@@ -48,14 +48,14 @@
         "body" : "autoTemplate(backendResponse)"
       }
     },
-    "codeendpoint.updateCode" : {
+    "codeendpoint.insertCode" : {
       "path" : "code",
-      "httpMethod" : "PUT",
+      "httpMethod" : "POST",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
       "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "com.qdacity.server.project.CodeEndpoint.updateCode",
+      "rosyMethod" : "com.qdacity.server.project.CodeEndpoint.insertCode",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
@@ -110,14 +110,14 @@
         "body" : "empty"
       }
     },
-    "codeendpoint.insertCode" : {
+    "codeendpoint.updateCode" : {
       "path" : "code",
-      "httpMethod" : "POST",
+      "httpMethod" : "PUT",
       "authLevel" : "NONE",
       "scopes" : [ "https://www.googleapis.com/auth/userinfo.email" ],
       "audiences" : [ ],
       "clientIds" : [ "292824132082.apps.googleusercontent.com" ],
-      "rosyMethod" : "com.qdacity.server.project.CodeEndpoint.insertCode",
+      "rosyMethod" : "com.qdacity.server.project.CodeEndpoint.updateCode",
       "request" : {
         "body" : "autoTemplate(backendRequest)",
         "bodyName" : "resource"
@@ -167,7 +167,7 @@
           "$ref" : "Code"
         }
       },
-      "com.qdacity.server.project.CodeEndpoint.updateCode" : {
+      "com.qdacity.server.project.CodeEndpoint.insertCode" : {
         "request" : {
           "$ref" : "Code"
         },
@@ -182,7 +182,7 @@
       },
       "com.qdacity.server.project.CodeEndpoint.removeCode" : {
       },
-      "com.qdacity.server.project.CodeEndpoint.insertCode" : {
+      "com.qdacity.server.project.CodeEndpoint.updateCode" : {
         "request" : {
           "$ref" : "Code"
         },
