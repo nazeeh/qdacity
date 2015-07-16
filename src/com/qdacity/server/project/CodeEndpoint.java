@@ -1,12 +1,17 @@
 package com.qdacity.server.project;
 
+import com.qdacity.Constants;
 import com.qdacity.server.PMF;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.google.appengine.api.users.User;
+
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -94,9 +99,14 @@ public class CodeEndpoint {
 	 *
 	 * @param code the entity to be inserted.
 	 * @return The inserted entity.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "insertCode")
-	public Code insertCode(Code code) {
+	@ApiMethod(name = "insertCode",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID,
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID})
+
+	public Code insertCode(Code code, User user) throws UnauthorizedException {
+		if (user == null) throw new UnauthorizedException("User is Not Valid");
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (containsCode(code)) {

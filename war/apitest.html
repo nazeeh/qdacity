@@ -4,7 +4,9 @@
     <title>QDAcity API Test</title>
 </head>
 <body>
- 
+	 <div id="login">
+       <input id="loginButton" type="button" value="Login"/>
+    </div>
     <form action="javascript:void(0);">
         <h2>List Codes</h2>
         <div><input id="listCode" type="submit" value="List Codes"></div>
@@ -36,10 +38,42 @@
     
     
     <script type="text/javascript">
+    
+	    var scopes = 'https://www.googleapis.com/auth/userinfo.email';
+	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
+	
+	    function handleAuth() {
+		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
+		    if (!resp.code) {
+		      // User is signed in, so hide the button
+		      document.getElementById('loginButton').style.visibility = 'hidden';
+		      document.getElementById('login').innerText = 'Welcome ' + resp.name;
+		    }
+		    else {
+		    	document.getElementById('loginButton').style.visibility = '';
+		    }
+		  });
+		}
+	    
+	    function signin(mode, callback) {
+	    	  gapi.auth.authorize({client_id: client_id,scope: scopes, immediate: mode},callback);
+	    }
+    
         function init() {
-                //Parameters are APIName,APIVersion,CallBack function,API Root 
-                gapi.client.load('codeendpoint', 'v1', null, 'http://localhost:8888/_ah/api');
-                
+        	var apisToLoad;
+        	var callback = function() {
+        	   if (--apisToLoad == 0) {
+        	     signin(true, handleAuth);
+        	   }
+        	}
+        	  
+        	apisToLoad = 2;
+        	//Parameters are APIName,APIVersion,CallBack function,API Root 
+        	//gapi.client.load('codeendpoint', 'v1', callback, 'https://localhost:8888/_ah/api');
+        	gapi.client.load('codeendpoint', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
+        	gapi.client.load('oauth2','v2',callback);
+        	
+        	                
                 document.getElementById('listCode').onclick = function() {
                 	listCodes();
                   }
@@ -55,6 +89,10 @@
                 document.getElementById('deleteCode').onclick = function() {
                         deleteCode();
                 }
+                
+                document.getElementById('loginButton').onclick = function() {
+            		signin(false,handleAuth);
+            	}
         }
         
         //List Quotes function that will execute the listQuote call
