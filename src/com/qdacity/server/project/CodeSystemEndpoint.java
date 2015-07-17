@@ -1,17 +1,13 @@
 package com.qdacity.server.project;
 
-import com.qdacity.Constants;
 import com.qdacity.server.PMF;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import com.google.appengine.api.users.User;
-
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +20,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 @Api(name = "qdacity", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
-public class CodeEndpoint {
+public class CodeSystemEndpoint {
 
 	/**
 	 * This method lists all the entities inserted in datastore.
@@ -34,18 +30,18 @@ public class CodeEndpoint {
 	 * persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "codes.listCode")
-	public CollectionResponse<Code> listCode(
+	@ApiMethod(name = "codesystem.listCodeSystem")
+	public CollectionResponse<CodeSystem> listCodeSystem(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit) {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
-		List<Code> execute = null;
+		List<CodeSystem> execute = null;
 
 		try {
 			mgr = getPersistenceManager();
-			Query query = mgr.newQuery(Code.class);
+			Query query = mgr.newQuery(CodeSystem.class);
 			if (cursorString != null && cursorString != "") {
 				cursor = Cursor.fromWebSafeString(cursorString);
 				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
@@ -57,20 +53,20 @@ public class CodeEndpoint {
 				query.setRange(0, limit);
 			}
 
-			execute = (List<Code>) query.execute();
+			execute = (List<CodeSystem>) query.execute();
 			cursor = JDOCursorHelper.getCursor(execute);
 			if (cursor != null)
 				cursorString = cursor.toWebSafeString();
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
-			for (Code obj : execute)
+			for (CodeSystem obj : execute)
 				;
 		} finally {
 			mgr.close();
 		}
 
-		return CollectionResponse.<Code> builder().setItems(execute)
+		return CollectionResponse.<CodeSystem> builder().setItems(execute)
 				.setNextPageToken(cursorString).build();
 	}
 
@@ -80,16 +76,16 @@ public class CodeEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(name = "codes.getCode")
-	public Code getCode(@Named("id") Long id) {
+	@ApiMethod(name = "codesystem.getCodeSystem")
+	public CodeSystem getCodeSystem(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
-		Code code = null;
+		CodeSystem codesystem = null;
 		try {
-			code = mgr.getObjectById(Code.class, id);
+			codesystem = mgr.getObjectById(CodeSystem.class, id);
 		} finally {
 			mgr.close();
 		}
-		return code;
+		return codesystem;
 	}
 
 	/**
@@ -97,26 +93,21 @@ public class CodeEndpoint {
 	 * exists in the datastore, an exception is thrown.
 	 * It uses HTTP POST method.
 	 *
-	 * @param code the entity to be inserted.
+	 * @param codesystem the entity to be inserted.
 	 * @return The inserted entity.
-	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "codes.insertCode",  scopes = {Constants.EMAIL_SCOPE},
-			clientIds = {Constants.WEB_CLIENT_ID,
-		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID})
-
-	public Code insertCode(Code code, User user) throws UnauthorizedException {
-		if (user == null) throw new UnauthorizedException("User is Not Valid");
+	@ApiMethod(name = "codesystem.insertCodeSystem")
+	public CodeSystem insertCodeSystem(CodeSystem codesystem) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (containsCode(code)) {
+			if (containsCodeSystem(codesystem)) {
 				throw new EntityExistsException("Object already exists");
 			}
-			mgr.makePersistent(code);
+			mgr.makePersistent(codesystem);
 		} finally {
 			mgr.close();
 		}
-		return code;
+		return codesystem;
 	}
 
 	/**
@@ -124,21 +115,21 @@ public class CodeEndpoint {
 	 * exist in the datastore, an exception is thrown.
 	 * It uses HTTP PUT method.
 	 *
-	 * @param code the entity to be updated.
+	 * @param codesystem the entity to be updated.
 	 * @return The updated entity.
 	 */
-	@ApiMethod(name = "codes.updateCode")
-	public Code updateCode(Code code) {
+	@ApiMethod(name = "codesystem.updateCodeSystem")
+	public CodeSystem updateCodeSystem(CodeSystem codesystem) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (!containsCode(code)) {
+			if (!containsCodeSystem(codesystem)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
-			mgr.makePersistent(code);
+			mgr.makePersistent(codesystem);
 		} finally {
 			mgr.close();
 		}
-		return code;
+		return codesystem;
 	}
 
 	/**
@@ -147,22 +138,22 @@ public class CodeEndpoint {
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 */
-	@ApiMethod(name = "codes.removeCode")
-	public void removeCode(@Named("id") Long id) {
+	@ApiMethod(name = "codesystem.removeCodeSystem")
+	public void removeCodeSystem(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			Code code = mgr.getObjectById(Code.class, id);
-			mgr.deletePersistent(code);
+			CodeSystem codesystem = mgr.getObjectById(CodeSystem.class, id);
+			mgr.deletePersistent(codesystem);
 		} finally {
 			mgr.close();
 		}
 	}
 
-	private boolean containsCode(Code code) {
+	private boolean containsCodeSystem(CodeSystem codesystem) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
 		try {
-			mgr.getObjectById(Code.class, code.getId());
+			mgr.getObjectById(CodeSystem.class, codesystem.getId());
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			contains = false;
 		} finally {

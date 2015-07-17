@@ -1,5 +1,7 @@
 package com.qdacity.server.project;
 
+import java.util.List;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -15,6 +17,8 @@ public class Code {
 	String author;
 	@Persistent
 	String message;
+	@Persistent
+	List<Long> subCodeIDs;
 
 	public Long getId() {
 		return id;
@@ -38,5 +42,18 @@ public class Code {
 
 	public void setName(String message) {
 		this.message = message;
+	}
+
+	
+	public List<Long> getSubCodesIDs() {
+		return subCodeIDs;
+	}
+
+	public void setSubCodesIDs(List<Long> subCodesIDs) {
+		this.subCodeIDs = subCodesIDs;
+	}
+
+	public void addSubCodeID(Long ID){
+		subCodeIDs.add(ID);
 	}
 }
