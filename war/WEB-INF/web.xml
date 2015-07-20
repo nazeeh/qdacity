@@ -5,7 +5,7 @@
   
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>Qdacity.html</welcome-file>
+    <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
   <servlet>
@@ -13,7 +13,7 @@
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
     <init-param>
       <param-name>services</param-name>
-      <param-value>com.qdacity.server.project.CodeEndpoint</param-value>
+      <param-value>com.qdacity.server.project.CodeEndpoint,com.qdacity.server.project.CodeSystemEndpoint</param-value>
     </init-param>
   </servlet>
 
