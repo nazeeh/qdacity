@@ -1,10 +1,67 @@
 <!DOCTYPE html>
+<html lang="en">
 <html>
 <head>
+
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
     <title>QDAcity API Test</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="css/landing-page.css" rel="stylesheet">
+    
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
 </head>
 <body>
-	 <div id="login">
+
+<!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+        <div class="container topnav">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand topnav" href="index.html">QDAcity</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="index.html#about">About</a>
+                    </li>
+                    <li>
+                        <a href="apitest.html">API Test</a>
+                    </li>
+                    <li>
+                        <a href="index.html#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <div id="login" class="testapi">
+	 <div id="login" >
        <input id="loginButton" type="button" value="Login"/>
     </div>
     <form action="javascript:void(0);">
@@ -23,10 +80,17 @@
     
     <form action="javascript:void(0);">
       <h2>Update Code</h2>
-         <div><input id="editCodeID" placeholder="Quote ID value"></input></div>
+         <div><input id="editCodeID" placeholder="code ID value"></input></div>
          <div><input id="editAuthorName" placeholder="Author name here"></input></div>
-         <div><input id="editName" placeholder="Quote text here"></input></div>
+         <div><input id="editName" placeholder="code name here"></input></div>
          <div><input id="updateCode" type="submit" value="Update Code"></div>
+    </form>
+    
+    <form action="javascript:void(0);">
+      <h2>Add/Remove Linkage</h2>
+         <div><input id="parentCodeID" placeholder="Code ID value"></input></div>
+         <div><input id="childCodeID" placeholder="Code ID value"></input></div>
+         <div><input id="addSubCode" type="submit" value="Add Subcode"><input id="removeSubCode" type="submit" value="Remove Subcode"></div>
     </form>
     
     
@@ -35,7 +99,7 @@
          <div><input id="codeID" placeholder="Code ID"></input></div>
          <div><input id="deleteCode" type="submit" value="Delete Code"></div>
     </form>
-    
+    </div>
     
     <script type="text/javascript">
     
@@ -69,8 +133,8 @@
         	  
         	apisToLoad = 2;
         	//Parameters are APIName,APIVersion,CallBack function,API Root 
-        	//gapi.client.load('codeendpoint', 'v1', callback, 'https://localhost:8888/_ah/api');
-        	gapi.client.load('codeendpoint', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
+        	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
+        	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
         	gapi.client.load('oauth2','v2',callback);
         	
         	                
@@ -86,6 +150,14 @@
                         updateCode();
                 }
                 
+                document.getElementById('addSubCode').onclick = function() {
+                	addSubCode();
+            	}
+                
+                document.getElementById('removeSubCode').onclick = function() {
+                	removeSubCode();
+            	}
+                
                 document.getElementById('deleteCode').onclick = function() {
                         deleteCode();
                 }
@@ -95,21 +167,21 @@
             	}
         }
         
-        //List Quotes function that will execute the listQuote call
+        //List Codes function that will execute the listCode call
         function listCodes() {
-                gapi.client.codeendpoint.listCode().execute(function(resp) {
+                gapi.client.qdacity.codes.listCode().execute(function(resp) {
                         if (!resp.code) {
                                 resp.items = resp.items || [];
                                 var result = "";
                                 for (var i=0;i<resp.items.length;i++) {
-                                        result = result+ resp.items[i].name + "..." + "<b>" + resp.items[i].author + "</b>" + "[" + resp.items[i].id + "]" + "<br/>";
+                                        result = result+ resp.items[i].name + "..." + "<b>" + resp.items[i].author + "</b>" + "[" + resp.items[i].id + "]" + "   {" + resp.items[i].subCodesIDs + "}" + "<br/>";
                                 }
                                 document.getElementById('listCodesResult').innerHTML = result;
                         }
                 });
         }
         
-        //Insert Quote function
+        //Insert Code function
         function insertCode() {
                 //Validate the entries
                 var _AuthorName = document.getElementById('txtAuthorName').value;
@@ -121,8 +193,9 @@
                 requestData.author = _AuthorName;
                 requestData.name = _CodeName;
                 requestData.id = _ID;
+                requestData.subCodesIDs = new Array();
                 
-                gapi.client.codeendpoint.insertCode(requestData).execute(function(resp) {
+                gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
 
                 	console.log(resp.id + ":" + resp.author + ":" + resp.name);
                         if (!resp.code) {
@@ -133,8 +206,10 @@
                 });
         }
         
-        //Update Quote function
+        //Update Code function
         function updateCode() {
+        	
+        	
                 //Validate the entries
                 var _ID = document.getElementById("editCodeID").value;
                 var _AuthorName = document.getElementById('editAuthorName').value;
@@ -145,15 +220,89 @@
                 requestData.id = _ID;
                 requestData.author = _AuthorName;
                 requestData.name = _Name;
-                gapi.client.codeendpoint.updateCode(requestData).execute(function(resp) {
+                requestData.subCodesIDs = ["4","5","6"];
+                gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
                         if (!resp.code) {
                                 //Just logging to console now, you can do your check here/display message
-                                console.log(resp.id + ":" + resp.author + ":" + resp.name);
+                                console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
                         }
                 });
         }
         
-        //Delete Quote function
+        
+        
+        //Add SubCode function FIXME
+        function addSubCode() {
+            var _ID = document.getElementById("parentCodeID").value;
+            var _SubID = document.getElementById("childCodeID").value;
+            
+            gapi.client.qdacity.codes.getCode({'id': _ID}).execute(function(resp) {
+            	
+            	          if (!resp.code) {
+            	        	  console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	          }
+            	          
+            	          var code = {};
+            	            
+            	            var requestData = {};
+            	           
+                          	requestData.name = resp.name;
+            	          	requestData.id = _ID;
+            	            requestData.author = resp.author;
+            	            if (typeof resp.subCodesIDs == 'undefined'){
+            	            	 requestData.subCodesIDs = [_SubID];
+            	            }
+            	            else {
+            	            	requestData.subCodesIDs = resp.subCodesIDs.concat(_SubID);
+            	            }
+            	            gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
+            	                    if (!resp.code) {
+            	                    	console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	                    }
+            	            });
+            	          
+        	 });
+    	}
+        
+        function removeSubCode() {
+            //Validate the entries
+            var _ID = document.getElementById("parentCodeID").value;
+            var _SubID = document.getElementById("childCodeID").value;
+            
+            gapi.client.qdacity.codes.getCode({'id': _ID}).execute(function(resp) {
+            	
+            	          if (!resp.code) {
+            	        	  console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	          }
+            	          
+            	          var code = {};
+            	            
+            	            var requestData = {};
+            	           
+                          	requestData.name = resp.name;
+            	          	requestData.id = _ID;
+            	            requestData.author = resp.author;
+            	            for(var i = resp.subCodesIDs.length - 1; i >= 0; i--) {
+            	            	
+            	                if(resp.subCodesIDs[i] === _SubID) {
+            	                	
+            	                	resp.subCodesIDs.splice(i, 1);
+            	                }
+            	            }
+            	            requestData.subCodesIDs = resp.subCodesIDs;
+            	            gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
+            	                    if (!resp.code) {
+            	                            //Just logging to console now, you can do your check here/display message
+            	                    	console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	                    }
+            	            });
+            	          
+        	 });
+    	}
+        
+        
+        
+        //Delete code function
         function deleteCode() {
                 //Validate the entries
                 var _ID = document.getElementById('codeID').value;
@@ -162,7 +311,7 @@
                 var requestData = {};
                 requestData.id = _ID;
                 console.log(requestData);
-                gapi.client.codeendpoint.removeCode(requestData).execute(function(resp) {
+                gapi.client.qdacity.codes.removeCode(requestData).execute(function(resp) {
                         //Just logging to console now, you can do your check here/display message
                         console.log(resp);
                 });
