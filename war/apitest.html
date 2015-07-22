@@ -9,15 +9,25 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>QDAcity API Test</title>
+     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link href="css/landing-page.css" rel="stylesheet">
     
+   
+    
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    
+      <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+      
+        <style>
+    .validateTips { border: 1px solid transparent; padding: 0.3em; }
+  </style>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -72,17 +82,11 @@
     
     <form action="javascript:void(0);">
       <h2>Insert New Code</h2>
-         <div><input id="txtAuthorName" placeholder="Author name here"></input></div>
-         <div><input id="txtName" placeholder="Name text here"></input></div>
-         <div><input id="txtId" placeholder="Id here"></input></div>
          <div><input id="insertCode" type="submit" value="Insert Code"></div>
     </form>
     
     <form action="javascript:void(0);">
       <h2>Update Code</h2>
-         <div><input id="editCodeID" placeholder="code ID value"></input></div>
-         <div><input id="editAuthorName" placeholder="Author name here"></input></div>
-         <div><input id="editName" placeholder="code name here"></input></div>
          <div><input id="updateCode" type="submit" value="Update Code"></div>
     </form>
     
@@ -100,9 +104,80 @@
          <div><input id="deleteCode" type="submit" value="Delete Code"></div>
     </form>
     </div>
-    
+
+<div id="new-code-form" title="Code Properties">
+  <p class="validateTips"></p>
+ 
+  <form >
+    <fieldset>
+    <table id="addCodeTable" style="padding-left: 10px;">
+    <tbody>
+      <tr>
+        <td><label for="newCodeName">Code Name</label></td>
+        <td><input type="text" name="newCodeName" id="newCodeName" value="Code Name" class="text ui-widget-content ui-corner-all"></td>
+      </tr>
+      <tr>
+      <td>
+      <label for="newCodeAuthor">Author</label>
+      </td>
+      <td>
+      <input type="text" name="newCodeAuthor" id="newCodeAuthor" value="Author" class="text ui-widget-content ui-corner-all">
+      </td>
+      </tr>
+      <tr>
+      <td>
+      <label for="newCodeID">ID</label>
+      </td>
+      <td>
+      <input type="text" name="newCodeID" id="newCodeID" value="" class="text ui-widget-content ui-corner-all">
+      </td>
+      </tr>
+    </tbody>
+  </table>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
+<div id="update-code-form" title="Code Properties">
+  <p class="validateTips"></p>
+ 
+  <form >
+    <fieldset>
+    <table id="changeCodeTable" style="padding-left: 10px;">
+    <tbody>
+      <tr>
+        <td><label for="updateCodeName">Code Name</label></td>
+        <td><input type="text" name="updateCodeName" id="updateCodeName" value="Code Name" class="text ui-widget-content ui-corner-all"></td>
+      </tr>
+      <tr>
+      <td>
+      <label for="updateCodeAuthor">Author</label>
+      </td>
+      <td>
+      <input type="text" name="updateCodeAuthor" id="updateCodeAuthor" value="Author" class="text ui-widget-content ui-corner-all">
+      </td>
+      </tr>
+      <tr>
+      <td>
+      <label for="updateCodeID">ID</label>
+      </td>
+      <td>
+      <input type="text" name="updateCodeID" id="updateCodeID" value="" class="text ui-widget-content ui-corner-all">
+      </td>
+      </tr>
+    </tbody>
+  </table>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
     <script type="text/javascript">
     
+    
+    
+          
 	    var scopes = 'https://www.googleapis.com/auth/userinfo.email';
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 	
@@ -142,14 +217,6 @@
                 	listCodes();
                   }
                 
-                document.getElementById('insertCode').onclick = function() {
-                        insertCode();
-                }
-                
-                document.getElementById('updateCode').onclick = function() {
-                        updateCode();
-                }
-                
                 document.getElementById('addSubCode').onclick = function() {
                 	addSubCode();
             	}
@@ -159,12 +226,14 @@
             	}
                 
                 document.getElementById('deleteCode').onclick = function() {
-                        deleteCode();
+                    deleteCode();
                 }
                 
                 document.getElementById('loginButton').onclick = function() {
             		signin(false,handleAuth);
             	}
+                
+                
         }
         
         //List Codes function that will execute the listCode call
@@ -182,12 +251,8 @@
         }
         
         //Insert Code function
-        function insertCode() {
-                //Validate the entries
-                var _AuthorName = document.getElementById('txtAuthorName').value;
-                var _CodeName = document.getElementById('txtName').value;
-                var _ID = document.getElementById('txtId').value;
-                
+        function insertCode(_AuthorName, _CodeName, _ID) {
+                window.alert(_AuthorName);
                 //Build the Request Object
                 var requestData = {};
                 requestData.author = _AuthorName;
@@ -207,20 +272,12 @@
         }
         
         //Update Code function
-        function updateCode() {
-        	
-        	
-                //Validate the entries
-                var _ID = document.getElementById("editCodeID").value;
-                var _AuthorName = document.getElementById('editAuthorName').value;
-                var _Name = document.getElementById('editName').value;
-                
+        function updateCode(_AuthorName, _CodeName, _ID) {
                 //Build the Request Object
                 var requestData = {};
                 requestData.id = _ID;
                 requestData.author = _AuthorName;
-                requestData.name = _Name;
-                requestData.subCodesIDs = ["4","5","6"];
+                requestData.name = _CodeName;
                 gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
                         if (!resp.code) {
                                 //Just logging to console now, you can do your check here/display message
@@ -316,6 +373,102 @@
                         console.log(resp);
                 });
         }
+        
+        
+        $(function() {
+            var dialog, form,
+            name = $( "#newCodeName" ),
+            email = $( "#newCodeAuthor" ),
+            password = $( "#newCodeID" ),
+            allFields = $( [] ).add( name ).add( email ).add( password ),
+              tips = $( ".validateTips" );
+         
+         
+            function addCode() {
+            	var name = document.getElementById('newCodeName').value,
+                author = document.getElementById('newCodeAuthor').value,
+                id = document.getElementById("newCodeID" ).value;
+
+              insertCode(author,name,id);
+              dialog.dialog( "close" );
+              form[ 0 ].reset();
+            }
+         
+            dialog = $( "#new-code-form" ).dialog({
+              autoOpen: false,
+              height: 350,
+              width: 450,
+              modal: true,
+              buttons: {
+                "Add code": addCode,
+                Cancel: function() {
+                  dialog.dialog( "close" );
+                }
+              },
+              close: function() {
+                form[ 0 ].reset();
+                allFields.removeClass( "ui-state-error" );
+                
+              }
+            });
+         
+            form = dialog.find( "form" ).on( "submit", function( event ) {
+              event.preventDefault();
+              addCode();
+            });
+         
+            $( "#insertCode" ).on( "click", function() {
+              dialog.dialog( "open" );
+            });
+          });
+        
+        $(function() {
+            var dialog, form,
+            name = $( "#updateCodeName" ),
+            email = $( "#updateCodeAuthor" ),
+            password = $( "#updateCodeID" ),
+            allFields = $( [] ).add( name ).add( email ).add( password ),
+              tips = $( ".validateTips" );
+         
+         
+            function changeCode() {
+            	var name = document.getElementById('updateCodeName').value,
+                author = document.getElementById('updateCodeAuthor').value,
+                id = document.getElementById("updateCodeID" ).value;
+
+              updateCode(author,name,id);
+              dialog.dialog( "close" );
+              form[ 0 ].reset();
+            }
+         
+            dialog = $( "#update-code-form" ).dialog({
+              autoOpen: false,
+              height: 350,
+              width: 450,
+              modal: true,
+              buttons: {
+                "Modify code": changeCode,
+                Cancel: function() {
+                  dialog.dialog( "close" );
+                }
+              },
+              close: function() {
+                form[ 0 ].reset();
+                allFields.removeClass( "ui-state-error" );
+                
+              }
+            });
+         
+            form = dialog.find( "form" ).on( "submit", function( event ) {
+              event.preventDefault();
+              changeCode();
+            });
+         
+            $( "#updateCode" ).on( "click", function() {
+              dialog.dialog( "open" );
+            });
+          });
+        
         
     </script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
