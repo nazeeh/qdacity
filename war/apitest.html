@@ -15,6 +15,10 @@
     
     <!-- Custom CSS -->
     <link href="css/landing-page.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <!-- EasyTree -->
+	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
+	<script type="text/javascript" src="EasyTree/jquery.easytree.min.js"></script>
     
    
     
@@ -22,7 +26,7 @@
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
     
-      <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+      
       
         <style>
     .validateTips { border: 1px solid transparent; padding: 0.3em; }
@@ -70,6 +74,22 @@
         </div>
         <!-- /.container -->
     </nav>
+    <div class="row">
+    <div class=col-md-2 >
+     <div class="testapi">
+     <div style="float:left; width:230px; margin-left:10px; margin-top:20px; text-align: left;">
+<b>Code System</b>
+
+    <div id="easytree-section" ">
+	
+        <ul>
+        </ul>
+    </div>
+</div>
+    
+     </div>
+</div>
+    <div class=col-md-10 >
     <div id="login" class="testapi">
 	 <div id="login" >
        <input id="loginButton" type="button" value="Login"/>
@@ -92,8 +112,8 @@
     
     <form action="javascript:void(0);">
       <h2>Add/Remove Linkage</h2>
-         <div><input id="parentCodeID" placeholder="Code ID value"></input></div>
-         <div><input id="childCodeID" placeholder="Code ID value"></input></div>
+         <div><input id="parentCodeID" placeholder="Parent ID value"></input></div>
+         <div><input id="childCodeID" placeholder="Child ID value"></input></div>
          <div><input id="addSubCode" type="submit" value="Add Subcode"><input id="removeSubCode" type="submit" value="Remove Subcode"></div>
     </form>
     
@@ -104,7 +124,8 @@
          <div><input id="deleteCode" type="submit" value="Delete Code"></div>
     </form>
     </div>
-
+</div>
+</div>
 <div id="new-code-form" title="Code Properties">
   <p class="validateTips"></p>
  
@@ -174,13 +195,16 @@
   </form>
 </div>
     <script type="text/javascript">
+
     
+
     
     
           
 	    var scopes = 'https://www.googleapis.com/auth/userinfo.email';
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-	
+	    
+	    var easytree = $('#easytree-section').easytree();
 	    function handleAuth() {
 		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
 		    if (!resp.code) {
@@ -199,10 +223,12 @@
 	    }
     
         function init() {
+        	
         	var apisToLoad;
         	var callback = function() {
         	   if (--apisToLoad == 0) {
         	     signin(true, handleAuth);
+        	     listCodes();
         	   }
         	}
         	  
@@ -215,6 +241,7 @@
         	                
                 document.getElementById('listCode').onclick = function() {
                 	listCodes();
+                	//window.alert(codes);
                   }
                 
                 document.getElementById('addSubCode').onclick = function() {
@@ -234,25 +261,54 @@
             	}
                 
                 
+                
+                
         }
         
         //List Codes function that will execute the listCode call
         function listCodes() {
+        	var codes = [];
                 gapi.client.qdacity.codes.listCode().execute(function(resp) {
                         if (!resp.code) {
                                 resp.items = resp.items || [];
                                 var result = "";
                                 for (var i=0;i<resp.items.length;i++) {
                                         result = result+ resp.items[i].name + "..." + "<b>" + resp.items[i].author + "</b>" + "[" + resp.items[i].id + "]" + "   {" + resp.items[i].subCodesIDs + "}" + "<br/>";
+                                        
+                                        codes.push(resp.items[i]);
                                 }
                                 document.getElementById('listCodesResult').innerHTML = result;
+                                for(var i=0;i<codes.length;i++) {
+                                	addNodeToTree(codes[i].id, codes[i].name);
+                                }
+                                
+                                for(var i=0;i<codes.length;i++) {
+                                	if (typeof codes[i].subCodesIDs != 'undefined')
+                                	{
+	                                	if (codes[i].subCodesIDs.length > 0){
+	                                		
+		                                	for(var j=0;j<codes.length;j++) {
+		                                		for(var k=0; k < codes[i].subCodesIDs.length; k++){
+		                                			if (codes[i].subCodesIDs[k] == codes[j].id){
+		                                				relocateNode(codes[j].id, codes[i].id);
+		                                			}
+		                                		}
+		                                	}
+		                                	
+	                                    }
+                                	}
+                                }
                         }
+                        
                 });
         }
         
+     
+        
+        
+
         //Insert Code function
         function insertCode(_AuthorName, _CodeName, _ID) {
-                window.alert(_AuthorName);
                 //Build the Request Object
                 var requestData = {};
                 requestData.author = _AuthorName;
@@ -267,8 +323,11 @@
                                 //Just logging to console now, you can do your check here/display message
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name);
                                 document.getElementById('listCodesResult').innerHTML = resp.id + ":" + resp.author + ":" + resp.name;
+                                addNodeToTree(resp.id, resp.name);
                         }
                 });
+                
+                
         }
         
         //Update Code function
@@ -282,6 +341,7 @@
                         if (!resp.code) {
                                 //Just logging to console now, you can do your check here/display message
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+                                changeNodeName(resp.id, resp.name);
                         }
                 });
         }
@@ -315,6 +375,7 @@
             	            gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
             	                    if (!resp.code) {
             	                    	console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	                    	relocateNode(_SubID, _ID);
             	                    }
             	            });
             	          
@@ -371,11 +432,15 @@
                 gapi.client.qdacity.codes.removeCode(requestData).execute(function(resp) {
                         //Just logging to console now, you can do your check here/display message
                         console.log(resp);
+                        removeNodeFromTree(_ID);
+                        
                 });
+                
         }
         
         
         $(function() {
+        
             var dialog, form,
             name = $( "#newCodeName" ),
             email = $( "#newCodeAuthor" ),
@@ -469,7 +534,43 @@
             });
           });
         
+        function addNodeToTree(id, name) {
+            var sourceNode = {};
+            sourceNode.text = name;
+            sourceNode.isFolder = true;
+            sourceNode.id = id;
+           // var targetId = $('#lstNodes :selected').val();
+			
+            easytree.addNode(sourceNode);
+            easytree.rebuildTree();
+            //loadSelectBox();
+        }
         
+        function removeNodeFromTree(id) {
+            
+            easytree.removeNode(id);
+            easytree.rebuildTree();
+        }
+        
+        function relocateNode(id, target) {
+        	
+            var sourceNode = easytree.getNode(id);
+            sourceNode.isFolder = true;
+            var targetId = target;
+            easytree.removeNode(id);
+			
+            easytree.addNode(sourceNode, target);
+            easytree.rebuildTree();
+        }
+        
+		function changeNodeName(id, name) {
+        	
+            var sourceNode = easytree.getNode(id);
+            sourceNode.text = name;
+
+            easytree.rebuildTree();
+        }
+
     </script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
 </body>
