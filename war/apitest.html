@@ -91,7 +91,7 @@
 <a id="btnInsertCode" class="btn btn-default" href="#">
   <i class="fa fa-plus fa-1x"></i>
 </a>
-<a class="btn btn-default" href="#">
+<a id="btnRemoveCode" class="btn btn-default" href="#">
   <i class="fa fa-trash fa-1x"></i>
 </a>
 <a id="btnListCode" class="btn btn-default" href="#">
@@ -120,13 +120,6 @@
          <div><input id="parentCodeID" placeholder="Parent ID value"></input></div>
          <div><input id="childCodeID" placeholder="Child ID value"></input></div>
          <div><input id="addSubCode" type="submit" value="Add Subcode"><input id="removeSubCode" type="submit" value="Remove Subcode"></div>
-    </form>
-    
-    
-    <form id="deleteCodeForm" action="javascript:void(0);">
-      <h2>Delete Code</h2>
-         <div><input id="codeID" placeholder="Code ID"></input></div>
-         <div><input id="deleteCode" type="submit" value="Delete Code"></div>
     </form>
     </div>
 </div>
@@ -172,6 +165,14 @@
     <fieldset>
     <table id="changeCodeTable" style="padding-left: 10px;">
     <tbody>
+   	  <tr>
+      <td>
+      <label for="updateCodeID">ID</label>
+      </td>
+      <td>
+      <div id="updateFormCodeId"></div>
+      </td>
+      </tr>
       <tr>
         <td><label for="updateCodeName">Code Name</label></td>
         <td><input type="text" name="updateCodeName" id="updateCodeName" value="Code Name" class="text ui-widget-content ui-corner-all"></td>
@@ -184,14 +185,7 @@
       <input type="text" name="updateCodeAuthor" id="updateCodeAuthor" value="Author" class="text ui-widget-content ui-corner-all">
       </td>
       </tr>
-      <tr>
-      <td>
-      <label for="updateCodeID">ID</label>
-      </td>
-      <td>
-      <input type="text" name="updateCodeID" id="updateCodeID" value="" class="text ui-widget-content ui-corner-all">
-      </td>
-      </tr>
+      
     </tbody>
   </table>
       <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -224,7 +218,6 @@
 	    }
     
         function init() {
-        	
         	var apisToLoad;
         	var callback = function() {
         	   if (--apisToLoad == 0) {
@@ -246,14 +239,14 @@
                   }
                 
                 document.getElementById('addSubCode').onclick = function() {
-                	addSubCode();
+                	//addSubCode();
             	}
                 
                 document.getElementById('removeSubCode').onclick = function() {
                 	removeSubCode();
             	}
                 
-                document.getElementById('deleteCode').onclick = function() {
+                document.getElementById('btnRemoveCode').onclick = function() {
                     deleteCode();
                 }
                 
@@ -310,6 +303,7 @@
 
         //Insert Code function
         function insertCode(_AuthorName, _CodeName, _ID) {
+        	var activeID = getActiveId();
                 //Build the Request Object
                 var requestData = {};
                 requestData.author = _AuthorName;
@@ -325,6 +319,10 @@
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name);
                                 document.getElementById('listCodesResult').innerHTML = resp.id + ":" + resp.author + ":" + resp.name;
                                 addNodeToTree(resp.id, resp.name);
+                                if (typeof activeID != 'undefined'){
+                                	addSubCode(activeID, _ID);
+                                	relocateNode(_ID, activeID);
+                                }
                         }
                 });
                 
@@ -350,9 +348,9 @@
         
         
         //Add SubCode function FIXME
-        function addSubCode() {
-            var _ID = document.getElementById("parentCodeID").value;
-            var _SubID = document.getElementById("childCodeID").value;
+        function addSubCode(_ID, _SubID) {
+            //var _ID = document.getElementById("parentCodeID").value;
+            //var _SubID = document.getElementById("childCodeID").value;
             
             gapi.client.qdacity.codes.getCode({'id': _ID}).execute(function(resp) {
             	
@@ -423,19 +421,23 @@
         
         //Delete code function
         function deleteCode() {
-                //Validate the entries
-                var _ID = document.getElementById('codeID').value;
-                
-                //Build the Request Object
-                var requestData = {};
-                requestData.id = _ID;
-                console.log(requestData);
-                gapi.client.qdacity.codes.removeCode(requestData).execute(function(resp) {
-                        //Just logging to console now, you can do your check here/display message
-                        console.log(resp);
-                        removeNodeFromTree(_ID);
-                        
-                });
+        	var activeID = getActiveId();
+        	if (typeof activeID == 'undefined'){
+        		window.alert("No code selected");
+        		return;
+        	}
+        	else
+       		{
+	            //Build the Request Object
+	            var requestData = {};
+	            requestData.id = activeID;
+	            console.log(requestData);
+	            gapi.client.qdacity.codes.removeCode(requestData).execute(function(resp) {
+	                    //Just logging to console now, you can do your check here/display message
+	                    console.log(resp);
+	                    removeNodeFromTree(activeID);
+	            });
+       		}
                 
         }
         
@@ -501,7 +503,7 @@
             function changeCode() {
             	var name = document.getElementById('updateCodeName').value,
                 author = document.getElementById('updateCodeAuthor').value,
-                id = document.getElementById("updateCodeID" ).value;
+                id = getActiveId();
 
               updateCode(author,name,id);
               dialog.dialog( "close" );
@@ -532,6 +534,7 @@
             });
          
             $( "#btnUpdateCode" ).on( "click", function() {
+              document.getElementById('updateFormCodeId').innerHTML = getActiveId();
               dialog.dialog( "open" );
             });
           });
@@ -575,6 +578,16 @@
             sourceNode.text = name;
 
             easytree.rebuildTree();
+        }
+		
+		function getActiveId() {
+            var nodes = easytree.getAllNodes();
+            
+            for (i = 0;  i < nodes.length; i++) {
+            	if (nodes[i].isActive == true){
+            		return nodes[i].id;
+            	}
+            }
         }
 
     </script>
