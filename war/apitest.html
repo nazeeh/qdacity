@@ -114,13 +114,7 @@
        <input id="loginButton" type="button" value="Login"/>
     </div>
     <div id="listCodesResult"></div>
-    
-    <form id="linkageForm" action="javascript:void(0);">
-      <h2>Add/Remove Linkage</h2>
-         <div><input id="parentCodeID" placeholder="Parent ID value"></input></div>
-         <div><input id="childCodeID" placeholder="Child ID value"></input></div>
-         <div><input id="addSubCode" type="submit" value="Add Subcode"><input id="removeSubCode" type="submit" value="Remove Subcode"></div>
-    </form>
+
     </div>
 </div>
 </div>
@@ -199,7 +193,11 @@
 	    var scopes = 'https://www.googleapis.com/auth/userinfo.email';
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 	    
-	    var easytree = $('#easytree-section').easytree();
+	    var easytree = $('#easytree-section').easytree({
+            enableDnd: true,
+            dropped: dropped
+        });
+	    
 	    function handleAuth() {
 		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
 		    if (!resp.code) {
@@ -237,14 +235,6 @@
                 	listCodes();
                 	//window.alert(codes);
                   }
-                
-                document.getElementById('addSubCode').onclick = function() {
-                	//addSubCode();
-            	}
-                
-                document.getElementById('removeSubCode').onclick = function() {
-                	removeSubCode();
-            	}
                 
                 document.getElementById('btnRemoveCode').onclick = function() {
                     deleteCode();
@@ -310,6 +300,7 @@
                 requestData.name = _CodeName;
                 requestData.id = _ID;
                 requestData.subCodesIDs = new Array();
+                requestData.parentID = activeID;
                 
                 gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
 
@@ -347,6 +338,14 @@
         
         
         
+        function relocateCode(codeId, newParentId){
+        	removeLinkFromOldParent(codeId);
+        	
+        	addSubCode(newParentId, codeId);
+        	
+        	changeParentId(codeId, newParentId);
+        }
+        
         //Add SubCode function FIXME
         function addSubCode(_ID, _SubID) {
             //var _ID = document.getElementById("parentCodeID").value;
@@ -374,17 +373,42 @@
             	            gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
             	                    if (!resp.code) {
             	                    	console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-            	                    	relocateNode(_SubID, _ID);
+            	                    	//relocateNode(_SubID, _ID);
             	                    }
             	            });
             	          
         	 });
     	}
         
-        function removeSubCode() {
+        function changeParentId(_ID, _newParent) {
+            
+            gapi.client.qdacity.codes.getCode({'id': _ID}).execute(function(resp) {
+            	
+            	          if (!resp.code) {
+            	        	  console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	          }
+            	            
+            	            var requestData = {};
+            	           
+                          	requestData.name = resp.name;
+            	          	requestData.id = _ID;
+            	            requestData.author = resp.author;
+            	            requestData.subCodesIDs = resp.subCodesIDs;
+            	            requestData.parentID = _newParent;
+            	           
+            	            gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
+            	                    if (!resp.code) {
+            	                    	console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	                    }
+            	            });
+            	          
+        	 });
+    	}
+        
+        function removeSubCode(_ID, _SubID) {
             //Validate the entries
-            var _ID = document.getElementById("parentCodeID").value;
-            var _SubID = document.getElementById("childCodeID").value;
+           // var _ID = document.getElementById("parentCodeID").value;
+           // var _SubID = document.getElementById("childCodeID").value;
             
             gapi.client.qdacity.codes.getCode({'id': _ID}).execute(function(resp) {
             	
@@ -414,6 +438,22 @@
             	                    }
             	            });
             	          
+        	 });
+    	}
+        
+        function removeLinkFromOldParent(codeId) {
+
+            gapi.client.qdacity.codes.getCode({'id': codeId}).execute(function(resp) {
+            	
+            	          if (!resp.code) {
+            	        	  window.alert("test");
+            	        	  console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+            	        	  window.alert("old parent of (" + codeId +") is " + resp.parentID);
+	            	          	if (typeof resp.parentID != 'undefined'){
+	            	          		window.alert("removing old subcode");
+	            	          		removeSubCode(resp.parentID, codeId);
+	            	          	}
+            	          }
         	 });
     	}
         
@@ -588,6 +628,15 @@
             		return nodes[i].id;
             	}
             }
+        }
+		
+		function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
+			
+            if (isSourceNode && isTargetNode) { // internal to internal drop
+                //alertMessage("Internal drop accepted, '" + source.text + "'  --> '" + target.text + "'");
+            	relocateCode(source.id, target.id);
+            }
+            
         }
 
     </script>
