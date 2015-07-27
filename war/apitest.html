@@ -619,13 +619,24 @@
 		
 		function getActiveId() {
             var nodes = easytree.getAllNodes();
+            return getActiveIdRecursive (nodes);
             
-            for (i = 0;  i < nodes.length; i++) {
+        }
+		
+		function getActiveIdRecursive(nodes) {
+			for (i = 0;  i < nodes.length; i++) {
+            	window.alert(nodes[i].id);
             	if (nodes[i].isActive == true){
             		return nodes[i].id;
             	}
+            	if (nodes[i].children && nodes[i].children.length > 0) {
+                    var result = getActiveIdRecursive(nodes[i].children);
+                    if (typeof result != 'undefined') return result;
+                }
             }
         }
+		
+		
 		
 		function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
 			
