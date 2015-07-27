@@ -446,11 +446,8 @@
             gapi.client.qdacity.codes.getCode({'id': codeId}).execute(function(resp) {
             	
             	          if (!resp.code) {
-            	        	  window.alert("test");
             	        	  console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-            	        	  window.alert("old parent of (" + codeId +") is " + resp.parentID);
 	            	          	if (typeof resp.parentID != 'undefined'){
-	            	          		window.alert("removing old subcode");
 	            	          		removeSubCode(resp.parentID, codeId);
 	            	          	}
             	          }
