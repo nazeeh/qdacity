@@ -19,6 +19,8 @@ public class Code {
 	String message;
 	@Persistent
 	List<Long> subCodeIDs;
+	@Persistent
+	Long parentID;
 
 	public Long getId() {
 		return id;
@@ -56,4 +58,14 @@ public class Code {
 	public void addSubCodeID(Long ID){
 		subCodeIDs.add(ID);
 	}
+
+	public Long getParentID() {
+		return parentID;
+	}
+
+	public void setParentID(Long parentCode) {
+		this.parentID = parentCode;
+	}
+	
+	
 }
