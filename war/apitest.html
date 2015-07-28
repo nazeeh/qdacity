@@ -26,11 +26,23 @@
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
     
+    
       
       
         <style>
     .validateTips { border: 1px solid transparent; padding: 0.3em; }
   </style>
+  
+   <script type="text/javascript" src="js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        tinymce.init({
+            selector: "#mytextarea",
+            min_height: 300,
+            height : 500
+
+        });
+    </script>
+    
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -78,13 +90,13 @@
     </nav>
             </div>
             </div>
-    <div class=row style="background-color: #f8f8f8">
+    <div class="row no-gutters" >
     <div class=col-md-2 >
-     <div style="float:left; width:103%; margin-left:2px; margin-right:2px; margin-top:50px; text-align: left; border: 2px solid #e7e7e7; ">
-     <div style="background-color: #e7e7e7; ">
+     <div style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
+     <div style="background-color: #e7e7e7;  width:105%;">
      <div style="text-align: center;">
 <b>Code System</b><br>
-<div class="btn-group">
+<div class="btn-group" >
 <a id="btnUpdateCode" class="btn btn-default" href="#">
   <i class="fa fa-pencil fa-1x"></i>
 </a>
@@ -98,9 +110,25 @@
   <i class="fa fa-refresh fa-1x"></i>
 </a>
 </div>
+<div class="btn-group" >
+
+
+<a id="btnApplyCode" class="btn btn-default" href="#">
+<span class="fa-stack fa-lg" style= "font-size: 8px;">
+  <i class="fa fa-tag fa-stack-2x"></i>
+  <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+<a id="btnRemoveCode" class="btn btn-default" href="#">
+  <span class="fa-stack fa-lg" style= "font-size: 8px;">
+  <i class="fa fa-tag fa-stack-2x"></i>
+  <i class="fa fa-minus fa-stack-1x fa-inverse"></i>
+</span>
+</a>
 </div>
 </div>
-    <div id="easytree-section" ">
+</div>
+    <div id="easytree-section" style="padding-left:2px; padding-right:2px;  text-align: left; border: 2px solid #e7e7e7;">
 	
         <ul>
         </ul>
@@ -108,13 +136,26 @@
 </div>
 
 </div>
-    <div class=col-md-10 style="background-color: #FFF" >
-    <div id="login" class="testapi">
+  <div class=col-md-10 style="background-color: #FFF; margin-top:50px;">
+    
+    
+		<form method="post">
+	        <textarea id="mytextarea" style="height:60%;">
+	        <h1>Test Text</h1><br>
+	        This test text is used to test the text for testing purposes.<br>
+	        This is another test text.<br>
+	        When you want to test, you can use this text.<br>
+	        Test texts are a good way to test something.<br>
+	        Here is some more text.<br>
+	        Not done testing? More text.<br>
+	        </textarea>
+	    </form>
+	    <div id="login" class="testapi">
 	 <div id="login" >
        <input id="loginButton" type="button" value="Login"/>
     </div>
-    <div id="listCodesResult"></div>
-
+	<div id="listCodesResult"></div>
+	
     </div>
 </div>
 </div>
