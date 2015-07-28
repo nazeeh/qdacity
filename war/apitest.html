@@ -478,6 +478,15 @@
                 
         }
         
+        function setNameAndAuthor(codeId, nameField, authorField){
+        	gapi.client.qdacity.codes.getCode({'id': codeId}).execute(function(resp) {
+            	
+  	          if (!resp.code) {
+  	        	document.getElementById(nameField).value = resp.name;
+  	        	document.getElementById(authorField).value = resp.author;
+  	          }  	          
+	 });
+        }
         
         $(function() {
         
@@ -572,6 +581,7 @@
          
             $( "#btnUpdateCode" ).on( "click", function() {
               document.getElementById('updateFormCodeId').innerHTML = getActiveId();
+              setNameAndAuthor( getActiveId(), 'updateCodeName', 'updateCodeAuthor');
               dialog.dialog( "open" );
             });
           });
@@ -640,7 +650,6 @@
 		function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
 			
             if (isSourceNode && isTargetNode) { // internal to internal drop
-                //alertMessage("Internal drop accepted, '" + source.text + "'  --> '" + target.text + "'");
             	relocateCode(source.id, target.id);
             }
             
