@@ -21,6 +21,8 @@ public class Code {
 	List<Long> subCodeIDs;
 	@Persistent
 	Long parentID;
+	@Persistent
+	Long codesytemID;
 
 	public Long getId() {
 		return id;
@@ -65,6 +67,14 @@ public class Code {
 
 	public void setParentID(Long parentCode) {
 		this.parentID = parentCode;
+	}
+
+	public Long getCodesytemID() {
+		return codesytemID;
+	}
+
+	public void setCodesytemID(Long codesytemID) {
+		this.codesytemID = codesytemID;
 	}
 	
 	

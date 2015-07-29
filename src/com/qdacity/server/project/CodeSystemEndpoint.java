@@ -1,7 +1,6 @@
 package com.qdacity.server.project;
 
 import com.qdacity.server.PMF;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -11,6 +10,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -77,15 +77,47 @@ public class CodeSystemEndpoint {
 	 * @return The entity with primary key id.
 	 */
 	@ApiMethod(name = "codesystem.getCodeSystem")
-	public CodeSystem getCodeSystem(@Named("id") Long id) {
-		PersistenceManager mgr = getPersistenceManager();
-		CodeSystem codesystem = null;
+	public CollectionResponse<Code> getCodeSystem(@Named("id") Long id,
+			@Nullable @Named("cursor") String cursorString,
+			@Nullable @Named("limit") Integer limit) {
+		PersistenceManager mgr = null;
+		Cursor cursor = null;
+		List<Code> execute = null;
+
 		try {
-			codesystem = mgr.getObjectById(CodeSystem.class, id);
+			mgr = getPersistenceManager();
+			Query query = mgr.newQuery(Code.class);
+			if (cursorString != null && cursorString != "") {
+				cursor = Cursor.fromWebSafeString(cursorString);
+				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
+				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+				query.setExtensions(extensionMap);
+			}
+
+			if (limit != null) {
+				query.setRange(0, limit);
+			}
+
+			query.setFilter( "codesytemID == :theID");
+			Map<String, Long> paramValues = new HashMap();
+			paramValues.put("theID", id);
+
+			execute = (List<Code>) query.executeWithMap(paramValues);
+			
+			cursor = JDOCursorHelper.getCursor(execute);
+			if (cursor != null)
+				cursorString = cursor.toWebSafeString();
+
+			// Tight loop for fetching all entities from datastore and accomodate
+			// for lazy fetch.
+			for (Code obj : execute)
+				;
 		} finally {
 			mgr.close();
 		}
-		return codesystem;
+
+		return CollectionResponse.<Code> builder().setItems(execute)
+				.setNextPageToken(cursorString).build();
 	}
 
 	/**

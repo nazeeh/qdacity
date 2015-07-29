@@ -233,7 +233,7 @@
           
 	    var scopes = 'https://www.googleapis.com/auth/userinfo.email';
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-	    
+	    var codesystem_id = '1';
 	    var easytree = $('#easytree-section').easytree({
             enableDnd: true,
             dropped: dropped
@@ -281,6 +281,11 @@
                     deleteCode();
                 }
                 
+                document.getElementById('btnApplyCode').onclick = function() {
+                	tinymce.activeEditor.selection.setContent('<tag id="123">'+ tinymce.activeEditor.selection.getContent() + '</tag>');
+                	//window.alert(codes);
+                  }
+                
                 document.getElementById('loginButton').onclick = function() {
             		signin(false,handleAuth);
             	}
@@ -293,7 +298,8 @@
         //List Codes function that will execute the listCode call
         function listCodes() {
         	var codes = [];
-                gapi.client.qdacity.codes.listCode().execute(function(resp) {
+                gapi.client.qdacity.codesystem.getCodeSystem({'id': codesystem_id}).execute(function(resp) {
+                	
                         if (!resp.code) {
                                 resp.items = resp.items || [];
                                 var result = "";
@@ -342,6 +348,7 @@
                 requestData.id = _ID;
                 requestData.subCodesIDs = new Array();
                 requestData.parentID = activeID;
+                requestData.codesytemID = codesystem_id;
                 
                 gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
 
@@ -357,8 +364,6 @@
                                 }
                         }
                 });
-                
-                
         }
         
         //Update Code function
@@ -368,6 +373,7 @@
                 requestData.id = _ID;
                 requestData.author = _AuthorName;
                 requestData.name = _CodeName;
+                requestData.codesytemID = codesystem_id;
                 gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
                         if (!resp.code) {
                                 //Just logging to console now, you can do your check here/display message
@@ -405,6 +411,7 @@
                           	requestData.name = resp.name;
             	          	requestData.id = _ID;
             	            requestData.author = resp.author;
+            	            requestData.codesytemID = resp.codesytemID;
             	            if (typeof resp.subCodesIDs == 'undefined'){
             	            	 requestData.subCodesIDs = [_SubID];
             	            }
@@ -436,7 +443,7 @@
             	            requestData.author = resp.author;
             	            requestData.subCodesIDs = resp.subCodesIDs;
             	            requestData.parentID = _newParent;
-            	           
+            	            requestData.codesytemID = resp.codesytemID;
             	            gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
             	                    if (!resp.code) {
             	                    	console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
@@ -464,6 +471,7 @@
                           	requestData.name = resp.name;
             	          	requestData.id = _ID;
             	            requestData.author = resp.author;
+            	            requestData.codesystemID = resp.codesystemID;
             	            for(var i = resp.subCodesIDs.length - 1; i >= 0; i--) {
             	            	
             	                if(resp.subCodesIDs[i] === _SubID) {

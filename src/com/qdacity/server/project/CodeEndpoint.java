@@ -37,7 +37,8 @@ public class CodeEndpoint {
 	@ApiMethod(name = "codes.listCode")
 	public CollectionResponse<Code> listCode(
 			@Nullable @Named("cursor") String cursorString,
-			@Nullable @Named("limit") Integer limit) {
+			@Nullable @Named("limit") Integer limit
+			) {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
