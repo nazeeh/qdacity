@@ -10,12 +10,17 @@
     <meta name="author" content="">
     <title>QDAcity API Test</title>
      <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+       
+     
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link href="css/landing-page.css" rel="stylesheet">
+    
+
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    
     <!-- EasyTree -->
 	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
 	<script type="text/javascript" src="EasyTree/jquery.easytree.min.js"></script>
@@ -38,12 +43,13 @@
         tinymce.init({
             selector: "#mytextarea",
             min_height: 300,
-            height : 500
-
+            height : 500,
+            plugins: "code"
         });
     </script>
     
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -51,7 +57,18 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
+      <style>
+  #feedback { font-size: 1.4em; }
+  #documentlist .ui-selecting { background: #BBB; }
+  #documentlist .ui-selected { background: #777; color: white; }
+  #documentlist { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+  #documentlist li { margin: 2px;  height: 20px; }
+  </style>
+  <script>
+  $(function() {
+    $( "#documentlist" ).selectable();
+  });
+  </script>
 </head>
 <body>
 <div class="row">
@@ -92,48 +109,83 @@
             </div>
     <div class="row no-gutters" >
     <div class=col-md-2 >
-     <div style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
-     <div style="background-color: #e7e7e7;  width:105%;">
-     <div style="text-align: center;">
-<b>Code System</b><br>
-<div class="btn-group" >
-<a id="btnUpdateCode" class="btn btn-default" href="#">
-  <i class="fa fa-pencil fa-1x"></i>
-</a>
-<a id="btnInsertCode" class="btn btn-default" href="#">
-  <i class="fa fa-plus fa-1x"></i>
-</a>
-<a id="btnRemoveCode" class="btn btn-default" href="#">
-  <i class="fa fa-trash fa-1x"></i>
-</a>
-<a id="btnListCode" class="btn btn-default" href="#">
-  <i class="fa fa-refresh fa-1x"></i>
-</a>
-</div>
-<div class="btn-group" >
+    <div style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
+	     <div style="background-color: #e7e7e7;  width:105%;">
+		     <div style="text-align: center;">
+			<b>Documents</b><br>
+			<div class="btn-group" >
+			<a id="btnUpdateDoc" class="btn btn-default" href="#">
+			  <i class="fa fa-pencil fa-1x"></i>
+			</a>
+			<a id="btnInsertDoc" class="btn btn-default" href="#">
+			  <i class="fa fa-plus fa-1x"></i>
+			</a>
+			<a id="btnRemoveDoc" class="btn btn-default" href="#">
+			  <i class="fa fa-trash fa-1x"></i>
+			</a>
+			</div>
+			<div class="btn-group" >
+			</div>
+			</div>
+		</div>
+		 <div id="document-section" style="padding-left:2px; padding-right:2px;  text-align: left; border: 2px solid #e7e7e7;">
+			<ol id="documentlist">
 
-
-<a id="btnApplyCode" class="btn btn-default" href="#">
-<span class="fa-stack fa-lg" style= "font-size: 8px;">
-  <i class="fa fa-tag fa-stack-2x"></i>
-  <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-<a id="btnRemoveCode" class="btn btn-default" href="#">
-  <span class="fa-stack fa-lg" style= "font-size: 8px;">
-  <i class="fa fa-tag fa-stack-2x"></i>
-  <i class="fa fa-minus fa-stack-1x fa-inverse"></i>
-</span>
-</a>
-</div>
-</div>
-</div>
-    <div id="easytree-section" style="padding-left:2px; padding-right:2px;  text-align: left; border: 2px solid #e7e7e7;">
+			</ol>
+	    </div>
+	</div>
 	
-        <ul>
-        </ul>
-    </div>
-</div>
+     <div style="float:left; width:100%; background-color: #f8f8f8; margin-top:5px;" >
+	     <div style="background-color: #e7e7e7;  width:105%;">
+		     <div style="text-align: center;">
+			<b>Code System</b><br>
+			<div class="btn-group" >
+			<a id="btnUpdateCode" class="btn btn-default" href="#">
+			  <i class="fa fa-pencil fa-1x"></i>
+			</a>
+			<a id="btnInsertCode" class="btn btn-default" href="#">
+			  <i class="fa fa-plus fa-1x"></i>
+			</a>
+			<a id="btnRemoveCode" class="btn btn-default" href="#">
+			  <i class="fa fa-trash fa-1x"></i>
+			</a>
+			<a id="btnListCode" class="btn btn-default" href="#">
+			  <i class="fa fa-refresh fa-1x"></i>
+			</a>
+			</div>
+			<div class="btn-group" >
+			
+			
+			<a id="btnApplyCode" class="btn btn-default" href="#">
+			<span class="fa-stack fa-lg" style= "font-size: 8px;">
+			  <i class="fa fa-tag fa-stack-2x"></i>
+			  <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+			</span>
+			</a>
+			<a id="btnRemoveCode" class="btn btn-default" href="#">
+			  <span class="fa-stack fa-lg" style= "font-size: 8px;">
+			  <i class="fa fa-tag fa-stack-2x"></i>
+			  <i class="fa fa-minus fa-stack-1x fa-inverse"></i>
+			</span>
+			</a>
+			</div>
+			</div>
+		</div>
+		 <div id="easytree-section" style="padding-left:2px; padding-right:2px;  text-align: left; border: 2px solid #e7e7e7;">
+			
+	        <ul>
+	        </ul>
+	    </div>
+	</div>
+	<div style="float:left; width:100%; background-color: #f8f8f8; margin-top:5px;" >
+	     <div style="background-color: #e7e7e7;  width:105%;">
+		     <div style="text-align: center;">
+			<b>Debug</b><br>
+			<div id="listCodesResult"></div>
+			</div>
+		</div>
+	</div>
+	
 
 </div>
   <div class=col-md-10 style="background-color: #FFF; margin-top:50px;">
@@ -154,7 +206,7 @@
 	 <div id="login" >
        <input id="loginButton" type="button" value="Login"/>
     </div>
-	<div id="listCodesResult"></div>
+	
 	
     </div>
 </div>
@@ -228,6 +280,7 @@
     </fieldset>
   </form>
 </div>
+
     <script type="text/javascript">
 
           
@@ -235,6 +288,7 @@
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 	    var codesystem_id;
 	    var project_id;
+	    var currentText;
 	    
 	    var easytree = $('#easytree-section').easytree({
             enableDnd: true,
@@ -273,20 +327,20 @@
         	  project_id = data[0];
         	  
         	var apisToLoad;
-        	var callback = function() {
+        	 var callback = function() {
         	   if (--apisToLoad == 0) {
         	     signin(true, handleAuth);
         	     //Load project settings
         	     gapi.client.qdacity.project.getProject({'id': data[0]}).execute(function(resp) {
         	    	 if (!resp.code) {
-	        	    	 codesystem_id = resp.codesystemID;
+        	    		 codesystem_id = resp.codesystemID;
 	        	    	 listCodes();
+	        	    	 setDocumentList(project_id);
         	    	 }
         	    	 else{
         	    		window.alert("Project could not be loaded");	 
         	    	}
         	     });
-        	     
         	   }
         	}
         	  
@@ -308,15 +362,45 @@
                 
                 document.getElementById('btnApplyCode').onclick = function() {
                 	tinymce.activeEditor.selection.setContent('<tag id="123">'+ tinymce.activeEditor.selection.getContent() + '</tag>');
-                	//window.alert(codes);
                   }
                 
+                document.getElementById('btnInsertDoc').onclick = function() {
+                	addDocumentToProject();
+            	}  
                 document.getElementById('loginButton').onclick = function() {
             		signin(false,handleAuth);
-            	}
-                
-                
-                
+            	}  
+        }
+        
+        function setDocumentList(projectID){
+        	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
+	    		 if (!resp.code) {
+	    			resp.items = resp.items || [];
+   	    		for (var i=0;i<resp.items.length;i++) {
+   	    			addDocumentToList(resp.items[i].title);
+               	}
+	    		 }
+	    		 
+	    	 });
+        }
+        
+        function addDocumentToProject(){
+        	var title = prompt("Name the document", "Title");
+
+        	if (title == null) {
+        	    return;
+        	}
+        	var requestData = {};
+            requestData.projectID = project_id;
+            requestData.text = "";
+            requestData.title = title;
+            
+            gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
+                    if (!resp.code) {
+                    	
+                    	addDocumentToList(title);
+                    }
+            });
                 
         }
         
@@ -324,10 +408,10 @@
         function listCodes() {
         	var codes = [];
                 gapi.client.qdacity.codesystem.getCodeSystem({'id': codesystem_id}).execute(function(resp) {
-                	
                         if (!resp.code) {
                                 resp.items = resp.items || [];
                                 var result = "";
+                                
                                 for (var i=0;i<resp.items.length;i++) {
                                         result = result+ resp.items[i].name + "..." + "<b>" + resp.items[i].author + "</b>" + "[" + resp.items[i].id + "]" + "   {" + resp.items[i].subCodesIDs + "}" + "<br/>";
                                         
@@ -728,7 +812,16 @@
             }
             
         }
-
+		
+		var listCreated = false;
+        
+        function addDocumentToList(newItem){
+            
+            $("#documentlist").append("<li class=\"ui-widget-content\">" + newItem + "</li>");
+            //$("#documentlist").listview("refresh");
+            
+        }
+		  
     </script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
 </body>
