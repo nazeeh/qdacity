@@ -288,6 +288,7 @@
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 	    var codesystem_id;
 	    var project_id;
+	    var documentMap;
 	    var currentText;
 	    
 	    var easytree = $('#easytree-section').easytree({
@@ -367,6 +368,16 @@
                 document.getElementById('btnInsertDoc').onclick = function() {
                 	addDocumentToProject();
             	}  
+                
+                document.getElementById('btnRemoveDoc').onclick = function() {
+                	removeDocumentFromProject();
+            	}  
+                
+                document.getElementById('btnUpdateDoc').onclick = function() {
+                	changeDocumentData();
+            	}  
+                
+                
                 document.getElementById('loginButton').onclick = function() {
             		signin(false,handleAuth);
             	}  
@@ -377,7 +388,8 @@
 	    		 if (!resp.code) {
 	    			resp.items = resp.items || [];
    	    		for (var i=0;i<resp.items.length;i++) {
-   	    			addDocumentToList(resp.items[i].title);
+   	    			addDocumentToList(resp.items[i].id, resp.items[i].title);
+   	    			//documentMap[i] = resp.items[i].id;
                	}
 	    		 }
 	    		 
@@ -397,11 +409,49 @@
             
             gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
                     if (!resp.code) {
-                    	
-                    	addDocumentToList(title);
+                    	document.getElementById('documentlist').innerHTML = "";
+                    	setDocumentList(project_id);
                     }
             });
                 
+        }
+        
+        function removeDocumentFromProject(){
+        	var ids = $('#documentlist .ui-selected').map(function() {
+                return $(this).attr('docID');
+                
+            });
+        	
+        	ids = ids.toArray();
+        	for (var i=0;i<ids.length;i++) {
+        		var requestData = {};
+        		requestData.id = ids[i];
+                gapi.client.qdacity.documents.removeTextDocument(requestData).execute(function(resp) {
+                	document.getElementById('documentlist').innerHTML = "";
+                	setDocumentList(project_id);   
+                })
+        	}
+        }
+        
+        function changeDocumentData(){
+        	var ids = $('#documentlist .ui-selected').map(function() {
+                return $(this).attr('docID');
+                
+            });
+        	
+        	ids = ids.toArray();
+        	for (var i=0;i<ids.length;i++) {
+        		var title = prompt("New name for document \"" + ids[i] + "\"", "Title");
+        		var requestData = {};
+        		requestData.id = ids[i];
+        		requestData.title = title;
+        		requestData.projectID = project_id;
+        		//FIXME text
+                gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
+                	document.getElementById('documentlist').innerHTML = "";
+                	setDocumentList(project_id);   
+                })
+        	}
         }
         
         //List Codes function that will execute the listCode call
@@ -815,9 +865,10 @@
 		
 		var listCreated = false;
         
-        function addDocumentToList(newItem){
-            
-            $("#documentlist").append("<li class=\"ui-widget-content\">" + newItem + "</li>");
+		
+        function addDocumentToList(docID, newItem){
+        	//window.alert("<li class=\"ui-widget-content\" data-docID=\""+ docID +"\">" + newItem + "</li>");
+            $("#documentlist").append("<li class=\"ui-widget-content\" docID=\""+ docID +"\">" + newItem + "</li>");
             //$("#documentlist").listview("refresh");
             
         }
