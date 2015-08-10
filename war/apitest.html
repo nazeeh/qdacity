@@ -44,7 +44,22 @@
             selector: "#mytextarea",
             min_height: 300,
             height : 500,
-            plugins: "code"
+            plugins: "code",
+           	plugins: "save",
+            toolbar: "save",
+            save_enablewhendirty: true,
+			save_onsavecallback: function() {
+				var docIDs = $('#documentlist .ui-selected').map(function() {
+	                return $(this).attr('docID');
+	                
+	            });
+	        	var docTitles = $('#documentlist .ui-selected').map(function() {
+	                return $(this).text();
+	                
+	            });
+	        	changeDocumentData(docIDs[0], docTitles[0]);
+			}
+
         });
     </script>
     
@@ -65,8 +80,19 @@
   #documentlist li { margin: 2px;  height: 20px; }
   </style>
   <script>
+  //FIXME
   $(function() {
-    $( "#documentlist" ).selectable();
+    $( "#documentlist" ).selectable({
+        stop: function() {
+        	var ids = $('#documentlist .ui-selected').map(function() {
+                return $(this).attr('docID');
+                
+            });
+        	ids = ids.toArray();
+        	var selectedID = ids[0];
+        	setDocumentView(selectedID);//FIXME
+          }
+        });
   });
   </script>
 </head>
@@ -374,7 +400,7 @@
             	}  
                 
                 document.getElementById('btnUpdateDoc').onclick = function() {
-                	changeDocumentData();
+                	changeDocumentTitle();
             	}  
                 
                 
@@ -404,7 +430,7 @@
         	}
         	var requestData = {};
             requestData.projectID = project_id;
-            requestData.text = "";
+            requestData.text = "My text";
             requestData.title = title;
             
             gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
@@ -433,25 +459,44 @@
         	}
         }
         
-        function changeDocumentData(){
+        function changeDocumentTitle(){
         	var ids = $('#documentlist .ui-selected').map(function() {
                 return $(this).attr('docID');
                 
             });
-        	
         	ids = ids.toArray();
-        	for (var i=0;i<ids.length;i++) {
-        		var title = prompt("New name for document \"" + ids[i] + "\"", "Title");
+        	var title = prompt("New name for document \"" + ids[0] + "\"", "Title");
+        	changeDocumentData(ids[0], title);
+        }
+        
+        function changeDocumentData(id, title){
+        	
         		var requestData = {};
-        		requestData.id = ids[i];
+        		
+        		requestData.id = id;
         		requestData.title = title;
+        		requestData.text = tinymce.activeEditor.getContent();
         		requestData.projectID = project_id;
         		//FIXME text
                 gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
                 	document.getElementById('documentlist').innerHTML = "";
                 	setDocumentList(project_id);   
-                })
-        	}
+                });
+        }
+        
+        function setDocumentView(textDocumentID){
+        	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
+	    		 if (!resp.code) {
+	    			resp.items = resp.items || [];
+  	    		for (var i=0;i<resp.items.length;i++) {
+  	    			if (resp.items[i].id == textDocumentID){
+  	    				if (typeof resp.items[i].text  == 'undefined') window.alert("No content for this document"); // FIXME
+  	    				tinymce.activeEditor.setContent(resp.items[i].text);
+  	    			}
+              	}
+	    		 }
+	    	 });
+        	
         }
         
         //List Codes function that will execute the listCode call
