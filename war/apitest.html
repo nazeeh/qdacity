@@ -24,7 +24,7 @@
     <!-- EasyTree -->
 	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
 	<script type="text/javascript" src="EasyTree/jquery.easytree.min.js"></script>
-    
+    <script type="text/javascript" src="js/loading/loadingoverlay.min.js"></script>
    
     
     <!-- Custom Fonts -->
@@ -135,7 +135,7 @@
             </div>
     <div class="row no-gutters" >
     <div class=col-md-2 >
-    <div style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
+    <div id="documents-ui"; style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
 	     <div style="background-color: #e7e7e7;  width:105%;">
 		     <div style="text-align: center;">
 			<b>Documents</b><br>
@@ -161,7 +161,7 @@
 	    </div>
 	</div>
 	
-     <div style="float:left; width:100%; background-color: #f8f8f8; margin-top:5px;" >
+     <div id="codesystem-ui"; style="float:left; width:100%; background-color: #f8f8f8; margin-top:5px;" >
 	     <div style="background-color: #e7e7e7;  width:105%;">
 		     <div style="text-align: center;">
 			<b>Code System</b><br>
@@ -216,7 +216,7 @@
 </div>
   <div class=col-md-10 style="background-color: #FFF; margin-top:50px;">
     
-    
+    <div id="textdocument-ui";>
 		<form method="post">
 	        <textarea id="mytextarea" style="height:60%;">
 	        <h1>Test Text</h1><br>
@@ -228,6 +228,8 @@
 	        Not done testing? More text.<br>
 	        </textarea>
 	    </form>
+	    
+	    </div>
 	    <div id="login" class="testapi">
 	 <div id="login" >
        <input id="loginButton" type="button" value="Login"/>
@@ -340,7 +342,7 @@
 	    }
     
         function init() {
-        	
+        	$.LoadingOverlay("show");
         	var query = window.location.search;
         	  // Skip the leading ?, which should always be there,
         	  // but be careful anyway
@@ -367,8 +369,11 @@
         	    	 else{
         	    		window.alert("Project could not be loaded");	 
         	    	}
+        	    	 $.LoadingOverlay("hide");
         	     });
+        	     
         	   }
+        	   
         	}
         	  
         	apisToLoad = 2;
@@ -410,6 +415,7 @@
         }
         
         function setDocumentList(projectID){
+        	$("#documents-ui").LoadingOverlay("show");
         	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
 	    		 if (!resp.code) {
 	    			resp.items = resp.items || [];
@@ -418,7 +424,7 @@
    	    			//documentMap[i] = resp.items[i].id;
                	}
 	    		 }
-	    		 
+	    		 $("#documents-ui").LoadingOverlay("hide");
 	    	 });
         }
         
@@ -485,6 +491,7 @@
         }
         
         function setDocumentView(textDocumentID){
+        	$("#textdocument-ui").LoadingOverlay("show");
         	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
 	    		 if (!resp.code) {
 	    			resp.items = resp.items || [];
@@ -495,12 +502,14 @@
   	    			}
               	}
 	    		 }
+	    		 $("#textdocument-ui").LoadingOverlay("hide");
 	    	 });
         	
         }
         
         //List Codes function that will execute the listCode call
         function listCodes() {
+        	$("#codesystem-ui").LoadingOverlay("show");
         	var codes = [];
                 gapi.client.qdacity.codesystem.getCodeSystem({'id': codesystem_id}).execute(function(resp) {
                         if (!resp.code) {
@@ -534,7 +543,7 @@
                                 	}
                                 }
                         }
-                        
+                        $("#codesystem-ui").LoadingOverlay("hide");
                 });
         }
         
