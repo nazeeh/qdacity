@@ -57,7 +57,10 @@
 	                
 	            });
 	        	changeDocumentData(docIDs[0], docTitles[0]);
-			}
+			},
+	        extended_valid_elements : 'coding[code_id]',
+	        custom_elements : 'coding',
+	        content_css: "css/texteditor.css"
 
         });
     </script>
@@ -392,7 +395,10 @@
                 }
                 
                 document.getElementById('btnApplyCode').onclick = function() {
-                	tinymce.activeEditor.selection.setContent('<tag id="123">'+ tinymce.activeEditor.selection.getContent() + '</tag>');
+                	var activeID = getActiveId();
+                	if (typeof activeID != 'undefined'){
+                		tinymce.activeEditor.selection.setContent('<coding code_id="' + activeID + '">'+ tinymce.activeEditor.selection.getContent() + '</coding>');
+                	}
                   }
                 
                 document.getElementById('btnInsertDoc').onclick = function() {
