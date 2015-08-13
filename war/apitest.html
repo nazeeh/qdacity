@@ -360,6 +360,7 @@ $(document).ready(function() {
 	    var current_user_name;
 	    var current_user_id;
 	    var codesystem_id;
+	    var active_code;
 	    var project_id;
 	    var documentMap;
 	    var currentText;
@@ -367,7 +368,8 @@ $(document).ready(function() {
 	    
 	    var easytree = $('#easytree-section').easytree({
             enableDnd: true,
-            dropped: dropped
+            dropped: dropped,
+            stateChanged: codesystemStateChanged
         });
 	    
 	    function handleAuth() {
@@ -1022,6 +1024,19 @@ $(document).ready(function() {
             }
             
         }
+		
+		var initialized_easytree = false;
+		function codesystemStateChanged(nodes, nodesJson) {
+			if (initialized_easytree){
+			active_code = getActiveId();
+				if ($("#footer").is(":visible")){
+					fillCodingTable(active_code);
+				} 
+			}
+			else{
+				initialized_easytree = true;
+			}
+	    }
 		
 		var listCreated = false;
         
