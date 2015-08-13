@@ -25,7 +25,7 @@
     
     <!-- EasyTree -->
 	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
-	<script type="text/javascript" src="EasyTree/jquery.easytree.min.js"></script>
+	<script type="text/javascript" src="EasyTree/jquery.easytree.js"></script>
 	
     <script type="text/javascript" src="js/loading/loadingoverlay.min.js"></script>
    <script type="text/javascript" src="js/DataTables-1.10.7/media/js/jquery.dataTables.min.js"></script>
@@ -50,23 +50,24 @@
            	plugins: "code save",
             toolbar: "save",
             save_enablewhendirty: true,
-			save_onsavecallback: function() {
-				var docIDs = $('#documentlist .ui-selected').map(function() {
-	                return $(this).attr('docID');
-	                
-	            });
-	        	var docTitles = $('#documentlist .ui-selected').map(function() {
-	                return $(this).text();
-	                
-	            });
-	        	changeDocumentData(docIDs[0], docTitles[0]);
-			},
+			save_onsavecallback: saveEditorContent,
 	        extended_valid_elements : 'coding[id|code_id|author]',
 	        custom_elements : '~coding',
 	        content_css: "css/texteditor.css"
 
 
         });
+        function saveEditorContent() {
+			var docIDs = $('#documentlist .ui-selected').map(function() {
+                return $(this).attr('docID');
+                
+            });
+        	var docTitles = $('#documentlist .ui-selected').map(function() {
+                return $(this).text();
+                
+            });
+        	changeDocumentData(docIDs[0], docTitles[0]);
+		}
     </script>
     
     <script type="text/javascript" language="javascript" class="init">
@@ -455,6 +456,9 @@ $(document).ready(function() {
                 			window.alert(codingID);
                 			var author = "User";
                 			tinymce.activeEditor.selection.setContent('<coding id="'+ codingID +'" code_id="' + activeID + '" author="'+ author +'">'+ tinymce.activeEditor.selection.getContent() + '</coding>');	
+                			easytree.getNode(activeID).codingCount++;
+                			easytree.rebuildTree();
+                			saveEditorContent();
                 		});
                 		
                 	}
@@ -520,6 +524,10 @@ $(document).ready(function() {
 	    		 }
 
 	    	 });
+        }
+        
+        function getCodingCount(codeId){
+        	
         }
         
         function setDocumentList(projectID){
@@ -651,6 +659,7 @@ $(document).ready(function() {
                                 	}
                                 }
                         }
+                        addCodingCountToTree();
                         $("#codesystem-ui").LoadingOverlay("hide");
                 });
         }
@@ -957,10 +966,11 @@ $(document).ready(function() {
           });
         
         function addNodeToTree(id, name) {
-            var sourceNode = {};
+			var sourceNode = {};
             sourceNode.text = name;
             sourceNode.isFolder = true;
             sourceNode.id = id;
+            sourceNode.codingCount = 12;
             sourceNode.uiIcon = "ui-icon-tag";
            
            sourceNode.onclick = function() {
@@ -970,6 +980,32 @@ $(document).ready(function() {
             easytree.addNode(sourceNode);
             easytree.rebuildTree();
             //loadSelectBox();
+        }
+        
+        function addCodingCountToTree(){
+        	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
+	    		 if (!resp.code) {
+	    			 var nodes = easytree.getAllNodes();
+	    			 var codeIDs = getAllCodeIds(nodes);
+	    			for (var i = 0;  i < codeIDs.length; i++) {
+		    			resp.items = resp.items || [];
+		    			var codingCount = 0;
+			    		for (var j=0;j<resp.items.length;j++) {
+			    			var elements = $(resp.items[j].text);
+			    			var foundArray = $('coding[code_id=\''+codeIDs[i]+'\']', elements).map(function() {
+			                  return $(this).attr('id');
+			              	});
+			    			codingCount += foundArray.length;
+		           		}
+			    		var node = easytree.getNode(codeIDs[i]);
+			    		
+			    		node.codingCount = codingCount;
+	    			}
+	    			 easytree.rebuildTree();
+	    		 }
+	    		
+	    	 });
+           
         }
         
         function removeNodeFromTree(id) {
@@ -1015,6 +1051,19 @@ $(document).ready(function() {
             }
         }
 		
+		function getAllCodeIds(nodes) {
+			var ids = [];
+			for (var i = 0;  i < nodes.length; i++) {
+            	ids.push(nodes[i].id);
+            	if (nodes[i].children && nodes[i].children.length > 0) {
+            		
+                    var result = getAllCodeIds(nodes[i].children);
+                    ids = ids.concat(result);
+                }
+            }
+			return ids;
+        }
+		
 		
 		
 		function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
@@ -1022,7 +1071,6 @@ $(document).ready(function() {
             if (isSourceNode && isTargetNode) { // internal to internal drop
             	relocateCode(source.id, target.id);
             }
-            
         }
 		
 		var initialized_easytree = false;
