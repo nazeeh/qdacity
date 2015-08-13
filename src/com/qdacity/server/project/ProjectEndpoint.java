@@ -31,7 +31,7 @@ public class ProjectEndpoint {
 	 * persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "project.listProject")
+	@ApiMethod(name = "project.listProject", path="projects")
 	public CollectionResponse<Project> listProject(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit) {
@@ -77,7 +77,7 @@ public class ProjectEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(name = "project.getProject")
+	@ApiMethod(name = "project.getProject", path="project")
 	public Project getProject(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		Project project = null;
@@ -89,6 +89,26 @@ public class ProjectEndpoint {
 		return project;
 	}
 	
+	/**
+	 * This method gets the entity having primary key id. It uses HTTP GET method.
+	 *
+	 * @param id the primary key of the java bean.
+	 * @return The entity with primary key id.
+	 */
+	@ApiMethod(name = "project.incrCodingId", path="codings")
+	public Project getAndIncrCodingId(@Named("id") Long id) {
+		PersistenceManager mgr = getPersistenceManager();
+		Project project = null;
+		try {
+			project = mgr.getObjectById(Project.class, id);
+			++project.maxCodingID;
+			mgr.makePersistent(project);
+		} finally {
+			mgr.close();
+		}
+		
+		return project;
+	}
 	
 
 

@@ -17,6 +17,8 @@
     
     <!-- Custom CSS -->
     <link href="css/landing-page.css" rel="stylesheet">
+    <link href="css/footer.css" rel="stylesheet">
+  
     
 
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -24,14 +26,15 @@
     <!-- EasyTree -->
 	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
 	<script type="text/javascript" src="EasyTree/jquery.easytree.min.js"></script>
+	
     <script type="text/javascript" src="js/loading/loadingoverlay.min.js"></script>
-   
+   <script type="text/javascript" src="js/DataTables-1.10.7/media/js/jquery.dataTables.min.js"></script>
     
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
     
-    
+    <link href="js/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet"> <!-- FIXME move to css folder -->
       
       
         <style>
@@ -58,12 +61,41 @@
 	            });
 	        	changeDocumentData(docIDs[0], docTitles[0]);
 			},
-	        extended_valid_elements : 'coding[code_id]',
-	        custom_elements : 'coding',
+	        extended_valid_elements : 'coding[id|code_id|author]',
+	        custom_elements : '~coding',
 	        content_css: "css/texteditor.css"
+
 
         });
     </script>
+    
+    <script type="text/javascript" language="javascript" class="init">
+
+
+var dataSet = [];
+
+$(document).ready(function() {
+	$('#codingtable').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>' );
+
+	$('#example').dataTable( {
+		"iDisplayLength": 7,
+		"bLengthChange": false,
+		"data": dataSet,
+		"autoWidth": false,
+		"columnDefs": [
+		               { "width": "5%"},
+		               { "width": "20%"},
+		               { "width": "20%"}
+		             ],
+		"columns": [
+			{  "title": "ID" , "width": "5%",},
+			{ "title": "Document", "width": "20%" },
+			{ "title": "Author", "width": "20%" }
+		]
+	
+	} );	
+} );
+	</script>
     
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
@@ -177,8 +209,8 @@
 			<a id="btnRemoveCode" class="btn btn-default" href="#">
 			  <i class="fa fa-trash fa-1x"></i>
 			</a>
-			<a id="btnListCode" class="btn btn-default" href="#">
-			  <i class="fa fa-refresh fa-1x"></i>
+			<a id="btnCodeProps" class="btn btn-default" href="#">
+			  <i class="fa  fa-list-alt  fa-1x"></i>
 			</a>
 			</div>
 			<div class="btn-group" >
@@ -190,7 +222,7 @@
 			  <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
 			</span>
 			</a>
-			<a id="btnRemoveCode" class="btn btn-default" href="#">
+			<a id="btnRemoveCoding" class="btn btn-default" href="#">
 			  <span class="fa-stack fa-lg" style= "font-size: 8px;">
 			  <i class="fa fa-tag fa-stack-2x"></i>
 			  <i class="fa fa-minus fa-stack-1x fa-inverse"></i>
@@ -241,6 +273,15 @@
     </div>
 </div>
 </div>
+
+<footer id="footer" class="footer">
+<div style="float: right; background-color: #e7e7e7;"><i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover" ></i> </div> 
+<!-- float: left; -->
+<div class="center" style=" text-align: center; background-color: #e7e7e7;"><b>Code Properties</b></div>
+<div id="codingtable"></div>
+      
+ </footer>
+
 <div id="new-code-form" title="Code Properties">
   <p class="validateTips"></p>
  
@@ -310,16 +351,19 @@
     </fieldset>
   </form>
 </div>
-
+<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
     <script type="text/javascript">
 
           
-	    var scopes = 'https://www.googleapis.com/auth/userinfo.email';
+	    var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
+	    var current_user_name;
+	    var current_user_id;
 	    var codesystem_id;
 	    var project_id;
 	    var documentMap;
 	    var currentText;
+	    var max_coding_id;
 	    
 	    var easytree = $('#easytree-section').easytree({
             enableDnd: true,
@@ -332,6 +376,8 @@
 		      // User is signed in, so hide the button
 		      document.getElementById('loginButton').style.visibility = 'hidden';
 		      document.getElementById('login').innerText = 'Welcome ' + resp.name;
+		      current_user_name = resp.given_name;
+		      current_user_id = resp.id;
 		    }
 		    else {
 		    	document.getElementById('loginButton').style.visibility = '';
@@ -345,6 +391,7 @@
     
         function init() {
         	$.LoadingOverlay("show");
+        	$( "#footer" ).hide();
         	var query = window.location.search;
         	  // Skip the leading ?, which should always be there,
         	  // but be careful anyway
@@ -372,8 +419,10 @@
         	    		window.alert("Project could not be loaded");	 
         	    	}
         	    	 $.LoadingOverlay("hide");
+        	    	 
         	     });
         	     
+
         	   }
         	   
         	}
@@ -385,9 +434,11 @@
         	gapi.client.load('oauth2','v2',callback);
         	
         	                
-                document.getElementById('btnListCode').onclick = function() {
-                	listCodes();
-                	//window.alert(codes);
+                document.getElementById('btnCodeProps').onclick = function() {
+                	$( "#footer" ).show( "clip", {}, 250, {} );
+                	var activeID = getActiveId();
+                	fillCodingTable(activeID);
+                	
                   }
                 
                 document.getElementById('btnRemoveCode').onclick = function() {
@@ -397,7 +448,13 @@
                 document.getElementById('btnApplyCode').onclick = function() {
                 	var activeID = getActiveId();
                 	if (typeof activeID != 'undefined'){
-                		tinymce.activeEditor.selection.setContent('<coding code_id="' + activeID + '">'+ tinymce.activeEditor.selection.getContent() + '</coding>');
+                		gapi.client.qdacity.project.incrCodingId({'id': project_id}).execute(function(resp){
+                			var codingID = resp.maxCodingID;
+                			window.alert(codingID);
+                			var author = "User";
+                			tinymce.activeEditor.selection.setContent('<coding id="'+ codingID +'" code_id="' + activeID + '" author="'+ author +'">'+ tinymce.activeEditor.selection.getContent() + '</coding>');	
+                		});
+                		
                 	}
                   }
                 
@@ -417,6 +474,50 @@
                 document.getElementById('loginButton').onclick = function() {
             		signin(false,handleAuth);
             	}  
+                
+                document.getElementById('btnHideFooter').onclick = function() {
+                	$( "#footer" ).hide( "clip", {}, 250, {} );
+            	}  
+                
+                document.getElementById('btnRemoveCoding').onclick = function() {
+                	
+            	}  
+                
+                
+        }
+        
+        function fillCodingTable(codeID){
+        	var table = $('#example').DataTable();
+        	
+        	table.clear();
+        	
+        	var codings = [];
+        	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
+	    		 if (!resp.code) {
+	    			resp.items = resp.items || [];
+	    			table.clear();
+  	    		for (var i=0;i<resp.items.length;i++) {
+  	    			var elements = $(resp.items[i].text);
+  	    			var found = $('coding', elements);
+  	    			var foundArray = $('coding[code_id=\''+codeID+'\']', elements).map(function() {
+  	    				var tmp = {};
+  	    				tmp.id = $(this).attr('id');
+  	    				tmp.code_id = $(this).attr('code_id');
+  	    				tmp.author = $(this).attr('author');
+  	                  return tmp;
+  	                  
+  	              });
+  	    			foundArray = foundArray.toArray();
+
+  	    			for (var j=0;j<foundArray.length;j++) {
+  	    			  	table.row.add( [ foundArray[j].id, resp.items[i].title, foundArray[j].author] );
+  	    			  
+  	    			}
+              	}
+  	    		table.draw();
+	    		 }
+
+	    	 });
         }
         
         function setDocumentList(projectID){

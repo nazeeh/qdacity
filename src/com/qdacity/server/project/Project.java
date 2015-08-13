@@ -17,6 +17,8 @@ public class Project {
 	Long id;
 	@Persistent
 	Long codesystemID;
+	@Persistent
+	Long maxCodingID;
 	
 	public Long getId() {
 		return id;
@@ -30,7 +32,10 @@ public class Project {
 	public void setCodesystemID(Long codesystemID) {
 		this.codesystemID = codesystemID;
 	}
-	
-	
-
+	public Long getMaxCodingID() {
+		return maxCodingID;
+	}
+	public void setMaxCodingID(Long maxCodingID) {
+		this.maxCodingID = maxCodingID;
+	}
 }
