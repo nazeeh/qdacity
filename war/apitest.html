@@ -418,7 +418,7 @@ $(document).ready(function() {
 	    
 	    var editor;
 	    var iframe = document.getElementById( 'editor' );
-	    iframe.addEventListener( 'load', function () {
+	    $(document).ready( function () {
 	      // Make sure we're in standards mode.
 	      var doc = iframe.contentDocument;
 	      $("iframe").css({  height : $(window).height() -52});
@@ -451,7 +451,7 @@ $(document).ready(function() {
 	      style.type = 'text/css';
 	      style.textContent = document.getElementById( 'editorStyles' ).textContent;
 	      doc.querySelector( 'head' ).appendChild( style );
-	    }, false );
+	    });
 	    
 	    window.onresize = resizeElements;
 	    
