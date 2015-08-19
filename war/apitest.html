@@ -509,7 +509,7 @@ function activateCodingInEditor(codingID){
 	    function resizeHandler(){
 	  	      setTimeout(function() {
 	  	    	resizeElements();
-	  	    }, 100);
+	  	    }, 250);
 	  	      if ($(window).width() > 770 || $(window).height() > 600){
 	  	    	$.LoadingOverlay("hide");
 	  	      }
@@ -523,7 +523,11 @@ function activateCodingInEditor(codingID){
 	    		{
 	    		$.LoadingOverlay("hide");
 	    		}
-	    	$("iframe").css({  height : $(window).height() -52});
+	    	var offsetBottom = 0;
+	    	if ($("#footer").is(":visible")){
+	    		offsetBottom += 350;
+			} 
+	    	$("iframe").css({  height : $(window).height() -52 - offsetBottom});
 	    }
 	    
 	    var easytree = $('#easytree-section').easytree({
@@ -597,10 +601,10 @@ function activateCodingInEditor(codingID){
         	
         	                
                 document.getElementById('btnCodeProps').onclick = function() {
-                	$( "#footer" ).show( "clip", {}, 250, {} );
+                	$( "#footer" ).show( "clip", {}, 200, {} );
                 	var activeID = getActiveId();
                 	fillCodingTable(activeID);
-                	
+                	resizeHandler();
                   }
                 
                 document.getElementById('btnRemoveCode').onclick = function() {
@@ -641,7 +645,8 @@ function activateCodingInEditor(codingID){
             	}  
                 
                 document.getElementById('btnHideFooter').onclick = function() {
-                	$( "#footer" ).hide( "clip", {}, 250, {} );
+                	$( "#footer" ).hide( "clip", {}, 200, {} );
+                	resizeHandler();
             	}  
                 
                 document.getElementById('btnRemoveCoding').onclick = function() {
