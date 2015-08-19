@@ -78,7 +78,7 @@ var dataSet = [];
 $(document).ready(function() {
 	$('#codingtable').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>' );
 
-	$('#example').dataTable( {
+	var table = $('#example').dataTable( {
 		"iDisplayLength": 7,
 		"bLengthChange": false,
 		"data": dataSet,
@@ -94,8 +94,55 @@ $(document).ready(function() {
 			{ "title": "Author", "width": "20%" }
 		]
 	
-	} );	
+	} );
+	
+	$('#example tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+        	
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var codingID = $(this).find("td").eq(0).html();
+            //window.alert(codingID); // FIXME
+            
+            activateCodingInEditor(codingID);
+            
+        }
+    } );
+    	
 } );
+
+function activateCodingInEditor(codingID){
+	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
+	    		 if (!resp.code) {
+	    			resp.items = resp.items || [];
+  	    		for (var i=0;i<resp.items.length;i++) {
+  	    			var elements = $(resp.items[i].text);
+  	    			var foundArray = $('coding[id=\''+codingID+'\']', elements).map(function() {
+  	    				return $(this);
+  	                  
+  	              });
+  	    			foundArray = foundArray.toArray();
+
+  	    			if (foundArray.length > 0) {
+  	    				var range;
+  	    				range = document.createRange();
+
+  	    			  	editor.setHTML(resp.items[i].text);
+  	    			  	var node = $("#editor").contents().find('coding[id=\''+codingID+'\']')[0]; // FIXME for multiple node codings
+  	    			  raWnge = iframe.contentDocument.createRange();
+  	    	        range.setStart(node, 0);
+  	    	        range.setEnd(node, node.childNodes.length);
+  	    	        editor.setSelection(range);
+  	    			  	
+  	    			}
+              	}
+	    		 }
+
+	    	 });
+}
 	</script>
     
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
