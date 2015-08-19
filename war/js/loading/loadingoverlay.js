@@ -29,6 +29,19 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
 			case "hide":
 				_Hide("body", options);
 				break;
+				
+			case "show_resize":
+				var config = {
+						color			: "rgba(250, 250, 250, 1)",
+						image			: "js/loading/resize.gif",
+						maxSize			: "100px",
+						minSize			: "20px",
+						resizeInterval	: 0,
+						size			: "50%"
+					};
+				var settings = $.extend(true, {}, config, options);
+				_Show("body", settings, true);
+				break;
 		}
 	};
 	

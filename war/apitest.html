@@ -27,7 +27,7 @@
 	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
 	<script type="text/javascript" src="EasyTree/jquery.easytree.js"></script>
 	
-    <script type="text/javascript" src="js/loading/loadingoverlay.min.js"></script>
+    <script type="text/javascript" src="js/loading/loadingoverlay.js"></script>
    <script type="text/javascript" src="js/DataTables-1.10.7/media/js/jquery.dataTables.min.js"></script>
     
     <script type="text/javascript" src="js/Squire/squire-raw.js"></script>
@@ -48,7 +48,7 @@
     height: 100px;
   }
 
-/* .col-md-10
+/* .col-sm-10
 {
     background-color: green;
     overflow: auto;
@@ -180,7 +180,7 @@ function activateCodingInEditor(codingID){
 </head>
 <body>
 <div class="row">
-<div class=col-md-12 >
+<div class=col-sm-12 >
 <!-- Navigation -->
     <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
         <div class="container topnav">
@@ -216,7 +216,7 @@ function activateCodingInEditor(codingID){
             </div>
             </div>
     <div class="row no-gutters" >
-    <div class=col-md-2 >
+    <div class=col-sm-2 >
     <div id="documents-ui"; style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
 	     <div style="background-color: #e7e7e7;  width:105%;">
 		     <div style="text-align: center;">
@@ -298,7 +298,7 @@ function activateCodingInEditor(codingID){
 	
 
 </div>
-  <div class=col-md-10 style="background-color: #FFF; margin-top:50px;margin-bottom:50px; height=100%;">
+  <div class=col-sm-10 style="background-color: #FFF; margin-top:50px;margin-bottom:50px; height=100%;">
     
     <div id="textdocument-ui";>
 		<iframe id="editor" height="100%" width="100%">
@@ -500,9 +500,29 @@ function activateCodingInEditor(codingID){
 	      doc.querySelector( 'head' ).appendChild( style );
 	    });
 	    
-	    window.onresize = resizeElements;
-	    
+	    window.onresize = resizeHandler;
+	    /* $(window).resize(function() {
+	    	resizeElements();
+	   //     clearTimeout(resizeTimer);
+	  //      var resizeTimer = setTimeout(resizeElements, 100);
+	    }); */
+	    function resizeHandler(){
+	  	      setTimeout(function() {
+	  	    	resizeElements();
+	  	    }, 100);
+	  	      if ($(window).width() > 770 || $(window).height() > 600){
+	  	    	$.LoadingOverlay("hide");
+	  	      }
+	    }
 	    function resizeElements(){
+	    	if ($(window).width() < 770 || $(window).height() < 600){
+	    		$.LoadingOverlay("show_resize");
+	    		//window.alert("test");
+	    	}
+	    	else
+	    		{
+	    		$.LoadingOverlay("hide");
+	    		}
 	    	$("iframe").css({  height : $(window).height() -52});
 	    }
 	    
