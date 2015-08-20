@@ -102,11 +102,10 @@ public class ProjectEndpoint {
 		try {
 			project = mgr.getObjectById(Project.class, id);
 			++project.maxCodingID;
-			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
 		}
-		
+		updateProject(project);
 		return project;
 	}
 	
