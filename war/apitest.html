@@ -1375,7 +1375,7 @@ function activateCodingInEditor(codingID){
             sourceNode.text = name;
             sourceNode.isFolder = true;
             sourceNode.id = id;
-            sourceNode.codingCount = 12;
+            sourceNode.codingCount = 0;
             sourceNode.uiIcon = "ui-icon-tag black";
            
            sourceNode.onclick = function() {
@@ -1396,7 +1396,7 @@ function activateCodingInEditor(codingID){
 		    			resp.items = resp.items || [];
 		    			var codingCount = 0;
 			    		for (var j=0;j<resp.items.length;j++) {
-			    			var elements = $(resp.items[j].text);
+			    			var elements = $(resp.items[j].text.value);
 			    			var foundArray = $('coding[code_id=\''+codeIDs[i]+'\']', elements).map(function() {
 			                  return $(this).attr('id');
 			              	});
