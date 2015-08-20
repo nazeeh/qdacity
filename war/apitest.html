@@ -82,7 +82,7 @@
                 return $(this).text();
                 
             });
-        	changeDocumentData(docIDs[0], docTitles[0]);
+        	changeDocumentData(active_document.id, active_document.title);
 		}
     </script>
     
@@ -186,8 +186,14 @@ function activateCodingInEditor(codingID){
                 return $(this).attr('docID');
                 
             });
+        	var docTitles = $('#documentlist .ui-selected').map(function() {
+                return $(this).text();
+                
+            });
         	ids = ids.toArray();
         	var selectedID = ids[0];
+        	active_document.id = ids[0];
+        	active_document.title = docTitles[0];
         	setDocumentView(selectedID);//FIXME
           }
         });
@@ -664,9 +670,9 @@ function activateCodingInEditor(codingID){
 	    var current_user_id;
 	    var codesystem_id;
 	    var active_code;
+	    var active_document = {};
 	    var project_id;
 	    var documentMap;
-	    var currentText;
 	    var max_coding_id;
 	    
 	    var editor;
@@ -991,7 +997,7 @@ function activateCodingInEditor(codingID){
         function changeDocumentData(id, title){
         	
         		var requestData = {};
-        		
+        		window.alert("chaning document " + id);
         		requestData.id = id;
         		requestData.title = title;
         		requestData.text = editor.getHTML();
