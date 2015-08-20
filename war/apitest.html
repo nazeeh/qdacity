@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <title>QDAcity API Test</title>
      <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-       
+       <link rel="stylesheet" href="css/jquery-ui.theme.css">
      
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -37,7 +37,23 @@
     
     <link href="js/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet"> <!-- FIXME move to css folder -->
       
-      
+        <style>
+  .custom-combobox {
+    position: relative;
+    display: inline-block;
+  }
+  .custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+  }
+  .custom-combobox-input {
+    margin: 0;
+    padding: 5px 10px;
+  }
+  </style>
         <style>
     .validateTips { border: 1px solid transparent; padding: 0.3em; }
   </style>
@@ -301,6 +317,55 @@ function activateCodingInEditor(codingID){
   <div class=col-sm-10 style="background-color: #FFF; margin-top:50px;margin-bottom:50px; height=100%;">
     
     <div id="textdocument-ui";>
+    <div id="textdocument-menu" style="text-align:center; padding-top:10px;  background-color:  #e7e7e7;">
+    
+    
+    <a id="btnTxtSave" style="float: right; margin-right: 20px;" class="btn btn-default btn-default" href="#">
+  				<i class="fa fa-floppy-o "></i> Save
+  	</a>
+  				
+    <div class="btn-group ui-widget" >
+			<a id="btnTxtBold" class="btn btn-default" href="#">
+			  <i class="fa fa-bold fa-1x"></i>
+			</a>
+			<a id="btnTxtItalic" class="btn btn-default" href="#">
+			  <i class="fa fa-italic fa-1x"></i>
+			</a>
+			<a id="btnTxtUnderline" class="btn btn-default" href="#">
+			  <i class="fa fa-underline fa-1x"></i>
+			</a>
+  <label>&nbsp;&nbsp;Font: </label>
+  <select id="combobox">
+    <option value="">Select one...</option>
+    <option value="Arial">Arial</option>
+    <option value="Arial Black">Arial Black</option>
+    <option value="Comic Sans MS">Comic Sans MS</option>
+    <option value="Courier New">Courier New</option>
+    <option value="Georgia">Georgia</option>
+    <option value="Impact">Impact</option>
+    <option value="Lucida Console">Lucida Console</option>
+    <option value="Palatino Linotype">Palatino Linotype</option>
+    <option value="Tahoma">Tahoma</option>
+    <option value="Times New Roman">Times New Roman</option>
+    <option value="Trebuchet MS">Trebuchet MS</option>
+    <option value="Verdana">Verdana</option>
+  </select>
+  
+</div>
+    <label style="margin-left:40px; ">Font Size: </label>
+  <input id="txtSizeSpinner"" />
+<script>
+    $(function() {
+        $('#txtSizeSpinner').spinner({
+            min: 1,
+            max: 99,
+            step: 1
+        });
+        $('#txtSizeSpinner').width(20);
+        $('#txtSizeSpinner').height(25);
+    });
+</script>
+    </div>
 		<iframe id="editor" height="100%" width="100%">
 		<div>
 		<h1>Test Text</h1><br>
@@ -404,6 +469,147 @@ function activateCodingInEditor(codingID){
 <div id="debugTextEditor" title="HTML">
   
 </div>
+
+
+  <script>
+  (function( $ ) {
+    $.widget( "custom.combobox", {
+      _create: function() {
+        this.wrapper = $( "<span>" )
+          .addClass( "custom-combobox" )
+          .insertAfter( this.element );
+ 
+        this.element.hide();
+        this._createAutocomplete();
+        this._createShowAllButton();
+      },
+ 
+      _createAutocomplete: function() {
+        var selected = this.element.children( ":selected" ),
+          value = selected.val() ? selected.text() : "";
+ 
+        this.input = $( "<input>" )
+          .appendTo( this.wrapper )
+          .val( value )
+          .attr( "title", "" )
+          .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left" )
+          .autocomplete({
+            delay: 0,
+            minLength: 0,
+            source: $.proxy( this, "_source" )
+          })
+          .tooltip({
+            tooltipClass: "ui-state-highlight"
+          });
+ 
+        this._on( this.input, {
+          autocompleteselect: function( event, ui ) {
+            ui.item.option.selected = true;
+            this._trigger( "select", event, {
+              item: ui.item.option
+            });
+            editor['setFontFace'](ui.item.option.innerHTML);
+          },
+ 
+          autocompletechange: "_removeIfInvalid"
+        });
+      },
+ 
+      _createShowAllButton: function() {
+        var input = this.input,
+          wasOpen = false;
+ 
+        $( "<a>" )
+          .attr( "tabIndex", -1 )
+          .attr( "title", "Show All Items" )
+          .tooltip()
+          .appendTo( this.wrapper )
+          .button({
+            icons: {
+              primary: "ui-icon-triangle-1-s"
+            },
+            text: false
+          })
+          .removeClass( "ui-corner-all" )
+          .addClass( "custom-combobox-toggle ui-corner-right" )
+          .mousedown(function() {
+            wasOpen = input.autocomplete( "widget" ).is( ":visible" );
+          })
+          .click(function() {
+            input.focus();
+ 
+            // Close if already visible
+            if ( wasOpen ) {
+              return;
+            }
+ 
+            // Pass empty string as value to search for, displaying all results
+            input.autocomplete( "search", "" );
+          });
+      },
+ 
+      _source: function( request, response ) {
+        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+        response( this.element.children( "option" ).map(function() {
+          var text = $( this ).text();
+          if ( this.value && ( !request.term || matcher.test(text) ) )
+            return {
+              label: text,
+              value: text,
+              option: this
+            };
+        }) );
+      },
+ 
+      _removeIfInvalid: function( event, ui ) {
+ 
+        // Selected an item, nothing to do
+        if ( ui.item ) {
+          return;
+        }
+ 
+        // Search for a match (case-insensitive)
+        var value = this.input.val(),
+          valueLowerCase = value.toLowerCase(),
+          valid = false;
+        this.element.children( "option" ).each(function() {
+          if ( $( this ).text().toLowerCase() === valueLowerCase ) {
+            this.selected = valid = true;
+            return false;
+          }
+        });
+ 
+        // Found a match, nothing to do
+        if ( valid ) {
+          return;
+        }
+ 
+        // Remove invalid value
+        this.input
+          .val( "" )
+          .attr( "title", value + " didn't match any item" )
+          .tooltip( "open" );
+        this.element.val( "" );
+        this._delay(function() {
+          this.input.tooltip( "close" ).attr( "title", "" );
+        }, 2500 );
+        this.input.autocomplete( "instance" ).term = "";
+      },
+ 
+      _destroy: function() {
+        this.wrapper.remove();
+        this.element.show();
+      }
+    });
+  })( jQuery );
+ 
+  $(function() {
+    $( "#combobox" ).combobox();
+    $( "#toggle" ).click(function() {
+      $( "#combobox" ).toggle();
+    });
+  });
+  </script>
 <script type="text/template" id="editorStyles">
   html {
     height: 100%;
@@ -659,7 +865,27 @@ function activateCodingInEditor(codingID){
  					document.getElementById('debugTextEditor').innerHTML = "<xmp>" + editor.getHTML() + "</xmp>";
  					$( "#debugTextEditor" ).dialog( "option", "show", { effect: "blind", duration: 800 } );
             	}  
-                
+				
+ 				document.getElementById('btnTxtBold').onclick = function() {
+ 					editor['bold']();
+            	}
+ 				
+ 				document.getElementById('btnTxtItalic').onclick = function() {
+ 					editor['italic']();
+            	}
+ 				
+ 				document.getElementById('btnTxtUnderline').onclick = function() {
+ 					editor['underline']();
+            	}
+ 				
+ 				document.getElementById('btnTxtSave').onclick = function() {
+ 					saveEditorContent();
+            	}
+ 				
+ 				$("#txtSizeSpinner").on( "spin", function( event, ui ) { 
+ 					editor['setFontSize'](ui.value);
+ 				});
+ 				
                 
         }
         
@@ -1142,7 +1368,7 @@ function activateCodingInEditor(codingID){
             sourceNode.isFolder = true;
             sourceNode.id = id;
             sourceNode.codingCount = 12;
-            sourceNode.uiIcon = "ui-icon-tag";
+            sourceNode.uiIcon = "ui-icon-tag black";
            
            sourceNode.onclick = function() {
         	   window.alert("test");
