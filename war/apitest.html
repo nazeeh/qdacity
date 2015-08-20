@@ -486,7 +486,7 @@ function activateCodingInEditor(codingID){
  
       _createAutocomplete: function() {
         var selected = this.element.children( ":selected" ),
-          value = selected.val() ? selected.text() : "";
+          value = selected.val() ? selected.text() :  " ";
  
         this.input = $( "<input>" )
           .appendTo( this.wrapper )
@@ -1010,8 +1010,10 @@ function activateCodingInEditor(codingID){
 	    			resp.items = resp.items || [];
   	    		for (var i=0;i<resp.items.length;i++) {
   	    			if (resp.items[i].id == textDocumentID){
-  	    				if (typeof resp.items[i].text  == 'undefined') window.alert("No content for this document"); // FIXME
-  	    				editor.setHTML(resp.items[i].text.value);
+  	    				if (typeof resp.items[i].text  == 'undefined'){
+  	    					editor.setHTML("");
+  	    				}
+  	    				else editor.setHTML(resp.items[i].text.value);
   	    			}
               	}
 	    		 }
