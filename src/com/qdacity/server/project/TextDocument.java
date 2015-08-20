@@ -6,6 +6,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Text;
+
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class TextDocument {
@@ -19,7 +21,7 @@ Long projectID;
 @Persistent
 String title;
 @Persistent
-String text;
+Text text;
 
 public Long getId() {
 	return id;
@@ -33,10 +35,10 @@ public String getTitle() {
 public void setTitle(String title) {
 	this.title = title;
 }
-public String getText() {
+public Text getText() {
 	return text;
 }
-public void setText(String text) {
+public void setText(Text text) {
 	this.text = text;
 }
 public Long getProjectID() {

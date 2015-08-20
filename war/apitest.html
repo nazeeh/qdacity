@@ -135,7 +135,7 @@ function activateCodingInEditor(codingID){
 	    		 if (!resp.code) {
 	    			resp.items = resp.items || [];
   	    		for (var i=0;i<resp.items.length;i++) {
-  	    			var elements = $(resp.items[i].text);
+  	    			var elements = $(resp.items[i].text.value);
   	    			var foundArray = $('coding[id=\''+codingID+'\']', elements).map(function() {
   	    				return $(this);
   	                  
@@ -146,7 +146,7 @@ function activateCodingInEditor(codingID){
   	    				var range;
   	    				range = document.createRange();
 
-  	    			  	editor.setHTML(resp.items[i].text);
+  	    			  	editor.setHTML(resp.items[i].text.value);
   	    			  	var node = $("#editor").contents().find('coding[id=\''+codingID+'\']')[0]; // FIXME for multiple node codings
   	    			  raWnge = iframe.contentDocument.createRange();
   	    	        range.setStart(node, 0);
@@ -900,7 +900,7 @@ function activateCodingInEditor(codingID){
 	    			resp.items = resp.items || [];
 	    			table.clear();
   	    		for (var i=0;i<resp.items.length;i++) {
-  	    			var elements = $(resp.items[i].text);
+  	    			var elements = $(resp.items[i].text.value);
   	    			var found = $('coding', elements);
   	    			var foundArray = $('coding[code_id=\''+codeID+'\']', elements).map(function() {
   	    				var tmp = {};
@@ -949,7 +949,7 @@ function activateCodingInEditor(codingID){
         	}
         	var requestData = {};
             requestData.projectID = project_id;
-            requestData.text = "My text";
+            requestData.text = "";
             requestData.title = title;
             
             gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
@@ -1011,7 +1011,7 @@ function activateCodingInEditor(codingID){
   	    		for (var i=0;i<resp.items.length;i++) {
   	    			if (resp.items[i].id == textDocumentID){
   	    				if (typeof resp.items[i].text  == 'undefined') window.alert("No content for this document"); // FIXME
-  	    				editor.setHTML(resp.items[i].text);
+  	    				editor.setHTML(resp.items[i].text.value);
   	    			}
               	}
 	    		 }
