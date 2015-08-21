@@ -15,6 +15,7 @@
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     
+    
     <!-- Custom CSS -->
     <link href="css/landing-page.css" rel="stylesheet">
     <link href="css/footer.css" rel="stylesheet">
@@ -22,6 +23,7 @@
     
 
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     
     <!-- EasyTree -->
 	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
@@ -177,6 +179,16 @@ function activateCodingInEditor(codingID){
   #documentlist { list-style-type: none; margin: 0; padding: 0; width: 100%; }
   #documentlist li { margin: 2px;  height: 20px; }
   </style>
+  <style>
+	  .edit-toggle .edit-toggle-off,
+	.edit-toggle.collapsed .edit-toggle-on {
+	    display: none;
+	}
+	.edit-toggle.collapsed .edit-toggle-off,
+	.edit-toggle .edit-toggle-on {
+	    display: inline-block;
+	}
+  </style>
   <script>
   //FIXME
   $(function() {
@@ -239,7 +251,25 @@ function activateCodingInEditor(codingID){
             </div>
     <div class="row no-gutters" >
     <div class=col-sm-2 >
-    <div id="documents-ui"; style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
+    
+    <!-- SETTINGS -->
+    <div id="project-ui"; style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
+	     <div style="background-color: #e7e7e7;  width:105%;">
+		     <div style="text-align: center;">
+			<b>Settings</b><br>
+			<div style="background-color: #f8f8f8; text-align: left;">
+			<a id="btnEditToggle" class = "btn btn-sm edit-toggle" style="color:#000000;" data-toggle="collapse" data-target="#textdocument-menu" >
+			  <span class="edit-toggle-off"><i class="fa fa-toggle-off fa-2x"   style="font-size: 20px; "></i> </span> 
+			   <span class="edit-toggle-on"><i class="fa fa-toggle-on fa-2x"   style="font-size: 20px; "></i> </span> 
+			  <span  style="font-size: 15px; margin-left:5px; vertical-align:top;">    Document Editable</span>
+			</a>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+	
+    <div id="documents-ui"; style="float:left; width:100%; background-color: #f8f8f8;" >
 	     <div style="background-color: #e7e7e7;  width:105%;">
 		     <div style="text-align: center;">
 			<b>Documents</b><br>
@@ -323,7 +353,7 @@ function activateCodingInEditor(codingID){
   <div class=col-sm-10 style="background-color: #FFF; margin-top:50px;margin-bottom:50px; height=100%;">
     
     <div id="textdocument-ui";>
-    <div id="textdocument-menu" style="text-align:center; padding-top:10px;  background-color:  #e7e7e7;">
+    <div id="textdocument-menu"  class="collapse in" style="text-align:center; padding-top:10px;  background-color:  #e7e7e7;">
     
     
     <a id="btnTxtSave" style="float: right; margin-right: 20px;" class="btn btn-default btn-default" href="#">
@@ -705,6 +735,8 @@ function activateCodingInEditor(codingID){
 	              li: {'class': 'listItem'}
 	          }
 	      });
+	      editor['readOnly']('true');
+
 	   // Add styles to frame
 	      var style = doc.createElement( 'style' );
 	      style.type = 'text/css';
@@ -770,6 +802,8 @@ function activateCodingInEditor(codingID){
         function init() {
         	$.LoadingOverlay("show");
         	$( "#footer" ).hide();
+        	$( "#textdocument-menu" ).collapse(); // editor will be initialized readonly, the toggle is later hooked to the visibility of the toolbar
+
         	var query = window.location.search;
         	  // Skip the leading ?, which should always be there,
         	  // but be careful anyway
@@ -891,6 +925,14 @@ function activateCodingInEditor(codingID){
  				$("#txtSizeSpinner").on( "spin", function( event, ui ) { 
  					editor['setFontSize'](ui.value);
  				});
+ 				
+ 				$('#textdocument-menu').on('shown.bs.collapse', function () {
+ 					editor['readOnly']('false');
+ 				})
+ 				
+ 				$('#textdocument-menu').on('hidden.bs.collapse', function () {
+ 					editor['readOnly']('true');
+ 				})
  				
                 
         }

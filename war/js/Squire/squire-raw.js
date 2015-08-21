@@ -1,4 +1,4 @@
-/* Copyright © 2011-2015 by Neil Jenkins. MIT Licensed. */
+/* Copyright Â© 2011-2015 by Neil Jenkins. MIT Licensed. */
 
 ( function ( doc, undefined ) {
 
@@ -1164,7 +1164,9 @@ var keys = {
 };
 
 // Ref: http://unixpapa.com/js/key.html
-var onKey = function ( event ) {
+var onKey = onKeyHandler;
+
+function onKeyHandler ( event ) {
     var code = event.keyCode,
         key = keys[ code ],
         modifiers = '',
@@ -2248,7 +2250,7 @@ function Squire ( doc, config ) {
         };
     }
 
-    body.setAttribute( 'contenteditable', 'true' );
+   body.setAttribute( 'contenteditable', 'true' );
 
     // Remove Firefox's built-in controls
     try {
@@ -3515,7 +3517,7 @@ proto.insertImage = function ( src, attributes ) {
     return img;
 };
 
-var linkRegExp = /\b((?:(?:ht|f)tps?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,}\/)(?:[^\s()<>]+|\([^\s()<>]+\))+(?:\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))|([\w\-.%+]+@(?:[\w\-]+\.)+[A-Z]{2,}\b)/i;
+var linkRegExp = /\b((?:(?:ht|f)tps?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,}\/)(?:[^\s()<>]+|\([^\s()<>]+\))+(?:\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?Â«Â»â€œâ€�â€˜â€™]))|([\w\-.%+]+@(?:[\w\-]+\.)+[A-Z]{2,}\b)/i;
 
 var addLinks = function ( frag ) {
     var doc = frag.ownerDocument,
@@ -3868,6 +3870,23 @@ proto.removeAllFormatting = function ( range ) {
 
     return this.focus();
 };
+
+proto.readOnly = function (readonly) {
+
+    if (readonly == 'true'){
+    	this._body.setAttribute( 'contenteditable', 'false' );
+
+    	this.removeEventListener( isPresto ? 'keypress' : 'keydown', onKey );
+
+    	
+    }
+    else if (readonly == 'false')
+    	{
+    	this._body.setAttribute( 'contenteditable', 'true' );
+    	this.addEventListener( isPresto ? 'keypress' : 'keydown', onKey );
+    	}
+};
+
 
 proto.increaseQuoteLevel = command( 'modifyBlocks', increaseBlockQuoteLevel );
 proto.decreaseQuoteLevel = command( 'modifyBlocks', decreaseBlockQuoteLevel );
