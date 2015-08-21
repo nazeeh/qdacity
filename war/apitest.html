@@ -35,7 +35,7 @@
     <script type="text/javascript" src="js/Squire/squire-raw.js"></script>
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
     
     <link href="js/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet"> <!-- FIXME move to css folder -->
       
@@ -56,6 +56,33 @@
     padding: 5px 10px;
   }
   </style>
+  <style>
+  .navbar-content
+{
+    width:320px;
+    padding: 15px;
+    padding-bottom:0px;
+}
+.navbar-content:before, .navbar-content:after
+{
+    display: table;
+    content: "";
+    line-height: 0;
+}
+.navbar-footer 
+{
+    background-color:#DDD;
+}
+.navbar-footer-content { padding:15px 15px 15px 15px; }
+.dropdown-menu {
+padding: 0px;
+overflow: hidden;
+}
+  </style>
+  <style type="text/css"> /* FIXME Scrollbar Styling */
+  body, html { 
+    overflow-y: hidden;
+}</style>
         <style>
     .validateTips { border: 1px solid transparent; padding: 0.3em; }
   </style>
@@ -240,7 +267,68 @@ function activateCodingInEditor(codingID){
                     <li>
                         <a href="index.html#contact">Contact</a>
                     </li>
-                </ul>
+                    
+                                    <li id="navAccount" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Account
+                                        <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <div class="navbar-content">
+                                                    <div class="row">
+                                                        <div class="col-md-5">
+                                                            <img id="currentUserPicture" src=""
+                                                                alt="Alternate Text" class="img-responsive" />
+                                                            <p class="text-center small">
+                                                                <a href="#">Change Photo</a></p>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <span id="currentUserName"></span>
+                                                            <p id="currentUserEmail" class="text-muted small"></p>
+                                                            <div class="divider">
+                                                            </div>
+                                                            <a href="#" class="btn btn-primary btn-sm active">View Profile</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="navbar-footer">
+                                                    <div class="navbar-footer-content">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <a href="#" class="btn btn-default btn-sm">Sign in as different User</a>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <a id="navBtnSignOut" class="btn btn-default btn-sm pull-right">Sign Out</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li  id="navSignin" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign In
+                                        <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <div class="navbar-content">
+                                                    <div class="row">
+                                                        <div class="col-md-12" style="text-align:center; padding-bottom:15px;">
+                                                        <a id ="navBtnSigninGoogle" class="btn  btn-primary" href="#">
+  																	<i class="fa fa-google fa-2x pull-left" ></i> <span style="font-size:18px;">Sign in with Google</span></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="navbar-footer">
+                                                    <div class="navbar-footer-content">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                            	
+                                                                
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
             </div>
             <!-- /.navbar-collapse -->
         </div>
@@ -249,7 +337,7 @@ function activateCodingInEditor(codingID){
     </nav>
             </div>
             </div>
-    <div class="row no-gutters" >
+    <div class="row no-gutters">
     <div class=col-sm-2 >
     
     <!-- SETTINGS -->
@@ -783,14 +871,21 @@ function activateCodingInEditor(codingID){
 	    function handleAuth() {
 		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
 		    if (!resp.code) {
+		    	
 		      // User is signed in, so hide the button
 		      document.getElementById('loginButton').style.visibility = 'hidden';
 		      document.getElementById('login').innerText = 'Welcome ' + resp.name;
 		      current_user_name = resp.given_name;
 		      current_user_id = resp.id;
+		      document.getElementById('currentUserName').innerHTML = resp.name;
+		      document.getElementById('currentUserEmail').innerHTML = resp.email;
+		      document.getElementById('currentUserPicture').src = resp.picture;
+		      $('#navAccount').show();
+		      $('#navSignin').hide();
 		    }
 		    else {
 		    	document.getElementById('loginButton').style.visibility = '';
+		    	 $('#navAccount').hide();
 		    }
 		  });
 		}
@@ -798,12 +893,20 @@ function activateCodingInEditor(codingID){
 	    function signin(mode, callback) {
 	    	  gapi.auth.authorize({client_id: client_id,scope: scopes, immediate: mode},callback);
 	    }
+	    
+	    function signout(){
+	    	window.open("https://accounts.google.com/logout");
+	    }
     
         function init() {
         	$.LoadingOverlay("show");
         	$( "#footer" ).hide();
+        	$('#navAccount').hide();
         	$( "#textdocument-menu" ).collapse(); // editor will be initialized readonly, the toggle is later hooked to the visibility of the toolbar
 
+        	
+        	
+        	
         	var query = window.location.search;
         	  // Skip the leading ?, which should always be there,
         	  // but be careful anyway
@@ -819,7 +922,7 @@ function activateCodingInEditor(codingID){
         	var apisToLoad;
         	 var callback = function() {
         	   if (--apisToLoad == 0) {
-        	     signin(true, handleAuth);
+        		   signin(true,handleAuth);
         	     //Load project settings
         	     gapi.client.qdacity.project.getProject({'id': data[0]}).execute(function(resp) {
         	    	 if (!resp.code) {
@@ -862,7 +965,6 @@ function activateCodingInEditor(codingID){
                 	if (typeof activeID != 'undefined'){
                 		gapi.client.qdacity.project.incrCodingId({'id': project_id}).execute(function(resp){
                 			var codingID = resp.maxCodingID;
-                			window.alert(codingID);
                 			var author = "User";	
                 			editor.insertHTML('<coding id="'+ codingID +'" code_id="' + activeID + '" author="'+ author +'" style="background-color: #00e7e7;">'+ editor.getSelectedText() + '</coding>');	
                 			easytree.getNode(activeID).codingCount++;
@@ -898,7 +1000,15 @@ function activateCodingInEditor(codingID){
                 document.getElementById('btnRemoveCoding').onclick = function() {
                 	
             	}  
-
+                
+ 				document.getElementById('navBtnSigninGoogle').onclick = function() {
+ 					signin(false, handleAuth);
+            	}  
+ 				
+ 				document.getElementById('navBtnSignOut').onclick = function() {
+ 					signout();
+            	}  
+                
  				document.getElementById('btnShowHTML').onclick = function() {
  					
  					$( "#debugTextEditor" ).dialog();
@@ -1039,7 +1149,6 @@ function activateCodingInEditor(codingID){
         function changeDocumentData(id, title){
         	
         		var requestData = {};
-        		window.alert("chaning document " + id);
         		requestData.id = id;
         		requestData.title = title;
         		requestData.text = editor.getHTML();
