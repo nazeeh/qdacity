@@ -839,7 +839,7 @@
                 }
                 html += '>';
             }
-            html += node.text + "  <span style=\" background-color: #e7e7e7; position:absolute;  right:8px; padding-right: 5px; border: 1px solid #bbbbbb; text-align: center;  border-radius: 10px; color:#666666; width:35px\">&nbsp;"+node.codingCount+" </span>";
+            html += node.text + "  <span onclick=\"showFooter()\" style=\" background-color: #e7e7e7; position:absolute;  right:8px; padding-right: 5px; border: 1px solid #bbbbbb; text-align: center;  border-radius: 10px; color:#666666; width:35px\">&nbsp;"+node.codingCount+" </span>";
             if (node.href) {
                 html += '</a>';
             }

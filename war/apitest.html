@@ -949,12 +949,9 @@ function activateCodingInEditor(codingID){
         	gapi.client.load('oauth2','v2',callback);
         	
         	                
-                document.getElementById('btnCodeProps').onclick = function() {
-                	$( "#footer" ).show( "clip", {}, 200, {} );
-                	var activeID = getActiveId();
-                	fillCodingTable(activeID);
-                	resizeHandler();
-                  }
+                document.getElementById('btnCodeProps').onclick = showCodingView;
+                
+                
                 
                 document.getElementById('btnRemoveCode').onclick = function() {
                     deleteCode();
@@ -1045,6 +1042,18 @@ function activateCodingInEditor(codingID){
  				})
  				
                 
+        }
+        
+        
+        function showCodingView(){
+        	showFooter();
+        	var activeID = getActiveId();
+        	fillCodingTable(activeID);
+        	resizeHandler();
+        }
+        
+        function showFooter(){
+        	$( "#footer" ).show( "clip", {}, 200, {} );
         }
         
         function fillCodingTable(codeID){
