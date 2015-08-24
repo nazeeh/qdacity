@@ -160,11 +160,9 @@ $(document).ready(function() {
 } );
 
 function activateCodingInEditor(codingID){
-	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
-	    		 if (!resp.code) {
-	    			resp.items = resp.items || [];
-  	    		for (var i=0;i<resp.items.length;i++) {
-  	    			var elements = $(resp.items[i].text.value);
+
+  	    		for (var id in text_documents) {
+  	    			var elements = text_documents[id].text;
   	    			var foundArray = $('coding[id=\''+codingID+'\']', elements).map(function() {
   	    				return $(this);
   	                  
@@ -175,7 +173,7 @@ function activateCodingInEditor(codingID){
   	    				var range;
   	    				range = document.createRange();
 
-  	    			  	editor.setHTML(resp.items[i].text.value);
+  	    			  	editor.setHTML(text_documents[id].text);
   	    			  	var node = $("#editor").contents().find('coding[id=\''+codingID+'\']')[0]; // FIXME for multiple node codings
   	    			  raWnge = iframe.contentDocument.createRange();
   	    	        range.setStart(node, 0);
@@ -184,9 +182,7 @@ function activateCodingInEditor(codingID){
   	    			  	
   	    			}
               	}
-	    		 }
-
-	    	 });
+	    		 
 }
 	</script>
     
@@ -789,6 +785,7 @@ function activateCodingInEditor(codingID){
 	    var codesystem_id;
 	    var active_code;
 	    var active_document = {};
+	    var text_documents = {};
 	    var project_id;
 	    var documentMap;
 	    var max_coding_id;
@@ -927,8 +924,8 @@ function activateCodingInEditor(codingID){
         	     gapi.client.qdacity.project.getProject({'id': data[0]}).execute(function(resp) {
         	    	 if (!resp.code) {
         	    		 codesystem_id = resp.codesystemID;
-	        	    	 listCodes();
 	        	    	 setDocumentList(project_id);
+	        	    	 listCodes();
         	    	 }
         	    	 else{
         	    		window.alert("Project could not be loaded");	 
@@ -936,8 +933,6 @@ function activateCodingInEditor(codingID){
         	    	 $.LoadingOverlay("hide");
         	    	 
         	     });
-        	     
-
         	   }
         	   
         	}
@@ -1047,10 +1042,7 @@ function activateCodingInEditor(codingID){
  				$('#textdocument-menu').on('hidden.bs.collapse', function () {
  					editor['readOnly']('true');
  				})
- 				
-                
         }
-        
         
         function showCodingView(){
         	showFooter();
@@ -1069,32 +1061,28 @@ function activateCodingInEditor(codingID){
         	table.clear();
         	
         	var codings = [];
-        	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
-	    		 if (!resp.code) {
-	    			resp.items = resp.items || [];
-	    			table.clear();
-  	    		for (var i=0;i<resp.items.length;i++) {
-  	    			var elements = $(resp.items[i].text.value);
-  	    			var found = $('coding', elements);
-  	    			var foundArray = $('coding[code_id=\''+codeID+'\']', elements).map(function() {
-  	    				var tmp = {};
-  	    				tmp.id = $(this).attr('id');
-  	    				tmp.code_id = $(this).attr('code_id');
-  	    				tmp.author = $(this).attr('author');
-  	                  return tmp;
-  	                  
-  	              });
-  	    			foundArray = foundArray.toArray();
+        	
+        	table.clear();
+        	for (var id in text_documents){
+        		var elements = text_documents[id].text;
+	    			var found = $('coding', elements);
+	    			var foundArray = $('coding[code_id=\''+codeID+'\']', elements).map(function() {
+	    				var tmp = {};
+	    				tmp.id = $(this).attr('id');
+	    				tmp.code_id = $(this).attr('code_id');
+	    				tmp.author = $(this).attr('author');
+	                  return tmp;
+	                  
+	              });
+	    			foundArray = foundArray.toArray();
 
-  	    			for (var j=0;j<foundArray.length;j++) {
-  	    			  	table.row.add( [ foundArray[j].id, resp.items[i].title, foundArray[j].author] );
-  	    			  
-  	    			}
-              	}
-  	    		table.draw();
-	    		 }
-
-	    	 });
+	    			for (var j=0;j<foundArray.length;j++) {
+	    			  	table.row.add( [ foundArray[j].id, text_documents[id].title, foundArray[j].author] );
+	    			}
+	    			  
+        	}
+        	
+        	table.draw();
         }
         
         function getCodingCount(codeId){
@@ -1108,10 +1096,18 @@ function activateCodingInEditor(codingID){
 	    			resp.items = resp.items || [];
    	    		for (var i=0;i<resp.items.length;i++) {
    	    			addDocumentToList(resp.items[i].id, resp.items[i].title);
-   	    			//documentMap[i] = resp.items[i].id;
+   	    			var document = {};
+   	    			document.id = resp.items[i].id;
+   	    			document.title = resp.items[i].title;
+   	    			document.text = resp.items[i].text.value;
+   	    			text_documents[document.id] = document;
                	}
 	    		 }
 	    		 $("#documents-ui").LoadingOverlay("hide");
+	    		 
+	    		 // Extract the codings from the loaded documents
+	    		 addCodingCountToTree();
+	    		 
 	    	 });
         }
         
@@ -1177,22 +1173,10 @@ function activateCodingInEditor(codingID){
         }
         
         function setDocumentView(textDocumentID){
-        	$("#textdocument-ui").LoadingOverlay("show");
-        	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
-	    		 if (!resp.code) {
-	    			resp.items = resp.items || [];
-  	    		for (var i=0;i<resp.items.length;i++) {
-  	    			if (resp.items[i].id == textDocumentID){
-  	    				if (typeof resp.items[i].text  == 'undefined'){
-  	    					editor.setHTML("");
-  	    				}
-  	    				else editor.setHTML(resp.items[i].text.value);
-  	    			}
-              	}
-	    		 }
-	    		 $("#textdocument-ui").LoadingOverlay("hide");
-	    	 });
-        	
+			if (typeof text_documents[textDocumentID].text  == 'undefined'){
+				editor.setHTML("");
+			}
+			else editor.setHTML(text_documents[textDocumentID].text);
         }
         
         //List Codes function that will execute the listCode call
@@ -1555,29 +1539,24 @@ function activateCodingInEditor(codingID){
         }
         
         function addCodingCountToTree(){
-        	gapi.client.qdacity.documents.getTextDocument({'id': project_id}).execute(function(resp){
-	    		 if (!resp.code) {
-	    			 var nodes = easytree.getAllNodes();
-	    			 var codeIDs = getAllCodeIds(nodes);
-	    			for (var i = 0;  i < codeIDs.length; i++) {
-		    			resp.items = resp.items || [];
-		    			var codingCount = 0;
-			    		for (var j=0;j<resp.items.length;j++) {
-			    			var elements = $(resp.items[j].text.value);
-			    			var foundArray = $('coding[code_id=\''+codeIDs[i]+'\']', elements).map(function() {
-			                  return $(this).attr('id');
-			              	});
-			    			codingCount += foundArray.length;
-		           		}
-			    		var node = easytree.getNode(codeIDs[i]);
-			    		
-			    		node.codingCount = codingCount;
-	    			}
-	    			 easytree.rebuildTree();
-	    		 }
+        	
+        	var nodes = easytree.getAllNodes();
+			 var codeIDs = getAllCodeIds(nodes);
+			 window.alert(Object.keys(text_documents).length);
+			for (var i = 0;  i < codeIDs.length; i++) {
+   			var codingCount = 0;
+	    		for (var id in text_documents) {
+	    			var elements = text_documents[id].text;
+	    			var foundArray = $('coding[code_id=\''+codeIDs[i]+'\']', elements).map(function() {
+	                  return $(this).attr('id');
+	              	});
+	    			codingCount += foundArray.length;
+          		}
+	    		var node = easytree.getNode(codeIDs[i]);
 	    		
-	    	 });
-           
+	    		node.codingCount = codingCount;
+			}
+			 easytree.rebuildTree();           
         }
         
         function removeNodeFromTree(id) {
