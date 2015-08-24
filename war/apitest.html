@@ -949,7 +949,14 @@ function activateCodingInEditor(codingID){
         	gapi.client.load('oauth2','v2',callback);
         	
         	                
-                document.getElementById('btnCodeProps').onclick = showCodingView;
+                document.getElementById('btnCodeProps').onclick = function(){
+                	if ($("#footer").is(":visible")){
+                		$( "#footer" ).hide( "clip", {}, 200, {} );
+    				} 
+                	else {
+                		showCodingView();
+                	}
+                }
                 
                 
                 
