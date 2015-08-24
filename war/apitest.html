@@ -25,6 +25,8 @@
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     
+    
+    
     <!-- EasyTree -->
 	<link rel="stylesheet" type="text/css" href="EasyTree/skin-win8/ui.easytree.css">
 	<script type="text/javascript" src="EasyTree/jquery.easytree.js"></script>
@@ -38,6 +40,8 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
     
     <link href="js/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet"> <!-- FIXME move to css folder -->
+      
+      
       
         <style>
   .custom-combobox {
@@ -156,6 +160,7 @@ $(document).ready(function() {
             
         }
     } );
+	 
     	
 } );
 
@@ -234,6 +239,7 @@ function activateCodingInEditor(codingID){
         });
   });
   </script>
+  
 </head>
 <body>
 <div class="row">
@@ -486,7 +492,7 @@ function activateCodingInEditor(codingID){
     });
 </script>
     </div>
-		<iframe id="editor" height="100%" width="100%">
+		<iframe id="editor" height="100%" width="100%" >
 		<div>
 		<h1>Test Text</h1><br>
 	        This test text is used to test the text for testing purposes.<br>
@@ -497,7 +503,6 @@ function activateCodingInEditor(codingID){
 	        Not done testing? More text.<br>
 	        </div>
 	        </iframe>
-	    
 	    </div>
 	    <div id="login" class="testapi">
 	 <div id="login" >
@@ -774,6 +779,8 @@ function activateCodingInEditor(codingID){
   }
 </script>
 
+
+
 <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
     <script type="text/javascript">
 
@@ -899,7 +906,7 @@ function activateCodingInEditor(codingID){
         	$( "#footer" ).hide();
         	$('#navAccount').hide();
         	$( "#textdocument-menu" ).collapse(); // editor will be initialized readonly, the toggle is later hooked to the visibility of the toolbar
-
+        	
         	
         	
         	
@@ -963,7 +970,7 @@ function activateCodingInEditor(codingID){
                 	if (typeof activeID != 'undefined'){
                 		gapi.client.qdacity.project.incrCodingId({'id': project_id}).execute(function(resp){
                 			var codingID = resp.maxCodingID;
-                			var author = "User";	
+                			var author = current_user_name;
                 			editor.insertHTML('<coding id="'+ codingID +'" code_id="' + activeID + '" author="'+ author +'" style="background-color: #00e7e7;">'+ editor.getSelectedText() + '</coding>');	
                 			easytree.getNode(activeID).codingCount++;
                 			easytree.rebuildTree();
@@ -1042,6 +1049,7 @@ function activateCodingInEditor(codingID){
  					editor['readOnly']('true');
  					resizeElements();
  				})
+ 				
         }
         
         function showCodingView(){
@@ -1472,6 +1480,7 @@ function activateCodingInEditor(codingID){
             });
          
             $( "#btnInsertCode" ).on( "click", function() {
+            	$('#newCodeAuthor').attr('value', current_user_name) ;
               dialog.dialog( "open" );
             });
             
