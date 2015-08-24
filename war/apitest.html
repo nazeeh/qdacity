@@ -830,11 +830,7 @@ function activateCodingInEditor(codingID){
 	    });
 	    
 	    window.onresize = resizeHandler;
-	    /* $(window).resize(function() {
-	    	resizeElements();
-	   //     clearTimeout(resizeTimer);
-	  //      var resizeTimer = setTimeout(resizeElements, 100);
-	    }); */
+	    
 	    function resizeHandler(){
 	  	      setTimeout(function() {
 	  	    	resizeElements();
@@ -843,20 +839,23 @@ function activateCodingInEditor(codingID){
 	  	    	$.LoadingOverlay("hide");
 	  	      }
 	    }
+	    
 	    function resizeElements(){
 	    	if ($(window).width() < 770 || $(window).height() < 600){
 	    		$.LoadingOverlay("show_resize");
-	    		//window.alert("test");
 	    	}
 	    	else
 	    		{
 	    		$.LoadingOverlay("hide");
 	    		}
-	    	var offsetBottom = 0;
+	    	var offsetHeight = 0;
 	    	if ($("#footer").is(":visible")){
-	    		offsetBottom += 350;
+	    		offsetHeight += 341;
 			} 
-	    	$("iframe").css({  height : $(window).height() -52 - offsetBottom});
+	    	if ($("#textdocument-menu").is(":visible")){
+	    		offsetHeight += 45;
+			} 
+	    	$("iframe").css({  height : $(window).height() -52 - offsetHeight});
 	    }
 	    
 	    var easytree = $('#easytree-section').easytree({
@@ -946,7 +945,7 @@ function activateCodingInEditor(codingID){
         	                
                 document.getElementById('btnCodeProps').onclick = function(){
                 	if ($("#footer").is(":visible")){
-                		$( "#footer" ).hide( "clip", {}, 200, {} );
+                		hideCodingView();
     				} 
                 	else {
                 		showCodingView();
@@ -992,8 +991,7 @@ function activateCodingInEditor(codingID){
             	}  
                 
                 document.getElementById('btnHideFooter').onclick = function() {
-                	$( "#footer" ).hide( "clip", {}, 200, {} );
-                	resizeHandler();
+                	hideCodingView();
             	}  
                 
                 document.getElementById('btnRemoveCoding').onclick = function() {
@@ -1037,10 +1035,12 @@ function activateCodingInEditor(codingID){
  				
  				$('#textdocument-menu').on('shown.bs.collapse', function () {
  					editor['readOnly']('false');
+ 					resizeElements();
  				})
  				
  				$('#textdocument-menu').on('hidden.bs.collapse', function () {
  					editor['readOnly']('true');
+ 					resizeElements();
  				})
         }
         
@@ -1052,7 +1052,12 @@ function activateCodingInEditor(codingID){
         }
         
         function showFooter(){
-        	$( "#footer" ).show( "clip", {}, 200, {} );
+        	$( "#footer" ).show( "clip", {}, 200, resizeElements );
+        }
+        
+        function hideCodingView(){
+        	$( "#footer" ).hide( "clip", {}, 200, resizeElements );
+        	
         }
         
         function fillCodingTable(codeID){
@@ -1542,7 +1547,7 @@ function activateCodingInEditor(codingID){
         	
         	var nodes = easytree.getAllNodes();
 			 var codeIDs = getAllCodeIds(nodes);
-			 window.alert(Object.keys(text_documents).length);
+			 
 			for (var i = 0;  i < codeIDs.length; i++) {
    			var codingCount = 0;
 	    		for (var id in text_documents) {
