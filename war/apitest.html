@@ -154,7 +154,6 @@ $(document).ready(function() {
             table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             var codingID = $(this).find("td").eq(0).html();
-            //window.alert(codingID); // FIXME
             
             activateCodingInEditor(codingID);
             
@@ -179,10 +178,13 @@ function activateCodingInEditor(codingID){
   	    				range = document.createRange();
 
   	    			  	editor.setHTML(text_documents[id].text);
-  	    			  	var node = $("#editor").contents().find('coding[id=\''+codingID+'\']')[0]; // FIXME for multiple node codings
+  	    			  	var codingNodes = $("#editor").contents().find('coding[id=\''+codingID+'\']');
+  	    			  	var startNode = codingNodes[0];
+  	    			  	var endNode = codingNodes[codingNodes.length -1];
+  	    			  	
   	    			  raWnge = iframe.contentDocument.createRange();
-  	    	        range.setStart(node, 0);
-  	    	        range.setEnd(node, node.childNodes.length);
+  	    	        range.setStart(startNode, 0);
+  	    	        range.setEnd(endNode, endNode.childNodes.length);
   	    	        editor.setSelection(range);
   	    			  	
   	    			}
@@ -970,8 +972,8 @@ function activateCodingInEditor(codingID){
                 	if (typeof activeID != 'undefined'){
                 		gapi.client.qdacity.project.incrCodingId({'id': project_id}).execute(function(resp){
                 			var codingID = resp.maxCodingID;
-                			var author = current_user_name;
-                			editor.insertHTML('<coding id="'+ codingID +'" code_id="' + activeID + '" author="'+ author +'" style="background-color: #00e7e7;">'+ editor.getSelectedText() + '</coding>');	
+                			var author = current_user_name;	
+                			editor['setCoding'](codingID, activeID, author);
                 			easytree.getNode(activeID).codingCount++;
                 			easytree.rebuildTree();
                 			saveEditorContent();
@@ -1088,9 +1090,11 @@ function activateCodingInEditor(codingID){
 	                  
 	              });
 	    			foundArray = foundArray.toArray();
-
+					var idsAdded = []; // When a coding spans multiple HTML blocks, then there will be multiple elements with the same ID
 	    			for (var j=0;j<foundArray.length;j++) {
+	    				if ($.inArray(foundArray[j].id, idsAdded) != -1) continue;
 	    			  	table.row.add( [ foundArray[j].id, text_documents[id].title, foundArray[j].author] );
+	    			  	idsAdded.push(foundArray[j].id);
 	    			}
 	    			  
         	}
@@ -1564,7 +1568,12 @@ function activateCodingInEditor(codingID){
 	    			var foundArray = $('coding[code_id=\''+codeIDs[i]+'\']', elements).map(function() {
 	                  return $(this).attr('id');
 	              	});
-	    			codingCount += foundArray.length;
+	    			var idsCounted = []; // When a coding spans multiple HTML blocks, then there will be multiple elements with the same ID
+	    			for (var j=0;j<foundArray.length;j++) {
+	    				if ($.inArray(foundArray[j], idsCounted) != -1) continue;
+	    				codingCount++;
+	    			  	idsCounted.push(foundArray[j]);
+	    			}
           		}
 	    		var node = easytree.getNode(codeIDs[i]);
 	    		

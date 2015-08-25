@@ -3765,6 +3765,19 @@ proto.setTextDirection = function ( direction ) {
     return this.focus();
 };
 
+proto.setCoding = function ( codingID, codeID, author) {
+    this.changeFormat({
+        tag: 'Coding',
+        attributes: {
+            'id': codingID,
+            'code_id' : codeID,
+            'author' : author,
+            style: 'background-color: #00e7e7;'
+        }
+    }, null);
+    return this.focus();
+};
+
 function removeFormatting ( self, root, clean ) {
     var node, next;
     for ( node = root.firstChild; node; node = next ) {
