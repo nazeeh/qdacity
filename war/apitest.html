@@ -19,11 +19,12 @@
     <!-- Custom CSS -->
     <link href="css/landing-page.css" rel="stylesheet">
     <link href="css/footer.css" rel="stylesheet">
-  
+  	<link href="js/tooltipster/css/tooltipster.css" rel="stylesheet">
     
 
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="js/tooltipster/js/jquery.tooltipster.js"></script>
     
     
     
@@ -159,7 +160,47 @@ $(document).ready(function() {
             
         }
     } );
-	 
+	
+        $('.tooltip').tooltipster();
+
+        //documents-ui
+        $('#btnUpdateDoc').tooltipster({
+            content: $('<span>Rename Document</span>'),
+        });
+        
+        $('#btnInsertDoc').tooltipster({
+            content: $('<span>New Document</span>'),
+        });
+        
+        $('#btnRemoveDoc').tooltipster({
+            content: $('<span>Remove Document</span>'),
+        });
+        
+        
+        //codesystem-ui
+        $('#btnApplyCode').tooltipster({
+            content: $('<span>Apply Code</span>'),
+        });
+        
+        $('#btnRemoveCoding').tooltipster({
+            content: $('<span>Remove Coding</span>'),
+        });
+        
+        $('#btnCodeProps').tooltipster({
+            content: $('<span>Code Properties</span>')
+        });
+        
+        $('#btnRemoveCode').tooltipster({
+            content: $('<span>Delete Code</span>')
+        });
+        
+        $('#btnInsertCode').tooltipster({
+            content: $('<span>New Code</span>')
+        });
+        
+        $('#btnUpdateCode').tooltipster({
+            content: $('<span>Edit Code</span>')
+        });
     	
 } );
 
