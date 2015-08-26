@@ -1,0 +1,317 @@
+#tip {
+  position: absolute;
+  z-index: 9999999;
+  -khtml-opacity: 0;
+  -moz-opacity: 0;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  color: #FFFFFF;
+  font-size: 12px;
+  line-height: 140%;
+  padding: 7px 10px 7px;
+  background: #303341;
+  background: rgba(48, 51, 65, 0.85);
+  background-clip: padding-box;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  border: 0 solid #000000;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+}
+.tooltip-show #tip {
+  -khtml-opacity: 1;
+  -moz-opacity: 1;
+  opacity: 1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  -moz-transition: opacity 100ms, margin 100ms;
+  -webkit-transition: opacity 100ms, margin 100ms;
+  -o-transition: opacity 100ms, margin 100ms;
+  transition: opacity 100ms, margin 100ms;
+}
+.tooltip-show #tip.top {
+  margin-top: -7px;
+}
+.tooltip-show #tip.bottom {
+  margin-top: 7px;
+}
+.tooltip-show #tip.left {
+  margin-left: -7px;
+}
+.tooltip-show #tip.right {
+  margin-left: 7px;
+}
+#tip > span {
+  position: absolute;
+}
+#tip > span.tail-1 {
+  z-index: 2;
+}
+#tip > span.tail-2 {
+  z-index: 1;
+}
+#tip.top > span,
+#tip.bottom > span {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  height: 0;
+  left: 50%;
+  margin-left: -5px;
+}
+#tip.top > span.tail-1 {
+  border-top: 5px solid rgba(48, 51, 65, 0.85);
+  bottom: -5px;
+}
+#tip.top > span.tail-2 {
+  border-top: 5px solid #000000;
+  bottom: -5px;
+}
+#tip.bottom > span.tail-1 {
+  border-bottom: 5px solid rgba(48, 51, 65, 0.85);
+  top: -5px;
+}
+#tip.bottom > span.tail-2 {
+  border-bottom: 5px solid #000000;
+  top: -5px;
+}
+#tip.left > span,
+#tip.right > span {
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  width: 0;
+  top: 50%;
+  margin-top: -5px;
+}
+#tip.left > span.tail-1 {
+  border-left: 5px solid rgba(48, 51, 65, 0.85);
+  right: -5px;
+}
+#tip.left > span.tail-2 {
+  border-left: 5px solid #000000;
+  right: -5px;
+}
+#tip.right > span {
+  left: -5px;
+}
+#tip.right > span.tail-1 {
+  border-right: 5px solid rgba(48, 51, 65, 0.85);
+  left: -5px;
+}
+#tip.right > span.tail-2 {
+  border-right: 5px solid #000000;
+  left: -5px;
+}
+#tip h5 {
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 5px;
+}
+#tip.green {
+  background: #008000;
+  background-clip: padding-box;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  border: 0 solid #000000;
+}
+#tip.green > span {
+  position: absolute;
+}
+#tip.green > span.tail-1 {
+  z-index: 2;
+}
+#tip.green > span.tail-2 {
+  z-index: 1;
+}
+#tip.green.top > span,
+#tip.green.bottom > span {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  height: 0;
+  left: 50%;
+  margin-left: -5px;
+}
+#tip.green.top > span.tail-1 {
+  border-top: 5px solid #008000;
+  bottom: -5px;
+}
+#tip.green.top > span.tail-2 {
+  border-top: 5px solid #000000;
+  bottom: -5px;
+}
+#tip.green.bottom > span.tail-1 {
+  border-bottom: 5px solid #008000;
+  top: -5px;
+}
+#tip.green.bottom > span.tail-2 {
+  border-bottom: 5px solid #000000;
+  top: -5px;
+}
+#tip.green.left > span,
+#tip.green.right > span {
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  width: 0;
+  top: 50%;
+  margin-top: -5px;
+}
+#tip.green.left > span.tail-1 {
+  border-left: 5px solid #008000;
+  right: -5px;
+}
+#tip.green.left > span.tail-2 {
+  border-left: 5px solid #000000;
+  right: -5px;
+}
+#tip.green.right > span {
+  left: -5px;
+}
+#tip.green.right > span.tail-1 {
+  border-right: 5px solid #008000;
+  left: -5px;
+}
+#tip.green.right > span.tail-2 {
+  border-right: 5px solid #000000;
+  left: -5px;
+}
+#tip.red {
+  background: #990000;
+  background: rgba(153, 0, 0, 0.8);
+  background-clip: padding-box;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  border: 0 solid #000000;
+  color: #FFFFFF;
+}
+#tip.red > span {
+  position: absolute;
+}
+#tip.red > span.tail-1 {
+  z-index: 2;
+}
+#tip.red > span.tail-2 {
+  z-index: 1;
+}
+#tip.red.top > span,
+#tip.red.bottom > span {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  height: 0;
+  left: 50%;
+  margin-left: -5px;
+}
+#tip.red.top > span.tail-1 {
+  border-top: 5px solid rgba(153, 0, 0, 0.8);
+  bottom: -5px;
+}
+#tip.red.top > span.tail-2 {
+  border-top: 5px solid #000000;
+  bottom: -5px;
+}
+#tip.red.bottom > span.tail-1 {
+  border-bottom: 5px solid rgba(153, 0, 0, 0.8);
+  top: -5px;
+}
+#tip.red.bottom > span.tail-2 {
+  border-bottom: 5px solid #000000;
+  top: -5px;
+}
+#tip.red.left > span,
+#tip.red.right > span {
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  width: 0;
+  top: 50%;
+  margin-top: -5px;
+}
+#tip.red.left > span.tail-1 {
+  border-left: 5px solid rgba(153, 0, 0, 0.8);
+  right: -5px;
+}
+#tip.red.left > span.tail-2 {
+  border-left: 5px solid #000000;
+  right: -5px;
+}
+#tip.red.right > span {
+  left: -5px;
+}
+#tip.red.right > span.tail-1 {
+  border-right: 5px solid rgba(153, 0, 0, 0.8);
+  left: -5px;
+}
+#tip.red.right > span.tail-2 {
+  border-right: 5px solid #000000;
+  left: -5px;
+}
+#tip.white {
+  background: #f1f1f1;
+  background: rgba(241, 241, 241, 0.9);
+  background-clip: padding-box;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  border: 3px solid rgba(187, 187, 187, 0.4);
+  color: #444444;
+}
+#tip.white > span {
+  position: absolute;
+}
+#tip.white > span.tail-1 {
+  z-index: 2;
+}
+#tip.white > span.tail-2 {
+  z-index: 1;
+}
+#tip.white.top > span,
+#tip.white.bottom > span {
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  height: 0;
+  left: 50%;
+  margin-left: -6px;
+}
+#tip.white.top > span.tail-1 {
+  border-top: 6px solid rgba(241, 241, 241, 0.9);
+  bottom: -6px;
+}
+#tip.white.top > span.tail-2 {
+  border-top: 6px solid rgba(187, 187, 187, 0.4);
+  bottom: -9px;
+}
+#tip.white.bottom > span.tail-1 {
+  border-bottom: 6px solid rgba(241, 241, 241, 0.9);
+  top: -6px;
+}
+#tip.white.bottom > span.tail-2 {
+  border-bottom: 6px solid rgba(187, 187, 187, 0.4);
+  top: -9px;
+}
+#tip.white.left > span,
+#tip.white.right > span {
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  width: 0;
+  top: 50%;
+  margin-top: -6px;
+}
+#tip.white.left > span.tail-1 {
+  border-left: 6px solid rgba(241, 241, 241, 0.9);
+  right: -6px;
+}
+#tip.white.left > span.tail-2 {
+  border-left: 6px solid rgba(187, 187, 187, 0.4);
+  right: -9px;
+}
+#tip.white.right > span {
+  left: -6px;
+}
+#tip.white.right > span.tail-1 {
+  border-right: 6px solid rgba(241, 241, 241, 0.9);
+  left: -6px;
+}
+#tip.white.right > span.tail-2 {
+  border-right: 6px solid rgba(187, 187, 187, 0.4);
+  left: -9px;
+}
+#tip.centered {
+  text-align: center;
+}

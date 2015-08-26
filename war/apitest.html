@@ -104,6 +104,8 @@ overflow: hidden;
     overflow: auto;
     height: 90vh;
 } */
+
+
   </style>
   
     <script type="text/javascript">
@@ -161,46 +163,7 @@ $(document).ready(function() {
         }
     } );
 	
-        $('.tooltip').tooltipster();
-
-        //documents-ui
-        $('#btnUpdateDoc').tooltipster({
-            content: $('<span>Rename Document</span>'),
-        });
         
-        $('#btnInsertDoc').tooltipster({
-            content: $('<span>New Document</span>'),
-        });
-        
-        $('#btnRemoveDoc').tooltipster({
-            content: $('<span>Remove Document</span>'),
-        });
-        
-        
-        //codesystem-ui
-        $('#btnApplyCode').tooltipster({
-            content: $('<span>Apply Code</span>'),
-        });
-        
-        $('#btnRemoveCoding').tooltipster({
-            content: $('<span>Remove Coding</span>'),
-        });
-        
-        $('#btnCodeProps').tooltipster({
-            content: $('<span>Code Properties</span>')
-        });
-        
-        $('#btnRemoveCode').tooltipster({
-            content: $('<span>Delete Code</span>')
-        });
-        
-        $('#btnInsertCode').tooltipster({
-            content: $('<span>New Code</span>')
-        });
-        
-        $('#btnUpdateCode').tooltipster({
-            content: $('<span>Edit Code</span>')
-        });
     	
 } );
 
@@ -232,10 +195,28 @@ function activateCodingInEditor(codingID){
               	}
 	    		 
 }
+
+function addTooltipsToEditor(){
+
+		var id =  active_document.id;
+		var elements = text_documents[id].text;
+		var foundArray = $("#editor").contents().find('coding');
+      
+		foundArray = foundArray.toArray();
+
+		for(var i = 0; i<foundArray.length; i++) {
+		  	var node = foundArray[i];
+		  	$(node).tooltip({"content":"Code ["+$(node).attr('codeName')+"]", placement: 'top'});
+		  	
+		}
+  	
+	 
+}
 	</script>
     
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
+<script src="js/tooltip/tooltip.js"></script>
+<link rel="stylesheet" href="js/tooltip/tooltip.css">
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -389,7 +370,7 @@ function activateCodingInEditor(codingID){
     <div id="project-ui"; style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
 	     <div style="background-color: #e7e7e7;  width:105%;">
 		     <div style="text-align: center;">
-			<b>Settings</b><br>
+			<div class="tooltips" title="test"><b >Settings</b><br></div>
 			<div style="background-color: #f8f8f8; text-align: left;">
 			<a id="btnEditToggle" class = "btn btn-sm edit-toggle" style="color:#000000;" data-toggle="collapse" data-target="#textdocument-menu" >
 			  <span class="edit-toggle-off"><i class="fa fa-toggle-off fa-2x"   style="font-size: 20px; "></i> </span> 
@@ -535,7 +516,7 @@ function activateCodingInEditor(codingID){
     });
 </script>
     </div>
-		<iframe id="editor" height="100%" width="100%" >
+		<iframe id="editor" >
 		<div>
 		<h1>Test Text</h1><br>
 	        This test text is used to test the text for testing purposes.<br>
@@ -853,7 +834,7 @@ function activateCodingInEditor(codingID){
 	      }
 	      
 	      doc.open();
-          doc.write( '<!DOCTYPE html><title>test</title>asd' );
+          doc.write( '<!DOCTYPE html><title>test</title><head></head>' );
           doc.close();
 	      // doc.close() can cause a re-entrant load event in some browsers,
 	      // such as IE9.
@@ -877,6 +858,49 @@ function activateCodingInEditor(codingID){
 	      style.type = 'text/css';
 	      style.textContent = document.getElementById( 'editorStyles' ).textContent;
 	      doc.querySelector( 'head' ).appendChild( style );
+	      
+	      $('.tooltips').tooltipster();
+	      
+	        //documents-ui
+	        $('#btnUpdateDoc').tooltipster({
+	            content: $('<span>Rename Document</span>'),
+	        });
+	        
+	        $('#btnInsertDoc').tooltipster({
+	            content: $('<span>New Document</span>'),
+	        });
+	        
+	        $('#btnRemoveDoc').tooltipster({
+	            content: $('<span>Remove Document</span>'),
+	        });
+	        
+	        
+	        //codesystem-ui
+	        $('#btnApplyCode').tooltipster({
+	            content: $('<span>Apply Code</span>'),
+	        });
+	        
+	        $('#btnRemoveCoding').tooltipster({
+	            content: $('<span>Remove Coding</span>'),
+	        });
+	        
+	        $('#btnCodeProps').tooltipster({
+	            content: $('<span>Code Properties</span>')
+	        });
+	        
+	        $('#btnRemoveCode').tooltipster({
+	            content: $('<span>Delete Code</span>')
+	        });
+	        
+	        $('#btnInsertCode').tooltipster({
+	            content: $('<span>New Code</span>')
+	        });
+	        
+	        $('#btnUpdateCode').tooltipster({
+	            content: $('<span>Edit Code</span>')
+	        });
+	        
+	        
 	    });
 	    
 	    window.onresize = resizeHandler;
@@ -945,6 +969,7 @@ function activateCodingInEditor(codingID){
 	    }
     
         function init() {
+        	
         	$.LoadingOverlay("show");
         	$( "#footer" ).hide();
         	$('#navAccount').hide();
@@ -1009,12 +1034,12 @@ function activateCodingInEditor(codingID){
                 }
                 
                 document.getElementById('btnApplyCode').onclick = function() {
-                	var activeID = getActiveId();
+                	var activeID = getActiveCode().id;
                 	if (typeof activeID != 'undefined'){
                 		gapi.client.qdacity.project.incrCodingId({'id': project_id}).execute(function(resp){
                 			var codingID = resp.maxCodingID;
                 			var author = current_user_name;	
-                			editor['setCoding'](codingID, activeID, author);
+                			editor['setCoding'](codingID, activeID, getActiveCode().name, author);
                 			easytree.getNode(activeID).codingCount++;
                 			easytree.rebuildTree();
                 			saveEditorContent();
@@ -1057,10 +1082,12 @@ function activateCodingInEditor(codingID){
             	}  
                 
  				document.getElementById('btnShowHTML').onclick = function() {
+ 					document.getElementById('listCodesResult').innerHTML = "<span  data-placement=\"top\" data-content=\"Tooltip title\" data-trigger=\"hover\">test</span>"
+ 					$('#listCodesResult').tooltip({"content":"Demo tooltip"});
  					
- 					$( "#debugTextEditor" ).dialog();
+ 					/* $( "#debugTextEditor" ).dialog();
  					document.getElementById('debugTextEditor').innerHTML = "<xmp>" + editor.getHTML() + "</xmp>";
- 					$( "#debugTextEditor" ).dialog( "option", "show", { effect: "blind", duration: 800 } );
+ 					$( "#debugTextEditor" ).dialog( "option", "show", { effect: "blind", duration: 800 } ); */
             	}  
 				
  				document.getElementById('btnTxtBold').onclick = function() {
@@ -1097,7 +1124,7 @@ function activateCodingInEditor(codingID){
         
         function showCodingView(){
         	showFooter();
-        	var activeID = getActiveId();
+        	var activeID = getActiveCode().id;
         	fillCodingTable(activeID);
         	resizeHandler();
         }
@@ -1235,6 +1262,7 @@ function activateCodingInEditor(codingID){
 				editor.setHTML("");
 			}
 			else editor.setHTML(text_documents[textDocumentID].text);
+			addTooltipsToEditor();
         }
         
         //List Codes function that will execute the listCode call
@@ -1284,7 +1312,7 @@ function activateCodingInEditor(codingID){
 
         //Insert Code function
         function insertCode(_AuthorName, _CodeName, _ID) {
-        	var activeID = getActiveId();
+        	var activeID = getActiveCode().id;
                 //Build the Request Object
                 var requestData = {};
                 requestData.author = _AuthorName;
@@ -1451,7 +1479,7 @@ function activateCodingInEditor(codingID){
         
         //Delete code function
         function deleteCode() {
-        	var activeID = getActiveId();
+        	var activeID = getActiveCode().id;
         	if (typeof activeID == 'undefined'){
         		window.alert("No code selected");
         		return;
@@ -1543,7 +1571,7 @@ function activateCodingInEditor(codingID){
             function changeCode() {
             	var name = document.getElementById('updateCodeName').value,
                 author = document.getElementById('updateCodeAuthor').value,
-                id = getActiveId();
+                id = getActiveCode().id;
 
               updateCode(author,name,id);
               dialog.dialog( "close" );
@@ -1574,8 +1602,8 @@ function activateCodingInEditor(codingID){
             });
          
             $( "#btnUpdateCode" ).on( "click", function() {
-              document.getElementById('updateFormCodeId').innerHTML = getActiveId();
-              setNameAndAuthor( getActiveId(), 'updateCodeName', 'updateCodeAuthor');
+              document.getElementById('updateFormCodeId').innerHTML = getActiveCode().id;
+              setNameAndAuthor( getActiveCode().id, 'updateCodeName', 'updateCodeAuthor');
               dialog.dialog( "open" );
             });
           });
@@ -1648,19 +1676,31 @@ function activateCodingInEditor(codingID){
             easytree.rebuildTree();
         }
 		
-		function getActiveId() {
+		function getActiveCode() {
             var nodes = easytree.getAllNodes();
-            return getActiveIdRecursive (nodes);
+            var activeNode =  getActiveNodeRecursive (nodes);
+            
+            var code = {};
+            if (typeof activeNode == 'undefined'){
+            	code.id = 'undefined';
+            	code.name = 'undefined';
+            }
+            else{
+            	code.id = activeNode.id;
+                code.name = activeNode.text;
+            }
+            
+            return code;
             
         }
 		
-		function getActiveIdRecursive(nodes) {
+		function getActiveNodeRecursive(nodes) {
 			for (var i = 0;  i < nodes.length; i++) {
             	if (nodes[i].isActive == true){
-            		return nodes[i].id;
+            		return nodes[i];
             	}
             	if (nodes[i].children && nodes[i].children.length > 0) {
-                    var result = getActiveIdRecursive(nodes[i].children);
+                    var result = getActiveNodeRecursive(nodes[i].children);
                     if (typeof result != 'undefined') return result;
                 }
             }
@@ -1691,7 +1731,7 @@ function activateCodingInEditor(codingID){
 		var initialized_easytree = false;
 		function codesystemStateChanged(nodes, nodesJson) {
 			if (initialized_easytree){
-			active_code = getActiveId();
+			active_code = getActiveCode().id;
 				if ($("#footer").is(":visible")){
 					fillCodingTable(active_code);
 				} 

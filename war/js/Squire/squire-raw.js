@@ -2263,6 +2263,7 @@ function Squire ( doc, config ) {
     // Need to register instance before calling setHTML, so that the fixCursor
     // function can lookup any default block tag options set.
     this.setHTML( '' );
+    
 }
 
 var proto = Squire.prototype;
@@ -3765,16 +3766,22 @@ proto.setTextDirection = function ( direction ) {
     return this.focus();
 };
 
-proto.setCoding = function ( codingID, codeID, author) {
+proto.setCoding = function ( codingID, codeID, codeName, author) {
     this.changeFormat({
-        tag: 'Coding',
+        tag: 'coding',
         attributes: {
             'id': codingID,
             'code_id' : codeID,
             'author' : author,
+            'class' : 'tooltipsss',
+            'codeName' : codeName,
+            'title' : codeName,
+            'data-toggle' : 'tooltip',
+            'data-placement' : 'bottom',
             style: 'background-color: #00e7e7;'
         }
     }, null);
+    
     return this.focus();
 };
 
