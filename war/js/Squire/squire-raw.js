@@ -3785,6 +3785,18 @@ proto.setCoding = function ( codingID, codeID, codeName, author) {
     return this.focus();
 };
 
+proto.removeCoding = function ( codingID ) {
+    this.changeFormat(null, 
+	    {
+	    	tag: 'coding',
+	        attributes: {
+	            'code_id': codingID
+	        }
+	    });
+    
+    return this.focus();
+};
+
 function removeFormatting ( self, root, clean ) {
     var node, next;
     for ( node = root.firstChild; node; node = next ) {

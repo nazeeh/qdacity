@@ -1033,21 +1033,6 @@ function addTooltipsToEditor(){
                     deleteCode();
                 }
                 
-                document.getElementById('btnApplyCode').onclick = function() {
-                	var activeID = getActiveCode().id;
-                	if (typeof activeID != 'undefined'){
-                		gapi.client.qdacity.project.incrCodingId({'id': project_id}).execute(function(resp){
-                			var codingID = resp.maxCodingID;
-                			var author = current_user_name;	
-                			editor['setCoding'](codingID, activeID, getActiveCode().name, author);
-                			easytree.getNode(activeID).codingCount++;
-                			easytree.rebuildTree();
-                			saveEditorContent();
-                		});
-                		
-                	}
-                  }
-                
                 document.getElementById('btnInsertDoc').onclick = function() {
                 	addDocumentToProject();
             	}  
@@ -1069,7 +1054,33 @@ function addTooltipsToEditor(){
                 	hideCodingView();
             	}  
                 
+                document.getElementById('btnApplyCode').onclick = function() {
+                	var activeID = getActiveCode().id;
+                	if (typeof activeID != 'undefined'){
+                		gapi.client.qdacity.project.incrCodingId({'id': project_id}).execute(function(resp){
+                			var codingID = resp.maxCodingID;
+                			var author = current_user_name;	
+                			editor['setCoding'](codingID, activeID, getActiveCode().name, author);
+                			easytree.getNode(activeID).codingCount--;
+                			easytree.rebuildTree();
+                			saveEditorContent();
+                		});
+                		
+                	}
+                  }
+                
                 document.getElementById('btnRemoveCoding').onclick = function() {
+                	var activeID = getActiveCode().id;
+                	if (typeof activeID != 'undefined'){
+                		
+                		editor['removeCoding'](activeID);
+                		easytree.getNode(activeID).codingCount++;
+            			easytree.rebuildTree();
+            			saveEditorContent();
+                	}
+                	else{
+                		window.alert("No code selected.")
+                	}
                 	
             	}  
                 
@@ -1082,12 +1093,12 @@ function addTooltipsToEditor(){
             	}  
                 
  				document.getElementById('btnShowHTML').onclick = function() {
- 					document.getElementById('listCodesResult').innerHTML = "<span  data-placement=\"top\" data-content=\"Tooltip title\" data-trigger=\"hover\">test</span>"
- 					$('#listCodesResult').tooltip({"content":"Demo tooltip"});
+ 					/* document.getElementById('listCodesResult').innerHTML = "<span  data-placement=\"top\" data-content=\"Tooltip title\" data-trigger=\"hover\">test</span>"
+ 					$('#listCodesResult').tooltip({"content":"Demo tooltip"}); */
  					
- 					/* $( "#debugTextEditor" ).dialog();
+ 					 $( "#debugTextEditor" ).dialog();
  					document.getElementById('debugTextEditor').innerHTML = "<xmp>" + editor.getHTML() + "</xmp>";
- 					$( "#debugTextEditor" ).dialog( "option", "show", { effect: "blind", duration: 800 } ); */
+ 					$( "#debugTextEditor" ).dialog( "option", "show", { effect: "blind", duration: 800 } ); 
             	}  
 				
  				document.getElementById('btnTxtBold').onclick = function() {
