@@ -180,7 +180,8 @@ function activateCodingInEditor(codingID){
   	    			if (foundArray.length > 0) {
   	    				var range;
   	    				range = document.createRange();
-
+  	    				$('#documentlist .ui-selected').removeClass( "ui-selected" );
+  	    				$("#documentlist").find("li[docID='" +id + "']").addClass( "ui-selected" );
   	    			  	editor.setHTML(text_documents[id].text);
   	    			  	var codingNodes = $("#editor").contents().find('coding[id=\''+codingID+'\']');
   	    			  	var startNode = codingNodes[0];
@@ -1061,9 +1062,10 @@ function addTooltipsToEditor(){
                 			var codingID = resp.maxCodingID;
                 			var author = current_user_name;	
                 			editor['setCoding'](codingID, activeID, getActiveCode().name, author);
+                			saveEditorContent();
                 			easytree.getNode(activeID).codingCount--;
                 			easytree.rebuildTree();
-                			saveEditorContent();
+                			
                 		});
                 		
                 	}
