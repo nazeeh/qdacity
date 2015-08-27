@@ -182,7 +182,7 @@ function activateCodingInEditor(codingID){
   	    				range = document.createRange();
   	    				$('#documentlist .ui-selected').removeClass( "ui-selected" );
   	    				$("#documentlist").find("li[docID='" +id + "']").addClass( "ui-selected" );
-  	    			  	editor.setHTML(text_documents[id].text);
+  	    			  	setDocumentView(id);
   	    			  	var codingNodes = $("#editor").contents().find('coding[id=\''+codingID+'\']');
   	    			  	var startNode = codingNodes[0];
   	    			  	var endNode = codingNodes[codingNodes.length -1];
@@ -197,9 +197,8 @@ function activateCodingInEditor(codingID){
 	    		 
 }
 
-function addTooltipsToEditor(){
+function addTooltipsToEditor(id){
 
-		var id =  active_document.id;
 		var elements = text_documents[id].text;
 		var foundArray = $("#editor").contents().find('coding');
       
@@ -1274,8 +1273,10 @@ function addTooltipsToEditor(){
 			if (typeof text_documents[textDocumentID].text  == 'undefined'){
 				editor.setHTML("");
 			}
-			else editor.setHTML(text_documents[textDocumentID].text);
-			addTooltipsToEditor();
+			else{
+				editor.setHTML(text_documents[textDocumentID].text);
+				addTooltipsToEditor(textDocumentID);
+			}
         }
         
         //List Codes function that will execute the listCode call
