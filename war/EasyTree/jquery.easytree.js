@@ -813,7 +813,7 @@
                 return html;
             }
             if (node.uiIcon) {
-                return '<span class="easytree-custom-icon ui-icon ' + node.uiIcon + '"></span>';
+                return '<i class="fa '+node.uiIcon+' "></i>';
             }
             if (node.iconUrl) {
                 return '<span><img src="' + node.iconUrl + '" /></span>';
