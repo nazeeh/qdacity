@@ -19,7 +19,9 @@
 
     /* Example node */
     // var node = {}
+    // node.author 
     // node.children = [];
+    // node.codingCount
     // node.isActive = false;
     // node.isFolder = false;
     // node.isExpanded = false;

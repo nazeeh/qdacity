@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <title>QDAcity API Test</title>
      <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-       <link rel="stylesheet" href="css/jquery-ui.theme.css">
+
      
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -36,6 +36,11 @@
    <script type="text/javascript" src="js/DataTables-1.10.7/media/js/jquery.dataTables.min.js"></script>
     
     <script type="text/javascript" src="js/Squire/squire-raw.js"></script>
+    
+    <script type="text/javascript" src="Easytabs/jquery.easytabs.js"></script>
+    <link href="Easytabs/easytabs.css" rel="stylesheet"> 
+    
+    
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
@@ -542,10 +547,33 @@ function addTooltipsToEditor(id){
 </div>
 
 <footer id="footer" class="footer">
-<div style="float: right; background-color: #e7e7e7;"><i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover" ></i> </div> 
+<!-- <div style="float: right; background-color: #e7e7e7;"><i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover" ></i> </div>  -->
 <!-- float: left; -->
-<div class="center" style=" text-align: center; background-color: #e7e7e7;"><b>Code Properties</b></div>
-<div id="codingtable"></div>
+<div id="codeTabs" class='tab-container'>
+<span style="float: right;"><i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover" ></i> </span> 
+<div class='etabs'>
+    <span class='tab' id="defaultCodeTab"><a href="#codingtable">Codings</a></span>
+    <span class='tab'><a href="#codeProperties">Code Properties</a></span>
+    
+    </div>
+    
+<div class='panel-container'>
+<div id="codingtable" style=" text-align: center; background-color: #eee;"></div>
+<div id="codeProperties" style=" text-align: left; background-color: #eee; ">
+<table>
+    <tr>
+    	<td><span>Name: </span></td>
+        <td><input id="codePropName" type="text" value="codePropName"></td>
+    </tr>
+    <tr>
+    	<td><span>Author: </span></td>
+        <td><input id="codePropAuthor" type="text" value="codePropAuthor"></td>
+    </tr>
+</table>
+</div>
+</div>
+</div>
+
       
  </footer>
 
@@ -859,6 +887,17 @@ function addTooltipsToEditor(id){
 	      style.textContent = document.getElementById( 'editorStyles' ).textContent;
 	      doc.querySelector( 'head' ).appendChild( style );
 	      
+	      
+	      //$( "#codeTabs" ).tabs();
+	      $("#codeTabs").easytabs({
+	    	  animate: true,
+	    	  animationSpeed: 100,
+	    	  panelActiveClass: "active-content-div",
+	    	  defaultTab: "span#defaultCodeTab",
+	    	  tabs: "> div > span",
+	    	  updateHash: false
+	    	});
+	      
 	      $('.tooltips').tooltipster();
 	      
 	        //documents-ui
@@ -899,9 +938,8 @@ function addTooltipsToEditor(id){
 	        $('#btnUpdateCode').tooltipster({
 	            content: $('<span>Edit Code</span>')
 	        });
-	        
-	        
 	    });
+	        
 	    
 	    window.onresize = resizeHandler;
 	    
@@ -1138,6 +1176,7 @@ function addTooltipsToEditor(id){
         	showFooter();
         	var activeID = getActiveCode().id;
         	fillCodingTable(activeID);
+        	fillPropertiesView(activeID);
         	resizeHandler();
         }
         
@@ -1180,6 +1219,12 @@ function addTooltipsToEditor(id){
         	}
         	
         	table.draw();
+        }
+        
+        function fillPropertiesView(codeID){
+        	$("#codePropName").val(getActiveCode().name);
+        	$("#codePropAuthor").val(getActiveCode().author);
+        	
         }
         
         function getCodingCount(codeId){
@@ -1295,7 +1340,7 @@ function addTooltipsToEditor(id){
                                 }
                                 document.getElementById('listCodesResult').innerHTML = result;
                                 for(var i=0;i<codes.length;i++) {
-                                	addNodeToTree(codes[i].id, codes[i].name);
+                                	addNodeToTree(codes[i].id, codes[i].name, codes[i].author);
                                 }
                                 
                                 for(var i=0;i<codes.length;i++) {
@@ -1343,7 +1388,7 @@ function addTooltipsToEditor(id){
                                 //Just logging to console now, you can do your check here/display message
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name);
                                 document.getElementById('listCodesResult').innerHTML = resp.id + ":" + resp.author + ":" + resp.name;
-                                addNodeToTree(resp.id, resp.name);
+                                addNodeToTree(resp.id, resp.name, resp.author);
                                 if (typeof activeID != 'undefined'){
                                 	addSubCode(activeID, _ID);
                                 	relocateNode(_ID, activeID);
@@ -1622,13 +1667,14 @@ function addTooltipsToEditor(id){
             });
           });
         
-        function addNodeToTree(id, name) {
+        function addNodeToTree(id, name, author) {
 			var sourceNode = {};
             sourceNode.text = name;
             sourceNode.isFolder = true;
             sourceNode.id = id;
             sourceNode.codingCount = 0;
             sourceNode.uiIcon = "fa-tag";
+            sourceNode.author = author;
            
            sourceNode.onclick = function() {
         	   window.alert("test");
@@ -1636,7 +1682,6 @@ function addTooltipsToEditor(id){
 			
             easytree.addNode(sourceNode);
             easytree.rebuildTree();
-            //loadSelectBox();
         }
         
         function addCodingCountToTree(){
@@ -1698,10 +1743,12 @@ function addTooltipsToEditor(id){
             if (typeof activeNode == 'undefined'){
             	code.id = 'undefined';
             	code.name = 'undefined';
+            	code.author = 'undefined';
             }
             else{
             	code.id = activeNode.id;
                 code.name = activeNode.text;
+                code.author = activeNode.author;
             }
             
             return code;
@@ -1748,6 +1795,7 @@ function addTooltipsToEditor(id){
 			active_code = getActiveCode().id;
 				if ($("#footer").is(":visible")){
 					fillCodingTable(active_code);
+					fillPropertiesView(active_code);
 				} 
 			}
 			else{
