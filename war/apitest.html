@@ -559,7 +559,7 @@ function addTooltipsToEditor(id){
     
 <div class='panel-container'>
 <div id="codingtable" style=" text-align: center; background-color: #eee;"></div>
-<div id="codeProperties" style=" text-align: left; background-color: #eee; ">
+<div id="codeProperties" style="  background-color: #eee; ">
 <table>
     <tr>
     	<td><span>Name: </span></td>
@@ -570,7 +570,13 @@ function addTooltipsToEditor(id){
         <td><input id="codePropAuthor" type="text" value="codePropAuthor"></td>
     </tr>
 </table>
+<div style=" width: 8em; text-align: center; margin: 0 auto;">
+<a id="btnCodeSave"  class="btn btn-default btn-default" href="#">
+  				<i class="fa fa-floppy-o "></i> Save
+  	</a>
 </div>
+</div>
+
 </div>
 </div>
 
@@ -1123,6 +1129,10 @@ function addTooltipsToEditor(id){
                 	
             	}  
                 
+                document.getElementById('btnCodeSave').onclick = function() {
+                	updateCode($('#codePropAuthor').val(),$('#codePropName').val(),getActiveCode().id);
+            	} 
+                
  				document.getElementById('navBtnSigninGoogle').onclick = function() {
  					signin(false, handleAuth);
             	}  
@@ -1409,7 +1419,7 @@ function addTooltipsToEditor(id){
                         if (!resp.code) {
                                 //Just logging to console now, you can do your check here/display message
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-                                changeNodeName(resp.id, resp.name);
+                                updateNode(resp.id, resp.name, resp.author);
                         }
                 });
         }
@@ -1727,10 +1737,11 @@ function addTooltipsToEditor(id){
             easytree.rebuildTree();
         }
         
-		function changeNodeName(id, name) {
+		function updateNode(id, name, author) {
         	
             var sourceNode = easytree.getNode(id);
             sourceNode.text = name;
+            sourceNode.author = author;
 
             easytree.rebuildTree();
         }
