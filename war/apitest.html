@@ -41,6 +41,7 @@
     <link href="Easytabs/easytabs.css" rel="stylesheet"> 
     
     
+    
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
@@ -225,6 +226,9 @@ function addTooltipsToEditor(id){
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="js/tooltip/tooltip.js"></script>
 <link rel="stylesheet" href="js/tooltip/tooltip.css">
+
+<script src="colorpicker/evol.colorpicker.js" type="text/javascript" charset="utf-8"></script>
+    <link href="colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
     
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -569,7 +573,12 @@ function addTooltipsToEditor(id){
     	<td><span>Author: </span></td>
         <td><input id="codePropAuthor" type="text" value="codePropAuthor"></td>
     </tr>
+    <tr>
+    	<td><span>Color: </span></td>
+        <td><input id="codePropColor" style="width:80px;" type="text" value="#000000"></td>
+    </tr>
 </table>
+
 <div style=" width: 8em; text-align: center; margin: 0 auto;">
 <a id="btnCodeSave"  class="btn btn-default btn-default" href="#">
   				<i class="fa fa-floppy-o "></i> Save
@@ -944,6 +953,9 @@ function addTooltipsToEditor(id){
 	        $('#btnUpdateCode').tooltipster({
 	            content: $('<span>Edit Code</span>')
 	        });
+	        
+	        
+	        $("#codePropColor").colorpicker();
 	    });
 	        
 	    
@@ -1130,7 +1142,8 @@ function addTooltipsToEditor(id){
             	}  
                 
                 document.getElementById('btnCodeSave').onclick = function() {
-                	updateCode($('#codePropAuthor').val(),$('#codePropName').val(),getActiveCode().id);
+                	updateCode($('#codePropAuthor').val(),$('#codePropName').val(), $('#codePropColor').val() ,getActiveCode().id);
+                	
             	} 
                 
  				document.getElementById('navBtnSigninGoogle').onclick = function() {
@@ -1234,7 +1247,10 @@ function addTooltipsToEditor(id){
         function fillPropertiesView(codeID){
         	$("#codePropName").val(getActiveCode().name);
         	$("#codePropAuthor").val(getActiveCode().author);
-        	
+        	//$("#codePropColor").val(getActiveCode().color);
+        	$("#codePropColor").colorpicker({
+        		color : getActiveCode().color
+        	});
         }
         
         function getCodingCount(codeId){
@@ -1350,7 +1366,7 @@ function addTooltipsToEditor(id){
                                 }
                                 document.getElementById('listCodesResult').innerHTML = result;
                                 for(var i=0;i<codes.length;i++) {
-                                	addNodeToTree(codes[i].id, codes[i].name, codes[i].author);
+                                	addNodeToTree(codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs);
                                 }
                                 
                                 for(var i=0;i<codes.length;i++) {
@@ -1390,6 +1406,7 @@ function addTooltipsToEditor(id){
                 requestData.subCodesIDs = new Array();
                 requestData.parentID = activeID;
                 requestData.codesytemID = codesystem_id;
+                requestData.color = "#000000";
                 
                 gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
 
@@ -1398,7 +1415,7 @@ function addTooltipsToEditor(id){
                                 //Just logging to console now, you can do your check here/display message
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name);
                                 document.getElementById('listCodesResult').innerHTML = resp.id + ":" + resp.author + ":" + resp.name;
-                                addNodeToTree(resp.id, resp.name, resp.author);
+                                addNodeToTree(resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs);
                                 if (typeof activeID != 'undefined'){
                                 	addSubCode(activeID, _ID);
                                 	relocateNode(_ID, activeID);
@@ -1408,18 +1425,21 @@ function addTooltipsToEditor(id){
         }
         
         //Update Code function
-        function updateCode(_AuthorName, _CodeName, _ID) {
+        function updateCode(_AuthorName, _CodeName, _CodeColor, _ID) {
                 //Build the Request Object
                 var requestData = {};
                 requestData.id = _ID;
                 requestData.author = _AuthorName;
                 requestData.name = _CodeName;
+                requestData.color = _CodeColor;
                 requestData.codesytemID = codesystem_id;
+                requestData.parentID = getActiveCode().parentID;
+                requestData.subCodesIDs = getActiveCode().subCodesIDs;
                 gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
                         if (!resp.code) {
                                 //Just logging to console now, you can do your check here/display message
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-                                updateNode(resp.id, resp.name, resp.author);
+                                updateNode(resp.id, resp.name, resp.author, resp.color);
                         }
                 });
         }
@@ -1453,6 +1473,7 @@ function addTooltipsToEditor(id){
             	          	requestData.id = _ID;
             	            requestData.author = resp.author;
             	            requestData.codesytemID = resp.codesytemID;
+            	            requestData.color = resp.color;
             	            if (typeof resp.subCodesIDs == 'undefined'){
             	            	 requestData.subCodesIDs = [_SubID];
             	            }
@@ -1485,6 +1506,7 @@ function addTooltipsToEditor(id){
             	            requestData.subCodesIDs = resp.subCodesIDs;
             	            requestData.parentID = _newParent;
             	            requestData.codesytemID = resp.codesytemID;
+            	            requestData.color = resp.color;
             	            gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
             	                    if (!resp.code) {
             	                    	console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
@@ -1513,6 +1535,7 @@ function addTooltipsToEditor(id){
             	          	requestData.id = _ID;
             	            requestData.author = resp.author;
             	            requestData.codesystemID = resp.codesystemID;
+            	            requestData.color = resp.color;
             	            for(var i = resp.subCodesIDs.length - 1; i >= 0; i--) {
             	            	
             	                if(resp.subCodesIDs[i] === _SubID) {
@@ -1628,6 +1651,7 @@ function addTooltipsToEditor(id){
             
           });
         
+        //FIXME check for dead legacy code
         $(function() {
             var dialog, form,
             name = $( "#updateCodeName" ),
@@ -1642,7 +1666,7 @@ function addTooltipsToEditor(id){
                 author = document.getElementById('updateCodeAuthor').value,
                 id = getActiveCode().id;
 
-              updateCode(author,name,id);
+              updateCode(author,name, "#000000",id);
               dialog.dialog( "close" );
               form[ 0 ].reset();
             }
@@ -1677,14 +1701,17 @@ function addTooltipsToEditor(id){
             });
           });
         
-        function addNodeToTree(id, name, author) {
+        function addNodeToTree(id, name, author, color, parentID, subCodesIDs) {
 			var sourceNode = {};
             sourceNode.text = name;
             sourceNode.isFolder = true;
             sourceNode.id = id;
             sourceNode.codingCount = 0;
-            sourceNode.uiIcon = "fa-tag";
+            sourceNode.uiIcon = "fa-tag fa-lg";
             sourceNode.author = author;
+            sourceNode.color = color;
+            sourceNode.parentID = parentID;
+            sourceNode.subCodesIDs = subCodesIDs;
            
            sourceNode.onclick = function() {
         	   window.alert("test");
@@ -1737,11 +1764,12 @@ function addTooltipsToEditor(id){
             easytree.rebuildTree();
         }
         
-		function updateNode(id, name, author) {
+		function updateNode(id, name, author, color) {
         	
             var sourceNode = easytree.getNode(id);
             sourceNode.text = name;
             sourceNode.author = author;
+            sourceNode.color = color;
 
             easytree.rebuildTree();
         }
@@ -1755,13 +1783,17 @@ function addTooltipsToEditor(id){
             	code.id = 'undefined';
             	code.name = 'undefined';
             	code.author = 'undefined';
+            	code.color = 'undefined';
             }
             else{
             	code.id = activeNode.id;
                 code.name = activeNode.text;
+                
                 code.author = activeNode.author;
+                code.color = activeNode.color;
+                code.parentID = activeNode.parentID;
+                code.subCodesIDs = activeNode.subCodesIDs;
             }
-            
             return code;
             
         }

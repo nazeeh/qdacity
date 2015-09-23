@@ -815,7 +815,7 @@
                 return html;
             }
             if (node.uiIcon) {
-                return '<i class="fa '+node.uiIcon+' "></i>';
+                return '<i class="fa '+node.uiIcon+' " style="color:'+ node.color+'" ></i>';
             }
             if (node.iconUrl) {
                 return '<span><img src="' + node.iconUrl + '" /></span>';

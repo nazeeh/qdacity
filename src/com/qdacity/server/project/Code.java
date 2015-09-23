@@ -16,6 +16,8 @@ public class Code {
 	@Persistent
 	String author;
 	@Persistent
+	String color;
+	@Persistent
 	String message;
 	@Persistent
 	List<Long> subCodeIDs;
@@ -38,6 +40,16 @@ public class Code {
 
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+	
+	
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 	public String getName() {
