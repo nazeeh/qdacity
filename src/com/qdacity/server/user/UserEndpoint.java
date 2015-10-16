@@ -1,4 +1,4 @@
-package com.qdacity.server.project;
+package com.qdacity.server.user;
 
 import com.qdacity.Constants;
 import com.qdacity.server.Authorization;
@@ -9,12 +9,10 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -24,7 +22,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 @Api(name = "qdacity", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
-public class TextDocumentEndpoint {
+public class UserEndpoint {
 
 	/**
 	 * This method lists all the entities inserted in datastore.
@@ -35,11 +33,11 @@ public class TextDocumentEndpoint {
 	 * @throws UnauthorizedException 
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "documents.listTextDocument",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "listUser",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public CollectionResponse<TextDocument> listTextDocument(
+	public CollectionResponse<User> listUser(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 		
@@ -47,11 +45,11 @@ public class TextDocumentEndpoint {
 
 //		PersistenceManager mgr = null;
 //		Cursor cursor = null;
-//		List<TextDocument> execute = null;
+//		List<User> execute = null;
 //
 //		try {
 //			mgr = getPersistenceManager();
-//			Query query = mgr.newQuery(TextDocument.class);
+//			Query query = mgr.newQuery(User.class);
 //			if (cursorString != null && cursorString != "") {
 //				cursor = Cursor.fromWebSafeString(cursorString);
 //				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
@@ -63,20 +61,20 @@ public class TextDocumentEndpoint {
 //				query.setRange(0, limit);
 //			}
 //
-//			execute = (List<TextDocument>) query.execute();
+//			execute = (List<User>) query.execute();
 //			cursor = JDOCursorHelper.getCursor(execute);
 //			if (cursor != null)
 //				cursorString = cursor.toWebSafeString();
 //
 //			// Tight loop for fetching all entities from datastore and accomodate
 //			// for lazy fetch.
-//			for (TextDocument obj : execute)
+//			for (User obj : execute)
 //				;
 //		} finally {
 //			mgr.close();
 //		}
 //
-//		return CollectionResponse.<TextDocument> builder().setItems(execute)
+//		return CollectionResponse.<User> builder().setItems(execute)
 //				.setNextPageToken(cursorString).build();
 	}
 
@@ -87,87 +85,48 @@ public class TextDocumentEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "documents.getTextDocument",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "getUser",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, User user) throws UnauthorizedException {
-		//Check authorization
-		Authorization.checkAuthorization(id, user);
-		
-		PersistenceManager mgr = null;
-		Cursor cursor = null;
-		List<TextDocument> execute = null;
-		String cursorString = null;
-		
+	public User getUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		User user = null;
 		try {
-			mgr = getPersistenceManager();
-			Query query = mgr.newQuery(TextDocument.class);
+			user = mgr.getObjectById(User.class, id);
 			
-			query.setFilter( "projectID == :theID");
-			Map<String, Long> paramValues = new HashMap();
-			paramValues.put("theID", id);
+			//Check if user is authorized
+			Authorization.checkAuthorization(user, loggedInUser);
 			
-			execute = (List<TextDocument>) query.executeWithMap(paramValues);
-			
-			cursor = JDOCursorHelper.getCursor(execute);
-			if (cursor != null)
-				cursorString = cursor.toWebSafeString();
-			
-			for (TextDocument obj : execute)
-				;
 		} finally {
 			mgr.close();
 		}
-		return CollectionResponse.<TextDocument> builder().setItems(execute)
-				.setNextPageToken(cursorString).build();	
-		}
-	
-//	/**
-//	 * This method gets the entity having primary key id. It uses HTTP GET method.
-//	 *
-//	 * @param id the primary key of the java bean.
-//	 * @return The entity with primary key id.
-//	 */
-//	@ApiMethod(name = "documents.getTextDocument")
-//	public TextDocument getTextDocument(@Named("id") Long id) {
-//		PersistenceManager mgr = getPersistenceManager();
-//		TextDocument textdocument = null;
-//		try {
-//			textdocument = mgr.getObjectById(TextDocument.class, id);
-//		} finally {
-//			mgr.close();
-//		}
-//		return textdocument;
-//	}
+		return user;
+	}
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
 	 * exists in the datastore, an exception is thrown.
 	 * It uses HTTP POST method.
 	 *
-	 * @param textdocument the entity to be inserted.
+	 * @param user the entity to be inserted.
 	 * @return The inserted entity.
-	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "documents.insertTextDocument",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "insertUser",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public TextDocument insertTextDocument(TextDocument textdocument, User user) throws UnauthorizedException {
-		//Check authorization
-		Authorization.checkAuthorization(textdocument, user);
-				
+	public User insertUser(User user) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-				if (textdocument.getId() != null && containsTextDocument(textdocument)) {
-					throw new EntityExistsException("Object already exists");
-				}
-			mgr.makePersistent(textdocument);
+			if (containsUser(user)) {
+				throw new EntityExistsException("Object already exists");
+			}
+			mgr.makePersistent(user);
 		} finally {
 			mgr.close();
 		}
-		return textdocument;
+		return user;
 	}
 
 	/**
@@ -175,28 +134,28 @@ public class TextDocumentEndpoint {
 	 * exist in the datastore, an exception is thrown.
 	 * It uses HTTP PUT method.
 	 *
-	 * @param textdocument the entity to be updated.
+	 * @param user the entity to be updated.
 	 * @return The updated entity.
 	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "documents.updateTextDocument",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "updateUser",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public TextDocument updateTextDocument(TextDocument textdocument, User user) throws UnauthorizedException {
-		//Check authorization
-		Authorization.checkAuthorization(textdocument, user);
-				
+	public User updateUser(User user, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		//Check if user is authorized
+		Authorization.checkAuthorization(user, loggedInUser);
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (!containsTextDocument(textdocument)) {
+			if (!containsUser(user)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
-			mgr.makePersistent(textdocument);
+			mgr.makePersistent(user);
 		} finally {
 			mgr.close();
 		}
-		return textdocument;
+		return user;
 	}
 
 	/**
@@ -206,28 +165,29 @@ public class TextDocumentEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "documents.removeTextDocument",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "removeUser",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public void removeTextDocument(@Named("id") Long id, User user) throws UnauthorizedException {
+	public void removeUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			TextDocument textdocument = mgr.getObjectById(TextDocument.class, id);
-			//Check authorization
-			Authorization.checkAuthorization(textdocument, user);
+			User user = mgr.getObjectById(User.class, id);
 			
-			mgr.deletePersistent(textdocument);
+			//Check if user is authorized
+			Authorization.checkAuthorization(user, loggedInUser);
+			
+			mgr.deletePersistent(user);
 		} finally {
 			mgr.close();
 		}
 	}
 
-	private boolean containsTextDocument(TextDocument textdocument) {
+	private boolean containsUser(User user) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
 		try {
-			mgr.getObjectById(TextDocument.class, textdocument.getId());
+			mgr.getObjectById(User.class, user.getId());
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			contains = false;
 		} finally {

@@ -17,7 +17,12 @@ public class CodeSystem {
 @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 Long id;
 @Persistent
+Long project;
+@Persistent
 List<Long> codeIDs = new  ArrayList<Long>();
+
+
+
 
 public void removeCode(Long codeID){
 	codeIDs.remove(codeID);
@@ -43,6 +48,16 @@ public List<Long> getCodeIDs() {
 public void setCodeIDs(List<Long> codeIDs) {
 	this.codeIDs = codeIDs;
 }
+
+public Long getProject() {
+	return project;
+}
+
+public void setProject(Long project) {
+	this.project = project;
+}
+
+
 
 
 

@@ -1,6 +1,7 @@
 package com.qdacity.server.project;
 
 import com.qdacity.Constants;
+import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -10,6 +11,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.appengine.api.users.User;
+
 
 
 
@@ -32,47 +34,53 @@ public class CodeEndpoint {
 	 *
 	 * @return A CollectionResponse class containing the list of all entities
 	 * persisted and a cursor to the next page.
+	 * @throws UnauthorizedException 
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "codes.listCode")
+	@ApiMethod(name = "codes.listCode",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
 	public CollectionResponse<Code> listCode(
 			@Nullable @Named("cursor") String cursorString,
-			@Nullable @Named("limit") Integer limit
-			) {
-
-		PersistenceManager mgr = null;
-		Cursor cursor = null;
-		List<Code> execute = null;
-
-		try {
-			mgr = getPersistenceManager();
-			Query query = mgr.newQuery(Code.class);
-			if (cursorString != null && cursorString != "") {
-				cursor = Cursor.fromWebSafeString(cursorString);
-				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-				query.setExtensions(extensionMap);
-			}
-
-			if (limit != null) {
-				query.setRange(0, limit);
-			}
-
-			execute = (List<Code>) query.execute();
-			cursor = JDOCursorHelper.getCursor(execute);
-			if (cursor != null)
-				cursorString = cursor.toWebSafeString();
-
-			// Tight loop for fetching all entities from datastore and accomodate
-			// for lazy fetch.
-			for (Code obj : execute)
-				;
-		} finally {
-			mgr.close();
-		}
-
-		return CollectionResponse.<Code> builder().setItems(execute)
-				.setNextPageToken(cursorString).build();
+			@Nullable @Named("limit") Integer limit, User user
+			) throws UnauthorizedException {
+		
+		throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all codes
+//
+//		PersistenceManager mgr = null;
+//		Cursor cursor = null;
+//		List<Code> execute = null;
+//
+//		try {
+//			mgr = getPersistenceManager();
+//			Query query = mgr.newQuery(Code.class);
+//			if (cursorString != null && cursorString != "") {
+//				cursor = Cursor.fromWebSafeString(cursorString);
+//				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
+//				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+//				query.setExtensions(extensionMap);
+//			}
+//
+//			if (limit != null) {
+//				query.setRange(0, limit);
+//			}
+//
+//			execute = (List<Code>) query.execute();
+//			cursor = JDOCursorHelper.getCursor(execute);
+//			if (cursor != null)
+//				cursorString = cursor.toWebSafeString();
+//
+//			// Tight loop for fetching all entities from datastore and accomodate
+//			// for lazy fetch.
+//			for (Code obj : execute)
+//				;
+//		} finally {
+//			mgr.close();
+//		}
+//
+//		return CollectionResponse.<Code> builder().setItems(execute)
+//				.setNextPageToken(cursorString).build();
 	}
 
 	/**
@@ -80,13 +88,20 @@ public class CodeEndpoint {
 	 *
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "codes.getCode")
-	public Code getCode(@Named("id") Long id) {
+	@ApiMethod(name = "codes.getCode",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Code getCode(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		Code code = null;
 		try {
 			code = mgr.getObjectById(Code.class, id);
+			
+			// Check if user is authorized
+			Authorization.checkAuthorization(code, user);
 		} finally {
 			mgr.close();
 		}
@@ -107,7 +122,8 @@ public class CodeEndpoint {
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID})
 
 	public Code insertCode(Code code, User user) throws UnauthorizedException {
-		if (user == null) throw new UnauthorizedException("User is Not Valid");
+		//Check if user is authorized
+		Authorization.checkAuthorization(code, user);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (containsCode(code)) {
@@ -127,9 +143,15 @@ public class CodeEndpoint {
 	 *
 	 * @param code the entity to be updated.
 	 * @return The updated entity.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "codes.updateCode")
-	public Code updateCode(Code code) {
+	@ApiMethod(name = "codes.updateCode",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Code updateCode(Code code, User user) throws UnauthorizedException {
+		//Check if user is authorized
+		Authorization.checkAuthorization(code, user);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (!containsCode(code)) {
@@ -147,12 +169,19 @@ public class CodeEndpoint {
 	 * It uses HTTP DELETE method.
 	 *
 	 * @param id the primary key of the entity to be deleted.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "codes.removeCode")
-	public void removeCode(@Named("id") Long id) {
+	@ApiMethod(name = "codes.removeCode",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public void removeCode(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			Code code = mgr.getObjectById(Code.class, id);
+			
+			//Check if user is authorized
+			Authorization.checkAuthorization(code, user);
 			mgr.deletePersistent(code);
 		} finally {
 			mgr.close();

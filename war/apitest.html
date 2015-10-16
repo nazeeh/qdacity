@@ -1003,11 +1003,28 @@ function addTooltipsToEditor(id){
 		      document.getElementById('login').innerText = 'Welcome ' + resp.name;
 		      current_user_name = resp.given_name;
 		      current_user_id = resp.id;
+		      //window.alert(resp.id);
 		      document.getElementById('currentUserName').innerHTML = resp.name;
 		      document.getElementById('currentUserEmail').innerHTML = resp.email;
 		      document.getElementById('currentUserPicture').src = resp.picture;
 		      $('#navAccount').show();
 		      $('#navSignin').hide();
+		      
+		      // INIT
+		      
+		      gapi.client.qdacity.project.getProject({'id': project_id}).execute(function(resp) {
+     	    	 if (!resp.code) {
+     	    		 codesystem_id = resp.codesystemID;
+	        	    	 setDocumentList(project_id);
+	        	    	 listCodes();
+     	    	 }
+     	    	 else{
+     	    		window.alert("Project could not be loaded");	 
+     	    	}
+     	    	 $.LoadingOverlay("hide");
+     	    	 
+     	     });
+		      
 		    }
 		    else {
 		    	document.getElementById('loginButton').style.visibility = '';
@@ -1051,18 +1068,7 @@ function addTooltipsToEditor(id){
         	   if (--apisToLoad == 0) {
         		   signin(true,handleAuth);
         	     //Load project settings
-        	     gapi.client.qdacity.project.getProject({'id': data[0]}).execute(function(resp) {
-        	    	 if (!resp.code) {
-        	    		 codesystem_id = resp.codesystemID;
-	        	    	 setDocumentList(project_id);
-	        	    	 listCodes();
-        	    	 }
-        	    	 else{
-        	    		window.alert("Project could not be loaded");	 
-        	    	}
-        	    	 $.LoadingOverlay("hide");
-        	    	 
-        	     });
+        	     
         	   }
         	   
         	}
@@ -1287,7 +1293,7 @@ function addTooltipsToEditor(id){
         	}
         	var requestData = {};
             requestData.projectID = project_id;
-            requestData.text = "";
+            requestData.text = " "; // can not be empty
             requestData.title = title;
             
             gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {

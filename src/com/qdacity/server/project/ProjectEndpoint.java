@@ -1,11 +1,15 @@
 package com.qdacity.server.project;
 
+import com.qdacity.Constants;
+import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 import java.util.Collection;
@@ -29,46 +33,52 @@ public class ProjectEndpoint {
 	 *
 	 * @return A CollectionResponse class containing the list of all entities
 	 * persisted and a cursor to the next page.
+	 * @throws UnauthorizedException 
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "project.listProject", path="projects")
+	@ApiMethod(name = "project.listProject", path="projects",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
 	public CollectionResponse<Project> listProject(
 			@Nullable @Named("cursor") String cursorString,
-			@Nullable @Named("limit") Integer limit) {
+			@Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
+		
+		throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
-		PersistenceManager mgr = null;
-		Cursor cursor = null;
-		List<Project> execute = null;
-
-		try {
-			mgr = getPersistenceManager();
-			Query query = mgr.newQuery(Project.class);
-			if (cursorString != null && cursorString != "") {
-				cursor = Cursor.fromWebSafeString(cursorString);
-				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-				query.setExtensions(extensionMap);
-			}
-
-			if (limit != null) {
-				query.setRange(0, limit);
-			}
-
-			execute = (List<Project>) query.execute();
-			cursor = JDOCursorHelper.getCursor(execute);
-			if (cursor != null)
-				cursorString = cursor.toWebSafeString();
-
-			// Tight loop for fetching all entities from datastore and accomodate
-			// for lazy fetch.
-			for (Project obj : execute)
-				;
-		} finally {
-			mgr.close();
-		}
-
-		return CollectionResponse.<Project> builder().setItems(execute)
-				.setNextPageToken(cursorString).build();
+//		PersistenceManager mgr = null;
+//		Cursor cursor = null;
+//		List<Project> execute = null;
+//
+//		try {
+//			mgr = getPersistenceManager();
+//			Query query = mgr.newQuery(Project.class);
+//			if (cursorString != null && cursorString != "") {
+//				cursor = Cursor.fromWebSafeString(cursorString);
+//				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
+//				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+//				query.setExtensions(extensionMap);
+//			}
+//
+//			if (limit != null) {
+//				query.setRange(0, limit);
+//			}
+//
+//			execute = (List<Project>) query.execute();
+//			cursor = JDOCursorHelper.getCursor(execute);
+//			if (cursor != null)
+//				cursorString = cursor.toWebSafeString();
+//
+//			// Tight loop for fetching all entities from datastore and accomodate
+//			// for lazy fetch.
+//			for (Project obj : execute)
+//				;
+//		} finally {
+//			mgr.close();
+//		}
+//
+//		return CollectionResponse.<Project> builder().setItems(execute)
+//				.setNextPageToken(cursorString).build();
 	}
 
 	/**
@@ -76,13 +86,19 @@ public class ProjectEndpoint {
 	 *
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "project.getProject", path="project")
-	public Project getProject(@Named("id") Long id) {
+	@ApiMethod(name = "project.getProject", path="project",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Project getProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		Project project = null;
 		try {
 			project = mgr.getObjectById(Project.class, id);
+			// Check if user is authorized
+			Authorization.checkAuthorization(project, user);
 		} finally {
 			mgr.close();
 		}
@@ -94,18 +110,24 @@ public class ProjectEndpoint {
 	 *
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "project.incrCodingId", path="codings")
-	public Project getAndIncrCodingId(@Named("id") Long id) {
+	@ApiMethod(name = "project.incrCodingId", path="codings",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Project getAndIncrCodingId(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		Project project = null;
 		try {
 			project = mgr.getObjectById(Project.class, id);
+			// Check if user is authorized
+			Authorization.checkAuthorization(project, user);
 			++project.maxCodingID;
 		} finally {
 			mgr.close();
 		}
-		updateProject(project);
+		updateProject(project, user);
 		return project;
 	}
 	
@@ -118,9 +140,16 @@ public class ProjectEndpoint {
 	 *
 	 * @param project the entity to be inserted.
 	 * @return The inserted entity.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "project.insertProject")
-	public Project insertProject(Project project) {
+	@ApiMethod(name = "project.insertProject",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Project insertProject(Project project, User user) throws UnauthorizedException {
+		// Check if user is authorized
+		Authorization.checkAuthorization(project, user);
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (containsProject(project)) {
@@ -140,9 +169,16 @@ public class ProjectEndpoint {
 	 *
 	 * @param project the entity to be updated.
 	 * @return The updated entity.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "project.updateProject")
-	public Project updateProject(Project project) {
+	@ApiMethod(name = "project.updateProject",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Project updateProject(Project project, User user) throws UnauthorizedException {
+		// Check if user is authorized
+		Authorization.checkAuthorization(project, user);
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (!containsProject(project)) {
@@ -160,12 +196,19 @@ public class ProjectEndpoint {
 	 * It uses HTTP DELETE method.
 	 *
 	 * @param id the primary key of the entity to be deleted.
+	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "project.removeProject")
-	public void removeProject(@Named("id") Long id) {
+	@ApiMethod(name = "project.removeProject",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public void removeProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			Project project = mgr.getObjectById(Project.class, id);
+			// Check if user is authorized
+			Authorization.checkAuthorization(project, user);
+			
 			mgr.deletePersistent(project);
 		} finally {
 			mgr.close();
