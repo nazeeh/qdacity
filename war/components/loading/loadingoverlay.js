@@ -8,7 +8,7 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
 (function($, undefined){	
 	var _defaults = {
 		color			: "rgba(255, 255, 255, 0.8)",
-		image			: "js/loading/loading.gif",
+		image			: "components/loading/loading.gif",
 		maxSize			: "100px",
 		minSize			: "20px",
 		resizeInterval	: 0,
@@ -33,7 +33,7 @@ LoadingOverlay - A flexible loading overlay jQuery plugin
 			case "show_resize":
 				var config = {
 						color			: "rgba(250, 250, 250, 1)",
-						image			: "js/loading/resize.gif",
+						image			: "components/loading/resize.gif",
 						maxSize			: "100px",
 						minSize			: "20px",
 						resizeInterval	: 0,
