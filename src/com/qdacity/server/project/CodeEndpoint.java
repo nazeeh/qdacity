@@ -15,6 +15,7 @@ import com.google.appengine.api.users.User;
 
 
 
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -124,11 +125,14 @@ public class CodeEndpoint {
 	public Code insertCode(Code code, User user) throws UnauthorizedException {
 		//Check if user is authorized
 		Authorization.checkAuthorization(code, user);
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (containsCode(code)) {
 				throw new EntityExistsException("Object already exists");
-			}
+			}		
+			
+			
 			mgr.makePersistent(code);
 		} finally {
 			mgr.close();

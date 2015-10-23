@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
@@ -53,12 +54,23 @@ public class Authorization {
 	
 	public static void checkAuthorization(Code code, User user)
 			throws UnauthorizedException {
-		Authorization.checkAuthorization(code.getCodesytemID(), user);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesytemID());
+			
+
+			Authorization.checkAuthorization(cs, user);
+		
+		} finally {
+			mgr.close();
+		}
 	}
 
 	public static void checkAuthorization(CodeSystem codesystem, User user)
 			throws UnauthorizedException {
-		Authorization.checkAuthorization(codesystem.getId(), user);
+		Authorization.checkAuthorization(codesystem.getProject(), user);
 	}
 
 //	public static void checkAuthorization(Long codesystemID, User user)

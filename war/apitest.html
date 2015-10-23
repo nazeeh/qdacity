@@ -1414,7 +1414,7 @@ function addTooltipsToEditor(id){
                 requestData.name = _CodeName;
                 requestData.id = _ID;
                 requestData.subCodesIDs = new Array();
-                requestData.parentID = activeID;
+                if (activeID != 'undefined')requestData.parentID = activeID;
                 requestData.codesytemID = codesystem_id;
                 requestData.color = "#000000";
                 
@@ -1431,6 +1431,10 @@ function addTooltipsToEditor(id){
                                 	relocateNode(_ID, activeID);
                                 }
                         }
+                        else{
+                        	console.log(resp.code);
+                        }
+                        	
                 });
         }
         
