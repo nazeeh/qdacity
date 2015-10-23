@@ -161,13 +161,14 @@ public class CodeSystemEndpoint {
 		     audiences = {Constants.WEB_CLIENT_ID})
 	public CodeSystem insertCodeSystem(CodeSystem codesystem, User user) throws UnauthorizedException {
 		//Check if user is authorized
-		Authorization.checkAuthorization(codesystem, user);
+		// Authorization.checkAuthorization(codesystem, user); // FIXME only check if user is in DB
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-						
-			if (containsCodeSystem(codesystem)) {
-				throw new EntityExistsException("Object already exists");
+			if (codesystem.getId() != null){
+				if (containsCodeSystem(codesystem)) {
+					throw new EntityExistsException("Object already exists");
+				}
 			}
 			mgr.makePersistent(codesystem);
 		} finally {
@@ -194,11 +195,13 @@ public class CodeSystemEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			// Check if user is Authorized
-			Authorization.checkAuthorization(codesystem, user);
+			//Authorization.checkAuthorization(codesystem, user);
 			// User is authorized
 						
-			if (!containsCodeSystem(codesystem)) {
-				throw new EntityNotFoundException("Object does not exist");
+			if (codesystem.getId() != null){
+				if (!containsCodeSystem(codesystem)) {
+					throw new EntityNotFoundException("Object does not exist");
+				}
 			}
 			mgr.makePersistent(codesystem);
 		} finally {

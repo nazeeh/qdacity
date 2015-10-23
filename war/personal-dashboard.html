@@ -169,6 +169,26 @@ overflow: hidden;
                 <div class="col-lg-4">
                     <div id="project-selection">
                         <h3>Projects</h3>
+                        <div id="newProject" class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-plus fa-fw"></i> New </a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <div class="navbar-footer">
+                                                    <div class="navbar-footer-content">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <form id="newProjectForm" class="form-wrapper cf">
+														        	<input type="text" placeholder="Project Name" required>
+														        	<button id="createProjectBtn" type="submit" class="btn btn-default btn-sm">Create</button>
+														    	</form>   
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                         </div>
+                                    
                         <ul id="project-list" class="list">
 							<!-- Accordion content added dynamically -->
                         </ul>
@@ -301,8 +321,51 @@ overflow: hidden;
 
 <script type="text/javascript">
 $(document).ready( function () {
-
+	//window.alert("test");
+	$( "#newProjectForm" ).on( "submit",function(event) {
+		event.preventDefault();	
+		createNewProject();
+      });
 });
+
+function createNewProject(){
+	
+	var requestData = {};
+    requestData.project = 0;
+    
+    gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function(resp) {
+            if (!resp.code) {
+            	
+            	var requestData2 = {};
+                requestData2.codesystemID = resp.id;
+                requestData2.maxCodingID = 0;
+                
+                
+                gapi.client.qdacity.project.insertProject(requestData2).execute(function(resp2) {
+                        if (!resp2.code) {
+                        	requestData.id = resp.id;
+                        	requestData.project = resp2.id
+                        	
+                        	gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function(resp3) {
+                                if (!resp3.code) {
+                                	window.alert("done");
+                                }
+                        	});
+                        }
+                        else{
+                        	window.alert(resp.code);
+                        }
+                });
+            }
+            else{
+            	window.alert(resp.code);
+            }
+    });
+}
+
+function addProjectToUser(){
+	
+}
 
 function fillProjectsList(){
 	gapi.client.qdacity.project.listProject().execute(function(resp) {

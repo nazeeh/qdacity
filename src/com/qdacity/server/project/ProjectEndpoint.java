@@ -1,6 +1,7 @@
 package com.qdacity.server.project;
 
 import com.qdacity.Constants;
+import com.qdacity.client.Qdacity;
 import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
 import com.google.api.server.spi.config.Api;
@@ -158,14 +159,19 @@ public class ProjectEndpoint {
 		     audiences = {Constants.WEB_CLIENT_ID})
 	public Project insertProject(Project project, User user) throws UnauthorizedException {
 		// Check if user is authorized
-		Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects
+		//Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (containsProject(project)) {
-				throw new EntityExistsException("Object already exists");
+			if (project.id != null){
+				if (containsProject(project)) {
+					throw new EntityExistsException("Object already exists");
+				}
 			}
 			mgr.makePersistent(project);
+			// Authorize User
+			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
+			dbUser.addProjectAuthorization(project.getId());
 		} finally {
 			mgr.close();
 		}

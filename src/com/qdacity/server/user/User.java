@@ -54,7 +54,9 @@ public class User {
 		this.projects = projects;
 	}
 
-	
+	public void addProjectAuthorization(Long project){
+		projects.add(project);
+	}
 
 	
 	
