@@ -16,6 +16,7 @@
 
     <!-- Custom CSS -->
     <link href="assets/css/landing-page.css" rel="stylesheet">
+    <link href="assets/css/project-list.css" rel="stylesheet">
     
 
     <!-- Custom Fonts -->
@@ -51,6 +52,13 @@ padding: 0px;
 overflow: hidden;
 }
   </style>
+  
+    
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<!--      <script src="components/accordion/accordion.js"></script>
+     <link href="components/accordion/accordion.css" rel="stylesheet"> -->
+     
+    
 </head>
 
 <body>
@@ -152,26 +160,25 @@ overflow: hidden;
 
 
     <!-- Header -->
-    <a name="about"></a>
-    <div class="intro-header">
         <div class="container">
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="intro-message">
-                        <h1>401</h1>
-                        <hr class="intro-divider">
-                        <h3>Sorry, you're currently not authorized to access this content</h3>
-                        
+            <div class="row" style="margin-top:50px;">
+            <div class="col-lg-8">
+            <h3>Other Content</h3>
+            </div>
+                <div class="col-lg-4">
+                    <div id="project-selection">
+                        <h3>Projects</h3>
+                        <ul id="project-list" class="list">
+							<!-- Accordion content added dynamically -->
+                        </ul>
+                        </br>
+                        </br>
                     </div>
                 </div>
             </div>
 
         </div>
-        <!-- /.container -->
-
-    </div>
-    <!-- /.intro-header -->
 
     <!-- Footer -->
     <footer>
@@ -200,6 +207,8 @@ overflow: hidden;
             </div>
         </div>
     </footer>
+
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
      <script type="text/javascript">
      var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
@@ -225,19 +234,9 @@ overflow: hidden;
 		      document.getElementById('currentUserPicture').src = resp.picture;
 		      $('#navAccount').show();
 		      $('#navSignin').hide();
-		      
 		      // INIT
 		      
-		      gapi.client.qdacity.project.getProject({'id': project_id}).execute(function(resp) {
-  	    	 if (!resp.code) {
-  	    		 codesystem_id = resp.codesystemID;
-	        	    	 setDocumentList(project_id);
-	        	    	 listCodes();
-  	    	 }
-  	    	 else{	 
-  	    	}
-  	    	 
-  	     });
+		      fillProjectsList();
 		      
 		    }
 		    else {
@@ -272,6 +271,7 @@ overflow: hidden;
         	 var callback = function() {
         	   if (--apisToLoad == 0) {
         		   signin(true,handleAuth);
+        		   
         	     //Load project settings
         	     
         	   }
@@ -293,13 +293,63 @@ overflow: hidden;
 				signout();
            	}  
                 
- 				
+		 	
  				
         }
 
 </script>
-    <!-- jQuery -->
-    <script src="components/jQuery/jquery.js"></script>
+
+<script type="text/javascript">
+$(document).ready( function () {
+
+});
+
+function fillProjectsList(){
+	gapi.client.qdacity.project.listProject().execute(function(resp) {
+   	 if (!resp.code) {
+   		resp.items = resp.items || [];
+        
+        for (var i=0;i<resp.items.length;i++) {
+                var project_id = resp.items[i].id;
+          		addProjectToProjectList(project_id);
+        }
+        var options = {
+        	  valueNames: [ 'project_name', 'project_id' ]
+        };
+
+        var projectList = new List('project-selection', options);
+
+        
+   	 }
+   
+   	 else{
+   		 window.alert(resp.code)
+   	}
+   	 
+    });
+	
+}
+
+function addProjectToProjectList(projectID){
+
+	var html = '<li onclick="location.href = \'apitest.html?'+projectID+'\';">';
+
+	html += '<h3 class="project_name hidden">My Project</h3>';
+	html += '<span class="project_id">'+projectID;
+
+	html +='<a href="apitest.html?'+projectID+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html +=' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
+	html +='<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
+	html +='</a>';
+	html += '</span>';
+	html += '</li>';
+	$("#project-list").append(html);
+	
+	
+}
+
+</script>
+<script src="components/listJS/list.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="components/bootstrap/bootstrap.min.js"></script>

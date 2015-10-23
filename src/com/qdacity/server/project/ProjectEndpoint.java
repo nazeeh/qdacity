@@ -44,41 +44,51 @@ public class ProjectEndpoint {
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 		
-		throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
+		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
-//		PersistenceManager mgr = null;
-//		Cursor cursor = null;
-//		List<Project> execute = null;
-//
-//		try {
-//			mgr = getPersistenceManager();
-//			Query query = mgr.newQuery(Project.class);
-//			if (cursorString != null && cursorString != "") {
-//				cursor = Cursor.fromWebSafeString(cursorString);
-//				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-//				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-//				query.setExtensions(extensionMap);
-//			}
-//
-//			if (limit != null) {
-//				query.setRange(0, limit);
-//			}
-//
-//			execute = (List<Project>) query.execute();
-//			cursor = JDOCursorHelper.getCursor(execute);
-//			if (cursor != null)
-//				cursorString = cursor.toWebSafeString();
-//
-//			// Tight loop for fetching all entities from datastore and accomodate
-//			// for lazy fetch.
-//			for (Project obj : execute)
-//				;
-//		} finally {
-//			mgr.close();
-//		}
-//
-//		return CollectionResponse.<Project> builder().setItems(execute)
-//				.setNextPageToken(cursorString).build();
+		PersistenceManager mgr = null;
+		Cursor cursor = null;
+		List<Project> execute = null;
+
+		try {
+			
+			
+			
+			mgr = getPersistenceManager();
+			
+			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
+
+			
+			Query q = mgr.newQuery(Project.class, ":p.contains(id)");
+			
+			
+			Query query = mgr.newQuery(Project.class);
+			if (cursorString != null && cursorString != "") {
+				cursor = Cursor.fromWebSafeString(cursorString);
+				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
+				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
+				query.setExtensions(extensionMap);
+			}
+
+			if (limit != null) {
+				query.setRange(0, limit);
+			}
+
+			execute = (List<Project>) q.execute(dbUser.getProjects());
+			cursor = JDOCursorHelper.getCursor(execute);
+			if (cursor != null)
+				cursorString = cursor.toWebSafeString();
+
+			// Tight loop for fetching all entities from datastore and accomodate
+			// for lazy fetch.
+			for (Project obj : execute)
+				;
+		} finally {
+			mgr.close();
+		}
+
+		return CollectionResponse.<Project> builder().setItems(execute)
+				.setNextPageToken(cursorString).build();
 	}
 
 	/**
@@ -148,7 +158,7 @@ public class ProjectEndpoint {
 		     audiences = {Constants.WEB_CLIENT_ID})
 	public Project insertProject(Project project, User user) throws UnauthorizedException {
 		// Check if user is authorized
-		Authorization.checkAuthorization(project, user);
+		Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
