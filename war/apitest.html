@@ -21,10 +21,15 @@
     <link href="assets/css/footer.css" rel="stylesheet">
   	<link href="components/tooltipster/css/tooltipster.css" rel="stylesheet">
     
+    <link href="components/filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
+	<link href="components/filer/css/themes/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
+
 
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="components/tooltipster/js/jquery.tooltipster.js"></script>
+    
+	<script src="components/filer/js/jquery.filer.min.js"></script>
     
     
     
@@ -169,7 +174,13 @@ $(document).ready(function() {
         }
     } );
 	
-        
+	$('#filer_input').filer({
+	    limit: 3,
+	    maxSize: 3,
+	    extensions: ['rtf', 'rtf'],
+	    changeInput: true,
+	    showThumbs: true
+	}); 
     	
 } );
 
@@ -661,6 +672,34 @@ function addTooltipsToEditor(id){
     </fieldset>
   </form>
 </div>
+
+<div id="new-document-form" title="Code Properties">
+  <p class="validateTips"></p>
+  <form >
+    <fieldset>
+    <table id="addDocTable" style="padding-left: 10px; table-layout: fixed; width: 700px;">
+    <tbody>
+      <tr>
+        <td style="width: 350px; text-align:center; ">
+        <label for="newCodeName">New Text Document</label>
+        <input id="newDocTitleFld" type="text" name="updateCodeName" id="updateCodeName" value="Title" class="text ui-widget-content ui-corner-all">
+        <br/>
+        <br/>
+        <span id="createDocBtn" class="jFiler-input-choose-btn">Create</span>
+        </td>
+        <td style="width: 350px;">
+        	<input type="file" name="files[]" id="filer_input" multiple="multiple">
+        	<span id="uploadDocBtn" class="jFiler-input-choose-btn">Upload</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    </fieldset>
+  </form>
+</div>
+
 <div id="debugTextEditor" title="HTML">
   
 </div>
@@ -1098,9 +1137,6 @@ function addTooltipsToEditor(id){
                     deleteCode();
                 }
                 
-                document.getElementById('btnInsertDoc').onclick = function() {
-                	addDocumentToProject();
-            	}  
                 
                 document.getElementById('btnRemoveDoc').onclick = function() {
                 	removeDocumentFromProject();
@@ -1202,6 +1238,15 @@ function addTooltipsToEditor(id){
  					resizeElements();
  				})
  				
+ 			
+ 				document.getElementById('uploadDocBtn').onclick = function() {
+ 					uploadSelectedDocuments();
+            	} 
+ 				
+ 				document.getElementById('createDocBtn').onclick = function() {
+ 					addDocumentToProject(document.getElementById("newDocTitleFld" ).value);
+            	} 
+ 				
         }
         
         function showCodingView(){
@@ -1289,12 +1334,8 @@ function addTooltipsToEditor(id){
 	    	 });
         }
         
-        function addDocumentToProject(){
-        	var title = prompt("Name the document", "Title");
+        function addDocumentToProject(title){
 
-        	if (title == null) {
-        	    return;
-        	}
         	var requestData = {};
             requestData.projectID = project_id;
             requestData.text = " "; // can not be empty
@@ -1464,7 +1505,7 @@ function addTooltipsToEditor(id){
         	removeLinkFromOldParent(codeId);
         	
         	addSubCode(newParentId, codeId);
-        	
+        	 
         	changeParentId(codeId, newParentId);
         }
         
@@ -1652,13 +1693,63 @@ function addTooltipsToEditor(id){
                 
               }
             });
-         
+            
             form = dialog.find( "form" ).on( "submit", function( event ) {
               event.preventDefault();
               addCode();
             });
          
             $( "#btnInsertCode" ).on( "click", function() {
+            	$('#newCodeAuthor').attr('value', current_user_name) ;
+              dialog.dialog( "open" );
+            });
+            
+          });
+        
+        $(function() {
+            
+            var dialog, form,
+            name = $( "#newCodeName" ),
+            email = $( "#newCodeAuthor" ),
+            password = $( "#newCodeID" ),
+            allFields = $( [] ).add( name ).add( email ).add( password ),
+              tips = $( ".validateTips" );
+         
+         
+            function addCode() {
+            	var name = document.getElementById('newCodeName').value,
+                author = document.getElementById('newCodeAuthor').value,
+                id = document.getElementById("newCodeID" ).value;
+
+              insertCode(author,name,id);
+              dialog.dialog( "close" );
+              form[ 0 ].reset();
+            }
+         
+            dialog = $( "#new-document-form" ).dialog({
+                autoOpen: false,
+                height: 450,
+                width: 750,
+                modal: true,
+                buttons: {
+                  "Add code": addCode,
+                  Cancel: function() {
+                    dialog.dialog( "close" );
+                  }
+                },
+                close: function() {
+                  form[ 0 ].reset();
+                  allFields.removeClass( "ui-state-error" );
+                  
+                }
+              });
+            
+            form = dialog.find( "form" ).on( "submit", function( event ) {
+              event.preventDefault();
+              addCode();
+            });
+         
+            $( "#btnInsertDoc" ).on( "click", function() {
             	$('#newCodeAuthor').attr('value', current_user_name) ;
               dialog.dialog( "open" );
             });
@@ -1869,6 +1960,62 @@ function addTooltipsToEditor(id){
             //$("#documentlist").listview("refresh");
             
         }
+        
+        function uploadSelectedDocuments(){
+        	var jFiler = $("#filer_input").prop("jFiler");
+        	var files = jFiler.files;
+        	for(var i = 0; i<files.length; i++) {
+    		  	var file = files[i];
+    		  	
+   				var reader = new FileReader();
+
+   				reader.onload = function(e) {
+   					uploadFile(reader.result, file.name);
+   					
+   				}
+
+   				reader.readAsDataURL(file);
+    		}
+        	
+        }
+        
+        function uploadFile(fileData, fileName){
+        	var requestData = {};
+            requestData.fileName = fileName;
+            requestData.fileSize = "0";
+            requestData.project = project_id;
+            requestData.fileData = fileData.split(',')[1];
+        	gapi.client.qdacity.upload.insertUpload(requestData).execute(function(resp) {
+                if (!resp.code) {
+                	document.getElementById('documentlist').innerHTML = "";
+   		        	setDocumentList(project_id);
+                }
+                else{
+                	console.log(resp.code + resp.message);
+                }
+        });
+        }
+
+        function dataURItoBlob(dataURI) {
+        	  // convert base64 to raw binary data held in a string
+        	  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+        	  var byteString = atob(dataURI.split(',')[1]);
+
+        	  // separate out the mime component
+        	  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+        	  // write the bytes of the string to an ArrayBuffer
+        	  var ab = new ArrayBuffer(byteString.length);
+        	  var ia = new Uint8Array(ab);
+        	  for (var i = 0; i < byteString.length; i++) {
+        	      ia[i] = byteString.charCodeAt(i);
+        	  }
+
+        	  // write the ArrayBuffer to a blob, and you're done
+        	  var blob = new Blob([ab], {type: mimeString}); 
+        	  window.alert("bytestring : "+byteString);
+        	  return byteString; 
+        	}
 		  
     </script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
