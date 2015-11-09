@@ -178,7 +178,7 @@ overflow: hidden;
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <form id="newProjectForm" class="form-wrapper cf">
-														        	<input type="text" placeholder="Project Name" required>
+														        	<input id="newProjectName" type="text" placeholder="Project Name" required>
 														        	<button id="createProjectBtn" type="submit" class="btn btn-default btn-sm">Create</button>
 														    	</form>   
                                                             </div>
@@ -339,8 +339,7 @@ function createNewProject(){
             	var requestData2 = {};
                 requestData2.codesystemID = resp.id;
                 requestData2.maxCodingID = 0;
-                
-                
+                requestData2.name = document.getElementById("newProjectName" ).value;
                 gapi.client.qdacity.project.insertProject(requestData2).execute(function(resp2) {
                         if (!resp2.code) {
                         	requestData.id = resp.id;
@@ -348,7 +347,7 @@ function createNewProject(){
                         	
                         	gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function(resp3) {
                                 if (!resp3.code) {
-                                	window.alert("done");
+                                	addProjectToProjectList(requestData.project, requestData2.name);
                                 }
                         	});
                         }
@@ -374,7 +373,9 @@ function fillProjectsList(){
         
         for (var i=0;i<resp.items.length;i++) {
                 var project_id = resp.items[i].id;
-          		addProjectToProjectList(project_id);
+                var project_name = resp.items[i].name;
+                
+          		addProjectToProjectList(project_id, project_name);
         }
         var options = {
         	  valueNames: [ 'project_name', 'project_id' ]
@@ -393,18 +394,17 @@ function fillProjectsList(){
 	
 }
 
-function addProjectToProjectList(projectID){
+function addProjectToProjectList(projectID, projectName){
 
 	var html = '<li onclick="location.href = \'apitest.html?'+projectID+'\';">';
 
-	html += '<h3 class="project_name hidden">My Project</h3>';
-	html += '<span class="project_id">'+projectID;
-
+	html += '<span class="project_name">'+projectName+'</span>';
+	html += '<span class="project_id hidden">'+projectID;
+	html += '</span>';
 	html +='<a href="apitest.html?'+projectID+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html +=' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 	html +='<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
 	html +='</a>';
-	html += '</span>';
 	html += '</li>';
 	$("#project-list").append(html);
 	

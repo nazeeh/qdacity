@@ -15,26 +15,44 @@ public class Project {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	Long id;
+	
+	@Persistent
+	String name;
+	
 	@Persistent
 	Long codesystemID;
+	
 	@Persistent
 	Long maxCodingID;
 	
 	public Long getId() {
 		return id;
 	}
+	
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public Long getCodesystemID() {
 		return codesystemID;
 	}
+	
 	public void setCodesystemID(Long codesystemID) {
 		this.codesystemID = codesystemID;
 	}
+	
 	public Long getMaxCodingID() {
 		return maxCodingID;
 	}
+	
 	public void setMaxCodingID(Long maxCodingID) {
 		this.maxCodingID = maxCodingID;
 	}
