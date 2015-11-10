@@ -17,6 +17,7 @@
     <!-- Custom CSS -->
     <link href="assets/css/landing-page.css" rel="stylesheet">
     <link href="assets/css/project-list.css" rel="stylesheet">
+    <link href="assets/css/search-box.css" rel="stylesheet">
     
 
     <!-- Custom Fonts -->
@@ -164,38 +165,49 @@ overflow: hidden;
 
             <div class="row" style="margin-top:50px;">
             <div class="col-lg-8">
-            <h3>Other Content</h3>
+            	<h3>Other Content</h3>
             </div>
-                <div class="col-lg-4">
-                    <div id="project-selection">
-                        <h3>Projects</h3>
-                        <div id="newProject" class="dropdown">
-                        <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-plus fa-fw"></i> New </a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <div class="navbar-footer">
-                                                    <div class="navbar-footer-content">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <form id="newProjectForm" class="form-wrapper cf">
-														        	<input id="newProjectName" type="text" placeholder="Project Name" required>
-														        	<button id="createProjectBtn" type="submit" class="btn btn-default btn-sm">Create</button>
-														    	</form>   
-                                                            </div>
+            <div class="col-lg-4">
+                <div  id="project-selection">
+                    <h3>Projects</h3>
+                    
+                    <div class= "projectlist-menu">
+                    <span class="searchfield" id="searchform">
+	                    <input type="text" class="search" placeholder="Search" />
+	                    <button type="button" id="search">Find! </button>
+	                    
+                    </span> 
+                    <div id="newProject" class="dropdown" style="margin-top:12px;">
+                    
+                    <button  class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-plus fa-fw"></i> New </button >
+                    
+                                    <ul class="dropdown-menu" style="margin-top:-8px;">
+                                        <li>
+                                            <div class="navbar-footer">
+                                                <div class="navbar-footer-content">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <form id="newProjectForm" class="form-wrapper cf" style="width:230px;">
+													        	<input id="newProjectName" type="text" placeholder="Project Name" required>
+													        	<button id="createProjectBtn" type="submit" class="btn btn-default btn-sm">Create</button>
+										    				</form>   
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </li>
-                                        </ul>
-                         </div>
-                                    
-                        <ul id="project-list" class="list">
-							<!-- Accordion content added dynamically -->
-                        </ul>
-                        </br>
-                        </br>
-                    </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                     </div>
+                     
+           
+                                </div>
+                    <ul id="project-list" class="list" style="margin-top:5px;">
+			<!-- Accordion content added dynamically -->
+                    </ul>
+                    </br>
+                    </br>
                 </div>
+            </div>
             </div>
 
         </div>

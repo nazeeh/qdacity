@@ -1,0 +1,65 @@
+ @import url(http://fonts.googleapis.com/css?family=Montserrat+Alternates);
+
+
+.projectlist-menu{
+	display:flex;
+	flex-direction:row;
+}
+.projectlist-menu .searchfield{
+	flex:1;
+	margin-right: 5px;
+	margin-top:12px;
+}
+.projectlist-menu .newProjectBtn{
+	margin-top:20px;
+	flex:1;
+}
+
+.searchfield {
+  display:flex;
+  position:realtive;
+  margin:0.7em auto;
+  flex-direction:row;
+  width: 100px;
+  float:left;
+  
+
+}
+
+.searchfield>input[type=text],
+.searchfield>button {
+  display:block;
+  font:1.0em 'Montserrat Alternates';
+}
+
+.searchfield>input[type=text] {
+  flex:1;
+  padding:0.3em;
+  border:0.2em solid #337ab7;
+  border-radius: 5px 0px 0px 5px;
+}
+
+.searchfield>button {
+  padding:0.6em 0.8em;
+  background-color:#337ab7;
+  color:white;
+  border:none;
+  border-radius: 0px 5px 5px 0px;
+} 
+
+
+/* .searchfield>button:before { left arrow
+width:20%;
+    height:100%;
+content: '';
+    position: relative;
+    border-width: 8px 8px 8px 8px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid black;
+    border-style: solid solid solid none;
+    border-color: transparent #d83c3c transparent;
+    top: 0px;
+    left: -20px;
+    
+} */
