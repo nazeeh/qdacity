@@ -13,7 +13,7 @@
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
     <init-param>
       <param-name>services</param-name>
-      <param-value>com.qdacity.server.project.CodeEndpoint,com.qdacity.server.project.CodeSystemEndpoint,com.qdacity.server.project.ProjectEndpoint,com.qdacity.server.project.TextDocumentEndpoint,com.qdacity.server.user.UserEndpoint,com.qdacity.upload.UploadEndpoint</param-value>
+      <param-value>com.qdacity.server.logs.ChangeEndpoint,com.qdacity.server.project.CodeEndpoint,com.qdacity.server.project.CodeSystemEndpoint,com.qdacity.server.project.ProjectEndpoint,com.qdacity.server.project.TextDocumentEndpoint,com.qdacity.server.user.UserEndpoint,com.qdacity.upload.UploadEndpoint</param-value>
     </init-param>
   </servlet>
 

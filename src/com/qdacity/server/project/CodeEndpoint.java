@@ -3,6 +3,9 @@ package com.qdacity.server.project;
 import com.qdacity.Constants;
 import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
+import com.qdacity.server.logs.Change;
+import com.qdacity.server.logs.ChangeObject;
+import com.qdacity.server.logs.ChangeType;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -16,6 +19,12 @@ import com.google.appengine.api.users.User;
 
 
 
+
+
+
+
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -130,10 +139,15 @@ public class CodeEndpoint {
 		try {
 			if (containsCode(code)) {
 				throw new EntityExistsException("Object already exists");
-			}		
-			
+			}
 			
 			mgr.makePersistent(code);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesytemID());
+			Change change = new Change(new Date(System.currentTimeMillis()),cs.getProject(),ChangeType.CREATED, user.getUserId(), ChangeObject.CODE, code.getId());
+			mgr.makePersistent(change);
+			
 		} finally {
 			mgr.close();
 		}
