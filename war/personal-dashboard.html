@@ -166,6 +166,16 @@ overflow: hidden;
             <div class="row" style="margin-top:50px;">
             <div class="col-lg-8">
             	<h3>Other Content</h3>
+            	<div class="panel panel-default">
+                        <div class="panel-heading">
+                            Activity
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-area-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                </div>
             	<div  id="changeLog">
             	
             	</div>
@@ -173,7 +183,12 @@ overflow: hidden;
             <div class="col-lg-4">
                 <div  id="project-selection">
                     <h3>Projects</h3>
-                    
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Projects
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
                     <div class= "projectlist-menu">
                     <span class="searchfield" id="searchform">
 	                    <input type="text" class="search" placeholder="Search" />
@@ -204,11 +219,12 @@ overflow: hidden;
                      
            
                                 </div>
+                     
                     <ul id="project-list" class="list" style="margin-top:5px;">
 			<!-- Accordion content added dynamically -->
                     </ul>
-                    </br>
-                    </br>
+                    </div>
+                     </div>
                 </div>
             </div>
             </div>
@@ -273,6 +289,8 @@ overflow: hidden;
 		      
 		      fillProjectsList();
 		      
+		      createAreaChart();
+		      
 		    }
 		    else {
 		    	 $('#navAccount').hide();
@@ -306,7 +324,7 @@ overflow: hidden;
         	 var callback = function() {
         	   if (--apisToLoad == 0) {
         		   signin(true,handleAuth);
-        		   
+        		  
         	     //Load project settings
         	     
         	   }
@@ -341,6 +359,7 @@ $(document).ready( function () {
 		event.preventDefault();	
 		createNewProject();
       });
+	
 });
 
 function createNewProject(){
@@ -409,6 +428,32 @@ function fillProjectsList(){
 	
 }
 
+function createAreaChart(){
+	 gapi.client.qdacity.changelog.listChangeStats().execute(function(resp){
+			if (!resp.code) {
+				var dataArray =  []; 
+				for (var i=0;i<resp.items.length;i++) {
+		            dataArray.push({
+			            period: resp.items[i].label,
+			            codesCreated: resp.items[i].codesCreated
+			        });
+				}
+				
+				Morris.Area({
+			        element: 'morris-area-chart',
+			        data: dataArray,
+			        xkey: 'period',
+			        ykeys: ['codesCreated'],
+			        labels: ['Codes Created'],
+			        pointSize: 3,
+			        hideHover: 'auto',
+			        resize: true
+			    });
+			}
+		});
+	
+}
+
 function addProjectToProjectList(projectID, projectName){
 
 	var html = '<li onclick="location.href = \'apitest.html?'+projectID+'\';">';
@@ -432,6 +477,12 @@ function addProjectToProjectList(projectID, projectName){
     <!-- Bootstrap Core JavaScript -->
     <script src="components/bootstrap/bootstrap.min.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=init"></script>
+
+<!-- Morris Charts JavaScript -->
+    <script src="components/raphael/raphael-min.js"></script>
+    <script src="components/morrisjs/morris.min.js"></script>
+    <script src="assets/js/morris-data.js"></script>
+    
 </body>
 
 </html>

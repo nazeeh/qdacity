@@ -7,9 +7,20 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +43,7 @@ public class ChangeEndpoint {
 	 * persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "changelog.listChange",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "changelog.listChange", path="log",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
@@ -81,6 +92,62 @@ public class ChangeEndpoint {
 
 		return CollectionResponse.<Change> builder().setItems(execute)
 				.setNextPageToken(cursorString).build();
+	}
+	
+	
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(name = "changelog.listChangeStats", path="stats",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public List<ChangeStats> listChangeStats(
+			@Nullable @Named("period") String period, User user) {
+
+		Cursor cursor = null;
+		List<Change> execute = null;
+		String cursorString = null;
+		
+		List<ChangeStats> stats = new ArrayList<ChangeStats>();
+
+		//Set filter
+		Filter userFilter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getUserId());
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change").setFilter(userFilter);
+
+		PreparedQuery pq = datastore.prepare(q);
+
+		Calendar cal = Calendar.getInstance();
+		
+		Map<String, Integer> freq = new HashMap<String, Integer>();
+
+		
+		
+		for (Entity result : pq.asIterable()) {
+			Date date = (Date) result.getProperty("datetime");
+			cal.setTime(date);
+			int changeWeekNo = cal.get(Calendar.WEEK_OF_YEAR);
+			int changeYearNo = cal.get(Calendar.YEAR);
+			String weekString = changeYearNo+ " W" + changeWeekNo;
+			Integer count = freq.get(weekString);
+			if (count == null) {
+			    freq.put(weekString, 1);
+			}
+			else {
+			    freq.put(weekString, count + 1);
+			}
+		}
+		
+		for (String key : freq.keySet()) {
+			ChangeStats stat = new ChangeStats();
+			stat.setCodesCreated(freq.get(key));
+			stat.setLabel(key);
+			stats.add(stat);
+		}
+		
+		
+		return stats;
 	}
 
 	/**
