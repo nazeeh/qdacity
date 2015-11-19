@@ -393,13 +393,27 @@ function addTooltipsToEditor(id){
     <div id="project-ui"; style="float:left; width:100%; background-color: #f8f8f8; margin-top:50px;" >
 	     <div style="background-color: #e7e7e7;  width:105%;">
 		     <div style="text-align: center;">
-			<div><b >Settings</b><br></div>
+
+
+<div class="list-group">
+  <a class="list-group-item projectDashboardLink" href="#">
+  <i class="fa fa-home fa-fw "></i> Project Dashboard</a>
+</div>
+			<div style="margin-top:-15px;"><b >Settings</b></div>
 			<div style="background-color: #f8f8f8; text-align: left;">
-			<a id="btnEditToggle" class = "btn btn-sm edit-toggle" style="color:#000000;" data-toggle="collapse" data-target="#textdocument-menu" >
+			
+  
+  
+
+  
+
+			<a id="btnEditToggle" class = "btn btn-sm edit-toggle" style=" color:#000000;" data-toggle="collapse" data-target="#textdocument-menu" >
 			  <span class="edit-toggle-off"><i class="fa fa-toggle-off fa-2x"   style="font-size: 20px; "></i> </span> 
 			   <span class="edit-toggle-on"><i class="fa fa-toggle-on fa-2x"   style="font-size: 20px; "></i> </span> 
 			  <span  style="font-size: 15px; margin-left:5px; vertical-align:top;">    Document Editable</span>
 			</a>
+			
+			
 			</div>
 			</div>
 		</div>
@@ -1104,6 +1118,8 @@ function addTooltipsToEditor(id){
         	    data[i] = unescape(data[i]);
         	  }
         	  project_id = data[0];
+        	  
+        	  $(".projectDashboardLink").attr('href','project-dashboard.html?'+project_id);
         	  
         	var apisToLoad;
         	 var callback = function() {

@@ -117,7 +117,7 @@ public class ChangeEndpoint {
 		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change").setFilter(userFilter);
 
 		PreparedQuery pq = datastore.prepare(q);
-
+		
 		Calendar cal = Calendar.getInstance();
 		
 		Map<String, Integer> freq = new HashMap<String, Integer>();

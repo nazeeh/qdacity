@@ -20,9 +20,13 @@
     <link href="assets/css/search-box.css" rel="stylesheet">
     <link href="assets/css/common.css" rel="stylesheet">
     
-
+	<link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
+	
     <!-- Custom Fonts -->
     <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -59,7 +63,7 @@ overflow: hidden;
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <!--      <script src="components/accordion/accordion.js"></script>
      <link href="components/accordion/accordion.css" rel="stylesheet"> -->
-     
+     <script src="assets/js/ErrorHandler.js" type="text/javascript" charset="utf-8"></script>
     
 </head>
 
@@ -164,69 +168,71 @@ overflow: hidden;
     <!-- Header -->
         <div class="container main-content">
 
-            <div class="row">
-            <div class="col-lg-8">
-            	<div class="panel panel-default">
-                        <div class="panel-heading">
-                            Activity
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="morris-area-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                </div>
-            	<div  id="changeLog">
-            	
-            	</div>
+            <!-- Small boxes (Stat box) -->
+      <div class="row">
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-aqua">
+            <div class="inner">
+              <h3 id="topStatsDocuments">N/A</h3>
+
+              <p>Documents</p>
             </div>
-            <div class="col-lg-4">
-                <div  id="project-selection">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Projects
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                    <div class= "projectlist-menu">
-                    <span class="searchfield" id="searchform">
-	                    <input type="text" class="search" placeholder="Search" />
-	                    <button type="button" id="search">Find! </button>
-	                    
-                    </span> 
-                    <div id="newProject" class="dropdown" style="margin-top:12px;">
-                    
-                    <button  class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa fa-plus fa-fw"></i> New </button >
-                    
-                                    <ul class="dropdown-menu" style="margin-top:-8px;">
-                                        <li>
-                                            <div class="navbar-footer">
-                                                <div class="navbar-footer-content">
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <form id="newProjectForm" class="form-wrapper cf" style="width:230px;">
-													        	<input id="newProjectName" type="text" placeholder="Project Name" required>
-													        	<button id="createProjectBtn" type="submit" class="btn btn-default btn-sm">Create</button>
-										    				</form>   
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                     </div>
-                     
-           
-                                </div>
-                     
-                    <ul id="project-list" class="list" style="margin-top:5px;">
-			<!-- Accordion content added dynamically -->
-                    </ul>
-                    </div>
-                     </div>
-                </div>
+            <div class="icon">
+              <i class="ion ion-document"></i>
             </div>
+            <a href="#" class="small-box-footer codeEditorLink">Coding Editor <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-yellow">
+            <div class="inner">
+              <h3 id="topStatsCodes">N/A</h3>
+
+              <p>Codes</p>
             </div>
+            <div class="icon">
+              <i class="ion ion-ios-pricetag-outline"></i>
+            </div>
+            <a href="#" class="small-box-footer codeEditorLink">Coding Editor <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-red">
+            <div class="inner">
+              <h3 id="topStatsCodings">N/A</h3>
+
+              <p>Codings</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-ios-pricetags"></i>
+            </div>
+            <a href="#" class="small-box-footer codeEditorLink">Coding Editor <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+          <!-- small box -->
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h3 id="topStatsSaturation">N/A<sup style="font-size: 20px">%</sup></h3>
+
+              <p>Saturation</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-stats-bars"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+      </div>
+      <!-- /.row -->
 
         </div>
 
@@ -261,7 +267,9 @@ overflow: hidden;
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
      <script type="text/javascript">
      var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-	    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
+    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
+    
+    var project_id;
 	    
      function signin(mode, callback) {
    	  gapi.auth.authorize({client_id: client_id,scope: scopes, immediate: mode},callback);
@@ -286,9 +294,11 @@ overflow: hidden;
 		      $('#navSignin').hide();
 		      // INIT
 		      
-		      fillProjectsList();
+		      setGeneralStats();
 		      
-		      createAreaChart();
+		      //fillProjectsList();
+		      
+		      //createAreaChart();
 		      
 		    }
 		    else {
@@ -300,11 +310,17 @@ overflow: hidden;
    
         function init() {
         	
-        	$( "#footer" ).hide();
-        	$('#navAccount').hide();
-        	$( "#textdocument-menu" ).collapse(); // editor will be initialized readonly, the toggle is later hooked to the visibility of the toolbar
-        	
-        	
+        	var query = window.location.search;
+      	  // Skip the leading ?, which should always be there,
+      	  // but be careful anyway
+      	  if (query.substring(0, 1) == '?') {
+      	    query = query.substring(1);
+      	  }
+      	  var data = query.split(',');
+      	  for (i = 0; (i < data.length); i++) {
+      	    data[i] = unescape(data[i]);
+      	  }
+      	  project_id = data[0];
         	
         	
         	var query = window.location.search;
@@ -318,6 +334,8 @@ overflow: hidden;
         	    data[i] = unescape(data[i]);
         	  }
         	  project_id = data[0];
+        	  
+        	  $(".codeEditorLink").attr('href','apitest.html?'+project_id);
         	  
         	var apisToLoad;
         	 var callback = function() {
@@ -399,6 +417,24 @@ function addProjectToUser(){
 	
 }
 
+function setGeneralStats(){
+	
+	gapi.client.qdacity.project.getProjectStats({'id': project_id}).execute(function(resp) {
+	   	 if (!resp.code) {
+	   		$("#topStatsDocuments").html(resp.documentCount);
+	   		$("#topStatsCodes").html(resp.codeCount);
+	   		$("#topStatsCodings").html(resp.codingCount);
+	        
+	   	 }
+	   
+	   	 else{
+	   		 window.alert(resp.code)
+	   	}
+	   	 
+	    });
+	
+}
+
 function fillProjectsList(){
 	gapi.client.qdacity.project.listProject().execute(function(resp) {
    	 if (!resp.code) {
@@ -455,7 +491,7 @@ function createAreaChart(){
 
 function addProjectToProjectList(projectID, projectName){
 
-	var html = '<li onclick="location.href = \'project-dashboard.html?'+projectID+'\';">';
+	var html = '<li onclick="location.href = \'apitest.html?'+projectID+'\';">';
 
 	html += '<span class="project_name">'+projectName+'</span>';
 	html += '<span class="project_id hidden">'+projectID;

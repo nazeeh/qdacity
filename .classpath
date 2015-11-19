@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/poi-ooxml-schemas-3.13.jar"/>
 	<classpathentry kind="lib" path="lib/xbean2.6.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jsoup-1.8.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

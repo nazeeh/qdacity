@@ -7,7 +7,6 @@ import javax.jdo.annotations.PrimaryKey;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class ChangeStats {
 	@PrimaryKey
-
 	Long id;
 	
 	String label;
