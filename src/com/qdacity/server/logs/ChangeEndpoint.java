@@ -1,11 +1,13 @@
 package com.qdacity.server.logs;
 
 import com.qdacity.Constants;
+import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -24,6 +26,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -101,8 +105,16 @@ public class ChangeEndpoint {
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
 	public List<ChangeStats> listChangeStats(
-			@Nullable @Named("period") String period, User user) {
+			@Nullable @Named("period") String period, @Named("filterType") String filterType, @Nullable @Named("projectID") Long projectID, User user) throws UnauthorizedException {
 
+		if (filterType.equals("project")) {
+			Authorization.checkAuthorization(projectID, user);
+		}else if (filterType.equals("user")) {
+			
+		}else {
+			// bad request
+		}
+		
 		Cursor cursor = null;
 		List<Change> execute = null;
 		String cursorString = null;
@@ -110,11 +122,17 @@ public class ChangeEndpoint {
 		List<ChangeStats> stats = new ArrayList<ChangeStats>();
 
 		//Set filter
-		Filter userFilter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getUserId());
+		Filter filter = null;
+		
+		if (filterType.equals("project")) {
+			filter = new FilterPredicate("projectID", FilterOperator.EQUAL, projectID);
+		} else if (filterType.equals("user")) {
+			filter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getUserId());
+		}
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change").setFilter(userFilter);
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change").setFilter(filter);
 
 		PreparedQuery pq = datastore.prepare(q);
 		

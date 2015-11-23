@@ -233,7 +233,28 @@ overflow: hidden;
         <!-- ./col -->
       </div>
       <!-- /.row -->
-
+      
+      <div class="row">
+            <div class="col-lg-8">
+            	<div class="panel panel-default">
+                        <div class="panel-heading">
+                            Activity
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-area-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                </div>
+            	<div  id="changeLog">
+            	
+            	</div>
+            </div>
+            <div class="col-lg-4">
+                User List
+            </div>
+            </div>
+			<!-- /.row -->
         </div>
 
     <!-- Footer -->
@@ -298,7 +319,7 @@ overflow: hidden;
 		      
 		      //fillProjectsList();
 		      
-		      //createAreaChart();
+		      createAreaChart();
 		      
 		    }
 		    else {
@@ -464,7 +485,7 @@ function fillProjectsList(){
 }
 
 function createAreaChart(){
-	 gapi.client.qdacity.changelog.listChangeStats().execute(function(resp){
+	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "project", 'projectID' : 1}).execute(function(resp){
 			if (!resp.code) {
 				var dataArray =  []; 
 				for (var i=0;i<resp.items.length;i++) {

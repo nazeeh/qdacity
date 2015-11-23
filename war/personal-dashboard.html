@@ -428,7 +428,7 @@ function fillProjectsList(){
 }
 
 function createAreaChart(){
-	 gapi.client.qdacity.changelog.listChangeStats().execute(function(resp){
+	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "user"}).execute(function(resp){
 			if (!resp.code) {
 				var dataArray =  []; 
 				for (var i=0;i<resp.items.length;i++) {
