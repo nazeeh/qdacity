@@ -5,14 +5,28 @@ import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -33,49 +47,45 @@ public class UserEndpoint {
 	 * @throws UnauthorizedException 
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "listUser",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "user.listUser", path = "userlist",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public CollectionResponse<User> listUser(
+	public List<User> listUser(
 			@Nullable @Named("cursor") String cursorString,
-			@Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
+			@Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, User user) throws UnauthorizedException {
 		
-		throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all text documents
+				//Set filter
+				List<Long> idsToFilter = new ArrayList<Long>();
+				idsToFilter.add(projectID);
+				Filter filter = new FilterPredicate("projects", FilterOperator.IN, idsToFilter);
+		
 
-//		PersistenceManager mgr = null;
-//		Cursor cursor = null;
-//		List<User> execute = null;
-//
-//		try {
-//			mgr = getPersistenceManager();
-//			Query query = mgr.newQuery(User.class);
-//			if (cursorString != null && cursorString != "") {
-//				cursor = Cursor.fromWebSafeString(cursorString);
-//				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-//				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-//				query.setExtensions(extensionMap);
-//			}
-//
-//			if (limit != null) {
-//				query.setRange(0, limit);
-//			}
-//
-//			execute = (List<User>) query.execute();
-//			cursor = JDOCursorHelper.getCursor(execute);
-//			if (cursor != null)
-//				cursorString = cursor.toWebSafeString();
-//
-//			// Tight loop for fetching all entities from datastore and accomodate
-//			// for lazy fetch.
-//			for (User obj : execute)
-//				;
-//		} finally {
-//			mgr.close();
-//		}
-//
-//		return CollectionResponse.<User> builder().setItems(execute)
-//				.setNextPageToken(cursorString).build();
+				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+				com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("User").setFilter(filter);
+
+				PreparedQuery pq = datastore.prepare(q);
+				
+				Calendar cal = Calendar.getInstance();
+				
+				Map<String, Integer> freq = new HashMap<String, Integer>();
+
+//				List<User> users = (List<User>)(List<?>)Lists.newArrayList(  pq.asIterable() );
+				
+				List<User> users = new ArrayList<User>();
+				
+				for (Entity result : pq.asIterable()) {
+					User dbUser = new User();
+					dbUser.setGivenName((String) result.getProperty("givenName"));
+					dbUser.setSurName((String) result.getProperty("surName"));
+					dbUser.setProjects((List<Long>) result.getProperty("projects"));
+					dbUser.setId((String) result.getProperty("id"));
+					
+					users.add(dbUser);
+				}
+				
+				return users;
 	}
 
 	/**
