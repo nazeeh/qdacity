@@ -1,5 +1,6 @@
 package com.qdacity.server.project;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.Element;
@@ -24,6 +25,12 @@ public class Project {
 	
 	@Persistent
 	Long maxCodingID;
+	
+	@Persistent
+	List<String> users;
+	
+	@Persistent
+	List<String> invitedUsers;
 	
 	public Long getId() {
 		return id;
@@ -56,4 +63,34 @@ public class Project {
 	public void setMaxCodingID(Long maxCodingID) {
 		this.maxCodingID = maxCodingID;
 	}
+
+	public List<String> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<String> users) {
+		this.users = users;
+	}
+	
+	public void addUser(String userID){
+		if (users == null) users = new ArrayList<String>();
+		if (!users.contains(userID)) users.add(userID);
+	}
+
+	public List<String> getInvitedUsers() {
+		return invitedUsers;
+	}
+
+	public void setInvitedUsers(List<String> invitedUsers) {
+		this.invitedUsers = invitedUsers;
+	}
+	
+	public void addInvitedUser(String userID){
+		if (invitedUsers == null) invitedUsers = new ArrayList<String>();
+		if (!invitedUsers.contains(userID)) invitedUsers.add(userID);
+	}
+	
+	
+	
+	
 }

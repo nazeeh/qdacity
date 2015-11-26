@@ -258,8 +258,17 @@ overflow: hidden;
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
+                    <div class= "List-menu">
+                    <span class="searchfield" id="searchform" style="width:100%;" >
+	                    <input id="userEmailFld" type="text" placeholder="User Email" />
+	                    <button id="inviteUserBtn" type="button" id="search">Invite </button>
+	                    
+                    </span> 
                      
-                    <ul id="user-list" class="list" >
+           
+                                </div>
+                     
+                    <ul id="user-list" class="list" style="margin-top:55px;">
 			<!-- Accordion content added dynamically -->
                     </ul>
                     </div>
@@ -397,8 +406,9 @@ overflow: hidden;
 				signout();
            	}  
                 
-		 	
- 				
+			document.getElementById('inviteUserBtn').onclick = function() {
+                inviteUser();
+            }
         }
 
 </script>
@@ -536,7 +546,18 @@ function addUserToUserList(userID, userName){
 	
 	
 }
-
+function inviteUser(){
+	var userEmail = document.getElementById("userEmailFld" ).value;
+	
+	gapi.client.qdacity.project.inviteUser({'projectID' : project_id, 'userEmail': userEmail}).execute(function(resp){
+		if (!resp.code) {
+			
+		}
+		else{
+			console.log(resp.code);
+		}
+	});
+}
 </script>
 <script src="components/listJS/list.js"></script>
 

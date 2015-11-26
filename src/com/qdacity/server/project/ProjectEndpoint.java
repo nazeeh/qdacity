@@ -4,16 +4,26 @@ import com.qdacity.Constants;
 import com.qdacity.client.Qdacity;
 import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
+import com.qdacity.server.user.UserNotification;
+import com.qdacity.server.user.UserNotificationType;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +70,10 @@ public class ProjectEndpoint {
 			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
 
 			
-			Query q = mgr.newQuery(Project.class, ":p.contains(id)");
+			Query q = mgr.newQuery(Project.class, ":p.contains(users)");
 			
 			
-			Query query = mgr.newQuery(Project.class);
+			Query query = mgr.newQuery(Project.class, ":p.contains(users)");
 			if (cursorString != null && cursorString != "") {
 				cursor = Cursor.fromWebSafeString(cursorString);
 				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
@@ -75,7 +85,7 @@ public class ProjectEndpoint {
 				query.setRange(0, limit);
 			}
 
-			execute = (List<Project>) q.execute(dbUser.getProjects());
+			execute = (List<Project>) q.execute(Arrays.asList(dbUser.getId()));
 			cursor = JDOCursorHelper.getCursor(execute);
 			if (cursor != null)
 				cursorString = cursor.toWebSafeString();
@@ -201,6 +211,69 @@ public class ProjectEndpoint {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 			mgr.makePersistent(project);
+		} finally {
+			mgr.close();
+		}
+		return project;
+	}
+	
+	@ApiMethod(name = "project.addUser",   scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Project addUser(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+		Project project = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			project = mgr.getObjectById(Project.class, projectID);
+			
+			project.addUser(user.getUserId());
+			
+			mgr.makePersistent(project);
+		} finally {
+			mgr.close();
+		}
+		return project;
+	}
+	
+	@ApiMethod(name = "project.inviteUser",   scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public Project inviteUser(@Named("projectID") Long projectID, @Named("userEmail") String userEmail, User user) throws UnauthorizedException {
+		Project project = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			
+			// Get the invited user
+			Query q = mgr.newQuery(com.qdacity.server.user.User.class, "email == '"+userEmail+"'");
+			@SuppressWarnings("unchecked")
+			List<com.qdacity.server.user.User> dbUsers =   (List<com.qdacity.server.user.User>) q.execute();
+			String userID = dbUsers.get(0).getId();
+			
+			// Get the inviting user
+			com.qdacity.server.user.User invitingUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
+			
+			// Insert user into project as invited user
+			project = mgr.getObjectById(Project.class, projectID);
+			project.addInvitedUser(user.getUserId());
+			
+			mgr.makePersistent(project);
+			
+			
+			// Create notification
+			UserNotification notification = new UserNotification();
+			notification.setDatetime(new Date());
+			notification.setMessage("Project: " + project.getName());
+			notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() +" "+invitingUser.getSurName() +"</b>");
+			notification.setOriginUser(user.getUserId());
+			notification.setProject(projectID);
+			notification.setSettled(false);
+			notification.setType(UserNotificationType.INVITATION);
+			notification.setUser(userID.toString());
+			
+			mgr.makePersistent(notification);
+			
 		} finally {
 			mgr.close();
 		}

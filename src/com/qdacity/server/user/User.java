@@ -20,6 +20,9 @@ public class User {
 	String surName;
 	
 	@Persistent
+	String email;
+	
+	@Persistent
 	List<Long> projects;
 
 	public String getId() {
@@ -56,6 +59,14 @@ public class User {
 
 	public void addProjectAuthorization(Long project){
 		projects.add(project);
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	

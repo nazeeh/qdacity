@@ -85,3 +85,20 @@ h2 {
     z-index:999;
     cursor: pointer; cursor: hand;
 }
+
+.fa-cancel-btn {
+    color: #61B329;
+    cursor: pointer; cursor: hand;
+    z-index:999;
+}
+
+.fa-cancel-btn-circle {
+    color: #ff4c4c;
+    z-index:999;
+}
+
+.fa-cancel-btn:hover {
+    color: red;
+    z-index:999;
+    cursor: pointer; cursor: hand;
+}
