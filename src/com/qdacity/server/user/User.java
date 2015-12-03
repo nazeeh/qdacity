@@ -8,6 +8,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.qdacity.server.taskboard.TaskBoard;
+
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class User {
 	@PrimaryKey
@@ -21,6 +23,9 @@ public class User {
 	
 	@Persistent
 	String email;
+	
+	@Persistent
+	Long taskBoardID;
 	
 	@Persistent
 	List<Long> projects;
@@ -69,8 +74,13 @@ public class User {
 		this.email = email;
 	}
 
-	
-	
+	public Long getTaskBoardId() {
+		return taskBoardID;
+	}
+
+	public void setTaskBoardId(Long taskBoardId) {
+		this.taskBoardID = taskBoardId;
+	}
 	
 	
 }

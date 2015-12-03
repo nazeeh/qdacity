@@ -3,6 +3,8 @@ package com.qdacity.server.user;
 import com.qdacity.Constants;
 import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
+import com.qdacity.server.taskboard.Task;
+import com.qdacity.server.taskboard.TaskBoard;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
@@ -18,6 +20,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.log.LogService.LogLevel;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.common.collect.Lists;
 
@@ -27,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -112,6 +116,53 @@ public class UserEndpoint {
 			mgr.close();
 		}
 		return user;
+	}
+	
+	@ApiMethod(name = "user.getTaskboard", path="usertaskboard",  scopes = {Constants.EMAIL_SCOPE},
+			clientIds = {Constants.WEB_CLIENT_ID, 
+		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+		     audiences = {Constants.WEB_CLIENT_ID})
+	public TaskBoard getTaskboard(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		User user = null;
+		List<TaskBoard> boards = new ArrayList<TaskBoard>();;
+		TaskBoard board = null;
+		try {
+			user = mgr.getObjectById(User.class, loggedInUser.getUserId());
+			Query query = mgr.newQuery(TaskBoard.class);
+			query.setFilter("id == "+user.getTaskBoardId());
+			
+			boards = (List<TaskBoard>) query.execute();
+			board = boards.get(0);
+			
+			List<Task> taskList = board.getTodo();
+			if (board.getTodo() != null){
+				for (Task task : taskList) {
+					task.getText();
+				}
+			}
+			taskList = board.getInProgress();
+			if (taskList != null){
+				for (Task task : taskList) {
+					task.getText();
+				}
+			}
+			
+			taskList = board.getDone();
+			if (taskList != null){
+				for (Task task : taskList) {
+					task.getText();
+				}
+			}
+//			Logger.getGlobal().log(LogLevel.INFO,"user has board  " +  user.getTaskBoardId());
+//			board = mgr.getObjectById(TaskBoard.class, user.getTaskBoardId());
+			//Check if user is authorized
+			//Authorization.checkAuthorization(user, loggedInUser);
+			
+		} finally {
+			mgr.close();
+		}
+		return board;
 	}
 
 	/**

@@ -19,7 +19,7 @@
     <link href="assets/css/project-list.css" rel="stylesheet">
     <link href="assets/css/search-box.css" rel="stylesheet">
     <link href="assets/css/common.css" rel="stylesheet">
-    
+    <link href="assets/css/taskboard.css" rel="stylesheet">
     
 
     <!-- Custom Fonts -->
@@ -60,7 +60,7 @@ overflow: hidden;
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <!--      <script src="components/accordion/accordion.js"></script>
      <link href="components/accordion/accordion.css" rel="stylesheet"> -->
-     
+       <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 </head>
 
 <body>
@@ -182,7 +182,48 @@ overflow: hidden;
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div id="morris-area-chart"></div>
+                            <div class="row no-gutters"  >
+                            <div class="col-lg-4 " >
+	                            <div class="taskcolumn">
+		                            <div class="taskcolumn-heading">
+		                            <span>TODO</span>
+									<br/>
+									
+		                            <a id="addToDoBtn"  class=" btn  fa-stack fa-lg" style="margin-top:-15px; ">
+										<i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
+										<i  class="fa fa-plus fa-stack-1x fa-inverse fa-editor-btn"></i>
+									</a>
+		                            </div>
+		                           <div class="taskcolumn-content">
+		                            <ul id="sortableToDo" class="droptrue" style="width:100%; padding-right:15px;">
+									</ul>
+									
+									 </div>
+								</div>
+                            </div>
+                            
+                            
+                            <div class="col-lg-4">
+                            <div class="taskcolumn">
+	                            <div class="taskcolumn-heading">
+	                            <span>In Progress</span>
+	                            </div>
+	                            <ul id="sortableInProgress" class="droptrue"  style="width:100%; padding-right:15px;">
+								</ul>
+                            </div>
+                            </div>
+                            
+                            
+                            <div class="col-lg-4">
+                            <div class="taskcolumn">
+                            <div class="taskcolumn-heading">
+                            Done
+                            </div>
+                            <ul id="sortableDone" class="droptrue"  style="width:100%; padding-right:15px;">
+							</ul>
+                            </div>
+                            </div>
+                            </div>
                         </div>
                         <!-- /.panel-body -->
                 </div>
@@ -279,7 +320,6 @@ overflow: hidden;
             </div>
         </div>
     </footer>
-
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
      <script type="text/javascript">
      var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
@@ -311,6 +351,7 @@ overflow: hidden;
 		      fillProjectsList();
 		      fillNotificationList();
 		      createAreaChart();
+		      fillTaskBoard()
 		      
 		    }
 		    else {
@@ -322,6 +363,8 @@ overflow: hidden;
    
         function init() {
         	
+        	
+        	    
         	$( "#footer" ).hide();
         	$('#navAccount').hide();
         	$( "#textdocument-menu" ).collapse(); // editor will be initialized readonly, the toggle is later hooked to the visibility of the toolbar
@@ -363,7 +406,19 @@ overflow: hidden;
 			document.getElementById('navBtnSignOut').onclick = function() {
 				signout();
            	}
-                
+			
+			document.getElementById('addToDoBtn').onclick = function() {
+				createNewTask();
+           	}
+			
+			function createNewTask(){
+				var task = {};
+				
+				var text = prompt("Describe task", "New Task");
+				task.text = text;
+				addTaskToList("#sortableToDo", task);
+				updateTaskBoard();
+			}
 		 	
  				
         }
@@ -514,6 +569,92 @@ function fillNotificationList(){
 	
 }
 
+function fillTaskBoard(){
+	$("#sortableToDo, #sortableInProgress, #sortableDone").html("");
+	
+	 gapi.client.qdacity.user.getTaskboard().execute(function(resp){
+			if (!resp.code) {
+				var todoList = resp.todo;
+				var inProgressList = resp.inProgress;
+				var doneList = resp.done;
+				
+				if (typeof todoList !== "undefined"){
+					var dataArray =  []; 
+					for (var i=0;i<todoList.length;i++) {
+			            var task = todoList[i];
+			            addTaskToList("#sortableToDo", task);
+					}
+				}
+				
+ 				if (typeof inProgressList !== "undefined"){
+					var dataArray =  []; 
+					for (var i=0;i<inProgressList.length;i++) {
+			            var task = inProgressList[i];
+			            addTaskToList("#sortableInProgress", task);
+					}
+				}
+				
+				if (typeof doneList  !== "undefined"){
+					var dataArray =  []; 
+					for (var i=0;i<doneList.length;i++) {
+			            var task = doneList[i];
+			            addTaskToList("#sortableDone", task);
+					}
+				}
+			}
+		});
+	 
+	$( "ul.droptrue" ).sortable({
+	      connectWith: "ul",
+	      update: function( ) {
+              updateTaskBoard();
+           }
+	    });
+
+	    $( "#sortableToDo, #sortableInProgress, #sortableDone" ).disableSelection();
+}
+
+
+function updateTaskBoard(){
+	
+	
+	
+	
+	
+	var requestData = {};
+	requestData.id = 2; // FIXME fixed ID only for testing
+	requestData.todo = getTaskList($("#sortableToDo").children())
+	requestData.inProgress = getTaskList($("#sortableInProgress").children())
+	requestData.done = getTaskList($("#sortableDone").children())
+	
+	gapi.client.qdacity.updateTaskBoard(requestData).execute(function(resp){
+		if (!resp.code) {
+			
+		}
+	});
+}
+
+function getTaskList(taskItemList){
+	var taskList = [];
+	for (var i=0;i<taskItemList.length;i++) {
+        var taskItem = taskItemList[i];
+        
+        var task = {};
+        task.text = taskItem.innerHTML;
+        taskList.push(task);
+	}
+	
+	return taskList;
+}
+
+function addTaskToList(list, task){
+	var html = '<li class="ui-state-default taskitem" >';
+	html += task.text;
+	html += '</li>';
+	
+	$(list).append(html);
+}
+
 function createAreaChart(){
 	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "user"}).execute(function(resp){
 			if (!resp.code) {
@@ -592,6 +733,8 @@ function addInvitationNotification(notificationID, projectID, subject, message,s
 function myAlert(message){
 	window.alert(message);
 }
+
+
 
 </script>
 <script src="components/listJS/list.js"></script>
