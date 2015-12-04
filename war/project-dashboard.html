@@ -3,573 +3,318 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
 
-    <title>QDAcity</title>
+<title>QDAcity</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="components/bootstrap/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Core CSS -->
+<link href="components/bootstrap/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link href="assets/css/landing-page.css" rel="stylesheet">
-    <link href="assets/css/project-list.css" rel="stylesheet">
-    <link href="assets/css/search-box.css" rel="stylesheet">
-    <link href="assets/css/common.css" rel="stylesheet">
-    
-	<link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
-	
-    <!-- Custom Fonts -->
-    <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+<!-- Custom CSS -->
+<link href="assets/css/landing-page.css" rel="stylesheet">
+<link href="assets/css/project-list.css" rel="stylesheet">
+<link href="assets/css/search-box.css" rel="stylesheet">
+<link href="assets/css/common.css" rel="stylesheet">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+<link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
+
+<!-- Custom Fonts -->
+<link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<!-- Ionicons -->
+<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+
+<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-  <style>
-  .navbar-content
-{
-    width:320px;
-    padding: 15px;
-    padding-bottom:0px;
+<style>
+.navbar-content {
+	width: 320px;
+	padding: 15px;
+	padding-bottom: 0px;
 }
-.navbar-content:before, .navbar-content:after
-{
-    display: table;
-    content: "";
-    line-height: 0;
+
+.navbar-content:before, .navbar-content:after {
+	display: table;
+	content: "";
+	line-height: 0;
 }
-.navbar-footer 
-{
-    background-color:#DDD;
+
+.navbar-footer {
+	background-color: #DDD;
 }
-.navbar-footer-content { padding:15px 15px 15px 15px; }
+
+.navbar-footer-content {
+	padding: 15px 15px 15px 15px;
+}
+
 .dropdown-menu {
-padding: 0px;
-overflow: hidden;
+	padding: 0px;
+	overflow: hidden;
 }
-  </style>
-  
-    
-    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<!--      <script src="components/accordion/accordion.js"></script>
-     <link href="components/accordion/accordion.css" rel="stylesheet"> -->
-     
-    
+</style>
+
+
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 
 <body>
 
-    <!-- Navigation -->
-    <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
-        <div class="container topnav">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand topnav" href="index.html">QDAcity</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="index.html#about">About</a>
-                    </li>
-                    <li>
-                        <a href="apitest.html">API Test</a>
-                    </li>
-                    <li>
-                        <a href="index.html#contact">Contact</a>
-                    </li>
-                    
-                                    <li id="navAccount" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Account
-                                        <b class="caret"></b></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <div class="navbar-content">
-                                                    <div class="row">
-                                                        <div class="col-md-5">
-                                                            <img id="currentUserPicture" src=""
-                                                                alt="Alternate Text" class="img-responsive" />
-                                                            <p class="text-center small">
-                                                                <a href="#">Change Photo</a></p>
-                                                        </div>
-                                                        <div class="col-md-7">
-                                                            <span id="currentUserName"></span>
-                                                            <p id="currentUserEmail" class="text-muted small"></p>
-                                                            <div class="divider">
-                                                            </div>
-                                                            <a href="personal-dashboard.html" class="btn btn-primary btn-sm active">Personal Dashboard</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="navbar-footer">
-                                                    <div class="navbar-footer-content">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <a href="#" class="btn btn-default btn-sm">Sign in as different User</a>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <a id="navBtnSignOut" class="btn btn-default btn-sm pull-right">Sign Out</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li  id="navSignin" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign In
-                                        <b class="caret"></b></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <div class="navbar-content">
-                                                    <div class="row">
-                                                        <div class="col-md-12" style="text-align:center; padding-bottom:15px;">
-                                                        <a id ="navBtnSigninGoogle" class="btn  btn-primary" href="#">
-  																	<i class="fa fa-google fa-2x pull-left" ></i> <span style="font-size:18px;">Sign in with Google</span></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="navbar-footer">
-                                                    <div class="navbar-footer-content">
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                            	
-                                                                
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
+	<!-- Navigation -->
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+		<div class="container topnav">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand topnav" href="index.html">QDAcity</a>
+			</div>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="index.html#about">About</a></li>
+					<li><a href="apitest.html">API Test</a></li>
+					<li><a href="index.html#contact">Contact</a></li>
 
-        <!-- /.container -->
-    </nav>
+					<li id="navAccount" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							Account <b class="caret"></b>
+						</a>
+						<ul class="dropdown-menu">
+							<li>
+								<div class="navbar-content">
+									<div class="row">
+										<div class="col-md-5">
+											<img id="currentUserPicture" src="" alt="Alternate Text" class="img-responsive" />
+											<p class="text-center small">
+												<a href="#">Change Photo</a>
+											</p>
+										</div>
+										<div class="col-md-7">
+											<span id="currentUserName"></span>
+											<p id="currentUserEmail" class="text-muted small"></p>
+											<div class="divider"></div>
+											<a href="personal-dashboard.html" class="btn btn-primary btn-sm active">Personal Dashboard</a>
+										</div>
+									</div>
+								</div>
+								<div class="navbar-footer">
+									<div class="navbar-footer-content">
+										<div class="row">
+											<div class="col-md-6">
+												<a href="#" class="btn btn-default btn-sm">Sign in as different User</a>
+											</div>
+											<div class="col-md-6">
+												<a id="navBtnSignOut" class="btn btn-default btn-sm pull-right">Sign Out</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul></li>
+					<li id="navSignin" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							Sign In <b class="caret"></b>
+						</a>
+						<ul class="dropdown-menu">
+							<li>
+								<div class="navbar-content">
+									<div class="row">
+										<div class="col-md-12" style="text-align: center; padding-bottom: 15px;">
+											<a id="navBtnSigninGoogle" class="btn  btn-primary" href="#">
+												<i class="fa fa-google fa-2x pull-left"></i>
+												<span style="font-size: 18px;">Sign in with Google</span>
+											</a>
+										</div>
+									</div>
+								</div>
+								<div class="navbar-footer">
+									<div class="navbar-footer-content">
+										<div class="row">
+											<div class="col-md-12"></div>
+										</div>
+									</div>
+							</li>
+						</ul></li>
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</div>
+
+		<!-- /.container -->
+	</nav>
 
 
-    <!-- Header -->
-        <div class="container main-content">
+	<!-- Header -->
+	<div class="container main-content">
 
-            <!-- Small boxes (Stat box) -->
-      <div class="row">
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-aqua">
-            <div class="inner">
-              <h3 id="topStatsDocuments">N/A</h3>
+		<!-- Small boxes (Stat box) -->
+		<div class="row">
+			<div class="col-lg-3 col-xs-6">
+				<!-- small box -->
+				<div class="small-box bg-aqua">
+					<div class="inner">
+						<h3 id="topStatsDocuments">N/A</h3>
 
-              <p>Documents</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-document"></i>
-            </div>
-            <a href="#" class="small-box-footer codeEditorLink">Coding Editor <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-yellow">
-            <div class="inner">
-              <h3 id="topStatsCodes">N/A</h3>
+						<p>Documents</p>
+					</div>
+					<div class="icon">
+						<i class="ion ion-document"></i>
+					</div>
+					<a href="#" class="small-box-footer codeEditorLink">
+						Coding Editor
+						<i class="fa fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+			<!-- ./col -->
 
-              <p>Codes</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-ios-pricetag-outline"></i>
-            </div>
-            <a href="#" class="small-box-footer codeEditorLink">Coding Editor <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-red">
-            <div class="inner">
-              <h3 id="topStatsCodings">N/A</h3>
+			<div class="col-lg-3 col-xs-6">
+				<!-- small box -->
+				<div class="small-box bg-yellow">
+					<div class="inner">
+						<h3 id="topStatsCodes">N/A</h3>
 
-              <p>Codings</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-ios-pricetags"></i>
-            </div>
-            <a href="#" class="small-box-footer codeEditorLink">Coding Editor <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-green">
-            <div class="inner">
-              <h3 id="topStatsSaturation">N/A<sup style="font-size: 20px">%</sup></h3>
+						<p>Codes</p>
+					</div>
+					<div class="icon">
+						<i class="ion ion-ios-pricetag-outline"></i>
+					</div>
+					<a href="#" class="small-box-footer codeEditorLink">
+						Coding Editor
+						<i class="fa fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+			<!-- ./col -->
+			<div class="col-lg-3 col-xs-6">
+				<!-- small box -->
+				<div class="small-box bg-red">
+					<div class="inner">
+						<h3 id="topStatsCodings">N/A</h3>
 
-              <p>Saturation</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-stats-bars"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-      </div>
-      <!-- /.row -->
-      
-      <div class="row">
-            <div class="col-lg-8">
-            	<div class="panel panel-default">
-                        <div class="panel-heading">
-                            Activity
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="morris-area-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                </div>
-            	<div  id="changeLog">
-            	
-            	</div>
-            </div>
-            <div class="col-lg-4">
-                                <div  id="user-section">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Users
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                    <div class= "List-menu">
-                    <span class="searchfield" id="searchform" style="width:100%;" >
-	                    <input id="userEmailFld" type="text" placeholder="User Email" />
-	                    <button id="inviteUserBtn" type="button" id="search">Invite </button>
-	                    
-                    </span> 
-                     
-           
-                                </div>
-                     
-                    <ul id="user-list" class="list" style="margin-top:55px;">
-			<!-- Accordion content added dynamically -->
-                    </ul>
-                    </div>
-                     </div>
-                </div>
-            </div>
-            </div>
-			<!-- /.row -->
-        </div>
+						<p>Codings</p>
+					</div>
+					<div class="icon">
+						<i class="ion ion-ios-pricetags"></i>
+					</div>
+					<a href="#" class="small-box-footer codeEditorLink">
+						Coding Editor
+						<i class="fa fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+			<!-- ./col -->
+			<div class="col-lg-3 col-xs-6">
+				<!-- small box -->
+				<div class="small-box bg-green">
+					<div class="inner">
+						<h3 id="topStatsSaturation">
+							N/A<sup style="font-size: 20px">%</sup>
+						</h3>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <ul class="list-inline">
-                        <li>
-                            <a href="#">Home</a>
-                        </li>
-                        <li class="footer-menu-divider">&sdot;</li>
-                        <li>
-                            <a href="#about">About</a>
-                        </li>
-                        <li class="footer-menu-divider">&sdot;</li>
-                        <li>
-                            <a href="#services">Services</a>
-                        </li>
-                        <li class="footer-menu-divider">&sdot;</li>
-                        <li>
-                            <a href="#contact">Contact</a>
-                        </li>
-                    </ul>
-                    <p class="copyright text-muted small">Copyright &copy; Open Source Research Group, FAU 2015. All Rights Reserved</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+						<p>Saturation</p>
+					</div>
+					<div class="icon">
+						<i class="ion ion-stats-bars"></i>
+					</div>
+					<a href="#" class="small-box-footer">
+						More info
+						<i class="fa fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+			<!-- ./col -->
+		</div>
+		<!-- /.row -->
 
-    <script src="https://apis.google.com/js/client.js?onload=init"></script>
-     <script type="text/javascript">
-     var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-    
-    var project_id;
-	    
-     function signin(mode, callback) {
-   	  gapi.auth.authorize({client_id: client_id,scope: scopes, immediate: mode},callback);
-   }
-   
-   function signout(){
-   	window.open("https://accounts.google.com/logout");
-   }
-   
-   function handleAuth() {
+		<div class="row">
+			<div class="col-lg-8">
+				<div class="panel panel-default">
+					<div class="panel-heading">Activity</div>
+					<!-- /.panel-heading -->
+					<div class="panel-body">
+						<div id="morris-area-chart"></div>
+					</div>
+					<!-- /.panel-body -->
+				</div>
+				<div id="changeLog"></div>
+			</div>
+			<div class="col-lg-4">
+				<div id="user-section">
+					<div class="panel panel-default">
+						<div class="panel-heading">Users</div>
+						<!-- /.panel-heading -->
+						<div class="panel-body">
+							<div class="List-menu">
+								<span class="searchfield" id="searchform" style="width: 100%;">
+									<input id="userEmailFld" type="text" placeholder="User Email" />
+									<button id="inviteUserBtn" type="button" id="search">Invite</button>
 
-   	
-		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
-		    if (!resp.code) {
-		      current_user_name = resp.given_name;
-		      current_user_id = resp.id;
-		      //window.alert(resp.id);
-		      document.getElementById('currentUserName').innerHTML = resp.name;
-		      document.getElementById('currentUserEmail').innerHTML = resp.email;
-		      document.getElementById('currentUserPicture').src = resp.picture;
-		      $('#navAccount').show();
-		      $('#navSignin').hide();
-		      // INIT
-		      
-		      setGeneralStats();
-		      
-		      fillUserList();
-		      
-		      createAreaChart();
-		      
-		    }
-		    else {
-		    	 $('#navAccount').hide();
-		    	 handleError(resp.code);
-		    }
-		  });
-		}
-   
-        function init() {
-        	
-        	var query = window.location.search;
-      	  // Skip the leading ?, which should always be there,
-      	  // but be careful anyway
-      	  if (query.substring(0, 1) == '?') {
-      	    query = query.substring(1);
-      	  }
-      	  var data = query.split(',');
-      	  for (i = 0; (i < data.length); i++) {
-      	    data[i] = unescape(data[i]);
-      	  }
-      	  project_id = data[0];
-        	
-        	
-        	var query = window.location.search;
-        	  // Skip the leading ?, which should always be there,
-        	  // but be careful anyway
-        	  if (query.substring(0, 1) == '?') {
-        	    query = query.substring(1);
-        	  }
-        	  var data = query.split(',');
-        	  for (i = 0; (i < data.length); i++) {
-        	    data[i] = unescape(data[i]);
-        	  }
-        	  project_id = data[0];
-        	  
-        	  $(".codeEditorLink").attr('href','apitest.html?'+project_id);
-        	  
-        	var apisToLoad;
-        	 var callback = function() {
-        	   if (--apisToLoad == 0) {
-        		   signin(true,handleAuth);
-        		  
-        	     //Load project settings
-        	     
-        	   }
-        	   
-        	}
-        	  
-        	apisToLoad = 2;
-        	//Parameters are APIName,APIVersion,CallBack function,API Root 
-        	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
-        	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
-        	gapi.client.load('oauth2','v2',callback);
+								</span>
+							</div>
 
-        	
-			document.getElementById('navBtnSigninGoogle').onclick = function() {
-				signin(false, handleAuth);
-           	}  
-				
-			document.getElementById('navBtnSignOut').onclick = function() {
-				signout();
-           	}  
-                
-			document.getElementById('inviteUserBtn').onclick = function() {
-                inviteUser();
-            }
-        }
+							<ul id="user-list" class="list" style="margin-top: 55px;">
+								<!-- Accordion content added dynamically -->
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /.row -->
+	</div>
 
-</script>
+	<!-- Footer -->
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<ul class="list-inline">
+						<li><a href="#">Home</a></li>
+						<li class="footer-menu-divider">&sdot;</li>
+						<li><a href="#about">About</a></li>
+						<li class="footer-menu-divider">&sdot;</li>
+						<li><a href="#services">Services</a></li>
+						<li class="footer-menu-divider">&sdot;</li>
+						<li><a href="#contact">Contact</a></li>
+					</ul>
+					<p class="copyright text-muted small">Copyright &copy; Open Source Research Group, FAU 2015. All Rights Reserved</p>
+				</div>
+			</div>
+		</div>
+	</footer>
 
-<script type="text/javascript">
-$(document).ready( function () {
-	//window.alert("test");
-	$( "#newProjectForm" ).on( "submit",function(event) {
-		event.preventDefault();	
-		createNewProject();
-      });
-	
-});
+	<script src="https://apis.google.com/js/client.js?onload=init"></script>
 
-function createNewProject(){
-	
-	var requestData = {};
-    requestData.project = 0;
-    
-    gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function(resp) {
-            if (!resp.code) {
-            	
-            	var requestData2 = {};
-                requestData2.codesystemID = resp.id;
-                requestData2.maxCodingID = 0;
-                requestData2.name = document.getElementById("newProjectName" ).value;
-                gapi.client.qdacity.project.insertProject(requestData2).execute(function(resp2) {
-                        if (!resp2.code) {
-                        	requestData.id = resp.id;
-                        	requestData.project = resp2.id
-                        	
-                        	gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function(resp3) {
-                                if (!resp3.code) {
-                                	addUserToUserList(requestData.project, requestData2.name);
-                                }
-                        	});
-                        }
-                        else{
-                        	window.alert(resp.code);
-                        }
-                });
-            }
-            else{
-            	window.alert(resp.code);
-            }
-    });
-}
+	<script type="text/javascript">
+		
+	</script>
+	<!-- Main JS Script -->
+	<script src="assets/js/project-dashboard.js"></script>
 
-function addProjectToUser(){
-	
-}
+	<script src="components/listJS/list.js"></script>
 
-function setGeneralStats(){
-	
-	gapi.client.qdacity.project.getProjectStats({'id': project_id}).execute(function(resp) {
-	   	 if (!resp.code) {
-	   		$("#topStatsDocuments").html(resp.documentCount);
-	   		$("#topStatsCodes").html(resp.codeCount);
-	   		$("#topStatsCodings").html(resp.codingCount);
-	        
-	   	 }
-	   
-	   	 else{
-	   		 window.alert(resp.code)
-	   	}
-	   	 
-	    });
-	
-}
+	<!-- Bootstrap Core JavaScript -->
+	<script src="components/bootstrap/bootstrap.min.js"></script>
+	<script src="https://apis.google.com/js/client.js?onload=init"></script>
 
-function fillUserList(){
-	gapi.client.qdacity.user.listUser({'projectID': project_id}).execute(function(resp) {
-   	 if (!resp.code) {
-   		resp.items = resp.items || [];
-        
-        for (var i=0;i<resp.items.length;i++) {
-                var user_id = resp.items[i].id;
-                var given_name = resp.items[i].givenName;
-                var sur_name = resp.items[i].surName;
-                
-          		addUserToUserList(user_id, given_name + " " + sur_name);
-        }
-        var options = {
-        	  valueNames: [ 'user_name', 'user_id' ]
-        };
+	<!-- Morris Charts JavaScript -->
+	<script src="components/raphael/raphael-min.js"></script>
+	<script src="components/morrisjs/morris.min.js"></script>
+	<script src="assets/js/morris-data.js"></script>
 
-        var projectList = new List('user-section', options);
-
-        
-   	 }
-   
-   	 else{
-   		 window.alert(resp.code)
-   	}
-   	 
-    });
-	
-}
-
-function createAreaChart(){
-	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "project", 'projectID' : 1}).execute(function(resp){
-			if (!resp.code) {
-				var dataArray =  []; 
-				for (var i=0;i<resp.items.length;i++) {
-		            dataArray.push({
-			            period: resp.items[i].label,
-			            codesCreated: resp.items[i].codesCreated
-			        });
-				}
-				
-				Morris.Area({
-			        element: 'morris-area-chart',
-			        data: dataArray,
-			        xkey: 'period',
-			        ykeys: ['codesCreated'],
-			        labels: ['Codes Created'],
-			        pointSize: 3,
-			        hideHover: 'auto',
-			        resize: true
-			    });
-			}
-		});
-	
-}
-
-function addUserToUserList(userID, userName){
-
-	var html = '<li>';
-
-	html += '<span class="user_name">'+userName+'</span>';
-	html += '<span class="user_id hidden">'+userID;
-	html += '</span>';
-	html += '</li>';
-	$("#user-list").append(html);
-	
-	
-}
-function inviteUser(){
-	var userEmail = document.getElementById("userEmailFld" ).value;
-	
-	gapi.client.qdacity.project.inviteUser({'projectID' : project_id, 'userEmail': userEmail}).execute(function(resp){
-		if (!resp.code) {
-			
-		}
-		else{
-			console.log(resp.code);
-		}
-	});
-}
-</script>
-<script src="components/listJS/list.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="components/bootstrap/bootstrap.min.js"></script>
-<script src="https://apis.google.com/js/client.js?onload=init"></script>
-
-<!-- Morris Charts JavaScript -->
-    <script src="components/raphael/raphael-min.js"></script>
-    <script src="components/morrisjs/morris.min.js"></script>
-    <script src="assets/js/morris-data.js"></script>
-    
 </body>
 
 </html>

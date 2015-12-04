@@ -25,6 +25,13 @@
   
 }
 
+.fa-outer-circle{
+	color: #337ab7;
+	margin-top:-1px !important;
+	font-size:205% !important;
+	z-index:1000;
+}
+
 .taskcolumn-content{
 	background: #eee;
 	
