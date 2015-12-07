@@ -227,10 +227,11 @@ function fillNotificationList(){
                 addInvitationNotification(id, project, subject, message,settled, type, originUser, user, datetime);
         }
         var options = {
-        	  valueNames: [ 'project_name', 'project_id' ]
+        	  valueNames: [ 'project_name', 'project_id' , 'notification_date']
         };
 
-        var projectList = new List('project-selection', options);
+        var projectList = new List('notifications', options);
+        projectList.sort('notification_date', { order: "desc" });
 
         
    	 }
@@ -380,6 +381,7 @@ function addInvitationNotification(notificationID, projectID, subject, message,s
 	html += '<span class="inviting_user">'+subject+'</span><br/>';
 	html += '<span class="project_name" style="font-size:20px;"> '+message+'</span>';
 	html += '<span class="project_id hidden">'+projectID+'</span>';
+	html += '<span class="notification_date hidden">'+datetime+'</span>';
 	html += '<span class="notification_id hidden">'+notificationID+'</span>';
 	
 	if (settled){
