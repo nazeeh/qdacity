@@ -233,13 +233,15 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	
         }
         function inviteUser(){
+        	
         	var userEmail = document.getElementById("userEmailFld" ).value;
         	
         	gapi.client.qdacity.project.inviteUser({'projectID' : project_id, 'userEmail': userEmail}).execute(function(resp){
         		if (!resp.code) {
-        			
+        			alertify.success(userEmail + " has been invited");
         		}
         		else{
+        			alertify.error(userEmail + " was not found");
         			console.log(resp.code);
         		}
         	});
