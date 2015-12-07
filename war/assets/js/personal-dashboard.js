@@ -189,7 +189,11 @@ function fillProjectsList(){
           		addProjectToProjectList(project_id, project_name);
         }
         var options = {
-        	  valueNames: [ 'project_name', 'project_id' ]
+        	  valueNames: [ 'project_name', 'project_id' ],
+			page: 5,
+			plugins: [
+			ListPagination({})
+    	    ]
         };
 
         var projectList = new List('project-selection', options);
@@ -227,7 +231,11 @@ function fillNotificationList(){
                 addInvitationNotification(id, project, subject, message,settled, type, originUser, user, datetime);
         }
         var options = {
-        	  valueNames: [ 'project_name', 'project_id' , 'notification_date']
+        	valueNames: [ 	'project_name', 'project_id' , 'notification_date'],
+			page: 5,
+			plugins: [
+			ListPagination({})
+    	    ]
         };
 
         var projectList = new List('notifications', options);
