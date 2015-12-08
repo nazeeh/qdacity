@@ -22,20 +22,19 @@ public class Authorization {
 		PersistenceManager mgr = getPersistenceManager();
 		
 		// Check if user is Authorized
-		
-		Query query = mgr.newQuery(com.qdacity.server.user.User.class);
+		Query query = mgr.newQuery(Project.class);
 		
 		query.setFilter( "id == :theID");
-		Map<String, String> params = new HashMap();
-		params.put("theID", googleUser.getUserId());
+		Map<String, Long> params = new HashMap();
+		params.put("theID", projectID);
 		
-		List<com.qdacity.server.user.User> users = (List<com.qdacity.server.user.User>) query.executeWithMap(params);
-		if (users.size() == 0){
-			throw new UnauthorizedException("User " +googleUser.getUserId() + " was not found");
+		List<Project> projects = (List<Project>) query.executeWithMap(params);
+		if (projects.size() == 0){
+			throw new UnauthorizedException("Project " + projectID + " was not found");
 		}
-		com.qdacity.server.user.User user = users.get(0);
-		if (user.getProjects().contains(projectID)) return true;
-		
+		Project project = projects.get(0);
+		if (project.getUsers().contains(googleUser.getUserId())) return true;
+
 		return false;
 	}
 
@@ -73,15 +72,6 @@ public class Authorization {
 		Authorization.checkAuthorization(codesystem.getProject(), user);
 	}
 
-//	public static void checkAuthorization(Long codesystemID, User user)
-//			throws UnauthorizedException {
-//		
-//		if (user == null) throw new UnauthorizedException("User is Not Valid");
-//		
-//		Long projectID = CodeSystemEndpoint.getProjectIdFromCodesystem(codesystemID);
-//		Boolean authorized = isUserAuthorized(user, projectID);
-//		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
-//	}
 	
 	public static void checkAuthorization(Project project, User user)
 			throws UnauthorizedException {

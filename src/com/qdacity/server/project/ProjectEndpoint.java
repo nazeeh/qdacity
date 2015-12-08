@@ -178,6 +178,7 @@ public class ProjectEndpoint {
 					throw new EntityExistsException("Object already exists");
 				}
 			}
+			project.addUser(user.getUserId());
 			mgr.makePersistent(project);
 			// Authorize User
 			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
