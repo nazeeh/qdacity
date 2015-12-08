@@ -137,9 +137,10 @@ public class CodeEndpoint {
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (containsCode(code)) {
+			if (code.getId() != null && containsCode(code)) {
 				throw new EntityExistsException("Object already exists");
 			}
+			
 			
 			mgr.makePersistent(code);
 			

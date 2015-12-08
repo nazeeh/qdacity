@@ -1463,13 +1463,12 @@ function addTooltipsToEditor(id){
         
 
         //Insert Code function
-        function insertCode(_AuthorName, _CodeName, _ID) {
+        function insertCode(_AuthorName, _CodeName) {
         	var activeID = getActiveCode().id;
                 //Build the Request Object
                 var requestData = {};
                 requestData.author = _AuthorName;
                 requestData.name = _CodeName;
-                requestData.id = _ID;
                 requestData.subCodesIDs = new Array();
                 if (activeID != 'undefined')requestData.parentID = activeID;
                 requestData.codesytemID = codesystem_id;
@@ -1477,15 +1476,15 @@ function addTooltipsToEditor(id){
                 
                 gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
 
-                	console.log(resp.id + ":" + resp.author + ":" + resp.name);
+                	console.log( "Response: " +resp.id + ":" + resp.author + ":" + resp.name);
                         if (!resp.code) {
                                 //Just logging to console now, you can do your check here/display message
                                 console.log(resp.id + ":" + resp.author + ":" + resp.name);
                                 document.getElementById('listCodesResult').innerHTML = resp.id + ":" + resp.author + ":" + resp.name;
                                 addNodeToTree(resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs);
                                 if (typeof activeID != 'undefined'){
-                                	addSubCode(activeID, _ID);
-                                	relocateNode(_ID, activeID);
+                                	addSubCode(activeID, resp.id);
+                                	relocateNode(resp.id, activeID);
                                 }
                         }
                         else{
@@ -1685,9 +1684,8 @@ function addTooltipsToEditor(id){
             function addCode() {
             	var name = document.getElementById('newCodeName').value,
                 author = document.getElementById('newCodeAuthor').value,
-                id = document.getElementById("newCodeID" ).value;
 
-              insertCode(author,name,id);
+              insertCode(author,name);
               dialog.dialog( "close" );
               form[ 0 ].reset();
             }
@@ -1735,9 +1733,8 @@ function addTooltipsToEditor(id){
             function addCode() {
             	var name = document.getElementById('newCodeName').value,
                 author = document.getElementById('newCodeAuthor').value,
-                id = document.getElementById("newCodeID" ).value;
 
-              insertCode(author,name,id);
+              insertCode(author,name);
               dialog.dialog( "close" );
               form[ 0 ].reset();
             }
