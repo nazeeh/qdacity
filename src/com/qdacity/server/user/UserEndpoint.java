@@ -57,8 +57,10 @@ public class UserEndpoint {
 		     audiences = {Constants.WEB_CLIENT_ID})
 	public List<User> listUser(
 			@Nullable @Named("cursor") String cursorString,
-			@Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, User user) throws UnauthorizedException {
+			@Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, com.google.appengine.api.users.User user) throws UnauthorizedException {
 		
+				Authorization.checkAuthorization(projectID, user);
+				
 				//Set filter
 				List<Long> idsToFilter = new ArrayList<Long>();
 				idsToFilter.add(projectID);
