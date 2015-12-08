@@ -23,6 +23,9 @@
     
     <link href="components/filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
 	<link href="components/filer/css/themes/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
+	
+	<link rel="stylesheet" href="components/Vex/css/vex.css" />
+<link rel="stylesheet" href="components/Vex/css/vex-theme-os.css" />
 
 
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -1008,7 +1011,6 @@ function addTooltipsToEditor(id){
 	            content: $('<span>Edit Code</span>')
 	        });
 	        
-	        
 	        $("#codePropColor").colorpicker();
 	    });
 	        
@@ -1147,7 +1149,17 @@ function addTooltipsToEditor(id){
                 	}
                 }
                 
-                
+                $( "#btnInsertCode" ).on( "click", function() {
+ 	            	vex.dialog.prompt({
+ 	            		  message: 'Give your code a name',
+ 	            		  placeholder: 'Code Name',
+ 	            		  callback: function(codeName) {
+ 	            			  if (codeName != false){
+ 	            			  	insertCode(current_user_name, codeName);
+ 	            			  }
+ 	            		  }
+ 	            		});
+ 	            });
                 
                 document.getElementById('btnRemoveCode').onclick = function() {
                     deleteCode();
@@ -1670,55 +1682,7 @@ function addTooltipsToEditor(id){
   	          }  	          
 	 });
         }
-        
-        $(function() {
-        
-            var dialog, form,
-            name = $( "#newCodeName" ),
-            email = $( "#newCodeAuthor" ),
-            password = $( "#newCodeID" ),
-            allFields = $( [] ).add( name ).add( email ).add( password ),
-              tips = $( ".validateTips" );
-         
-         
-            function addCode() {
-            	var name = document.getElementById('newCodeName').value,
-                author = document.getElementById('newCodeAuthor').value,
 
-              insertCode(author,name);
-              dialog.dialog( "close" );
-              form[ 0 ].reset();
-            }
-         
-            dialog = $( "#new-code-form" ).dialog({
-              autoOpen: false,
-              height: 350,
-              width: 450,
-              modal: true,
-              buttons: {
-                "Add code": addCode,
-                Cancel: function() {
-                  dialog.dialog( "close" );
-                }
-              },
-              close: function() {
-                form[ 0 ].reset();
-                allFields.removeClass( "ui-state-error" );
-                
-              }
-            });
-            
-            form = dialog.find( "form" ).on( "submit", function( event ) {
-              event.preventDefault();
-              addCode();
-            });
-         
-            $( "#btnInsertCode" ).on( "click", function() {
-            	$('#newCodeAuthor').attr('value', current_user_name) ;
-              dialog.dialog( "open" );
-            });
-            
-          });
         
         $(function() {
             
@@ -1732,7 +1696,7 @@ function addTooltipsToEditor(id){
          
             function addCode() {
             	var name = document.getElementById('newCodeName').value,
-                author = document.getElementById('newCodeAuthor').value,
+                author = document.getElementById('newCodeAuthor').value;
 
               insertCode(author,name);
               dialog.dialog( "close" );
@@ -2031,6 +1995,12 @@ function addTooltipsToEditor(id){
         	}
 		  
     </script>
+    
+    <script src="components/vex/js/vex.combined.min.js"></script>
+<script>vex.defaultOptions.className = 'vex-theme-os';</script>
+
+
+
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
 </body>
 </html>
