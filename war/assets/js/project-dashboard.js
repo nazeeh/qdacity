@@ -67,7 +67,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	  }
         	  project_id = data[0];
         	  
-        	  $(".codeEditorLink").attr('href','apitest.html?'+project_id);
+        	  $(".codeEditorLink").attr('href','coding-editor.html?'+project_id);
         	  
         	var apisToLoad;
         	 var callback = function() {

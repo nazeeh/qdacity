@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<title>QDAcity API Test</title>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+<!-- Bootstrap Core CSS -->
+<link href="components/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+
+<!-- Custom CSS -->
+<link href="assets/css/landing-page.css" rel="stylesheet">
+<link href="assets/css/footer.css" rel="stylesheet">
+<link href="components/tooltipster/css/tooltipster.css" rel="stylesheet">
+
+<link href="components/filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
+<link href="components/filer/css/themes/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
+
+<link rel="stylesheet" href="components/Vex/css/vex.css" />
+<link rel="stylesheet" href="components/Vex/css/vex-theme-os.css" />
+
+
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="components/tooltipster/js/jquery.tooltipster.js"></script>
+
+<script src="components/filer/js/jquery.filer.min.js"></script>
+
+
+
+<!-- EasyTree -->
+<link rel="stylesheet" type="text/css" href="components/EasyTree/skin-win8/ui.easytree.css">
+<script type="text/javascript" src="components/EasyTree/jquery.easytree.js"></script>
+
+<script type="text/javascript" src="components/loading/loadingoverlay.js"></script>
+<script type="text/javascript" src="components/DataTables-1.10.7/media/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript" src="components/Squire/squire-raw.js"></script>
+
+<script type="text/javascript" src="components/Easytabs/jquery.easytabs.js"></script>
+<link href="components/Easytabs/easytabs.css" rel="stylesheet">
+
+
+
+<!-- Custom Fonts -->
+<link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+<link href="components/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet">
+<!-- FIXME move to css folder -->
+
+
+
+<style>
+.custom-combobox {
+	position: relative;
+	display: inline-block;
+}
+
+.custom-combobox-toggle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin-left: -1px;
+	padding: 0;
+}
+
+.custom-combobox-input {
+	margin: 0;
+	padding: 5px 10px;
+}
+</style>
+<style>
+.navbar-content {
+	width: 320px;
+	padding: 15px;
+	padding-bottom: 0px;
+}
+
+.navbar-content:before, .navbar-content:after {
+	display: table;
+	content: "";
+	line-height: 0;
+}
+
+.navbar-footer {
+	background-color: #DDD;
+}
+
+.navbar-footer-content {
+	padding: 15px 15px 15px 15px;
+}
+
+.dropdown-menu {
+	padding: 0px;
+	overflow: hidden;
+}
+</style>
+<style type="text/css"> /* FIXME Scrollbar Styling */
+body, html {
+	overflow-y: hidden;
+}
+</style>
+<style>
+.validateTips {
+	border: 1px solid transparent;
+	padding: 0.3em;
+}
+</style>
+<style>
+iframe {
+	border: 1px solid #888;
+	width: 100%;
+	height: 100px;
+}
+
+/* .col-sm-10
+{
+    background-color: green;
+    overflow: auto;
+    height: 90vh;
+} */
+</style>
+
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="components/tooltip/tooltip.js"></script>
+<link rel="stylesheet" href="components/tooltip/tooltip.css">
+
+<script src="components/colorpicker/evol.colorpicker.js" type="text/javascript" charset="utf-8"></script>
+<link href="components/colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<style>
+#feedback {
+	font-size: 1.4em;
+}
+
+#documentlist .ui-selecting {
+	background: #BBB;
+}
+
+#documentlist .ui-selected {
+	background: #777;
+	color: white;
+}
+
+#documentlist {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+#documentlist li {
+	margin: 2px;
+	height: 20px;
+}
+</style>
+<style>
+.edit-toggle .edit-toggle-off, .edit-toggle.collapsed .edit-toggle-on {
+	display: none;
+}
+
+.edit-toggle.collapsed .edit-toggle-off, .edit-toggle .edit-toggle-on {
+	display: inline-block;
+}
+</style>
+
+</head>
+<body>
+	<div class="row">
+		<div class=col-sm-12>
+			<!-- Navigation -->
+			<nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+				<div class="container topnav">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand topnav" href="index.html">QDAcity</a>
+					</div>
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						<ul class="nav navbar-nav navbar-right">
+							<li><a href="index.html#about">About</a></li>
+							<li><a href="index.html#contact">Contact</a></li>
+
+							<li id="navAccount" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									Account <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<div class="navbar-content">
+											<div class="row">
+												<div class="col-md-5">
+													<img id="currentUserPicture" src="" alt="Alternate Text" class="img-responsive" />
+													<p class="text-center small">
+														<a href="#">Change Photo</a>
+													</p>
+												</div>
+												<div class="col-md-7">
+													<span id="currentUserName"></span>
+													<p id="currentUserEmail" class="text-muted small"></p>
+													<div class="divider"></div>
+													<a href="personal-dashboard.html" class="btn btn-primary btn-sm active">Personal Dashboard</a>
+												</div>
+											</div>
+										</div>
+										<div class="navbar-footer">
+											<div class="navbar-footer-content">
+												<div class="row">
+													<div class="col-md-6">
+														<a href="#" class="btn btn-default btn-sm">Sign in as different User</a>
+													</div>
+													<div class="col-md-6">
+														<a id="navBtnSignOut" class="btn btn-default btn-sm pull-right">Sign Out</a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul></li>
+							<li id="navSignin" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									Sign In <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<li>
+										<div class="navbar-content">
+											<div class="row">
+												<div class="col-md-12" style="text-align: center; padding-bottom: 15px;">
+													<a id="navBtnSigninGoogle" class="btn  btn-primary" href="#">
+														<i class="fa fa-google fa-2x pull-left"></i>
+														<span style="font-size: 18px;">Sign in with Google</span>
+													</a>
+												</div>
+											</div>
+										</div>
+										<div class="navbar-footer">
+											<div class="navbar-footer-content">
+												<div class="row">
+													<div class="col-md-12"></div>
+												</div>
+											</div>
+									</li>
+								</ul></li>
+						</ul>
+					</div>
+					<!-- /.navbar-collapse -->
+				</div>
+
+				<!-- /.container -->
+			</nav>
+		</div>
+	</div>
+	<div class="row no-gutters">
+		<div class=col-sm-2>
+
+			<!-- SETTINGS -->
+			<div id="project-ui" ; style="float: left; width: 100%; background-color: #f8f8f8; margin-top: 50px;">
+				<div style="background-color: #e7e7e7; width: 105%;">
+					<div style="text-align: center;">
+
+
+						<div class="list-group">
+							<a class="list-group-item projectDashboardLink" href="#">
+								<i class="fa fa-home fa-fw "></i>
+								Project Dashboard
+							</a>
+						</div>
+						<div style="margin-top: -15px;">
+							<b>Settings</b>
+						</div>
+						<div style="background-color: #f8f8f8; text-align: left;">
+
+
+
+
+
+
+							<a id="btnEditToggle" class="btn btn-sm edit-toggle" style="color: #000000;" data-toggle="collapse" data-target="#textdocument-menu">
+								<span class="edit-toggle-off">
+									<i class="fa fa-toggle-off fa-2x" style="font-size: 20px;"></i>
+								</span>
+								<span class="edit-toggle-on">
+									<i class="fa fa-toggle-on fa-2x" style="font-size: 20px;"></i>
+								</span>
+								<span style="font-size: 15px; margin-left: 5px; vertical-align: top;"> Document Editable</span>
+							</a>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div id="documents-ui" ; style="float: left; width: 100%; background-color: #f8f8f8;">
+				<div style="background-color: #e7e7e7; width: 105%;">
+					<div style="text-align: center;">
+						<b>Documents</b><br>
+						<div class="btn-group">
+							<a id="btnUpdateDoc" class="btn btn-default" href="#">
+								<i class="fa fa-pencil fa-1x"></i>
+							</a>
+							<a id="btnInsertDoc" class="btn btn-default" href="#">
+								<i class="fa fa-plus fa-1x"></i>
+							</a>
+							<a id="btnRemoveDoc" class="btn btn-default" href="#">
+								<i class="fa fa-trash fa-1x"></i>
+							</a>
+						</div>
+						<div class="btn-group"></div>
+					</div>
+				</div>
+				<div id="document-section" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;">
+					<ol id="documentlist">
+
+					</ol>
+				</div>
+			</div>
+
+			<div id="codesystem-ui" ; style="float: left; width: 100%; background-color: #f8f8f8; margin-top: 5px;">
+				<div style="background-color: #e7e7e7; width: 105%;">
+					<div style="text-align: center;">
+						<b>Code System</b><br>
+						<div class="btn-group">
+							<a id="btnUpdateCode" class="btn btn-default" href="#">
+								<i class="fa fa-pencil fa-1x"></i>
+							</a>
+							<a id="btnInsertCode" class="btn btn-default" href="#">
+								<i class="fa fa-plus fa-1x"></i>
+							</a>
+							<a id="btnRemoveCode" class="btn btn-default" href="#">
+								<i class="fa fa-trash fa-1x"></i>
+							</a>
+							<a id="btnCodeProps" class="btn btn-default" href="#">
+								<i class="fa  fa-list-alt  fa-1x"></i>
+							</a>
+						</div>
+						<div class="btn-group">
+
+
+							<a id="btnApplyCode" class="btn btn-default" href="#">
+								<span class="fa-stack fa-lg" style="font-size: 8px;">
+									<i class="fa fa-tag fa-stack-2x"></i>
+									<i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+							<a id="btnRemoveCoding" class="btn btn-default" href="#">
+								<span class="fa-stack fa-lg" style="font-size: 8px;">
+									<i class="fa fa-tag fa-stack-2x"></i>
+									<i class="fa fa-minus fa-stack-1x fa-inverse"></i>
+								</span>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div id="easytree-section" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;">
+
+					<ul>
+					</ul>
+				</div>
+			</div>
+			<div style="float: left; width: 100%; background-color: #f8f8f8; margin-top: 5px;">
+				<div style="background-color: #e7e7e7; width: 105%;">
+					<div style="text-align: center;">
+						<b>Debug</b><br>
+						<a id="btnShowHTML" class="btn btn-default btn-sm" href="#">
+							<i class="fa fa-file-text "></i>
+							HTML
+						</a>
+						<div id="listCodesResult"></div>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+		<div class=col-sm-10 style="background-color: #FFF; margin-top: 50px; margin-bottom: 50px;">
+
+			<div id="textdocument-ui";>
+				<div id="textdocument-menu" class="collapse in" style="text-align: center; padding-top: 10px; background-color: #e7e7e7;">
+
+
+					<a id="btnTxtSave" style="float: right; margin-right: 20px;" class="btn btn-default btn-default" href="#">
+						<i class="fa fa-floppy-o "></i>
+						Save
+					</a>
+
+					<div class="btn-group ui-widget">
+						<a id="btnTxtBold" class="btn btn-default" href="#">
+							<i class="fa fa-bold fa-1x"></i>
+						</a>
+						<a id="btnTxtItalic" class="btn btn-default" href="#">
+							<i class="fa fa-italic fa-1x"></i>
+						</a>
+						<a id="btnTxtUnderline" class="btn btn-default" href="#">
+							<i class="fa fa-underline fa-1x"></i>
+						</a>
+						<label>&nbsp;&nbsp;Font: </label> <select id="combobox">
+							<option value="">Select one...</option>
+							<option value="Arial">Arial</option>
+							<option value="Arial Black">Arial Black</option>
+							<option value="Comic Sans MS">Comic Sans MS</option>
+							<option value="Courier New">Courier New</option>
+							<option value="Georgia">Georgia</option>
+							<option value="Impact">Impact</option>
+							<option value="Lucida Console">Lucida Console</option>
+							<option value="Palatino Linotype">Palatino Linotype</option>
+							<option value="Tahoma">Tahoma</option>
+							<option value="Times New Roman">Times New Roman</option>
+							<option value="Trebuchet MS">Trebuchet MS</option>
+							<option value="Verdana">Verdana</option>
+						</select>
+
+					</div>
+					<label style="margin-left: 40px;">Font Size: </label>
+					<input id="txtSizeSpinner" " />
+
+				</div>
+				<iframe id="editor">
+					<div>
+						<h1>Test Text</h1>
+						<br> This test text is used to test the text for testing purposes.<br> This is another test text.<br> When you want to test, you can use this text.<br> Test texts are a good way to test something.<br> Here is some more text.<br> Not done testing? More text.<br>
+					</div>
+				</iframe>
+			</div>
+			<div id="login" class="testapi">
+				<div id="login">
+					<input id="loginButton" type="button" value="Login" />
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+
+	<footer id="footer" class="footer">
+		<!-- <div style="float: right; background-color: #e7e7e7;"><i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover" ></i> </div>  -->
+		<!-- float: left; -->
+		<div id="codeTabs" class='tab-container'>
+			<span style="float: right;">
+				<i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover"></i>
+			</span>
+			<div class='etabs'>
+				<span class='tab' id="defaultCodeTab">
+					<a href="#codingtable">Codings</a>
+				</span>
+				<span class='tab'>
+					<a href="#codeProperties">Code Properties</a>
+				</span>
+
+			</div>
+
+			<div class='panel-container'>
+				<div id="codingtable" style="text-align: center; background-color: #eee;"></div>
+				<div id="codeProperties" style="background-color: #eee;">
+					<table>
+						<tr>
+							<td><span>Name: </span></td>
+							<td><input id="codePropName" type="text" value="codePropName"></td>
+						</tr>
+						<tr>
+							<td><span>Author: </span></td>
+							<td><input id="codePropAuthor" type="text" value="codePropAuthor"></td>
+						</tr>
+						<tr>
+							<td><span>Color: </span></td>
+							<td><input id="codePropColor" style="width: 80px;" type="text" value="#000000"></td>
+						</tr>
+					</table>
+
+					<div style="width: 8em; text-align: center; margin: 0 auto;">
+						<a id="btnCodeSave" class="btn btn-default btn-default" href="#">
+							<i class="fa fa-floppy-o "></i>
+							Save
+						</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+
+	</footer>
+
+	<div id="new-code-form" title="Code Properties">
+		<p class="validateTips"></p>
+
+		<form>
+			<fieldset>
+				<table id="addCodeTable" style="padding-left: 10px;">
+					<tbody>
+						<tr>
+							<td><label for="newCodeName">Code Name</label></td>
+							<td><input type="text" name="newCodeName" id="newCodeName" value="Code Name" class="text ui-widget-content ui-corner-all"></td>
+						</tr>
+						<tr>
+							<td><label for="newCodeAuthor">Author</label></td>
+							<td><input type="text" name="newCodeAuthor" id="newCodeAuthor" value="Author" class="text ui-widget-content ui-corner-all"></td>
+						</tr>
+						<tr>
+							<td><label for="newCodeID">ID</label></td>
+							<td><input type="text" name="newCodeID" id="newCodeID" value="" class="text ui-widget-content ui-corner-all"></td>
+						</tr>
+					</tbody>
+				</table>
+				<!-- Allow form submission with keyboard without duplicating the dialog button -->
+				<input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
+			</fieldset>
+		</form>
+	</div>
+	<div id="update-code-form" title="Code Properties">
+		<p class="validateTips"></p>
+
+		<form>
+			<fieldset>
+				<table id="changeCodeTable" style="padding-left: 10px;">
+					<tbody>
+						<tr>
+							<td><label for="updateCodeID">ID</label></td>
+							<td>
+								<div id="updateFormCodeId"></div>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="updateCodeName">Code Name</label></td>
+							<td><input type="text" name="updateCodeName" id="updateCodeName" value="Code Name" class="text ui-widget-content ui-corner-all"></td>
+						</tr>
+						<tr>
+							<td><label for="updateCodeAuthor">Author</label></td>
+							<td><input type="text" name="updateCodeAuthor" id="updateCodeAuthor" value="Author" class="text ui-widget-content ui-corner-all"></td>
+						</tr>
+
+					</tbody>
+				</table>
+				<!-- Allow form submission with keyboard without duplicating the dialog button -->
+				<input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
+			</fieldset>
+		</form>
+	</div>
+
+	<div id="new-document-form" title="Code Properties">
+		<p class="validateTips"></p>
+		<form>
+			<fieldset>
+				<table id="addDocTable" style="padding-left: 10px; table-layout: fixed; width: 700px;">
+					<tbody>
+						<tr>
+							<td style="width: 350px; text-align: center;"><label for="newCodeName">New Text Document</label> <input id="newDocTitleFld" type="text" name="updateCodeName" id="updateCodeName" value="Title" class="text ui-widget-content ui-corner-all"> <br /> <br /> <span id="createDocBtn"
+									class="jFiler-input-choose-btn">Create</span></td>
+							<td style="width: 350px;"><input type="file" name="files[]" id="filer_input" multiple="multiple"> <span id="uploadDocBtn" class="jFiler-input-choose-btn">Upload</span></td>
+						</tr>
+					</tbody>
+				</table>
+				<!-- Allow form submission with keyboard without duplicating the dialog button -->
+				<input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
+			</fieldset>
+		</form>
+	</div>
+
+	<div id="debugTextEditor" title="HTML"></div>
+
+
+	<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+	<script src="assets/js/ErrorHandler.js" type="text/javascript" charset="utf-8"></script>
+
+	<!-- Main JS Script -->
+	<script src="assets/js/coding-editor/coding-editor.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/js/coding-editor/codings-view.js" type="text/javascript" charset="utf-8"></script>
+
+	<script src="components/vex/js/vex.combined.min.js"></script>
+
+	<script src="https://apis.google.com/js/client.js?onload=init"></script>
+</body>
+</html>

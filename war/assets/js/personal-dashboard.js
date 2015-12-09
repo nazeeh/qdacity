@@ -373,7 +373,7 @@ function addProjectToProjectList(projectID, projectName){
 	html += '<span class="project_name">'+projectName+'</span>';
 	html += '<span class="project_id hidden">'+projectID;
 	html += '</span>';
-	html +='<a href="apitest.html?'+projectID+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html +='<a href="coding-editor.html?'+projectID+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html +=' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 	html +='<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
 	html +='</a>';
