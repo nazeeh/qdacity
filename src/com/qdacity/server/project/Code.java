@@ -25,6 +25,8 @@ public class Code {
 	Long parentID;
 	@Persistent
 	Long codesytemID;
+	@Persistent
+	String memo;
 
 	public Long getId() {
 		return id;
@@ -88,6 +90,14 @@ public class Code {
 	public void setCodesytemID(Long codesytemID) {
 		this.codesytemID = codesytemID;
 	}
+
+  public String getMemo() {
+    return memo;
+  }
+
+  public void setMemo(String memo) {
+    this.memo = memo;
+  }
 	
 	
 }

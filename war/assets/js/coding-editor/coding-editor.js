@@ -11,12 +11,13 @@ var documentMap;
 var max_coding_id;
 
 var editor;
+var codeMemoEditor;
 
 var iframe = document.getElementById('editor');
 $(document).ready(function() {
 	// Make sure we're in standards mode.
 	var doc = iframe.contentDocument;
-	$("iframe").css({
+	$("#editor").css({
 		height : $(window).height() - 52
 	});
 	if (doc.compatMode !== 'CSS1Compat') {
@@ -51,7 +52,9 @@ $(document).ready(function() {
 		}
 	});
 	editor['readOnly']('true');
-
+	
+	createCodeMemoEditor();
+	
 	// Add styles to frame
 	var style = doc.createElement('style');
 	style.type = 'text/css';
@@ -111,6 +114,21 @@ $(document).ready(function() {
 	$("#codePropColor").colorpicker();
 });
 
+
+function createCodeMemoEditor(){
+	var codeMemoIFrame = document.getElementById('codeMemoEditor');
+	codeMemoIFrame.onload = function(event) {
+		var codeMemoIFrame = document.getElementById('codeMemoEditor');
+		var doc = codeMemoIFrame.contentDocument;
+
+		// Create Squire instance
+		codeMemoEditor = new Squire(doc);
+		
+		codeMemoEditor.setHTML(getActiveCode().memo);
+	  }
+	
+}
+
 window.onresize = resizeHandler;
 
 function resizeHandler() {
@@ -135,7 +153,7 @@ function resizeElements() {
 	if ($("#textdocument-menu").is(":visible")) {
 		offsetHeight += 45;
 	}
-	$("iframe").css({
+	$("#editor").css({
 		height : $(window).height() - 52 - offsetHeight
 	});
 }
@@ -311,7 +329,13 @@ function init() {
 	}
 
 	document.getElementById('btnCodeSave').onclick = function() {
-		updateCode($('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().id);
+		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().id);
+
+	}
+	
+	document.getElementById('btnCodeMemoSave').onclick = function() {
+		window.alert(codeMemoEditor.getHTML());
+		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().id);
 
 	}
 
@@ -573,7 +597,7 @@ function listCodes() {
 			}
 			document.getElementById('listCodesResult').innerHTML = result;
 			for (var i = 0; i < codes.length; i++) {
-				addNodeToTree(codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs);
+				addNodeToTree(codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo);
 			}
 
 			for (var i = 0; i < codes.length; i++) {
@@ -618,7 +642,7 @@ function insertCode(_AuthorName, _CodeName) {
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name);
 			document.getElementById('listCodesResult').innerHTML = resp.id + ":" + resp.author + ":" + resp.name;
-			addNodeToTree(resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs);
+			addNodeToTree(resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo);
 			if (typeof activeID != 'undefined') {
 				addSubCode(activeID, resp.id);
 				relocateNode(resp.id, activeID);
@@ -631,13 +655,14 @@ function insertCode(_AuthorName, _CodeName) {
 }
 
 // Update Code function
-function updateCode(_AuthorName, _CodeName, _CodeColor, _ID) {
+function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID) {
 	// Build the Request Object
 	var requestData = {};
 	requestData.id = _ID;
 	requestData.author = _AuthorName;
 	requestData.name = _CodeName;
 	requestData.color = _CodeColor;
+	requestData.memo = _Memo;
 	requestData.codesytemID = codesystem_id;
 	requestData.parentID = getActiveCode().parentID;
 	requestData.subCodesIDs = getActiveCode().subCodesIDs;
@@ -646,7 +671,7 @@ function updateCode(_AuthorName, _CodeName, _CodeColor, _ID) {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			updateNode(resp.id, resp.name, resp.author, resp.color);
+			updateNode(resp.id, resp.name, resp.author, resp.color, resp.memo);
 		}
 	});
 }
@@ -681,6 +706,8 @@ function addSubCode(_ID, _SubID) {
 		requestData.author = resp.author;
 		requestData.codesytemID = resp.codesytemID;
 		requestData.color = resp.color;
+		requestData.memo = resp.memo;
+		
 		if (typeof resp.subCodesIDs == 'undefined') {
 			requestData.subCodesIDs = [ _SubID ];
 		} else {
@@ -715,6 +742,8 @@ function changeParentId(_ID, _newParent) {
 		requestData.parentID = _newParent;
 		requestData.codesytemID = resp.codesytemID;
 		requestData.color = resp.color;
+		requestData.memo = resp.memo;
+		
 		gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
 			if (!resp.code) {
 				console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
@@ -743,6 +772,8 @@ function removeSubCode(_ID, _SubID) {
 		requestData.author = resp.author;
 		requestData.codesystemID = resp.codesystemID;
 		requestData.color = resp.color;
+		requestData.memo = resp.memo;
+		
 		for (var i = resp.subCodesIDs.length - 1; i >= 0; i--) {
 
 			if (resp.subCodesIDs[i] === _SubID) {
@@ -894,7 +925,7 @@ $(function() {
 	});
 });
 
-function addNodeToTree(id, name, author, color, parentID, subCodesIDs) {
+function addNodeToTree(id, name, author, color, parentID, subCodesIDs, memo) {
 	var sourceNode = {};
 	sourceNode.text = name;
 	sourceNode.isFolder = true;
@@ -905,6 +936,8 @@ function addNodeToTree(id, name, author, color, parentID, subCodesIDs) {
 	sourceNode.color = color;
 	sourceNode.parentID = parentID;
 	sourceNode.subCodesIDs = subCodesIDs;
+	if (memo == undefined) memo = "";
+	sourceNode.memo = memo;
 
 	sourceNode.onclick = function() {
 		window.alert("test");
@@ -960,13 +993,14 @@ function relocateNode(id, target) {
 	easytree.rebuildTree();
 }
 
-function updateNode(id, name, author, color) {
+function updateNode(id, name, author, color, memo) {
 
 	var sourceNode = easytree.getNode(id);
 	sourceNode.text = name;
 	sourceNode.author = author;
 	sourceNode.color = color;
-
+	sourceNode.memo = memo;
+	
 	easytree.rebuildTree();
 }
 
@@ -988,6 +1022,7 @@ function getActiveCode() {
 		code.color = activeNode.color;
 		code.parentID = activeNode.parentID;
 		code.subCodesIDs = activeNode.subCodesIDs;
+		code.memo = activeNode.memo;
 	}
 	return code;
 
@@ -1033,6 +1068,7 @@ function codesystemStateChanged(nodes, nodesJson) {
 		if ($("#footer").is(":visible")) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);
+			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
 		}
 	} else {
 		initialized_easytree = true;

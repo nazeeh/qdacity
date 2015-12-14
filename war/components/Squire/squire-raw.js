@@ -2453,14 +2453,19 @@ proto.setSelection = function ( range ) {
         if ( isIOS ) {
             this._win.focus();
         }
+        if (this._sel != null){
+
         var sel = this._sel;
         sel.removeAllRanges();
         sel.addRange( range );
+        }
     }
     return this;
 };
 
 proto.getSelection = function () {
+	if (this._sel == null)this._sel=win.getSelection();
+		
     var sel = this._sel,
         selection, startContainer, endContainer;
     if ( sel.rangeCount ) {
