@@ -30,21 +30,23 @@ function addAllBrackets(editorDoc,svgElem){
 	for ( var i = 0; i< codingsArray.length; i++) {
 		var startY = codingsArray[i].offsetTop - 21;
 		var endY = startY + codingsArray[i].height;
-		addBracket(svgElem, startY, endY);
+		addBracket(svgElem, codingsArray[i].name, startY, endY);
 	}
 
 }
 
 
-function addBracket(svgElement,startY,endY){
-	createPath(svgElement, startY, endY);
+function addBracket(svgElement, name, startY,endY){
+	var pathRightX = 130;
+	var pathLeftX = pathRightX - 15;
+	var labelX = pathLeftX - 6;
+	
+	createPath(svgElement, startY, endY, pathRightX, pathLeftX);
+	labelCodingBracket(svgElement, name, labelX, startY + (endY - startY)/2 + 4);
 }
 
 
-function createPath(svgElement, startY, endY){
-	var rightX = 130;
-	var leftX = rightX - 15;
-	var offsetX;
+function createPath(svgElement, startY, endY, rightX, leftX){
 	
 	var lineData = [{ "x": rightX,   "y": startY},  // Start point
 	                { "x": leftX,   "y": startY   },  // Move left
@@ -64,3 +66,10 @@ function createPath(svgElement, startY, endY){
 	.attr("fill", "none");
 }
 
+function labelCodingBracket(svgElement, label, x, y){
+	svgElement.append('text')
+	.text(label)
+	.attr('x', x)
+	.attr('y', y)
+	.attr('style', 'text-anchor: end');
+}

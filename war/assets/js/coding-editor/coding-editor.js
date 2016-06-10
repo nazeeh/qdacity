@@ -472,6 +472,7 @@ function getCodingsFromText(text){
 			var codingData = {};
 			codingData.offsetTop = codingNode.offsetTop;
 			codingData.height = codingNode.offsetHeight;
+			codingData.name = codingNode.getAttribute("title"); 
 			
 			codingArray.push(codingData);
 			
