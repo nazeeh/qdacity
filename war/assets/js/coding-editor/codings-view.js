@@ -83,6 +83,7 @@ function activateCodingInEditor(codingID) {
 			range.setStart(startNode, 0);
 			range.setEnd(endNode, endNode.childNodes.length);
 			editor.setSelection(range);
+			
 			//Scroll to selection
 			var offset = startNode.offsetTop;
 			$("#editor").contents().scrollTop(offset);

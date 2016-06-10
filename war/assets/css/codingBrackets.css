@@ -1,0 +1,18 @@
+svg path {
+	stroke: #000;
+	stroke-width: 3px;
+	fill: none;
+	margin-left:90px;
+}
+
+svg>path:hover {
+	stroke: red !important;
+	cursor: pointer;
+	color: red;
+}
+
+.svgContainer {
+	position: absolute;
+	opacity: 1;
+	margin-left: -150px;
+}
