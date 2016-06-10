@@ -473,6 +473,7 @@ function getCodingsFromText(text){
 			codingData.offsetTop = codingNode.offsetTop;
 			codingData.height = codingNode.offsetHeight;
 			codingData.name = codingNode.getAttribute("title"); 
+			codingData.codingId = codingNode.getAttribute("id"); 
 			
 			codingArray.push(codingData);
 			

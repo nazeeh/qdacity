@@ -23,30 +23,78 @@ function createSVG(editorDoc, svgContainer){
 	
 }
 
+
+
 function addAllBrackets(editorDoc,svgElem){
 	var codedText = editorDoc.body.innerHTML;
 	var codingsArray = getCodingsFromText(codedText);
 	var foundCodings = $('coding', codedText);
+	var bracketIntervals = [];
+	var labelIntervals = [];
+	
 	for ( var i = 0; i< codingsArray.length; i++) {
 		var startY = codingsArray[i].offsetTop - 21;
 		var endY = startY + codingsArray[i].height;
-		addBracket(svgElem, codingsArray[i].name, startY, endY);
+		var codingId = codingsArray[i].codingId;
+		
+		var offsetX = calculateOffsetX( startY, endY, bracketIntervals, svgElem);
+		bracketIntervals.push({'codingId': codingId, 'start': startY, 'end':endY });
+		
+		var labelPosY = calculateLabelPosY( startY + (endY - startY)/2, labelIntervals);
+		labelIntervals.push(labelPosY);
+		
+		addBracket(svgElem, codingId, codingsArray[i].name, startY, endY, offsetX, labelPosY);
 	}
 
 }
 
 
-function addBracket(svgElement, name, startY,endY){
+function addBracket(svgElement, codingId, name, startY,endY, offsetX, labelPosY){
 	var pathRightX = 130;
-	var pathLeftX = pathRightX - 15;
-	var labelX = pathLeftX - 6;
+	var pathLeftX = pathRightX - offsetX - 8;
+	var labelX = pathLeftX - 8;
 	
-	createPath(svgElement, startY, endY, pathRightX, pathLeftX);
-	labelCodingBracket(svgElement, name, labelX, startY + (endY - startY)/2 + 4);
+	createPath(svgElement, codingId, startY, endY, pathRightX, pathLeftX);
+	labelCodingBracket(svgElement, codingId, name, labelX, labelPosY);
 }
 
+function calculateOffsetX( startY, endY, bracketIntervals, svgElem){
+	var collisionCount = 0;
+	for (var i = 0; i < bracketIntervals.length; i++){
+		var intervalStart = bracketIntervals[i].start;
+		var intervalEnd = bracketIntervals[i].end;
+		var codingId = bracketIntervals[i].codingId;
+		
+		if (((startY <= intervalEnd) && (startY >= intervalStart)) ||
+			(endY <= intervalEnd && endY >= intervalStart)         ||
+			(startY <= intervalStart && endY >= intervalEnd))        {
+			var elements = $(svgElem).find("text");
+			var collidingElement = svgElem.select("#label_"+codingId);
+			var labelPosX = collidingElement.attr("x");
+			collidingElement.attr("x", labelPosX -7);
+			collisionCount++;
+		}
+	}
+	
+	return 7*collisionCount;
+}
 
-function createPath(svgElement, startY, endY, rightX, leftX){
+function calculateLabelPosY( labelPosition, labelPositions){
+	var collisionCount = 0;
+	var labelHeight = 7;
+	for (var i = 0; i < labelPositions.length; i++){
+		var existingLabel = labelPositions[i];
+		if (labelPosition - existingLabel < labelHeight && labelPosition - existingLabel > 0){
+			return calculateLabelPosY(labelPosition + labelHeight, labelPositions);
+		}else if (labelPosition - existingLabel > -labelHeight && labelPosition - existingLabel < 0){
+			return calculateLabelPosY(labelPosition + labelHeight, labelPositions);
+		}
+	}
+	
+	return labelPosition + 4;
+}
+
+function createPath(svgElement, codingId, startY, endY, rightX, leftX){
 	
 	var lineData = [{ "x": rightX,   "y": startY},  // Start point
 	                { "x": leftX,   "y": startY   },  // Move left
@@ -59,17 +107,21 @@ function createPath(svgElement, startY, endY, rightX, leftX){
 	.interpolate("linear");
 	
 	
+	
 	var lineGraph = svgElement.append("path")
-	.attr("id", "path1")
+	.attr("id", "path_"+codingId)
 	.attr("d", lineFunction(lineData))
 	.attr("stroke", "#000")
-	.attr("fill", "none");
+	.attr("fill", "none")
+	.attr("coding_id", codingId);
 }
 
-function labelCodingBracket(svgElement, label, x, y){
+function labelCodingBracket(svgElement, codingId, label, x, y){
 	svgElement.append('text')
 	.text(label)
+	.attr("id", "label_"+codingId)
 	.attr('x', x)
 	.attr('y', y)
-	.attr('style', 'text-anchor: end');
+	.attr('style', 'text-anchor: end')
+	.attr("coding_id", codingId);
 }
