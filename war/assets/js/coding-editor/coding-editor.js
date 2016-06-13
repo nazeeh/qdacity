@@ -120,6 +120,8 @@ $(document).ready(function() {
 
 function addCodingBrackets(){
 	var doc = iframe.contentDocument;
+	$(doc).find(".svgContainer").remove();
+	
 	var svgDiv = createCodingBrackets(doc, "");
 	var body = doc.querySelector('body');
 	body.insertBefore(svgDiv, body.firstChild);
@@ -466,16 +468,29 @@ function getCodingsFromText(text){
 		var codingNodes = $("#editor").contents().find(
 				'coding');
 		if (codingNodes.length > 0){
-			
+		var codingData = {};
+		var currentID = -1;
 		for ( var i = 0; i< codingNodes.length; i++) {
 			var codingNode = codingNodes[i];
-			var codingData = {};
-			codingData.offsetTop = codingNode.offsetTop;
-			codingData.height = codingNode.offsetHeight;
-			codingData.name = codingNode.getAttribute("title"); 
-			codingData.codingId = codingNode.getAttribute("id"); 
 			
-			codingArray.push(codingData);
+			// One code ID may have multiple DOM elements, if this is a new one create a coding object
+			if (currentID != codingNode.getAttribute("id")){
+				currentID = codingNode.getAttribute("id");
+				
+				codingData = {};
+				codingData.offsetTop = codingNode.offsetTop;
+				codingData.height = codingNode.offsetHeight;
+				codingData.name = codingNode.getAttribute("title"); 
+				codingData.codingId = currentID; 
+				
+				codingArray.push(codingData);
+			}
+			// if this is just another DOM element for a coding that has already been created, then adjust the hight
+			else{ 
+				codingData.height = codingNode.offsetTop - codingData.offsetTop + codingNode.offsetHeight;
+			}
+			
+			
 			
 		}
 		}
