@@ -128,6 +128,9 @@ function createPath(svgElement, codingId, startY, endY, rightX, leftX){
 	   .on("mouseout", function(d) {
 	       d3.select(this.parentNode).classed('hover', false);
 	   })
+	   .on("click", function(d) {
+		   activateCodingInEditor(codingId, false);
+	   })
 }
 
 function labelCodingBracket(svgElement, codingId, label, x, y){
@@ -145,5 +148,8 @@ function labelCodingBracket(svgElement, codingId, label, x, y){
 	   })
 	   .on("mouseout", function(d) {
 	       d3.select(this.parentNode).classed('hover', false);
+	   })
+	   .on("click", function(d) {
+		   activateCodingInEditor(codingId, false);
 	   })
 }

@@ -41,7 +41,7 @@ $(document)
 							$(this).addClass('selected');
 							var codingID = $(this).find("td").eq(0).html();
 
-							activateCodingInEditor(codingID);
+							activateCodingInEditor(codingID, true);
 
 						}
 					});
@@ -56,7 +56,7 @@ $(document)
 
 				});
 
-function activateCodingInEditor(codingID) {
+function activateCodingInEditor(codingID, scrollToSection) {
 
 	for ( var id in text_documents) {
 		var elements = text_documents[id].text;
@@ -85,8 +85,10 @@ function activateCodingInEditor(codingID) {
 			editor.setSelection(range);
 			
 			//Scroll to selection
-			var offset = startNode.offsetTop;
-			$("#editor").contents().scrollTop(offset);
+			if (scrollToSection){
+				var offset = startNode.offsetTop;
+				$("#editor").contents().scrollTop(offset);
+			}
 
 		}
 	}
