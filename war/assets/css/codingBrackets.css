@@ -5,14 +5,35 @@ svg path {
 	margin-left:90px;
 }
 
-svg>path:hover {
-	stroke: red !important;
-	cursor: pointer;
-	color: red;
-}
 
 .svgContainer {
 	position: absolute;
 	opacity: 1;
 	margin-left: -150px;
 }
+
+ .codingBracket:hover {
+
+	z-index:9999 !important;
+}
+
+
+.hover path{
+	stroke: red !important;
+	cursor: pointer ;
+	color: red ;
+	z-index:9999 !important;
+}
+
+.hover text{
+	cursor: pointer;
+	fill: red;
+}
+ 
+ path.hover {
+    stroke: red !important;
+	cursor: pointer;
+	color: red;
+	z-index:9999 !important;
+} 
+
