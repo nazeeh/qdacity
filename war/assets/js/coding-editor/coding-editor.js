@@ -170,6 +170,7 @@ function resizeElements() {
 	$("#editor").css({
 		height : $(window).height() - 52 - offsetHeight
 	});
+	addCodingBrackets();
 }
 
 var easytree = $('#easytree-section').easytree({
