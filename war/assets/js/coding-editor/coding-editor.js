@@ -464,38 +464,33 @@ function fillCodingTable(codeID) {
 
 function getCodingsFromText(text){
 
-		var codingArray = [];
+		var codingMap = {};
 		var codingNodes = $("#editor").contents().find(
 				'coding');
 		if (codingNodes.length > 0){
-		var codingData = {};
-		var currentID = -1;
-		for ( var i = 0; i< codingNodes.length; i++) {
-			var codingNode = codingNodes[i];
-			
-			// One code ID may have multiple DOM elements, if this is a new one create a coding object
-			if (currentID != codingNode.getAttribute("id")){
+			var codingData = {};
+			var currentID = -1;
+			for ( var i = 0; i< codingNodes.length; i++) {
+				var codingNode = codingNodes[i];
 				currentID = codingNode.getAttribute("id");
-				
-				codingData = {};
-				codingData.offsetTop = codingNode.offsetTop;
-				codingData.height = codingNode.offsetHeight;
-				codingData.name = codingNode.getAttribute("title"); 
-				codingData.codingId = currentID; 
-				
-				codingArray.push(codingData);
+				// One code ID may have multiple DOM elements, if this is a new one create a coding object
+				if (!(currentID in codingMap)){
+					codingData = {};
+					codingData.offsetTop = codingNode.offsetTop;
+					codingData.height = codingNode.offsetHeight;
+					codingData.name = codingNode.getAttribute("title"); 
+					codingData.codingId = currentID; 
+					
+					codingMap[currentID] = codingData;
+				}
+				// if this is just another DOM element for a coding that has already been created, then adjust the hight
+				else{ 
+					codingMap[currentID].height = codingNode.offsetTop - codingMap[currentID].offsetTop + codingNode.offsetHeight;
+				}
 			}
-			// if this is just another DOM element for a coding that has already been created, then adjust the hight
-			else{ 
-				codingData.height = codingNode.offsetTop - codingData.offsetTop + codingNode.offsetHeight;
-			}
-			
-			
-			
-		}
 		}
 	
-	return codingArray;
+	return codingMap;
 }
 
 function fillPropertiesView(codeID) {

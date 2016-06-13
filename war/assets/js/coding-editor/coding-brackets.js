@@ -27,15 +27,15 @@ function createSVG(editorDoc, svgContainer){
 
 function addAllBrackets(editorDoc,svgElem){
 	var codedText = editorDoc.body.innerHTML;
-	var codingsArray = getCodingsFromText(codedText);
+	var codingsMap = getCodingsFromText(codedText);
 	var foundCodings = $('coding', codedText);
 	var bracketIntervals = [];
 	var labelIntervals = [];
 	
-	for ( var i = 0; i< codingsArray.length; i++) {
-		var startY = codingsArray[i].offsetTop - 21;
-		var endY = startY + codingsArray[i].height;
-		var codingId = codingsArray[i].codingId;
+	for ( var i in codingsMap) {
+		var startY = codingsMap[i].offsetTop - 21;
+		var endY = startY + codingsMap[i].height;
+		var codingId = codingsMap[i].codingId;
 		
 		var offsetX = calculateOffsetX( startY, endY, bracketIntervals, svgElem);
 		bracketIntervals.push({'codingId': codingId, 'start': startY, 'end':endY });
@@ -43,7 +43,7 @@ function addAllBrackets(editorDoc,svgElem){
 		var labelPosY = calculateLabelPosY( startY + (endY - startY)/2, labelIntervals);
 		labelIntervals.push(labelPosY);
 		
-		addBracket(svgElem, codingId, codingsArray[i].name, startY, endY, offsetX, labelPosY);
+		addBracket(svgElem, codingId, codingsMap[i].name, startY, endY, offsetX, labelPosY);
 	}
 
 }
