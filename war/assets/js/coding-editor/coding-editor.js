@@ -323,6 +323,7 @@ function init() {
 				saveEditorContent();
 				easytree.getNode(activeID).codingCount--;
 				easytree.rebuildTree();
+				addCodingBrackets();
 
 			});
 
@@ -337,6 +338,7 @@ function init() {
 			easytree.getNode(activeID).codingCount++;
 			easytree.rebuildTree();
 			saveEditorContent();
+			addCodingBrackets();
 		} else {
 			window.alert("No code selected.")
 		}
