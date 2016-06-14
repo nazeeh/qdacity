@@ -43,13 +43,13 @@ function addAllBrackets(editorDoc,svgElem){
 		var labelPosY = calculateLabelPosY( startY + (endY - startY)/2, labelIntervals);
 		labelIntervals.push(labelPosY);
 		
-		addBracket(svgElem, codingId, codingsMap[i].name, startY, endY, offsetX, labelPosY);
+		addBracket(svgElem, codingId, codingsMap[i].name, codingsMap[i].color, startY, endY, offsetX, labelPosY);
 	}
 
 }
 
 
-function addBracket(svgElement, codingId, name, startY,endY, offsetX, labelPosY){
+function addBracket(svgElement, codingId, name, color, startY,endY, offsetX, labelPosY){
 	var pathRightX = 130;
 	var pathLeftX = pathRightX - offsetX - 8;
 	var labelX = pathLeftX - 8;
@@ -59,8 +59,8 @@ function addBracket(svgElement, codingId, name, startY,endY, offsetX, labelPosY)
 	.attr("class", "codingBracket")
 	.attr("coding_id", codingId);
 	
-	createPath(codingBracketDiv, codingId, startY, endY, pathRightX, pathLeftX);
-	labelCodingBracket(codingBracketDiv, codingId, name, labelX, labelPosY);
+	createPath(codingBracketDiv, codingId, color, startY, endY, pathRightX, pathLeftX);
+	labelCodingBracket(codingBracketDiv, codingId, name, color, labelX, labelPosY);
 	
 }
 
@@ -100,7 +100,7 @@ function calculateLabelPosY( labelPosition, labelPositions){
 	return labelPosition + 4;
 }
 
-function createPath(svgElement, codingId, startY, endY, rightX, leftX){
+function createPath(svgElement, codingId, color, startY, endY, rightX, leftX){
 	
 	var lineData = [{ "x": rightX,   "y": startY},  // Start point
 	                { "x": leftX,    "y": startY},  // Move left
@@ -117,7 +117,8 @@ function createPath(svgElement, codingId, startY, endY, rightX, leftX){
 	var lineGraph = svgElement.append("path")
 	.attr("id", "path_"+codingId)
 	.attr("d", lineFunction(lineData))
-	.attr("stroke", "#000")
+	.attr("stroke", color)
+	.attr("style", "stroke="+color)
 	.attr("fill", "none")
 	.attr("coding_id", codingId);
 	
@@ -133,13 +134,13 @@ function createPath(svgElement, codingId, startY, endY, rightX, leftX){
 	   })
 }
 
-function labelCodingBracket(svgElement, codingId, label, x, y){
+function labelCodingBracket(svgElement, codingId, label, color, x, y){
 	var labelElement = svgElement.append('text')
 	.text(label)
 	.attr("id", "label_"+codingId)
 	.attr('x', x)
 	.attr('y', y)
-	.attr('style', 'text-anchor: end')
+	.attr('style', 'text-anchor: end; fill:' + color +';')
 	.attr("coding_id", codingId);
 	
 	labelElement.on("mouseover", function(d) {

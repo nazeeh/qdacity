@@ -481,6 +481,7 @@ function getCodingsFromText(text){
 					codingData.height = codingNode.offsetHeight;
 					codingData.name = codingNode.getAttribute("title"); 
 					codingData.codingId = currentID; 
+					codingData.color = getCodeColor(codingNode.getAttribute("code_id"));
 					
 					codingMap[currentID] = codingData;
 				}
@@ -1049,6 +1050,12 @@ function updateNode(id, name, author, color, memo) {
 	sourceNode.memo = memo;
 	
 	easytree.rebuildTree();
+}
+
+function getCodeColor(id, target) {
+	var node = easytree.getNode(id);
+	if (node != null) return node.color;
+	else return "#000";
 }
 
 function getActiveCode() {
