@@ -15,9 +15,11 @@ function createSVG(editorDoc, svgContainer){
 	var svgElem = editorDoc.createElement('svg');
 	svgElem.id="svg1";
 	
+	var scrollHeight = $(editorDoc).find('html')[0].scrollHeight;
+
 	var svgElement = d3.select(svgContainer).append("svg")
     .attr("width", 150)
-    .attr("height", 1500); // FIXME Length of document
+    .attr("height", scrollHeight); // FIXME Length of document
 
 	return svgElement;
 	
