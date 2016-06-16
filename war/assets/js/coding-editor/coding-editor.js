@@ -120,11 +120,14 @@ $(document).ready(function() {
 
 function addCodingBrackets(){
 	var doc = iframe.contentDocument;
-	$(doc).find(".svgContainer").remove();
+	$(doc).imagesLoaded( function() {
+		$(doc).find(".svgContainer").remove();
+		
+		var svgDiv = createCodingBrackets(doc, "");
+		var body = doc.querySelector('body');
+		body.insertBefore(svgDiv, body.firstChild);
+	});
 	
-	var svgDiv = createCodingBrackets(doc, "");
-	var body = doc.querySelector('body');
-	body.insertBefore(svgDiv, body.firstChild);
 }
 
 
@@ -597,6 +600,11 @@ function setDocumentView(textDocumentID) {
 		editor.setHTML(text_documents[textDocumentID].text);
 		addTooltipsToEditor(textDocumentID);
 	}
+	//addCodingBrackets();
+//	setTimeout(function() {
+//		addCodingBrackets();
+//	}, 250);
+	
 	addCodingBrackets();
 }
 
