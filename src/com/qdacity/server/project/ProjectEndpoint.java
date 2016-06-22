@@ -292,18 +292,54 @@ public class ProjectEndpoint {
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public void removeProject(@Named("id") Long id, User user) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			Project project = mgr.getObjectById(Project.class, id);
-			// Check if user is authorized
-			Authorization.checkAuthorization(project, user);
-			
-			mgr.deletePersistent(project);
-		} finally {
-			mgr.close();
-		}
-	}
+  public void removeProject(@Named("id") Long id, User user) throws UnauthorizedException {
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      Project project = mgr.getObjectById(Project.class, id);
+      // Check if user is authorized
+      Authorization.checkAuthorization(project, user);
+      
+      List<String> userIDs = project.getUsers();
+      
+      for (String projectUserIDs : userIDs) {
+        com.qdacity.server.user.User projectUser = mgr.getObjectById(com.qdacity.server.user.User.class, projectUserIDs);
+        
+        projectUser.removeProjectAuthorization(id);
+        mgr.makePersistent(projectUser);
+        
+      }
+      
+      Long codeSystemID = project.getCodesystemID();
+
+      mgr.deletePersistent(project);
+
+      // Delete code system
+      CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
+      
+      Query q;
+      q = mgr.newQuery(Code.class, " codesytemID  == :codeSystemID");
+      //q.deletePersistentAll();
+      Map<String, Long> codesParam = new HashMap();
+      codesParam.put("codeSystemID", codeSystem.getId());
+      @SuppressWarnings("unchecked")
+      List<Code> codes =   (List<Code>) q.executeWithMap(codesParam);
+      mgr.deletePersistentAll(codes);
+      
+      mgr.deletePersistent(codeSystem);
+
+      // Delete all documents
+
+      q = mgr.newQuery(TextDocument.class);
+      q.setFilter( "projectID == :theID");
+      Map<String, Long> paramValues = new HashMap();
+      paramValues.put("theID", id);
+      mgr.deletePersistentAll((List<TextDocument>)q.executeWithMap(paramValues));
+
+      
+    } finally {
+      mgr.close();
+    }
+  }
 
 	private boolean containsProject(Project project) {
 		PersistenceManager mgr = getPersistenceManager();

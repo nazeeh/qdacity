@@ -65,6 +65,10 @@ public class User {
 	public void addProjectAuthorization(Long project){
 		projects.add(project);
 	}
+	
+	public void removeProjectAuthorization(Long project){
+    projects.remove(project);
+  }
 
 	public String getEmail() {
 		return email;
