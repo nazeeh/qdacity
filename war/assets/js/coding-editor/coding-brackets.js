@@ -5,7 +5,9 @@ function createCodingBrackets(editorDoc, codedText){
 	
 	var svgElem = createSVG(editorDoc, svgContainer);
 	
-	addAllBrackets(editorDoc,svgElem);
+	var codingsMap = getCodingsFromText(codedText);
+	
+	addAllBrackets(editorDoc, svgElem, codingsMap);
 	
 	return svgContainer;
 }
@@ -27,10 +29,9 @@ function createSVG(editorDoc, svgContainer){
 
 
 
-function addAllBrackets(editorDoc,svgElem){
+function addAllBrackets(editorDoc,svgElem, codingsMap){
 	var codedText = editorDoc.body.innerHTML;
-	var codingsMap = getCodingsFromText(codedText);
-	var foundCodings = $('coding', codedText);
+	
 	var bracketIntervals = [];
 	var labelIntervals = [];
 	
@@ -47,6 +48,8 @@ function addAllBrackets(editorDoc,svgElem){
 		
 		addBracket(svgElem, codingId, codingsMap[i].name, codingsMap[i].color, startY, endY, offsetX, labelPosY);
 	}
+	
+	return svgElem[0][0];
 
 }
 

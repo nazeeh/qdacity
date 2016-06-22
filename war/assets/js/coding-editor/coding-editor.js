@@ -600,10 +600,6 @@ function setDocumentView(textDocumentID) {
 		editor.setHTML(text_documents[textDocumentID].text);
 		addTooltipsToEditor(textDocumentID);
 	}
-	//addCodingBrackets();
-//	setTimeout(function() {
-//		addCodingBrackets();
-//	}, 250);
 	
 	addCodingBrackets();
 }
