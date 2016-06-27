@@ -85,7 +85,7 @@ public class Project {
 
 	public void removeOwner(String userID){
     if (owners == null) owners = new ArrayList<String>();
-    if (!owners.contains(userID)) owners.add(userID);
+    owners.remove(userID);
   }
 	
 	public List<String> getInvitedUsers() {
@@ -116,7 +116,7 @@ public class Project {
 	
   public void removeValidationCoder(String userID){
     if (validationCoders == null) validationCoders = new ArrayList<String>();
-    if (!validationCoders.contains(userID)) validationCoders.add(userID);
+    validationCoders.remove(userID);
   }
 
   public List<String> getCoders() {
@@ -134,6 +134,6 @@ public class Project {
   
   public void removeCoder(String userID){
     if (coders == null) coders = new ArrayList<String>();
-    if (!coders.contains(userID)) coders.add(userID);
+    coders.remove(userID);
   }
 }
