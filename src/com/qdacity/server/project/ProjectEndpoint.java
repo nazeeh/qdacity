@@ -222,13 +222,14 @@ public class ProjectEndpoint {
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public Project addOwner(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+	public Project addOwner(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = mgr.getObjectById(Project.class, projectID);
 			
-			project.addOwner(user.getUserId());
+			if (userID != null) project.addOwner(userID);
+			else project.addOwner(user.getUserId());
 			
 			mgr.makePersistent(project);
 		} finally {
@@ -241,13 +242,14 @@ public class ProjectEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public Project removeOwner(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+  public Project removeOwner(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
     Project project = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
       project = mgr.getObjectById(Project.class, projectID);
       
-      project.removeOwner(user.getUserId());
+      if (userID != null) project.removeOwner(userID);
+      else project.removeOwner(user.getUserId());
       
       mgr.makePersistent(project);
     } finally {
@@ -260,13 +262,14 @@ public class ProjectEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public Project addCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+  public Project addCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
     Project project = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
       project = mgr.getObjectById(Project.class, projectID);
       
-      project.addCoder(user.getUserId());
+      if (userID != null)project.addCoder(userID);
+      else project.addCoder(user.getUserId());
       
       mgr.makePersistent(project);
     } finally {
@@ -279,13 +282,14 @@ public class ProjectEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public Project removeCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+  public Project removeCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
     Project project = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
       project = mgr.getObjectById(Project.class, projectID);
       
-      project.removeCoder(user.getUserId());
+      if (userID != null) project.removeCoder(userID);
+      else project.removeCoder(user.getUserId());
       
       mgr.makePersistent(project);
     } finally {
@@ -298,13 +302,14 @@ public class ProjectEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public Project addValidationCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+  public Project addValidationCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
     Project project = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
       project = mgr.getObjectById(Project.class, projectID);
       
-      project.addValidationCoder(user.getUserId());
+      if (userID != null) project.addValidationCoder(userID);
+      else project.addValidationCoder(user.getUserId());
       
       mgr.makePersistent(project);
     } finally {
@@ -317,13 +322,14 @@ public class ProjectEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public Project removeValidationCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+  public Project removeValidationCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
     Project project = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
       project = mgr.getObjectById(Project.class, projectID);
       
-      project.removeValidationCoder(user.getUserId());
+      if (userID != null) project.removeValidationCoder(userID);
+      else project.removeValidationCoder(user.getUserId());
       
       mgr.makePersistent(project);
     } finally {
