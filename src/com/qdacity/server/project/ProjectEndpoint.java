@@ -70,10 +70,10 @@ public class ProjectEndpoint {
 			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
 
 			
-			Query q = mgr.newQuery(Project.class, ":p.contains(users)");
+			Query q = mgr.newQuery(Project.class, ":p.contains(owners)");
 			
 			
-			Query query = mgr.newQuery(Project.class, ":p.contains(users)");
+			Query query = mgr.newQuery(Project.class, ":p.contains(owners)");
 			if (cursorString != null && cursorString != "") {
 				cursor = Cursor.fromWebSafeString(cursorString);
 				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
@@ -178,7 +178,7 @@ public class ProjectEndpoint {
 					throw new EntityExistsException("Object already exists");
 				}
 			}
-			project.addUser(user.getUserId());
+			project.addOwner(user.getUserId());
 			mgr.makePersistent(project);
 			// Authorize User
 			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
@@ -218,17 +218,17 @@ public class ProjectEndpoint {
 		return project;
 	}
 	
-	@ApiMethod(name = "project.addUser",   scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "project.addOwner",   scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public Project addUser(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+	public Project addOwner(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = mgr.getObjectById(Project.class, projectID);
 			
-			project.addUser(user.getUserId());
+			project.addOwner(user.getUserId());
 			
 			mgr.makePersistent(project);
 		} finally {
@@ -236,6 +236,101 @@ public class ProjectEndpoint {
 		}
 		return project;
 	}
+	
+  @ApiMethod(name = "project.removeOwner",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Project removeOwner(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+    Project project = null;
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      project = mgr.getObjectById(Project.class, projectID);
+      
+      project.removeOwner(user.getUserId());
+      
+      mgr.makePersistent(project);
+    } finally {
+      mgr.close();
+    }
+    return project;
+  }
+	
+	@ApiMethod(name = "project.addCoder",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Project addCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+    Project project = null;
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      project = mgr.getObjectById(Project.class, projectID);
+      
+      project.addCoder(user.getUserId());
+      
+      mgr.makePersistent(project);
+    } finally {
+      mgr.close();
+    }
+    return project;
+  }
+	
+  @ApiMethod(name = "project.removeCoder",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Project removeCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+    Project project = null;
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      project = mgr.getObjectById(Project.class, projectID);
+      
+      project.removeCoder(user.getUserId());
+      
+      mgr.makePersistent(project);
+    } finally {
+      mgr.close();
+    }
+    return project;
+  }
+	
+	@ApiMethod(name = "project.addValidationCoder",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Project addValidationCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+    Project project = null;
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      project = mgr.getObjectById(Project.class, projectID);
+      
+      project.addValidationCoder(user.getUserId());
+      
+      mgr.makePersistent(project);
+    } finally {
+      mgr.close();
+    }
+    return project;
+  }
+	
+	@ApiMethod(name = "project.removeValidationCoder",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Project removeValidationCoder(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+    Project project = null;
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      project = mgr.getObjectById(Project.class, projectID);
+      
+      project.removeValidationCoder(user.getUserId());
+      
+      mgr.makePersistent(project);
+    } finally {
+      mgr.close();
+    }
+    return project;
+  }
 	
 	@ApiMethod(name = "project.inviteUser",   scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
@@ -299,7 +394,7 @@ public class ProjectEndpoint {
       // Check if user is authorized
       Authorization.checkAuthorization(project, user);
       
-      List<String> userIDs = project.getUsers();
+      List<String> userIDs = project.getOwners();
       
       for (String projectUserIDs : userIDs) {
         com.qdacity.server.user.User projectUser = mgr.getObjectById(com.qdacity.server.user.User.class, projectUserIDs);

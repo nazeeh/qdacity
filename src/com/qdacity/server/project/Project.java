@@ -27,7 +27,13 @@ public class Project {
 	Long maxCodingID;
 	
 	@Persistent
-	List<String> users;
+	List<String> owners;
+	
+	@Persistent
+  List<String> coders;
+	
+	@Persistent
+  List<String> validationCoders;
 	
 	@Persistent
 	List<String> invitedUsers;
@@ -64,19 +70,24 @@ public class Project {
 		this.maxCodingID = maxCodingID;
 	}
 
-	public List<String> getUsers() {
-		return users;
+	public List<String> getOwners() {
+		return owners;
 	}
 
-	public void setUsers(List<String> users) {
-		this.users = users;
+	public void setOwners(List<String> users) {
+		this.owners = users;
 	}
 	
-	public void addUser(String userID){
-		if (users == null) users = new ArrayList<String>();
-		if (!users.contains(userID)) users.add(userID);
+	public void addOwner(String userID){
+		if (owners == null) owners = new ArrayList<String>();
+		if (!owners.contains(userID)) owners.add(userID);
 	}
 
+	public void removeOwner(String userID){
+    if (owners == null) owners = new ArrayList<String>();
+    if (!owners.contains(userID)) owners.add(userID);
+  }
+	
 	public List<String> getInvitedUsers() {
 		return invitedUsers;
 	}
@@ -89,8 +100,40 @@ public class Project {
 		if (invitedUsers == null) invitedUsers = new ArrayList<String>();
 		if (!invitedUsers.contains(userID)) invitedUsers.add(userID);
 	}
+
+  public List<String> getValidationCoders() {
+    return validationCoders;
+  }
+
+  public void setValidationCoders(List<String> validationCoders) {
+    this.validationCoders = validationCoders;
+  }
 	
+  public void addValidationCoder(String userID){
+    if (validationCoders == null) validationCoders = new ArrayList<String>();
+    if (!validationCoders.contains(userID)) validationCoders.add(userID);
+  }
 	
-	
-	
+  public void removeValidationCoder(String userID){
+    if (validationCoders == null) validationCoders = new ArrayList<String>();
+    if (!validationCoders.contains(userID)) validationCoders.add(userID);
+  }
+
+  public List<String> getCoders() {
+    return coders;
+  }
+
+  public void setCoders(List<String> coders) {
+    this.coders = coders;
+  }
+  
+  public void addCoder(String userID){
+    if (coders == null) coders = new ArrayList<String>();
+    if (!coders.contains(userID)) coders.add(userID);
+  }
+  
+  public void removeCoder(String userID){
+    if (coders == null) coders = new ArrayList<String>();
+    if (!coders.contains(userID)) coders.add(userID);
+  }
 }

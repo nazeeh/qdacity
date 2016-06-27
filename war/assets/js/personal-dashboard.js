@@ -144,7 +144,7 @@ function createNewProject(){
 }
 
 function addProjectToUser(projectID, notificationID, type, originUser,user, datetime, subject, message){
-	gapi.client.qdacity.project.addUser({'projectID': projectID}).execute(function(resp) {
+	gapi.client.qdacity.project.addOwner({'projectID': projectID}).execute(function(resp) {
 	   	 if (!resp.code) {
 	   	 }
 	   

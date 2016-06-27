@@ -33,7 +33,7 @@ public class Authorization {
 			throw new UnauthorizedException("Project " + projectID + " was not found");
 		}
 		Project project = projects.get(0);
-		if (project.getUsers().contains(googleUser.getUserId())) return true;
+		if (project.getOwners().contains(googleUser.getUserId())) return true;
 
 		return false;
 	}
