@@ -366,6 +366,14 @@ function createAreaChart(){
 	
 }
 
+function deleteProject(projectID){
+	gapi.client.qdacity.project.removeProject({'id': projectID}).execute(function(resp){
+		if (!resp.code) {
+			fillProjectsList();
+		}
+	});
+}
+
 function addProjectToProjectList(projectID, projectName){
 
 	var html = '<li onclick="location.href = \'project-dashboard.html?'+projectID+'\';">';
@@ -373,6 +381,10 @@ function addProjectToProjectList(projectID, projectName){
 	html += '<span class="project_name">'+projectName+'</span>';
 	html += '<span class="project_id hidden">'+projectID;
 	html += '</span>';
+	html +='<a href="" onclick="deleteProject('+projectID+')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html +=' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
+	html +='<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
+	html +='</a>';
 	html +='<a href="coding-editor.html?'+projectID+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html +=' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 	html +='<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
