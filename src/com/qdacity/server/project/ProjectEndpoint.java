@@ -238,26 +238,6 @@ public class ProjectEndpoint {
 		return project;
 	}
 	
-  @ApiMethod(name = "project.removeOwner",   scopes = {Constants.EMAIL_SCOPE},
-      clientIds = {Constants.WEB_CLIENT_ID, 
-         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-         audiences = {Constants.WEB_CLIENT_ID})
-  public Project removeOwner(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
-    Project project = null;
-    PersistenceManager mgr = getPersistenceManager();
-    try {
-      project = mgr.getObjectById(Project.class, projectID);
-      
-      if (userID != null) project.removeOwner(userID);
-      else project.removeOwner(user.getUserId());
-      
-      mgr.makePersistent(project);
-    } finally {
-      mgr.close();
-    }
-    return project;
-  }
-	
 	@ApiMethod(name = "project.addCoder",   scopes = {Constants.EMAIL_SCOPE},
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
@@ -270,26 +250,6 @@ public class ProjectEndpoint {
       
       if (userID != null)project.addCoder(userID);
       else project.addCoder(user.getUserId());
-      
-      mgr.makePersistent(project);
-    } finally {
-      mgr.close();
-    }
-    return project;
-  }
-	
-  @ApiMethod(name = "project.removeCoder",   scopes = {Constants.EMAIL_SCOPE},
-      clientIds = {Constants.WEB_CLIENT_ID, 
-         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-         audiences = {Constants.WEB_CLIENT_ID})
-  public Project removeCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
-    Project project = null;
-    PersistenceManager mgr = getPersistenceManager();
-    try {
-      project = mgr.getObjectById(Project.class, projectID);
-      
-      if (userID != null) project.removeCoder(userID);
-      else project.removeCoder(user.getUserId());
       
       mgr.makePersistent(project);
     } finally {
@@ -318,7 +278,7 @@ public class ProjectEndpoint {
     return project;
   }
 	
-	@ApiMethod(name = "project.removeValidationCoder",   scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "project.removeUser",   scopes = {Constants.EMAIL_SCOPE},
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
@@ -328,8 +288,8 @@ public class ProjectEndpoint {
     try {
       project = mgr.getObjectById(Project.class, projectID);
       
-      if (userID != null) project.removeValidationCoder(userID);
-      else project.removeValidationCoder(user.getUserId());
+      if (userID != null) project.removeUser(userID);
+      else project.removeUser(user.getUserId());
       
       mgr.makePersistent(project);
     } finally {

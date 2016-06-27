@@ -83,11 +83,6 @@ public class Project {
 		if (!owners.contains(userID)) owners.add(userID);
 	}
 
-	public void removeOwner(String userID){
-    if (owners == null) owners = new ArrayList<String>();
-    owners.remove(userID);
-  }
-	
 	public List<String> getInvitedUsers() {
 		return invitedUsers;
 	}
@@ -113,11 +108,6 @@ public class Project {
     if (validationCoders == null) validationCoders = new ArrayList<String>();
     if (!validationCoders.contains(userID)) validationCoders.add(userID);
   }
-	
-  public void removeValidationCoder(String userID){
-    if (validationCoders == null) validationCoders = new ArrayList<String>();
-    validationCoders.remove(userID);
-  }
 
   public List<String> getCoders() {
     return coders;
@@ -132,8 +122,12 @@ public class Project {
     if (!coders.contains(userID)) coders.add(userID);
   }
   
-  public void removeCoder(String userID){
+  public void removeUser(String userID){
+    if (owners == null) owners = new ArrayList<String>();
     if (coders == null) coders = new ArrayList<String>();
+    if (validationCoders == null) validationCoders = new ArrayList<String>();
+    owners.remove(userID);
     coders.remove(userID);
+    validationCoders.remove(userID);
   }
 }
