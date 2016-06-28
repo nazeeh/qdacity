@@ -53,6 +53,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
       	    data[i] = unescape(data[i]);
       	  }
       	  project_id = data[0];
+      	  
+          
         	
         	
         	var query = window.location.search;
@@ -66,8 +68,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	    data[i] = unescape(data[i]);
         	  }
         	  project_id = data[0];
+        	  var urlParams = URI(window.location.search).query(true);
+        	  	
+    	  	  project_id = urlParams.project;
         	  
-        	  $(".codeEditorLink").attr('href','coding-editor.html?'+project_id);
+        	  $(".codeEditorLink").attr('href','coding-editor.html?project='+project_id);
         	  
         	var apisToLoad;
         	 var callback = function() {

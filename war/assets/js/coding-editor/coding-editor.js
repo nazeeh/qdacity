@@ -256,8 +256,12 @@ function init() {
 		data[i] = unescape(data[i]);
 	}
 	project_id = data[0];
+	
+	var urlParams = URI(window.location.search).query(true);
+  	
+	project_id = urlParams.project;
 
-	$(".projectDashboardLink").attr('href', 'project-dashboard.html?' + project_id);
+	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project?' + project_id);
 
 	var apisToLoad;
 	var callback = function() {

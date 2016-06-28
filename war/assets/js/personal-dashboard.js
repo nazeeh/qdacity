@@ -45,17 +45,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	$('#navAccount').hide();
         	$( "#textdocument-menu" ).collapse(); // editor will be initialized readonly, the toggle is later hooked to the visibility of the toolbar
         
-        	var query = window.location.search;
-        	  // Skip the leading ?, which should always be there,
-        	  // but be careful anyway
-        	  if (query.substring(0, 1) == '?') {
-        	    query = query.substring(1);
-        	  }
-        	  var data = query.split(',');
-        	  for (i = 0; (i < data.length); i++) {
-        	    data[i] = unescape(data[i]);
-        	  }
-        	  project_id = data[0];
         	  
         	var apisToLoad;
         	 var callback = function() {
@@ -384,7 +373,7 @@ function leaveProject(projectID){
 
 function addProjectToProjectList(projectID, projectName){
 
-	var html = '<li onclick="location.href = \'project-dashboard.html?'+projectID+'\';">';
+	var html = '<li onclick="location.href = \'project-dashboard.html?project='+projectID+'\';">';
 
 	html += '<span class="project_name">'+projectName+'</span>';
 	html += '<span class="project_id hidden">'+projectID;
@@ -403,7 +392,7 @@ function addProjectToProjectList(projectID, projectName){
 	html +='</a>';
 	
 	// Coding Editor Btn
-	html +='<a href="coding-editor.html?'+projectID+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html +='<a href="coding-editor.html?project='+projectID+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html +=' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 	html +='<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
 	html +='</a>';
