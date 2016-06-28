@@ -262,7 +262,9 @@ function getPath ( node ) {
         if ( id = node.id ) {
             path += '#' + id;
         }
-        if ( className = node.className.trim() ) {
+       
+        // Added className in node check to prevent trim() being executed when clicking on an SVG element
+        if (className in node && (className = node.className.trim()) ) {
             classNames = className.split( /\s\s*/ );
             classNames.sort();
             path += '.';
