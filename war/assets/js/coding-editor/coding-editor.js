@@ -163,15 +163,22 @@ function resizeElements() {
 	} else {
 		$.LoadingOverlay("hide");
 	}
-	var offsetHeight = 0;
+	var offsetFooter = 0;
 	if ($("#footer").is(":visible")) {
-		offsetHeight += 341;
+		offsetFooter += 341;
 	}
+	
+	var offsetEditMenu = 0;
 	if ($("#textdocument-menu").is(":visible")) {
-		offsetHeight += 45;
+		offsetEditMenu += 45;
 	}
 	$("#editor").css({
-		height : $(window).height() - 52 - offsetHeight
+		height : $(window).height() - 52 - offsetFooter - offsetEditMenu
+	});
+	
+	var codesystemTreeOffset = $("#easytree-section").offset().top
+	$("#easytree-section").css({
+		height : $(window).height() - codesystemTreeOffset - offsetFooter
 	});
 	addCodingBrackets();
 }
@@ -539,6 +546,8 @@ function setDocumentList(projectID) {
 
 		// Extract the codings from the loaded documents
 		addCodingCountToTree();
+		
+		resizeElements();
 
 	});
 }
