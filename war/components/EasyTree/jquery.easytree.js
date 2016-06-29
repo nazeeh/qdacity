@@ -739,7 +739,7 @@
 
                 html += '<li>';
                 html += '<span id="' + n.id + '" class="' + spanCss + ' ">'; // wrapper span
-                html += forceOpenNode ? '' : '<span class="easytree-expander"></span>';
+                html += forceOpenNode ? '' : '<span class=" pull-left  easytree-expander"></span>';
 
                 html += getIconHtml(n);
                 html += getTitleHtml(n);
@@ -815,7 +815,7 @@
                 return html;
             }
             if (node.uiIcon) {
-                return '<i class="fa '+node.uiIcon+' " style="color:'+ node.color+'" ></i>';
+                return '<i class="fa '+node.uiIcon+' pull-left" style="margin-top: 3px; color:'+ node.color+'" ></i>';
             }
             if (node.iconUrl) {
                 return '<span><img src="' + node.iconUrl + '" /></span>';
@@ -831,9 +831,10 @@
             if (node.textCss) {
                 titleCss += " " + node.textCss;
             }
-
-            html += '<span ' + tooltip + ' class="' + titleCss + '">';
-
+            html +="<span class=\"pull-left\">" + node.text  + "</span>";
+            html +=  "  <span onclick=\"showFooter()\" class=\"pull-right\" style=\" background-color: #e7e7e7;   border: 1px solid #bbbbbb; text-align: center;  border-radius: 10px; color:#666666; width:35px\">&nbsp;"+node.codingCount+" </span>";
+            html += '<span  class=\"pull-left\" ' + tooltip + ' class="' + titleCss + '">';
+            
             if (node.href) {
                 html += '<a href="' + node.href + '" ';
                 if (node.hrefTarget) {
@@ -841,7 +842,7 @@
                 }
                 html += '>';
             }
-            html += node.text + "  <span onclick=\"showFooter()\" style=\" background-color: #e7e7e7; position:absolute;  right:8px; padding-right: 5px; border: 1px solid #bbbbbb; text-align: center;  border-radius: 10px; color:#666666; width:35px\">&nbsp;"+node.codingCount+" </span>";
+            
             if (node.href) {
                 html += '</a>';
             }
