@@ -378,16 +378,6 @@ function init() {
 		signout();
 	}
 
-	document.getElementById('btnShowHTML').onclick = function() {
-
-		$("#debugTextEditor").dialog();
-		document.getElementById('debugTextEditor').innerHTML = "<xmp>" + editor.getHTML() + "</xmp>";
-		$("#debugTextEditor").dialog("option", "show", {
-			effect : "blind",
-			duration : 800
-		});
-	}
-
 	document.getElementById('btnTxtBold').onclick = function() {
 		editor['bold']();
 	}
@@ -662,7 +652,7 @@ function listCodes() {
 
 				codes.push(resp.items[i]);
 			}
-			document.getElementById('listCodesResult').innerHTML = result;
+			
 			for (var i = 0; i < codes.length; i++) {
 				addNodeToTree(codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo);
 			}
@@ -708,7 +698,6 @@ function insertCode(_AuthorName, _CodeName) {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name);
-			document.getElementById('listCodesResult').innerHTML = resp.id + ":" + resp.author + ":" + resp.name;
 			addNodeToTree(resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo);
 			if (typeof activeID != 'undefined') {
 				addSubCode(activeID, resp.id);
