@@ -12,6 +12,7 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -222,7 +223,27 @@ public class TextDocumentEndpoint {
 			mgr.close();
 		}
 	}
-
+	
+	public static void cloneTextDocuments(Long projectId, Long cloneId, User user) throws UnauthorizedException {
+    // TODO Auto-generated method stub
+	  TextDocumentEndpoint tde = new TextDocumentEndpoint();
+	  Collection<TextDocument> documents = tde.getTextDocument(projectId,user).getItems();
+	  PersistenceManager mgr = getPersistenceManager();
+    try {
+  	  for (TextDocument textDocument : documents) {
+        TextDocument cloneDocument = new TextDocument();
+        cloneDocument.setProjectID(cloneId);
+        cloneDocument.setTitle(textDocument.getTitle());
+        cloneDocument.setText(textDocument.getText());
+        
+        mgr.makePersistent(cloneDocument);
+      }
+    } finally {
+      mgr.close();
+    }
+    
+  }
+	
 	private boolean containsTextDocument(TextDocument textdocument) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
@@ -239,5 +260,7 @@ public class TextDocumentEndpoint {
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
+
+  
 
 }

@@ -12,6 +12,8 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -280,5 +282,41 @@ public class CodeSystemEndpoint {
 		
 		return projectID;
 	}
+	
+public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, User user) throws UnauthorizedException {
+    
+    PersistenceManager mgr = null;
+    CodeSystem cloneCodeSystem = null;
+    try {
+      mgr = getPersistenceManager();
+      
+      cloneCodeSystem =  new CodeSystem();
+      cloneCodeSystem.setProject(projectId);
+      cloneCodeSystem = mgr.makePersistent(cloneCodeSystem);
+      
+      CodeSystemEndpoint cse = new CodeSystemEndpoint();
+      Collection<Code> codes = cse.getCodeSystem(codeSystemId, null, null, user).getItems();;
+      
+      for (Code code : codes) {
+        Code cloneCode = new Code();
+        cloneCode.setAuthor(code.author);
+        cloneCode.setCodesytemID(cloneCodeSystem.getId());
+        cloneCode.setColor(code.getColor());
+        cloneCode.setMemo(code.getMemo());
+        cloneCode.setName(code.getName());
+        cloneCode.setParentID(code.getParentID());
+        cloneCode.setSubCodesIDs(new ArrayList<Long>(code.getSubCodesIDs()));
+        
+        mgr.makePersistent(cloneCode);
+      }
+      
+      mgr.makePersistent(cloneCodeSystem);
+    } finally {
+      mgr.close();
+    }
+    
+    return cloneCodeSystem;
+  }
+
 
 }

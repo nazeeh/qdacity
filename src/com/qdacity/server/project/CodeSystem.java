@@ -24,6 +24,19 @@ List<Long> codeIDs = new  ArrayList<Long>();
 
 
 
+public CodeSystem(CodeSystem codesystem) {
+  this.project = codesystem.project;
+  this.codeIDs = new ArrayList<Long>(codesystem.codeIDs);
+}
+
+public CodeSystem() {
+}
+
+public CodeSystem(Long projectId, List<Long> codes) {
+  this.project = projectId;
+  this.codeIDs = codes;
+}
+
 public void removeCode(Long codeID){
 	codeIDs.remove(codeID);
 
@@ -56,11 +69,6 @@ public Long getProject() {
 public void setProject(Long project) {
 	this.project = project;
 }
-
-
-
-
-
 
 
 }

@@ -1,7 +1,6 @@
 package com.qdacity.server.project;
 
 import com.qdacity.Constants;
-import com.qdacity.client.Qdacity;
 import com.qdacity.server.Authorization;
 import com.qdacity.server.PMF;
 import com.qdacity.server.user.UserNotification;
@@ -12,17 +11,10 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,9 +54,6 @@ public class ProjectEndpoint {
 		List<Project> execute = null;
 
 		try {
-			
-			
-			
 			mgr = getPersistenceManager();
 			
 			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
@@ -188,6 +177,7 @@ public class ProjectEndpoint {
 		}
 		return project;
 	}
+
 
 	/**
 	 * This method is used for updating an existing entity. If the entity does not
@@ -341,6 +331,30 @@ public class ProjectEndpoint {
 		}
 		return project;
 	}
+	
+	 @ApiMethod(name = "project.createSnapshot",   scopes = {Constants.EMAIL_SCOPE},
+	      clientIds = {Constants.WEB_CLIENT_ID, 
+	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	         audiences = {Constants.WEB_CLIENT_ID})
+	  public Project createSnapshot(@Named("projectID") Long projectID, @Named("comment") String comment, User user) throws UnauthorizedException {
+	    Project project = null;
+	    PersistenceManager mgr = getPersistenceManager();
+	    try {
+	      project = mgr.getObjectById(Project.class, projectID);
+	      
+	      ProjectRevision cloneProject = new ProjectRevision (cloneProject(project, user),project.getId(), comment);
+	      
+	      project.setRevision(project.getRevision() + 1);
+	      
+	      cloneProject = mgr.makePersistent(cloneProject);
+	      project = mgr.makePersistent(project);
+	      
+	      TextDocumentEndpoint.cloneTextDocuments(project.getId(), cloneProject.getId(), user);
+	    } finally {
+	      mgr.close();
+	    }
+	    return project;
+	  }
 
 	/**
 	 * This method removes the entity with primary key id.
@@ -401,6 +415,69 @@ public class ProjectEndpoint {
       mgr.close();
     }
   }
+	
+	 /**
+   * This method removes the entity with primary key id.
+   * It uses HTTP DELETE method.
+   *
+   * @param id the primary key of the entity to be deleted.
+   * @throws UnauthorizedException 
+   */
+  @ApiMethod(name = "project.removeProjectRevision",  scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public void removeProjectRevision(@Named("id") Long id, User user) throws UnauthorizedException {
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      ProjectRevision project = mgr.getObjectById(ProjectRevision.class, id);
+      // Check if user is authorized
+      Authorization.checkAuthorization(project.getProjectID(), user);
+      
+      Long codeSystemID = project.getCodesystemID();
+
+      mgr.deletePersistent(project);
+
+      // Delete code system
+      CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
+      
+      Query q;
+      q = mgr.newQuery(Code.class, " codesytemID  == :codeSystemID");
+      //q.deletePersistentAll();
+      Map<String, Long> codesParam = new HashMap();
+      codesParam.put("codeSystemID", codeSystem.getId());
+      @SuppressWarnings("unchecked")
+      List<Code> codes =   (List<Code>) q.executeWithMap(codesParam);
+      mgr.deletePersistentAll(codes);
+      
+      mgr.deletePersistent(codeSystem);
+
+      // Delete all documents
+
+      q = mgr.newQuery(TextDocument.class);
+      q.setFilter( "projectID == :theID");
+      Map<String, Long> paramValues = new HashMap();
+      paramValues.put("theID", id);
+      mgr.deletePersistentAll((List<TextDocument>)q.executeWithMap(paramValues));
+
+      
+    } finally {
+      mgr.close();
+    }
+  }
+	
+	private Project cloneProject(Project project, User user) throws UnauthorizedException{
+	  
+	  Project cloneProject = new Project(project);
+	  CodeSystem codeSystemClone = CodeSystemEndpoint.cloneCodeSystem(project.getCodesystemID(), project.getId(), user);
+	  
+	  cloneProject.setCodesystemID(codeSystemClone.getId());
+	  
+	  return cloneProject;
+	  
+	}
+	
+	
 
 	private boolean containsProject(Project project) {
 		PersistenceManager mgr = getPersistenceManager();

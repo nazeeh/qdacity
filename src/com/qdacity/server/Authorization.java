@@ -6,13 +6,10 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.server.project.Code;
 import com.qdacity.server.project.CodeSystem;
-import com.qdacity.server.project.CodeSystemEndpoint;
 import com.qdacity.server.project.Project;
 import com.qdacity.server.project.TextDocument;
 

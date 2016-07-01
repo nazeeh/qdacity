@@ -71,8 +71,8 @@ public class Code {
 		this.subCodeIDs = subCodesIDs;
 	}
 
-	public void addSubCodeID(Long ID){
-		subCodeIDs.add(ID);
+	public void addSubCodeID(Long id){
+		subCodeIDs.add(id);
 	}
 
 	public Long getParentID() {
