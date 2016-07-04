@@ -26,11 +26,15 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		      $('#navSignin').hide();
 		      // INIT
 		      
+		      vex.defaultOptions.className = 'vex-theme-os';
+		      
 		      setGeneralStats();
 		      
 		      fillUserList();
 		      
 		      createAreaChart();
+		      
+		      setProjectName();
 		      
 		    }
 		    else {
@@ -103,6 +107,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			document.getElementById('inviteUserBtn').onclick = function() {
                 inviteUser();
             }
+			
+			document.getElementById('newRevisionBtn').onclick = function() {
+				showNewRevisionModal("Revision Comment");
+            }
+			
         }
         
         $(document).ready( function () {
@@ -168,6 +177,20 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	   	 
         	    });
         	
+        }
+        
+        function setProjectName(){
+        	gapi.client.qdacity.project.getProject({'id': project_id}).execute(function(resp) {
+       	   	 if (!resp.code) {
+       	   		$("#project-name").html(resp.name);
+       	        
+       	   	 }
+       	   
+       	   	 else{
+       	   		 window.alert(resp.code)
+       	   	}
+       	   	 
+       	    });
         }
 
         function fillUserList(){
@@ -251,3 +274,36 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         		}
         	});
         }
+        
+        function createNewRevision(comment){
+        	gapi.client.qdacity.project.createSnapshot({'projectID': project_id, 'comment' : comment}).execute(function(resp) {
+                if (!resp.code) {
+                	alertify.success("New revision has been created");
+                	
+                }
+                else{
+                	alertify.error("New revision has not been created");
+                }
+        });
+        }
+        
+        function showNewRevisionModal(title){
+           	var formElements =  "<textarea placeholder=\"Use this field to describe this revision in a few sentences\" rows=\"15\" cols=\"200\" name=\"textBox\" type=\"text\"  ></textarea><br/>\n";
+           	 
+           		vex.dialog.open({
+           			message : title,
+           			contentCSS: { width: '600px' },
+           			input : formElements,
+           			buttons : [ $.extend({}, vex.dialog.buttons.YES, {
+           				text : 'OK'
+           			}), $.extend({}, vex.dialog.buttons.NO, {
+           				text : 'Cancel'
+           			}) ],
+           			callback : function(data) {
+           				if (data === false) {
+           					return console.log('Cancelled');
+           				}
+           				createNewRevision(data.textBox);
+           			}
+           		});
+            }
