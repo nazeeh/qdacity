@@ -355,6 +355,30 @@ public class ProjectEndpoint {
 	    }
 	    return project;
 	  }
+	 
+	 @ApiMethod(name = "project.listRevisions",   scopes = {Constants.EMAIL_SCOPE},
+       clientIds = {Constants.WEB_CLIENT_ID, 
+          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+          audiences = {Constants.WEB_CLIENT_ID})
+   public List<ProjectRevision> listRevisions(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+	   List<ProjectRevision> revisions = null;
+     PersistenceManager mgr = getPersistenceManager();
+     try {
+       
+       Query q;
+       q = mgr.newQuery(ProjectRevision.class, " projectID  == :projectID");
+       
+       Map<String, Long> params = new HashMap();
+       params.put("projectID", projectID);
+       
+       revisions = (List<ProjectRevision>)q.executeWithMap(params);
+       
+      
+     } finally {
+       mgr.close();
+     }
+     return revisions;
+   }
 
 	/**
 	 * This method removes the entity with primary key id.

@@ -21,6 +21,7 @@
 <link href="assets/css/common.css" rel="stylesheet">
 
 <link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
+<link href="assets/css/customTimeline.css" rel="stylesheet">
 
 <link href="components/Alertify/css/alertify.core.css" rel="stylesheet">
 <link href="components/Alertify/css/alertify.default.css" rel="stylesheet">
@@ -177,7 +178,6 @@
 				<div class="small-box bg-aqua">
 					<div class="inner">
 						<h3 id="topStatsDocuments">N/A</h3>
-
 						<p>Documents</p>
 					</div>
 					<div class="icon">
@@ -260,6 +260,20 @@
 					</div>
 					<!-- /.panel-body -->
 				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading">Revision History</div>
+					<!-- /.panel-heading -->
+					<div class="panel-body">
+						<div id="revision-panel">
+						
+						
+						<ul id="revision-timeline" class="timeline list" style="margin-top:25px;">
+						<!-- timeline time label -->
+						</ul>
+						</div>
+					</div>
+					<!-- /.panel-body -->
+				</div>
 				<div id="changeLog"></div>
 			</div>
 			<div class="col-lg-4">
@@ -276,7 +290,7 @@
 								</span>
 							</div>
 
-							<ul id="user-list" class="list" style="margin-top: 55px;">
+							<ul id="user-list" class="list compactBoxList" style="margin-top: 55px;">
 								<!-- Accordion content added dynamically -->
 							</ul>
 						</div>
@@ -315,8 +329,10 @@
 	<script src="components/alertify/alertify-0.3.js"></script>
 	<script src="components/URIjs/URI.min.js"></script>
 	<!-- Main JS Script -->
+	
 	<script src="assets/js/project-dashboard.js"></script>
-
+	<script src="assets/js/timeline.js"></script>
+	
 	<script src="components/listJS/list.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->

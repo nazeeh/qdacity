@@ -36,6 +36,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		      
 		      setProjectName();
 		      
+		      setRevisionHistory();
+		      
 		    }
 		    else {
 		    	 $('#navAccount').hide();
@@ -192,7 +194,28 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
        	   	 
        	    });
         }
-
+        
+        function setRevisionHistory (){
+        	gapi.client.qdacity.project.listRevisions({'projectID': project_id}).execute(function(resp) {
+              	 if (!resp.code) {
+              		resp.items = resp.items || [];
+              		var timeline = new Timeline();
+                    for (var i=0;i<resp.items.length;i++) {
+            		    timeline.addRevInfoToTimeline(resp.items[i].comment);
+                    }
+                    $("#revision-timeline").append(timeline.getHTML());
+              		
+                   
+              	 }
+              
+              	 else{
+              		 window.alert(resp.code)
+              	}
+              	 
+               });
+	        
+        }
+        
         function fillUserList(){
         	gapi.client.qdacity.user.listUser({'projectID': project_id}).execute(function(resp) {
            	 if (!resp.code) {
@@ -307,3 +330,4 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
            			}
            		});
             }
+         
