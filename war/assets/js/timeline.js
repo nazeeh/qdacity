@@ -1,4 +1,4 @@
-class Timeline  {
+class Timeline {
   constructor() {
 
     this.html = "";
