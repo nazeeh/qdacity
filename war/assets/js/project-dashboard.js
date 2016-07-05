@@ -113,7 +113,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			document.getElementById('newRevisionBtn').onclick = function() {
 				showNewRevisionModal("Revision Comment");
             }
-			
         }
         
         $(document).ready( function () {
@@ -198,14 +197,19 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         function setRevisionHistory (){
         	gapi.client.qdacity.project.listRevisions({'projectID': project_id}).execute(function(resp) {
               	 if (!resp.code) {
+              		$("#revision-timeline").empty();
               		resp.items = resp.items || [];
               		var timeline = new Timeline();
                     for (var i=0;i<resp.items.length;i++) {
-            		    timeline.addRevInfoToTimeline(resp.items[i].comment);
+                    	timeline.addLabelToTimeline(resp.items[i].revision);
+            		    timeline.addRevInfoToTimeline(resp.items[i].comment, resp.items[i].id);
                     }
                     $("#revision-timeline").append(timeline.getHTML());
-              		
-                   
+                    
+                    $( "#deleteRevisionBtn" ).click(function() {
+                    	var revisionId = $( this ).attr("revId");
+                    	deleteRevision(revisionId);
+                    });
               	 }
               
               	 else{
@@ -214,6 +218,24 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
               	 
                });
 	        
+        }
+        
+        function deleteRevision(revisionId){
+        	
+        	var projectEndpoint = new ProjectEndpoint();
+        	
+        	projectEndpoint.deleteRevision(revisionId)
+        		.then(
+        	        function(val) {
+        	        	alertify.success("Revision has been deleted");
+        	        	setRevisionHistory();
+        	        })
+        	    .catch(handleError(reason));
+        }
+        
+        function handleError(reason){
+        	alertify.error("There was an error");
+        	console.log(reason.message);
         }
         
         function fillUserList(){
@@ -302,6 +324,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	gapi.client.qdacity.project.createSnapshot({'projectID': project_id, 'comment' : comment}).execute(function(resp) {
                 if (!resp.code) {
                 	alertify.success("New revision has been created");
+                	setRevisionHistory();
                 	
                 }
                 else{
