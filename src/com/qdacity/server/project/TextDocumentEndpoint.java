@@ -92,9 +92,7 @@ public class TextDocumentEndpoint {
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, User user) throws UnauthorizedException {
-		//Check authorization
-		Authorization.checkAuthorization(id, user);
+	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, @Nullable @Named("projectType") String prjType, User user) throws UnauthorizedException {
 		
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
@@ -103,6 +101,14 @@ public class TextDocumentEndpoint {
 		
 		try {
 			mgr = getPersistenceManager();
+			//Check authorization
+	    if (prjType == "REVISION"){
+	      ProjectRevision validationProject = mgr.getObjectById(ProjectRevision.class, id);
+	      Authorization.checkAuthorization(validationProject.getProjectID(), user);
+	    } else {
+	      Authorization.checkAuthorization(id, user);
+	    }
+	    
 			Query query = mgr.newQuery(TextDocument.class);
 			
 			query.setFilter( "projectID == :theID");
@@ -227,7 +233,7 @@ public class TextDocumentEndpoint {
 	public static void cloneTextDocuments(Long projectId, Long cloneId, User user) throws UnauthorizedException {
     // TODO Auto-generated method stub
 	  TextDocumentEndpoint tde = new TextDocumentEndpoint();
-	  Collection<TextDocument> documents = tde.getTextDocument(projectId,user).getItems();
+	  Collection<TextDocument> documents = tde.getTextDocument(projectId, "REVISION",user).getItems();
 	  PersistenceManager mgr = getPersistenceManager();
     try {
   	  for (TextDocument textDocument : documents) {

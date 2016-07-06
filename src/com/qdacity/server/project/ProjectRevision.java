@@ -1,6 +1,8 @@
 package com.qdacity.server.project;
 
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -18,6 +20,12 @@ public class ProjectRevision extends AbstractProject {
     super.setRevision(revision);
     this.projectID = projectID;
     this.comment = comment;
+  }
+  
+  public ProjectRevision(ProjectRevision prjRev) {
+    super(prjRev.getName(), prjRev.getCodesystemID(), 0L, prjRev.getRevision());
+    this.projectID = prjRev.getProjectID();
+    this.comment = prjRev.getComment();
   }
 
   public Long getProjectID() {

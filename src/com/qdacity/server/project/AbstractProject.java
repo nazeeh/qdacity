@@ -40,6 +40,17 @@ public abstract class AbstractProject {
     this.maxCodingID = prj.maxCodingID;
     this.revision = prj.revision;
   }
+  
+  
+
+  public AbstractProject(String name, Long codesystemID, Long maxCodingID, Integer revision) {
+    this.name = name;
+    this.codesystemID = codesystemID;
+    this.maxCodingID = maxCodingID;
+    this.revision = revision;
+  }
+
+
 
   public AbstractProject() {
     // TODO Auto-generated constructor stub

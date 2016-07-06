@@ -356,6 +356,31 @@ public class ProjectEndpoint {
 	    return project;
 	  }
 	 
+	 @ApiMethod(name = "project.createValidationProject",   scopes = {Constants.EMAIL_SCOPE},
+       clientIds = {Constants.WEB_CLIENT_ID, 
+          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+          audiences = {Constants.WEB_CLIENT_ID})
+   public ValidationProject createValidationProject(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+	   ProjectRevision project = null;
+     ValidationProject cloneProject = null;
+     PersistenceManager mgr = getPersistenceManager();
+     try {
+       project = mgr.getObjectById(ProjectRevision.class, projectID);
+       
+       cloneProject = createValidationProject(project, user);
+       
+       //cloneProject.setRevisionID(project.getId());// FIXME Check why this works and previous assignments dont
+       
+       cloneProject = mgr.makePersistent(cloneProject);
+       project = mgr.makePersistent(project);
+       
+       TextDocumentEndpoint.cloneTextDocuments(project.getId(), cloneProject.getId(), user);
+     } finally {
+       mgr.close();
+     }
+     return cloneProject;
+   }
+	 
 	 @ApiMethod(name = "project.listRevisions",   scopes = {Constants.EMAIL_SCOPE},
        clientIds = {Constants.WEB_CLIENT_ID, 
           com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
@@ -489,17 +514,78 @@ public class ProjectEndpoint {
       mgr.close();
     }
   }
+  
+  /**
+  * This method removes the entity with primary key id.
+  * It uses HTTP DELETE method.
+  *
+  * @param id the primary key of the entity to be deleted.
+  * @throws UnauthorizedException 
+  */
+ @ApiMethod(name = "project.removeValidationProject",  scopes = {Constants.EMAIL_SCOPE},
+     clientIds = {Constants.WEB_CLIENT_ID, 
+        com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+        audiences = {Constants.WEB_CLIENT_ID})
+ public void removeValidationProject(@Named("id") Long id, User user) throws UnauthorizedException {
+   PersistenceManager mgr = getPersistenceManager();
+   try {
+     ValidationProject project = mgr.getObjectById(ValidationProject.class, id);
+     // Check if user is authorized
+     Authorization.checkAuthorization(project.getProjectID(), user);
+     
+     Long codeSystemID = project.getCodesystemID();
+
+     mgr.deletePersistent(project);
+
+     // Delete code system
+     CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
+     
+     Query q;
+     q = mgr.newQuery(Code.class, " codesytemID  == :codeSystemID");
+     //q.deletePersistentAll();
+     Map<String, Long> codesParam = new HashMap();
+     codesParam.put("codeSystemID", codeSystem.getId());
+     @SuppressWarnings("unchecked")
+     List<Code> codes =   (List<Code>) q.executeWithMap(codesParam);
+     mgr.deletePersistentAll(codes);
+     
+     mgr.deletePersistent(codeSystem);
+
+     // Delete all documents
+
+     q = mgr.newQuery(TextDocument.class);
+     q.setFilter( "projectID == :theID");
+     Map<String, Long> paramValues = new HashMap();
+     paramValues.put("theID", id);
+     mgr.deletePersistentAll((List<TextDocument>)q.executeWithMap(paramValues));
+
+     
+   } finally {
+     mgr.close();
+   }
+ }
 	
 	private Project cloneProject(Project project, User user) throws UnauthorizedException{
 	  
 	  Project cloneProject = new Project(project);
 	  CodeSystem codeSystemClone = CodeSystemEndpoint.cloneCodeSystem(project.getCodesystemID(), project.getId(), user);
 	  
-	  cloneProject.setCodesystemID(codeSystemClone.getId());
+	  cloneProject.setCodesystemID(codeSystemClone.getId()); 
 	  
 	  return cloneProject;
 	  
 	}
+	
+private ValidationProject createValidationProject(ProjectRevision projectRev, User user) throws UnauthorizedException{
+    
+    ValidationProject cloneProject = new ValidationProject(projectRev);
+    CodeSystem codeSystemClone = CodeSystemEndpoint.cloneCodeSystem(projectRev.getCodesystemID(), projectRev.getId(), user);
+    
+    cloneProject.setCodesystemID(codeSystemClone.getId());
+    
+    return cloneProject;
+    
+  }
 	
 	
 

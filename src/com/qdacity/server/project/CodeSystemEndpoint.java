@@ -274,8 +274,20 @@ public class CodeSystemEndpoint {
 		params.put("theID", id);
 		
 		List<Project> projects = (List<Project>) query.executeWithMap(params);
-		Project project = projects.get(0);
-		projectID = project.id;
+		
+		if (projects.size() > 0){
+  		Project project = projects.get(0);
+  		projectID = project.id;
+		}
+		else { // Try to find a matching revision
+		  query = mgr.newQuery(ProjectRevision.class);
+	    
+	    query.setFilter( "codesystemID == :theID");
+	    
+	    List<ProjectRevision> projectRevs = (List<ProjectRevision>) query.executeWithMap(params);
+	    ProjectRevision project = projectRevs.get(0);
+      projectID = project.getProjectID();
+		}
 		} finally {
 			mgr.close();
 		}
