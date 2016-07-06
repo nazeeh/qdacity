@@ -356,16 +356,54 @@ public class ProjectEndpoint {
 	    return project;
 	  }
 	 
+	 @ApiMethod(name = "project.requestValidationAccess",   scopes = {Constants.EMAIL_SCOPE},
+       clientIds = {Constants.WEB_CLIENT_ID, 
+          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+          audiences = {Constants.WEB_CLIENT_ID})
+   public ValidationProject requestValidationAccess(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
+     ProjectRevision projectRevision = null;
+     Project project = null;
+     ValidationProject cloneProject = null;
+     PersistenceManager mgr = getPersistenceManager();
+     try {
+       projectRevision = mgr.getObjectById(ProjectRevision.class, revisionID);
+       project = mgr.getObjectById(Project.class, projectRevision.getProjectID());
+    // Get the inviting user
+       com.qdacity.server.user.User requestingUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
+       
+       // Create notification
+       List<String> owners = project.getOwners();
+       
+       for (String owner : owners) {
+         UserNotification notification = new UserNotification();
+         notification.setDatetime(new Date());
+         notification.setMessage("Project: " + project.getName() + "Rev. " + projectRevision.getRevision());
+         notification.setSubject("Validation request by <b>" + requestingUser.getGivenName() +" "+requestingUser.getSurName() +"</b>");
+         notification.setOriginUser(user.getUserId());
+         notification.setProject(revisionID);
+         notification.setSettled(false);
+         notification.setType(UserNotificationType.VALIDATION_REQUEST);
+         notification.setUser(owner);
+         
+         mgr.makePersistent(notification);
+      }
+       
+     } finally {
+       mgr.close();
+     }
+     return cloneProject;
+   }
+	 
 	 @ApiMethod(name = "project.createValidationProject",   scopes = {Constants.EMAIL_SCOPE},
        clientIds = {Constants.WEB_CLIENT_ID, 
           com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
           audiences = {Constants.WEB_CLIENT_ID})
-   public ValidationProject createValidationProject(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+   public ValidationProject createValidationProject(@Named("projectID") Long revisionID, User user) throws UnauthorizedException {
 	   ProjectRevision project = null;
      ValidationProject cloneProject = null;
      PersistenceManager mgr = getPersistenceManager();
      try {
-       project = mgr.getObjectById(ProjectRevision.class, projectID);
+       project = mgr.getObjectById(ProjectRevision.class, revisionID);
        
        cloneProject = createValidationProject(project, user);
        
@@ -542,7 +580,7 @@ public class ProjectEndpoint {
      
      Query q;
      q = mgr.newQuery(Code.class, " codesytemID  == :codeSystemID");
-     //q.deletePersistentAll();
+
      Map<String, Long> codesParam = new HashMap();
      codesParam.put("codeSystemID", codeSystem.getId());
      @SuppressWarnings("unchecked")

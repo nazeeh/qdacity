@@ -1,7 +1,7 @@
 package com.qdacity.server.user;
 
 public enum UserNotificationType {
-	INVITATION(1);
+	INVITATION(1), VALIDATION_REQUEST(2);
 
 	private final int value;
     private UserNotificationType(int value) {
