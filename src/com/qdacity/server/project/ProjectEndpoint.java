@@ -14,6 +14,7 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -436,14 +437,21 @@ public class ProjectEndpoint {
        Map<String, Long> params = new HashMap();
        params.put("projectID", projectID);
        
-       revisions = (List<ProjectRevision>)q.executeWithMap(params);
+       List<ProjectRevision> snapshots  = (List<ProjectRevision>)q.executeWithMap(params);
+
+       Query validationQuery = mgr.newQuery(ValidationProject.class, " projectID  == :projectID");
+       List<ValidationProject> validationProjects = (List<ValidationProject>)validationQuery.executeWithMap(params);
+       revisions = new ArrayList<ProjectRevision>();
        
+       revisions.addAll(validationProjects);
+       revisions.addAll(snapshots);
       
      } finally {
        mgr.close();
      }
      return revisions;
    }
+
 
 	/**
 	 * This method removes the entity with primary key id.

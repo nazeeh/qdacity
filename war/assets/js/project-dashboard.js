@@ -199,10 +199,20 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
               	 if (!resp.code) {
               		$("#revision-timeline").empty();
               		resp.items = resp.items || [];
+              		var snapshots = [];
+              		var validationProjects = {};
+              		for (var i=0;i<resp.items.length;i++) {
+                    	if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
+                    	else {
+                    		if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
+                    		validationProjects[resp.items[i].revisionID].push(resp.items[i]);
+                    	}
+                    }
+              		
               		var timeline = new Timeline();
-                    for (var i=0;i<resp.items.length;i++) {
-                    	timeline.addLabelToTimeline(resp.items[i].revision);
-            		    timeline.addRevInfoToTimeline(resp.items[i].comment, resp.items[i].id);
+                    for (var i=0;i<snapshots.length;i++) {
+                    	timeline.addLabelToTimeline(snapshots[i].revision);
+            		    timeline.addRevInfoToTimeline(snapshots[i].comment, snapshots[i].id);
                     }
                     $("#revision-timeline").append(timeline.getHTML());
                     
