@@ -213,6 +213,10 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     for (var i=0;i<snapshots.length;i++) {
                     	timeline.addLabelToTimeline(snapshots[i].revision);
             		    timeline.addRevInfoToTimeline(snapshots[i].comment, snapshots[i].id);
+            		    
+            		    var validationProjectList = validationProjects[snapshots[i].id];
+
+            		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
                     }
                     $("#revision-timeline").append(timeline.getHTML());
                     
