@@ -230,10 +230,12 @@ public class TextDocumentEndpoint {
 		}
 	}
 	
-	public static void cloneTextDocuments(Long projectId, Long cloneId, User user) throws UnauthorizedException {
-    // TODO Auto-generated method stub
+	public static void cloneTextDocuments(AbstractProject project, Long cloneId, User user) throws UnauthorizedException {
 	  TextDocumentEndpoint tde = new TextDocumentEndpoint();
-	  Collection<TextDocument> documents = tde.getTextDocument(projectId, "REVISION",user).getItems();
+	  Collection<TextDocument> documents = null;
+	  if (project.getClass() == ProjectRevision.class) documents  = tde.getTextDocument(project.getId(), "REVISION",user).getItems();
+	  else documents  = tde.getTextDocument(project.getId(),null, user).getItems();
+	  
 	  PersistenceManager mgr = getPersistenceManager();
     try {
   	  for (TextDocument textDocument : documents) {
