@@ -531,6 +531,9 @@ public class ProjectEndpoint {
       // Check if user is authorized
       Authorization.checkAuthorization(project.getProjectID(), user);
       
+      // remove all ValidationProjects associated with this revision
+      removeAllValidationProjects(id);
+      
       Long codeSystemID = project.getCodesystemID();
 
       mgr.deletePersistent(project);
@@ -582,10 +585,43 @@ public class ProjectEndpoint {
      Authorization.checkAuthorization(project.getProjectID(), user);
      
      Long codeSystemID = project.getCodesystemID();
+     
+     removeAssociatedData(project);
 
      mgr.deletePersistent(project);
 
+     
+   } finally {
+     mgr.close();
+   }
+ }
+ 
+ private void removeAllValidationProjects(Long revisionId) {
+   PersistenceManager mgr = getPersistenceManager();
+   try {
+     Query q;
+     q = mgr.newQuery(ValidationProject.class, " revisionID  == :revisionID");
+     Map<String, Long> codesParam = new HashMap();
+     codesParam.put("revisionID", revisionId);
+     
+     List<ValidationProject> validationProjects = (List<ValidationProject>)q.executeWithMap(codesParam);
+     
+     for (ValidationProject validationProject : validationProjects) {
+       removeAssociatedData(validationProject);
+       mgr.deletePersistent(validationProject);
+    }
+     
+   } finally {
+     mgr.close();
+   }
+ }
+ 
+ private void removeAssociatedData(ValidationProject project)  {
+   PersistenceManager mgr = getPersistenceManager();
+   try {
+     
      // Delete code system
+     Long codeSystemID = project.getCodesystemID();
      CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
      
      Query q;
@@ -604,8 +640,10 @@ public class ProjectEndpoint {
      q = mgr.newQuery(TextDocument.class);
      q.setFilter( "projectID == :theID");
      Map<String, Long> paramValues = new HashMap();
-     paramValues.put("theID", id);
+     paramValues.put("theID", project.getId());
      mgr.deletePersistentAll((List<TextDocument>)q.executeWithMap(paramValues));
+     
+     
 
      
    } finally {
