@@ -20,4 +20,23 @@ class ProjectEndpoint {
 	  
 	  return promise;
   }
+  
+  deleteValidationProject(prjId){
+	  
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.project.removeValidationProject({'id': prjId}).execute(function(resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       
+			       	 else{
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+  }
 }

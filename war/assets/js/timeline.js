@@ -59,7 +59,13 @@ class Timeline {
    
    addValidationProjectItem(validationProject){
 	   var itemHTML = "";
-	   itemHTML = '<li><span class="project_name">'+validationProject.name+'</span><span class="project_id hidden">'+validationProject.id+'</span></li>';
+	   itemHTML = '<li><span class="project_name">'+validationProject.name+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
+	   	// Delete Project Btn
+	   itemHTML +='<a id="deleteValidationPrjBtn" href="" prjId="'+validationProject.id+'" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	   itemHTML +=' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
+	   itemHTML +='<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
+	   itemHTML +='</a>';
+	   itemHTML += '</li>'
 	   
 	   return itemHTML;
    }

@@ -224,6 +224,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     	var revisionId = $( this ).attr("revId");
                     	deleteRevision(revisionId);
                     });
+                    
+                    $( "#deleteValidationPrjBtn" ).click(function() {
+                    	var prjId = $( this ).attr("prjId");
+                    	deleteValidationProject(prjId);
+                    });
               	 }
               
               	 else{
@@ -247,6 +252,19 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	    .catch(handleError(reason));
         }
         
+        function deleteValidationProject(prjId){
+        	
+        	var projectEndpoint = new ProjectEndpoint();
+        	
+        	projectEndpoint.deleteValidationProject(prjId)
+        		.then(
+        	        function(val) {
+        	        	alertify.success("Revision has been deleted");
+        	        	setRevisionHistory();
+        	        })
+        	    .catch(handleError(reason));
+        }
+
         function handleError(reason){
         	alertify.error("There was an error");
         	console.log(reason.message);
