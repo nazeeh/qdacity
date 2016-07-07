@@ -398,7 +398,7 @@ public class ProjectEndpoint {
        clientIds = {Constants.WEB_CLIENT_ID, 
           com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
           audiences = {Constants.WEB_CLIENT_ID})
-   public ValidationProject createValidationProject(@Named("projectID") Long revisionID, User user) throws UnauthorizedException {
+   public ValidationProject createValidationProject(@Named("projectID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException {
 	   ProjectRevision project = null;
      ValidationProject cloneProject = null;
      PersistenceManager mgr = getPersistenceManager();
@@ -406,6 +406,8 @@ public class ProjectEndpoint {
        project = mgr.getObjectById(ProjectRevision.class, revisionID);
        
        cloneProject = createValidationProject(project, user);
+       
+       cloneProject.addValidationCoder(userID);
        
        //cloneProject.setRevisionID(project.getId());// FIXME Check why this works and previous assignments dont
        

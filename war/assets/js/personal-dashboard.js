@@ -165,6 +165,36 @@ function addProjectToUser(projectID, notificationID, type, originUser,user, date
 	
 }
 
+function createValidationProject(notification){
+	var tmp = notification;
+	gapi.client.qdacity.project.createValidationProject({'projectID': notification.project , 'userID': notification.originUser}).execute(function(resp) {
+	   	 if (!resp.code) {
+	   	 }
+	   
+	   	 else{
+	   		 window.alert(resp.code)
+	   	}
+	 });
+	
+	
+
+	settleNotification(notification);
+	
+}
+
+function settleNotification(notification){
+	notification.settled = true;
+	gapi.client.qdacity.user.updateUserNotification(notification).execute(function(resp) {
+	   	 if (!resp.code) {
+	   		fillNotificationList();
+	   		fillProjectsList();
+	   	 }
+	   	 else{
+	   		 window.alert(resp.code)
+	   	}
+	 });
+}
+
 function fillProjectsList(){
 	$("#project-list").html("");
 	gapi.client.qdacity.project.listProject().execute(function(resp) {
@@ -217,7 +247,19 @@ function fillNotificationList(){
                 var message = resp.items[i].message;
                 var settled = resp.items[i].settled;
                 
-                addInvitationNotification(id, project, subject, message,settled, type, originUser, user, datetime);
+                switch (type) {
+				case "INVITATION":
+					addInvitationNotification(id, project, subject, message,settled, type, originUser, user, datetime);
+					break;
+				case "VALIDATION_REQUEST":
+					addValidationRequestNotification(resp.items[i]);
+					
+					break;
+				default:
+					break;
+				
+                }
+                
         }
         var options = {
         	valueNames: [ 	'project_name', 'project_id' , 'notification_date'],
@@ -423,6 +465,39 @@ function addInvitationNotification(notificationID, projectID, subject, message,s
 		html +='</a>';
 		//Accept Button
 		html +='<a onclick="addProjectToUser('+projectID+','+notificationID+',\''+type+'\',\''+originUser+'\',\''+user+'\',\''+datetime+'\',\''+subject+'\',\''+message+'\')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
+		html +=' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
+		html +='<i  class="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>';
+		html +='</a>';
+	}
+	
+	
+	html += '</li>';
+	$("#notification-list").prepend(html);
+}
+
+function addValidationRequestNotification(notification){
+
+	var html = '<li>';
+	html += '<span class="inviting_user">'+notification.subject+'</span><br/>';
+	html += '<span class="project_name" style="font-size:20px;"> '+notification.message+'</span>';
+	html += '<span class="project_id hidden">'+notification.projectID+'</span>';
+	html += '<span class="notification_date hidden">'+notification.datetime+'</span>';
+	html += '<span class="notification_id hidden">'+notification.notificationID+'</span>';
+	
+	if (notification.settled){
+		html +='<a class=" fa-lg" style="color:green; float:right; margin-top:-15px; ">';
+		html +='<i  class="fa fa-check fa-2x "></i>';
+		html +='</a>';
+	}else {
+		var notificationString = JSON.stringify(notification).replace(/"/g, '&quot;');
+		//Reject Button
+		html +='<a onclick="settleNotification('+notificationString+')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
+		html +=' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
+		html +='<i  class="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>';
+		html +='</a>';
+		
+		//Accept Button
+		html +='<a onclick="createValidationProject('+notificationString+')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
 		html +=' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 		html +='<i  class="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>';
 		html +='</a>';
