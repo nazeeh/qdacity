@@ -39,4 +39,23 @@ class ProjectEndpoint {
 	  
 	  return promise;
   }
+  
+  requestValidationAccess(revId){
+	  
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.project.requestValidationAccess({'revisionID': revId}).execute(function(resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       
+			       	 else{
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+  }
 }

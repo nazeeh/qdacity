@@ -229,6 +229,12 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     	var prjId = $( this ).attr("prjId");
                     	deleteValidationProject(prjId);
                     });
+                    
+                    $( "#requestValidationAccessBtn" ).click(function() {
+                    	var revId = $( this ).attr("revId");
+                    	requestValidationAccess(revId);
+                    });
+                    
               	 }
               
               	 else{
@@ -265,6 +271,17 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	    .catch(handleError(reason));
         }
 
+        function requestValidationAccess(prjId){
+        	var projectEndpoint = new ProjectEndpoint();
+        	
+        	projectEndpoint.requestValidationAccess(prjId)
+        		.then(
+        	        function(val) {
+        	        	alertify.success("Request has been filed");
+        	        })
+        	    .catch(handleError(reason));
+        }
+        
         function handleError(reason){
         	alertify.error("There was an error");
         	console.log(reason.message);

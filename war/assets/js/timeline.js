@@ -22,7 +22,8 @@ class Timeline {
 
   		this.html += '</div>';
   		this.html += '<div class="timeline-footer">';
-  		this.html += '<a id="deleteRevisionBtn" revId="'+revID+'" class="btn btn-danger btn-xs">Delete</a>';
+  		this.html += '<a id="requestValidationAccessBtn" revId="'+revID+'" class="btn btn-info btn-xs ">Re-Code</a>';
+  		this.html += '<a id="deleteRevisionBtn" revId="'+revID+'" class="btn btn-danger btn-xs pull-right">Delete</a>';
   		this.html += ' </div>';
   		this.html += '</div>';
   		this.html += '</li>';
