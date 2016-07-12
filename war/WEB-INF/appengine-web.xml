@@ -17,8 +17,9 @@
 
     <include path="**.cache.*" expiration="365d" />
     <exclude path="**.gwt.rpc" />
+    <exclude path="/node_modules**" />
   </static-files>
-
+	<resource-files><exclude path="**"/></resource-files>
   <!-- Configure java.util.logging -->
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>

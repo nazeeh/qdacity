@@ -1,3 +1,8 @@
+import 'script!../../components/bootstrap/bootstrap.min.js';
+
+import $script from 'scriptjs';
+$script('https://apis.google.com/js/client.js?onload=init','google-api');
+
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';

@@ -1,3 +1,41 @@
+import Timeline from './timeline';
+import ProjectEndpoint from './ProjectEndpoint';
+
+//import 'script!./ProjectEndpoint.js';
+//import 'script!./ErrorHandler.js';
+import 'script!./morris-data.js';
+import 'script!../../components/bootstrap/bootstrap.min.js';
+import 'script!../../components/listJS/list.js';
+import 'script!../../components/listJS/list.pagination.js';
+import 'script!../../components/raphael/raphael-min.js';
+import 'script!../../components/morrisjs/morris.min.js';
+import 'script!../../components/Vex/js/vex.combined.min.js';
+import 'script!../../components/URIjs/URI.min.js'; 
+import 'script!../../components/alertify/alertify-0.3.js';
+
+import $script from 'scriptjs';
+$script('https://apis.google.com/js/client.js?onload=init','google-api');
+
+(function(d, script) {
+//    script = d.createElement('script');
+//    script.type = 'text/javascript';
+//    script.async = true;
+//    script.onload = function(){
+//        init();
+//    };
+//    script.src = 'https://apis.google.com/js/client.js';
+//	d.getElementsByTagName('head')[0].appendChild(script);
+	
+	$.getScript( "https://apis.google.com/js/client.js", function( data, textStatus, jqxhr ) {
+		  console.log( data ); // Data returned
+		  console.log( textStatus ); // Success
+		  console.log( jqxhr.status ); // 200
+		  console.log( "Load was performed." );
+		  window.init();
+		});
+}(document));
+
+
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
     var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
     
@@ -10,15 +48,12 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
    function signout(){
    	window.open("https://accounts.google.com/logout");
    }
-   
+
    function handleAuth() {
 
    	
 		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
 		    if (!resp.code) {
-		      current_user_name = resp.given_name;
-		      current_user_id = resp.id;
-		      //window.alert(resp.id);
 		      document.getElementById('currentUserName').innerHTML = resp.name;
 		      document.getElementById('currentUserEmail').innerHTML = resp.email;
 		      document.getElementById('currentUserPicture').src = resp.picture;
@@ -46,7 +81,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		  });
 		}
    
-        function init() {
+   window.init = function () {
         	
         	var query = window.location.search;
       	  // Skip the leading ?, which should always be there,
@@ -55,7 +90,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
       	    query = query.substring(1);
       	  }
       	  var data = query.split(',');
-      	  for (i = 0; (i < data.length); i++) {
+      	  for (var i = 0; (i < data.length); i++) {
       	    data[i] = unescape(data[i]);
       	  }
       	  project_id = data[0];

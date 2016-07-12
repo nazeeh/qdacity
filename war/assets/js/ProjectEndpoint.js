@@ -1,4 +1,4 @@
-class ProjectEndpoint {
+export default class ProjectEndpoint {
   constructor() {
   }
  
