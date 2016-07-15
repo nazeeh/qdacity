@@ -5,3 +5,6 @@ gwt-unitCache
 /war/WEB-INF/lib
 /war/qdacity
 /war/WEB-INF/appengine-generated
+/war/node_modules
+/war/WEB-INF/*.api
+dist

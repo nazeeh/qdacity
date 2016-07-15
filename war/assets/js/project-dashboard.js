@@ -13,27 +13,10 @@ import 'script!../../components/Vex/js/vex.combined.min.js';
 import 'script!../../components/URIjs/URI.min.js'; 
 import 'script!../../components/alertify/alertify-0.3.js';
 
+
 import $script from 'scriptjs';
 $script('https://apis.google.com/js/client.js?onload=init','google-api');
 
-(function(d, script) {
-//    script = d.createElement('script');
-//    script.type = 'text/javascript';
-//    script.async = true;
-//    script.onload = function(){
-//        init();
-//    };
-//    script.src = 'https://apis.google.com/js/client.js';
-//	d.getElementsByTagName('head')[0].appendChild(script);
-	
-	$.getScript( "https://apis.google.com/js/client.js", function( data, textStatus, jqxhr ) {
-		  console.log( data ); // Data returned
-		  console.log( textStatus ); // Success
-		  console.log( jqxhr.status ); // 200
-		  console.log( "Load was performed." );
-		  window.init();
-		});
-}(document));
 
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
@@ -94,9 +77,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
       	    data[i] = unescape(data[i]);
       	  }
       	  project_id = data[0];
-      	  
-          
-        	
         	
         	var query = window.location.search;
         	  // Skip the leading ?, which should always be there,

@@ -12,11 +12,12 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 
-<!-- Bootstrap Core CSS -->
-<link href="components/bootstrap/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Core CSS --> 
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
 
 <!-- Custom CSS -->
+<link href="assets/css/documentView.css" rel="stylesheet">
 <link href="assets/css/landing-page.css" rel="stylesheet">
 <link href="assets/css/footer.css" rel="stylesheet">
 <link href="assets/css/CodesystemView.css" rel="stylesheet">
@@ -32,6 +33,8 @@
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="components/tooltipster/js/jquery.tooltipster.js"></script>
+<script src="https://fb.me/react-15.0.0.js"></script>
+    <script src="https://fb.me/react-dom-15.0.0.js"></script>
 
 <script src="components/filer/js/jquery.filer.min.js"></script>
 
@@ -333,9 +336,8 @@ iframe {
 					</div>
 				</div>
 				<div id="document-section" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;">
-					<ol id="documentlist">
-
-					</ol>
+					<div id="documentView">
+					</div>
 				</div>
 			</div>
 
@@ -586,12 +588,12 @@ iframe {
 
 	<script src="components/URIjs/URI.min.js"></script>
 	<!-- Main JS Script -->
-	<script src="assets/js/coding-editor/coding-editor.js" type="text/javascript" charset="utf-8"></script>
+	<script src="dist/js/coding-editor.dist.js" type="text/javascript" charset="utf-8"></script>
 	<script src="assets/js/coding-editor/codings-view.js" type="text/javascript" charset="utf-8"></script>
-	<script src="assets/js/coding-editor/coding-brackets.js" type="text/javascript" charset="utf-8"></script>
+<!-- 	<script src="assets/js/coding-editor/coding-brackets.js" type="text/javascript" charset="utf-8"></script> -->
 	<script src="components/imagesloaded/imagesloaded.pkgd.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="components/Vex/js/vex.combined.min.js"></script>
 
-	<script src="https://apis.google.com/js/client.js?onload=init"></script>
+	<!-- <script src="https://apis.google.com/js/client.js?onload=init"></script> -->
 </body>
 </html>

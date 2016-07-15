@@ -41,7 +41,7 @@ $(document)
 							$(this).addClass('selected');
 							var codingID = $(this).find("td").eq(0).html();
 
-							activateCodingInEditor(codingID, true);
+							window.activateCodingInEditor(codingID, true);
 
 						}
 					});
@@ -56,40 +56,3 @@ $(document)
 
 				});
 
-function activateCodingInEditor(codingID, scrollToSection) {
-
-	for ( var id in text_documents) {
-		var elements = text_documents[id].text;
-		var foundArray = $('coding[id=\'' + codingID + '\']', elements).map(
-				function() {
-					return $(this);
-
-				});
-		foundArray = foundArray.toArray();
-
-		if (foundArray.length > 0) {
-			var range;
-			range = document.createRange();
-			$('#documentlist .ui-selected').removeClass("ui-selected");
-			$("#documentlist").find("li[docID='" + id + "']").addClass(
-					"ui-selected");
-			setDocumentView(id);
-			var codingNodes = $("#editor").contents().find(
-					'coding[id=\'' + codingID + '\']');
-			var startNode = codingNodes[0];
-			var endNode = codingNodes[codingNodes.length - 1];
-
-			raWnge = iframe.contentDocument.createRange();
-			range.setStart(startNode, 0);
-			range.setEnd(endNode, endNode.childNodes.length);
-			editor.setSelection(range);
-			
-			//Scroll to selection
-			if (scrollToSection){
-				var offset = startNode.offsetTop;
-				$("#editor").contents().scrollTop(offset);
-			}
-
-		}
-	}
-}

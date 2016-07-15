@@ -1,3 +1,11 @@
+import DocumentsView from './DocumentsView.jsx';
+import CodingBrackets from './coding-brackets';
+//import 'script!./coding-brackets.js';   
+
+import $script from 'scriptjs';
+$script('https://apis.google.com/js/platform.js?onload=onLoad','google-platform'); 
+$script('https://apis.google.com/js/client.js?onload=init','google-api');
+ 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 var current_user_name;
@@ -122,8 +130,8 @@ function addCodingBrackets(){
 	var doc = iframe.contentDocument;
 	$(doc).imagesLoaded( function() {
 		$(doc).find(".svgContainer").remove();
-		
-		var svgDiv = createCodingBrackets(doc, "");
+		var codingsMap = getCodingsFromText(doc);
+		var svgDiv = (new CodingBrackets()).createCodingBrackets(doc, codingsMap);
 		var body = doc.querySelector('body');
 		body.insertBefore(svgDiv, body.firstChild);
 	});
@@ -241,7 +249,8 @@ function signout() {
 	window.open("https://accounts.google.com/logout");
 }
 
-function init() {
+window.init = function (){
+
 
 	$.LoadingOverlay("show");
 	$("#footer").hide();
@@ -259,7 +268,7 @@ function init() {
 		query = query.substring(1);
 	}
 	var data = query.split(',');
-	for (i = 0; (i < data.length); i++) {
+	for (var i = 0; (i < data.length); i++) {
 		data[i] = unescape(data[i]);
 	}
 	project_id = data[0];
@@ -514,8 +523,46 @@ function getCodingCount(codeId) {
 
 }
 
+window.activateCodingInEditor = function (codingID, scrollToSection) {
+
+	for ( var id in text_documents) {
+		var elements = text_documents[id].text;
+		var foundArray = $('coding[id=\'' + codingID + '\']', elements).map(
+				function() {
+					return $(this);
+
+				});
+		foundArray = foundArray.toArray();
+
+		if (foundArray.length > 0) {
+			var range;
+			range = document.createRange();
+			documentsView.setActiveDocument(id);
+			setDocumentView(id);
+			var codingNodes = $("#editor").contents().find(
+					'coding[id=\'' + codingID + '\']');
+			var startNode = codingNodes[0];
+			var endNode = codingNodes[codingNodes.length - 1];
+
+			var raWnge = iframe.contentDocument.createRange();
+			range.setStart(startNode, 0);
+			range.setEnd(endNode, endNode.childNodes.length);
+			editor.setSelection(range);
+			
+			//Scroll to selection
+			if (scrollToSection){
+				var offset = startNode.offsetTop;
+				$("#editor").contents().scrollTop(offset);
+			}
+
+		}
+	}
+}
+
+var documentsView = {};
 function setDocumentList(projectID) {
-	document.getElementById('documentlist').innerHTML = "";
+	documentsView = ReactDOM.render(<DocumentsView setEditor={setDocumentView} />, document.getElementById('documentView'));
+
 	$("#documents-ui").LoadingOverlay("show");
 	gapi.client.qdacity.documents.getTextDocument({
 		'id' : project_id
@@ -523,7 +570,7 @@ function setDocumentList(projectID) {
 		if (!resp.code) {
 			resp.items = resp.items || [];
 			for (var i = 0; i < resp.items.length; i++) {
-				addDocumentToList(resp.items[i].id, resp.items[i].title);
+				documentsView.addDocument(resp.items[i].id, resp.items[i].title);
 				var document = {};
 				document.id = resp.items[i].id;
 				document.title = resp.items[i].title;
@@ -551,48 +598,45 @@ function addDocumentToProject(title) {
 
 	gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
 		if (!resp.code) {
-			setDocumentList(project_id);
+			documentsView.addDocument(resp.id, resp.title);
+			var document = {};
+			document.id = resp.items[i].id;
+			document.title = resp.items[i].title;
+			document.text = resp.items[i].text.value;
+			text_documents[document.id] = document;
 		}
 	});
 
 }
 
-function removeDocumentFromProject() {
-	var ids = $('#documentlist .ui-selected').map(function() {
-		return $(this).attr('docID');
+function removeDocumentFromProject() {	
+	var docId = documentsView.getActiveDocumentId();
 
+	var requestData = {};
+	requestData.id = docId;
+	gapi.client.qdacity.documents.removeTextDocument(requestData).execute(function(resp) {
+		documentsView.removeDocument(docId);
 	});
-
-	ids = ids.toArray();
-	for (var i = 0; i < ids.length; i++) {
-		var requestData = {};
-		requestData.id = ids[i];
-		gapi.client.qdacity.documents.removeTextDocument(requestData).execute(function(resp) {
-			setDocumentList(project_id);
-		})
-	}
 }
 
 function changeDocumentTitle() {
-	var ids = $('#documentlist .ui-selected').map(function() {
-		return $(this).attr('docID');
-
-	});
-	ids = ids.toArray();
-	var title = prompt("New name for document \"" + ids[0] + "\"", "Title");
-	changeDocumentData(ids[0], title);
+	var docId = documentsView.getActiveDocumentId();
+	var title = prompt("New name for document \"" + docId + "\"", "Title");
+	changeDocumentData(docId, title);
 }
 
 function changeDocumentData(id, title) {
 
 	var requestData = {};
-	requestData.id = id;
+	requestData.id = id; 
 	requestData.title = title;
 	requestData.text = editor.getHTML();
 	requestData.projectID = project_id;
 	// FIXME text
 	gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
-		setDocumentList(project_id);
+		if (!resp.code) {
+			documentsView.renameDocument(id, title);
+		}
 	});
 }
 
@@ -625,14 +669,6 @@ function addTooltipsToEditor(id) {
 }
 
 function saveEditorContent() {
-	var docIDs = $('#documentlist .ui-selected').map(function() {
-		return $(this).attr('docID');
-
-	});
-	var docTitles = $('#documentlist .ui-selected').map(function() {
-		return $(this).text();
-
-	});
 	changeDocumentData(active_document.id, active_document.title);
 }
 
@@ -1137,16 +1173,6 @@ function codesystemStateChanged(nodes, nodesJson) {
 	}
 }
 
-var listCreated = false;
-
-function addDocumentToList(docID, newItem) {
-	// window.alert("<li class=\"ui-widget-content\" data-docID=\""+ docID
-	// +"\">" + newItem + "</li>");
-	$("#documentlist").append("<li class=\"ui-widget-content\" docID=\"" + docID + "\">" + newItem + "</li>");
-	// $("#documentlist").listview("refresh");
-
-}
-
 function uploadSelectedDocuments() {
 	var jFiler = $("#filer_input").prop("jFiler");
 	var files = jFiler.files;
@@ -1330,27 +1356,5 @@ $(function() {
 	$("#combobox").combobox();
 	$("#toggle").click(function() {
 		$("#combobox").toggle();
-	});
-});
-
-// Document List
-// FIXME
-$(function() {
-	$("#documentlist").selectable({
-		stop : function() {
-			var ids = $('#documentlist .ui-selected').map(function() {
-				return $(this).attr('docID');
-
-			});
-			var docTitles = $('#documentlist .ui-selected').map(function() {
-				return $(this).text();
-
-			});
-			ids = ids.toArray();
-			var selectedID = ids[0];
-			active_document.id = ids[0];
-			active_document.title = docTitles[0];
-			setDocumentView(selectedID);// FIXME
-		}
 	});
 });
