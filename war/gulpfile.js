@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var webpack = require('webpack-stream');
+var uglify = require('gulp-uglify');
 
 var paths = {
   scripts: ['assets/js/**/*.js'],
@@ -17,9 +18,15 @@ gulp.task('bundle', function() {
 	.pipe(webpack( require('./webpack.config.js') )).on('error', handleError)
 	.pipe(gulp.dest('dist/js/'));
 });
+
+gulp.task('minify', function() {
+	 return gulp.src('./dist/js/*.js', {base: './'})
+      .pipe(uglify())
+      .pipe(gulp.dest('./'));
+});
  
 gulp.task('watch',function() {
-	gulp.watch('assets/**/*.js',['bundle'])
+	gulp.watch('assets/**/*.{js,jsx}',['bundle'])
 });
  
 gulp.task('default', ['watch']);
