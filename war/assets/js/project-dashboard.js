@@ -1,8 +1,6 @@
 import Timeline from './timeline';
 import ProjectEndpoint from './ProjectEndpoint';
 
-//import 'script!./ProjectEndpoint.js';
-//import 'script!./ErrorHandler.js';
 import 'script!./morris-data.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/listJS/list.js';
@@ -10,7 +8,7 @@ import 'script!../../components/listJS/list.pagination.js';
 import 'script!../../components/raphael/raphael-min.js';
 import 'script!../../components/morrisjs/morris.min.js';
 import 'script!../../components/Vex/js/vex.combined.min.js';
-import 'script!../../components/URIjs/URI.min.js'; 
+import 'script!../../components/URIjs/URI.min.js';
 import 'script!../../components/alertify/alertify-0.3.js';
 
 
@@ -21,20 +19,20 @@ $script('https://apis.google.com/js/client.js?onload=init','google-api');
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
     var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-    
+
     var project_id;
-	    
+
      function signin(mode, callback) {
    	  gapi.auth.authorize({client_id: client_id,scope: scopes, immediate: mode},callback);
    }
-   
+
    function signout(){
    	window.open("https://accounts.google.com/logout");
    }
 
    function handleAuth() {
 
-   	
+
 		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
 		    if (!resp.code) {
 		      document.getElementById('currentUserName').innerHTML = resp.name;
@@ -43,19 +41,19 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		      $('#navAccount').show();
 		      $('#navSignin').hide();
 		      // INIT
-		      
+
 		      vex.defaultOptions.className = 'vex-theme-os';
-		      
+
 		      setGeneralStats();
-		      
+
 		      fillUserList();
-		      
+
 		      createAreaChart();
-		      
+
 		      setProjectName();
-		      
+
 		      setRevisionHistory();
-		      
+
 		    }
 		    else {
 		    	 $('#navAccount').hide();
@@ -63,9 +61,9 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		    }
 		  });
 		}
-   
+
    window.init = function () {
-        	
+
         	var query = window.location.search;
       	  // Skip the leading ?, which should always be there,
       	  // but be careful anyway
@@ -77,7 +75,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
       	    data[i] = unescape(data[i]);
       	  }
       	  project_id = data[0];
-        	
+
         	var query = window.location.search;
         	  // Skip the leading ?, which should always be there,
         	  // but be careful anyway
@@ -90,63 +88,63 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	  }
         	  project_id = data[0];
         	  var urlParams = URI(window.location.search).query(true);
-        	  	
+
     	  	  project_id = urlParams.project;
-        	  
+
         	  $(".codeEditorLink").attr('href','coding-editor.html?project='+project_id);
-        	  
+
         	var apisToLoad;
         	 var callback = function() {
         	   if (--apisToLoad == 0) {
         		   signin(true,handleAuth);
-        		  
+
         	     //Load project settings
-        	     
+
         	   }
-        	   
+
         	}
-        	  
+
         	apisToLoad = 2;
-        	//Parameters are APIName,APIVersion,CallBack function,API Root 
+        	//Parameters are APIName,APIVersion,CallBack function,API Root
         	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
         	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
         	gapi.client.load('oauth2','v2',callback);
 
-        	
+
 			document.getElementById('navBtnSigninGoogle').onclick = function() {
 				signin(false, handleAuth);
-           	}  
-				
+           	}
+
 			document.getElementById('navBtnSignOut').onclick = function() {
 				signout();
-           	}  
-                
+           	}
+
 			document.getElementById('inviteUserBtn').onclick = function() {
                 inviteUser();
             }
-			
+
 			document.getElementById('newRevisionBtn').onclick = function() {
 				showNewRevisionModal("Revision Comment");
             }
         }
-        
+
         $(document).ready( function () {
         	//window.alert("test");
         	$( "#newProjectForm" ).on( "submit",function(event) {
-        		event.preventDefault();	
+        		event.preventDefault();
         		createNewProject();
               });
-        	
+
         });
 
         function createNewProject(){
-        	
+
         	var requestData = {};
             requestData.project = 0;
-            
+
             gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function(resp) {
                     if (!resp.code) {
-                    	
+
                     	var requestData2 = {};
                         requestData2.codesystemID = resp.id;
                         requestData2.maxCodingID = 0;
@@ -155,7 +153,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                                 if (!resp2.code) {
                                 	requestData.id = resp.id;
                                 	requestData.project = resp2.id
-                                	
+
                                 	gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function(resp3) {
                                         if (!resp3.code) {
                                         	addUserToUserList(requestData.project, requestData2.name);
@@ -174,41 +172,41 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function addProjectToUser(){
-        	
+
         }
 
         function setGeneralStats(){
-        	
+
         	gapi.client.qdacity.project.getProjectStats({'id': project_id}).execute(function(resp) {
         	   	 if (!resp.code) {
         	   		$("#topStatsDocuments").html(resp.documentCount);
         	   		$("#topStatsCodes").html(resp.codeCount);
         	   		$("#topStatsCodings").html(resp.codingCount);
-        	        
+
         	   	 }
-        	   
+
         	   	 else{
         	   		 window.alert(resp.code)
         	   	}
-        	   	 
+
         	    });
-        	
+
         }
-        
+
         function setProjectName(){
         	gapi.client.qdacity.project.getProject({'id': project_id}).execute(function(resp) {
        	   	 if (!resp.code) {
        	   		$("#project-name").html(resp.name);
-       	        
+
        	   	 }
-       	   
+
        	   	 else{
        	   		 window.alert(resp.code)
        	   	}
-       	   	 
+
        	    });
         }
-        
+
         function setRevisionHistory (){
         	gapi.client.qdacity.project.listRevisions({'projectID': project_id}).execute(function(resp) {
               	 if (!resp.code) {
@@ -223,95 +221,95 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     		validationProjects[resp.items[i].revisionID].push(resp.items[i]);
                     	}
                     }
-              		
+
               		var timeline = new Timeline();
                     for (var i=0;i<snapshots.length;i++) {
                     	timeline.addLabelToTimeline(snapshots[i].revision);
             		    timeline.addRevInfoToTimeline(snapshots[i].comment, snapshots[i].id);
-            		    
+
             		    var validationProjectList = validationProjects[snapshots[i].id];
 
             		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
                     }
                     $("#revision-timeline").append(timeline.getHTML());
-                    
+
                     $( "#deleteRevisionBtn" ).click(function() {
                     	var revisionId = $( this ).attr("revId");
                     	deleteRevision(revisionId);
                     });
-                    
+
                     $( "#deleteValidationPrjBtn" ).click(function() {
                     	var prjId = $( this ).attr("prjId");
                     	deleteValidationProject(prjId);
                     });
-                    
+
                     $( "#requestValidationAccessBtn" ).click(function() {
                     	var revId = $( this ).attr("revId");
                     	requestValidationAccess(revId);
                     });
-                    
+
               	 }
-              
+
               	 else{
               		 window.alert(resp.code)
               	}
-              	 
+
                });
-	        
+
         }
-        
+
         function deleteRevision(revisionId){
-        	
+
         	var projectEndpoint = new ProjectEndpoint();
-        	
+
         	projectEndpoint.deleteRevision(revisionId)
         		.then(
         	        function(val) {
         	        	alertify.success("Revision has been deleted");
         	        	setRevisionHistory();
         	        })
-        	    .catch(handleError(reason));
+        	    .catch(handleBadResponse);
         }
-        
+
         function deleteValidationProject(prjId){
-        	
+
         	var projectEndpoint = new ProjectEndpoint();
-        	
+
         	projectEndpoint.deleteValidationProject(prjId)
         		.then(
         	        function(val) {
         	        	alertify.success("Revision has been deleted");
         	        	setRevisionHistory();
         	        })
-        	    .catch(handleError(reason));
+        	    .catch(handleBadResponse);
         }
 
         function requestValidationAccess(prjId){
         	var projectEndpoint = new ProjectEndpoint();
-        	
+
         	projectEndpoint.requestValidationAccess(prjId)
         		.then(
         	        function(val) {
         	        	alertify.success("Request has been filed");
         	        })
-        	    .catch(handleError(reason));
+        	    .catch(handleBadResponse);
         }
-        
-        function handleError(reason){
+
+        function handleBadResponse(reason){
         	alertify.error("There was an error");
         	console.log(reason.message);
         }
-        
+
         function fillUserList(){
         	gapi.client.qdacity.user.listUser({'projectID': project_id}).execute(function(resp) {
            	 if (!resp.code) {
            		resp.items = resp.items || [];
-                
+
                 for (var i=0;i<resp.items.length;i++) {
                         var user_id = resp.items[i].id;
                         var given_name = resp.items[i].givenName;
                         var sur_name = resp.items[i].surName;
-                        
+
                   		addUserToUserList(user_id, given_name + " " + sur_name);
                 }
                 var options = {
@@ -320,28 +318,28 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
                 var projectList = new List('user-section', options);
 
-                
+
            	 }
-           
+
            	 else{
            		 window.alert(resp.code)
            	}
-           	 
+
             });
-        	
+
         }
 
         function createAreaChart(){
         	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "project", 'projectID' : 1}).execute(function(resp){
         			if (!resp.code) {
-        				var dataArray =  []; 
+        				var dataArray =  [];
         				for (var i=0;i<resp.items.length;i++) {
         		            dataArray.push({
         			            period: resp.items[i].label,
         			            codesCreated: resp.items[i].codesCreated
         			        });
         				}
-        				
+
         				Morris.Area({
         			        element: 'morris-area-chart',
         			        data: dataArray,
@@ -354,7 +352,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         			    });
         			}
         		});
-        	
+
         }
 
         function addUserToUserList(userID, userName){
@@ -366,13 +364,13 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	html += '</span>';
         	html += '</li>';
         	$("#user-list").append(html);
-        	
-        	
+
+
         }
         function inviteUser(){
-        	
+
         	var userEmail = document.getElementById("userEmailFld" ).value;
-        	
+
         	gapi.client.qdacity.project.inviteUser({'projectID' : project_id, 'userEmail': userEmail}).execute(function(resp){
         		if (!resp.code) {
         			alertify.success(userEmail + " has been invited");
@@ -383,23 +381,23 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         		}
         	});
         }
-        
+
         function createNewRevision(comment){
         	gapi.client.qdacity.project.createSnapshot({'projectID': project_id, 'comment' : comment}).execute(function(resp) {
                 if (!resp.code) {
                 	alertify.success("New revision has been created");
                 	setRevisionHistory();
-                	
+
                 }
                 else{
                 	alertify.error("New revision has not been created");
                 }
         });
         }
-        
+
         function showNewRevisionModal(title){
            	var formElements =  "<textarea placeholder=\"Use this field to describe this revision in a few sentences\" rows=\"15\" cols=\"200\" name=\"textBox\" type=\"text\"  ></textarea><br/>\n";
-           	 
+
            		vex.dialog.open({
            			message : title,
            			contentCSS: { width: '600px' },
@@ -417,4 +415,3 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
            			}
            		});
             }
-         
