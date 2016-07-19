@@ -1,11 +1,13 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingBrackets from './coding-brackets';
-//import 'script!./coding-brackets.js';   
+import Account from '../Account';
 
 import $script from 'scriptjs';
-$script('https://apis.google.com/js/platform.js?onload=onLoad','google-platform'); 
-$script('https://apis.google.com/js/client.js?onload=init','google-api');
- 
+
+$script('https://apis.google.com/js/client.js', function() {
+	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
+	});
+  
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 var current_user_name;
@@ -17,12 +19,14 @@ var text_documents = {};
 var project_id;
 var documentMap;
 var max_coding_id;
-
+ 
 var editor;
 var codeMemoEditor;
 
+var account;
+
 var iframe = document.getElementById('editor');
-$(document).ready(function() {
+  window.init = function()  {
 	// Make sure we're in standards mode.
 	var doc = iframe.contentDocument;
 	$("#editor").css({
@@ -123,7 +127,9 @@ $(document).ready(function() {
 	});
 
 	$("#codePropColor").colorpicker();
-});
+	
+	window.init2();
+}
 
 
 function addCodingBrackets(){
@@ -197,59 +203,44 @@ var easytree = $('#easytree-section').easytree({
 	stateChanged : codesystemStateChanged
 });
 
-function handleAuth() {
 
-	var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
+function setupUI(){
+	if (account.isSignedIn()){
+	var profile = account.getProfile();
+	
+	document.getElementById('loginButton').style.visibility = 'hidden';
+    document.getElementById('currentUserName').innerHTML = profile.getName();
+	document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
+	document.getElementById('currentUserPicture').src = profile.getImageUrl();
+	$('#navAccount').show();
+	$('#navSignin').hide();
+	
+	gapi.client.qdacity.project.getProject({ 'id' : project_id }).execute(function(resp) {
 		if (!resp.code) {
-			// User is signed in, so hide the button
-			document.getElementById('loginButton').style.visibility = 'hidden';
-			document.getElementById('login').innerText = 'Welcome ' + resp.name;
-			current_user_name = resp.given_name;
-			current_user_id = resp.id;
-			// window.alert(resp.id);
-			document.getElementById('currentUserName').innerHTML = resp.name;
-			document.getElementById('currentUserEmail').innerHTML = resp.email;
-			document.getElementById('currentUserPicture').src = resp.picture;
-			$('#navAccount').show();
-			$('#navSignin').hide();
-
-			// INIT
-
-			gapi.client.qdacity.project.getProject({
-				'id' : project_id
-			}).execute(function(resp) {
-				if (!resp.code) {
-					codesystem_id = resp.codesystemID;
-					setDocumentList(project_id);
-					listCodes();
-				} else {
-					handleError(resp.code);
-				}
-				$.LoadingOverlay("hide");
-
-			});
-
+			codesystem_id = resp.codesystemID;
+			setDocumentList(project_id);
+			listCodes();
 		} else {
-			document.getElementById('loginButton').style.visibility = '';
-			$('#navAccount').hide();
 			handleError(resp.code);
 		}
+		$.LoadingOverlay("hide");
+
 	});
+	}
+	else {
+		document.getElementById('loginButton').style.visibility = '';
+		$('#navAccount').hide();
+	}
+	
+	
 }
 
-function signin(mode, callback) {
-	gapi.auth.authorize({
-		client_id : client_id,
-		scope : scopes,
-		immediate : mode
-	}, callback);
-}
 
 function signout() {
 	window.open("https://accounts.google.com/logout");
 }
 
-window.init = function (){
+window.init2 = function (){
 
 
 	$.LoadingOverlay("show");
@@ -261,6 +252,7 @@ window.init = function (){
 
 	vex.defaultOptions.className = 'vex-theme-os';
 
+	// FIXME clean up parameter setting
 	var query = window.location.search;
 	// Skip the leading ?, which should always be there,
 	// but be careful anyway
@@ -282,9 +274,8 @@ window.init = function (){
 	var apisToLoad;
 	var callback = function() {
 		if (--apisToLoad == 0) {
-			signin(true, handleAuth);
-			// Load project settings
-
+			account = new Account(client_id, scopes);
+			account.signin(setupUI);
 		}
 
 	}
@@ -292,7 +283,7 @@ window.init = function (){
 	apisToLoad = 2;
 	// Parameters are APIName,APIVersion,CallBack function,API Root
 	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
-	gapi.client.load('oauth2', 'v2', callback);
+	gapi.load('auth2', callback);
 
 	document.getElementById('btnCodeProps').onclick = function() {
 		if ($("#footer").is(":visible")) {
@@ -327,12 +318,16 @@ window.init = function (){
 	}
 
 	document.getElementById('loginButton').onclick = function() {
-		signin(false, handleAuth);
+		account.signin(setupUI);
 	}
 
 	document.getElementById('btnHideFooter').onclick = function() {
 		hideCodingView();
 	}
+	
+	document.getElementById('navBtnSwitchAccount').onclick = function () {
+		account.changeAccount(setupUI,client_id,scopes);
+	};
 
 	document.getElementById('btnApplyCode').onclick = function() {
 		var activeID = getActiveCode().id;
@@ -380,7 +375,7 @@ window.init = function (){
 	}
 
 	document.getElementById('navBtnSigninGoogle').onclick = function() {
-		signin(false, handleAuth);
+		account.signin(setupUI, anonymousUser);
 	}
 
 	document.getElementById('navBtnSignOut').onclick = function() {

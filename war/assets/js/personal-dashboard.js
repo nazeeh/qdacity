@@ -1,5 +1,6 @@
 import 'script!./ErrorHandler.js';
 import 'script!./morris-data.js';
+import Account from './Account';
 import 'script!../../components/bootstrap/bootstrap.min.js'
 import 'script!../../components/listJS/list.js';
 import 'script!../../components/listJS/list.pagination.js';
@@ -7,42 +8,42 @@ import 'script!../../components/raphael/raphael-min.js';
 import 'script!../../components/morrisjs/morris.min.js';
 
 import $script from 'scriptjs';
-$script('https://apis.google.com/js/client.js?onload=init','google-api');
+
+$script('https://apis.google.com/js/client.js', function() {
+	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
+	});
 
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 
-function signin(mode, callback) {
-	gapi.auth.authorize({ client_id: client_id, scope: scopes, immediate: mode }, callback);
+var account;
+
+function setupUI(){
+	if (account.isSignedIn()){
+		var profile = account.getProfile();
+	    console.log(profile.getId());
+	    
+	    document.getElementById('currentUserName').innerHTML = profile.getName();
+		document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
+		document.getElementById('currentUserPicture').src = profile.getImageUrl();
+		$('#navAccount').show();
+		$('#navSignin').hide();
+		
+		fillProjectsList();
+		fillNotificationList();
+		createAreaChart();
+		fillTaskBoard();
+	}
+	else{
+		$('#navAccount').hide();
+	}
 }
 
 function signout() {
 	window.open("https://accounts.google.com/logout");
 }
 
-function handleAuth() {
-
-	var request = gapi.client.oauth2.userinfo.get().execute(function (resp) {
-		if (!resp.code) {
-			//window.alert(resp.id);
-			document.getElementById('currentUserName').innerHTML = resp.name;
-			document.getElementById('currentUserEmail').innerHTML = resp.email;
-			document.getElementById('currentUserPicture').src = resp.picture;
-			$('#navAccount').show();
-			$('#navSignin').hide();
-			// INIT
-
-			fillProjectsList();
-			fillNotificationList();
-			createAreaChart();
-			fillTaskBoard();
-		} else {
-			$('#navAccount').hide();
-			handleError(resp.code);
-		}
-	});
-}
 
 window.init = function () {
 
@@ -53,9 +54,8 @@ window.init = function () {
 	var apisToLoad;
 	var callback = function callback() {
 		if (--apisToLoad == 0) {
-			signin(true, handleAuth);
-
-			//Load project settings
+			account = new Account(client_id, scopes);
+			account.signin(setupUI);
 		}
 	};
 
@@ -63,10 +63,11 @@ window.init = function () {
 	//Parameters are APIName,APIVersion,CallBack function,API Root
 	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
 	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
-	gapi.client.load('oauth2', 'v2', callback);
+	gapi.load('auth2', callback);
+
 
 	document.getElementById('navBtnSigninGoogle').onclick = function () {
-		signin(false, handleAuth);
+		account.signin(setupUI);
 	};
 
 	document.getElementById('navBtnSignOut').onclick = function () {
@@ -76,6 +77,12 @@ window.init = function () {
 	document.getElementById('addToDoBtn').onclick = function () {
 		createNewTask();
 	};
+	
+	
+	document.getElementById('navBtnSwitchAccount').onclick = function () {
+		account.changeAccount(setupUI,client_id,scopes);
+	};
+	
 
 	function createNewTask() {
 		var task = {};
@@ -101,7 +108,7 @@ function createNewProject() {
 	var requestData = {};
 	requestData.project = 0;
 
-	googleClient.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function (resp) {
+	gapi.client.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function (resp) {
 		if (!resp.code) { 
 
 			var requestData2 = {};

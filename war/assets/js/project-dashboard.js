@@ -1,5 +1,6 @@
 import Timeline from './timeline';
 import ProjectEndpoint from './ProjectEndpoint';
+import Account from './Account';
 
 import 'script!./morris-data.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
@@ -13,14 +14,16 @@ import 'script!../../components/alertify/alertify-0.3.js';
 
 
 import $script from 'scriptjs';
-$script('https://apis.google.com/js/client.js?onload=init','google-api');
 
-
+$script('https://apis.google.com/js/client.js', function() {
+	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
+	});
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
     var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 
     var project_id;
+    var account;
 
      function signin(mode, callback) {
    	  gapi.auth.authorize({client_id: client_id,scope: scopes, immediate: mode},callback);
@@ -29,18 +32,16 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
    function signout(){
    	window.open("https://accounts.google.com/logout");
    }
-
-   function handleAuth() {
-
-
-		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
-		    if (!resp.code) {
-		      document.getElementById('currentUserName').innerHTML = resp.name;
-		      document.getElementById('currentUserEmail').innerHTML = resp.email;
-		      document.getElementById('currentUserPicture').src = resp.picture;
-		      $('#navAccount').show();
-		      $('#navSignin').hide();
-		      // INIT
+   
+   function setupUI(){
+	   if (account.isSignedIn()) {
+		   var profile = account.getProfile();
+			
+		    document.getElementById('currentUserName').innerHTML = profile.getName();
+			document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
+			document.getElementById('currentUserPicture').src = profile.getImageUrl();
+			$('#navAccount').show();
+			$('#navSignin').hide();
 
 		      vex.defaultOptions.className = 'vex-theme-os';
 
@@ -59,8 +60,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		    	 $('#navAccount').hide();
 		    	 handleError(resp.code);
 		    }
-		  });
-		}
+   }
+
 
    window.init = function () {
 
@@ -96,10 +97,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	var apisToLoad;
         	 var callback = function() {
         	   if (--apisToLoad == 0) {
-        		   signin(true,handleAuth);
-
-        	     //Load project settings
-
+        		   account = new Account(client_id, scopes);
+        		   account.signin(setupUI);
         	   }
 
         	}
@@ -108,11 +107,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	//Parameters are APIName,APIVersion,CallBack function,API Root
         	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
         	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
-        	gapi.client.load('oauth2','v2',callback);
+        	gapi.load('auth2', callback);
 
 
 			document.getElementById('navBtnSigninGoogle').onclick = function() {
-				signin(false, handleAuth);
+				account.signin(setupUI);
            	}
 
 			document.getElementById('navBtnSignOut').onclick = function() {
@@ -126,13 +125,16 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			document.getElementById('newRevisionBtn').onclick = function() {
 				showNewRevisionModal("Revision Comment");
             }
+			
+			document.getElementById('navBtnSwitchAccount').onclick = function () {
+				account.changeAccount(setupUI,client_id,scopes);
+			};
         }
 
         $(document).ready( function () {
-        	//window.alert("test");
         	$( "#newProjectForm" ).on( "submit",function(event) {
         		event.preventDefault();
-        		createNewProject();
+        		createNewProject(); 
               });
 
         });
