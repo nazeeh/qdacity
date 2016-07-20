@@ -317,20 +317,16 @@ window.init2 = function (){
 	document.getElementById('btnApplyCode').onclick = function() {
 		var activeID = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
-			gapi.client.qdacity.project.incrCodingId({
-				'id' : project_id
-			}).execute(function(resp) {
+			gapi.client.qdacity.project.incrCodingId({'id' : project_id }).execute(function(resp) {
 				var codingID = resp.maxCodingID;
 				var author = current_user_name;
 				editor['setCoding'](codingID, activeID, getActiveCode().name, author);
 				var activeDoc = documentsView.getActiveDocument();
 				changeDocumentData(activeDoc.id, activeDoc.title);
-				easytree.getNode(activeID).codingCount--;
-				easytree.rebuildTree();
 				addCodingBrackets();
-
+				easytree.getNode(activeID).codingCount++;
+				rebuildTree();
 			});
-
 		}
 	}
 
@@ -338,12 +334,16 @@ window.init2 = function (){
 		var activeID = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
 
-			editor['removeCoding'](activeID);
-			easytree.getNode(activeID).codingCount++;
-			easytree.rebuildTree();
-			var activeDoc = documentsView.getActiveDocument();
-			changeDocumentData(activeDoc.id, activeDoc.title);
-			addCodingBrackets();
+			var slection = editor['removeCoding'](activeID);
+			splitupCoding(slection).then(function(value) {
+				easytree.getNode(activeID).codingCount++;
+				rebuildTree();
+				var activeDoc = documentsView.getActiveDocument();
+				changeDocumentData(activeDoc.id, activeDoc.title);
+				addCodingBrackets();
+			});
+			
+			
 		} else {
 			window.alert("No code selected.")
 		}
@@ -409,6 +409,31 @@ window.init2 = function (){
 
 }
 
+
+function splitupCoding(selection){
+	 var promise = new Promise(
+		  function(resolve, reject) {
+			  var anchor = $(selection._sel.anchorNode);
+				var codingID = anchor.next().attr('id');
+				if (codingID === anchor.prev().attr('id')){
+					gapi.client.qdacity.project.incrCodingId({'id' : project_id	}).execute(function(resp) {
+						anchor.nextAll('coding[id='+codingID+']').attr("id", resp.maxCodingID);
+						anchor.parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);
+						resolve();
+					});
+					
+				}
+				else{
+					resolve();
+				}
+		  }
+	  );
+	 
+	 return promise;
+	
+	
+}
+
 function showCodingView() {
 	showFooter();
 	var activeID = getActiveCode().id;
@@ -466,8 +491,7 @@ function fillCodingTable(codeID) {
 function getCodingsFromText(text){
 
 		var codingMap = {};
-		var codingNodes = $("#editor").contents().find(
-				'coding');
+		var codingNodes = $("#editor").contents().find('coding');
 		if (codingNodes.length > 0){
 			var codingData = {};
 			var currentID = -1;
@@ -613,7 +637,7 @@ function changeDocumentData(id, title) {
 	// FIXME text
 	gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
 		if (!resp.code) {
-			documentsView.renameDocument(id, title);
+			documentsView.updateDocument(id, title, requestData.text);
 		}
 	});
 }
@@ -626,7 +650,6 @@ function setDocumentView(textDocumentID) {
 		editor.setHTML(doc.text);
 		addTooltipsToEditor(textDocumentID);
 	}
-	
 	addCodingBrackets();
 }
 
@@ -1011,7 +1034,7 @@ function addNodeToTree(id, name, author, color, parentID, subCodesIDs, memo) {
 	}
 
 	easytree.addNode(sourceNode);
-	easytree.rebuildTree();
+	rebuildTree();
 }
 
 function addCodingCountToTree() {
@@ -1042,8 +1065,10 @@ function addCodingCountToTree() {
 
 		node.codingCount = codingCount;
 	}
-	
-	
+	rebuildTree();
+}
+
+function rebuildTree(){
 	easytree.rebuildTree();
 	$(".codingCountBubble").click(showFooter).css( 'cursor', 'pointer' );
 }
@@ -1051,7 +1076,7 @@ function addCodingCountToTree() {
 function removeNodeFromTree(id) {
 
 	easytree.removeNode(id);
-	easytree.rebuildTree();
+	rebuildTree();
 }
 
 function relocateNode(id, target) {
@@ -1062,7 +1087,7 @@ function relocateNode(id, target) {
 	easytree.removeNode(id);
 
 	easytree.addNode(sourceNode, target);
-	easytree.rebuildTree();
+	rebuildTree();
 }
 
 function updateNode(id, name, author, color, memo) {
@@ -1073,7 +1098,7 @@ function updateNode(id, name, author, color, memo) {
 	sourceNode.color = color;
 	sourceNode.memo = memo;
 	
-	easytree.rebuildTree();
+	rebuildTree();
 }
 
 function getCodeColor(id, target) {

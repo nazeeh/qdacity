@@ -27,6 +27,16 @@ constructor(props) {
 
   }
   
+  updateDocument(pId, pNewTitle, pText){
+	var index = this.state.documents.findIndex(function (doc, index, array) {
+		return doc.id == pId;
+	});
+	this.state.documents[index].title = pNewTitle;
+	this.state.documents[index].text = pText;
+	this.setState({documents: this.state.documents});
+
+  }
+  
   removeDocument(pId){
 	var index = this.state.documents.findIndex(function (doc, index, array) {
 		return doc.id == pId;
@@ -64,6 +74,8 @@ constructor(props) {
   isActive(value){
     return 'list-group-item ' + ((value==this.state.selected) ?'active':'default');
   }
+  
+  
   
   
    render() {
