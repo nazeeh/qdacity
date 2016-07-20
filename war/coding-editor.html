@@ -17,11 +17,13 @@
 
 
 <!-- Custom CSS -->
+<link href="assets/css/coding-editor.css" rel="stylesheet">
 <link href="assets/css/documentView.css" rel="stylesheet">
 <link href="assets/css/landing-page.css" rel="stylesheet">
 <link href="assets/css/footer.css" rel="stylesheet">
 <link href="assets/css/CodesystemView.css" rel="stylesheet">
 <link href="components/tooltipster/css/tooltipster.css" rel="stylesheet">
+<link href="assets/css/navbar-account.css" rel="stylesheet">
 
 <link href="components/filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
 <link href="components/filer/css/themes/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
@@ -61,80 +63,7 @@
 <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
 <link href="components/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet">
-<!-- FIXME move to css folder -->
 
-
-
-<style>
-.custom-combobox {
-	position: relative;
-	display: inline-block;
-}
-
-.custom-combobox-toggle {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	margin-left: -1px;
-	padding: 0;
-}
-
-.custom-combobox-input {
-	margin: 0;
-	padding: 5px 10px;
-}
-</style>
-<style>
-.navbar-content {
-	width: 320px;
-	padding: 15px;
-	padding-bottom: 0px;
-}
-
-.navbar-content:before, .navbar-content:after {
-	display: table;
-	content: "";
-	line-height: 0;
-}
-
-.navbar-footer {
-	background-color: #DDD;
-}
-
-.navbar-footer-content {
-	padding: 15px 15px 15px 15px;
-}
-
-.dropdown-menu {
-	padding: 0px;
-	overflow: hidden;
-}
-</style>
-<style type="text/css"> /* FIXME Scrollbar Styling */
-body, html {
-	overflow-y: hidden;
-}
-</style>
-<style>
-.validateTips {
-	border: 1px solid transparent;
-	padding: 0.3em;
-}
-</style>
-<style>
-iframe {
-	border: 1px solid #888;
-	width: 100%;
-	height: 100px;
-}
-
-/* .col-sm-10
-{
-    background-color: green;
-    overflow: auto;
-    height: 90vh;
-} */
-</style>
 
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script src="components/tooltip/tooltip.js"></script>
@@ -142,48 +71,6 @@ iframe {
 
 <script src="components/colorpicker/evol.colorpicker.js" type="text/javascript" charset="utf-8"></script>
 <link href="components/colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
-
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-<style>
-#feedback {
-	font-size: 1.4em;
-}
-
-#documentlist .ui-selecting {
-	background: #BBB;
-}
-
-#documentlist .ui-selected {
-	background: #777;
-	color: white;
-}
-
-#documentlist {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	width: 100%;
-}
-
-#documentlist li {
-	margin: 2px;
-	height: 20px;
-}
-</style>
-<style>
-.edit-toggle .edit-toggle-off, .edit-toggle.collapsed .edit-toggle-on {
-	display: none;
-}
-
-.edit-toggle.collapsed .edit-toggle-off, .edit-toggle .edit-toggle-on {
-	display: inline-block;
-}
-</style>
 
 </head>
 <body>
@@ -581,19 +468,15 @@ iframe {
 	</div>
 
 	<div id="debugTextEditor" title="HTML"></div>
-
-
-	<!-- <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script> -->
+	
 	<script src="assets/js/ErrorHandler.js" type="text/javascript" charset="utf-8"></script>
 
 	<script src="components/URIjs/URI.min.js"></script>
 	<!-- Main JS Script -->
 	<script src="dist/js/coding-editor.dist.js" type="text/javascript" charset="utf-8"></script>
 	<script src="assets/js/coding-editor/codings-view.js" type="text/javascript" charset="utf-8"></script>
-<!-- 	<script src="assets/js/coding-editor/coding-brackets.js" type="text/javascript" charset="utf-8"></script> -->
 	<script src="components/imagesloaded/imagesloaded.pkgd.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="components/Vex/js/vex.combined.min.js"></script>
 
-	<!-- <script src="https://apis.google.com/js/client.js?onload=init"></script> -->
 </body>
 </html>

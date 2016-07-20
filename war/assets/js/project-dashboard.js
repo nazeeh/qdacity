@@ -64,30 +64,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
 
    window.init = function () {
-
-        	var query = window.location.search;
-      	  // Skip the leading ?, which should always be there,
-      	  // but be careful anyway
-      	  if (query.substring(0, 1) == '?') {
-      	    query = query.substring(1);
-      	  }
-      	  var data = query.split(',');
-      	  for (var i = 0; (i < data.length); i++) {
-      	    data[i] = unescape(data[i]);
-      	  }
-      	  project_id = data[0];
-
-        	var query = window.location.search;
-        	  // Skip the leading ?, which should always be there,
-        	  // but be careful anyway
-        	  if (query.substring(0, 1) == '?') {
-        	    query = query.substring(1);
-        	  }
-        	  var data = query.split(',');
-        	  for (i = 0; (i < data.length); i++) {
-        	    data[i] = unescape(data[i]);
-        	  }
-        	  project_id = data[0];
         	  var urlParams = URI(window.location.search).query(true);
 
     	  	  project_id = urlParams.project;

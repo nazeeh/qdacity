@@ -65,10 +65,10 @@ var iframe = document.getElementById('editor');
 	});
 	editor['readOnly']('true');
 	
-	createCodeMemoEditor();
+	createCodeMemoEditor(); 
 	
 	var editorStyle = doc.createElement('link');
-	editorStyle.href = 'assets/css/coding-editor.css';
+	editorStyle.href = 'assets/css/editorView.css';
 	editorStyle.rel = 'stylesheet';
 	doc.querySelector('head').appendChild(editorStyle);
 		
@@ -251,19 +251,6 @@ window.init2 = function (){
 	// visibility of the toolbar
 
 	vex.defaultOptions.className = 'vex-theme-os';
-
-	// FIXME clean up parameter setting
-	var query = window.location.search;
-	// Skip the leading ?, which should always be there,
-	// but be careful anyway
-	if (query.substring(0, 1) == '?') {
-		query = query.substring(1);
-	}
-	var data = query.split(',');
-	for (var i = 0; (i < data.length); i++) {
-		data[i] = unescape(data[i]);
-	}
-	project_id = data[0];
 	
 	var urlParams = URI(window.location.search).query(true);
   	
@@ -773,12 +760,8 @@ function relocateCode(codeId, newParentId) {
 
 // Add SubCode function FIXME
 function addSubCode(_ID, _SubID) {
-	// var _ID = document.getElementById("parentCodeID").value;
-	// var _SubID = document.getElementById("childCodeID").value;
 
-	gapi.client.qdacity.codes.getCode({
-		'id' : _ID
-	}).execute(function(resp) {
+	gapi.client.qdacity.codes.getCode({	'id' : _ID }).execute(function(resp) {
 
 		if (!resp.code) {
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
