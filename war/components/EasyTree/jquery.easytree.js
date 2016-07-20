@@ -832,7 +832,7 @@
                 titleCss += " " + node.textCss;
             }
             html +="<span class=\"pull-left\">" + node.text  + "</span>";
-            html +=  "  <span onclick=\"showFooter()\" class=\"pull-right\" style=\" background-color: #e7e7e7;   border: 1px solid #bbbbbb; text-align: center;  border-radius: 10px; color:#666666; width:35px\">&nbsp;"+node.codingCount+" </span>";
+            html +=  "  <span class=\"pull-right codingCountBubble\" style=\" background-color: #e7e7e7;   border: 1px solid #bbbbbb; text-align: center;  border-radius: 10px; color:#666666; width:35px\">&nbsp;"+node.codingCount+" </span>";
             html += '<span  class=\"pull-left\" ' + tooltip + ' class="' + titleCss + '">';
             
             if (node.href) {

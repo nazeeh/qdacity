@@ -1042,7 +1042,10 @@ function addCodingCountToTree() {
 
 		node.codingCount = codingCount;
 	}
+	
+	
 	easytree.rebuildTree();
+	$(".codingCountBubble").click(showFooter).css( 'cursor', 'pointer' );
 }
 
 function removeNodeFromTree(id) {
