@@ -325,7 +325,8 @@ window.init2 = function (){
 				var codingID = resp.maxCodingID;
 				var author = current_user_name;
 				editor['setCoding'](codingID, activeID, getActiveCode().name, author);
-				saveEditorContent();
+				var activeDoc = documentsView.getActiveDocument();
+				changeDocumentData(activeDoc.id, activeDoc.title);
 				easytree.getNode(activeID).codingCount--;
 				easytree.rebuildTree();
 				addCodingBrackets();

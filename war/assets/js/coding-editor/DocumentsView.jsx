@@ -5,7 +5,8 @@ constructor(props) {
 	this.addDocument = this.addDocument.bind(this); 
 	this.setActiveDocument = this.setActiveDocument.bind(this); 
 	this.isActive = this.isActive.bind(this); 
-  }
+	this.getActiveDocument = this.getActiveDocument.bind(this); 
+  }  
  
   addDocument(pId, pTitle, pText){
 	  var doc = {};
@@ -42,9 +43,20 @@ constructor(props) {
   getActiveDocumentId(selectedID){
 	  return this.state.selected;
   }
+  
+  getActiveDocument(){
+  	var _this = this;
+	  var activeDoc = this.state.documents.find(function (doc) {
+		return doc.id == _this.state.selected;
+		});
+		return activeDoc;
+  }
+  
   isActive(value){
     return 'list-group-item ' + ((value==this.state.selected) ?'active':'default');
   }
+  
+  
    render() {
 	   var _this = this; 
       return (
