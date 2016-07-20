@@ -14,8 +14,6 @@ var current_user_name;
 var current_user_id;
 var codesystem_id;
 var active_code;
-var active_document = {};
-var text_documents = {};
 var project_id;
 var documentMap;
 var max_coding_id;
@@ -343,7 +341,8 @@ window.init2 = function (){
 			editor['removeCoding'](activeID);
 			easytree.getNode(activeID).codingCount++;
 			easytree.rebuildTree();
-			saveEditorContent();
+			var activeDoc = documentsView.getActiveDocument();
+			changeDocumentData(activeDoc.id, activeDoc.title);
 			addCodingBrackets();
 		} else {
 			window.alert("No code selected.")
@@ -435,8 +434,12 @@ function fillCodingTable(codeID) {
 	var codings = [];
 
 	table.clear();
-	for ( var id in text_documents) {
-		var elements = text_documents[id].text;
+	
+	var documents = documentsView.getDocuments();
+	
+	for ( var i in documents) {
+		var doc = documents[i];
+		var elements = doc.text;
 		var found = $('coding', elements);
 		var foundArray = $('coding[code_id=\'' + codeID + '\']', elements).map(function() {
 			var tmp = {};
@@ -452,12 +455,11 @@ function fillCodingTable(codeID) {
 		for (var j = 0; j < foundArray.length; j++) {
 			if ($.inArray(foundArray[j].id, idsAdded) != -1)
 				continue;
-			table.row.add([ foundArray[j].id, text_documents[id].title, foundArray[j].author ]);
+			table.row.add([ foundArray[j].id, doc.title, foundArray[j].author ]);
 			idsAdded.push(foundArray[j].id);
 		}
-
 	}
-
+	
 	table.draw();
 }
 
@@ -508,8 +510,10 @@ function getCodingCount(codeId) {
 
 window.activateCodingInEditor = function (codingID, scrollToSection) {
 
-	for ( var id in text_documents) {
-		var elements = text_documents[id].text;
+	var documents = documentsView.getDocuments();
+	for ( var i in documents) {
+		var doc = documents[i];
+		var elements = doc.text;
 		var foundArray = $('coding[id=\'' + codingID + '\']', elements).map(
 				function() {
 					return $(this);
@@ -520,8 +524,8 @@ window.activateCodingInEditor = function (codingID, scrollToSection) {
 		if (foundArray.length > 0) {
 			var range;
 			range = document.createRange();
-			documentsView.setActiveDocument(id);
-			setDocumentView(id);
+			documentsView.setActiveDocument(doc.id);
+			setDocumentView(doc.id);
 			var codingNodes = $("#editor").contents().find(
 					'coding[id=\'' + codingID + '\']');
 			var startNode = codingNodes[0];
@@ -553,12 +557,8 @@ function setDocumentList(projectID) {
 		if (!resp.code) {
 			resp.items = resp.items || [];
 			for (var i = 0; i < resp.items.length; i++) {
-				documentsView.addDocument(resp.items[i].id, resp.items[i].title);
-				var document = {};
-				document.id = resp.items[i].id;
-				document.title = resp.items[i].title;
-				document.text = resp.items[i].text.value;
-				text_documents[document.id] = document;
+				documentsView.addDocument(resp.items[i].id, resp.items[i].title, resp.items[i].text.value);
+				
 			}
 		}
 
@@ -581,12 +581,7 @@ function addDocumentToProject(title) {
 
 	gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
 		if (!resp.code) {
-			documentsView.addDocument(resp.id, resp.title);
-			var document = {};
-			document.id = resp.items[i].id;
-			document.title = resp.items[i].title;
-			document.text = resp.items[i].text.value;
-			text_documents[document.id] = document;
+			documentsView.addDocument(resp.id, resp.title, resp.items[i].text.value);
 		}
 	});
 
@@ -608,7 +603,7 @@ function changeDocumentTitle() {
 	changeDocumentData(docId, title);
 }
 
-function changeDocumentData(id, title) {
+function changeDocumentData(id, title) {f
 
 	var requestData = {};
 	requestData.id = id; 
@@ -624,10 +619,11 @@ function changeDocumentData(id, title) {
 }
 
 function setDocumentView(textDocumentID) {
-	if (typeof text_documents[textDocumentID].text == 'undefined') {
+	var doc = documentsView.getDocument(textDocumentID);
+	if (typeof doc.text == 'undefined') {
 		editor.setHTML("");
 	} else {
-		editor.setHTML(text_documents[textDocumentID].text);
+		editor.setHTML(doc.text);
 		addTooltipsToEditor(textDocumentID);
 	}
 	
@@ -635,8 +631,8 @@ function setDocumentView(textDocumentID) {
 }
 
 function addTooltipsToEditor(id) {
-
-	var elements = text_documents[id].text;
+	var doc = documentsView.getDocument(id);
+	var elements = doc.text;
 	var foundArray = $("#editor").contents().find('coding');
 
 	foundArray = foundArray.toArray();
@@ -1025,8 +1021,10 @@ function addCodingCountToTree() {
 
 	for (var i = 0; i < codeIDs.length; i++) {
 		var codingCount = 0;
-		for ( var id in text_documents) {
-			var elements = text_documents[id].text;
+		var documents = documentsView.getDocuments();
+		for ( var index in documents) {
+			var doc = documents[index];
+			var elements = doc.text;
 			var foundArray = $('coding[code_id=\'' + codeIDs[i] + '\']', elements).map(function() {
 				return $(this).attr('id');
 			});

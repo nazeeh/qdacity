@@ -6,6 +6,7 @@ constructor(props) {
 	this.setActiveDocument = this.setActiveDocument.bind(this); 
 	this.isActive = this.isActive.bind(this); 
 	this.getActiveDocument = this.getActiveDocument.bind(this); 
+	this.getDocuments = this.getDocuments.bind(this); 
   }  
  
   addDocument(pId, pTitle, pText){
@@ -35,6 +36,10 @@ constructor(props) {
 	this.render();
   }
   
+  getDocuments(){
+  	return this.state.documents;
+  }
+  
   setActiveDocument(selectedID){
 	  this.setState({selected: selectedID});
 	  this.props.setEditor(selectedID);
@@ -45,9 +50,13 @@ constructor(props) {
   }
   
   getActiveDocument(){
+		return this.getDocument(this.state.selectedID);
+  }
+  
+  getDocument(docId){
   	var _this = this;
 	  var activeDoc = this.state.documents.find(function (doc) {
-		return doc.id == _this.state.selected;
+		return doc.id == docId;
 		});
 		return activeDoc;
   }
