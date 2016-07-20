@@ -205,7 +205,7 @@ var easytree = $('#easytree-section').easytree({
 function setupUI(){
 	if (account.isSignedIn()){
 	var profile = account.getProfile();
-	
+	current_user_name = profile.getName();
 	document.getElementById('loginButton').style.visibility = 'hidden';
     document.getElementById('currentUserName').innerHTML = profile.getName();
 	document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
@@ -603,7 +603,7 @@ function changeDocumentTitle() {
 	changeDocumentData(docId, title);
 }
 
-function changeDocumentData(id, title) {f
+function changeDocumentData(id, title) {
 
 	var requestData = {};
 	requestData.id = id; 
