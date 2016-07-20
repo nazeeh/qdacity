@@ -50,7 +50,7 @@ constructor(props) {
   }
   
   getActiveDocument(){
-		return this.getDocument(this.state.selectedID);
+		return this.getDocument(this.state.selected);
   }
   
   getDocument(docId){
