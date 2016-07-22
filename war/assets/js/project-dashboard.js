@@ -279,6 +279,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function fillUserList(){
+        	$('#user-list').empty();  
         	gapi.client.qdacity.user.listUser({'projectID': project_id}).execute(function(resp) {
            	 if (!resp.code) {
            		resp.items = resp.items || [];
@@ -308,6 +309,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function createAreaChart(){
+        	$('#morris-area-chart').empty();  
         	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "project", 'projectID' : 1}).execute(function(resp){
         			if (!resp.code) {
         				var dataArray =  [];

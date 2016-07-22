@@ -337,6 +337,7 @@ function addTaskToList(list, task) {
 }
 
 function createAreaChart() {
+	$('#morris-area-chart').empty();  
 	gapi.client.qdacity.changelog.listChangeStats({ 'filterType': "user" }).execute(function (resp) {
 		if (!resp.code) {
 			if (typeof resp.items != 'undefined') {

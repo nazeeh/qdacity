@@ -13,7 +13,7 @@ export default class Account {
    
    
    changeAccount(callback,client_id,scopes){
-	   this.auth2.getAuthInstance().signIn({'prompt':'select_account'}).then(callback); 
+	   this.auth2.signIn({'prompt':'select_account'}).then(callback); 
   }
    
    getProfile(){
