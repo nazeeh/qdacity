@@ -678,9 +678,7 @@ function saveEditorContent() {
 function listCodes() {
 	$("#codesystem-ui").LoadingOverlay("show");
 	var codes = [];
-	gapi.client.qdacity.codesystem.getCodeSystem({
-		'id' : codesystem_id
-	}).execute(function(resp) {
+	gapi.client.qdacity.codesystem.getCodeSystem({'id' : codesystem_id }).execute(function(resp) {
 		if (!resp.code) {
 			resp.items = resp.items || [];
 			var result = "";
@@ -711,6 +709,7 @@ function listCodes() {
 				}
 			}
 		}
+		activateRootNode();
 		addCodingCountToTree();
 		$("#codesystem-ui").LoadingOverlay("hide");
 	});
@@ -724,8 +723,7 @@ function insertCode(_AuthorName, _CodeName) {
 	requestData.author = _AuthorName;
 	requestData.name = _CodeName;
 	requestData.subCodesIDs = new Array();
-	if (activeID != 'undefined')
-		requestData.parentID = activeID;
+	if (activeID != 'undefined') requestData.parentID = activeID;
 	requestData.codesytemID = codesystem_id;
 	requestData.color = "#000000";
 
@@ -737,7 +735,7 @@ function insertCode(_AuthorName, _CodeName) {
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name);
 			addNodeToTree(resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo);
-			if (typeof activeID != 'undefined') {
+			if (activeID != 'undefined') {
 				addSubCode(activeID, resp.id);
 				relocateNode(resp.id, activeID);
 			}
@@ -1066,6 +1064,10 @@ function addCodingCountToTree() {
 		node.codingCount = codingCount;
 	}
 	rebuildTree();
+}
+
+function activateRootNode(){
+	easytree.getAllNodes()[0].isActive = true;
 }
 
 function rebuildTree(){

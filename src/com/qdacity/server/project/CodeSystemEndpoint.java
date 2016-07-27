@@ -172,7 +172,18 @@ public class CodeSystemEndpoint {
 					throw new EntityExistsException("Object already exists");
 				}
 			}
+			Code rootCode = new Code();
+			rootCode.setName("Code System");
+			rootCode.setAuthor("QDAcity");
+			rootCode.setColor("#fff");
+			mgr.makePersistent(rootCode);
+			
+			codesystem.addCode(rootCode.getId());
 			mgr.makePersistent(codesystem);
+			
+			rootCode.setCodesytemID(codesystem.getId());
+			mgr.makePersistent(rootCode);
+			
 		} finally {
 			mgr.close();
 		}

@@ -164,7 +164,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	   	 }
 
         	   	 else{
-        	   		 window.alert(resp.code)
+        	   		 console.log(resp.code + " : " +resp.message);
         	   	}
 
         	    });
