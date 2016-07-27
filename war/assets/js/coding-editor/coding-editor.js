@@ -605,7 +605,7 @@ function addDocumentToProject(title) {
 
 	gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
 		if (!resp.code) {
-			documentsView.addDocument(resp.id, resp.title, resp.items[i].text.value);
+			documentsView.addDocument(resp.id, resp.title, resp.text.value);
 		}
 	});
 
