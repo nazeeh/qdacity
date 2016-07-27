@@ -96,7 +96,6 @@ window.init = function () {
 }
 
 $(document).ready(function () {
-	//window.alert("test");
 	$("#newProjectForm").on("submit", function (event) {
 		event.preventDefault();
 		createNewProject();
@@ -108,7 +107,7 @@ function createNewProject() {
 	var requestData = {};
 	requestData.project = 0;
 
-	gapi.client.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function (resp) {
+	gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function (resp) {
 		if (!resp.code) { 
 
 			var requestData2 = {};
@@ -186,7 +185,7 @@ function settleNotification(notification) {
 }
 
 function fillProjectsList() {
-	$("#project-list").html("");
+	$("#project-list").empty();
 	gapi.client.qdacity.project.listProject().execute(function (resp) {
 		if (!resp.code) {
 			resp.items = resp.items || [];
@@ -389,7 +388,7 @@ function addProjectToProjectList(projectID, projectName) {
 	html += '</span>';
 
 	// Delete Project Btn
-	html += '<a href="" onclick="deleteProject(' + projectID + ')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html += '<a  prjId="'+projectID+'" class=" deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 	html += '<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 	html += '</a>';
@@ -407,6 +406,12 @@ function addProjectToProjectList(projectID, projectName) {
 	html += '</a>';
 	html += '</li>';
 	$("#project-list").append(html);
+	
+	$('.deletePrjBtn').click(function(e) {
+		e.stopPropagation();
+    	var projectId = $( this ).attr("prjId");
+    	deleteProject(projectId);
+    });
 	
 	
 }
