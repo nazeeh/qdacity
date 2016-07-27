@@ -671,7 +671,8 @@ function addTooltipsToEditor(id) {
 }
 
 function saveEditorContent() {
-	changeDocumentData(active_document.id, active_document.title);
+	var activeDoc = documentsView.getActiveDocument();
+	changeDocumentData(activeDoc.id, activeDoc.title);
 }
 
 // List Codes function that will execute the listCode call
