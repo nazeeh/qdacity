@@ -1,6 +1,7 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingBrackets from './coding-brackets';
 import Account from '../Account';
+import DocumentsCtrl from './DocumentsCtrl';
 
 import $script from 'scriptjs';
 
@@ -403,11 +404,8 @@ window.init2 = function (){
 		uploadSelectedDocuments();
 	}
 
-	document.getElementById('createDocBtn').onclick = function() {
-		addDocumentToProject(document.getElementById("newDocTitleFld").value);
-	}
+} 
 
-}
 
 
 function splitupCoding(selection){
@@ -571,9 +569,12 @@ window.activateCodingInEditor = function (codingID, scrollToSection) {
 }
 
 var documentsView = {};
+var documentsCtrl = {};
 function setDocumentList(projectID) {
 	documentsView = ReactDOM.render(<DocumentsView setEditor={setDocumentView} />, document.getElementById('documentView'));
-
+	documentsCtrl = new DocumentsCtrl(documentsView, project_id);
+	$("#btnInsertDoc").click(documentsCtrl.addDocument);
+	
 	$("#documents-ui").LoadingOverlay("show");
 	gapi.client.qdacity.documents.getTextDocument({
 		'id' : project_id
@@ -596,20 +597,7 @@ function setDocumentList(projectID) {
 	});
 }
 
-function addDocumentToProject(title) {
 
-	var requestData = {};
-	requestData.projectID = project_id;
-	requestData.text = " "; // can not be empty
-	requestData.title = title;
-
-	gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
-		if (!resp.code) {
-			documentsView.addDocument(resp.id, resp.title, resp.text.value);
-		}
-	});
-
-}
 
 function removeDocumentFromProject() {	
 	var docId = documentsView.getActiveDocumentId();
@@ -930,48 +918,6 @@ function setNameAndAuthor(codeId, nameField, authorField) {
 	});
 }
 
-$(function() {
-
-	var dialog, form, name = $("#newCodeName"), email = $("#newCodeAuthor"), password = $("#newCodeID"), allFields = $([]).add(name).add(email).add(password), tips = $(".validateTips");
-
-	function addCode() {
-		var name = document.getElementById('newCodeName').value, author = document.getElementById('newCodeAuthor').value;
-
-		insertCode(author, name);
-		dialog.dialog("close");
-		form[0].reset();
-	}
-
-	dialog = $("#new-document-form").dialog({
-		autoOpen : false,
-		height : 450,
-		width : 750,
-		modal : true,
-		buttons : {
-			"Add code" : addCode,
-			Cancel : function() {
-				dialog.dialog("close");
-			}
-		},
-		close : function() {
-			form[0].reset();
-			allFields.removeClass("ui-state-error");
-
-		}
-	});
-
-	form = dialog.find("form").on("submit", function(event) {
-		event.preventDefault();
-		addCode();
-	});
-
-	$("#btnInsertDoc").on("click", function() {
-		$('#newCodeAuthor').attr('value', current_user_name);
-		dialog.dialog("open");
-	});
-
-});
-
 // FIXME check for dead legacy code
 $(function() {
 	var dialog, form, name = $("#updateCodeName"), email = $("#updateCodeAuthor"), password = $("#updateCodeID"), allFields = $([]).add(name).add(email).add(password), tips = $(".validateTips");
@@ -1180,65 +1126,6 @@ function codesystemStateChanged(nodes, nodesJson) {
 		initialized_easytree = true;
 	}
 }
-
-function uploadSelectedDocuments() {
-	var jFiler = $("#filer_input").prop("jFiler");
-	var files = jFiler.files;
-	for (var i = 0; i < files.length; i++) {
-		var file = files[i];
-
-		var reader = new FileReader();
-
-		reader.onload = function(e) {
-			uploadFile(reader.result, file.name);
-
-		}
-
-		reader.readAsDataURL(file);
-	}
-
-}
-
-function uploadFile(fileData, fileName) {
-	var requestData = {};
-	requestData.fileName = fileName;
-	requestData.fileSize = "0";
-	requestData.project = project_id;
-	requestData.fileData = fileData.split(',')[1];
-	gapi.client.qdacity.upload.insertUpload(requestData).execute(function(resp) {
-		if (!resp.code) {
-			setDocumentList(project_id);
-		} else {
-			console.log(resp.code + resp.message);
-		}
-	});
-}
-
-function dataURItoBlob(dataURI) {
-	// convert base64 to raw binary data held in a string
-	// doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that
-	// does this
-	var byteString = atob(dataURI.split(',')[1]);
-
-	// separate out the mime component
-	var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-	// write the bytes of the string to an ArrayBuffer
-	var ab = new ArrayBuffer(byteString.length);
-	var ia = new Uint8Array(ab);
-	for (var i = 0; i < byteString.length; i++) {
-		ia[i] = byteString.charCodeAt(i);
-	}
-
-	// write the ArrayBuffer to a blob, and you're done
-	var blob = new Blob([ ab ], {
-		type : mimeString
-	});
-	window.alert("bytestring : " + byteString);
-	return byteString;
-}
-
-// Font Size
 
 $(function() {
 	$('#txtSizeSpinner').spinner({
