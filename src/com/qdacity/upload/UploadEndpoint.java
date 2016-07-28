@@ -134,13 +134,14 @@ public class UploadEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException 
 	 */
-	@ApiMethod(name = "upload.insertUpload",  scopes = {Constants.EMAIL_SCOPE},
+	@ApiMethod(name = "upload.insertUpload" , path = "upload",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public Upload insertUpload(Upload upload, User user) throws UnauthorizedException {
+	public TextDocument insertUpload(Upload upload, User user) throws UnauthorizedException {
 		//FIXME authorization check
 		PersistenceManager mgr = getPersistenceManager();
+		TextDocument document = null;
 		try {
 			if (upload.getId() != null){
 				if (containsUpload(upload)) {
@@ -154,7 +155,7 @@ public class UploadEndpoint {
 			
 			
 			
-			TextDocument document = new TextDocument();
+			document = new TextDocument();
 			document.setProjectID(upload.getProject());
 			document.setText(new Text(html));
 			document.setTitle(upload.getFileName());
@@ -168,7 +169,7 @@ public class UploadEndpoint {
 		} finally {
 			mgr.close();
 		}
-		return upload;
+		return document;
 	}
 
 	private String rtfToHtml(byte[] bytes) {

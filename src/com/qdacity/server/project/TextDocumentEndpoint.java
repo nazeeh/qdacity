@@ -9,6 +9,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
@@ -23,6 +24,9 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 @Api(name = "qdacity", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class TextDocumentEndpoint {
@@ -230,7 +234,7 @@ public class TextDocumentEndpoint {
 		}
 	}
 	
-	public static void cloneTextDocuments(AbstractProject project, Long cloneId, User user) throws UnauthorizedException {
+	public static void cloneTextDocuments(AbstractProject project, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
 	  TextDocumentEndpoint tde = new TextDocumentEndpoint();
 	  Collection<TextDocument> documents = null;
 	  if (project.getClass() == ProjectRevision.class) documents  = tde.getTextDocument(project.getId(), "REVISION",user).getItems();
@@ -239,10 +243,16 @@ public class TextDocumentEndpoint {
 	  PersistenceManager mgr = getPersistenceManager();
     try {
   	  for (TextDocument textDocument : documents) {
+  	    Text text = textDocument.getText();
+  	    if (stripCodings){
+  	      Document doc = Jsoup.parse(text.getValue());
+  	      doc.select("coding").unwrap();
+  	      text = new Text(doc.body().children().toString()); //  Jsoup wraps the elements in html and body tags if not present, so we have to get body's children here to get the converted fragment.
+  	    }
         TextDocument cloneDocument = new TextDocument();
         cloneDocument.setProjectID(cloneId);
         cloneDocument.setTitle(textDocument.getTitle());
-        cloneDocument.setText(textDocument.getText());
+        cloneDocument.setText(text);
         
         mgr.makePersistent(cloneDocument);
       }

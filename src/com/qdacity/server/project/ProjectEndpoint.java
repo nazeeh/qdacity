@@ -350,7 +350,7 @@ public class ProjectEndpoint {
 	      cloneProject = mgr.makePersistent(cloneProject);
 	      project = mgr.makePersistent(project);
 	      
-	      TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), user);
+	      TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), false, user);
 	    } finally {
 	      mgr.close();
 	    }
@@ -415,7 +415,7 @@ public class ProjectEndpoint {
        cloneProject = mgr.makePersistent(cloneProject);
        project = mgr.makePersistent(project);
        
-       TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), user);
+       TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), true, user);
      } finally {
        mgr.close();
      }
