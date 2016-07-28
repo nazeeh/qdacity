@@ -211,17 +211,17 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     }
                     $("#revision-timeline").append(timeline.getHTML());
 
-                    $( "#deleteRevisionBtn" ).click(function() {
+                    $( ".deleteRevisionBtn" ).click(function() {
                     	var revisionId = $( this ).attr("revId");
                     	deleteRevision(revisionId);
                     });
 
-                    $( "#deleteValidationPrjBtn" ).click(function() {
+                    $( ".deleteValidationPrjBtn" ).click(function() {
                     	var prjId = $( this ).attr("prjId");
                     	deleteValidationProject(prjId);
                     });
 
-                    $( "#requestValidationAccessBtn" ).click(function() {
+                    $( ".requestValidationAccessBtn" ).click(function() {
                     	var revId = $( this ).attr("revId");
                     	requestValidationAccess(revId);
                     });
