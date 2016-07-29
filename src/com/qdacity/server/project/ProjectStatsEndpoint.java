@@ -51,54 +51,6 @@ import org.jsoup.select.Elements;
 @Api(name = "qdacity", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class ProjectStatsEndpoint {
 
-	/**
-	 * This method lists all the entities inserted in datastore.
-	 * It uses HTTP GET method and paging support.
-	 *
-	 * @return A CollectionResponse class containing the list of all entities
-	 * persisted and a cursor to the next page.
-	 */
-//	@SuppressWarnings({ "unchecked", "unused" })
-//	@ApiMethod(name = "listProjectStats")
-//	
-//	public CollectionResponse<ProjectStats> listProjectStats(
-//			@Nullable @Named("cursor") String cursorString,
-//			@Nullable @Named("limit") Integer limit) {
-//
-//		PersistenceManager mgr = null;
-//		Cursor cursor = null;
-//		List<ProjectStats> execute = null;
-//
-//		try {
-//			mgr = getPersistenceManager();
-//			Query query = mgr.newQuery(ProjectStats.class);
-//			if (cursorString != null && cursorString != "") {
-//				cursor = Cursor.fromWebSafeString(cursorString);
-//				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-//				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-//				query.setExtensions(extensionMap);
-//			}
-//
-//			if (limit != null) {
-//				query.setRange(0, limit);
-//			}
-//
-//			execute = (List<ProjectStats>) query.execute();
-//			cursor = JDOCursorHelper.getCursor(execute);
-//			if (cursor != null)
-//				cursorString = cursor.toWebSafeString();
-//
-//			// Tight loop for fetching all entities from datastore and accomodate
-//			// for lazy fetch.
-//			for (ProjectStats obj : execute)
-//				;
-//		} finally {
-//			mgr.close();
-//		}
-//
-//		return CollectionResponse.<ProjectStats> builder().setItems(execute)
-//				.setNextPageToken(cursorString).build();
-//	}
 
 	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.

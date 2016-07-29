@@ -109,7 +109,7 @@ public class CodeSystemEndpoint {
 			
 			// Check if user is Authorized
 			Long projectID = CodeSystemEndpoint.getProjectIdFromCodesystem(id);
-			Authorization.checkAuthorization(projectID, user);
+			//Authorization.checkAuthorization(projectID, user); // FIXME add authorization for codesystem (could be associated to different types of projects)
 			// User is authorized
 			
 			Query query = mgr.newQuery(Code.class);
@@ -296,8 +296,25 @@ public class CodeSystemEndpoint {
 	    query.setFilter( "codesystemID == :theID");
 	    
 	    List<ProjectRevision> projectRevs = (List<ProjectRevision>) query.executeWithMap(params);
-	    ProjectRevision project = projectRevs.get(0);
-      projectID = project.getProjectID();
+	    if (projectRevs.size() > 0){
+	      ProjectRevision project = projectRevs.get(0);
+	      projectID = project.getProjectID();
+	    }
+	    else{ // Try to find a matching validationproject
+	      query = mgr.newQuery(ValidationProject.class);
+	      query.setFilter( "codesystemID == :theID");
+        
+        List<ProjectRevision> validationProjects = (List<ProjectRevision>) query.executeWithMap(params);
+        
+	      if (validationProjects.size() > 0){
+	        ProjectRevision project = validationProjects.get(0);
+	        projectID = project.getProjectID();
+	      } else{
+	        throw new EntityNotFoundException("No project found for codesystem " + id );
+	      }
+	      
+	    }
+	    
 		}
 		} finally {
 			mgr.close();

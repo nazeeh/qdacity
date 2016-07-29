@@ -103,13 +103,23 @@ public class ProjectEndpoint {
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public Project getProject(@Named("id") Long id, User user) throws UnauthorizedException {
+	public AbstractProject getProject(@Named("id") Long id,@Named("type") String type , User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
-		Project project = null;
+		AbstractProject project = null;
 		try {
-			project = mgr.getObjectById(Project.class, id);
+		  switch (type) {
+      case "validation":
+        project = mgr.getObjectById(ValidationProject.class, id);
+        break;
+
+      default:
+        project = mgr.getObjectById(Project.class, id);
+        Authorization.checkAuthorization((Project)project, user);
+        break;
+      }
+			
 			// Check if user is authorized
-			Authorization.checkAuthorization(project, user);
+			
 		} finally {
 			mgr.close();
 		}

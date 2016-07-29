@@ -16,6 +16,7 @@ var current_user_id;
 var codesystem_id;
 var active_code;
 var project_id;
+var project_type;
 var documentMap;
 var max_coding_id;
  
@@ -214,7 +215,7 @@ function setupUI(){
 	$('#navAccount').show();
 	$('#navSignin').hide();
 	
-	gapi.client.qdacity.project.getProject({ 'id' : project_id }).execute(function(resp) {
+	gapi.client.qdacity.project.getProject({ 'id' : project_id, 'type': project_type}).execute(function(resp) {
 		if (!resp.code) {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
@@ -254,6 +255,8 @@ window.init2 = function (){
 	var urlParams = URI(window.location.search).query(true);
   	
 	project_id = urlParams.project;
+	project_type = urlParams.type;
+	if (typeof project_type == undefined) project_type = "project";
 
 	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project?' + project_id);
 
@@ -577,7 +580,7 @@ function setDocumentList(projectID) {
 	
 	$("#documents-ui").LoadingOverlay("show");
 	gapi.client.qdacity.documents.getTextDocument({
-		'id' : project_id
+		'id' : project_id, 'projectType' : project_type
 	}).execute(function(resp) {
 		if (!resp.code) {
 			resp.items = resp.items || [];

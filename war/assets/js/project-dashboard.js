@@ -172,7 +172,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function setProjectName(){
-        	gapi.client.qdacity.project.getProject({'id': project_id}).execute(function(resp) {
+        	gapi.client.qdacity.project.getProject({'id': project_id, 'type':'project'}).execute(function(resp) {
        	   	 if (!resp.code) {
        	   		$("#project-name").html(resp.name);
 
@@ -219,6 +219,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     $( ".deleteValidationPrjBtn" ).click(function() {
                     	var prjId = $( this ).attr("prjId");
                     	deleteValidationProject(prjId);
+                    });
+                    
+                    $( ".validationProjectListItem" ).click(function() {
+                    	var prjId = $( this ).attr("prjId");
+                    	window.location.href = 'coding-editor.html?project='+prjId+'&type=validation';
                     });
 
                     $( ".requestValidationAccessBtn" ).click(function() {

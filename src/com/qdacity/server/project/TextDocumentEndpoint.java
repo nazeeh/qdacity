@@ -109,7 +109,9 @@ public class TextDocumentEndpoint {
 	    if (prjType == "REVISION"){
 	      ProjectRevision validationProject = mgr.getObjectById(ProjectRevision.class, id);
 	      Authorization.checkAuthorization(validationProject.getProjectID(), user);
-	    } else {
+	    } else if (prjType.equals("validation")){
+	      //FIXME auth
+	    } else{
 	      Authorization.checkAuthorization(id, user);
 	    }
 	    
@@ -196,7 +198,7 @@ public class TextDocumentEndpoint {
 		     audiences = {Constants.WEB_CLIENT_ID})
 	public TextDocument updateTextDocument(TextDocument textdocument, User user) throws UnauthorizedException {
 		//Check authorization
-		Authorization.checkAuthorization(textdocument, user);
+		//Authorization.checkAuthorization(textdocument, user); // FIXME authorization for textdocument w.r.t. project type
 				
 		PersistenceManager mgr = getPersistenceManager();
 		try {

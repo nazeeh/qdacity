@@ -15,3 +15,7 @@
 	border-radius: 3px;
   background: #e1e1e1;
 }
+
+.validationProjectListItem{
+	cursor: pointer;
+}

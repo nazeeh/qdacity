@@ -60,7 +60,7 @@ export default class Timeline {
    
    addValidationProjectItem(validationProject){
 	   var itemHTML = "";
-	   itemHTML = '<li><span class="project_name">'+validationProject.name+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
+	   itemHTML = '<li class="validationProjectListItem" prjId="'+validationProject.id+'" ><span class="project_name">'+validationProject.name+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   	// Delete Project Btn
 	   itemHTML +='<a href="" prjId="'+validationProject.id+'" class="deleteValidationPrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	   itemHTML +=' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
