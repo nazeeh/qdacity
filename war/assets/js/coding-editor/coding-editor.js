@@ -256,7 +256,9 @@ window.init2 = function (){
   	
 	project_id = urlParams.project;
 	project_type = urlParams.type;
-	if (typeof project_type == undefined) project_type = "project";
+	if (typeof project_type == 'undefined'){
+		project_type = "project";
+	}
 
 	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project?' + project_id);
 
@@ -402,10 +404,6 @@ window.init2 = function (){
 		editor['readOnly']('true');
 		resizeElements();
 	})
-
-	document.getElementById('uploadDocBtn').onclick = function() {
-		uploadSelectedDocuments();
-	}
 
 } 
 
