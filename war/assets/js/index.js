@@ -1,4 +1,5 @@
 import Account from './Account';
+import BinaryDecider from './modals/BinaryDecider.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/Vex/js/vex.combined.min.js';
 
@@ -11,23 +12,7 @@ $script('https://apis.google.com/js/client.js', function() {
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-var account;
-	    
-function handleAuth() {
-		  var request = gapi.client.oauth2.userinfo.get().execute(function(resp) {
-
-		    if (!resp.code) {
-		    	
-		    	setCookie("isRegistered", "true", 30);
-		    	window.location = "personal-dashboard.html";
-		     
-		    }
-		    else {
-		    	$("#bodyCover").hide();
-		    }
-		  });
-		}
-
+var account; 
 
 function signout(){
 	window.open("https://accounts.google.com/logout");
@@ -45,8 +30,6 @@ var callback = function() {
   if (--apisToLoad == 0) {
 	  account = new Account(client_id, scopes);
 	   account.signin(setupUI);
-//	   signin(true,handleAuth);
-    //Load project settings
   }
   vex.defaultOptions.className = 'vex-theme-os';
   
@@ -64,40 +47,21 @@ function setupUI(){
 }
 
 function redirect(){
+	
 	account.getCurrentUser().then(function(value) {
 		window.location = "personal-dashboard.html";
 	 }, function(value) {
-		 vex.dialog.open({ 
-			    message: 'Dear Sir or Madam, \nI see your google account, but it is not yet registered with QDAcity. What would you like me to do?',
-			    contentCSS: { width: '500px' },
-			    buttons: [
-		         	$.extend({}, vex.dialog.buttons.NO, { className: 'deciderBtn vex-dialog-button-primary', text: 'Register Account', click: function($vexContent, event) {
-			            $vexContent.data().vex.value = 'choiceA';
-			            vex.close($vexContent.data().vex.id);
-			        }}),
-			        $.extend({}, vex.dialog.buttons.NO, { className: 'deciderBtn pull-left vex-dialog-button-primary ', text: 'Use Different Account', click: function($vexContent, event) {
-			            $vexContent.data().vex.value = 'choiceB';
-			            vex.close($vexContent.data().vex.id);
-			        }}),
-			       
-			    ],
-			    callback: function(value) {
-			        switch (value) {
-					case 'choiceA':
-						registerAccount();
-						break;
-					case 'choiceB':
-						account.changeAccount(redirect,client_id,scopes);
-						break;
-
-					default:
-						break;
-					}
-			        
-			    }
-			});
-		 
+		 var acc = account;
+		 var _this = this;
+		  var decider = new BinaryDecider('Dear Sir or Madam, \nI see your google account, but it is not yet registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account' );
+		  decider.showModal().then(function(value){
+			  if (value == 'optionA') account.changeAccount(redirect,client_id,scopes);
+			  else registerAccount();
+		  });
 	 });
+}
+function changeUser(){
+	account.changeAccount(redirect,client_id,scopes);
 }
 
 function registerAccount(){
@@ -124,8 +88,6 @@ function registerAccount(){
 		});
 
 }
-
-
 
 function signIn(event){
 	event.preventDefault();
@@ -154,30 +116,3 @@ function getCookie(cname) {
     }
     return "";
 } 
-
-function addStartBtns(isLoggedIn){
-	if (isLoggedIn) {
-		addDashboardBtn();
-	} else {
-		addRegisterBtns();
-	} 
-}
-
-function addRegisterBtns(){
-	var html = '<ul class="list-inline intro-social-buttons">';
-	html += '<li>';
-	html += '<a href="index.html" class="btn btn-default btn-lg"><i class="fa fa-user-plus"></i> <span class="network-name">Sign up</span></a>';
-	html += '</li>';
-	html += '<li>';
-	html += '<a href="index.html" class="btn btn-default btn-lg"><i class="fa fa-sign-in fa-fw"></i> <span class="network-name">Sign in</span></a>';
-	html += '</li>';
-	html += '</ul>';
-	
-	$('#startBtns').append(html);
-}
-
-function addDashboardBtn(){
-	var html = '<a href="personal-dashboard.html" class="btn btn-default btn-lg"><i class="fa fa-sign-in fa-fw"></i> <span class="network-name">Sign in</span></a>';
-	
-	$('#startBtns').append(html);
-}

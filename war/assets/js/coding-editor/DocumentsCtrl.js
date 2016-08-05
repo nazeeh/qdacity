@@ -1,5 +1,9 @@
 import DocumentsView from './DocumentsView.jsx';
+import BinaryDecider from '../modals/BinaryDecider.js';
+import FileUpload from '../modals/FileUpload.js';
+import Prompt from '../modals/Prompt.js';
 import 'script!../../../components/filer/js/jquery.filer.min.js';
+
 
 export default class DocumentsCtrl {
 	
@@ -11,83 +15,28 @@ export default class DocumentsCtrl {
 
   addDocument(){
 	  var _this = this;
-		vex.dialog.open({ 
-		    message: 'Empty Document or Upload?',
-		    contentCSS: { width: '500px' },
-		    buttons: [
-	         	$.extend({}, vex.dialog.buttons.NO, { className: 'deciderBtn vex-dialog-button-primary', text: 'Upload Documents', click: function($vexContent, event) {
-		            $vexContent.data().vex.value = 'uploadDocs';
-		            vex.close($vexContent.data().vex.id);
-		        }}),
-		        $.extend({}, vex.dialog.buttons.NO, { className: 'deciderBtn pull-left vex-dialog-button-primary ', text: 'New Text Document', click: function($vexContent, event) {
-		            $vexContent.data().vex.value = 'emptyDoc';
-		            vex.close($vexContent.data().vex.id);
-		        }}),
-		       
-		    ],
-		    callback: function(value) {
-		        switch (value) {
-				case 'emptyDoc':
-					_this.addEmptyDocument();
-					break;
-				case 'uploadDocs':
-					_this.addUploadDocuments();
-					break;
-
-				default:
-					break;
-				}
-		        
-		    }
-		});
+	  var decider = new BinaryDecider('Empty Document or Upload?', 'New Text Document', 'Upload Documents' );
+	  decider.showModal().then(function(value){
+		  if (value == 'optionA') _this.addEmptyDocument();
+		  else _this.addUploadDocuments();
+	  });
 	}
   
   addEmptyDocument(){
 	  var _this = this;
-		vex.dialog.prompt({
-			message : 'Give your code a name',
-			placeholder : 'Code Name',
-			callback : function(docTitle) {
-				if (docTitle != false) {
-					_this.addDocumentToProject(docTitle);
-				}
-			}
+	  var prompt = new Prompt('Give your document a name', 'Document Name');
+		prompt.showModal().then(function(docTitle) {
+			_this.addDocumentToProject(docTitle);
 		});
 	}
   
   addUploadDocuments(){
 	  var _this = this;
-	  vex.dialog.open({
-		  contentCSS: { width: '500px' },
-		  message: 'Select a date and color.',
-		  input: '<form action="" method="post" class="filerModal" enctype="multipart/form-data"><input type="file" name="files" id="filer_input" multiple="multiple">    </form>',
-		  
-			  afterOpen: function($vexContent) {
-				  var filerInput = $vexContent.find("#filer_input");
-				  filerInput.filer({
-					    limit: 10,
-					    maxSize: 3,
-					    extensions: ['rtf'],
-					    changeInput: true,
-					    showThumbs: true,
-					    captions:{
-					    	errors: {
-						        filesType: "Only text files are allowed to be uploaded.",
-						    }
-					    }
-					    
-					});
-				  return $vexContent;
-			  },
-		  callback: function(data) {
-			  if (data){
-				  var test = data.files;
-				  var jFiler = $(this.content).find("#filer_input").prop("jFiler");;
-				  var files = jFiler.files;
-				  _this.uploadDocuments(files);
-			  }
-			  
-		  }
+	  
+	  var dialog = new FileUpload('Select a date and color.');
+	  
+	  dialog.showModal().then(function(files) {
+		  _this.uploadDocuments(files);
 		});
 	}
   

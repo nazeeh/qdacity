@@ -2,6 +2,7 @@ import DocumentsView from './DocumentsView.jsx';
 import CodingBrackets from './coding-brackets';
 import Account from '../Account';
 import DocumentsCtrl from './DocumentsCtrl';
+import Prompt from '../modals/Prompt';
 
 import $script from 'scriptjs';
 
@@ -249,8 +250,6 @@ window.init2 = function (){
 	$("#textdocument-menu").collapse(); // editor will be initialized readonly,
 	// the toggle is later hooked to the
 	// visibility of the toolbar
-
-	vex.defaultOptions.className = 'vex-theme-os';
 	
 	var urlParams = URI(window.location.search).query(true);
   	
@@ -285,14 +284,9 @@ window.init2 = function (){
 	}
 
 	$("#btnInsertCode").on("click", function() {
-		vex.dialog.prompt({
-			message : 'Give your code a name',
-			placeholder : 'Code Name',
-			callback : function(codeName) {
-				if (codeName != false) {
-					insertCode(current_user_name, codeName);
-				}
-			}
+		var prompt = new Prompt('Give your code a name', 'Code Name');
+		prompt.showModal().then(function(codeName) {
+				insertCode(current_user_name, codeName);
 		});
 	});
 
