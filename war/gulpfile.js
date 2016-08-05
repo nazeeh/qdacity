@@ -29,4 +29,4 @@ gulp.task('watch',function() {
 	gulp.watch('assets/**/*.{js,jsx}',['bundle'])
 });
  
-gulp.task('default', ['watch']);
+gulp.task('default', ['bundle','watch']);

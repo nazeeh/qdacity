@@ -120,6 +120,22 @@ public class UserEndpoint {
 		return user;
 	}
 	
+	 @ApiMethod(name = "user.getCurrentUser",  scopes = {Constants.EMAIL_SCOPE},
+	      clientIds = {Constants.WEB_CLIENT_ID, 
+	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	         audiences = {Constants.WEB_CLIENT_ID})
+	  public User getCurrentUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	    PersistenceManager mgr = getPersistenceManager();
+	    User user = null;
+	    try {
+	      user = mgr.getObjectById(User.class, loggedInUser.getUserId());
+
+	    } finally {
+	      mgr.close();
+	    }
+	    return user;
+	  }
+	
 	@ApiMethod(name = "user.getTaskboard", path="usertaskboard",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
@@ -179,10 +195,12 @@ public class UserEndpoint {
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public User insertUser(User user) {
+	public User insertUser(User user, com.google.appengine.api.users.User loggedInUser) {
+	  user.setId(loggedInUser.getUserId());
+	  user.setProjects(new ArrayList<Long>());
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (containsUser(user)) {
+			if (user.id != null && containsUser(user)) {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(user);

@@ -23,4 +23,46 @@ export default class Account {
   isSignedIn(){
 	  return this.auth2.isSignedIn.get();
   }
+  
+  getCurrentUser(){
+	  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.user.getCurrentUser().execute(function(resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       
+				       	 else{
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  
+		  return promise;
+  }
+  
+  
+  registerCurrentUser(givenName, surName, email){
+	  var promise = new Promise(
+			  function(resolve, reject) {
+				  var user = {};
+				  user.email = email;
+				  user.givenName = givenName;
+				  user.surName = surName;
+				  
+				  gapi.client.qdacity.insertUser(user).execute(function(resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       
+				       	 else{
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  
+		  return promise;
+  }
 }  
