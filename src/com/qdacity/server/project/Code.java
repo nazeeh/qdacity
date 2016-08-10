@@ -13,6 +13,9 @@ public class Code {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	Long id;
+	
+  @Persistent
+	Long codeID;
 	@Persistent
 	String author;
 	@Persistent
@@ -35,8 +38,16 @@ public class Code {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public Long getCodeID() {
+    return codeID;
+  }
 
-	public String getAuthor() {
+  public void setCodeID(Long codeID) {
+    this.codeID = codeID;
+  }
+
+  public String getAuthor() {
 		return author;
 	}
 

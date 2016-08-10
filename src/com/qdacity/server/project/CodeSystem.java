@@ -21,15 +21,18 @@ Long project;
 @Persistent
 List<Long> codeIDs = new  ArrayList<Long>();
 
-
+@Persistent
+Long maxCodeID;
 
 
 public CodeSystem(CodeSystem codesystem) {
   this.project = codesystem.project;
+  this.maxCodeID = codesystem.maxCodeID;
   this.codeIDs = new ArrayList<Long>(codesystem.codeIDs);
 }
 
 public CodeSystem() {
+  maxCodeID = 0L;
 }
 
 public CodeSystem(Long projectId, List<Long> codes) {
@@ -70,5 +73,12 @@ public void setProject(Long project) {
 	this.project = project;
 }
 
+public Long getMaxCodeID() {
+  return maxCodeID;
+}
+
+public void setMaxCodeID(Long maxCodeID) {
+  this.maxCodeID = maxCodeID;
+}
 
 }

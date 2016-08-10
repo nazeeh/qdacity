@@ -16,6 +16,8 @@ public class ValidationProject extends ProjectRevision {
   List<String> validationCoders;
   @Persistent
   Long revisionID;
+  @Persistent
+  double paragraphFMeasure;
   
   public ValidationProject(Project prj, Long projectID, String comment) {
     super(prj, projectID, comment);
@@ -54,5 +56,17 @@ public class ValidationProject extends ProjectRevision {
     if (validationCoders == null) validationCoders = new ArrayList<String>();
     if (!validationCoders.contains(userID)) validationCoders.add(userID);
   }
+
+
+  public double getParagraphFMeasure() {
+    return paragraphFMeasure;
+  }
+
+
+  public void setParagraphFMeasure(double paragraphAgreement) {
+    this.paragraphFMeasure = paragraphAgreement;
+  }
+  
+  
 
 }

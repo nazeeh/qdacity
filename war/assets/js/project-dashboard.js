@@ -105,6 +105,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			document.getElementById('navBtnSwitchAccount').onclick = function () {
 				account.changeAccount(setupUI,client_id,scopes);
 			};
+			
         }
 
         $(document).ready( function () {
@@ -230,7 +231,12 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     	var revId = $( this ).attr("revId");
                     	requestValidationAccess(revId);
                     });
-
+                    
+                    $( ".validateRevisionBtn" ).click(function(event) {
+                    	event.preventDefault();
+                    	var revId = $( this ).attr("revId");
+                    	evaluateRevision(revId);
+                    });
               	 }
 
               	 else{
@@ -274,6 +280,18 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         		.then(
         	        function(val) {
         	        	alertify.success("Request has been filed");
+        	        })
+        	    .catch(handleBadResponse);
+        }
+        
+        function evaluateRevision(revId){
+        	var projectEndpoint = new ProjectEndpoint();
+
+        	projectEndpoint.evaluateRevision(revId)
+        		.then(
+        	        function(val) {
+        	        	alertify.success("Agreement: " + val.items[0].paragraphFMeasure	);
+        	        	
         	        })
         	    .catch(handleBadResponse);
         }

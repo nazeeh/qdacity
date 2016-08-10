@@ -1,10 +1,20 @@
 package com.qdacity.server.project;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.google.appengine.api.datastore.Text;
 
@@ -47,6 +57,10 @@ public Long getProjectID() {
 public void setProjectID(Long projectID) {
 	this.projectID = projectID;
 }
+
+
+
+
 
 
 }

@@ -331,7 +331,7 @@ window.init2 = function (){
 	}
 
 	document.getElementById('btnRemoveCoding').onclick = function() {
-		var activeID = getActiveCode().id;
+		var activeID = getActiveCode().dbID;
 		if (typeof activeID != 'undefined') {
 
 			var slection = editor['removeCoding'](activeID);
@@ -351,13 +351,13 @@ window.init2 = function (){
 	}
 
 	document.getElementById('btnCodeSave').onclick = function() {
-		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().id);
+		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID);
 
 	}
 	
 	document.getElementById('btnCodeMemoSave').onclick = function() {
 		window.alert(codeMemoEditor.getHTML());
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().id);
+		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID);
 
 	}
 
@@ -429,7 +429,7 @@ function splitupCoding(selection){
 
 function showCodingView() {
 	showFooter();
-	var activeID = getActiveCode().id;
+	var activeID = getActiveCode().dbID;
 	fillCodingTable(activeID);
 	fillPropertiesView(activeID);
 	resizeHandler();
@@ -674,7 +674,7 @@ function listCodes() {
 			}
 			
 			for (var i = 0; i < codes.length; i++) {
-				addNodeToTree(codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo);
+				addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo);
 			}
 
 			for (var i = 0; i < codes.length; i++) {
@@ -683,8 +683,8 @@ function listCodes() {
 
 						for (var j = 0; j < codes.length; j++) {
 							for (var k = 0; k < codes[i].subCodesIDs.length; k++) {
-								if (codes[i].subCodesIDs[k] == codes[j].id) {
-									relocateNode(codes[j].id, codes[i].id);
+								if (codes[i].subCodesIDs[k] == codes[j].codeID) {
+									relocateNode(codes[j].codeID, codes[i].codeID);
 								}
 							}
 						}
@@ -718,10 +718,10 @@ function insertCode(_AuthorName, _CodeName) {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name);
-			addNodeToTree(resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo);
+			addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo);
 			if (activeID != 'undefined') {
-				addSubCode(activeID, resp.id);
-				relocateNode(resp.id, activeID);
+				addSubCode(getActiveCode().dbID, resp.codeID);
+				relocateNode(resp.codeID, activeID);
 			}
 		} else {
 			console.log(resp.code);
@@ -752,6 +752,8 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID) {
 	});
 }
 
+
+// FIXME fix for change from id to codeID
 function relocateCode(codeId, newParentId) {
 	removeLinkFromOldParent(codeId);
 
@@ -809,6 +811,7 @@ function changeParentId(_ID, _newParent) {
 
 		requestData.name = resp.name;
 		requestData.id = _ID;
+		requestData.codeID = resp.codeID;
 		requestData.author = resp.author;
 		requestData.subCodesIDs = resp.subCodesIDs;
 		requestData.parentID = _newParent;
@@ -840,6 +843,7 @@ function removeSubCode(_ID, _SubID) {
 		var requestData = {};
 
 		requestData.name = resp.name;
+		requestData.codeID = resp.codeID;
 		requestData.id = _ID;
 		requestData.author = resp.author;
 		requestData.codesystemID = resp.codesystemID;
@@ -882,7 +886,7 @@ function removeLinkFromOldParent(codeId) {
 
 // Delete code function
 function deleteCode() {
-	var activeID = getActiveCode().id;
+	var activeID = getActiveCode().dbID;
 	if (typeof activeID == 'undefined') {
 		window.alert("No code selected");
 		return;
@@ -918,7 +922,7 @@ $(function() {
 	var dialog, form, name = $("#updateCodeName"), email = $("#updateCodeAuthor"), password = $("#updateCodeID"), allFields = $([]).add(name).add(email).add(password), tips = $(".validateTips");
 
 	function changeCode() {
-		var name = document.getElementById('updateCodeName').value, author = document.getElementById('updateCodeAuthor').value, id = getActiveCode().id;
+		var name = document.getElementById('updateCodeName').value, author = document.getElementById('updateCodeAuthor').value, id = getActiveCode().dbID;
 
 		updateCode(author, name, "#000000", id);
 		dialog.dialog("close");
@@ -949,17 +953,18 @@ $(function() {
 	});
 
 	$("#btnUpdateCode").on("click", function() {
-		document.getElementById('updateFormCodeId').innerHTML = getActiveCode().id;
-		setNameAndAuthor(getActiveCode().id, 'updateCodeName', 'updateCodeAuthor');
+		document.getElementById('updateFormCodeId').innerHTML = getActiveCode().dbID;
+		setNameAndAuthor(getActiveCode().dbID, 'updateCodeName', 'updateCodeAuthor');
 		dialog.dialog("open");
 	});
 });
 
-function addNodeToTree(id, name, author, color, parentID, subCodesIDs, memo) {
+function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo) {
 	var sourceNode = {};
 	sourceNode.text = name;
 	sourceNode.isFolder = true;
 	sourceNode.id = id;
+	sourceNode.dbID = dbID;
 	sourceNode.codingCount = 0;
 	sourceNode.uiIcon = "fa-tag fa-lg";
 	sourceNode.author = author;
@@ -1058,11 +1063,13 @@ function getActiveCode() {
 	var code = {};
 	if (typeof activeNode == 'undefined') {
 		code.id = 'undefined';
+		code.dbID = 'undefined';
 		code.name = 'undefined';
 		code.author = 'undefined';
 		code.color = 'undefined';
 	} else {
 		code.id = activeNode.id;
+		code.dbID = activeNode.dbID;
 		code.name = activeNode.text;
 
 		code.author = activeNode.author;
@@ -1111,7 +1118,7 @@ function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
 var initialized_easytree = false;
 function codesystemStateChanged(nodes, nodesJson) {
 	if (initialized_easytree) {
-		active_code = getActiveCode().id;
+		active_code = getActiveCode().dbID;
 		if ($("#footer").is(":visible")) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);

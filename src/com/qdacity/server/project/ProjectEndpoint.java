@@ -16,10 +16,13 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -179,6 +182,7 @@ public class ProjectEndpoint {
 				}
 			}
 			project.addOwner(user.getUserId());
+			project.setRevision(0);
 			mgr.makePersistent(project);
 			// Authorize User
 			com.qdacity.server.user.User dbUser = mgr.getObjectById(com.qdacity.server.user.User.class, user.getUserId());
@@ -461,6 +465,67 @@ public class ProjectEndpoint {
      }
      return revisions;
    }
+	 
+	 
+	 @ApiMethod(name = "project.evaluateRevision",   scopes = {Constants.EMAIL_SCOPE},
+       clientIds = {Constants.WEB_CLIENT_ID, 
+          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+          audiences = {Constants.WEB_CLIENT_ID})
+   public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
+	   List<ValidationProject> validationProjects = null;
+     PersistenceManager mgr = getPersistenceManager();
+     try {
+       TextDocumentEndpoint tde = new TextDocumentEndpoint();
+       Query q;
+       q = mgr.newQuery(ValidationProject.class, "revisionID  == :revisionID");
+       
+       Map<String, Long> params = new HashMap();
+       params.put("revisionID", revisionID);
+       
+//       q = mgr.newQuery(TextDocument.class);
+//       q.setFilter( "projectID == :theID");
+//       Map<String, Long> paramValues = new HashMap();
+//       paramValues.put("theID", revisionID);
+       //List<TextDocument> originalDocs = (List<TextDocument>) q.executeWithMap(paramValues);
+       Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems();
+
+       validationProjects = (List<ValidationProject>)q.executeWithMap(params);
+       
+       for (ValidationProject validationProject : validationProjects) {
+         List<Double> documentAgreements = new ArrayList<Double>();
+         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "validation", user).getItems();
+         Logger.getLogger("logger").log(Level.INFO,   "Number of original docs: " + originalDocs.size() + " Number of recoded docs: "+ recodedDocs.size());
+         for (TextDocument original : originalDocs) {
+          for (TextDocument recoded : recodedDocs) {
+            if (original.getTitle().equals(recoded.getTitle())){
+              double documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
+              documentAgreements.add(documentAgreement);
+              //Logger.getLogger("logger").log(Level.INFO,   "Document Agreement: " + documentAgreement);
+//              if (original.getTitle().equals("_Beförderung_.rtf")){
+//                
+//              }
+            }
+          }
+        }
+         double totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
+
+         Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
+         validationProject.setParagraphFMeasure(totalAgreement);
+         mgr.makePersistent(validationProject);
+         
+       }
+       
+       
+       
+       
+       
+       
+
+     } finally {
+       mgr.close();
+     }
+     return validationProjects;
+   }
 
 
 	/**
@@ -592,9 +657,9 @@ public class ProjectEndpoint {
    try {
      ValidationProject project = mgr.getObjectById(ValidationProject.class, id);
      // Check if user is authorized
-     Authorization.checkAuthorization(project.getProjectID(), user);
+     //Authorization.checkAuthorization(project.getProjectID(), user);
      
-     Long codeSystemID = project.getCodesystemID();
+     //Long codeSystemID = project.getCodesystemID();
      
      removeAssociatedData(project);
 
@@ -629,25 +694,9 @@ public class ProjectEndpoint {
  private void removeAssociatedData(ValidationProject project)  {
    PersistenceManager mgr = getPersistenceManager();
    try {
-     
-     // Delete code system
-     Long codeSystemID = project.getCodesystemID();
-     CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
-     
-     Query q;
-     q = mgr.newQuery(Code.class, " codesytemID  == :codeSystemID");
-
-     Map<String, Long> codesParam = new HashMap();
-     codesParam.put("codeSystemID", codeSystem.getId());
-     @SuppressWarnings("unchecked")
-     List<Code> codes =   (List<Code>) q.executeWithMap(codesParam);
-     mgr.deletePersistentAll(codes);
-     
-     mgr.deletePersistent(codeSystem);
-
      // Delete all documents
 
-     q = mgr.newQuery(TextDocument.class);
+     Query q = mgr.newQuery(TextDocument.class);
      q.setFilter( "projectID == :theID");
      Map<String, Long> paramValues = new HashMap();
      paramValues.put("theID", project.getId());
@@ -675,9 +724,9 @@ public class ProjectEndpoint {
 private ValidationProject createValidationProject(ProjectRevision projectRev, User user) throws UnauthorizedException{
     
     ValidationProject cloneProject = new ValidationProject(projectRev);
-    CodeSystem codeSystemClone = CodeSystemEndpoint.cloneCodeSystem(projectRev.getCodesystemID(), projectRev.getId(), user);
+    //CodeSystem codeSystemClone = CodeSystemEndpoint.cloneCodeSystem(projectRev.getCodesystemID(), projectRev.getId(), user);
     
-    cloneProject.setCodesystemID(codeSystemClone.getId());
+    cloneProject.setCodesystemID(projectRev.getCodesystemID());
     
     return cloneProject;
     

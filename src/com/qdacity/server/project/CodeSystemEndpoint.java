@@ -176,10 +176,14 @@ public class CodeSystemEndpoint {
 			rootCode.setName("Code System");
 			rootCode.setAuthor("QDAcity");
 			rootCode.setColor("#fff");
+			rootCode.setCodeID(1L);
 			mgr.makePersistent(rootCode);
 			
 			codesystem.addCode(rootCode.getId());
+			codesystem.setMaxCodeID(1L);
 			mgr.makePersistent(codesystem);
+			
+			
 			
 			rootCode.setCodesytemID(codesystem.getId());
 			mgr.makePersistent(rootCode);
@@ -216,6 +220,8 @@ public class CodeSystemEndpoint {
 					throw new EntityNotFoundException("Object does not exist");
 				}
 			}
+			CodeSystem codeSystemDB = mgr.getObjectById(CodeSystem.class, codesystem.getId());
+			codesystem.setMaxCodeID(codeSystemDB.getMaxCodeID());
 			mgr.makePersistent(codesystem);
 		} finally {
 			mgr.close();
@@ -247,6 +253,20 @@ public class CodeSystemEndpoint {
 			mgr.close();
 		}
 	}
+	
+  public static Long getAndIncrCodeId(@Named("id") Long id) throws UnauthorizedException {
+    PersistenceManager mgr = getPersistenceManager();
+    CodeSystem codesystem = null;
+    try {
+      codesystem = mgr.getObjectById(CodeSystem.class, id);
+      ++codesystem.maxCodeID;
+      mgr.makePersistent(codesystem);
+    } finally {
+      mgr.close();
+    }
+    
+    return codesystem.getMaxCodeID();
+  }
 
 	
 	
@@ -330,8 +350,11 @@ public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, User
     try {
       mgr = getPersistenceManager();
       
+      CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemId);
+      
       cloneCodeSystem =  new CodeSystem();
       cloneCodeSystem.setProject(projectId);
+      cloneCodeSystem.setMaxCodeID(codeSystem.getMaxCodeID());
       cloneCodeSystem = mgr.makePersistent(cloneCodeSystem);
       
       CodeSystemEndpoint cse = new CodeSystemEndpoint();
@@ -339,6 +362,7 @@ public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, User
       
       for (Code code : codes) {
         Code cloneCode = new Code();
+        cloneCode.setCodeID(code.getCodeID());
         cloneCode.setAuthor(code.author);
         cloneCode.setCodesytemID(cloneCodeSystem.getId());
         cloneCode.setColor(code.getColor());

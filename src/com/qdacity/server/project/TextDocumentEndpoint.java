@@ -109,7 +109,7 @@ public class TextDocumentEndpoint {
 	    if (prjType == "REVISION"){
 	      ProjectRevision validationProject = mgr.getObjectById(ProjectRevision.class, id);
 	      Authorization.checkAuthorization(validationProject.getProjectID(), user);
-	    } else if (prjType.equals("validation")){
+	    } else if (prjType != null && prjType.equals("validation")){
 	      //FIXME auth
 	    } else{
 	      Authorization.checkAuthorization(id, user);

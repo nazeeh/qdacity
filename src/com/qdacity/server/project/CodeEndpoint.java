@@ -24,6 +24,8 @@ import com.google.appengine.api.users.User;
 
 
 
+
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -134,7 +136,10 @@ public class CodeEndpoint {
 	public Code insertCode(Code code, User user) throws UnauthorizedException {
 		//Check if user is authorized
 		Authorization.checkAuthorization(code, user);
+		Long codesystemId = code.getCodesytemID();
+		Long codeId = CodeSystemEndpoint.getAndIncrCodeId(codesystemId);
 		
+		code.setCodeID(codeId);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (code.getId() != null && containsCode(code)) {
@@ -176,6 +181,8 @@ public class CodeEndpoint {
 			if (!containsCode(code)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
+			Code codeDB = mgr.getObjectById(Code.class, code.getId());
+			code.setCodeID(codeDB.getCodeID());
 			mgr.makePersistent(code);
 		} finally {
 			mgr.close();
