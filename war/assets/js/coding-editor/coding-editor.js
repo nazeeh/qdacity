@@ -3,8 +3,23 @@ import CodingBrackets from './coding-brackets';
 import Account from '../Account';
 import DocumentsCtrl from './DocumentsCtrl';
 import Prompt from '../modals/Prompt';
-
+ 
 import $script from 'scriptjs';
+
+import 'script!../../../components/tooltipster/js/jquery.tooltipster.js';
+import 'script!../../../components/filer/js/jquery.filer.min.js';
+import 'script!../../../components/EasyTree/jquery.easytree.js';
+import 'script!../../../components/loading/loadingoverlay.js';
+import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import 'script!../../../components/Squire/squire-raw.js';
+import 'script!../../../components/Easytabs/jquery.easytabs.js';
+import 'script!../../../components/tooltip/tooltip.js';
+import 'script!../../../components/colorpicker/evol.colorpicker.js';
+import 'script!../../../components/URIjs/URI.min.js';
+import 'script!../../../components/imagesloaded/imagesloaded.pkgd.min.js';
+
+import 'script!../../../assets/js/ErrorHandler.js';
+import 'script!../../../assets/js/coding-editor/codings-view.js';
 
 $script('https://apis.google.com/js/client.js', function() {
 	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
