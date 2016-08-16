@@ -29,6 +29,8 @@ import com.google.appengine.api.users.User;
 
 
 
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -141,6 +143,8 @@ public class CodeEndpoint {
 		Authorization.checkAuthorization(code, user);
 		Long codesystemId = code.getCodesytemID();
 		Long codeId = CodeSystemEndpoint.getAndIncrCodeId(codesystemId);
+		if (code.getSubCodesIDs() == null) code.setSubCodesIDs(new ArrayList<Long>());
+		
 		
 		code.setCodeID(codeId);
 		PersistenceManager mgr = getPersistenceManager();
