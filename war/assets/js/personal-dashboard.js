@@ -102,10 +102,11 @@ $(document).ready(function () {
 	});
 }); 
 
-function createNewProject() { 
+function createNewProject() {
 
 	var requestData = {};
 	requestData.project = 0;
+	requestData.projectType = "PROJECT";
 
 	gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function (resp) {
 		if (!resp.code) { 

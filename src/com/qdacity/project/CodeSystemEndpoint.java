@@ -343,7 +343,7 @@ public class CodeSystemEndpoint {
 		return projectID;
 	}
 	
-public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, User user) throws UnauthorizedException {
+public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, ProjectType prjType, User user) throws UnauthorizedException {
     
     PersistenceManager mgr = null;
     CodeSystem cloneCodeSystem = null;
@@ -355,6 +355,7 @@ public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, User
       cloneCodeSystem =  new CodeSystem();
       cloneCodeSystem.setProject(projectId);
       cloneCodeSystem.setMaxCodeID(codeSystem.getMaxCodeID());
+      cloneCodeSystem.setProjectType(prjType);
       cloneCodeSystem = mgr.makePersistent(cloneCodeSystem);
       
       CodeSystemEndpoint cse = new CodeSystemEndpoint();
@@ -382,5 +383,22 @@ public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, User
     return cloneCodeSystem;
   }
 
+public static CodeSystem setProject(Long codeSystemId, Long projectId) throws UnauthorizedException {
+  
+  PersistenceManager mgr = null;
+  CodeSystem codeSystem = null;
+  try {
+    mgr = getPersistenceManager();
+    
+    codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemId);
+    codeSystem.setProject(projectId);
+    mgr.makePersistent(codeSystem);
+    
+  } finally {
+    mgr.close();
+  }
+  
+  return codeSystem;
+}
 
 }

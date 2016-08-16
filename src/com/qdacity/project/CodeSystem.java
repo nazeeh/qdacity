@@ -19,6 +19,8 @@ Long id;
 @Persistent
 Long project;
 @Persistent
+ProjectType projectType;
+@Persistent
 List<Long> codeIDs = new  ArrayList<Long>();
 
 @Persistent
@@ -80,5 +82,15 @@ public Long getMaxCodeID() {
 public void setMaxCodeID(Long maxCodeID) {
   this.maxCodeID = maxCodeID;
 }
+
+public ProjectType getProjectType() {
+  return projectType;
+}
+
+public void setProjectType(ProjectType projectType) {
+  this.projectType = projectType;
+}
+
+
 
 }

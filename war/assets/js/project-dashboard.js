@@ -108,6 +108,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			
         }
 
+   		//FIXME Legacy Code?
         $(document).ready( function () {
         	$( "#newProjectForm" ).on( "submit",function(event) {
         		event.preventDefault();
@@ -116,10 +117,12 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
         });
 
+        //FIXME Legacy Code?
         function createNewProject(){
 
         	var requestData = {};
             requestData.project = 0;
+            requestData.type = "PROJECT";
 
             gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function(resp) {
                     if (!resp.code) {
@@ -155,8 +158,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function setGeneralStats(){
-
-        	gapi.client.qdacity.project.getProjectStats({'id': project_id}).execute(function(resp) {
+        	// FIXME support other types than normal project
+        	gapi.client.qdacity.project.getProjectStats({'id': project_id, 'projectType': 'PROJECT'}).execute(function(resp) {
         	   	 if (!resp.code) {
         	   		$("#topStatsDocuments").html(resp.documentCount);
         	   		$("#topStatsCodes").html(resp.codeCount);

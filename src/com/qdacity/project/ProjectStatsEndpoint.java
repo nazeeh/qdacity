@@ -65,7 +65,7 @@ public class ProjectStatsEndpoint {
 	clientIds = {Constants.WEB_CLIENT_ID, 
      com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
      audiences = {Constants.WEB_CLIENT_ID})
-	public ProjectStats getProjectStats(@Named("id") Long projectId, User user) throws UnauthorizedException {
+	public ProjectStats getProjectStats(@Named("id") Long projectId, @Named("projectType") String prjType, User user) throws UnauthorizedException {
 		
 		Authorization.checkAuthorization(projectId, user);
 		
@@ -73,6 +73,7 @@ public class ProjectStatsEndpoint {
 		
 		// Count and get all TextDocuments
 		Filter projectFilter = new FilterPredicate("projectID", FilterOperator.EQUAL, projectId);
+		//Filter projectFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, projectId);
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("TextDocument").setFilter(projectFilter);
 		PreparedQuery pq = datastore.prepare(q);
@@ -91,7 +92,9 @@ public class ProjectStatsEndpoint {
 	
 		// Get the code system id
 		projectFilter = new FilterPredicate("project", FilterOperator.EQUAL, projectId);
-		q = new com.google.appengine.api.datastore.Query("CodeSystem").setFilter(projectFilter);
+		Filter projectTypeFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, prjType);
+		q = new com.google.appengine.api.datastore.Query("CodeSystem").setFilter(projectFilter).setFilter(projectTypeFilter);
+		
 		pq = datastore.prepare(q);
 		Entity entity =  pq.asSingleEntity();
 		Key entityKey =   entity.getKey();

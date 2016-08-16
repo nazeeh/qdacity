@@ -364,6 +364,9 @@ public class ProjectEndpoint {
 	      cloneProject = mgr.makePersistent(cloneProject);
 	      project = mgr.makePersistent(project);
 	      
+	      // Set the ID that was just generated
+	      CodeSystemEndpoint.setProject(cloneProject.getCodesystemID(), cloneProject.getId());
+	      
 	      TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), false, user);
 	    } finally {
 	      mgr.close();
@@ -713,7 +716,7 @@ public class ProjectEndpoint {
 	private Project cloneProject(Project project, User user) throws UnauthorizedException{
 	  
 	  Project cloneProject = new Project(project);
-	  CodeSystem codeSystemClone = CodeSystemEndpoint.cloneCodeSystem(project.getCodesystemID(), project.getId(), user);
+	  CodeSystem codeSystemClone = CodeSystemEndpoint.cloneCodeSystem(project.getCodesystemID(), project.getId(), ProjectType.REVISION, user);
 	  
 	  cloneProject.setCodesystemID(codeSystemClone.getId()); 
 	  
