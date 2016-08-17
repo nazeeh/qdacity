@@ -25,6 +25,9 @@ public abstract class AbstractProject {
   String name;
   
   @Persistent
+  String description;
+  
+  @Persistent
   Long codesystemID;
   
   @Persistent
@@ -70,6 +73,14 @@ public abstract class AbstractProject {
   
   public void setName(String name) {
     this.name = name;
+  }
+  
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
   
   public Long getCodesystemID() {

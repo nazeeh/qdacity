@@ -65,7 +65,7 @@ public class ProjectEndpoint {
 			
 			Query q = mgr.newQuery(Project.class, ":p.contains(owners)");
 			
-			
+			//FIXME redundant code?
 			Query query = mgr.newQuery(Project.class, ":p.contains(owners)");
 			if (cursorString != null && cursorString != "") {
 				cursor = Cursor.fromWebSafeString(cursorString);
@@ -95,6 +95,36 @@ public class ProjectEndpoint {
 				.setNextPageToken(cursorString).build();
 	}
 
+	 @ApiMethod(name = "project.listValidationProject",  scopes = {Constants.EMAIL_SCOPE},
+	      clientIds = {Constants.WEB_CLIENT_ID, 
+	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	         audiences = {Constants.WEB_CLIENT_ID})
+	  public List<ValidationProject> listValidationProject(User user) throws UnauthorizedException {
+	    
+	    if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
+
+	    PersistenceManager mgr = getPersistenceManager();
+	    List<ValidationProject> execute = null;
+
+	    try {
+	      //mgr = getPersistenceManager();
+	      
+	      com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+	      Query q = mgr.newQuery(ValidationProject.class, ":p.contains(validationCoders)");
+
+	      execute = (List<ValidationProject>) q.execute(Arrays.asList(dbUser.getId()));
+
+	      // Tight loop for fetching all entities from datastore and accomodate
+	      // for lazy fetch.
+	      for (ValidationProject obj : execute)
+	        ;
+	    } finally {
+	      mgr.close();
+	    }
+	    return execute;
+	  }
+	 
 	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.
 	 *
@@ -346,6 +376,28 @@ public class ProjectEndpoint {
 		}
 		return project;
 	}
+	
+	@ApiMethod(name = "project.setDescription",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Project setDescription(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("description") String description, User user) throws UnauthorizedException {
+    Project project = null;
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      //FIXME handle authorization
+      //FIXME handle project types differently
+      project = mgr.getObjectById(Project.class, projectID);
+      
+      project.setDescription(description);
+
+      project = mgr.makePersistent(project);
+      
+    } finally {
+      mgr.close();
+    }
+    return project;
+  }
 	
 	 @ApiMethod(name = "project.createSnapshot",   scopes = {Constants.EMAIL_SCOPE},
 	      clientIds = {Constants.WEB_CLIENT_ID, 

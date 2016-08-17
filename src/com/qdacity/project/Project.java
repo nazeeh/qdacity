@@ -11,6 +11,7 @@ import javax.jdo.annotations.Persistent;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Project extends AbstractProject{
+
   
   @Persistent
   List<String> owners;
@@ -36,6 +37,10 @@ public class Project extends AbstractProject{
     // TODO Auto-generated constructor stub
   }
   
+  
+  
+
+
   public List<String> getOwners() {
     return owners;
   }
