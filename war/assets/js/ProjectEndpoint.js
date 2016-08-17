@@ -10,7 +10,6 @@ export default class ProjectEndpoint {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }
-			       
 			       	 else{
 			       		reject(resp);
 			       	}
@@ -29,7 +28,6 @@ export default class ProjectEndpoint {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }
-			       
 			       	 else{
 			       		reject(resp);
 			       	}
@@ -48,7 +46,6 @@ export default class ProjectEndpoint {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }
-			       
 			       	 else{
 			       		reject(resp);
 			       	}
@@ -67,7 +64,6 @@ evaluateRevision(revId){
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }
-			       
 			       	 else{
 			       		reject(resp);
 			       	}
@@ -77,4 +73,23 @@ evaluateRevision(revId){
 	  
 	  return promise;
   }
+
+static setDescription(prjId, description){
+	  
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.project.setDescription({'projectID': prjId, 'projectType': 'PROJECT', 'description': description}).execute(function(resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       	 else{
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+}
+
 }

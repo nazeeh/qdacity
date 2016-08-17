@@ -1,6 +1,7 @@
 import Timeline from './timeline';
 import ProjectEndpoint from './ProjectEndpoint';
 import Account from './Account';
+import TextField from './modals/TextField';
 
 import 'script!./morris-data.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
@@ -8,7 +9,6 @@ import 'script!../../components/listJS/list.js';
 import 'script!../../components/listJS/list.pagination.js';
 import 'script!../../components/raphael/raphael-min.js';
 import 'script!../../components/morrisjs/morris.min.js';
-import 'script!../../components/Vex/js/vex.combined.min.js';
 import 'script!../../components/URIjs/URI.min.js';
 import 'script!../../components/alertify/alertify-0.3.js';
 
@@ -43,15 +43,14 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			$('#navAccount').show();
 			$('#navSignin').hide();
 
-		      vex.defaultOptions.className = 'vex-theme-os';
-
 		      setGeneralStats();
+		      
 
 		      fillUserList();
 
 		      createAreaChart();
 
-		      setProjectName();
+		      setProjectProperties();
 
 		      setRevisionHistory();
 
@@ -104,6 +103,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			
 			document.getElementById('navBtnSwitchAccount').onclick = function () {
 				account.changeAccount(setupUI,client_id,scopes);
+			};
+			
+			
+			document.getElementById('editDescriptionBtn').onclick = function () {
+				showDescriptionModal();
 			};
 			
         }
@@ -175,10 +179,12 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
         }
 
-        function setProjectName(){
+
+        function setProjectProperties(){
         	gapi.client.qdacity.project.getProject({'id': project_id, 'type':'project'}).execute(function(resp) {
        	   	 if (!resp.code) {
        	   		$("#project-name").html(resp.name);
+       	   		$("#projectDescription").html(resp.description);
 
        	   	 }
 
@@ -402,22 +408,17 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function showNewRevisionModal(title){
-           	var formElements =  "<textarea placeholder=\"Use this field to describe this revision in a few sentences\" rows=\"15\" cols=\"200\" name=\"textBox\" type=\"text\"  ></textarea><br/>\n";
-
-           		vex.dialog.open({
-           			message : title,
-           			contentCSS: { width: '600px' },
-           			input : formElements,
-           			buttons : [ $.extend({}, vex.dialog.buttons.YES, {
-           				text : 'OK'
-           			}), $.extend({}, vex.dialog.buttons.NO, {
-           				text : 'Cancel'
-           			}) ],
-           			callback : function(data) {
-           				if (data === false) {
-           					return console.log('Cancelled');
-           				}
-           				createNewRevision(data.textBox);
-           			}
-           		});
-            }
+        	var modal = new TextField(title, 'Use this field to describe this revision in a few sentences');
+        	modal.showModal().then(function(text) {
+        		createNewRevision(text);
+    		});
+        }
+        
+        function showDescriptionModal(){
+        	var modal = new TextField('Change the project description', 'Description');
+        	modal.showModal().then(function(text) {
+    				ProjectEndpoint.setDescription(project_id, text).then(function (resp){
+    					$("#projectDescription").html(text);
+    				});
+    		});
+        }
