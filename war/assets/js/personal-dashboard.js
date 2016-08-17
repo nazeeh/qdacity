@@ -122,7 +122,7 @@ function createNewProject() {
 
 					gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function (resp3) {
 						if (!resp3.code) {
-							addProjectToProjectList(requestData.project, requestData2.name);
+							addProjectToProjectList(requestData.project, requestData2.name, 'PROJECT');
 						}
 					});
 				} else {
@@ -178,7 +178,6 @@ function settleNotification(notification) {
 	gapi.client.qdacity.user.updateUserNotification(notification).execute(function (resp) {
 		if (!resp.code) {
 			fillNotificationList();
-			fillProjectsList();
 		} else {
 			window.alert(resp.code);
 		}
@@ -187,6 +186,7 @@ function settleNotification(notification) {
 
 function fillProjectsList() {
 	$("#project-list").empty();
+	
 	gapi.client.qdacity.project.listProject().execute(function (resp) {
 		if (!resp.code) {
 			resp.items = resp.items || [];
@@ -195,8 +195,9 @@ function fillProjectsList() {
 				var project_id = resp.items[i].id;
 				var project_name = resp.items[i].name;
 
-				addProjectToProjectList(project_id, project_name);
+				addProjectToProjectList(project_id, project_name, 'PROJECT');
 			}
+			addValidationProjects();
 			var options = {
 				valueNames: ['project_name', 'project_id'],
 				page: 5,
@@ -204,6 +205,24 @@ function fillProjectsList() {
 			};
 
 			var projectList = new List('project-selection', options);
+		} else {
+			window.alert(resp.code);
+		}
+	});
+	
+}
+
+function addValidationProjects(){
+	gapi.client.qdacity.project.listValidationProject().execute(function (resp) {
+		if (!resp.code) {
+			resp.items = resp.items || [];
+
+			for (var i = 0; i < resp.items.length; i++) {
+				var project_id = resp.items[i].id;
+				var project_name = resp.items[i].name;
+
+				addProjectToProjectList(project_id, project_name, 'VALIDATION_PROJECT');
+			}
 		} else {
 			window.alert(resp.code);
 		}
@@ -380,16 +399,24 @@ function leaveProject(projectID) {
 	});
 }
 
-function addProjectToProjectList(projectID, projectName) {
+function addProjectToProjectList(projectID, projectName, projectType) {
 
-	var html = '<li onclick="location.href = \'project-dashboard.html?project=' + projectID + '\';">';
+	var html = '<li';
+	if (projectType=='VALIDATION_PROJECT'){
+		html +=	' class="validationProjectItem" ';
+		html +=	' onclick="location.href = \'project-dashboard.html?project=' + projectID + '&type=validation\'">'; 
+	}
+	else {
+		html +=	' onclick="location.href = \'project-dashboard.html?project=' + projectID + '\'">'; 
+	}
+	
 
 	html += '<span class="project_name">' + projectName + '</span>';
 	html += '<span class="project_id hidden">' + projectID;
 	html += '</span>';
 
 	// Delete Project Btn
-	html += '<a  prjId="'+projectID+'" class=" deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html += '<a  prjId="'+projectID+'" class="deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 	html += '<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 	html += '</a>';
@@ -401,7 +428,8 @@ function addProjectToProjectList(projectID, projectName) {
 	html += '</a>';
 
 	// Coding Editor Btn
-	html += '<a href="coding-editor.html?project=' + projectID + '" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	if (projectType=='PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	if (projectType=='VALIDATION_PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '&type=validation" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html += ' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 	html += '<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
 	html += '</a>';
