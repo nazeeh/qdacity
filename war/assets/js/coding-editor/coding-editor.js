@@ -1,16 +1,15 @@
 import DocumentsView from './DocumentsView.jsx';
+import CodingsView from './CodingsView.js';
 import CodingBrackets from './coding-brackets';
 import Account from '../Account';
 import DocumentsCtrl from './DocumentsCtrl';
 import Prompt from '../modals/Prompt';
- 
 import $script from 'scriptjs';
 
 import 'script!../../../components/tooltipster/js/jquery.tooltipster.js';
 import 'script!../../../components/filer/js/jquery.filer.min.js';
 import 'script!../../../components/EasyTree/jquery.easytree.js';
 import 'script!../../../components/loading/loadingoverlay.js';
-import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import 'script!../../../components/Squire/squire-raw.js';
 import 'script!../../../components/Easytabs/jquery.easytabs.js';
 import 'script!../../../components/tooltip/tooltip.js';
@@ -19,7 +18,6 @@ import 'script!../../../components/URIjs/URI.min.js';
 import 'script!../../../components/imagesloaded/imagesloaded.pkgd.min.js';
 
 import 'script!../../../assets/js/ErrorHandler.js';
-import 'script!../../../assets/js/coding-editor/codings-view.js';
 
 $script('https://apis.google.com/js/client.js', function() {
 	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
@@ -40,6 +38,7 @@ var editor;
 var codeMemoEditor;
 
 var account;
+var codingsView;
 
 var iframe = document.getElementById('editor');
   window.init = function()  {
@@ -414,6 +413,8 @@ window.init2 = function (){
 		resizeElements();
 	})
 
+	codingsView = new CodingsView();
+
 } 
 
 
@@ -444,7 +445,8 @@ function splitupCoding(selection){
 
 function showCodingView() {
 	showFooter();
-	var activeID = getActiveCode().dbID;
+	var activeID = getActiveCode().id;
+	
 	fillCodingTable(activeID);
 	fillPropertiesView(activeID);
 	resizeHandler();
@@ -459,41 +461,9 @@ function hideCodingView() {
 
 }
 
-function fillCodingTable(codeID) {
-	var table = $('#example').DataTable();
-
-	table.clear();
-
-	var codings = [];
-
-	table.clear();
-	
+function fillCodingTable(activeID){
 	var documents = documentsView.getDocuments();
-	
-	for ( var i in documents) {
-		var doc = documents[i];
-		var elements = doc.text;
-		var found = $('coding', elements);
-		var foundArray = $('coding[code_id=\'' + codeID + '\']', elements).map(function() {
-			var tmp = {};
-			tmp.id = $(this).attr('id');
-			tmp.code_id = $(this).attr('code_id');
-			tmp.author = $(this).attr('author');
-			return tmp;
-
-		});
-		foundArray = foundArray.toArray();
-		var idsAdded = []; // When a coding spans multiple HTML blocks, then
-		// there will be multiple elements with the same ID
-		for (var j = 0; j < foundArray.length; j++) {
-			if ($.inArray(foundArray[j].id, idsAdded) != -1)
-				continue;
-			table.row.add([ foundArray[j].id, doc.title, foundArray[j].author ]);
-			idsAdded.push(foundArray[j].id);
-		}
-	}
-	
-	table.draw();
+	codingsView.fillCodingTable(activeID, documents);
 }
 
 function getCodingsFromText(text){
@@ -1133,7 +1103,7 @@ function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
 var initialized_easytree = false;
 function codesystemStateChanged(nodes, nodesJson) {
 	if (initialized_easytree) {
-		active_code = getActiveCode().dbID;
+		active_code = getActiveCode().id;
 		if ($("#footer").is(":visible")) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);
