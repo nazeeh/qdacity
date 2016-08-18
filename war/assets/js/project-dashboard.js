@@ -11,6 +11,7 @@ import 'script!../../components/raphael/raphael-min.js';
 import 'script!../../components/morrisjs/morris.min.js';
 import 'script!../../components/URIjs/URI.min.js';
 import 'script!../../components/alertify/alertify-0.3.js';
+import 'script!../../components/AdminLTE/js/app.min.js';
 
 
 import $script from 'scriptjs';
@@ -67,7 +68,9 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
     	  	  project_id = urlParams.project;
 
-        	  $(".codeEditorLink").attr('href','coding-editor.html?project='+project_id);
+        	  $("#codingEditorBtn").click(function() {
+        		  location.href='coding-editor.html?project='+project_id;
+        	  });
 
         	var apisToLoad;
         	 var callback = function() {

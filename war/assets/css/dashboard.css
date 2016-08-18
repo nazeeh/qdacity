@@ -1,0 +1,27 @@
+body{
+	background: #fcfcfc;
+}
+
+.info-box{
+	padding-right: 0px!important;
+	padding-left: 0px!important;
+
+}
+.info-box-content{
+	padding-right: 0px!important;
+
+}
+
+.info-box-icon{
+	width:60px!important;
+
+}
+.info-box-text{
+	margin-left:-35px!important;
+	
+	
+}
+.info-box-number{
+	 margin-left:-35px!important;
+	 font-size:25px;
+}

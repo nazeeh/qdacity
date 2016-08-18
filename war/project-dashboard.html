@@ -23,6 +23,7 @@
 
 <link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
 <link href="assets/css/customTimeline.css" rel="stylesheet">
+<link href="assets/css/dashboard.css" rel="stylesheet">
 
 <link href="components/Alertify/css/alertify.core.css" rel="stylesheet">
 <link href="components/Alertify/css/alertify.default.css" rel="stylesheet">
@@ -135,133 +136,103 @@
 	<div class="container main-content">
 	<h2 class="page-header">
 			<i class="fa fa-newspaper-o"></i> <span id="project-name"></span><span id="react-test"></span>
-            <button type="button" id="newRevisionBtn" class="btn btn-default btn-sm pull-right"><i class="fa fa-clone fa-lg"></i>&nbsp;&nbsp;<b>New Revision</b></button>
+            <button type="button" id="codingEditorBtn" class="btn btn-default btn-sm pull-right"><i class="fa fa-tags fa-lg"></i>&nbsp;&nbsp;<b>Coding Editor</b></button>
           </h2>
-
-		<!-- Small boxes (Stat box) -->
 		<div class="row">
-			<div class="col-lg-3 col-xs-6">
-				<!-- small box -->
-				<div class="small-box bg-aqua">
-					<div class="inner">
-						<h3 id="topStatsDocuments">N/A</h3>
-						<p>Documents</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-document"></i>
-					</div>
-					<a href="#" class="small-box-footer codeEditorLink">
-						Coding Editor
-						<i class="fa fa-arrow-circle-right"></i>
-					</a>
-				</div>
-			</div>
-			<!-- ./col -->
-
-			<div class="col-lg-3 col-xs-6">
-				<!-- small box -->
-				<div class="small-box bg-yellow">
-					<div class="inner">
-						<h3 id="topStatsCodes">N/A</h3>
-
-						<p>Codes</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-ios-pricetag-outline"></i>
-					</div>
-					<a href="#" class="small-box-footer codeEditorLink">
-						Coding Editor
-						<i class="fa fa-arrow-circle-right"></i>
-					</a>
-				</div>
-			</div>
-			<!-- ./col -->
-			<div class="col-lg-3 col-xs-6">
-				<!-- small box -->
-				<div class="small-box bg-red">
-					<div class="inner">
-						<h3 id="topStatsCodings">N/A</h3>
-
-						<p>Codings</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-ios-pricetags"></i>
-					</div>
-					<a href="#" class="small-box-footer codeEditorLink">
-						Coding Editor
-						<i class="fa fa-arrow-circle-right"></i>
-					</a>
-				</div>
-			</div>
-			<!-- ./col -->
-			<div class="col-lg-3 col-xs-6">
-				<!-- small box -->
-				<div class="small-box bg-green">
-					<div class="inner">
-						<h3 id="topStatsSaturation">
-							N/A<sup style="font-size: 20px">%</sup>
-						</h3>
-
-						<p>Saturation</p>
-					</div>
-					<div class="icon">
-						<i class="ion ion-stats-bars"></i>
-					</div>
-					<a href="#" class="small-box-footer">
-						More info
-						<i class="fa fa-arrow-circle-right"></i>
-					</a>
-				</div>
-			</div>
-			<!-- ./col -->
-		</div>
-		<!-- /.row -->
-
-		<div class="row">
-			<div class="col-lg-8">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						Description
-						<i id="editDescriptionBtn" class="fa fa-pencil fa-lg pull-right hoverHand"></i>
-					
-					
+			<div class="col-lg-7">
+			
+				<div class="box box-default">
+					<div class="box-header with-border">
+					<h3 class="box-title">Description</h3>
+						<div class="box-tools pull-right">
+							<button id="editDescriptionBtn" type="button" class="btn btn-box-tool">
+			                	<i  class="fa fa-pencil fa-lg  hoverHand"></i>
+			                </button>
+			            </div>
 					</div>
 					<!-- /.panel-heading -->
-					<div class="panel-body">
+					<div class="box-body">
 						<div id="projectDescription"></div>
 					</div>
 					<!-- /.panel-body -->
 				</div>
-				<div class="panel panel-default">
-					<div class="panel-heading">Activity</div>
+				<div class="box box-default">
+					<div class="box-header with-border">
+					<h3 class="box-title">Project Stats</h3>
+					</div>
 					<!-- /.panel-heading -->
-					<div class="panel-body">
+					<div class="box-body">
+					<div class="row" >
+						<div class="col-lg-3 col-xs-6 small-gutter-right">
+							<div class="info-box">
+								<div class="info-box-icon bg-aqua">
+								<i class="ion ion-document"></i>
+									
+								</div>
+								<div class="info-box-content">
+			              			<span class="info-box-text">Documents</span>
+			              			<span id="topStatsDocuments" class="info-box-number">N/A</span>
+								</div>
+							</div>
+						</div>
+						
+			
+						<div class="col-lg-3 col-xs-6 small-gutter">
+							<div class="info-box">
+								<div class="info-box-icon bg-yellow">
+								<i class="ion ion-ios-pricetag-outline"></i>
+									
+								</div>
+								<div class="info-box-content">
+			              			<span class="info-box-text">Codes</span>
+			              			<span id="topStatsCodes" class="info-box-number">N/A</span>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-lg-3 col-xs-6 small-gutter">
+							<div class="info-box">
+								<div class="info-box-icon bg-red">
+								<i class="ion ion-ios-pricetags"></i>
+									
+								</div>
+								<div class="info-box-content">
+			              			<span class="info-box-text">Codings</span>
+			              			<span id="topStatsCodings" class="info-box-number">N/A</span>
+								</div>
+							</div>
+							
+						</div>
+						
+						<div class="col-lg-3 col-xs-6 small-gutter-left">
+						<div class="info-box">
+								<div class="info-box-icon bg-green">
+								<i class="ion ion-stats-bars"></i>
+									
+								</div>
+								<div class="info-box-content">
+			              			<span class="info-box-text">Saturation</span>
+			              			<span id="topStatsSaturation" class="info-box-number">N/A</span>
+								</div>
+							</div>
+						</div>
+						
+				</div>
 						<div id="morris-area-chart"></div>
 					</div>
 					<!-- /.panel-body -->
 				</div>
-				<div class="panel panel-default">
-					<div class="panel-heading">Revision History</div>
-					<!-- /.panel-heading -->
-					<div class="panel-body">
-						<div id="revision-panel">
-						
-						
-						<ul id="revision-timeline" class="timeline list" style="margin-top:25px;">
-						<!-- timeline time label -->
-						</ul>
-						</div>
-					</div>
-					<!-- /.panel-body -->
-				</div>
+				revision history
 				<div id="changeLog"></div>
 			</div>
-			<div class="col-lg-4">
+			<div class="col-lg-5">
 				<div id="user-section">
-					<div class="panel panel-default">
-						<div class="panel-heading">Users</div>
+					<div class="box box-default">
+						<div class="box-header with-border">
+							<h3 class="box-title">Users</h3>
+						</div>
 						<!-- /.panel-heading -->
-						<div class="panel-body">
+						<div class="box-body">
 							<div class="List-menu">
 								<span class="searchfield" id="searchform" style="width: 100%;">
 									<input id="userEmailFld" type="text" placeholder="User Email" />
@@ -274,7 +245,28 @@
 								<!-- Accordion content added dynamically -->
 							</ul>
 						</div>
+						<!-- /.panel-body -->
 					</div>
+				</div>
+				<div class="box box-default">
+					<div class="box-header with-border">
+						<h3 class="box-title">Revision History</h3>
+						<a id="newRevisionBtn" class=" btn  btn-default btn-sm pull-right" style="   padding: 5px 10px;" href="#">
+						<i style="margin-top:-2px; font-size: 18px;" class="fa fa-code-fork pull-left"></i>
+						New Revision
+						</a>
+					</div>
+					<!-- /.panel-heading -->
+					<div class="box-body">
+						<div id="revision-panel">
+						
+						
+						<ul id="revision-timeline" class="timeline list" style="margin-top:25px;">
+						<!-- timeline time label -->
+						</ul>
+						</div>
+					</div>
+					<!-- /.panel-body -->
 				</div>
 			</div>
 		</div>
