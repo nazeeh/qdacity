@@ -273,7 +273,7 @@ window.init2 = function (){
 		project_type = "project";
 	}
 
-	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project?' + project_id);
+	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type=project');
 
 	var apisToLoad;
 	var callback = function() {
