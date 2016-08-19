@@ -15,6 +15,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -32,7 +34,11 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 
 
+
+
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -93,7 +99,9 @@ public class ProjectStatsEndpoint {
 		// Get the code system id
 		projectFilter = new FilterPredicate("project", FilterOperator.EQUAL, projectId);
 		Filter projectTypeFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, prjType);
-		q = new com.google.appengine.api.datastore.Query("CodeSystem").setFilter(projectFilter).setFilter(projectTypeFilter);
+		Filter compositeFilter =  new CompositeFilter(CompositeFilterOperator.AND,Arrays.asList(projectFilter,projectTypeFilter));
+
+		q = new com.google.appengine.api.datastore.Query("CodeSystem").setFilter(compositeFilter);
 		
 		pq = datastore.prepare(q);
 		Entity entity =  pq.asSingleEntity();
