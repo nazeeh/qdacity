@@ -270,7 +270,7 @@ window.init2 = function (){
 	project_id = urlParams.project;
 	project_type = urlParams.type;
 	if (typeof project_type == 'undefined'){
-		project_type = "project";
+		project_type = "PROJECT";
 	}
 
 	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type=PROJECT');

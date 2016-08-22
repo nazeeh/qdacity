@@ -429,7 +429,7 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 
 	// Coding Editor Btn
 	if (projectType=='PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-	if (projectType=='VALIDATION_PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '&type=validation" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	if (projectType=='VALIDATION_PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '&type=VALIDATION" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html += ' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 	html += '<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
 	html += '</a>';

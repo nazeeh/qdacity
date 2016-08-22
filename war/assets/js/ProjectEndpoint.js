@@ -74,11 +74,11 @@ evaluateRevision(revId){
 	  return promise;
   }
 
-static setDescription(prjId, description){
+static setDescription(prjId, projectType, description){
 	  
 	  var promise = new Promise(
 		  function(resolve, reject) {
-			  gapi.client.qdacity.project.setDescription({'projectID': prjId, 'projectType': 'PROJECT', 'description': description}).execute(function(resp) {
+			  gapi.client.qdacity.project.setDescription({'projectID': prjId, 'projectType': projectType, 'description': description}).execute(function(resp) {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }

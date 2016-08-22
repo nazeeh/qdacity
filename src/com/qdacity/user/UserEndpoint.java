@@ -3,6 +3,11 @@ package com.qdacity.user;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeObject;
+import com.qdacity.logs.ChangeType;
+import com.qdacity.project.CodeSystem;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.taskboard.Task;
 import com.qdacity.taskboard.TaskBoard;
 import com.google.api.server.spi.config.Api;
@@ -25,6 +30,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,6 +98,28 @@ public class UserEndpoint {
 				}
 				
 				return users;
+	}
+	
+	 @ApiMethod(name = "user.listValidationCoders", path = "validationProject",  scopes = {Constants.EMAIL_SCOPE},
+	      clientIds = {Constants.WEB_CLIENT_ID, 
+	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	         audiences = {Constants.WEB_CLIENT_ID})
+	public List<User> listValidationCoders(@Named("validationProject") Long projectID, com.google.appengine.api.users.User user) {
+	  List<User> users = new ArrayList<User>();
+	  PersistenceManager mgr = getPersistenceManager();
+	  try {
+      ValidationProject project = mgr.getObjectById(ValidationProject.class, projectID);
+      List<String> validationCoders = project.getValidationCoders();
+      
+      Query userQuery = mgr.newQuery(User.class, ":p.contains(id)");
+
+      users = (List<User>) userQuery.execute(validationCoders);
+      
+    } finally {
+      mgr.close();
+    }
+	  
+	  return users;
 	}
 
 	/**

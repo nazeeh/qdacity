@@ -381,13 +381,19 @@ public class ProjectEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public Project setDescription(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("description") String description, User user) throws UnauthorizedException {
-    Project project = null;
+  public AbstractProject setDescription(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("description") String description, User user) throws UnauthorizedException {
+	  AbstractProject project = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
+      ProjectType.PROJECT.toString();
       //FIXME handle authorization
       //FIXME handle project types differently
-      project = mgr.getObjectById(Project.class, projectID);
+      if (projectType.equals(ProjectType.PROJECT.toString())){
+        project = mgr.getObjectById(Project.class, projectID);
+      } else if (projectType.equals(ProjectType.VALIDATION.toString())){
+        project = mgr.getObjectById(ValidationProject.class, projectID);
+      }
+      
       
       project.setDescription(description);
 

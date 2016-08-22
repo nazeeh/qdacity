@@ -70,8 +70,21 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
     	  	  project_id = urlParams.project;
     	  	  project_type = urlParams.type;
     	  	  if (typeof project_type === "undefined") project_type = 'PROJECT';
+    	  	  switch (project_type) {
+				case 'PROJECT':
+					$('#revisionHistory').show();
+					break;
+				case 'VALIDATION':
+					$('#parentProject').show();
+					break;
+				default:
+					break;
+    	  	   }
+//    	  	  if (project_type === 'PROJECT'){
+//    	  		  $('#revisionHistory').show();
+//    	  	  }
         	  $("#codingEditorBtn").click(function() {
-        		  location.href='coding-editor.html?project='+project_id;
+        		  location.href='coding-editor.html?project='+project_id+'&type='+project_type;
         	  });
 
         	var apisToLoad;
@@ -152,12 +165,12 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                                 	});
                                 }
                                 else{
-                                	window.alert(resp.code);
+                                	console.log(resp.code + " : " + resp.message);
                                 }
                         });
                     }
                     else{
-                    	window.alert(resp.code);
+                    	console.log(resp.code + " : " + resp.message);
                     }
             });
         }
@@ -190,11 +203,13 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
        	   	 if (!resp.code) {
        	   		$("#project-name").html(resp.name);
        	   		$("#projectDescription").html(resp.description);
+       	   		
+       	   		if (project_type === 'VALIDATION') $('#parentProjectLink').attr('href','project-dashboard.html?project='+resp.projectID+'&type=PROJECT');
 
        	   	 }
 
        	   	 else{
-       	   		 window.alert(resp.code)
+       	   	console.log(resp.code + " : " + resp.message);
        	   	}
 
        	    });
@@ -238,7 +253,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                     
                     $( ".validationProjectListItem" ).click(function() {
                     	var prjId = $( this ).attr("prjId");
-                    	window.location.href = 'coding-editor.html?project='+prjId+'&type=validation';
+                    	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
                     });
 
                     $( ".requestValidationAccessBtn" ).click(function() {
@@ -254,7 +269,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
               	 }
 
               	 else{
-              		 window.alert(resp.code)
+              		console.log(resp.code + " : " + resp.message);
               	}
 
                });
@@ -316,33 +331,74 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function fillUserList(){
-        	$('#user-list').empty();  
+        	$('#user-list').empty();
+        	switch (project_type) {
+				case "VALIDATION":
+					addValidationCoders();
+					break;
+				case "PROJECT":
+					addOwners();
+					break;
+				default:
+				break;
+
+        	}
+        }
+        
+        function addOwners(){
         	gapi.client.qdacity.user.listUser({'projectID': project_id}).execute(function(resp) {
-           	 if (!resp.code) {
-           		resp.items = resp.items || [];
+              	 if (!resp.code) {
+              		resp.items = resp.items || [];
 
-                for (var i=0;i<resp.items.length;i++) {
-                        var user_id = resp.items[i].id;
-                        var given_name = resp.items[i].givenName;
-                        var sur_name = resp.items[i].surName;
+                   for (var i=0;i<resp.items.length;i++) {
+                           var user_id = resp.items[i].id;
+                           var given_name = resp.items[i].givenName;
+                           var sur_name = resp.items[i].surName;
 
-                  		addUserToUserList(user_id, given_name + " " + sur_name);
-                }
-                var options = {
-                	  valueNames: [ 'user_name', 'user_id' ]
-                };
+                     		addUserToUserList(user_id, given_name + " " + sur_name);
+                   }
+                   var options = {
+                   	  valueNames: [ 'user_name', 'user_id' ]
+                   };
 
-                var projectList = new List('user-section', options);
+                   var projectList = new List('user-section', options);
 
 
-           	 }
+              	 }
 
-           	 else{
-           		 window.alert(resp.code)
-           	}
+              	 else{
+              		console.log(resp.code + " : " + resp.message);
+              	}
 
-            });
+               });
+        }
+        
+        function addValidationCoders(){
+        	gapi.client.qdacity.user.listValidationCoders({'validationProject': project_id}).execute(function(resp) {
+              	 if (!resp.code) {
+              		resp.items = resp.items || [];
 
+                   for (var i=0;i<resp.items.length;i++) {
+                           var user_id = resp.items[i].id;
+                           var given_name = resp.items[i].givenName;
+                           var sur_name = resp.items[i].surName;
+
+                     		addUserToUserList(user_id, given_name + " " + sur_name);
+                   }
+                   var options = {
+                   	  valueNames: [ 'user_name', 'user_id' ]
+                   };
+
+                   var projectList = new List('user-section', options);
+
+
+              	 }
+
+              	 else{
+              		console.log(resp.code + " : " + resp.message);
+              	}
+
+               });
         }
 
         function createAreaChart(){
@@ -423,7 +479,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         function showDescriptionModal(){
         	var modal = new TextField('Change the project description', 'Description');
         	modal.showModal().then(function(text) {
-    				ProjectEndpoint.setDescription(project_id, text).then(function (resp){
+    				ProjectEndpoint.setDescription(project_id, project_type, text).then(function (resp){
     					$("#projectDescription").html(text);
     				});
     		});
