@@ -8,6 +8,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.qdacity.project.ProjectType;
+
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Change {
@@ -18,6 +20,8 @@ public class Change {
 	Date datetime;
 	@Persistent
 	Long projectID;
+	@Persistent
+	ProjectType projectType;
 	@Persistent
 	ChangeType changeType;
 	@Persistent
@@ -35,11 +39,12 @@ public class Change {
 	
 	
 	
-	public Change( Date datetime, Long projectID, ChangeType changeType,
+	public Change( Date datetime, Long projectID, ProjectType projectType, ChangeType changeType,
 			String userID, ChangeObject objectType, Long objectID) {
 		super();
 		this.datetime = datetime;
 		this.projectID = projectID;
+		this.projectType = projectType;
 		this.changeType = changeType;
 		this.userID = userID;
 		this.objectType = objectType;
@@ -64,7 +69,15 @@ public class Change {
 	public void setProjectID(Long projectID) {
 		this.projectID = projectID;
 	}
-	public ChangeType getChangeType() {
+	public ProjectType getProjectType() {
+    return projectType;
+  }
+
+  public void setProjectType(ProjectType projectType) {
+    this.projectType = projectType;
+  }
+
+  public ChangeType getChangeType() {
 		return changeType;
 	}
 	public void setChangeType(ChangeType changeType) {

@@ -158,7 +158,7 @@ public class CodeEndpoint {
 			
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesytemID());
-			Change change = new Change(new Date(System.currentTimeMillis()),cs.getProject(),ChangeType.CREATED, user.getUserId(), ChangeObject.CODE, code.getId());
+			Change change = new Change(new Date(System.currentTimeMillis()),cs.getProject(), cs.getProjectType(),ChangeType.CREATED, user.getUserId(), ChangeObject.CODE, code.getId());
 			mgr.makePersistent(change);
 			
 		} finally {

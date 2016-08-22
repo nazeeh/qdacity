@@ -404,10 +404,10 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 	var html = '<li';
 	if (projectType=='VALIDATION_PROJECT'){
 		html +=	' class="validationProjectItem" ';
-		html +=	' onclick="location.href = \'project-dashboard.html?project=' + projectID + '&type=validation\'">'; 
+		html +=	' onclick="location.href = \'project-dashboard.html?project=' + projectID + '&type=VALIDATION\'">'; 
 	}
 	else {
-		html +=	' onclick="location.href = \'project-dashboard.html?project=' + projectID + '\'">'; 
+		html +=	' onclick="location.href = \'project-dashboard.html?project=' + projectID + '&type=PROJECT\'">'; 
 	}
 	
 

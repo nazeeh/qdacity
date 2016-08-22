@@ -24,6 +24,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
     var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 
     var project_id;
+    var project_type;
     var account;
 
      function signin(mode, callback) {
@@ -67,7 +68,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	  var urlParams = URI(window.location.search).query(true);
 
     	  	  project_id = urlParams.project;
-
+    	  	  project_type = urlParams.type;
+    	  	  if (typeof project_type === "undefined") project_type = 'PROJECT';
         	  $("#codingEditorBtn").click(function() {
         		  location.href='coding-editor.html?project='+project_id;
         	  });
@@ -166,7 +168,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
         function setGeneralStats(){
         	// FIXME support other types than normal project
-        	gapi.client.qdacity.project.getProjectStats({'id': project_id, 'projectType': 'PROJECT'}).execute(function(resp) {
+        	gapi.client.qdacity.project.getProjectStats({'id': project_id, 'projectType': project_type}).execute(function(resp) {
         	   	 if (!resp.code) {
         	   		$("#topStatsDocuments").html(resp.documentCount);
         	   		$("#topStatsCodes").html(resp.codeCount);
@@ -184,7 +186,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
 
         function setProjectProperties(){
-        	gapi.client.qdacity.project.getProject({'id': project_id, 'type':'project'}).execute(function(resp) {
+        	gapi.client.qdacity.project.getProject({'id': project_id, 'type':project_type}).execute(function(resp) {
        	   	 if (!resp.code) {
        	   		$("#project-name").html(resp.name);
        	   		$("#projectDescription").html(resp.description);
@@ -345,7 +347,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
         function createAreaChart(){
         	$('#morris-area-chart').empty();  
-        	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "project", 'projectID' : 1}).execute(function(resp){
+
+        	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "project", 'projectID' : project_id, 'projectType' : project_type}).execute(function(resp){
         			if (!resp.code) {
         				var dataArray =  [];
         				for (var i=0;i<resp.items.length;i++) {

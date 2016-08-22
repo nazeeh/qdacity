@@ -141,7 +141,7 @@ public class ProjectEndpoint {
 		AbstractProject project = null;
 		try {
 		  switch (type) {
-      case "validation":
+      case "VALIDATION":
         project = mgr.getObjectById(ValidationProject.class, id);
         break;
 
@@ -548,7 +548,7 @@ public class ProjectEndpoint {
        
        for (ValidationProject validationProject : validationProjects) {
          List<Double> documentAgreements = new ArrayList<Double>();
-         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "validation", user).getItems();
+         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
          Logger.getLogger("logger").log(Level.INFO,   "Number of original docs: " + originalDocs.size() + " Number of recoded docs: "+ recodedDocs.size());
          for (TextDocument original : originalDocs) {
           for (TextDocument recoded : recodedDocs) {

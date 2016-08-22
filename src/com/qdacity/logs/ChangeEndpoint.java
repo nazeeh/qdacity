@@ -13,6 +13,8 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -20,6 +22,7 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -105,10 +108,11 @@ public class ChangeEndpoint {
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
 	public List<ChangeStats> listChangeStats(
-			@Nullable @Named("period") String period, @Named("filterType") String filterType, @Nullable @Named("projectID") Long projectID, User user) throws UnauthorizedException {
+			@Nullable @Named("period") String period, @Named("filterType") String filterType, @Nullable @Named("projectID") Long projectID, @Nullable @Named("projectType") String projectType,  User user) throws UnauthorizedException {
 
 		if (filterType.equals("project")) {
-			Authorization.checkAuthorization(projectID, user);
+			//FIXME authorization for different project types
+		  //Authorization.checkAuthorization(projectID, user);
 		}else if (filterType.equals("user")) {
 			
 		}else {
@@ -125,7 +129,9 @@ public class ChangeEndpoint {
 		Filter filter = null;
 		
 		if (filterType.equals("project")) {
-			filter = new FilterPredicate("projectID", FilterOperator.EQUAL, projectID);
+		  Filter projectTypeFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, projectType);
+		  Filter projectIdFilter = new FilterPredicate("projectID", FilterOperator.EQUAL, projectID);
+	    filter =  new CompositeFilter(CompositeFilterOperator.AND,Arrays.asList(projectIdFilter,projectTypeFilter));
 		} else if (filterType.equals("user")) {
 			filter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getUserId());
 		}

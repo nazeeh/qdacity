@@ -37,6 +37,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -72,8 +73,8 @@ public class ProjectStatsEndpoint {
      com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
      audiences = {Constants.WEB_CLIENT_ID})
 	public ProjectStats getProjectStats(@Named("id") Long projectId, @Named("projectType") String prjType, User user) throws UnauthorizedException {
-		
-		Authorization.checkAuthorization(projectId, user);
+		//FIXME authorization for mutliple types of projects
+		//Authorization.checkAuthorization(projectId, user);
 		
 		ProjectStats projectstats = new ProjectStats();
 		
@@ -98,8 +99,23 @@ public class ProjectStatsEndpoint {
 	
 		// Get the code system id
 		projectFilter = new FilterPredicate("project", FilterOperator.EQUAL, projectId);
-		Filter projectTypeFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, prjType);
-		Filter compositeFilter =  new CompositeFilter(CompositeFilterOperator.AND,Arrays.asList(projectFilter,projectTypeFilter));
+		String codesytemProjectType = prjType;
+		Long codesystemProject = projectId;
+		Logger.getLogger("logger").log(Level.INFO,   "type: " + prjType );
+		if (prjType.equals("VALIDATION")){
+		  codesytemProjectType= "REVISION"; // Validationprojects all use the same codesystem belonging to the revision
+		  PersistenceManager mgr = getPersistenceManager();
+		  try {
+		    ValidationProject validationProject = mgr.getObjectById(ValidationProject.class, projectId);
+		    codesystemProject = validationProject.getRevisionID();
+		  } finally {
+	      mgr.close();
+	    }
+		  Logger.getLogger("logger").log(Level.INFO,   "VALITATION_PROJECT codesystemProject: " + codesystemProject + " codesytemProjectType: "+ codesytemProjectType);
+		}
+		Filter codesystemProjectFilter = new FilterPredicate("project", FilterOperator.EQUAL, codesystemProject);
+		Filter projectTypeFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, codesytemProjectType);
+		Filter compositeFilter =  new CompositeFilter(CompositeFilterOperator.AND,Arrays.asList(codesystemProjectFilter,projectTypeFilter));
 
 		q = new com.google.appengine.api.datastore.Query("CodeSystem").setFilter(compositeFilter);
 		
@@ -143,6 +159,9 @@ public class ProjectStatsEndpoint {
         }
 		return 0;
 	}
-
+	
+	private static PersistenceManager getPersistenceManager() {
+    return PMF.get().getPersistenceManager();
+  }
 
 }
