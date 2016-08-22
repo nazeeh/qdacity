@@ -371,7 +371,7 @@ public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, Proj
         cloneCode.setMemo(code.getMemo());
         cloneCode.setName(code.getName());
         cloneCode.setParentID(code.getParentID());
-        cloneCode.setSubCodesIDs(new ArrayList<Long>(code.getSubCodesIDs()));
+        cloneCode.setSubCodesIDs(code.getSubCodesIDs());
         
         mgr.makePersistent(cloneCode);
       }
