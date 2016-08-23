@@ -331,7 +331,7 @@ window.init2 = function (){
 	document.getElementById('btnApplyCode').onclick = function() {
 		var activeID = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
-			gapi.client.qdacity.project.incrCodingId({'id' : project_id }).execute(function(resp) {
+			gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type }).execute(function(resp) {
 				var codingID = resp.maxCodingID;
 				var author = current_user_name;
 				editor['setCoding'](codingID, activeID, getActiveCode().name, author);
@@ -425,7 +425,7 @@ function splitupCoding(selection){
 			  var anchor = $(selection._sel.anchorNode);
 				var codingID = anchor.next().attr('id');
 				if (codingID === anchor.prev().attr('id')){
-					gapi.client.qdacity.project.incrCodingId({'id' : project_id	}).execute(function(resp) {
+					gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type}).execute(function(resp) {
 						anchor.nextAll('coding[id='+codingID+']').attr("id", resp.maxCodingID);
 						anchor.parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);
 						resolve();

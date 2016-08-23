@@ -162,7 +162,7 @@ public class ProjectEndpoint {
 	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.
 	 *
-	 * @param id the primary key of the java bean.
+	 * @param projectID the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException 
 	 */
@@ -170,13 +170,20 @@ public class ProjectEndpoint {
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public Project getAndIncrCodingId(@Named("id") Long id, User user) throws UnauthorizedException {
+	public AbstractProject getAndIncrCodingId(@Named("id") Long projectID, @Named("type") String type, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
-		Project project = null;
+		AbstractProject project = null;
 		try {
-			project = mgr.getObjectById(Project.class, id);
-			// Check if user is authorized
-			Authorization.checkAuthorization(project, user);
+		  switch (type) {
+      case "VALIDATION":
+        project = mgr.getObjectById(ValidationProject.class, projectID);
+        break;
+      default: // PROJECT
+        project = mgr.getObjectById(Project.class, projectID);
+        break;
+      }
+			// Check if user is authorized // FIXME Authorization
+			//Authorization.checkAuthorization(project, user);
 			++project.maxCodingID;
 		} finally {
 			mgr.close();
@@ -237,15 +244,16 @@ public class ProjectEndpoint {
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 		     audiences = {Constants.WEB_CLIENT_ID})
-	public Project updateProject(Project project, User user) throws UnauthorizedException {
+	public AbstractProject updateProject(AbstractProject project, User user) throws UnauthorizedException {
 		// Check if user is authorized
-		Authorization.checkAuthorization(project, user);
+		//Authorization.checkAuthorization(project, user);
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (!containsProject(project)) {
-				throw new EntityNotFoundException("Object does not exist");
-			}
+		  //FIXME check if project exists
+//			if (!containsProject(project)) {
+//				throw new EntityNotFoundException("Object does not exist");
+//			}
 			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
