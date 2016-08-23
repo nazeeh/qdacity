@@ -1,6 +1,7 @@
 import 'script!./ErrorHandler.js';
 import 'script!./morris-data.js';
 import Account from './Account';
+import CustomForm from './modals/CustomForm';
 import 'script!../../components/bootstrap/bootstrap.min.js'
 import 'script!../../components/listJS/list.js';
 import 'script!../../components/listJS/list.pagination.js';
@@ -83,6 +84,9 @@ window.init = function () {
 		account.changeAccount(setupUI,client_id,scopes);
 	};
 	
+	document.getElementById('newPrjBtn').onclick = function () {
+		showNewProjectModal();
+	};
 
 	function createNewTask() {
 		var task = {};
@@ -95,14 +99,7 @@ window.init = function () {
 	
 }
 
-$(document).ready(function () {
-	$("#newProjectForm").on("submit", function (event) {
-		event.preventDefault();
-		createNewProject();
-	});
-}); 
-
-function createNewProject() {
+function createNewProject(name, description) {
 
 	var requestData = {};
 	requestData.project = 0;
@@ -114,7 +111,8 @@ function createNewProject() {
 			var requestData2 = {};
 			requestData2.codesystemID = resp.id;
 			requestData2.maxCodingID = 0;
-			requestData2.name = document.getElementById("newProjectName").value;
+			requestData2.name = name;
+			requestData2.description = description;
 			gapi.client.qdacity.project.insertProject(requestData2).execute(function (resp2) {
 				if (!resp2.code) {
 					requestData.id = resp.id;
@@ -525,4 +523,13 @@ function bindNotificationBtns(){
 
 function myAlert(message) {
 	window.alert(message);
+}
+
+function showNewProjectModal(){
+	var modal = new CustomForm('Create a new project');
+	modal.addTextInput('name', "Project Name", 'Name');
+	modal.addTextField('desc', "Project Description", 'Description');
+	modal.showModal().then(function(data) {
+		createNewProject(data.name, data.desc);
+	});
 }
