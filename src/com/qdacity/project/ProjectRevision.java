@@ -26,6 +26,7 @@ public class ProjectRevision extends AbstractProject {
     super(prjRev.getName(), prjRev.getCodesystemID(), 0L, prjRev.getRevision());
     this.projectID = prjRev.getProjectID();
     this.comment = prjRev.getComment();
+    this.description = prjRev.getDescription();
   }
 
   public Long getProjectID() {

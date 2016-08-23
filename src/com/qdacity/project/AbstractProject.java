@@ -42,6 +42,7 @@ public abstract class AbstractProject {
     this.codesystemID = prj.codesystemID;
     this.maxCodingID = prj.maxCodingID;
     this.revision = prj.revision;
+    this.description = prj.description;
   }
   
   
