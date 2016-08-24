@@ -54,34 +54,14 @@ public class ProjectEndpoint {
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
 		PersistenceManager mgr = null;
-		Cursor cursor = null;
 		List<Project> execute = null;
 
 		try {
 			mgr = getPersistenceManager();
 			
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-
-			
 			Query q = mgr.newQuery(Project.class, ":p.contains(owners)");
-			
-			//FIXME redundant code?
-			Query query = mgr.newQuery(Project.class, ":p.contains(owners)");
-			if (cursorString != null && cursorString != "") {
-				cursor = Cursor.fromWebSafeString(cursorString);
-				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-				query.setExtensions(extensionMap);
-			}
 
-			if (limit != null) {
-				query.setRange(0, limit);
-			}
-
-			execute = (List<Project>) q.execute(Arrays.asList(dbUser.getId()));
-			cursor = JDOCursorHelper.getCursor(execute);
-			if (cursor != null)
-				cursorString = cursor.toWebSafeString();
+			execute = (List<Project>) q.execute(Arrays.asList(user.getUserId()));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
@@ -547,12 +527,7 @@ public class ProjectEndpoint {
        
        Map<String, Long> params = new HashMap();
        params.put("revisionID", revisionID);
-       
-//       q = mgr.newQuery(TextDocument.class);
-//       q.setFilter( "projectID == :theID");
-//       Map<String, Long> paramValues = new HashMap();
-//       paramValues.put("theID", revisionID);
-       //List<TextDocument> originalDocs = (List<TextDocument>) q.executeWithMap(paramValues);
+
        Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems();
 
        validationProjects = (List<ValidationProject>)q.executeWithMap(params);
@@ -566,10 +541,6 @@ public class ProjectEndpoint {
             if (original.getTitle().equals(recoded.getTitle())){
               double documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
               documentAgreements.add(documentAgreement);
-              //Logger.getLogger("logger").log(Level.INFO,   "Document Agreement: " + documentAgreement);
-//              if (original.getTitle().equals("_Beförderung_.rtf")){
-//                
-//              }
             }
           }
         }
