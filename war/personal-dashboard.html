@@ -20,6 +20,9 @@
 <link href="assets/css/taskboard.css" rel="stylesheet">
 <link href="assets/css/navbar-account.css" rel="stylesheet">
 
+<link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
+<link href="assets/css/dashboard.css" rel="stylesheet">
+
 <link rel="stylesheet" href="components/Vex/css/vex.css" />
 <link rel="stylesheet" href="components/Vex/css/vex-theme-os.css" />
 
@@ -126,11 +129,13 @@
 
 		<div class="row">
 			<div class="col-lg-8">
-
-				<div class="panel panel-default">
-					<div class="panel-heading">Task Board</div>
+				<div class="box box-default">
+				<div class="box-header with-border">
+					<h3 class="box-title">Task Board</h3>
+					</div>
+					
 					<!-- /.panel-heading -->
-					<div class="panel-body">
+					<div class="box-body">
 						<div class="row no-gutters">
 							<div class="col-lg-4 ">
 								<div class="taskcolumn">
@@ -174,10 +179,12 @@
 					<!-- /.panel-body -->
 				</div>
 
-				<div class="panel panel-default">
-					<div class="panel-heading">Activity</div>
+				<div class="box box-default">
+					<div class="box-header with-border">
+						<h3 class="box-title">Activity</h3>
+					</div>
 					<!-- /.panel-heading -->
-					<div class="panel-body">
+					<div class="box-body">
 						<div id="morris-area-chart"></div>
 					</div>
 					<!-- /.panel-body -->
@@ -186,10 +193,12 @@
 			</div>
 			<div class="col-lg-4">
 				<div id="project-selection">
-					<div class="panel panel-default">
-						<div class="panel-heading">Projects</div>
+					<div class="box box-default">
+						<div class="box-header with-border">
+							<h3 class="box-title">Projects</h3>
+						</div>
 						<!-- /.panel-heading -->
-						<div class="panel-body">
+						<div class="box-body">
 							<div class="projectlist-menu">
 								<span class="searchfield" id="searchform"> <input type="text" class="search" placeholder="Search" />
 									<button type="button" id="search">Find!</button>
@@ -213,10 +222,12 @@
 						</div>
 					</div>
 				</div>
-				<div class="panel panel-default">
-					<div class="panel-heading">Notifications</div>
+				<div class="box box-default">
+				<div class="box-header with-border">
+					<h3 class="box-title">Notifications</h3>
+				</div>
 					<!-- /.panel-heading -->
-					<div id="notifications" class="panel-body">
+					<div id="notifications" class="box-body">
 						<ul id="notification-list" class="list compactBoxList" style="margin-top: 5px;">
 							<!-- Accordion content added dynamically -->
 						</ul>
