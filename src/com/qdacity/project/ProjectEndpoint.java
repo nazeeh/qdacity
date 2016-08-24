@@ -595,7 +595,7 @@ public class ProjectEndpoint {
       
       Long codeSystemID = project.getCodesystemID();
 
-      mgr.deletePersistent(project);
+     
 
       // Delete code system
       CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
@@ -618,8 +618,21 @@ public class ProjectEndpoint {
       Map<String, Long> paramValues = new HashMap();
       paramValues.put("theID", id);
       mgr.deletePersistentAll((List<TextDocument>)q.executeWithMap(paramValues));
-
       
+      // Delete Revisions incl ValidationProjects
+      Query query = mgr.newQuery(ProjectRevision.class);
+      
+      query.setFilter( "projectID == :theID");
+      Map<String, Long> revisionParams = new HashMap();
+      revisionParams.put("theID", id);
+      
+      List<ProjectRevision> execute = (List<ProjectRevision>) query.executeWithMap(revisionParams);
+      for (ProjectRevision projectRevision : execute) {
+        this.removeProjectRevision(projectRevision.getId(), user);
+      }
+      
+      //Finally remove the actual project
+      mgr.deletePersistent(project);
     } finally {
       mgr.close();
     }

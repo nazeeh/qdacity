@@ -446,7 +446,7 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 		var projectType = $( this ).attr("prjType");
     	var projectId = $( this ).attr("prjId");
     	switch (projectType) {
-		case "PROIJECT":
+		case "PROJECT":
 			deleteProject(projectId);
 			break;
 		case "VALIDATION":
