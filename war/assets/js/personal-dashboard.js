@@ -218,7 +218,7 @@ function addValidationProjects(){
 				var project_id = resp.items[i].id;
 				var project_name = resp.items[i].name;
 
-				addProjectToProjectList(project_id, project_name, 'VALIDATION_PROJECT');
+				addProjectToProjectList(project_id, project_name, 'VALIDATION');
 			}
 		} else {
 			window.alert(resp.code);
@@ -388,6 +388,14 @@ function deleteProject(projectID) {
 	});
 }
 
+function deleteValidationProject(projectID) {
+	gapi.client.qdacity.project.removeValidationProject({ 'id': projectID }).execute(function (resp) {
+		if (!resp.code) {
+			fillProjectsList();
+		}
+	});
+}
+
 function leaveProject(projectID) {
 	gapi.client.qdacity.project.removeUser({ 'projectID': projectID }).execute(function (resp) {
 		if (!resp.code) {
@@ -399,7 +407,7 @@ function leaveProject(projectID) {
 function addProjectToProjectList(projectID, projectName, projectType) {
 
 	var html = '<li';
-	if (projectType=='VALIDATION_PROJECT'){
+	if (projectType=='VALIDATION'){
 		html +=	' class="validationProjectItem" ';
 		html +=	' onclick="location.href = \'project-dashboard.html?project=' + projectID + '&type=VALIDATION\'">'; 
 	}
@@ -413,7 +421,7 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 	html += '</span>';
 
 	// Delete Project Btn
-	html += '<a  prjId="'+projectID+'" class="deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html += '<a  prjId="'+projectID+'" prjType="'+projectType+'" class="deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 	html += '<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 	html += '</a>';
@@ -426,7 +434,7 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 
 	// Coding Editor Btn
 	if (projectType=='PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-	if (projectType=='VALIDATION_PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '&type=VALIDATION" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	if (projectType=='VALIDATION') html += '<a href="coding-editor.html?project=' + projectID + '&type=VALIDATION" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html += ' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 	html += '<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
 	html += '</a>';
@@ -435,9 +443,21 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 	
 	$('.deletePrjBtn').click(function(e) {
 		e.stopPropagation();
+		var projectType = $( this ).attr("prjType");
     	var projectId = $( this ).attr("prjId");
-    	deleteProject(projectId);
+    	switch (projectType) {
+		case "PROIJECT":
+			deleteProject(projectId);
+			break;
+		case "VALIDATION":
+			deleteValidationProject(projectId);
+			break;
+		default:
+			break;
+		}
+    	
     });
+
 	
 	
 }

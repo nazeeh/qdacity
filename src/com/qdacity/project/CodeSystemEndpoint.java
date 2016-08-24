@@ -175,7 +175,7 @@ public class CodeSystemEndpoint {
 			Code rootCode = new Code();
 			rootCode.setName("Code System");
 			rootCode.setAuthor("QDAcity");
-			rootCode.setColor("#fff");
+			rootCode.setColor("#000");
 			rootCode.setCodeID(1L);
 			rootCode.setSubCodesIDs(new ArrayList<Long>());
 			mgr.makePersistent(rootCode);
