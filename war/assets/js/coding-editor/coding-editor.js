@@ -345,12 +345,12 @@ window.init2 = function (){
 	}
 
 	document.getElementById('btnRemoveCoding').onclick = function() {
-		var activeID = getActiveCode().dbID;
+		var activeID = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
 
 			var slection = editor['removeCoding'](activeID);
 			splitupCoding(slection).then(function(value) {
-				easytree.getNode(activeID).codingCount++;
+				easytree.getNode(activeID).codingCount--;
 				rebuildTree();
 				var activeDoc = documentsView.getActiveDocument();
 				changeDocumentData(activeDoc.id, activeDoc.title);

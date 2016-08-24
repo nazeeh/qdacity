@@ -23,7 +23,6 @@ var account;
 function setupUI(){
 	if (account.isSignedIn()){
 		var profile = account.getProfile();
-	    console.log(profile.getId());
 	    
 	    document.getElementById('currentUserName').innerHTML = profile.getName();
 		document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
