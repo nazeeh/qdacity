@@ -101,19 +101,16 @@ public class ProjectEndpoint {
 	         audiences = {Constants.WEB_CLIENT_ID})
 	  public List<ValidationProject> listValidationProject(User user) throws UnauthorizedException {
 	    
-	    if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
+	    if (user == null) throw new UnauthorizedException("User not authorized"); // TODO user unknown
 
 	    PersistenceManager mgr = getPersistenceManager();
 	    List<ValidationProject> execute = null;
 
 	    try {
-	      //mgr = getPersistenceManager();
-	      
-	      com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
 	      Query q = mgr.newQuery(ValidationProject.class, ":p.contains(validationCoders)");
 
-	      execute = (List<ValidationProject>) q.execute(Arrays.asList(dbUser.getId()));
+	      execute = (List<ValidationProject>) q.execute(Arrays.asList(user.getUserId()));
 
 	      // Tight loop for fetching all entities from datastore and accomodate
 	      // for lazy fetch.
