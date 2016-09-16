@@ -365,13 +365,13 @@ window.init2 = function (){
 	}
 
 	document.getElementById('btnCodeSave').onclick = function() {
-		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID);
+		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
 
 	}
 	
 	document.getElementById('btnCodeMemoSave').onclick = function() {
 		window.alert(codeMemoEditor.getHTML());
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID);
+		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
 
 	}
 
@@ -716,10 +716,11 @@ function insertCode(_AuthorName, _CodeName) {
 }
 
 // Update Code function
-function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID) {
+function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID) {
 	// Build the Request Object
 	var requestData = {};
 	requestData.id = _ID;
+	requestData.codeID = _CodeID;
 	requestData.author = _AuthorName;
 	requestData.name = _CodeName;
 	requestData.color = _CodeColor;
@@ -732,7 +733,7 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID) {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			updateNode(resp.id, resp.name, resp.author, resp.color, resp.memo);
+			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo);
 		}
 	});
 }
@@ -909,9 +910,9 @@ $(function() {
 	var dialog, form, name = $("#updateCodeName"), email = $("#updateCodeAuthor"), password = $("#updateCodeID"), allFields = $([]).add(name).add(email).add(password), tips = $(".validateTips");
 
 	function changeCode() {
-		var name = document.getElementById('updateCodeName').value, author = document.getElementById('updateCodeAuthor').value, id = getActiveCode().dbID;
+		var name = document.getElementById('updateCodeName').value, author = document.getElementById('updateCodeAuthor').value, id = getActiveCode().dbID, codeID = getActiveCode().id;
 
-		updateCode(author, name, "#000000", id);
+		updateCode(author, name, "#000000", id, codeID);
 		dialog.dialog("close");
 		form[0].reset();
 	}
