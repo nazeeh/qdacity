@@ -137,10 +137,6 @@ var iframe = document.getElementById('editor');
 		content : $('<span>New Code</span>')
 	});
 
-	$('#btnUpdateCode').tooltipster({
-		content : $('<span>Edit Code</span>')
-	});
-
 	$("#codePropColor").colorpicker();
 	
 	window.init2();
@@ -223,7 +219,6 @@ function setupUI(){
 	if (account.isSignedIn()){
 	var profile = account.getProfile();
 	current_user_name = profile.getName();
-	document.getElementById('loginButton').style.visibility = 'hidden';
     document.getElementById('currentUserName').innerHTML = profile.getName();
 	document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
 	document.getElementById('currentUserPicture').src = profile.getImageUrl();
@@ -243,7 +238,6 @@ function setupUI(){
 	});
 	}
 	else {
-		document.getElementById('loginButton').style.visibility = '';
 		$('#navAccount').hide();
 	}
 	
@@ -261,7 +255,7 @@ window.init2 = function (){
 	$.LoadingOverlay("show");
 	$("#footer").hide();
 	$('#navAccount').hide();
-	$("#textdocument-menu").collapse(); // editor will be initialized readonly,
+	//$("#textdocument-menu").collapse(); // editor will be initialized readonly,
 	// the toggle is later hooked to the
 	// visibility of the toolbar
 	
@@ -316,9 +310,6 @@ window.init2 = function (){
 		changeDocumentTitle();
 	}
 
-	document.getElementById('loginButton').onclick = function() {
-		account.signin(setupUI);
-	}
 
 	document.getElementById('btnHideFooter').onclick = function() {
 		hideCodingView();
@@ -904,48 +895,6 @@ function setNameAndAuthor(codeId, nameField, authorField) {
 		}
 	});
 }
-
-// FIXME check for dead legacy code
-$(function() {
-	var dialog, form, name = $("#updateCodeName"), email = $("#updateCodeAuthor"), password = $("#updateCodeID"), allFields = $([]).add(name).add(email).add(password), tips = $(".validateTips");
-
-	function changeCode() {
-		var name = document.getElementById('updateCodeName').value, author = document.getElementById('updateCodeAuthor').value, id = getActiveCode().dbID, codeID = getActiveCode().id;
-
-		updateCode(author, name, "#000000", id, codeID);
-		dialog.dialog("close");
-		form[0].reset();
-	}
-
-	dialog = $("#update-code-form").dialog({
-		autoOpen : false,
-		height : 350,
-		width : 450,
-		modal : true,
-		buttons : {
-			"Modify code" : changeCode,
-			Cancel : function() {
-				dialog.dialog("close");
-			}
-		},
-		close : function() {
-			form[0].reset();
-			allFields.removeClass("ui-state-error");
-
-		}
-	});
-
-	form = dialog.find("form").on("submit", function(event) {
-		event.preventDefault();
-		changeCode();
-	});
-
-	$("#btnUpdateCode").on("click", function() {
-		document.getElementById('updateFormCodeId').innerHTML = getActiveCode().dbID;
-		setNameAndAuthor(getActiveCode().dbID, 'updateCodeName', 'updateCodeAuthor');
-		dialog.dialog("open");
-	});
-});
 
 function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo) {
 	var sourceNode = {};

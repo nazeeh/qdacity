@@ -169,11 +169,7 @@
 						<div style="background-color: #f8f8f8; text-align: left;">
 
 
-
-
-
-
-							<a id="btnEditToggle" class="btn btn-sm edit-toggle" style="color: #000000;" data-toggle="collapse" data-target="#textdocument-menu">
+							<a id="btnEditToggle" class="btn btn-sm edit-toggle collapsed" style="color: #000000;" data-toggle="collapse" data-target="#textdocument-menu">
 								<span class="edit-toggle-off">
 									<i class="fa fa-toggle-off fa-2x" style="font-size: 20px;"></i>
 								</span>
@@ -219,9 +215,6 @@
 					<div style="text-align: center;">
 						<b>Code System</b><br>
 						<div class="btn-group">
-							<a id="btnUpdateCode" class="btn btn-default" href="#">
-								<i class="fa fa-pencil fa-1x"></i>
-							</a>
 							<a id="btnInsertCode" class="btn btn-default" href="#">
 								<i class="fa fa-plus fa-1x"></i>
 							</a>
@@ -259,8 +252,8 @@
 		</div>
 		<div class=col-sm-10 style="background-color: #FFF; margin-top: 50px; margin-bottom: 50px;">
 
-			<div id="textdocument-ui";>
-				<div id="textdocument-menu" class="collapse in" style="text-align: center; padding-top: 10px; background-color: #e7e7e7;">
+			<div id="textdocument-ui">
+				<div id="textdocument-menu" class="collapse" aria-expanded="false" style="text-align: center; padding-top: 10px; background-color: #e7e7e7; ">
 
 
 					<a id="btnTxtSave" style="float: right; margin-right: 20px;" class="btn btn-default btn-default" href="#">
@@ -299,20 +292,10 @@
 					<input id="txtSizeSpinner" " />
 
 				</div>
-				<iframe id="editor">
-					<div>
-						<h1>Test Text</h1>
-						<br> This test text is used to test the text for testing purposes.<br> This is another test text.<br> When you want to test, you can use this text.<br> Test texts are a good way to test something.<br> Here is some more text.<br> Not done testing? More text.<br>
-					</div>
+				<iframe id="editor" class="textEditor">
 				</iframe>
 			</div>
-			<div id="login" class="testapi">
-				<div id="login">
-					<input id="loginButton" type="button" value="Login" />
-				</div>
 
-
-			</div>
 		</div>
 	</div>
 
@@ -371,69 +354,11 @@
 						</a>
 					</div>
 				</div>
-					
 			</div>
 		</div>
 
 
 	</footer>
-
-	<div id="new-code-form" title="Code Properties">
-		<p class="validateTips"></p>
-
-		<form>
-			<fieldset>
-				<table id="addCodeTable" style="padding-left: 10px;">
-					<tbody>
-						<tr>
-							<td><label for="newCodeName">Code Name</label></td>
-							<td><input type="text" name="newCodeName" id="newCodeName" value="Code Name" class="text ui-widget-content ui-corner-all"></td>
-						</tr>
-						<tr>
-							<td><label for="newCodeAuthor">Author</label></td>
-							<td><input type="text" name="newCodeAuthor" id="newCodeAuthor" value="Author" class="text ui-widget-content ui-corner-all"></td>
-						</tr>
-						<tr>
-							<td><label for="newCodeID">ID</label></td>
-							<td><input type="text" name="newCodeID" id="newCodeID" value="" class="text ui-widget-content ui-corner-all"></td>
-						</tr>
-					</tbody>
-				</table>
-				<!-- Allow form submission with keyboard without duplicating the dialog button -->
-				<input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
-			</fieldset>
-		</form>
-	</div>
-	<div id="update-code-form" title="Code Properties">
-		<p class="validateTips"></p>
-
-		<form>
-			<fieldset>
-				<table id="changeCodeTable" style="padding-left: 10px;">
-					<tbody>
-						<tr>
-							<td><label for="updateCodeID">ID</label></td>
-							<td>
-								<div id="updateFormCodeId"></div>
-							</td>
-						</tr>
-						<tr>
-							<td><label for="updateCodeName">Code Name</label></td>
-							<td><input type="text" name="updateCodeName" id="updateCodeName" value="Code Name" class="text ui-widget-content ui-corner-all"></td>
-						</tr>
-						<tr>
-							<td><label for="updateCodeAuthor">Author</label></td>
-							<td><input type="text" name="updateCodeAuthor" id="updateCodeAuthor" value="Author" class="text ui-widget-content ui-corner-all"></td>
-						</tr>
-
-					</tbody>
-				</table>
-				<!-- Allow form submission with keyboard without duplicating the dialog button -->
-				<input type="submit" tabindex="-1" style="position: absolute; top: -1000px">
-			</fieldset>
-		</form>
-	</div>
-	<div id="debugTextEditor" title="HTML"></div>
 	
 	<!-- Main JS Script -->
 	<script src="dist/js/coding-editor.dist.js" type="text/javascript" charset="utf-8"></script>

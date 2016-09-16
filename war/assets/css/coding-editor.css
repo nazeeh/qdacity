@@ -2,6 +2,10 @@ body, html {
 	overflow-y: hidden;
 }
 
+.textEditor{
+	height:100vh;
+}
+
 .edit-toggle .edit-toggle-off, .edit-toggle.collapsed .edit-toggle-on {
 	display: none;
 }
