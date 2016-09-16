@@ -738,16 +738,15 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID) {
 }
 
 
-// FIXME fix for change from id to codeID
-function relocateCode(codeId, newParentId) {
-	removeLinkFromOldParent(codeId);
+function relocateCode(code, newParentCode) {
+	removeLinkFromOldParent(code);
 
-	addSubCode(newParentId, codeId);
+	addSubCode(newParentCode.dbID, code.id);
 
-	changeParentId(codeId, newParentId);
+	changeParentId(code.dbID, newParentCode.id);
 }
 
-// Add SubCode function FIXME
+
 function addSubCode(_ID, _SubID) {
 
 	gapi.client.qdacity.codes.getCode({	'id' : _ID }).execute(function(resp) {
@@ -823,6 +822,8 @@ function removeSubCode(_ID, _SubID) {
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 		}
 
+		if (typeof resp.subCodesIDs == 'undefined') return;
+
 		var code = {};
 
 		var requestData = {};
@@ -831,7 +832,7 @@ function removeSubCode(_ID, _SubID) {
 		requestData.codeID = resp.codeID;
 		requestData.id = _ID;
 		requestData.author = resp.author;
-		requestData.codesystemID = resp.codesystemID;
+		requestData.codesytemID = resp.codesytemID;
 		requestData.color = resp.color;
 		requestData.memo = resp.memo;
 		
@@ -854,16 +855,17 @@ function removeSubCode(_ID, _SubID) {
 	});
 }
 
-function removeLinkFromOldParent(codeId) {
+function removeLinkFromOldParent(code) {
 
 	gapi.client.qdacity.codes.getCode({
-		'id' : codeId
+		'id' : code.dbID
 	}).execute(function(resp) {
 
 		if (!resp.code) {
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 			if (typeof resp.parentID != 'undefined') {
-				removeSubCode(resp.parentID, codeId);
+				var node = easytree.getNode(resp.parentID);
+				removeSubCode(node.dbID, code.id);
 			}
 		}
 	});
@@ -1096,7 +1098,7 @@ function getAllCodeIds(nodes) {
 function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
 
 	if (isSourceNode && isTargetNode) { // internal to internal drop
-		relocateCode(source.id, target.id);
+		relocateCode(source, target);
 	}
 }
 
