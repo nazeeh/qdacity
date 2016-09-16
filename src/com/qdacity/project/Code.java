@@ -27,7 +27,7 @@ public class Code {
 	@Persistent
 	Long parentID;
 	@Persistent
-	Long codesytemID;
+	Long codesystemID;
 	@Persistent
 	String memo;
 
@@ -94,12 +94,12 @@ public class Code {
 		this.parentID = parentCode;
 	}
 
-	public Long getCodesytemID() {
-		return codesytemID;
+	public Long getCodesystemID() {
+		return codesystemID;
 	}
 
-	public void setCodesytemID(Long codesytemID) {
-		this.codesytemID = codesytemID;
+	public void setCodesystemID(Long codesystemID) {
+		this.codesystemID = codesystemID;
 	}
 
   public String getMemo() {

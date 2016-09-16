@@ -693,7 +693,7 @@ function insertCode(_AuthorName, _CodeName) {
 	requestData.name = _CodeName;
 	requestData.subCodesIDs = new Array();
 	if (activeID != 'undefined') requestData.parentID = activeID;
-	requestData.codesytemID = codesystem_id;
+	requestData.codesystemID = codesystem_id;
 	requestData.color = "#000000";
 
 	gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
@@ -724,7 +724,7 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID) {
 	requestData.name = _CodeName;
 	requestData.color = _CodeColor;
 	requestData.memo = _Memo;
-	requestData.codesytemID = codesystem_id;
+	requestData.codesystemID = codesystem_id;
 	requestData.parentID = getActiveCode().parentID;
 	requestData.subCodesIDs = getActiveCode().subCodesIDs;
 	gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
@@ -762,7 +762,7 @@ function addSubCode(_ID, _SubID) {
 		requestData.name = resp.name;
 		requestData.id = _ID;
 		requestData.author = resp.author;
-		requestData.codesytemID = resp.codesytemID;
+		requestData.codesystemID = resp.codesystemID;
 		requestData.color = resp.color;
 		requestData.memo = resp.memo;
 		
@@ -799,7 +799,7 @@ function changeParentId(_ID, _newParent) {
 		requestData.author = resp.author;
 		requestData.subCodesIDs = resp.subCodesIDs;
 		requestData.parentID = _newParent;
-		requestData.codesytemID = resp.codesytemID;
+		requestData.codesystemID = resp.codesystemID;
 		requestData.color = resp.color;
 		requestData.memo = resp.memo;
 		
@@ -832,7 +832,7 @@ function removeSubCode(_ID, _SubID) {
 		requestData.codeID = resp.codeID;
 		requestData.id = _ID;
 		requestData.author = resp.author;
-		requestData.codesytemID = resp.codesytemID;
+		requestData.codesystemID = resp.codesystemID;
 		requestData.color = resp.color;
 		requestData.memo = resp.memo;
 		

@@ -124,7 +124,7 @@ public class CodeSystemEndpoint {
 				query.setRange(0, limit);
 			}
 
-			query.setFilter( "codesytemID == :theID");
+			query.setFilter( "codesystemID == :theID");
 			Map<String, Long> paramValues = new HashMap();
 			paramValues.put("theID", id);
 
@@ -186,7 +186,7 @@ public class CodeSystemEndpoint {
 			
 			
 			
-			rootCode.setCodesytemID(codesystem.getId());
+			rootCode.setCodesystemID(codesystem.getId());
 			mgr.makePersistent(rootCode);
 			
 		} finally {
@@ -366,7 +366,7 @@ public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, Proj
         Code cloneCode = new Code();
         cloneCode.setCodeID(code.getCodeID());
         cloneCode.setAuthor(code.author);
-        cloneCode.setCodesytemID(cloneCodeSystem.getId());
+        cloneCode.setCodesystemID(cloneCodeSystem.getId());
         cloneCode.setColor(code.getColor());
         cloneCode.setMemo(code.getMemo());
         cloneCode.setName(code.getName());

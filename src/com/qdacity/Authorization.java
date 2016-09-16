@@ -55,7 +55,7 @@ public class Authorization {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			
-			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesytemID());
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			
 
 			Authorization.checkAuthorization(cs, user);

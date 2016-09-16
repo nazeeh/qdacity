@@ -141,7 +141,7 @@ public class CodeEndpoint {
 	public Code insertCode(Code code, User user) throws UnauthorizedException {
 		//Check if user is authorized
 		Authorization.checkAuthorization(code, user);
-		Long codesystemId = code.getCodesytemID();
+		Long codesystemId = code.getCodesystemID();
 		Long codeId = CodeSystemEndpoint.getAndIncrCodeId(codesystemId);
 		if (code.getSubCodesIDs() == null) code.setSubCodesIDs(new ArrayList<Long>());
 		
@@ -157,7 +157,7 @@ public class CodeEndpoint {
 			mgr.makePersistent(code);
 			
 			//Log change
-			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesytemID());
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new Change(new Date(System.currentTimeMillis()),cs.getProject(), cs.getProjectType(),ChangeType.CREATED, user.getUserId(), ChangeObject.CODE, code.getId());
 			mgr.makePersistent(change);
 			

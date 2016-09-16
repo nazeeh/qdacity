@@ -99,11 +99,11 @@ public class ProjectStatsEndpoint {
 	
 		// Get the code system id
 		projectFilter = new FilterPredicate("project", FilterOperator.EQUAL, projectId);
-		String codesytemProjectType = prjType;
+		String codesystemProjectType = prjType;
 		Long codesystemProject = projectId;
 		Logger.getLogger("logger").log(Level.INFO,   "type: " + prjType );
 		if (prjType.equals("VALIDATION")){
-		  codesytemProjectType= "REVISION"; // Validationprojects all use the same codesystem belonging to the revision
+		  codesystemProjectType= "REVISION"; // Validationprojects all use the same codesystem belonging to the revision
 		  PersistenceManager mgr = getPersistenceManager();
 		  try {
 		    ValidationProject validationProject = mgr.getObjectById(ValidationProject.class, projectId);
@@ -111,10 +111,10 @@ public class ProjectStatsEndpoint {
 		  } finally {
 	      mgr.close();
 	    }
-		  Logger.getLogger("logger").log(Level.INFO,   "VALITATION_PROJECT codesystemProject: " + codesystemProject + " codesytemProjectType: "+ codesytemProjectType);
+		  Logger.getLogger("logger").log(Level.INFO,   "VALITATION_PROJECT codesystemProject: " + codesystemProject + " codesystemProjectType: "+ codesystemProjectType);
 		}
 		Filter codesystemProjectFilter = new FilterPredicate("project", FilterOperator.EQUAL, codesystemProject);
-		Filter projectTypeFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, codesytemProjectType);
+		Filter projectTypeFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, codesystemProjectType);
 		Filter compositeFilter =  new CompositeFilter(CompositeFilterOperator.AND,Arrays.asList(codesystemProjectFilter,projectTypeFilter));
 
 		q = new com.google.appengine.api.datastore.Query("CodeSystem").setFilter(compositeFilter);
@@ -125,7 +125,7 @@ public class ProjectStatsEndpoint {
 		Long codeSystemID = entityKey.getId();
 
 		// Count the number of codes with this code system id
-		projectFilter = new FilterPredicate("codesytemID", FilterOperator.EQUAL, codeSystemID);
+		projectFilter = new FilterPredicate("codesystemID", FilterOperator.EQUAL, codeSystemID);
 		q = new com.google.appengine.api.datastore.Query("Code").setFilter(projectFilter);
 		pq = datastore.prepare(q);
 		

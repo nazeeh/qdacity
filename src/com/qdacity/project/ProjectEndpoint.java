@@ -601,7 +601,7 @@ public class ProjectEndpoint {
       CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
       
       Query q;
-      q = mgr.newQuery(Code.class, " codesytemID  == :codeSystemID");
+      q = mgr.newQuery(Code.class, " codesystemID  == :codeSystemID");
       //q.deletePersistentAll();
       Map<String, Long> codesParam = new HashMap();
       codesParam.put("codeSystemID", codeSystem.getId());
@@ -667,7 +667,7 @@ public class ProjectEndpoint {
       CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
       
       Query q;
-      q = mgr.newQuery(Code.class, " codesytemID  == :codeSystemID");
+      q = mgr.newQuery(Code.class, " codesystemID  == :codeSystemID");
       //q.deletePersistentAll();
       Map<String, Long> codesParam = new HashMap();
       codesParam.put("codeSystemID", codeSystem.getId());
