@@ -810,23 +810,14 @@ function addSubCode(_ID, _SubID) {
 
 		var code = {};
 
-		var requestData = {};
-
-		requestData.name = resp.name;
-		requestData.id = _ID;
-		requestData.author = resp.author;
-		requestData.codesystemID = resp.codesystemID;
-		requestData.color = resp.color;
-		requestData.memo = resp.memo;
-		
 		if (typeof resp.subCodesIDs == 'undefined') {
-			requestData.subCodesIDs = [ _SubID ];
+			resp.subCodesIDs = [ _SubID ];
 		} else {
-			requestData.subCodesIDs = resp.subCodesIDs.concat(_SubID);
+			resp.subCodesIDs = resp.subCodesIDs.concat(_SubID);
 		}
-		gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
-			if (!resp.code) {
-				console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+		gapi.client.qdacity.codes.updateCode(resp).execute(function(resp2) {
+			if (!resp2.code) {
+				console.log(resp2.id + ":" + resp2.author + ":" + resp2.name + ":" + resp2.subCodesIDs);
 				// relocateNode(_SubID, _ID);
 			}
 		});
