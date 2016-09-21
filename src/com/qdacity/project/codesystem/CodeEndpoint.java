@@ -32,6 +32,7 @@ import com.google.appengine.api.users.User;
 
 
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -193,14 +194,43 @@ public class CodeEndpoint {
 	    Map<String, Long> params = new HashMap();
 	    params.put("code", code.getParentID());
 	    params.put("codesystem", code.getCodesystemID());
-	    Code parentCode = ((List<Code>) query.executeWithMap(params)).get(0);
-	    parentCode.removeSubCodeID(code.getCodeID());
-	    mgr.makePersistent(parentCode);
+	    
+	    List<Code> codes = (List<Code>) query.executeWithMap(params);
+	    if (codes.size() > 0){
+	      Code parentCode = codes.get(0);
+	      parentCode.removeSubCodeID(code.getCodeID());
+	      mgr.makePersistent(parentCode);
+	    }
+	    
+	    removeSubCodes(code);
+	    
 			mgr.deletePersistent(code);
 			
 		} finally {
 			mgr.close();
 		}
+	}
+	
+	private void removeSubCodes(Code code){
+	  List<Long> subcodeIDs = code.getSubCodesIDs();
+	  
+	  if (subcodeIDs.size() > 0){
+	    PersistenceManager mgr = getPersistenceManager();
+	    
+	    for (Long subcodeID : subcodeIDs) {
+	      Query query = mgr.newQuery(Code.class);
+	      
+	      query.setFilter( "codeID == :code && codesystemID == :codesystem");
+	      Map<String, Long> params = new HashMap();
+	      params.put("code", subcodeID);
+	      params.put("codesystem", code.getCodesystemID());
+	      
+	      Code subcode = ((List<Code>) query.executeWithMap(params)).get(0);
+	      
+	      removeSubCodes(subcode);
+	      mgr.deletePersistent(subcode);
+      }
+	  }
 	}
 
 	private boolean containsCode(Code code) {
