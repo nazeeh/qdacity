@@ -9,10 +9,10 @@ import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
-import com.qdacity.project.Code;
-import com.qdacity.project.CodeSystem;
 import com.qdacity.project.Project;
-import com.qdacity.project.TextDocument;
+import com.qdacity.project.codesystem.Code;
+import com.qdacity.project.codesystem.CodeSystem;
+import com.qdacity.project.data.TextDocument;
 
 public class Authorization {
 	

@@ -1,4 +1,4 @@
-package com.qdacity.project;
+package com.qdacity.project.codesystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.datanucleus.annotations.Unowned;
+import com.qdacity.project.ProjectType;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class CodeSystem {

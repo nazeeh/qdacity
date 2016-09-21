@@ -1,4 +1,4 @@
-package com.qdacity.project;
+package com.qdacity.project.codesystem;
 
 import com.qdacity.Authorization;
 import com.qdacity.Constants;

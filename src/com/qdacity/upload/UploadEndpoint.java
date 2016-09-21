@@ -2,8 +2,8 @@ package com.qdacity.upload;
 
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.project.TextDocument;
-import com.qdacity.project.TextDocumentEndpoint;
+import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.data.TextDocumentEndpoint;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;

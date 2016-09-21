@@ -1,4 +1,4 @@
-package com.qdacity.project;
+package com.qdacity.project.metrics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +11,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.qdacity.project.data.TextDocument;
 
 public class Agreement {
   static public double calculateParagraphAgreement(TextDocument original, TextDocument recoded) {

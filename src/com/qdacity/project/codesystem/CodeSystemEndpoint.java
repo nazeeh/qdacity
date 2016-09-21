@@ -1,8 +1,12 @@
-package com.qdacity.project;
+package com.qdacity.project.codesystem;
 
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -312,7 +316,7 @@ public class CodeSystemEndpoint {
 		
 		if (projects.size() > 0){
   		Project project = projects.get(0);
-  		projectID = project.id;
+  		projectID = project.getId();
 		}
 		else { // Try to find a matching revision
 		  query = mgr.newQuery(ProjectRevision.class);

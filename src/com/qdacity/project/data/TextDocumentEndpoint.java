@@ -1,8 +1,10 @@
-package com.qdacity.project;
+package com.qdacity.project.data;
 
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.project.AbstractProject;
+import com.qdacity.project.ProjectRevision;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
