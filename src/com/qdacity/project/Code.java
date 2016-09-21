@@ -2,6 +2,8 @@ package com.qdacity.project;
 
 import java.util.List;
 
+import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -30,6 +32,9 @@ public class Code {
 	Long codesystemID;
 	@Persistent
 	String memo;
+	@Persistent(defaultFetchGroup="true", dependent = "true") 
+	@Column(name="codeBookEntry")
+	CodeBookEntry codeBookEntry;
 
 	public Long getId() {
 		return id;
@@ -108,6 +113,20 @@ public class Code {
 
   public void setMemo(String memo) {
     this.memo = memo;
+  }
+
+  public CodeBookEntry getCodeBookEntry() {
+    return codeBookEntry;
+  }
+
+  public void setCodeBookEntry(CodeBookEntry codeBookEntry) {
+    if (this.codeBookEntry == null) this.codeBookEntry = new CodeBookEntry(); 
+    this.codeBookEntry.setDefinition(codeBookEntry.getDefinition());
+    this.codeBookEntry.setExample(codeBookEntry.getExample());
+    this.codeBookEntry.setShortDefinition(codeBookEntry.getShortDefinition());
+    this.codeBookEntry.setWhenToUse(codeBookEntry.getWhenToUse());
+    this.codeBookEntry.setWhenNotToUse(codeBookEntry.getWhenNotToUse());
+
   }
 	
 	

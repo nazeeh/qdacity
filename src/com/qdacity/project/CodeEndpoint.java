@@ -46,61 +46,6 @@ import javax.jdo.Query;
 public class CodeEndpoint {
 
 	/**
-	 * This method lists all the entities inserted in datastore.
-	 * It uses HTTP GET method and paging support.
-	 *
-	 * @return A CollectionResponse class containing the list of all entities
-	 * persisted and a cursor to the next page.
-	 * @throws UnauthorizedException 
-	 */
-	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "codes.listCode",  scopes = {Constants.EMAIL_SCOPE},
-			clientIds = {Constants.WEB_CLIENT_ID, 
-		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-		     audiences = {Constants.WEB_CLIENT_ID})
-	public CollectionResponse<Code> listCode(
-			@Nullable @Named("cursor") String cursorString,
-			@Nullable @Named("limit") Integer limit, User user
-			) throws UnauthorizedException {
-		
-		throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all codes
-//
-//		PersistenceManager mgr = null;
-//		Cursor cursor = null;
-//		List<Code> execute = null;
-//
-//		try {
-//			mgr = getPersistenceManager();
-//			Query query = mgr.newQuery(Code.class);
-//			if (cursorString != null && cursorString != "") {
-//				cursor = Cursor.fromWebSafeString(cursorString);
-//				HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-//				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-//				query.setExtensions(extensionMap);
-//			}
-//
-//			if (limit != null) {
-//				query.setRange(0, limit);
-//			}
-//
-//			execute = (List<Code>) query.execute();
-//			cursor = JDOCursorHelper.getCursor(execute);
-//			if (cursor != null)
-//				cursorString = cursor.toWebSafeString();
-//
-//			// Tight loop for fetching all entities from datastore and accomodate
-//			// for lazy fetch.
-//			for (Code obj : execute)
-//				;
-//		} finally {
-//			mgr.close();
-//		}
-//
-//		return CollectionResponse.<Code> builder().setItems(execute)
-//				.setNextPageToken(cursorString).build();
-	}
-
-	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.
 	 *
 	 * @param id the primary key of the java bean.
@@ -153,6 +98,7 @@ public class CodeEndpoint {
 				throw new EntityExistsException("Object already exists");
 			}
 			
+			if (code.getCodeBookEntry() == null) code.setCodeBookEntry(new CodeBookEntry());
 			
 			mgr.makePersistent(code);
 			
@@ -190,12 +136,33 @@ public class CodeEndpoint {
 			}
 			Code codeDB = mgr.getObjectById(Code.class, code.getId());
 			code.setCodeID(codeDB.getCodeID());
+			code.setCodeBookEntry(codeDB.getCodeBookEntry());
 			mgr.makePersistent(code);
 		} finally {
 			mgr.close();
 		}
 		return code;
 	}
+	
+	@ApiMethod(name = "codes.setCodeBookEntry",  scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Code setCodeBookEntry(@Named("codeId")  Long codeID, CodeBookEntry entry, User user) throws UnauthorizedException {
+    //Fixme Authorization
+	  Code code = null; 
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      code = mgr.getObjectById(Code.class, codeID);
+      Authorization.checkAuthorization(code, user);
+      
+      code.setCodeBookEntry(entry);
+      mgr.makePersistent(code);
+    } finally {
+      mgr.close();
+    }
+    return code;
+  }
 
 	/**
 	 * This method removes the entity with primary key id.
@@ -215,6 +182,7 @@ public class CodeEndpoint {
 			
 			//Check if user is authorized
 			Authorization.checkAuthorization(code, user);
+			mgr.deletePersistent(code.getCodeBookEntry());
 			mgr.deletePersistent(code);
 		} finally {
 			mgr.close();

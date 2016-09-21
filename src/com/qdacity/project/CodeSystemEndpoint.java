@@ -136,8 +136,10 @@ public class CodeSystemEndpoint {
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
-			for (Code obj : execute)
-				;
+			for (Code obj : execute){
+			  obj.getCodeBookEntry().getDefinition();
+			}
+				
 		} finally {
 			mgr.close();
 		}
@@ -178,6 +180,7 @@ public class CodeSystemEndpoint {
 			rootCode.setColor("#000");
 			rootCode.setCodeID(1L);
 			rootCode.setSubCodesIDs(new ArrayList<Long>());
+			rootCode.setCodeBookEntry(new CodeBookEntry());
 			mgr.makePersistent(rootCode);
 			
 			codesystem.addCode(rootCode.getId());
@@ -372,6 +375,7 @@ public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, Proj
         cloneCode.setName(code.getName());
         cloneCode.setParentID(code.getParentID());
         cloneCode.setSubCodesIDs(code.getSubCodesIDs());
+        cloneCode.setCodeBookEntry(code.getCodeBookEntry());
         
         mgr.makePersistent(cloneCode);
       }

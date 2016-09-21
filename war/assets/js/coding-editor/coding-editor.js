@@ -36,6 +36,9 @@ var max_coding_id;
  
 var editor;
 var codeMemoEditor;
+var cbEditorDef;
+var cbEditorWhen;
+var cbEditorWenNot;
 
 var account;
 var codingsView;
@@ -81,6 +84,8 @@ var iframe = document.getElementById('editor');
 	editor['readOnly']('true');
 	
 	createCodeMemoEditor(); 
+	
+	createCodeBookEditor();
 	
 	var editorStyle = doc.createElement('link');
 	editorStyle.href = 'assets/css/editorView.css';
@@ -168,7 +173,44 @@ function createCodeMemoEditor(){
 		
 		codeMemoEditor.setHTML(getActiveCode().memo);
 	  }
+}
+
+function createCodeBookEditor(){
 	
+	var cbDefFrame = document.getElementById('cbEditorDef');
+	cbDefFrame.onload = function(event) {
+		var codeBookEntry = getActiveCode().codeBookEntry;
+		var cbDefFrame = document.getElementById('cbEditorDef');
+		var doc = cbDefFrame.contentDocument; // FIXME use "this"?
+
+		// Create Squire instance
+		cbEditorDef = new Squire(doc);
+		cbEditorDef.setHTML(codeBookEntry.definition);
+	}
+	
+	// FIXE Refactor for less code replication
+	var cbWhenFrame = document.getElementById('cbEditorWhen');
+	cbWhenFrame.onload = function(event) {
+		var codeBookEntry = getActiveCode().codeBookEntry;
+		var cbWhenFrame = document.getElementById('cbEditorWhen');
+		var doc = cbWhenFrame.contentDocument;
+
+		// Create Squire instance
+		cbEditorWhen = new Squire(doc);
+		
+		cbEditorWhen.setHTML(codeBookEntry.whenToUse);
+	  }
+	
+	var cbWhenNotFrame = document.getElementById('cbEditorWhenNot');
+	cbWhenNotFrame.onload = function(event) {
+		var codeBookEntry = getActiveCode().codeBookEntry;
+		var cbWhenNotFrame = document.getElementById('cbEditorWhenNot');
+		var doc = cbWhenNotFrame.contentDocument;
+
+		// Create Squire instance
+		cbEditorWhenNot = new Squire(doc);
+		cbEditorWhenNot.setHTML(codeBookEntry.whenNotToUse);
+	  }
 }
 
 window.onresize = resizeHandler;
@@ -361,10 +403,19 @@ window.init2 = function (){
 	}
 	
 	document.getElementById('btnCodeMemoSave').onclick = function() {
-		window.alert(codeMemoEditor.getHTML());
 		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
 
 	}
+	
+	document.getElementById('btnCodeBookEntrySave').onclick = function() {
+		var codeBookEntry = {};
+		codeBookEntry.definition = cbEditorDef.getHTML();
+		codeBookEntry.whenToUse = cbEditorWhen.getHTML();
+		codeBookEntry.whenNotToUse = cbEditorWhenNot.getHTML();
+		updateCodeBookEntry(codeBookEntry);
+	}
+	
+	
 
 	document.getElementById('navBtnSigninGoogle').onclick = function() {
 		account.signin(setupUI, anonymousUser);
@@ -650,7 +701,7 @@ function listCodes() {
 			}
 			
 			for (var i = 0; i < codes.length; i++) {
-				addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo);
+				addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo, codes[i].codeBookEntry);
 			}
 
 			for (var i = 0; i < codes.length; i++) {
@@ -694,7 +745,7 @@ function insertCode(_AuthorName, _CodeName) {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name);
-			addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo);
+			addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry);
 			if (activeID != 'undefined') {
 				addSubCode(getActiveCode().dbID, resp.codeID);
 				relocateNode(resp.codeID, activeID);
@@ -702,7 +753,6 @@ function insertCode(_AuthorName, _CodeName) {
 		} else {
 			console.log(resp.code);
 		}
-
 	});
 }
 
@@ -724,7 +774,18 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID) {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo);
+			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry);
+		}
+	});
+}
+
+function updateCodeBookEntry(codeBookEntry){
+	gapi.client.qdacity.codes.setCodeBookEntry({'codeId' : getActiveCode().dbID },codeBookEntry).execute(function(resp) {
+		if (!resp.code) {
+			// Just logging to console now, you can do your check here/display
+			// message
+			//console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry);
 		}
 	});
 }
@@ -896,7 +957,7 @@ function setNameAndAuthor(codeId, nameField, authorField) {
 	});
 }
 
-function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo) {
+function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo, codeBookEntry) {
 	var sourceNode = {};
 	sourceNode.text = name;
 	sourceNode.isFolder = true;
@@ -907,6 +968,7 @@ function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, mem
 	sourceNode.author = author;
 	sourceNode.color = color;
 	sourceNode.parentID = parentID;
+	sourceNode.codeBookEntry = codeBookEntry;
 	sourceNode.subCodesIDs = subCodesIDs;
 	if (memo == undefined) memo = "";
 	sourceNode.memo = memo;
@@ -976,13 +1038,14 @@ function relocateNode(id, target) {
 	rebuildTree();
 }
 
-function updateNode(id, name, author, color, memo) {
+function updateNode(id, name, author, color, memo, codeBookEntry) {
 
 	var sourceNode = easytree.getNode(id);
 	sourceNode.text = name;
 	sourceNode.author = author;
 	sourceNode.color = color;
 	sourceNode.memo = memo;
+	sourceNode.codeBookEntry = codeBookEntry;
 	
 	rebuildTree();
 }
@@ -1014,6 +1077,7 @@ function getActiveCode() {
 		code.parentID = activeNode.parentID;
 		code.subCodesIDs = activeNode.subCodesIDs;
 		code.memo = activeNode.memo;
+		code.codeBookEntry = activeNode.codeBookEntry;
 	}
 	return code;
 
@@ -1060,6 +1124,12 @@ function codesystemStateChanged(nodes, nodesJson) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);
 			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
+			if (cbEditorDef != undefined){
+				var codeBookEntry = getActiveCode().codeBookEntry
+				cbEditorDef.setHTML(codeBookEntry.definition);
+				cbEditorWhen.setHTML(codeBookEntry.whenToUse);
+				cbEditorWhenNot.setHTML(codeBookEntry.whenNotToUse);
+			}
 		}
 	} else {
 		initialized_easytree = true;
