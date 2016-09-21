@@ -6,6 +6,7 @@ import com.qdacity.PMF;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeType;
+import com.qdacity.project.Project;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -30,10 +31,12 @@ import com.google.appengine.api.users.User;
 
 
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -182,8 +185,19 @@ public class CodeEndpoint {
 			
 			//Check if user is authorized
 			Authorization.checkAuthorization(code, user);
-			mgr.deletePersistent(code.getCodeBookEntry());
+			
+			// Delete link from parent code
+			Query query = mgr.newQuery(Code.class);
+	    
+	    query.setFilter( "codeID == :code && codesystemID == :codesystem");
+	    Map<String, Long> params = new HashMap();
+	    params.put("code", code.getParentID());
+	    params.put("codesystem", code.getCodesystemID());
+	    Code parentCode = ((List<Code>) query.executeWithMap(params)).get(0);
+	    parentCode.removeSubCodeID(code.getCodeID());
+	    mgr.makePersistent(parentCode);
 			mgr.deletePersistent(code);
+			
 		} finally {
 			mgr.close();
 		}

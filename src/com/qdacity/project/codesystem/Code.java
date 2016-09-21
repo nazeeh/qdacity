@@ -90,6 +90,10 @@ public class Code {
 	public void addSubCodeID(Long id){
 		subCodeIDs.add(id);
 	}
+	
+	public void removeSubCodeID(Long id){
+    subCodeIDs.remove(id);
+  }
 
 	public Long getParentID() {
 		return parentID;

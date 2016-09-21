@@ -939,7 +939,7 @@ function deleteCode() {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp);
-			removeNodeFromTree(activeID);
+			removeNodeFromTree(getActiveCode().id);
 		});
 	}
 
