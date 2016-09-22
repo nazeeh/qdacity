@@ -291,6 +291,8 @@ function signout() {
 	window.open("https://accounts.google.com/logout");
 }
 
+
+
 window.init2 = function (){
 
 
@@ -369,7 +371,7 @@ window.init2 = function (){
 				var author = current_user_name;
 				editor['setCoding'](codingID, activeID, getActiveCode().name, author);
 				var activeDoc = documentsView.getActiveDocument();
-				changeDocumentData(activeDoc.id, activeDoc.title);
+				updateDocumentFromEditor(activeDoc.id, activeDoc.title);
 				addCodingBrackets();
 				easytree.getNode(activeID).codingCount++;
 				rebuildTree();
@@ -386,7 +388,7 @@ window.init2 = function (){
 				easytree.getNode(activeID).codingCount--;
 				rebuildTree();
 				var activeDoc = documentsView.getActiveDocument();
-				changeDocumentData(activeDoc.id, activeDoc.title);
+				updateDocumentFromEditor(activeDoc.id, activeDoc.title);
 				addCodingBrackets();
 			});
 			
@@ -396,6 +398,8 @@ window.init2 = function (){
 		}
 
 	}
+	
+	
 
 	document.getElementById('btnCodeSave').onclick = function() {
 		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
@@ -485,6 +489,23 @@ function splitupCoding(selection){
 	
 }
 
+function removeAllCodings(codingID){
+	var documents = documentsView.getDocuments();
+	var activeDocId = documentsView.getActiveDocumentId();
+	
+	for ( var i in documents) {
+		var doc = documents[i];
+		var elements = $('<div>'+doc.text+'</div>');
+		var originalText = elements.html();
+		elements.find('coding[code_id=\'' + codingID + '\']').contents().unwrap();
+		var strippedText = elements.html();
+		if (strippedText !== originalText){
+			changeDocumentData(doc.id, doc.title, strippedText);
+			if (activeDocId === doc.id)updateDocumentView(doc.id, strippedText)
+		}
+	}
+}
+
 function showCodingView() {
 	showFooter();
 	var activeID = getActiveCode().id;
@@ -570,8 +591,7 @@ window.activateCodingInEditor = function (codingID, scrollToSection) {
 			range = document.createRange();
 			documentsView.setActiveDocument(doc.id);
 			setDocumentView(doc.id);
-			var codingNodes = $("#editor").contents().find(
-					'coding[id=\'' + codingID + '\']');
+			var codingNodes = $("#editor").contents().find('coding[id=\'' + codingID + '\']');
 			var startNode = codingNodes[0];
 			var endNode = codingNodes[codingNodes.length - 1];
 
@@ -634,17 +654,21 @@ function removeDocumentFromProject() {
 function changeDocumentTitle() {
 	var docId = documentsView.getActiveDocumentId();
 	var title = prompt("New name for document \"" + docId + "\"", "Title");
-	changeDocumentData(docId, title);
+	updateDocumentFromEditor(docId, title);
 }
 
-function changeDocumentData(id, title) {
+function updateDocumentFromEditor(id, title) {
+	changeDocumentData(id, title, editor.getHTML());
+
+}
+
+function changeDocumentData(id, title, text) {
 
 	var requestData = {};
 	requestData.id = id; 
 	requestData.title = title;
-	requestData.text = editor.getHTML();
+	requestData.text = text;
 	requestData.projectID = project_id;
-	// FIXME text
 	gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
 		if (!resp.code) {
 			documentsView.updateDocument(id, title, requestData.text);
@@ -662,6 +686,13 @@ function setDocumentView(textDocumentID) {
 	}
 	addCodingBrackets();
 }
+
+function updateDocumentView(id, text){
+	editor.setHTML(text);
+	addTooltipsToEditor(id);
+	addCodingBrackets();
+}
+
 
 function addTooltipsToEditor(id) {
 	var doc = documentsView.getDocument(id);
@@ -682,7 +713,7 @@ function addTooltipsToEditor(id) {
 
 function saveEditorContent() {
 	var activeDoc = documentsView.getActiveDocument();
-	changeDocumentData(activeDoc.id, activeDoc.title);
+	updateDocumentFromEditor(activeDoc.id, activeDoc.title);
 }
 
 // List Codes function that will execute the listCode call
@@ -930,7 +961,9 @@ function deleteCode() {
 			// Just logging to console now, you can do your check here/display
 			// message
 			console.log(resp);
+			removeAllCodings(getActiveCode().id);
 			removeNodeFromTree(getActiveCode().id);
+			
 		});
 	}
 
