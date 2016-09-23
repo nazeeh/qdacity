@@ -52,7 +52,7 @@ constructor(props) {
   
   setActiveDocument(selectedID){
 	  this.setState({selected: selectedID});
-	  this.props.setEditor(selectedID);
+	  this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
   }
   
   getActiveDocumentId(selectedID){

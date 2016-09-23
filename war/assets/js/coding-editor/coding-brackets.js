@@ -1,9 +1,9 @@
 export default class CodingBrackets {
 	
-	constructor() {
+	constructor(editorCtrl) {
 
 	    this.html = "";
-	  
+	    this.editorCtrl = editorCtrl;
 	  }
 
 	createCodingBrackets (editorDoc, codingsMap){
@@ -134,7 +134,7 @@ export default class CodingBrackets {
 		.attr("style", "stroke="+color)
 		.attr("fill", "none")
 		.attr("coding_id", codingId);
-		
+		var _this = this;
 		lineGraph.on("mouseover", function(d) {
 		       d3.select(this.parentNode).classed('hover', true);
 		       this.parentNode.parentNode.appendChild(this.parentNode);
@@ -143,7 +143,7 @@ export default class CodingBrackets {
 		       d3.select(this.parentNode).classed('hover', false);
 		   })
 		   .on("click", function(d) {
-			   window.activateCodingInEditor(codingId, false);
+			   _this.editorCtrl.activateCodingInEditor(codingId, false);
 		   })
 	}
 	
@@ -155,7 +155,7 @@ export default class CodingBrackets {
 		.attr('y', y)
 		.attr('style', 'text-anchor: end; fill:' + color +';')
 		.attr("coding_id", codingId);
-		
+		var _this = this;
 		labelElement.on("mouseover", function(d) {
 		       d3.select(this.parentNode).classed('hover', true);
 		       this.parentNode.parentNode.appendChild(this.parentNode);
@@ -164,7 +164,7 @@ export default class CodingBrackets {
 		       d3.select(this.parentNode).classed('hover', false);
 		   })
 		   .on("click", function(d) {
-			   window.activateCodingInEditor(codingId, false);
+			   _this.editorCtrl.activateCodingInEditor(codingId, false);
 		   })
 	}
 }

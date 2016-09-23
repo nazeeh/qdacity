@@ -1,8 +1,21 @@
 import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import 'script!../../../components/Easytabs/jquery.easytabs.js';
 
 export default class CodingsView {
 	
-	constructor() {
+	constructor(editorCtrl, documentsCtrl) {
+		this.editorCtrl = editorCtrl;
+		this.documentsCtrl = documentsCtrl;
+		
+		$("#codeTabs").easytabs({
+			animate : true,
+			animationSpeed : 100,
+			panelActiveClass : "active-content-div",
+			defaultTab : "span#defaultCodeTab",
+			tabs : "> div > span",
+			updateHash : false
+		});
+		
 		var dataSet = [];
 		var table = $('#example').dataTable({
 			"iDisplayLength" : 7,
@@ -28,7 +41,7 @@ export default class CodingsView {
 			} ]
 
 		});
-		
+		var _this = this;
 		$('#example tbody').on('click', 'tr', function() {
 			if ($(this).hasClass('selected')) {
 				$(this).removeClass('selected');
@@ -38,7 +51,8 @@ export default class CodingsView {
 				$(this).addClass('selected');
 				var codingID = $(this).find("td").eq(0).html();
 
-				window.activateCodingInEditor(codingID, true);
+				_this.documentsCtrl.setDocumentWithCoding(codingID, true);
+				_this.editorCtrl.activateCodingInEditor(codingID, true);
 
 			}
 		});
@@ -76,5 +90,4 @@ export default class CodingsView {
 		
 		table.draw();
 	}
-	
 }

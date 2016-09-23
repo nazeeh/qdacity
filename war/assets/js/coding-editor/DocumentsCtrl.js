@@ -87,6 +87,20 @@ export default class DocumentsCtrl {
 			}
 		});
 	}
+	
+	setDocumentWithCoding(codingID){
+		var documents = this.view.getDocuments();
+		for ( var i in documents) {
+			var doc = documents[i];
+			var elements = doc.text;
+
+			var foundArray = $(doc.text).find('coding[id=\'' + codingID + '\']');
+			if (foundArray.length > 0) {
+				this.view.setActiveDocument(doc.id);
+			}
+			
+		}
+	}
 
 	//TODO: Currently not used, as long as files are sent directly through the endpoint. This is limited to 1MB and when uploading to cloud storage we need to send blobs
 	dataURItoBlob(dataURI) {
@@ -111,6 +125,42 @@ export default class DocumentsCtrl {
 		});
 		window.alert("bytestring : " + byteString);
 		return byteString;
+	}
+	
+	changeTitle() {
+		var doc = documentsView.getActiveDocument();
+		var title = prompt("New name for document \"" + docId + "\"", "Title");
+		documentsCtrl.changeDocumentData(doc.id, title, doc.text);
+	}
+	
+	saveCurrentDoc(text){
+		var doc = this.view.getActiveDocument();
+		this.changeDocumentData(doc.id,doc.title,text);
+	}
+	
+	changeDocumentData(id, title, text) {
+
+		var requestData = {};
+		requestData.id = id; 
+		requestData.title = title;
+		requestData.text = text;
+		requestData.projectID = this.projectID;
+		var _this = this;
+		gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
+			if (!resp.code) {
+				_this.view.updateDocument(id, title, requestData.text);
+			}
+		});
+	}
+	
+	removeDocumentFromProject() {
+		var docId = this.view.getActiveDocumentId();
+
+		var requestData = {};
+		requestData.id = docId;
+		gapi.client.qdacity.documents.removeTextDocument(requestData).execute(function(resp) {
+			this.view.removeDocument(docId);
+		});
 	}
   
 }

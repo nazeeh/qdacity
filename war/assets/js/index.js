@@ -5,8 +5,8 @@ import 'script!../../components/Vex/js/vex.combined.min.js';
 
 
 import $script from 'scriptjs';
-$script('https://apis.google.com/js/client.js', function() {
-	$script('https://apis.google.com/js/platform.js',init);
+$script('https://apis.google.com/js/platform.js', function() {
+	$script('https://apis.google.com/js/client.js?onload=init','gapi');
 	});
 
 
@@ -18,7 +18,7 @@ function signout(){
 	window.open("https://accounts.google.com/logout");
 }
 
-function init() {
+window.init = function() {
 	
 	var isRegistered=getCookie("isRegistered");
     if (isRegistered == "true") {

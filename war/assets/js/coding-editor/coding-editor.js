@@ -1,8 +1,9 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingsView from './CodingsView.js';
-import CodingBrackets from './coding-brackets';
+//import CodingBrackets from './coding-brackets';
 import Account from '../Account';
 import DocumentsCtrl from './DocumentsCtrl';
+import EditorCtrl from './EditorCtrl';
 import Prompt from '../modals/Prompt';
 import $script from 'scriptjs';
 
@@ -10,14 +11,13 @@ import 'script!../../../components/tooltipster/js/jquery.tooltipster.js';
 import 'script!../../../components/filer/js/jquery.filer.min.js';
 import 'script!../../../components/EasyTree/jquery.easytree.js';
 import 'script!../../../components/loading/loadingoverlay.js';
-import 'script!../../../components/Squire/squire-raw.js';
-import 'script!../../../components/Easytabs/jquery.easytabs.js';
-import 'script!../../../components/tooltip/tooltip.js';
+
 import 'script!../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../components/URIjs/URI.min.js';
 import 'script!../../../components/imagesloaded/imagesloaded.pkgd.min.js';
 
 import 'script!../../../assets/js/ErrorHandler.js';
+
 
 $script('https://apis.google.com/js/client.js', function() {
 	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
@@ -34,7 +34,6 @@ var project_type;
 var documentMap;
 var max_coding_id;
  
-var editor;
 var codeMemoEditor;
 var cbEditorDef;
 var cbEditorWhen;
@@ -43,69 +42,19 @@ var cbEditorWenNot;
 var account;
 var codingsView;
 
-var iframe = document.getElementById('editor');
-  window.init = function()  {
-	// Make sure we're in standards mode.
-	var doc = iframe.contentDocument;
-	$("#editor").css({
-		height : $(window).height() - 52
-	});
-	if (doc.compatMode !== 'CSS1Compat') {
-		doc.open();
-		doc.write('<!DOCTYPE html><title></title>');
-		doc.close();
-	}
 
-	doc.open();
-	doc.write('<!DOCTYPE html><title>test</title><head></head>');
-	doc.close();
-	// doc.close() can cause a re-entrant load event in some browsers, such as IE9.
-	if (editor) {
-		return;
-	}
-	// Create Squire instance
-	editor = new Squire(doc, {
-		blockTag : 'p',
-		blockAttributes : {
-			'class' : 'paragraph'
-		},
-		tagAttributes : {
-			ul : {
-				'class' : 'UL'
-			},
-			ol : {
-				'class' : 'OL'
-			},
-			li : {
-				'class' : 'listItem'
-			}
-		}
-	});
-	editor['readOnly']('true');
-	
+var documentsView = {};
+var documentsCtrl = {};
+
+var editorCtrl = {};
+
+  window.init = function()  {
+	  
+	editorCtrl = new EditorCtrl(easytree);
 	createCodeMemoEditor(); 
 	
 	createCodeBookEditor();
 	
-	var editorStyle = doc.createElement('link');
-	editorStyle.href = 'assets/css/editorView.css';
-	editorStyle.rel = 'stylesheet';
-	doc.querySelector('head').appendChild(editorStyle);
-		
-	var codingBracketStyle = doc.createElement('link');
-	codingBracketStyle.href = 'assets/css/codingBrackets.css';
-	codingBracketStyle.rel = 'stylesheet';
-	doc.querySelector('head').appendChild(codingBracketStyle);
-	
-	$("#codeTabs").easytabs({
-		animate : true,
-		animationSpeed : 100,
-		panelActiveClass : "active-content-div",
-		defaultTab : "span#defaultCodeTab",
-		tabs : "> div > span",
-		updateHash : false
-	});
-
 	$('.tooltips').tooltipster();
 
 	// documents-ui
@@ -145,21 +94,8 @@ var iframe = document.getElementById('editor');
 	$("#codePropColor").colorpicker();
 	
 	window.init2();
-}
-
-
-function addCodingBrackets(){
-	var doc = iframe.contentDocument;
-	$(doc).imagesLoaded( function() {
-		$(doc).find(".svgContainer").remove();
-		var codingsMap = getCodingsFromText(doc);
-		var svgDiv = (new CodingBrackets()).createCodingBrackets(doc, codingsMap);
-		var body = doc.querySelector('body');
-		body.insertBefore(svgDiv, body.firstChild);
-	});
 	
 }
-
 
 
 function createCodeMemoEditor(){
@@ -247,7 +183,7 @@ function resizeElements() {
 	$("#easytree-section").css({
 		height : $(window).height() - codesystemTreeOffset - offsetFooter
 	});
-	addCodingBrackets();
+	editorCtrl.addCodingBrackets();
 }
 
 var easytree = $('#easytree-section').easytree({
@@ -282,8 +218,6 @@ function setupUI(){
 	else {
 		$('#navAccount').hide();
 	}
-	
-	
 }
 
 
@@ -299,7 +233,7 @@ window.init2 = function (){
 	$.LoadingOverlay("show");
 	$("#footer").hide();
 	$('#navAccount').hide();
-	//$("#textdocument-menu").collapse(); // editor will be initialized readonly,
+
 	// the toggle is later hooked to the
 	// visibility of the toolbar
 	
@@ -347,11 +281,11 @@ window.init2 = function (){
 	}
 
 	document.getElementById('btnRemoveDoc').onclick = function() {
-		removeDocumentFromProject();
+		documentsCtrl.removeDocumentFromProject();
 	}
 
 	document.getElementById('btnUpdateDoc').onclick = function() {
-		changeDocumentTitle();
+		documentsCtrl.changeTitle();
 	}
 
 
@@ -369,10 +303,9 @@ window.init2 = function (){
 			gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type }).execute(function(resp) {
 				var codingID = resp.maxCodingID;
 				var author = current_user_name;
-				editor['setCoding'](codingID, activeID, getActiveCode().name, author);
-				var activeDoc = documentsView.getActiveDocument();
-				updateDocumentFromEditor(activeDoc.id, activeDoc.title);
-				addCodingBrackets();
+
+				editorCtrl.setCoding(codingID, activeID, getActiveCode().name, author);
+				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
 				easytree.getNode(activeID).codingCount++;
 				rebuildTree();
 			});
@@ -387,9 +320,8 @@ window.init2 = function (){
 			splitupCoding(slection).then(function(value) {
 				easytree.getNode(activeID).codingCount--;
 				rebuildTree();
-				var activeDoc = documentsView.getActiveDocument();
-				updateDocumentFromEditor(activeDoc.id, activeDoc.title);
-				addCodingBrackets();
+				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
+				editorCtrl.addCodingBrackets();
 			});
 			
 			
@@ -399,8 +331,6 @@ window.init2 = function (){
 
 	}
 	
-	
-
 	document.getElementById('btnCodeSave').onclick = function() {
 		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
 
@@ -411,6 +341,7 @@ window.init2 = function (){
 
 	}
 	
+	// FIXME possibly move to CodingsView
 	document.getElementById('btnCodeBookEntrySave').onclick = function() {
 		var codeBookEntry = {};
 		codeBookEntry.definition = cbEditorDef.getHTML();
@@ -428,41 +359,21 @@ window.init2 = function (){
 	document.getElementById('navBtnSignOut').onclick = function() {
 		signout();
 	}
-
-	document.getElementById('btnTxtBold').onclick = function() {
-		editor['bold']();
-	}
-
-	document.getElementById('btnTxtItalic').onclick = function() {
-		editor['italic']();
-	}
-
-	document.getElementById('btnTxtUnderline').onclick = function() {
-		editor['underline']();
-	}
-
+	
 	document.getElementById('btnTxtSave').onclick = function() {
-		saveEditorContent();
+		documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
 	}
-
-	$("#txtSizeSpinner").on("spin", function(event, ui) {
-		editor['setFontSize'](ui.value);
-	});
 
 	$('#textdocument-menu').on('shown.bs.collapse', function() {
-		editor['readOnly']('false');
+		editorCtrl.setReadOnly(false);
 		resizeElements();
 	})
 
 	$('#textdocument-menu').on('hidden.bs.collapse', function() {
-		editor['readOnly']('true');
+		editorCtrl.setReadOnly(true);
 		resizeElements();
 	})
-
-	codingsView = new CodingsView();
-
-} 
-
+}
 
 
 function splitupCoding(selection){
@@ -485,8 +396,6 @@ function splitupCoding(selection){
 	  );
 	 
 	 return promise;
-	
-	
 }
 
 function removeAllCodings(codingID){
@@ -500,8 +409,9 @@ function removeAllCodings(codingID){
 		elements.find('coding[code_id=\'' + codingID + '\']').contents().unwrap();
 		var strippedText = elements.html();
 		if (strippedText !== originalText){
-			changeDocumentData(doc.id, doc.title, strippedText);
-			if (activeDocId === doc.id)updateDocumentView(doc.id, strippedText)
+			doc.text = strippedText;
+			documentsCtrl.changeDocumentData(doc.id, doc.title, doc.text);
+			if (activeDocId === doc.id)editorCtrl.setDocumentView(doc);
 		}
 	}
 }
@@ -529,37 +439,7 @@ function fillCodingTable(activeID){
 	codingsView.fillCodingTable(activeID, documents);
 }
 
-function getCodingsFromText(text){
-
-		var codingMap = {};
-		var codingNodes = $("#editor").contents().find('coding');
-		if (codingNodes.length > 0){
-			var codingData = {};
-			var currentID = -1;
-			for ( var i = 0; i< codingNodes.length; i++) {
-				var codingNode = codingNodes[i];
-				currentID = codingNode.getAttribute("id");
-				// One code ID may have multiple DOM elements, if this is a new one create a coding object
-				if (!(currentID in codingMap)){
-					codingData = {};
-					codingData.offsetTop = codingNode.offsetTop;
-					codingData.height = codingNode.offsetHeight;
-					codingData.name = codingNode.getAttribute("title"); 
-					codingData.codingId = currentID; 
-					codingData.color = getCodeColor(codingNode.getAttribute("code_id"));
-					
-					codingMap[currentID] = codingData;
-				}
-				// if this is just another DOM element for a coding that has already been created, then adjust the hight
-				else{ 
-					codingMap[currentID].height = codingNode.offsetTop - codingMap[currentID].offsetTop + codingNode.offsetHeight;
-				}
-			}
-		}
-	
-	return codingMap;
-}
-
+//FIXME possibly move to CodingsView
 function fillPropertiesView(codeID) {
 	$("#codePropName").val(getActiveCode().name);
 	$("#codePropAuthor").val(getActiveCode().author);
@@ -569,52 +449,11 @@ function fillPropertiesView(codeID) {
 	});
 }
 
-function getCodingCount(codeId) {
-
-}
-
-window.activateCodingInEditor = function (codingID, scrollToSection) {
-
-	var documents = documentsView.getDocuments();
-	for ( var i in documents) {
-		var doc = documents[i];
-		var elements = doc.text;
-		var foundArray = $('coding[id=\'' + codingID + '\']', elements).map(
-				function() {
-					return $(this);
-
-				});
-		foundArray = foundArray.toArray();
-
-		if (foundArray.length > 0) {
-			var range;
-			range = document.createRange();
-			documentsView.setActiveDocument(doc.id);
-			setDocumentView(doc.id);
-			var codingNodes = $("#editor").contents().find('coding[id=\'' + codingID + '\']');
-			var startNode = codingNodes[0];
-			var endNode = codingNodes[codingNodes.length - 1];
-
-			var raWnge = iframe.contentDocument.createRange();
-			range.setStart(startNode, 0);
-			range.setEnd(endNode, endNode.childNodes.length);
-			editor.setSelection(range);
-			
-			//Scroll to selection
-			if (scrollToSection){
-				var offset = startNode.offsetTop;
-				$("#editor").contents().scrollTop(offset);
-			}
-
-		}
-	}
-}
-
-var documentsView = {};
-var documentsCtrl = {};
 function setDocumentList(projectID) {
-	documentsView = ReactDOM.render(<DocumentsView setEditor={setDocumentView} />, document.getElementById('documentView'));
+	documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} />, document.getElementById('documentView'));
 	documentsCtrl = new DocumentsCtrl(documentsView, project_id);
+	codingsView = new CodingsView(editorCtrl, documentsCtrl);
+	
 	$("#btnInsertDoc").click(documentsCtrl.addDocument);
 	
 	$("#documents-ui").LoadingOverlay("show");
@@ -639,82 +478,6 @@ function setDocumentList(projectID) {
 	});
 }
 
-
-
-function removeDocumentFromProject() {	
-	var docId = documentsView.getActiveDocumentId();
-
-	var requestData = {};
-	requestData.id = docId;
-	gapi.client.qdacity.documents.removeTextDocument(requestData).execute(function(resp) {
-		documentsView.removeDocument(docId);
-	});
-}
-
-function changeDocumentTitle() {
-	var docId = documentsView.getActiveDocumentId();
-	var title = prompt("New name for document \"" + docId + "\"", "Title");
-	updateDocumentFromEditor(docId, title);
-}
-
-function updateDocumentFromEditor(id, title) {
-	changeDocumentData(id, title, editor.getHTML());
-
-}
-
-function changeDocumentData(id, title, text) {
-
-	var requestData = {};
-	requestData.id = id; 
-	requestData.title = title;
-	requestData.text = text;
-	requestData.projectID = project_id;
-	gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
-		if (!resp.code) {
-			documentsView.updateDocument(id, title, requestData.text);
-		}
-	});
-}
-
-function setDocumentView(textDocumentID) {
-	var doc = documentsView.getDocument(textDocumentID);
-	if (typeof doc.text == 'undefined') {
-		editor.setHTML("");
-	} else {
-		editor.setHTML(doc.text);
-		addTooltipsToEditor(textDocumentID);
-	}
-	addCodingBrackets();
-}
-
-function updateDocumentView(id, text){
-	editor.setHTML(text);
-	addTooltipsToEditor(id);
-	addCodingBrackets();
-}
-
-
-function addTooltipsToEditor(id) {
-	var doc = documentsView.getDocument(id);
-	var elements = doc.text;
-	var foundArray = $("#editor").contents().find('coding');
-
-	foundArray = foundArray.toArray();
-
-	for (var i = 0; i < foundArray.length; i++) {
-		var node = foundArray[i];
-		$(node).tooltip({
-			"content" : "Code [" + $(node).attr('codeName') + "]",
-			placement : 'top'
-		});
-
-	}
-}
-
-function saveEditorContent() {
-	var activeDoc = documentsView.getActiveDocument();
-	updateDocumentFromEditor(activeDoc.id, activeDoc.title);
-}
 
 // List Codes function that will execute the listCode call
 function listCodes() {
@@ -967,18 +730,6 @@ function deleteCode() {
 		});
 	}
 
-}
-
-function setNameAndAuthor(codeId, nameField, authorField) {
-	gapi.client.qdacity.codes.getCode({
-		'id' : codeId
-	}).execute(function(resp) {
-
-		if (!resp.code) {
-			document.getElementById(nameField).value = resp.name;
-			document.getElementById(authorField).value = resp.author;
-		}
-	});
 }
 
 function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo, codeBookEntry) {
