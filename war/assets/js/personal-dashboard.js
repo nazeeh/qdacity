@@ -33,7 +33,6 @@ function setupUI(){
 		fillProjectsList();
 		fillNotificationList();
 		createAreaChart();
-		fillTaskBoard();
 	}
 	else{
 		$('#navAccount').hide();
@@ -73,11 +72,6 @@ window.init = function () {
 	document.getElementById('navBtnSignOut').onclick = function () {
 		signout();
 	};
-
-	document.getElementById('addToDoBtn').onclick = function () {
-		createNewTask();
-	};
-	
 	
 	document.getElementById('navBtnSwitchAccount').onclick = function () {
 		account.changeAccount(setupUI,client_id,scopes);
@@ -86,15 +80,6 @@ window.init = function () {
 	document.getElementById('newPrjBtn').onclick = function () {
 		showNewProjectModal();
 	};
-
-	function createNewTask() {
-		var task = {};
-
-		var text = prompt("Describe task", "New Task");
-		task.text = text;
-		addTaskToList("#sortableToDo", task);
-		updateTaskBoard();
-	}
 	
 }
 
@@ -271,85 +256,6 @@ function fillNotificationList() {
 			window.alert(resp.code);
 		}
 	});
-}
-
-function fillTaskBoard() {
-	$("#sortableToDo, #sortableInProgress, #sortableDone").html("");
-
-	gapi.client.qdacity.user.getTaskboard().execute(function (resp) {
-		if (!resp.code) {
-			var todoList = resp.todo;
-			var inProgressList = resp.inProgress;
-			var doneList = resp.done;
-
-			if (typeof todoList !== "undefined") {
-				var dataArray = [];
-				for (var i = 0; i < todoList.length; i++) {
-					var task = todoList[i];
-					addTaskToList("#sortableToDo", task);
-				}
-			}
-
-			if (typeof inProgressList !== "undefined") {
-				var dataArray = [];
-				for (var i = 0; i < inProgressList.length; i++) {
-					var task = inProgressList[i];
-					addTaskToList("#sortableInProgress", task);
-				}
-			}
-
-			if (typeof doneList !== "undefined") {
-				var dataArray = [];
-				for (var i = 0; i < doneList.length; i++) {
-					var task = doneList[i];
-					addTaskToList("#sortableDone", task);
-				}
-			}
-		}
-	});
-
-	$("ul.droptrue").sortable({
-		connectWith: "ul",
-		update: function update() {
-			updateTaskBoard();
-		}
-	});
-
-	$("#sortableToDo, #sortableInProgress, #sortableDone").disableSelection();
-}
-
-function updateTaskBoard() {
-
-	var requestData = {};
-	requestData.id = 2; // FIXME fixed ID only for testing
-	requestData.todo = getTaskList($("#sortableToDo").children());
-	requestData.inProgress = getTaskList($("#sortableInProgress").children());
-	requestData.done = getTaskList($("#sortableDone").children());
-
-	gapi.client.qdacity.updateTaskBoard(requestData).execute(function (resp) {
-		if (!resp.code) {}
-	});
-}
-
-function getTaskList(taskItemList) {
-	var taskList = [];
-	for (var i = 0; i < taskItemList.length; i++) {
-		var taskItem = taskItemList[i];
-
-		var task = {};
-		task.text = taskItem.innerHTML;
-		taskList.push(task);
-	}
-
-	return taskList;
-}
-
-function addTaskToList(list, task) {
-	var html = '<li class="ui-state-default taskitem" >';
-	html += task.text;
-	html += '</li>';
-
-	$(list).append(html);
 }
 
 function createAreaChart() {
