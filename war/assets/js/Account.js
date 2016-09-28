@@ -8,7 +8,14 @@ export default class Account {
  
   
    signin(callbackSucc) {
-		this.auth2.signIn().then(callbackSucc); 
+	   var _this = this;
+	   this.auth2.currentUser.listen(function (googleUser) {
+		    if (googleUser.isSignedIn()) {
+		    	callbackSucc();
+		    } else {
+		    	_this.auth2.signIn({'prompt':'login','display':'popup'}).then(callbackSucc); 
+		    }
+		});
 	}
    
    
