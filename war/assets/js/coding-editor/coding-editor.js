@@ -481,15 +481,10 @@ function insertCode(_AuthorName, _CodeName) {
 	requestData.color = "#000000";
 
 	gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
-
-		console.log("Response: " + resp.id + ":" + resp.author + ":" + resp.name);
 		if (!resp.code) {
-			// Just logging to console now, you can do your check here/display
-			// message
-			console.log(resp.id + ":" + resp.author + ":" + resp.name);
 			addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry);
 			if (activeID != 'undefined') {
-				addSubCode(getActiveCode().dbID, resp.codeID);
+				setSubCodeIDs(getActiveCode());
 				relocateNode(resp.codeID, activeID);
 			}
 		} else {
@@ -524,9 +519,6 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID) {
 function updateCodeBookEntry(codeBookEntry){
 	gapi.client.qdacity.codes.setCodeBookEntry({'codeId' : getActiveCode().dbID },codeBookEntry).execute(function(resp) {
 		if (!resp.code) {
-			// Just logging to console now, you can do your check here/display
-			// message
-			//console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry);
 		}
 	});
@@ -534,126 +526,60 @@ function updateCodeBookEntry(codeBookEntry){
 
 
 function relocateCode(code, newParentCode) {
-	removeLinkFromOldParent(code);
-
-	addSubCode(newParentCode.dbID, code.id);
-
-	changeParentId(code.dbID, newParentCode.id);
+	setSubCodeIDs(easytree.getNode(code.parentID));
+	setSubCodeIDs(newParentCode);
+	changeParentId(code, newParentCode.id);
 }
 
-
-function addSubCode(_ID, _SubID) {
-
+function setSubCodeIDs(node) {
+	var _ID = node.dbID;
+	var subCodeIDs = getSubCodeIDs(node);
+	
 	gapi.client.qdacity.codes.getCode({	'id' : _ID }).execute(function(resp) {
 
 		if (!resp.code) {
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 		}
+		
+			resp.subCodesIDs = subCodeIDs;
 
-		var code = {};
-
-		if (typeof resp.subCodesIDs == 'undefined') {
-			resp.subCodesIDs = [ _SubID ];
-		} else {
-			resp.subCodesIDs = resp.subCodesIDs.concat(_SubID);
-		}
 		gapi.client.qdacity.codes.updateCode(resp).execute(function(resp2) {
 			if (!resp2.code) {
-				console.log(resp2.id + ":" + resp2.author + ":" + resp2.name + ":" + resp2.subCodesIDs);
-				// relocateNode(_SubID, _ID);
+				console.log("Updated: ID"+resp2.id + " SubCodeIDs:" + resp2.subCodesIDs);
 			}
 		});
-
 	});
 }
 
-function changeParentId(_ID, _newParent) {
-
-	gapi.client.qdacity.codes.getCode({
-		'id' : _ID
-	}).execute(function(resp) {
-
-		if (!resp.code) {
-			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-		}
-
-		var requestData = {};
-
-		requestData.name = resp.name;
-		requestData.id = _ID;
-		requestData.codeID = resp.codeID;
-		requestData.author = resp.author;
-		requestData.subCodesIDs = resp.subCodesIDs;
-		requestData.parentID = _newParent;
-		requestData.codesystemID = resp.codesystemID;
-		requestData.color = resp.color;
-		requestData.memo = resp.memo;
-		
-		gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
-			if (!resp.code) {
-				console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			}
-		});
-
-	});
+function getSubCodeIDs(node){
+	var children = node.children;
+	var subCodeIDs = [];
+	if (typeof children == 'undefined') return subCodeIDs;
+	
+	for (var i = children.length - 1; i >= 0; i--) {
+		subCodeIDs.push(children[i].id);
+	}
+	return subCodeIDs;
 }
 
-function removeSubCode(_ID, _SubID) {
-
-	gapi.client.qdacity.codes.getCode({
-		'id' : _ID
-	}).execute(function(resp) {
-
-		if (!resp.code) {
-			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-		}
-
-		if (typeof resp.subCodesIDs == 'undefined') return;
-
-		var code = {};
-
-		var requestData = {};
-
-		requestData.name = resp.name;
-		requestData.codeID = resp.codeID;
-		requestData.id = _ID;
-		requestData.author = resp.author;
-		requestData.codesystemID = resp.codesystemID;
-		requestData.color = resp.color;
-		requestData.memo = resp.memo;
-		
-		for (var i = resp.subCodesIDs.length - 1; i >= 0; i--) {
-
-			if (resp.subCodesIDs[i] === _SubID) {
-
-				resp.subCodesIDs.splice(i, 1);
-			}
-		}
-		requestData.subCodesIDs = resp.subCodesIDs;
-		gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
-			if (!resp.code) {
-				// Just logging to console now, you can do your check
-				// here/display message
-				console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			}
-		});
-
-	});
-}
-
-function removeLinkFromOldParent(code) {
-
+function changeParentId(code, _newParent) {
 	gapi.client.qdacity.codes.getCode({
 		'id' : code.dbID
 	}).execute(function(resp) {
 
 		if (!resp.code) {
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			if (typeof resp.parentID != 'undefined') {
-				var node = easytree.getNode(resp.parentID);
-				removeSubCode(node.dbID, code.id);
-			}
 		}
+		
+		resp.parentID = _newParent;
+		
+		gapi.client.qdacity.codes.updateCode(resp).execute(function(resp2) {
+			if (!resp2.code) {
+				console.log(resp2.id + ":" + resp2.author + ":" + resp2.name + ":" + resp2.subCodesIDs);
+				code.parentID = _newParent;
+			}
+		});
+
 	});
 }
 
@@ -693,6 +619,7 @@ function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, mem
 	sourceNode.parentID = parentID;
 	sourceNode.codeBookEntry = codeBookEntry;
 	sourceNode.subCodesIDs = subCodesIDs;
+	if (typeof subCodesIDs == 'undefined') sourceNode.subCodesIDs = [];
 	if (memo == undefined) memo = "";
 	sourceNode.memo = memo;
 
