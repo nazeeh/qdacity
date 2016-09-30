@@ -1,6 +1,5 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingsView from './CodingsView.js';
-//import CodingBrackets from './coding-brackets';
 import Account from '../Account';
 import DocumentsCtrl from './DocumentsCtrl';
 import EditorCtrl from './EditorCtrl';
@@ -11,10 +10,8 @@ import 'script!../../../components/tooltipster/js/jquery.tooltipster.js';
 import 'script!../../../components/filer/js/jquery.filer.min.js';
 import 'script!../../../components/EasyTree/jquery.easytree.js';
 import 'script!../../../components/loading/loadingoverlay.js';
-
 import 'script!../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../components/URIjs/URI.min.js';
-import 'script!../../../components/imagesloaded/imagesloaded.pkgd.min.js';
 
 import 'script!../../../assets/js/ErrorHandler.js';
 
@@ -57,19 +54,6 @@ var editorCtrl = {};
 	
 	$('.tooltips').tooltipster();
 
-	// documents-ui
-	$('#btnUpdateDoc').tooltipster({
-		content : $('<span>Rename Document</span>'),
-	});
-
-	$('#btnInsertDoc').tooltipster({
-		content : $('<span>New Document</span>'),
-	});
-
-	$('#btnRemoveDoc').tooltipster({
-		content : $('<span>Remove Document</span>'),
-	});
-
 	// codesystem-ui
 	$('#btnApplyCode').tooltipster({
 		content : $('<span>Apply Code</span>'),
@@ -92,8 +76,142 @@ var editorCtrl = {};
 	});
 
 	$("#codePropColor").colorpicker();
+
 	
-	window.init2();
+	$.LoadingOverlay("show");
+	$("#footer").hide();
+	$('#navAccount').hide();
+
+	// the toggle is later hooked to the
+	// visibility of the toolbar
+	
+	var urlParams = URI(window.location.search).query(true);
+  	
+	project_id = urlParams.project;
+	project_type = urlParams.type;
+	if (typeof project_type == 'undefined'){
+		project_type = "PROJECT";
+	}
+
+	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type='+project_type);
+
+	var apisToLoad;
+	var callback = function() {
+		if (--apisToLoad == 0) {
+			account = new Account(client_id, scopes);
+			account.signin(setupUI);
+		}
+
+	}
+
+	apisToLoad = 2;
+	// Parameters are APIName,APIVersion,CallBack function,API Root
+	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
+	gapi.load('auth2', callback);
+
+	document.getElementById('btnCodeProps').onclick = function() {
+		if ($("#footer").is(":visible")) {
+			hideCodingView();
+		} else {
+			showCodingView();
+		}
+	}
+
+	$("#btnInsertCode").on("click", function() {
+		var prompt = new Prompt('Give your code a name', 'Code Name');
+		prompt.showModal().then(function(codeName) {
+				insertCode(current_user_name, codeName);
+		});
+	});
+
+	document.getElementById('btnRemoveCode').onclick = function() {
+		deleteCode();
+	}
+
+	document.getElementById('btnHideFooter').onclick = function() {
+		hideCodingView();
+	}
+	
+	document.getElementById('navBtnSwitchAccount').onclick = function () {
+		account.changeAccount(setupUI,client_id,scopes);
+	};
+
+	document.getElementById('btnApplyCode').onclick = function() {
+		var activeID = getActiveCode().id;
+		if (typeof activeID != 'undefined') {
+			gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type }).execute(function(resp) {
+				var codingID = resp.maxCodingID;
+				var author = current_user_name;
+
+				editorCtrl.setCoding(codingID, activeID, getActiveCode().name, author);
+				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
+				easytree.getNode(activeID).codingCount++;
+				rebuildTree();
+			});
+		}
+	}
+
+	document.getElementById('btnRemoveCoding').onclick = function() {
+		var activeID = getActiveCode().id;
+		if (typeof activeID != 'undefined') {
+
+			var slection = editor['removeCoding'](activeID);
+			splitupCoding(slection).then(function(value) {
+				easytree.getNode(activeID).codingCount--;
+				rebuildTree();
+				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
+				editorCtrl.addCodingBrackets();
+			});
+			
+			
+		} else {
+			window.alert("No code selected.")
+		}
+
+	}
+	
+	document.getElementById('btnCodeSave').onclick = function() {
+		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
+
+	}
+	
+	document.getElementById('btnCodeMemoSave').onclick = function() {
+		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
+
+	}
+	
+	// FIXME possibly move to CodingsView
+	document.getElementById('btnCodeBookEntrySave').onclick = function() {
+		var codeBookEntry = {};
+		codeBookEntry.definition = cbEditorDef.getHTML();
+		codeBookEntry.whenToUse = cbEditorWhen.getHTML();
+		codeBookEntry.whenNotToUse = cbEditorWhenNot.getHTML();
+		updateCodeBookEntry(codeBookEntry);
+	}
+	
+	
+
+	document.getElementById('navBtnSigninGoogle').onclick = function() {
+		account.signin(setupUI, anonymousUser);
+	}
+
+	document.getElementById('navBtnSignOut').onclick = function() {
+		signout();
+	}
+	
+	document.getElementById('btnTxtSave').onclick = function() {
+		documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
+	}
+
+	$('#textdocument-menu').on('shown.bs.collapse', function() {
+		editorCtrl.setReadOnly(false);
+		resizeElements();
+	})
+
+	$('#textdocument-menu').on('hidden.bs.collapse', function() {
+		editorCtrl.setReadOnly(true);
+		resizeElements();
+	})
 	
 }
 
@@ -226,156 +344,6 @@ function signout() {
 }
 
 
-
-window.init2 = function (){
-
-
-	$.LoadingOverlay("show");
-	$("#footer").hide();
-	$('#navAccount').hide();
-
-	// the toggle is later hooked to the
-	// visibility of the toolbar
-	
-	var urlParams = URI(window.location.search).query(true);
-  	
-	project_id = urlParams.project;
-	project_type = urlParams.type;
-	if (typeof project_type == 'undefined'){
-		project_type = "PROJECT";
-	}
-
-	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type='+project_type);
-
-	var apisToLoad;
-	var callback = function() {
-		if (--apisToLoad == 0) {
-			account = new Account(client_id, scopes);
-			account.signin(setupUI);
-		}
-
-	}
-
-	apisToLoad = 2;
-	// Parameters are APIName,APIVersion,CallBack function,API Root
-	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
-	gapi.load('auth2', callback);
-
-	document.getElementById('btnCodeProps').onclick = function() {
-		if ($("#footer").is(":visible")) {
-			hideCodingView();
-		} else {
-			showCodingView();
-		}
-	}
-
-	$("#btnInsertCode").on("click", function() {
-		var prompt = new Prompt('Give your code a name', 'Code Name');
-		prompt.showModal().then(function(codeName) {
-				insertCode(current_user_name, codeName);
-		});
-	});
-
-	document.getElementById('btnRemoveCode').onclick = function() {
-		deleteCode();
-	}
-
-	document.getElementById('btnRemoveDoc').onclick = function() {
-		documentsCtrl.removeDocumentFromProject();
-	}
-
-	document.getElementById('btnUpdateDoc').onclick = function() {
-		documentsCtrl.changeTitle();
-	}
-
-
-	document.getElementById('btnHideFooter').onclick = function() {
-		hideCodingView();
-	}
-	
-	document.getElementById('navBtnSwitchAccount').onclick = function () {
-		account.changeAccount(setupUI,client_id,scopes);
-	};
-
-	document.getElementById('btnApplyCode').onclick = function() {
-		var activeID = getActiveCode().id;
-		if (typeof activeID != 'undefined') {
-			gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type }).execute(function(resp) {
-				var codingID = resp.maxCodingID;
-				var author = current_user_name;
-
-				editorCtrl.setCoding(codingID, activeID, getActiveCode().name, author);
-				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
-				easytree.getNode(activeID).codingCount++;
-				rebuildTree();
-			});
-		}
-	}
-
-	document.getElementById('btnRemoveCoding').onclick = function() {
-		var activeID = getActiveCode().id;
-		if (typeof activeID != 'undefined') {
-
-			var slection = editor['removeCoding'](activeID);
-			splitupCoding(slection).then(function(value) {
-				easytree.getNode(activeID).codingCount--;
-				rebuildTree();
-				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
-				editorCtrl.addCodingBrackets();
-			});
-			
-			
-		} else {
-			window.alert("No code selected.")
-		}
-
-	}
-	
-	document.getElementById('btnCodeSave').onclick = function() {
-		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
-
-	}
-	
-	document.getElementById('btnCodeMemoSave').onclick = function() {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id);
-
-	}
-	
-	// FIXME possibly move to CodingsView
-	document.getElementById('btnCodeBookEntrySave').onclick = function() {
-		var codeBookEntry = {};
-		codeBookEntry.definition = cbEditorDef.getHTML();
-		codeBookEntry.whenToUse = cbEditorWhen.getHTML();
-		codeBookEntry.whenNotToUse = cbEditorWhenNot.getHTML();
-		updateCodeBookEntry(codeBookEntry);
-	}
-	
-	
-
-	document.getElementById('navBtnSigninGoogle').onclick = function() {
-		account.signin(setupUI, anonymousUser);
-	}
-
-	document.getElementById('navBtnSignOut').onclick = function() {
-		signout();
-	}
-	
-	document.getElementById('btnTxtSave').onclick = function() {
-		documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
-	}
-
-	$('#textdocument-menu').on('shown.bs.collapse', function() {
-		editorCtrl.setReadOnly(false);
-		resizeElements();
-	})
-
-	$('#textdocument-menu').on('hidden.bs.collapse', function() {
-		editorCtrl.setReadOnly(true);
-		resizeElements();
-	})
-}
-
-
 function splitupCoding(selection){
 	 var promise = new Promise(
 		  function(resolve, reject) {
@@ -387,7 +355,6 @@ function splitupCoding(selection){
 						anchor.parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);
 						resolve();
 					});
-					
 				}
 				else{
 					resolve();
@@ -443,7 +410,6 @@ function fillCodingTable(activeID){
 function fillPropertiesView(codeID) {
 	$("#codePropName").val(getActiveCode().name);
 	$("#codePropAuthor").val(getActiveCode().author);
-	// $("#codePropColor").val(getActiveCode().color);
 	$("#codePropColor").colorpicker({
 		color : getActiveCode().color
 	});
@@ -454,27 +420,9 @@ function setDocumentList(projectID) {
 	documentsCtrl = new DocumentsCtrl(documentsView, project_id);
 	codingsView = new CodingsView(editorCtrl, documentsCtrl);
 	
-	$("#btnInsertDoc").click(documentsCtrl.addDocument);
-	
-	$("#documents-ui").LoadingOverlay("show");
-	gapi.client.qdacity.documents.getTextDocument({
-		'id' : project_id, 'projectType' : project_type
-	}).execute(function(resp) {
-		if (!resp.code) {
-			resp.items = resp.items || [];
-			for (var i = 0; i < resp.items.length; i++) {
-				documentsView.addDocument(resp.items[i].id, resp.items[i].title, resp.items[i].text.value);
-				
-			}
-		}
-
-		$("#documents-ui").LoadingOverlay("hide");
-
-		// Extract the codings from the loaded documents
+	documentsCtrl.setupView(project_id, project_type).then(function(codeName) {
 		addCodingCountToTree();
-		
 		resizeElements();
-
 	});
 }
 
@@ -910,130 +858,3 @@ function codesystemStateChanged(nodes, nodesJson) {
 		initialized_easytree = true;
 	}
 }
-
-$(function() {
-	$('#txtSizeSpinner').spinner({
-		min : 1,
-		max : 99,
-		step : 1
-	});
-	$('#txtSizeSpinner').width(20);
-	$('#txtSizeSpinner').height(25);
-});
-
-// Font Selector
-
-(function($) {
-	$.widget("custom.combobox", {
-		_create : function() {
-			this.wrapper = $("<span>").addClass("custom-combobox").insertAfter(this.element);
-
-			this.element.hide();
-			this._createAutocomplete();
-			this._createShowAllButton();
-		},
-
-		_createAutocomplete : function() {
-			var selected = this.element.children(":selected"), value = selected.val() ? selected.text() : " ";
-
-			this.input = $("<input>").appendTo(this.wrapper).val(value).attr("title", "").addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left").autocomplete({
-				delay : 0,
-				minLength : 0,
-				source : $.proxy(this, "_source")
-			}).tooltip({
-				"trigger" : "manual"
-			});
-
-			this._on(this.input, {
-				autocompleteselect : function(event, ui) {
-					ui.item.option.selected = true;
-					this._trigger("select", event, {
-						item : ui.item.option
-					});
-					editor.setFontFace(ui.item.option.innerHTML);
-				},
-
-				autocompletechange : "_removeIfInvalid"
-			});
-		},
-
-		_createShowAllButton : function() {
-			var input = this.input, wasOpen = false;
-
-			$("<a>").attr("tabIndex", -1).attr("title", "Show All Items").appendTo(this.wrapper).button({
-				icons : {
-					primary : "ui-icon-triangle-1-s"
-				},
-				text : false
-			}).removeClass("ui-corner-all").addClass("custom-combobox-toggle ui-corner-right").mousedown(function() {
-				wasOpen = input.autocomplete("widget").is(":visible");
-			}).click(function() {
-				input.focus();
-
-				// Close if already visible
-				if (wasOpen) {
-					return;
-				}
-
-				// Pass empty string as value to search for, displaying all
-				// results
-				input.autocomplete("search", "");
-			});
-		},
-
-		_source : function(request, response) {
-			var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-			response(this.element.children("option").map(function() {
-				var text = $(this).text();
-				if (this.value && (!request.term || matcher.test(text)))
-					return {
-						label : text,
-						value : text,
-						option : this
-					};
-			}));
-		},
-
-		_removeIfInvalid : function(event, ui) {
-
-			// Selected an item, nothing to do
-			if (ui.item) {
-				return;
-			}
-
-			// Search for a match (case-insensitive)
-			var value = this.input.val(), valueLowerCase = value.toLowerCase(), valid = false;
-			this.element.children("option").each(function() {
-				if ($(this).text().toLowerCase() === valueLowerCase) {
-					this.selected = valid = true;
-					return false;
-				}
-			});
-
-			// Found a match, nothing to do
-			if (valid) {
-				return;
-			}
-
-			// Remove invalid value
-			this.input.val("").tooltip("set", "content", value + " is not supported").tooltip("show");
-			this.element.val("");
-			this._delay(function() {
-				this.input.tooltip("hide");
-			}, 2500);
-			this.input.autocomplete("instance").term = "";
-		},
-
-		_destroy : function() {
-			this.wrapper.remove();
-			this.element.show();
-		}
-	});
-})(jQuery);
-
-$(function() {
-	$("#combobox").combobox();
-	$("#toggle").click(function() {
-		$("#combobox").toggle();
-	});
-});

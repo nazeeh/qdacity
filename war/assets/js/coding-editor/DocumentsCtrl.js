@@ -11,6 +11,8 @@ export default class DocumentsCtrl {
 	  this.view = documentsView;
 	  this.projectID = projectID;
 	  this.addDocument = this.addDocument.bind(this);
+	  
+	  this.bindDomElements();
   }
 
   addDocument(){
@@ -128,9 +130,9 @@ export default class DocumentsCtrl {
 	}
 	
 	changeTitle() {
-		var doc = documentsView.getActiveDocument();
-		var title = prompt("New name for document \"" + docId + "\"", "Title");
-		documentsCtrl.changeDocumentData(doc.id, title, doc.text);
+		var doc = this.view.getActiveDocument();
+		var title = prompt("New name for document \"" + doc.title + "\"", "Title");
+		this.changeDocumentData(doc.id, title, doc.text);
 	}
 	
 	saveCurrentDoc(text){
@@ -155,14 +157,50 @@ export default class DocumentsCtrl {
 	
 	removeDocumentFromProject() {
 		var docId = this.view.getActiveDocumentId();
-
+		var _this = this;
 		var requestData = {};
 		requestData.id = docId;
 		gapi.client.qdacity.documents.removeTextDocument(requestData).execute(function(resp) {
-			this.view.removeDocument(docId);
+			_this.view.removeDocument(docId);
 		});
 	}
-  
+	
+	bindDomElements(){
+		var _this = this;
+		$('#btnRemoveDoc').click(function(){_this.removeDocumentFromProject();});
+		$('#btnRemoveDoc').tooltipster({content : $('<span>Remove Document</span>')});
+		
+		$('#btnUpdateDoc').click(function() {_this.changeTitle();});
+		$('#btnUpdateDoc').tooltipster({content : $('<span>Rename Document</span>')});
+		
+		$("#btnInsertDoc").click(this.addDocument);
+		$('#btnInsertDoc').tooltipster({content : $('<span>New Document</span>')});
+	}
+	
+	setupView(project_id, project_type){
+		var _this = this;
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  $("#documents-ui").LoadingOverlay("show");
+					gapi.client.qdacity.documents.getTextDocument({'id' : project_id, 'projectType' : project_type}).execute(function(resp) {
+						if (!resp.code) {
+							resp.items = resp.items || [];
+							for (var i = 0; i < resp.items.length; i++) {
+								_this.view.addDocument(resp.items[i].id, resp.items[i].title, resp.items[i].text.value);
+								
+							}
+							resolve();
+						} else{
+							reject();
+						}
+
+						$("#documents-ui").LoadingOverlay("hide");
+					});
+				}
+
+		  );
+		  return promise;
+	  }  
 }
 
  
