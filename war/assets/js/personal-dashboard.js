@@ -180,6 +180,9 @@ function fillProjectsList() {
 				addProjectToProjectList(project_id, project_name, 'PROJECT');
 			}
 			addValidationProjects();
+			
+			attachDeleteHandler();
+			
 			var options = {
 				valueNames: ['project_name', 'project_id'],
 				page: 5,
@@ -192,6 +195,24 @@ function fillProjectsList() {
 		}
 	});
 	
+}
+
+function attachDeleteHandler(){
+	$('.deletePrjBtn').click(function(e) {
+		e.stopPropagation();
+		var projectType = $( this ).attr("prjType");
+    	var projectId = $( this ).attr("prjId");
+    	switch (projectType) {
+		case "PROJECT":
+			deleteProject(projectId);
+			break;
+		case "VALIDATION":
+			deleteValidationProject(projectId);
+			break;
+		default:
+			break;
+		}
+    });
 }
 
 function addValidationProjects(){
@@ -346,26 +367,6 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 	html += '</a>';
 	html += '</li>';
 	$("#project-list").append(html);
-	
-	$('.deletePrjBtn').click(function(e) {
-		e.stopPropagation();
-		var projectType = $( this ).attr("prjType");
-    	var projectId = $( this ).attr("prjId");
-    	switch (projectType) {
-		case "PROJECT":
-			deleteProject(projectId);
-			break;
-		case "VALIDATION":
-			deleteValidationProject(projectId);
-			break;
-		default:
-			break;
-		}
-    	
-    });
-
-	
-	
 }
 
 function addInvitationNotification(notificationID, projectID, subject, message, settled, type, originUser, user, datetime) {
