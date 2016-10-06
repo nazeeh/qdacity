@@ -1,6 +1,7 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingsView from './CodingsView.js';
-import Account from '../Account';
+
+import Account from '../Account.jsx';
 import DocumentsCtrl from './DocumentsCtrl';
 import EditorCtrl from './EditorCtrl';
 import Prompt from '../modals/Prompt';
@@ -16,19 +17,16 @@ import 'script!../../../components/URIjs/URI.min.js';
 import 'script!../../../assets/js/ErrorHandler.js';
 
 
-$script('https://apis.google.com/js/client.js', function() {
-	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
+$script('https://apis.google.com/js/platform.js', function() {
+	$script('https://apis.google.com/js/client.js?onload=init','google-api');
 	});
   
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-var current_user_name;
-var current_user_id;
+
 var codesystem_id;
-var active_code;
 var project_id;
 var project_type;
-var documentMap;
 var max_coding_id;
  
 var codeMemoEditor;
@@ -98,8 +96,7 @@ var editorCtrl = {};
 	var apisToLoad;
 	var callback = function() {
 		if (--apisToLoad == 0) {
-			account = new Account(client_id, scopes);
-			account.signin(setupUI);
+			account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView'));
 		}
 
 	}
@@ -120,7 +117,7 @@ var editorCtrl = {};
 	$("#btnInsertCode").on("click", function() {
 		var prompt = new Prompt('Give your code a name', 'Code Name');
 		prompt.showModal().then(function(codeName) {
-				insertCode(current_user_name, codeName);
+				insertCode(account.getProfile().getName(), codeName);
 		});
 	});
 
@@ -131,17 +128,13 @@ var editorCtrl = {};
 	document.getElementById('btnHideFooter').onclick = function() {
 		hideCodingView();
 	}
-	
-	document.getElementById('navBtnSwitchAccount').onclick = function () {
-		account.changeAccount(setupUI,client_id,scopes);
-	};
 
 	document.getElementById('btnApplyCode').onclick = function() {
 		var activeID = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
 			gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type }).execute(function(resp) {
 				var codingID = resp.maxCodingID;
-				var author = current_user_name;
+				var author = account.getProfile().getName();
 
 				editorCtrl.setCoding(codingID, activeID, getActiveCode().name, author);
 				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
@@ -187,16 +180,6 @@ var editorCtrl = {};
 		codeBookEntry.whenToUse = cbEditorWhen.getHTML();
 		codeBookEntry.whenNotToUse = cbEditorWhenNot.getHTML();
 		updateCodeBookEntry(codeBookEntry);
-	}
-	
-	
-
-	document.getElementById('navBtnSigninGoogle').onclick = function() {
-		account.signin(setupUI, anonymousUser);
-	}
-
-	document.getElementById('navBtnSignOut').onclick = function() {
-		signout();
 	}
 	
 	document.getElementById('btnTxtSave').onclick = function() {
@@ -314,10 +297,7 @@ var easytree = $('#easytree-section').easytree({
 function setupUI(){
 	if (account.isSignedIn()){
 	var profile = account.getProfile();
-	current_user_name = profile.getName();
-    document.getElementById('currentUserName').innerHTML = profile.getName();
-	document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
-	document.getElementById('currentUserPicture').src = profile.getImageUrl();
+
 	$('#navAccount').show();
 	$('#navSignin').hide();
 	
@@ -337,12 +317,6 @@ function setupUI(){
 		$('#navAccount').hide();
 	}
 }
-
-
-function signout() {
-	window.open("https://accounts.google.com/logout");
-}
-
 
 function splitupCoding(selection){
 	 var promise = new Promise(
@@ -484,8 +458,8 @@ function insertCode(_AuthorName, _CodeName) {
 		if (!resp.code) {
 			addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry);
 			if (activeID != 'undefined') {
-				setSubCodeIDs(getActiveCode());
 				relocateNode(resp.codeID, activeID);
+				setSubCodeIDs(easytree.getNode(resp.parentID));
 			}
 		} else {
 			console.log(resp.code);
@@ -769,7 +743,7 @@ function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
 var initialized_easytree = false;
 function codesystemStateChanged(nodes, nodesJson) {
 	if (initialized_easytree) {
-		active_code = getActiveCode().id;
+		var active_code = getActiveCode().id;
 		if ($("#footer").is(":visible")) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);

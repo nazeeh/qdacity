@@ -1,4 +1,4 @@
-import Account from './Account';
+import Account from './Account.jsx';
 import BinaryDecider from './modals/BinaryDecider.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/Vex/js/vex.combined.min.js';
@@ -28,8 +28,7 @@ window.init = function() {
 var apisToLoad;
 var callback = function() {
   if (--apisToLoad == 0) {
-	  account = new Account(client_id, scopes);
-	   account.signin(setupUI);
+	  account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView')); 
   }
   vex.defaultOptions.className = 'vex-theme-os';
   
@@ -60,10 +59,6 @@ function redirect(){
 		  });
 	 });
 }
-function changeUser(){
-	account.changeAccount(redirect,client_id,scopes);
-}
-
 function registerAccount(){
 	var googleProfile = account.getProfile();
 	vex.dialog.open({
@@ -95,7 +90,7 @@ function signIn(event){
 		   redirect();
 	    }
 	    else {
-	    	account.signin(redirect);
+	    	account.changeAccount(redirect);
 	    }
 }
 

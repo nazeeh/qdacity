@@ -15,8 +15,8 @@
     <link href="components/bootstrap/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="assets/css/landing-page.css" rel="stylesheet">
-    
+   <link href="assets/css/landing-page.css" rel="stylesheet">
+    <link href="assets/css/navbar-account.css" rel="stylesheet">
     <link rel="stylesheet" href="components/Vex/css/vex.css" />
 	<link rel="stylesheet" href="components/Vex/css/vex-theme-os.css" />
     
@@ -26,6 +26,8 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
 	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="https://fb.me/react-15.0.0.js"></script>
+    <script src="https://fb.me/react-dom-15.0.0.js"></script>
 </head>
 
 <body>
@@ -52,6 +54,12 @@
                     <li>
                         <a href="#contact">Contact</a>
                     </li>
+                    <li id="navAccount" class="dropdown hidden">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									Account <b class="caret"></b>
+								</a>
+							 	<div id="accountView" class="dropdown-menu "></div>
+					</li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->

@@ -1,6 +1,6 @@
 import Timeline from './timeline';
 import ProjectEndpoint from './ProjectEndpoint';
-import Account from './Account';
+import Account from './Account.jsx';
 import TextField from './modals/TextField';
 
 import 'script!./morris-data.js';
@@ -29,34 +29,20 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
     var project_type;
     var account;
 
-     function signin(mode, callback) {
-   	  gapi.auth.authorize({client_id: client_id,scope: scopes, immediate: mode},callback);
-   }
-
-   function signout(){
-   	window.open("https://accounts.google.com/logout");
-   }
-   
    function setupUI(){
 	   if (account.isSignedIn()) {
-		   var profile = account.getProfile();
-			
-		    document.getElementById('currentUserName').innerHTML = profile.getName();
-			document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
-			document.getElementById('currentUserPicture').src = profile.getImageUrl();
+   
 			$('#navAccount').show();
 			$('#navSignin').hide();
-
-		      setGeneralStats();
-		      
-
-		      fillUserList();
-
-		      createAreaChart();
-
-		      setProjectProperties();
-
-		      setRevisionHistory();
+			
+			setGeneralStats();
+			  
+			fillUserList();
+			
+			createAreaChart();
+			
+			setProjectProperties();
+			setRevisionHistory();
 
 		    }
 		    else {
@@ -82,9 +68,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 				default:
 					break;
     	  	   }
-//    	  	  if (project_type === 'PROJECT'){
-//    	  		  $('#revisionHistory').show();
-//    	  	  }
+
         	  $("#codingEditorBtn").click(function() {
         		  location.href='coding-editor.html?project='+project_id+'&type='+project_type;
         	  });
@@ -92,8 +76,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	var apisToLoad;
         	 var callback = function() {
         	   if (--apisToLoad == 0) {
-        		   account = new Account(client_id, scopes);
-        		   account.signin(setupUI);
+        		   account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView'));
         	   }
 
         	}
@@ -104,15 +87,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
         	gapi.load('auth2', callback);
 
-
-			document.getElementById('navBtnSigninGoogle').onclick = function() {
-				account.signin(setupUI);
-           	}
-
-			document.getElementById('navBtnSignOut').onclick = function() {
-				signout();
-           	}
-
 			document.getElementById('inviteUserBtn').onclick = function() {
                 inviteUser();
             }
@@ -122,7 +96,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
             }
 			
 			document.getElementById('navBtnSwitchAccount').onclick = function () {
-				account.changeAccount(setupUI,client_id,scopes);
+				account.changeAccount(setupUI);
 			};
 			
 			

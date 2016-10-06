@@ -1,6 +1,6 @@
 import 'script!./ErrorHandler.js';
 import 'script!./morris-data.js';
-import Account from './Account';
+import Account from './Account.jsx';
 import CustomForm from './modals/CustomForm';
 import 'script!../../components/bootstrap/bootstrap.min.js'
 import 'script!../../components/listJS/list.js';
@@ -22,11 +22,6 @@ var account;
 
 function setupUI(){
 	if (account.isSignedIn()){
-		var profile = account.getProfile();
-	    
-	    document.getElementById('currentUserName').innerHTML = profile.getName();
-		document.getElementById('currentUserEmail').innerHTML = profile.getEmail();
-		document.getElementById('currentUserPicture').src = profile.getImageUrl();
 		$('#navAccount').show();
 		$('#navSignin').hide();
 		
@@ -39,11 +34,6 @@ function setupUI(){
 	}
 }
 
-function signout() {
-	window.open("https://accounts.google.com/logout");
-}
-
-
 window.init = function () {
 
 	$("#footer").hide();
@@ -53,8 +43,7 @@ window.init = function () {
 	var apisToLoad;
 	var callback = function callback() {
 		if (--apisToLoad == 0) {
-			account = new Account(client_id, scopes);
-			account.signin(setupUI);
+			account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView'));
 		}
 	};
 
@@ -66,16 +55,9 @@ window.init = function () {
 
 
 	document.getElementById('navBtnSigninGoogle').onclick = function () {
-		account.signin(setupUI);
+		account.changeAccount(setupUI);
 	};
 
-	document.getElementById('navBtnSignOut').onclick = function () {
-		signout();
-	};
-	
-	document.getElementById('navBtnSwitchAccount').onclick = function () {
-		account.changeAccount(setupUI,client_id,scopes);
-	};
 	
 	document.getElementById('newPrjBtn').onclick = function () {
 		showNewProjectModal();
