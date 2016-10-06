@@ -95,10 +95,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 				showNewRevisionModal("Revision Comment");
             }
 			
-			document.getElementById('navBtnSwitchAccount').onclick = function () {
-				account.changeAccount(setupUI);
-			};
-			
 			
 			document.getElementById('editDescriptionBtn').onclick = function () {
 				showDescriptionModal();
