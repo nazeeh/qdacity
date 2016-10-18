@@ -90,6 +90,9 @@ var editorCtrl = {};
 	if (typeof project_type == 'undefined'){
 		project_type = "PROJECT";
 	}
+	if (project_type == "PROJECT"){
+		$('#settings').show();
+	}
 
 	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type='+project_type);
 
