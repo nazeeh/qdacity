@@ -82,7 +82,6 @@ var editorCtrl = {};
 
 	// the toggle is later hooked to the
 	// visibility of the toolbar
-	
 	var urlParams = URI(window.location.search).query(true);
   	
 	project_id = urlParams.project;
@@ -91,6 +90,8 @@ var editorCtrl = {};
 		project_type = "PROJECT";
 	}
 	if (project_type == "PROJECT"){
+		$('#btnInsertCode').show();
+		$('#btnRemoveCode').show();
 		$('#settings').show();
 	}
 
