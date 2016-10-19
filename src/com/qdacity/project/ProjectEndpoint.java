@@ -475,7 +475,9 @@ public class ProjectEndpoint {
        cloneProject = createValidationProject(project, user);
        
        cloneProject.addValidationCoder(userID);
+       com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, userID);
        
+       cloneProject.setCreatorName(validationCoder.getSurName());
        //cloneProject.setRevisionID(project.getId());// FIXME Check why this works and previous assignments dont
        
        cloneProject = mgr.makePersistent(cloneProject);

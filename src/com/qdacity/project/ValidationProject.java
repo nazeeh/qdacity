@@ -18,6 +18,8 @@ public class ValidationProject extends ProjectRevision {
   Long revisionID;
   @Persistent
   double paragraphFMeasure;
+  @Persistent
+  String creatorName;
   
   public ValidationProject(Project prj, Long projectID, String comment) {
     super(prj, projectID, comment);
@@ -65,6 +67,15 @@ public class ValidationProject extends ProjectRevision {
 
   public void setParagraphFMeasure(double paragraphAgreement) {
     this.paragraphFMeasure = paragraphAgreement;
+  }
+
+
+  public String getCreatorName() {
+    return creatorName;
+  }
+
+  public void setCreatorName(String creatorName) {
+    this.creatorName = creatorName;
   }
   
   
