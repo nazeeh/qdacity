@@ -17,6 +17,9 @@ public class User {
 	String id;
 	
 	@Persistent
+	UserType type;
+	
+	@Persistent
 	String givenName;
 	@Persistent
 	String surName;
@@ -85,6 +88,14 @@ public class User {
 	public void setTaskBoardId(Long taskBoardId) {
 		this.taskBoardID = taskBoardId;
 	}
+
+  public UserType getType() {
+    return type;
+  }
+
+  public void setType(UserType type) {
+    this.type = type;
+  }
 	
 	
 }

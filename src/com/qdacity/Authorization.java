@@ -10,9 +10,11 @@ import javax.jdo.Query;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.project.Project;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.user.UserType;
 
 public class Authorization {
 	
@@ -94,6 +96,18 @@ public class Authorization {
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 		
 	}
+	
+  public static AuthorizationLevel checkAuthorization(ValidationProject project, com.qdacity.user.User user)
+      throws UnauthorizedException {
+    if (user == null) throw new UnauthorizedException("User is Not Valid");
+    
+    if (user.getType() == UserType.ADMIN) return AuthorizationLevel.ADMIN;
+    
+    Boolean isValidationCoder = project.getValidationCoders().indexOf(user.getId()) != -1;
+    if (isValidationCoder) return AuthorizationLevel.VALIDATIONCODER;
+    
+    throw new UnauthorizedException("User is Not Authorized");
+  }
 
 	
 }

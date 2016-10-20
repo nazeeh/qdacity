@@ -126,8 +126,9 @@ public class ProjectEndpoint {
 		  switch (type) {
       case "VALIDATION":
         project = mgr.getObjectById(ValidationProject.class, id);
+        com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+        Authorization.checkAuthorization((ValidationProject)project, dbUser);
         break;
-
       default:
         project = mgr.getObjectById(Project.class, id);
         Authorization.checkAuthorization((Project)project, user);

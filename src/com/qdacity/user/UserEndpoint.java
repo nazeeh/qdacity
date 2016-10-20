@@ -247,6 +247,7 @@ public class UserEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException 
 	 */
+	//FIXME Possibly remove, or make secure.
 	@ApiMethod(name = "updateUser",  scopes = {Constants.EMAIL_SCOPE},
 			clientIds = {Constants.WEB_CLIENT_ID, 
 		     com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
