@@ -212,7 +212,9 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
                 		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList, user);
                         }
-                        $("#revision-timeline").append(timeline.getHTML());
+                        
+                        timeline.addToDom("#revision-timeline");
+                       
 
                         $( ".deleteRevisionBtn" ).click(function() {
                         	var revisionId = $( this ).attr("revId");

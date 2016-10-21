@@ -2,7 +2,7 @@ export default class Timeline {
   constructor() {
 
     this.html = "";
-  
+    this.revisionCount = 0;
   }
   
   getHTML(){
@@ -52,14 +52,20 @@ export default class Timeline {
 		this.html += '</a> </h3>';
 		//this.html += '</div>';
 		
-		this.html += '<div class="timeline-body timelineContent">';
-		   
+		this.html += '<div id="validationPrjList'+this.revisionCount++ +'" class="timeline-body timelineContent validationPrjList">'; //list.js needs an (any) id for the div 
+		
+		this.html += '<span class="searchfield" id="searchform'+this.revisionCount++ +'"  style="width: 100%; float:none;"> <input type="text" class="search" placeholder="Search" />';
+		this.html += '<button type="button" id="search">Find!</button>';
+		this.html += '</span>';
+			
+		this.html += '<ul id="validation-project-list" class="list compactBoxList">';
 	   for (var i=0;i<validationProjects.length;i++) {
-		   this.html += '<ul id="validation-project-list" class="list compactBoxList">';
+		   
 		   this.html += this.addValidationProjectItem(validationProjects[i], user);
-		   this.html += '</ul>';
        }
 	   
+	   this.html += '</ul>';
+	   this.html += '<ul class="pagination"></ul>';
 	   this.html += '</div>';
  		this.html += '</div>';
 	   
@@ -74,20 +80,38 @@ export default class Timeline {
 	   
 	   var linkToProject = isValidationCoder || isProjectOwner || isAdmin;
 	   if (linkToProject){
-		   itemHTML = '<li class="validationProjectListItem validationProjectLink" prjId="'+validationProject.id+'" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
+		   itemHTML = '<li class="validationProjectListItem validationProjectLink" prjId="'+validationProject.id+'"  ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   } else itemHTML = '<li class="" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   
 	   // Delete Project Btn if the user is admin, or owner of the project
 	   var showDeleteBtn = isAdmin || isProjectOwner;
 	   if (showDeleteBtn){
-		   itemHTML +='<a href="" prjId="'+validationProject.id+'" class="deleteValidationPrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-		   itemHTML +=' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
+		   itemHTML +='<a href="" prjId="'+validationProject.id+'" class="deleteValidationPrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-18px; ">';
+		   itemHTML +='<i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 		   itemHTML +='<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 		   itemHTML +='</a>';
 	   }
 	   itemHTML += '</li>'
 	   
 	   return itemHTML;
+   }
+   
+   addToDom(selector){
+	   $(selector).append(this.html);
+	   
+	   var lists = [];
+	   var elem = $('.validationPrjList');
+	   elem.each(function() {
+		   var options = {
+					valueNames: ['project_name'],
+					page: 10,
+					plugins: [ListPagination({})]
+				};
+		   var myList = new List( this, options);
+		   lists.push();
+	   });
+			//var projectList = new List('validationPrjList', options);
+       
    }
 }
 
