@@ -11,7 +11,6 @@ export default class Account extends React.Component  {
 	      scope: this.props.scope
 	  });
 	  this.signin();
-	  this.initialized = false;
   }
  
   
@@ -20,10 +19,7 @@ export default class Account extends React.Component  {
 	   this.auth2.currentUser.listen(function (googleUser) {
 		    if (googleUser.isSignedIn()) {
 		    	_this.setUser(_this.getProfile());
-		    	if (_this.initialized == false){
-		    	  _this.props.callback();
-		    	  _this.initialized == true;
-		    	}
+		    	_this.props.callback();
 		    }
 		});
 	}

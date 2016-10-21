@@ -78,7 +78,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	   if (--apisToLoad == 0) {
         		   account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView'));
         	   }
-
         	}
 
         	apisToLoad = 2;
@@ -188,58 +187,60 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function setRevisionHistory (){
+        	var userPromise = account.getCurrentUser();
         	gapi.client.qdacity.project.listRevisions({'projectID': project_id}).execute(function(resp) {
               	 if (!resp.code) {
-              		$("#revision-timeline").empty();
-              		resp.items = resp.items || [];
-              		var snapshots = [];
-              		var validationProjects = {};
-              		for (var i=0;i<resp.items.length;i++) {
-                    	if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
-                    	else {
-                    		if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
-                    		validationProjects[resp.items[i].revisionID].push(resp.items[i]);
-                    	}
-                    }
+              		userPromise.then(function(user){
+              			$("#revision-timeline").empty();
+                  		resp.items = resp.items || [];
+                  		var snapshots = [];
+                  		var validationProjects = {};
+                  		for (var i=0;i<resp.items.length;i++) {
+                        	if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
+                        	else {
+                        		if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
+                        		validationProjects[resp.items[i].revisionID].push(resp.items[i]);
+                        	}
+                        }
 
-              		var timeline = new Timeline();
-                    for (var i=0;i<snapshots.length;i++) {
-                    	timeline.addLabelToTimeline(snapshots[i].revision);
-            		    timeline.addRevInfoToTimeline(snapshots[i].comment, snapshots[i].id);
+                  		var timeline = new Timeline();
+                        for (var i=0;i<snapshots.length;i++) {
+                        	timeline.addLabelToTimeline(snapshots[i].revision);
+                		    timeline.addRevInfoToTimeline(snapshots[i].comment, snapshots[i].id);
 
-            		    var validationProjectList = validationProjects[snapshots[i].id];
+                		    var validationProjectList = validationProjects[snapshots[i].id];
 
-            		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
-                    }
-                    $("#revision-timeline").append(timeline.getHTML());
+                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList, user);
+                        }
+                        $("#revision-timeline").append(timeline.getHTML());
 
-                    $( ".deleteRevisionBtn" ).click(function() {
-                    	var revisionId = $( this ).attr("revId");
-                    	deleteRevision(revisionId);
-                    });
+                        $( ".deleteRevisionBtn" ).click(function() {
+                        	var revisionId = $( this ).attr("revId");
+                        	deleteRevision(revisionId);
+                        });
 
-                    $( ".deleteValidationPrjBtn" ).click(function() {
-                    	var prjId = $( this ).attr("prjId");
-                    	deleteValidationProject(prjId);
-                    });
-                    
-                    $( ".validationProjectListItem" ).click(function() {
-                    	var prjId = $( this ).attr("prjId");
-                    	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
-                    });
+                        $( ".deleteValidationPrjBtn" ).click(function() {
+                        	var prjId = $( this ).attr("prjId");
+                        	deleteValidationProject(prjId);
+                        });
+                        
+                        $( ".validationProjectLink" ).click(function() {
+                        	var prjId = $( this ).attr("prjId");
+                        	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
+                        });
 
-                    $( ".requestValidationAccessBtn" ).click(function() {
-                    	var revId = $( this ).attr("revId");
-                    	requestValidationAccess(revId);
-                    });
-                    
-                    $( ".validateRevisionBtn" ).click(function(event) {
-                    	event.preventDefault();
-                    	var revId = $( this ).attr("revId");
-                    	evaluateRevision(revId);
-                    });
+                        $( ".requestValidationAccessBtn" ).click(function() {
+                        	var revId = $( this ).attr("revId");
+                        	requestValidationAccess(revId);
+                        });
+                        
+                        $( ".validateRevisionBtn" ).click(function(event) {
+                        	event.preventDefault();
+                        	var revId = $( this ).attr("revId");
+                        	evaluateRevision(revId);
+                        });
+              		});
               	 }
-
               	 else{
               		console.log(resp.code + " : " + resp.message);
               	}

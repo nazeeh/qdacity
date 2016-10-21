@@ -10,9 +10,11 @@ import 'script!../../components/morrisjs/morris.min.js';
 
 import $script from 'scriptjs';
 
-$script('https://apis.google.com/js/client.js', function() {
+$script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
+
+window.loadPlatform = function (){
 	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
-	});
+}
 
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';

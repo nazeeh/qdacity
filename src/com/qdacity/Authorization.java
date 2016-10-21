@@ -92,8 +92,8 @@ public class Authorization {
 	public static void checkAuthorization(com.qdacity.user.User userRequested, User userLoggedIn)
 			throws UnauthorizedException {
 		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
-		Boolean authorized = userLoggedIn.getUserId() == userRequested.getId();
-		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
+		Boolean authorized = (userLoggedIn.getUserId().equals(userRequested.getId()));
+		if (!authorized) throw new UnauthorizedException("User " + userLoggedIn.getUserId() +" is Not Authorized");
 		
 	}
 	

@@ -38,7 +38,7 @@ export default class Timeline {
   	this.html += '</li>';
    }
    
-   addValidationProjects(validationProjects){
+   addValidationProjects(validationProjects, user){
 	   this.html += '<li>';
 	   this.html += '<i class="fa fa-check bg-green"></i>';
 		 this.html += '<span class="timelineType" style="display:none;">done</span>';
@@ -53,10 +53,10 @@ export default class Timeline {
 		//this.html += '</div>';
 		
 		this.html += '<div class="timeline-body timelineContent">';
-		
+		   
 	   for (var i=0;i<validationProjects.length;i++) {
 		   this.html += '<ul id="validation-project-list" class="list compactBoxList">';
-		   this.html += this.addValidationProjectItem(validationProjects[i]);
+		   this.html += this.addValidationProjectItem(validationProjects[i], user);
 		   this.html += '</ul>';
        }
 	   
@@ -66,14 +66,25 @@ export default class Timeline {
 	   this.html += '</li>';
    }
    
-   addValidationProjectItem(validationProject){
+   addValidationProjectItem(validationProject, user){
 	   var itemHTML = "";
-	   itemHTML = '<li class="validationProjectListItem" prjId="'+validationProject.id+'" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
-	   	// Delete Project Btn
-	   itemHTML +='<a href="" prjId="'+validationProject.id+'" class="deleteValidationPrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-	   itemHTML +=' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
-	   itemHTML +='<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
-	   itemHTML +='</a>';
+	   var isValidationCoder = validationProject.validationCoders.indexOf(user.id) != -1;
+	   var isProjectOwner = user.projects.indexOf(validationProject.projectID) !== -1;
+	   var isAdmin = user.type === "ADMIN";
+	   
+	   var linkToProject = isValidationCoder || isProjectOwner || isAdmin;
+	   if (linkToProject){
+		   itemHTML = '<li class="validationProjectListItem validationProjectLink" prjId="'+validationProject.id+'" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
+	   } else itemHTML = '<li class="" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
+	   
+	   // Delete Project Btn if the user is admin, or owner of the project
+	   var showDeleteBtn = isAdmin || isProjectOwner;
+	   if (showDeleteBtn){
+		   itemHTML +='<a href="" prjId="'+validationProject.id+'" class="deleteValidationPrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+		   itemHTML +=' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
+		   itemHTML +='<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
+		   itemHTML +='</a>';
+	   }
 	   itemHTML += '</li>'
 	   
 	   return itemHTML;
