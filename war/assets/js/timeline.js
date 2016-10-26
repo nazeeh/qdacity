@@ -1,6 +1,9 @@
 export default class Timeline {
-  constructor() {
-
+  constructor(user, prjId) {
+	  
+	this.isAdmin = user.type === "ADMIN";
+	this.isProjectOwner = user.projects.indexOf(prjId) !== -1;
+	this.user = user;
     this.html = "";
     this.revisionCount = 0;
   }
@@ -9,8 +12,8 @@ export default class Timeline {
 	  return this.html;
   }
 
-  addRevInfoToTimeline(comment, revID){
-  	 
+  addRevInfoToTimeline(revision){
+	  
   	 this.html += '<li>';
   		 this.html += '<i class="fa fa-info bg-yellow"></i>';
   		 this.html += '<span class="timelineType" style="display:none;">done</span>';
@@ -18,12 +21,12 @@ export default class Timeline {
   		this.html += ' <h3 class="timeline-header timelineUserName"><b> Revision Info </b> </h3>';
 
   		this.html += '<div class="timeline-body timelineContent">';
-  		this.html += comment;
+  		this.html += revision.comment;
 
   		this.html += '</div>';
   		this.html += '<div class="timeline-footer">';
-  		this.html += '<a revId="'+revID+'" class="requestValidationAccessBtn btn btn-info btn-xs ">Re-Code</a>';
-  		this.html += '<a revId="'+revID+'" class="deleteRevisionBtn btn btn-danger btn-xs pull-right">Delete</a>';
+  		this.html += '<a revId="'+revision.id+'" class="requestValidationAccessBtn btn btn-info btn-xs ">Re-Code</a>';
+  		if (this.isAdmin || this.isProjectOwner) this.html += '<a revId="'+revision.id+'" class="deleteRevisionBtn btn btn-danger btn-xs pull-right">Delete</a>';
   		this.html += ' </div>';
   		this.html += '</div>';
   		this.html += '</li>';
@@ -38,7 +41,7 @@ export default class Timeline {
   	this.html += '</li>';
    }
    
-   addValidationProjects(validationProjects, user){
+   addValidationProjects(validationProjects){
 	   this.html += '<li>';
 	   this.html += '<i class="fa fa-check bg-green"></i>';
 		 this.html += '<span class="timelineType" style="display:none;">done</span>';
@@ -46,9 +49,9 @@ export default class Timeline {
 		
 		this.html += ' <h3 class="timeline-header timelineUserName"><b> Validation Projects </b> ';
 		//this.html += '<div class="timeline-body timelineContent">';style="font-size: 18px;"
-		this.html += '<a revId="'+validationProjects[0].revisionID+'" class=" validateRevisionBtn btn  btn-default btn-sm pull-right" style="margin-top:-6px;   padding: 5px 10px;" href="#">';
+		this.html += '<a revId="'+validationProjects[0].revisionID+'" class=" intercoderAgreementBtn btn  btn-default btn-sm pull-right" style="margin-top:-6px;   padding: 5px 10px;" href="#">';
 		this.html += '<i style="margin-top:-2px; font-size: 18px;" class="fa fa-tachometer pull-left"></i>';
-		this.html += 'Calculate Agreement';
+		this.html += 'Intercoder Agreement';
 		this.html += '</a> </h3>';
 		//this.html += '</div>';
 		
@@ -61,7 +64,7 @@ export default class Timeline {
 		this.html += '<ul id="validation-project-list" class="list compactBoxList">';
 	   for (var i=0;i<validationProjects.length;i++) {
 		   
-		   this.html += this.addValidationProjectItem(validationProjects[i], user);
+		   this.html += this.addValidationProjectItem(validationProjects[i]);
        }
 	   
 	   this.html += '</ul>';
@@ -72,19 +75,17 @@ export default class Timeline {
 	   this.html += '</li>';
    }
    
-   addValidationProjectItem(validationProject, user){
+   addValidationProjectItem(validationProject){
 	   var itemHTML = "";
-	   var isValidationCoder = validationProject.validationCoders.indexOf(user.id) != -1;
-	   var isProjectOwner = user.projects.indexOf(validationProject.projectID) !== -1;
-	   var isAdmin = user.type === "ADMIN";
+	   var isValidationCoder = validationProject.validationCoders.indexOf(this.user.id) != -1;
 	   
-	   var linkToProject = isValidationCoder || isProjectOwner || isAdmin;
+	   var linkToProject = isValidationCoder || this.isProjectOwner || this.isAdmin;
 	   if (linkToProject){
 		   itemHTML = '<li class="validationProjectListItem validationProjectLink" prjId="'+validationProject.id+'"  ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   } else itemHTML = '<li class="" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   
 	   // Delete Project Btn if the user is admin, or owner of the project
-	   var showDeleteBtn = isAdmin || isProjectOwner;
+	   var showDeleteBtn = this.isAdmin || this.isProjectOwner;
 	   if (showDeleteBtn){
 		   itemHTML +='<a href="" prjId="'+validationProject.id+'" class="deleteValidationPrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-18px; ">';
 		   itemHTML +='<i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';

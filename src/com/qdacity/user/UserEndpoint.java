@@ -148,6 +148,36 @@ public class UserEndpoint {
 		return user;
 	}
 	
+	 @ApiMethod(name = "updateUserType",  scopes = {Constants.EMAIL_SCOPE},
+	      clientIds = {Constants.WEB_CLIENT_ID, 
+	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	         audiences = {Constants.WEB_CLIENT_ID})
+	  public User updateUserType(@Named("id") String id, @Named("type") String type, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	    PersistenceManager mgr = getPersistenceManager();
+	    User user = null;
+	    try {
+	      user = mgr.getObjectById(User.class, id);
+	      
+	      //FIXME Check if user is authorized
+	      //Authorization.checkAuthorization(user, loggedInUser);
+	      
+        switch (type) {
+        case "ADMIN":
+          user.setType(UserType.ADMIN);
+          break;
+        case "USER":
+          user.setType(UserType.USER);
+          break;
+        default:
+          break;
+        }
+	      
+	    } finally {
+	      mgr.close();
+	    }
+	    return user;
+	  }
+	
 	 @ApiMethod(name = "user.getCurrentUser",  scopes = {Constants.EMAIL_SCOPE},
 	      clientIds = {Constants.WEB_CLIENT_ID, 
 	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},

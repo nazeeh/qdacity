@@ -558,7 +558,6 @@ public class ProjectEndpoint {
          Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
          validationProject.setParagraphFMeasure(totalAgreement);
          mgr.makePersistent(validationProject);
-         
        }
        
        

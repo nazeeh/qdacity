@@ -1,7 +1,10 @@
 import Timeline from './timeline';
 import ProjectEndpoint from './ProjectEndpoint';
+import Project from './Project';
+import Revision from './Revision';
 import Account from './Account.jsx';
 import TextField from './modals/TextField';
+import IntercoderAgreement from './modals/IntercoderAgreement';
 
 import 'script!./morris-data.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
@@ -28,6 +31,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
     var project_id;
     var project_type;
     var account;
+    
+    var project;
 
    function setupUI(){
 	   if (account.isSignedIn()) {
@@ -57,6 +62,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
     	  	  project_id = urlParams.project;
     	  	  project_type = urlParams.type;
+    	  	  project = new Project(urlParams.project, urlParams.type)
     	  	  if (typeof project_type === "undefined") project_type = 'PROJECT';
     	  	  switch (project_type) {
 				case 'PROJECT':
@@ -202,15 +208,17 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                         		validationProjects[resp.items[i].revisionID].push(resp.items[i]);
                         	}
                         }
-
-                  		var timeline = new Timeline();
+                  		project.setRevisions(snapshots);
+                  		project.setValidationProjects(validationProjects);
+                  		
+                  		var timeline = new Timeline(user, project_id);
                         for (var i=0;i<snapshots.length;i++) {
                         	timeline.addLabelToTimeline(snapshots[i].revision);
-                		    timeline.addRevInfoToTimeline(snapshots[i].comment, snapshots[i].id);
+                		    timeline.addRevInfoToTimeline(snapshots[i], user);
 
                 		    var validationProjectList = validationProjects[snapshots[i].id];
 
-                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList, user);
+                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
                         }
                         
                         timeline.addToDom("#revision-timeline");
@@ -236,10 +244,10 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                         	requestValidationAccess(revId);
                         });
                         
-                        $( ".validateRevisionBtn" ).click(function(event) {
+                        $( ".intercoderAgreementBtn" ).click(function(event) {
                         	event.preventDefault();
                         	var revId = $( this ).attr("revId");
-                        	evaluateRevision(revId);
+                        	showIntercoderAgreement(revId);
                         });
               		});
               	 }
@@ -288,16 +296,9 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	    .catch(handleBadResponse);
         }
         
-        function evaluateRevision(revId){
-        	var projectEndpoint = new ProjectEndpoint();
-
-        	projectEndpoint.evaluateRevision(revId)
-        		.then(
-        	        function(val) {
-        	        	alertify.success("Agreement: " + val.items[0].paragraphFMeasure	);
-        	        	
-        	        })
-        	    .catch(handleBadResponse);
+        function showIntercoderAgreement(revId){        	
+        	var agreementModal = new IntercoderAgreement(revId, project.getValidationProject(revId));
+        	agreementModal.showModal();
         }
 
         function handleBadResponse(reason){
