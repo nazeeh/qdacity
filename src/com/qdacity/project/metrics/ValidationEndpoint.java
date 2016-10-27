@@ -2,6 +2,7 @@ package com.qdacity.project.metrics;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.data.TextDocumentEndpoint;
@@ -44,7 +44,17 @@ public class ValidationEndpoint {
       
       reports  = (List<ValidationReport>)q.executeWithMap(params);
       
-     
+      for (ValidationReport validationReport : reports) {
+        List<ValidationResult> results = validationReport.getValidationResult();
+        for (ValidationResult result : results) {
+          result.getName();
+          result.getParagraphFMeasure();
+          result.getParagraphPrecision();
+          result.getParagraphRecall();
+          result.getRevisionId();
+          result.getValidationProjectID();
+        }
+      }
     } finally {
       mgr.close();
     }
@@ -55,7 +65,7 @@ public class ValidationEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
+  public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, @Named("name") String name, User user) throws UnauthorizedException {
     List<ValidationProject> validationProjects = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
@@ -72,14 +82,14 @@ public class ValidationEndpoint {
       
       ValidationReport report = new ValidationReport();
       report.setRevisionID(revisionID);
+      report.setName(name);
+      report.setDatetime(new Date());
       
       for (ValidationProject validationProject : validationProjects) {
         report.setProjectID(validationProject.getProjectID());
         
         ValidationResult valResult = new ValidationResult(); 
-        valResult.setName(validationProject.getCreatorName());
-        valResult.setRevisionID(revisionID);
-        valResult.setValidationProjectID(validationProject.getId());
+        
 
         List<Double> documentAgreements = new ArrayList<Double>();
         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
@@ -94,15 +104,15 @@ public class ValidationEndpoint {
        }
         
         double totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
-
+        
         valResult.setParagraphFMeasure(totalAgreement);
+        valResult.setName(validationProject.getCreatorName());
+        valResult.setRevisionID(revisionID);
+        valResult.setValidationProjectID(validationProject.getId());
         
         report.addResult(valResult);
        
         Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
-        validationProject.setParagraphFMeasure(totalAgreement);
-        mgr.makePersistent(validationProject);
-        
       }
       
       

@@ -1,6 +1,7 @@
 package com.qdacity.project.metrics;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.annotations.Column;
@@ -25,7 +26,10 @@ public class ValidationReport {
   Long revisionID;
   
   @Persistent
-  String comment;
+  String name;
+  
+  @Persistent
+  Date datetime;
   
   @Persistent(defaultFetchGroup="true") 
   @Element(dependent = "true")
@@ -56,13 +60,6 @@ public class ValidationReport {
     this.revisionID = revisionID;
   }
 
-  public String getComment() {
-    return comment;
-  }
-
-  public void setComment(String comment) {
-    this.comment = comment;
-  }
 
   public List<ValidationResult> getValidationResult() {
     return validationResult;
@@ -77,4 +74,21 @@ public class ValidationReport {
     validationResult.add(result);
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Date getDatetime() {
+    return datetime;
+  }
+
+  public void setDatetime(Date datetime) {
+    this.datetime = datetime;
+  }
+
+  
 }

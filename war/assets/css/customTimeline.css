@@ -16,7 +16,15 @@
   background: #e1e1e1;
 }
 
-.validationProjectListItem{
+.listItem{
 	cursor: pointer;
 	height: 38px;
+}
+
+.reportName{
+	
+}
+.reportDate{
+	float: right;
+	font-style: italic;
 }

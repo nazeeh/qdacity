@@ -79,7 +79,7 @@ export default class Timeline {
 	   
 	   var linkToProject = isValidationCoder || this.isProjectOwner || this.isAdmin;
 	   if (linkToProject){
-		   itemHTML = '<li class="validationProjectListItem validationProjectLink" prjId="'+validationProject.id+'"  ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
+		   itemHTML = '<li class="listItem validationProjectLink" prjId="'+validationProject.id+'"  ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   } else itemHTML = '<li class="" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   
 	   // Delete Project Btn if the user is admin, or owner of the project
@@ -122,8 +122,11 @@ export default class Timeline {
    
    addValidationReportItem(report){
 	   var itemHTML = "";
-	   
-	   itemHTML = '<li class="validationReportListItem" revId="'+report.revisionID+'" repId="'+report.id+'"  ><span class="project_name">'+report.id +'</span>';
+	   var datetime = report.datetime;
+	   if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
+	   else datetime = "";
+	   var label = '<span class="reportName">'+ report.name +'</span>' + '<span class="reportDate">[' + datetime + ']</span>'  ;
+	   itemHTML = '<li class="reportLink listItem" revId="'+report.revisionID+'" repId="'+report.id+'"  >' + label;
 	   itemHTML += '</li>'
 	   
 	   return itemHTML;

@@ -6,6 +6,7 @@ import Revision from './Revision';
 import Account from './Account.jsx';
 import TextField from './modals/TextField';
 import IntercoderAgreement from './modals/IntercoderAgreement';
+import Prompt from './modals/Prompt';
 
 import 'script!./morris-data.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
@@ -258,25 +259,23 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	                        	requestValidationAccess(revId);
 	                        });
 	                        
-	                        $( ".intercoderAgreementBtn" ).click(function(event) {
-	                        	event.preventDefault();
-	                        	var revId = $( this ).attr("revId");
-	                        	//showValidationReports(revId);
-	                        });
-	                        
 	                        $( ".createReportBtn" ).click(function(event) {
 	                        	event.preventDefault();
 	                        	var revId = $( this ).attr("revId");
 	                        	var projectEndpoint = new ProjectEndpoint();
-	                          	projectEndpoint.evaluateRevision(revId)
-	                          		.then(
-	                          	        function(val) {
-	                          	        	alertify.success("Agreement: " + val.items[0].paragraphFMeasure	);
-	                          	        })
-	                          	    .catch(handleBadResponse);
+	                        	var prompt = new Prompt('Name the report', 'Report Name');
+	                    		prompt.showModal().then(function(reportName) {
+		                          	projectEndpoint.evaluateRevision(revId, reportName)
+		                          		.then(
+		                          	        function(val) {
+		                          	        	alertify.success("Agreement: " + val.items[0].paragraphFMeasure	);
+		                          	        })
+		                          	    .catch(handleBadResponse);
+	                          	
+	                    		});
 	                        });
 	                        
-	                        $( ".validationReportListItem" ).click(function(event) {
+	                        $( ".reportLink" ).click(function(event) {
 	                        	event.preventDefault();
 	                        	var revId = $( this ).attr("revId");
 	                        	var repId = $( this ).attr("repId");
