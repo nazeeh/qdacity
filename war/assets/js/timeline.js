@@ -42,37 +42,35 @@ export default class Timeline {
    }
    
    addValidationProjects(validationProjects){
-	   this.html += '<li>';
-	   this.html += '<i class="fa fa-check bg-green"></i>';
-		 this.html += '<span class="timelineType" style="display:none;">done</span>';
-		this.html += '<div class="timeline-item">';
+	this.html += '<li>';
+	this.html += '<i class="fa fa-check bg-grey"></i>';
+	this.html += '<span class="timelineType" style="display:none;">done</span>';
+	this.html += '<div class="timeline-item">';
+	
+	this.html += ' <h3 class="timeline-header timelineUserName"><b> Validation Projects </b> ';
+	this.html += '<a revId="'+validationProjects[0].revisionID+'" class="createReportBtn btn  btn-default btn-sm pull-right" style="margin-top:-6px;   padding: 5px 10px;" href="#">';
+	this.html += '<i style="font-size: 18px;" class="fa fa-plus-circle  pull-left"></i>';
+	this.html += 'Create Report';
+	this.html += '</a> </h3>';
+	
+	this.html += '<div id="validationPrjList'+this.revisionCount++ +'" class="timeline-body timelineContent validationPrjList">'; //list.js needs an (any) id for the div 
+	
+	this.html += '<span class="searchfield" id="searchform'+this.revisionCount++ +'"  style="width: 100%; float:none;"> <input type="text" class="search" placeholder="Search" />';
+	this.html += '<button type="button" id="search">Find!</button>';
+	this.html += '</span>';
 		
-		this.html += ' <h3 class="timeline-header timelineUserName"><b> Validation Projects </b> ';
-		//this.html += '<div class="timeline-body timelineContent">';style="font-size: 18px;"
-		this.html += '<a revId="'+validationProjects[0].revisionID+'" class=" intercoderAgreementBtn btn  btn-default btn-sm pull-right" style="margin-top:-6px;   padding: 5px 10px;" href="#">';
-		this.html += '<i style="margin-top:-2px; font-size: 18px;" class="fa fa-tachometer pull-left"></i>';
-		this.html += 'Intercoder Agreement';
-		this.html += '</a> </h3>';
-		//this.html += '</div>';
+	this.html += '<ul id="validation-project-list" class="list compactBoxList">';
 		
-		this.html += '<div id="validationPrjList'+this.revisionCount++ +'" class="timeline-body timelineContent validationPrjList">'; //list.js needs an (any) id for the div 
-		
-		this.html += '<span class="searchfield" id="searchform'+this.revisionCount++ +'"  style="width: 100%; float:none;"> <input type="text" class="search" placeholder="Search" />';
-		this.html += '<button type="button" id="search">Find!</button>';
-		this.html += '</span>';
-			
-		this.html += '<ul id="validation-project-list" class="list compactBoxList">';
-	   for (var i=0;i<validationProjects.length;i++) {
-		   
-		   this.html += this.addValidationProjectItem(validationProjects[i]);
-       }
+	for (var i=0;i<validationProjects.length;i++) {
+		this.html += this.addValidationProjectItem(validationProjects[i]);
+	}
 	   
-	   this.html += '</ul>';
-	   this.html += '<ul class="pagination"></ul>';
-	   this.html += '</div>';
- 		this.html += '</div>';
+	this.html += '</ul>';
+	this.html += '<ul class="pagination"></ul>';
+	this.html += '</div>';
+	this.html += '</div>';
 	   
-	   this.html += '</li>';
+	this.html += '</li>';
    }
    
    addValidationProjectItem(validationProject){
@@ -97,6 +95,40 @@ export default class Timeline {
 	   return itemHTML;
    }
    
+   addReportToTimeline(reports){
+	   this.html += '<li>';
+	   this.html += '<i class="fa fa-tachometer bg-grey"></i>';
+		 this.html += '<span class="timelineType" style="display:none;">done</span>';
+		this.html += '<div class="timeline-item">';
+		
+		this.html += ' <h3 class="timeline-header timelineUserName"><b> Reports </b> ';
+		this.html += '</h3>';
+		
+		this.html += '<div id="validationReportList'+this.revisionCount++ +'" class="timeline-body timelineContent validationPrjList">'; //list.js needs an (any) id for the div 
+			
+		this.html += '<ul id="validation-report-list" class="list compactBoxList">';
+	   for (var i=0;i<reports.length;i++) {
+		   
+		   this.html += this.addValidationReportItem(reports[i]);
+       }
+	   
+	   this.html += '</ul>';
+	   this.html += '<ul class="pagination"></ul>';
+	   this.html += '</div>';
+ 		this.html += '</div>';
+	   
+	   this.html += '</li>';
+   }
+   
+   addValidationReportItem(report){
+	   var itemHTML = "";
+	   
+	   itemHTML = '<li class="validationReportListItem" revId="'+report.revisionID+'" repId="'+report.id+'"  ><span class="project_name">'+report.id +'</span>';
+	   itemHTML += '</li>'
+	   
+	   return itemHTML;
+   }
+   
    addToDom(selector){
 	   $(selector).append(this.html);
 	   
@@ -111,8 +143,6 @@ export default class Timeline {
 		   var myList = new List( this, options);
 		   lists.push();
 	   });
-			//var projectList = new List('validationPrjList', options);
-       
    }
 }
 

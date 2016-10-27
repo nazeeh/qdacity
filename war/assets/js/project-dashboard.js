@@ -1,5 +1,6 @@
 import Timeline from './timeline';
 import ProjectEndpoint from './ProjectEndpoint';
+import ValidationEndpoint from './ValidationEndpoint';
 import Project from './Project';
 import Revision from './Revision';
 import Account from './Account.jsx';
@@ -193,7 +194,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         }
 
         function setRevisionHistory (){
+        	var validationEndpoint = new ValidationEndpoint();
+        	
         	var userPromise = account.getCurrentUser();
+        	var validationPromise = validationEndpoint.listReports(project_id);
+        	
         	gapi.client.qdacity.project.listRevisions({'projectID': project_id}).execute(function(resp) {
               	 if (!resp.code) {
               		userPromise.then(function(user){
@@ -212,43 +217,72 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                   		project.setValidationProjects(validationProjects);
                   		
                   		var timeline = new Timeline(user, project_id);
-                        for (var i=0;i<snapshots.length;i++) {
-                        	timeline.addLabelToTimeline(snapshots[i].revision);
-                		    timeline.addRevInfoToTimeline(snapshots[i], user);
-
-                		    var validationProjectList = validationProjects[snapshots[i].id];
-
-                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
-                        }
+                  		
+                  		validationPromise.then(function(reports){
+                  			project.setReports(reports);
+	                        for (var i=0;i<snapshots.length;i++) {
+	                        	var revID = snapshots[i].id;
+	                        	timeline.addLabelToTimeline(snapshots[i].revision);
+	                		    timeline.addRevInfoToTimeline(snapshots[i], user);
+	                		    
+	                		    
+	                		    if (typeof reports[revID] != 'undefined') timeline.addReportToTimeline(reports[revID]);
+	                		    
+	
+	                		    var validationProjectList = validationProjects[revID];
+	
+	                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
+	                        }
+                  		
                         
-                        timeline.addToDom("#revision-timeline");
-                       
-
-                        $( ".deleteRevisionBtn" ).click(function() {
-                        	var revisionId = $( this ).attr("revId");
-                        	deleteRevision(revisionId);
-                        });
-
-                        $( ".deleteValidationPrjBtn" ).click(function() {
-                        	var prjId = $( this ).attr("prjId");
-                        	deleteValidationProject(prjId);
-                        });
-                        
-                        $( ".validationProjectLink" ).click(function() {
-                        	var prjId = $( this ).attr("prjId");
-                        	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
-                        });
-
-                        $( ".requestValidationAccessBtn" ).click(function() {
-                        	var revId = $( this ).attr("revId");
-                        	requestValidationAccess(revId);
-                        });
-                        
-                        $( ".intercoderAgreementBtn" ).click(function(event) {
-                        	event.preventDefault();
-                        	var revId = $( this ).attr("revId");
-                        	showIntercoderAgreement(revId);
-                        });
+	                        timeline.addToDom("#revision-timeline");
+	                       
+	
+	                        $( ".deleteRevisionBtn" ).click(function() {
+	                        	var revisionId = $( this ).attr("revId");
+	                        	deleteRevision(revisionId);
+	                        });
+	
+	                        $( ".deleteValidationPrjBtn" ).click(function() {
+	                        	var prjId = $( this ).attr("prjId");
+	                        	deleteValidationProject(prjId);
+	                        });
+	                        
+	                        $( ".validationProjectLink" ).click(function() {
+	                        	var prjId = $( this ).attr("prjId");
+	                        	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
+	                        });
+	
+	                        $( ".requestValidationAccessBtn" ).click(function() {
+	                        	var revId = $( this ).attr("revId");
+	                        	requestValidationAccess(revId);
+	                        });
+	                        
+	                        $( ".intercoderAgreementBtn" ).click(function(event) {
+	                        	event.preventDefault();
+	                        	var revId = $( this ).attr("revId");
+	                        	//showValidationReports(revId);
+	                        });
+	                        
+	                        $( ".createReportBtn" ).click(function(event) {
+	                        	event.preventDefault();
+	                        	var revId = $( this ).attr("revId");
+	                        	var projectEndpoint = new ProjectEndpoint();
+	                          	projectEndpoint.evaluateRevision(revId)
+	                          		.then(
+	                          	        function(val) {
+	                          	        	alertify.success("Agreement: " + val.items[0].paragraphFMeasure	);
+	                          	        })
+	                          	    .catch(handleBadResponse);
+	                        });
+	                        
+	                        $( ".validationReportListItem" ).click(function(event) {
+	                        	event.preventDefault();
+	                        	var revId = $( this ).attr("revId");
+	                        	var repId = $( this ).attr("repId");
+	                        	showValidationReports(project.getReport(revId, repId));
+	                        });
+                  		});
               		});
               	 }
               	 else{
@@ -296,8 +330,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	    .catch(handleBadResponse);
         }
         
-        function showIntercoderAgreement(revId){        	
-        	var agreementModal = new IntercoderAgreement(revId, project.getValidationProject(revId));
+        function showValidationReports(report){        	
+        	var agreementModal = new IntercoderAgreement(report);
         	agreementModal.showModal();
         }
 

@@ -9,6 +9,8 @@ import com.qdacity.project.codesystem.CodeSystemEndpoint;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.data.TextDocumentEndpoint;
 import com.qdacity.project.metrics.Agreement;
+import com.qdacity.project.metrics.ValidationReport;
+import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
 import com.google.api.server.spi.config.Api;
@@ -522,55 +524,69 @@ public class ProjectEndpoint {
    }
 	 
 	 
-	 @ApiMethod(name = "project.evaluateRevision",   scopes = {Constants.EMAIL_SCOPE},
-       clientIds = {Constants.WEB_CLIENT_ID, 
-          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-          audiences = {Constants.WEB_CLIENT_ID})
-   public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
-	   List<ValidationProject> validationProjects = null;
-     PersistenceManager mgr = getPersistenceManager();
-     try {
-       TextDocumentEndpoint tde = new TextDocumentEndpoint();
-       Query q;
-       q = mgr.newQuery(ValidationProject.class, "revisionID  == :revisionID");
-       
-       Map<String, Long> params = new HashMap();
-       params.put("revisionID", revisionID);
-
-       Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems();
-
-       validationProjects = (List<ValidationProject>)q.executeWithMap(params);
-       
-       for (ValidationProject validationProject : validationProjects) {
-         List<Double> documentAgreements = new ArrayList<Double>();
-         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
-         Logger.getLogger("logger").log(Level.INFO,   "Number of original docs: " + originalDocs.size() + " Number of recoded docs: "+ recodedDocs.size());
-         for (TextDocument original : originalDocs) {
-          for (TextDocument recoded : recodedDocs) {
-            if (original.getTitle().equals(recoded.getTitle())){
-              double documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
-              documentAgreements.add(documentAgreement);
-            }
-          }
-        }
-         double totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
-
-         Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
-         validationProject.setParagraphFMeasure(totalAgreement);
-         mgr.makePersistent(validationProject);
-       }
-       
-       
-       
-       
-       
-       
-
-     } finally {
-       mgr.close();
-     }
-     return validationProjects;
-   }
+//	 @ApiMethod(name = "project.evaluateRevision",   scopes = {Constants.EMAIL_SCOPE},
+//       clientIds = {Constants.WEB_CLIENT_ID, 
+//          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+//          audiences = {Constants.WEB_CLIENT_ID})
+//   public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
+//	   List<ValidationProject> validationProjects = null;
+//     PersistenceManager mgr = getPersistenceManager();
+//     try {
+//       TextDocumentEndpoint tde = new TextDocumentEndpoint();
+//       Query q;
+//       q = mgr.newQuery(ValidationProject.class, "revisionID  == :revisionID");
+//       
+//       Map<String, Long> params = new HashMap();
+//       params.put("revisionID", revisionID);
+//
+//       Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems();
+//
+//       validationProjects = (List<ValidationProject>)q.executeWithMap(params);
+//       
+//       ValidationReport report = new ValidationReport();
+//       report.setRevisionID(revisionID);
+//       
+//       for (ValidationProject validationProject : validationProjects) {
+//         ValidationResult valResult = new ValidationResult(); 
+//         valResult.setName(validationProject.getCreatorName());
+//         valResult.setRevisionId(revisionID);
+//         valResult.setValidationProjectId(validationProject.getId());
+//
+//         List<Double> documentAgreements = new ArrayList<Double>();
+//         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
+//         Logger.getLogger("logger").log(Level.INFO,   "Number of original docs: " + originalDocs.size() + " Number of recoded docs: "+ recodedDocs.size());
+//         for (TextDocument original : originalDocs) {
+//          for (TextDocument recoded : recodedDocs) {
+//            if (original.getTitle().equals(recoded.getTitle())){
+//              double documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
+//              documentAgreements.add(documentAgreement);
+//            }
+//          }
+//        }
+//         
+//         double totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
+//
+//         valResult.setParagraphFMeasure(totalAgreement);
+//         
+//         report.addResult(valResult);
+//        
+//         Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
+//         validationProject.setParagraphFMeasure(totalAgreement);
+//         mgr.makePersistent(validationProject);
+//         
+//       }
+//       
+//       
+//       mgr.makePersistent(report);
+//       
+//       
+//       
+//
+//     } finally {
+//       mgr.close();
+//     }
+//     return validationProjects;
+//   }
 
 
 	/**
