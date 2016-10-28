@@ -249,6 +249,19 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	                        	deleteValidationProject(prjId);
 	                        });
 	                        
+	                        $( ".deleteReportBtn" ).click(function(event) {
+	                        	event.preventDefault();
+	                        	event.stopPropagation();
+	                        	var repId = $( this ).attr("repId");
+	                        	deleteValidationReport(repId);
+	                        });
+	                        
+	                        $( ".reportLink" ).click(function(event) {
+	                        	var revId = $( this ).attr("revId");
+	                        	var repId = $( this ).attr("repId");
+	                        	showValidationReports(project.getReport(revId, repId));
+	                        });
+	                        
 	                        $( ".validationProjectLink" ).click(function() {
 	                        	var prjId = $( this ).attr("prjId");
 	                        	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
@@ -268,19 +281,14 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		                          	projectEndpoint.evaluateRevision(revId, reportName)
 		                          		.then(
 		                          	        function(val) {
-		                          	        	alertify.success("Agreement: " + val.items[0].paragraphFMeasure	);
+		                          	        	setRevisionHistory();
 		                          	        })
 		                          	    .catch(handleBadResponse);
 	                          	
 	                    		});
 	                        });
 	                        
-	                        $( ".reportLink" ).click(function(event) {
-	                        	event.preventDefault();
-	                        	var revId = $( this ).attr("revId");
-	                        	var repId = $( this ).attr("repId");
-	                        	showValidationReports(project.getReport(revId, repId));
-	                        });
+	                        
                   		});
               		});
               	 }
@@ -313,6 +321,19 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         		.then(
         	        function(val) {
         	        	alertify.success("Revision has been deleted");
+        	        	setRevisionHistory();
+        	        })
+        	    .catch(handleBadResponse);
+        }
+        
+        function deleteValidationReport(repId){
+
+        	var validationEndpoint = new ValidationEndpoint();
+
+        	validationEndpoint.deleteReport(repId)
+        		.then(
+        	        function(val) {
+        	        	alertify.success("Report has been deleted");
         	        	setRevisionHistory();
         	        })
         	    .catch(handleBadResponse);

@@ -125,7 +125,12 @@ export default class Timeline {
 	   var datetime = report.datetime;
 	   if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 	   else datetime = "";
-	   var label = '<span class="reportName">'+ report.name +'</span>' + '<span class="reportDate">[' + datetime + ']</span>'  ;
+	   var deleteBtn ='<a href="" repId="'+report.id+'" class="deleteReportBtn btn  fa-stack fa-lg" style="float:right; margin-top:-18px; ">';
+	   deleteBtn +='<i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
+	   deleteBtn +='<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
+	   deleteBtn +='</a>';
+	   
+	   var label = '<span class="reportName">'+ report.name +'</span>' + ''+deleteBtn+ '<span class="reportDate">[' + datetime + ']</span>'  ;
 	   itemHTML = '<li class="reportLink listItem" revId="'+report.revisionID+'" repId="'+report.id+'"  >' + label;
 	   itemHTML += '</li>'
 	   

@@ -117,14 +117,28 @@ public class ValidationEndpoint {
       
       
       mgr.makePersistent(report);
-      
-      
-      
 
     } finally {
       mgr.close();
     }
     return validationProjects;
+  }
+  
+  @ApiMethod(name = "validation.deleteReport",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public List<ValidationReport> deleteReport(@Named("reportID") Long repID, User user) throws UnauthorizedException {
+    List<ValidationReport> reports = new ArrayList<ValidationReport>();
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      ValidationReport report = mgr.getObjectById(ValidationReport.class, repID);
+      
+      mgr.deletePersistent(report);
+    } finally {
+      mgr.close();
+    }
+    return reports;
   }
 
   
