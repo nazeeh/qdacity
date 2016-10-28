@@ -93,6 +93,8 @@ var editorCtrl = {};
 		$('#btnInsertCode').show();
 		$('#btnRemoveCode').show();
 		$('#settings').show();
+	} else {
+		easytree.options.enableDnd = false;
 	}
 
 	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type='+project_type);
@@ -301,7 +303,13 @@ var easytree = $('#easytree-section').easytree({
 function setupUI(){
 	if (account.isSignedIn()){
 	var profile = account.getProfile();
-
+	
+//	easytree = $('#easytree-section').easytree({
+//		enableDnd : false,
+//		dropped : dropped,
+//		stateChanged : codesystemStateChanged
+//	});
+	//easytree.options.enableDnd = false;
 	$('#navAccount').show();
 	$('#navSignin').hide();
 	
@@ -320,6 +328,7 @@ function setupUI(){
 	else {
 		$('#navAccount').hide();
 	}
+	//resizeHandler();
 }
 
 function splitupCoding(selection){
