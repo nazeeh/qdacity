@@ -1,4 +1,5 @@
 import Account from './Account.jsx';
+import ReactLoading from './ReactLoading.jsx';
 import BinaryDecider from './modals/BinaryDecider.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/Vex/js/vex.combined.min.js';
@@ -13,12 +14,14 @@ $script('https://apis.google.com/js/platform.js', function() {
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 var account; 
+var signInLoader;
 
 function signout(){
 	window.open("https://accounts.google.com/logout");
 }
 
 window.init = function() {
+	signInLoader = ReactDOM.render(<ReactLoading />, document.getElementById('loaderMount'));
 	
 	var isRegistered=getCookie("isRegistered");
     if (isRegistered == "true") {
@@ -86,6 +89,10 @@ function registerAccount(){
 
 function signIn(event){
 	event.preventDefault();
+	$('#signinGoogleBtn').hide();
+	$('.signin').css( "display", "inline-block" );
+	//signInLoader.show();
+	
 	   if (account.isSignedIn()) {
 		   redirect();
 	    }
