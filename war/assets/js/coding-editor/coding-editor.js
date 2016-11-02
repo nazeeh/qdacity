@@ -32,13 +32,13 @@ var max_coding_id;
 var codeMemoEditor;
 var cbEditorDef;
 var cbEditorWhen;
-var cbEditorWenNot;
+var cbEditorWhenNot;
 
 var account;
 var codingsView;
 
 
-var documentsView = {};
+var documentsView;
 var documentsCtrl = {};
 
 var editorCtrl = {};
@@ -403,9 +403,11 @@ function fillPropertiesView(codeID) {
 }
 
 function setDocumentList(projectID) {
-	documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} />, document.getElementById('documentView'));
-	documentsCtrl = new DocumentsCtrl(documentsView, project_id);
-	codingsView = new CodingsView(editorCtrl, documentsCtrl);
+	if (typeof documentsView == 'undefined'){
+		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} />, document.getElementById('documentView'));
+		documentsCtrl = new DocumentsCtrl(documentsView, project_id);
+		codingsView = new CodingsView(editorCtrl, documentsCtrl);
+	}
 	
 	documentsCtrl.setupView(project_id, project_type).then(function(codeName) {
 		addCodingCountToTree();
@@ -420,11 +422,15 @@ function listCodes() {
 	var codes = [];
 	gapi.client.qdacity.codesystem.getCodeSystem({'id' : codesystem_id }).execute(function(resp) {
 		if (!resp.code) {
+			// clear codesystem in easytree object
+			easytree.rebuildTree([]);
+			
+			
 			resp.items = resp.items || [];
-			var result = "";
+			//var result = "";
 
 			for (var i = 0; i < resp.items.length; i++) {
-				result = result + resp.items[i].name + "..." + "<b>" + resp.items[i].author + "</b>" + "[" + resp.items[i].id + "]" + "   {" + resp.items[i].subCodesIDs + "}" + "<br/>";
+				//result = result + resp.items[i].name + "..." + "<b>" + resp.items[i].author + "</b>" + "[" + resp.items[i].id + "]" + "   {" + resp.items[i].subCodesIDs + "}" + "<br/>";
 
 				codes.push(resp.items[i]);
 			}
