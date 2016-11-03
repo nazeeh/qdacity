@@ -65,7 +65,7 @@ public class UserEndpoint {
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, com.google.appengine.api.users.User user) throws UnauthorizedException {
 		
-				Authorization.checkAuthorization(projectID, user);
+				//Authorization.checkAuthorization(projectID, user); //FIXME consider public projects
 				
 				//Set filter
 				List<Long> idsToFilter = new ArrayList<Long>();

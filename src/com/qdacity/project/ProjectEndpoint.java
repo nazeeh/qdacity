@@ -129,11 +129,11 @@ public class ProjectEndpoint {
       case "VALIDATION":
         project = mgr.getObjectById(ValidationProject.class, id);
         com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-        Authorization.checkAuthorization((ValidationProject)project, dbUser);
+        //Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
         break;
       default:
         project = mgr.getObjectById(Project.class, id);
-        Authorization.checkAuthorization((Project)project, user);
+        //Authorization.checkAuthorization((Project)project, user);
         break;
       }
 			

@@ -243,6 +243,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	              				$('.deleteReportBtn').removeClass('hidden');
 	              				$('.createReportBtn').removeClass('hidden');
 	              				$('#codingEditorBtn').removeClass('hidden');
+	              				$('#editDescriptionBtn').removeClass('hidden');
+	              				
 	              				$('.report').addClass('reportLink');
 	              			}else{
 	              				$('.report').removeClass('reportLink');
@@ -250,6 +252,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	              				$('.deleteReportBtn').addClass('hidden');
 	              				$('.createReportBtn').addClass('hidden');
 	              				$('#codingEditorBtn').addClass('hidden');
+	              				$('#editDescriptionBtn').addClass('hidden');
 	              			}
 	                       
 	
