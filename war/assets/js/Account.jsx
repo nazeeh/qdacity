@@ -55,6 +55,14 @@ export default class Account extends React.Component  {
 		  return promise;
   }
   
+  isProjectOwner(user, prjId){
+  	var isOwner = false;
+  	user.projects.forEach(function(userPrjId) {
+     	if (userPrjId === prjId) isOwner = true;
+     });
+     return isOwner;
+  }
+  
   registerCurrentUser(givenName, surName, email){
 	  var promise = new Promise(
 			  function(resolve, reject) {

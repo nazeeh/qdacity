@@ -48,7 +48,7 @@ export default class Timeline {
 	this.html += '<div class="timeline-item">';
 	
 	this.html += ' <h3 class="timeline-header timelineUserName"><b> Validation Projects </b> ';
-	this.html += '<a revId="'+validationProjects[0].revisionID+'" class="createReportBtn btn  btn-default btn-sm pull-right" style="margin-top:-6px;   padding: 5px 10px;" href="#">';
+	this.html += '<a revId="'+validationProjects[0].revisionID+'" class="createReportBtn btn  btn-default btn-sm pull-right hidden" style="margin-top:-6px;   padding: 5px 10px;" href="#">';
 	this.html += '<i style="font-size: 18px;" class="fa fa-plus-circle  pull-left"></i>';
 	this.html += 'Create Report';
 	this.html += '</a> </h3>';
@@ -80,7 +80,7 @@ export default class Timeline {
 	   var linkToProject = isValidationCoder || this.isProjectOwner || this.isAdmin;
 	   if (linkToProject){
 		   itemHTML = '<li class="listItem validationProjectLink" prjId="'+validationProject.id+'"  ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
-	   } else itemHTML = '<li class="" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
+	   } else itemHTML = '<li class="listItem" ><span class="project_name">'+validationProject.creatorName+'</span><span class="project_id hidden">'+validationProject.id+'</span>';
 	   
 	   // Delete Project Btn if the user is admin, or owner of the project
 	   var showDeleteBtn = this.isAdmin || this.isProjectOwner;
@@ -125,13 +125,13 @@ export default class Timeline {
 	   var datetime = report.datetime;
 	   if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 	   else datetime = "";
-	   var deleteBtn ='<a href="" repId="'+report.id+'" class="deleteReportBtn btn  fa-stack fa-lg" style="float:right; margin-top:-18px; ">';
+	   var deleteBtn ='<a href="" repId="'+report.id+'" class="deleteReportBtn btn  fa-stack fa-lg hidden" style="float:right; margin-top:-18px; ">';
 	   deleteBtn +='<i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 	   deleteBtn +='<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 	   deleteBtn +='</a>';
 	   
 	   var label = '<span class="reportName">'+ report.name +'</span>' + ''+deleteBtn+ '<span class="reportDate">[' + datetime + ']</span>'  ;
-	   itemHTML = '<li class="reportLink listItem" revId="'+report.revisionID+'" repId="'+report.id+'"  >' + label;
+	   itemHTML = '<li class="reportLink listItem report" revId="'+report.revisionID+'" repId="'+report.id+'"  >' + label;
 	   itemHTML += '</li>'
 	   
 	   return itemHTML;

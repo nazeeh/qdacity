@@ -203,6 +203,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	gapi.client.qdacity.project.listRevisions({'projectID': project_id}).execute(function(resp) {
               	 if (!resp.code) {
               		userPromise.then(function(user){
+              			
               			$("#revision-timeline").empty();
                   		resp.items = resp.items || [];
                   		var snapshots = [];
@@ -234,9 +235,22 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	
 	                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
 	                        }
-                  		
                         
 	                        timeline.addToDom("#revision-timeline");
+	                        
+	                        if (account.isProjectOwner(user, project_id)) {
+	              				$('#newRevisionBtn').removeClass('hidden');
+	              				$('.deleteReportBtn').removeClass('hidden');
+	              				$('.createReportBtn').removeClass('hidden');
+	              				$('#codingEditorBtn').removeClass('hidden');
+	              				$('.report').addClass('reportLink');
+	              			}else{
+	              				$('.report').removeClass('reportLink');
+	              				$('#newRevisionBtn').addClass('hidden');
+	              				$('.deleteReportBtn').addClass('hidden');
+	              				$('.createReportBtn').addClass('hidden');
+	              				$('#codingEditorBtn').addClass('hidden');
+	              			}
 	                       
 	
 	                        $( ".deleteRevisionBtn" ).click(function() {
@@ -261,6 +275,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	                        	var repId = $( this ).attr("repId");
 	                        	showValidationReports(project.getReport(revId, repId));
 	                        });
+	                        
 	                        
 	                        $( ".validationProjectLink" ).click(function() {
 	                        	var prjId = $( this ).attr("prjId");
