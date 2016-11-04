@@ -181,7 +181,6 @@ export default class DocumentsCtrl {
 		var _this = this;
 		  var promise = new Promise(
 			  function(resolve, reject) {
-				  $("#documents-ui").LoadingOverlay("show");
 					gapi.client.qdacity.documents.getTextDocument({'id' : project_id, 'projectType' : project_type}).execute(function(resp) {
 						if (!resp.code) {
 							resp.items = resp.items || [];
@@ -193,8 +192,7 @@ export default class DocumentsCtrl {
 						} else{
 							reject();
 						}
-
-						$("#documents-ui").LoadingOverlay("hide");
+						$("#documentsLoadingDiv").addClass('hidden'); 
 					});
 				}
 

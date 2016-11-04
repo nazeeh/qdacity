@@ -2,6 +2,7 @@ import DocumentsView from './DocumentsView.jsx';
 import CodingsView from './CodingsView.js';
 
 import Account from '../Account.jsx';
+import ReactLoading from '../ReactLoading.jsx';
 import DocumentsCtrl from './DocumentsCtrl';
 import EditorCtrl from './EditorCtrl';
 import Prompt from '../modals/Prompt';
@@ -44,6 +45,9 @@ var documentsCtrl = {};
 var editorCtrl = {};
 
   window.init = function()  {
+	 
+	ReactDOM.render(<ReactLoading />, document.getElementById('documentsLoaderMount'));
+	ReactDOM.render(<ReactLoading />, document.getElementById('codesystemLoaderMount'));
 	  
 	editorCtrl = new EditorCtrl(easytree);
 	createCodeMemoEditor(); 
@@ -76,7 +80,6 @@ var editorCtrl = {};
 	$("#codePropColor").colorpicker();
 
 	
-	$.LoadingOverlay("show");
 	$("#footer").hide();
 	$('#navAccount').hide();
 
@@ -419,7 +422,6 @@ function setDocumentList(projectID) {
 
 // List Codes function that will execute the listCode call
 function listCodes() {
-	$("#codesystem-ui").LoadingOverlay("show");
 	var codes = [];
 	gapi.client.qdacity.codesystem.getCodeSystem({'id' : codesystem_id }).execute(function(resp) {
 		if (!resp.code) {
@@ -458,7 +460,8 @@ function listCodes() {
 		}
 		activateRootNode();
 		addCodingCountToTree();
-		$("#codesystem-ui").LoadingOverlay("hide");
+		$("#codesystemLoadingDiv").addClass("hidden");
+		
 	});
 }
 
