@@ -33,6 +33,7 @@ import com.google.appengine.api.users.User;
 
 
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -210,6 +211,57 @@ public class CodeEndpoint {
 			mgr.close();
 		}
 	}
+	
+	@ApiMethod(name = "codes.relocateCode",  scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public Code relocateCode(@Named("codeId")  Long codeID, @Named("newParentID")  Long newParentID, User user) throws UnauthorizedException {
+    //Fixme Authorization
+    Code code = null; 
+    PersistenceManager mgr = getPersistenceManager();
+    try {
+      code = mgr.getObjectById(Code.class, codeID);
+      Authorization.checkAuthorization(code, user);
+      
+      Long oldParentID = code.getParentID();
+      Code oldParent = getCode(oldParentID, code.getCodesystemID());
+      Code newParent = getCode(newParentID, code.getCodesystemID());
+      
+      oldParent.removeSubCodeID(code.getCodeID());
+      newParent.addSubCodeID(code.getCodeID());
+      code.setParentID(newParentID);
+      
+      mgr.makePersistent(oldParent);
+      mgr.makePersistent(newParent);
+      mgr.makePersistent(code);
+      
+    } finally {
+      mgr.close();
+    }
+    return code;
+  }
+	
+	private Code getCode(Long codeID, Long Codesystem){
+	    Code code = null;
+	  
+      PersistenceManager mgr = getPersistenceManager();
+      try {
+
+        Query query = mgr.newQuery(Code.class);
+        
+        query.setFilter( "codeID == :code && codesystemID == :codesystem");
+        Map<String, Long> params = new HashMap();
+        params.put("code", codeID);
+        params.put("codesystem", Codesystem);
+        
+        code = ((List<Code>) query.executeWithMap(params)).get(0);
+        
+      } finally {
+        mgr.close();
+      }
+      return code;
+  }
 	
 	private void removeSubCodes(Code code){
 	  List<Long> subcodeIDs = code.getSubCodesIDs();

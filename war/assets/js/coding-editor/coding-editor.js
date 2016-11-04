@@ -296,7 +296,8 @@ function resizeElements() {
 var easytree = $('#easytree-section').easytree({
 	enableDnd : true,
 	dropped : dropped,
-	stateChanged : codesystemStateChanged
+	stateChanged : codesystemStateChanged,
+	ordering : 'orderedFolder'
 });
 
 
@@ -519,10 +520,19 @@ function updateCodeBookEntry(codeBookEntry){
 
 
 function relocateCode(code, newParentCode) {
-	setSubCodeIDs(easytree.getNode(code.parentID));
-	setSubCodeIDs(newParentCode);
-	changeParentId(code, newParentCode.id);
+//	setSubCodeIDs(easytree.getNode(code.parentID));
+//	setSubCodeIDs(newParentCode);
+//	changeParentId(code, newParentCode.id);
+	
+	gapi.client.qdacity.codes.relocateCode({	'codeId' : code.dbID , 'newParentID' : newParentCode.id}).execute(function(resp) {
+		if (!resp.code) {
+			code.parentID = newParentCode.id;
+			console.log( "Updated logation of code:"+ resp.id + " |  "+ resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+		}
+	});
 }
+
+
 
 function setSubCodeIDs(node) {
 	var _ID = node.dbID;
