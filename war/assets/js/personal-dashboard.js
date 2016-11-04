@@ -101,23 +101,18 @@ function createNewProject(name, description) {
 	});
 }
 
-function addProjectToUser(projectID, notificationID, type, originUser, user, datetime, subject, message) {
-	gapi.client.qdacity.project.addOwner({ 'projectID': projectID }).execute(function (resp) {
+function acceptInvitation(notification) {
+	
+	gapi.client.qdacity.project.addOwner({ 'projectID': notification.project }).execute(function (resp) {
 		if (!resp.code) {} else {
 			window.alert(resp.code);
 		}
 	});
 
 	var requestData = {};
-	requestData.id = notificationID;
-	requestData.project = projectID;
-	requestData.type = type;
-	requestData.originUser = originUser.toString();
-	requestData.user = user.toString();
+	requestData = notification;
 	requestData.settled = true;
-	requestData.datetime = datetime;
-	requestData.subject = subject;
-	requestData.message = message;
+	
 	gapi.client.qdacity.user.updateUserNotification(requestData).execute(function (resp) {
 		if (!resp.code) {
 			fillNotificationList();
@@ -197,6 +192,15 @@ function attachDeleteHandler(){
 			break;
 		}
     });
+
+	$('.leavePrjBtn').click(function(e) {
+		e.stopPropagation();
+		var projectType = $( this ).attr("prjType");
+    	var projectId = $( this ).attr("prjId");
+    	leaveProject(projectType, projectId);
+
+    });
+	
 }
 
 function addValidationProjects(){
@@ -223,22 +227,13 @@ function fillNotificationList() {
 			resp.items = resp.items || [];
 
 			for (var i = 0; i < resp.items.length; i++) {
-				var id = resp.items[i].id;
-				var datetime = resp.items[i].datetime;
-				var user = resp.items[i].user;
-				var originUser = resp.items[i].originUser;
-				var type = resp.items[i].type;
-				var project = resp.items[i].project;
-				var subject = resp.items[i].subject;
-				var message = resp.items[i].message;
-				var settled = resp.items[i].settled;
-
-				switch (type) {
+				var item = resp.items[i];
+				switch (item.type) {
 					case "INVITATION":
-						addInvitationNotification(id, project, subject, message, settled, type, originUser, user, datetime);
+						addInvitationNotification(item);
 						break;
 					case "VALIDATION_REQUEST":
-						addValidationRequestNotification(resp.items[i]);
+						addValidationRequestNotification(item);
 
 						break;
 					default:
@@ -246,6 +241,13 @@ function fillNotificationList() {
 
 				}
 			}
+			
+			$('.notificationAccept').click(function() {
+				var notificationString = $( this ).attr("notification");
+				var notificationObj = JSON.parse(notificationString);
+				acceptInvitation(notificationObj);
+		    });
+			
 			
 			bindNotificationBtns();
 			
@@ -307,8 +309,8 @@ function deleteValidationProject(projectID) {
 	});
 }
 
-function leaveProject(projectID) {
-	gapi.client.qdacity.project.removeUser({ 'projectID': projectID }).execute(function (resp) {
+function leaveProject(prjType, prjID) {
+	gapi.client.qdacity.project.removeUser({ 'projectID': prjID }).execute(function (resp) {
 		if (!resp.code) {
 			fillProjectsList();
 		}
@@ -338,7 +340,7 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 	html += '</a>';
 
 	// Leave Project Btn
-	html += '<a href="" onclick="leaveProject(' + projectID + ')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+	html += '<a prjId="'+projectID+'" prjType="'+projectType+'"  class=" leavePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
 	html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 	html += '<i  class="fa fa-sign-out  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 	html += '</a>';
@@ -353,27 +355,27 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 	$("#project-list").append(html);
 }
 
-function addInvitationNotification(notificationID, projectID, subject, message, settled, type, originUser, user, datetime) {
+function addInvitationNotification(notification) {
 
 	var html = '<li>';
-	html += '<span class="inviting_user">' + subject + '</span><br/>';
-	html += '<span class="project_name" style="font-size:20px;"> ' + message + '</span>';
-	html += '<span class="project_id hidden">' + projectID + '</span>';
-	html += '<span class="notification_date hidden">' + datetime + '</span>';
-	html += '<span class="notification_id hidden">' + notificationID + '</span>';
+	html += '<span class="inviting_user">' + notification.subject + '</span><br/>';
+	html += '<span class="project_name" style="font-size:20px;"> ' + notification.message + '</span>';
+	html += '<span class="project_id hidden">' + notification.projectID + '</span>';
+	html += '<span class="notification_date hidden">' + notification.datetime + '</span>';
+	html += '<span class="notification_id hidden">' + notification.notificationID + '</span>';
 
-	if (settled) {
+	if (notification.settled) {
 		html += '<a class=" fa-lg" style="color:green; float:right; margin-top:-15px; ">';
 		html += '<i  class="fa fa-check fa-2x "></i>';
 		html += '</a>';
 	} else {
 		//Reject Button
-		html += '<a onclick="myAlert(' + projectID + ')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
+		html += '<a onclick="myAlert(' + notification.projectID + ')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
 		html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 		html += '<i  class="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 		html += '</a>';
 		//Accept Button
-		html += '<a onclick="addProjectToUser(' + projectID + ',' + notificationID + ',\'' + type + '\',\'' + originUser + '\',\'' + user + '\',\'' + datetime + '\',\'' + subject + '\',\'' + message + '\')" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
+		html += '<a notification="'+JSON.stringify(notification).replace(/"/g, '&quot;')+'" class=" btn  fa-stack fa-lg notificationAccept" style="float:right; margin-top:-22px; ">';
 		html += ' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 		html += '<i  class="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>';
 		html += '</a>';

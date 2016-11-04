@@ -260,7 +260,12 @@ public class ProjectEndpoint {
 			if (userID != null) project.addOwner(userID);
 			else project.addOwner(user.getUserId());
 			
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			dbUser.addProjectAuthorization(projectID);
+			
 			mgr.makePersistent(project);
+			mgr.makePersistent(dbUser);
+			
 		} finally {
 			mgr.close();
 		}
@@ -317,10 +322,17 @@ public class ProjectEndpoint {
     try {
       project = mgr.getObjectById(Project.class, projectID);
       
-      if (userID != null) project.removeUser(userID);
-      else project.removeUser(user.getUserId());
+      String userIdToRemove = "";
       
+      if (userID != null) userIdToRemove = userID;
+      else userIdToRemove = user.getUserId();
+      project.removeUser(userIdToRemove);
       mgr.makePersistent(project);
+      
+      com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
+      dbUser.removeProjectAuthorization(projectID);
+      mgr.makePersistent(dbUser);
+      
     } finally {
       mgr.close();
     }
