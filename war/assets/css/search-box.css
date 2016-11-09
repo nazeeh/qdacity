@@ -8,7 +8,6 @@
 .projectlist-menu .searchfield{
 	flex:1;
 	margin-right: 5px;
-	margin-top:12px;
 }
 .projectlist-menu .newProjectBtn{
 	margin-top:20px;
@@ -17,12 +16,9 @@
 
 .searchfield {
   display:flex;
-  position:realtive;
-  margin:0.7em auto;
   flex-direction:row;
   width: 100px;
-  float:left;
-  
+  margin-bottom: 5px;
 
 }
 

@@ -245,6 +245,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	              				$('#codingEditorBtn').removeClass('hidden');
 	              				$('#editDescriptionBtn').removeClass('hidden');
 	              				
+	              				$('#inviteUser').removeClass('hidden');
+	              				
 	              				$('.report').addClass('reportLink');
 	              			}else{
 	              				$('.report').removeClass('reportLink');
@@ -253,6 +255,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	              				$('.createReportBtn').addClass('hidden');
 	              				$('#codingEditorBtn').addClass('hidden');
 	              				$('#editDescriptionBtn').addClass('hidden');
+	              				$('#inviteUser').addClass('hidden');
 	              			}
 	                       
 	
