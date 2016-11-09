@@ -334,10 +334,12 @@ function addProjectToProjectList(projectID, projectName, projectType) {
 	html += '</span>';
 
 	// Delete Project Btn
-	html += '<a  prjId="'+projectID+'" prjType="'+projectType+'" class="deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-	html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
-	html += '<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
-	html += '</a>';
+	if (projectType === "PROJECT"){
+		html += '<a  prjId="'+projectID+'" prjType="'+projectType+'" class="deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
+		html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
+		html += '<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
+		html += '</a>';
+	}
 
 	// Leave Project Btn
 	html += '<a prjId="'+projectID+'" prjType="'+projectType+'"  class=" leavePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
