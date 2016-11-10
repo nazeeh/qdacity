@@ -21,5 +21,25 @@
     <servlet-name>SystemServiceServlet</servlet-name>
     <url-pattern>/_ah/spi/*</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>letsencrypt</servlet-name>
+    <servlet-class>com.qdacity.LetsencryptServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>letsencrypt</servlet-name>
+    <url-pattern>/.well-known/acme-challenge/*</url-pattern>
+  </servlet-mapping>
+  
+  <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>qdacity</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+  
 
 </web-app>
