@@ -7,6 +7,7 @@ import 'script!../../components/listJS/list.js';
 import 'script!../../components/listJS/list.pagination.js';
 import 'script!../../components/raphael/raphael-min.js';
 import 'script!../../components/morrisjs/morris.min.js';
+import BinaryDecider from './modals/BinaryDecider.js';
 
 import $script from 'scriptjs';
 
@@ -195,10 +196,15 @@ function attachDeleteHandler(){
 
 	$('.leavePrjBtn').click(function(e) {
 		e.stopPropagation();
-		var projectType = $( this ).attr("prjType");
-    	var projectId = $( this ).attr("prjId");
-    	leaveProject(projectType, projectId);
-
+		var element = $(this);
+		var decider = new BinaryDecider('Please confirm leaving this project',  'Cancel', 'Leave' );
+		  decider.showModal().then(function(value){
+			  if (value == 'optionB'){
+				var projectType = element.attr("prjType");
+    	        var projectId = element.attr("prjId");
+    	        leaveProject(projectType, projectId);
+			  }
+		  });
     });
 	
 }
