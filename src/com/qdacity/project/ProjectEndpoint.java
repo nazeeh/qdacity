@@ -459,7 +459,7 @@ public class ProjectEndpoint {
        for (String owner : owners) {
          UserNotification notification = new UserNotification();
          notification.setDatetime(new Date());
-         notification.setMessage("Project: " + project.getName() + "Rev. " + projectRevision.getRevision());
+         notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
          notification.setSubject("Validation request by <b>" + requestingUser.getGivenName() +" "+requestingUser.getSurName() +"</b>");
          notification.setOriginUser(user.getUserId());
          notification.setProject(revisionID);
@@ -469,6 +469,18 @@ public class ProjectEndpoint {
          
          mgr.makePersistent(notification);
       }
+       
+       UserNotification notification = new UserNotification();
+       notification.setDatetime(new Date());
+       notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
+       notification.setSubject("You have requiested access");
+       notification.setOriginUser(user.getUserId());
+       notification.setProject(revisionID);
+       notification.setSettled(false);
+       notification.setType(UserNotificationType.POSTED_VALIDATION_REQUEST);
+       notification.setUser(user.getUserId());
+       
+       mgr.makePersistent(notification);
        
      } finally {
        mgr.close();
@@ -499,6 +511,21 @@ public class ProjectEndpoint {
        project = mgr.makePersistent(project);
        
        TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), true, user);
+       
+       // Notify user of accepted request
+       UserNotification notification = new UserNotification();
+       notification.setDatetime(new Date());
+       notification.setMessage(project.getName() + " (Revision " + project.getRevision() + " )");
+       notification.setSubject("Your request was granted");
+       notification.setOriginUser(user.getUserId());
+       notification.setProject(revisionID);
+       notification.setSettled(false);
+       notification.setType(UserNotificationType.VALIDATION_REQUEST_GRANTED);
+       notification.setUser(user.getUserId());
+       
+       mgr.makePersistent(notification);
+       
+       
      } finally {
        mgr.close();
      }

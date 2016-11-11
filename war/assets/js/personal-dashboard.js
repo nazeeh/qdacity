@@ -242,6 +242,14 @@ function fillNotificationList() {
 						addValidationRequestNotification(item);
 
 						break;
+					case "POSTED_VALIDATION_REQUEST":
+						addPostedRequestNotification(item);
+
+						break;
+					case "VALIDATION_REQUEST_GRANTED":
+						addRequestGrantedNotification(item);
+
+						break;
 					default:
 						break;
 
@@ -401,6 +409,50 @@ function addValidationRequestNotification(notification) {
 	$("#notification-list").prepend(html);
 	
 }
+
+function addPostedRequestNotification(notification) {
+
+	var html = '<li>';
+	html += '<span class="inviting_user">' + notification.subject + '</span><br/>';
+	html += '<span class="project_name" style="font-size:20px;"> ' + notification.message + '</span>';
+	html += '<span class="project_id hidden">' + notification.projectID + '</span>';
+	html += '<span class="notification_date hidden">' + notification.datetime + '</span>';
+	html += '<span class="notification_id hidden">' + notification.notificationID + '</span>';
+	var notificationString = "";
+
+	html += '<a class=" fa-lg" style="color:grey; float:right; margin-top:-15px; ">';
+	html += '<i  class="fa fa-key fa-2x "></i>';
+	html += '</a>';
+
+
+	html += '</li>';
+	
+	$("#notification-list").prepend(html);
+	
+}
+
+function addRequestGrantedNotification(notification) {
+
+	var html = '<li>';
+	html += '<span class="inviting_user">' + notification.subject + '</span><br/>';
+	html += '<span class="project_name" style="font-size:20px;"> ' + notification.message + '</span>';
+	html += '<span class="project_id hidden">' + notification.projectID + '</span>';
+	html += '<span class="notification_date hidden">' + notification.datetime + '</span>';
+	html += '<span class="notification_id hidden">' + notification.notificationID + '</span>';
+	var notificationString = "";
+
+	html += '<a class=" fa-lg" style="color:green; float:right; margin-top:-15px; ">';
+	html += '<i  class="fa fa-key fa-2x "></i>';
+	html += '</a>';
+
+
+	html += '</li>';
+	
+	$("#notification-list").prepend(html);
+	
+}
+
+
 
 function bindNotificationBtns(){
 	$( ".settleNotificationBtn" ).click(function() {
