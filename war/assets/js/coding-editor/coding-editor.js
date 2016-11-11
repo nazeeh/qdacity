@@ -96,6 +96,7 @@ var editorCtrl = {};
 		$('#btnInsertCode').show();
 		$('#btnRemoveCode').show();
 		$('#settings').show();
+		$('.projectsOnly').removeClass('projectsOnly');
 	} else {
 		easytree.options.enableDnd = false;
 	}

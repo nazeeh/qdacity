@@ -70,3 +70,6 @@ iframe {
 	margin-top:10px !important;
 }
 
+.projectsOnly{
+	display:none;
+}
