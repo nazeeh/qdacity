@@ -3816,8 +3816,7 @@ proto.setCoding = function ( codingID, codeID, codeName, author) {
             'codeName' : codeName,
             'title' : codeName,
             'data-toggle' : 'tooltip',
-            'data-placement' : 'bottom',
-            style: 'background-color: #00e7e7;'
+            'data-placement' : 'bottom'
         }
     }, null);
     
