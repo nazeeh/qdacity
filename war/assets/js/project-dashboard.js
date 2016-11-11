@@ -46,7 +46,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			  
 			fillUserList();
 			
-			createAreaChart();
+			//createAreaChart();
 			
 			setProjectProperties();
 			setRevisionHistory();
