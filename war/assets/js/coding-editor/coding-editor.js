@@ -156,8 +156,7 @@ var editorCtrl = {};
 	document.getElementById('btnRemoveCoding').onclick = function() {
 		var activeID = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
-
-			var slection = editor['removeCoding'](activeID);
+			var slection = editorCtrl.removeCoding(activeID);
 			splitupCoding(slection).then(function(value) {
 				easytree.getNode(activeID).codingCount--;
 				rebuildTree();

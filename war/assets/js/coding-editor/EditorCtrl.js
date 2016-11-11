@@ -189,6 +189,10 @@ export default class EditorCtrl {
 		this.addCodingBrackets();
 	}
 	
+	removeCoding(copdingID){
+		return this.editor['removeCoding'](copdingID);
+	}
+	
 	setHTML(content){
 		this.editor.setHTML(content);
 		this.addCodingBrackets();
