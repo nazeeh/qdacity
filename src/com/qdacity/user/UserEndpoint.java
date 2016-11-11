@@ -22,6 +22,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -36,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
@@ -93,12 +96,71 @@ public class UserEndpoint {
 					dbUser.setSurName((String) result.getProperty("surName"));
 					dbUser.setProjects((List<Long>) result.getProperty("projects"));
 					dbUser.setId((String) result.getProperty("id"));
+					dbUser.setType(UserType.valueOf((String)result.getProperty("type")));
 					
 					users.add(dbUser);
 				}
 				
 				return users;
 	}
+	
+	 @SuppressWarnings({ "unchecked", "unused" })
+	  @ApiMethod(name = "user.findUsers", path = "userlist",  scopes = {Constants.EMAIL_SCOPE},
+	      clientIds = {Constants.WEB_CLIENT_ID, 
+	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	         audiences = {Constants.WEB_CLIENT_ID})
+	  public List<User> findUsers(
+	      @Nullable @Named("cursor") String cursorString,
+	      @Nullable @Named("limit") Integer limit, @Named("searchTerm") String searchTerm, com.google.appengine.api.users.User user) throws UnauthorizedException {
+	    
+	        //Authorization.checkAuthorization(projectID, user); //FIXME only ADMIN
+	        
+	   
+	        List<Filter> filterList = new ArrayList<Filter>();
+	        //Set filter
+	        filterList.add(new FilterPredicate("givenName", FilterOperator.EQUAL, searchTerm));
+	        filterList.add(new FilterPredicate("surName", FilterOperator.EQUAL, searchTerm));
+	        filterList.add(new FilterPredicate("email", FilterOperator.EQUAL, searchTerm));
+//	        
+//	        Filter filterGivenName = new FilterPredicate("givenName", FilterOperator.EQUAL, searchTerm);
+//	        Filter filterSurName = new FilterPredicate("surName", FilterOperator.EQUAL, searchTerm);
+//	        Filter filterEmail = new FilterPredicate("email", FilterOperator.EQUAL, searchTerm);
+//	        
+	        
+	        
+	        CompositeFilter compFilter = new CompositeFilter(CompositeFilterOperator.OR, filterList);
+	        
+	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+
+	        com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("User").setFilter(compFilter);
+
+	        PreparedQuery pq = datastore.prepare(q);
+	        
+	        Calendar cal = Calendar.getInstance();
+	        
+	        Map<String, Integer> freq = new HashMap<String, Integer>();
+
+//	        List<User> users = (List<User>)(List<?>)Lists.newArrayList(  pq.asIterable() );
+	        
+	        List<User> users = new ArrayList<User>();
+	        
+	        for (Entity result : pq.asIterable()) {
+	          User dbUser = new User();
+	          
+	          Logger.getLogger("logger").log(Level.INFO,   "Found User: " + result.getKey().getName());
+	          dbUser.setId(result.getKey().getName());
+	          dbUser.setGivenName((String) result.getProperty("givenName"));
+	          dbUser.setSurName((String) result.getProperty("surName"));
+	          dbUser.setProjects((List<Long>) result.getProperty("projects"));
+	          dbUser.setType(UserType.valueOf((String)result.getProperty("type")));
+	          dbUser.setEmail((String) result.getProperty("email"));
+	          
+	          users.add(dbUser);
+	        }
+	        
+	        return users;
+	  }
 	
 	 @ApiMethod(name = "user.listValidationCoders", path = "validationProject",  scopes = {Constants.EMAIL_SCOPE},
 	      clientIds = {Constants.WEB_CLIENT_ID, 

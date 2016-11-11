@@ -7,6 +7,7 @@ module.exports = {
 		'personal-dashboard' :  './assets/js/personal-dashboard.js',
 		'index' : './assets/js/index.js',
 		'coding-editor' : './assets/js/coding-editor/coding-editor.js',
+		'admin' : './assets/js/admin/admin.js',
     },
     output: {
         path: __dirname,
@@ -20,7 +21,11 @@ module.exports = {
                 query: {
                   presets: ['es2015', 'react'],
                 },
-            }
+            },
+			  {
+    test: /\.css$/, 
+    loader: 'style-loader!css-loader?modules=true&localIdentName=[name]__[local]___[hash:base64:5]'
+}
         ]
     },
     plugins: [

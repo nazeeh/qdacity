@@ -446,8 +446,8 @@ function myAlert(message) {
 }
 
 function showNewProjectModal(){
-	var modal = new CustomForm('Create a new project');
-	modal.addTextInput('name', "Project Name", 'Name');
+	var modal = new CustomForm('Create a new project','');
+	modal.addTextInput('name', "Project Name", 'Name','');
 	modal.addTextField('desc', "Project Description", 'Description');
 	modal.showModal().then(function(data) {
 		createNewProject(data.name, data.desc);
