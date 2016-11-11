@@ -27,10 +27,10 @@ function setupUI(){
 	if (account.isSignedIn()){
 		$('#navAccount').show();
 		$('#navSignin').hide();
-		
+		$('#welcomeName').html(account.getProfile().getGivenName());
+		$('#welcome').removeClass('hidden');
 		fillProjectsList();
 		fillNotificationList();
-		createAreaChart();
 	}
 	else{
 		$('#navAccount').hide();
@@ -271,33 +271,6 @@ function fillNotificationList() {
 	});
 }
 
-function createAreaChart() {
-	$('#morris-area-chart').empty();  
-	gapi.client.qdacity.changelog.listChangeStats({ 'filterType': "user" }).execute(function (resp) {
-		if (!resp.code) {
-			if (typeof resp.items != 'undefined') {
-				var dataArray = [];
-				for (var i = 0; i < resp.items.length; i++) {
-					dataArray.push({
-						period: resp.items[i].label,
-						codesCreated: resp.items[i].codesCreated
-					});
-				}
-
-				Morris.Area({
-					element: 'morris-area-chart',
-					data: dataArray,
-					xkey: 'period',
-					ykeys: ['codesCreated'],
-					labels: ['Codes Created'],
-					pointSize: 3,
-					hideHover: 'auto',
-					resize: true
-				});
-			}
-		}
-	});
-}
 
 function deleteProject(projectID) {
 	gapi.client.qdacity.project.removeProject({ 'id': projectID }).execute(function (resp) {
