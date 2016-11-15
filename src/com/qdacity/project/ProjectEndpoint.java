@@ -2,6 +2,7 @@ package com.qdacity.project;
 
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
+import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
@@ -13,6 +14,8 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
+import com.qdacity.user.UserType;
+import com.qdacity.Sendgrid;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -21,6 +24,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,6 +133,8 @@ public class ProjectEndpoint {
       case "VALIDATION":
         project = mgr.getObjectById(ValidationProject.class, id);
         com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+        Authorization.checkAuthorization((ValidationProject)project, dbUser);
+        
         //Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
         break;
       default:
@@ -316,27 +322,35 @@ public class ProjectEndpoint {
       clientIds = {Constants.WEB_CLIENT_ID, 
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
-  public Project removeValidationCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
-    Project project = null;
+  public void removeUser(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+    
     PersistenceManager mgr = getPersistenceManager();
     try {
-      project = mgr.getObjectById(Project.class, projectID);
-      
       String userIdToRemove = "";
       
       if (userID != null) userIdToRemove = userID;
       else userIdToRemove = user.getUserId();
-      project.removeUser(userIdToRemove);
-      mgr.makePersistent(project);
       
-      com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
-      dbUser.removeProjectAuthorization(projectID);
-      mgr.makePersistent(dbUser);
+      if (projectType.equals("PROJECT")){
+        Project project = mgr.getObjectById(Project.class, projectID);
+  
+        project.removeUser(userIdToRemove);
+        mgr.makePersistent(project);
+        
+        com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
+        dbUser.removeProjectAuthorization(projectID);
+        mgr.makePersistent(dbUser);
+      } else if (projectType.equals("VALIDATION")){
+        ValidationProject project = mgr.getObjectById(ValidationProject.class, projectID);
+        Logger.getLogger("logger").log(Level.INFO, "ValidationCoders: " + project.getValidationCoders().toString());
+        project.removeValidationCoder(userIdToRemove);
+        mgr.makePersistent(project);
+        Logger.getLogger("logger").log(Level.INFO, "ValidationCoders: " + project.getValidationCoders().toString());
+      }
       
     } finally {
       mgr.close();
     }
-    return project;
   }
 	
 	@ApiMethod(name = "project.inviteUser",   scopes = {Constants.EMAIL_SCOPE},
@@ -492,7 +506,7 @@ public class ProjectEndpoint {
        clientIds = {Constants.WEB_CLIENT_ID, 
           com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
           audiences = {Constants.WEB_CLIENT_ID})
-   public ValidationProject createValidationProject(@Named("projectID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException {
+   public ValidationProject createValidationProject(@Named("projectID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException, JSONException {
 	   ProjectRevision project = null;
      ValidationProject cloneProject = null;
      PersistenceManager mgr = getPersistenceManager();
@@ -504,7 +518,7 @@ public class ProjectEndpoint {
        cloneProject.addValidationCoder(userID);
        com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, userID);
        
-       cloneProject.setCreatorName(validationCoder.getSurName());
+       cloneProject.setCreatorName(validationCoder.getGivenName() + " " +validationCoder.getSurName());
        //cloneProject.setRevisionID(project.getId());// FIXME Check why this works and previous assignments dont
        
        cloneProject = mgr.makePersistent(cloneProject);
@@ -521,9 +535,11 @@ public class ProjectEndpoint {
        notification.setProject(revisionID);
        notification.setSettled(false);
        notification.setType(UserNotificationType.VALIDATION_REQUEST_GRANTED);
-       notification.setUser(user.getUserId());
+       notification.setUser(userID);
        
        mgr.makePersistent(notification);
+       
+       sendEmailNotification(project, validationCoder);
        
        
      } finally {
@@ -532,7 +548,28 @@ public class ProjectEndpoint {
      return cloneProject;
    }
 	 
-	 @ApiMethod(name = "project.listRevisions",   scopes = {Constants.EMAIL_SCOPE},
+	 private void sendEmailNotification(ProjectRevision project, com.qdacity.user.User validationCoder) throws JSONException {
+	   Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER ,Credentials.SENDGRID_PW);
+	   
+	   String message = "Dear " +validationCoder.getGivenName() + ", \n";
+	   message += "Your request has been authorized, you may now code the data of project " + project.getName() +"\n";
+
+	   
+	    
+     // FIXME project number
+    mail.setFrom("QDAcity <support@qdacity.com>").setSubject("QDAcity Request Authorized").setText(" ").setHtml(message);
+
+    
+      String fullName = validationCoder.getGivenName() + " " + validationCoder.getSurName();
+      fullName = fullName.replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");
+      mail.addTo(validationCoder.getEmail(), fullName);
+
+    mail.send();
+    Logger.getLogger("logger").log(Level.INFO,   mail.getServerResponse());
+    
+  }
+
+  @ApiMethod(name = "project.listRevisions",   scopes = {Constants.EMAIL_SCOPE},
        clientIds = {Constants.WEB_CLIENT_ID, 
           com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
           audiences = {Constants.WEB_CLIENT_ID})
@@ -783,6 +820,7 @@ public class ProjectEndpoint {
      mgr.close();
    }
  }
+ 
  
  private void removeAllValidationProjects(Long revisionId) {
    PersistenceManager mgr = getPersistenceManager();

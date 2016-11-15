@@ -172,11 +172,11 @@ public class UserEndpoint {
 	  try {
       ValidationProject project = mgr.getObjectById(ValidationProject.class, projectID);
       List<String> validationCoders = project.getValidationCoders();
-      
-      Query userQuery = mgr.newQuery(User.class, ":p.contains(id)");
+      if (!validationCoders.isEmpty()){
+        Query userQuery = mgr.newQuery(User.class, ":p.contains(id)");
 
-      users = (List<User>) userQuery.execute(validationCoders);
-      
+        users = (List<User>) userQuery.execute(validationCoders);
+      }
     } finally {
       mgr.close();
     }
@@ -318,6 +318,7 @@ public class UserEndpoint {
 	public User insertUser(User user, com.google.appengine.api.users.User loggedInUser) {
 	  user.setId(loggedInUser.getUserId());
 	  user.setProjects(new ArrayList<Long>());
+	  user.setType(UserType.USER);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (user.id != null && containsUser(user)) {

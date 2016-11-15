@@ -257,6 +257,8 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	              				$('#editDescriptionBtn').addClass('hidden');
 	              				$('#inviteUser').addClass('hidden');
 	              			}
+	                        
+	                        if (project_type == "VALIDATION") $('#codingEditorBtn').removeClass('hidden');
 	                       
 	
 	                        $( ".deleteRevisionBtn" ).click(function() {
@@ -427,26 +429,25 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         function addValidationCoders(){
         	gapi.client.qdacity.user.listValidationCoders({'validationProject': project_id}).execute(function(resp) {
               	 if (!resp.code) {
-              		resp.items = resp.items || [];
+              		 if (typeof resp.items != 'undefined'){
+              			resp.items = resp.items || [];
+                  		
+                        for (var i=0;i<resp.items.length;i++) {
+                                var user_id = resp.items[i].id;
+                                var given_name = resp.items[i].givenName;
+                                var sur_name = resp.items[i].surName;
 
-                   for (var i=0;i<resp.items.length;i++) {
-                           var user_id = resp.items[i].id;
-                           var given_name = resp.items[i].givenName;
-                           var sur_name = resp.items[i].surName;
+                          		addUserToUserList(user_id, given_name + " " + sur_name);
+                        }
+                        var options = {
+                        	  valueNames: [ 'user_name', 'user_id' ]
+                        };
 
-                     		addUserToUserList(user_id, given_name + " " + sur_name);
-                   }
-                   var options = {
-                   	  valueNames: [ 'user_name', 'user_id' ]
-                   };
-
-                   var projectList = new List('user-section', options);
-
-
+                        var projectList = new List('user-section', options);
+              		 }
               	 }
-
               	 else{
-              		console.log(resp.code + " : " + resp.message);
+              		console.log(resp.code);
               	}
 
                });

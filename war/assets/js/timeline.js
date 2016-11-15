@@ -2,7 +2,8 @@ export default class Timeline {
   constructor(user, prjId) {
 	  
 	this.isAdmin = user.type === "ADMIN";
-	this.isProjectOwner = user.projects.indexOf(prjId) !== -1;
+	this.isProjectOwner = false;
+	if (typeof user.projects != 'undefined' ) this.isProjectOwner = user.projects.indexOf(prjId) !== -1;
 	this.user = user;
     this.html = "";
     this.revisionCount = 0;
@@ -75,7 +76,8 @@ export default class Timeline {
    
    addValidationProjectItem(validationProject){
 	   var itemHTML = "";
-	   var isValidationCoder = validationProject.validationCoders.indexOf(this.user.id) != -1;
+	   var isValidationCoder = false;
+		if (typeof validationProject.validationCoders != 'undefined') isValidationCoder =  validationProject.validationCoders.indexOf(this.user.id) != -1;
 	   
 	   var linkToProject = isValidationCoder || this.isProjectOwner || this.isAdmin;
 	   if (linkToProject){

@@ -155,10 +155,10 @@ var editorCtrl = {};
 	}
 
 	document.getElementById('btnRemoveCoding').onclick = function() {
-		var activeID = getActiveCode().id;
+		var activeID	 = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
 			var slection = editorCtrl.removeCoding(activeID);
-			splitupCoding(slection).then(function(value) {
+			splitupCoding(slection, activeID).then(function(value) {
 				easytree.getNode(activeID).codingCount--;
 				rebuildTree();
 				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
@@ -335,21 +335,27 @@ function setupUI(){
 	//resizeHandler();
 }
 
-function splitupCoding(selection){
+function splitupCoding(selection, codeID){
 	 var promise = new Promise(
 		  function(resolve, reject) {
 			  var anchor = $(selection._sel.anchorNode);
-				var codingID = anchor.next().attr('id');
-				if (codingID === anchor.prev().attr('id')){
+				var codingID = anchor.prev('coding[code_id='+codeID+']').attr('id');
+				if (typeof codingID == 'undefined') codingID = anchor.next('coding[code_id='+codeID+']').attr('id');
+				if (typeof codingID == 'undefined') codingID = anchor.parent().prev().find('coding[code_id='+codeID+']').last().attr('id');
+				if (typeof codingID == 'undefined') codingID = anchor.find('coding[code_id='+codeID+']').last().attr('id');
+				
+				var next = codingID === anchor.prev().attr('id');
+				var previousParagraph = anchor.parent().prev().find( 'coding[id='+codingID+']' );
+				//if (next){ // FIXME If a code is nested in many other codes, the coding is not the sibling or the a child of the parents next sibling
 					gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type}).execute(function(resp) {
 						anchor.nextAll('coding[id='+codingID+']').attr("id", resp.maxCodingID);
 						anchor.parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);
 						resolve();
 					});
-				}
-				else{
-					resolve();
-				}
+//				}
+//				else{
+//					resolve();
+//				}
 		  }
 	  );
 	 

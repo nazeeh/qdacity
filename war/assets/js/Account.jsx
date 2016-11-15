@@ -57,9 +57,11 @@ export default class Account extends React.Component  {
   
   isProjectOwner(user, prjId){
   	var isOwner = false;
-  	user.projects.forEach(function(userPrjId) {
-     	if (userPrjId === prjId) isOwner = true;
-     });
+  	if (typeof user.projects != 'undefined'){  	
+	  	user.projects.forEach(function(userPrjId) {
+	     	if (userPrjId === prjId) isOwner = true;
+	     });
+     }
      return isOwner;
   }
   

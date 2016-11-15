@@ -55,7 +55,7 @@ function redirect(){
 	 }, function(value) {
 		 var acc = account;
 		 var _this = this;
-		  var decider = new BinaryDecider('Dear Sir or Madam, \nI see your google account, but it is not yet registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account' );
+		  var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account' );
 		  decider.showModal().then(function(value){
 			  if (value == 'optionA') account.changeAccount(redirect,client_id,scopes);
 			  else registerAccount();
@@ -66,9 +66,9 @@ function registerAccount(){
 	var googleProfile = account.getProfile();
 	vex.dialog.open({
 		  message: 'Please confirm:',
-		  input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="'+googleProfile.Za+'" required />'+
-		   		'<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="'+googleProfile.Na+'" required />\n'
-		   		+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="'+googleProfile.hg +'" required />\n\n',
+		  input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="'+googleProfile.getGivenName()+'" required />'+
+		   		'<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="'+googleProfile.getFamilyName()+'" required />\n'
+		   		+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="'+googleProfile.getEmail() +'" required />\n\n',
 		  buttons: [
 		    $.extend({}, vex.dialog.buttons.YES, {
 		      text: 'Register'

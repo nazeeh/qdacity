@@ -161,7 +161,7 @@ function fillProjectsList() {
 			}
 			addValidationProjects();
 			
-			attachDeleteHandler();
+			
 			
 			var options = {
 				valueNames: ['project_name', 'project_id'],
@@ -220,6 +220,9 @@ function addValidationProjects(){
 
 				addProjectToProjectList(project_id, project_name, 'VALIDATION');
 			}
+			
+			attachDeleteHandler(); // for both projects and validation projects
+			
 		} else {
 			window.alert(resp.code);
 		}
@@ -297,10 +300,8 @@ function deleteValidationProject(projectID) {
 }
 
 function leaveProject(prjType, prjID) {
-	gapi.client.qdacity.project.removeUser({ 'projectID': prjID }).execute(function (resp) {
-		if (!resp.code) {
+	gapi.client.qdacity.project.removeUser({ 'projectID': prjID, 'projectType': prjType }).execute(function (resp) {
 			fillProjectsList();
-		}
 	});
 }
 

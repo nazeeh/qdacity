@@ -58,6 +58,11 @@ public class ValidationProject extends ProjectRevision {
     if (validationCoders == null) validationCoders = new ArrayList<String>();
     if (!validationCoders.contains(userID)) validationCoders.add(userID);
   }
+  
+  public void removeValidationCoder(String userID){
+    if (validationCoders == null) validationCoders = new ArrayList<String>();
+    if (validationCoders.contains(userID)) validationCoders.remove(userID);
+  }
 
 
   public double getParagraphFMeasure() {
