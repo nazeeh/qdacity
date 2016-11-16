@@ -9,6 +9,7 @@ import 'script!../../components/raphael/raphael-min.js';
 import 'script!../../components/morrisjs/morris.min.js';
 import BinaryDecider from './modals/BinaryDecider.js';
 
+
 import $script from 'scriptjs';
 
 $script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
@@ -349,7 +350,7 @@ function addInvitationNotification(notification) {
 
 	var html = '<li>';
 	html += '<span class="inviting_user">' + notification.subject + '</span><br/>';
-	html += '<span class="project_name" style="font-size:20px;"> ' + notification.message + '</span>';
+	html += '<span class="project_name"> ' + notification.message + '</span>';
 	html += '<span class="project_id hidden">' + notification.projectID + '</span>';
 	html += '<span class="notification_date hidden">' + notification.datetime + '</span>';
 	html += '<span class="notification_id hidden">' + notification.notificationID + '</span>';
@@ -380,26 +381,26 @@ function addValidationRequestNotification(notification) {
 
 	var html = '<li>';
 	html += '<span class="inviting_user">' + notification.subject + '</span><br/>';
-	html += '<span class="project_name" style="font-size:20px;"> ' + notification.message + '</span>';
+	html += '<span class="project_name" > ' + notification.message + '</span>';
 	html += '<span class="project_id hidden">' + notification.projectID + '</span>';
 	html += '<span class="notification_date hidden">' + notification.datetime + '</span>';
 	html += '<span class="notification_id hidden">' + notification.notificationID + '</span>';
 	var notificationString = "";
 
 	if (notification.settled) {
-		html += '<a class=" fa-lg" style="color:green; float:right; margin-top:-15px; ">';
+		html += '<a class=" fa-lg" style="color:green; float:right; margin-top:-20px; ">';
 		html += '<i  class="fa fa-check fa-2x "></i>';
 		html += '</a>';
 	} else {
 		notificationString = JSON.stringify(notification).replace(/"/g, '&quot;');
 		//Reject Button
-		html += '<a notificationString="'+notificationString+'" class=" settleNotificationBtn btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
+		html += '<a notificationString="'+notificationString+'" class=" settleNotificationBtn btn  fa-stack fa-lg" style="float:right; margin-top:-26px; ">';
 		html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
 		html += '<i  class="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>';
 		html += '</a>';
 		
 		//Accept Button
-		html += '<a notificationString="' + notificationString + '" class=" createValidationProjectBtn btn  fa-stack fa-lg" style="float:right; margin-top:-22px; ">';
+		html += '<a notificationString="' + notificationString + '" class=" createValidationProjectBtn btn  fa-stack fa-lg" style="float:right; margin-top:-26px; ">';
 		html += ' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
 		html += '<i  class="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>';
 		html += '</a>';
@@ -415,13 +416,13 @@ function addPostedRequestNotification(notification) {
 
 	var html = '<li>';
 	html += '<span class="inviting_user">' + notification.subject + '</span><br/>';
-	html += '<span class="project_name" style="font-size:20px;"> ' + notification.message + '</span>';
+	html += '<span class="project_name"> ' + notification.message + '</span>';
 	html += '<span class="project_id hidden">' + notification.projectID + '</span>';
 	html += '<span class="notification_date hidden">' + notification.datetime + '</span>';
 	html += '<span class="notification_id hidden">' + notification.notificationID + '</span>';
 	var notificationString = "";
 
-	html += '<a class=" fa-lg" style="color:grey; float:right; margin-top:-15px; ">';
+	html += '<a class=" fa-lg" style="color:grey; float:right; margin-top:-20px; ">';
 	html += '<i  class="fa fa-key fa-2x "></i>';
 	html += '</a>';
 
@@ -436,13 +437,13 @@ function addRequestGrantedNotification(notification) {
 
 	var html = '<li>';
 	html += '<span class="inviting_user">' + notification.subject + '</span><br/>';
-	html += '<span class="project_name" style="font-size:20px;"> ' + notification.message + '</span>';
+	html += '<span class="project_name" > ' + notification.message + '</span>';
 	html += '<span class="project_id hidden">' + notification.projectID + '</span>';
 	html += '<span class="notification_date hidden">' + notification.datetime + '</span>';
 	html += '<span class="notification_id hidden">' + notification.notificationID + '</span>';
 	var notificationString = "";
 
-	html += '<a class=" fa-lg" style="color:green; float:right; margin-top:-15px; ">';
+	html += '<a class=" fa-lg" style="color:green; float:right; margin-top:-20px; ">';
 	html += '<i  class="fa fa-key fa-2x "></i>';
 	html += '</a>';
 
