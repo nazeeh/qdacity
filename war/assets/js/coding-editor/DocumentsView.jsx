@@ -72,11 +72,8 @@ constructor(props) {
   }
   
   isActive(value){
-    return 'list-group-item ' + ((value==this.state.selected) ?'active':'default');
+    return 'list-group-item clickable ' + ((value==this.state.selected) ?'active':'default');
   }
-  
-  
-  
   
    render() {
 	   var _this = this; 
@@ -84,7 +81,7 @@ constructor(props) {
       <div className="list-group">
         {
           this.state.documents.map(function(doc) {
-            return <a className= {_this.isActive(doc.id)} key={doc.id} href={"#"}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
+            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
           })
         }
       </div>

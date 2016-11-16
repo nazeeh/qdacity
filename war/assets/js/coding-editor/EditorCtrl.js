@@ -313,7 +313,7 @@ export default class EditorCtrl {
 
 			_destroy : function() {
 				this.wrapper.remove();
-				this.element.show();
+				this.element.show(); 
 			}
 		});
 		

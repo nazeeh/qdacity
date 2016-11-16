@@ -2,6 +2,7 @@ body, html {
 	overflow-y: hidden;
 }
 
+
 .textEditor{
 	height:100vh;
 }
@@ -72,4 +73,22 @@ iframe {
 
 .projectsOnly{
 	display:none;
+}
+
+.editorPanelTogel{
+	margin-right: 2px;
+	margin-top: 2px;
+	font-size:20px;
+	color:grey;
+}
+.editorPanelTogel:hover{
+	cursor:pointer;
+	color:black;
+}
+
+a[aria-expanded=true] .fa-expand {
+   display: none;
+}
+a[aria-expanded=false] .fa-compress {
+   display: none;
 }

@@ -48,7 +48,7 @@ var editorCtrl = {};
 	 
 	ReactDOM.render(<ReactLoading />, document.getElementById('documentsLoaderMount'));
 	ReactDOM.render(<ReactLoading />, document.getElementById('codesystemLoaderMount'));
-	  
+
 	editorCtrl = new EditorCtrl(easytree);
 	createCodeMemoEditor(); 
 	
@@ -130,6 +130,11 @@ var editorCtrl = {};
 				insertCode(account.getProfile().getName(), codeName);
 		});
 	});
+	
+	//$("#documentsToggleBtn").mouseup(resizeElements);
+	
+	$('#document-section').on('hidden.bs.collapse', resizeElements);
+	$('#document-section').on('shown.bs.collapse', resizeElements);
 
 	document.getElementById('btnRemoveCode').onclick = function() {
 		deleteCode();

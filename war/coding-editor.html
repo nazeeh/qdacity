@@ -16,6 +16,7 @@
 
 
 <!-- Custom CSS -->
+<link href="assets/css/common.css" rel="stylesheet">
 <link href="assets/css/coding-editor.css" rel="stylesheet">
 <link href="assets/css/loader.css" rel="stylesheet">
 <link href="assets/css/documentView.css" rel="stylesheet">
@@ -126,19 +127,23 @@
 		<div class="col-sm-2">
 
 			<!-- SETTINGS -->
+			<div class="row no-gutters" >
 			<div id="project-ui" style="float: left; width: 100%; background-color: #f8f8f8;">
-				<div style="background-color: #e7e7e7; width: 105%;">
+				<div style="background-color: #e7e7e7;">
+				
 					<div style="text-align: center;">
 
 
 						<div class="list-group">
-							<a class="list-group-item projectDashboardLink" href="#">
+							<a class="list-group-item projectDashboardLink clickable" href="#">
 								<i class="fa fa-home fa-fw "></i>
 								Project Dashboard
 							</a>
 						</div>
+					
+						<div class="row no-gutters" >
 						<div id="settings" class="collapse">
-						<div style="margin-top: -15px;">
+						<div>
 							<b>Settings</b>
 						</div>
 						<div style="background-color: #f8f8f8; text-align: left;">
@@ -160,11 +165,18 @@
 					</div>
 				</div>
 			</div>
-			<div id="documents-ui" style="float: left; width: 100%; background-color: #f8f8f8;">
-				<div style="background-color: #e7e7e7; width: 105%;">
-					<div style="text-align: center;">
-						<b>Documents</b><br>
-						<div class="btn-group projectsOnly">
+			</div>
+			</div>
+			<div id="documents-ui" style=" width: 100%; background-color: #f8f8f8;">
+				<div style="background-color: #e7e7e7;">
+				
+					<div style="text-align: center; position:relative;">
+					<div class="row no-gutters" >
+					<span class="col-xs-1"></span>
+    				<span class="col-xs-10">
+    					<b>Documents</b>
+    					<br>
+    					<div class="btn-group projectsOnly">
 							<a id="btnUpdateDoc" class="btn btn-default" href="#">
 								<i class="fa fa-pencil fa-1x"></i>
 							</a>
@@ -175,10 +187,18 @@
 								<i class="fa fa-trash fa-1x"></i>
 							</a>
 						</div>
-						<div class="btn-group"></div>
+					</span>
+    				<span class="col-xs-1">
+							<!-- <button class="toggleEditorPanel pull-right" data-toggle="collapse"  data-target="#document-section">-</button> -->
+								<a id="documentsToggleBtn" class="editorPanelTogel pull-right" aria-expanded="true" data-toggle="collapse"  data-target="#document-section">
+									<i class="fa fa-compress fa-1x"></i>
+									<i class="fa fa-expand fa-1x"></i>
+								</a>
+					</span>
+						</div>
 					</div>
 				</div>
-				<div id="document-section" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;">
+				<div id="document-section" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;" class="collapse in">
 						<div id ="documentsLoadingDiv" class="loader">
 						  	<div id ="documentsLoaderMount" class="loaderMount"></div>
 						</div>
@@ -187,31 +207,31 @@
 				</div>
 			</div>
 
-			<div id="codesystem-ui" style=" width: 100%; background-color: #f8f8f8; margin-top: 5px;">
-				<div style="background-color: #e7e7e7; width: 105%;">
+			<div id="codesystem-ui" style=" width: 100%; background-color: #f8f8f8; ">
+				<div style="background-color: #e7e7e7;">
 					<div style="text-align: center;">
 						<b>Code System</b><br>
 						<div class="btn-group">
-							<a id="btnInsertCode" class="btn btn-default collapse" href="#">
+							<a id="btnInsertCode" class="btn btn-default collapse">
 								<i class="fa fa-plus fa-1x"></i>
 							</a>
-							<a id="btnRemoveCode" class="btn btn-default collapse" href="#">
+							<a id="btnRemoveCode" class="btn btn-default collapse">
 								<i class="fa fa-trash fa-1x"></i>
 							</a>
-							<a id="btnCodeProps" class="btn btn-default" href="#">
+							<a id="btnCodeProps" class="btn btn-default">
 								<i class="fa  fa-list-alt  fa-1x"></i>
-							</a>
+							</a>	
 						</div>
 						<div class="btn-group">
 
 
-							<a id="btnApplyCode" class="btn btn-default" href="#">
+							<a id="btnApplyCode" class="btn btn-default">
 								<span class="fa-stack fa-lg" style="font-size: 8px;">
 									<i class="fa fa-tag fa-stack-2x"></i>
 									<i class="fa fa-plus fa-stack-1x fa-inverse"></i>
 								</span>
 							</a>
-							<a id="btnRemoveCoding" class="btn btn-default" href="#">
+							<a id="btnRemoveCoding" class="btn btn-default">
 								<span class="fa-stack fa-lg" style="font-size: 8px;">
 									<i class="fa fa-tag fa-stack-2x"></i>
 									<i class="fa fa-minus fa-stack-1x fa-inverse"></i>
