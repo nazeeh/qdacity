@@ -32,16 +32,16 @@ var apisToLoad;
 var callback = function() {
   if (--apisToLoad == 0) {
 	  account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView')); 
+	  $('#signinGoogleBtn').click(signIn); 
   }
   vex.defaultOptions.className = 'vex-theme-os';
-  
+
 }
  
 apisToLoad = 2;
 gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
 gapi.load('auth2', callback);
 
-$('#signinGoogleBtn').click(signIn);
 }
 
 function setupUI(){
