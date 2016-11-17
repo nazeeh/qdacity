@@ -345,22 +345,20 @@ function splitupCoding(selection, codeID){
 		  function(resolve, reject) {
 			  var anchor = $(selection._sel.anchorNode);
 				var codingID = anchor.prev('coding[code_id='+codeID+']').attr('id');
-				if (typeof codingID == 'undefined') codingID = anchor.next('coding[code_id='+codeID+']').attr('id');
-				if (typeof codingID == 'undefined') codingID = anchor.parent().prev().find('coding[code_id='+codeID+']').last().attr('id');
-				if (typeof codingID == 'undefined') codingID = anchor.find('coding[code_id='+codeID+']').last().attr('id');
-				
-				var next = codingID === anchor.prev().attr('id');
-				var previousParagraph = anchor.parent().prev().find( 'coding[id='+codingID+']' );
-				//if (next){ // FIXME If a code is nested in many other codes, the coding is not the sibling or the a child of the parents next sibling
+				if (typeof codingID == 'undefined') codingID = anchor.parentsUntil('p').parent().prev().find('coding[code_id='+codeID+']').last().attr('id');
+				if (typeof codingID == 'undefined') codingID = anchor.parent().prev().find('coding[code_id='+codeID+']').last().attr('id'); // Case beginning of paragraph to middle of paragraph
+
+				if (typeof codingID != 'undefined'){ 
 					gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type}).execute(function(resp) {
 						anchor.nextAll('coding[id='+codingID+']').attr("id", resp.maxCodingID);
-						anchor.parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);
+						anchor.parentsUntil('p').parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);
+						anchor.parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID); // Case beginning of paragraph to middle of paragraph
 						resolve();
 					});
-//				}
-//				else{
-//					resolve();
-//				}
+				}
+				else{
+					resolve();
+				}
 		  }
 	  );
 	 
