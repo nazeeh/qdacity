@@ -113,7 +113,7 @@ var editorCtrl = {};
 
 	apisToLoad = 2;
 	// Parameters are APIName,APIVersion,CallBack function,API Root
-	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
+	gapi.client.load('qdacity', 'v2', callback, 'https://2-dot-qdacity-app.appspot.com/_ah/api');
 	gapi.load('auth2', callback);
 
 	document.getElementById('btnCodeProps').onclick = function() {
@@ -348,7 +348,7 @@ function splitupCoding(selection, codeID){
 				if (typeof codingID == 'undefined') codingID = anchor.parentsUntil('p').parent().prev().find('coding[code_id='+codeID+']').last().attr('id');
 				if (typeof codingID == 'undefined') codingID = anchor.parent().prev().find('coding[code_id='+codeID+']').last().attr('id'); // Case beginning of paragraph to middle of paragraph
 
-				if (typeof codingID != 'undefined'){ 
+				if (typeof codingID != 'undefined'){
 					gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type}).execute(function(resp) {
 						anchor.nextAll('coding[id='+codingID+']').attr("id", resp.maxCodingID);
 						anchor.parentsUntil('p').parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);

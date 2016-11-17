@@ -30,7 +30,7 @@ import javax.jdo.Query;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-@Api(name = "qdacity", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
+@Api(name = "qdacity", version = "v2", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class TextDocumentEndpoint {
 
 	/**

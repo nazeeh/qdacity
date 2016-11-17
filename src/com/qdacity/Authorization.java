@@ -3,9 +3,12 @@ package com.qdacity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+
+import org.apache.log4j.Logger;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
@@ -106,7 +109,13 @@ public class Authorization {
     Boolean isValidationCoder = project.getValidationCoders().indexOf(user.getId()) != -1;
     if (isValidationCoder) return AuthorizationLevel.VALIDATIONCODER;
     
-    throw new UnauthorizedException("User is Not Authorized");
+    PersistenceManager mgr = getPersistenceManager();
+    Project parentProject = mgr.getObjectById(Project.class, project.getProjectID());
+    
+    Boolean isProjectOwner = parentProject.getOwners().contains(user.getId());
+    if (isProjectOwner) return AuthorizationLevel.CODER;
+    java.util.logging.Logger.getLogger("logger").log(Level.INFO, user.getId() + " is not owner of project " + parentProject.getId());
+    throw new UnauthorizedException("User is Not Authorized.");
   }
 
 	

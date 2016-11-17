@@ -54,7 +54,7 @@ window.init = function () {
 	apisToLoad = 2;
 	//Parameters are APIName,APIVersion,CallBack function,API Root
 	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
-	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
+	gapi.client.load('qdacity', 'v2', callback, 'https://2-dot-qdacity-app.appspot.com/_ah/api');
 	gapi.load('auth2', callback);
 
 

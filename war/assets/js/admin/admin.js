@@ -30,7 +30,7 @@ window.init = function () {
 	};
 
 	apisToLoad = 2;
-	gapi.client.load('qdacity', 'v1', callback, 'https://qdacity-app.appspot.com/_ah/api');
+	gapi.client.load('qdacity', 'v2', callback, 'https://2-dot-qdacity-app.appspot.com/_ah/api');
 	gapi.load('auth2', callback);
 
 

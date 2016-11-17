@@ -24,7 +24,7 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.data.TextDocumentEndpoint;
 
-@Api(name = "qdacity", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
+@Api(name = "qdacity", version = "v2", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class ValidationEndpoint {
 
   @ApiMethod(name = "validation.listReports",   scopes = {Constants.EMAIL_SCOPE},
