@@ -142,17 +142,7 @@ export default class Timeline {
    addToDom(selector){
 	   $(selector).append(this.html);
 	   
-	   var lists = [];
-	   var elem = $('.validationPrjList');
-	   elem.each(function() {
-		   var options = {
-					valueNames: ['project_name'],
-					page: 10,
-					plugins: [ListPagination({})]
-				};
-		   var myList = new List( this, options);
-		   lists.push();
-	   });
+	   
    }
 }
 

@@ -26,6 +26,29 @@ export default class CustomForm extends VexModal {
 	  this.formElements += '</div>';
   }
   
+  addCheckBox(name, label, checked, value){
+	  this.formElements += '<div class="vex-custom-field-wrapper">';
+
+	  this.formElements += '<div class="vex-custom-input-wrapper">';
+	  this.formElements += '<input type="checkbox" name="'+name+'" value="'+value+'"'
+	  if (checked) this.formElements += ' checked';
+	  this.formElements += '>'+value+'<br>';
+	  this.formElements += '</div>';
+	  this.formElements += '</div>';
+  }
+  
+  addCheckBoxes(name, itemList){
+	  var _this = this;
+	  this.formElements += '<div class="vex-custom-field-wrapper">';
+
+	  this.formElements += '<div class="vex-custom-input-wrapper">';
+	  itemList.forEach(function(el) {
+		  _this.formElements += '<input type="checkbox" name="'+name+'" value="'+el.id+'">'+el.title+'<br>';
+  	  });
+	  this.formElements += '</div>';
+	  this.formElements += '</div>';
+  }
+  
   showModal(){
 	  var _this = this;
 	  var promise = new Promise(

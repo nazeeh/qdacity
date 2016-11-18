@@ -57,11 +57,11 @@ export default class ProjectEndpoint {
   }
   
   //FIXME move to validationEndpoint
-evaluateRevision(revId, name){
+evaluateRevision(revId, name, docs){
 	  
 	  var promise = new Promise(
 		  function(resolve, reject) {
-			  gapi.client.qdacity.validation.evaluateRevision({'revisionID': revId, 'name': name}).execute(function(resp) {
+			  gapi.client.qdacity.validation.evaluateRevision({'revisionID': revId, 'name': name, 'docs': docs}).execute(function(resp) {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }

@@ -6,7 +6,8 @@ import Revision from './Revision';
 import Account from './Account.jsx';
 import TextField from './modals/TextField';
 import IntercoderAgreement from './modals/IntercoderAgreement';
-import Prompt from './modals/Prompt';
+import CustomForm from './modals/CustomForm';
+import DocumentsEndpoint from './DocumentsEndpoint';
 
 import 'script!./morris-data.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
@@ -91,7 +92,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
         	apisToLoad = 2;
         	//Parameters are APIName,APIVersion,CallBack function,API Root
         	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
-        	gapi.client.load('qdacity', 'v2', callback, 'https://2-dot-qdacity-app.appspot.com/_ah/api');
+        	gapi.client.load('qdacity', 'v3', callback, 'https://3-dot-qdacity-app.appspot.com/_ah/api');
         	gapi.load('auth2', callback);
 
 			document.getElementById('inviteUserBtn').onclick = function() {
@@ -299,19 +300,52 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	                        	event.preventDefault();
 	                        	var revId = $( this ).attr("revId");
 	                        	var projectEndpoint = new ProjectEndpoint();
-	                        	var prompt = new Prompt('Name the report', 'Report Name');
-	                    		prompt.showModal().then(function(reportName) {
-		                          	projectEndpoint.evaluateRevision(revId, reportName)
+//	                        	var prompt = new Prompt('Name the report', 'Report Name');
+	                        	var de = new DocumentsEndpoint();
+	                        	de.getDocuments(revId, "REVISION").then(function(documents) {
+	                        		var modal = new CustomForm('Edit User Info');
+		                        	modal.addTextInput('title', "Report Title",'', user.givenName);
+		                        	var documentTitles = [];
+		                        	
+		                        	modal.addCheckBoxes('docs', documents);
+//		                        	documents.forEach(function(el) {
+//		                        	    modal.addCheckBox(el.title, 'This one document', false, el.title);
+//		                        	});
+		                        	
+		                        	modal.showModal().then(function(data) {
+		                        		var selectedDocs = [];
+			                          	projectEndpoint.evaluateRevision(revId, data.title, data.docs)
 		                          		.then(
 		                          	        function(val) {
 		                          	        	setRevisionHistory();
 		                          	        })
 		                          	    .catch(handleBadResponse);
-	                          	
-	                    		});
+		                        	});
+	                        	});
+	                        	
+	                        	
+//	                    		prompt.showModal().then(function(reportName) {
+//		                          	projectEndpoint.evaluateRevision(revId, reportName)
+//		                          		.then(
+//		                          	        function(val) {
+//		                          	        	setRevisionHistory();
+//		                          	        })
+//		                          	    .catch(handleBadResponse);
+//	                          	
+//	                    		});
 	                        });
 	                        
-	                        
+	                       //Create ListJS Lists (doing it here so all the click handlers are already applied)
+	                 	   var elem = $('.validationPrjList');
+	                 	   elem.each(function() {
+	                 		   var options = {
+	                 					valueNames: ['project_name'],
+	                 					page: 10,
+	                 					plugins: [ListPagination({})]
+	                 				};
+	                 		   var myList = new List( this, options);
+	                 	   });
+	                 	   
                   		});
               		});
               	 }

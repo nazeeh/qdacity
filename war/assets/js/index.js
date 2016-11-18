@@ -39,7 +39,7 @@ var callback = function() {
 }
  
 apisToLoad = 2;
-gapi.client.load('qdacity', 'v2', callback, 'https://2-dot-qdacity-app.appspot.com/_ah/api');
+gapi.client.load('qdacity', 'v3', callback, 'https://3-dot-qdacity-app.appspot.com/_ah/api');
 gapi.load('auth2', callback);
 
 }

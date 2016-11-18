@@ -27,7 +27,7 @@ public class ValidationReport {
   
   @Persistent
   String name;
-  
+    
   @Persistent
   Date datetime;
   
@@ -88,7 +88,6 @@ public class ValidationReport {
 
   public void setDatetime(Date datetime) {
     this.datetime = datetime;
-  }
-
+  }  
   
 }

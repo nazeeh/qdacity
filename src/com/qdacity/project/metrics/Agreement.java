@@ -65,6 +65,7 @@ public class Agreement {
     if ((truePositives + falsePositives) == 0) precision = 1;
     
     double fMeasure = 2*(precision*recall)/(precision + recall);
+    if ((precision + recall) == 0) fMeasure = 0;
     
     return fMeasure;
   }

@@ -56,7 +56,7 @@ import org.xml.sax.SAXException;
 
 
 
-@Api(name = "qdacity", version = "v2", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
+@Api(name = "qdacity", version = "v3", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class UploadEndpoint {
 
 	/**

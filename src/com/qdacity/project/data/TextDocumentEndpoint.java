@@ -30,7 +30,7 @@ import javax.jdo.Query;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-@Api(name = "qdacity", version = "v2", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
+@Api(name = "qdacity", version = "v3", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class TextDocumentEndpoint {
 
 	/**
@@ -108,7 +108,7 @@ public class TextDocumentEndpoint {
 		try {
 			mgr = getPersistenceManager();
 			//Check authorization
-	    if (prjType == "REVISION"){
+	    if (prjType.equals("REVISION")){
 	      ProjectRevision validationProject = mgr.getObjectById(ProjectRevision.class, id);
 	      Authorization.checkAuthorization(validationProject.getProjectID(), user);
 	    } else if (prjType != null && prjType.equals("VALIDATION")){
