@@ -52,6 +52,7 @@ public class ValidationEndpoint {
           result.getParagraphAgreement();
           result.getRevisionId();
           result.getValidationProjectID();
+          result.getParagraphAgreement();
           List<DocumentResult> docResults = result.getDocumentResults();
           for (DocumentResult documentResult : docResults) {
             documentResult.getDocumentID();
