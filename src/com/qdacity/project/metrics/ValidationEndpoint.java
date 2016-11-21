@@ -44,15 +44,15 @@ public class ValidationEndpoint {
       params.put("projectID", prjID);
       
       reports  = (List<ValidationReport>)q.executeWithMap(params);
-      
+
       for (ValidationReport validationReport : reports) {
+        validationReport.getParagraphAgreement();
         List<ValidationResult> results = validationReport.getValidationResult();
         for (ValidationResult result : results) {
           result.getName();
           result.getParagraphAgreement();
           result.getRevisionId();
           result.getValidationProjectID();
-          result.getParagraphAgreement();
           List<DocumentResult> docResults = result.getDocumentResults();
           for (DocumentResult documentResult : docResults) {
             documentResult.getDocumentID();
