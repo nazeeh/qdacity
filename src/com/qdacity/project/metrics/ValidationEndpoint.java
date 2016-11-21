@@ -46,7 +46,7 @@ public class ValidationEndpoint {
       reports  = (List<ValidationReport>)q.executeWithMap(params);
 
       for (ValidationReport validationReport : reports) {
-        validationReport.getParagraphAgreement();
+        validationReport.getParagraphAgreement().getFMeasure();
         List<ValidationResult> results = validationReport.getValidationResult();
         for (ValidationResult result : results) {
           result.getName();
@@ -123,7 +123,8 @@ public class ValidationEndpoint {
        }
         
         ParagraphAgreement totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
-        validationCoderAvg.add(totalAgreement);
+        if (!(totalAgreement.getPrecision() == 1 && totalAgreement.getRecall() == 0)) validationCoderAvg.add(totalAgreement); // We exclude validationproject where nothing was coded (recall 0 prec 1) from calculation of avg
+        
         valResult.setParagraphAgreement(totalAgreement);
         valResult.setName(validationProject.getCreatorName());
         valResult.setRevisionID(revisionID);
