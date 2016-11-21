@@ -51,17 +51,27 @@ export default class IntercoderAgreement extends VexModal {
 			"data" : dataSet,
 			"autoWidth" : false,
 			"columnDefs" : [ {
-				"width" : "33%"
+				"width" : "20%"
 			}, {
-				"width" : "33%"
-			} ],
+				"width" : "25%"
+			} , {
+				"width" : "25%"
+			}, {
+				"width" : "25%"
+			}],
 			"columns" : [ {
 				"title" : "Coder",
-				"width" : "33%",
+				"width" : "20%",
 			}, {
-				"title" : "Agreement (Paragraph)",
-				"width" : "33%"
-			} ]
+				"title" : "F-Measure (Paragraph)",
+				"width" : "25%"
+			},  {
+				"title" : "Recall (Paragraph)",
+				"width" : "25%"
+			}, {
+				"title" : "Precision (Paragraph)",
+				"width" : "25%"
+			}]
 
 		});
 	}
@@ -73,7 +83,7 @@ export default class IntercoderAgreement extends VexModal {
 		var results = this.report.validationResult;
 		for (var i=0;i< results.length;i++) {
 		      var result = results[i];
-		      table.row.add([ result.name, result.paragraphFMeasure]);
+		      table.row.add([ result.name, result.paragraphAgreement.fmeasure, result.paragraphAgreement.recall, result.paragraphAgreement.precision]);
 			}
 	}
 	

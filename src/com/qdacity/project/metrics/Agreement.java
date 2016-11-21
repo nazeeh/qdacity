@@ -15,7 +15,7 @@ import org.jsoup.select.Elements;
 import com.qdacity.project.data.TextDocument;
 
 public class Agreement {
-  static public double calculateParagraphAgreement(TextDocument original, TextDocument recoded) {
+  static public ParagraphAgreement calculateParagraphAgreement(TextDocument original, TextDocument recoded) {
     
     HashMap<Long, Integer> hits = new HashMap<Long, Integer>();
     HashMap<Long, Integer> misses = new HashMap<Long, Integer>();
@@ -51,13 +51,13 @@ public class Agreement {
     
     
     //double fMeasureParagraph = calculateFMeasure(originalParagraphs.get(i), recodedParagraphs.get(i));
-    double totalAgreement = calculateFMeasure(truePositives, falsePositives, falseNegatives);
+    ParagraphAgreement totalAgreement = calculateFMeasure(truePositives, falsePositives, falseNegatives);
     Logger.getLogger("logger").log(Level.INFO,   "Total Agreement" + totalAgreement);
     return totalAgreement;
   }
 
-  static public double calculateFMeasure(Integer truePositives, Integer falsePositives, Integer falseNegatives){
-    
+  static public ParagraphAgreement calculateFMeasure(Integer truePositives, Integer falsePositives, Integer falseNegatives){
+    ParagraphAgreement agreement = new ParagraphAgreement();
     double recall = truePositives.doubleValue()/(falseNegatives + truePositives);
     if ((falseNegatives + truePositives) == 0) recall = 1;
     
@@ -67,16 +67,34 @@ public class Agreement {
     double fMeasure = 2*(precision*recall)/(precision + recall);
     if ((precision + recall) == 0) fMeasure = 0;
     
-    return fMeasure;
+    agreement.setRecall(recall);
+    agreement.setPrecision(precision);
+    agreement.setFMeasure(fMeasure);
+    return agreement;
   }
 
-  static public double calculateAverageAgreement(List <Double> agreements) {
-    double avg = 0;
-    if(!agreements.isEmpty()) {
-      for (double agreement : agreements) {
-        avg += agreement;
+  static public ParagraphAgreement calculateAverageAgreement(List<ParagraphAgreement> documentAgreements) {
+    ParagraphAgreement avg = new ParagraphAgreement();
+    avg.setFMeasure(0);
+    avg.setPrecision(0);
+    avg.setRecall(0);
+    
+    if(!documentAgreements.isEmpty()) {
+      double avgRecall = 0;
+      double avgPrecision = 0;
+      double avgFMeasure = 0;
+      for (ParagraphAgreement agreement : documentAgreements) {
+        avgRecall += agreement.getRecall();
+        avgPrecision += agreement.getPrecision();
+        avgFMeasure += agreement.getFMeasure();
       }
-      return avg / agreements.size();
+      avgRecall = avgRecall / documentAgreements.size();
+      avgPrecision = avgPrecision / documentAgreements.size();
+      avgFMeasure = avgFMeasure / documentAgreements.size();
+      
+      avg.setRecall(avgRecall);
+      avg.setPrecision(avgPrecision);
+      avg.setFMeasure(avgFMeasure);
     }
     return avg;
   }

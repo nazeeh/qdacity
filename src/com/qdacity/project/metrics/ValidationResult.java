@@ -1,5 +1,10 @@
 package com.qdacity.project.metrics;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -25,13 +30,13 @@ public class ValidationResult {
   Long revisionID;
   
   @Persistent(defaultFetchGroup="true", dependent="true" )
-  double paragraphFMeasure;
+  @Column(name="paragraphAgreement")
+  ParagraphAgreement paragraphAgreement;
   
-  @Persistent(defaultFetchGroup="true", dependent="true" )
-  double paragraphRecall;
-  
-  @Persistent(defaultFetchGroup="true", dependent="true" )
-  double paragraphPrecision;
+  @Persistent(defaultFetchGroup="true") 
+  @Element(dependent = "true")
+  @Column(name="documentResults")
+  List<DocumentResult> documentResults;
 
   public Key getKey() {
     return key;
@@ -66,27 +71,30 @@ public class ValidationResult {
     this.name = name;
   }
 
-  public double getParagraphFMeasure() {
-    return paragraphFMeasure;
+  public ParagraphAgreement getParagraphAgreement() {
+    return paragraphAgreement;
   }
 
-  public void setParagraphFMeasure(double paragraphFMeasure) {
-    this.paragraphFMeasure = paragraphFMeasure;
+  public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
+    this.paragraphAgreement = paragraphAgreement;
   }
 
-  public double getParagraphRecall() {
-    return paragraphRecall;
+  public List<DocumentResult> getDocumentResults() {
+    return documentResults;
   }
 
-  public void setParagraphRecall(double paragraphRecall) {
-    this.paragraphRecall = paragraphRecall;
+  public void setDocumentResults(List<DocumentResult> documentResults) {
+    this.documentResults = documentResults;
+  }
+  
+  public void addDocumentResult(DocumentResult documentResult){
+    if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
+    this.documentResults.add(documentResult);
   }
 
-  public double getParagraphPrecision() {
-    return paragraphPrecision;
+  public Long getRevisionID() {
+    return revisionID;
   }
-
-  public void setParagraphPrecision(double paragraphPrecision) {
-    this.paragraphPrecision = paragraphPrecision;
-  }
+  
+  
 }

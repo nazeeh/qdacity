@@ -49,11 +49,15 @@ public class ValidationEndpoint {
         List<ValidationResult> results = validationReport.getValidationResult();
         for (ValidationResult result : results) {
           result.getName();
-          result.getParagraphFMeasure();
-          result.getParagraphPrecision();
-          result.getParagraphRecall();
+          result.getParagraphAgreement();
           result.getRevisionId();
           result.getValidationProjectID();
+          List<DocumentResult> docResults = result.getDocumentResults();
+          for (DocumentResult documentResult : docResults) {
+            documentResult.getDocumentID();
+            documentResult.getDocumentName();
+            documentResult.getParagraphAgreement();
+          }
         }
       }
     } finally {
@@ -87,6 +91,7 @@ public class ValidationEndpoint {
 
       validationProjects = (List<ValidationProject>)q.executeWithMap(params);
       
+      List<ParagraphAgreement> validationCoderAvg = new ArrayList<ParagraphAgreement>(); 
       ValidationReport report = new ValidationReport();
       report.setRevisionID(revisionID);
       report.setName(name);
@@ -97,7 +102,7 @@ public class ValidationEndpoint {
         
         ValidationResult valResult = new ValidationResult(); 
 
-        List<Double> documentAgreements = new ArrayList<Double>();
+        List<ParagraphAgreement> documentAgreements = new ArrayList<ParagraphAgreement>();
         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
         Logger.getLogger("logger").log(Level.INFO,   "Number of original docs: " + originalDocs.size() + " Number of recoded docs: "+ recodedDocs.size());
         Logger.getLogger("logger").log(Level.INFO,   "Docs to evaluate: " + docIDs.toArray().toString());
@@ -105,15 +110,20 @@ public class ValidationEndpoint {
          if (!docIDs.contains(original.getId())) continue; // Exclude text documents that should not be considered
          for (TextDocument recoded : recodedDocs) {
            if (original.getTitle().equals(recoded.getTitle())){
-             double documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
+             ParagraphAgreement documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
              documentAgreements.add(documentAgreement);
+             DocumentResult docResults= new DocumentResult();
+             docResults.setDocumentID(recoded.getId());
+             docResults.setDocumentName(recoded.getTitle());
+             docResults.setParagraphAgreement(documentAgreement);
+             valResult.addDocumentResult(docResults);
            }
          }
        }
         
-        double totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
-        
-        valResult.setParagraphFMeasure(totalAgreement);
+        ParagraphAgreement totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
+        validationCoderAvg.add(totalAgreement);
+        valResult.setParagraphAgreement(totalAgreement);
         valResult.setName(validationProject.getCreatorName());
         valResult.setRevisionID(revisionID);
         valResult.setValidationProjectID(validationProject.getId());
@@ -123,7 +133,8 @@ public class ValidationEndpoint {
         Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
       }
       
-      
+      ParagraphAgreement avgReportAgreement = Agreement.calculateAverageAgreement(validationCoderAvg);
+      report.setParagraphAgreement(avgReportAgreement);
       mgr.makePersistent(report);
 
     } finally {
@@ -137,7 +148,7 @@ public class ValidationEndpoint {
          com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
          audiences = {Constants.WEB_CLIENT_ID})
   public List<ValidationReport> deleteReport(@Named("reportID") Long repID, User user) throws UnauthorizedException {
-    List<ValidationReport> reports = new ArrayList<ValidationReport>();
+    List<ValidationReport> reports = new ArrayList<ValidationReport>(); //FIXME Why?
     PersistenceManager mgr = getPersistenceManager();
     try {
       ValidationReport report = mgr.getObjectById(ValidationReport.class, repID);

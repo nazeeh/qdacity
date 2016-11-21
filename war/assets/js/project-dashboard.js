@@ -303,14 +303,11 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 //	                        	var prompt = new Prompt('Name the report', 'Report Name');
 	                        	var de = new DocumentsEndpoint();
 	                        	de.getDocuments(revId, "REVISION").then(function(documents) {
-	                        		var modal = new CustomForm('Edit User Info');
-		                        	modal.addTextInput('title', "Report Title",'', user.givenName);
+	                        		var modal = new CustomForm('Create Validation Report');
+		                        	modal.addTextInput('title', "Report Title",'', '');
 		                        	var documentTitles = [];
 		                        	
 		                        	modal.addCheckBoxes('docs', documents);
-//		                        	documents.forEach(function(el) {
-//		                        	    modal.addCheckBox(el.title, 'This one document', false, el.title);
-//		                        	});
 		                        	
 		                        	modal.showModal().then(function(data) {
 		                        		var selectedDocs = [];

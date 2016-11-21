@@ -31,6 +31,10 @@ public class ValidationReport {
   @Persistent
   Date datetime;
   
+  @Persistent(defaultFetchGroup="true", dependent="true" )
+  @Column(name="paragraphAgreement")
+  ParagraphAgreement paragraphAgreement;
+  
   @Persistent(defaultFetchGroup="true") 
   @Element(dependent = "true")
   @Column(name="validationResult")
@@ -88,6 +92,15 @@ public class ValidationReport {
 
   public void setDatetime(Date datetime) {
     this.datetime = datetime;
+  }
+
+  public ParagraphAgreement getParagraphAgreement() {
+    return paragraphAgreement;
+  }
+
+  public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
+    this.paragraphAgreement = paragraphAgreement;
   }  
+  
   
 }
