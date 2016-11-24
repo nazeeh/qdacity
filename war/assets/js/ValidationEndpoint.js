@@ -42,4 +42,23 @@ export default class ProjectEndpoint {
 		  
 		  return promise;
   }
+  
+  sendNotificationEmail(reportID){
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.validation.sendNotificationEmail({'reportID': reportID}).execute(function(resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       	 else{
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+  }
+  
+  
 }

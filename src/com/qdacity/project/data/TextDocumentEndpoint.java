@@ -242,7 +242,7 @@ public class TextDocumentEndpoint {
 	  TextDocumentEndpoint tde = new TextDocumentEndpoint();
 	  Collection<TextDocument> documents = null;
 	  if (project.getClass() == ProjectRevision.class) documents  = tde.getTextDocument(project.getId(), "REVISION",user).getItems();
-	  else documents  = tde.getTextDocument(project.getId(),null, user).getItems();
+	  else documents  = tde.getTextDocument(project.getId(),"PROJECT", user).getItems();
 	  
 	  PersistenceManager mgr = getPersistenceManager();
     try {

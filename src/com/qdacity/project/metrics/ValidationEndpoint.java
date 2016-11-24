@@ -1,5 +1,6 @@
 package com.qdacity.project.metrics;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,11 +20,14 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.data.TextDocumentEndpoint;
+import com.qdacity.Sendgrid;
+import com.qdacity.Credentials;;
 
 @Api(name = "qdacity", version = "v3", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class ValidationEndpoint {
@@ -143,6 +147,86 @@ public class ValidationEndpoint {
       mgr.close();
     }
     return validationProjects;
+  }
+  
+  @ApiMethod(name = "validation.sendNotificationEmail",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public void sendNotificationEmail(@Named("reportID") Long reportID, User user) throws UnauthorizedException, JSONException {
+    
+    PersistenceManager mgr = getPersistenceManager();
+    
+    
+    try {
+      ValidationReport report = mgr.getObjectById(ValidationReport.class, reportID);
+      
+      List<ValidationResult> results = report.getValidationResult();
+      
+      for (ValidationResult result : results) {
+        Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER ,Credentials.SENDGRID_PW);
+        Long prjID = result.getValidationProjectID();
+        ValidationProject project =  mgr.getObjectById(ValidationProject.class, prjID);
+        List<String> coderIDs = project.getValidationCoders();
+        
+        for (String coderID : coderIDs) {
+          com.qdacity.user.User coder =  mgr.getObjectById(com.qdacity.user.User.class, coderID);
+          mail.addTo(coder.getEmail(), coder.getGivenName() + " " +coder.getSurName());
+        }
+        
+        String msgBody = "Hi,<br>";
+        msgBody += "<p>";
+        msgBody +="We have analyzed your codings, and you've achieved the following scores:<br>";
+        msgBody += "</p>";
+        msgBody += "<p>";
+        msgBody +="<strong>Overall</strong> <br>";
+        msgBody +="F-Measure: "+result.getParagraphAgreement().getFMeasure()+"<br>";
+        msgBody +="Recall: "+result.getParagraphAgreement().getRecall()+"<br>";
+        msgBody +="Precision: "+result.getParagraphAgreement().getPrecision()+"<br>";
+        msgBody += "</p>";
+        msgBody += "<p>";
+        msgBody +="<strong>Document specific data:</strong><br>";
+        msgBody += "</p>";
+        List<DocumentResult> docResults = result.getDocumentResults();
+        for (DocumentResult documentResult : docResults) {
+          msgBody += "<p>";
+          msgBody +="<strong>"+documentResult.getDocumentName()+":</strong><br>";
+          msgBody +="F-Measure: "+documentResult.getParagraphAgreement().getFMeasure()+"<br>";
+          msgBody +="Recall: "+documentResult.getParagraphAgreement().getRecall()+"<br>";
+          msgBody +="Precision: "+documentResult.getParagraphAgreement().getPrecision()+"<br><br>";
+          msgBody += "</p>";
+        }
+        
+        msgBody += "<p>";
+        msgBody +="You may compare these values to the average of this report<br>";
+        msgBody +="F-Measure: "+report.getParagraphAgreement().getFMeasure()+"<br>";
+        msgBody +="Recall: "+report.getParagraphAgreement().getRecall()+"<br>";
+        msgBody +="Precision: "+report.getParagraphAgreement().getPrecision()+"<br><br>";
+        msgBody += "</p>";
+        
+        msgBody += "<p>";
+        String reportTime = DateFormat.getDateInstance().format(report.getDatetime());
+        msgBody +="Date of this report: "+reportTime+"<br>";
+        
+        msgBody += "<p>";
+        msgBody +="Best regards,<br>";
+        msgBody +="QDAcity Mailbot<br>";
+        msgBody += "</p>";
+        
+        mail.setFrom("QDAcity <support@qdacity.com>");
+        mail.setSubject("QDAcity Report");
+        mail.setText(" ").setHtml(msgBody);
+        
+        mail.send();
+        
+        Logger.getLogger("logger").log(Level.INFO,   mail.getServerResponse());
+        
+      }
+    } finally {
+      mgr.close();
+    }
+   
+     
   }
   
   @ApiMethod(name = "validation.deleteReport",   scopes = {Constants.EMAIL_SCOPE},

@@ -1,5 +1,7 @@
 import VexModal from './VexModal';
+import BinaryDecider from './BinaryDecider';
 import ProjectEndpoint from '../ProjectEndpoint';
+import ValidationEndpoint from '../ValidationEndpoint';
 import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
 export default class IntercoderAgreement extends VexModal {
@@ -8,6 +10,8 @@ export default class IntercoderAgreement extends VexModal {
 	  super();
 	  this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee;">Average: F-Measure:'+report.paragraphAgreement.fmeasure+' Recall:'+report.paragraphAgreement.recall+' Precision:'+report.paragraphAgreement.precision+'</div>';
 	  this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee;"><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
+	  
+	  
 	  this.report = report;
   }
   
@@ -23,7 +27,17 @@ export default class IntercoderAgreement extends VexModal {
 			 			contentCSS: { width: '900px' },
 			 			input : formElements,
 			 			buttons : [ 
-			 			            $.extend({}, vex.dialog.buttons.YES, {text : 'OK'})
+			 			            $.extend({}, vex.dialog.buttons.YES, {text : 'OK'}),
+			 			            $.extend({}, vex.dialog.buttons.NO, { className: 'deciderBtn vex-dialog-button-primary', text: "Send Email", click: function($vexContent, event) {
+			 			            	var decider = new BinaryDecider('Confirm sending out emails to all validation coders',  'Cancel', 'Yes, send email' );
+			 			            	decider.showModal().then(function(value){
+			 			     			  if (value == 'optionB'){
+			 			     				var validationEndpoint = new ValidationEndpoint();
+				 			            	validationEndpoint.sendNotificationEmail(_this.report.id);
+			 			     			  }
+			 			     		  });
+			 			            	
+							        }}),
 			 			          ],
 			 			callback : function(data) {
 			 				
