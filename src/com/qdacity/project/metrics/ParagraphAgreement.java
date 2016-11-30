@@ -1,5 +1,12 @@
 package com.qdacity.project.metrics;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -9,7 +16,7 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class ParagraphAgreement {
+public class ParagraphAgreement  implements Serializable {
   @PrimaryKey
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Key key;
@@ -22,6 +29,18 @@ public class ParagraphAgreement {
   
   @Persistent(defaultFetchGroup="true", dependent="true" )
   double precision;
+  
+  
+  public ParagraphAgreement() {
+    // TODO Auto-generated constructor stub
+  }
+  
+  public ParagraphAgreement(ParagraphAgreement copy) {
+    super();
+    this.fMeasure = copy.fMeasure;
+    this.recall = copy.recall;
+    this.precision = copy.precision;
+  }
 
   public double getFMeasure() {
     return fMeasure;
@@ -46,4 +65,14 @@ public class ParagraphAgreement {
   public void setPrecision(double paragraphPrecision) {
     this.precision = paragraphPrecision;
   }
+
+  public double getfMeasure() {
+    return fMeasure;
+  }
+
+  public void setfMeasure(double fMeasure) {
+    this.fMeasure = fMeasure;
+  }
+
+
 }

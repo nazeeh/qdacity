@@ -130,12 +130,19 @@ public class ProjectEndpoint {
 		AbstractProject project = null;
 		try {
 		  java.util.logging.Logger.getLogger("logger").log(Level.INFO,  " Getting Project " + id);
+		  com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 		  switch (type) {
       case "VALIDATION":
         project = mgr.getObjectById(ValidationProject.class, id);
-        com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+        
         java.util.logging.Logger.getLogger("logger").log(Level.INFO,  " Checking authorization for validationproject " + id);
         Authorization.checkAuthorization((ValidationProject)project, dbUser);
+        //Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
+        break;
+      case "REVISION":
+        project = mgr.getObjectById(ProjectRevision.class, id);
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO,  " Checking authorization for validationproject " + id);
+        //Authorization.checkAuthorization((ValidationProject)project, dbUser);
         
         //Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
         break;

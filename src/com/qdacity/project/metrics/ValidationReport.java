@@ -21,13 +21,13 @@ public class ValidationReport {
   
   @Persistent
   Long projectID;
-  
+
   @Persistent
   Long revisionID;
   
   @Persistent
   String name;
-    
+
   @Persistent
   Date datetime;
   
@@ -35,16 +35,26 @@ public class ValidationReport {
   @Column(name="paragraphAgreement")
   ParagraphAgreement paragraphAgreement;
   
+//  @Persistent(defaultFetchGroup="true") 
+//  @Element(dependent = "true")
+//  @Column(name="validationResult")
+//  List<ValidationResult> validationResult;
+  
   @Persistent(defaultFetchGroup="true") 
   @Element(dependent = "true")
-  @Column(name="validationResult")
-  List<ValidationResult> validationResult;
+  @Column(name="validationResultIDs")
+  List<Long> validationResultIDs;
+  
+  @Persistent(defaultFetchGroup="true") 
+  @Element(dependent = "true")
+  @Column(name="documentResults")
+  List<DocumentResult> documentResults;
 
   public Long getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(Long id) { 
     this.id = id;
   }
   
@@ -63,19 +73,37 @@ public class ValidationReport {
   public void setRevisionID(Long revisionID) {
     this.revisionID = revisionID;
   }
-
-
-  public List<ValidationResult> getValidationResult() {
-    return validationResult;
-  }
-
-  public void setValidationResult(List<ValidationResult> validationResult) {
-    this.validationResult = validationResult;
-  }
   
+  
+
+
+  public List<Long> getValidationResultIDs() {
+    if (validationResultIDs == null)  validationResultIDs = new ArrayList<Long>();
+    return validationResultIDs;
+  }
+
+  public void setValidationResultIDs(List<Long> validationResultIDs) {
+    this.validationResultIDs = validationResultIDs;
+  }
+
+  //  public List<ValidationResult> getValidationResult() {
+//    return validationResult;
+//  }
+//
+//  public void setValidationResult(List<ValidationResult> validationResult) {
+//    this.validationResult = validationResult;
+//  }
+//  
   public void addResult(ValidationResult result){
-    if (validationResult == null) validationResult = new ArrayList<ValidationResult>();
-    validationResult.add(result);
+    if (validationResultIDs == null) validationResultIDs = new ArrayList<Long>();
+    validationResultIDs.add(result.getId());
+    //validationResult.add(result);
+    
+//    aggregateDocumentResults(result);
+    
+    ParagraphAgreement agreement = result.getParagraphAgreement();
+    if (paragraphAgreement == null) paragraphAgreement = new ParagraphAgreement();
+
   }
 
   public String getName() {
@@ -100,7 +128,37 @@ public class ValidationReport {
 
   public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
     this.paragraphAgreement = paragraphAgreement;
-  }  
+  }
+
+  public List<DocumentResult> getDocumentResults() {
+    return documentResults;
+  }
+
+  public void setDocumentResults(List<DocumentResult> documentResults) {
+    this.documentResults = documentResults;
+  }
   
+  public void addDocumentResult(DocumentResult result){
+    if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
+    Boolean merged = mergeDocumentResults(result);
+    if (!merged)documentResults.add(new DocumentResult(result));
+  }
   
+  private void aggregateDocumentResults(ValidationResult result){
+      if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
+      for (DocumentResult newResult : result.getDocumentResults()) {
+        Boolean merged = mergeDocumentResults(newResult);
+        if (!merged)documentResults.add(new DocumentResult(newResult));
+      }
+  }
+  
+  private Boolean mergeDocumentResults(DocumentResult newResult){
+    for (DocumentResult aggregated : documentResults) {
+      if (aggregated.getDocumentID().equals(newResult.getDocumentID())){
+        aggregated.addCodingResults(newResult.getCodingResults());
+        return true;
+      }
+    }
+    return false;
+  }
 }

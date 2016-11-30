@@ -9,9 +9,19 @@ module.exports = {
 		'coding-editor' : './assets/js/coding-editor/coding-editor.js',
 		'admin' : './assets/js/admin/admin.js',
     },
+	resolve: {
+    alias: {
+         "jquery": path.join(__dirname, "./assets/js/jquery-stub.js")
+    }
+},
     output: {
         path: __dirname,
         filename: '[name].dist.js'
+    },
+    externals: {
+        // require("jquery") is external and available
+        //  on the global var jQuery
+        react: "React"
     },
     module: {
         loaders: [
@@ -28,6 +38,7 @@ module.exports = {
 }
         ]
     },
+  
     plugins: [
         // Avoid publishing files when compilation fails
         new webpack.NoErrorsPlugin(),

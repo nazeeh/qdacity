@@ -8,7 +8,7 @@ export default class EditorCtrl {
 
 	constructor( easytree ) {
 		this.easytree = easytree;
-		
+		this.agreementMap = false;
 		this.setupFontSelector();
 		this.setupFontSizeSelector();
 		
@@ -66,6 +66,11 @@ export default class EditorCtrl {
 		
 		this.registerEventHandlers(this.editor);
 	}
+	
+	
+	showsAgreementMap(mapFlag){
+		this.agreementMap = mapFlag;
+	}
   
 	registerEventHandlers(editor){
 		document.getElementById('btnTxtBold').onclick = function() {
@@ -88,6 +93,7 @@ export default class EditorCtrl {
 	}
 
 	setDocumentView(doc) {
+		var _this = this;
 		if (typeof doc.text == 'undefined') {
 			this.editor.setHTML("");
 		} else {
@@ -95,6 +101,20 @@ export default class EditorCtrl {
 			this.addTooltipsToEditor(doc);
 		}
 		this.addCodingBrackets();
+		if (this.agreementMap){
+			$("#agreementMapSettings").removeClass("hidden");
+			var maxVal = this.getMaxFalseNeg();
+			this.highlightAgreementMap(Math.ceil(maxVal/2));
+			$( "#agreementMapSlider" ).slider({
+		        range: "max",
+		        min: 1,
+		        max: maxVal,
+		        value: Math.ceil(maxVal/2),
+		        slide: function( event, ui ) {		        	
+		        	_this.highlightAgreementMap(ui.value);
+		        }
+		   });
+		}
 	}
 	
 	addTooltipsToEditor(doc) {
@@ -111,6 +131,27 @@ export default class EditorCtrl {
 			});
 
 		}
+	}
+	
+	highlightAgreementMap(maxValue){
+		$( "#maxFalseNeg" ).html(maxValue );
+		var all = $("#editor").contents().find('p');
+		var filtered =  $("#editor").contents().find('p').filter(function() {
+			var falseNegCount = $(this).attr('falsenegcount');
+		    return  falseNegCount >= maxValue;
+		});
+		
+		filtered.css( "backgroundColor", "#cc6666" );
+		all.not(filtered).css( "backgroundColor", "white" );
+	}
+	
+	getMaxFalseNeg(){
+		var max = 0;
+		$("#editor").contents().find('p').each(function() {
+			var falsenegcount = $(this).attr('falsenegcount');
+			if (falsenegcount > max ) max = falsenegcount;
+		});
+		return max;
 	}
 	
 	addCodingBrackets(){

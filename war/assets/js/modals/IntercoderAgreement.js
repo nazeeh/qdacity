@@ -1,3 +1,5 @@
+import ReactLoading from '../ReactLoading.jsx';
+
 import VexModal from './VexModal';
 import BinaryDecider from './BinaryDecider';
 import ProjectEndpoint from '../ProjectEndpoint';
@@ -9,13 +11,15 @@ export default class IntercoderAgreement extends VexModal {
   constructor(report) {
 	  super();
 	  this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee;">Average: F-Measure:'+report.paragraphAgreement.fmeasure+' Recall:'+report.paragraphAgreement.recall+' Precision:'+report.paragraphAgreement.precision+'</div>';
-	  this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee;"><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
+	  this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222;"><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
 	  
 	  
 	  this.report = report;
+	  this.results;
   }
   
   showModal(){
+	  
 	  var _this = this;
 	  var promise = new Promise(
 			  function(resolve, reject) {
@@ -38,6 +42,9 @@ export default class IntercoderAgreement extends VexModal {
 			 			     		  });
 			 			            	
 							        }}),
+							        $.extend({}, vex.dialog.buttons.NO, { className: 'deciderBtn vex-dialog-button-primary', text: "Agreement Maps", click: function($vexContent, event) {
+							        	window.location.href = 'coding-editor.html?project='+_this.report.revisionID+'&type=REVISION&report='+_this.report.id+'&parentproject='+_this.report.projectID;
+							        }}),
 			 			          ],
 			 			callback : function(data) {
 			 				
@@ -47,8 +54,18 @@ export default class IntercoderAgreement extends VexModal {
 							else reject(data);
 			 			}
 			 		});
+			 		ReactDOM.render(<ReactLoading color={'#444'} />, document.getElementById('reactLoading'));
 			 		
-			 		_this.setupDataTable();
+			 		gapi.client.qdacity.validation.listValidationResults({'reportID' : _this.report.id}).execute(function(resp) {
+						if (!resp.code) {
+							$('#loadingAnimation').addClass('hidden');
+							_this.results = resp.items || [];
+							_this.setupDataTable();
+						} else{
+							// Log error
+						}
+					});
+			 		
 			  }
 		  );
 	  
@@ -95,9 +112,8 @@ export default class IntercoderAgreement extends VexModal {
 	
 	table.clear();
 	if (typeof this.report != 'undefined'){
-		var results = this.report.validationResult;
-		for (var i=0;i< results.length;i++) {
-		      var result = results[i];
+		for (var i=0;i< this.results.length;i++) {
+		      var result = this.results[i];
 		      table.row.add([ result.name, result.paragraphAgreement.fmeasure, result.paragraphAgreement.recall, result.paragraphAgreement.precision]);
 			}
 	}

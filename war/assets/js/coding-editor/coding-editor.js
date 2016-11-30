@@ -8,6 +8,8 @@ import EditorCtrl from './EditorCtrl';
 import Prompt from '../modals/Prompt';
 import $script from 'scriptjs';
 
+import Slider from 'bootstrap-slider';
+
 import 'script!../../../components/tooltipster/js/jquery.tooltipster.js';
 import 'script!../../../components/filer/js/jquery.filer.min.js';
 import 'script!../../../components/EasyTree/jquery.easytree.js';
@@ -28,6 +30,7 @@ var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleuserco
 var codesystem_id;
 var project_id;
 var project_type;
+var report;
 var max_coding_id;
  
 var codeMemoEditor;
@@ -50,6 +53,8 @@ var editorCtrl = {};
 	ReactDOM.render(<ReactLoading />, document.getElementById('codesystemLoaderMount'));
 
 	editorCtrl = new EditorCtrl(easytree);
+	
+	
 	createCodeMemoEditor(); 
 	
 	createCodeBookEditor();
@@ -89,8 +94,9 @@ var editorCtrl = {};
   	
 	project_id = urlParams.project;
 	project_type = urlParams.type;
+	report = urlParams.report;
 	if (typeof project_type == 'undefined'){
-		project_type = "PROJECT";
+		project_type = "PROJECT";  
 	}
 	if (project_type == "PROJECT"){
 		$('#btnInsertCode').show();
@@ -100,8 +106,16 @@ var editorCtrl = {};
 	} else {
 		easytree.options.enableDnd = false;
 	}
+	if (typeof report != 'undefined'){
+		editorCtrl.showsAgreementMap(true);
+//		React.render(<ReactSlider defaultValue={[0, 100]} withBars />, document.body);
+		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + urlParams.parentproject+'&type=PROJECT');
+	}
+	else {
+		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type='+project_type);
+	}
 
-	$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type='+project_type);
+	
 
 	var apisToLoad;
 	var callback = function() {
@@ -267,6 +281,9 @@ function createCodeBookEditor(){
 window.onresize = resizeHandler;
 
 function resizeHandler() {
+	var filteredParagraphs = $('p').filter(function() {
+		return  $(this).attr("falsenegcount") > 0;
+	}).css( "backgroundColor", "yellow" );
 	setTimeout(function() {
 		resizeElements();
 	}, 250);
@@ -321,7 +338,6 @@ function setupUI(){
 	//easytree.options.enableDnd = false;
 	$('#navAccount').show();
 	$('#navSignin').hide();
-	
 	gapi.client.qdacity.project.getProject({ 'id' : project_id, 'type': project_type}).execute(function(resp) {
 		if (!resp.code) {
 			codesystem_id = resp.codesystemID;
@@ -417,12 +433,12 @@ function fillPropertiesView(codeID) {
 
 function setDocumentList(projectID) {
 	if (typeof documentsView == 'undefined'){
-		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} />, document.getElementById('documentView'));
+		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl}/>, document.getElementById('documentView'));
 		documentsCtrl = new DocumentsCtrl(documentsView, project_id);
 		codingsView = new CodingsView(editorCtrl, documentsCtrl);
 	}
 	
-	documentsCtrl.setupView(project_id, project_type).then(function(codeName) {
+	documentsCtrl.setupView(project_id, project_type, report).then(function(codeName) {
 		addCodingCountToTree();
 		resizeElements();
 	});

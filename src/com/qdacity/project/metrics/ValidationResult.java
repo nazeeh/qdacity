@@ -1,5 +1,6 @@
 package com.qdacity.project.metrics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +15,14 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class ValidationResult {
+public class ValidationResult  implements Serializable  {
   
   @PrimaryKey
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Key key;
+  private Long id;
+
+  @Persistent(defaultFetchGroup="true", dependent="true" )
+  Long reportID;
 
   @Persistent(defaultFetchGroup="true", dependent="true" )
   String name;
@@ -35,18 +39,28 @@ public class ValidationResult {
   
   @Persistent(defaultFetchGroup="true") 
   @Element(dependent = "true")
-  @Column(name="documentResults")
+  @Column(name="documentResults") 
   List<DocumentResult> documentResults;
 
-  public Key getKey() {
-    return key;
+  public Long getId() {
+    return id;
   }
 
-  public void setKey(Key key) {
-    this.key = key;
+  public void setId(Long id) {
+    this.id = id;
   }
+  
+  
 
   
+  public Long getReportID() {
+    return reportID;
+  }
+
+  public void setReportID(Long reportID) {
+    this.reportID = reportID;
+  }
+
   public Long getValidationProjectID() {
     return validationProjectID;
   }
@@ -95,6 +109,4 @@ public class ValidationResult {
   public Long getRevisionID() {
     return revisionID;
   }
-  
-  
 }

@@ -15,7 +15,10 @@ import org.jsoup.select.Elements;
 import com.qdacity.project.data.TextDocument;
 
 public class Agreement {
-  static public ParagraphAgreement calculateParagraphAgreement(TextDocument original, TextDocument recoded) {
+  static public DocumentResult calculateParagraphAgreement(TextDocument original, TextDocument recoded) {
+    DocumentResult docResults= new DocumentResult();
+    docResults.setDocumentID(recoded.getId());
+    docResults.setDocumentName(recoded.getTitle());
     
     HashMap<Long, Integer> hits = new HashMap<Long, Integer>();
     HashMap<Long, Integer> misses = new HashMap<Long, Integer>();
@@ -30,9 +33,15 @@ public class Agreement {
     Elements recodedParagraphs = recodedDoc.select("p");
     
     ArrayList<Double> paragraphAgreement = new ArrayList<Double>();
-    Integer truePositives = 0;
-    Integer falsePositives = 0;
-    Integer falseNegatives = 0;
+    Integer truePositiveCount = 0;
+    Integer falsePositiveCount = 0;
+    Integer falseNegativeCount = 0;
+//    ArrayList<ArrayList<String>> truePositives = new ArrayList<ArrayList<String>>();
+//    ArrayList<ArrayList<String>> falsePositives = new ArrayList<ArrayList<String>>();
+//    ArrayList<ArrayList<String>> falseNegatives = new ArrayList<ArrayList<String>>();
+//    
+    List<CodingResults> codingResultList = new ArrayList<CodingResults>();
+    
     for (int i = 0; i < originalParagraphs.size(); i++) {
       Elements originalCodings = originalParagraphs.get(i).select("coding");
       HashSet<String> originalCodeIDs = getAppliedCodes(originalCodings);
@@ -41,19 +50,33 @@ public class Agreement {
       Elements recodedCodings = recodedParagraphs.get(i).select("coding");
       HashSet<String> recodedCodeIDs = getAppliedCodes(recodedCodings);
       //Logger.getLogger("logger").log(Level.INFO,   "Number of codings in recoded paragraph: " + recodedCodeIDs.size() + " | " + recodedCodeIDs);
+      ArrayList<String> tpList = countTruePositives(originalCodeIDs, recodedCodeIDs);
+      truePositiveCount += tpList.size();
+      //truePositives.add(tpList);
       
-      truePositives += countTruePositives(originalCodeIDs, recodedCodeIDs);
-      falsePositives += countFalsePositives(originalCodeIDs, recodedCodeIDs);
-      falseNegatives += countFalseNegatives(originalCodeIDs, recodedCodeIDs);
+      ArrayList<String> fpList = countFalsePositives(originalCodeIDs, recodedCodeIDs);
+      falsePositiveCount += fpList.size();
+      //falsePositives.add(fpList);
+      
+      ArrayList<String> fnList = countFalseNegatives(originalCodeIDs, recodedCodeIDs);
+      falseNegativeCount += fnList.size();
+      //falseNegatives.add(fnList);
+      
+      CodingResults codingResults = new CodingResults(fpList, tpList, fnList);
+      codingResultList.add(codingResults);
 
     }
-    Logger.getLogger("logger").log(Level.INFO,   "True Pos: " + truePositives + ", False Pos: " + falsePositives + ", False Neg" + falseNegatives);
-    
+//    Logger.getLogger("logger").log(Level.INFO,   "True Pos: " + truePositiveCount + ", False Pos: " + falsePositiveCount + ", False Neg " + falseNegativeCount);
+//    Logger.getLogger("logger").log(Level.INFO,   " Number of paragraphs "+ codingResultList.size());
     
     //double fMeasureParagraph = calculateFMeasure(originalParagraphs.get(i), recodedParagraphs.get(i));
-    ParagraphAgreement totalAgreement = calculateFMeasure(truePositives, falsePositives, falseNegatives);
-    Logger.getLogger("logger").log(Level.INFO,   "Total Agreement" + totalAgreement);
-    return totalAgreement;
+    ParagraphAgreement totalAgreement = calculateFMeasure(truePositiveCount, falsePositiveCount, falseNegativeCount);
+    
+    
+//    Logger.getLogger("logger").log(Level.INFO,   "Total Agreement" + totalAgreement);
+    docResults.setParagraphAgreement(totalAgreement);
+    docResults.setCodingResults(codingResultList);
+    return docResults;
   }
 
   static public ParagraphAgreement calculateFMeasure(Integer truePositives, Integer falsePositives, Integer falseNegatives){
@@ -108,28 +131,34 @@ public class Agreement {
     return originalCodeIDs;
   }
 
-  static private Integer countTruePositives(HashSet<String> originalCodeIDs, HashSet<String> recodedCodeIDs){
-    int count = 0;
+  static private ArrayList<String> countTruePositives(HashSet<String> originalCodeIDs, HashSet<String> recodedCodeIDs){
+    ArrayList<String> truePositives = new ArrayList<String>();
     for (String codeId : recodedCodeIDs) {
-      if (originalCodeIDs.contains(codeId)) count++;
+      if (originalCodeIDs.contains(codeId)){
+        truePositives.add(codeId);
+      }
     }
-    return count;
+    return truePositives;
   }
 
-  static private Integer countFalsePositives(HashSet<String> originalCodeIDs, HashSet<String> recodedCodeIDs){
-    int count = 0;
+  static private ArrayList<String> countFalsePositives(HashSet<String> originalCodeIDs, HashSet<String> recodedCodeIDs){
+    ArrayList<String> falsePositives = new ArrayList<String>();
     for (String codeId : recodedCodeIDs) {
-      if (!originalCodeIDs.contains(codeId)) count++;
+      if (!originalCodeIDs.contains(codeId)){
+        falsePositives.add(codeId);
+      }
     }
-    return count;
+    return falsePositives;
   }
 
-  static private Integer countFalseNegatives(HashSet<String> originalCodeIDs, HashSet<String> recodedCodeIDs){
-    int count = 0;
+  static private ArrayList<String> countFalseNegatives(HashSet<String> originalCodeIDs, HashSet<String> recodedCodeIDs){
+    ArrayList<String> falseNegatives = new ArrayList<String>();
     for (String codeId : originalCodeIDs) {
-      if (!recodedCodeIDs.contains(codeId)) count++;
+      if (!recodedCodeIDs.contains(codeId)){
+        falseNegatives.add(codeId);
+      }
     }
     
-    return count;
+    return falseNegatives;
   }
 }

@@ -5,6 +5,8 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.ValidationReport;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -15,6 +17,7 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -137,6 +140,31 @@ public class TextDocumentEndpoint {
 		return CollectionResponse.<TextDocument> builder().setItems(execute)
 				.setNextPageToken(cursorString).build();	
 		}
+	
+	 @ApiMethod(name = "documents.getAgreementMaps",  scopes = {Constants.EMAIL_SCOPE},
+	      clientIds = {Constants.WEB_CLIENT_ID, 
+	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	         audiences = {Constants.WEB_CLIENT_ID})
+	  public List<AgreementMap> getAgreementMaps(@Named("id") Long id, User user) throws UnauthorizedException {
+	    
+	    PersistenceManager mgr = null;
+	    List<AgreementMap> agreementMaps = new ArrayList<AgreementMap>();;
+	    
+	    try {
+	      mgr = getPersistenceManager();
+	      
+	      ValidationReport report = mgr.getObjectById(ValidationReport.class, id);
+	      List<DocumentResult> documentResults = report.getDocumentResults();
+	      
+	      for (DocumentResult documentResult : documentResults) {
+          agreementMaps.add(documentResult.getAgreementMap());
+        }
+	      
+	    } finally {
+	      mgr.close();
+	    }
+	    return agreementMaps;  
+	    }
 	
 //	/**
 //	 * This method gets the entity having primary key id. It uses HTTP GET method.

@@ -32,3 +32,12 @@
 .clickable:hover{
 	cursor: pointer;
 }
+
+.centerParent{
+    text-align: center;
+}
+
+.centerChild{
+	display: inline-block;
+	float: none;
+}

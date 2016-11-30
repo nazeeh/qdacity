@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default class DocumentsView extends React.Component {
 constructor(props) {
     super(props);
@@ -53,6 +55,7 @@ constructor(props) {
   setActiveDocument(selectedID){
 	  this.setState({selected: selectedID});
 	  this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
+	  
   }
   
   getActiveDocumentId(selectedID){

@@ -177,11 +177,28 @@ export default class DocumentsCtrl {
 		$('#btnInsertDoc').tooltipster({content : $('<span>New Document</span>')});
 	}
 	
-	setupView(project_id, project_type){
+	setupView(project_id, project_type, agreement_map){
 		var _this = this;
-		  var promise = new Promise(
+		  var promise = new Promise( 
 			  function(resolve, reject) {
-					gapi.client.qdacity.documents.getTextDocument({'id' : project_id, 'projectType' : project_type}).execute(function(resp) {
+				  
+				  if (typeof agreement_map != 'undefined'){
+					  gapi.client.qdacity.documents.getAgreementMaps({'id' : agreement_map}).execute(function(resp) {
+							if (!resp.code) {
+								resp.items = resp.items || [];
+								for (var i = 0; i < resp.items.length; i++) {
+									_this.view.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
+									
+								}
+								resolve();
+							} else{
+								reject();
+							}
+							$("#documentsLoadingDiv").addClass('hidden'); 
+						});
+				  }
+				  else{
+					  gapi.client.qdacity.documents.getTextDocument({'id' : project_id, 'projectType' : project_type}).execute(function(resp) {
 						if (!resp.code) {
 							resp.items = resp.items || [];
 							for (var i = 0; i < resp.items.length; i++) {
@@ -194,6 +211,8 @@ export default class DocumentsCtrl {
 						}
 						$("#documentsLoadingDiv").addClass('hidden'); 
 					});
+				}
+					
 				}
 
 		  );

@@ -25,6 +25,7 @@
 <link href="assets/css/CodesystemView.css" rel="stylesheet">
 <link href="components/tooltipster/css/tooltipster.css" rel="stylesheet">
 <link href="assets/css/navbar-account.css" rel="stylesheet">
+<link href="assets/css/agreementMap.css" rel="stylesheet">
 
 <link href="components/filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
 <link href="components/filer/css/themes/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
@@ -140,7 +141,15 @@
 								Project Dashboard
 							</a>
 						</div>
-					
+						<div id="agreementMapSettings" class="hidden">
+							<p>
+							  <!-- <label for="maxFalseNeg">Filter False Negatives > :</label> -->
+							  <span>Showing False Negatives >= </span>
+							  <span id="maxFalseNeg" class="falseNegValue"></span>
+							</p>
+							<div id="agreementMapSlider" class="agreementMapSlider"></div>
+						</div>
+						
 						<div class="row no-gutters" >
 						<div id="settings" class="collapse">
 						<div>
@@ -167,7 +176,11 @@
 			</div>
 			</div>
 			</div>
+
+						
+
 			<div id="documents-ui" style=" width: 100%; background-color: #f8f8f8;">
+			
 				<div style="background-color: #e7e7e7;">
 				
 					<div style="text-align: center; position:relative;">
@@ -176,6 +189,7 @@
     				<span class="col-xs-10">
     					<b>Documents</b>
     					<br>
+    					
     					<div class="btn-group projectsOnly">
 							<a id="btnUpdateDoc" class="btn btn-default" href="#">
 								<i class="fa fa-pencil fa-1x"></i>

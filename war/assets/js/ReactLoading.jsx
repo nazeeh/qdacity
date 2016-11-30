@@ -1,3 +1,4 @@
+import React from 'react';
 import Loading from 'react-loading';
 
 export default class ReactLoading extends React.Component  {
@@ -6,6 +7,8 @@ export default class ReactLoading extends React.Component  {
   constructor(props) {
   	super(props);
   	this.state = {show: false};
+  	if (typeof this.props.color != 'undefined') this.color = this.props.color;
+  	else this.color = '#e3e3e3';
   }
 
 	show(){
@@ -16,7 +19,7 @@ export default class ReactLoading extends React.Component  {
 
     	//if(this.state.show) {
     	if(true){
-           return <Loading type='bars' color='#e3e3e3' />;
+           return <Loading type='bars' color={this.color} />;
         } else {
             return null;
         }
