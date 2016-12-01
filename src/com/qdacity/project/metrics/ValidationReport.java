@@ -45,7 +45,7 @@ public class ValidationReport {
   @Column(name="validationResultIDs")
   List<Long> validationResultIDs;
   
-  @Persistent(defaultFetchGroup="true") 
+  @Persistent
   @Element(dependent = "true")
   @Column(name="documentResults")
   List<DocumentResult> documentResults;

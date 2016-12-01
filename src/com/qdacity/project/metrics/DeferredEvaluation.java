@@ -115,8 +115,10 @@ public class DeferredEvaluation  implements DeferredTask {
       report.setParagraphAgreement(avgReportAgreement);
       
       generateAgreementMaps(report.getDocumentResults(), originalDocs);
-      
+
       mgr.makePersistent(report);
+      
+      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + results.size() + " Results");
       
       for (ValidationResult result : results) {
         result.setReportID(report.getId());

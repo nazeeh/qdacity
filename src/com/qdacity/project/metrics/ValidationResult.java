@@ -11,6 +11,8 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -37,7 +39,8 @@ public class ValidationResult  implements Serializable  {
   @Column(name="paragraphAgreement")
   ParagraphAgreement paragraphAgreement;
   
-  @Persistent(defaultFetchGroup="true") 
+  @Persistent
+  @OneToMany (cascade=CascadeType.ALL)
   @Element(dependent = "true")
   @Column(name="documentResults") 
   List<DocumentResult> documentResults;

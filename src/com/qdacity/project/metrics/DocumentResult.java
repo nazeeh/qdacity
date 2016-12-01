@@ -35,6 +35,7 @@ public class DocumentResult  implements Serializable {
   @Persistent
   String documentName;
   
+  
   @Persistent(defaultFetchGroup="true", dependent="true" )
   @Column(name="paragraphAgreement")
   ParagraphAgreement paragraphAgreement;
@@ -46,6 +47,7 @@ public class DocumentResult  implements Serializable {
   
   @Persistent(defaultFetchGroup="true" , dependent="true" )
   AgreementMap agreementMap;
+  
   
    public DocumentResult() {
     // TODO Auto-generated constructor stub
@@ -60,6 +62,17 @@ public class DocumentResult  implements Serializable {
     for (CodingResults copyResults : copy.codingResults) {
       this.codingResults.add(new CodingResults(copyResults));
     }
+  }
+  
+  
+  
+
+  public Key getKey() {
+    return key;
+  }
+
+  public void setKey(Key key) {
+    this.key = key;
   }
 
   public Long getDocumentID() {
@@ -129,6 +142,6 @@ public class DocumentResult  implements Serializable {
     AgreementMap map = new AgreementMap(textDocument.getId(),textDocument.getProjectID(), textDocument.getTitle(), originalDoc.toString());
     this.agreementMap = map;
   }
-
+ 
   
 }
