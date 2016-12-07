@@ -1,8 +1,6 @@
-package com.qdacity.project.metrics;
+package com.qdacity.project.metrics.tasks;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -10,12 +8,15 @@ import javax.jdo.Transaction;
 
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.qdacity.PMF;
+import com.qdacity.project.metrics.ValidationResult;
 
-public class DeferredDocResults implements DeferredTask {
+public class DeferredResults implements DeferredTask {
   
-  DocumentResult result;
+  ValidationResult result;
+  
+  
 
-  public DeferredDocResults(DocumentResult result) {
+  public DeferredResults(ValidationResult result) {
     super();
     this.result = result;
   }
@@ -29,7 +30,15 @@ public class DeferredDocResults implements DeferredTask {
     try {
       
       tx.begin();
-      Logger.getLogger("logger").log(Level.INFO,   "Persisting DocResult for ValidationResult : " + result.getValidationResultID() + " DocResults");
+      
+      
+//      List<DocumentResult> docResults = result.getDocumentResults();
+//      for (DocumentResult documentResult : docResults) {
+//        documentResult.setDocumentName("CHANGED");
+//        documentResult.setKey(null);
+//      }
+      //mgr.makeTransactional(result);
+      
       mgr.makePersistent(result);
       tx.commit();
     } finally {

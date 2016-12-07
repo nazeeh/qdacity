@@ -29,6 +29,8 @@ import com.qdacity.project.Project;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.data.TextDocumentEndpoint;
+import com.qdacity.project.metrics.tasks.DeferredEvaluation;
+import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
 import com.qdacity.Sendgrid;
 import com.qdacity.Credentials;;
 
@@ -290,29 +292,11 @@ public class ValidationEndpoint {
         results = (List<ValidationResult>) q.execute(report.getValidationResultIDs());
         mgr.deletePersistentAll(results);
       }else {
-     // Delete all ValidationResults / new - foreign key in result
-        Query q2 = mgr.newQuery(ValidationResult.class, "reportID  == :reportID");
-//        Map<String, Long> params = new HashMap();
-//        params.put("reportID", repID);
-        results = (List<ValidationResult>) q2.execute(repID);
-        
-        //Delete all DocumentResults corresponding to the ValidationResults
-        for (ValidationResult validationResult : results) {
-          Query q3 = mgr.newQuery(DocumentResult.class, "validationResultID  == :validationResultID");
-          List<DocumentResult> docResults = (List<DocumentResult>) q3.execute(validationResult.getId());
-          if (docResults != null){
-//            for (DocumentResult documentResult : docResults) {
-//              mgr.deletePersistent(documentResult);
-//            }
-          
-          
-          if (docResults != null && !docResults.isEmpty()) {
-            mgr.deletePersistentAll(docResults);
-          }
-          }
-        }
-        
-        mgr.deletePersistentAll(results);
+        DeferredReportDeletion task = new DeferredReportDeletion(repID);
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+       
+     
       }
       
       

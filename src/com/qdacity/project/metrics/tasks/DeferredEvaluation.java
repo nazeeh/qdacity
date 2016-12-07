@@ -1,4 +1,4 @@
-package com.qdacity.project.metrics;
+package com.qdacity.project.metrics.tasks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +26,11 @@ import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.data.TextDocumentEndpoint;
+import com.qdacity.project.metrics.Agreement;
+import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.ValidationReport;
+import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.user.UserType;
 
 public class DeferredEvaluation  implements DeferredTask {
