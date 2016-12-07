@@ -40,6 +40,7 @@ public class DeferredReportDeletion implements DeferredTask {
       
       //Delete all DocumentResults corresponding to the ValidationResults
       for (ValidationResult validationResult : results) {
+        validationResult.getParagraphAgreement(); //Lazy Fetch
         Query q3 = mgr.newQuery(DocumentResult.class, "validationResultID  == :validationResultID");
         List<DocumentResult> docResults = (List<DocumentResult>) q3.execute(validationResult.getId());
         if (docResults != null){
@@ -49,6 +50,10 @@ public class DeferredReportDeletion implements DeferredTask {
         
         
         if (docResults != null && !docResults.isEmpty()) {
+          for (DocumentResult documentResult : docResults) {
+            documentResult.getParagraphAgreement();
+            documentResult.getAgreementMap();
+          }
           mgr.deletePersistentAll(docResults);
         }
         }

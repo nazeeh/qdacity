@@ -299,8 +299,14 @@ public class ValidationEndpoint {
      
       }
       
-      
-
+      //Lazy fetch
+      report.getParagraphAgreement();
+      List<DocumentResult> docResults = report.getDocumentResults();
+      for (DocumentResult documentResult : docResults) {
+        documentResult.getAgreementMap();
+        documentResult.getParagraphAgreement();
+        List<CodingResults> codingResults = documentResult.getCodingResults();
+      }
       
       //Delete the actual report      
       mgr.deletePersistent(report);

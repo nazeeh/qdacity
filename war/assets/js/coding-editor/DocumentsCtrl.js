@@ -64,7 +64,6 @@ export default class DocumentsCtrl {
 		var reader = new FileReader();
 
 		reader.onload = function(e) {
-			//console.log("File "+ file.name + " - "+ (reader.result != ""));
 			_this.uploadFile(reader.result, file.name);
 
 		}
