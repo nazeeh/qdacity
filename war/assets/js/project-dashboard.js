@@ -1,4 +1,5 @@
 import Timeline from './timeline';
+import AgreementStats from './AgreementStats';
 import ProjectEndpoint from './ProjectEndpoint';
 import ValidationEndpoint from './ValidationEndpoint';
 import Project from './Project';
@@ -25,7 +26,10 @@ import $script from 'scriptjs';
 $script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
 
 window.loadPlatform = function (){
-	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
+	$script('https://www.gstatic.com/charts/loader.js', function() { //load charts loader for google charts
+		$script('https://apis.google.com/js/platform.js?onload=init','google-api');
+		});
+	
 }
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
@@ -221,7 +225,10 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
                   		
                   		var timeline = new Timeline(user, project_id);
                   		
+                  		
                   		validationPromise.then(function(reports){
+                  			var agreementStats = new AgreementStats("agreementStats");
+                  			
                   			project.setReports(reports);
 	                        for (var i=0;i<snapshots.length;i++) {
 	                        	var revID = snapshots[i].id;
@@ -229,7 +236,10 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	                		    timeline.addRevInfoToTimeline(snapshots[i], user);
 	                		    
 	                		    
-	                		    if (typeof reports[revID] != 'undefined') timeline.addReportToTimeline(reports[revID]);
+	                		    if (typeof reports[revID] != 'undefined'){
+	                		    	timeline.addReportToTimeline(reports[revID]);
+	                		    	agreementStats.addReports(reports[revID]);
+	                		    }
 	                		    
 	
 	                		    var validationProjectList = validationProjects[revID];

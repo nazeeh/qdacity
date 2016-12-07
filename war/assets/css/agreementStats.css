@@ -1,0 +1,11 @@
+.agreementStats{
+	margin-left:25px;
+	margin-right:25px;
+}
+.slick-prev:before{
+	color:grey !important;
+}
+
+.slick-next:before{
+	color:grey !important;
+}
