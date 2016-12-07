@@ -58,19 +58,27 @@ export default class DocumentsCtrl {
 
 	}
   
+  readAndUpload(file) {
+		var _this = this;
+		
+		var reader = new FileReader();
+
+		reader.onload = function(e) {
+			//console.log("File "+ file.name + " - "+ (reader.result != ""));
+			_this.uploadFile(reader.result, file.name);
+
+		}
+
+		reader.readAsDataURL(file);
+		
+	}
+  
   uploadDocuments(files) {
 		var _this = this;
 		for (var i = 0; i < files.length; i++) {
 			var file = files[i];
+			this.readAndUpload(file);
 
-			var reader = new FileReader();
-
-			reader.onload = function(e) {
-				_this.uploadFile(reader.result, file.name);
-
-			}
-
-			reader.readAsDataURL(file);
 		}
 	}
 
