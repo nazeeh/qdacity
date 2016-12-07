@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +16,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -73,43 +76,82 @@ public class DeferredEvaluation  implements DeferredTask {
       report.setDatetime(new Date());
       
       List<ValidationResult> results = new ArrayList<ValidationResult>();
+      List<DocumentResult> docResults = new ArrayList<DocumentResult>();
+      Map<Long,List<ParagraphAgreement>> agreementByDoc = new HashMap<Long,List<ParagraphAgreement>>();
       
       for (ValidationProject validationProject : validationProjects) {
         report.setProjectID(validationProject.getProjectID());     
         
         ValidationResult valResult = new ValidationResult(); 
 
+        
+        
         List<ParagraphAgreement> documentAgreements = new ArrayList<ParagraphAgreement>();
+        
         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
 //        Logger.getLogger("logger").log(Level.INFO,   "Number of original docs: " + originalDocs.size() + " Number of recoded docs: "+ recodedDocs.size());
 //        Logger.getLogger("logger").log(Level.INFO,   "Docs to evaluate: " + docIDs.toArray().toString());
         for (TextDocument original : originalDocs) {
+//         List<ParagraphAgreement> documentAverage = new ArrayList<ParagraphAgreement>(); 
          if (!docIDs.contains(original.getId())) continue; // Exclude text documents that should not be considered
          for (TextDocument recoded : recodedDocs) {
            if (original.getTitle().equals(recoded.getTitle())){
              DocumentResult documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
              documentAgreements.add(documentAgreement.getParagraphAgreement());
 
-             valResult.addDocumentResult(documentAgreement);
+             
+             mgr.makePersistent(valResult);
+             
+             //valResult.addDocumentResult(documentAgreement);
+             documentAgreement.setValidationResultID(valResult.getId());
+             //documentAgreement.setDocumentID(original.getId());
+             docResults.add(documentAgreement);
+             
+             
+             
+             
              DocumentResult documentResultForAggregation = new DocumentResult(documentAgreement);
              documentResultForAggregation.setDocumentID(original.getId());
              report.addDocumentResult(documentResultForAggregation);
+             
+             ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
+             
+             if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)){
+//             documentAverage.add(documentAgreement.getParagraphAgreement());
+             List<ParagraphAgreement> agreementList = agreementByDoc.get(original.getId());
+             if (agreementList == null) agreementList = new ArrayList<ParagraphAgreement>();
+             agreementList.add(docAgreement);
+             agreementByDoc.put(original.getId(), agreementList);
+             //agreementByDoc.putIfAbsent(key, value)
            }
-         }
+           }
+         }         
        }
         
+        
+        
         ParagraphAgreement totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
+        
         if (!(totalAgreement.getPrecision() == 1 && totalAgreement.getRecall() == 0)) validationCoderAvg.add(totalAgreement); // We exclude validationproject where nothing was coded (recall 0 prec 1) from calculation of avg
         
         valResult.setParagraphAgreement(totalAgreement);
         valResult.setName(validationProject.getCreatorName());
         valResult.setRevisionID(revisionID);
         valResult.setValidationProjectID(validationProject.getId());
-        
+
         results.add(valResult);
 //        report.addResult(valResult);
 //        Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
       }
+
+      for (Long docID : agreementByDoc.keySet()) {
+        ParagraphAgreement avgDocAgreement = Agreement.calculateAverageAgreement(agreementByDoc.get(docID));
+        Logger.getLogger("logger").log(Level.INFO,   "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measuzre of " + avgDocAgreement.getfMeasure());
+        report.setDocumentResultAverage(docID, avgDocAgreement);
+      }
+      
+      
+      
       
       ParagraphAgreement avgReportAgreement = Agreement.calculateAverageAgreement(validationCoderAvg);
       report.setParagraphAgreement(avgReportAgreement);
@@ -120,14 +162,21 @@ public class DeferredEvaluation  implements DeferredTask {
       
       Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + results.size() + " Results");
       
+      // Persist all ValidationResults asynchronously
       for (ValidationResult result : results) {
         result.setReportID(report.getId());
-//        mgr.makePersistent(result);
         DeferredResults deferredResults = new DeferredResults(result);
         Queue queue = QueueFactory.getDefaultQueue();
         queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
       }
-     // mgr.makePersistentAll(results);
+
+      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + docResults.size() + " DocResults");
+      // Persist all DocumentResults asynchronously
+      for (DocumentResult documentResult : docResults) {
+        DeferredDocResults deferredDocResults = new DeferredDocResults(documentResult);
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredDocResults));
+      }
 
     } catch (UnauthorizedException e) {
       Logger.getLogger("logger").log(Level.INFO,   "User not authorized: " + user.getEmail());

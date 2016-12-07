@@ -49,6 +49,7 @@ public class ValidationReport {
   @Element(dependent = "true")
   @Column(name="documentResults")
   List<DocumentResult> documentResults;
+  
 
   public Long getId() {
     return id;
@@ -131,6 +132,7 @@ public class ValidationReport {
   }
 
   public List<DocumentResult> getDocumentResults() {
+    if (documentResults == null) documentResults = new ArrayList<DocumentResult>();
     return documentResults;
   }
 
@@ -156,9 +158,31 @@ public class ValidationReport {
     for (DocumentResult aggregated : documentResults) {
       if (aggregated.getDocumentID().equals(newResult.getDocumentID())){
         aggregated.addCodingResults(newResult.getCodingResults());
+
         return true;
       }
     }
     return false;
   }
+  
+  
+  public void setDocumentResultAverage(Long docID, ParagraphAgreement averageAgreement){
+    for (DocumentResult aggregated : documentResults) {
+      if (aggregated.getDocumentID().equals(docID)){
+        aggregated.setParagraphAgreement(averageAgreement);
+      }
+    }
+  }
+  
+//  private Boolean mergeDocumentAgreement(Long docID, ParagraphAgreement averageAgreement){
+//    for (DocumentResult aggregated : documentResults) {
+//      if (aggregated.getDocumentID().equals(newResult.getDocumentID())){
+//        aggregated.addCodingResults(newResult.getCodingResults());
+//
+//        return true;
+//      }
+//    }
+//    return false;
+//  }
+
 }

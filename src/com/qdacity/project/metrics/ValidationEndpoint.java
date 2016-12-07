@@ -54,6 +54,15 @@ public class ValidationEndpoint {
 
       for (ValidationReport validationReport : reports) {
         validationReport.getParagraphAgreement().getFMeasure();
+        List<DocumentResult> docresults = validationReport.getDocumentResults();
+        if (docresults.size() > 0){
+          for (DocumentResult documentResult : docresults) {
+            documentResult.getParagraphAgreement().getfMeasure();
+          }
+        }
+          
+
+        
 //        List<ValidationResult> results = validationReport.getValidationResult();
 //        if (results != null){
 //          for (ValidationResult result : results) {
@@ -107,6 +116,34 @@ public class ValidationEndpoint {
     }
     return results;
   }
+  
+  @ApiMethod(name = "validation.listDocumentResults",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public List<DocumentResult> listDocumentResults(@Named("validationRresultID") Long validationRresultID, User user) throws UnauthorizedException {
+    List<ValidationReport> reports = new ArrayList<ValidationReport>();
+    PersistenceManager mgr = getPersistenceManager();
+    List<DocumentResult> results = new ArrayList<DocumentResult>();
+    
+    try {
+      
+      Query q = mgr.newQuery(DocumentResult.class, "validationResultID  == :validationResultID");
+      Map<String, Long> params = new HashMap();
+      params.put("validationResultID", validationRresultID);
+
+      results = (List<DocumentResult>) q.execute(validationRresultID);
+      
+      // Lazy fetch
+      for (DocumentResult result : results) {
+        result.getParagraphAgreement().getFMeasure();
+      }
+      
+    } finally {
+      mgr.close();
+    }
+    return results;
+  }
 
   @ApiMethod(name = "validation.evaluateRevision",   scopes = {Constants.EMAIL_SCOPE},
       clientIds = {Constants.WEB_CLIENT_ID, 
@@ -152,67 +189,82 @@ public class ValidationEndpoint {
     try {
       ValidationReport report = mgr.getObjectById(ValidationReport.class, reportID);
       // FIXME
+      List<ValidationResult> results;
+      
+      Query q2 = mgr.newQuery(ValidationResult.class, "reportID  == :reportID");
+//    Map<String, Long> params = new HashMap();
+//    params.put("reportID", repID);
+    results = (List<ValidationResult>) q2.execute(reportID);
+
+
+      
 //      List<ValidationResult> results = report.getValidationResult();
-//      
-//      for (ValidationResult result : results) {
-//        Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER ,Credentials.SENDGRID_PW);
-//        Long prjID = result.getValidationProjectID();
-//        ValidationProject project =  mgr.getObjectById(ValidationProject.class, prjID);
-//        List<String> coderIDs = project.getValidationCoders();
-//        
-//        for (String coderID : coderIDs) {
-//          com.qdacity.user.User coder =  mgr.getObjectById(com.qdacity.user.User.class, coderID);
-//          mail.addTo(coder.getEmail(), coder.getGivenName() + " " +coder.getSurName());
-//        }
-//        
-//        String msgBody = "Hi,<br>";
-//        msgBody += "<p>";
-//        msgBody +="We have analyzed your codings, and you've achieved the following scores:<br>";
-//        msgBody += "</p>";
-//        msgBody += "<p>";
-//        msgBody +="<strong>Overall</strong> <br>";
-//        msgBody +="F-Measure: "+result.getParagraphAgreement().getFMeasure()+"<br>";
-//        msgBody +="Recall: "+result.getParagraphAgreement().getRecall()+"<br>";
-//        msgBody +="Precision: "+result.getParagraphAgreement().getPrecision()+"<br>";
-//        msgBody += "</p>";
-//        msgBody += "<p>";
-//        msgBody +="<strong>Document specific data:</strong><br>";
-//        msgBody += "</p>";
-//        List<DocumentResult> docResults = result.getDocumentResults();
-//        for (DocumentResult documentResult : docResults) {
-//          msgBody += "<p>";
-//          msgBody +="<strong>"+documentResult.getDocumentName()+":</strong><br>";
-//          msgBody +="F-Measure: "+documentResult.getParagraphAgreement().getFMeasure()+"<br>";
-//          msgBody +="Recall: "+documentResult.getParagraphAgreement().getRecall()+"<br>";
-//          msgBody +="Precision: "+documentResult.getParagraphAgreement().getPrecision()+"<br><br>";
-//          msgBody += "</p>";
-//        }
-//        
-//        msgBody += "<p>";
-//        msgBody +="You may compare these values to the average of this report<br>";
-//        msgBody +="F-Measure: "+report.getParagraphAgreement().getFMeasure()+"<br>";
-//        msgBody +="Recall: "+report.getParagraphAgreement().getRecall()+"<br>";
-//        msgBody +="Precision: "+report.getParagraphAgreement().getPrecision()+"<br><br>";
-//        msgBody += "</p>";
-//        
-//        msgBody += "<p>";
-//        String reportTime = DateFormat.getDateInstance().format(report.getDatetime());
-//        msgBody +="Date of this report: "+reportTime+"<br>";
-//        
-//        msgBody += "<p>";
-//        msgBody +="Best regards,<br>";
-//        msgBody +="QDAcity Mailbot<br>";
-//        msgBody += "</p>";
-//        
-//        mail.setFrom("QDAcity <support@qdacity.com>");
-//        mail.setSubject("QDAcity Report");
-//        mail.setText(" ").setHtml(msgBody);
-//        
-//        mail.send();
-//        
-//        Logger.getLogger("logger").log(Level.INFO,   mail.getServerResponse());
-//        
-//      }
+      
+      for (ValidationResult result : results) {
+        Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER ,Credentials.SENDGRID_PW);
+        Long prjID = result.getValidationProjectID();
+        ValidationProject project =  mgr.getObjectById(ValidationProject.class, prjID);
+        List<String> coderIDs = project.getValidationCoders();
+        String greetingName = "";
+        for (String coderID : coderIDs) {
+          com.qdacity.user.User coder =  mgr.getObjectById(com.qdacity.user.User.class, coderID);
+          Logger.getLogger("logger").log(Level.INFO,   "Sending notification mail to: " + coder.getGivenName() + " " +coder.getSurName());
+          mail.addTo(coder.getEmail(), coder.getGivenName() + " " +coder.getSurName());
+          greetingName += coder.getGivenName() +", ";
+        }
+        mail.addTo("kaufmann@group.riehle.org", "Andreas Kaufmann");
+        String msgBody = "Hi "+greetingName+"<br>";
+        msgBody += "<p>";
+        msgBody +="We have analyzed your codings, and you've achieved the following scores:<br>";
+        msgBody += "</p>";
+        msgBody += "<p>";
+        msgBody +="<strong>Overall</strong> <br>";
+        msgBody +="F-Measure: "+result.getParagraphAgreement().getFMeasure()+"<br>";
+        msgBody +="Recall: "+result.getParagraphAgreement().getRecall()+"<br>";
+        msgBody +="Precision: "+result.getParagraphAgreement().getPrecision()+"<br>";
+        msgBody += "</p>";
+        msgBody += "<p>";
+        msgBody +="<strong>Document specific data:</strong><br>";
+        msgBody += "</p>";
+        
+        
+        List<DocumentResult> docResults = listDocumentResults(result.getId(), user);
+        for (DocumentResult documentResult : docResults) {
+          msgBody += "<p>";
+          msgBody +="<strong>"+documentResult.getDocumentName()+":</strong><br>";
+          msgBody +="F-Measure: "+documentResult.getParagraphAgreement().getFMeasure()+"<br>";
+          msgBody +="Recall: "+documentResult.getParagraphAgreement().getRecall()+"<br>";
+          msgBody +="Precision: "+documentResult.getParagraphAgreement().getPrecision()+"<br><br>";
+          msgBody += "</p>";
+        }
+        
+        msgBody += "<p>";
+        msgBody +="You may compare these values to the average of this report<br>";
+        msgBody +="F-Measure: "+report.getParagraphAgreement().getFMeasure()+"<br>";
+        msgBody +="Recall: "+report.getParagraphAgreement().getRecall()+"<br>";
+        msgBody +="Precision: "+report.getParagraphAgreement().getPrecision()+"<br><br>";
+        msgBody += "</p>";
+        
+        msgBody += "<p>";
+        msgBody +="This email is generated for this report: "+report.getName()+"<br>";
+        String reportTime = DateFormat.getDateInstance().format(report.getDatetime());
+        
+        msgBody +="Date of this report: "+reportTime+"<br>";
+        
+        msgBody += "<p>";
+        msgBody +="Best regards,<br>";
+        msgBody +="QDAcity Mailbot<br>";
+        msgBody += "</p>";
+        
+        mail.setFrom("QDAcity <support@qdacity.com>");
+        mail.setSubject("QDAcity Report");
+        mail.setText(" ").setHtml(msgBody);
+        
+        mail.send();
+        
+        Logger.getLogger("logger").log(Level.INFO,   mail.getServerResponse());
+        
+      }
     } finally {
       mgr.close();
     }
@@ -237,15 +289,34 @@ public class ValidationEndpoint {
         Query q = mgr.newQuery(ValidationResult.class, ":p.contains(id)");
         results = (List<ValidationResult>) q.execute(report.getValidationResultIDs());
         mgr.deletePersistentAll(results);
+      }else {
+     // Delete all ValidationResults / new - foreign key in result
+        Query q2 = mgr.newQuery(ValidationResult.class, "reportID  == :reportID");
+//        Map<String, Long> params = new HashMap();
+//        params.put("reportID", repID);
+        results = (List<ValidationResult>) q2.execute(repID);
+        
+        //Delete all DocumentResults corresponding to the ValidationResults
+        for (ValidationResult validationResult : results) {
+          Query q3 = mgr.newQuery(DocumentResult.class, "validationResultID  == :validationResultID");
+          List<DocumentResult> docResults = (List<DocumentResult>) q3.execute(validationResult.getId());
+          if (docResults != null){
+//            for (DocumentResult documentResult : docResults) {
+//              mgr.deletePersistent(documentResult);
+//            }
+          
+          
+          if (docResults != null && !docResults.isEmpty()) {
+            mgr.deletePersistentAll(docResults);
+          }
+          }
+        }
+        
+        mgr.deletePersistentAll(results);
       }
-     
       
-      // Delete all ValidationResults / new - foreign key in result
-      Query q2 = mgr.newQuery(ValidationResult.class, "reportID  == :reportID");
-//      Map<String, Long> params = new HashMap();
-//      params.put("reportID", repID);
-      results = (List<ValidationResult>) q2.execute(repID);
-      mgr.deletePersistentAll(results);
+      
+
       
       //Delete the actual report      
       mgr.deletePersistent(report);
