@@ -1,6 +1,7 @@
 import ReactLoading from '../ReactLoading.jsx';
 
 import VexModal from './VexModal';
+import IntercoderAgreementByDoc from './IntercoderAgreementByDoc';
 import BinaryDecider from './BinaryDecider';
 import ProjectEndpoint from '../ProjectEndpoint';
 import ValidationEndpoint from '../ValidationEndpoint';
@@ -74,7 +75,7 @@ export default class IntercoderAgreement extends VexModal {
   
   setupDataTable(){
 	  var dataSet = [];
-	  
+	  var _this = this;
 	  // initialize if not initialized
 	  if ( !$.fn.dataTable.isDataTable( '#agreementTable' ) ) {
 		var table1 = $('#agreementTable').dataTable({
@@ -82,16 +83,12 @@ export default class IntercoderAgreement extends VexModal {
 			"bLengthChange" : false,
 			"data" : dataSet,
 			"autoWidth" : false,
-			"columnDefs" : [ {
-				"width" : "20%"
-			}, {
-				"width" : "25%"
-			} , {
-				"width" : "25%"
-			}, {
-				"width" : "25%"
-			}],
-			"columns" : [ {
+			"columns" : [ 
+			{
+				className: "hidden" ,
+				"searchable": true
+			},
+			{
 				"title" : "Coder",
 				"width" : "20%",
 			}, {
@@ -108,18 +105,34 @@ export default class IntercoderAgreement extends VexModal {
 		});
 	}
 	  
+  $('#agreementTable tbody').on('click', 'tr', function() {
+		if ($(_this).hasClass('selected')) {
+			$(_this).removeClass('selected');
+		} else {
+
+			table.$('tr.selected').removeClass('selected');
+			$(_this).addClass('selected');
+			
+			var resultID = $(this).find("td").eq(0).html();
+			var agreementByDoc = new IntercoderAgreementByDoc(resultID);
+			agreementByDoc.showModal();
+		}
+	});
+	  
 	var table = $( '#agreementTable' ).DataTable();
 	
 	table.clear();
 	if (typeof this.report != 'undefined'){
 		for (var i=0;i< this.results.length;i++) {
 		      var result = this.results[i];
-		      table.row.add([ result.name, result.paragraphAgreement.fmeasure, result.paragraphAgreement.recall, result.paragraphAgreement.precision]);
+		      table.row.add([result.id, result.name, result.paragraphAgreement.fmeasure, result.paragraphAgreement.recall, result.paragraphAgreement.precision]);
 			}
 	}
 	
 	
 	table.draw();
+	
+	$('#agreementTable tbody > tr').addClass("clickable");
 	
 	$('#agreementTable tbody').on('click', 'tr', function() {
 		if ($(this).hasClass('selected')) {

@@ -304,7 +304,7 @@ public class ValidationEndpoint {
       List<DocumentResult> docResults = report.getDocumentResults();
       for (DocumentResult documentResult : docResults) {
         documentResult.getAgreementMap();
-        documentResult.getParagraphAgreement();
+        documentResult.getParagraphAgreement().getfMeasure();
         List<CodingResults> codingResults = documentResult.getCodingResults();
       }
       
