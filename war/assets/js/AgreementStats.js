@@ -22,7 +22,6 @@ export default class Timeline {
 	  google.charts.setOnLoadCallback(function() {
 		  reports.forEach(function(report) {
 				  if (typeof report.documentResults != 'undefined'){
-				    console.log(report);
 				    	//Create node for report
 				    	var div = document.createElement("div"); 
 				    	_this.documentResults.append(div);
@@ -37,8 +36,6 @@ export default class Timeline {
 				  }
 
 		    });
-		//if ($(_this.rootElement).hasClass('slick-initialized'))$(_this.rootElement).unslick();
-
 	  	_this.documentResults.slick({dots: true});
 		});
 	  

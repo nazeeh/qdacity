@@ -10,12 +10,9 @@ import IntercoderAgreement from './modals/IntercoderAgreement';
 import CustomForm from './modals/CustomForm';
 import DocumentsEndpoint from './DocumentsEndpoint';
 
-import 'script!./morris-data.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/listJS/list.js';
 import 'script!../../components/listJS/list.pagination.js';
-import 'script!../../components/raphael/raphael-min.js';
-import 'script!../../components/morrisjs/morris.min.js';
 import 'script!../../components/URIjs/URI.min.js';
 import 'script!../../components/alertify/alertify-0.3.js';
 import 'script!../../components/AdminLTE/js/app.min.js';

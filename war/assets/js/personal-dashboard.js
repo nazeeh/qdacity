@@ -1,12 +1,9 @@
 import 'script!./ErrorHandler.js';
-import 'script!./morris-data.js';
 import Account from './Account.jsx';
 import CustomForm from './modals/CustomForm';
 import 'script!../../components/bootstrap/bootstrap.min.js'
 import 'script!../../components/listJS/list.js';
 import 'script!../../components/listJS/list.pagination.js';
-import 'script!../../components/raphael/raphael-min.js';
-import 'script!../../components/morrisjs/morris.min.js';
 import BinaryDecider from './modals/BinaryDecider.js';
 
 
