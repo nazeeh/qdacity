@@ -1,6 +1,7 @@
 package com.qdacity.project.metrics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -161,4 +162,20 @@ public class Agreement {
     
     return falseNegatives;
   }
+  
+  static public void generateAgreementMaps(List<DocumentResult> documentResults, Collection<TextDocument> originalDocs) {
+//  Logger.getLogger("logger").log(Level.INFO,   "originalDocs: "+ originalDocs+" documentResults: "+ documentResults);
+  for (TextDocument textDocument : originalDocs) {
+    for (DocumentResult documentResult : documentResults) {
+      //Logger.getLogger("logger").log(Level.INFO,   "documentResultDocID: "+ documentResult.getDocumentID()+" docID: "+ textDocument.getId());
+      if (documentResult.getDocumentID().equals(textDocument.getId())){
+        Logger.getLogger("logger").log(Level.INFO,   "Generating map for: " + textDocument.getId());
+        documentResult.generateAgreementMap(textDocument);
+        break;
+      }
+      
+    }
+  }
+  
+}
 }

@@ -6,7 +6,9 @@ import com.qdacity.PMF;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.ValidationEndpoint;
 import com.qdacity.project.metrics.ValidationReport;
+import com.qdacity.project.metrics.ValidationResult;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -33,7 +35,7 @@ import javax.jdo.Query;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-@Api(name = "qdacity", version = "v3", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
+@Api(name = "qdacity", version = "v4", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class TextDocumentEndpoint {
 
 	/**
@@ -110,6 +112,7 @@ public class TextDocumentEndpoint {
 		
 		try {
 			mgr = getPersistenceManager();
+			mgr.setMultithreaded(true);
 			//Check authorization
 	    if (prjType.equals("REVISION")){
 	      ProjectRevision validationProject = mgr.getObjectById(ProjectRevision.class, id);
@@ -145,7 +148,7 @@ public class TextDocumentEndpoint {
 	      clientIds = {Constants.WEB_CLIENT_ID, 
 	         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	         audiences = {Constants.WEB_CLIENT_ID})
-	  public List<AgreementMap> getAgreementMaps(@Named("id") Long id, User user) throws UnauthorizedException {
+	  public List<AgreementMap> getAgreementMaps(@Named("id") Long id, @Named("projectType") String projectType, User user) throws UnauthorizedException {
 	    
 	    PersistenceManager mgr = null;
 	    List<AgreementMap> agreementMaps = new ArrayList<AgreementMap>();;
@@ -153,8 +156,15 @@ public class TextDocumentEndpoint {
 	    try {
 	      mgr = getPersistenceManager();
 	      
-	      ValidationReport report = mgr.getObjectById(ValidationReport.class, id);
-	      List<DocumentResult> documentResults = report.getDocumentResults();
+	      List<DocumentResult> documentResults = new ArrayList<DocumentResult>();
+	      
+	      if ( projectType.equals("REVISION")){
+	        ValidationReport report = mgr.getObjectById(ValidationReport.class, id);
+	        documentResults = report.getDocumentResults();
+	      } else if (projectType.equals("VALIDATION")) {
+	        ValidationEndpoint ve = new ValidationEndpoint();
+	        documentResults = ve.listDocumentResults(id, user);
+        }
 	      
 	      for (DocumentResult documentResult : documentResults) {
           agreementMaps.add(documentResult.getAgreementMap());

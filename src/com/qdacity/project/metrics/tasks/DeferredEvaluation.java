@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +23,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
@@ -29,6 +32,7 @@ import com.qdacity.project.data.TextDocumentEndpoint;
 import com.qdacity.project.metrics.Agreement;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.ValidationEndpoint;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.user.UserType;
@@ -60,7 +64,6 @@ public class DeferredEvaluation  implements DeferredTask {
       docIDs.add(Long.parseLong(string));
     }
     
-    List<ValidationProject> validationProjects = null;
     PersistenceManager mgr = getPersistenceManager();
     try {
       TextDocumentEndpoint tde = new TextDocumentEndpoint();
@@ -72,143 +75,170 @@ public class DeferredEvaluation  implements DeferredTask {
 
       Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems();
 
-      validationProjects = (List<ValidationProject>)q.executeWithMap(params);
+      List<ValidationProject> validationProjects = (List<ValidationProject>)q.executeWithMap(params);
       
-      List<ParagraphAgreement> validationCoderAvg = new ArrayList<ParagraphAgreement>(); 
+      for (ValidationProject prj : validationProjects) {
+        prj.getId();
+      }
+      
       ValidationReport report = new ValidationReport();
+      mgr.makePersistent(report); // So we have an ID to pass to ValidationResults
+//      mgr.makePersistent(report); // Generate ID right away
       report.setRevisionID(revisionID);
       report.setName(name);
       report.setDatetime(new Date());
       
       List<ValidationResult> results = new ArrayList<ValidationResult>();
+      report.setProjectID(validationProjects.get(0).getProjectID());
+      
       List<DocumentResult> docResults = new ArrayList<DocumentResult>();
       Map<Long,List<ParagraphAgreement>> agreementByDoc = new HashMap<Long,List<ParagraphAgreement>>();
       
+      List<Future<TaskHandle>> futures = new ArrayList<Future<TaskHandle>>();
+      
       for (ValidationProject validationProject : validationProjects) {
-        report.setProjectID(validationProject.getProjectID());     
+        validationProject.getId(); // Lazy Fetch?
+        Logger.getLogger("logger").log(Level.INFO,   "Starting ValidationProject : " + validationProject.getId());
+        DeferredValPrjEvaluation deferredResults = new DeferredValPrjEvaluation(validationProject, docIDs, report.getId(), user);
+        Queue queue = QueueFactory.getDefaultQueue();
         
-        ValidationResult valResult = new ValidationResult(); 
+        Future<TaskHandle> future = queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
 
-        
-        
-        List<ParagraphAgreement> documentAgreements = new ArrayList<ParagraphAgreement>();
-        
-        Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
-//        Logger.getLogger("logger").log(Level.INFO,   "Number of original docs: " + originalDocs.size() + " Number of recoded docs: "+ recodedDocs.size());
-//        Logger.getLogger("logger").log(Level.INFO,   "Docs to evaluate: " + docIDs.toArray().toString());
-        for (TextDocument original : originalDocs) {
-//         List<ParagraphAgreement> documentAverage = new ArrayList<ParagraphAgreement>(); 
-         if (!docIDs.contains(original.getId())) continue; // Exclude text documents that should not be considered
-         for (TextDocument recoded : recodedDocs) {
-           if (original.getTitle().equals(recoded.getTitle())){
-             DocumentResult documentAgreement = Agreement.calculateParagraphAgreement(original, recoded);
-             documentAgreements.add(documentAgreement.getParagraphAgreement());
-
-             
-             mgr.makePersistent(valResult);
-             
-             //valResult.addDocumentResult(documentAgreement);
-             documentAgreement.setValidationResultID(valResult.getId());
-             //documentAgreement.setDocumentID(original.getId());
-             docResults.add(documentAgreement);
-             
-             
-             
-             
-             DocumentResult documentResultForAggregation = new DocumentResult(documentAgreement);
-             documentResultForAggregation.setDocumentID(original.getId());
-             report.addDocumentResult(documentResultForAggregation);
-             
-             ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
-             
-             if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)){
-//             documentAverage.add(documentAgreement.getParagraphAgreement());
-             List<ParagraphAgreement> agreementList = agreementByDoc.get(original.getId());
-             if (agreementList == null) agreementList = new ArrayList<ParagraphAgreement>();
-             agreementList.add(docAgreement);
-             agreementByDoc.put(original.getId(), agreementList);
-             //agreementByDoc.putIfAbsent(key, value)
-           }
-           }
-         }         
-       }
-        
-        
-        
-        ParagraphAgreement totalAgreement = Agreement.calculateAverageAgreement(documentAgreements);
-        
-        if (!(totalAgreement.getPrecision() == 1 && totalAgreement.getRecall() == 0)) validationCoderAvg.add(totalAgreement); // We exclude validationproject where nothing was coded (recall 0 prec 1) from calculation of avg
-        
-        valResult.setParagraphAgreement(totalAgreement);
-        valResult.setName(validationProject.getCreatorName());
-        valResult.setRevisionID(revisionID);
-        valResult.setValidationProjectID(validationProject.getId());
-
-        results.add(valResult);
-//        report.addResult(valResult);
-//        Logger.getLogger("logger").log(Level.INFO,   "Calculated agreement: " + totalAgreement);
+        futures.add(future);
       }
-
-      for (Long docID : agreementByDoc.keySet()) {
-        ParagraphAgreement avgDocAgreement = Agreement.calculateAverageAgreement(agreementByDoc.get(docID));
-        Logger.getLogger("logger").log(Level.INFO,   "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measuzre of " + avgDocAgreement.getfMeasure());
-        report.setDocumentResultAverage(docID, avgDocAgreement);
+      
+      Logger.getLogger("logger").log(Level.INFO,   "Waiting for tasks: "+futures.size() );
+      
+      for (Future<TaskHandle> future : futures) {
+        Logger.getLogger("logger").log(Level.INFO,   "Is task finished? : "+future.isDone() );
+        future.get();
+      }
+      
+      // Poll every 10 seconds. TODO: find better solution
+      List<ValidationResult> valResults = new ArrayList<ValidationResult>();
+      while (valResults.size() != validationProjects.size()) {
+        
+        ValidationEndpoint ve = new ValidationEndpoint();
+        valResults = ve.listValidationResults(report.getId(), user);
+        Logger.getLogger("logger").log(Level.WARNING, " So many results " + valResults.size() + " for report " + report.getId() + " at time "  + System.currentTimeMillis());
+        if (valResults.size() != validationProjects.size()){
+          Thread.sleep(10000);
+        }
       }
       
       
       
+      Logger.getLogger("logger").log(Level.INFO,   "All Tasks Done for tasks: ");
+      Logger.getLogger("logger").log(Level.INFO,   "Is task finished? : "+futures.get(0).isDone() );
       
-      ParagraphAgreement avgReportAgreement = Agreement.calculateAverageAgreement(validationCoderAvg);
-      report.setParagraphAgreement(avgReportAgreement);
+      aggregateDocAgreement(report);
       
-      generateAgreementMaps(report.getDocumentResults(), originalDocs);
+      Agreement.generateAgreementMaps(report.getDocumentResults(), originalDocs);
 
       mgr.makePersistent(report);
       
-      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + results.size() + " Results");
       
-      // Persist all ValidationResults asynchronously
-      for (ValidationResult result : results) {
-        result.setReportID(report.getId());
-        DeferredResults deferredResults = new DeferredResults(result);
-        Queue queue = QueueFactory.getDefaultQueue();
-        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
-      }
-
-      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + docResults.size() + " DocResults");
+      
+      
+      
+//      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + results.size() + " Results");
+//      
+//      // Persist all ValidationResults asynchronously
+//      for (ValidationResult result : results) {
+//        result.setReportID(report.getId());
+//        DeferredResults deferredResults = new DeferredResults(result);
+//        Queue queue = QueueFactory.getDefaultQueue();
+//        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
+//      }
+//
+//      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + docResults.size() + " DocResults");
+      
       // Persist all DocumentResults asynchronously
-      for (DocumentResult documentResult : docResults) {
-        DeferredDocResults deferredDocResults = new DeferredDocResults(documentResult);
-        Queue queue = QueueFactory.getDefaultQueue();
-        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredDocResults));
-      }
+//      for (DocumentResult documentResult : docResults) {
+//        DeferredDocResults deferredDocResults = new DeferredDocResults(documentResult, user);
+//        Queue queue = QueueFactory.getDefaultQueue();
+//        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredDocResults));
+//      }
+      
+      
 
     } catch (UnauthorizedException e) {
       Logger.getLogger("logger").log(Level.INFO,   "User not authorized: " + user.getEmail());
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ExecutionException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     } finally {
       mgr.close();
     }
     long elapsed = System.nanoTime() - startTime;
-    Logger.getLogger("logger").log(Level.INFO,   "Time for ValidationReport: " + elapsed);
+    Logger.getLogger("logger").log(Level.WARNING,   "Time for ValidationReport: " + elapsed);
     
   }
   
-  private void generateAgreementMaps(List<DocumentResult> documentResults, Collection<TextDocument> originalDocs) {
-//    Logger.getLogger("logger").log(Level.INFO,   "originalDocs: "+ originalDocs+" documentResults: "+ documentResults);
-    for (TextDocument textDocument : originalDocs) {
-      for (DocumentResult documentResult : documentResults) {
-        //Logger.getLogger("logger").log(Level.INFO,   "documentResultDocID: "+ documentResult.getDocumentID()+" docID: "+ textDocument.getId());
-        if (documentResult.getDocumentID().equals(textDocument.getId())){
-          Logger.getLogger("logger").log(Level.INFO,   "Generating map for: " + textDocument.getId());
-          documentResult.generateAgreementMap(textDocument);
-          break;
+//  private void generateAgreementMaps(List<DocumentResult> documentResults, Collection<TextDocument> originalDocs) {
+////    Logger.getLogger("logger").log(Level.INFO,   "originalDocs: "+ originalDocs+" documentResults: "+ documentResults);
+//    for (TextDocument textDocument : originalDocs) {
+//      for (DocumentResult documentResult : documentResults) {
+//        //Logger.getLogger("logger").log(Level.INFO,   "documentResultDocID: "+ documentResult.getDocumentID()+" docID: "+ textDocument.getId());
+//        if (documentResult.getDocumentID().equals(textDocument.getId())){
+//          Logger.getLogger("logger").log(Level.INFO,   "Generating map for: " + textDocument.getId());
+//          documentResult.generateAgreementMap(textDocument);
+//          break;
+//        }
+//        
+//      }
+//    }
+//    
+//  }
+  
+  private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException{
+    List<ParagraphAgreement> validationCoderAvg = new ArrayList<ParagraphAgreement>(); 
+    Map<Long,List<ParagraphAgreement>> agreementByDoc = new HashMap<Long,List<ParagraphAgreement>>();
+    
+    ValidationEndpoint ve = new ValidationEndpoint();
+    List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
+    Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time "  + System.currentTimeMillis());
+    for (ValidationResult validationResult : validationResults) {
+      ParagraphAgreement resultParagraphAgreement = validationResult.getParagraphAgreement();
+      if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) validationCoderAvg.add(resultParagraphAgreement);
+      
+      List<DocumentResult> docResults = ve.listDocumentResults(validationResult.getId(), user);
+      
+      for (DocumentResult documentResult : docResults) {
+        Long revisionDocumentID = documentResult.getOriginDocumentID();
+        
+        DocumentResult documentResultForAggregation = new DocumentResult(documentResult);
+        documentResultForAggregation.setDocumentID(revisionDocumentID);
+        report.addDocumentResult(documentResultForAggregation);
+        
+        ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
+        
+        if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)){
+//        documentAverage.add(documentAgreement.getParagraphAgreement());
+          List<ParagraphAgreement> agreementList = agreementByDoc.get(revisionDocumentID);
+          if (agreementList == null) agreementList = new ArrayList<ParagraphAgreement>();
+          agreementList.add(docAgreement);
+          agreementByDoc.put(revisionDocumentID, agreementList);
+          //agreementByDoc.putIfAbsent(key, value)
         }
         
       }
+      
     }
     
+    for (Long docID : agreementByDoc.keySet()) {
+      ParagraphAgreement avgDocAgreement = Agreement.calculateAverageAgreement(agreementByDoc.get(docID));
+      Logger.getLogger("logger").log(Level.INFO,   "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measuzre of " + avgDocAgreement.getfMeasure());
+      report.setDocumentResultAverage(docID, avgDocAgreement);
+    }
+    
+    ParagraphAgreement avgReportAgreement = Agreement.calculateAverageAgreement(validationCoderAvg);
+    report.setParagraphAgreement(avgReportAgreement);
   }
   
   private static PersistenceManager getPersistenceManager() {

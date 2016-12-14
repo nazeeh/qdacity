@@ -89,6 +89,10 @@ export default class IntercoderAgreement extends VexModal {
 				"searchable": true
 			},
 			{
+				className: "hidden" ,
+				"searchable": true
+			},
+			{
 				"title" : "Coder",
 				"width" : "20%",
 			}, {
@@ -106,15 +110,16 @@ export default class IntercoderAgreement extends VexModal {
 	}
 	  
   $('#agreementTable tbody').on('click', 'tr', function() {
-		if ($(_this).hasClass('selected')) {
-			$(_this).removeClass('selected');
+		if ($(this).hasClass('selected')) {
+			$(this).removeClass('selected');
 		} else {
 
 			table.$('tr.selected').removeClass('selected');
-			$(_this).addClass('selected');
+			$( this).addClass('selected');
 			
 			var resultID = $(this).find("td").eq(0).html();
-			var agreementByDoc = new IntercoderAgreementByDoc(resultID);
+			var validationProjectID = $(this).find("td").eq(1).html();
+			var agreementByDoc = new IntercoderAgreementByDoc(resultID, validationProjectID, _this.report.projectID);
 			agreementByDoc.showModal();
 		}
 	});
@@ -125,7 +130,7 @@ export default class IntercoderAgreement extends VexModal {
 	if (typeof this.report != 'undefined'){
 		for (var i=0;i< this.results.length;i++) {
 		      var result = this.results[i];
-		      table.row.add([result.id, result.name, result.paragraphAgreement.fmeasure, result.paragraphAgreement.recall, result.paragraphAgreement.precision]);
+		      table.row.add([result.id, result.validationProjectID, result.name, result.paragraphAgreement.fmeasure, result.paragraphAgreement.recall, result.paragraphAgreement.precision]);
 			}
 	}
 	

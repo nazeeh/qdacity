@@ -190,7 +190,7 @@ export default class DocumentsCtrl {
 			  function(resolve, reject) {
 				  
 				  if (typeof agreement_map != 'undefined'){
-					  gapi.client.qdacity.documents.getAgreementMaps({'id' : agreement_map}).execute(function(resp) {
+					  gapi.client.qdacity.documents.getAgreementMaps({'id' : agreement_map, 'projectType' : project_type}).execute(function(resp) {
 							if (!resp.code) {
 								resp.items = resp.items || [];
 								for (var i = 0; i < resp.items.length; i++) {

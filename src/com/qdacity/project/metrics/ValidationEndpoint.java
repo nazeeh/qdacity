@@ -34,7 +34,7 @@ import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
 import com.qdacity.Sendgrid;
 import com.qdacity.Credentials;;
 
-@Api(name = "qdacity", version = "v3", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
+@Api(name = "qdacity", version = "v4", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
 public class ValidationEndpoint {
 
   @ApiMethod(name = "validation.listReports",   scopes = {Constants.EMAIL_SCOPE},
@@ -55,7 +55,7 @@ public class ValidationEndpoint {
       reports  = (List<ValidationReport>)q.executeWithMap(params);
 
       for (ValidationReport validationReport : reports) {
-        validationReport.getParagraphAgreement().getFMeasure();
+        if ( validationReport.getParagraphAgreement() != null)validationReport.getParagraphAgreement().getFMeasure();
         List<DocumentResult> docresults = validationReport.getDocumentResults();
         if (docresults.size() > 0){
           for (DocumentResult documentResult : docresults) {
@@ -139,6 +139,7 @@ public class ValidationEndpoint {
       // Lazy fetch
       for (DocumentResult result : results) {
         result.getParagraphAgreement().getFMeasure();
+        result.getAgreementMap();
       }
       
     } finally {

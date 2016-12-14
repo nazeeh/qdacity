@@ -36,6 +36,9 @@ public class DocumentResult  implements Serializable {
   Long documentID;
   
   @Persistent
+  Long originDocumentID;
+  
+  @Persistent
   String documentName;
   
   
@@ -85,8 +88,14 @@ public class DocumentResult  implements Serializable {
   public void setDocumentID(Long documentID) {
     this.documentID = documentID;
   }
-  
-  
+
+  public Long getOriginDocumentID() {
+    return originDocumentID;
+  }
+
+  public void setOriginDocumentID(Long originDocumentID) {
+    this.originDocumentID = originDocumentID;
+  }
 
   public Long getValidationResultID() {
     return validationResultID;

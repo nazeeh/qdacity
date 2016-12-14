@@ -127,7 +127,7 @@ var editorCtrl = {};
 
 	apisToLoad = 2;
 	// Parameters are APIName,APIVersion,CallBack function,API Root
-	gapi.client.load('qdacity', 'v3', callback, 'https://3-dot-qdacity-app.appspot.com/_ah/api');
+	gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-app.appspot.com/_ah/api');
 	gapi.load('auth2', callback);
 
 	document.getElementById('btnCodeProps').onclick = function() {
