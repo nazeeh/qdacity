@@ -228,7 +228,7 @@ public class ValidationEndpoint {
       for (DocumentResult documentResult : docResults) {
         documentResult.getAgreementMap();
         documentResult.getParagraphAgreement().getfMeasure();
-        List<CodingResults> codingResults = documentResult.getCodingResults();
+//        List<CodingResults> codingResults = documentResult.getCodingResults();
       }
       
       //Delete the actual report      

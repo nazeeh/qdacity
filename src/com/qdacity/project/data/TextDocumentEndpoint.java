@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -151,7 +153,7 @@ public class TextDocumentEndpoint {
 	  public List<AgreementMap> getAgreementMaps(@Named("id") Long id, @Named("projectType") String projectType, User user) throws UnauthorizedException {
 	    
 	    PersistenceManager mgr = null;
-	    List<AgreementMap> agreementMaps = new ArrayList<AgreementMap>();;
+	    List<AgreementMap> agreementMaps = new ArrayList<AgreementMap>();
 	    
 	    try {
 	      mgr = getPersistenceManager();
@@ -167,6 +169,7 @@ public class TextDocumentEndpoint {
         }
 	      
 	      for (DocumentResult documentResult : documentResults) {
+	        documentResult.getAgreementMap().getTitle();
           agreementMaps.add(documentResult.getAgreementMap());
         }
 	      

@@ -133,6 +133,8 @@ public class DeferredEvaluation  implements DeferredTask {
       
       aggregateDocAgreement(report);
       
+      Logger.getLogger("logger").log(Level.INFO,   "Generating Agreement Map for report : "+report.getDocumentResults().size() );
+      
       Agreement.generateAgreementMaps(report.getDocumentResults(), originalDocs);
 
       mgr.makePersistent(report);

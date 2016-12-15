@@ -41,7 +41,10 @@ public class Agreement {
 //    ArrayList<ArrayList<String>> falsePositives = new ArrayList<ArrayList<String>>();
 //    ArrayList<ArrayList<String>> falseNegatives = new ArrayList<ArrayList<String>>();
 //    
-    List<CodingResults> codingResultList = new ArrayList<CodingResults>();
+//    List<CodingResults> codingResultList = new ArrayList<CodingResults>();
+    List<String> truePositives = new ArrayList<String>();
+    List<String> falsePositives = new ArrayList<String>();
+    List<String> falseNegatives = new ArrayList<String>();
     
     for (int i = 0; i < originalParagraphs.size(); i++) {
       Elements originalCodings = originalParagraphs.get(i).select("coding");
@@ -64,7 +67,11 @@ public class Agreement {
       //falseNegatives.add(fnList);
       
       CodingResults codingResults = new CodingResults(fpList, tpList, fnList);
-      codingResultList.add(codingResults);
+//      codingResultList.add(codingResults);
+      
+      truePositives.add(tpList.toString());
+      falsePositives.add(fpList.toString());
+      falseNegatives.add(fnList.toString());
 
     }
 //    Logger.getLogger("logger").log(Level.INFO,   "True Pos: " + truePositiveCount + ", False Pos: " + falsePositiveCount + ", False Neg " + falseNegativeCount);
@@ -76,7 +83,11 @@ public class Agreement {
     
 //    Logger.getLogger("logger").log(Level.INFO,   "Total Agreement" + totalAgreement);
     docResults.setParagraphAgreement(totalAgreement);
-    docResults.setCodingResults(codingResultList);
+//    docResults.setCodingResults(codingResultList);
+    docResults.setTruePositives(truePositives);
+    docResults.setFalsePositives(falsePositives);
+    docResults.setFalseNegatives(falseNegatives);
+    
     return docResults;
   }
 

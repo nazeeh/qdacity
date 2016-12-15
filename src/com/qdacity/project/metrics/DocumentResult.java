@@ -2,8 +2,11 @@ package com.qdacity.project.metrics;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
@@ -46,10 +49,21 @@ public class DocumentResult  implements Serializable {
   @Column(name="paragraphAgreement")
   ParagraphAgreement paragraphAgreement;
   
-  @Persistent(defaultFetchGroup="true") 
-  @Element(dependent = "true")
-  @Column(name="codingResults")
-  List<CodingResults> codingResults;
+//  @Persistent(defaultFetchGroup="true") 
+//  @Element(dependent = "true")
+//  @Column(name="codingResults")
+//  List<CodingResults> codingResults;
+  
+  
+  @Persistent
+  List<String> truePositives;
+  
+  @Persistent
+  List<String> falsePositives;
+  
+  @Persistent
+  List<String> falseNegatives;
+  
   
   @Persistent(defaultFetchGroup="true" , dependent="true" )
   AgreementMap agreementMap;
@@ -64,10 +78,13 @@ public class DocumentResult  implements Serializable {
     this.documentID = copy.documentID;
     this.documentName = copy.documentName;
     this.paragraphAgreement = new ParagraphAgreement(copy.paragraphAgreement);
-    this.codingResults = new ArrayList<CodingResults>();
-    for (CodingResults copyResults : copy.codingResults) {
-      this.codingResults.add(new CodingResults(copyResults));
-    }
+//    this.codingResults = new ArrayList<CodingResults>();
+    this.truePositives = copy.truePositives;
+    this.falsePositives = copy.falsePositives;
+    this.falseNegatives = copy.falseNegatives;
+//    for (CodingResults copyResults : copy.codingResults) {
+//      this.codingResults.add(new CodingResults(copyResults));
+//    }
   }
   
   
@@ -121,18 +138,38 @@ public class DocumentResult  implements Serializable {
     this.paragraphAgreement = paragraphAgreement;
   }
   
-  public List<CodingResults> getCodingResults() {
-    if (codingResults == null) codingResults =  new ArrayList<CodingResults>();
-    return codingResults;
+//  public List<CodingResults> getCodingResults() {
+//    if (codingResults == null) codingResults =  new ArrayList<CodingResults>();
+//    return codingResults;
+//  }
+//
+//  public void setCodingResults(List<CodingResults> codingResults) {
+//    this.codingResults = codingResults;
+//  }
+  
+  public List<String> getTruePositives() {
+    return truePositives;
   }
 
-  public void setCodingResults(List<CodingResults> codingResults) {
-    this.codingResults = codingResults;
+  public void setTruePositives(List<String> truePositives) {
+    this.truePositives = truePositives;
   }
-  
-  
 
-  
+  public List<String> getFalsePositives() {
+    return falsePositives;
+  }
+
+  public void setFalsePositives(List<String> falsePositives) {
+    this.falsePositives = falsePositives;
+  }
+
+  public List<String> getFalseNegatives() {
+    return falseNegatives;
+  }
+
+  public void setFalseNegatives(List<String> falseNegatives) {
+    this.falseNegatives = falseNegatives;
+  }
 
   public AgreementMap getAgreementMap() {
     return agreementMap;
@@ -141,29 +178,67 @@ public class DocumentResult  implements Serializable {
   public void setAgreementMap(AgreementMap agreementMap) {
     this.agreementMap = agreementMap;
   }
+  
+  public void addCodingResults(DocumentResult newResult){
+    
+    List<String> newTP = newResult.getTruePositives();
+    List<String> newFP = newResult.getFalsePositives();
+    List<String> newFN = newResult.getFalseNegatives();
+    
+    
+    if (this.truePositives == null) this.truePositives = new ArrayList<String>(newTP.size());
 
-  public void addCodingResults(List<CodingResults> pCodingResults){
-    if (this.codingResults == null) this.codingResults = new ArrayList<CodingResults>();
-    if (this.codingResults.size() == 0) this.codingResults = pCodingResults;
-    for(int i = 0; i < this.codingResults.size(); i++){
-      this.codingResults.get(i).addCodingResults(pCodingResults.get(i));
+    if (this.falsePositives == null) this.falsePositives = new ArrayList<String>(newFP.size());
+    if (this.falseNegatives == null) this.falseNegatives = new ArrayList<String>(newFN.size());
+    Logger.getLogger("logger").log(Level.INFO,   "Adding to truepositives  "+truePositives.size() + " / " +newTP.size());
+    for(int i = 0; i < this.truePositives.size(); i++){
+      String aggregatedList = this.truePositives.get(i).replaceAll("^\\[|]$", "");
+      aggregatedList += "," + newTP.get(i).replaceAll("^\\[|]$", "");
+      truePositives.set(i, "["+aggregatedList+"]");
+    }
+    
+    for(int i = 0; i < this.falsePositives.size(); i++){
+      String aggregatedList = this.falsePositives.get(i).replaceAll("^\\[|]$", "");
+      aggregatedList += "," + newTP.get(i).replaceAll("^\\[|]$", "");
+      falsePositives.set(i, "["+aggregatedList+"]");
+    }
+    
+    for(int i = 0; i < this.falseNegatives.size(); i++){
+      String aggregatedList = this.falseNegatives.get(i).replaceAll("^\\[|]$", "");
+      aggregatedList += "," + newTP.get(i).replaceAll("^\\[|]$", "");
+      falseNegatives.set(i, "["+aggregatedList+"]");
     }
   }
+  
   public void generateAgreementMap(TextDocument textDocument) {
     Document originalDoc = Jsoup.parse(textDocument.getText().getValue());
     Elements paragraphs = originalDoc.select("p");
     for (int i = 0; i < paragraphs.size(); i++) {
       org.jsoup.nodes.Element paragraph = paragraphs.get(i);
-      CodingResults measurements = this.codingResults.get(i);
-      paragraph.attr("truePosCount", String.valueOf(measurements.getTruePositives().size()));
-      paragraph.attr("falsePosCount", String.valueOf(measurements.getFalsePositives().size()));
-      paragraph.attr("falseNegCount", String.valueOf(measurements.getFalseNegatives().size()));
+      //CodingResults measurements = this.codingResults.get(i);
+      
+      Logger.getLogger("logger").log(Level.INFO,   "TruePositives i: " + truePositives.get(i));
+      Integer tpCount = stringToList(truePositives.get(i)).size();
+      Integer fpCount = stringToList(falsePositives.get(i)).size();
+      Integer fnCount = stringToList(falseNegatives.get(i)).size();
+      
+      Logger.getLogger("logger").log(Level.INFO,   "tpCount: " + tpCount);
+      
+      paragraph.attr("truePosCount", tpCount.toString());
+      paragraph.attr("falsePosCount", fpCount.toString());
+      paragraph.attr("falseNegCount", fnCount.toString());
     }
     
     textDocument.setText(new Text(originalDoc.toString()));
     AgreementMap map = new AgreementMap(textDocument.getId(),textDocument.getProjectID(), textDocument.getTitle(), originalDoc.toString());
     this.agreementMap = map;
   }
- 
   
+  private List<String> stringToList(String listString){
+    String withoutBrackets = listString.replaceAll("^\\[|]$", "");
+    if (withoutBrackets.isEmpty()) return new ArrayList<String>();
+    
+    List<String> list = new ArrayList<String>(Arrays.asList(withoutBrackets.split(",")));  
+    return list;
+  }
 }
