@@ -38,6 +38,11 @@ public class DeferredReportDeletion implements DeferredTask {
 //      params.put("reportID", repID);
       List<ValidationResult> results = (List<ValidationResult>) q2.execute(this.reportID);
       
+      for (ValidationResult validationResult : results) {
+        validationResult.getId();
+        validationResult.getParagraphAgreement().getfMeasure();
+      }
+      
       //Delete all DocumentResults corresponding to the ValidationResults
       for (ValidationResult validationResult : results) {
         validationResult.getParagraphAgreement().getfMeasure(); //Lazy Fetch

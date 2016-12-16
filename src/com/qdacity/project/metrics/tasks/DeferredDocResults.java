@@ -22,15 +22,15 @@ import com.qdacity.project.metrics.DocumentResult;
 public class DeferredDocResults implements DeferredTask {
   
   DocumentResult result;
-  Long valPrjID;
+  Long recodedDocID;
 //  Long validationProjectID;
   User user;
 
-  public DeferredDocResults(DocumentResult result, Long valPrjID, User user) {
+  public DeferredDocResults(DocumentResult result, Long recodedDocID , User user) {
     super();
     this.result = result;
     this.user = user;
-    this.valPrjID = valPrjID;
+    this.recodedDocID = recodedDocID;
 //    this.validationProjectID = validationProjectID;
   }
 
@@ -43,22 +43,25 @@ public class DeferredDocResults implements DeferredTask {
     
     try {
         TextDocumentEndpoint tde = new TextDocumentEndpoint();
-        try {
+
 //          Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems();
-          Collection<TextDocument> recodedDocs = tde.getTextDocument(valPrjID, "VALIDATION", user).getItems();
-          List<DocumentResult> results = new ArrayList<DocumentResult>();
-          results.add(result);
-          tx.begin();
-          Agreement.generateAgreementMaps(results, recodedDocs);
-          
-          
-          Logger.getLogger("logger").log(Level.INFO,   "Persisting DocResult for ValidationResult : " + result.getValidationResultID() + " DocResults");
-          mgr.makePersistent(result);
-          tx.commit();
-        } catch (UnauthorizedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
+//          Collection<TextDocument> recodedDocs = tde.getTextDocument(recodedDocID, "VALIDATION", user).getItems();
+        TextDocument recodedDoc = mgr.getObjectById(TextDocument.class, recodedDocID);
+        
+//          List<DocumentResult> results = new ArrayList<DocumentResult>();
+//          results.add(result);
+//          
+        result.generateAgreementMap(recodedDoc);
+        tx.begin();
+//          Agreement.generateAgreementMaps(results, recodedDocs);
+        
+        
+        
+        
+        Logger.getLogger("logger").log(Level.INFO,   "Persisting DocResult for ValidationResult : " + result.getValidationResultID() + " DocResults");
+        mgr.makePersistent(result);
+        tx.commit();
+
       
     } finally {
       if (tx.isActive())

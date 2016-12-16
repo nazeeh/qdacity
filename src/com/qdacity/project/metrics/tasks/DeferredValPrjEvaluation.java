@@ -77,7 +77,7 @@ public class DeferredValPrjEvaluation implements DeferredTask {
              documentAgreement.setValidationResultID(valResult.getId());
              documentAgreement.setOriginDocumentID(original.getId());
           // Persist all DocumentResults asynchronously
-             DeferredDocResults deferredDocResults = new DeferredDocResults(documentAgreement,validationProject.getId(), user);
+             DeferredDocResults deferredDocResults = new DeferredDocResults(documentAgreement,recoded.getId(), user);
              Queue queue = QueueFactory.getDefaultQueue();
              
     //         Future<TaskHandle> future = queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredDocResults));
