@@ -19,6 +19,7 @@ import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
+import com.google.appengine.api.taskqueue.DeferredTaskContext;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
@@ -60,7 +61,7 @@ public class DeferredValPrjEvaluation implements DeferredTask {
     
     try {
         TextDocumentEndpoint tde = new TextDocumentEndpoint();
-        
+
         Collection<TextDocument> originalDocs = new ArrayList<TextDocument>();
         
         for (Long docID : orignalDocIDs) {

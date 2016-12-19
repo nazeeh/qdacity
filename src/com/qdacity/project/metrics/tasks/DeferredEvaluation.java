@@ -126,6 +126,7 @@ public class DeferredEvaluation  implements DeferredTask {
       for (Future<TaskHandle> future : futures) {
         Logger.getLogger("logger").log(Level.INFO,   "Is task finished? : "+future.isDone() );
         future.get();
+        
       }
       
       // Poll every 10 seconds. TODO: find better solution
@@ -195,7 +196,6 @@ public class DeferredEvaluation  implements DeferredTask {
         ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
         
         if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)){
-//        documentAverage.add(documentAgreement.getParagraphAgreement());
           List<ParagraphAgreement> agreementList = agreementByDoc.get(revisionDocumentID);
           if (agreementList == null) agreementList = new ArrayList<ParagraphAgreement>();
           agreementList.add(docAgreement);
