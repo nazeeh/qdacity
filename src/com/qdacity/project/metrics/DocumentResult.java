@@ -190,7 +190,7 @@ public class DocumentResult  implements Serializable {
 
     if (this.falsePositives == null) this.falsePositives = new ArrayList<String>(newFP.size());
     if (this.falseNegatives == null) this.falseNegatives = new ArrayList<String>(newFN.size());
-    Logger.getLogger("logger").log(Level.INFO,   "Adding to truepositives  "+truePositives.size() + " / " +newTP.size());
+
     for(int i = 0; i < this.truePositives.size(); i++){
       String aggregatedList = this.truePositives.get(i).replaceAll("^\\[|]$", "");
       aggregatedList += "," + newTP.get(i).replaceAll("^\\[|]$", "");
@@ -199,13 +199,13 @@ public class DocumentResult  implements Serializable {
     
     for(int i = 0; i < this.falsePositives.size(); i++){
       String aggregatedList = this.falsePositives.get(i).replaceAll("^\\[|]$", "");
-      aggregatedList += "," + newTP.get(i).replaceAll("^\\[|]$", "");
+      aggregatedList += "," + newFP.get(i).replaceAll("^\\[|]$", "");
       falsePositives.set(i, "["+aggregatedList+"]");
     }
     
     for(int i = 0; i < this.falseNegatives.size(); i++){
       String aggregatedList = this.falseNegatives.get(i).replaceAll("^\\[|]$", "");
-      aggregatedList += "," + newTP.get(i).replaceAll("^\\[|]$", "");
+      aggregatedList += "," + newFN.get(i).replaceAll("^\\[|]$", "");
       falseNegatives.set(i, "["+aggregatedList+"]");
     }
   }
@@ -215,14 +215,13 @@ public class DocumentResult  implements Serializable {
     Elements paragraphs = originalDoc.select("p");
     for (int i = 0; i < paragraphs.size(); i++) {
       org.jsoup.nodes.Element paragraph = paragraphs.get(i);
-      //CodingResults measurements = this.codingResults.get(i);
       
-      Logger.getLogger("logger").log(Level.INFO,   "TruePositives i: " + truePositives.get(i));
+      //Logger.getLogger("logger").log(Level.INFO,   "TruePositives i: " + truePositives.get(i));
       Integer tpCount = stringToList(truePositives.get(i)).size();
       Integer fpCount = stringToList(falsePositives.get(i)).size();
       Integer fnCount = stringToList(falseNegatives.get(i)).size();
       
-      Logger.getLogger("logger").log(Level.INFO,   "tpCount: " + tpCount);
+      //Logger.getLogger("logger").log(Level.INFO,   "tpCount: " + tpCount);
       
       paragraph.attr("truePosCount", tpCount.toString());
       paragraph.attr("falsePosCount", fpCount.toString());

@@ -13,6 +13,11 @@ import javax.jdo.Query;
 import javax.jdo.Transaction;
 
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.memcache.Expiration;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -33,14 +38,16 @@ public class DeferredValPrjEvaluation implements DeferredTask {
   User user;
   List<Long> docIDs;
   Long reportID;
+  List<Long> orignalDocIDs;
   
   
 
-  public DeferredValPrjEvaluation(ValidationProject result, List<Long> docIDs, Long reportID, User user) {
+  public DeferredValPrjEvaluation(ValidationProject result, List<Long> docIDs, List<Long> orignalDocIDs, Long reportID, User user) {
     super();
     this.validationProject = result;
     this.user = user;
-    this.docIDs = docIDs;
+    this.docIDs = docIDs; // FIXME dont need anymore, because only list of relevant textdocumentIDs is passed?
+    this.orignalDocIDs = orignalDocIDs;
     this.reportID = reportID;
   }
 
@@ -53,8 +60,20 @@ public class DeferredValPrjEvaluation implements DeferredTask {
     
     try {
         TextDocumentEndpoint tde = new TextDocumentEndpoint();
-        Collection<TextDocument> originalDocs = tde.getTextDocument(validationProject.getRevisionID(), "REVISION", user).getItems();
- 
+        
+        Collection<TextDocument> originalDocs = new ArrayList<TextDocument>();
+        
+        for (Long docID : orignalDocIDs) {
+          String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), docID);
+          MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+          syncCache.get(keyString);
+          TextDocument origialDoc = (TextDocument) syncCache.get(keyString);
+          if (origialDoc == null){
+            origialDoc = mgr.getObjectById(TextDocument.class, docID);
+          }
+          originalDocs.add(origialDoc);
+        }
+        
 //        report.setProjectID(validationProject.getProjectID());     
         
         ValidationResult valResult = new ValidationResult(); 
@@ -65,8 +84,15 @@ public class DeferredValPrjEvaluation implements DeferredTask {
         
         Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
 
-        for (TextDocument original : originalDocs) {
-         if (!docIDs.contains(original.getId())) continue; // Exclude text documents that should not be considered
+        for (TextDocument textDocument : recodedDocs) { 
+          String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
+          MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+          syncCache.put(keyString, textDocument,Expiration.byDeltaSeconds(300));
+          
+        }
+        
+        for (TextDocument original : originalDocs) {// FIXME reverse order of the two loops to put the memcache operation here instead of preceding in its own loop 
+//         if (!docIDs.contains(original.getId())) continue; // Exclude text documents that should not be considered
          
          for (TextDocument recoded : recodedDocs) {
            if (original.getTitle().equals(recoded.getTitle())){
@@ -76,28 +102,13 @@ public class DeferredValPrjEvaluation implements DeferredTask {
              //valResult.addDocumentResult(documentAgreement);
              documentAgreement.setValidationResultID(valResult.getId());
              documentAgreement.setOriginDocumentID(original.getId());
-          // Persist all DocumentResults asynchronously
-             DeferredDocResults deferredDocResults = new DeferredDocResults(documentAgreement,recoded.getId(), user);
-             Queue queue = QueueFactory.getDefaultQueue();
              
-    //         Future<TaskHandle> future = queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredDocResults));
+             // Persist all DocumentResults asynchronously
+             DeferredDocResults deferredDocResults = new DeferredDocResults(documentAgreement,recoded.getId(), user);
+             Queue queue = QueueFactory.getQueue("DocumentResultQueue");
+             
              queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredDocResults));
 
-             //FIXME test if added in new aggregation method correctly
-//             DocumentResult documentResultForAggregation = new DocumentResult(documentAgreement);
-//             documentResultForAggregation.setDocumentID(original.getId());
-//             report.addDocumentResult(documentResultForAggregation);
-//             
-//             ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
-//             
-//             if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)){
-//    //         documentAverage.add(documentAgreement.getParagraphAgreement());
-//             List<ParagraphAgreement> agreementList = agreementByDoc.get(original.getId());
-//             if (agreementList == null) agreementList = new ArrayList<ParagraphAgreement>();
-//               agreementList.add(docAgreement);
-//               agreementByDoc.put(original.getId(), agreementList);
-//               //agreementByDoc.putIfAbsent(key, value)
-//             }
            }
          }         
        }
@@ -108,13 +119,13 @@ public class DeferredValPrjEvaluation implements DeferredTask {
         valResult.setRevisionID(validationProject.getRevisionID());
         valResult.setValidationProjectID(validationProject.getId());
         valResult.setReportID(reportID);
-        mgr.setMultithreaded(true);
+        mgr.setMultithreaded(true); // FIXME needed?
         mgr.makePersistent(valResult);
 
         
-        ValidationEndpoint ve = new ValidationEndpoint();
-        List<ValidationResult> validationResults = ve.listValidationResults(reportID, user);
-        Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + reportID + " at time "  + System.currentTimeMillis());
+//        ValidationEndpoint ve = new ValidationEndpoint();
+//        List<ValidationResult> validationResults = ve.listValidationResults(reportID, user);
+//        Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + reportID + " at time "  + System.currentTimeMillis());
     
   } catch (UnauthorizedException e) {
     // TODO Auto-generated catch block

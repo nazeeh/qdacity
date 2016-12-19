@@ -18,8 +18,10 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.memcache.Expiration;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -73,7 +75,18 @@ public class DeferredEvaluation  implements DeferredTask {
       Map<String, Long> params = new HashMap();
       params.put("revisionID", revisionID);
 
-      Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems();
+      Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems(); // FIXME put in Memcache, so for each validationResult it does not have to be fetched again
+      List<Long> orignalDocIDs = new ArrayList<Long>();
+      for (TextDocument textDocument : originalDocs) {
+        
+        if (docIDs.contains(textDocument.getId())){
+          String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
+          MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+          syncCache.put(keyString, textDocument,Expiration.byDeltaSeconds(300));
+          
+          orignalDocIDs.add(textDocument.getId());
+        }
+      }
 
       List<ValidationProject> validationProjects = (List<ValidationProject>)q.executeWithMap(params);
       
@@ -82,8 +95,8 @@ public class DeferredEvaluation  implements DeferredTask {
       }
       
       ValidationReport report = new ValidationReport();
-      mgr.makePersistent(report); // So we have an ID to pass to ValidationResults
-//      mgr.makePersistent(report); // Generate ID right away
+      mgr.makePersistent(report); //  Generate ID right away so we have an ID to pass to ValidationResults
+      
       report.setRevisionID(revisionID);
       report.setName(name);
       report.setDatetime(new Date());
@@ -99,8 +112,9 @@ public class DeferredEvaluation  implements DeferredTask {
       for (ValidationProject validationProject : validationProjects) {
         validationProject.getId(); // Lazy Fetch?
         Logger.getLogger("logger").log(Level.INFO,   "Starting ValidationProject : " + validationProject.getId());
-        DeferredValPrjEvaluation deferredResults = new DeferredValPrjEvaluation(validationProject, docIDs, report.getId(), user);
-        Queue queue = QueueFactory.getDefaultQueue();
+        DeferredValPrjEvaluation deferredResults = new DeferredValPrjEvaluation(validationProject, docIDs, orignalDocIDs, report.getId(), user);
+
+        Queue queue = QueueFactory.getQueue("ValidationResultQueue");
         
         Future<TaskHandle> future = queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
 
@@ -138,31 +152,6 @@ public class DeferredEvaluation  implements DeferredTask {
       Agreement.generateAgreementMaps(report.getDocumentResults(), originalDocs);
 
       mgr.makePersistent(report);
-      
-      
-      
-      
-      
-//      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + results.size() + " Results");
-//      
-//      // Persist all ValidationResults asynchronously
-//      for (ValidationResult result : results) {
-//        result.setReportID(report.getId());
-//        DeferredResults deferredResults = new DeferredResults(result);
-//        Queue queue = QueueFactory.getDefaultQueue();
-//        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
-//      }
-//
-//      Logger.getLogger("logger").log(Level.INFO,   "Farming out: " + docResults.size() + " DocResults");
-      
-      // Persist all DocumentResults asynchronously
-//      for (DocumentResult documentResult : docResults) {
-//        DeferredDocResults deferredDocResults = new DeferredDocResults(documentResult, user);
-//        Queue queue = QueueFactory.getDefaultQueue();
-//        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredDocResults));
-//      }
-      
-      
 
     } catch (UnauthorizedException e) {
       Logger.getLogger("logger").log(Level.INFO,   "User not authorized: " + user.getEmail());
@@ -181,22 +170,7 @@ public class DeferredEvaluation  implements DeferredTask {
     Logger.getLogger("logger").log(Level.WARNING,   "Time for ValidationReport: " + elapsed);
     
   }
-  
-//  private void generateAgreementMaps(List<DocumentResult> documentResults, Collection<TextDocument> originalDocs) {
-////    Logger.getLogger("logger").log(Level.INFO,   "originalDocs: "+ originalDocs+" documentResults: "+ documentResults);
-//    for (TextDocument textDocument : originalDocs) {
-//      for (DocumentResult documentResult : documentResults) {
-//        //Logger.getLogger("logger").log(Level.INFO,   "documentResultDocID: "+ documentResult.getDocumentID()+" docID: "+ textDocument.getId());
-//        if (documentResult.getDocumentID().equals(textDocument.getId())){
-//          Logger.getLogger("logger").log(Level.INFO,   "Generating map for: " + textDocument.getId());
-//          documentResult.generateAgreementMap(textDocument);
-//          break;
-//        }
-//        
-//      }
-//    }
-//    
-//  }
+
   
   private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException{
     List<ParagraphAgreement> validationCoderAvg = new ArrayList<ParagraphAgreement>(); 

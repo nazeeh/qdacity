@@ -1,5 +1,6 @@
 package com.qdacity.project.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +21,7 @@ import com.google.appengine.api.datastore.Text;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class TextDocument {
+public class TextDocument implements Serializable{
 @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 @PrimaryKey
 Long id;
