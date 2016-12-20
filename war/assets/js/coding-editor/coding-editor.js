@@ -109,7 +109,7 @@ var editorCtrl = {};
 	if (typeof report != 'undefined'){
 		editorCtrl.showsAgreementMap(true);
 //		React.render(<ReactSlider defaultValue={[0, 100]} withBars />, document.body);
-		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + urlParams.parentproject+'&type=PROJECT');
+		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + urlParams.parentproject+'&type='+urlParams.parentprojecttype);
 	}
 	else {
 		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id+'&type='+project_type);

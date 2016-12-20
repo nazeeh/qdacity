@@ -6,7 +6,7 @@ import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.
 
 export default class IntercoderAgreementByDoc extends VexModal {
 	
-  constructor(resultID, validationProjectID, projectID) {
+  constructor(resultID, validationProjectID, projectID, projectType) {
 	  super();
 	  this.formElements = '<div id="intercoderAgreementByDoc" style="text-align: center; background-color: #eee; font-color:#222;"><div id="loadingAnimationDocAgreement" class="centerParent"><div id="reactLoadingDocAgreement" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementByDocTable"></table></div>';
 	  
@@ -16,6 +16,8 @@ export default class IntercoderAgreementByDoc extends VexModal {
 	  this.validationProjectID = validationProjectID;
 	  
 	  this.projectID = projectID;
+	  
+	  this.projectType = projectType;
 	  
 	  this.results;
 
@@ -36,7 +38,7 @@ export default class IntercoderAgreementByDoc extends VexModal {
 			 			buttons : [ 
 			 			            $.extend({}, vex.dialog.buttons.YES, {text : 'OK'}),
 							        $.extend({}, vex.dialog.buttons.NO, { className: 'deciderBtn vex-dialog-button-primary', text: "Agreement Maps", click: function($vexContent, event) {
-							        	window.location.href = 'coding-editor.html?project='+_this.validationProjectID+'&type=VALIDATION&report='+_this.resultID +'&parentproject='+_this.projectID;
+							        	window.location.href = 'coding-editor.html?project='+_this.validationProjectID+'&type=VALIDATION&report='+_this.resultID +'&parentproject='+_this.projectID+'&parentprojecttype='+ _this.projectType;
 							        }}), 
 			 			          ],
 			 			callback : function(data) {

@@ -7,8 +7,10 @@ import Revision from './Revision';
 import Account from './Account.jsx';
 import TextField from './modals/TextField';
 import IntercoderAgreement from './modals/IntercoderAgreement';
+import IntercoderAgreementByDoc from './modals/IntercoderAgreementByDoc';
 import CustomForm from './modals/CustomForm';
 import DocumentsEndpoint from './DocumentsEndpoint';
+
 
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/listJS/list.js';
@@ -51,7 +53,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			//createAreaChart();
 			
 			setProjectProperties();
-			setRevisionHistory();
+			if (project_type === 'PROJECT') setRevisionHistory();
 
 		    }
 		    else {
@@ -74,6 +76,7 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 					break;
 				case 'VALIDATION':
 					$('#parentProject').show();
+					$('#validationReports').show();
 					break;
 				default:
 					break;
@@ -185,7 +188,10 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
        	   		$("#project-name").html(resp.name);
        	   		$("#projectDescription").html(resp.description);
        	   		
-       	   		if (project_type === 'VALIDATION') $('#parentProjectLink').attr('href','project-dashboard.html?project='+resp.projectID+'&type=PROJECT');
+       	   		if (project_type === 'VALIDATION'){
+       	   			$('#parentProjectLink').attr('href','project-dashboard.html?project='+resp.projectID+'&type=PROJECT');
+       	   			setReportList(resp.projectID);
+       	   		}
 
        	   	 }
 
@@ -194,6 +200,43 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
        	   	}
 
        	    });
+        }
+        
+        function setReportList(parentProject){
+        	var validationEndpoint = new ValidationEndpoint();
+        	var validationPromise = validationEndpoint.listReports(parentProject);
+        	//FIXME clear list on reload
+        	validationPromise.then(function(reports){
+        		
+        		for (var property in reports) {
+        		    if (reports.hasOwnProperty(property)) {
+        		    	var reportArr = reports[property];
+        		    	reportArr = reportArr || [];
+        		    	for (var i=0;i<reportArr.length;i++) {
+                        	var report = reportArr[i];
+                        	addReportToReportList(report.name, report.revisionID, report.id, report.datetime);
+                        	
+                        }
+        		    }
+        		}
+        		$( ".studentReportLink" ).click(function(event) {
+        			var repId = $( this ).attr("repId");
+        			showDocumentResults(repId, parentProject);
+                });
+        		
+      		});
+        }
+        
+        function showDocumentResults(reportID, parentProject){
+        	gapi.client.qdacity.validation.getValidationResult({'reportID' : reportID, 'validationProjectID': project_id}).execute(function(resp) {
+				if (!resp.code) {
+					var agreementByDoc = new IntercoderAgreementByDoc(resp.id , project_id, project_id, project_type);
+					agreementByDoc.showModal();
+				} else{
+					// Log error
+				}
+			});
+        	
         }
 
         function setRevisionHistory (){
@@ -291,7 +334,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	                        	var repId = $( this ).attr("repId");
 	                        	showValidationReports(project.getReport(revId, repId));
 	                        });
-	                        
 	                        
 	                        $( ".validationProjectLink" ).click(function() {
 	                        	var prjId = $( this ).attr("prjId");
@@ -531,6 +573,17 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 
 
         }
+        
+        function addReportToReportList(reportName, revisionID, reportID, dateTime){
+
+
+        	var label = '<span class="reportName">'+ reportName +'</span><span class="reportDate">[' + dateTime + ']</span>'  ;
+     	   var html = '<li class="studentReportLink listItem report" repId="'+reportID+'"  >' + label;
+     	  html += '</li>'
+        	$("#reports-list").append(html);
+        }
+        
+        
         function inviteUser(){
 
         	var userEmail = document.getElementById("userEmailFld" ).value;

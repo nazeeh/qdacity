@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -132,12 +133,21 @@ public class ValidationEndpoint {
     List<DocumentResult> results = new ArrayList<DocumentResult>();
     
     try {
+//      if (validationRresultID == -1){ // fetch all DocResults for this ValidationResult
+//        Query q = mgr.newQuery(ValidationResult.class, "validationProjectID  == :validationProjectID  &&  reportID == :reportID");
+//        Map<String, Long> params = new HashMap();
+//        params.put("validationProjectID", validationProjectID);
+//        params.put("reportID", reportID);
+//        ValidationResult validationResult = ((List<ValidationResult>) q.execute(validationRresultID)).get(0);
+//        validationRresultID = validationResult.getId();
+//      } 
       
       Query q = mgr.newQuery(DocumentResult.class, "validationResultID  == :validationResultID");
       Map<String, Long> params = new HashMap();
       params.put("validationResultID", validationRresultID);
 
       results = (List<DocumentResult>) q.execute(validationRresultID);
+      
       
       // Lazy fetch
       for (DocumentResult result : results) {
@@ -149,6 +159,28 @@ public class ValidationEndpoint {
       mgr.close();
     }
     return results;
+  }
+  
+  @ApiMethod(name = "validation.getValidationResult",   scopes = {Constants.EMAIL_SCOPE},
+      clientIds = {Constants.WEB_CLIENT_ID, 
+         com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+         audiences = {Constants.WEB_CLIENT_ID})
+  public ValidationResult getValidationResultID(@Named("reportID") Long reportID,  @Named("validationProjectID") Long validationProjectID, User user) throws UnauthorizedException {
+    List<ValidationReport> reports = new ArrayList<ValidationReport>();
+    PersistenceManager mgr = getPersistenceManager();
+    ValidationResult result;
+    
+    try {
+      Query q = mgr.newQuery(ValidationResult.class, "validationProjectID  == :validationProjectID  &&  reportID == :reportID");
+      Map<String, Long> params = new HashMap();
+      params.put("validationProjectID", validationProjectID);
+      params.put("reportID", reportID);
+      result = ((List<ValidationResult>) q.executeWithMap(params)).get(0);
+      
+    } finally {
+      mgr.close();
+    }
+    return result;
   }
 
   @ApiMethod(name = "validation.evaluateRevision",   scopes = {Constants.EMAIL_SCOPE},
