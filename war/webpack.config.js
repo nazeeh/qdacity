@@ -8,6 +8,7 @@ module.exports = {
 		'index' : './assets/js/index.js',
 		'coding-editor' : './assets/js/coding-editor/coding-editor.js',
 		'admin' : './assets/js/admin/admin.js',
+		'uml-editor' : './assets/js/uml-editor/uml-editor.js',
     },
 	resolve: {
     alias: {

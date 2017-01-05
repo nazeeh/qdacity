@@ -28,36 +28,13 @@ export default class UMLClassEditor {
 		var d = [{ x: posX, y: posY }];
 		
 		var g = this.svgElement.data(d).append("g").attr("class","umlClass").attr("transform", "translate(" + posX + "," + posY + ")");
-		var class1 = ReactDOM.render(<UMLClass name={name} />, g[0][0]);
+		var class1 = ReactDOM.render(<UMLClass name={name} codeID={codeID} />, g[0][0]);
 		class1.setPosition(posX ,posY );
 		
 		var _this = this;
 		var drag = d3.behavior.drag()
         .on("drag", function(d) {
-			d.x += d3.event.dx;
-            d.y += d3.event.dy;
-            d3.select(this).attr("transform", "translate(" + d.x + "," + d.y + ")");
-			class1.setPosition(d.x ,d.y );
-			
-			var edgesOut = _this.edgesA[codeID];
-			
-			if (typeof edgesOut != 'undefined'){
-				for (var i=0;i<edgesOut.length;i++) {
-					var edge = edgesOut[i];
-					d3.select(edge).attr("x1", class1.getTopConnector().x)
-					.attr("y1", class1.getTopConnector().y)
-				}
-			}
-			
-			var edgesIn = _this.edgesB[codeID];
-			
-			if (typeof edgesIn != 'undefined'){
-				for (var i=0;i<edgesIn.length;i++) {
-					var edge = edgesIn[i];
-					d3.select(edge).attr("x2", class1.getTopConnector().x)
-					.attr("y2", class1.getTopConnector().y)
-				}
-			}
+			_this.dragClass(this, class1, d);
         });
 		
 		g.call(drag);
@@ -73,15 +50,17 @@ export default class UMLClassEditor {
 			console.log("Class does not exist in the model")
 		}
 		
-		var posA = classA.getTopConnector();
-		var posB = classB.getTopConnector();
+		var posA = classA.getConnector(classB);
+		var posB = classB.getConnector(classA); 
 		
 		var edge = this.svgElement.append("line")
 		.style("stroke", "black")
 		.attr("x1", posA.x)
 		.attr("y1", posA.y)
+		.attr("codeID_A", codeID_A)
 		.attr("x2", posB.x)
-		.attr("y2", posB.y);
+		.attr("y2", posB.y)
+		.attr("codeID_B", codeID_B);
 		
 		if (this.edgesA[codeID_A] === undefined) this.edgesA[codeID_A] = [];
 		this.edgesA[codeID_A].push(edge[0][0]);
@@ -89,6 +68,50 @@ export default class UMLClassEditor {
 		if (this.edgesB[codeID_B] === undefined) this.edgesB[codeID_B] = [];
 		this.edgesB[codeID_B].push(edge[0][0]);
 		
+	}
+	
+	dragClass(d3Obj, classObj, d){
+		d.x += d3.event.dx;
+		d.y += d3.event.dy;
+		d3.select(d3Obj).attr("transform", "translate(" + d.x + "," + d.y + ")");
+		classObj.setPosition(d.x ,d.y );
+		var codeID = classObj.getCodeID();
+		var edgesOut = this.edgesA[codeID];
+		
+		if (typeof edgesOut != 'undefined'){
+			for (var i=0;i<edgesOut.length;i++) {
+				var edge = edgesOut[i];
+				var codeID_B = d3.select(edge).attr("codeID_B"); // FIXME continue: select both classes, find best connector, draw new line
+				var classB  = this.classes[codeID_B];
+				this.redrawConnection(edge, classObj, classB);
+			}
+		}
+		
+		var edgesIn = this.edgesB[codeID];
+		
+		if (typeof edgesIn != 'undefined'){
+			for (var i=0;i<edgesIn.length;i++) {
+				var edge = edgesIn[i];
+				var codeID_A = d3.select(edge).attr("codeID_A"); // FIXME continue: select both classes, find best connector, draw new line
+				var classA  = this.classes[codeID_A];
+				this.redrawConnection(edge, classA, classObj);
+				
+			}
+		}
+	}
+	
+	redrawConnection(edge, classA, classB){
+		var connectorA = classA.getConnector(classB); 
+		var connectorB = classB.getConnector(classA); 
+		d3.select(edge).attr("x1", connectorA.x)
+						.attr("y1", connectorA.y);
+						
+		d3.select(edge).attr("x2", connectorB.x)
+						.attr("y2", connectorB.y)
+	}
+	
+	getConnector(otherPos, classObj){
+		var classPosition
 	}
 
 }
