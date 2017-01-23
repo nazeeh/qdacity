@@ -1,24 +1,30 @@
 package com.qdacity.taskboard;
 
-import com.qdacity.PMF;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.qdacity.PMF;
 
-import java.util.HashMap;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
-@Api(name = "qdacity", version = "v4", namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"))
+@Api(
+	name = "qdacity",
+	version = "v4",
+	namespace = @ApiNamespace(
+		ownerDomain = "qdacity.com",
+		ownerName = "qdacity.com",
+		packagePath = "server.project"))
 public class TaskBoardEndpoint {
 
 	/**
@@ -26,13 +32,12 @@ public class TaskBoardEndpoint {
 	 * It uses HTTP GET method and paging support.
 	 *
 	 * @return A CollectionResponse class containing the list of all entities
-	 * persisted and a cursor to the next page.
+	 *         persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "listTaskBoard")
-	public CollectionResponse<TaskBoard> listTaskBoard(
-			@Nullable @Named("cursor") String cursorString,
-			@Nullable @Named("limit") Integer limit) {
+	@ApiMethod(
+		name = "listTaskBoard")
+	public CollectionResponse<TaskBoard> listTaskBoard(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit) {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
@@ -54,19 +59,16 @@ public class TaskBoardEndpoint {
 
 			execute = (List<TaskBoard>) query.execute();
 			cursor = JDOCursorHelper.getCursor(execute);
-			if (cursor != null)
-				cursorString = cursor.toWebSafeString();
+			if (cursor != null) cursorString = cursor.toWebSafeString();
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
-			for (TaskBoard obj : execute)
-				;
+			for (TaskBoard obj : execute);
 		} finally {
 			mgr.close();
 		}
 
-		return CollectionResponse.<TaskBoard> builder().setItems(execute)
-				.setNextPageToken(cursorString).build();
+		return CollectionResponse.<TaskBoard> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
 
 	/**
@@ -75,13 +77,14 @@ public class TaskBoardEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(name = "getTaskBoard")
+	@ApiMethod(
+		name = "getTaskBoard")
 	public TaskBoard getTaskBoard(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		TaskBoard taskboard = null;
 		try {
 			taskboard = mgr.getObjectById(TaskBoard.class, id);
-			
+
 		} finally {
 			mgr.close();
 		}
@@ -96,7 +99,8 @@ public class TaskBoardEndpoint {
 	 * @param taskboard the entity to be inserted.
 	 * @return The inserted entity.
 	 */
-	@ApiMethod(name = "insertTaskBoard")
+	@ApiMethod(
+		name = "insertTaskBoard")
 	public TaskBoard insertTaskBoard(TaskBoard taskboard) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -118,7 +122,8 @@ public class TaskBoardEndpoint {
 	 * @param taskboard the entity to be updated.
 	 * @return The updated entity.
 	 */
-	@ApiMethod(name = "updateTaskBoard")
+	@ApiMethod(
+		name = "updateTaskBoard")
 	public TaskBoard updateTaskBoard(TaskBoard taskboard) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -138,7 +143,8 @@ public class TaskBoardEndpoint {
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 */
-	@ApiMethod(name = "removeTaskBoard")
+	@ApiMethod(
+		name = "removeTaskBoard")
 	public void removeTaskBoard(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

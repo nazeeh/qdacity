@@ -1,6 +1,5 @@
 package com.qdacity.project;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,81 +8,76 @@ import javax.jdo.annotations.Inheritance;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
-@Inheritance(customStrategy = "complete-table")
+@PersistenceCapable(
+	identityType = IdentityType.APPLICATION)
+@Inheritance(
+	customStrategy = "complete-table")
 public class ValidationProject extends ProjectRevision {
-  
-  @Persistent
-  List<String> validationCoders;
-  @Persistent
-  Long revisionID;
-  @Persistent
-  double paragraphFMeasure;
-  @Persistent
-  String creatorName;
-  
-  public ValidationProject(Project prj, Long projectID, String comment) {
-    super(prj, projectID, comment);
-    // TODO Auto-generated constructor stub
-  }
-  
-  
-  public ValidationProject(ProjectRevision prjRev) {
-    super(prjRev);
-    this.revisionID = prjRev.getId();
-    // TODO Auto-generated constructor stub
-  }
-  
-  
-  public Long getRevisionID() {
-    return revisionID;
-  }
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8799704365471391176L;
+	@Persistent
+	List<String> validationCoders;
+	@Persistent
+	Long revisionID;
+	@Persistent
+	double paragraphFMeasure;
+	@Persistent
+	String creatorName;
 
+	public ValidationProject(Project prj, Long projectID, String comment) {
+		super(prj, projectID, comment);
+		// TODO Auto-generated constructor stub
+	}
 
-  public void setRevisionID(Long revisionID) {
-    this.revisionID = revisionID;
-  }
+	public ValidationProject(ProjectRevision prjRev) {
+		super(prjRev);
+		this.revisionID = prjRev.getId();
+		// TODO Auto-generated constructor stub
+	}
 
+	public Long getRevisionID() {
+		return revisionID;
+	}
 
+	public void setRevisionID(Long revisionID) {
+		this.revisionID = revisionID;
+	}
 
-  public List<String> getValidationCoders() {
-    return validationCoders;
-  }
+	public List<String> getValidationCoders() {
+		return validationCoders;
+	}
 
-  public void setValidationCoders(List<String> validationCoders) {
-    this.validationCoders = validationCoders;
-  }
-  
-  public void addValidationCoder(String userID){
-    if (validationCoders == null) validationCoders = new ArrayList<String>();
-    if (!validationCoders.contains(userID)) validationCoders.add(userID);
-  }
-  
-  public void removeValidationCoder(String userID){
-    if (validationCoders == null) validationCoders = new ArrayList<String>();
-    if (validationCoders.contains(userID)) validationCoders.remove(userID);
-  }
+	public void setValidationCoders(List<String> validationCoders) {
+		this.validationCoders = validationCoders;
+	}
 
+	public void addValidationCoder(String userID) {
+		if (validationCoders == null) validationCoders = new ArrayList<String>();
+		if (!validationCoders.contains(userID)) validationCoders.add(userID);
+	}
 
-  public double getParagraphFMeasure() {
-    return paragraphFMeasure;
-  }
+	public void removeValidationCoder(String userID) {
+		if (validationCoders == null) validationCoders = new ArrayList<String>();
+		if (validationCoders.contains(userID)) validationCoders.remove(userID);
+	}
 
+	public double getParagraphFMeasure() {
+		return paragraphFMeasure;
+	}
 
-  public void setParagraphFMeasure(double paragraphAgreement) {
-    this.paragraphFMeasure = paragraphAgreement;
-  }
+	public void setParagraphFMeasure(double paragraphAgreement) {
+		this.paragraphFMeasure = paragraphAgreement;
+	}
 
+	public String getCreatorName() {
+		return creatorName;
+	}
 
-  public String getCreatorName() {
-    return creatorName;
-  }
-
-  public void setCreatorName(String creatorName) {
-    this.creatorName = creatorName;
-  }
-  
-  
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
 
 }

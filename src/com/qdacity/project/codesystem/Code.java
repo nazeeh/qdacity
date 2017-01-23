@@ -3,20 +3,21 @@ package com.qdacity.project.codesystem;
 import java.util.List;
 
 import javax.jdo.annotations.Column;
-import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(
+	identityType = IdentityType.APPLICATION)
 public class Code {
 	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	@Persistent(
+		valueStrategy = IdGeneratorStrategy.IDENTITY)
 	Long id;
-	
-  @Persistent
+
+	@Persistent
 	Long codeID;
 	@Persistent
 	String author;
@@ -32,8 +33,11 @@ public class Code {
 	Long codesystemID;
 	@Persistent
 	String memo;
-	@Persistent(defaultFetchGroup="true", dependent = "true") 
-	@Column(name="codeBookEntry")
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	@Column(
+		name = "codeBookEntry")
 	CodeBookEntry codeBookEntry;
 
 	public Long getId() {
@@ -43,24 +47,22 @@ public class Code {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Long getCodeID() {
-    return codeID;
-  }
+		return codeID;
+	}
 
-  public void setCodeID(Long codeID) {
-    this.codeID = codeID;
-  }
+	public void setCodeID(Long codeID) {
+		this.codeID = codeID;
+	}
 
-  public String getAuthor() {
+	public String getAuthor() {
 		return author;
 	}
 
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	
-	
 
 	public String getColor() {
 		return color;
@@ -78,7 +80,6 @@ public class Code {
 		this.message = message;
 	}
 
-	
 	public List<Long> getSubCodesIDs() {
 		return subCodeIDs;
 	}
@@ -87,13 +88,13 @@ public class Code {
 		this.subCodeIDs = subCodesIDs;
 	}
 
-	public void addSubCodeID(Long id){
+	public void addSubCodeID(Long id) {
 		subCodeIDs.add(id);
 	}
-	
-	public void removeSubCodeID(Long id){
-    subCodeIDs.remove(id);
-  }
+
+	public void removeSubCodeID(Long id) {
+		subCodeIDs.remove(id);
+	}
 
 	public Long getParentID() {
 		return parentID;
@@ -111,27 +112,26 @@ public class Code {
 		this.codesystemID = codesystemID;
 	}
 
-  public String getMemo() {
-    return memo;
-  }
+	public String getMemo() {
+		return memo;
+	}
 
-  public void setMemo(String memo) {
-    this.memo = memo;
-  }
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
 
-  public CodeBookEntry getCodeBookEntry() {
-    return codeBookEntry;
-  }
+	public CodeBookEntry getCodeBookEntry() {
+		return codeBookEntry;
+	}
 
-  public void setCodeBookEntry(CodeBookEntry codeBookEntry) {
-    if (this.codeBookEntry == null) this.codeBookEntry = new CodeBookEntry(); 
-    this.codeBookEntry.setDefinition(codeBookEntry.getDefinition());
-    this.codeBookEntry.setExample(codeBookEntry.getExample());
-    this.codeBookEntry.setShortDefinition(codeBookEntry.getShortDefinition());
-    this.codeBookEntry.setWhenToUse(codeBookEntry.getWhenToUse());
-    this.codeBookEntry.setWhenNotToUse(codeBookEntry.getWhenNotToUse());
+	public void setCodeBookEntry(CodeBookEntry codeBookEntry) {
+		if (this.codeBookEntry == null) this.codeBookEntry = new CodeBookEntry();
+		this.codeBookEntry.setDefinition(codeBookEntry.getDefinition());
+		this.codeBookEntry.setExample(codeBookEntry.getExample());
+		this.codeBookEntry.setShortDefinition(codeBookEntry.getShortDefinition());
+		this.codeBookEntry.setWhenToUse(codeBookEntry.getWhenToUse());
+		this.codeBookEntry.setWhenNotToUse(codeBookEntry.getWhenNotToUse());
 
-  }
-	
-	
+	}
+
 }

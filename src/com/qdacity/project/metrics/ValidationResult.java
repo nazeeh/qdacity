@@ -14,102 +14,118 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 
-import com.google.appengine.api.datastore.Key;
+@PersistenceCapable(
+	identityType = IdentityType.APPLICATION)
+public class ValidationResult implements Serializable {
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class ValidationResult  implements Serializable  {
-  
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  private Long id;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2809724253613296102L;
 
-  @Persistent(defaultFetchGroup="true", dependent="true" )
-  Long reportID;
+	@PrimaryKey
+	@Persistent(
+		valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
 
-  @Persistent(defaultFetchGroup="true", dependent="true" )
-  String name;
-  
-  @Persistent(defaultFetchGroup="true", dependent="true" )
-  Long validationProjectID;
-  
-  @Persistent(defaultFetchGroup="true", dependent="true" )
-  Long revisionID;
-  
-  @Persistent(defaultFetchGroup="true", dependent="true" )
-  @Column(name="paragraphAgreement")
-  ParagraphAgreement paragraphAgreement;
-  
-  @Persistent
-  @OneToMany (cascade=CascadeType.ALL)
-  @Element(dependent = "true")
-  @Column(name="documentResults") 
-  List<DocumentResult> documentResults;
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	Long reportID;
 
-  public Long getId() {
-    return id;
-  }
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	String name;
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-  
-  
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	Long validationProjectID;
 
-  
-  public Long getReportID() {
-    return reportID;
-  }
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	Long revisionID;
 
-  public void setReportID(Long reportID) {
-    this.reportID = reportID;
-  }
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	@Column(
+		name = "paragraphAgreement")
+	ParagraphAgreement paragraphAgreement;
 
-  public Long getValidationProjectID() {
-    return validationProjectID;
-  }
+	@Persistent
+	@OneToMany(
+		cascade = CascadeType.ALL)
+	@Element(
+		dependent = "true")
+	@Column(
+		name = "documentResults")
+	List<DocumentResult> documentResults;
 
-  public void setValidationProjectID(Long validationProjectID) {
-    this.validationProjectID = validationProjectID;
-  }
+	public Long getId() {
+		return id;
+	}
 
-  public Long getRevisionId() {
-    return revisionID;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public void setRevisionID(Long ID) {
-    this.revisionID = ID;
-  }
+	public Long getReportID() {
+		return reportID;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public void setReportID(Long reportID) {
+		this.reportID = reportID;
+	}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+	public Long getValidationProjectID() {
+		return validationProjectID;
+	}
 
-  public ParagraphAgreement getParagraphAgreement() {
-    return paragraphAgreement;
-  }
+	public void setValidationProjectID(Long validationProjectID) {
+		this.validationProjectID = validationProjectID;
+	}
 
-  public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
-    this.paragraphAgreement = paragraphAgreement;
-  }
+	public Long getRevisionId() {
+		return revisionID;
+	}
 
-  public List<DocumentResult> getDocumentResults() {
-    return documentResults;
-  }
+	public void setRevisionID(Long ID) {
+		this.revisionID = ID;
+	}
 
-  public void setDocumentResults(List<DocumentResult> documentResults) {
-    this.documentResults = documentResults;
-  }
-  
-  public void addDocumentResult(DocumentResult documentResult){
-    if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
-    this.documentResults.add(documentResult);
-  }
+	public String getName() {
+		return name;
+	}
 
-  public Long getRevisionID() {
-    return revisionID;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public ParagraphAgreement getParagraphAgreement() {
+		return paragraphAgreement;
+	}
+
+	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
+		this.paragraphAgreement = paragraphAgreement;
+	}
+
+	public List<DocumentResult> getDocumentResults() {
+		return documentResults;
+	}
+
+	public void setDocumentResults(List<DocumentResult> documentResults) {
+		this.documentResults = documentResults;
+	}
+
+	public void addDocumentResult(DocumentResult documentResult) {
+		if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
+		this.documentResults.add(documentResult);
+	}
+
+	public Long getRevisionID() {
+		return revisionID;
+	}
 }

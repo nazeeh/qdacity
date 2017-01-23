@@ -8,28 +8,28 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.qdacity.taskboard.TaskBoard;
-
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(
+	identityType = IdentityType.APPLICATION)
 public class User {
 	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	@Persistent(
+		valueStrategy = IdGeneratorStrategy.IDENTITY)
 	String id;
-	
+
 	@Persistent
 	UserType type;
-	
+
 	@Persistent
 	String givenName;
 	@Persistent
 	String surName;
-	
+
 	@Persistent
 	String email;
-	
+
 	@Persistent
 	Long taskBoardID;
-	
+
 	@Persistent
 	List<Long> projects;
 
@@ -40,11 +40,11 @@ public class User {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getGivenName() {
 		return givenName;
 	}
-	
+
 	public void setGivenName(String givenName) {
 		this.givenName = givenName;
 	}
@@ -65,13 +65,13 @@ public class User {
 		this.projects = projects;
 	}
 
-	public void addProjectAuthorization(Long project){
+	public void addProjectAuthorization(Long project) {
 		projects.add(project);
 	}
-	
-	public void removeProjectAuthorization(Long project){
-    projects.remove(project);
-  }
+
+	public void removeProjectAuthorization(Long project) {
+		projects.remove(project);
+	}
 
 	public String getEmail() {
 		return email;
@@ -89,13 +89,12 @@ public class User {
 		this.taskBoardID = taskBoardId;
 	}
 
-  public UserType getType() {
-    return type;
-  }
+	public UserType getType() {
+		return type;
+	}
 
-  public void setType(UserType type) {
-    this.type = type;
-  }
-	
-	
+	public void setType(UserType type) {
+		this.type = type;
+	}
+
 }

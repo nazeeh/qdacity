@@ -12,180 +12,153 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(
+	identityType = IdentityType.APPLICATION)
 public class ValidationReport {
 
-  @PrimaryKey
-  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-  Long id;
+	@PrimaryKey
+	@Persistent(
+		valueStrategy = IdGeneratorStrategy.IDENTITY)
+	Long id;
 
-  @Persistent
-  Long projectID;
+	@Persistent
+	Long projectID;
 
-  @Persistent
-  Long revisionID;
+	@Persistent
+	Long revisionID;
 
-  @Persistent
-  String name;
+	@Persistent
+	String name;
 
-  @Persistent
-  Date datetime;
+	@Persistent
+	Date datetime;
 
-  @Persistent(defaultFetchGroup = "true", dependent = "true")
-  @Column(name = "paragraphAgreement")
-  ParagraphAgreement paragraphAgreement;
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	@Column(
+		name = "paragraphAgreement")
+	ParagraphAgreement paragraphAgreement;
 
-  // @Persistent(defaultFetchGroup="true")
-  // @Element(dependent = "true")
-  // @Column(name="validationResult")
-  // List<ValidationResult> validationResult;
+	@Persistent(
+		defaultFetchGroup = "true")
+	@Element(
+		dependent = "true")
+	@Column(
+		name = "validationResultIDs")
+	List<Long> validationResultIDs;
 
-  @Persistent(defaultFetchGroup = "true")
-  @Element(dependent = "true")
-  @Column(name = "validationResultIDs")
-  List<Long> validationResultIDs;
+	@Persistent
+	@Element(
+		dependent = "true")
+	@Column(
+		name = "documentResults")
+	List<DocumentResult> documentResults;
 
-  @Persistent
-  @Element(dependent = "true")
-  @Column(name = "documentResults")
-  List<DocumentResult> documentResults;
+	public Long getId() {
+		return id;
+	}
 
-  public Long getId() {
-    return id;
-  }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	public Long getProjectID() {
+		return projectID;
+	}
 
-  public Long getProjectID() {
-    return projectID;
-  }
+	public void setProjectID(Long projectID) {
+		this.projectID = projectID;
+	}
 
-  public void setProjectID(Long projectID) {
-    this.projectID = projectID;
-  }
+	public Long getRevisionID() {
+		return revisionID;
+	}
 
-  public Long getRevisionID() {
-    return revisionID;
-  }
+	public void setRevisionID(Long revisionID) {
+		this.revisionID = revisionID;
+	}
 
-  public void setRevisionID(Long revisionID) {
-    this.revisionID = revisionID;
-  }
+	public List<Long> getValidationResultIDs() {
+		if (validationResultIDs == null) validationResultIDs = new ArrayList<Long>();
+		return validationResultIDs;
+	}
 
-  public List<Long> getValidationResultIDs() {
-    if (validationResultIDs == null)
-      validationResultIDs = new ArrayList<Long>();
-    return validationResultIDs;
-  }
+	public void setValidationResultIDs(List<Long> validationResultIDs) {
+		this.validationResultIDs = validationResultIDs;
+	}
 
-  public void setValidationResultIDs(List<Long> validationResultIDs) {
-    this.validationResultIDs = validationResultIDs;
-  }
+	public void addResult(ValidationResult result) {
+		if (validationResultIDs == null) validationResultIDs = new ArrayList<Long>();
+		validationResultIDs.add(result.getId());
 
-  // public List<ValidationResult> getValidationResult() {
-  // return validationResult;
-  // }
-  //
-  // public void setValidationResult(List<ValidationResult> validationResult) {
-  // this.validationResult = validationResult;
-  // }
-  //
-  public void addResult(ValidationResult result) {
-    if (validationResultIDs == null)
-      validationResultIDs = new ArrayList<Long>();
-    validationResultIDs.add(result.getId());
-    // validationResult.add(result);
+		if (paragraphAgreement == null) paragraphAgreement = new ParagraphAgreement();
+	}
 
-    // aggregateDocumentResults(result);
+	public String getName() {
+		return name;
+	}
 
-    ParagraphAgreement agreement = result.getParagraphAgreement();
-    if (paragraphAgreement == null)
-      paragraphAgreement = new ParagraphAgreement();
+	public void setName(String name) {
+		this.name = name;
+	}
 
-  }
+	public Date getDatetime() {
+		return datetime;
+	}
 
-  public String getName() {
-    return name;
-  }
+	public void setDatetime(Date datetime) {
+		this.datetime = datetime;
+	}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+	public ParagraphAgreement getParagraphAgreement() {
+		return paragraphAgreement;
+	}
 
-  public Date getDatetime() {
-    return datetime;
-  }
+	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
+		this.paragraphAgreement = paragraphAgreement;
+	}
 
-  public void setDatetime(Date datetime) {
-    this.datetime = datetime;
-  }
+	public List<DocumentResult> getDocumentResults() {
+		if (documentResults == null) documentResults = new ArrayList<DocumentResult>();
+		return documentResults;
+	}
 
-  public ParagraphAgreement getParagraphAgreement() {
-    return paragraphAgreement;
-  }
+	public void setDocumentResults(List<DocumentResult> documentResults) {
+		this.documentResults = documentResults;
+	}
 
-  public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
-    this.paragraphAgreement = paragraphAgreement;
-  }
+	public void addDocumentResult(DocumentResult result) {
+		if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
+		Boolean merged = mergeDocumentResults(result);
+		if (!merged) documentResults.add(new DocumentResult(result));
+	}
 
-  public List<DocumentResult> getDocumentResults() {
-    if (documentResults == null)
-      documentResults = new ArrayList<DocumentResult>();
-    return documentResults;
-  }
+	private void aggregateDocumentResults(ValidationResult result) {
+		if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
+		for (DocumentResult newResult : result.getDocumentResults()) {
+			Boolean merged = mergeDocumentResults(newResult);
+			if (!merged) documentResults.add(new DocumentResult(newResult));
+		}
+	}
 
-  public void setDocumentResults(List<DocumentResult> documentResults) {
-    this.documentResults = documentResults;
-  }
+	private Boolean mergeDocumentResults(DocumentResult newResult) {
+		for (DocumentResult aggregated : documentResults) {
+			if (aggregated.getDocumentID().equals(newResult.getDocumentID())) {
+				aggregated.addCodingResults(newResult);
 
-  public void addDocumentResult(DocumentResult result) {
-    if (this.documentResults == null)
-      this.documentResults = new ArrayList<DocumentResult>();
-    Boolean merged = mergeDocumentResults(result);
-    if (!merged)
-      documentResults.add(new DocumentResult(result));
-  }
+				return true;
+			}
+		}
+		return false;
+	}
 
-  private void aggregateDocumentResults(ValidationResult result) {
-    if (this.documentResults == null)
-      this.documentResults = new ArrayList<DocumentResult>();
-    for (DocumentResult newResult : result.getDocumentResults()) {
-      Boolean merged = mergeDocumentResults(newResult);
-      if (!merged)
-        documentResults.add(new DocumentResult(newResult));
-    }
-  }
-
-  private Boolean mergeDocumentResults(DocumentResult newResult) {
-    for (DocumentResult aggregated : documentResults) {
-      if (aggregated.getDocumentID().equals(newResult.getDocumentID())) {
-        aggregated.addCodingResults(newResult);
-
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public void setDocumentResultAverage(Long docID, ParagraphAgreement averageAgreement) {
-    for (DocumentResult aggregated : documentResults) {
-      if (aggregated.getDocumentID().equals(docID)) {
-        aggregated.setParagraphAgreement(averageAgreement);
-      }
-    }
-  }
-
-  // private Boolean mergeDocumentAgreement(Long docID, ParagraphAgreement averageAgreement){
-  // for (DocumentResult aggregated : documentResults) {
-  // if (aggregated.getDocumentID().equals(newResult.getDocumentID())){
-  // aggregated.addCodingResults(newResult.getCodingResults());
-  //
-  // return true;
-  // }
-  // }
-  // return false;
-  // }
+	public void setDocumentResultAverage(Long docID, ParagraphAgreement averageAgreement) {
+		for (DocumentResult aggregated : documentResults) {
+			if (aggregated.getDocumentID().equals(docID)) {
+				aggregated.setParagraphAgreement(averageAgreement);
+			}
+		}
+	}
 
 }

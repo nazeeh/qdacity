@@ -8,33 +8,35 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(
+	identityType = IdentityType.APPLICATION)
 public class UserNotification {
 	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	@Persistent(
+		valueStrategy = IdGeneratorStrategy.IDENTITY)
 	Long id;
-	
+
 	@Persistent
 	Date datetime;
-	
+
 	@Persistent
 	String user;
-	
+
 	@Persistent
 	String originUser;
-	
+
 	@Persistent
 	UserNotificationType type;
-	
+
 	@Persistent
 	Long project;
-	
+
 	@Persistent
 	String subject;
-	
+
 	@Persistent
 	String message;
-	
+
 	@Persistent
 	Boolean settled;
 
@@ -86,8 +88,6 @@ public class UserNotification {
 		this.project = project;
 	}
 
-	
-	
 	public String getSubject() {
 		return subject;
 	}
@@ -111,8 +111,5 @@ public class UserNotification {
 	public void setSettled(Boolean settled) {
 		this.settled = settled;
 	}
-	
-	
-	
-	
+
 }
