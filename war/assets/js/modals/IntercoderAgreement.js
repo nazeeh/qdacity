@@ -3,8 +3,8 @@ import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
 import IntercoderAgreementByDoc from './IntercoderAgreementByDoc';
 import BinaryDecider from './BinaryDecider';
-import ProjectEndpoint from '../ProjectEndpoint';
-import ValidationEndpoint from '../ValidationEndpoint';
+import ProjectEndpoint from '../endpoints/ProjectEndpoint';
+import ValidationEndpoint from '../endpoints/ValidationEndpoint';
 import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
 export default class IntercoderAgreement extends VexModal {

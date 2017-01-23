@@ -1,17 +1,16 @@
 import Timeline from './timeline';
 import AgreementStats from './AgreementStats';
-import ProjectEndpoint from './ProjectEndpoint';
-import ValidationEndpoint from './ValidationEndpoint';
+import ProjectEndpoint from './endpoints/ProjectEndpoint';
+import ValidationEndpoint from './endpoints/ValidationEndpoint';
 import Project from './Project';
-import Revision from './Revision';
 import Account from './Account.jsx';
 import TextField from './modals/TextField';
 import IntercoderAgreement from './modals/IntercoderAgreement';
 import IntercoderAgreementByDoc from './modals/IntercoderAgreementByDoc';
 import CustomForm from './modals/CustomForm';
-import DocumentsEndpoint from './DocumentsEndpoint';
+import DocumentsEndpoint from './endpoints/DocumentsEndpoint';
 
-
+ 
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/listJS/list.js';
 import 'script!../../components/listJS/list.pagination.js';
