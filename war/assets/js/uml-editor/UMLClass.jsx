@@ -5,7 +5,7 @@ constructor(props) {
 	this.state = {pos: {x: 0, y: 0}, name: this.props.name, codeID: this.props.codeID};
 
 	this.setPosition = this.setPosition.bind(this); 
-	
+	this.svgContainer = this.props.svgContainer;
 	this.width = 250;
 	this.height = 100;
 
@@ -18,8 +18,21 @@ constructor(props) {
 	this.setState({pos: position});
   }
   
+  move(dx, dy){
+	var position = this.state.pos;
+
+	position.x += dx;
+	position.y += dy;
+	d3.select(this.svgContainer).attr("transform", "translate(" + position.x + "," + position.y + ")");
+	this.setState({pos: position});
+  }
+  
   getPosition(){
 	return this.state.pos;
+  }
+  
+  getCodeID(){
+	return this.state.codeID;
   }
   
   getHeight(){
@@ -40,10 +53,10 @@ constructor(props) {
 		else if (deltaY > 0 ) {
 			return this.getBottomConnector();
 		}
-		if (deltaX < 0 ){
+		if (deltaX > 0 ){
 			return this.getLeftConnector();
 		}
-		else if (deltaX > 0 ) {
+		else if (deltaX < 0 ) {
 			return this.getRightConnector();
 		}
 		return this.getTopConnector();
@@ -73,10 +86,10 @@ constructor(props) {
 	var otherLeft = otherClass.getPosition().x;
 	var otherRight = otherClass.getPosition().x + otherClass.getWidth();
 	
-	var leftToRight = otherRight - thisLeft;
-	var rightToLeft =  thisRight - otherLeft;
+	var leftToRight = thisLeft - otherRight; 
+	var rightToLeft =  otherLeft - thisRight;
 	
-	if (leftToRight < 0 && rightToLeft < 0 ){
+	if (leftToRight < 0.1 && rightToLeft < 0.1 ){
 		return 0;
 	}
 	if (leftToRight > 0 ) return leftToRight;

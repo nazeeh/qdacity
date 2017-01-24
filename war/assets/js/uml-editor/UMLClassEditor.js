@@ -28,7 +28,7 @@ export default class UMLClassEditor {
 		var d = [{ x: posX, y: posY }];
 		
 		var g = this.svgElement.data(d).append("g").attr("class","umlClass").attr("transform", "translate(" + posX + "," + posY + ")");
-		var class1 = ReactDOM.render(<UMLClass name={name} codeID={codeID} />, g[0][0]);
+		var class1 = ReactDOM.render(<UMLClass name={name} codeID={codeID} svgContainer={g} />, g[0][0]);
 		class1.setPosition(posX ,posY );
 		
 		var _this = this;
@@ -71,10 +71,13 @@ export default class UMLClassEditor {
 	}
 	
 	dragClass(d3Obj, classObj, d){
-		d.x += d3.event.dx;
-		d.y += d3.event.dy;
+		var dx = d3.event.dx, dy = d3.event.dy;
+		d.x += dx;
+		d.y += dy;
+		
 		d3.select(d3Obj).attr("transform", "translate(" + d.x + "," + d.y + ")");
 		classObj.setPosition(d.x ,d.y );
+		this.resolveCollisions(classObj,dx,dy);
 		var codeID = classObj.getCodeID();
 		var edgesOut = this.edgesA[codeID];
 		
@@ -95,6 +98,25 @@ export default class UMLClassEditor {
 				var codeID_A = d3.select(edge).attr("codeID_A"); // FIXME continue: select both classes, find best connector, draw new line
 				var classA  = this.classes[codeID_A];
 				this.redrawConnection(edge, classA, classObj);
+				
+			}
+		}
+		
+	}
+	
+	resolveCollisions(classObj, moveX, moveY){
+		for (var codeID in this.classes) {
+			if (this.classes.hasOwnProperty(codeID)) {
+				var otherClass = this.classes[codeID];
+				if (codeID == classObj.getCodeID()) continue;
+				var dx = classObj.calculateDeltaX(otherClass);
+				var dy = classObj.calculateDeltaY(otherClass);
+				if (dx == 0 && dy == 0){ 
+					console.log("Collision Found");
+			
+					otherClass.move(moveX ,moveY);
+					// Update colliding class
+				}
 				
 			}
 		}

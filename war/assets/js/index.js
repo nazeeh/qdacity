@@ -1,5 +1,5 @@
-import Account from './Account.jsx';
-import ReactLoading from './ReactLoading.jsx';
+import Account from './common/Account.jsx';
+import ReactLoading from './common/ReactLoading.jsx';
 import BinaryDecider from './modals/BinaryDecider.js';
 import 'script!../../components/bootstrap/bootstrap.min.js';
 import 'script!../../components/Vex/js/vex.combined.min.js';

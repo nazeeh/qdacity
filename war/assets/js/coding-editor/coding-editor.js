@@ -1,8 +1,8 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingsView from './CodingsView.js';
 
-import Account from '../Account.jsx';
-import ReactLoading from '../ReactLoading.jsx';
+import Account from '../common/Account.jsx';
+import ReactLoading from '../common/ReactLoading.jsx';
 import DocumentsCtrl from './DocumentsCtrl';
 import EditorCtrl from './EditorCtrl';
 import Prompt from '../modals/Prompt';

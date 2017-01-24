@@ -1,4 +1,4 @@
-import ReactLoading from '../ReactLoading.jsx';
+import ReactLoading from '../common/ReactLoading.jsx';
 
 import VexModal from './VexModal';
 
