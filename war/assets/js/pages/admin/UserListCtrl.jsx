@@ -1,5 +1,5 @@
 import styles from './styles.css'
-import CustomForm from '../modals/CustomForm';
+import CustomForm from '../../common/modals/CustomForm';
 
 export default class UserListCtrl extends React.Component {
 constructor(props) {

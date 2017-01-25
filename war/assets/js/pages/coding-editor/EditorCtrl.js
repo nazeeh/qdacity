@@ -1,8 +1,8 @@
 import CodingBrackets from './coding-brackets';
-import Prompt from '../modals/Prompt.js';
-import 'script!../../../components/Squire/squire-raw.js';
-import 'script!../../../components/tooltip/tooltip.js';
-import 'script!../../../components/imagesloaded/imagesloaded.pkgd.min.js';
+import Prompt from '../../common/modals/Prompt.js';
+import 'script!../../../../components/Squire/squire-raw.js';
+import 'script!../../../../components/tooltip/tooltip.js';
+import 'script!../../../../components/imagesloaded/imagesloaded.pkgd.min.js';
 
 export default class EditorCtrl {
 

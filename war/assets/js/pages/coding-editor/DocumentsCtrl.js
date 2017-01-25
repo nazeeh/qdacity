@@ -1,8 +1,8 @@
 import DocumentsView from './DocumentsView.jsx';
-import BinaryDecider from '../modals/BinaryDecider.js';
-import FileUpload from '../modals/FileUpload.js';
-import Prompt from '../modals/Prompt.js';
-import 'script!../../../components/filer/js/jquery.filer.min.js';
+import BinaryDecider from '../../common/modals/BinaryDecider.js';
+import FileUpload from '../../common/modals/FileUpload.js';
+import Prompt from '../../common/modals/Prompt.js';
+import 'script!../../../../components/filer/js/jquery.filer.min.js';
 
 
 export default class DocumentsCtrl {

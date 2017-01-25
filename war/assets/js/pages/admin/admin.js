@@ -1,6 +1,6 @@
-import Account from '../common/Account.jsx';
+import Account from '../../common/Account.jsx';
 import UserList from './UserList.jsx';
-import 'script!../../../components/bootstrap/bootstrap.min.js';
+import 'script!../../../../components/bootstrap/bootstrap.min.js';
 
 import $script from 'scriptjs';
 

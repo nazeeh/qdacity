@@ -1,10 +1,10 @@
 import 'script!../../common/ErrorHandler.js';
 import Account from '../../common/Account.jsx';
-import CustomForm from '../../modals/CustomForm';
+import CustomForm from '../../common/modals/CustomForm';
 import 'script!../../../../components/bootstrap/bootstrap.min.js'
 import 'script!../../../../components/listJS/list.js';
 import 'script!../../../../components/listJS/list.pagination.js';
-import BinaryDecider from '../../modals/BinaryDecider.js';
+import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
 
 import $script from 'scriptjs';

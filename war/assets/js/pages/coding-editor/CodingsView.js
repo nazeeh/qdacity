@@ -1,5 +1,5 @@
-import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
-import 'script!../../../components/Easytabs/jquery.easytabs.js';
+import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import 'script!../../../../components/Easytabs/jquery.easytabs.js';
 
 export default class CodingsView {
 	

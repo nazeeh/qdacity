@@ -1,8 +1,8 @@
-import ReactLoading from '../common/ReactLoading.jsx';
+import ReactLoading from '../ReactLoading.jsx';
 
 import VexModal from './VexModal';
 
-import 'script!../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
 export default class IntercoderAgreementByDoc extends VexModal {
 	

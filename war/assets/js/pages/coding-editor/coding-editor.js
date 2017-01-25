@@ -1,23 +1,23 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingsView from './CodingsView.js';
 
-import Account from '../common/Account.jsx';
-import ReactLoading from '../common/ReactLoading.jsx';
+import Account from '../../common/Account.jsx';
+import ReactLoading from '../../common/ReactLoading.jsx';
 import DocumentsCtrl from './DocumentsCtrl';
 import EditorCtrl from './EditorCtrl';
-import Prompt from '../modals/Prompt';
+import Prompt from '../../common/modals/Prompt';
 import $script from 'scriptjs';
 
 import Slider from 'bootstrap-slider';
 
-import 'script!../../../components/tooltipster/js/jquery.tooltipster.js';
-import 'script!../../../components/filer/js/jquery.filer.min.js';
-import 'script!../../../components/EasyTree/jquery.easytree.js';
-import 'script!../../../components/loading/loadingoverlay.js';
-import 'script!../../../components/colorpicker/evol.colorpicker.js';
-import 'script!../../../components/URIjs/URI.min.js';
+import 'script!../../../../components/tooltipster/js/jquery.tooltipster.js';
+import 'script!../../../../components/filer/js/jquery.filer.min.js';
+import 'script!../../../../components/EasyTree/jquery.easytree.js';
+import 'script!../../../../components/loading/loadingoverlay.js';
+import 'script!../../../../components/colorpicker/evol.colorpicker.js';
+import 'script!../../../../components/URIjs/URI.min.js';
 
-import 'script!../../../assets/js/common/ErrorHandler.js'
+import 'script!../../../../assets/js/common/ErrorHandler.js'
 
 
 $script('https://apis.google.com/js/platform.js', function() {

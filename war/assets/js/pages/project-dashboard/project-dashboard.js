@@ -4,10 +4,10 @@ import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import Project from './Project';
 import Account from '../../common/Account.jsx';
-import TextField from '../../modals/TextField';
-import IntercoderAgreement from '../../modals/IntercoderAgreement';
-import IntercoderAgreementByDoc from '../../modals/IntercoderAgreementByDoc';
-import CustomForm from '../../modals/CustomForm';
+import TextField from '../../common/modals/TextField';
+import IntercoderAgreement from '../../common/modals/IntercoderAgreement';
+import IntercoderAgreementByDoc from '../../common/modals/IntercoderAgreementByDoc';
+import CustomForm from '../../common/modals/CustomForm';
 import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
 
  
@@ -112,51 +112,51 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			};
 			
         }
-
-   		//FIXME Legacy Code?
-        $(document).ready( function () {
-        	$( "#newProjectForm" ).on( "submit",function(event) {
-        		event.preventDefault();
-        		createNewProject(); 
-              });
-
-        });
-
-        //FIXME Legacy Code?
-        function createNewProject(){
-
-        	var requestData = {};
-            requestData.project = 0;
-            requestData.type = "PROJECT";
-
-            gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function(resp) {
-                    if (!resp.code) {
-
-                    	var requestData2 = {};
-                        requestData2.codesystemID = resp.id;
-                        requestData2.maxCodingID = 0;
-                        requestData2.name = document.getElementById("newProjectName" ).value;
-                        gapi.client.qdacity.project.insertProject(requestData2).execute(function(resp2) {
-                                if (!resp2.code) {
-                                	requestData.id = resp.id;
-                                	requestData.project = resp2.id
-
-                                	gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function(resp3) {
-                                        if (!resp3.code) {
-                                        	addUserToUserList(requestData.project, requestData2.name);
-                                        }
-                                	});
-                                }
-                                else{
-                                	console.log(resp.code + " : " + resp.message);
-                                }
-                        });
-                    }
-                    else{
-                    	console.log(resp.code + " : " + resp.message);
-                    }
-            });
-        }
+//
+//   		//FIXME Legacy Code?
+//        $(document).ready( function () {
+//        	$( "#newProjectForm" ).on( "submit",function(event) {
+//        		event.preventDefault();
+//        		createNewProject(); 
+//              });
+//
+//        });
+//
+//        //FIXME Legacy Code?
+//        function createNewProject(){
+//
+//        	var requestData = {};
+//            requestData.project = 0;
+//            requestData.type = "PROJECT";
+//
+//            gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function(resp) {
+//                    if (!resp.code) {
+//
+//                    	var requestData2 = {};
+//                        requestData2.codesystemID = resp.id;
+//                        requestData2.maxCodingID = 0;
+//                        requestData2.name = document.getElementById("newProjectName" ).value;
+//                        gapi.client.qdacity.project.insertProject(requestData2).execute(function(resp2) {
+//                                if (!resp2.code) {
+//                                	requestData.id = resp.id;
+//                                	requestData.project = resp2.id
+//
+//                                	gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function(resp3) {
+//                                        if (!resp3.code) {
+//                                        	addUserToUserList(requestData.project, requestData2.name);
+//                                        }
+//                                	});
+//                                }
+//                                else{
+//                                	console.log(resp.code + " : " + resp.message);
+//                                }
+//                        });
+//                    }
+//                    else{
+//                    	console.log(resp.code + " : " + resp.message);
+//                    }
+//            });
+//        }
 
         function addProjectToUser(){
 
@@ -348,7 +348,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 	                        	event.preventDefault();
 	                        	var revId = $( this ).attr("revId");
 	                        	var projectEndpoint = new ProjectEndpoint();
-//	                        	var prompt = new Prompt('Name the report', 'Report Name');
 	                        	var de = new DocumentsEndpoint();
 	                        	de.getDocuments(revId, "REVISION").then(function(documents) {
 	                        		var modal = new CustomForm('Create Validation Report');
@@ -367,17 +366,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 		                          	    .catch(handleBadResponse);
 		                        	});
 	                        	});
-	                        	
-	                        	
-//	                    		prompt.showModal().then(function(reportName) {
-//		                          	projectEndpoint.evaluateRevision(revId, reportName)
-//		                          		.then(
-//		                          	        function(val) {
-//		                          	        	setRevisionHistory();
-//		                          	        })
-//		                          	    .catch(handleBadResponse);
-//	                          	
-//	                    		});
 	                        });
 	                        
 	                       //Create ListJS Lists (doing it here so all the click handlers are already applied)
