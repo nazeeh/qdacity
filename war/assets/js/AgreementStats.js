@@ -1,6 +1,6 @@
 //import 'slick-carousel';
 import 'script!slick-carousel';
-export default class Timeline {
+export default class AgreementStats {
   constructor(rootElemID) {
 	  this.drawReport = this.drawReport.bind(this); 
 	  this.rootElement = document.getElementById(rootElemID);

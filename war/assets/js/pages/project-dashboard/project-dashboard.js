@@ -1,22 +1,22 @@
-import Timeline from './timeline';
-import AgreementStats from './AgreementStats';
-import ProjectEndpoint from './common/endpoints/ProjectEndpoint';
-import ValidationEndpoint from './common/endpoints/ValidationEndpoint';
-import Project from './Project';
-import Account from './common/Account.jsx';
-import TextField from './modals/TextField';
-import IntercoderAgreement from './modals/IntercoderAgreement';
-import IntercoderAgreementByDoc from './modals/IntercoderAgreementByDoc';
-import CustomForm from './modals/CustomForm';
-import DocumentsEndpoint from './common/endpoints/DocumentsEndpoint';
+import Timeline from '../../timeline';
+import AgreementStats from '../../AgreementStats';
+import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
+import Project from '../../Project';
+import Account from '../../common/Account.jsx';
+import TextField from '../../modals/TextField';
+import IntercoderAgreement from '../../modals/IntercoderAgreement';
+import IntercoderAgreementByDoc from '../../modals/IntercoderAgreementByDoc';
+import CustomForm from '../../modals/CustomForm';
+import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
 
  
-import 'script!../../components/bootstrap/bootstrap.min.js';
-import 'script!../../components/listJS/list.js';
-import 'script!../../components/listJS/list.pagination.js';
-import 'script!../../components/URIjs/URI.min.js';
-import 'script!../../components/alertify/alertify-0.3.js';
-import 'script!../../components/AdminLTE/js/app.min.js';
+import 'script!../../../../components/bootstrap/bootstrap.min.js';
+import 'script!../../../../components/listJS/list.js';
+import 'script!../../../../components/listJS/list.pagination.js';
+import 'script!../../../../components/URIjs/URI.min.js';
+import 'script!../../../../components/alertify/alertify-0.3.js';
+import 'script!../../../../components/AdminLTE/js/app.min.js';
 
 
 import $script from 'scriptjs';
