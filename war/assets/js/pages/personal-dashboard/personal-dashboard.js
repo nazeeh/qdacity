@@ -1,4 +1,4 @@
-import 'script!../../ErrorHandler.js';
+import 'script!../../common/ErrorHandler.js';
 import Account from '../../common/Account.jsx';
 import CustomForm from '../../modals/CustomForm';
 import 'script!../../../../components/bootstrap/bootstrap.min.js'

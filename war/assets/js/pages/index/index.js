@@ -1,8 +1,8 @@
-import Account from './common/Account.jsx';
-import ReactLoading from './common/ReactLoading.jsx';
-import BinaryDecider from './modals/BinaryDecider.js';
-import 'script!../../components/bootstrap/bootstrap.min.js';
-import 'script!../../components/Vex/js/vex.combined.min.js';
+import Account from '../../common/Account.jsx';
+import ReactLoading from '../../common/ReactLoading.jsx';
+import BinaryDecider from '../../modals/BinaryDecider.js';
+import 'script!../../../../components/bootstrap/bootstrap.min.js';
+import 'script!../../../../components/Vex/js/vex.combined.min.js';
 
 
 import $script from 'scriptjs';

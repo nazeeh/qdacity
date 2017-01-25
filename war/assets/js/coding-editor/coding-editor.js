@@ -17,7 +17,7 @@ import 'script!../../../components/loading/loadingoverlay.js';
 import 'script!../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../components/URIjs/URI.min.js';
 
-import 'script!../../../assets/js/ErrorHandler.js';
+import 'script!../../../assets/js/common/ErrorHandler.js'
 
 
 $script('https://apis.google.com/js/platform.js', function() {
