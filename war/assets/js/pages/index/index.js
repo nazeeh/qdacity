@@ -47,7 +47,7 @@ function redirect(){
 		 var _this = this;
 		  var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account' );
 		  decider.showModal().then(function(value){
-			  if (value == 'optionA') account.changeAccount(redirect,client_id,scopes);
+			  if (value == 'optionA') account.changeAccount(redirect);
 			  else registerAccount();
 		  });
 	 });
