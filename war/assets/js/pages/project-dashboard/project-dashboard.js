@@ -30,7 +30,7 @@ window.loadPlatform = function (){
 	
 }
 
-var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+	var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
     var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 
     var project_id;
@@ -112,51 +112,6 @@ var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googlea
 			};
 			
         }
-//
-//   		//FIXME Legacy Code?
-//        $(document).ready( function () {
-//        	$( "#newProjectForm" ).on( "submit",function(event) {
-//        		event.preventDefault();
-//        		createNewProject(); 
-//              });
-//
-//        });
-//
-//        //FIXME Legacy Code?
-//        function createNewProject(){
-//
-//        	var requestData = {};
-//            requestData.project = 0;
-//            requestData.type = "PROJECT";
-//
-//            gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function(resp) {
-//                    if (!resp.code) {
-//
-//                    	var requestData2 = {};
-//                        requestData2.codesystemID = resp.id;
-//                        requestData2.maxCodingID = 0;
-//                        requestData2.name = document.getElementById("newProjectName" ).value;
-//                        gapi.client.qdacity.project.insertProject(requestData2).execute(function(resp2) {
-//                                if (!resp2.code) {
-//                                	requestData.id = resp.id;
-//                                	requestData.project = resp2.id
-//
-//                                	gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function(resp3) {
-//                                        if (!resp3.code) {
-//                                        	addUserToUserList(requestData.project, requestData2.name);
-//                                        }
-//                                	});
-//                                }
-//                                else{
-//                                	console.log(resp.code + " : " + resp.message);
-//                                }
-//                        });
-//                    }
-//                    else{
-//                    	console.log(resp.code + " : " + resp.message);
-//                    }
-//            });
-//        }
 
         function addProjectToUser(){
 
