@@ -9,7 +9,7 @@ import IntercoderAgreement from '../../common/modals/IntercoderAgreement';
 import IntercoderAgreementByDoc from '../../common/modals/IntercoderAgreementByDoc';
 import CustomForm from '../../common/modals/CustomForm';
 import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
-
+import loadGAPIs from '../../common/GAPI';
  
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/listJS/list.js';
@@ -29,9 +29,6 @@ window.loadPlatform = function (){
 		});
 	
 }
-
-	var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-    var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 
     var project_id;
     var project_type;
@@ -85,18 +82,11 @@ window.loadPlatform = function (){
         		  location.href='coding-editor.html?project='+project_id+'&type='+project_type;
         	  });
 
-        	var apisToLoad;
-        	 var callback = function() {
-        	   if (--apisToLoad == 0) {
-        		   account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView'));
-        	   }
-        	}
-
-        	apisToLoad = 2; 
-        	//Parameters are APIName,APIVersion,CallBack function,API Root
-        	//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
-        	gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-app.appspot.com/_ah/api'); 
-        	gapi.load('auth2', callback);
+        	loadGAPIs(setupUI).then(
+        			function(accountModule){
+        				account = accountModule;
+        			}
+        	);
 
 			document.getElementById('inviteUserBtn').onclick = function() {
                 inviteUser();

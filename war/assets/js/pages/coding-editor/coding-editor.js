@@ -6,6 +6,8 @@ import ReactLoading from '../../common/ReactLoading.jsx';
 import DocumentsCtrl from './DocumentsCtrl';
 import EditorCtrl from './EditorCtrl';
 import Prompt from '../../common/modals/Prompt';
+import loadGAPIs from '../../common/GAPI';
+
 import $script from 'scriptjs';
 
 import Slider from 'bootstrap-slider';
@@ -23,9 +25,6 @@ import 'script!../../../../assets/js/common/ErrorHandler.js'
 $script('https://apis.google.com/js/platform.js', function() {
 	$script('https://apis.google.com/js/client.js?onload=init','google-api');
 	});
-  
-var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 
 var codesystem_id;
 var project_id;
@@ -116,20 +115,12 @@ var editorCtrl = {};
 	}
 
 	
-
-	var apisToLoad;
-	var callback = function() {
-		if (--apisToLoad == 0) {
-			account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView'));
-		}
-
-	}
-
-	apisToLoad = 2;
-	// Parameters are APIName,APIVersion,CallBack function,API Root
-	gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-app.appspot.com/_ah/api');
-	gapi.load('auth2', callback);
-
+	loadGAPIs(setupUI).then(
+			function(accountModule){
+				account = accountModule;
+			}
+	);
+	
 	document.getElementById('btnCodeProps').onclick = function() {
 		if ($("#footer").is(":visible")) {
 			hideCodingView();

@@ -1,5 +1,7 @@
 import Account from '../../common/Account.jsx';
 import UserList from './UserList.jsx';
+import loadGAPIs from '../../common/GAPI';
+
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 
 import $script from 'scriptjs';
@@ -10,10 +12,6 @@ window.loadPlatform = function (){
 	$script('https://apis.google.com/js/platform.js?onload=init','google-api');
 }
 
-
-var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-
 var account;
 var userList;
 
@@ -22,17 +20,11 @@ window.init = function () {
 	$("#footer").hide();
 	$('#navAccount').hide();
 
-	var apisToLoad;
-	var callback = function callback() {
-		if (--apisToLoad == 0) {
-			account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView'));
-		}
-	};
-
-	apisToLoad = 2;
-	gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-app.appspot.com/_ah/api');
-	gapi.load('auth2', callback);
-
+	loadGAPIs(setupUI).then(
+			function(accountModule){
+				account = accountModule;
+			}
+	);
 
 	document.getElementById('navBtnSigninGoogle').onclick = function () {
 		account.changeAccount(setupUI);

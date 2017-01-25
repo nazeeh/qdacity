@@ -3,6 +3,7 @@ import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/Vex/js/vex.combined.min.js';
+import loadGAPIs from '../../common/GAPI';
 
 
 import $script from 'scriptjs';
@@ -10,9 +11,6 @@ $script('https://apis.google.com/js/platform.js', function() {
 	$script('https://apis.google.com/js/client.js?onload=init','gapi');
 	});
 
-
-var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
 var account; 
 var signInLoader;
 
@@ -28,20 +26,12 @@ window.init = function() {
     	//window.location = "personal-dashboard.html"; 
     }
 	
-var apisToLoad;
-var callback = function() {
-  if (--apisToLoad == 0) {
-	  account = ReactDOM.render(<Account  client_id={client_id} scopes={scopes} callback={setupUI}/>, document.getElementById('accountView')); 
-	  $('#signinGoogleBtn').click(signIn); 
-  }
-  vex.defaultOptions.className = 'vex-theme-os';
-
-}
- 
-apisToLoad = 2;
-gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-app.appspot.com/_ah/api');
-gapi.load('auth2', callback);
-
+    loadGAPIs(setupUI).then(
+			function(accountModule){
+				account = accountModule;
+				$('#signinGoogleBtn').click(signIn); 
+			}
+	);
 }
 
 function setupUI(){
