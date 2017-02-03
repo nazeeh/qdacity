@@ -20,6 +20,8 @@ public class LetsencryptServlet extends HttpServlet {
 	static {
 		challenges.put("17pmkD3noQ9GIARXYUbofNxkxxVv0I2wsWVR3-5nKdg", "17pmkD3noQ9GIARXYUbofNxkxxVv0I2wsWVR3-5nKdg.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
 		challenges.put("c_rSqaYWs4qM1DvTstl2iZukhYmWk3pq5iccfLKyNss", "c_rSqaYWs4qM1DvTstl2iZukhYmWk3pq5iccfLKyNss.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
+		challenges.put("soQhffJu3ge23g5yQ7_K9Ab67HGG_DALbgNxPPAodg0", "soQhffJu3ge23g5yQ7_K9Ab67HGG_DALbgNxPPAodg0.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
+		challenges.put("XxOqKSdyggobVXCJcdp3qKJ0iUu6KX2GhKKBzEdkJ9I", "XxOqKSdyggobVXCJcdp3qKJ0iUu6KX2GhKKBzEdkJ9I.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
 	}
 
 	@Override

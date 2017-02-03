@@ -1,6 +1,8 @@
 import Timeline from './timeline';
 import AgreementStats from './AgreementStats';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import ChangeLogEndpoint from '../../common/endpoints/ChangeLogEndpoint';
 import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import Project from './Project';
 import Account from '../../common/Account.jsx';
@@ -108,27 +110,16 @@ window.loadPlatform = function (){
         }
 
         function setGeneralStats(){
-        	// FIXME support other types than normal project
-        	gapi.client.qdacity.project.getProjectStats({'id': project_id, 'projectType': project_type}).execute(function(resp) {
-        	   	 if (!resp.code) {
+        	ProjectEndpoint.getProjectStats(project_id,  project_type).then(function(resp) {
         	   		$("#topStatsDocuments").html(resp.documentCount);
         	   		$("#topStatsCodes").html(resp.codeCount);
         	   		$("#topStatsCodings").html(resp.codingCount);
-
-        	   	 }
-
-        	   	 else{
-        	   		 console.log(resp.code + " : " +resp.message);
-        	   	}
-
-        	    });
-
+        	});
         }
 
 
         function setProjectProperties(){
-        	gapi.client.qdacity.project.getProject({'id': project_id, 'type':project_type}).execute(function(resp) {
-       	   	 if (!resp.code) {
+        	ProjectEndpoint.getProject(project_id, project_type).then(function(resp) {
        	   		$("#project-name").html(resp.name);
        	   		$("#projectDescription").html(resp.description);
        	   		
@@ -136,13 +127,6 @@ window.loadPlatform = function (){
        	   			$('#parentProjectLink').attr('href','project-dashboard.html?project='+resp.projectID+'&type=PROJECT');
        	   			setReportList(resp.projectID);
        	   		}
-
-       	   	 }
-
-       	   	 else{
-       	   	console.log(resp.code + " : " + resp.message);
-       	   	}
-
        	    });
         }
         
@@ -172,15 +156,10 @@ window.loadPlatform = function (){
         }
         
         function showDocumentResults(reportID, parentProject){
-        	gapi.client.qdacity.validation.getValidationResult({'reportID' : reportID, 'validationProjectID': project_id}).execute(function(resp) {
-				if (!resp.code) {
+        	ValidationEndpoint.getValidationResult(reportID,  project_id).then(function(resp) {
 					var agreementByDoc = new IntercoderAgreementByDoc(resp.id , project_id, project_id, project_type);
 					agreementByDoc.showModal();
-				} else{
-					// Log error
-				}
 			});
-        	
         }
 
         function setRevisionHistory (){
@@ -189,147 +168,142 @@ window.loadPlatform = function (){
         	var userPromise = account.getCurrentUser();
         	var validationPromise = validationEndpoint.listReports(project_id);
         	
-        	gapi.client.qdacity.project.listRevisions({'projectID': project_id}).execute(function(resp) {
-              	 if (!resp.code) {
-              		userPromise.then(function(user){
+        	ProjectEndpoint.listRevisions(project_id).then(function(resp) {
+          		userPromise.then(function(user){
+          			
+          			$("#revision-timeline").empty();
+              		resp.items = resp.items || [];
+              		var snapshots = [];
+              		var validationProjects = {};
+              		for (var i=0;i<resp.items.length;i++) {
+                    	if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
+                    	else {
+                    		if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
+                    		validationProjects[resp.items[i].revisionID].push(resp.items[i]);
+                    	}
+                    }
+              		project.setRevisions(snapshots);
+              		project.setValidationProjects(validationProjects);
+              		
+              		var timeline = new Timeline(user, project_id);
+              		
+              		
+              		validationPromise.then(function(reports){
+              			var agreementStats = new AgreementStats("agreementStats");
               			
-              			$("#revision-timeline").empty();
-                  		resp.items = resp.items || [];
-                  		var snapshots = [];
-                  		var validationProjects = {};
-                  		for (var i=0;i<resp.items.length;i++) {
-                        	if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
-                        	else {
-                        		if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
-                        		validationProjects[resp.items[i].revisionID].push(resp.items[i]);
-                        	}
+              			project.setReports(reports);
+                        for (var i=0;i<snapshots.length;i++) {
+                        	var revID = snapshots[i].id;
+                        	timeline.addLabelToTimeline(snapshots[i].revision);
+                		    timeline.addRevInfoToTimeline(snapshots[i], user);
+                		    
+                		    
+                		    if (typeof reports[revID] != 'undefined'){
+                		    	timeline.addReportToTimeline(reports[revID]);
+                		    	agreementStats.addReports(reports[revID]);
+                		    }
+                		    
+
+                		    var validationProjectList = validationProjects[revID];
+
+                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
                         }
-                  		project.setRevisions(snapshots);
-                  		project.setValidationProjects(validationProjects);
-                  		
-                  		var timeline = new Timeline(user, project_id);
-                  		
-                  		
-                  		validationPromise.then(function(reports){
-                  			var agreementStats = new AgreementStats("agreementStats");
-                  			
-                  			project.setReports(reports);
-	                        for (var i=0;i<snapshots.length;i++) {
-	                        	var revID = snapshots[i].id;
-	                        	timeline.addLabelToTimeline(snapshots[i].revision);
-	                		    timeline.addRevInfoToTimeline(snapshots[i], user);
-	                		    
-	                		    
-	                		    if (typeof reports[revID] != 'undefined'){
-	                		    	timeline.addReportToTimeline(reports[revID]);
-	                		    	agreementStats.addReports(reports[revID]);
-	                		    }
-	                		    
-	
-	                		    var validationProjectList = validationProjects[revID];
-	
-	                		    if (validationProjectList !== undefined) timeline.addValidationProjects(validationProjectList);
-	                        }
+                    
+                        timeline.addToDom("#revision-timeline");
                         
-	                        timeline.addToDom("#revision-timeline");
-	                        
-	                        if (account.isProjectOwner(user, project_id)) {
-	              				$('#newRevisionBtn').removeClass('hidden');
-	              				$('.deleteReportBtn').removeClass('hidden');
-	              				$('.createReportBtn').removeClass('hidden');
-	              				$('#codingEditorBtn').removeClass('hidden');
-	              				$('#editDescriptionBtn').removeClass('hidden');
-	              				
-	              				$('#inviteUser').removeClass('hidden');
-	              				
-	              				$('.report').addClass('reportLink');
-	              			}else{
-	              				$('.report').removeClass('reportLink');
-	              				$('#newRevisionBtn').addClass('hidden');
-	              				$('.deleteReportBtn').addClass('hidden');
-	              				$('.createReportBtn').addClass('hidden');
-	              				$('#codingEditorBtn').addClass('hidden');
-	              				$('#editDescriptionBtn').addClass('hidden');
-	              				$('#inviteUser').addClass('hidden');
-	              			}
-	                        
-	                        if (project_type == "VALIDATION") $('#codingEditorBtn').removeClass('hidden');
-	                       
-	
-	                        $( ".deleteRevisionBtn" ).click(function() {
-	                        	var revisionId = $( this ).attr("revId");
-	                        	deleteRevision(revisionId);
-	                        });
-	
-	                        $( ".deleteValidationPrjBtn" ).click(function() {
-	                        	var prjId = $( this ).attr("prjId");
-	                        	deleteValidationProject(prjId);
-	                        });
-	                        
-	                        $( ".deleteReportBtn" ).click(function(event) {
-	                        	event.preventDefault();
-	                        	event.stopPropagation();
-	                        	var repId = $( this ).attr("repId");
-	                        	deleteValidationReport(repId);
-	                        });
-	                        
-	                        $( ".reportLink" ).click(function(event) {
-	                        	var revId = $( this ).attr("revId");
-	                        	var repId = $( this ).attr("repId");
-	                        	showValidationReports(project.getReport(revId, repId));
-	                        });
-	                        
-	                        $( ".validationProjectLink" ).click(function() {
-	                        	var prjId = $( this ).attr("prjId");
-	                        	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
-	                        });
-	
-	                        $( ".requestValidationAccessBtn" ).click(function() {
-	                        	var revId = $( this ).attr("revId");
-	                        	requestValidationAccess(revId);
-	                        });
-	                        
-	                        $( ".createReportBtn" ).click(function(event) {
-	                        	event.preventDefault();
-	                        	var revId = $( this ).attr("revId");
-	                        	var projectEndpoint = new ProjectEndpoint();
-	                        	var de = new DocumentsEndpoint();
-	                        	de.getDocuments(revId, "REVISION").then(function(documents) {
-	                        		var modal = new CustomForm('Create Validation Report');
-		                        	modal.addTextInput('title', "Report Title",'', '');
-		                        	var documentTitles = [];
-		                        	
-		                        	modal.addCheckBoxes('docs', documents);
-		                        	
-		                        	modal.showModal().then(function(data) {
-		                        		var selectedDocs = [];
-			                          	projectEndpoint.evaluateRevision(revId, data.title, data.docs)
-		                          		.then(
-		                          	        function(val) {
-		                          	        	setRevisionHistory();
-		                          	        })
-		                          	    .catch(handleBadResponse);
-		                        	});
+                        if (account.isProjectOwner(user, project_id)) {
+              				$('#newRevisionBtn').removeClass('hidden');
+              				$('.deleteReportBtn').removeClass('hidden');
+              				$('.createReportBtn').removeClass('hidden');
+              				$('#codingEditorBtn').removeClass('hidden');
+              				$('#editDescriptionBtn').removeClass('hidden');
+              				
+              				$('#inviteUser').removeClass('hidden');
+              				
+              				$('.report').addClass('reportLink');
+              			}else{
+              				$('.report').removeClass('reportLink');
+              				$('#newRevisionBtn').addClass('hidden');
+              				$('.deleteReportBtn').addClass('hidden');
+              				$('.createReportBtn').addClass('hidden');
+              				$('#codingEditorBtn').addClass('hidden');
+              				$('#editDescriptionBtn').addClass('hidden');
+              				$('#inviteUser').addClass('hidden');
+              			}
+                        
+                        if (project_type == "VALIDATION") $('#codingEditorBtn').removeClass('hidden');
+                       
+
+                        $( ".deleteRevisionBtn" ).click(function() {
+                        	var revisionId = $( this ).attr("revId");
+                        	deleteRevision(revisionId);
+                        });
+
+                        $( ".deleteValidationPrjBtn" ).click(function() {
+                        	var prjId = $( this ).attr("prjId");
+                        	deleteValidationProject(prjId);
+                        });
+                        
+                        $( ".deleteReportBtn" ).click(function(event) {
+                        	event.preventDefault();
+                        	event.stopPropagation();
+                        	var repId = $( this ).attr("repId");
+                        	deleteValidationReport(repId);
+                        });
+                        
+                        $( ".reportLink" ).click(function(event) {
+                        	var revId = $( this ).attr("revId");
+                        	var repId = $( this ).attr("repId");
+                        	showValidationReports(project.getReport(revId, repId));
+                        });
+                        
+                        $( ".validationProjectLink" ).click(function() {
+                        	var prjId = $( this ).attr("prjId");
+                        	window.location.href = 'coding-editor.html?project='+prjId+'&type=VALIDATION';
+                        });
+
+                        $( ".requestValidationAccessBtn" ).click(function() {
+                        	var revId = $( this ).attr("revId");
+                        	requestValidationAccess(revId);
+                        });
+                        
+                        $( ".createReportBtn" ).click(function(event) {
+                        	event.preventDefault();
+                        	var revId = $( this ).attr("revId");
+                        	var projectEndpoint = new ProjectEndpoint();
+                        	var de = new DocumentsEndpoint();
+                        	de.getDocuments(revId, "REVISION").then(function(documents) {
+                        		var modal = new CustomForm('Create Validation Report');
+	                        	modal.addTextInput('title', "Report Title",'', '');
+	                        	var documentTitles = [];
+	                        	
+	                        	modal.addCheckBoxes('docs', documents);
+	                        	
+	                        	modal.showModal().then(function(data) {
+	                        		var selectedDocs = [];
+		                          	projectEndpoint.evaluateRevision(revId, data.title, data.docs)
+	                          		.then(
+	                          	        function(val) {
+	                          	        	setRevisionHistory();
+	                          	        })
+	                          	    .catch(handleBadResponse);
 	                        	});
-	                        });
-	                        
-	                       //Create ListJS Lists (doing it here so all the click handlers are already applied)
-	                 	   var elem = $('.validationPrjList');
-	                 	   elem.each(function() {
-	                 		   var options = {
-	                 					valueNames: ['project_name'],
-	                 					page: 10,
-	                 					plugins: [ListPagination({})]
-	                 				};
-	                 		   var myList = new List( this, options);
-	                 	   });
-	                 	   
-                  		});
+                        	});
+                        });
+                        
+                       //Create ListJS Lists (doing it here so all the click handlers are already applied)
+                 	   var elem = $('.validationPrjList');
+                 	   elem.each(function() {
+                 		   var options = {
+                 					valueNames: ['project_name'],
+                 					page: 10,
+                 					plugins: [ListPagination({})]
+                 				};
+                 		   var myList = new List( this, options);
+                 	   });
+                 	   
               		});
-              	 }
-              	 else{
-              		console.log(resp.code + " : " + resp.message);
-              	}
+          		});
 
                });
 
@@ -411,65 +385,48 @@ window.loadPlatform = function (){
         }
         
         function addOwners(){
-        	gapi.client.qdacity.user.listUser({'projectID': project_id}).execute(function(resp) {
-              	 if (!resp.code) {
-              		resp.items = resp.items || [];
+        	UserEndpoint.listUser(project_id).then(function(resp) {
+        		resp.items = resp.items || [];
 
-                   for (var i=0;i<resp.items.length;i++) {
-                           var user_id = resp.items[i].id;
-                           var given_name = resp.items[i].givenName;
-                           var sur_name = resp.items[i].surName;
+               for (var i=0;i<resp.items.length;i++) {
+                       var user_id = resp.items[i].id;
+                       var given_name = resp.items[i].givenName;
+                       var sur_name = resp.items[i].surName;
 
-                     		addUserToUserList(user_id, given_name + " " + sur_name);
-                   }
-                   var options = {
-                   	  valueNames: [ 'user_name', 'user_id' ]
-                   };
+                 		addUserToUserList(user_id, given_name + " " + sur_name);
+               }
+               var options = {
+               	  valueNames: [ 'user_name', 'user_id' ]
+               };
 
-                   var projectList = new List('user-section', options);
-
-
-              	 }
-
-              	 else{
-              		console.log(resp.code + " : " + resp.message);
-              	}
-
-               });
+               var projectList = new List('user-section', options);
+        	
+           });
         }
         
         function addValidationCoders(){
-        	gapi.client.qdacity.user.listValidationCoders({'validationProject': project_id}).execute(function(resp) {
-              	 if (!resp.code) {
-              		 if (typeof resp.items != 'undefined'){
-              			resp.items = resp.items || [];
-                  		
-                        for (var i=0;i<resp.items.length;i++) {
-                                var user_id = resp.items[i].id;
-                                var given_name = resp.items[i].givenName;
-                                var sur_name = resp.items[i].surName;
+        	UserEndpoint.listValidationCoders(project_id).then(function(resp) {
+          			resp.items = resp.items || [];
+              		
+                    for (var i=0;i<resp.items.length;i++) {
+                            var user_id = resp.items[i].id;
+                            var given_name = resp.items[i].givenName;
+                            var sur_name = resp.items[i].surName;
 
-                          		addUserToUserList(user_id, given_name + " " + sur_name);
-                        }
-                        var options = {
-                        	  valueNames: [ 'user_name', 'user_id' ]
-                        };
+                      		addUserToUserList(user_id, given_name + " " + sur_name);
+                    }
+                    var options = {
+                    	  valueNames: [ 'user_name', 'user_id' ]
+                    };
 
-                        var projectList = new List('user-section', options);
-              		 }
-              	 }
-              	 else{
-              		console.log(resp.code);
-              	}
-
-               });
+                    var projectList = new List('user-section', options);            });
         }
 
+        //FIXME Obsolete for now
         function createAreaChart(){
         	$('#morris-area-chart').empty();  
 
-        	 gapi.client.qdacity.changelog.listChangeStats({'filterType': "project", 'projectID' : project_id, 'projectType' : project_type}).execute(function(resp){
-        			if (!resp.code) {
+        	ChangeLogEndpoint.listChangeStats( project_id, project_type).then(function(resp){
         				var dataArray =  [];
         				for (var i=0;i<resp.items.length;i++) {
         		            dataArray.push({
@@ -488,9 +445,7 @@ window.loadPlatform = function (){
         			        hideHover: 'auto',
         			        resize: true
         			    });
-        			}
         		});
-
         }
 
         function addUserToUserList(userID, userName){
@@ -520,28 +475,21 @@ window.loadPlatform = function (){
 
         	var userEmail = document.getElementById("userEmailFld" ).value;
 
-        	gapi.client.qdacity.project.inviteUser({'projectID' : project_id, 'userEmail': userEmail}).execute(function(resp){
-        		if (!resp.code) {
-        			alertify.success(userEmail + " has been invited");
-        		}
-        		else{
-        			alertify.error(userEmail + " was not found");
-        			console.log(resp.code);
-        		}
+        	ProjectEndpoint.inviteUser(project_id,  userEmail).then(function(resp){
+        		alertify.success(userEmail + " has been invited");
+        	}).catch(function(resp){
+        		alertify.error(userEmail + " was not found");
         	});
         }
 
         function createNewRevision(comment){
-        	gapi.client.qdacity.project.createSnapshot({'projectID': project_id, 'comment' : comment}).execute(function(resp) {
-                if (!resp.code) {
-                	alertify.success("New revision has been created");
-                	setRevisionHistory();
-
-                }
-                else{
-                	alertify.error("New revision has not been created");
-                }
-        });
+        	ProjectEndpoint.createSnapshot(project_id, comment).then(function(resp) {
+            	alertify.success("New revision has been created");
+            	setRevisionHistory();
+            	
+	        }).catch(function(resp){
+	        	alertify.error("New revision has not been created");
+	    	});
         }
 
         function showNewRevisionModal(title){
@@ -559,5 +507,4 @@ window.loadPlatform = function (){
     				});
     		});
         }
-        
         
