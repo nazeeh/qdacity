@@ -6,6 +6,10 @@ import 'script!../../../../components/listJS/list.js';
 import 'script!../../../../components/listJS/list.pagination.js';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import loadGAPIs from '../../common/GAPI';
+import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
+import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import UserEndpoint from '../../common/endpoints/UserEndpoint';
+
 
 
 import $script from 'scriptjs';
@@ -57,88 +61,54 @@ window.init = function () {
 }
 
 function createNewProject(name, description) {
+	CodesystemEndpoint.insertCodeSystem(0,"PROJECT").then(function (codeSystem) {
+			var project = {};
+			project.codesystemID = codeSystem.id;
+			project.maxCodingID = 0;
+			project.name = name;
+			project.description = description;
+			ProjectEndpoint.insertProject(project).then(function (insertedProject) {
+				codeSystem.project = insertedProject.id;
 
-	var requestData = {};
-	requestData.project = 0;
-	requestData.projectType = "PROJECT";
-
-	gapi.client.qdacity.codesystem.insertCodeSystem(requestData).execute(function (resp) {
-		if (!resp.code) { 
-
-			var requestData2 = {};
-			requestData2.codesystemID = resp.id;
-			requestData2.maxCodingID = 0;
-			requestData2.name = name;
-			requestData2.description = description;
-			gapi.client.qdacity.project.insertProject(requestData2).execute(function (resp2) {
-				if (!resp2.code) {
-					requestData.id = resp.id;
-					requestData.project = resp2.id;
-
-					gapi.client.qdacity.codesystem.updateCodeSystem(requestData).execute(function (resp3) {
-						if (!resp3.code) {
-							addProjectToProjectList(requestData.project, requestData2.name, 'PROJECT');
-						}
-					});
-				} else {
-					window.alert(resp.code);
-				}
+				CodesystemEndpoint.updateCodeSystem(codeSystem).then(function (updatedCodeSystem) {
+						addProjectToProjectList(codeSystem.project, project.name, 'PROJECT');
+				});
 			});
-		} else {
-			window.alert(resp.code);
-		}
 	});
 }
 
 function acceptInvitation(notification) {
 	
-	gapi.client.qdacity.project.addOwner({ 'projectID': notification.project }).execute(function (resp) {
-		if (!resp.code) {} else {
-			window.alert(resp.code);
-		}
-	});
+	ProjectEndpoint.addOwner( notification.project ).then(function (resp) {});
 
 	var requestData = {};
 	requestData = notification;
 	requestData.settled = true;
 	
-	gapi.client.qdacity.user.updateUserNotification(requestData).execute(function (resp) {
-		if (!resp.code) {
+	UserEndpoint.updateUserNotification(requestData).then(function (resp) {
 			fillNotificationList();
 			fillProjectsList();
-		} else {
-			window.alert(resp.code);
-		}
 	});
 }
 
 function createValidationProject(notification) {
 	var tmp = notification;
-	gapi.client.qdacity.project.createValidationProject({ 'projectID': notification.project, 'userID': notification.originUser }).execute(function (resp) {
-		if (!resp.code) {} else {
-			window.alert(resp.code);
-		}
-	});
+	ProjectEndpoint.createValidationProject( notification.project, notification.originUser ).then(function (resp) {	});
 
 	settleNotification(notification);
 }
 
 function settleNotification(notification) {
 	notification.settled = true;
-	gapi.client.qdacity.user.updateUserNotification(notification).execute(function (resp) {
-		if (!resp.code) {
+	UserEndpoint.updateUserNotification(notification).then(function (resp) {
 			fillNotificationList();
-		} else {
-			window.alert(resp.code);
-		}
 	});
 }
 
 function fillProjectsList() {
 	$("#project-list").empty();
 	
-	gapi.client.qdacity.project.listProject().execute(function (resp) {
-		if (!resp.code) {
+	ProjectEndpoint.listProject().then(function (resp) {
 			resp.items = resp.items || [];
 
 			for (var i = 0; i < resp.items.length; i++) {
@@ -158,9 +128,6 @@ function fillProjectsList() {
 			};
 
 			var projectList = new List('project-selection', options);
-		} else {
-			window.alert(resp.code);
-		}
 	});
 	
 }
@@ -198,29 +165,23 @@ function attachDeleteHandler(){
 }
 
 function addValidationProjects(){
-	gapi.client.qdacity.project.listValidationProject().execute(function (resp) {
-		if (!resp.code) {
-			resp.items = resp.items || [];
+	ProjectEndpoint.listValidationProject().then(function (resp) {
+		resp.items = resp.items || [];
 
-			for (var i = 0; i < resp.items.length; i++) {
-				var project_id = resp.items[i].id;
-				var project_name = resp.items[i].name;
+		for (var i = 0; i < resp.items.length; i++) {
+			var project_id = resp.items[i].id;
+			var project_name = resp.items[i].name;
 
-				addProjectToProjectList(project_id, project_name, 'VALIDATION');
-			}
-			
-			attachDeleteHandler(); // for both projects and validation projects
-			
-		} else {
-			window.alert(resp.code);
+			addProjectToProjectList(project_id, project_name, 'VALIDATION');
 		}
+		
+		attachDeleteHandler(); // for both projects and validation projects
 	});
 }
 
 function fillNotificationList() {
 	$("#notification-list").html("");
-	gapi.client.qdacity.user.listUserNotification().execute(function (resp) {
-		if (!resp.code) {
+	UserEndpoint.listUserNotification().then(function (resp) {
 			resp.items = resp.items || [];
 
 			for (var i = 0; i < resp.items.length; i++) {
@@ -264,31 +225,24 @@ function fillNotificationList() {
 
 			var projectList = new List('notifications', options);
 			projectList.sort('notification_date', { order: "desc" });
-		} else {
-			window.alert(resp.code);
-		}
 	});
 }
 
 
 function deleteProject(projectID) {
-	gapi.client.qdacity.project.removeProject({ 'id': projectID }).execute(function (resp) {
-		if (!resp.code) {
+	ProjectEndpoint.removeProject(projectID ).then(function (resp) {
 			fillProjectsList();
-		}
 	});
 }
 
 function deleteValidationProject(projectID) {
-	gapi.client.qdacity.project.removeValidationProject({ 'id': projectID }).execute(function (resp) {
-		if (!resp.code) {
+	ProjectEndpoint.removeValidationProject( projectID ).then(function (resp) {
 			fillProjectsList();
-		}
 	});
 }
 
 function leaveProject(prjType, prjID) {
-	gapi.client.qdacity.project.removeUser({ 'projectID': prjID, 'projectType': prjType }).execute(function (resp) {
+	ProjectEndpoint.removeUser( prjID, prjType ).then(function (resp) {
 			fillProjectsList();
 	});
 }

@@ -324,9 +324,7 @@ window.loadPlatform = function (){
 
         function deleteValidationProject(prjId){
 
-        	var projectEndpoint = new ProjectEndpoint();
-
-        	projectEndpoint.deleteValidationProject(prjId)
+        	ProjectEndpoint.removeValidationProject(prjId)
         		.then(
         	        function(val) {
         	        	alertify.success("Revision has been deleted");

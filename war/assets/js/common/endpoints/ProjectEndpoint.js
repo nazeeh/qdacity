@@ -1,6 +1,78 @@
 export default class ProjectEndpoint {
   constructor() {
   }
+  
+	static listProject(){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.project.listProject().execute(function (resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  
+		  return promise;
+	}
+	
+	static listValidationProject(){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.project.listValidationProject().execute(function (resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  
+		  return promise;
+	}
+	
+	static removeProject(prjId){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.project.removeProject({ 'id': prjId }).execute(function (resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  
+		  return promise;
+	}
+	
+	static removeUser(prjId, prjType){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.project.removeUser({ 'projectID': prjID, 'projectType': prjType }).execute(function (resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  
+		  return promise;
+	}
  
   deleteRevision(revisionId){
 	  
@@ -20,7 +92,7 @@ export default class ProjectEndpoint {
 	  return promise;
   }
   
-  deleteValidationProject(prjId){
+  static removeValidationProject(prjId){
 	  
 	  var promise = new Promise(
 		  function(resolve, reject) {
@@ -178,6 +250,63 @@ static setDescription(prjId, projectType, description){
 			       		resolve(resp);
 			       	 }
 			       	 else{
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+}
+
+static insertProject(project){
+	  
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.project.insertProject(project).execute(function (resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       	 else{
+			       		console.log(resp.code + " : " +resp.message);
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+}
+
+static addOwner(prjId){
+	  
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.project.addOwner({ 'projectID': prjId }).execute(function (resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       	 else{
+			       		console.log(resp.code + " : " +resp.message);
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+}
+
+static createValidationProject(prjId, userId){
+	  
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.project.createValidationProject({ 'projectID': prjId, 'userID': userId }).execute(function (resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       	 else{
+			       		console.log(resp.code + " : " +resp.message);
 			       		reject(resp);
 			       	}
 			  });

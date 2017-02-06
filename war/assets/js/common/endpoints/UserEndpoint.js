@@ -33,6 +33,40 @@ export default class ProjectEndpoint {
 			  }
 		  );
 		  return promise;
-		}
+	}
+	
+	static listUserNotification(notification){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.user.listUserNotification().execute(function (resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  return promise;
+	}
+	
+	static updateUserNotification(notification){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.user.updateUserNotification(notification).execute(function (resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  return promise;
+	}
 
 }
