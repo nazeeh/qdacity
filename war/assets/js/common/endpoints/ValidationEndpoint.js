@@ -1,3 +1,5 @@
+import Promisizer from './Promisizer'
+
 export default class ProjectEndpoint {
   constructor() {
   }
@@ -27,54 +29,18 @@ export default class ProjectEndpoint {
   }
   
   deleteReport(repId){
-	  var promise = new Promise(
-			  function(resolve, reject) {
-				  gapi.client.qdacity.validation.deleteReport({'reportID': repId}).execute(function(resp) {
-				       	 if (!resp.code) {
-				       		resolve(resp);
-				       	 }
-				       	 else{
-				       		reject(resp);
-				       	}
-				  });
-			  }
-		  );
-		  
-		  return promise;
+	  var apiMethod = gapi.client.qdacity.validation.deleteReport({'reportID': repId});
+	  return Promisizer.makePromise(apiMethod);
   }
   
   sendNotificationEmail(reportID){
-	  var promise = new Promise(
-		  function(resolve, reject) {
-			  gapi.client.qdacity.validation.sendNotificationEmail({'reportID': reportID}).execute(function(resp) {
-			       	 if (!resp.code) {
-			       		resolve(resp);
-			       	 }
-			       	 else{
-			       		reject(resp);
-			       	}
-			  });
-		  }
-	  );
-	  
-	  return promise;
+	  var apiMethod = gapi.client.qdacity.validation.sendNotificationEmail({'reportID': reportID});
+	  return Promisizer.makePromise(apiMethod);
   }
   
-  static sendNotificationEmail(reportID, prjId){
-	  var promise = new Promise(
-		  function(resolve, reject) {
-			  gapi.client.qdacity.validation.getValidationResult({'reportID' : reportID, 'validationProjectID': prjId}).execute(function(resp) {
-			       	 if (!resp.code) {
-			       		resolve(resp);
-			       	 }
-			       	 else{
-			       		reject(resp);
-			       	}
-			  });
-		  }
-	  );
-	  
-	  return promise;
+  static getValidationResult(reportID, prjId){
+	  var apiMethod = gapi.client.qdacity.validation.getValidationResult({'reportID' : reportID, 'validationProjectID': prjId});
+	  return Promisizer.makePromise(apiMethod);
   }
   
   

@@ -1,3 +1,5 @@
+import Promisizer from './Promisizer'
+
 export default class DocumentsEndpoint {
   constructor() {
   }
@@ -22,71 +24,23 @@ export default class DocumentsEndpoint {
   }
   
   static insertTextDocument(doc){
-	  var promise = new Promise(
-		  function(resolve, reject) {
-			  gapi.client.qdacity.documents.insertTextDocument(doc).execute(function(resp) {
-			       	 if (!resp.code) {
-			       		resolve(resp);
-			       	 }
-			       	 else{
-			       		console.log(resp.code + " : " +resp.message);
-			       		reject(resp);
-			       	}
-			  });
-		  }
-	  );
-	  return promise;
+	  var apiMethod = gapi.client.qdacity.documents.insertTextDocument(doc);
+	  return Promisizer.makePromise(apiMethod);
   }
   
   static updateTextDocument(doc){
-	  var promise = new Promise(
-		  function(resolve, reject) {
-			  gapi.client.qdacity.documents.updateTextDocument(doc).execute(function(resp) {
-			       	 if (!resp.code) {
-			       		resolve(resp);
-			       	 }
-			       	 else{
-			       		console.log(resp.code + " : " +resp.message);
-			       		reject(resp);
-			       	}
-			  });
-		  }
-	  );
-	  return promise;
+	  var apiMethod = gapi.client.qdacity.documents.updateTextDocument(doc);
+	  return Promisizer.makePromise(apiMethod);
   }
   
   static removeTextDocument(doc){
-	  var promise = new Promise(
-		  function(resolve, reject) {
-			  gapi.client.qdacity.documents.removeTextDocument(doc).execute(function(resp) {
-			       	 if (!resp.code) {
-			       		resolve(resp);
-			       	 }
-			       	 else{
-			       		console.log(resp.code + " : " +resp.message);
-			       		reject(resp);
-			       	}
-			  });
-		  }
-	  );
-	  return promise;
+	  var apiMethod = gapi.client.qdacity.documents.removeTextDocument(doc);
+	  return Promisizer.makePromise(apiMethod);
   }
   
-  static removeTextDocument(mapId, prjType){
-	  var promise = new Promise(
-		  function(resolve, reject) {
-			  gapi.client.qdacity.documents.getAgreementMaps({'id' : mapId, 'projectType' : prjType}).execute(function(resp) {
-			       	 if (!resp.code) {
-			       		resolve(resp);
-			       	 }
-			       	 else{
-			       		console.log(resp.code + " : " +resp.message);
-			       		reject(resp);
-			       	}
-			  });
-		  }
-	  );
-	  return promise;
+  static getAgreementMaps(mapId, prjType){
+	  var apiMethod = gapi.client.qdacity.documents.getAgreementMaps({'id' : mapId, 'projectType' : prjType});
+	  return Promisizer.makePromise(apiMethod);
   }
   
   
