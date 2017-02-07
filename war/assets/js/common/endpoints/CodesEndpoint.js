@@ -1,16 +1,17 @@
-export default class ProjectEndpoint {
+export default class CodesEndpoint {
 	constructor() {
 	}
  
 
-	static listValidationCoders(prjId){
+	static insertCode(code){
 	  var promise = new Promise(
 		  function(resolve, reject) {
-			  gapi.client.qdacity.user.listValidationCoders({'validationProject': prjId}).execute(function(resp) {
-			       	 if (!resp.code && typeof (resp.items != 'undefined')) {
+			  gapi.client.qdacity.codes.insertCode(code).execute(function(resp) {
+			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }
 			       	 else{
+			       		console.log(resp.code + " : " +resp.message);
 			       		reject(resp);
 			       	}
 			  });
@@ -19,59 +20,10 @@ export default class ProjectEndpoint {
 	  return promise;
 	}
 	
-	static updateUser(user){
+	static updateCode(code){
 		  var promise = new Promise(
 			  function(resolve, reject) {
-				  gapi.client.qdacity.updateUser(user).execute(function (resp) {
-				       	 if (!resp.code) {
-				       		resolve(resp);
-				       	 }
-				       	 else{
-				       		reject(resp);
-				       	}
-				  });
-			  }
-		  );
-		  return promise;
-	}
-	
-	static listUser(prjId){
-		  var promise = new Promise(
-			  function(resolve, reject) {
-				  gapi.client.qdacity.user.listUser({'projectID': prjId}).execute(function(resp) {
-				       	 if (!resp.code) {
-				       		resolve(resp);
-				       	 }
-				       	 else{
-				       		reject(resp);
-				       	}
-				  });
-			  }
-		  );
-		  return promise;
-	}
-	
-	
-	static findUsers(searchTerm){
-		  var promise = new Promise(
-			  function(resolve, reject) {
-				  gapi.client.qdacity.user.findUsers({'searchTerm': searchTerm}).execute(function (resp) {
-				       	 if (!resp.code && typeof resp.items != 'undefined') {
-				       		resolve(resp);
-				       	 }
-				       	 else{
-				       		reject(resp);
-				       	}
-				  });
-			  }
-		  );
-		  return promise;
-	}
-	
-	static listUserNotification(notification){
-		  var promise = new Promise(
-			  function(resolve, reject) {
-				  gapi.client.qdacity.user.listUserNotification().execute(function (resp) {
+				  gapi.client.qdacity.codes.updateCode(code).execute(function(resp) {
 				       	 if (!resp.code) {
 				       		resolve(resp);
 				       	 }
@@ -85,10 +37,10 @@ export default class ProjectEndpoint {
 		  return promise;
 	}
 	
-	static updateUserNotification(notification){
+	static removeCode(code){
 		  var promise = new Promise(
 			  function(resolve, reject) {
-				  gapi.client.qdacity.user.updateUserNotification(notification).execute(function (resp) {
+				  gapi.client.qdacity.codes.removeCode(code).execute(function(resp) {
 				       	 if (!resp.code) {
 				       		resolve(resp);
 				       	 }
@@ -101,5 +53,55 @@ export default class ProjectEndpoint {
 		  );
 		  return promise;
 	}
-
+	
+	static setCodeBookEntry(codeId, codebookEntry){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.codes.setCodeBookEntry({'codeId' : getActiveCode().dbID },codeBookEntry).execute(function(resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  return promise;
+	}
+	
+	static relocateCode(codeId, newParentId){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.codes.relocateCode({	'codeId' : codeId, 'newParentID' : newParentId}).execute(function(resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  return promise;
+	}
+	
+	static getCode(codeId){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.codes.getCode({'id' : codeId }).execute(function(resp) {
+				       	 if (!resp.code) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		console.log(resp.code + " : " +resp.message);
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  return promise;
+	}
 }

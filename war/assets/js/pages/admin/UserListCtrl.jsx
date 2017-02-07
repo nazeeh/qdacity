@@ -1,5 +1,6 @@
 import styles from './styles.css'
 import CustomForm from '../../common/modals/CustomForm';
+import UserEndpoint from '../../common/endpoints/UserEndpoint';
 
 export default class UserListCtrl extends React.Component {
 constructor(props) {
@@ -10,7 +11,7 @@ constructor(props) {
   }
    
    showUserInfo(){
-   var _this = this;
+   	var _this = this;
    	var user = _this.props.user;
    	var modal = new CustomForm('Edit User Info');
 	modal.addTextInput('firstName', "First Name",'', user.givenName);
@@ -31,11 +32,7 @@ constructor(props) {
    		user.surName = basicInfo.lastName;
    		user.email = basicInfo.email;
    		
-	   gapi.client.qdacity.updateUser(user).execute(function (resp) {
-			if (!resp.code) {
-			} else {
-			}
-		});
+	   UserEndpoint.updateUser(user).then(function (resp) {});
    }
    
    

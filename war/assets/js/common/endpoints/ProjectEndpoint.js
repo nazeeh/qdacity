@@ -148,9 +148,10 @@ evaluateRevision(revId, name, docs){
   }
 
 static getProjectStats(prjID, prjType){
+	var apiMethod = gapi.client.qdacity.project.getProjectStats({'id': prjID, 'projectType': prjType});
 	  var promise = new Promise(
 		  function(resolve, reject) {
-			  gapi.client.qdacity.project.getProjectStats({'id': prjID, 'projectType': prjType}).execute(function(resp) {
+			  .execute(function(resp) {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }
@@ -164,6 +165,24 @@ static getProjectStats(prjID, prjType){
 	  
 	  return promise;
 }
+
+//static getProjectStats(prjID, prjType){
+//	  var promise = new Promise(
+//		  function(resolve, reject) {
+//			  gapi.client.qdacity.project.getProjectStats({'id': prjID, 'projectType': prjType}).execute(function(resp) {
+//			       	 if (!resp.code) {
+//			       		resolve(resp);
+//			       	 }
+//			       	 else{
+//			       		console.log(resp.code + " : " +resp.message);
+//			       		reject(resp);
+//			       	}
+//			  });
+//		  }
+//	  );
+//	  
+//	  return promise;
+//}
 
 static getProject(prjID, prjType){
 	  var promise = new Promise(
@@ -302,6 +321,25 @@ static createValidationProject(prjId, userId){
 	  var promise = new Promise(
 		  function(resolve, reject) {
 			  gapi.client.qdacity.project.createValidationProject({ 'projectID': prjId, 'userID': userId }).execute(function (resp) {
+			       	 if (!resp.code) {
+			       		resolve(resp);
+			       	 }
+			       	 else{
+			       		console.log(resp.code + " : " +resp.message);
+			       		reject(resp);
+			       	}
+			  });
+		  }
+	  );
+	  
+	  return promise;
+}
+
+static incrCodingId(prjId, prjType){
+	  
+	  var promise = new Promise(
+		  function(resolve, reject) {
+			  gapi.client.qdacity.project.incrCodingId({'id' : prjId, 'type' : prjType }).execute(function(resp) {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }

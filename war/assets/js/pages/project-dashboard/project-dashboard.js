@@ -271,8 +271,7 @@ window.loadPlatform = function (){
                         	event.preventDefault();
                         	var revId = $( this ).attr("revId");
                         	var projectEndpoint = new ProjectEndpoint();
-                        	var de = new DocumentsEndpoint();
-                        	de.getDocuments(revId, "REVISION").then(function(documents) {
+                        	DocumentsEndpoint.getDocuments(revId, "REVISION").then(function(documents) {
                         		var modal = new CustomForm('Create Validation Report');
 	                        	modal.addTextInput('title', "Report Title",'', '');
 	                        	var documentTitles = [];

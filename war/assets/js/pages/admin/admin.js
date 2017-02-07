@@ -1,6 +1,7 @@
 import Account from '../../common/Account.jsx';
 import UserList from './UserList.jsx';
 import loadGAPIs from '../../common/GAPI';
+import UserEndpoint from '../../common/endpoints/UserEndpoint';
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 
@@ -62,22 +63,10 @@ function setupUI(){
 	}
 }
 function findUsers(searchTerm){
-	gapi.client.qdacity.user.findUsers({'searchTerm': searchTerm}).execute(function (resp) {
-		if (!resp.code) {
-			if (typeof resp.items != 'undefined'){
+	UserEndpoint.findUsers( searchTerm).then(function (resp) {
 				userList.setUsers(resp.items);
-			}
-			else userList.setUsers([]);
-			
-//			resp.items = resp.items || [];
-//
-//            for (var i=0;i<resp.items.length;i++) {
-//            	userList.addUser(resp.items[i])
-//            }
-			console.log(resp.code);
-		} else {
-			userList.setUsers(new []);
-			window.alert(resp.code);
-		}
+	}).catch(function(resp){
+		userList.setUsers(new []);
+		window.alert(resp.code);
 	});
 }

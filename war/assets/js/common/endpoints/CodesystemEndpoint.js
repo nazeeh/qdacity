@@ -33,7 +33,23 @@ export default class CodesystemEndpoint {
 			  }
 		  );
 		  return promise;
-		}
+	}
+	
+	static getCodeSystem(codeSystemId){
+		  var promise = new Promise(
+			  function(resolve, reject) {
+				  gapi.client.qdacity.codesystem.getCodeSystem({'id' : codeSystemId }).execute(function(resp) {
+				       	 if (!resp.code && typeof (resp.items != 'undefined')) {
+				       		resolve(resp);
+				       	 }
+				       	 else{
+				       		reject(resp);
+				       	}
+				  });
+			  }
+		  );
+		  return promise;
+	}
 
 
 }

@@ -4,6 +4,9 @@ import FileUpload from '../../common/modals/FileUpload.js';
 import Prompt from '../../common/modals/Prompt.js';
 import 'script!../../../../components/filer/js/jquery.filer.min.js';
 
+import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
+import UploadEndpoint from '../../common/endpoints/UploadEndpoint';
+
 
 export default class DocumentsCtrl {
 	
@@ -45,15 +48,13 @@ export default class DocumentsCtrl {
   
   addDocumentToProject(title) {
 	  var _this = this;
-		var requestData = {};
-		requestData.projectID = this.projectID;
-		requestData.text = " "; // can not be empty
-		requestData.title = title;
+		var doc = {};
+		doc.projectID = this.projectID;
+		doc.text = " "; // can not be empty
+		doc.title = title;
 
-		gapi.client.qdacity.documents.insertTextDocument(requestData).execute(function(resp) {
-			if (!resp.code) {
+		DocumentsEndpoint.insertTextDocument(doc).then(function(resp) {
 				_this.view.addDocument(resp.id, resp.title, resp.text.value);
-			}
 		});
 
 	}
@@ -83,17 +84,13 @@ export default class DocumentsCtrl {
 
 	uploadFile(fileData, fileName) {
 		var _this = this;
-		var requestData = {};
-		requestData.fileName = fileName;
-		requestData.fileSize = "0";
-		requestData.project = this.projectID;
-		requestData.fileData = fileData.split(',')[1];
-		gapi.client.qdacity.upload.insertUpload(requestData).execute(function(resp) {
-			if (!resp.code) {
+		var uploadFile = {};
+		uploadFile.fileName = fileName;
+		uploadFile.fileSize = "0";
+		uploadFile.project = this.projectID;
+		uploadFile.fileData = fileData.split(',')[1];
+		UploadEndpoint.insertUpload(uploadFile).then(function(resp) {
 				_this.view.addDocument(resp.id, resp.title, resp.text.value);
-			} else {
-				console.log(resp.code + resp.message);
-			}
 		});
 	}
 	
@@ -155,10 +152,8 @@ export default class DocumentsCtrl {
 		requestData.text = text;
 		requestData.projectID = this.projectID;
 		var _this = this;
-		gapi.client.qdacity.documents.updateTextDocument(requestData).execute(function(resp) {
-			if (!resp.code) {
+		DocumentsEndpoint.updateTextDocument(requestData).then(function(resp) {
 				_this.view.updateDocument(id, title, requestData.text);
-			}
 		});
 	}
 	
@@ -167,7 +162,7 @@ export default class DocumentsCtrl {
 		var _this = this;
 		var requestData = {};
 		requestData.id = docId;
-		gapi.client.qdacity.documents.removeTextDocument(requestData).execute(function(resp) {
+		DocumentsEndpoint.removeTextDocument(requestData).then(function(resp) {
 			_this.view.removeDocument(docId);
 		});
 	}
@@ -190,32 +185,27 @@ export default class DocumentsCtrl {
 			  function(resolve, reject) {
 				  
 				  if (typeof agreement_map != 'undefined'){
-					  gapi.client.qdacity.documents.getAgreementMaps({'id' : agreement_map, 'projectType' : project_type}).execute(function(resp) {
-							if (!resp.code) {
+					  DocumentsEndpoint.getAgreementMaps(agreement_map, project_type).then(function(resp) {
 								resp.items = resp.items || [];
 								for (var i = 0; i < resp.items.length; i++) {
 									_this.view.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
-									
 								}
 								resolve();
-							} else{
-								reject();
-							}
 							$("#documentsLoadingDiv").addClass('hidden'); 
+						}).catch(function(resp){
+							reject();
+							$("#documentsLoadingDiv").addClass('hidden');
 						});
 				  }
 				  else{
-					  gapi.client.qdacity.documents.getTextDocument({'id' : project_id, 'projectType' : project_type}).execute(function(resp) {
-						if (!resp.code) {
-							resp.items = resp.items || [];
-							for (var i = 0; i < resp.items.length; i++) {
-								_this.view.addDocument(resp.items[i].id, resp.items[i].title, resp.items[i].text.value);
-								
+					  DocumentsEndpoint.getDocuments( project_id,  project_type).then(function(items) {
+							for (var i = 0; i < items.length; i++) {
+								_this.view.addDocument(items[i].id, items[i].title, items[i].text.value);
 							}
 							resolve();
-						} else{
-							reject();
-						}
+						$("#documentsLoadingDiv").addClass('hidden'); 
+					}).catch(function(resp){
+						reject();
 						$("#documentsLoadingDiv").addClass('hidden'); 
 					});
 				}

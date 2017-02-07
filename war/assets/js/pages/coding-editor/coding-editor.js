@@ -8,6 +8,10 @@ import EditorCtrl from './EditorCtrl';
 import Prompt from '../../common/modals/Prompt';
 import loadGAPIs from '../../common/GAPI';
 
+import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
+import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
+
 import $script from 'scriptjs';
 
 import Slider from 'bootstrap-slider';
@@ -152,7 +156,7 @@ var editorCtrl = {};
 	document.getElementById('btnApplyCode').onclick = function() {
 		var activeID = getActiveCode().id;
 		if (typeof activeID != 'undefined') {
-			gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type }).execute(function(resp) {
+			ProjectEndpoint.incrCodingId(project_id, project_type ).then(function(resp) {
 				var codingID = resp.maxCodingID;
 				var author = account.getProfile().getName();
 
@@ -329,16 +333,12 @@ function setupUI(){
 	//easytree.options.enableDnd = false;
 	$('#navAccount').show();
 	$('#navSignin').hide();
-	gapi.client.qdacity.project.getProject({ 'id' : project_id, 'type': project_type}).execute(function(resp) {
-		if (!resp.code) {
-			codesystem_id = resp.codesystemID;
-			setDocumentList(project_id);
-			listCodes();
-		} else {
-			handleError(resp.code);
-		}
+	ProjectEndpoint.getProject( project_id, project_type).then(function(resp) {
+		codesystem_id = resp.codesystemID;
+		setDocumentList(project_id);
+		listCodes();
+		
 		$.LoadingOverlay("hide");
-
 	});
 	}
 	else {
@@ -356,7 +356,7 @@ function splitupCoding(selection, codeID){
 				if (typeof codingID == 'undefined') codingID = anchor.parent().prev().find('coding[code_id='+codeID+']').last().attr('id'); // Case beginning of paragraph to middle of paragraph
 
 				if (typeof codingID != 'undefined'){
-					gapi.client.qdacity.project.incrCodingId({'id' : project_id, 'type' : project_type}).execute(function(resp) {
+					ProjectEndpoint.incrCodingId( project_id,project_type).then(function(resp) {
 						anchor.nextAll('coding[id='+codingID+']').attr("id", resp.maxCodingID);
 						anchor.parentsUntil('p').parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID);
 						anchor.parent().nextAll().find( 'coding[id='+codingID+']' ).attr("id", resp.maxCodingID); // Case beginning of paragraph to middle of paragraph
@@ -439,8 +439,7 @@ function setDocumentList(projectID) {
 // List Codes function that will execute the listCode call
 function listCodes() {
 	var codes = [];
-	gapi.client.qdacity.codesystem.getCodeSystem({'id' : codesystem_id }).execute(function(resp) {
-		if (!resp.code) {
+	CodesystemEndpoint.getCodeSystem( codesystem_id ).then(function(resp) {
 			// clear codesystem in easytree object
 			easytree.rebuildTree([]);
 			
@@ -473,7 +472,7 @@ function listCodes() {
 					}
 				}
 			}
-		}
+			
 		activateRootNode();
 		addCodingCountToTree();
 		$("#codesystemLoadingDiv").addClass("hidden");
@@ -493,15 +492,11 @@ function insertCode(_AuthorName, _CodeName) {
 	requestData.codesystemID = codesystem_id;
 	requestData.color = "#000000";
 
-	gapi.client.qdacity.codes.insertCode(requestData).execute(function(resp) {
-		if (!resp.code) {
-			addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry);
-			if (activeID != 'undefined') {
-				relocateNode(resp.codeID, activeID);
-				setSubCodeIDs(easytree.getNode(resp.parentID));
-			}
-		} else {
-			console.log(resp.code);
+	CodesEndpoint.insertCode(requestData).then(function(resp) {
+		addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry);
+		if (activeID != 'undefined') {
+			relocateNode(resp.codeID, activeID);
+			setSubCodeIDs(easytree.getNode(resp.parentID));
 		}
 	});
 }
@@ -519,21 +514,16 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID) {
 	requestData.codesystemID = codesystem_id;
 	requestData.parentID = getActiveCode().parentID;
 	requestData.subCodesIDs = getActiveCode().subCodesIDs;
-	gapi.client.qdacity.codes.updateCode(requestData).execute(function(resp) {
-		if (!resp.code) {
-			// Just logging to console now, you can do your check here/display
-			// message
+	CodesEndpoint.updateCode(requestData).then(function(resp) {
+			//FIXME debug output
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry);
-		}
 	});
 }
 
 function updateCodeBookEntry(codeBookEntry){
-	gapi.client.qdacity.codes.setCodeBookEntry({'codeId' : getActiveCode().dbID },codeBookEntry).execute(function(resp) {
-		if (!resp.code) {
+	CodesEndpoint.setCodeBookEntry( getActiveCode().dbID, codeBookEntry).then(function(resp) {
 			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry);
-		}
 	});
 }
 
@@ -543,11 +533,9 @@ function relocateCode(code, newParentCode) {
 //	setSubCodeIDs(newParentCode);
 //	changeParentId(code, newParentCode.id);
 	
-	gapi.client.qdacity.codes.relocateCode({	'codeId' : code.dbID , 'newParentID' : newParentCode.id}).execute(function(resp) {
-		if (!resp.code) {
+	CodesEndpoint.relocateCode(code.dbID ,newParentCode.id).then(function(resp) {
 			code.parentID = newParentCode.id;
 			console.log( "Updated logation of code:"+ resp.id + " |  "+ resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-		}
 	});
 }
 
@@ -557,18 +545,12 @@ function setSubCodeIDs(node) {
 	var _ID = node.dbID;
 	var subCodeIDs = getSubCodeIDs(node);
 	
-	gapi.client.qdacity.codes.getCode({	'id' : _ID }).execute(function(resp) {
+	CodesEndpoint.getCode(_ID).then(function(resp) {
 
-		if (!resp.code) {
-			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-		}
-		
-			resp.subCodesIDs = subCodeIDs;
+		resp.subCodesIDs = subCodeIDs;
 
-		gapi.client.qdacity.codes.updateCode(resp).execute(function(resp2) {
-			if (!resp2.code) {
+		CodesEndpoint.updateCode(resp).then(function(resp2) {
 				console.log("Updated: ID"+resp2.id + " SubCodeIDs:" + resp2.subCodesIDs);
-			}
 		});
 	});
 }
@@ -585,21 +567,13 @@ function getSubCodeIDs(node){
 }
 
 function changeParentId(code, _newParent) {
-	gapi.client.qdacity.codes.getCode({
-		'id' : code.dbID
-	}).execute(function(resp) {
-
-		if (!resp.code) {
-			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-		}
+	CodesEndpoint.getCode(code.dbID).then(function(resp) {
 		
 		resp.parentID = _newParent;
 		
-		gapi.client.qdacity.codes.updateCode(resp).execute(function(resp2) {
-			if (!resp2.code) {
-				console.log(resp2.id + ":" + resp2.author + ":" + resp2.name + ":" + resp2.subCodesIDs);
+		CodesEndpoint.updateCode(resp).then(function(resp2) {
+				console.log("Updated Code "+ resp2.id + ":" + resp2.author + ":" + resp2.name + ":" + resp2.subCodesIDs);
 				code.parentID = _newParent;
-			}
 		});
 
 	});
@@ -615,14 +589,9 @@ function deleteCode() {
 		// Build the Request Object
 		var requestData = {};
 		requestData.id = activeID;
-		console.log(requestData);
-		gapi.client.qdacity.codes.removeCode(requestData).execute(function(resp) {
-			// Just logging to console now, you can do your check here/display
-			// message
-			console.log(resp);
+		CodesEndpoint.removeCode(requestData).then(function(resp) {
 			removeAllCodings(getActiveCode().id);
 			removeNodeFromTree(getActiveCode().id);
-			
 		});
 	}
 
