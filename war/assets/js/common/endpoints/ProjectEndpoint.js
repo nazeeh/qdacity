@@ -148,10 +148,9 @@ evaluateRevision(revId, name, docs){
   }
 
 static getProjectStats(prjID, prjType){
-	var apiMethod = gapi.client.qdacity.project.getProjectStats({'id': prjID, 'projectType': prjType});
 	  var promise = new Promise(
 		  function(resolve, reject) {
-			  .execute(function(resp) {
+			  gapi.client.qdacity.project.getProjectStats({'id': prjID, 'projectType': prjType}).execute(function(resp) {
 			       	 if (!resp.code) {
 			       		resolve(resp);
 			       	 }
