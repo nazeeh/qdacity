@@ -1,5 +1,6 @@
 import DocumentsView from './DocumentsView.jsx';
 import CodingsView from './CodingsView.js';
+import MetaModelView from './MetaModelView.jsx';
 
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
@@ -427,6 +428,8 @@ function setDocumentList(projectID) {
 		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl}/>, document.getElementById('documentView'));
 		documentsCtrl = new DocumentsCtrl(documentsView, project_id);
 		codingsView = new CodingsView(editorCtrl, documentsCtrl);
+
+		ReactDOM.render(<MetaModelView/>, document.getElementById('metaModelAttrSelector'));
 	}
 	
 	documentsCtrl.setupView(project_id, project_type, report).then(function(codeName) {
