@@ -15,6 +15,7 @@
       <param-name>services</param-name>
       <param-value>com.qdacity.logs.ChangeEndpoint,com.qdacity.maintenance.MaintenanceEndpoint,com.qdacity.project.ProjectEndpoint,com.qdacity.project.codesystem.CodeEndpoint,com.qdacity.project.codesystem.CodeSystemEndpoint,com.qdacity.project.data.TextDocumentEndpoint,com.qdacity.project.metrics.ProjectStatsEndpoint,com.qdacity.project.metrics.ValidationEndpoint,com.qdacity.taskboard.TaskBoardEndpoint,com.qdacity.upload.UploadEndpoint,com.qdacity.user.UserEndpoint,com.qdacity.user.UserNotificationEndpoint</param-value>
     </init-param>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
