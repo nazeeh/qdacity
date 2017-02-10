@@ -6,6 +6,7 @@
     "test": "tests"
   },
   "dependencies": {
+    "bootstrap-slider": "^9.7.1",
     "slick-carousel": "^1.6.0"
   },
   "devDependencies": {
