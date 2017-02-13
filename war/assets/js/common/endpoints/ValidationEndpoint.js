@@ -9,6 +9,7 @@ export default class ProjectEndpoint {
 		  function(resolve, reject) {
 			  gapi.client.qdacity.validation.listReports({'projectID': projectId}).execute(function(resp) {
 			       	 if (!resp.code) {
+			       		//Hashmap with list as value
 			       		var reportsByRevision = {};
 			       		if (typeof resp.items != 'undefined'){
 				       		for (var i=0;i<resp.items.length;i++) {
