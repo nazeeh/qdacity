@@ -108,6 +108,7 @@ function settleNotification(notification) {
 function fillProjectsList() {
 	$("#project-list").empty();
 	
+	var validationPrjPromise = ProjectEndpoint.listValidationProject();
 	ProjectEndpoint.listProject().then(function (resp) {
 			resp.items = resp.items || [];
 
@@ -117,9 +118,8 @@ function fillProjectsList() {
 
 				addProjectToProjectList(project_id, project_name, 'PROJECT');
 			}
-			addValidationProjects();
 			
-			
+			validationPrjPromise.then(addValidationProjects);
 			
 			var options = {
 				valueNames: ['project_name', 'project_id'],
@@ -164,8 +164,7 @@ function attachDeleteHandler(){
 	
 }
 
-function addValidationProjects(){
-	ProjectEndpoint.listValidationProject().then(function (resp) {
+function addValidationProjects(resp){
 		resp.items = resp.items || [];
 
 		for (var i = 0; i < resp.items.length; i++) {
@@ -176,7 +175,7 @@ function addValidationProjects(){
 		}
 		
 		attachDeleteHandler(); // for both projects and validation projects
-	});
+
 }
 
 function fillNotificationList() {
