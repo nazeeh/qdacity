@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
@@ -123,6 +124,9 @@ public class CodeEndpoint {
 			if (!containsCode(code)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
+
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementID " + code.getMmElementID());
+
 			Code codeDB = mgr.getObjectById(Code.class, code.getId());
 			code.setCodeID(codeDB.getCodeID());
 			code.setCodeBookEntry(codeDB.getCodeBookEntry());

@@ -15,6 +15,9 @@ public class MetaModelRelation {
 		Long id;
 	
 	@Persistent
+	Long metaModelId;
+
+	@Persistent
 	Long src;
 	
 	@Persistent
@@ -28,6 +31,14 @@ public class MetaModelRelation {
 	
 	@Persistent
 	String cardinality;
+
+	public Long getMetaModelId() {
+		return metaModelId;
+	}
+
+	public void setMetaModelId(Long metaModelId) {
+		this.metaModelId = metaModelId;
+	}
 
 	public Long getId() {
 		return id;

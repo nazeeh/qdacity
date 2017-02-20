@@ -33,6 +33,11 @@ public class Code {
 	Long codesystemID;
 	@Persistent
 	String memo;
+	
+	//Meta model element
+	@Persistent
+	Long mmElementID;
+	
 	@Persistent(
 		defaultFetchGroup = "true",
 		dependent = "true")
@@ -118,6 +123,14 @@ public class Code {
 
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	public Long getMmElementID() {
+		return mmElementID;
+	}
+
+	public void setMmElementID(Long mmElementID) {
+		this.mmElementID = mmElementID;
 	}
 
 	public CodeBookEntry getCodeBookEntry() {
