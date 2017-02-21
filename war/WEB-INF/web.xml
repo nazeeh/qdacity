@@ -27,10 +27,16 @@
     <servlet-name>letsencrypt</servlet-name>
     <servlet-class>com.qdacity.LetsencryptServlet</servlet-class>
   </servlet>
+  
   <servlet-mapping>
     <servlet-name>letsencrypt</servlet-name>
     <url-pattern>/.well-known/acme-challenge/*</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+  <servlet-name>_ah_warmup</servlet-name>
+  <servlet-class>com.qdacity.WarmupServlet</servlet-class>
+  </servlet>
   
   <security-constraint>
         <web-resource-collection>

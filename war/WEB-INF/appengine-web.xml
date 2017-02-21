@@ -4,7 +4,9 @@
   <version>4</version>
   <ssl-enabled>true</ssl-enabled>
   <warmup-requests-enabled>true</warmup-requests-enabled>
-
+  <inbound-services>
+    <service>warmup</service>
+  </inbound-services>
   <!--
     Allows App Engine to send multiple requests to one instance in parallel:
   -->
