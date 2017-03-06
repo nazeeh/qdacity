@@ -12,7 +12,7 @@ import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 
-public class ProjectDataPreload implements DeferredTask {
+public class ProjectDataPreloader implements DeferredTask {
 
 
 	/**
@@ -24,7 +24,7 @@ public class ProjectDataPreload implements DeferredTask {
 	ProjectType projectType;
 	com.qdacity.user.User dbUser;
 
-	public ProjectDataPreload(Long projectId, ProjectType projectType) {
+	public ProjectDataPreloader(Long projectId, ProjectType projectType) {
 		super();
 		this.projectId = projectId;
 		this.projectType = projectType;

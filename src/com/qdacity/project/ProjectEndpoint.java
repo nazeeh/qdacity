@@ -143,43 +143,18 @@ public class ProjectEndpoint {
 			switch (type) {
 				case "VALIDATION":
 					project = (ValidationProject) Cache.getOrLoad(id, ValidationProject.class);
-					// project = mgr.getObjectById(ValidationProject.class, id);
-
-					java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Checking authorization for validationproject " + id);
-					Authorization.checkAuthorization((ValidationProject) project, dbUser);
-					// Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
+					Authorization.checkAuthorization((ValidationProject) project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				case "REVISION":
 
 					project = (ProjectRevision) Cache.getOrLoad(id, ProjectRevision.class);
-					// keyString = KeyFactory.createKeyString(ProjectRevision.class.toString(), id);
-					// syncCache = MemcacheServiceFactory.getMemcacheService();
-					// if (syncCache.contains(keyString)) {
-					// project = (Project) syncCache.get(keyString);
-					// } else {
-					// project = mgr.getObjectById(Project.class, id);
-					// }
-					//
-					// project = mgr.getObjectById(ProjectRevision.class, id);
-					 java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Checking authorization for validationproject " + id);
-
 					// Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				default:
 					project = (Project) Cache.getOrLoad(id, Project.class);
-					// keyString = KeyFactory.createKeyString(Project.class.toString(), id);
-					// syncCache = MemcacheServiceFactory.getMemcacheService();
-					// if (syncCache.contains(keyString)) {
-					// project = (Project) syncCache.get(keyString);
-					// } else {
-					// project = mgr.getObjectById(Project.class, id);
-					// }
-
 					// Authorization.checkAuthorization((Project)project, user);
 					break;
 			}
-
-			// Check if user is authorized
 
 		} finally {
 			mgr.close();

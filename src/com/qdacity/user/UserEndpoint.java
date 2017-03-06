@@ -34,7 +34,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.tasks.ProjectDataPreload;
+import com.qdacity.project.tasks.ProjectDataPreloader;
 import com.qdacity.taskboard.Task;
 import com.qdacity.taskboard.TaskBoard;
 
@@ -243,7 +243,7 @@ public class UserEndpoint {
 
 			// PreLoad User Data
 			if (user.getLastProjectId() != null) {
-				ProjectDataPreload task = new ProjectDataPreload(user.getLastProjectId(), user.getLastProjectType());
+				ProjectDataPreloader task = new ProjectDataPreloader(user.getLastProjectId(), user.getLastProjectType());
 				Queue queue = QueueFactory.getDefaultQueue();
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
