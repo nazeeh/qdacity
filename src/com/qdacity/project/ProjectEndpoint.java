@@ -20,9 +20,13 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.qdacity.Authorization;
+import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
@@ -32,6 +36,7 @@ import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.codesystem.CodeSystemEndpoint;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.data.TextDocumentEndpoint;
+import com.qdacity.project.tasks.LastProjectUsed;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
 
@@ -125,23 +130,51 @@ public class ProjectEndpoint {
 		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Project " + id);
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+			if (dbUser.getLastProjectId() != id) { // Check if lastProject property of user has to be updated
+				// Update User async TODO: check if actually faster than saving directly
+				LastProjectUsed task = new LastProjectUsed(dbUser, id, ProjectType.valueOf(type));
+				Queue queue = QueueFactory.getDefaultQueue();
+				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+			}
+
+			String keyString;
+			MemcacheService syncCache;
 			switch (type) {
 				case "VALIDATION":
-					project = mgr.getObjectById(ValidationProject.class, id);
+					project = (ValidationProject) Cache.getOrLoad(id, ValidationProject.class);
+					// project = mgr.getObjectById(ValidationProject.class, id);
 
 					java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Checking authorization for validationproject " + id);
 					Authorization.checkAuthorization((ValidationProject) project, dbUser);
 					// Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				case "REVISION":
-					project = mgr.getObjectById(ProjectRevision.class, id);
-					java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Checking authorization for validationproject " + id);
-					// Authorization.checkAuthorization((ValidationProject)project, dbUser);
+
+					project = (ProjectRevision) Cache.getOrLoad(id, ProjectRevision.class);
+					// keyString = KeyFactory.createKeyString(ProjectRevision.class.toString(), id);
+					// syncCache = MemcacheServiceFactory.getMemcacheService();
+					// if (syncCache.contains(keyString)) {
+					// project = (Project) syncCache.get(keyString);
+					// } else {
+					// project = mgr.getObjectById(Project.class, id);
+					// }
+					//
+					// project = mgr.getObjectById(ProjectRevision.class, id);
+					 java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Checking authorization for validationproject " + id);
 
 					// Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				default:
-					project = mgr.getObjectById(Project.class, id);
+					project = (Project) Cache.getOrLoad(id, Project.class);
+					// keyString = KeyFactory.createKeyString(Project.class.toString(), id);
+					// syncCache = MemcacheServiceFactory.getMemcacheService();
+					// if (syncCache.contains(keyString)) {
+					// project = (Project) syncCache.get(keyString);
+					// } else {
+					// project = mgr.getObjectById(Project.class, id);
+					// }
+
 					// Authorization.checkAuthorization((Project)project, user);
 					break;
 			}

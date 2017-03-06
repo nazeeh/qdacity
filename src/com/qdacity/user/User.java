@@ -1,5 +1,6 @@
 package com.qdacity.user;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -8,9 +9,16 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.qdacity.project.ProjectType;
+
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
-public class User {
+public class User implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2378677713032476995L;
+
 	@PrimaryKey
 	@Persistent(
 		valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -29,6 +37,12 @@ public class User {
 
 	@Persistent
 	Long taskBoardID;
+
+	@Persistent
+	Long lastProjectId; // Used to pre-load to cache when user signs in
+
+	@Persistent
+	ProjectType lastProjectType; // Used to pre-load to cache when user signs in
 
 	@Persistent
 	List<Long> projects;
@@ -95,6 +109,22 @@ public class User {
 
 	public void setType(UserType type) {
 		this.type = type;
+	}
+
+	public Long getLastProjectId() {
+		return lastProjectId;
+	}
+
+	public void setLastProjectId(Long lastProjectId) {
+		this.lastProjectId = lastProjectId;
+	}
+
+	public ProjectType getLastProjectType() {
+		return lastProjectType;
+	}
+
+	public void setLastProjectType(ProjectType lastProjectType) {
+		this.lastProjectType = lastProjectType;
 	}
 
 }

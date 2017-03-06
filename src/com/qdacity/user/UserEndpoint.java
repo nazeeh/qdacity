@@ -28,10 +28,13 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.tasks.ProjectDataPreload;
 import com.qdacity.taskboard.Task;
 import com.qdacity.taskboard.TaskBoard;
 
@@ -223,9 +226,9 @@ public class UserEndpoint {
 
 		} finally {
 			mgr.close();
-		}
+			}
 		return user;
-	}
+		}
 
 	@ApiMethod(
 		name = "user.getCurrentUser",
@@ -237,6 +240,13 @@ public class UserEndpoint {
 		User user = null;
 		try {
 			user = mgr.getObjectById(User.class, loggedInUser.getUserId());
+
+			// PreLoad User Data
+			if (user.getLastProjectId() != null) {
+				ProjectDataPreload task = new ProjectDataPreload(user.getLastProjectId(), user.getLastProjectType());
+				Queue queue = QueueFactory.getDefaultQueue();
+				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+			}
 
 		} finally {
 			mgr.close();
