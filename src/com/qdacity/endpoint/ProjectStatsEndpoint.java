@@ -1,4 +1,4 @@
-package com.qdacity.project.metrics;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +34,7 @@ import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.metrics.ProjectStats;
 
 @Api(
 	name = "qdacity",

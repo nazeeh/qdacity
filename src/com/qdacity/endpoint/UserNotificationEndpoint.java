@@ -1,4 +1,4 @@
-package com.qdacity.user;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +22,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.user.UserNotification;
+import com.qdacity.user.UserNotificationType;
 
 @Api(
 	name = "qdacity",

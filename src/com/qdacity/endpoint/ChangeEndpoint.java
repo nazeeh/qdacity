@@ -1,4 +1,4 @@
-package com.qdacity.logs;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +34,8 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeStats;
 
 @Api(
 	name = "qdacity",

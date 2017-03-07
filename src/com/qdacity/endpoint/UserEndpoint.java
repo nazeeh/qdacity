@@ -1,4 +1,4 @@
-package com.qdacity.user;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,6 +37,8 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
 import com.qdacity.taskboard.Task;
 import com.qdacity.taskboard.TaskBoard;
+import com.qdacity.user.User;
+import com.qdacity.user.UserType;
 
 @Api(
 	name = "qdacity",
@@ -319,7 +321,7 @@ public class UserEndpoint {
 		user.setType(UserType.USER);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (user.id != null && containsUser(user)) {
+			if (user.getId() != null && containsUser(user)) {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(user);

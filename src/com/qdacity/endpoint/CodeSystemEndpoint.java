@@ -1,4 +1,4 @@
-package com.qdacity.project.codesystem;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +28,9 @@ import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.codesystem.Code;
+import com.qdacity.project.codesystem.CodeBookEntry;
+import com.qdacity.project.codesystem.CodeSystem;
 
 @Api(
 	name = "qdacity",
@@ -237,7 +240,8 @@ public class CodeSystemEndpoint {
 		CodeSystem codesystem = null;
 		try {
 			codesystem = mgr.getObjectById(CodeSystem.class, id);
-			++codesystem.maxCodeID;
+			codesystem.setMaxCodeID(codesystem.getMaxCodeID() + 1);
+			// ++codesystem.maxCodeID;
 			mgr.makePersistent(codesystem);
 		} finally {
 			mgr.close();
@@ -341,7 +345,7 @@ public class CodeSystemEndpoint {
 			for (Code code : codes) {
 				Code cloneCode = new Code();
 				cloneCode.setCodeID(code.getCodeID());
-				cloneCode.setAuthor(code.author);
+				cloneCode.setAuthor(code.getAuthor());
 				cloneCode.setCodesystemID(cloneCodeSystem.getId());
 				cloneCode.setColor(code.getColor());
 				cloneCode.setMemo(code.getMemo());

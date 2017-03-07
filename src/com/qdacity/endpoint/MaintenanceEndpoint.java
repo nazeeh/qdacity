@@ -1,4 +1,4 @@
-package com.qdacity.maintenance;
+package com.qdacity.endpoint;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;

@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
-import com.qdacity.project.ProjectEndpoint;
-import com.qdacity.user.UserEndpoint;
-import com.qdacity.user.UserNotificationEndpoint;
+import com.qdacity.endpoint.ProjectEndpoint;
+import com.qdacity.endpoint.UserEndpoint;
+import com.qdacity.endpoint.UserNotificationEndpoint;
 
 public class WarmupServlet extends HttpServlet {
 

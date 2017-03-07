@@ -16,9 +16,9 @@ import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
+import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.DocumentResult;
-import com.qdacity.project.metrics.ValidationEndpoint;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 

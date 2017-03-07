@@ -1,4 +1,4 @@
-package com.qdacity.metamodel;
+package com.qdacity.endpoint;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +15,8 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.metamodel.MetaModelEntity;
+import com.qdacity.metamodel.MetaModelRelation;
 
 @Api(name = "qdacity",
 version = "v4",

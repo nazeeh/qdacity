@@ -1,4 +1,4 @@
-package com.qdacity.project;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +31,14 @@ import com.qdacity.Constants;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
+import com.qdacity.project.AbstractProject;
+import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
-import com.qdacity.project.codesystem.CodeSystemEndpoint;
 import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.data.TextDocumentEndpoint;
 import com.qdacity.project.tasks.LastProjectUsed;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
@@ -188,7 +191,8 @@ public class ProjectEndpoint {
 			}
 			// Check if user is authorized // FIXME Authorization
 			// Authorization.checkAuthorization(project, user);
-			++project.maxCodingID;
+			project.setMaxCodingID(project.getMaxCodingID() + 1);
+			// ++project.maxCodingID;
 		} finally {
 			mgr.close();
 		}
@@ -215,7 +219,7 @@ public class ProjectEndpoint {
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (project.id != null) {
+			if (project.getId() != null) {
 				if (containsProject(project)) {
 					throw new EntityExistsException("Object already exists");
 				}

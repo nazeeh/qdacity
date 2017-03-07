@@ -1,4 +1,4 @@
-package com.qdacity.project.codesystem;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +24,9 @@ import com.qdacity.PMF;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeType;
+import com.qdacity.project.codesystem.Code;
+import com.qdacity.project.codesystem.CodeBookEntry;
+import com.qdacity.project.codesystem.CodeSystem;
 
 @Api(
 	name = "qdacity",

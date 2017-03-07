@@ -1,4 +1,4 @@
-package com.qdacity.upload;
+package com.qdacity.endpoint;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.data.TextDocumentEndpoint;
+import com.qdacity.upload.Upload;
 
 @Api(
 	name = "qdacity",
@@ -137,7 +137,7 @@ public class UploadEndpoint {
 				}
 			}
 
-			byte[] bytes = upload.fileData.getBytes();
+			byte[] bytes = upload.getFileData().getBytes();
 
 			String html = rtfToHtml(bytes);
 

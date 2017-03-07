@@ -1,4 +1,4 @@
-package com.qdacity.project.data;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,8 +30,9 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.data.AgreementMap;
+import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
-import com.qdacity.project.metrics.ValidationEndpoint;
 import com.qdacity.project.metrics.ValidationReport;
 
 @Api(

@@ -1,4 +1,4 @@
-package com.qdacity.project.metrics;
+package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,11 +23,13 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.ValidationReport;
+import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
 import com.qdacity.project.metrics.tasks.DeferredEvaluation;
 import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
 
-;
 
 @Api(
 	name = "qdacity",
