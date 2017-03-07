@@ -25,7 +25,7 @@
   
   <servlet>
     <servlet-name>letsencrypt</servlet-name>
-    <servlet-class>com.qdacity.LetsencryptServlet</servlet-class>
+    <servlet-class>com.qdacity.servlet.LetsencryptServlet</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -35,7 +35,7 @@
   
   <servlet>
   <servlet-name>_ah_warmup</servlet-name>
-  <servlet-class>com.qdacity.WarmupServlet</servlet-class>
+  <servlet-class>com.qdacity.servlet.WarmupServlet</servlet-class>
   </servlet>
   
   <security-constraint>

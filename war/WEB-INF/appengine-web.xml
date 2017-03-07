@@ -14,7 +14,7 @@
   <automatic-scaling>
     <min-idle-instances>1</min-idle-instances>
     <min-pending-latency>30ms</min-pending-latency>
-    <max-pending-latency>automatic</max-pending-latency>
+    <max-pending-latency>2s</max-pending-latency>
     <max-concurrent-requests>50</max-concurrent-requests>
   </automatic-scaling>
   

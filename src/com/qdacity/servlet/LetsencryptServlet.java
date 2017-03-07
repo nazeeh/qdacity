@@ -1,4 +1,4 @@
-package com.qdacity;
+package com.qdacity.servlet;
 
 import java.io.IOException;
 import java.util.HashMap;

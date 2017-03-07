@@ -1,4 +1,4 @@
-package com.qdacity;
+package com.qdacity.servlet;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -9,10 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.ProjectEndpoint;
+import com.qdacity.endpoint.ProjectStatsEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.endpoint.UserNotificationEndpoint;
+import com.qdacity.endpoint.ValidationEndpoint;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.tasks.ProjectDataPreloader;
 
 public class WarmupServlet extends HttpServlet {
 
@@ -37,7 +43,13 @@ public class WarmupServlet extends HttpServlet {
 		
 		warmupProjectEndpoint(user);
 
+		warmupProjectStatsEndpoint(user);
+
 		warmupUserNotificationEndpoint(user);
+
+		warmupValidationEndpoint(user);
+
+		warmupProjectDataPreloader();
 
 		resp.setContentType("text/plain");
 		resp.getOutputStream().print("warmup finished");
@@ -45,11 +57,20 @@ public class WarmupServlet extends HttpServlet {
 		java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Warmup finished");
 	}
 
+	private void warmupProjectDataPreloader() {
+		ProjectDataPreloader task = new ProjectDataPreloader(5703572956119040L, ProjectType.PROJECT);
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+	}
+
 	private void warmupProjectEndpoint(User user) {
 		ProjectEndpoint pe = new ProjectEndpoint();
 		try {
 			pe.listProject(null, null, user);
 			pe.listValidationProject(user);
+
+			pe.listRevisions(5703572956119040L, user);
+
 		} catch (UnauthorizedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,5 +93,29 @@ public class WarmupServlet extends HttpServlet {
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
 
 		une.listUserNotification(null, null, user);
+	}
+
+	private void warmupProjectStatsEndpoint(User user) {
+		ProjectStatsEndpoint pse = new ProjectStatsEndpoint();
+
+		try {
+			pse.getProjectStats(5703572956119040L, "PROJECT", user);
+		} catch (UnauthorizedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void warmupValidationEndpoint(User user) {
+		ValidationEndpoint ve = new ValidationEndpoint();
+
+		try {
+			ve.listReports(5703572956119040L, user);
+		} catch (UnauthorizedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
