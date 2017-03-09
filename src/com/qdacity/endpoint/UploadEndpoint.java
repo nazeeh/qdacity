@@ -191,34 +191,6 @@ public class UploadEndpoint {
 		return "Error while parsing RTF";
 	}
 
-	// private String rtfToHtml2(byte[] bytes) {
-	// InputStream is = new ByteArrayInputStream(bytes);
-	// try {
-	// WordprocessingMLPackage doc = Docx4J.load(is);
-	//
-	// HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
-	//
-	// // htmlSettings.setWmlPackage(doc);
-	// // String userCSS = "html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, img,  ol, ul, li, table, caption, tbody, tfoot, thead, tr, th, td " +
-	// // "{ margin: 0; padding: 0; border: 0;}" +
-	// // "body {line-height: 1;} ";
-	// // htmlSettings.setUserCSS(userCSS);
-	//
-	// // ByteArrayOutputStream os = new ByteArrayOutputStream();
-	// //
-	// // Docx4jProperties.setProperty("docx4j.Convert.Out.HTML.OutputMethodXML", true);
-	// //
-	// // Docx4J.toHTML(htmlSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
-	// //
-	// // return os.toString();
-	//
-	//
-	// } catch (Exception e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// return "Error while parsing RTF";
-	// }
 
 	/**
 	 * This method is used for updating an existing entity. If the entity does not

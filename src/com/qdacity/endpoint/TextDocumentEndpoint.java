@@ -61,39 +61,6 @@ public class TextDocumentEndpoint {
 
 		throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all text documents
 
-		// PersistenceManager mgr = null;
-		// Cursor cursor = null;
-		// List<TextDocument> execute = null;
-		//
-		// try {
-		// mgr = getPersistenceManager();
-		// Query query = mgr.newQuery(TextDocument.class);
-		// if (cursorString != null && cursorString != "") {
-		// cursor = Cursor.fromWebSafeString(cursorString);
-		// HashMap<String, Object> extensionMap = new HashMap<String, Object>();
-		// extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-		// query.setExtensions(extensionMap);
-		// }
-		//
-		// if (limit != null) {
-		// query.setRange(0, limit);
-		// }
-		//
-		// execute = (List<TextDocument>) query.execute();
-		// cursor = JDOCursorHelper.getCursor(execute);
-		// if (cursor != null)
-		// cursorString = cursor.toWebSafeString();
-		//
-		// // Tight loop for fetching all entities from datastore and accomodate
-		// // for lazy fetch.
-		// for (TextDocument obj : execute)
-		// ;
-		// } finally {
-		// mgr.close();
-		// }
-		//
-		// return CollectionResponse.<TextDocument> builder().setItems(execute)
-		// .setNextPageToken(cursorString).build();
 	}
 
 	/**
