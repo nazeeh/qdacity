@@ -24,6 +24,14 @@ public class Cache {
 		return obj;
 	}
 
+	public static void invalidate(Long id, Class type) {
+		String keyString = KeyFactory.createKeyString(type.toString(), id);
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+
+		syncCache.delete(keyString);
+
+	}
+
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}

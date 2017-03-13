@@ -186,7 +186,7 @@ public class ProjectEndpoint {
 					project = mgr.getObjectById(ValidationProject.class, projectID);
 					break;
 				default: // PROJECT
-					project = mgr.getObjectById(Project.class, projectID);
+					project = (Project) Cache.getOrLoad(projectID, Project.class);
 					break;
 			}
 			// Check if user is authorized // FIXME Authorization
@@ -226,6 +226,7 @@ public class ProjectEndpoint {
 			}
 			project.addOwner(user.getUserId());
 			project.setRevision(0);
+			Cache.invalidate(project.getId(), Project.class);
 			mgr.makePersistent(project);
 			// Authorize User
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
@@ -259,6 +260,7 @@ public class ProjectEndpoint {
 			// if (!containsProject(project)) {
 			// throw new EntityNotFoundException("Object does not exist");
 			// }
+			Cache.invalidate(project.getId(), Project.class);
 			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
@@ -274,14 +276,13 @@ public class ProjectEndpoint {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			project = mgr.getObjectById(Project.class, projectID);
-
+			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addOwner(userID);
 			else project.addOwner(user.getUserId());
 
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 			dbUser.addProjectAuthorization(projectID);
-
+			Cache.invalidate(project.getId(), Project.class);
 			mgr.makePersistent(project);
 			mgr.makePersistent(dbUser);
 
@@ -299,11 +300,10 @@ public class ProjectEndpoint {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			project = mgr.getObjectById(Project.class, projectID);
-
+			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addCoder(userID);
 			else project.addCoder(user.getUserId());
-
+			Cache.invalidate(project.getId(), Project.class);
 			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
@@ -319,11 +319,10 @@ public class ProjectEndpoint {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			project = mgr.getObjectById(Project.class, projectID);
-
+			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addValidationCoder(userID);
 			else project.addValidationCoder(user.getUserId());
-
+			Cache.invalidate(project.getId(), Project.class);
 			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
@@ -345,9 +344,9 @@ public class ProjectEndpoint {
 			else userIdToRemove = user.getUserId();
 
 			if (projectType.equals("PROJECT")) {
-				Project project = mgr.getObjectById(Project.class, projectID);
-
+				Project project = (Project) Cache.getOrLoad(projectID, Project.class);
 				project.removeUser(userIdToRemove);
+				Cache.invalidate(project.getId(), Project.class);
 				mgr.makePersistent(project);
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
@@ -356,6 +355,7 @@ public class ProjectEndpoint {
 			} else if (projectType.equals("VALIDATION")) {
 				ValidationProject project = mgr.getObjectById(ValidationProject.class, projectID);
 				Logger.getLogger("logger").log(Level.INFO, "ValidationCoders: " + project.getValidationCoders().toString());
+				Cache.invalidate(project.getId(), ValidationProject.class);
 				project.removeValidationCoder(userIdToRemove);
 				mgr.makePersistent(project);
 				Logger.getLogger("logger").log(Level.INFO, "ValidationCoders: " + project.getValidationCoders().toString());
@@ -385,9 +385,9 @@ public class ProjectEndpoint {
 			com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
 			// Insert user into project as invited user
-			project = mgr.getObjectById(Project.class, projectID);
+			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			project.addInvitedUser(user.getUserId());
-
+			Cache.invalidate(project.getId(), Project.class);
 			mgr.makePersistent(project);
 
 			// Create notification
@@ -421,13 +421,13 @@ public class ProjectEndpoint {
 			// FIXME handle authorization
 			// FIXME handle project types differently
 			if (projectType.equals(ProjectType.PROJECT.toString())) {
-				project = mgr.getObjectById(Project.class, projectID);
+				project = (Project) Cache.getOrLoad(projectID, Project.class);
 			} else if (projectType.equals(ProjectType.VALIDATION.toString())) {
 				project = mgr.getObjectById(ValidationProject.class, projectID);
 			}
 
 			project.setDescription(description);
-
+			Cache.invalidate(project.getId(), Project.class);
 			project = mgr.makePersistent(project);
 
 		} finally {
@@ -444,7 +444,7 @@ public class ProjectEndpoint {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			project = mgr.getObjectById(Project.class, projectID);
+			project = (Project) Cache.getOrLoad(projectID, Project.class);
 
 			ProjectRevision cloneProject = new ProjectRevision(cloneProject(project, user), project.getId(), comment);
 
@@ -474,7 +474,7 @@ public class ProjectEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			projectRevision = mgr.getObjectById(ProjectRevision.class, revisionID);
-			project = mgr.getObjectById(Project.class, projectRevision.getProjectID());
+			project = (Project) Cache.getOrLoad(projectRevision.getProjectID(), Project.class);
 			// Get the inviting user
 			com.qdacity.user.User requestingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
@@ -623,7 +623,7 @@ public class ProjectEndpoint {
 	public void removeProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			Project project = mgr.getObjectById(Project.class, id);
+			Project project = (Project) Cache.getOrLoad(id, Project.class);
 			// Check if user is authorized
 			Authorization.checkAuthorization(project, user);
 
