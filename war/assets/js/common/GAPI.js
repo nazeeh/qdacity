@@ -18,7 +18,7 @@ export default function loadGAPIs(allLoadedCallback){
 			apisToLoad = 2; 
 			//Parameters are APIName,APIVersion,CallBack function,API Root
 			//gapi.client.load('qdacity', 'v1', callback, 'https://localhost:8888/_ah/api');
-			gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-app.appspot.com/_ah/api'); 
+			gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-quality-metrics.appspot.com/_ah/api'); 
 			gapi.load('auth2', callback);
 		}
 	);
