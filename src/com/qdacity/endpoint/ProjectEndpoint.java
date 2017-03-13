@@ -226,7 +226,6 @@ public class ProjectEndpoint {
 			}
 			project.addOwner(user.getUserId());
 			project.setRevision(0);
-			Cache.invalidate(project.getId(), Project.class);
 			mgr.makePersistent(project);
 			// Authorize User
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
@@ -260,7 +259,7 @@ public class ProjectEndpoint {
 			// if (!containsProject(project)) {
 			// throw new EntityNotFoundException("Object does not exist");
 			// }
-			Cache.invalidate(project.getId(), Project.class);
+			Cache.cache(project.getId(), project.getClass(), project);
 			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
@@ -282,7 +281,7 @@ public class ProjectEndpoint {
 
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 			dbUser.addProjectAuthorization(projectID);
-			Cache.invalidate(project.getId(), Project.class);
+			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 			mgr.makePersistent(dbUser);
 
@@ -303,7 +302,7 @@ public class ProjectEndpoint {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addCoder(userID);
 			else project.addCoder(user.getUserId());
-			Cache.invalidate(project.getId(), Project.class);
+			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
@@ -322,7 +321,7 @@ public class ProjectEndpoint {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addValidationCoder(userID);
 			else project.addValidationCoder(user.getUserId());
-			Cache.invalidate(project.getId(), Project.class);
+			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
 			mgr.close();
@@ -346,7 +345,7 @@ public class ProjectEndpoint {
 			if (projectType.equals("PROJECT")) {
 				Project project = (Project) Cache.getOrLoad(projectID, Project.class);
 				project.removeUser(userIdToRemove);
-				Cache.invalidate(project.getId(), Project.class);
+				Cache.cache(projectID, Project.class, project);
 				mgr.makePersistent(project);
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
@@ -355,7 +354,7 @@ public class ProjectEndpoint {
 			} else if (projectType.equals("VALIDATION")) {
 				ValidationProject project = mgr.getObjectById(ValidationProject.class, projectID);
 				Logger.getLogger("logger").log(Level.INFO, "ValidationCoders: " + project.getValidationCoders().toString());
-				Cache.invalidate(project.getId(), ValidationProject.class);
+				Cache.cache(projectID, Project.class, project);
 				project.removeValidationCoder(userIdToRemove);
 				mgr.makePersistent(project);
 				Logger.getLogger("logger").log(Level.INFO, "ValidationCoders: " + project.getValidationCoders().toString());
@@ -387,7 +386,7 @@ public class ProjectEndpoint {
 			// Insert user into project as invited user
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			project.addInvitedUser(user.getUserId());
-			Cache.invalidate(project.getId(), Project.class);
+			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 
 			// Create notification
@@ -427,7 +426,7 @@ public class ProjectEndpoint {
 			}
 
 			project.setDescription(description);
-			Cache.invalidate(project.getId(), Project.class);
+			Cache.cache(projectID, project.getClass(), project);
 			project = mgr.makePersistent(project);
 
 		} finally {

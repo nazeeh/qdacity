@@ -18,10 +18,20 @@ public class Cache {
 		if (syncCache.contains(keyString)) {
 			obj = syncCache.get(keyString);
 		} else {
-			obj = mgr.getObjectById(type, id);
+			try {
+				obj = mgr.getObjectById(type, id);
+			} finally {
+				mgr.close();
+			}
 		}
 
 		return obj;
+	}
+	
+	public static void cache(Long id, Class type, Object obj) {
+		String keyString = KeyFactory.createKeyString(type.toString(), id);
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+		syncCache.put(keyString, obj);
 	}
 
 	public static void invalidate(Long id, Class type) {
