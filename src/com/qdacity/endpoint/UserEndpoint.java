@@ -22,6 +22,8 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -238,10 +240,20 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User getCurrentUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		User user = null;
+		User user = new User();
 		try {
-			user = mgr.getObjectById(User.class, loggedInUser.getUserId());
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			Key key = KeyFactory.createKey(User.class.toString(), loggedInUser.getUserId());
+			Entity userEntity = datastore.get(key);
+
+			user.setEmail((String) userEntity.getProperty("email"));
+			user.setGivenName((String) userEntity.getProperty("givenName"));
+			user.setId(userEntity.getKey().getName());
+			user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
+			user.setProjects((List<Long>) userEntity.getProperty("projects"));
+			user.setSurName((String) userEntity.getProperty("surName"));
+			user.setType((UserType) userEntity.getProperty("type"));
 
 			// PreLoad User Data
 			if (user.getLastProjectId() != null) {
@@ -250,8 +262,9 @@ public class UserEndpoint {
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
 
-		} finally {
-			mgr.close();
+		} catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return user;
 	}
