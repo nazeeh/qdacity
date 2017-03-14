@@ -20,6 +20,7 @@ public class Cache {
 		} else {
 			try {
 				obj = mgr.getObjectById(type, id);
+				syncCache.put(keyString, obj);
 			} finally {
 				mgr.close();
 			}
