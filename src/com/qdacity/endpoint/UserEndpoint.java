@@ -33,6 +33,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
+import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
@@ -189,17 +190,13 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User getUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		User user = null;
-		try {
-			user = mgr.getObjectById(User.class, id);
+
+		User user = (User) Cache.getOrLoad(id, User.class);
 
 			// Check if user is authorized
 			Authorization.checkAuthorization(user, loggedInUser);
 
-		} finally {
-			mgr.close();
-		}
+
 		return user;
 	}
 
@@ -212,8 +209,8 @@ public class UserEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		User user = null;
 		try {
-			user = mgr.getObjectById(User.class, id);
 
+			user = (User) Cache.getOrLoad(id, User.class);
 			// FIXME Check if user is authorized
 			// Authorization.checkAuthorization(user, loggedInUser);
 
@@ -228,6 +225,9 @@ public class UserEndpoint {
 					break;
 			}
 
+			mgr.makePersistent(user);
+			Cache.cache(id, User.class, user);
+
 		} finally {
 			mgr.close();
 			}
@@ -240,20 +240,26 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User getCurrentUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		User user = new User();
+		User user = null;
 		try {
 
-			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			Key key = KeyFactory.createKey(User.class.toString(), loggedInUser.getUserId());
-			Entity userEntity = datastore.get(key);
+			user = (User) Cache.get(loggedInUser.getUserId(), User.class);
 
-			user.setEmail((String) userEntity.getProperty("email"));
-			user.setGivenName((String) userEntity.getProperty("givenName"));
-			user.setId(userEntity.getKey().getName());
-			user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
-			user.setProjects((List<Long>) userEntity.getProperty("projects"));
-			user.setSurName((String) userEntity.getProperty("surName"));
-			user.setType((UserType) userEntity.getProperty("type"));
+			if (user == null) {
+				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+				Key key = KeyFactory.createKey(User.class.toString(), loggedInUser.getUserId());
+				Entity userEntity = datastore.get(key);
+
+				user.setEmail((String) userEntity.getProperty("email"));
+				user.setGivenName((String) userEntity.getProperty("givenName"));
+				user.setId(userEntity.getKey().getName());
+				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
+				user.setProjects((List<Long>) userEntity.getProperty("projects"));
+				user.setSurName((String) userEntity.getProperty("surName"));
+				user.setType((UserType) userEntity.getProperty("type"));
+
+				Cache.cache(user.getId(), User.class, user);
+			}
 
 			// PreLoad User Data
 			if (user.getLastProjectId() != null) {
@@ -282,7 +288,7 @@ public class UserEndpoint {
 		List<TaskBoard> boards = new ArrayList<TaskBoard>();;
 		TaskBoard board = null;
 		try {
-			user = mgr.getObjectById(User.class, loggedInUser.getUserId());
+			user = (User) Cache.getOrLoad(loggedInUser.getUserId(), User.class);
 			Query query = mgr.newQuery(TaskBoard.class);
 			query.setFilter("id == " + user.getTaskBoardId());
 
@@ -369,6 +375,7 @@ public class UserEndpoint {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 			mgr.makePersistent(user);
+			Cache.cache(user.getId(), User.class, user);
 		} finally {
 			mgr.close();
 		}
@@ -390,7 +397,7 @@ public class UserEndpoint {
 	public void removeUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, id);
+			User user = (User) Cache.getOrLoad(id, User.class);
 
 			// Check if user is authorized
 			Authorization.checkAuthorization(user, loggedInUser);
