@@ -246,17 +246,19 @@ public class UserEndpoint {
 			user = (User) Cache.get(loggedInUser.getUserId(), User.class);
 
 			if (user == null) {
+
 				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Key key = KeyFactory.createKey(User.class.toString(), loggedInUser.getUserId());
+				Key key = KeyFactory.createKey("User", loggedInUser.getUserId());
 				Entity userEntity = datastore.get(key);
 
+				user = new User();
 				user.setEmail((String) userEntity.getProperty("email"));
 				user.setGivenName((String) userEntity.getProperty("givenName"));
 				user.setId(userEntity.getKey().getName());
 				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
 				user.setProjects((List<Long>) userEntity.getProperty("projects"));
 				user.setSurName((String) userEntity.getProperty("surName"));
-				user.setType((UserType) userEntity.getProperty("type"));
+				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
 
 				Cache.cache(user.getId(), User.class, user);
 			}
