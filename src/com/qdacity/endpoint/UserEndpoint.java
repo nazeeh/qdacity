@@ -36,6 +36,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
 import com.qdacity.taskboard.Task;
@@ -259,7 +260,8 @@ public class UserEndpoint {
 				user.setProjects((List<Long>) userEntity.getProperty("projects"));
 				user.setSurName((String) userEntity.getProperty("surName"));
 				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
-
+				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
+				user.setLastProjectType((ProjectType) userEntity.getProperty("lastProjectType"));
 				Cache.cache(user.getId(), User.class, user);
 			}
 
