@@ -256,12 +256,11 @@ public class UserEndpoint {
 				user.setEmail((String) userEntity.getProperty("email"));
 				user.setGivenName((String) userEntity.getProperty("givenName"));
 				user.setId(userEntity.getKey().getName());
-				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
 				user.setProjects((List<Long>) userEntity.getProperty("projects"));
 				user.setSurName((String) userEntity.getProperty("surName"));
 				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
 				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
-				user.setLastProjectType((ProjectType) userEntity.getProperty("lastProjectType"));
+				user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
 				Cache.cache(user.getId(), User.class, user);
 			}
 
