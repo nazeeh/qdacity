@@ -11,13 +11,14 @@
     Allows App Engine to send multiple requests to one instance in parallel:
   -->
   <threadsafe>true</threadsafe>
+  <!-- Commented out to prevent costs while testing
   <automatic-scaling>
     <min-idle-instances>1</min-idle-instances>
     <min-pending-latency>30ms</min-pending-latency>
     <max-pending-latency>2s</max-pending-latency>
     <max-concurrent-requests>50</max-concurrent-requests>
   </automatic-scaling>
-  
+  -->
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
