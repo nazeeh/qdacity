@@ -32,26 +32,27 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.Agreement;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.ParagraphAgreement;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 
 public class DeferredEvaluation implements DeferredTask {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 8021773396438274981L;
 	Long revisionID;
 	String name;
 	String docIDsString;
 	User user;
+        private final EvaluationMethod evaluationMethod;
 
-	public DeferredEvaluation(Long revisionID, String name, String docIDsString, User user) {
+	public DeferredEvaluation(Long revisionID, String name, String docIDsString, String evaluationMethod, User user) {
 		super();
 		this.revisionID = revisionID;
 		this.name = name;
 		this.docIDsString = docIDsString;
 		this.user = user;
+                this.evaluationMethod = EvaluationMethod.fromString(evaluationMethod);
 	}
 
 	@Override
