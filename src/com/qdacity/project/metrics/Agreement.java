@@ -69,7 +69,9 @@ public class Agreement {
 		return docResults;
 	}
 
+        
 	static public ParagraphAgreement calculateFMeasure(Integer truePositives, Integer falsePositives, Integer falseNegatives) {
+                //See https://en.wikipedia.org/wiki/F1_score
 		ParagraphAgreement agreement = new ParagraphAgreement();
 		double recall = truePositives.doubleValue() / (falseNegatives + truePositives);
 		if ((falseNegatives + truePositives) == 0) recall = 1;
