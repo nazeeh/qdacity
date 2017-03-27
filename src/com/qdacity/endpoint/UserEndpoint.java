@@ -260,20 +260,22 @@ public class UserEndpoint {
 				user.setSurName((String) userEntity.getProperty("surName"));
 				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
 				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
-				user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
+				Object lastPrjType = userEntity.getProperty("lastProjectType");
+				if (lastPrjType != null) user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
 				Cache.cache(user.getId(), User.class, user);
 			}
 
 			// PreLoad User Data
-			if (user.getLastProjectId() != null) {
+			if (user.getLastProjectId() != null && user.getLastProjectType() != null) {
 				ProjectDataPreloader task = new ProjectDataPreloader(user.getLastProjectId(), user.getLastProjectType());
-				Queue queue = QueueFactory.getDefaultQueue();
+				Queue queue = QueueFactory.getQueue("PreloadQueue");
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
 
 		} catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new UnauthorizedException("User is not registered");
+
 		}
 		return user;
 	}
