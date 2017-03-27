@@ -9,6 +9,7 @@ export default class MetaModelView extends React.Component{
 	    this.setActiveElement = this.setActiveElement.bind(this); 
 	    
 	    this.state = {elements: [], selected: -1};
+	    
 	    this.init();
 	  }
 	  
@@ -45,6 +46,16 @@ export default class MetaModelView extends React.Component{
 	  	return this.state.selected; 
 	  }
 	  
+	  getElement(pId){
+	  	var idFilter = function (el) { 
+    			return el.getId() === pId;
+		}
+		
+		var element = this.state.elements.find(idFilter);
+		
+		return element;
+	  }
+	  
 	  selectGeneralizations(elementID){
 	  	var _this = this;
 	  	this.state.elements.forEach(function(el){
@@ -74,7 +85,13 @@ export default class MetaModelView extends React.Component{
   			
 			var entitiesById = {};
 			for (var i = 0; i < entities.length; i++) {
+				
+				
 				var element = new MetaModelElement(entities[i].id, entities[i].name);
+				if (_this.props.filter == entities[i].name ){
+					 _this.setState({selected: element.id});
+					 element.setSelected(true);
+				}
 				entitiesById[element.id] = element;
 			}
 			
@@ -111,8 +128,9 @@ export default class MetaModelView extends React.Component{
     	var firstLevelSelected = -1;
     	
     	var firstLevel = this.state.elements.map(function(mmElement) {
-    		if (mmElement.generalizations.length == 0)
+    		if (mmElement.generalizations.length == 0 && (typeof _this.props.filter == "undefined" || _this.props.filter == mmElement.name))
     		{
+    			
 	          	var attributes ={
 	          		value:mmElement.id,
 	          		onClick:_this.setActiveElement.bind(null,mmElement)

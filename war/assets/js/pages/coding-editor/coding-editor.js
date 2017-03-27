@@ -1,4 +1,5 @@
 import DocumentsView from './DocumentsView.jsx';
+import CodeRelationsView from './CodeRelationsView.jsx';
 import CodingsView from './CodingsView.js';
 import MetaModelView from './MetaModelView.jsx';
 
@@ -47,6 +48,7 @@ var codingsView;
 
 var metaModelView;
 
+var codeRelationsView
 
 var documentsView;
 var documentsCtrl = {};
@@ -190,17 +192,17 @@ var editorCtrl = {};
 	}
 	
 	document.getElementById('btnCodeSave').onclick = function() {
-		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementID);
+		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementID, getActiveCode().relations);
 
 	}
 	
 	document.getElementById('btnCodeMemoSave').onclick = function() {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementID);
+		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementID, getActiveCode().relations);
 
 	}
 	
 	document.getElementById('btnSaveMetaModelAttr').onclick = function() {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, metaModelView.getActiveElementId());
+		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, metaModelView.getActiveElementId(), getActiveCode().relations);
 
 	}
 	
@@ -410,6 +412,7 @@ function showCodingView() {
 	
 	fillCodingTable(activeID);
 	fillPropertiesView(activeID);
+	fillCodeRelationsView();
 	resizeHandler();
 }
 
@@ -436,6 +439,12 @@ function fillPropertiesView(codeID) {
 	});
 }
 
+function fillCodeRelationsView(){
+	var code = getActiveCode();
+	
+	codeRelationsView.setRelations(code.relations, easytree, getActiveCode().dbID);
+}
+
 function setDocumentList(projectID) {
 	if (typeof documentsView == 'undefined'){
 		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl}/>, document.getElementById('documentView'));
@@ -443,6 +452,9 @@ function setDocumentList(projectID) {
 		codingsView = new CodingsView(editorCtrl, documentsCtrl);
 
 		metaModelView = ReactDOM.render(<MetaModelView/>, document.getElementById('metaModelAttrSelector'));
+		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView}/>, document.getElementById('codeRelationsView'));
+		
+		
 	}
 	
 	documentsCtrl.setupView(project_id, project_type, report).then(function(codeName) {
@@ -470,7 +482,7 @@ function listCodes() {
 			}
 			
 			for (var i = 0; i < codes.length; i++) {
-				addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo, codes[i].codeBookEntry, codes[i].mmElementID);
+				addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo, codes[i].codeBookEntry, codes[i].mmElementID, codes[i].relations);
 			}
 
 			for (var i = 0; i < codes.length; i++) {
@@ -508,7 +520,7 @@ function insertCode(_AuthorName, _CodeName) {
 	requestData.color = "#000000";
 
 	CodesEndpoint.insertCode(requestData).then(function(resp) {
-		addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry, resp.mmElementID);
+		addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry, resp.mmElementID, resp.relations);
 		if (activeID != 'undefined') {
 			relocateNode(resp.codeID, activeID);
 			setSubCodeIDs(easytree.getNode(resp.parentID));
@@ -517,7 +529,7 @@ function insertCode(_AuthorName, _CodeName) {
 }
 
 // Update Code function
-function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID, _mmElementID) {
+function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID, _mmElementID, _relations) {
 	// Build the Request Object
 	var requestData = {};
 	requestData.id = _ID;
@@ -530,16 +542,17 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID, _mm
 	requestData.parentID = getActiveCode().parentID;
 	requestData.subCodesIDs = getActiveCode().subCodesIDs;
 	requestData.mmElementID = _mmElementID;
+	requestData.relations = _relations;
 	CodesEndpoint.updateCode(requestData).then(function(resp) {
 			//FIXME debug output
 			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry, resp.mmElementID);
+			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry, resp.mmElementID, resp.relations);
 	});
 }
 
 function updateCodeBookEntry(codeBookEntry){
 	CodesEndpoint.setCodeBookEntry( getActiveCode().dbID, codeBookEntry).then(function(resp) {
-			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry, resp.mmElementID);
+			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry, resp.mmElementID, resp.relations);
 	});
 }
 
@@ -613,7 +626,7 @@ function deleteCode() {
 
 }
 
-function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo, codeBookEntry, mmElementID) {
+function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo, codeBookEntry, mmElementID, relations) {
 	var sourceNode = {};
 	sourceNode.text = name;
 	sourceNode.isFolder = true;
@@ -627,6 +640,7 @@ function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, mem
 	sourceNode.codeBookEntry = codeBookEntry;
 	sourceNode.mmElementID = mmElementID;
 	sourceNode.subCodesIDs = subCodesIDs;
+	sourceNode.relations = relations;
 	if (typeof subCodesIDs == 'undefined') sourceNode.subCodesIDs = [];
 	if (memo == undefined) memo = "";
 	sourceNode.memo = memo;
@@ -696,7 +710,7 @@ function relocateNode(id, target) {
 	rebuildTree();
 }
 
-function updateNode(id, name, author, color, memo, codeBookEntry, mmElementID) {
+function updateNode(id, name, author, color, memo, codeBookEntry, mmElementID, relations) {
 
 	var sourceNode = easytree.getNode(id);
 	sourceNode.text = name;
@@ -705,7 +719,7 @@ function updateNode(id, name, author, color, memo, codeBookEntry, mmElementID) {
 	sourceNode.memo = memo;
 	sourceNode.codeBookEntry = codeBookEntry;
 	sourceNode.mmElementID = mmElementID;
-	
+	sourceNode.relations = relations;
 	rebuildTree();
 }
 
@@ -738,6 +752,7 @@ function getActiveCode() {
 		code.memo = activeNode.memo;
 		code.codeBookEntry = activeNode.codeBookEntry;
 		code.mmElementID = activeNode.mmElementID;
+		code.relations = activeNode.relations;
 	}
 	return code;
 
@@ -784,6 +799,7 @@ function codesystemStateChanged(nodes, nodesJson) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);
 			metaModelView.setActiveId(getActiveCode().mmElementID);
+			codeRelationsView.setRelations(getActiveCode().relations, easytree, getActiveCode().dbID);
 			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
 			if (cbEditorDef != undefined){
 				var codeBookEntry = getActiveCode().codeBookEntry

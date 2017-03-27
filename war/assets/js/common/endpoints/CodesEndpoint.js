@@ -34,4 +34,14 @@ export default class CodesEndpoint {
 		var apiMethod = gapi.client.qdacity.codes.getCode({'id' : codeId });
 		return Promisizer.makePromise(apiMethod);
 	}
+	
+	static addRelationship(srcId, dstId, mmElementId){
+		var apiMethod = gapi.client.qdacity.codes.addRelationship({'sourceCode' : srcId}, {'codeId': dstId, 'mmElementId': mmElementId});
+		return Promisizer.makePromise(apiMethod);
+	}
+	
+	static removeRelationship(codeId, relationshipId){
+		var apiMethod = gapi.client.qdacity.codes.removeRelationship({'codeId' : codeId, 'relationshipId': relationshipId});
+		return Promisizer.makePromise(apiMethod);
+	}
 }

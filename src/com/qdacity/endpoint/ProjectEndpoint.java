@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
@@ -622,7 +623,8 @@ public class ProjectEndpoint {
 	public void removeProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			Project project = (Project) Cache.getOrLoad(id, Project.class);
+			Project project = (Project) mgr.getObjectById(Project.class, id);
+
 			// Check if user is authorized
 			Authorization.checkAuthorization(project, user);
 
@@ -637,19 +639,27 @@ public class ProjectEndpoint {
 			}
 
 			Long codeSystemID = project.getCodesystemID();
+			Query q;
 
 			// Delete code system
-			CodeSystem codeSystem = mgr.getObjectById(CodeSystem.class, codeSystemID);
+			PersistenceManager mgr2 = getPersistenceManager();
+			try {
 
-			Query q;
-			q = mgr.newQuery(Code.class, " codesystemID  == :codeSystemID");
-			// q.deletePersistentAll();
-			Map<String, Long> codesParam = new HashMap<String, Long>();
-			codesParam.put("codeSystemID", codeSystem.getId());
-			List<Code> codes = (List<Code>) q.executeWithMap(codesParam);
-			mgr.deletePersistentAll(codes);
+				CodeSystem codeSystem = mgr2.getObjectById(CodeSystem.class, codeSystemID);
 
-			mgr.deletePersistent(codeSystem);
+				q = mgr2.newQuery(Code.class, " codesystemID  == :codeSystemID");
+				// q.deletePersistentAll();
+				Map<String, Long> codesParam = new HashMap<String, Long>();
+				codesParam.put("codeSystemID", codeSystem.getId());
+				List<Code> codes = (List<Code>) q.executeWithMap(codesParam);
+				mgr2.deletePersistentAll(codes);
+
+				mgr2.deletePersistent(codeSystem);
+			} catch (JDOObjectNotFoundException e) {
+				java.util.logging.Logger.getLogger("logger").log(Level.WARNING, " Could not delete codesystem " + codeSystemID);
+			} finally {
+				mgr2.close();
+			}
 
 			// Delete all documents
 
