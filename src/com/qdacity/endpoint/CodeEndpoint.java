@@ -177,6 +177,11 @@ public class CodeEndpoint {
 
 			code.addRelation(realtion);
 			mgr.makePersistent(code);
+
+			List<CodeRelation> relationships = code.getRelations();
+			for (CodeRelation codeRelation : relationships) {
+				codeRelation.getCodeId();
+			}
 		} finally {
 			mgr.close();
 		}

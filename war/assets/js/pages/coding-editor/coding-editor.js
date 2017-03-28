@@ -442,7 +442,7 @@ function fillPropertiesView(codeID) {
 function fillCodeRelationsView(){
 	var code = getActiveCode();
 	
-	codeRelationsView.setRelations(code.relations, easytree, getActiveCode().dbID);
+	codeRelationsView.setRelations(code.relations, easytree, getActiveCode().dbID, getActiveCode().id);
 }
 
 function setDocumentList(projectID) {
@@ -799,7 +799,7 @@ function codesystemStateChanged(nodes, nodesJson) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);
 			metaModelView.setActiveId(getActiveCode().mmElementID);
-			codeRelationsView.setRelations(getActiveCode().relations, easytree, getActiveCode().dbID);
+			codeRelationsView.setRelations(getActiveCode().relations, easytree, getActiveCode().dbID, getActiveCode().id);
 			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
 			if (cbEditorDef != undefined){
 				var codeBookEntry = getActiveCode().codeBookEntry

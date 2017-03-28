@@ -41,14 +41,16 @@ constructor(props) {
   	this.setState({sourceCode: this.state.sourceCode});
   }
   
-  setRelations(relations, codesytem, pSourceId){
+  setRelations(relations, codesytem, pSourceId, pNodeId){
   	var _this = this;
   	this.state.sourceCode = pSourceId;
   	this.codesystem = codesytem;
   	this.state.relationships = [];
-	this.setState({relationships: this.state.relationships, sourceCode: this.state.sourceCode});
-	  
-	  
+  	this.state.nodeId = pNodeId;
+	this.setState({relationships: this.state.relationships, sourceCode: this.state.sourceCode, nodeId : this.state.nodeId });
+	
+    if (typeof relations == 'undefined') return;
+  
   	relations.forEach(function (relation) {
   		var mmElement = _this.props.metaModelView.getElement(relation.mmElementId);
   		var code = codesytem.getNode(relation.codeId);
@@ -93,8 +95,9 @@ constructor(props) {
 		var a = 1;
 		CodesEndpoint.addRelationship(_this.state.sourceCode, data.codeId , data.mmElementId).then(function(resp) {
 			var mmElementName = _this.props.metaModelView.getElement(data.mmElementId).name;
-			var codeName = _this.codesystem.getNode(data.codeId).text;
-			_this.addRelationship(_this.state.sourceCode, codeName, data.mmElementId, mmElementName);
+			var code = _this.codesystem.getNode(_this.state.nodeId);
+			code.relations = resp.relations;
+			_this.codesystem.rebuildTree();
 		});
 	});
   }
