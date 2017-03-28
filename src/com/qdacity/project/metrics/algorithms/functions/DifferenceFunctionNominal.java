@@ -9,9 +9,9 @@ public class DifferenceFunctionNominal implements DifferenceFunction {
     @Override
     public double compute(int v, int v_dash) {
         if (v == v_dash) {
-            return 0;
+            return 0.0;
         } else {
-            return 1;
+            return 1.0;
         }
 
     }

@@ -1,6 +1,8 @@
 package com.qdacity.project.metrics.algorithms;
 
+import com.qdacity.project.metrics.algorithms.datastructures.CoincidenceMatrix;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataToCoincidenceMatrixConverter;
 import com.qdacity.project.metrics.algorithms.functions.DifferenceFunction;
 import com.qdacity.project.metrics.algorithms.functions.PermutationFunction;
 
@@ -11,64 +13,68 @@ import com.qdacity.project.metrics.algorithms.functions.PermutationFunction;
  */
 public class KrippendorffsAlphaCoefficient {
 
-    private int n; //the total number of pairable elements
-    private DifferenceFunction diffFunction;
-    private int R; //possible responses an observer can give.
-    //TODO
+    private final int n; //the total number of pairable elements
+    private final DifferenceFunction diffFunction;
+    private final int R; //possible responses an observer can give.
+    private final CoincidenceMatrix cMatrix;
+    private final ReliabilityData reliabilityData;
+
+    public KrippendorffsAlphaCoefficient(DifferenceFunction diffFunction, ReliabilityData reliabilityData, int numberOfAvailableCodes) {
+        this.diffFunction = diffFunction;
+        this.reliabilityData = reliabilityData;
+        this.R = numberOfAvailableCodes;
+        this.cMatrix = ReliabilityDataToCoincidenceMatrixConverter.convert(reliabilityData, numberOfAvailableCodes);
+        this.n = cMatrix.getTotalPairableElements();
+    }
 
     /**
      * Computes Krippendorff's Alpha TODO
      *
-     * @param reliabilityData the data we want to compute the alpha on.
      * @return the result alpha for the given reliabilityData
      */
-    public double compute(ReliabilityData reliabilityData) {
-        //TODO reliabilityData zu Coincidece Matrix convertieren.
-        //n=reliabilityData.getTotalPairableElements();
-        // Formulas see Krippendorff's Paper or: https://en.wikipedia.org/wiki/Krippendorff%27s_alpha
+    public double compute() {
+        // Formulas see e.g: https://en.wikipedia.org/wiki/Krippendorff%27s_alpha
         // alpha = 1 - ( D_o / D_e )
-        return 1 - (computeObservedDisagreement(reliabilityData) / computeDisagreementExpectedByChance());
+        return 1.0 - (computeObservedDisagreement() / computeDisagreementExpectedByChance());
     }
 
-    private double computeObservedDisagreement(ReliabilityData reliabilityData) {
-        double inversedPermutationAcummulated = 0;
-        double diffFunctionResults = 0;
-        for (int c = 0; c < R; c++) {
-            for (int k = 0; k < R; k++) {
+    private double computeObservedDisagreement() {
+        double sumsOverDiffFunctionAndPermutation = 0;
+        for (int c = 1; c <= R; c++) {
+            for (int k = 1; k <= R; k++) {
                 double sumPermutation = 0;
-                for (int u = 0; u < reliabilityData.getAmountUnits(); u++) {
+                for (int u = 1; u <= reliabilityData.getAmountUnits(); u++) {
                     int m_u = reliabilityData.getNumberOfItemsInUnit(u);
-                    sumPermutation
-                            += m_u
-                            * reliabilityData.get(c, k)
-                            / //should be n_cku number of ( c , k ) {\displaystyle (c,k)} {\displaystyle (c,k)} pairs in unit u {\displaystyle u} u  TODO???
-                            PermutationFunction.compute(m_u, 2);
+                    if (m_u != 0 && c != k) {
+                        sumPermutation
+                                += (double) m_u
+                                * (double) cMatrix.get(c, k)
+                                / PermutationFunction.compute(m_u, 2);
+                    }
                 }
-                diffFunctionResults += (diffFunction.compute(c, k) * sumPermutation);
+                sumsOverDiffFunctionAndPermutation += (diffFunction.compute(c, k) * sumPermutation);
             }
         }
-        return 1 / n * diffFunctionResults * inversedPermutationAcummulated;
+        return 1.0 / n * sumsOverDiffFunctionAndPermutation;
 
     }
 
     private double computeDisagreementExpectedByChance() {
         double diffFunctionResults = 0;
-        for (int c = 0; c < R; c++) {
-            for (int k = 0; k < R; k++) {
+        for (int c = 1; c <= R; c++) {
+            for (int k = 1; k <= R; k++) {
                 diffFunctionResults += diffFunction.compute(c, k) * pairsOf(c, k);
-
             }
         }
-        return 1 / PermutationFunction.compute(n, 2) * diffFunctionResults;
+        return 1.0 / PermutationFunction.compute(n, 2) * diffFunctionResults;
     }
 
-    private int pairsOf(int c, int k) {
+    private double pairsOf(int c, int k) {
         if (c != k) {
-            //TODO ???
+            return cMatrix.getFrequencyOfValue(c) * cMatrix.getFrequencyOfValue(k);
         } else {
-            //TODO ???
+            return cMatrix.getFrequencyOfValue(c) * (cMatrix.getFrequencyOfValue(c) - 1);
         }
-        return 1;
     }
 
 }

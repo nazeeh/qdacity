@@ -23,7 +23,7 @@ public class ReliabilityDataToCoincidenceMatrixConverterTest {
         System.out.println("=== COINCIDENCE MATRIX ===");
         printMatrix(cMatrix);
         for (int value = 1; value <= cMatrix.getX(); value++) {
-            System.out.println("Frequency: " + cMatrix.getFrequencyOfValue(value));
+            System.out.println("Value "+value+" frequency: " + cMatrix.getFrequencyOfValue(value));
         }
         System.out.println("Total Pairable Elements: " + cMatrix.getTotalPairableElements());
 
