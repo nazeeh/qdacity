@@ -20,7 +20,7 @@ export default class ProjectEndpoint {
 	}
 	
 	static removeUser(prjId, prjType){
-		  var apiMethod = gapi.client.qdacity.project.removeUser({ 'projectID': prjID, 'projectType': prjType });
+		  var apiMethod = gapi.client.qdacity.project.removeUser({ 'projectID': prjId, 'projectType': prjType });
 		  return Promisizer.makePromise(apiMethod);
 	}
  
