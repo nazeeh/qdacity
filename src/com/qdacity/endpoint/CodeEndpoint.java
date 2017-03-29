@@ -203,6 +203,11 @@ public class CodeEndpoint {
 
 			code.removeRelation(relationId);
 			mgr.makePersistent(code);
+
+			List<CodeRelation> relationships = code.getRelations();
+			for (CodeRelation codeRelation : relationships) {
+				codeRelation.getCodeId();
+			}
 		} finally {
 			mgr.close();
 		}

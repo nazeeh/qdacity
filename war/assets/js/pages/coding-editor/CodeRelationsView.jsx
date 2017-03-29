@@ -106,6 +106,9 @@ constructor(props) {
   	var _this = this;
   	CodesEndpoint.removeRelationship(_this.state.sourceCode, relationshipId).then(function(resp) {
 			_this.removeRelationship(relationshipId);
+			var code = _this.codesystem.getNode(_this.state.nodeId);
+			code.relations = resp.relations;
+			_this.codesystem.rebuildTree();
 	});
   }
 
