@@ -39,9 +39,7 @@ var report;
 var max_coding_id;
  
 var codeMemoEditor;
-var cbEditorDef;
-var cbEditorWhen;
-var cbEditorWhenNot;
+var cbEditor = {def:{},when:{},whenNot:{}};
 
 var account;
 var codingsView;
@@ -209,9 +207,9 @@ var editorCtrl = {};
 	// FIXME possibly move to CodingsView
 	document.getElementById('btnCodeBookEntrySave').onclick = function() {
 		var codeBookEntry = {};
-		codeBookEntry.definition = cbEditorDef.getHTML();
-		codeBookEntry.whenToUse = cbEditorWhen.getHTML();
-		codeBookEntry.whenNotToUse = cbEditorWhenNot.getHTML();
+		codeBookEntry.definition = cbEditor.def.getHTML();
+		codeBookEntry.whenToUse = cbEditor.when.getHTML();
+		codeBookEntry.whenNotToUse = cbEditor.whenNot.getHTML();
 		updateCodeBookEntry(codeBookEntry);
 	}
 	
@@ -247,47 +245,27 @@ function createCodeMemoEditor(){
 
 function createCodeBookEditor(){
 	
-	var cbDefFrame = document.getElementById('cbEditorDef');
-	cbDefFrame.onload = function(event) {
-		var codeBookEntry = getActiveCode().codeBookEntry;
-		
-			var cbDefFrame = document.getElementById('cbEditorDef');
-			var doc = cbDefFrame.contentDocument; // FIXME use "this"?
-
-			// Create Squire instance
-			cbEditorDef = new Squire(doc);
-		if (typeof codeBookEntry != 'undefined'){
-			cbEditorDef.setHTML(codeBookEntry.definition);
-		}
-	}
+	initializeCodeBookEditor('cbEditorDef',  cbEditor, 'def' , 'definition');
 	
-	// FIXE Refactor for less code replication
-	var cbWhenFrame = document.getElementById('cbEditorWhen');
-	cbWhenFrame.onload = function(event) {
-		var codeBookEntry = getActiveCode().codeBookEntry;
-		
-		var cbWhenFrame = document.getElementById('cbEditorWhen');
-		var doc = cbWhenFrame.contentDocument;
-
-		// Create Squire instance
-		cbEditorWhen = new Squire(doc);
-		
-		if (typeof codeBookEntry != 'undefined'){
-			cbEditorWhen.setHTML(codeBookEntry.whenToUse);
-		}
-	  }
+	initializeCodeBookEditor('cbEditorWhen',  cbEditor, 'when', 'whenToUse');
 	
-	var cbWhenNotFrame = document.getElementById('cbEditorWhenNot');
+	initializeCodeBookEditor('cbEditorWhenNot',  cbEditor, 'whenNot', 'whenNotToUse');
+	
+}
+
+
+function initializeCodeBookEditor(pEditorId, pEditor, pEditorProp, pEntryProp){
+	var cbWhenNotFrame = document.getElementById(pEditorId);
 	cbWhenNotFrame.onload = function(event) {
 		var codeBookEntry = getActiveCode().codeBookEntry;
 		
-		var cbWhenNotFrame = document.getElementById('cbEditorWhenNot');
+		var cbWhenNotFrame = document.getElementById(pEditorId);
 		var doc = cbWhenNotFrame.contentDocument;
 
 		// Create Squire instance
-		cbEditorWhenNot = new Squire(doc);
+		pEditor[pEditorProp] = new Squire(doc);
 		if (typeof codeBookEntry != 'undefined'){
-			cbEditorWhenNot.setHTML(codeBookEntry.whenNotToUse);
+			pEditor[pEditorProp].setHTML(codeBookEntry[pEntryProp]);
 		}
 	  }
 }
@@ -804,11 +782,11 @@ function codesystemStateChanged(nodes, nodesJson) {
 			metaModelView.setActiveId(getActiveCode().mmElementID);
 			codeRelationsView.setRelations(getActiveCode().relations, easytree, getActiveCode().dbID, getActiveCode().id);
 			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
-			if (cbEditorDef != undefined){
+			if (cbEditor.def != undefined){
 				var codeBookEntry = getActiveCode().codeBookEntry
-				cbEditorDef.setHTML(codeBookEntry.definition);
-				cbEditorWhen.setHTML(codeBookEntry.whenToUse);
-				cbEditorWhenNot.setHTML(codeBookEntry.whenNotToUse);
+				cbEditor.def.setHTML(codeBookEntry.definition);
+				cbEditor.when.setHTML(codeBookEntry.whenToUse);
+				cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
 			}
 		}
 	} else {
