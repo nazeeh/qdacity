@@ -21,7 +21,7 @@ export default class CodesEndpoint {
 	}
 	
 	static setCodeBookEntry(codeId, codebookEntry){
-		var apiMethod = gapi.client.qdacity.codes.setCodeBookEntry({'codeId' : getActiveCode().dbID },codeBookEntry);
+		var apiMethod = gapi.client.qdacity.codes.setCodeBookEntry({'codeId' : codeId },codebookEntry);
 		return Promisizer.makePromise(apiMethod);
 	}
 	

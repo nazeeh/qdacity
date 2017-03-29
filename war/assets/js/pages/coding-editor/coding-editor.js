@@ -250,12 +250,13 @@ function createCodeBookEditor(){
 	var cbDefFrame = document.getElementById('cbEditorDef');
 	cbDefFrame.onload = function(event) {
 		var codeBookEntry = getActiveCode().codeBookEntry;
-		if (typeof codebookEntry != 'undefined'){
+		
 			var cbDefFrame = document.getElementById('cbEditorDef');
 			var doc = cbDefFrame.contentDocument; // FIXME use "this"?
 
 			// Create Squire instance
 			cbEditorDef = new Squire(doc);
+		if (typeof codeBookEntry != 'undefined'){
 			cbEditorDef.setHTML(codeBookEntry.definition);
 		}
 	}
@@ -264,13 +265,14 @@ function createCodeBookEditor(){
 	var cbWhenFrame = document.getElementById('cbEditorWhen');
 	cbWhenFrame.onload = function(event) {
 		var codeBookEntry = getActiveCode().codeBookEntry;
-		if (typeof codebookEntry != 'undefined'){
-			var cbWhenFrame = document.getElementById('cbEditorWhen');
-			var doc = cbWhenFrame.contentDocument;
-	
-			// Create Squire instance
-			cbEditorWhen = new Squire(doc);
-			
+		
+		var cbWhenFrame = document.getElementById('cbEditorWhen');
+		var doc = cbWhenFrame.contentDocument;
+
+		// Create Squire instance
+		cbEditorWhen = new Squire(doc);
+		
+		if (typeof codeBookEntry != 'undefined'){
 			cbEditorWhen.setHTML(codeBookEntry.whenToUse);
 		}
 	  }
@@ -278,12 +280,13 @@ function createCodeBookEditor(){
 	var cbWhenNotFrame = document.getElementById('cbEditorWhenNot');
 	cbWhenNotFrame.onload = function(event) {
 		var codeBookEntry = getActiveCode().codeBookEntry;
-		if (typeof codebookEntry != 'undefined'){
-			var cbWhenNotFrame = document.getElementById('cbEditorWhenNot');
-			var doc = cbWhenNotFrame.contentDocument;
-	
-			// Create Squire instance
-			cbEditorWhenNot = new Squire(doc);
+		
+		var cbWhenNotFrame = document.getElementById('cbEditorWhenNot');
+		var doc = cbWhenNotFrame.contentDocument;
+
+		// Create Squire instance
+		cbEditorWhenNot = new Squire(doc);
+		if (typeof codeBookEntry != 'undefined'){
 			cbEditorWhenNot.setHTML(codeBookEntry.whenNotToUse);
 		}
 	  }
