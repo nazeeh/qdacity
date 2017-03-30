@@ -1,9 +1,10 @@
 
 
 export default class MetaModelElement{
-	constructor(elementId, elementName) {
+	constructor(elementId, elementName, type) {
 		  this.id = elementId;
 		  this.name = elementName;
+		  this.type = type;
 		  this.generalizations = [];
 		  this.specializations = [];
 		  this.selected = false;

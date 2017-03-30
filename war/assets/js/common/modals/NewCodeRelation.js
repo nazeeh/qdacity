@@ -46,7 +46,7 @@ export default class NewCodeRelation extends VexModal {
 			 			}
 			 		});
 			 		
-			 		_this.mmRelationshipsView = ReactDOM.render(<MetaModelView filter={"Relationship"}/>, document.getElementById('mmRelationships'));
+			 		_this.mmRelationshipsView = ReactDOM.render(<MetaModelView filter={"RELATIONSHIP"}/>, document.getElementById('mmRelationships'));
 			 		
 			 		_this.easytree = $('#easytreeNewCode').easytree({
 			 			enableDnd : false,

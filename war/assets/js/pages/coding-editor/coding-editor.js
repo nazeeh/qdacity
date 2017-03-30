@@ -432,7 +432,7 @@ function setDocumentList(projectID) {
 		documentsCtrl = new DocumentsCtrl(documentsView, project_id);
 		codingsView = new CodingsView(editorCtrl, documentsCtrl);
 
-		metaModelView = ReactDOM.render(<MetaModelView/>, document.getElementById('metaModelAttrSelector'));
+		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
 		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView}/>, document.getElementById('codeRelationsView'));
 		
 		

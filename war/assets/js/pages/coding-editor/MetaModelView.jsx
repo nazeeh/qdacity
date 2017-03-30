@@ -87,7 +87,7 @@ export default class MetaModelView extends React.Component{
 			for (var i = 0; i < entities.length; i++) {
 				
 				
-				var element = new MetaModelElement(entities[i].id, entities[i].name);
+				var element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type);
 				if (_this.props.filter == entities[i].name ){
 					 _this.setState({selected: element.id});
 					 element.setSelected(true);
@@ -128,7 +128,7 @@ export default class MetaModelView extends React.Component{
     	var firstLevelSelected = -1;
     	
     	var firstLevel = this.state.elements.map(function(mmElement) {
-    		if (mmElement.generalizations.length == 0 && (typeof _this.props.filter == "undefined" || _this.props.filter == mmElement.name))
+    		if (mmElement.generalizations.length == 0 && (typeof _this.props.filter == "undefined" || _this.props.filter == mmElement.type))
     		{
     			
 	          	var attributes ={
