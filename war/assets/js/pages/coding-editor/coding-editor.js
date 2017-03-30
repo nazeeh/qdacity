@@ -322,12 +322,6 @@ function setupUI(){
 	if (account.isSignedIn()){
 	var profile = account.getProfile();
 	
-//	easytree = $('#easytree-section').easytree({
-//		enableDnd : false,
-//		dropped : dropped,
-//		stateChanged : codesystemStateChanged
-//	});
-	//easytree.options.enableDnd = false;
 	$('#navAccount').show();
 	$('#navSignin').hide();
 	ProjectEndpoint.getProject( project_id, project_type).then(function(resp) {
@@ -454,11 +448,8 @@ function listCodes() {
 			
 			
 			resp.items = resp.items || [];
-			//var result = "";
 
 			for (var i = 0; i < resp.items.length; i++) {
-				//result = result + resp.items[i].name + "..." + "<b>" + resp.items[i].author + "</b>" + "[" + resp.items[i].id + "]" + "   {" + resp.items[i].subCodesIDs + "}" + "<br/>";
-
 				codes.push(resp.items[i]);
 			}
 			
@@ -525,9 +516,8 @@ function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID, _mm
 	requestData.mmElementID = _mmElementID;
 	requestData.relations = _relations;
 	CodesEndpoint.updateCode(requestData).then(function(resp) {
-			//FIXME debug output
-			console.log(resp.id + ":" + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
-			updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry, resp.mmElementID, resp.relations);
+
+	updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry, resp.mmElementID, resp.relations);
 	});
 }
 
@@ -539,10 +529,6 @@ function updateCodeBookEntry(codeBookEntry){
 
 
 function relocateCode(code, newParentCode) {
-//	setSubCodeIDs(easytree.getNode(code.parentID));
-//	setSubCodeIDs(newParentCode);
-//	changeParentId(code, newParentCode.id);
-	
 	CodesEndpoint.relocateCode(code.dbID ,newParentCode.id).then(function(resp) {
 			code.parentID = newParentCode.id;
 			console.log( "Updated logation of code:"+ resp.id + " |  "+ resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
