@@ -282,9 +282,11 @@ public class ProjectEndpoint {
 
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 			dbUser.addProjectAuthorization(projectID);
-			Cache.cache(projectID, Project.class, project);
+
 			mgr.makePersistent(project);
+			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(dbUser);
+			Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
 
 		} finally {
 			mgr.close();
