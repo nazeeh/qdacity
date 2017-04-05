@@ -5,7 +5,7 @@ package com.qdacity.project.metrics.algorithms.datastructures;
  * KrippenDorfsAlphaCoefficient
  *
  */
-public class ReliabilityData extends KrippendorffsDataMatrix {
+public class ReliabilityData extends RatersDataMatrix {
 
     //According to https://en.wikipedia.org/wiki/Krippendorff%27s_alpha#Reliability_data
     public ReliabilityData(int units, int coder) {

@@ -1,7 +1,7 @@
 package com.qdacity.project.metrics;
 
 public enum EvaluationMethod {
-    INTERCODER_AGREEMENT,
+    F_MEASURE_PARAGRAPH,
     INTERCODER_AGREEMENT_PARAGRAPH, //Already implemented by Andreas
     THEORETICAL_SATURATION,
     COMPLETENESS_CODING_PARADIGM,
@@ -10,7 +10,7 @@ public enum EvaluationMethod {
 
     /**
      * returns an Objekt of this Type matching the given String. If it does not
-     * match to any, always INTERCODER_AGREEMENT is returned as default.
+     * match to any, always F_MEASURE_PARAGRAPH is returned as default.
      *
      * @param evalMethod such as "intercoder-agreement",
      * "intercoder-agreement-paragraph", "theoretical-saturation", "krippendorffs-alpha",
@@ -19,8 +19,8 @@ public enum EvaluationMethod {
      */
     public static EvaluationMethod fromString(String evalMethod) {
         switch (evalMethod) {
-            case "intercoder-agreement":
-                return EvaluationMethod.INTERCODER_AGREEMENT;
+            case "f-measure-paragraph":
+                return EvaluationMethod.F_MEASURE_PARAGRAPH; //FMeasure Paragraph? TODO
             case "intercoder-agreement-paragraph":
                 return EvaluationMethod.INTERCODER_AGREEMENT_PARAGRAPH;
             case "theoretical-saturation":
@@ -32,7 +32,7 @@ public enum EvaluationMethod {
             case "cohens-cappa":
                 return EvaluationMethod.COHENS_CAPPA;
             default:
-                return EvaluationMethod.INTERCODER_AGREEMENT;
+                return EvaluationMethod.F_MEASURE_PARAGRAPH;
 
         }
     }

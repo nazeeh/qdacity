@@ -5,7 +5,7 @@ package com.qdacity.project.metrics.algorithms.datastructures;
  *
  * @author ms
  */
-public class CoincidenceMatrix extends KrippendorffsDataMatrix {
+public class CoincidenceMatrix extends RatersDataMatrix {
 
     public CoincidenceMatrix(int v) {
         super(v, v);

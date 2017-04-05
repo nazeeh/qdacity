@@ -21,6 +21,7 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.Agreement;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.ParagraphAgreement;
 import com.qdacity.project.metrics.ValidationResult;
 
@@ -35,14 +36,16 @@ public class DeferredValPrjEvaluation implements DeferredTask {
 	List<Long> docIDs;
 	Long reportID;
 	List<Long> orignalDocIDs;
+        private final EvaluationMethod evaluationMethod;
 
-	public DeferredValPrjEvaluation(ValidationProject result, List<Long> docIDs, List<Long> orignalDocIDs, Long reportID, User user) {
+	public DeferredValPrjEvaluation(ValidationProject result, List<Long> docIDs, List<Long> orignalDocIDs, Long reportID, EvaluationMethod evalMethod, User user) {
 		super();
 		this.validationProject = result;
 		this.user = user;
 		this.docIDs = docIDs; // FIXME dont need anymore, because only list of relevant textdocumentIDs is passed?
 		this.orignalDocIDs = orignalDocIDs;
 		this.reportID = reportID;
+                this.evaluationMethod = evalMethod;
 	}
 
 	@Override
