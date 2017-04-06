@@ -2,47 +2,47 @@ import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTabl
 import 'script!../../../../components/Easytabs/jquery.easytabs.js';
 
 export default class CodingsView {
-	
+
 	constructor(editorCtrl, documentsCtrl) {
 		this.editorCtrl = editorCtrl;
 		this.documentsCtrl = documentsCtrl;
-		
+
 		$("#codeTabs").easytabs({
-			animate : true,
-			animationSpeed : 100,
-			panelActiveClass : "active-content-div",
-			defaultTab : "span#defaultCodeTab",
-			tabs : "> div > span",
-			updateHash : false
+			animate: true,
+			animationSpeed: 100,
+			panelActiveClass: "active-content-div",
+			defaultTab: "span#defaultCodeTab",
+			tabs: "> div > span",
+			updateHash: false
 		});
-		
+
 		var dataSet = [];
 		var table = $('#example').dataTable({
-			"iDisplayLength" : 7,
-			"bLengthChange" : false,
-			"data" : dataSet,
-			"autoWidth" : false,
-			"columnDefs" : [ {
-				"width" : "5%"
+			"iDisplayLength": 7,
+			"bLengthChange": false,
+			"data": dataSet,
+			"autoWidth": false,
+			"columnDefs": [{
+				"width": "5%"
 			}, {
-				"width" : "20%"
+				"width": "20%"
 			}, {
-				"width" : "20%"
-			} ],
-			"columns" : [ {
-				"title" : "ID",
-				"width" : "5%",
+				"width": "20%"
+			}],
+			"columns": [{
+				"title": "ID",
+				"width": "5%",
 			}, {
-				"title" : "Document",
-				"width" : "20%"
+				"title": "Document",
+				"width": "20%"
 			}, {
-				"title" : "Author",
-				"width" : "20%"
-			} ]
+				"title": "Author",
+				"width": "20%"
+			}]
 
 		});
 		var _this = this;
-		$('#example tbody').on('click', 'tr', function() {
+		$('#example tbody').on('click', 'tr', function () {
 			if ($(this).hasClass('selected')) {
 				$(this).removeClass('selected');
 			} else {
@@ -56,20 +56,20 @@ export default class CodingsView {
 
 			}
 		});
-	  }
+	}
 
 	fillCodingTable(codeID, documents) {
-		var table = $( '#example' ).DataTable();
+		var table = $('#example').DataTable();
 
 		table.clear();
 
 		var codings = [];
-		
-		for ( var i in documents) {
+
+		for (var i in documents) {
 			var doc = documents[i];
 			var elements = doc.text;
 			var found = $('coding', elements);
-			var foundArray = $('coding[code_id=\'' + codeID + '\']', elements).map(function() {
+			var foundArray = $('coding[code_id=\'' + codeID + '\']', elements).map(function () {
 				var tmp = {};
 				tmp.id = $(this).attr('id');
 				tmp.code_id = $(this).attr('code_id');
@@ -83,11 +83,11 @@ export default class CodingsView {
 			for (var j = 0; j < foundArray.length; j++) {
 				if ($.inArray(foundArray[j].id, idsAdded) != -1)
 					continue;
-				table.row.add([ foundArray[j].id, doc.title, foundArray[j].author ]);
+				table.row.add([foundArray[j].id, doc.title, foundArray[j].author]);
 				idsAdded.push(foundArray[j].id);
 			}
 		}
-		
+
 		table.draw();
 	}
 }

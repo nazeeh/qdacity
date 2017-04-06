@@ -9,71 +9,71 @@ import UploadEndpoint from '../../common/endpoints/UploadEndpoint';
 
 
 export default class DocumentsCtrl {
-	
-  constructor(documentsView, projectID) {
-	  this.view = documentsView;
-	  this.projectID = projectID;
-	  this.addDocument = this.addDocument.bind(this);
-	  
-	  this.bindDomElements();
-  }
 
-  addDocument(){
-	  var _this = this;
-	  var decider = new BinaryDecider('Empty Document or Upload?', 'New Text Document', 'Upload Documents' );
-	  decider.showModal().then(function(value){
-		  if (value == 'optionA') _this.addEmptyDocument();
-		  else _this.addUploadDocuments();
-	  });
+	constructor(documentsView, projectID) {
+		this.view = documentsView;
+		this.projectID = projectID;
+		this.addDocument = this.addDocument.bind(this);
+
+		this.bindDomElements();
 	}
-  
-  addEmptyDocument(){
-	  var _this = this;
-	  var prompt = new Prompt('Give your document a name', 'Document Name');
-		prompt.showModal().then(function(docTitle) {
+
+	addDocument() {
+		var _this = this;
+		var decider = new BinaryDecider('Empty Document or Upload?', 'New Text Document', 'Upload Documents');
+		decider.showModal().then(function (value) {
+			if (value == 'optionA') _this.addEmptyDocument();
+			else _this.addUploadDocuments();
+		});
+	}
+
+	addEmptyDocument() {
+		var _this = this;
+		var prompt = new Prompt('Give your document a name', 'Document Name');
+		prompt.showModal().then(function (docTitle) {
 			_this.addDocumentToProject(docTitle);
 		});
 	}
-  
-  addUploadDocuments(){
-	  var _this = this;
-	  
-	  var dialog = new FileUpload('Select a date and color.');
-	  
-	  dialog.showModal().then(function(files) {
-		  _this.uploadDocuments(files);
+
+	addUploadDocuments() {
+		var _this = this;
+
+		var dialog = new FileUpload('Select a date and color.');
+
+		dialog.showModal().then(function (files) {
+			_this.uploadDocuments(files);
 		});
 	}
-  
-  
-  addDocumentToProject(title) {
-	  var _this = this;
+
+
+	addDocumentToProject(title) {
+		var _this = this;
 		var doc = {};
 		doc.projectID = this.projectID;
 		doc.text = " "; // can not be empty
 		doc.title = title;
 
-		DocumentsEndpoint.insertTextDocument(doc).then(function(resp) {
-				_this.view.addDocument(resp.id, resp.title, resp.text.value);
+		DocumentsEndpoint.insertTextDocument(doc).then(function (resp) {
+			_this.view.addDocument(resp.id, resp.title, resp.text.value);
 		});
 
 	}
-  
-  readAndUpload(file) {
+
+	readAndUpload(file) {
 		var _this = this;
-		
+
 		var reader = new FileReader();
 
-		reader.onload = function(e) {
+		reader.onload = function (e) {
 			_this.uploadFile(reader.result, file.name);
 
 		}
 
 		reader.readAsDataURL(file);
-		
+
 	}
-  
-  uploadDocuments(files) {
+
+	uploadDocuments(files) {
 		var _this = this;
 		for (var i = 0; i < files.length; i++) {
 			var file = files[i];
@@ -89,14 +89,14 @@ export default class DocumentsCtrl {
 		uploadFile.fileSize = "0";
 		uploadFile.project = this.projectID;
 		uploadFile.fileData = fileData.split(',')[1];
-		UploadEndpoint.insertUpload(uploadFile).then(function(resp) {
-				_this.view.addDocument(resp.id, resp.title, resp.text.value);
+		UploadEndpoint.insertUpload(uploadFile).then(function (resp) {
+			_this.view.addDocument(resp.id, resp.title, resp.text.value);
 		});
 	}
-	
-	setDocumentWithCoding(codingID){
+
+	setDocumentWithCoding(codingID) {
 		var documents = this.view.getDocuments();
-		for ( var i in documents) {
+		for (var i in documents) {
 			var doc = documents[i];
 			var elements = doc.text;
 
@@ -104,7 +104,7 @@ export default class DocumentsCtrl {
 			if (foundArray.length > 0) {
 				this.view.setActiveDocument(doc.id);
 			}
-			
+
 		}
 	}
 
@@ -126,95 +126,102 @@ export default class DocumentsCtrl {
 		}
 
 		// write the ArrayBuffer to a blob, and you're done
-		var blob = new Blob([ ab ], {
-			type : mimeString
+		var blob = new Blob([ab], {
+			type: mimeString
 		});
 		window.alert("bytestring : " + byteString);
 		return byteString;
 	}
-	
+
 	changeTitle() {
 		var doc = this.view.getActiveDocument();
 		var title = prompt("New name for document \"" + doc.title + "\"", "Title");
 		this.changeDocumentData(doc.id, title, doc.text);
 	}
-	
-	saveCurrentDoc(text){
+
+	saveCurrentDoc(text) {
 		var doc = this.view.getActiveDocument();
-		this.changeDocumentData(doc.id,doc.title,text);
+		this.changeDocumentData(doc.id, doc.title, text);
 	}
-	
+
 	changeDocumentData(id, title, text) {
 
 		var requestData = {};
-		requestData.id = id; 
+		requestData.id = id;
 		requestData.title = title;
 		requestData.text = text;
 		requestData.projectID = this.projectID;
 		var _this = this;
-		DocumentsEndpoint.updateTextDocument(requestData).then(function(resp) {
-				_this.view.updateDocument(id, title, requestData.text);
+		DocumentsEndpoint.updateTextDocument(requestData).then(function (resp) {
+			_this.view.updateDocument(id, title, requestData.text);
 		});
 	}
-	
+
 	removeDocumentFromProject() {
 		var docId = this.view.getActiveDocumentId();
 		var _this = this;
 		var requestData = {};
 		requestData.id = docId;
-		DocumentsEndpoint.removeTextDocument(requestData).then(function(resp) {
+		DocumentsEndpoint.removeTextDocument(requestData).then(function (resp) {
 			_this.view.removeDocument(docId);
 		});
 	}
-	
-	bindDomElements(){
+
+	bindDomElements() {
 		var _this = this;
-		$('#btnRemoveDoc').click(function(){_this.removeDocumentFromProject();});
-		$('#btnRemoveDoc').tooltipster({content : $('<span>Remove Document</span>')});
-		
-		$('#btnUpdateDoc').click(function() {_this.changeTitle();});
-		$('#btnUpdateDoc').tooltipster({content : $('<span>Rename Document</span>')});
-		
+		$('#btnRemoveDoc').click(function () {
+			_this.removeDocumentFromProject();
+		});
+		$('#btnRemoveDoc').tooltipster({
+			content: $('<span>Remove Document</span>')
+		});
+
+		$('#btnUpdateDoc').click(function () {
+			_this.changeTitle();
+		});
+		$('#btnUpdateDoc').tooltipster({
+			content: $('<span>Rename Document</span>')
+		});
+
 		$("#btnInsertDoc").click(this.addDocument);
-		$('#btnInsertDoc').tooltipster({content : $('<span>New Document</span>')});
+		$('#btnInsertDoc').tooltipster({
+			content: $('<span>New Document</span>')
+		});
 	}
-	
-	setupView(project_id, project_type, agreement_map){
+
+	setupView(project_id, project_type, agreement_map) {
 		var _this = this;
-		  var promise = new Promise( 
-			  function(resolve, reject) {
-				  
-				  if (typeof agreement_map != 'undefined'){
-					  DocumentsEndpoint.getAgreementMaps(agreement_map, project_type).then(function(resp) {
-								resp.items = resp.items || [];
-								for (var i = 0; i < resp.items.length; i++) {
-									_this.view.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
-								}
-								resolve();
-							$("#documentsLoadingDiv").addClass('hidden'); 
-						}).catch(function(resp){
-							reject();
-							$("#documentsLoadingDiv").addClass('hidden');
-						});
-				  }
-				  else{
-					  DocumentsEndpoint.getDocuments( project_id,  project_type).then(function(items) {
-							for (var i = 0; i < items.length; i++) {
-								_this.view.addDocument(items[i].id, items[i].title, items[i].text.value);
-							}
-							resolve();
-						$("#documentsLoadingDiv").addClass('hidden'); 
-					}).catch(function(resp){
+		var promise = new Promise(
+			function (resolve, reject) {
+
+				if (typeof agreement_map != 'undefined') {
+					DocumentsEndpoint.getAgreementMaps(agreement_map, project_type).then(function (resp) {
+						resp.items = resp.items || [];
+						for (var i = 0; i < resp.items.length; i++) {
+							_this.view.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
+						}
+						resolve();
+						$("#documentsLoadingDiv").addClass('hidden');
+					}).catch(function (resp) {
 						reject();
-						$("#documentsLoadingDiv").addClass('hidden'); 
+						$("#documentsLoadingDiv").addClass('hidden');
+					});
+				} else {
+					DocumentsEndpoint.getDocuments(project_id, project_type).then(function (items) {
+						for (var i = 0; i < items.length; i++) {
+							_this.view.addDocument(items[i].id, items[i].title, items[i].text.value);
+						}
+						resolve();
+						$("#documentsLoadingDiv").addClass('hidden');
+					}).catch(function (resp) {
+						reject();
+						$("#documentsLoadingDiv").addClass('hidden');
 					});
 				}
-					
-				}
 
-		  );
-		  return promise;
-	  }  
+			}
+
+		);
+		return promise;
+	}
 }
-
- 
