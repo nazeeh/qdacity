@@ -1,5 +1,3 @@
-package test;
-
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 
 public class TestableReliabilityData extends ReliabilityData {

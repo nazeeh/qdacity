@@ -1,5 +1,3 @@
-package test;
-
 import com.qdacity.project.metrics.algorithms.datastructures.CoincidenceMatrix;
 
 public class TestableCoincidenceMatrix extends CoincidenceMatrix {
