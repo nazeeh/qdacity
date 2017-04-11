@@ -1,4 +1,4 @@
-package com.qdacity.project.metrics.tasks;
+package com.qdacity.project.metrics.tasks.algorithms;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +23,7 @@ import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ParagraphAgreement;
 import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.tasks.DeferredDocResults;
 
 public class DeferredFMeasureEvaluation implements DeferredTask {
 

@@ -1,5 +1,6 @@
 package com.qdacity.project.metrics.tasks;
 
+import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
 import com.google.api.server.spi.response.CollectionResponse;
 import java.util.ArrayList;
 import java.util.Collection;
