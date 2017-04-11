@@ -29,6 +29,7 @@ import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
 import com.qdacity.project.metrics.tasks.DeferredEvaluation;
 import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
+import javax.annotation.Nullable;
 
 
 @Api(
@@ -161,9 +162,9 @@ public class ValidationEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, User user) throws UnauthorizedException {
+	public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
 
-		DeferredEvaluation task = new DeferredEvaluation(revisionID, name, docIDsString, evaluationMethod, user);
+		DeferredEvaluation task = new DeferredEvaluation(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
 		// Set instance variables etc as you wish
 		Queue queue = QueueFactory.getDefaultQueue();
 		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));

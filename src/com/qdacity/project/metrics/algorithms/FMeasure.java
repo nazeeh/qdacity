@@ -1,4 +1,4 @@
-package com.qdacity.project.metrics;
+package com.qdacity.project.metrics.algorithms;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +13,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.ParagraphAgreement;
 
-public class Agreement {
+public class FMeasure {
 	static public DocumentResult calculateParagraphAgreement(TextDocument original, TextDocument recoded) {
 		DocumentResult docResults = new DocumentResult();
 		docResults.setDocumentID(recoded.getId());

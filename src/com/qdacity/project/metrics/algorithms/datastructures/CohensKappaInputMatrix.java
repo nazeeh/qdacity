@@ -1,9 +1,5 @@
 package com.qdacity.project.metrics.algorithms.datastructures;
 
-/**
- *
- *
- */
 public class CohensKappaInputMatrix extends RatersDataMatrix {
 
     public CohensKappaInputMatrix(int categories) {

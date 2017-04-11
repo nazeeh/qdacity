@@ -7,7 +7,7 @@ import com.qdacity.project.metrics.algorithms.datastructures.converter.Reliabili
 /**
  * An implementation for the Krippendorff's Alpha Coefficient TODO Using
  * variable names as given in original formulas see, e.g.
- * https://en.wikipedia.org/wiki/Krippendorff%27s_alpha
+ * <a>https://en.wikipedia.org/wiki/Krippendorff%27s_alpha</a>
  */
 public class KrippendorffsAlphaCoefficient {
 
