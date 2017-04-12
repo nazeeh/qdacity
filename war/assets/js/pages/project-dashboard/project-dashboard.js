@@ -277,10 +277,16 @@ window.loadPlatform = function (){
 	                        	var documentTitles = [];
 	                        	
 	                        	modal.addCheckBoxes('docs', documents);
+                                        
+                                        //TODO should not be hardcoded here
+                                        //var methods = ["f-measure", "krippendorffs-alpha"];
+                                        //var units = ["paragraph", "sentence"];
+                                        
+                                        
 	                        	
 	                        	modal.showModal().then(function(data) {
 	                        		var selectedDocs = [];
-		                          	projectEndpoint.evaluateRevision(revId, data.title, data.docs)
+		                          	projectEndpoint.evaluateRevision(revId, data.title, data.docs, "f-measure", "paragraph") //TODO
 	                          		.then(
 	                          	        function(val) {
 	                          	        	setRevisionHistory();
@@ -416,7 +422,8 @@ window.loadPlatform = function (){
                     	  valueNames: [ 'user_name', 'user_id' ]
                     };
 
-                    var projectList = new List('user-section', options);            });
+                    var projectList = new List('user-section', options);
+            });
         }
 
         //FIXME Obsolete for now

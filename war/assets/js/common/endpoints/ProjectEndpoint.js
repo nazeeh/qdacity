@@ -40,8 +40,8 @@ export default class ProjectEndpoint {
   }
   
   //FIXME move to validationEndpoint
-evaluateRevision(revId, name, docs){
-	var apiMethod = gapi.client.qdacity.validation.evaluateRevision({'revisionID': revId, 'name': name, 'docs': docs});
+evaluateRevision(revId, name, docs, method, unit){
+	var apiMethod = gapi.client.qdacity.validation.evaluateRevision({'revisionID': revId, 'name': name, 'docs': docs, 'method': method, 'unit' : unit});
 	return Promisizer.makePromise(apiMethod);
   }
 
