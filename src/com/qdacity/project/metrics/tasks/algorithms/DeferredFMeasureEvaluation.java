@@ -84,7 +84,6 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	ParagraphAgreement totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
 	valResult.setParagraphAgreement(totalAgreement);
-
     }
 
 }

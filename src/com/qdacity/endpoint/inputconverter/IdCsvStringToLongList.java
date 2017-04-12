@@ -9,11 +9,15 @@ public class IdCsvStringToLongList {
     private final static String SPLIT_REGEX = "\\s*,\\s*";
 
     public static List<Long> convert(String idString) {
-	List<String> idArr = Arrays.asList(idString.split(SPLIT_REGEX));
-	List<Long> idList = new ArrayList<Long>();
-	for (String string : idArr) {
-	    idList.add(Long.parseLong(string));
+	if (idString != null) {
+	    List<String> idArr = Arrays.asList(idString.split(SPLIT_REGEX));
+	    List<Long> idList = new ArrayList<>();
+	    for (String string : idArr) {
+		idList.add(Long.parseLong(string));
+	    }
+	    return idList;
+	} else {
+	    return new ArrayList<>();
 	}
-	return idList;
     }
 }

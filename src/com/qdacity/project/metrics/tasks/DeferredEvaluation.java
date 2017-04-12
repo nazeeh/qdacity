@@ -251,9 +251,13 @@ public class DeferredEvaluation implements DeferredTask {
 	report.setParagraphAgreement(avgReportAgreement);
     }
 
-    //TODO als singleton?
+    private PersistenceManager pm = null;
+
     private PersistenceManager getPersistenceManager() {
-	return PMF.get().getPersistenceManager();
+	if (this.pm == null) {
+	    this.pm = PMF.get().getPersistenceManager();
+	}
+	return this.pm;
     }
 
     /**
