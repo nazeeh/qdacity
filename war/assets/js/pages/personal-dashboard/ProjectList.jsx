@@ -1,9 +1,6 @@
 import React from 'react';
-import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
-
-import NewCodeRelation from '../../common/modals/NewCodeRelation';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
@@ -113,13 +110,6 @@ export default class ProjectList extends React.Component {
 				textDecoration: "none",
 				cursor: "pointer"
 
-			},
-			relation: {
-				fontSize: "12px",
-				fontWeight: "bold"
-			},
-			dstCode: {
-				fontSize: "16px"
 			},
 			listItemBtn: {
 				float: "right",
