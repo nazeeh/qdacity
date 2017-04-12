@@ -1,14 +1,14 @@
 import 'script!../../common/ErrorHandler.js';
 import Account from '../../common/Account.jsx';
-import CustomForm from '../../common/modals/CustomForm';
+
 import 'script!../../../../components/bootstrap/bootstrap.min.js'
-import 'script!../../../../components/listJS/list.js';
-import 'script!../../../../components/listJS/list.pagination.js';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import loadGAPIs from '../../common/GAPI';
-import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
+
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
+
+import ProjectList from "./ProjectList.jsx"
 
 
 
@@ -21,6 +21,7 @@ window.loadPlatform = function () {
 }
 
 var account;
+var projectList;
 
 function setupUI() {
 	if (account.isSignedIn()) {
@@ -28,8 +29,9 @@ function setupUI() {
 		$('#navSignin').hide();
 		$('#welcomeName').html(account.getProfile().getGivenName());
 		$('#welcome').removeClass('hidden');
-		fillProjectsList();
 		fillNotificationList();
+
+		projectList.init();
 	} else {
 		$('#navAccount').hide();
 	}
@@ -39,7 +41,8 @@ window.init = function () {
 
 	$("#footer").hide();
 	$('#navAccount').hide();
-	$("#textdocument-menu").collapse(); // editor will be initialized readonly, the toggle is later hooked to the visibility of the toolbar
+
+	projectList = ReactDOM.render(<ProjectList />, document.getElementById('projectList'));
 
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
@@ -52,33 +55,14 @@ window.init = function () {
 		account.changeAccount(setupUI);
 	};
 
-
-	document.getElementById('newPrjBtn').onclick = function () {
-		showNewProjectModal();
-	};
-
 }
 
-function createNewProject(name, description) {
-	CodesystemEndpoint.insertCodeSystem(0, "PROJECT").then(function (codeSystem) {
-		var project = {};
-		project.codesystemID = codeSystem.id;
-		project.maxCodingID = 0;
-		project.name = name;
-		project.description = description;
-		ProjectEndpoint.insertProject(project).then(function (insertedProject) {
-			codeSystem.project = insertedProject.id;
-
-			CodesystemEndpoint.updateCodeSystem(codeSystem).then(function (updatedCodeSystem) {
-				addProjectToProjectList(codeSystem.project, project.name, 'PROJECT');
-			});
-		});
-	});
-}
 
 function acceptInvitation(notification) {
 
-	ProjectEndpoint.addOwner(notification.project).then(function (resp) {});
+	ProjectEndpoint.addOwner(notification.project).then(function (resp) {
+		projectList.addProject(resp);
+	});
 
 	var requestData = {};
 	requestData = notification;
@@ -86,7 +70,6 @@ function acceptInvitation(notification) {
 
 	UserEndpoint.updateUserNotification(requestData).then(function (resp) {
 		fillNotificationList();
-		fillProjectsList();
 	});
 }
 
@@ -102,79 +85,6 @@ function settleNotification(notification) {
 	UserEndpoint.updateUserNotification(notification).then(function (resp) {
 		fillNotificationList();
 	});
-}
-
-function fillProjectsList() {
-	$("#project-list").empty();
-
-	var validationPrjPromise = ProjectEndpoint.listValidationProject();
-	ProjectEndpoint.listProject().then(function (resp) {
-		resp.items = resp.items || [];
-
-		for (var i = 0; i < resp.items.length; i++) {
-			var project_id = resp.items[i].id;
-			var project_name = resp.items[i].name;
-
-			addProjectToProjectList(project_id, project_name, 'PROJECT');
-		}
-
-		validationPrjPromise.then(addValidationProjects);
-
-		var options = {
-			valueNames: ['project_name', 'project_id'],
-			page: 5,
-			plugins: [ListPagination({})]
-		};
-
-		var projectList = new List('project-selection', options);
-	});
-
-}
-
-function attachDeleteHandler() {
-	$('.deletePrjBtn').click(function (e) {
-		e.stopPropagation();
-		var projectType = $(this).attr("prjType");
-		var projectId = $(this).attr("prjId");
-		switch (projectType) {
-		case "PROJECT":
-			deleteProject(projectId);
-			break;
-		case "VALIDATION":
-			deleteValidationProject(projectId);
-			break;
-		default:
-			break;
-		}
-	});
-
-	$('.leavePrjBtn').click(function (e) {
-		e.stopPropagation();
-		var element = $(this);
-		var decider = new BinaryDecider('Please confirm leaving this project', 'Cancel', 'Leave');
-		decider.showModal().then(function (value) {
-			if (value == 'optionB') {
-				var projectType = element.attr("prjType");
-				var projectId = element.attr("prjId");
-				leaveProject(projectType, projectId);
-			}
-		});
-	});
-
-}
-
-function addValidationProjects(resp) {
-	resp.items = resp.items || [];
-
-	for (var i = 0; i < resp.items.length; i++) {
-		var project_id = resp.items[i].id;
-		var project_name = resp.items[i].name;
-
-		addProjectToProjectList(project_id, project_name, 'VALIDATION');
-	}
-
-	attachDeleteHandler(); // for both projects and validation projects
-
 }
 
 function fillNotificationList() {
@@ -228,63 +138,6 @@ function fillNotificationList() {
 	});
 }
 
-
-function deleteProject(projectID) {
-	ProjectEndpoint.removeProject(projectID).then(function (resp) {
-		fillProjectsList();
-	});
-}
-
-function deleteValidationProject(projectID) {
-	ProjectEndpoint.removeValidationProject(projectID).then(function (resp) {
-		fillProjectsList();
-	});
-}
-
-function leaveProject(prjType, prjID) {
-	ProjectEndpoint.removeUser(prjID, prjType).then(function (resp) {
-		fillProjectsList();
-	});
-}
-
-function addProjectToProjectList(projectID, projectName, projectType) {
-
-	var html = '<li';
-	if (projectType == 'VALIDATION') {
-		html += ' class="clickable validationProjectItem" ';
-		html += ' onclick="location.href = \'project-dashboard.html?project=' + projectID + '&type=VALIDATION\'">';
-	} else {
-		html += ' class="clickable" onclick="location.href = \'project-dashboard.html?project=' + projectID + '&type=PROJECT\'">';
-	}
-
-
-	html += '<span class="project_name">' + projectName + '</span>';
-	html += '<span class="project_id hidden">' + projectID;
-	html += '</span>';
-
-	// Delete Project Btn
-	if (projectType === "PROJECT") {
-		html += '<a  prjId="' + projectID + '" prjType="' + projectType + '" class="deletePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-		html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
-		html += '<i  class="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
-		html += '</a>';
-	}
-
-	// Leave Project Btn
-	html += '<a prjId="' + projectID + '" prjType="' + projectType + '"  class=" leavePrjBtn btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-	html += ' <i class="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>';
-	html += '<i  class="fa fa-sign-out  fa-stack-1x fa-inverse fa-cancel-btn"></i>';
-	html += '</a>';
-
-	// Coding Editor Btn
-	if (projectType == 'PROJECT') html += '<a href="coding-editor.html?project=' + projectID + '" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-	if (projectType == 'VALIDATION') html += '<a href="coding-editor.html?project=' + projectID + '&type=VALIDATION" class=" btn  fa-stack fa-lg" style="float:right; margin-top:-15px; ">';
-	html += ' <i class="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>';
-	html += '<i  class="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>';
-	html += '</a>';
-	html += '</li>';
-	$("#project-list").append(html);
-}
 
 function addInvitationNotification(notification) {
 
@@ -394,8 +247,6 @@ function addRequestGrantedNotification(notification) {
 
 }
 
-
-
 function bindNotificationBtns() {
 	$(".settleNotificationBtn").click(function () {
 		var notificationString = $(this).attr("notificationString");
@@ -410,13 +261,4 @@ function bindNotificationBtns() {
 
 function myAlert(message) {
 	window.alert(message);
-}
-
-function showNewProjectModal() {
-	var modal = new CustomForm('Create a new project', '');
-	modal.addTextInput('name', "Project Name", 'Name', '');
-	modal.addTextField('desc', "Project Description", 'Description');
-	modal.showModal().then(function (data) {
-		createNewProject(data.name, data.desc);
-	});
 }
