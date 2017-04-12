@@ -348,9 +348,11 @@ public class ProjectEndpoint {
 
 			if (projectType.equals("PROJECT")) {
 				Project project = (Project) Cache.getOrLoad(projectID, Project.class);
-				project.removeUser(userIdToRemove);
-				Cache.cache(projectID, Project.class, project);
-				mgr.makePersistent(project);
+				if (project != null) { // if false -> bug.
+					project.removeUser(userIdToRemove);
+					Cache.cache(projectID, Project.class, project);
+					mgr.makePersistent(project);
+				}
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
 				dbUser.removeProjectAuthorization(projectID);
@@ -765,8 +767,8 @@ public class ProjectEndpoint {
 
 			// Long codeSystemID = project.getCodesystemID();
 
-			removeAssociatedData(project);
 
+			removeAssociatedData(project);
 			mgr.deletePersistent(project);
 
 		} finally {

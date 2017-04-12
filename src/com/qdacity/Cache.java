@@ -1,5 +1,9 @@
 package com.qdacity;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.datastore.KeyFactory;
@@ -22,7 +26,7 @@ public class Cache {
 	}
 
 	public static Object getOrLoad(Long id, Class type) {
-		Object obj;
+		Object obj = null;
 
 		PersistenceManager mgr = getPersistenceManager();
 
@@ -35,7 +39,10 @@ public class Cache {
 			try {
 				obj = mgr.getObjectById(type, id);
 				syncCache.put(keyString, obj);
-			} finally {
+			} catch (JDOObjectNotFoundException e){
+				Logger.getLogger("logger").log(Level.WARNING, "Could not retrieve " + type + " with ID " + id);
+			}
+			finally {
 				mgr.close();
 			}
 		}
