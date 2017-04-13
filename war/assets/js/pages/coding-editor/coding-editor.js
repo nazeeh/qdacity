@@ -134,6 +134,11 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
+	
+
+	$("#btnOpenUMLEditor").on("click", function () {
+		window.location.href = "uml-editor.html";
+	});
 
 	document.getElementById('btnCodeProps').onclick = function () {
 		if ($("#footer").is(":visible")) {
