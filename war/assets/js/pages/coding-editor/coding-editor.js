@@ -92,6 +92,10 @@ window.init = function () {
 		content: $('<span>New Code</span>')
 	});
 
+	$('#btnOpenDomainModelEditor').tooltipster({
+		content: $('<span>Open Domain Model Editor</span>'),
+	});
+
 	$("#codePropColor").colorpicker();
 
 
