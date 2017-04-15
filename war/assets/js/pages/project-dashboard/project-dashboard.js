@@ -279,14 +279,15 @@ window.loadPlatform = function (){
 	                        	modal.addCheckBoxes('docs', documents);
                                         
                                         //TODO should not be hardcoded here
-                                        //var methods = ["f-measure", "krippendorffs-alpha"];
-                                        //var units = ["paragraph", "sentence"];
+                                        var methods = ["f-measure", "krippendorffs-alpha", "cohens-kappa"];
+                                        var units = ["paragraph", "sentence"];
                                         
-                                        
+                                        modal.addSelect("method", methods, "Evaluation Method");
+                                        modal.addSelect("unit", units, "Unit of Coding");
 	                        	
 	                        	modal.showModal().then(function(data) {
 	                        		var selectedDocs = [];
-		                          	projectEndpoint.evaluateRevision(revId, data.title, data.docs, "f-measure", "paragraph") //TODO
+		                          	projectEndpoint.evaluateRevision(revId, data.title, data.docs, data.method, data.unit) //TODO
 	                          		.then(
 	                          	        function(val) {
 	                          	        	setRevisionHistory();
