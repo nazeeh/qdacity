@@ -27,7 +27,7 @@ import com.qdacity.user.UserNotificationType;
 
 @Api(
 	name = "qdacity",
-	version = "v4",
+	version = Constants.API_VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
