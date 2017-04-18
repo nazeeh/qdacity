@@ -16,11 +16,12 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
+import com.qdacity.Constants;
 import com.qdacity.PMF;
 
 @Api(
 	name = "qdacity",
-	version = "v4",
+	version = Constants.API_VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
