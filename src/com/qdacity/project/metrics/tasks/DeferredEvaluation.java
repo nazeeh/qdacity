@@ -43,6 +43,8 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
 
 public class DeferredEvaluation implements DeferredTask {
 
@@ -57,6 +59,8 @@ public class DeferredEvaluation implements DeferredTask {
     private final List<Long> docIDs;
     private List<ValidationProject> validationProjectsFromUsers;
     private ValidationReport validationReport;
+    private Queue taskQueue;
+    List<Future<TaskHandle>> futures;
 
     public DeferredEvaluation(Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
 	super();
@@ -77,6 +81,8 @@ public class DeferredEvaluation implements DeferredTask {
 
 	initValidationReport();
 
+	initTaskQueueAndFutures();
+
 	try {
 	    switch (evaluationMethod) {
 		case F_MEASURE:
@@ -92,7 +98,7 @@ public class DeferredEvaluation implements DeferredTask {
 		    break;
 	    }
 
-	} catch (UnauthorizedException ex) {
+	} catch (Exception ex) {
 	    Logger.getLogger(DeferredEvaluation.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	long elapsed = System.nanoTime() - startTime;
@@ -143,42 +149,14 @@ public class DeferredEvaluation implements DeferredTask {
     private void calculateFMeasure(Collection<TextDocument> originalDocs) {
 	try {
 
-	    List<Future<TaskHandle>> futures = new ArrayList<>();
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
 	    for (ValidationProject validationProject : validationProjectsFromUsers) {
-		validationProject.getId(); // Lazy Fetch?
+		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, docIDs, orignalDocIDs, validationReport.getId(), user);
 		Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
-		DeferredFMeasureEvaluation deferredResults = new DeferredFMeasureEvaluation(validationProject, docIDs, orignalDocIDs, validationReport.getId(), user);
-
-		Queue queue = QueueFactory.getQueue("ValidationResultQueue");
-
-		Future<TaskHandle> future = queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
-
-		futures.add(future);
+		launchInTaskQueue(deferredValidation);
 	    }
 
-	    Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
-
-	    for (Future<TaskHandle> future : futures) {
-		Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + future.isDone());
-		future.get();
-
-	    }
-
-	    // Poll every 10 seconds. TODO: find better solution
-	    List<ValidationResult> valResults = new ArrayList<ValidationResult>();
-	    while (valResults.size() != validationProjectsFromUsers.size()) {
-
-		ValidationEndpoint ve = new ValidationEndpoint();
-		valResults = ve.listValidationResults(validationReport.getId(), user);
-		Logger.getLogger("logger").log(Level.WARNING, " So many results " + valResults.size() + " for report " + validationReport.getId() + " at time " + System.currentTimeMillis());
-		if (valResults.size() != validationProjectsFromUsers.size()) {
-		    Thread.sleep(10000);
-		}
-	    }
-
-	    Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
-	    Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
+	    waitForTasksToFinish(); //TODO
 
 	    aggregateDocAgreement(validationReport);
 
@@ -190,22 +168,44 @@ public class DeferredEvaluation implements DeferredTask {
 
 	} catch (UnauthorizedException e) {
 	    Logger.getLogger("logger").log(Level.INFO, "User not authorized: " + user.getEmail());
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
-	} catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (ExecutionException e) {
-	    // TODO Auto-generated catch block
+	} catch (InterruptedException | ExecutionException e) {
 	    e.printStackTrace();
 	} finally {
 	    getPersistenceManager().close();
 	}
     }
 
+    public void waitForTasksToFinish() throws ExecutionException, UnauthorizedException, InterruptedException {
+	Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
+	
+	for (Future<TaskHandle> future : futures) {
+	    Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + future.isDone());
+	    future.get();
+	}
+	// Poll every 10 seconds. TODO: find better solution
+	List<ValidationResult> valResults = new ArrayList<>();
+	while (valResults.size() != validationProjectsFromUsers.size()) {
+	    //checking if all validationReports exists. If yes tasks must have finished.
+	    ValidationEndpoint ve = new ValidationEndpoint();
+	    valResults = ve.listValidationResults(validationReport.getId(), user);
+	    Logger.getLogger("logger").log(Level.WARNING, " So many results " + valResults.size() + " for report " + validationReport.getId() + " at time " + System.currentTimeMillis());
+	    if (valResults.size() != validationProjectsFromUsers.size()) {
+		Thread.sleep(10000);
+	    }
+	}
+	Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
+	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
+    }
+
+    private void launchInTaskQueue(DeferredAlgorithmEvaluation deferredAlgorithmTask) {
+	Future<TaskHandle> future = addToTaskQueue(deferredAlgorithmTask);
+	futures.add(future);
+    }
+
     private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException {
-	List<ParagraphAgreement> validationCoderAvg = new ArrayList<ParagraphAgreement>();
-	Map<Long, List<ParagraphAgreement>> agreementByDoc = new HashMap<Long, List<ParagraphAgreement>>();
+	List<ParagraphAgreement> validationCoderAvg = new ArrayList<>();
+	Map<Long, List<ParagraphAgreement>> agreementByDoc = new HashMap<>();
 
 	ValidationEndpoint ve = new ValidationEndpoint();
 	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
@@ -230,7 +230,7 @@ public class DeferredEvaluation implements DeferredTask {
 		if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
 		    List<ParagraphAgreement> agreementList = agreementByDoc.get(revisionDocumentID);
 		    if (agreementList == null) {
-			agreementList = new ArrayList<ParagraphAgreement>();
+			agreementList = new ArrayList<>();
 		    }
 		    agreementList.add(docAgreement);
 		    agreementByDoc.put(revisionDocumentID, agreementList);
@@ -267,7 +267,7 @@ public class DeferredEvaluation implements DeferredTask {
      * @throws UnauthorizedException if user can not see documents of other
      * users
      */
-    private void calculateKrippendorffsAlpha() throws UnauthorizedException {
+    private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
 	List<Long> codeIds = findCodeIds();
 	List<TextDocument> textDocuments = new ArrayList<>();
 
@@ -278,11 +278,24 @@ public class DeferredEvaluation implements DeferredTask {
 	    textDocuments.addAll(tde.getTextDocument(project.getId(), "VALIDATION", user).getItems());
 	    //TODO vielleicht noch mal filtern hier (man soll ja nach Textdocument filtern können)
 	}
+	Logger.getLogger("logger").log(Level.INFO, "Textdocuments: "+textDocuments.size());
+	Logger.getLogger("logger").log(Level.INFO, "CodeIds: "+codeIds.size());
 	List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(textDocuments, codeIds);
 
 	for (ReliabilityData rData : reliabilityData) {
-	    //TODO für jede Data neuen Task starten
+	    DeferredKrippendorffsAlphaEvaluation kEval = new DeferredKrippendorffsAlphaEvaluation(rData, null, user, validationReport.getId());
+	    launchInTaskQueue(kEval);
 	}
+	waitForTasksToFinish();
+	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
+	//TODO documentResults und paragraphAgreement zum validationReport hinzufügen
+	ParagraphAgreement TODO_AGREEMENT = new ParagraphAgreement();
+	TODO_AGREEMENT.setFMeasure(1); //TODO
+	TODO_AGREEMENT.setPrecision(0.1); //TODO
+	TODO_AGREEMENT.setRecall(0.7); //TODO
+	validationReport.setParagraphAgreement(TODO_AGREEMENT);
+	//TODO? muss man das hier machen?
+	 getPersistenceManager().makePersistent(validationReport);
     }
 
     private void calculateCohensKappa() {
@@ -300,6 +313,15 @@ public class DeferredEvaluation implements DeferredTask {
 	    codeIds.add(code.getCodeID());
 	}
 	return codeIds;
+    }
+
+    private void initTaskQueueAndFutures() {
+	taskQueue = QueueFactory.getQueue("ValidationResultQueue");
+	futures = new ArrayList<>();
+    }
+
+    private Future<TaskHandle> addToTaskQueue(DeferredAlgorithmEvaluation algorithmTask) {
+	return taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(algorithmTask));
     }
 
 }

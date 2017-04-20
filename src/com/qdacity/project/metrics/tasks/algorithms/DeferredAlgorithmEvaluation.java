@@ -1,6 +1,5 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
@@ -14,6 +13,7 @@ import javax.jdo.PersistenceManager;
  */
 public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 
+    protected static final long serialVersionUID = 2611140265864647884L;
     protected PersistenceManager mgr;
     protected ValidationResult valResult;
     protected final ValidationProject validationProject;

@@ -21,7 +21,6 @@ import com.qdacity.project.metrics.tasks.DeferredDocResults;
 
 public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
-    private static final long serialVersionUID = 2611140265864647884L;
     List<Long> docIDs;
     List<Long> orignalDocIDs;
 

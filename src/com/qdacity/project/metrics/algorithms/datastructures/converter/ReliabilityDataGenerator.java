@@ -57,8 +57,8 @@ public class ReliabilityDataGenerator {
 		}
 	    }
 	    rDatas.add(rData);
-	    String rDataAsString = rData.toString();
-	    Logger.getLogger("logger").log(Level.INFO, "Code-ID: "+codeId+" Adding Reliabillity Data: "+rDataAsString); //TODO remove this in production environment
+	    //String rDataAsString = rData.toString();
+	    //Logger.getLogger("logger").log(Level.INFO, "Code-ID: "+codeId+" Adding Reliabillity Data: "+rDataAsString); //TODO remove this in production environment
 	}
 
 	return rDatas;
