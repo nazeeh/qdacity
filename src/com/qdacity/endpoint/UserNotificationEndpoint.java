@@ -1,6 +1,7 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,8 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -48,11 +51,16 @@ public class UserNotificationEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<UserNotification> listUserNotification(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, com.google.appengine.api.users.User user) {
 
-		Filter filter = new FilterPredicate("user", FilterOperator.EQUAL, user.getUserId());
+		Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user.getUserId());
+
+		Date thirtyDaysAgo = new Date(new Date().getTime() - 2592000000L);
+		Filter dateFilter = new FilterPredicate("datetime", FilterOperator.GREATER_THAN, thirtyDaysAgo);
+
+		Filter compositeFilter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(dateFilter, userFilter));
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("UserNotification").setFilter(filter);
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("UserNotification").setFilter(compositeFilter);
 
 		PreparedQuery pq = datastore.prepare(q);
 

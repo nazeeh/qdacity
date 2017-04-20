@@ -106,9 +106,17 @@ h2 {
 .validationProjectItem {
   display:block;
   background-color: #5b94d9!important;
+  color:white;
   padding:12px;
   box-shadow: inset 0 1px 0 #fff;
 }
 .validationProjectItem:hover {
   background-color: #8798dc!important;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+.pagination a.active {
+    background-color: #5b94d9;
+    color: white!important;
 }

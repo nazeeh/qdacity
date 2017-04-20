@@ -238,7 +238,9 @@ function setRevisionHistory() {
 					deleteRevision(revisionId);
 				});
 
-				$(".deleteValidationPrjBtn").click(function () {
+				$(".deleteValidationPrjBtn").click(function (event) {
+					event.preventDefault();
+					event.stopPropagation();
 					var prjId = $(this).attr("prjId");
 					deleteValidationProject(prjId);
 				});
