@@ -48,16 +48,17 @@ public class ReliabilityDataGenerator {
 	    ReliabilityData rData = new ReliabilityData(ratings.get(0).size(), raters); //TODO units nicht unbedingt gleich lang!! split nicht eindeutig!
 	    for (int coder = 1; coder <= raters; coder++) {
 		for (int unit = 1; unit <= ratings.get(coder - 1).size(); unit++) {
-		    int valueToSet = 0;
+		    int valueToSet = 1; //1 not set
 		    if(ratings.get(coder - 1).get(unit - 1).equals(codeId+"")) {
 		    	//Only set 1 if code we are looking at right now is set.
-		    	valueToSet = 1;
+		    	valueToSet = 2; //set
 		    }
 		    rData.set(unit, coder, valueToSet);
 		}
 	    }
 	    rDatas.add(rData);
-	    Logger.getLogger("logger").log(Level.INFO, "Code-ID: "+codeId+" Adding Reliabillity Data: "+rData.toString()); //TODO remove this in production environment
+	    String rDataAsString = rData.toString();
+	    Logger.getLogger("logger").log(Level.INFO, "Code-ID: "+codeId+" Adding Reliabillity Data: "+rDataAsString); //TODO remove this in production environment
 	}
 
 	return rDatas;

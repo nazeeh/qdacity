@@ -16,7 +16,6 @@ public class KrippendorffsAlphaCoefficient {
     private final int n; //the total number of pairable elements
     private final int R; //possible responses an observer can give.
     private final CoincidenceMatrix cMatrix;
-    private final ReliabilityData reliabilityData;
 
     /**
      * Computes the Krippendorff's Alpha for nominal ratings
@@ -24,7 +23,6 @@ public class KrippendorffsAlphaCoefficient {
      * @param numberOfAvailableCodes How many codes a rater can use.
      */
     public KrippendorffsAlphaCoefficient(ReliabilityData reliabilityData, int numberOfAvailableCodes) {
-        this.reliabilityData = reliabilityData;
         this.R = numberOfAvailableCodes;
         this.cMatrix = ReliabilityDataToCoincidenceMatrixConverter.convert(reliabilityData, numberOfAvailableCodes);
         this.n = cMatrix.getTotalPairableElements();
@@ -39,6 +37,7 @@ public class KrippendorffsAlphaCoefficient {
     public double compute() {
         // Formulas see e.g: https://en.wikipedia.org/wiki/Krippendorff%27s_alpha
         // alpha = 1 - ( D_o / D_e )
+    	Logger.getLogger("logger").log(Level.INFO, "cMatrix: "+cMatrix.toString()); //TODO
         double observedDisagreement = computeObservedDisagreement();
         double disagreementExpectedByChance = computeDisagreementExpectedByChance();
         Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Calculation: 1-" + observedDisagreement + "/" + disagreementExpectedByChance); //TODO
