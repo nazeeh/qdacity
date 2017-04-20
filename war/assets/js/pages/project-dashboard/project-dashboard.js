@@ -83,6 +83,10 @@ window.init = function () {
 		location.href = 'coding-editor.html?project=' + project_id + '&type=' + project_type;
 	});
 
+	$("#settingsBtn").click(function () {
+		alert('settings');
+	});
+
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
 			account = accountModule;
@@ -215,6 +219,7 @@ function setRevisionHistory() {
 					$('.deleteReportBtn').removeClass('hidden');
 					$('.createReportBtn').removeClass('hidden');
 					$('#codingEditorBtn').removeClass('hidden');
+					$('#settingsBtn').removeClass('hidden');
 					$('#editDescriptionBtn').removeClass('hidden');
 
 					$('#inviteUser').removeClass('hidden');
@@ -226,11 +231,15 @@ function setRevisionHistory() {
 					$('.deleteReportBtn').addClass('hidden');
 					$('.createReportBtn').addClass('hidden');
 					$('#codingEditorBtn').addClass('hidden');
+					$('#settingsBtn').addClass('hidden');
 					$('#editDescriptionBtn').addClass('hidden');
 					$('#inviteUser').addClass('hidden');
 				}
 
-				if (project_type == "VALIDATION") $('#codingEditorBtn').removeClass('hidden');
+				if (project_type == "VALIDATION") {
+					$('#codingEditorBtn').removeClass('hidden');
+					$('#settingsBtn').removeClass('hidden');
+				}
 
 
 				$(".deleteRevisionBtn").click(function () {
