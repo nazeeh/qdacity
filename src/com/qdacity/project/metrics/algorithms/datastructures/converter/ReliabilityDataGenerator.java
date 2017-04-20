@@ -5,6 +5,8 @@ import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,20 +36,28 @@ public class ReliabilityDataGenerator {
 	int raters = sameDocumentFromDifferentRaters.size();
 	List<List<String>> ratings = new ArrayList<>();
 	List<ReliabilityData> rDatas = new ArrayList<>();
+	Logger.getLogger("logger").log(Level.INFO, "Documents: "+sameDocumentFromDifferentRaters.size()); //TODO remove this in production environment
 
 	for (TextDocument document : sameDocumentFromDifferentRaters) {
 	    ratings.add(split(document));
 	}
+	Logger.getLogger("logger").log(Level.INFO, "Ratings: "+ratings.size()); //TODO remove this in production environment
+	Logger.getLogger("logger").log(Level.INFO, "CodeIds: "+codeIds.size()); //TODO remove this in production environment
 
 	for (long codeId : codeIds) {
-	    ReliabilityData rData = new ReliabilityData(raters, 2); //now there is only the code set or not set, therefor amountOfCoces is 2
+	    ReliabilityData rData = new ReliabilityData(ratings.get(0).size(), raters); //TODO units nicht unbedingt gleich lang!! split nicht eindeutig!
 	    for (int coder = 1; coder <= raters; coder++) {
 		for (int unit = 1; unit <= ratings.get(coder - 1).size(); unit++) {
-		    int valueToSet = ratings.get(coder - 1).get(unit - 1).equals(codeId) ? 1 : 0; //Only set 1 if code we are looking at right now is set.
+		    int valueToSet = 0;
+		    if(ratings.get(coder - 1).get(unit - 1).equals(codeId+"")) {
+		    	//Only set 1 if code we are looking at right now is set.
+		    	valueToSet = 1;
+		    }
 		    rData.set(unit, coder, valueToSet);
 		}
 	    }
 	    rDatas.add(rData);
+	    Logger.getLogger("logger").log(Level.INFO, "Code-ID: "+codeId+" Adding Reliabillity Data: "+rData.toString()); //TODO remove this in production environment
 	}
 
 	return rDatas;
@@ -60,11 +70,11 @@ public class ReliabilityDataGenerator {
 	if (unitOfCoding == EvaluationUnit.PARAGRAPH) {
 	    for (int i = 0; i < paragraphs.size(); i++) {
 		Elements codings = paragraphs.get(i).select(CODING_TAG);
-		//TODO Units sind hier nicht eindeutig wenn z.B. ein User einen Code nicht gesetzt hat!! Andere DS nötig!
-		ratings.addAll(getAppliedCodes(codings)); //ACHTUNG: Hier kann es mehr als einen pro Unit geben!!
+		//TODO Units sind hier nicht eindeutig wenn z.B. ein User einen Code nicht gesetzt hat!! Andere DS nï¿½tig!
+		ratings.addAll(getAppliedCodes(codings)); //ACHTUNG: Hier kann es mehr als einen pro Unit geben!! ODER AUCH KEINEN
 	    }
 	} else {
-	    throw new UnsupportedOperationException("Evaluation Unit not supported yet.");
+	    throw new UnsupportedOperationException("Evaluation Unit not supported yet."); //TODO
 	}
 
 	return ratings;
