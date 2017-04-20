@@ -1,10 +1,12 @@
 package com.qdacity.project.metrics.algorithms.datastructures;
 
+import java.io.Serializable;
+
 /**
  * A basic abstract datasturcture for a data matrix containing values from raters
  *
  */
-public abstract class RatersDataMatrix {
+public abstract class RatersDataMatrix implements Serializable {
 
     private final int[][] matrixData;
     protected final static int NO_DATA = 0;

@@ -3,6 +3,8 @@ package com.qdacity.project.metrics.algorithms;
 import com.qdacity.project.metrics.algorithms.datastructures.CoincidenceMatrix;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataToCoincidenceMatrixConverter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation for the Krippendorff's Alpha Coefficient TODO Using
@@ -39,7 +41,7 @@ public class KrippendorffsAlphaCoefficient {
         // alpha = 1 - ( D_o / D_e )
         double observedDisagreement = computeObservedDisagreement();
         double disagreementExpectedByChance = computeDisagreementExpectedByChance();
-        System.out.println("Calculation: 1-" + observedDisagreement + "/" + disagreementExpectedByChance); //TODO
+        Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Calculation: 1-" + observedDisagreement + "/" + disagreementExpectedByChance); //TODO
         return 1.0 - (observedDisagreement / disagreementExpectedByChance);
     }
 
