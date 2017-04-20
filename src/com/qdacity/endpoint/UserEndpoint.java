@@ -46,7 +46,7 @@ import com.qdacity.user.UserType;
 
 @Api(
 	name = "qdacity",
-	version = "v4",
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
