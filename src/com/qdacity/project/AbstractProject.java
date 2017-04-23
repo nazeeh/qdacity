@@ -40,12 +40,16 @@ public abstract class AbstractProject implements Serializable {
 	@Persistent
 	Integer revision;
 
+	@Persistent 
+	boolean umlEditorEnabled;
+
 	public AbstractProject(Project prj) {
 		this.name = prj.name;
 		this.codesystemID = prj.codesystemID;
 		this.maxCodingID = prj.maxCodingID;
 		this.revision = prj.revision;
 		this.description = prj.description;
+		this.umlEditorEnabled = false;
 	}
 
 	public AbstractProject(String name, Long codesystemID, Long maxCodingID, Integer revision) {
@@ -53,6 +57,7 @@ public abstract class AbstractProject implements Serializable {
 		this.codesystemID = codesystemID;
 		this.maxCodingID = maxCodingID;
 		this.revision = revision;
+		this.umlEditorEnabled = false;
 	}
 
 	public AbstractProject() {
@@ -105,5 +110,13 @@ public abstract class AbstractProject implements Serializable {
 
 	public void setRevision(Integer revision) {
 		this.revision = revision;
+	}
+
+	public boolean isUmlEditorEnabled() {
+		return umlEditorEnabled;
+	}
+	
+	public void setUmlEditorEnabled(boolean umlEditorEnabled) {
+		this.umlEditorEnabled = umlEditorEnabled;
 	}
 }
