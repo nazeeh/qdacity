@@ -451,7 +451,7 @@ public class ProjectEndpoint {
 		try {
 			ProjectType.PROJECT.toString();
 			// FIXME handle authorization
-			// FIXME handle project types differently
+
 			if (projectType.equals(ProjectType.PROJECT.toString())) {
 				project = (Project) Cache.getOrLoad(projectID, Project.class);
 			} else if (projectType.equals(ProjectType.VALIDATION.toString())) {
