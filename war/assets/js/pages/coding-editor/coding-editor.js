@@ -331,6 +331,10 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
+			
+			if (resp.umlEditorEnabled) {
+				$('#btnOpenUMLEditor').show();
+			}
 		});
 	} else {
 		$('#navAccount').hide();
