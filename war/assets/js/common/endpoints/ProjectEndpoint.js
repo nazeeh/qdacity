@@ -109,6 +109,15 @@ export default class ProjectEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static setUmlEditorEnabled(prjId, projectType, umlEditorEnabled) {
+		var apiMethod = gapi.client.qdacity.project.setUmlEditorEnabled({
+			'projectID': prjId,
+			'projectType': projectType,
+			'umlEditorEnabled': umlEditorEnabled
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static insertProject(project) {
 		var apiMethod = gapi.client.qdacity.project.insertProject(project);
 		return Promisizer.makePromise(apiMethod);
