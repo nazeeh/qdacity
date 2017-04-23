@@ -36,8 +36,7 @@ export default class Settings extends VexModal {
 					buttons: [$.extend({}, vex.dialog.buttons.YES, {
 						text: 'Save', 
 						click: function($vexContent, event) {
-							var umlEditorEnabled = document.getElementById('settingsUmlEditorEnabled');
-					        $vexContent.data().vex.value = { 'umlEditorEnabled': umlEditorEnabled.checked };
+					        $vexContent.data().vex.value = { 'umlEditorEnabled': $('#settingsUmlEditorEnabled').prop('checked') };
 				            vex.close($vexContent.data().vex.id);
 				        }
 					}), $.extend({}, vex.dialog.buttons.NO, {
