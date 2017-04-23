@@ -19,10 +19,11 @@ import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
 
 @Api(name = "qdacity",
-version = Constants.API_VERSION,
-namespace = @ApiNamespace(ownerDomain = "qdacity.com",
-	ownerName = "qdacity.com",
-	packagePath = "server.project"))
+	version = Constants.VERSION,
+	namespace = @ApiNamespace(
+		ownerDomain = "qdacity.com",
+		ownerName = "qdacity.com",
+		packagePath = "server.project"))
 public class MetaModelEndpoint {
 	
 	@ApiMethod(name = "metamodel.listEntities",

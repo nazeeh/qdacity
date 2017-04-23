@@ -2,6 +2,7 @@ package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ import com.qdacity.user.UserType;
 
 @Api(
 	name = "qdacity",
-	version = Constants.API_VERSION,
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
@@ -192,14 +193,15 @@ public class UserEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User getUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 
-		User user = (User) Cache.getOrLoad(id, User.class);
+		User user = getUser(id);
 
-			// Check if user is authorized
-			Authorization.checkAuthorization(user, loggedInUser);
-
+		// Check if user is authorized
+		Authorization.checkAuthorization(user, loggedInUser);
 
 		return user;
 	}
+
+
 
 	@ApiMethod(
 		name = "updateUserType",
@@ -241,43 +243,7 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User getCurrentUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		User user = null;
-		try {
-
-			user = (User) Cache.get(loggedInUser.getUserId(), User.class);
-
-			if (user == null) {
-
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Key key = KeyFactory.createKey("User", loggedInUser.getUserId());
-				Entity userEntity = datastore.get(key);
-
-				user = new User();
-				user.setEmail((String) userEntity.getProperty("email"));
-				user.setGivenName((String) userEntity.getProperty("givenName"));
-				user.setId(userEntity.getKey().getName());
-				user.setProjects((List<Long>) userEntity.getProperty("projects"));
-				user.setSurName((String) userEntity.getProperty("surName"));
-				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
-				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
-				Object lastPrjType = userEntity.getProperty("lastProjectType");
-				if (lastPrjType != null) user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
-				Cache.cache(user.getId(), User.class, user);
-			}
-
-			// PreLoad User Data
-			if (user.getLastProjectId() != null && user.getLastProjectType() != null) {
-				ProjectDataPreloader task = new ProjectDataPreloader(user.getLastProjectId(), user.getLastProjectType());
-				Queue queue = QueueFactory.getQueue("PreloadQueue");
-				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-			}
-
-		} catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
-			e.printStackTrace();
-			throw new UnauthorizedException("User is not registered");
-
-		}
-		return user;
+		return getUser(loggedInUser.getUserId());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -411,6 +377,53 @@ public class UserEndpoint {
 		} finally {
 			mgr.close();
 		}
+	}
+
+	private User getUser(String userId) throws UnauthorizedException {
+		User user = null;
+		try {
+
+			user = (User) Cache.get(userId, User.class);
+
+			if (user == null || user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
+
+				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+				Key key = KeyFactory.createKey("User", userId);
+				Entity userEntity = datastore.get(key);
+
+				user = new User();
+				user.setEmail((String) userEntity.getProperty("email"));
+				user.setGivenName((String) userEntity.getProperty("givenName"));
+				user.setId(userEntity.getKey().getName());
+				user.setProjects((List<Long>) userEntity.getProperty("projects"));
+				user.setSurName((String) userEntity.getProperty("surName"));
+				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
+				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
+				user.setLastLogin((Date) userEntity.getProperty("lastLogin"));
+				Object lastPrjType = userEntity.getProperty("lastProjectType");
+				if (lastPrjType != null) user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
+
+				if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
+					user.setLastLogin(new Date());
+					userEntity.setProperty("lastLogin", new Date());
+					datastore.put(userEntity);
+				}
+				Cache.cache(user.getId(), User.class, user);
+			}
+
+			// PreLoad User Data
+			if (user.getLastProjectId() != null && user.getLastProjectType() != null) {
+				ProjectDataPreloader task = new ProjectDataPreloader(user.getLastProjectId(), user.getLastProjectType());
+				Queue queue = QueueFactory.getQueue("PreloadQueue");
+				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+			}
+
+		} catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
+			e.printStackTrace();
+			throw new UnauthorizedException("User is not registered");
+
+		}
+		return user;
 	}
 
 	private boolean containsUser(User user) {

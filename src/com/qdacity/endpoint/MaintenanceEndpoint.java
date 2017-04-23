@@ -12,7 +12,7 @@ import com.qdacity.maintenance.tasks.ValidationCleanup;
 
 @Api(
 	name = "qdacity",
-	version = Constants.API_VERSION,
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",

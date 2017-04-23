@@ -33,7 +33,7 @@ import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
 
 @Api(
 	name = "qdacity",
-	version = Constants.API_VERSION,
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",

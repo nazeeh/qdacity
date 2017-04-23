@@ -1,6 +1,7 @@
 package com.qdacity.user;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -43,6 +44,9 @@ public class User implements Serializable {
 
 	@Persistent
 	ProjectType lastProjectType; // Used to pre-load to cache when user signs in
+
+	@Persistent
+	Date lastLogin;
 
 	@Persistent
 	List<Long> projects;
@@ -125,6 +129,14 @@ public class User implements Serializable {
 
 	public void setLastProjectType(ProjectType lastProjectType) {
 		this.lastProjectType = lastProjectType;
+	}
+
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
 	}
 
 }

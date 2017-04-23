@@ -1,5 +1,6 @@
 import Account from '../../common/Account.jsx';
 import UserList from './UserList.jsx';
+import AdminStats from './AdminStats.jsx';
 import loadGAPIs from '../../common/GAPI';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 
@@ -15,6 +16,7 @@ window.loadPlatform = function () {
 
 var account;
 var userList;
+var adminStats;
 
 window.init = function () {
 
@@ -56,6 +58,8 @@ function setupUI() {
 		$('#navAccount').show();
 		$('#navSignin').hide();
 		userList = ReactDOM.render(<UserList />, document.getElementById('userList'));
+		adminStats = ReactDOM.render(<AdminStats />, document.getElementById('statistics'));
+		
 		// Setup for logged in user
 	} else {
 		$('#navAccount').hide();

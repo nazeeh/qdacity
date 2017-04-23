@@ -21,7 +21,6 @@ import Slider from 'bootstrap-slider';
 import 'script!../../../../components/tooltipster/js/jquery.tooltipster.js';
 import 'script!../../../../components/filer/js/jquery.filer.min.js';
 import 'script!../../../../components/EasyTree/jquery.easytree.js';
-import 'script!../../../../components/loading/loadingoverlay.js';
 import 'script!../../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../../components/URIjs/URI.min.js';
 
@@ -291,17 +290,9 @@ function resizeHandler() {
 	setTimeout(function () {
 		resizeElements();
 	}, 250);
-	if ($(window).width() > 770 || $(window).height() > 600) {
-		$.LoadingOverlay("hide");
-	}
 }
 
 function resizeElements() {
-	if ($(window).width() < 770 || $(window).height() < 600) {
-		$.LoadingOverlay("show_resize");
-	} else {
-		$.LoadingOverlay("hide");
-	}
 	var offsetFooter = 0;
 	if ($("#footer").is(":visible")) {
 		offsetFooter += 341;
@@ -340,8 +331,6 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
-
-			$.LoadingOverlay("hide");
 		});
 	} else {
 		$('#navAccount').hide();

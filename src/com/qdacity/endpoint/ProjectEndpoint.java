@@ -45,7 +45,7 @@ import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
 
 @Api(name = "qdacity",
-	version = Constants.API_VERSION,
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"))
@@ -573,7 +573,7 @@ public class ProjectEndpoint {
 		mail.setFrom("QDAcity <support@qdacity.com>").setSubject("QDAcity Request Authorized").setText(" ").setHtml(message);
 
 		String fullName = validationCoder.getGivenName() + " " + validationCoder.getSurName();
-		fullName = fullName.replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");
+		fullName = fullName.replaceAll("ï¿½", "ae").replaceAll("ï¿½", "oe").replaceAll("ï¿½", "ue");
 		mail.addTo(validationCoder.getEmail(), fullName);
 
 		mail.send();
