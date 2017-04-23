@@ -136,7 +136,7 @@ window.init = function () {
 	
 
 	$("#btnOpenUMLEditor").on("click", function () {
-		window.location.href = "uml-editor.html";
+		window.location.href = 'uml-editor.html?project=' + project_id + '&type=' + project_type;
 	});
 
 	document.getElementById('btnCodeProps').onclick = function () {
