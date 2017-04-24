@@ -3,6 +3,7 @@ package com.qdacity.project.metrics.algorithms.datastructures.converter;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
+import com.qdacity.project.metrics.constants.TextDocumentConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,9 +16,6 @@ import org.jsoup.select.Elements;
 public class ReliabilityDataGenerator {
 
     EvaluationUnit unitOfCoding;
-    private final String CODING_TAG = "coding"; //TODO in eine Constants Klasse
-    private final String CODING_ID_ATTRIBUTE = "code_id"; //TODO in eine Constants Klasse
-    private final String PARAGRAPH_TAG = "p"; //TODO in eine Constants Klasse
 
     public ReliabilityDataGenerator(EvaluationUnit unitOfCoding) {
 	this.unitOfCoding = unitOfCoding;
@@ -66,11 +64,11 @@ public class ReliabilityDataGenerator {
 
     private List<String> split(TextDocument document) {
 	Document parsedDocument = Jsoup.parse(document.getText().getValue());
-	Elements paragraphs = parsedDocument.select(PARAGRAPH_TAG);
+	Elements paragraphs = parsedDocument.select(TextDocumentConstants.PARAGRAPH_TAG);
 	List<String> ratings = new ArrayList<>();
 	if (unitOfCoding == EvaluationUnit.PARAGRAPH) {
 	    for (int i = 0; i < paragraphs.size(); i++) {
-		Elements codings = paragraphs.get(i).select(CODING_TAG);
+		Elements codings = paragraphs.get(i).select(TextDocumentConstants.CODING_TAG);
 		//TODO Units sind hier nicht eindeutig wenn z.B. ein User einen Code nicht gesetzt hat!! Andere DS n�tig!
 		ratings.addAll(getAppliedCodes(codings)); //ACHTUNG: Hier kann es mehr als einen pro Unit geben!! ODER AUCH KEINEN
 	    }
@@ -84,7 +82,7 @@ public class ReliabilityDataGenerator {
     private List<String> getAppliedCodes(Elements codings) {
 	List<String> originalCodeIDs = new ArrayList<>();
 	for (Element originalCoding : codings) {
-	    String codeId = originalCoding.attr(CODING_ID_ATTRIBUTE);
+	    String codeId = originalCoding.attr(TextDocumentConstants.CODING_ID_ATTRIBUTE);
 	    originalCodeIDs.add(codeId);
 	}
 	return originalCodeIDs;
