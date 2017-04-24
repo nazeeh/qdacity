@@ -1,3 +1,4 @@
+package com.qdacity.project.metrics.algorithms.datastructures.converter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,6 +113,7 @@ public class ReliabilityDataGeneratorTest {
 	int rDataIdx = 0;
 	for (ReliabilityData rData : rDataList) {
 	    assert (rData.equals(reliabilityData_SOLUTION.get(rDataIdx++)));
+	    Logger.getLogger("logger").log(Level.INFO, "ALPHA: "+new KrippendorffsAlphaCoefficient(rData, 2).compute());
 	}
     }
 }

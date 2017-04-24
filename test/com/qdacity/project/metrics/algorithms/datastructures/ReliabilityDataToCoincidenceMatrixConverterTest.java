@@ -1,3 +1,4 @@
+package com.qdacity.project.metrics.algorithms.datastructures;
 import com.qdacity.project.metrics.algorithms.datastructures.CoincidenceMatrix;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataToCoincidenceMatrixConverter;
 import org.junit.Test;

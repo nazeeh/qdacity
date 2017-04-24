@@ -1,3 +1,4 @@
+package com.qdacity.project.metrics.algorithms;
 import com.qdacity.project.metrics.algorithms.KrippendorffsAlphaCoefficient;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import org.junit.Test;
