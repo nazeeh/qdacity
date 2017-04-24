@@ -11,7 +11,7 @@ export default class AdminStats extends React.Component {
 		this.init();
 		//this.selectUser = this.selectUser.bind(this);
 	}
-
+	
 	init() {
 		var _this = this;
 		AdminEndpoint.getAdminStats().then(function (resp) {
