@@ -48,7 +48,7 @@ export default class MyEditorView extends React.Component {
 
 	render() {
 		return (
-			<div id="graphContainer" style={{backgroundColor:'yellow', position:'relative', overflow:'hidden', width:'800px', height:'600px', cursor:'default'}}></div>
+			<div id="graphContainer" style={{position:'relative', overflow:'hidden', width:'800px', height:'600px', cursor:'default'}}></div>
 		);
 	}
 
