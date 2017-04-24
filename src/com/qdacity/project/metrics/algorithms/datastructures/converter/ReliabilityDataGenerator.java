@@ -5,6 +5,7 @@ import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import com.qdacity.project.metrics.constants.TextDocumentConstants;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +31,7 @@ public class ReliabilityDataGenerator {
      * @param codeIds relevant codeIds
      * @return ReliabilityData derived from the given Documents
      */
-    public List<ReliabilityData> generate(List<TextDocument> sameDocumentFromDifferentRaters, List<Long> codeIds) {
+    public List<ReliabilityData> generate(Collection<TextDocument> sameDocumentFromDifferentRaters, List<Long> codeIds) {
 	int raters = sameDocumentFromDifferentRaters.size();
 	List<List<String>> ratings = new ArrayList<>();
 	List<ReliabilityData> rDatas = new ArrayList<>();

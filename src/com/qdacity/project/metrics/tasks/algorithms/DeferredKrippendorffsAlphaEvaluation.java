@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvaluation {
 
- 	private final ReliabilityData rData;
+    private final ReliabilityData rData;
 
     public DeferredKrippendorffsAlphaEvaluation(ReliabilityData rData, ValidationProject validationProject, User user, Long validationReportId) {
 	super(validationProject, user, validationReportId);
@@ -26,14 +26,14 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 	DocumentResult docResult = new DocumentResult();
 	//docResult.setDocumentID(validationReportId);
 	docResult.setDocumentName("TEST KRIPP'ALPHA DOC-NAME");
-	ParagraphAgreement pAgreement  = new ParagraphAgreement();
+	ParagraphAgreement pAgreement = new ParagraphAgreement();
 	pAgreement.setFMeasure(result); //TODO just for testing
 	pAgreement.setPrecision(result); //TODO just for testing
 	pAgreement.setRecall(result); //TODO just for testing
 	pAgreement.setfMeasure(result); //TODO just for testing
 	docResult.setParagraphAgreement(pAgreement); //TODO nur Testweise!
-	
-	Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: "+result+" adding to Validaiton Result.");
+
+	Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: " + result + " adding to Validaiton Result.");
 	valResult.addDocumentResult(docResult);
     }
 
