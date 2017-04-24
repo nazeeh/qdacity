@@ -6,14 +6,12 @@ import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ParagraphAgreement;
 import com.qdacity.project.metrics.algorithms.KrippendorffsAlphaCoefficient;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvaluation {
 
-    private final ReliabilityData rData;
+ 	private final ReliabilityData rData;
 
     public DeferredKrippendorffsAlphaEvaluation(ReliabilityData rData, ValidationProject validationProject, User user, Long validationReportId) {
 	super(validationProject, user, validationReportId);
@@ -35,10 +33,8 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 	pAgreement.setfMeasure(result); //TODO just for testing
 	docResult.setParagraphAgreement(pAgreement); //TODO nur Testweise!
 	
-	List<DocumentResult> docResults = new ArrayList<>();
-	docResults.add(docResult);
 	Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: "+result+" adding to Validaiton Result.");
-	valResult.setDocumentResults(docResults);
+	valResult.addDocumentResult(docResult);
     }
 
 }

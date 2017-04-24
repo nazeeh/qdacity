@@ -31,7 +31,6 @@ public class ReliabilityDataToCoincidenceMatrixConverter {
                         //equals NOT PAIRABLE
                         tmpValue = 0;
                     }
-                    //System.out.println(v+"/"+v2+": unit "+unit+"/"+reliabilityData.getAmountUnits()+" ITEMS: "+reliabilityData.getNumberOfItemsInUnit(unit)+" ==> VALUE "+tmpValue);#
                     resultValue += tmpValue;
                 }
                 coincidenceMatrix.set(v, v2, resultValue);

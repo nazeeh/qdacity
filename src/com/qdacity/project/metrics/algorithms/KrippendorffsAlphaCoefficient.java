@@ -30,8 +30,9 @@ public class KrippendorffsAlphaCoefficient {
     }
 
     /**
-     * Computes Krippendorff's Alpha TODO
-     *
+     * Computes Krippendorff's Alpha with the set parameters in the constructor
+     * Uses the formulas as described in <a>https://en.wikipedia.org/wiki/Krippendorff%27s_alpha</a>
+     * WARNING: Does not support multiple codings per unit by one user. Please split your input in multiple reliability Data in that case an run this algorithm several times for each code.
      * @return the result alpha for the given reliabilityData
      */
     public double compute() {

@@ -40,7 +40,6 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	    mgr.setMultithreaded(true); // FIXME needed?
 	    mgr.makePersistent(valResult);
 	} catch (Exception e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	} finally {
 	    mgr.close();

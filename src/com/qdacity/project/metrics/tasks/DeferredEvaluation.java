@@ -87,7 +87,7 @@ public class DeferredEvaluation implements DeferredTask {
 	    switch (evaluationMethod) {
 		case F_MEASURE:
 		    Collection<TextDocument> originalDocs;
-		    originalDocs = getOriginalDocs(docIDs); //TODO auslagern
+		    originalDocs = getOriginalDocs(docIDs);
 		    calculateFMeasure(originalDocs);
 		    break;
 		case KRIPPENDORFFS_ALPHA:
@@ -156,7 +156,7 @@ public class DeferredEvaluation implements DeferredTask {
 		launchInTaskQueue(deferredValidation);
 	    }
 
-	    waitForTasksToFinish(); //TODO
+	    waitForTasksToFinish();
 
 	    aggregateDocAgreement(validationReport);
 
