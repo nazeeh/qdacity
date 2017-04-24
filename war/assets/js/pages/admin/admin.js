@@ -59,7 +59,7 @@ function setupUI() {
 		$('#navSignin').hide();
 		userList = ReactDOM.render(<UserList />, document.getElementById('userList'));
 		adminStats = ReactDOM.render(<AdminStats />, document.getElementById('statistics'));
-		
+
 		// Setup for logged in user
 	} else {
 		$('#navAccount').hide();

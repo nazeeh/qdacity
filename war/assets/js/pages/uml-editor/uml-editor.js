@@ -30,43 +30,42 @@ window.init = function () {
 
 	project_id = urlParams.project;
 	project_type = urlParams.type;
-	
-	
-	if (!mxClient.isBrowserSupported())
-    {
-        // Displays an error message if the browser is not supported.
-        mxUtils.error('Browser is not supported!', 200, false);
-    }
-	
-	
-    view = ReactDOM.render(<MyEditorView projectId={project_id} />, document.getElementById('content'));
-    view.run();
-    
 
-    loadGAPIs(setupUI).then(
-        function (accountModule) {
-            account = accountModule;
-        }
-    );
+
+	if (!mxClient.isBrowserSupported()) {
+		// Displays an error message if the browser is not supported.
+		mxUtils.error('Browser is not supported!', 200, false);
+	}
+
+
+	view = ReactDOM.render(<MyEditorView projectId={project_id} />, document.getElementById('content'));
+	view.run();
+
+
+	loadGAPIs(setupUI).then(
+		function (accountModule) {
+			account = accountModule;
+		}
+	);
 }
 
 function setupUI() {
-    if (account.isSignedIn()) {
-        var profile = account.getProfile();
+	if (account.isSignedIn()) {
+		var profile = account.getProfile();
 
-        $('#navAccount').show();
-        $('#navSignin').hide();
-        ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
-            loadCodes(resp.codesystemID);
-        });
-    } else {
-        $('#navAccount').hide();
-    }
+		$('#navAccount').show();
+		$('#navSignin').hide();
+		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
+			loadCodes(resp.codesystemID);
+		});
+	} else {
+		$('#navAccount').hide();
+	}
 }
 
 function loadCodes(codesystem_id) {
 	var codes = [];
-	
+
 	CodesystemEndpoint.getCodeSystem(codesystem_id).then(function (resp) {
 		resp.items = resp.items || [];
 
@@ -75,43 +74,30 @@ function loadCodes(codesystem_id) {
 		}
 
 
-	    
+
 		for (var i = 0; i < codes.length; i++) {
 			console.log('add ' + codes[i].name);
 			view.addNode(codes[i].name);
 		}
-        
-        
-//addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo, codes[i].codeBookEntry, codes[i].mmElementID, codes[i].relations);
 
-//		for (var i = 0; i < codes.length; i++) {
-//			if (typeof codes[i].subCodesIDs != 'undefined') {
-//				if (codes[i].subCodesIDs.length > 0) {
-//
-//					for (var j = 0; j < codes.length; j++) {
-//						for (var k = 0; k < codes[i].subCodesIDs.length; k++) {
-//							if (codes[i].subCodesIDs[k] == codes[j].codeID) {
-//								relocateNode(codes[j].codeID, codes[i].codeID);
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
+
+		//addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo, codes[i].codeBookEntry, codes[i].mmElementID, codes[i].relations);
+
+		//		for (var i = 0; i < codes.length; i++) {
+		//			if (typeof codes[i].subCodesIDs != 'undefined') {
+		//				if (codes[i].subCodesIDs.length > 0) {
+		//
+		//					for (var j = 0; j < codes.length; j++) {
+		//						for (var k = 0; k < codes[i].subCodesIDs.length; k++) {
+		//							if (codes[i].subCodesIDs[k] == codes[j].codeID) {
+		//								relocateNode(codes[j].codeID, codes[i].codeID);
+		//							}
+		//						}
+		//					}
+		//				}
+		//			}
+		//		}
 
 		//$("#codesystemLoadingDiv").addClass("hidden");
 	});
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
