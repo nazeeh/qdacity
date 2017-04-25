@@ -1,7 +1,6 @@
 package com.qdacity.project.metrics.tasks;
 
 import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
-import com.google.api.server.spi.response.CollectionResponse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -28,7 +27,6 @@ import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
@@ -205,9 +203,7 @@ public class DeferredEvaluation implements DeferredTask {
 		    agreementByDoc.put(revisionDocumentID, agreementList);
 		    // agreementByDoc.putIfAbsent(key, value)
 		}
-
 	    }
-
 	}
 
 	for (Long docID : agreementByDoc.keySet()) {
@@ -238,7 +234,7 @@ public class DeferredEvaluation implements DeferredTask {
      */
     private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
-	List<Long> codeIds = findCodeIds();
+	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
 	Map<ValidationProject, Collection<TextDocument>> validationProjectWithTextDocuments = new HashMap();
 
 	TextDocumentEndpoint tde = new TextDocumentEndpoint();
@@ -282,19 +278,6 @@ public class DeferredEvaluation implements DeferredTask {
 
     private void calculateCohensKappa() {
 	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private List<Long> findCodeIds() throws UnauthorizedException {
-	Long codesystemId = validationProjectsFromUsers.get(0).getCodesystemID();
-
-	CodeSystemEndpoint cse = new CodeSystemEndpoint();
-	CollectionResponse<Code> codes = cse.getCodeSystem(codesystemId, null, null, user);
-	List<Long> codeIds = new ArrayList<>();
-	for (Code code : codes.getItems()) {
-	    //IMPORTANT: Using CodeId (Actual Code Id) and NOT id (Database Key)
-	    codeIds.add(code.getCodeID());
-	}
-	return codeIds;
     }
 
 }
