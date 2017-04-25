@@ -24,6 +24,7 @@ public class KrippendorffsAlphaCoefficient {
      */
     public KrippendorffsAlphaCoefficient(ReliabilityData reliabilityData, int numberOfAvailableCodes) {
         this.R = numberOfAvailableCodes;
+	assert(reliabilityData.getAmountCoder()>1);
         this.cMatrix = ReliabilityDataToCoincidenceMatrixConverter.convert(reliabilityData, numberOfAvailableCodes);
         this.n = cMatrix.getTotalPairableElements();
         assert (this.n > 0);
@@ -42,6 +43,9 @@ public class KrippendorffsAlphaCoefficient {
         double observedDisagreement = computeObservedDisagreement();
         double disagreementExpectedByChance = computeDisagreementExpectedByChance();
         Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Calculation: 1-" + observedDisagreement + "/" + disagreementExpectedByChance); //TODO
+	if(disagreementExpectedByChance == 0) {
+	    return 1.0; //if there is no expected disagreement then there was only one rater, so alpha must be 1.
+	}
         return 1.0 - (observedDisagreement / disagreementExpectedByChance);
     }
 
