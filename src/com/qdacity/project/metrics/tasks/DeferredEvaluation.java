@@ -50,7 +50,7 @@ public class DeferredEvaluation implements DeferredTask {
     private final EvaluationMethod evaluationMethod;
     private final EvaluationUnit evalUnit;
     private List<Long> orignalDocIDs;
-    private final List<Long> raterIds;
+    private final List<Long> raterIds; //TODO?
     private final List<Long> docIDs;
     private List<ValidationProject> validationProjectsFromUsers;
     private ValidationReport validationReport;
@@ -113,13 +113,13 @@ public class DeferredEvaluation implements DeferredTask {
      * prepares the validationProjectsFromUsers so it contains the project in
      * the given revision from all users.
      */
-    private void initValidationProjects() {
+    private void initValidationProjects() { //TODO auslagern
 	Query q;
 	q = getPersistenceManager().newQuery(ValidationProject.class, "revisionID  == :revisionID");
 
 	Map<String, Long> params = new HashMap<>();
 	params.put("revisionID", revisionID);
-	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params);
+	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params); //TODO Fehler! liefert nur eins?
     }
 
     private Collection<TextDocument> getOriginalDocs(List<Long> docIDs) throws UnauthorizedException {
@@ -208,7 +208,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	for (Long docID : agreementByDoc.keySet()) {
 	    ParagraphAgreement avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
-	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measuzre of " + avgDocAgreement.getfMeasure());
+	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getfMeasure());
 	    report.setDocumentResultAverage(docID, avgDocAgreement);
 	}
 
@@ -235,34 +235,23 @@ public class DeferredEvaluation implements DeferredTask {
     private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
-	Map<ValidationProject, Collection<TextDocument>> validationProjectWithTextDocuments = new HashMap();
 
-	TextDocumentEndpoint tde = new TextDocumentEndpoint();
-	//Looping over validationProjects has the effect of retrieving documents from all users
-	for (ValidationProject project : validationProjectsFromUsers) {
-	    //gets the documents from the validationProject of a user with the rights of our user.
-	    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), "VALIDATION", user).getItems();
-	    //TODO vielleicht noch mal filtern hier (man soll ja nach Textdocument filtern k�nnen)
-	    validationProjectWithTextDocuments.put(project, textDocuments);
-	}
+	Map<String, List<TextDocument>> sameDocumentsFromDifferentRatersMap
+		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
+	//TODO nach Textdocumenten filtern!
 
 	//Convert TextDocuments to Reliability Data Matrix, which will be input for Krippendorffs Alpha
-	//It is important to keep track of which ReliabilityData belongs to which ValidationProject
-	Map<ValidationProject, List<ReliabilityData>> validationProjectsWithReliabilityData = new HashMap();
-	for (ValidationProject project : validationProjectWithTextDocuments.keySet()) {
-	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(validationProjectWithTextDocuments.get(project), codeIds);
-	    validationProjectsWithReliabilityData.put(project, reliabilityData);
-	}
-
-	//Create the DeferredKrippendorffsAlphaEvaluation for every ValidationProject and ReliabilityData
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
-	for (ValidationProject project : validationProjectsWithReliabilityData.keySet()) {
-	    for (ReliabilityData rData : validationProjectsWithReliabilityData.get(project)) {
-		kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(rData, project, user, validationReport.getId()));
+	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
+	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
+	    //create a the tasks with the reliability Data
+	    for (ReliabilityData rData : reliabilityData) {
+		kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(rData, validationProjectsFromUsers.get(0), user, validationReport.getId()));
 	    }
 	}
-	//Now launch them all
-	taskQueue.launchListInTaskQueue(kAlphaTasks); //TODO alles was mit der Queue zu tun hat in ne eigene Klasse
+
+	//Now launch all the Tasks
+	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
 	taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), validationReport.getId(), user);
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");

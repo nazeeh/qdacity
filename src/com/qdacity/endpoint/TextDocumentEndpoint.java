@@ -30,6 +30,7 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
@@ -277,6 +278,30 @@ public class TextDocumentEndpoint {
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
+	}
+	
+	/**
+	 * 
+	 * @param validationProjects
+	 * @param user
+	 * @return
+	 * @throws UnauthorizedException 
+	 */
+	public static Map<String, List<TextDocument>> getDocumentsFromDifferentValidationProjectsGroupedByName(List<ValidationProject> validationProjects, User user) throws UnauthorizedException {
+	    	TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		Map<String, List<TextDocument>> sameDocumentsFromDifferentRaters = new HashMap();
+		
+		for (ValidationProject project : validationProjects) {
+			//gets the documents from the validationProject of a user with the rights of our user.
+		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), "VALIDATION", user).getItems();
+		    for(TextDocument doc : textDocuments) {
+			if(null == sameDocumentsFromDifferentRaters.get(doc.getTitle())) {
+			    sameDocumentsFromDifferentRaters.put(doc.getTitle(), new ArrayList<TextDocument>());
+			}
+			sameDocumentsFromDifferentRaters.get(doc.getTitle()).add(doc);
+		    }
+		}
+		return sameDocumentsFromDifferentRaters;
 	}
 
 }
