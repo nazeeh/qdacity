@@ -1,8 +1,10 @@
 package com.qdacity.project.codesystem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -44,6 +46,14 @@ public class Code {
 	@Column(
 		name = "codeBookEntry")
 	CodeBookEntry codeBookEntry;
+
+	@Persistent(
+		defaultFetchGroup = "true")
+	@Element(
+		dependent = "true")
+	@Column(
+		name = "relations")
+	List<CodeRelation> relations;
 
 	public Long getId() {
 		return id;
@@ -145,6 +155,31 @@ public class Code {
 		this.codeBookEntry.setWhenToUse(codeBookEntry.getWhenToUse());
 		this.codeBookEntry.setWhenNotToUse(codeBookEntry.getWhenNotToUse());
 
+	}
+
+	public List<CodeRelation> getRelations() {
+		return relations;
+	}
+
+	public void setRelations(List<CodeRelation> relations) {
+		this.relations = relations;
+	}
+
+	public void addRelation(CodeRelation relation) {
+		if (this.relations == null) this.relations = new ArrayList<CodeRelation>();
+		this.relations.add(relation);
+
+	}
+
+	public void removeRelation(Long relationId) {
+		if (this.relations == null) this.relations = new ArrayList<CodeRelation>();
+		int index = -1;
+		for (int i = 0; i < relations.size(); i++) {
+			if (relations.get(i).getKey().getId() == relationId){
+				relations.remove(i);
+				break;
+			}
+		}
 	}
 
 }

@@ -100,7 +100,7 @@ public class Authorization {
 		if (isValidationCoder) return AuthorizationLevel.VALIDATIONCODER;
 
 		PersistenceManager mgr = getPersistenceManager();
-		Project parentProject = mgr.getObjectById(Project.class, project.getProjectID());
+		Project parentProject = (Project) Cache.getOrLoad(project.getProjectID(), Project.class);
 
 		Boolean isProjectOwner = parentProject.getOwners().contains(user.getId());
 		if (isProjectOwner) return AuthorizationLevel.CODER;

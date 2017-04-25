@@ -2,6 +2,7 @@ package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -31,8 +34,10 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
+import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
 import com.qdacity.taskboard.Task;
@@ -42,7 +47,7 @@ import com.qdacity.user.UserType;
 
 @Api(
 	name = "qdacity",
-	version = "v4",
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
@@ -187,19 +192,16 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User getUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		User user = null;
-		try {
-			user = mgr.getObjectById(User.class, id);
 
-			// Check if user is authorized
-			Authorization.checkAuthorization(user, loggedInUser);
+		User user = getUser(id);
 
-		} finally {
-			mgr.close();
-		}
+		// Check if user is authorized
+		Authorization.checkAuthorization(user, loggedInUser);
+
 		return user;
 	}
+
+
 
 	@ApiMethod(
 		name = "updateUserType",
@@ -210,8 +212,8 @@ public class UserEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		User user = null;
 		try {
-			user = mgr.getObjectById(User.class, id);
 
+			user = (User) Cache.getOrLoad(id, User.class);
 			// FIXME Check if user is authorized
 			// Authorization.checkAuthorization(user, loggedInUser);
 
@@ -226,6 +228,9 @@ public class UserEndpoint {
 					break;
 			}
 
+			mgr.makePersistent(user);
+			Cache.cache(id, User.class, user);
+
 		} finally {
 			mgr.close();
 			}
@@ -238,22 +243,7 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User getCurrentUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		User user = null;
-		try {
-			user = mgr.getObjectById(User.class, loggedInUser.getUserId());
-
-			// PreLoad User Data
-			if (user.getLastProjectId() != null) {
-				ProjectDataPreloader task = new ProjectDataPreloader(user.getLastProjectId(), user.getLastProjectType());
-				Queue queue = QueueFactory.getDefaultQueue();
-				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-			}
-
-		} finally {
-			mgr.close();
-		}
-		return user;
+		return getUser(loggedInUser.getUserId());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -269,7 +259,7 @@ public class UserEndpoint {
 		List<TaskBoard> boards = new ArrayList<TaskBoard>();;
 		TaskBoard board = null;
 		try {
-			user = mgr.getObjectById(User.class, loggedInUser.getUserId());
+			user = (User) Cache.getOrLoad(loggedInUser.getUserId(), User.class);
 			Query query = mgr.newQuery(TaskBoard.class);
 			query.setFilter("id == " + user.getTaskBoardId());
 
@@ -356,6 +346,7 @@ public class UserEndpoint {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 			mgr.makePersistent(user);
+			Cache.cache(user.getId(), User.class, user);
 		} finally {
 			mgr.close();
 		}
@@ -377,7 +368,7 @@ public class UserEndpoint {
 	public void removeUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, id);
+			User user = (User) Cache.getOrLoad(id, User.class);
 
 			// Check if user is authorized
 			Authorization.checkAuthorization(user, loggedInUser);
@@ -386,6 +377,53 @@ public class UserEndpoint {
 		} finally {
 			mgr.close();
 		}
+	}
+
+	private User getUser(String userId) throws UnauthorizedException {
+		User user = null;
+		try {
+
+			user = (User) Cache.get(userId, User.class);
+
+			if (user == null || user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
+
+				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+				Key key = KeyFactory.createKey("User", userId);
+				Entity userEntity = datastore.get(key);
+
+				user = new User();
+				user.setEmail((String) userEntity.getProperty("email"));
+				user.setGivenName((String) userEntity.getProperty("givenName"));
+				user.setId(userEntity.getKey().getName());
+				user.setProjects((List<Long>) userEntity.getProperty("projects"));
+				user.setSurName((String) userEntity.getProperty("surName"));
+				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
+				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
+				user.setLastLogin((Date) userEntity.getProperty("lastLogin"));
+				Object lastPrjType = userEntity.getProperty("lastProjectType");
+				if (lastPrjType != null) user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
+
+				if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
+					user.setLastLogin(new Date());
+					userEntity.setProperty("lastLogin", new Date());
+					datastore.put(userEntity);
+				}
+				Cache.cache(user.getId(), User.class, user);
+			}
+
+			// PreLoad User Data
+			if (user.getLastProjectId() != null && user.getLastProjectType() != null) {
+				ProjectDataPreloader task = new ProjectDataPreloader(user.getLastProjectId(), user.getLastProjectType());
+				Queue queue = QueueFactory.getQueue("PreloadQueue");
+				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+			}
+
+		} catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
+			e.printStackTrace();
+			throw new UnauthorizedException("User is not registered");
+
+		}
+		return user;
 	}
 
 	private boolean containsUser(User user) {

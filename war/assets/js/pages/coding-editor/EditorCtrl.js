@@ -6,20 +6,20 @@ import 'script!../../../../components/imagesloaded/imagesloaded.pkgd.min.js';
 
 export default class EditorCtrl {
 
-	constructor( easytree ) {
+	constructor(easytree) {
 		this.easytree = easytree;
 		this.agreementMap = false;
 		this.setupFontSelector();
 		this.setupFontSizeSelector();
-		
+
 		this.iframe = document.getElementById('editor');
-		
-		
-		
+
+
+
 		// Make sure we're in standards mode.
 		var doc = this.iframe.contentDocument;
 		$("#editor").css({
-			height : $(window).height() - 52
+			height: $(window).height() - 52
 		});
 		if (doc.compatMode !== 'CSS1Compat') {
 			doc.open();
@@ -36,58 +36,58 @@ export default class EditorCtrl {
 		}
 		// Create Squire instance
 		this.editor = new Squire(doc, {
-			blockTag : 'p',
-			blockAttributes : {
-				'class' : 'paragraph'
+			blockTag: 'p',
+			blockAttributes: {
+				'class': 'paragraph'
 			},
-			tagAttributes : {
-				ul : {
-					'class' : 'UL'
+			tagAttributes: {
+				ul: {
+					'class': 'UL'
 				},
-				ol : {
-					'class' : 'OL'
+				ol: {
+					'class': 'OL'
 				},
-				li : {
-					'class' : 'listItem'
+				li: {
+					'class': 'listItem'
 				}
 			}
 		});
 		this.editor['readOnly']('true');
-		
+
 		var editorStyle = doc.createElement('link');
 		editorStyle.href = 'assets/css/editorView.css';
 		editorStyle.rel = 'stylesheet';
 		doc.querySelector('head').appendChild(editorStyle);
-			
+
 		var codingBracketStyle = doc.createElement('link');
 		codingBracketStyle.href = 'assets/css/codingBrackets.css';
 		codingBracketStyle.rel = 'stylesheet';
 		doc.querySelector('head').appendChild(codingBracketStyle);
-		
+
 		this.registerEventHandlers(this.editor);
 	}
-	
-	
-	showsAgreementMap(mapFlag){
+
+
+	showsAgreementMap(mapFlag) {
 		this.agreementMap = mapFlag;
 	}
-  
-	registerEventHandlers(editor){
-		document.getElementById('btnTxtBold').onclick = function() {
+
+	registerEventHandlers(editor) {
+		document.getElementById('btnTxtBold').onclick = function () {
 			editor['bold']();
 		}
 
-		document.getElementById('btnTxtItalic').onclick = function() {
+		document.getElementById('btnTxtItalic').onclick = function () {
 			editor['italic']();
 		}
 
-		document.getElementById('btnTxtUnderline').onclick = function() {
+		document.getElementById('btnTxtUnderline').onclick = function () {
 			editor['underline']();
 		}
 
-		
 
-		$("#txtSizeSpinner").on("spin", function(event, ui) {
+
+		$("#txtSizeSpinner").on("spin", function (event, ui) {
 			editor['setFontSize'](ui.value);
 		});
 	}
@@ -101,22 +101,22 @@ export default class EditorCtrl {
 			this.addTooltipsToEditor(doc);
 		}
 		this.addCodingBrackets();
-		if (this.agreementMap){
+		if (this.agreementMap) {
 			$("#agreementMapSettings").removeClass("hidden");
 			var maxVal = this.getMaxFalseNeg();
-			this.highlightAgreementMap(Math.ceil(maxVal/2));
-			$( "#agreementMapSlider" ).slider({
-		        range: "max",
-		        min: 1,
-		        max: maxVal,
-		        value: Math.ceil(maxVal/2),
-		        slide: function( event, ui ) {		        	
-		        	_this.highlightAgreementMap(ui.value);
-		        }
-		   });
+			this.highlightAgreementMap(Math.ceil(maxVal / 2));
+			$("#agreementMapSlider").slider({
+				range: "max",
+				min: 1,
+				max: maxVal,
+				value: Math.ceil(maxVal / 2),
+				slide: function (event, ui) {
+					_this.highlightAgreementMap(ui.value);
+				}
+			});
 		}
 	}
-	
+
 	addTooltipsToEditor(doc) {
 		var elements = doc.text;
 		var foundArray = $("#editor").contents().find('coding');
@@ -126,134 +126,134 @@ export default class EditorCtrl {
 		for (var i = 0; i < foundArray.length; i++) {
 			var node = foundArray[i];
 			$(node).tooltip({
-				"content" : "Code [" + $(node).attr('codeName') + "]",
-				placement : 'top'
+				"content": "Code [" + $(node).attr('codeName') + "]",
+				placement: 'top'
 			});
 
 		}
 	}
-	
-	highlightAgreementMap(maxValue){
-		$( "#maxFalseNeg" ).html(maxValue );
+
+	highlightAgreementMap(maxValue) {
+		$("#maxFalseNeg").html(maxValue);
 		var all = $("#editor").contents().find('p');
-		var filtered =  $("#editor").contents().find('p').filter(function() {
+		var filtered = $("#editor").contents().find('p').filter(function () {
 			var falseNegCount = $(this).attr('falsenegcount');
-		    return  falseNegCount >= maxValue;
+			return falseNegCount >= maxValue;
 		});
-		
-		filtered.css( "backgroundColor", "#cc6666" );
-		all.not(filtered).css( "backgroundColor", "white" );
+
+		filtered.css("backgroundColor", "#cc6666");
+		all.not(filtered).css("backgroundColor", "white");
 	}
-	
-	getMaxFalseNeg(){
+
+	getMaxFalseNeg() {
 		var max = 0;
-		$("#editor").contents().find('p').each(function() {
+		$("#editor").contents().find('p').each(function () {
 			var falsenegcount = $(this).attr('falsenegcount');
-			if (falsenegcount > max ) max = falsenegcount;
+			if (falsenegcount > max) max = falsenegcount;
 		});
 		return max;
 	}
-	
-	addCodingBrackets(){
+
+	addCodingBrackets() {
 		var doc = this.iframe.contentDocument;
 		var _this = this;
-		$(doc).imagesLoaded( function() {
+		$(doc).imagesLoaded(function () {
 			$(doc).find(".svgContainer").remove();
 			var codingsMap = _this.getCodingsFromText(doc);
 			var svgDiv = (new CodingBrackets(_this)).createCodingBrackets(doc, codingsMap);
 			var body = doc.querySelector('body');
 			body.insertBefore(svgDiv, body.firstChild);
 		});
-		
+
 	}
-	
-	getCodingsFromText(text){
+
+	getCodingsFromText(text) {
 		var codingMap = {};
 		var codingNodes = $("#editor").contents().find('coding');
-		if (codingNodes.length > 0){
+		if (codingNodes.length > 0) {
 			var codingData = {};
 			var currentID = -1;
-			for ( var i = 0; i< codingNodes.length; i++) {
+			for (var i = 0; i < codingNodes.length; i++) {
 				var codingNode = codingNodes[i];
 				currentID = codingNode.getAttribute("id");
 				// One code ID may have multiple DOM elements, if this is a new one create a coding object
-				if (!(currentID in codingMap)){
+				if (!(currentID in codingMap)) {
 					codingData = {};
 					codingData.offsetTop = codingNode.offsetTop;
 					codingData.height = codingNode.offsetHeight;
-					codingData.name = codingNode.getAttribute("title"); 
-					codingData.codingId = currentID; 
+					codingData.name = codingNode.getAttribute("title");
+					codingData.codingId = currentID;
 					codingData.color = this.getCodeColor(codingNode.getAttribute("code_id"));
-					
+
 					codingMap[currentID] = codingData;
 				}
 				// if this is just another DOM element for a coding that has already been created, then adjust the hight
-				else{ 
+				else {
 					codingMap[currentID].height = codingNode.offsetTop - codingMap[currentID].offsetTop + codingNode.offsetHeight;
 				}
 			}
 		}
-	
-	return codingMap;
+
+		return codingMap;
 	}
-	
+
 	getCodeColor(id, target) {
 		var node = this.easytree.getNode(id);
 		if (node != null) return node.color;
 		else return "#000";
 	}
-	
-	activateCodingInEditor (codingID, scrollToSection) {
-				var range;
-				range = document.createRange();
-				var codingNodes = $("#editor").contents().find('coding[id=\'' + codingID + '\']');
-				var startNode = codingNodes[0];
-				var endNode = codingNodes[codingNodes.length - 1];
 
-				var raWnge = this.iframe.contentDocument.createRange();
-				range.setStart(startNode, 0);
-				range.setEnd(endNode, endNode.childNodes.length);
-				this.editor.setSelection(range);
-				
-				//Scroll to selection
-				if (scrollToSection){
-					var offset = startNode.offsetTop;
-					$("#editor").contents().scrollTop(offset);
-				}
+	activateCodingInEditor(codingID, scrollToSection) {
+		var range;
+		range = document.createRange();
+		var codingNodes = $("#editor").contents().find('coding[id=\'' + codingID + '\']');
+		var startNode = codingNodes[0];
+		var endNode = codingNodes[codingNodes.length - 1];
 
-//			}
-//		}
+		var raWnge = this.iframe.contentDocument.createRange();
+		range.setStart(startNode, 0);
+		range.setEnd(endNode, endNode.childNodes.length);
+		this.editor.setSelection(range);
+
+		//Scroll to selection
+		if (scrollToSection) {
+			var offset = startNode.offsetTop;
+			$("#editor").contents().scrollTop(offset);
+		}
+
+		//			}
+		//		}
 	}
-	
-	setCoding(codingID, activeID, name, author){
+
+	setCoding(codingID, activeID, name, author) {
 		this.editor['setCoding'](codingID, activeID, name, author);
 		this.addCodingBrackets();
 	}
-	
-	removeCoding(copdingID){
+
+	removeCoding(copdingID) {
 		return this.editor['removeCoding'](copdingID);
 	}
-	
-	setHTML(content){
+
+	setHTML(content) {
 		this.editor.setHTML(content);
 		this.addCodingBrackets();
 		this.addTooltipsToEditor(textDocumentID);
 	}
-	
-	getHTML(){
+
+	getHTML() {
 		return this.editor.getHTML()
 	}
-	
-	setReadOnly(value){
+
+	setReadOnly(value) {
 		this.editor.readOnly('false');
 		//resizeElements();
 	}
-	
-	
-	setupFontSelector(){
+
+
+	setupFontSelector() {
 		var _this = this;
 		$.widget("custom.combobox", {
-			_create : function() {
+			_create: function () {
 				this.wrapper = $("<span>").addClass("custom-combobox").insertAfter(this.element);
 
 				this.element.hide();
@@ -261,41 +261,43 @@ export default class EditorCtrl {
 				this._createShowAllButton();
 			},
 
-			_createAutocomplete : function() {
-				var selected = this.element.children(":selected"), value = selected.val() ? selected.text() : " ";
+			_createAutocomplete: function () {
+				var selected = this.element.children(":selected"),
+					value = selected.val() ? selected.text() : " ";
 
 				this.input = $("<input>").appendTo(this.wrapper).val(value).attr("title", "").addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left").autocomplete({
-					delay : 0,
-					minLength : 0,
-					source : $.proxy(this, "_source")
+					delay: 0,
+					minLength: 0,
+					source: $.proxy(this, "_source")
 				}).tooltip({
-					"trigger" : "manual"
+					"trigger": "manual"
 				});
 
 				this._on(this.input, {
-					autocompleteselect : function(event, ui) {
+					autocompleteselect: function (event, ui) {
 						ui.item.option.selected = true;
 						this._trigger("select", event, {
-							item : ui.item.option
+							item: ui.item.option
 						});
 						_this.editor.setFontFace(ui.item.option.innerHTML);
 					},
 
-					autocompletechange : "_removeIfInvalid"
+					autocompletechange: "_removeIfInvalid"
 				});
 			},
 
-			_createShowAllButton : function() {
-				var input = this.input, wasOpen = false;
+			_createShowAllButton: function () {
+				var input = this.input,
+					wasOpen = false;
 
 				$("<a>").attr("tabIndex", -1).attr("title", "Show All Items").appendTo(this.wrapper).button({
-					icons : {
-						primary : "ui-icon-triangle-1-s"
+					icons: {
+						primary: "ui-icon-triangle-1-s"
 					},
-					text : false
-				}).removeClass("ui-corner-all").addClass("custom-combobox-toggle ui-corner-right").mousedown(function() {
+					text: false
+				}).removeClass("ui-corner-all").addClass("custom-combobox-toggle ui-corner-right").mousedown(function () {
 					wasOpen = input.autocomplete("widget").is(":visible");
-				}).click(function() {
+				}).click(function () {
 					input.focus();
 
 					// Close if already visible
@@ -309,20 +311,20 @@ export default class EditorCtrl {
 				});
 			},
 
-			_source : function(request, response) {
+			_source: function (request, response) {
 				var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-				response(this.element.children("option").map(function() {
+				response(this.element.children("option").map(function () {
 					var text = $(this).text();
 					if (this.value && (!request.term || matcher.test(text)))
 						return {
-							label : text,
-							value : text,
-							option : this
+							label: text,
+							value: text,
+							option: this
 						};
 				}));
 			},
 
-			_removeIfInvalid : function(event, ui) {
+			_removeIfInvalid: function (event, ui) {
 
 				// Selected an item, nothing to do
 				if (ui.item) {
@@ -330,8 +332,10 @@ export default class EditorCtrl {
 				}
 
 				// Search for a match (case-insensitive)
-				var value = this.input.val(), valueLowerCase = value.toLowerCase(), valid = false;
-				this.element.children("option").each(function() {
+				var value = this.input.val(),
+					valueLowerCase = value.toLowerCase(),
+					valid = false;
+				this.element.children("option").each(function () {
 					if ($(this).text().toLowerCase() === valueLowerCase) {
 						this.selected = valid = true;
 						return false;
@@ -346,30 +350,30 @@ export default class EditorCtrl {
 				// Remove invalid value
 				this.input.val("").tooltip("set", "content", value + " is not supported").tooltip("show");
 				this.element.val("");
-				this._delay(function() {
+				this._delay(function () {
 					this.input.tooltip("hide");
 				}, 2500);
 				this.input.autocomplete("instance").term = "";
 			},
 
-			_destroy : function() {
+			_destroy: function () {
 				this.wrapper.remove();
-				this.element.show(); 
+				this.element.show();
 			}
 		});
-		
+
 		//make searchable and styled:
 		$("#combobox").combobox();
-		$("#toggle").click(function() {
+		$("#toggle").click(function () {
 			$("#combobox").toggle();
 		});
 	}
-	
-	setupFontSizeSelector(){
+
+	setupFontSizeSelector() {
 		$('#txtSizeSpinner').spinner({
-			min : 1,
-			max : 99,
-			step : 1
+			min: 1,
+			max: 99,
+			step: 1
 		});
 		$('#txtSizeSpinner').width(20);
 		$('#txtSizeSpinner').height(25);

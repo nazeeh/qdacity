@@ -1,5 +1,7 @@
 package com.qdacity.project.tasks;
 
+import java.util.logging.Level;
+
 import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.datastore.KeyFactory;
@@ -32,6 +34,10 @@ public class ProjectDataPreloader implements DeferredTask {
 
 	@Override
 	public void run() {
+		if (projectType == null) {
+			java.util.logging.Logger.getLogger("logger").log(Level.WARNING, " Could not preload data because type is null");
+			return;
+		}
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {

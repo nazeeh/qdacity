@@ -59,7 +59,7 @@ public class WarmupServlet extends HttpServlet {
 
 	private void warmupProjectDataPreloader() {
 		ProjectDataPreloader task = new ProjectDataPreloader(5703572956119040L, ProjectType.PROJECT);
-		Queue queue = QueueFactory.getDefaultQueue();
+		Queue queue = QueueFactory.getQueue("PreloadQueue");
 		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 	}
 

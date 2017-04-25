@@ -38,7 +38,7 @@ import com.qdacity.project.metrics.ValidationReport;
 
 @Api(
 	name = "qdacity",
-	version = "v4",
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",

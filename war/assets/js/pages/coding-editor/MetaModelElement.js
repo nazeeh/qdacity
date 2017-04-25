@@ -1,54 +1,53 @@
+export default class MetaModelElement {
+	constructor(elementId, elementName, type) {
+		this.id = elementId;
+		this.name = elementName;
+		this.type = type;
+		this.generalizations = [];
+		this.specializations = [];
+		this.selected = false;
+	}
 
-
-export default class MetaModelElement{
-	constructor(elementId, elementName) {
-		  this.id = elementId;
-		  this.name = elementName;
-		  this.generalizations = [];
-		  this.specializations = [];
-		  this.selected = false;
-	  }
-	
-	getId(){
+	getId() {
 		return this.id;
 	}
-	setGeneralization(generalizations){
+	setGeneralization(generalizations) {
 		this.generalizations = generalization;
 	}
-	
-	addGeneralization(generalization){
+
+	addGeneralization(generalization) {
 		this.generalizations.push(generalization);
 	}
-	
-	addSpecialization(generalization){
+
+	addSpecialization(generalization) {
 		this.specializations.push(generalization);
 	}
-	
-	hasGeneralization(generalization){
+
+	hasGeneralization(generalization) {
 		return this.generalizations.indexOf(generalization) != -1
 	}
-	
-	hasSpecialization(generalization){
+
+	hasSpecialization(generalization) {
 		return this.specializations.indexOf(generalization) != -1
 	}
-	
-	setSpecialization(specialization){
+
+	setSpecialization(specialization) {
 		this.specializations = specialization;
 	}
-	
-	getSpecialization(){
+
+	getSpecialization() {
 		this.specializations;
 	}
-	
-	setSelected(value){
+
+	setSelected(value) {
 		this.selected = value;
 	}
-	
-	toggleSelected(){
-		this.selected = (this.selected==true) ?false:true;
+
+	toggleSelected() {
+		this.selected = (this.selected == true) ? false : true;
 	}
-	
-	isSelected(){
+
+	isSelected() {
 		return this.selected;
 	}
 

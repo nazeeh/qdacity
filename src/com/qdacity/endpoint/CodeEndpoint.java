@@ -26,11 +26,12 @@ import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
+import com.qdacity.project.codesystem.CodeRelation;
 import com.qdacity.project.codesystem.CodeSystem;
 
 @Api(
 	name = "qdacity",
-	version = "v4",
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
@@ -161,6 +162,58 @@ public class CodeEndpoint {
 		return code;
 	}
 
+	@ApiMethod(
+		name = "codes.addRelationship",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code addRelationship(@Named("sourceCode") Long codeID, CodeRelation realtion, User user) throws UnauthorizedException {
+		// Fixme Authorization
+		Code code = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			code = mgr.getObjectById(Code.class, codeID);
+			Authorization.checkAuthorization(code, user);
+
+			code.addRelation(realtion);
+			mgr.makePersistent(code);
+
+			List<CodeRelation> relationships = code.getRelations();
+			for (CodeRelation codeRelation : relationships) {
+				codeRelation.getCodeId();
+			}
+		} finally {
+			mgr.close();
+		}
+		return code;
+	}
+
+	@ApiMethod(
+		name = "codes.removeRelationship",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code removeRelationship(@Named("codeId") Long codeID, @Named("relationshipId") Long relationId, User user) throws UnauthorizedException {
+		// Fixme Authorization
+		Code code = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			code = mgr.getObjectById(Code.class, codeID);
+			Authorization.checkAuthorization(code, user);
+
+			code.removeRelation(relationId);
+			mgr.makePersistent(code);
+
+			List<CodeRelation> relationships = code.getRelations();
+			for (CodeRelation codeRelation : relationships) {
+				codeRelation.getCodeId();
+			}
+		} finally {
+			mgr.close();
+		}
+		return code;
+	}
+
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
@@ -223,11 +276,14 @@ public class CodeEndpoint {
 			Code oldParent = getCode(oldParentID, code.getCodesystemID());
 			Code newParent = getCode(newParentID, code.getCodesystemID());
 
-			oldParent.removeSubCodeID(code.getCodeID());
+			if (oldParent != null) {
+				oldParent.removeSubCodeID(code.getCodeID());
+				mgr.makePersistent(oldParent);
+			}
+
 			newParent.addSubCodeID(code.getCodeID());
 			code.setParentID(newParentID);
 
-			mgr.makePersistent(oldParent);
 			mgr.makePersistent(newParent);
 			mgr.makePersistent(code);
 
@@ -251,7 +307,9 @@ public class CodeEndpoint {
 			params.put("code", codeID);
 			params.put("codesystem", Codesystem);
 
-			code = ((List<Code>) query.executeWithMap(params)).get(0);
+			List<Code> codeList = ((List<Code>) query.executeWithMap(params));
+
+			if (codeList.size() > 0) code = codeList.get(0);
 
 		} finally {
 			mgr.close();

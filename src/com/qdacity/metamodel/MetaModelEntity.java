@@ -25,6 +25,9 @@ public class MetaModelEntity {
 	@Persistent
 	Boolean isAbstract;
 
+	@Persistent
+	MetaModelEntityType type;
+
 	public Long getId() {
 		return id;
 	}
@@ -63,6 +66,14 @@ public class MetaModelEntity {
 
 	public void setIsAbstract(Boolean isAbstract) {
 		this.isAbstract = isAbstract;
+	}
+
+	public MetaModelEntityType getType() {
+		return type;
+	}
+
+	public void setType(MetaModelEntityType type) {
+		this.type = type;
 	}
 	
 	

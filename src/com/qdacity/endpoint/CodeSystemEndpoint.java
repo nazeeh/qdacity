@@ -30,11 +30,12 @@ import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
+import com.qdacity.project.codesystem.CodeRelation;
 import com.qdacity.project.codesystem.CodeSystem;
 
 @Api(
 	name = "qdacity",
-	version = "v4",
+	version = Constants.VERSION,
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
@@ -116,6 +117,13 @@ public class CodeSystemEndpoint {
 			// for lazy fetch.
 			for (Code obj : execute) {
 				obj.getCodeBookEntry().getDefinition();
+				List<CodeRelation> relations = obj.getRelations();
+				if (relations != null) {
+					for (CodeRelation codeRelation : relations) {
+						codeRelation.getCodeId();
+					}
+				}
+
 			}
 
 		} finally {
