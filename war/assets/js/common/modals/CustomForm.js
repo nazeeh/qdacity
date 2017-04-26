@@ -6,14 +6,25 @@ export default class CustomForm extends VexModal {
 		super();
 		this.formElements = "";
 		this.message = message;
+	}
 	
-	  this.formElements += '<div class="vex-custom-input-wrapper">';
-	  itemList.forEach(function(el) {
-		  _this.formElements += '<input type="checkbox" name="'+name+'" value="'+el.id+'">'+el.title+'<br>';
-  	  });
-	  this.formElements += '</div>';
-	  this.formElements += '</div>';
-  }
+	addTextInput(name, label, placeholder, value) {
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+		this.formElements += '<label for="' + name + '">' + label + '</label>';
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += '<input placeholder="' + placeholder + '" name="' + name + '" type="text" value="' + value + '" ></input>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+	}
+
+	addTextField(name, label, placeholder, value) {
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+		this.formElements += '<label for="' + name + '">' + label + '</label>';
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += '<textarea placeholder="' + placeholder + '" rows="15" cols="200" name="' + name + '" type="text" value="' + value + '" ></textarea>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+	}
   
     addSelect(name, options, label) {
       	  var _this = this;
