@@ -132,6 +132,5 @@ export default class ProjectEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
->>>>>>> upstream/master
 
 }

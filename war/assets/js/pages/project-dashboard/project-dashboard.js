@@ -514,4 +514,3 @@ function showDescriptionModal() {
 		});
 	});
 }
->>>>>>> upstream/master
