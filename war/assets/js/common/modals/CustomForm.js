@@ -6,7 +6,7 @@ export default class CustomForm extends VexModal {
 		super();
 		this.formElements = "";
 		this.message = message;
-	}
+	
 	  this.formElements += '<div class="vex-custom-input-wrapper">';
 	  itemList.forEach(function(el) {
 		  _this.formElements += '<input type="checkbox" name="'+name+'" value="'+el.id+'">'+el.title+'<br>';
