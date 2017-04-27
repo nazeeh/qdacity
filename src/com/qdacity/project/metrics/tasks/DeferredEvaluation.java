@@ -74,7 +74,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	initValidationProjects();
 
-	initValidationReport(); //TODO gilt nur für FMeasure so wie es hier ist
+	initValidationReport(); //TODO gilt nur fï¿½r FMeasure so wie es hier ist
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
 
@@ -151,7 +151,7 @@ public class DeferredEvaluation implements DeferredTask {
 		taskQueue.launchInTaskQueue(deferredValidation);
 	    }
 
-	    taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), validationReport.getId(), user);
+	    taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), validationReport.getId(), user);
 
 	    aggregateDocAgreement(validationReport);
 
@@ -242,9 +242,16 @@ public class DeferredEvaluation implements DeferredTask {
 	tabularValidationReport.setDatetime(new Date());
 	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
 	///END TODO
-	
+
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+	
+	List<String> tableHead = new ArrayList<>();
+	tableHead.add("Documents \\ Codes");
+	for(Long codeId : codeIds) {
+	    tableHead.add(codeId+"");
+	}
+	tabularValidationReport.addRow(tableHead);
 
 	Map<String, List<TextDocument>> sameDocumentsFromDifferentRatersMap
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
@@ -254,20 +261,21 @@ public class DeferredEvaluation implements DeferredTask {
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
-	    //create a the tasks with the reliability Data
-	    for (ReliabilityData rData : reliabilityData) {
-		kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(rData, validationProjectsFromUsers.get(0), user, tabularValidationReport));
-	    }
+	    //create all the tasks with the reliability Data
+	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, tabularValidationReport, documentTitle));
 	}
 
 	//Now launch all the Tasks
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
-	//TODO wird nicht gehen!!
-	taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), tabularValidationReport.getId(), user);
-	
+	Thread.sleep(10000); //TODO richtig auf die ergebnisse warten, die den validationReport modofozieren. evtl kann man an dem syncen..
+	//TODO wird nicht gehen!! brauchen wir hier eh nicht?
+	//taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), tabularValidationReport.getId(), user);
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
+	tabularValidationReport.setInformationTextBefore("TODO Some text before");
+	tabularValidationReport.setInformationTextAfter("TODO for example used evaluation unit");
+	//nicht gebraucht?
 	getPersistenceManager().makePersistent(tabularValidationReport);
     }
 

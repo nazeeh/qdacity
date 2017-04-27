@@ -1,5 +1,6 @@
 package com.qdacity.project.metrics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,7 +17,7 @@ import javax.jdo.annotations.PrimaryKey;
  */
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
-public class TabularValidationReport {
+public class TabularValidationReport implements Serializable {
 
     private static final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
 

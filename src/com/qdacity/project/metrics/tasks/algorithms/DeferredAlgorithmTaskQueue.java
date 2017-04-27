@@ -60,7 +60,7 @@ public class DeferredAlgorithmTaskQueue {
      * @throws UnauthorizedException
      * @throws InterruptedException
      */
-    public void waitForTasksToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
+    public void waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
 	Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
 
 	for (Future<TaskHandle> future : futures) {
