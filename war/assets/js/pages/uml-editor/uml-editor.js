@@ -68,36 +68,11 @@ function loadCodes(codesystem_id) {
 
 	CodesystemEndpoint.getCodeSystem(codesystem_id).then(function (resp) {
 		resp.items = resp.items || [];
-
-		for (var i = 0; i < resp.items.length; i++) {
-			codes.push(resp.items[i]);
-		}
-
-
+		codes = resp.items;
 
 		for (var i = 0; i < codes.length; i++) {
 			console.log('add ' + codes[i].name);
 			view.addNode(codes[i].name);
 		}
-
-
-		//addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo, codes[i].codeBookEntry, codes[i].mmElementID, codes[i].relations);
-
-		//		for (var i = 0; i < codes.length; i++) {
-		//			if (typeof codes[i].subCodesIDs != 'undefined') {
-		//				if (codes[i].subCodesIDs.length > 0) {
-		//
-		//					for (var j = 0; j < codes.length; j++) {
-		//						for (var k = 0; k < codes[i].subCodesIDs.length; k++) {
-		//							if (codes[i].subCodesIDs[k] == codes[j].codeID) {
-		//								relocateNode(codes[j].codeID, codes[i].codeID);
-		//							}
-		//						}
-		//					}
-		//				}
-		//			}
-		//		}
-
-		//$("#codesystemLoadingDiv").addClass("hidden");
 	});
 }
