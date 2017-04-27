@@ -35,7 +35,6 @@ var codesystem_id;
 var project_id;
 var project_type;
 var report;
-var max_coding_id;
 
 var codeMemoEditor;
 var cbEditor = {

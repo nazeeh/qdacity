@@ -28,12 +28,16 @@ export default class ProjectList extends React.Component {
 		var validationPrjPromise = ProjectEndpoint.listValidationProject();
 		ProjectEndpoint.listProject().then(function (resp) {
 			resp.items = resp.items || [];
-			resp.items.forEach(function(prj) { prj.type = "PROJECT"; });
+			resp.items.forEach(function (prj) {
+				prj.type = "PROJECT";
+			});
 			var projects = _this.state.projects.concat(resp.items)
 
 			validationPrjPromise.then(function (resp2) {
 				resp2.items = resp2.items || [];
-				resp2.items.forEach(function(prj) { prj.type = "VALIDATION"; });
+				resp2.items.forEach(function (prj) {
+					prj.type = "VALIDATION";
+				});
 				projects = projects.concat(resp2.items)
 				projects = _this.sortProjects(projects);
 				_this.setState({
