@@ -12,7 +12,9 @@ export default class IntercoderAgreement extends VexModal {
 
 	constructor(report) {
 		super();
-		this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee;">Average: F-Measure:' + report.paragraphAgreement.fmeasure + ' Recall:' + report.paragraphAgreement.recall + ' Precision:' + report.paragraphAgreement.precision + '</div>';
+                if(report.paragraphAgreement) {
+                    this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee;">Average: F-Measure:' + report.paragraphAgreement.fmeasure + ' Recall:' + report.paragraphAgreement.recall + ' Precision:' + report.paragraphAgreement.precision + '</div>';
+                }
 		this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222;"><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
 
 

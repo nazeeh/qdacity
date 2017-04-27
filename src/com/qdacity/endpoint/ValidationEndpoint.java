@@ -95,7 +95,10 @@ public class ValidationEndpoint {
 
 			// Lazy fetch
 			for (ValidationResult result : results) {
+			    //TODO this only works if we are looking at FMeasure! SHould not be here!
+			    if(result.getParagraphAgreement()!=null) {
 				result.getParagraphAgreement().getFMeasure();
+			    }
 			}
 
 		} finally {
