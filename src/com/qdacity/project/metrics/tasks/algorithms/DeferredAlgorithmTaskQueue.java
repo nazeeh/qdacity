@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.qdacity.project.metrics.tasks.algorithms;
 
 import com.google.api.server.spi.response.UnauthorizedException;
@@ -21,9 +16,8 @@ import java.util.logging.Logger;
 
 /**
  * Wrapper for com.google.appengine.api.taskqueue for easier usage in the
- * DeferredEvaluation class.
+ * DeferredEvaluation class. Only works for DeferredAlgorithmEvaluation Tasks
  *
- * @author ms
  */
 public class DeferredAlgorithmTaskQueue {
 
@@ -35,16 +29,37 @@ public class DeferredAlgorithmTaskQueue {
 	futures = new ArrayList<>();
     }
 
-    public Future<TaskHandle> addToTaskQueue(DeferredAlgorithmEvaluation algorithmTask) {
-	return taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(algorithmTask));
+    /**
+     * Add your Task here and it will be run in the Queue directly
+     *
+     * @param deferredAlgorithmTask the task you want to run
+     */
+    public void launchInTaskQueue(DeferredAlgorithmEvaluation deferredAlgorithmTask) {
+	Future<TaskHandle> future = addToTaskQueue(deferredAlgorithmTask);
+	futures.add(future);
     }
 
+    /**
+     * same as launchInTaskQueue, but for lists of tasks
+     *
+     * @param algorithmTasks the list of your tasks to run
+     */
     public void launchListInTaskQueue(List<DeferredAlgorithmEvaluation> algorithmTasks) {
 	for (DeferredAlgorithmEvaluation algortihmTask : algorithmTasks) {
 	    launchInTaskQueue(algortihmTask);
 	}
     }
 
+    /**
+     * Waits for all Tasks to finish by polling for their results.
+     *
+     * @param amountValidationProjects how many tasks are you waiting for
+     * @param validationReportId from which validationReport
+     * @param user user which has the rights to see the results of the task
+     * @throws ExecutionException
+     * @throws UnauthorizedException
+     * @throws InterruptedException
+     */
     public void waitForTasksToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
 	Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
 
@@ -67,9 +82,8 @@ public class DeferredAlgorithmTaskQueue {
 	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
     }
 
-    public void launchInTaskQueue(DeferredAlgorithmEvaluation deferredAlgorithmTask) {
-	Future<TaskHandle> future = addToTaskQueue(deferredAlgorithmTask);
-	futures.add(future);
+    private Future<TaskHandle> addToTaskQueue(DeferredAlgorithmEvaluation algorithmTask) {
+	return taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(algorithmTask));
     }
 
 }
