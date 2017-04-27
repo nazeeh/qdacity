@@ -483,6 +483,8 @@ public class ProjectEndpoint {
 			project.setRevision(project.getRevision() + 1);
 
 			cloneProject = mgr.makePersistent(cloneProject);
+
+			Cache.cache(project.getId(), Project.class, project);
 			project = mgr.makePersistent(project);
 
 			// Set the ID that was just generated
