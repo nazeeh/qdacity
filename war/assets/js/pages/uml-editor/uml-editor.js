@@ -5,7 +5,6 @@ import loadGAPIs from '../../common/GAPI';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
-import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 
 import 'script!../../../../components/URIjs/URI.min.js';
 
