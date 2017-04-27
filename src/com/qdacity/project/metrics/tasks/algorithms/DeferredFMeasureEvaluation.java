@@ -17,22 +17,27 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.tasks.DeferredDocResults;
 
 public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
     List<Long> docIDs;
     List<Long> orignalDocIDs;
+    protected ValidationResult valResult;
+    protected final Long validationReportId;
 
     public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> docIDs, List<Long> orignalDocIDs, Long validationReportID, User user) {
-	super(validationPrj, user, validationReportID);
+	super(validationPrj, user);
+	this.validationReportId = validationReportID;
 	this.docIDs = docIDs; // FIXME dont need anymore, because only list of relevant textdocumentIDs is passed?
 	this.orignalDocIDs = orignalDocIDs;
     }
 
     @Override
     protected void runAlgorithm() throws Exception {
-
+	valResult = new ValidationResult();
+	mgr.makePersistent(valResult); // make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	TextDocumentEndpoint tde = new TextDocumentEndpoint();
 
 	Collection<TextDocument> originalDocs = new ArrayList<>();
@@ -83,6 +88,13 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	ParagraphAgreement totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
 	valResult.setParagraphAgreement(totalAgreement);
+
+	valResult.setName(validationProject.getCreatorName());
+	valResult.setRevisionID(validationProject.getRevisionID());
+	valResult.setValidationProjectID(validationProject.getId());
+	valResult.setReportID(validationReportId);
+	mgr.setMultithreaded(true); // FIXME needed?
+	mgr.makePersistent(valResult);
     }
 
 }

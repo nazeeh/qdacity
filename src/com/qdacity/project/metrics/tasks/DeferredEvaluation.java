@@ -33,6 +33,7 @@ import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.TabularValidationReport;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
@@ -73,7 +74,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	initValidationProjects();
 
-	initValidationReport();
+	initValidationReport(); //TODO gilt nur für FMeasure so wie es hier ist
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
 
@@ -233,6 +234,15 @@ public class DeferredEvaluation implements DeferredTask {
      * users
      */
     private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
+	//TODO auslagern, wie Validation Report. Generalize it!
+	TabularValidationReport tabularValidationReport = new TabularValidationReport();
+	getPersistenceManager().makePersistent(tabularValidationReport); // Generate ID right away so we have an ID to pass to DeferredKrippendorffsAlphaEvaluation
+	tabularValidationReport.setRevisionID(revisionID);
+	tabularValidationReport.setName(name);
+	tabularValidationReport.setDatetime(new Date());
+	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	///END TODO
+	
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
 
@@ -246,23 +256,19 @@ public class DeferredEvaluation implements DeferredTask {
 	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
 	    //create a the tasks with the reliability Data
 	    for (ReliabilityData rData : reliabilityData) {
-		kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(rData, validationProjectsFromUsers.get(0), user, validationReport.getId()));
+		kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(rData, validationProjectsFromUsers.get(0), user, tabularValidationReport));
 	    }
 	}
 
 	//Now launch all the Tasks
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
-	taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), validationReport.getId(), user);
+	//TODO wird nicht gehen!!
+	taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), tabularValidationReport.getId(), user);
+	
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
-	//TODO documentResults und paragraphAgreement zum validationReport hinzufï¿½gen
-	ParagraphAgreement TODO_AGREEMENT = new ParagraphAgreement();
-	TODO_AGREEMENT.setFMeasure(1); //TODO
-	TODO_AGREEMENT.setPrecision(0.1); //TODO
-	TODO_AGREEMENT.setRecall(0.7); //TODO
-	validationReport.setParagraphAgreement(TODO_AGREEMENT);
-	//TODO? muss man das hier machen?
-	getPersistenceManager().makePersistent(validationReport);
+
+	getPersistenceManager().makePersistent(tabularValidationReport);
     }
 
     private void calculateCohensKappa() {

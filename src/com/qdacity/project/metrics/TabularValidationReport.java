@@ -16,7 +16,7 @@ import javax.jdo.annotations.PrimaryKey;
  */
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
-public class TabluarValidationReport {
+public class TabularValidationReport {
 
     private static final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
 
@@ -98,6 +98,9 @@ public class TabluarValidationReport {
     }
 
     public String getInformationTextBefore() {
+	if (informationTextBefore == null) {
+	    return "";
+	}
 	return informationTextBefore;
     }
 
@@ -106,6 +109,9 @@ public class TabluarValidationReport {
     }
 
     public String getInformationTextAfter() {
+	if (informationTextAfter == null) {
+	    return "";
+	}
 	return informationTextAfter;
     }
 
@@ -125,16 +131,7 @@ public class TabluarValidationReport {
     }
 
     /**
-     * Make sure rows have a CSV format when using this method.
-     *
-     * @param rows
-     */
-    public void setRows(List<String> rows) {
-	this.rows = rows;
-    }
-
-    /**
-     * Adds a row to the table. Order of rows and columns is stable
+     * Adds a row to the table. Thread safe, but order not deterministic.
      *
      * @param columns the colums in the row
      */
@@ -146,7 +143,9 @@ public class TabluarValidationReport {
 	for (String column : columns) {
 	    csvRow += column.replace(",", "&#44;") + ","; //replace commas with html entity befor making a csv String!
 	}
-	this.rows.add(csvRow.substring(0, csvRow.length() - 1));
+	synchronized (this) {
+	    this.rows.add(csvRow.substring(0, csvRow.length() - 1));
+	}
     }
 
 }
