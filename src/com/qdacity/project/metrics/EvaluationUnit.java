@@ -8,14 +8,26 @@ public enum EvaluationUnit {
     PARAGRAPH,
     SENTENCE;
     
+    private static final String paragraph = "paragraph";
+    private static final String sentence = "sentence";
+    
     public static EvaluationUnit fromString(String evalUnit) {
 	switch(evalUnit) {
-	    case "paragraph":
+	    case paragraph:
 		return EvaluationUnit.PARAGRAPH;
-	    case "sentence":
+	    case sentence:
 		return EvaluationUnit.SENTENCE;
 	    default:
 		return EvaluationUnit.PARAGRAPH;
+	}
+    }
+    
+    @Override
+    public String toString() {
+	if (this.equals(EvaluationUnit.PARAGRAPH)){
+	    return paragraph;
+	} else {
+	    return sentence;
 	}
     }
 }
