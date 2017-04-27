@@ -441,6 +441,33 @@ public class ProjectEndpoint {
 		return project;
 	}
 
+	@ApiMethod(name = "project.setUmlEditorEnabled",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public AbstractProject setUmlEditorEnabled(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("umlEditorEnabled") boolean umlEditorEnabled, User user) throws UnauthorizedException {
+		AbstractProject project = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			ProjectType.PROJECT.toString();
+			// FIXME handle authorization
+
+			if (projectType.equals(ProjectType.PROJECT.toString())) {
+				project = (Project) Cache.getOrLoad(projectID, Project.class);
+			} else if (projectType.equals(ProjectType.VALIDATION.toString())) {
+				project = mgr.getObjectById(ValidationProject.class, projectID);
+			}
+
+			project.setUmlEditorEnabled(umlEditorEnabled);
+			Cache.cache(projectID, project.getClass(), project);
+			project = mgr.makePersistent(project);
+
+		} finally {
+			mgr.close();
+		}
+		return project;
+	}	
+	
 	@ApiMethod(name = "project.createSnapshot",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },

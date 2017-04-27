@@ -5,6 +5,7 @@ export default class Project {
 		this.reports = {}; // hashmap indexed by revision ID
 		this.revisions = [];
 		this.validationProjects = {}; // list indexed by revision ID
+		this.umlEditorEnabled = false;
 	}
 
 	getId() {
@@ -62,5 +63,14 @@ export default class Project {
 	getRevision(revID) {
 		return this.revisions.find((x) => x.id === revID);
 	}
+
+	setUmlEditorEnabled(umlEditorEnabled) {
+		this.umlEditorEnabled = umlEditorEnabled;
+	}
+
+	isUmlEditorEnabled() {
+		return this.umlEditorEnabled;
+	}
+
 
 }

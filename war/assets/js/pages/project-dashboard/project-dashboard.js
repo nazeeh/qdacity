@@ -7,6 +7,7 @@ import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import Project from './Project';
 import Account from '../../common/Account.jsx';
 import TextField from '../../common/modals/TextField';
+import Settings from '../../common/modals/Settings';
 import IntercoderAgreement from '../../common/modals/IntercoderAgreement';
 import IntercoderAgreementByDoc from '../../common/modals/IntercoderAgreementByDoc';
 import CustomForm from '../../common/modals/CustomForm';
@@ -83,6 +84,10 @@ window.init = function () {
 		location.href = 'coding-editor.html?project=' + project_id + '&type=' + project_type;
 	});
 
+	$("#settingsBtn").click(function () {
+		showSettingsModal();
+	});
+
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
 			account = accountModule;
@@ -121,6 +126,7 @@ function setProjectProperties() {
 	ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 		$("#project-name").html(resp.name);
 		$("#projectDescription").html(resp.description);
+		project.setUmlEditorEnabled(resp.umlEditorEnabled);
 
 		if (project_type === 'VALIDATION') {
 			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
@@ -215,6 +221,7 @@ function setRevisionHistory() {
 					$('.deleteReportBtn').removeClass('hidden');
 					$('.createReportBtn').removeClass('hidden');
 					$('#codingEditorBtn').removeClass('hidden');
+					$('#settingsBtn').removeClass('hidden');
 					$('#editDescriptionBtn').removeClass('hidden');
 
 					$('#inviteUser').removeClass('hidden');
@@ -226,11 +233,15 @@ function setRevisionHistory() {
 					$('.deleteReportBtn').addClass('hidden');
 					$('.createReportBtn').addClass('hidden');
 					$('#codingEditorBtn').addClass('hidden');
+					$('#settingsBtn').addClass('hidden');
 					$('#editDescriptionBtn').addClass('hidden');
 					$('#inviteUser').addClass('hidden');
 				}
 
-				if (project_type == "VALIDATION") $('#codingEditorBtn').removeClass('hidden');
+				if (project_type == "VALIDATION") {
+					$('#codingEditorBtn').removeClass('hidden');
+					$('#settingsBtn').removeClass('hidden');
+				}
 
 
 				$(".deleteRevisionBtn").click(function () {
@@ -503,6 +514,16 @@ function showDescriptionModal() {
 	modal.showModal().then(function (text) {
 		ProjectEndpoint.setDescription(project_id, project_type, text).then(function (resp) {
 			$("#projectDescription").html(text);
+		});
+	});
+}
+
+function showSettingsModal() {
+	var modal = new Settings();
+
+	modal.showModal(project.isUmlEditorEnabled()).then(function (data) {
+		ProjectEndpoint.setUmlEditorEnabled(project_id, project_type, data.umlEditorEnabled).then(function (resp) {
+			project.setUmlEditorEnabled(data.umlEditorEnabled);
 		});
 	});
 }
