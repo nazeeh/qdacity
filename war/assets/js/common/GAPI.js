@@ -2,7 +2,7 @@ import Account from './Account.jsx';
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 var client_id = '62776117166-iuu5qlid44hnas1ivvurlr0cku1f0hnc.apps.googleusercontent.com';
-var api_path = 'https://1-dot-felix-lo-qdacity.appspot.com/_ah/api'; //'https://localhost:8888/_ah/api'
+var api_path = 'https://1-dot-felix-lo-qdacity.appspot.com/_ah/api'; //'http://localhost:8888/_ah/api'; 
 var api_version = 'v1';
 
 export default function loadGAPIs(allLoadedCallback) {
