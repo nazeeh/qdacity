@@ -251,7 +251,7 @@ public class DeferredEvaluation implements DeferredTask {
 	for(Long codeId : codeIds) {
 	    tableHead.add(codeId+"");
 	}
-	tabularValidationReport.addRow(tableHead);
+	tabularValidationReport.setHeadRow(tableHead);
 
 	Map<String, List<TextDocument>> sameDocumentsFromDifferentRatersMap
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
@@ -262,15 +262,17 @@ public class DeferredEvaluation implements DeferredTask {
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
 	    //create all the tasks with the reliability Data
-	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, tabularValidationReport, documentTitle));
+	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, tabularValidationReport.getId(), documentTitle));
 	}
 
 	//Now launch all the Tasks
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
-	Thread.sleep(10000); //TODO richtig auf die ergebnisse warten, die den validationReport modofozieren. evtl kann man an dem syncen..
+	
 	//TODO wird nicht gehen!! brauchen wir hier eh nicht?
 	//taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), tabularValidationReport.getId(), user);
+	//TODO warten muss man trotzdem?
+	
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
 	tabularValidationReport.setInformationTextBefore("TODO Some text before");

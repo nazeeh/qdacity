@@ -19,7 +19,7 @@ import javax.jdo.annotations.PrimaryKey;
 	identityType = IdentityType.APPLICATION)
 public class TabularValidationReport implements Serializable {
 
-    private static final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
+    protected static final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
 
     @PrimaryKey
     @Persistent(
@@ -48,7 +48,7 @@ public class TabularValidationReport implements Serializable {
     String informationTextAfter;
 
     @Persistent
-    List<String> rows; //Format as CSV
+    String headRow; //Format as CSV
 
     public Long getId() {
 	return id;
@@ -120,33 +120,27 @@ public class TabularValidationReport implements Serializable {
 	this.informationTextAfter = informationTextAfter;
     }
 
-    public List<List<String>> getRowsParsed() {
-	if (this.rows == null) {
-	    return null;
-	}
-	List<List<String>> parsed = new ArrayList<>();
-	for (String row : this.rows) {
-	    parsed.add(Arrays.asList(row.split(ROW_STRING_FORMAT_REGEXP)));
-	}
-	return parsed;
+    /**
+     * Retrieve the HeadRow as List of Strings representing a cell.
+     *
+     * @return the HeadRow as cells in a list
+     */
+    public List<String> getHeadRow() {
+	return Arrays.asList(headRow.split(TabularValidationReport.ROW_STRING_FORMAT_REGEXP));
     }
 
     /**
-     * Adds a row to the table. Thread safe, but order not deterministic.
+     * Adds the complete headRow to this object. Commas "," will be replaced with
+     * HTML entity "&#44;"
      *
-     * @param columns the colums in the row
+     * @param columns the colums in the row, can contain any UTF8 characters
      */
-    public void addRow(List<String> columns) {
+    public void setHeadRow(List<String> columns) {
 	String csvRow = "";
-	if (this.rows == null) {
-	    this.rows = new ArrayList<>();
-	}
 	for (String column : columns) {
 	    csvRow += column.replace(",", "&#44;") + ","; //replace commas with html entity befor making a csv String!
 	}
-	synchronized (this) {
-	    this.rows.add(csvRow.substring(0, csvRow.length() - 1));
-	}
+	this.headRow = csvRow.substring(0, csvRow.length()-1); //remove last comma;
     }
 
 }

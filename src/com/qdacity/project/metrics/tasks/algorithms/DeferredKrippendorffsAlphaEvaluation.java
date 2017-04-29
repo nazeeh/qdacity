@@ -2,7 +2,7 @@ package com.qdacity.project.metrics.tasks.algorithms;
 
 import com.google.appengine.api.users.User;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.metrics.TabularValidationReport;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.algorithms.KrippendorffsAlphaCoefficient;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import java.util.ArrayList;
@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvaluation {
 
     private final List<ReliabilityData> rData;
-    private final TabularValidationReport report;
+    private final Long reportId;
     private final List<String> row;
 
-    public DeferredKrippendorffsAlphaEvaluation(List<ReliabilityData> rData, ValidationProject validationProject, User user, TabularValidationReport tabularValidationReport, String documentTitle) {
+    public DeferredKrippendorffsAlphaEvaluation(List<ReliabilityData> rData, ValidationProject validationProject, User user, Long tabularValidationReportId, String documentTitle) {
 	super(validationProject, user);
 	this.rData = rData;
-	report = tabularValidationReport;
+	reportId = tabularValidationReportId;
 	row = new ArrayList<>();
 	row.add(documentTitle);
     }
@@ -33,7 +33,9 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 	    row.add(result+"");
 	    Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: " + result + " adding to TabularValidationResult");
 	}
-	report.addRow(row);
+	TabularValidationReportRow myRowResult = new TabularValidationReportRow(reportId);
+	myRowResult.setRow(row);
+	mgr.makePersistent(myRowResult);
     }
 
 }

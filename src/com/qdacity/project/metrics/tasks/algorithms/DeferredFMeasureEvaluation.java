@@ -93,7 +93,6 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	valResult.setRevisionID(validationProject.getRevisionID());
 	valResult.setValidationProjectID(validationProject.getId());
 	valResult.setReportID(validationReportId);
-	mgr.setMultithreaded(true); // FIXME needed?
 	mgr.makePersistent(valResult);
     }
 

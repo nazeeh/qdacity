@@ -26,6 +26,7 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     public void run() {
 	try {
 	    mgr = getPersistenceManager();
+	    mgr.setMultithreaded(true);
 	    runAlgorithm();
 	} catch (Exception e) {
 	    e.printStackTrace();
