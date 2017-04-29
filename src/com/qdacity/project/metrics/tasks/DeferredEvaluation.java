@@ -54,7 +54,6 @@ public class DeferredEvaluation implements DeferredTask {
     private final List<Long> raterIds; //TODO?
     private final List<Long> docIDs;
     private List<ValidationProject> validationProjectsFromUsers;
-    private ValidationReport validationReport;
     private DeferredAlgorithmTaskQueue taskQueue;
 
     public DeferredEvaluation(Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
@@ -73,8 +72,6 @@ public class DeferredEvaluation implements DeferredTask {
 	long startTime = System.nanoTime();
 
 	initValidationProjects();
-
-	initValidationReport(); //TODO gilt nur f�r FMeasure so wie es hier ist
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
 
@@ -101,13 +98,14 @@ public class DeferredEvaluation implements DeferredTask {
 
     }
 
-    private void initValidationReport() {
-	validationReport = new ValidationReport();
+    private ValidationReport initValidationReportFMeasure() {
+	ValidationReport validationReport = new ValidationReport();
 	getPersistenceManager().makePersistent(validationReport); // Generate ID right away so we have an ID to pass to ValidationResults
 	validationReport.setRevisionID(revisionID);
 	validationReport.setName(name);
 	validationReport.setDatetime(new Date());
 	validationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	return validationReport;
     }
 
     /**
@@ -142,6 +140,7 @@ public class DeferredEvaluation implements DeferredTask {
     }
 
     private void calculateFMeasure(Collection<TextDocument> originalDocs) {
+	ValidationReport validationReport = initValidationReportFMeasure();
 	try {
 
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
@@ -234,14 +233,7 @@ public class DeferredEvaluation implements DeferredTask {
      * users
      */
     private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
-	//TODO auslagern, wie Validation Report. Generalize it!
-	TabularValidationReport tabularValidationReport = new TabularValidationReport();
-	getPersistenceManager().makePersistent(tabularValidationReport); // Generate ID right away so we have an ID to pass to DeferredKrippendorffsAlphaEvaluation
-	tabularValidationReport.setRevisionID(revisionID);
-	tabularValidationReport.setName(name);
-	tabularValidationReport.setDatetime(new Date());
-	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
-	///END TODO
+	TabularValidationReport tabularValidationReport = initTabularValidationReport();
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
@@ -279,6 +271,16 @@ public class DeferredEvaluation implements DeferredTask {
 	tabularValidationReport.setInformationTextAfter("TODO for example used evaluation unit");
 	//nicht gebraucht?
 	getPersistenceManager().makePersistent(tabularValidationReport);
+    }
+
+    private TabularValidationReport initTabularValidationReport() {
+	TabularValidationReport tabularValidationReport = new TabularValidationReport();
+	getPersistenceManager().makePersistent(tabularValidationReport); // Generate ID right away so we have an ID to pass to the Algorithm
+	tabularValidationReport.setRevisionID(revisionID);
+	tabularValidationReport.setName(name);
+	tabularValidationReport.setDatetime(new Date());
+	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	return tabularValidationReport;
     }
 
     private void calculateCohensKappa() {
