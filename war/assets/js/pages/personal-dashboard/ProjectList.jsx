@@ -28,12 +28,16 @@ export default class ProjectList extends React.Component {
 		var validationPrjPromise = ProjectEndpoint.listValidationProject();
 		ProjectEndpoint.listProject().then(function (resp) {
 			resp.items = resp.items || [];
-			resp.items.forEach(function(prj) { prj.type = "PROJECT"; });
+			resp.items.forEach(function (prj) {
+				prj.type = "PROJECT";
+			});
 			var projects = _this.state.projects.concat(resp.items)
 
 			validationPrjPromise.then(function (resp2) {
 				resp2.items = resp2.items || [];
-				resp2.items.forEach(function(prj) { prj.type = "VALIDATION"; });
+				resp2.items.forEach(function (prj) {
+					prj.type = "VALIDATION";
+				});
 				projects = projects.concat(resp2.items)
 				projects = _this.sortProjects(projects);
 				_this.setState({
@@ -168,7 +172,7 @@ export default class ProjectList extends React.Component {
 		});
 	}
 
-	renderDeleteBtn(project) {
+	renderDeleteBtn(project, index) {
 		const styles = this.getStyles();
 		if (typeof project.revisionID == "undefined") {
 			return <a onClick={(e) => this.deleteProject(e, project, index)} className=" btn  fa-stack fa-lg" style={styles.listItemBtn} > 
@@ -238,7 +242,7 @@ export default class ProjectList extends React.Component {
 					
 				>
 					<span>{project.name}</span>
-					{this.renderDeleteBtn(project)}
+					{this.renderDeleteBtn(project, index)}
 					<a onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" style={styles.listItemBtn} > 
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>

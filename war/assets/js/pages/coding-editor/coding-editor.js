@@ -35,7 +35,6 @@ var codesystem_id;
 var project_id;
 var project_type;
 var report;
-var max_coding_id;
 
 var codeMemoEditor;
 var cbEditor = {
@@ -91,6 +90,10 @@ window.init = function () {
 		content: $('<span>New Code</span>')
 	});
 
+	$('#btnOpenUMLEditor').tooltipster({
+		content: $('<span>Open UML Editor</span>'),
+	});
+
 	$("#codePropColor").colorpicker();
 
 
@@ -129,6 +132,11 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
+
+
+	$("#btnOpenUMLEditor").on("click", function () {
+		window.location.href = 'uml-editor.html?project=' + project_id + '&type=' + project_type;
+	});
 
 	document.getElementById('btnCodeProps').onclick = function () {
 		if ($("#footer").is(":visible")) {
@@ -322,6 +330,10 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
+
+			if (resp.umlEditorEnabled) {
+				$('#btnOpenUMLEditor').show();
+			}
 		});
 	} else {
 		$('#navAccount').hide();

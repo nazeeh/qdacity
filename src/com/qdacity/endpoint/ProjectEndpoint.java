@@ -2,6 +2,7 @@ package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import com.qdacity.project.AbstractProject;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
+import com.qdacity.project.RevisionComparator;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
@@ -441,6 +443,33 @@ public class ProjectEndpoint {
 		return project;
 	}
 
+	@ApiMethod(name = "project.setUmlEditorEnabled",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public AbstractProject setUmlEditorEnabled(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("umlEditorEnabled") boolean umlEditorEnabled, User user) throws UnauthorizedException {
+		AbstractProject project = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			ProjectType.PROJECT.toString();
+			// FIXME handle authorization
+
+			if (projectType.equals(ProjectType.PROJECT.toString())) {
+				project = (Project) Cache.getOrLoad(projectID, Project.class);
+			} else if (projectType.equals(ProjectType.VALIDATION.toString())) {
+				project = mgr.getObjectById(ValidationProject.class, projectID);
+			}
+
+			project.setUmlEditorEnabled(umlEditorEnabled);
+			Cache.cache(projectID, project.getClass(), project);
+			project = mgr.makePersistent(project);
+
+		} finally {
+			mgr.close();
+		}
+		return project;
+	}	
+	
 	@ApiMethod(name = "project.createSnapshot",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
@@ -456,6 +485,8 @@ public class ProjectEndpoint {
 			project.setRevision(project.getRevision() + 1);
 
 			cloneProject = mgr.makePersistent(cloneProject);
+
+			Cache.cache(project.getId(), Project.class, project);
 			project = mgr.makePersistent(project);
 
 			// Set the ID that was just generated
@@ -598,6 +629,7 @@ public class ProjectEndpoint {
 
 			@SuppressWarnings("unchecked")
 			List<ProjectRevision> snapshots = (List<ProjectRevision>) q.executeWithMap(params);
+			Collections.sort(snapshots, new RevisionComparator()); // Sort by revision number
 
 			Query validationQuery = mgr.newQuery(ValidationProject.class, " projectID  == :projectID");
 			@SuppressWarnings("unchecked")

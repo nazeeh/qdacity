@@ -3,6 +3,8 @@ import Account from './Account.jsx';
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
 //from: https://console.cloud.google.com/apis/credentials?project=qdacity-quality-metrics 
 var client_id = '98628102717-19mnq0ntljj8gptvs3fh5v51t5dqj32j.apps.googleusercontent.com';
+var api_version = 'v4';
+var api_path = 'https://4-dot-qdacity-app.appspot.com/_ah/api'; //'https://localhost:8888/_ah/api'
 
 export default function loadGAPIs(allLoadedCallback) {
 	var _this = this;
@@ -18,8 +20,8 @@ export default function loadGAPIs(allLoadedCallback) {
 			}
 			apisToLoad = 2;
 			//Parameters are APIName,APIVersion,CallBack function,API Root
-			gapi.client.load('qdacity', 'v4', callback, 'http://localhost:8888/_ah/api');
-			//gapi.client.load('qdacity', 'v4', callback, 'https://4-dot-qdacity-app.appspot.com/_ah/api');
+			gapi.client.load('qdacity', api_version, callback, api_path);
+
 			gapi.load('auth2', callback);
 		}
 	);

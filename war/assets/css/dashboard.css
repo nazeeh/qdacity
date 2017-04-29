@@ -25,3 +25,7 @@ body{
 	 margin-left:-35px!important;
 	 font-size:25px;
 }
+
+#settingsBtn {
+	margin-left: 5px;
+}
