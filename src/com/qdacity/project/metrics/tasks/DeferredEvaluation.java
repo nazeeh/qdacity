@@ -267,9 +267,6 @@ public class DeferredEvaluation implements DeferredTask {
 	
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	tabularValidationReport.setInformationTextBefore("TODO Some text before");
-	tabularValidationReport.setInformationTextAfter("TODO for example used evaluation unit");
-	//nicht gebraucht?
 	getPersistenceManager().makePersistent(tabularValidationReport);
     }
 

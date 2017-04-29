@@ -1,7 +1,6 @@
 package com.qdacity.project.metrics;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -40,12 +39,6 @@ public class TabularValidationReport implements Serializable {
 
     @Persistent
     String evaluationUnit;
-
-    @Persistent
-    String informationTextBefore;
-
-    @Persistent
-    String informationTextAfter;
 
     @Persistent
     String headRow; //Format as CSV
@@ -96,28 +89,6 @@ public class TabularValidationReport implements Serializable {
 
     public void setEvaluationUnit(EvaluationUnit evaluationUnit) {
 	this.evaluationUnit = evaluationUnit.toString();
-    }
-
-    public String getInformationTextBefore() {
-	if (informationTextBefore == null) {
-	    return "";
-	}
-	return informationTextBefore;
-    }
-
-    public void setInformationTextBefore(String informationTextBefore) {
-	this.informationTextBefore = informationTextBefore;
-    }
-
-    public String getInformationTextAfter() {
-	if (informationTextAfter == null) {
-	    return "";
-	}
-	return informationTextAfter;
-    }
-
-    public void setInformationTextAfter(String informationTextAfter) {
-	this.informationTextAfter = informationTextAfter;
     }
 
     /**
