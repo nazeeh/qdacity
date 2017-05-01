@@ -25,6 +25,7 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.TabularValidationReport;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
@@ -266,6 +267,29 @@ public class ValidationEndpoint {
 		}
 		return reports;
 	}
+	
+    @SuppressWarnings("unchecked")
+    @ApiMethod(
+	    name = "validation.deleteTabularReport",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public void deleteTabularReport(@Named("reportID") Long repID, User user) throws UnauthorizedException {
+	PersistenceManager mgr = getPersistenceManager();
+	try {
+	    TabularValidationReport tabularReport = mgr.getObjectById(TabularValidationReport.class, repID);
+
+	    Query rowsQuery = mgr.newQuery(TabularValidationReportRow.class, "tabularValidationReportId  == :tabularValidationReportId");
+	    @SuppressWarnings("unchecked")
+	    List<TabularValidationReportRow> tabularReportRows = (List<TabularValidationReportRow>) rowsQuery.execute(repID);
+
+	    mgr.deletePersistentAll(tabularReportRows);
+	    mgr.deletePersistent(tabularReport);
+
+	} finally {
+	    mgr.close();
+	}
+    }
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
