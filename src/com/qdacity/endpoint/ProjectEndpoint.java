@@ -2,6 +2,7 @@ package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import com.qdacity.project.AbstractProject;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
+import com.qdacity.project.RevisionComparator;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
@@ -483,6 +485,8 @@ public class ProjectEndpoint {
 			project.setRevision(project.getRevision() + 1);
 
 			cloneProject = mgr.makePersistent(cloneProject);
+
+			Cache.cache(project.getId(), Project.class, project);
 			project = mgr.makePersistent(project);
 
 			// Set the ID that was just generated
@@ -625,6 +629,7 @@ public class ProjectEndpoint {
 
 			@SuppressWarnings("unchecked")
 			List<ProjectRevision> snapshots = (List<ProjectRevision>) q.executeWithMap(params);
+			Collections.sort(snapshots, new RevisionComparator()); // Sort by revision number
 
 			Query validationQuery = mgr.newQuery(ValidationProject.class, " projectID  == :projectID");
 			@SuppressWarnings("unchecked")
