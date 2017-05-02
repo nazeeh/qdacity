@@ -277,6 +277,7 @@ public class DeferredEvaluation implements DeferredTask {
 	tabularValidationReport.setName(name);
 	tabularValidationReport.setDatetime(new Date());
 	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	tabularValidationReport.setEvaluationUnit(evalUnit);
 	return tabularValidationReport;
     }
 
