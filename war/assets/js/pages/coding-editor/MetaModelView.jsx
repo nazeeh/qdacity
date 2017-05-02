@@ -1,5 +1,6 @@
 import 'script!../../../../components/Easytabs/jquery.easytabs.js';
-import MetaModelEndpoint from '../../common/endpoints/MetaModelEndpoint';
+import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
+import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 import MetaModelElement from './MetaModelElement';
 
 export default class MetaModelView extends React.Component {
@@ -86,8 +87,8 @@ export default class MetaModelView extends React.Component {
 
 	init() {
 		var _this = this;
-		var relationsPromise = MetaModelEndpoint.listRelations(1); // FIXME choose a configurable MM. MM with ID 1 is the default RE MM
-		MetaModelEndpoint.listEntities(1).then(function (resp) {
+		var relationsPromise = MetaModelRelationEndpoint.listRelations(1); // FIXME choose a configurable MM. MM with ID 1 is the default RE MM
+		MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
 			var entities = resp.items || [];
 
 			var entitiesById = {};
