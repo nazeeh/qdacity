@@ -99,6 +99,30 @@ public class ValidationEndpoint {
 
 	return tabularReports;
     }
+    
+    @SuppressWarnings("unchecked")
+    @ApiMethod(
+	    name = "validation.listTabularReportRows",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public List<TabularValidationReportRow> listTabularReportsRows(@Named("tabularValidationReportId") Long tabularValidationReportId, User user) throws UnauthorizedException {
+	List<TabularValidationReportRow> tabularReportRows = new ArrayList<>();
+	PersistenceManager mgr = getPersistenceManager();
+	try {
+	    Query q;
+	    q = mgr.newQuery(TabularValidationReportRow.class, " tabularValidationReportId  == :tabularValidationReportId ");
+
+	    Map<String, Long> params = new HashMap<>();
+	    params.put("tabularValidationReportId", tabularValidationReportId);
+
+	    tabularReportRows = (List<TabularValidationReportRow>) q.executeWithMap(params);
+	} finally {
+	    mgr.close();
+	}
+
+	return tabularReportRows;
+    }
 
 	@SuppressWarnings("unchecked")
 	@ApiMethod(
