@@ -23,15 +23,15 @@ export default class MyEditorView extends React.Component {
 		var parent = this.graph.getDefaultParent();
 
 		// Adds cells to the model in a single step
-		this.graph.getModel().beginUpdate();
-		try {
-			var v1 = this.graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-			var v2 = this.graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-			var e1 = this.graph.insertEdge(parent, null, '', v1, v2);
-		} finally {
-			// Updates the display
-			this.graph.getModel().endUpdate();
-		}
+//		this.graph.getModel().beginUpdate();
+//		try {
+//			var v1 = this.graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+//			var v2 = this.graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+//			var e1 = this.graph.insertEdge(parent, null, '', v1, v2);
+//		} finally {
+//			// Updates the display
+//			this.graph.getModel().endUpdate();
+//		}
 	}
 
 	addNode(name) {
