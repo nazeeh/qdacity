@@ -390,5 +390,23 @@ public class CodeSystemEndpoint {
 
 		return codeSystem;
 	}
+	
+	/**
+	 * Gets the code Ids (not DB Keys!) from the codesystem as List
+	 * @param codesystemId which Codesystem ID
+	 * @param user The user who performs the operation
+	 * @return A list of Code IDs (not DB Keys!)
+	 * @throws UnauthorizedException if user is not authorized to use this codesystem
+	 */
+	public static List<Long> getCodeIds(Long codesystemId, User user) throws UnauthorizedException {
+		CodeSystemEndpoint cse = new CodeSystemEndpoint();
+		CollectionResponse<Code> codes = cse.getCodeSystem(codesystemId, null, null, user);
+		List<Long> codeIds = new ArrayList<>();
+		for (Code code : codes.getItems()) {
+		    //IMPORTANT: Using CodeId (Actual Code Id) and NOT id (Database Key)
+		    codeIds.add(code.getCodeID());
+		}
+		return codeIds;
+    }
 
 }

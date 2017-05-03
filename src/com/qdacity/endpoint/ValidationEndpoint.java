@@ -24,11 +24,14 @@ import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.TabularValidationReport;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
 import com.qdacity.project.metrics.tasks.DeferredEvaluation;
 import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
+import javax.annotation.Nullable;
 
 
 @Api(
@@ -47,14 +50,13 @@ public class ValidationEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<ValidationReport> listReports(@Named("projectID") Long prjID, User user) throws UnauthorizedException {
-		List<ValidationReport> reports = new ArrayList<ValidationReport>();
+		List<ValidationReport> reports = new ArrayList<>();
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-
 			Query q;
 			q = mgr.newQuery(ValidationReport.class, " projectID  == :projectID");
 
-			Map<String, Long> params = new HashMap<String, Long>();
+			Map<String, Long> params = new HashMap<>();
 			params.put("projectID", prjID);
 
 			reports = (List<ValidationReport>) q.executeWithMap(params);
@@ -73,6 +75,54 @@ public class ValidationEndpoint {
 		}
 		return reports;
 	}
+	
+    @SuppressWarnings("unchecked")
+    @ApiMethod(
+	    name = "validation.listTabularReports",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public List<TabularValidationReport> listTabularReports(@Named("projectID") Long prjID, User user) throws UnauthorizedException {
+	List<TabularValidationReport> tabularReports = new ArrayList<>();
+	PersistenceManager mgr = getPersistenceManager();
+	try {
+	    Query q;
+	    q = mgr.newQuery(TabularValidationReport.class, " projectID  == :projectID");
+
+	    Map<String, Long> params = new HashMap<>();
+	    params.put("projectID", prjID);
+
+	    tabularReports = (List<TabularValidationReport>) q.executeWithMap(params);
+	} finally {
+	    mgr.close();
+	}
+
+	return tabularReports;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @ApiMethod(
+	    name = "validation.listTabularReportRows",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public List<TabularValidationReportRow> listTabularReportsRows(@Named("tabularValidationReportId") Long tabularValidationReportId, User user) throws UnauthorizedException {
+	List<TabularValidationReportRow> tabularReportRows = new ArrayList<>();
+	PersistenceManager mgr = getPersistenceManager();
+	try {
+	    Query q;
+	    q = mgr.newQuery(TabularValidationReportRow.class, " tabularValidationReportId  == :tabularValidationReportId ");
+
+	    Map<String, Long> params = new HashMap<>();
+	    params.put("tabularValidationReportId", tabularValidationReportId);
+
+	    tabularReportRows = (List<TabularValidationReportRow>) q.executeWithMap(params);
+	} finally {
+	    mgr.close();
+	}
+
+	return tabularReportRows;
+    }
 
 	@SuppressWarnings("unchecked")
 	@ApiMethod(
@@ -94,7 +144,9 @@ public class ValidationEndpoint {
 
 			// Lazy fetch
 			for (ValidationResult result : results) {
+			    if(result.getParagraphAgreement()!=null) {
 				result.getParagraphAgreement().getFMeasure();
+			    }
 			}
 
 		} finally {
@@ -161,9 +213,9 @@ public class ValidationEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, User user) throws UnauthorizedException {
+	public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
 
-		DeferredEvaluation task = new DeferredEvaluation(revisionID, name, docIDsString, user);
+		DeferredEvaluation task = new DeferredEvaluation(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
 		// Set instance variables etc as you wish
 		Queue queue = QueueFactory.getDefaultQueue();
 		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
@@ -206,7 +258,7 @@ public class ValidationEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<ValidationReport> deleteReport(@Named("reportID") Long repID, User user) throws UnauthorizedException {
-		List<ValidationReport> reports = new ArrayList<ValidationReport>(); // FIXME Why?
+		List<ValidationReport> reports = new ArrayList<>(); // FIXME Why?
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			ValidationReport report = mgr.getObjectById(ValidationReport.class, repID);
@@ -222,7 +274,6 @@ public class ValidationEndpoint {
 				DeferredReportDeletion task = new DeferredReportDeletion(repID);
 				Queue queue = QueueFactory.getDefaultQueue();
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-
 			}
 
 			// Lazy fetch
@@ -240,6 +291,29 @@ public class ValidationEndpoint {
 		}
 		return reports;
 	}
+	
+    @SuppressWarnings("unchecked")
+    @ApiMethod(
+	    name = "validation.deleteTabularReport",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public void deleteTabularReport(@Named("reportID") Long repID, User user) throws UnauthorizedException {
+	PersistenceManager mgr = getPersistenceManager();
+	try {
+	    TabularValidationReport tabularReport = mgr.getObjectById(TabularValidationReport.class, repID);
+
+	    Query rowsQuery = mgr.newQuery(TabularValidationReportRow.class, "tabularValidationReportId  == :tabularValidationReportId");
+	    @SuppressWarnings("unchecked")
+	    List<TabularValidationReportRow> tabularReportRows = (List<TabularValidationReportRow>) rowsQuery.execute(repID);
+
+	    mgr.deletePersistentAll(tabularReportRows);
+	    mgr.deletePersistent(tabularReport);
+
+	} finally {
+	    mgr.close();
+	}
+    }
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
