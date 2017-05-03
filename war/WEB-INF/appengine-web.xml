@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-  <application>qdacity-quality-metrics</application>
+  <application>qdacity-app</application>
   <version>5</version>
   <ssl-enabled>true</ssl-enabled>
   <warmup-requests-enabled>true</warmup-requests-enabled>
@@ -11,13 +11,12 @@
     Allows App Engine to send multiple requests to one instance in parallel:
   -->
   <threadsafe>true</threadsafe>
-  <!-- Commented out to prevent costs while testing
   <automatic-scaling>
     <min-pending-latency>30ms</min-pending-latency>
     <max-pending-latency>2s</max-pending-latency>
     <max-concurrent-requests>50</max-concurrent-requests>
   </automatic-scaling>
-  -->
+  
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
