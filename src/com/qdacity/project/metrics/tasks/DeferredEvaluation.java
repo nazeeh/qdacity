@@ -112,13 +112,14 @@ public class DeferredEvaluation implements DeferredTask {
      * prepares the validationProjectsFromUsers so it contains the project in
      * the given revision from all users.
      */
-    private void initValidationProjects() { //TODO auslagern
+    private void initValidationProjects() {
 	Query q;
 	q = getPersistenceManager().newQuery(ValidationProject.class, "revisionID  == :revisionID");
 
 	Map<String, Long> params = new HashMap<>();
 	params.put("revisionID", revisionID);
-	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params); //TODO Fehler! liefert nur eins?
+	//Hint: Only gets the validationProjects from Users, but not the project itself. This behaviour is wanted.
+	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params);
     }
 
     private Collection<TextDocument> getOriginalDocs(List<Long> docIDs) throws UnauthorizedException {
@@ -237,11 +238,11 @@ public class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
-	
+
 	List<String> tableHead = new ArrayList<>();
 	tableHead.add("Documents \\ Codes");
-	for(Long codeId : codeIds) {
-	    tableHead.add(codeId+"");
+	for (Long codeId : codeIds) {
+	    tableHead.add(codeId + "");
 	}
 	tabularValidationReport.setHeadRow(tableHead);
 
@@ -260,11 +261,6 @@ public class DeferredEvaluation implements DeferredTask {
 	//Now launch all the Tasks
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
-	
-	//TODO wird nicht gehen!! brauchen wir hier eh nicht?
-	//taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), tabularValidationReport.getId(), user);
-	//TODO warten muss man trotzdem?
-	
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
 	getPersistenceManager().makePersistent(tabularValidationReport);
