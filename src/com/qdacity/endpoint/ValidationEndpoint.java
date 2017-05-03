@@ -66,7 +66,7 @@ public class ValidationEndpoint {
 				List<DocumentResult> docresults = validationReport.getDocumentResults();
 				if (docresults.size() > 0) {
 					for (DocumentResult documentResult : docresults) {
-						documentResult.getParagraphAgreement().getfMeasure();
+						documentResult.getParagraphAgreement().getFMeasure();
 					}
 				}
 			}
@@ -280,7 +280,7 @@ public class ValidationEndpoint {
 			List<DocumentResult> docResults = report.getDocumentResults();
 			for (DocumentResult documentResult : docResults) {
 				documentResult.getAgreementMap();
-				documentResult.getParagraphAgreement().getfMeasure();
+				documentResult.getParagraphAgreement().getFMeasure();
 			}
 
 			// Delete the actual report

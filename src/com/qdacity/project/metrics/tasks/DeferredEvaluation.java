@@ -208,7 +208,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	for (Long docID : agreementByDoc.keySet()) {
 	    ParagraphAgreement avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
-	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getfMeasure());
+	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getFMeasure());
 	    report.setDocumentResultAverage(docID, avgDocAgreement);
 	}
 

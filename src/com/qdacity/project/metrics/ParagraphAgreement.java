@@ -73,12 +73,4 @@ public class ParagraphAgreement implements Serializable {
 		this.precision = paragraphPrecision;
 	}
 
-	public double getfMeasure() {
-		return fMeasure;
-	}
-
-	public void setfMeasure(double fMeasure) {
-		this.fMeasure = fMeasure;
-	}
-
 }
