@@ -1,5 +1,6 @@
 package com.qdacity.project.metrics;
 
+import com.google.appengine.api.datastore.Key;
 import java.util.Arrays;
 import java.util.List;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -24,21 +25,13 @@ public class TabularValidationReportRow {
     @PrimaryKey
     @Persistent(
 	    valueStrategy = IdGeneratorStrategy.IDENTITY)
-    Long id;
+    private Key key;
 
     @Persistent
     Long tabularValidationReportId;
 
     @Persistent
     String rowCsvString; //Contains the row data as CSV String
-
-    public Long getId() {
-	return id;
-    }
-
-    public void setId(Long id) {
-	this.id = id;
-    }
 
     public Long getTabularValidationReportId() {
 	return tabularValidationReportId;
@@ -50,6 +43,7 @@ public class TabularValidationReportRow {
 
     /**
      * Retrieve the Row as List of Strings representing a cell.
+     *
      * @return the row as cells in a list
      */
     public List<String> getCells() {
@@ -67,7 +61,7 @@ public class TabularValidationReportRow {
 	for (String column : columns) {
 	    csvRow += column.replace(",", "&#44;") + ","; //replace commas with html entity befor making a csv String!
 	}
-	this.rowCsvString = csvRow.substring(0, csvRow.length()-1); //remove last comma
+	this.rowCsvString = csvRow.substring(0, csvRow.length() - 1); //remove last comma
     }
 
 }
