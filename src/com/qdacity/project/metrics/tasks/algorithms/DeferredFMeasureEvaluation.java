@@ -87,9 +87,8 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	}
 
 	ParagraphAgreement totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
-	valResult.setParagraphAgreement(totalAgreement);
+	valResult.setParagraphAgreement(totalAgreement, validationProject.getCreatorName());
 
-	valResult.setName(validationProject.getCreatorName());
 	valResult.setRevisionID(validationProject.getRevisionID());
 	valResult.setValidationProjectID(validationProject.getId());
 	valResult.setReportID(validationReportId);

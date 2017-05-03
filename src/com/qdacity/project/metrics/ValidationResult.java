@@ -1,5 +1,6 @@
 package com.qdacity.project.metrics;
 
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,6 @@ public class ValidationResult implements Serializable {
 	@Persistent(
 		defaultFetchGroup = "true",
 		dependent = "true")
-	String name;
-
-	@Persistent(
-		defaultFetchGroup = "true",
-		dependent = "true")
 	Long validationProjectID;
 
 	@Persistent(
@@ -52,8 +48,8 @@ public class ValidationResult implements Serializable {
 		defaultFetchGroup = "true",
 		dependent = "true")
 	@Column(
-		name = "paragraphAgreement")
-	ParagraphAgreement paragraphAgreement;
+		name = "reportRow") //TODO Migration: paragraphAgreement wird zu reportRow
+	TabularValidationReportRow reportRow;
 
 	@Persistent
 	@OneToMany(
@@ -96,20 +92,20 @@ public class ValidationResult implements Serializable {
 		this.revisionID = ID;
 	}
 
-	public String getName() {
-		return name;
+	public TabularValidationReportRow getReportRow() {
+		return reportRow;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setReportRow(TabularValidationReportRow reportRow) {
+	    this.reportRow = reportRow;
 	}
-
+	
 	public ParagraphAgreement getParagraphAgreement() {
-		return paragraphAgreement;
+	    return ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(reportRow);
 	}
-
-	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
-		this.paragraphAgreement = paragraphAgreement;
+	
+	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement, String coderName) {
+	    this.reportRow = ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(paragraphAgreement, validationProjectID, coderName);
 	}
 
 	public List<DocumentResult> getDocumentResults() {
