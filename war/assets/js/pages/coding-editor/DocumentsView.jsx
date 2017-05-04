@@ -14,6 +14,7 @@ export default class DocumentsView extends React.Component {
 		this.getDocuments = this.getDocuments.bind(this);
 	}
 
+	// Adds a document and selects the new document as active
 	addDocument(pId, pTitle, pText) {
 		var doc = {};
 		doc.id = pId;
@@ -23,6 +24,7 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			documents: this.state.documents
 		});
+		this.setActiveDocument(doc.id);
 	}
 
 	renameDocument(pId, pNewTitle) {
