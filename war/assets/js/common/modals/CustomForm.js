@@ -26,15 +26,20 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 	}
   
-    addSelect(name, options, label) {
+    addSelect(name, options, label, initialValue) {
       	  var _this = this;
 	  this.formElements += '<div class="vex-custom-field-wrapper">';
 
 	  this.formElements += '<div class="vex-custom-input-wrapper">';
 	  this.formElements += label+': ';
 	  this.formElements += '<select name="'+name+'">';
+	  
+	  var isDefault = function (el){
+		  return ((el == initialValue) ? 'selected="selected"' : '');
+	  }
+	  
 	  options.forEach(function(el) {
-		  _this.formElements += '<option value="'+el+'">'+el+'</option>';
+		  _this.formElements += '<option value="'+el+'" '+ isDefault(el) +'>'+el+'</option>';
   	  });
 	  this.formElements += '</select>';
 	  this.formElements += '</div>';
