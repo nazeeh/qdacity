@@ -13,7 +13,7 @@
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
     <init-param>
       <param-name>services</param-name>
-      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint,com.qdacity.taskboard.TaskBoardEndpoint</param-value>
+      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.DataMigrationEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint,com.qdacity.taskboard.TaskBoardEndpoint</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
