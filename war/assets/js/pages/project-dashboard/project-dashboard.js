@@ -40,14 +40,17 @@ function setupUI() {
 		$('#navAccount').show();
 		$('#navSignin').hide();
 
+		var userPromise = account.getCurrentUser();
+		
 		setGeneralStats();
 
 		fillUserList();
 
 		setProjectProperties();
 		if (project_type === 'PROJECT'){
-			setRevisionHistory();
 			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project_id} />, document.getElementById('revisionHistoryTimeline'));
+			setRevisionHistory(userPromise);
+			setBtnVisibility(userPromise);
 		}
 
 	} else {
@@ -71,6 +74,8 @@ window.init = function () {
 	case 'VALIDATION':
 		$('#parentProject').show();
 		$('#validationReports').show();
+		$('#codingEditorBtn').removeClass('hidden');
+		$('#settingsBtn').addClass('hidden');
 		break;
 	default:
 		break;
@@ -148,10 +153,9 @@ function setReportList(parentProject) {
 	});
 }
 
-function setRevisionHistory() {
+function setRevisionHistory(userPromise) {
 	var validationEndpoint = new ValidationEndpoint();
 
-	var userPromise = account.getCurrentUser();
 	var validationPromise = validationEndpoint.listReports(project_id);
 
 	ProjectEndpoint.listRevisions(project_id).then(function (resp) {
@@ -185,6 +189,22 @@ function setRevisionHistory() {
 
 	});
 
+}
+
+function setBtnVisibility(userPromise){
+	userPromise.then(function (user) {
+		if (account.isProjectOwner(user, project_id)) {
+			$('#codingEditorBtn').removeClass('hidden');
+			$('#settingsBtn').removeClass('hidden');
+			$('#editDescriptionBtn').removeClass('hidden');
+			$('#inviteUser').removeClass('hidden');
+		} else {
+			$('#codingEditorBtn').addClass('hidden');
+			$('#settingsBtn').addClass('hidden');
+			$('#editDescriptionBtn').addClass('hidden');
+			$('#inviteUser').addClass('hidden');
+		}
+	});
 }
 
 function handleBadResponse(reason) {
