@@ -69,9 +69,40 @@ function loadCodes(codesystem_id) {
 		resp.items = resp.items || [];
 		codes = resp.items;
 
+		var nodes = new Map();
+		var relations = [];
+		
 		for (var i = 0; i < codes.length; i++) {
-			console.log('add ' + codes[i].name);
-			view.addNode(codes[i].name);
+						
+			var node = view.addNode(codes[i].name);
+			nodes.set(codes[i].codeID, { 'code': codes[i], 'node': node });
+			
+			
+			console.log('add ' + codes[i].codeID + ' - ' + codes[i].name);
+			
+			if (codes[i].relations != null) {
+				for (var j = 0; j < codes[i].relations.length; j++) {
+					console.log(codes[i].codeID + ' is connected to ' + codes[i].relations[j].codeId);
+					
+					relations.push({ 'start': codes[i].codeID, 'end': codes[i].relations[j].codeId });
+				}
+			}
 		}
-	});
+		
+		
+		
+		
+		for (var i = 0; i < relations.length; i++) {
+			var relation = relations[i];
+			
+			var start = nodes.get(relation.start).node;
+			var end = nodes.get(relation.end).node;
+			
+			view.addEdge(start, end);
+		}
+
+		
+		view.applyLayout();
+		
+	});	
 }

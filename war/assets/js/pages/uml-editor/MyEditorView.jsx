@@ -4,7 +4,9 @@ export default class MyEditorView extends React.Component {
 
 	constructor(props) {
 		super(props);
+		
 		this.graph = null;
+		this.layout = null;
 	}
 
 	run() {
@@ -18,9 +20,17 @@ export default class MyEditorView extends React.Component {
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
 
+		
+		this.layout = new mxFastOrganicLayout(this.graph);
+        // Moves stuff wider apart than usual
+        this.layout.forceConstant = 80;
+		
+		
+		
+		
 		// Gets the default parent for inserting new cells. This
 		// is normally the first child of the root (ie. layer 0).
-		var parent = this.graph.getDefaultParent();
+//		var parent = this.graph.getDefaultParent();
 
 		// Adds cells to the model in a single step
 //		this.graph.getModel().beginUpdate();
@@ -39,16 +49,48 @@ export default class MyEditorView extends React.Component {
 
 		this.graph.getModel().beginUpdate();
 
+		var node;
 		try {
-			var v1 = this.graph.insertVertex(parent, null, name, 20, 20, 80, 30);
+			node = this.graph.insertVertex(parent, null, name, 20, 20, 80, 30);
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
+		
+		return node;
+	}
+	
+	addEdge(v1, v2) {
+        var parent = this.graph.getDefaultParent();
+        
+	    this.graph.getModel().beginUpdate();
+        
+	    var edge;
+	    try {
+            edge = this.graph.insertEdge(parent, null, '', v1, v2);
+        } finally {
+            this.graph.getModel().endUpdate();
+        }   
+        
+        return edge;
 	}
 
+	applyLayout() {
+	    var parent = this.graph.getDefaultParent();
+
+        this.graph.getModel().beginUpdate();
+
+        try {
+            this.layout.execute(parent);
+        }
+        finally {
+            this.graph.getModel().endUpdate();
+            alert('done');
+        }
+	}
+	
 	render() {
 		return (
-			<div id="graphContainer" style={{position:'relative', overflow:'hidden', width:'800px', height:'600px', cursor:'default'}}></div>
+			<div id="graphContainer" style={{position:'relative', overflow:'hidden', width:'1200px', height:'800px', cursor:'default'}}></div>
 		);
 	}
 
