@@ -15,6 +15,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.metamodel.MetaModelEntity;
@@ -109,8 +110,8 @@ public class MetaModelEntityEndpoint {
 			audiences = { Constants.WEB_CLIENT_ID })
 	public MetaModelEntity insertMetaModelEntity(MetaModelEntity metaModelEntity, User user) throws UnauthorizedException {
 
-		if (user == null) throw new UnauthorizedException("User not authorized");
-
+		Authorization.checkAuthorization(metaModelEntity, user);
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (metaModelEntity.getId() != null && containsMetaModelEntity(metaModelEntity)) {

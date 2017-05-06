@@ -14,8 +14,10 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
 
 @Api(name = "qdacity",
@@ -72,8 +74,8 @@ public class MetaModelRelationEndpoint {
 			audiences = { Constants.WEB_CLIENT_ID })
 	public MetaModelRelation insertMetaModelRelation(MetaModelRelation metaModelRelation, User user) throws UnauthorizedException {
 
-		if (user == null) throw new UnauthorizedException("User not authorized");
-
+		Authorization.checkAuthorization(metaModelRelation, user);
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (metaModelRelation.getId() != null && containsMetaModelRelation(metaModelRelation)) {

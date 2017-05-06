@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
+import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.maintenance.tasks.OrphanDeletion;
 import com.qdacity.maintenance.tasks.ValidationCleanup;
@@ -67,11 +68,8 @@ public class MaintenanceEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, User user) throws UnauthorizedException {
 		
-		// Check if user is authorized
-		//Authorization.checkAuthorization(code, user);
+		Authorization.checkDatabaseInitalizationAuthorization(user);
 
-		// TODO what if executed more than once
-		
 		if (initializeMetaModel) {
 			initializeMetaModelEntities(user);
 			initializeMetaModelRelations(user);
