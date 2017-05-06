@@ -68,33 +68,33 @@ public class MetaModelEntityEndpoint {
 	 * @return the entity with the given name
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "metaModelEntity.getMetaModelEntityByName",
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "metaModelEntity.getMetaModelEntitiesByName",
 			path = "metaModelEntity",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 			audiences = { Constants.WEB_CLIENT_ID })
-	public MetaModelEntity getMetaModelEntityByName(@Named("name") String name, User user) throws UnauthorizedException {
+	public List<MetaModelEntity> getMetaModelEntitiesByName(@Named("name") String name, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized");
 
-		MetaModelEntity metaModelEntity = null;
+		List<MetaModelEntity> metaModelEntities = null;
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {			
 			Query query = mgr.newQuery(MetaModelEntity.class);
 			query.setFilter("name == :name");
-			query.setUnique(true);
 			
 			Map<String, String> params = new HashMap<>();
 			params.put("name", name);
 			
-			metaModelEntity = (MetaModelEntity) query.executeWithMap(params);
+			metaModelEntities = (List<MetaModelEntity>) query.executeWithMap(params);
 			
 		} finally {
 			mgr.close();
 		}
 		
-		return metaModelEntity;
+		return metaModelEntities;
 	}
 	
 	/**

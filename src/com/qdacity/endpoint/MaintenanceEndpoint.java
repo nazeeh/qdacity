@@ -1,6 +1,9 @@
 package com.qdacity.endpoint;
 
+import java.util.List;
+
 import javax.inject.Named;
+import javax.persistence.EntityNotFoundException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -153,12 +156,22 @@ public class MaintenanceEndpoint {
 		metaModelRelation.setMetaModelId(metaModelId);
 		metaModelRelation.setType(type);
 		
-		MetaModelEntity sourceEntity = metaModelEntityEndpoint.getMetaModelEntityByName(source, user);
-		MetaModelEntity destinationEntity = metaModelEntityEndpoint.getMetaModelEntityByName(destination, user);
+		MetaModelEntity sourceEntity = getMetaModelEntityByName(source, user);
+		MetaModelEntity destinationEntity =getMetaModelEntityByName(destination, user);
 		
 		metaModelRelation.setSrc(sourceEntity.getId());
 		metaModelRelation.setDst(destinationEntity.getId());
 		
 		metaModelRelationEndpoint.insertMetaModelRelation(metaModelRelation, user);
+	}
+	
+	private MetaModelEntity getMetaModelEntityByName(String name, User user) throws UnauthorizedException {
+		List<MetaModelEntity> entities = metaModelEntityEndpoint.getMetaModelEntitiesByName(name, user);
+		
+		if (entities == null || entities.size() == 0) {
+			throw new EntityNotFoundException("Entity with name " + name + " was not found.");
+		}
+		
+		return entities.get(0);
 	}
 }
