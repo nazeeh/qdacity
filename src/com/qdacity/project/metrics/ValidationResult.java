@@ -107,6 +107,15 @@ public class ValidationResult implements Serializable {
 	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement, String coderName) {
 	    this.reportRow = ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(paragraphAgreement, validationProjectID, coderName);
 	}
+	
+	public String getName() {
+	    if(reportRow != null) {
+		return reportRow.getCells().get(0);
+	    }
+	    else {
+		return "";
+	    }
+	}
 
 	public List<DocumentResult> getDocumentResults() {
 		return documentResults;
