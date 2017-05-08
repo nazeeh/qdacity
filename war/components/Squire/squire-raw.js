@@ -3943,14 +3943,14 @@ proto.removeAllFormatting = function ( range ) {
 
 proto.readOnly = function (readonly) {
 
-    if (readonly == 'true'){
+    if (readonly == true){
     	this._body.setAttribute( 'contenteditable', 'false' );
 
     	this.removeEventListener( isPresto ? 'keypress' : 'keydown', onKey );
 
     	
     }
-    else if (readonly == 'false')
+    else if (readonly == false)
     	{
     	this._body.setAttribute( 'contenteditable', 'true' );
     	this.addEventListener( isPresto ? 'keypress' : 'keydown', onKey );
