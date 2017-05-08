@@ -17,7 +17,9 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 import com.qdacity.project.metrics.tasks.DeferredDocResults;
 
 public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
@@ -70,7 +72,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	    for (TextDocument recoded : recodedDocs) {
 		if (original.getTitle().equals(recoded.getTitle())) {
 		    DocumentResult documentAgreement = FMeasure.calculateParagraphAgreement(original, recoded);
-		    documentAgreements.add(documentAgreement.getParagraphAgreement());
+		    documentAgreements.add(documentAgreement.getParagraphAgreement()); //TODO Replace ParagraphAgreement?
 
 		    // valResult.addDocumentResult(documentAgreement);
 		    documentAgreement.setValidationResultID(valResult.getId());
@@ -87,7 +89,8 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	}
 
 	ParagraphAgreement totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
-	valResult.setParagraphAgreement(totalAgreement, validationProject.getCreatorName());
+	TabularValidationReportRow fmeasureRow = ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(totalAgreement, validationReportId, validationProject.getCreatorName());
+	valResult.setReportRow(fmeasureRow);
 
 	valResult.setRevisionID(validationProject.getRevisionID());
 	valResult.setValidationProjectID(validationProject.getId());

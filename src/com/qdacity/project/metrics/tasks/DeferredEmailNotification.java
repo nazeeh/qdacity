@@ -19,8 +19,10 @@ import com.qdacity.Sendgrid;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.ParagraphAgreement;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 
 public class DeferredEmailNotification implements DeferredTask {
 
@@ -72,9 +74,10 @@ public class DeferredEmailNotification implements DeferredTask {
 				msgBody += "</p>";
 				msgBody += "<p>";
 				msgBody += "<strong>Overall</strong> <br>";
-				msgBody += "F-Measure: " + result.getParagraphAgreement().getFMeasure() + "<br>";
-				msgBody += "Recall: " + result.getParagraphAgreement().getRecall() + "<br>";
-				msgBody += "Precision: " + result.getParagraphAgreement().getPrecision() + "<br>";
+				ParagraphAgreement paragraphAgreement = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(result.getReportRow());
+				msgBody += "F-Measure: " + paragraphAgreement.getFMeasure() + "<br>";
+				msgBody += "Recall: " + paragraphAgreement.getRecall() + "<br>";
+				msgBody += "Precision: " + paragraphAgreement.getPrecision() + "<br>";
 				msgBody += "</p>";
 				msgBody += "<p>";
 				msgBody += "<strong>Document specific data:</strong><br>";

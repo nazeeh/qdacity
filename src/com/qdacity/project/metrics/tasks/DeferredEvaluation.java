@@ -37,6 +37,7 @@ import com.qdacity.project.metrics.TabularValidationReport;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
@@ -179,7 +180,7 @@ public class DeferredEvaluation implements DeferredTask {
 	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
 	Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
 	for (ValidationResult validationResult : validationResults) {
-	    ParagraphAgreement resultParagraphAgreement = validationResult.getParagraphAgreement();
+	    ParagraphAgreement resultParagraphAgreement = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(validationResult.getReportRow());
 	    if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) {
 		validationCoderAvg.add(resultParagraphAgreement);
 	    }
@@ -242,7 +243,7 @@ public class DeferredEvaluation implements DeferredTask {
 	List<String> tableHead = new ArrayList<>();
 	tableHead.add("Documents \\ Codes");
 	for (Long codeId : codeIds) {
-	    tableHead.add(codeId + "");
+	    tableHead.add(codeId + ""); //TODO get Name of Code From Codesystem
 	}
 	tabularValidationReport.setHeadRow(tableHead);
 

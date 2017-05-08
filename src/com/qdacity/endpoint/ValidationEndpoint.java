@@ -144,8 +144,8 @@ public class ValidationEndpoint {
 
 			// Lazy fetch
 			for (ValidationResult result : results) {
-			    if(result.getParagraphAgreement()!=null) {
-				result.getParagraphAgreement().getFMeasure();
+			    if(result.getReportRow()!=null) {
+				result.getReportRow().getCells();
 			    }
 			}
 
