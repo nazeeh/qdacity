@@ -21,6 +21,7 @@ export default class RevisionHistory extends React.Component {
 		};
 		
 		this.renderReports = this.renderReports.bind(this);
+		this.addRevision = this.addRevision.bind(this);
 	}
 	
 	getStyles() {
@@ -90,6 +91,24 @@ export default class RevisionHistory extends React.Component {
 			reports: pReports
 		});
 	}
+	
+	addRevision(pRevision){
+		this.state.revisions.unshift(pRevision);
+		this.setState({
+			revisions: this.state.revisions
+		});
+	}
+	
+	createNewRevision(prjId, comment){
+			var _this = this;
+        	ProjectEndpoint.createSnapshot(prjId, comment).then(function(resp) {
+            	alertify.success("New revision has been created");
+            	_this.addRevision(resp);
+            	
+	        }).catch(function(resp){
+	        	alertify.error("New revision has not been created");
+	    	});
+    }
 	
 	requestValidationAccess(revId) {
 		var projectEndpoint = new ProjectEndpoint();

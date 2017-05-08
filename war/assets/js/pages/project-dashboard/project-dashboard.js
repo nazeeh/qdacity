@@ -103,7 +103,18 @@ window.init = function () {
 	document.getElementById('editDescriptionBtn').onclick = function () {
 		showDescriptionModal();
 	};
+	
+	document.getElementById('newRevisionBtn').onclick = function() {
+		showNewRevisionModal("Revision Comment");
+    }
 
+}
+
+function showNewRevisionModal(title){
+	var modal = new TextField(title, 'Use this field to describe this revision in a few sentences');
+	modal.showModal().then(function(text) {
+		revisionHistory.createNewRevision(project_id, text);
+	});
 }
 
 function setGeneralStats() {
@@ -198,11 +209,13 @@ function setBtnVisibility(userPromise){
 			$('#settingsBtn').removeClass('hidden');
 			$('#editDescriptionBtn').removeClass('hidden');
 			$('#inviteUser').removeClass('hidden');
+			$('#newRevisionBtn').removeClass('hidden');
 		} else {
 			$('#codingEditorBtn').addClass('hidden');
 			$('#settingsBtn').addClass('hidden');
 			$('#editDescriptionBtn').addClass('hidden');
 			$('#inviteUser').addClass('hidden');
+			$('#newRevisionBtn').addClass('hidden');
 		}
 	});
 }
