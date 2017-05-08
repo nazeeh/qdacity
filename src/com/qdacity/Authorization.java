@@ -79,7 +79,7 @@ public class Authorization {
 
 	public static void checkAuthorization(Long projectID, User user) throws UnauthorizedException {
 		if (user == null) throw new UnauthorizedException("User is Not Valid");
-		Boolean authorized = Authorization.isUserAuthorized(user, projectID);
+		Boolean authorized = Authorization.isUserAuthorized(user, projectID) || isUserAdmin(user);
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 
 	}
@@ -106,6 +106,12 @@ public class Authorization {
 		if (isProjectOwner) return AuthorizationLevel.CODER;
 		java.util.logging.Logger.getLogger("logger").log(Level.INFO, user.getId() + " is not owner of project " + parentProject.getId());
 		throw new UnauthorizedException("User is Not Authorized.");
+	}
+	
+	private static Boolean isUserAdmin(User googleUser){
+		com.qdacity.user.User user = (com.qdacity.user.User) Cache.getOrLoad(googleUser.getUserId(), com.qdacity.user.User.class);
+		if (user.getType() == UserType.ADMIN) return true;
+		return false;
 	}
 
 }
