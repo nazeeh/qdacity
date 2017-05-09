@@ -10,6 +10,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
 
+//TODO needs to stay persistence cabable until datamigration is completed.
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
 public class FMeasureResult implements Serializable {
