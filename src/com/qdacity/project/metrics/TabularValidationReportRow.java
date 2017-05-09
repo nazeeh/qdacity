@@ -21,6 +21,12 @@ public class TabularValidationReportRow {
 	assert (tabularValidationReportId != null);
 	this.tabularValidationReportId = tabularValidationReportId;
     }
+    
+    public TabularValidationReportRow(TabularValidationReportRow copy) {
+	super();
+	this.rowCsvString = copy.rowCsvString;
+	this.tabularValidationReportId = copy.tabularValidationReportId;
+    }
 
     @PrimaryKey
     @Persistent(
