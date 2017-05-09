@@ -7,7 +7,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 import java.util.HashMap;
@@ -56,14 +56,14 @@ public class DataMigrationEndpoint {
 	PersistenceManager mgr = getPersistenceManager();
 	
 	//TODO nicht über einzelne Paragraph Agreements, sondern immer über die Elternobjekte!
-	List<ParagraphAgreement> pAgreements;
+	List<FMeasureResult> pAgreements;
 	TabularValidationReportRow tabularValidationReportRow = null;
 	try {
-	    Query q = mgr.newQuery(ParagraphAgreement.class, "id  == :id");
+	    Query q = mgr.newQuery(FMeasureResult.class, "id  == :id");
 	    Map<String, Long> params = new HashMap<>();
 	    params.put("id", paragraphAgreementId);
 
-	    pAgreements = (List<ParagraphAgreement>) q.execute(params);
+	    pAgreements = (List<FMeasureResult>) q.execute(params);
 	    if (pAgreements.size() == 1) {
 		tabularValidationReportRow = ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(pAgreements.get(0), null, coderName);
 		mgr.makePersistent(tabularValidationReportRow);

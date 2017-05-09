@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
-public class ParagraphAgreement implements Serializable {
+public class FMeasureResult implements Serializable {
 	/**
 	 * 
 	 */
@@ -38,11 +38,11 @@ public class ParagraphAgreement implements Serializable {
 		dependent = "true")
 	double precision;
 
-	public ParagraphAgreement() {
+	public FMeasureResult() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ParagraphAgreement(ParagraphAgreement copy) {
+	public FMeasureResult(FMeasureResult copy) {
 		super();
 		this.fMeasure = copy.fMeasure;
 		this.recall = copy.recall;

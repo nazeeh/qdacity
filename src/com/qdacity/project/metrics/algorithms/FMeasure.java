@@ -14,7 +14,7 @@ import org.jsoup.select.Elements;
 
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
-import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 
 public class FMeasure {
@@ -61,7 +61,7 @@ public class FMeasure {
 
 		}
 
-		ParagraphAgreement totalAgreement = calculateFMeasure(truePositiveCount, falsePositiveCount, falseNegativeCount);
+		FMeasureResult totalAgreement = calculateFMeasure(truePositiveCount, falsePositiveCount, falseNegativeCount);
 		
 
 		docResults.setReportRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(totalAgreement, null, "TODO NAME?")); //TODO
@@ -73,9 +73,9 @@ public class FMeasure {
 	}
 
         
-	static public ParagraphAgreement calculateFMeasure(Integer truePositives, Integer falsePositives, Integer falseNegatives) {
+	static public FMeasureResult calculateFMeasure(Integer truePositives, Integer falsePositives, Integer falseNegatives) {
                 //See https://en.wikipedia.org/wiki/F1_score
-		ParagraphAgreement agreement = new ParagraphAgreement();
+		FMeasureResult agreement = new FMeasureResult();
 		double recall = truePositives.doubleValue() / (falseNegatives + truePositives);
 		if ((falseNegatives + truePositives) == 0) recall = 1;
 
@@ -91,8 +91,8 @@ public class FMeasure {
 		return agreement;
 	}
 
-	static public ParagraphAgreement calculateAverageAgreement(List<ParagraphAgreement> documentAgreements) {
-		ParagraphAgreement avg = new ParagraphAgreement();
+	static public FMeasureResult calculateAverageAgreement(List<FMeasureResult> documentAgreements) {
+		FMeasureResult avg = new FMeasureResult();
 		avg.setFMeasure(0);
 		avg.setPrecision(0);
 		avg.setRecall(0);
@@ -101,7 +101,7 @@ public class FMeasure {
 			double avgRecall = 0;
 			double avgPrecision = 0;
 			double avgFMeasure = 0;
-			for (ParagraphAgreement agreement : documentAgreements) {
+			for (FMeasureResult agreement : documentAgreements) {
 				avgRecall += agreement.getRecall();
 				avgPrecision += agreement.getPrecision();
 				avgFMeasure += agreement.getFMeasure();

@@ -1,6 +1,6 @@
 package com.qdacity.project.metrics.algorithms.datastructures.converter;
 
-import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +16,8 @@ public class ParagraphAgreementConverter {
     private static final int RECALL_INDEX = 2;
     private static final int PRECISION_INDEX = 3;
     
-    public static ParagraphAgreement tabularValidationReportRowToParagraphAgreement(TabularValidationReportRow tabularReportRow) {
-	ParagraphAgreement paragraphAgreement = new ParagraphAgreement();
+    public static FMeasureResult tabularValidationReportRowToParagraphAgreement(TabularValidationReportRow tabularReportRow) {
+	FMeasureResult paragraphAgreement = new FMeasureResult();
 	
 	if(tabularReportRow.getCells().size() < 4) {
 	    throw new IllegalArgumentException("You did not provide a tabularReportRow, which can be converted to a ParagraphAgreement");
@@ -30,7 +30,7 @@ public class ParagraphAgreementConverter {
 	return paragraphAgreement;
     }
     
-    public static TabularValidationReportRow paragraphAgreementToTabularValidationReportRow(ParagraphAgreement paragraphAgreement, Long tabularValidationReportId, String coderName) {
+    public static TabularValidationReportRow paragraphAgreementToTabularValidationReportRow(FMeasureResult paragraphAgreement, Long tabularValidationReportId, String coderName) {
 	TabularValidationReportRow tabularValidationReportRow = new TabularValidationReportRow(tabularValidationReportId);
 	
 	List<String> columns = new ArrayList<>();
