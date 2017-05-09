@@ -37,8 +37,8 @@ public class ValidationReport {
 		defaultFetchGroup = "true",
 		dependent = "true")
 	@Column(
-		name = "paragraphAgreement")
-	ParagraphAgreement paragraphAgreement;
+		name = "reportRow")
+	TabularValidationReportRow reportRow;
 
 	@Persistent(
 		defaultFetchGroup = "true")
@@ -92,7 +92,7 @@ public class ValidationReport {
 		if (validationResultIDs == null) validationResultIDs = new ArrayList<Long>();
 		validationResultIDs.add(result.getId());
 
-		if (paragraphAgreement == null) paragraphAgreement = new ParagraphAgreement();
+		//if (reportRow == null) reportRow = new TabularValidationReportRow(0); TODO why?
 	}
 
 	public String getName() {
@@ -111,12 +111,12 @@ public class ValidationReport {
 		this.datetime = datetime;
 	}
 
-	public ParagraphAgreement getParagraphAgreement() {
-		return paragraphAgreement;
+        public TabularValidationReportRow getReportRow() {
+		return reportRow;
 	}
 
-	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
-		this.paragraphAgreement = paragraphAgreement;
+	public void setReportRow(TabularValidationReportRow reportRow) {
+	    this.reportRow = reportRow;
 	}
 
 	public List<DocumentResult> getDocumentResults() {

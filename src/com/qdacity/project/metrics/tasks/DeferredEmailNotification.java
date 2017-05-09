@@ -96,9 +96,10 @@ public class DeferredEmailNotification implements DeferredTask {
 
 				msgBody += "<p>";
 				msgBody += "You may compare these values to the average of this report<br>";
-				msgBody += "F-Measure: " + report.getParagraphAgreement().getFMeasure() + "<br>";
-				msgBody += "Recall: " + report.getParagraphAgreement().getRecall() + "<br>";
-				msgBody += "Precision: " + report.getParagraphAgreement().getPrecision() + "<br><br>";
+				ParagraphAgreement reportPA = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(report.getReportRow());
+				msgBody += "F-Measure: " + reportPA.getFMeasure() + "<br>";
+				msgBody += "Recall: " + reportPA.getRecall() + "<br>";
+				msgBody += "Precision: " + reportPA.getPrecision() + "<br><br>";
 				msgBody += "</p>";
 
 				msgBody += "<p>";

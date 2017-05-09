@@ -62,7 +62,7 @@ public class ValidationEndpoint {
 			reports = (List<ValidationReport>) q.executeWithMap(params);
 
 			for (ValidationReport validationReport : reports) {
-				if (validationReport.getParagraphAgreement() != null) validationReport.getParagraphAgreement().getFMeasure();
+				if (validationReport.getReportRow()!= null) validationReport.getReportRow().getCells();
 				List<DocumentResult> docresults = validationReport.getDocumentResults();
 				if (docresults.size() > 0) {
 					for (DocumentResult documentResult : docresults) {
