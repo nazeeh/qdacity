@@ -474,13 +474,13 @@ public class ProjectEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public Project createSnapshot(@Named("projectID") Long projectID, @Named("comment") String comment, User user) throws UnauthorizedException {
-		Project project = null;
+	public ProjectRevision createSnapshot(@Named("projectID") Long projectID, @Named("comment") String comment, User user) throws UnauthorizedException {
+		ProjectRevision cloneProject = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			project = (Project) Cache.getOrLoad(projectID, Project.class);
+			Project project = (Project) Cache.getOrLoad(projectID, Project.class);
 
-			ProjectRevision cloneProject = new ProjectRevision(cloneProject(project, user), project.getId(), comment);
+			cloneProject = new ProjectRevision(cloneProject(project, user), project.getId(), comment);
 
 			project.setRevision(project.getRevision() + 1);
 
@@ -496,7 +496,8 @@ public class ProjectEndpoint {
 		} finally {
 			mgr.close();
 		}
-		return project;
+
+		return cloneProject;
 	}
 
 	@ApiMethod(name = "project.requestValidationAccess",
