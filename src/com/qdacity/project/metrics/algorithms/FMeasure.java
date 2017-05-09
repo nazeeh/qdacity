@@ -15,6 +15,7 @@ import org.jsoup.select.Elements;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 
 public class FMeasure {
 	static public DocumentResult calculateParagraphAgreement(TextDocument original, TextDocument recoded) {
@@ -61,9 +62,9 @@ public class FMeasure {
 		}
 
 		ParagraphAgreement totalAgreement = calculateFMeasure(truePositiveCount, falsePositiveCount, falseNegativeCount);
+		
 
-
-		docResults.setParagraphAgreement(totalAgreement);
+		docResults.setReportRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(totalAgreement, null, "TODO NAME?")); //TODO
 		docResults.setTruePositives(truePositives);
 		docResults.setFalsePositives(falsePositives);
 		docResults.setFalseNegatives(falseNegatives);

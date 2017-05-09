@@ -194,7 +194,7 @@ public class DeferredEvaluation implements DeferredTask {
 		documentResultForAggregation.setDocumentID(revisionDocumentID);
 		report.addDocumentResult(documentResultForAggregation);
 
-		ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
+		ParagraphAgreement docAgreement = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(documentResultForAggregation.getReportRow());
 
 		if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
 		    List<ParagraphAgreement> agreementList = agreementByDoc.get(revisionDocumentID);
@@ -211,7 +211,7 @@ public class DeferredEvaluation implements DeferredTask {
 	for (Long docID : agreementByDoc.keySet()) {
 	    ParagraphAgreement avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
 	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getFMeasure());
-	    report.setDocumentResultAverage(docID, avgDocAgreement);
+	    report.setDocumentResultAverage(docID, ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(avgDocAgreement, null, "Average"));
 	}
 
 	ParagraphAgreement avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);

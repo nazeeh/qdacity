@@ -87,9 +87,10 @@ public class DeferredEmailNotification implements DeferredTask {
 				for (DocumentResult documentResult : docResults) {
 					msgBody += "<p>";
 					msgBody += "<strong>" + documentResult.getDocumentName() + ":</strong><br>";
-					msgBody += "F-Measure: " + documentResult.getParagraphAgreement().getFMeasure() + "<br>";
-					msgBody += "Recall: " + documentResult.getParagraphAgreement().getRecall() + "<br>";
-					msgBody += "Precision: " + documentResult.getParagraphAgreement().getPrecision() + "<br><br>";
+					ParagraphAgreement documentPA = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(documentResult.getReportRow());
+					msgBody += "F-Measure: " + documentPA.getFMeasure() + "<br>";
+					msgBody += "Recall: " + documentPA.getRecall() + "<br>";
+					msgBody += "Precision: " + documentPA.getPrecision() + "<br><br>";
 					msgBody += "</p>";
 				}
 

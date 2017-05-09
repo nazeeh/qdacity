@@ -1,6 +1,7 @@
 package com.qdacity.project.metrics;
 
 import com.google.appengine.api.datastore.Key;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -15,13 +16,13 @@ import javax.jdo.annotations.PrimaryKey;
  */
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
-public class TabularValidationReportRow {
+public class TabularValidationReportRow implements Serializable {
 
     public TabularValidationReportRow(Long tabularValidationReportId) {
 	assert (tabularValidationReportId != null);
 	this.tabularValidationReportId = tabularValidationReportId;
     }
-    
+
     public TabularValidationReportRow(TabularValidationReportRow copy) {
 	super();
 	this.rowCsvString = copy.rowCsvString;

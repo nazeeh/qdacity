@@ -153,10 +153,10 @@ public class ValidationReport {
 		return false;
 	}
 
-	public void setDocumentResultAverage(Long docID, ParagraphAgreement averageAgreement) {
+	public void setDocumentResultAverage(Long docID, TabularValidationReportRow averageAgreement) {
 		for (DocumentResult aggregated : documentResults) {
 			if (aggregated.getDocumentID().equals(docID)) {
-				aggregated.setParagraphAgreement(averageAgreement);
+				aggregated.setReportRow(averageAgreement);
 			}
 		}
 	}
