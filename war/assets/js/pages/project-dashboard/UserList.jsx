@@ -9,8 +9,7 @@ export default class UserList extends React.Component {
 			users: [],
 			// pagination
 			currentPage: 1,
-			itemsPerPage: 5,
-			search: ''
+			itemsPerPage: 5
 		};
 		
 		this.init();
