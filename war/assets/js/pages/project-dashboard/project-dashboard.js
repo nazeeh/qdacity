@@ -11,6 +11,7 @@ import loadGAPIs from '../../common/GAPI';
 import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
 import UserList from "./UserList.jsx"
 import InviteUserField from "./InviteUserField.jsx"
+import ProjectStats from "./ProjectStats.jsx"
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/URIjs/URI.min.js';
@@ -37,6 +38,7 @@ var project;
 var revisionHistory;
 var userList;
 var inviteUserField;
+var projectStats;
 
 function setupUI() {
 	if (account.isSignedIn()) {
@@ -46,9 +48,8 @@ function setupUI() {
 
 		var userPromise = account.getCurrentUser();
 		
-		setGeneralStats();
-		
 		userList = ReactDOM.render(<UserList projectType={project_type}  projectId={project_id} />, document.getElementById('userList'));
+		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
 		inviteUserField = ReactDOM.render(<InviteUserField projectType={project_type} projectId={project_id} />, document.getElementById('inviteUserField'));
 		
 		setProjectProperties();
@@ -116,15 +117,6 @@ function showNewRevisionModal(title){
 		revisionHistory.createNewRevision(project_id, text);
 	});
 }
-
-function setGeneralStats() {
-	ProjectEndpoint.getProjectStats(project_id, project_type).then(function (resp) {
-		$("#topStatsDocuments").html(resp.documentCount);
-		$("#topStatsCodes").html(resp.codeCount);
-		$("#topStatsCodings").html(resp.codingCount);
-	});
-}
-
 
 function setProjectProperties() {
 	ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
@@ -220,11 +212,6 @@ function setBtnVisibility(userPromise){
 			$('#newRevisionBtn').addClass('hidden');
 		}
 	});
-}
-
-function handleBadResponse(reason) {
-	alertify.error("There was an error");
-	console.log(reason.message);
 }
 
 function showDescriptionModal() {
