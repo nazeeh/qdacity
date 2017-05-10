@@ -10,6 +10,7 @@ import loadGAPIs from '../../common/GAPI';
 
 import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
 import UserList from "./UserList.jsx"
+import InviteUserField from "./InviteUserField.jsx"
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/URIjs/URI.min.js';
@@ -35,6 +36,7 @@ var project;
 
 var revisionHistory;
 var userList;
+var inviteUserField;
 
 function setupUI() {
 	if (account.isSignedIn()) {
@@ -47,6 +49,7 @@ function setupUI() {
 		setGeneralStats();
 		
 		userList = ReactDOM.render(<UserList projectType={project_type}  projectId={project_id} />, document.getElementById('userList'));
+		inviteUserField = ReactDOM.render(<InviteUserField projectType={project_type} projectId={project_id} />, document.getElementById('inviteUserField'));
 		
 		setProjectProperties();
 		if (project_type === 'PROJECT'){
@@ -96,11 +99,6 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
-
-	document.getElementById('inviteUserBtn').onclick = function () {
-		inviteUser();
-	}
-
 
 	document.getElementById('editDescriptionBtn').onclick = function () {
 		showDescriptionModal();
@@ -206,17 +204,19 @@ function setRevisionHistory(userPromise) {
 
 function setBtnVisibility(userPromise){
 	userPromise.then(function (user) {
-		if (account.isProjectOwner(user, project_id)) {
+		
+		var isProjectOwner = account.isProjectOwner(user, project_id);
+		inviteUserField.setIsProjectOwner(isProjectOwner);
+		
+		if (isProjectOwner) {
 			$('#codingEditorBtn').removeClass('hidden');
 			$('#settingsBtn').removeClass('hidden');
 			$('#editDescriptionBtn').removeClass('hidden');
-			$('#inviteUser').removeClass('hidden');
 			$('#newRevisionBtn').removeClass('hidden');
 		} else {
 			$('#codingEditorBtn').addClass('hidden');
 			$('#settingsBtn').addClass('hidden');
 			$('#editDescriptionBtn').addClass('hidden');
-			$('#inviteUser').addClass('hidden');
 			$('#newRevisionBtn').addClass('hidden');
 		}
 	});
@@ -226,20 +226,6 @@ function handleBadResponse(reason) {
 	alertify.error("There was an error");
 	console.log(reason.message);
 }
-
-
-function inviteUser() {
-
-	var userEmail = document.getElementById("userEmailFld").value;
-
-	ProjectEndpoint.inviteUser(project_id, userEmail).then(function (resp) {
-		alertify.success(userEmail + " has been invited");
-	}).catch(function (resp) {
-		alertify.error(userEmail + " was not found");
-	});
-}
-
-
 
 function showDescriptionModal() {
 	var modal = new TextField('Change the project description', 'Description');
