@@ -9,6 +9,9 @@ import Settings from '../../common/modals/Settings';
 import loadGAPIs from '../../common/GAPI';
 
 import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
+import UserList from "./UserList.jsx"
+import InviteUserField from "./InviteUserField.jsx"
+import ProjectStats from "./ProjectStats.jsx"
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/URIjs/URI.min.js';
@@ -33,6 +36,9 @@ var account;
 var project;
 
 var revisionHistory;
+var userList;
+var inviteUserField;
+var projectStats;
 
 function setupUI() {
 	if (account.isSignedIn()) {
@@ -42,10 +48,10 @@ function setupUI() {
 
 		var userPromise = account.getCurrentUser();
 		
-		setGeneralStats();
-
-		fillUserList();
-
+		userList = ReactDOM.render(<UserList projectType={project_type}  projectId={project_id} />, document.getElementById('userList'));
+		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
+		inviteUserField = ReactDOM.render(<InviteUserField projectType={project_type} projectId={project_id} />, document.getElementById('inviteUserField'));
+		
 		setProjectProperties();
 		if (project_type === 'PROJECT'){
 			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project_id} />, document.getElementById('revisionHistoryTimeline'));
@@ -95,11 +101,6 @@ window.init = function () {
 		}
 	);
 
-	document.getElementById('inviteUserBtn').onclick = function () {
-		inviteUser();
-	}
-
-
 	document.getElementById('editDescriptionBtn').onclick = function () {
 		showDescriptionModal();
 	};
@@ -116,15 +117,6 @@ function showNewRevisionModal(title){
 		revisionHistory.createNewRevision(project_id, text);
 	});
 }
-
-function setGeneralStats() {
-	ProjectEndpoint.getProjectStats(project_id, project_type).then(function (resp) {
-		$("#topStatsDocuments").html(resp.documentCount);
-		$("#topStatsCodes").html(resp.codeCount);
-		$("#topStatsCodings").html(resp.codingCount);
-	});
-}
-
 
 function setProjectProperties() {
 	ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
@@ -204,94 +196,23 @@ function setRevisionHistory(userPromise) {
 
 function setBtnVisibility(userPromise){
 	userPromise.then(function (user) {
-		if (account.isProjectOwner(user, project_id)) {
+		
+		var isProjectOwner = account.isProjectOwner(user, project_id);
+		inviteUserField.setIsProjectOwner(isProjectOwner);
+		
+		if (isProjectOwner) {
 			$('#codingEditorBtn').removeClass('hidden');
 			$('#settingsBtn').removeClass('hidden');
 			$('#editDescriptionBtn').removeClass('hidden');
-			$('#inviteUser').removeClass('hidden');
 			$('#newRevisionBtn').removeClass('hidden');
 		} else {
 			$('#codingEditorBtn').addClass('hidden');
 			$('#settingsBtn').addClass('hidden');
 			$('#editDescriptionBtn').addClass('hidden');
-			$('#inviteUser').addClass('hidden');
 			$('#newRevisionBtn').addClass('hidden');
 		}
 	});
 }
-
-function handleBadResponse(reason) {
-	alertify.error("There was an error");
-	console.log(reason.message);
-}
-
-function fillUserList() {
-	$('#user-list').empty();
-	switch (project_type) {
-	case "VALIDATION":
-		addValidationCoders();
-		break;
-	case "PROJECT":
-		addOwners();
-		break;
-	default:
-		break;
-
-	}
-}
-
-function addOwners() {
-	UserEndpoint.listUser(project_id).then(function (resp) {
-		resp.items = resp.items || [];
-
-		for (var i = 0; i < resp.items.length; i++) {
-			var user_id = resp.items[i].id;
-			var given_name = resp.items[i].givenName;
-			var sur_name = resp.items[i].surName;
-
-			addUserToUserList(user_id, given_name + " " + sur_name);
-		}
-	});
-}
-
-function addValidationCoders() {
-	UserEndpoint.listValidationCoders(project_id).then(function (resp) {
-		resp.items = resp.items || [];
-
-		for (var i = 0; i < resp.items.length; i++) {
-			var user_id = resp.items[i].id;
-			var given_name = resp.items[i].givenName;
-			var sur_name = resp.items[i].surName;
-
-			addUserToUserList(user_id, given_name + " " + sur_name);
-		}
-	});
-}
-
-
-function addUserToUserList(userID, userName) {
-
-	var html = '<li>';
-
-	html += '<span class="user_name">' + userName + '</span>';
-	html += '<span class="user_id hidden">' + userID;
-	html += '</span>';
-	html += '</li>';
-	$("#user-list").append(html);
-}
-
-function inviteUser() {
-
-	var userEmail = document.getElementById("userEmailFld").value;
-
-	ProjectEndpoint.inviteUser(project_id, userEmail).then(function (resp) {
-		alertify.success(userEmail + " has been invited");
-	}).catch(function (resp) {
-		alertify.error(userEmail + " was not found");
-	});
-}
-
-
 
 function showDescriptionModal() {
 	var modal = new TextField('Change the project description', 'Description');

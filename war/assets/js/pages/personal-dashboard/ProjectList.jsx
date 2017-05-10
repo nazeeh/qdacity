@@ -229,7 +229,7 @@ export default class ProjectList extends React.Component {
 
 		function prjClick(prj) {
 			console.log('Link');
-			location.href = 'project-dashboard.html?project=' + prj.id + '&type=PROJECT'
+			location.href = 'project-dashboard.html?project=' + prj.id + '&type='+ prj.type;
 		}
 
 		const renderListItems = itemsToDisplay.map((project, index) => {
