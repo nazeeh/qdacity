@@ -1,5 +1,5 @@
 
-export default class MyEditorView {
+export default class MetaModelMapper {
     
 	static getEdgeType(metaModelEntity) {
 		let mode = null;

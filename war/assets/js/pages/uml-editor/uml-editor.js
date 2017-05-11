@@ -1,5 +1,5 @@
 import EdgeTypes from './EdgeTypes.js';
-import Helper from './Helper.js';
+import MetaModelMapper from './MetaModelMapper.js';
 import MyEditorView from './MyEditorView.js';
 
 import Account from '../../common/Account.jsx';
@@ -105,7 +105,7 @@ function initGraph(codes, mmEntities) {
 		
 		var metaModelEntity = mmEntities.find(function(mmEntity) { return mmEntity.id == relations[i].metaModelEntityId;});
 		
-		var edgeType = Helper.getEdgeType(metaModelEntity);		
+		var edgeType = MetaModelMapper.getEdgeType(metaModelEntity);		
 		
 		view.addEdge(start, end, edgeType);
 	}
