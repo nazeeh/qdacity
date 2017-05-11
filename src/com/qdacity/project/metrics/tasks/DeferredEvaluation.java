@@ -34,6 +34,7 @@ import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReport;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
@@ -143,6 +144,9 @@ public class DeferredEvaluation implements DeferredTask {
 
     private void calculateFMeasure(Collection<TextDocument> originalDocs) {
 	ValidationReport validationReport = initValidationReportFMeasure();
+	TabularValidationReportRow fmeasureHeaderRow = new TabularValidationReportRow("Coder,FMeasure,Recall,Precision");
+	validationReport.setAverageAgreementHeader(fmeasureHeaderRow);
+	validationReport.setDetailedAgreementHeader(fmeasureHeaderRow);
 	try {
 
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
@@ -159,6 +163,7 @@ public class DeferredEvaluation implements DeferredTask {
 	    Logger.getLogger("logger").log(Level.INFO, "Generating Agreement Map for report : " + validationReport.getDocumentResults().size());
 
 	    FMeasure.generateAgreementMaps(validationReport.getDocumentResults(), originalDocs);
+	    
 
 	    getPersistenceManager().makePersistent(validationReport);
 
