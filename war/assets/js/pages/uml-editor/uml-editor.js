@@ -1,4 +1,4 @@
-import MyEditorView from './MyEditorView.jsx';
+import MyEditorView from './MyEditorView.js';
 
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
@@ -48,10 +48,8 @@ window.init = function () {
 		mxUtils.error('Browser is not supported!', 200, false);
 	}
 
-
-	view = ReactDOM.render(<MyEditorView projectId={project_id} edgeTypes={edgeTypes} />, document.getElementById('content'));
-	view.run();
-
+	let container = document.getElementById('graphContainer');
+	view = new MyEditorView(container, edgeTypes);
 
 	loadGAPIs(setupUI).then(
 		function (accountModule) {

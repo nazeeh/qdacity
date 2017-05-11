@@ -1,16 +1,39 @@
-import React from 'react';
 
-export default class MyEditorView extends React.Component {
+export default class MyEditorView {
     
-	constructor(props) {
-		super(props);
-		
+	constructor(container, edgeTypes) {	
+        this.edgeTypes = edgeTypes;
+        
 		this.graph = null;
 		this.layout = null;
-		
-		this.edgeTypes = props.edgeTypes;
+
+        // Disables the context menu
+        mxEvent.disableContextMenu(container);
+
+        // Creates the graph
+        this.graph = new mxGraph(container);
+        this.graph.setConnectable(false);
+        this.graph.setCellsEditable(false);
+        this.graph.setAllowDanglingEdges(false);
+        this.graph.setAllowLoops(false);
+        this.graph.setCellsDeletable(false);
+        this.graph.setCellsCloneable(false);
+        this.graph.setCellsDisconnectable(false);
+        this.graph.setDropEnabled(false);
+        this.graph.setSplitEnabled(false);
+        this.graph.setCellsBendable(false);
+                            
+        // Enables rubberband selection
+        new mxRubberband(this.graph);
+
+        // Enables layouting
+        this.layout = new mxFastOrganicLayout(this.graph);
+        this.layout.disableEdgeStyle = false;
+        this.layout.forceConstant = 180;
+        
+        // Initializes the styles
+        this.initializeStyles();
 	}
-	
 	
 	initializeStyles() {
 	    this.initializeDefaultStyles();
@@ -97,37 +120,6 @@ export default class MyEditorView extends React.Component {
         stylesheet.putCellStyle(this.edgeTypes.REALIZATION, style);
     }
 	
-	run() {
-		var container = document.getElementById('graphContainer');
-
-		// Disables the context menu
-		mxEvent.disableContextMenu(container);
-
-		// Creates the graph
-		this.graph = new mxGraph(container);
-		this.graph.setConnectable(false);
-		this.graph.setCellsEditable(false);
-		this.graph.setAllowDanglingEdges(false);
-		this.graph.setAllowLoops(false);
-		this.graph.setCellsDeletable(false);
-		this.graph.setCellsCloneable(false);
-		this.graph.setCellsDisconnectable(false);
-		this.graph.setDropEnabled(false);
-		this.graph.setSplitEnabled(false);
-		this.graph.setCellsBendable(false);
-		      				
-		// Enables rubberband selection
-		new mxRubberband(this.graph);
-
-		// Enables layouting
-		this.layout = new mxFastOrganicLayout(this.graph);
-		this.layout.disableEdgeStyle = false;
-        this.layout.forceConstant = 180;
-        
-        // Initializes the styles
-        this.initializeStyles();
-	}
-	
 	addNode(name) {
 		var parent = this.graph.getDefaultParent();
 
@@ -172,15 +164,6 @@ export default class MyEditorView extends React.Component {
             alert('done');
         }
 	}
-	
-	render() {
-		return (
-			<div id="graphContainer" style={{position:'relative', overflow:'hidden', width:'1200px', height:'800px', cursor:'default'}}></div>
-		);
-	}
-
-	
-
     /*
     addClass() {
         var field = new mxCell('+ field: type', new mxGeometry(0, 0, 100, 26), 'text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;');
