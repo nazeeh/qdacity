@@ -43,6 +43,8 @@ public class ValidationReport {
 	@Persistent
 	@Column(name = "detailedAgreementHead")
 	String detailedAgreementHeaderCsvString;
+	@Persistent
+	String evaluationUnit;
 
 	@Persistent(
 		defaultFetchGroup = "true")
@@ -97,6 +99,14 @@ public class ValidationReport {
 		validationResultIDs.add(result.getId());
 
 		//if (reportRow == null) reportRow = new TabularValidationReportRow(0); TODO why?
+	}
+	
+	public EvaluationUnit getEvaluationUnit() {
+	    return EvaluationUnit.fromString(evaluationUnit);
+	}
+
+	public void setEvaluationUnit(EvaluationUnit evaluationUnit) {
+	    this.evaluationUnit = evaluationUnit.toString();
 	}
 
 	public String getName() {
