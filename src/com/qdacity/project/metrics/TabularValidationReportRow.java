@@ -28,6 +28,15 @@ public class TabularValidationReportRow implements Serializable {
 	this.rowCsvString = copy.rowCsvString;
 	this.tabularValidationReportId = copy.tabularValidationReportId;
     }
+    
+    /**
+     * Use this constructor if you save a reportRow as plain csvString in the DataStore for efficiency reasons
+     * Be aware that a Row created with this constructor does not have a Key and is not in a Parent-Child
+     * @param csvString a valid csv String representing a row
+     */
+    public TabularValidationReportRow(String csvString) {
+	this.rowCsvString = csvString;
+    }
 
     @PrimaryKey
     @Persistent(
@@ -69,6 +78,11 @@ public class TabularValidationReportRow implements Serializable {
 	    csvRow += column.replace(",", "&#44;") + ","; //replace commas with html entity befor making a csv String!
 	}
 	this.rowCsvString = csvRow.substring(0, csvRow.length() - 1); //remove last comma
+    }
+    
+    @Override
+    public String toString() {
+	return this.rowCsvString;
     }
 
 }
