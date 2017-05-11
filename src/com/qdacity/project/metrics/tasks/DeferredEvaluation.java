@@ -75,16 +75,18 @@ public class DeferredEvaluation implements DeferredTask {
 	initValidationProjects();
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
+	
+	ValidationReport validationReport = initValidationReport();
 
 	try {
 	    switch (evaluationMethod) {
 		case F_MEASURE:
 		    Collection<TextDocument> originalDocs;
 		    originalDocs = getOriginalDocs(docIDs);
-		    calculateFMeasure(originalDocs);
+		    calculateFMeasure(originalDocs, validationReport);
 		    break;
 		case KRIPPENDORFFS_ALPHA:
-		    calculateKrippendorffsAlpha();
+		    calculateKrippendorffsAlpha(validationReport);
 		    break;
 		case COHENS_CAPPA:
 		    calculateCohensKappa();
@@ -142,8 +144,7 @@ public class DeferredEvaluation implements DeferredTask {
 	return originalDocs;
     }
 
-    private void calculateFMeasure(Collection<TextDocument> originalDocs) {
-	ValidationReport validationReport = initValidationReport();
+    private void calculateFMeasure(Collection<TextDocument> originalDocs, ValidationReport validationReport) {
 	TabularValidationReportRow fmeasureHeaderRow = new TabularValidationReportRow("Coder,FMeasure,Recall,Precision");
 	validationReport.setAverageAgreementHeader(fmeasureHeaderRow);
 	validationReport.setDetailedAgreementHeader(fmeasureHeaderRow);
@@ -239,8 +240,7 @@ public class DeferredEvaluation implements DeferredTask {
      * @throws UnauthorizedException if user can not see documents of other
      * users
      */
-    private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
-	ValidationReport validationReport = initValidationReport();
+    private void calculateKrippendorffsAlpha(ValidationReport validationReport) throws UnauthorizedException, ExecutionException, InterruptedException {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
