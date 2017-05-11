@@ -20,8 +20,7 @@ export default class MetaModelMapper {
 			}
 			default: {
 				// TODO ERROR?
-				//alert("error??");
-				mode = EdgeType.ASSOCIATION;
+				mode = EdgeType.NONE;
 				break;
 			}
 		}
