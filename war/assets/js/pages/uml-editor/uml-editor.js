@@ -45,7 +45,7 @@ window.init = function () {
 		function (accountModule) {
 			account = accountModule;
 		}
-	);	
+	);
 }
 
 function setupUI() {
@@ -65,52 +65,59 @@ function setupUI() {
 function loadCodes(codesystem_id) {
 	CodesystemEndpoint.getCodeSystem(codesystem_id).then(function (resp) {
 		var codes = resp.items || [];
-		
+
 		MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
 			var mmEntities = resp.items || [];
-			
+
 			initGraph(codes, mmEntities);
 		});
-	});	
+	});
 }
 
 function initGraph(codes, mmEntities) {
 	var nodes = new Map();
 	var relations = [];
-	
+
 	for (var i = 0; i < codes.length; i++) {
-					
+
 		var node = view.addNode(codes[i].name);
-		nodes.set(codes[i].codeID, { 'code': codes[i], 'node': node });
-		
-		
+		nodes.set(codes[i].codeID, {
+			'code': codes[i],
+			'node': node
+		});
+
+
 		console.log('add ' + codes[i].codeID + ' - ' + codes[i].name);
-		
+
 		if (codes[i].relations != null) {
 			for (var j = 0; j < codes[i].relations.length; j++) {
 				console.log(codes[i].codeID + ' is connected to ' + codes[i].relations[j].codeId);
-				
-				relations.push({ 'start': codes[i].codeID, 'end': codes[i].relations[j].codeId, 'metaModelEntityId': codes[i].relations[j].mmElementId });
+
+				relations.push({
+					'start': codes[i].codeID,
+					'end': codes[i].relations[j].codeId,
+					'metaModelEntityId': codes[i].relations[j].mmElementId
+				});
 			}
 		}
 	}
-	
-	
+
+
 	for (var i = 0; i < relations.length; i++) {
 		var relation = relations[i];
-		
+
 		var start = nodes.get(relation.start).node;
 		var end = nodes.get(relation.end).node;
-		
-		var metaModelEntity = mmEntities.find(function(mmEntity) { return mmEntity.id == relations[i].metaModelEntityId;});
-		
-		var edgeType = MetaModelMapper.getEdgeType(metaModelEntity);		
-		
+
+		var metaModelEntity = mmEntities.find(function (mmEntity) {
+			return mmEntity.id == relations[i].metaModelEntityId;
+		});
+
+		var edgeType = MetaModelMapper.getEdgeType(metaModelEntity);
+
 		view.addEdge(start, end, edgeType);
 	}
 
-	
+
 	view.applyLayout();
 }
-
-

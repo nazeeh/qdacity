@@ -8,24 +8,24 @@ export default class Description extends React.Component {
 		super(props);
 		this.state = {
 			description: "",
-			isProjectOwner : false
+			isProjectOwner: false
 		};
-		
+
 		this.showDescriptionModal = this.showDescriptionModal.bind(this);
 	}
-	
-	setDescription(desc){
+
+	setDescription(desc) {
 		this.setState({
 			description: desc
 		});
 	}
-	
-	setIsProjectOwner(pIsProjectOnwer){
+
+	setIsProjectOwner(pIsProjectOnwer) {
 		this.setState({
 			isProjectOwner: pIsProjectOnwer
 		});
 	}
-	
+
 	showDescriptionModal() {
 		var _this = this;
 		var modal = new TextField('Change the project description', 'Description');
@@ -37,8 +37,8 @@ export default class Description extends React.Component {
 			});
 		});
 	}
-	
-	renderEditBtn(){
+
+	renderEditBtn() {
 		if (!this.state.isProjectOwner) return "";
 		else return <div className="box-tools pull-right"> 
 				<button 

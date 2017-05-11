@@ -10,10 +10,10 @@ export default class ProjectStats extends React.Component {
 			codeCount: "N/A",
 			codingCount: "N/A"
 		};
-		
+
 		this.init();
 	}
-		
+
 	init() {
 		var _this = this;
 		ProjectEndpoint.getProjectStats(this.props.projectId, this.props.projectType).then(function (resp) {

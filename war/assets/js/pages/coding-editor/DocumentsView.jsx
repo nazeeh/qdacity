@@ -63,16 +63,16 @@ export default class DocumentsView extends React.Component {
 		});
 		this.render();
 	}
-	
-	saveCurrentDocument(){
-			var doc = this.getDocument(this.state.selected);
-			doc.text = this.props.editorCtrl.getHTML();
-			this.setState({
-				documents: this.state.documents
-			});
-			this.saveDocument(doc);
+
+	saveCurrentDocument() {
+		var doc = this.getDocument(this.state.selected);
+		doc.text = this.props.editorCtrl.getHTML();
+		this.setState({
+			documents: this.state.documents
+		});
+		this.saveDocument(doc);
 	}
-	
+
 	saveDocument(doc) {
 		doc.projectID = this.props.projectID;
 		var _this = this;
@@ -83,9 +83,9 @@ export default class DocumentsView extends React.Component {
 	getDocuments() {
 		return this.state.documents;
 	}
-	
+
 	setActiveDocument(selectedID) {
-		if (this.props.editorCtrl.isReadOnly === false){
+		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
 		this.setState({

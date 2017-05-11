@@ -1,30 +1,36 @@
-import { EdgeType } from './EdgeType.js';
+import {
+	EdgeType
+} from './EdgeType.js';
 
 export default class MetaModelMapper {
-    
+
 	static getEdgeType(metaModelEntity) {
 		let mode = null;
-		
+
 		switch (metaModelEntity.name) {
-			case 'is a': {
+		case 'is a':
+			{
 				mode = EdgeType.GENERALIZATION;
 				break;
 			}
-			case 'is part of': {
+		case 'is part of':
+			{
 				mode = EdgeType.AGGREGATION;
 				break;
 			}
-			case 'is related to': {
+		case 'is related to':
+			{
 				mode = EdgeType.DIRECTED_ASSOCIATION;
 				break;
 			}
-			default: {
+		default:
+			{
 				// TODO ERROR?
 				mode = EdgeType.NONE;
 				break;
 			}
 		}
-		
+
 		return mode;
 	}
 }

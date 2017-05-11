@@ -50,14 +50,14 @@ function setupUI() {
 		$('#navSignin').hide();
 
 		var userPromise = account.getCurrentUser();
-		
+
 		userList = ReactDOM.render(<UserList projectType={project_type}  projectId={project_id} />, document.getElementById('userList'));
 		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
 		inviteUserField = ReactDOM.render(<InviteUserField projectType={project_type} projectId={project_id} />, document.getElementById('inviteUserField'));
 		titleRow = ReactDOM.render(<TitleRow projectType={project_type} projectId={project_id} account={account} />, document.getElementById('titleRow'));
 		description = ReactDOM.render(<Description projectType={project_type} projectId={project_id} />, document.getElementById('projectDescription'));
 		setProjectProperties();
-		if (project_type === 'PROJECT'){
+		if (project_type === 'PROJECT') {
 			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project_id} />, document.getElementById('revisionHistoryTimeline'));
 			setRevisionHistory(userPromise);
 			setBtnVisibility(userPromise);
@@ -93,16 +93,16 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
-	
-	document.getElementById('newRevisionBtn').onclick = function() {
+
+	document.getElementById('newRevisionBtn').onclick = function () {
 		showNewRevisionModal("Revision Comment");
-    }
+	}
 
 }
 
-function showNewRevisionModal(title){
+function showNewRevisionModal(title) {
 	var modal = new TextField(title, 'Use this field to describe this revision in a few sentences');
-	modal.showModal().then(function(text) {
+	modal.showModal().then(function (text) {
 		revisionHistory.createNewRevision(project_id, text);
 	});
 }
@@ -115,7 +115,7 @@ function setProjectProperties() {
 		if (project_type === 'VALIDATION') {
 			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
 			ReactDOM.render(<PersonalReportList projectType={project_type} projectId={project_id} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
-			 
+
 		}
 	});
 }
@@ -143,9 +143,9 @@ function setRevisionHistory(userPromise) {
 
 			validationPromise.then(function (reports) {
 				var agreementStats = new AgreementStats("agreementStats");
-				
+
 				project.setReports(reports);
-				
+
 				revisionHistory.setRevisions(snapshots);
 				revisionHistory.setValidationProjects(validationProjects);
 				revisionHistory.setReports(reports);
@@ -158,9 +158,9 @@ function setRevisionHistory(userPromise) {
 
 }
 
-function setBtnVisibility(userPromise){
+function setBtnVisibility(userPromise) {
 	userPromise.then(function (user) {
-		
+
 		var isProjectOwner = account.isProjectOwner(user, project_id);
 		inviteUserField.setIsProjectOwner(isProjectOwner);
 		description.setIsProjectOwner(isProjectOwner);

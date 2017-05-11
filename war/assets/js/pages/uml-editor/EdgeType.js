@@ -1,4 +1,3 @@
-
 export const EdgeType = {
 	NONE: 'none',
 	GENERALIZATION: 'generalization',
