@@ -215,7 +215,7 @@ public class DeferredEvaluation implements DeferredTask {
 	}
 
 	FMeasureResult avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
-	report.setReportRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(avgReportAgreement,null, "Average"));
+	report.setAverageAgreementRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(avgReportAgreement,null, "Average"));
     }
 
     private PersistenceManager pm = null;

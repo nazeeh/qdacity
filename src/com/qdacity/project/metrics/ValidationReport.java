@@ -32,13 +32,17 @@ public class ValidationReport {
 
 	@Persistent
 	Date datetime;
-
-	@Persistent(
-		defaultFetchGroup = "true",
-		dependent = "true")
-	@Column(
-		name = "reportRow")
-	TabularValidationReportRow reportRow;
+	
+	//Hint: The following Rows are saved as csv Strings for efficiency
+	@Persistent
+	@Column(name = "avgAgreementHead")
+	String averageAgreementHeaderCsvString; //Hint: This used to be hardcoded in the Frontend in older Versions.
+	@Persistent
+	@Column(name = "avgAgreement")
+	String averageAgreementCsvString; //Hint: This used to be ParagraphAgreement in older Versions. Important for migration!
+	@Persistent
+	@Column(name = "detailedAgreementHead")
+	String detailedAgreementHeaderCsvString;
 
 	@Persistent(
 		defaultFetchGroup = "true")
@@ -111,14 +115,38 @@ public class ValidationReport {
 		this.datetime = datetime;
 	}
 
-        public TabularValidationReportRow getReportRow() {
-		return reportRow;
+        public TabularValidationReportRow getAverageAgreementRow() {
+		return new TabularValidationReportRow(averageAgreementCsvString);
 	}
 
-	public void setReportRow(TabularValidationReportRow reportRow) {
-	    this.reportRow = reportRow;
+	public void setAverageAgreementRow(TabularValidationReportRow reportRow) {
+	    this.averageAgreementCsvString = reportRow.toString();
 	}
 
+	public TabularValidationReportRow getAverageAgreementHeader() {
+	    return new TabularValidationReportRow(averageAgreementHeaderCsvString);
+	}
+
+	public void setAverageAgreementHeader(TabularValidationReportRow averageAgreementHeaderCsvString) {
+	    this.averageAgreementHeaderCsvString = averageAgreementHeaderCsvString.toString();
+	}
+
+	public TabularValidationReportRow getAverageAgreement() {
+	    return new TabularValidationReportRow(averageAgreementCsvString);
+	}
+
+	public void setAverageAgreement(TabularValidationReportRow averageAgreementCsvString) {
+	    this.averageAgreementCsvString = averageAgreementCsvString.toString();
+	}
+
+	public TabularValidationReportRow getDetailedAgreementHeader() {
+	    return new TabularValidationReportRow(detailedAgreementHeaderCsvString);
+	}
+
+	public void setDetailedAgreementHeader(TabularValidationReportRow detailedAgreementHeaderCsvString) {
+	    this.detailedAgreementHeaderCsvString = detailedAgreementHeaderCsvString.toString();
+	}
+	
 	public List<DocumentResult> getDocumentResults() {
 		if (documentResults == null) documentResults = new ArrayList<DocumentResult>();
 		return documentResults;
