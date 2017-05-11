@@ -20,6 +20,7 @@ import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.FMeasureResult;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
@@ -96,7 +97,7 @@ public class DeferredEmailNotification implements DeferredTask {
 
 				msgBody += "<p>";
 				msgBody += "You may compare these values to the average of this report<br>";
-				FMeasureResult reportPA = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(report.getAverageAgreementRow());
+				FMeasureResult reportPA = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(new TabularValidationReportRow(report.getAverageAgreementCsvString()));
 				msgBody += "F-Measure: " + reportPA.getFMeasure() + "<br>";
 				msgBody += "Recall: " + reportPA.getRecall() + "<br>";
 				msgBody += "Precision: " + reportPA.getPrecision() + "<br><br>";

@@ -44,6 +44,7 @@ public class ValidationReport {
 	@Column(name = "detailedAgreementHead")
 	String detailedAgreementHeaderCsvString;
 	@Persistent
+	@Column(name = "evaluationUnit")
 	String evaluationUnit;
 
 	@Persistent(
@@ -101,8 +102,8 @@ public class ValidationReport {
 		//if (reportRow == null) reportRow = new TabularValidationReportRow(0); TODO why?
 	}
 	
-	public EvaluationUnit getEvaluationUnit() {
-	    return EvaluationUnit.fromString(evaluationUnit);
+	public String getEvaluationUnit() { //Hint: needs to be String to be parseable
+	    return evaluationUnit;
 	}
 
 	public void setEvaluationUnit(EvaluationUnit evaluationUnit) {
@@ -125,36 +126,32 @@ public class ValidationReport {
 		this.datetime = datetime;
 	}
 
-        public TabularValidationReportRow getAverageAgreementRow() {
-		return new TabularValidationReportRow(averageAgreementCsvString);
-	}
-
 	public void setAverageAgreementRow(TabularValidationReportRow reportRow) {
 	    this.averageAgreementCsvString = reportRow.toString();
-	}
-
-	public TabularValidationReportRow getAverageAgreementHeader() {
-	    return new TabularValidationReportRow(averageAgreementHeaderCsvString);
 	}
 
 	public void setAverageAgreementHeader(TabularValidationReportRow averageAgreementHeaderCsvString) {
 	    this.averageAgreementHeaderCsvString = averageAgreementHeaderCsvString.toString();
 	}
 
-	public TabularValidationReportRow getAverageAgreement() {
-	    return new TabularValidationReportRow(averageAgreementCsvString);
-	}
-
 	public void setAverageAgreement(TabularValidationReportRow averageAgreementCsvString) {
 	    this.averageAgreementCsvString = averageAgreementCsvString.toString();
 	}
 
-	public TabularValidationReportRow getDetailedAgreementHeader() {
-	    return new TabularValidationReportRow(detailedAgreementHeaderCsvString);
-	}
-
 	public void setDetailedAgreementHeader(TabularValidationReportRow detailedAgreementHeaderCsvString) {
 	    this.detailedAgreementHeaderCsvString = detailedAgreementHeaderCsvString.toString();
+	}
+
+	public String getAverageAgreementHeaderCsvString() {
+	    return averageAgreementHeaderCsvString;
+	}
+
+	public String getAverageAgreementCsvString() {
+	    return averageAgreementCsvString;
+	}
+
+	public String getDetailedAgreementHeaderCsvString() {
+	    return detailedAgreementHeaderCsvString;
 	}
 	
 	public List<DocumentResult> getDocumentResults() {
