@@ -112,13 +112,11 @@ function showNewRevisionModal(title){
 
 function setProjectProperties() {
 	ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
-		$("#project-name").html(resp.name);
 		$("#projectDescription").html(resp.description);
 		project.setUmlEditorEnabled(resp.umlEditorEnabled);
 		titleRow.setProjectProperties(resp);
 		if (project_type === 'VALIDATION') {
 			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
-			setReportList(resp.projectID);
 			ReactDOM.render(<PersonalReportList projectType={project_type} projectId={project_id} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
 			 
 		}
