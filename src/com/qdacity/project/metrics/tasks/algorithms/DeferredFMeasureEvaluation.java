@@ -71,7 +71,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	    for (TextDocument recoded : recodedDocs) {
 		if (original.getTitle().equals(recoded.getTitle())) {
-		    DocumentResult documentAgreement = FMeasure.calculateParagraphAgreement(original, recoded);
+		    DocumentResult documentAgreement = FMeasure.calculateParagraphAgreement(original, recoded, validationProject.getCreatorName());
 		    documentAgreements.add(ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(documentAgreement.getReportRow()));
 
 		    // valResult.addDocumentResult(documentAgreement);

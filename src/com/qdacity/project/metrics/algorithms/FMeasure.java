@@ -18,7 +18,7 @@ import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
 
 public class FMeasure {
-	static public DocumentResult calculateParagraphAgreement(TextDocument original, TextDocument recoded) {
+	static public DocumentResult calculateParagraphAgreement(TextDocument original, TextDocument recoded, String coderName) {
 		DocumentResult docResults = new DocumentResult();
 		docResults.setDocumentID(recoded.getId());
 		docResults.setDocumentName(recoded.getTitle());
@@ -64,7 +64,7 @@ public class FMeasure {
 		FMeasureResult totalAgreement = calculateFMeasure(truePositiveCount, falsePositiveCount, falseNegativeCount);
 		
 
-		docResults.setReportRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(totalAgreement, null, "TODO NAME?")); //TODO
+		docResults.setReportRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(totalAgreement, null, coderName));
 		docResults.setTruePositives(truePositives);
 		docResults.setFalsePositives(falsePositives);
 		docResults.setFalseNegatives(falseNegatives);
