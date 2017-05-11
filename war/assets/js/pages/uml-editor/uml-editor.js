@@ -17,14 +17,14 @@ $script('https://apis.google.com/js/platform.js', function () {
 
 
 var edgeTypes = {
-	NONE: 0,
-	GENERALIZATION: 1,
-	DEPENDENCY: 2,
-	AGREGATION: 3,
-	CONTAINMENT: 4,
-	ASSOCIATION: 5,
-	DIRECTED_ASSOCIATION: 6,
-	REALIZATION: 7
+	NONE: 'none',
+	GENERALIZATION: 'generalization',
+	DEPENDENCY: 'dependency',
+	AGGREGATION: 'aggregation',
+	CONTAINMENT: 'containment',
+	ASSOCIATION: 'association',
+	DIRECTED_ASSOCIATION: 'directed_association',
+	REALIZATION: 'realization'
 };
 
 var project_id;
@@ -57,27 +57,7 @@ window.init = function () {
 		function (accountModule) {
 			account = accountModule;
 		}
-	);
-
-//	var v1 = view.addNode("1");
-//	var v2 = view.addNode("2");
-//	var v3 = view.addNode("3");
-//	var v4 = view.addNode("4");
-//	var v5 = view.addNode("5");
-//	var v6 = view.addNode("6");
-//	var v7 = view.addNode("7");
-//	var v8 = view.addNode("8");
-//	
-//	view.addEdge(v1, v2, generialization);
-//	view.addEdge(v2, v3, dependency);
-//	view.addEdge(v3, v4, aggregation);
-//	view.addEdge(v4, v5, containment);
-//	view.addEdge(v5, v6, association);
-//	view.addEdge(v6, v7, directed_association);
-//	view.addEdge(v7, v8, realization);
-//    
-//    
-	
+	);	
 }
 
 function setupUI() {
@@ -128,46 +108,47 @@ function initGraph(codes, mmEntities) {
 	}
 	
 	
-	
-	
 	for (var i = 0; i < relations.length; i++) {
 		var relation = relations[i];
 		
 		var start = nodes.get(relation.start).node;
 		var end = nodes.get(relation.end).node;
 		
-		
-		
-		
-		
 		var metaModelEntity = mmEntities.find(function(mmEntity) { return mmEntity.id == relations[i].metaModelEntityId;});
 		
-		var mode = null;
+		var edgeType = getEdgeType(metaModelEntity);		
 		
-		switch (metaModelEntity.name) {
-			case 'is a': {
-				mode = edgeTypes.GENERALIZATION;
-				break;
-			}
-			case 'is part of': {
-				mode = edgeTypes.AGGREGATION;
-				break;
-			}
-			case 'is related to': {
-				mode = edgeTypes.DIRECTED_ASSOCIATION;
-				break;
-			}
-			default: {
-				// ERROR?
-				//alert("error??");
-				mode = edgeTypes.ASSOCIATION;
-				break;
-			}
-		}
-		
-		view.addEdge(start, end, mode);
+		view.addEdge(start, end, edgeType);
 	}
 
 	
 	view.applyLayout();
+}
+
+
+function getEdgeType(metaModelEntity) {
+	let mode = null;
+	
+	switch (metaModelEntity.name) {
+		case 'is a': {
+			mode = edgeTypes.GENERALIZATION;
+			break;
+		}
+		case 'is part of': {
+			mode = edgeTypes.AGGREGATION;
+			break;
+		}
+		case 'is related to': {
+			mode = edgeTypes.DIRECTED_ASSOCIATION;
+			break;
+		}
+		default: {
+			// TODO ERROR?
+			//alert("error??");
+			mode = edgeTypes.ASSOCIATION;
+			break;
+		}
+	}
+	
+	return mode;
 }
