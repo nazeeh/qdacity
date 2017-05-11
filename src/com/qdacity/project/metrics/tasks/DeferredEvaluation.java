@@ -33,7 +33,6 @@ import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.FMeasureResult;
-import com.qdacity.project.metrics.TabularValidationReport;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
@@ -100,12 +99,13 @@ public class DeferredEvaluation implements DeferredTask {
 
     }
 
-    private ValidationReport initValidationReportFMeasure() {
+    private ValidationReport initValidationReport() {
 	ValidationReport validationReport = new ValidationReport();
 	getPersistenceManager().makePersistent(validationReport); // Generate ID right away so we have an ID to pass to ValidationResults
 	validationReport.setRevisionID(revisionID);
 	validationReport.setName(name);
 	validationReport.setDatetime(new Date());
+	validationReport.setEvaluationUnit(evalUnit);
 	validationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
 	return validationReport;
     }
@@ -143,7 +143,7 @@ public class DeferredEvaluation implements DeferredTask {
     }
 
     private void calculateFMeasure(Collection<TextDocument> originalDocs) {
-	ValidationReport validationReport = initValidationReportFMeasure();
+	ValidationReport validationReport = initValidationReport();
 	TabularValidationReportRow fmeasureHeaderRow = new TabularValidationReportRow("Coder,FMeasure,Recall,Precision");
 	validationReport.setAverageAgreementHeader(fmeasureHeaderRow);
 	validationReport.setDetailedAgreementHeader(fmeasureHeaderRow);
@@ -240,7 +240,7 @@ public class DeferredEvaluation implements DeferredTask {
      * users
      */
     private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
-	TabularValidationReport tabularValidationReport = initTabularValidationReport();
+	ValidationReport validationReport = initValidationReport();
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
@@ -250,7 +250,7 @@ public class DeferredEvaluation implements DeferredTask {
 	for (Long codeId : codeIds) {
 	    tableHead.add(codeId + ""); //TODO get Name of Code From Codesystem
 	}
-	tabularValidationReport.setHeadRow(tableHead);
+	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
 
 	Map<String, List<TextDocument>> sameDocumentsFromDifferentRatersMap
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
@@ -261,7 +261,7 @@ public class DeferredEvaluation implements DeferredTask {
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
 	    //create all the tasks with the reliability Data
-	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, tabularValidationReport.getId(), documentTitle));
+	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle));
 	}
 
 	//Now launch all the Tasks
@@ -269,18 +269,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	getPersistenceManager().makePersistent(tabularValidationReport);
-    }
-
-    private TabularValidationReport initTabularValidationReport() {
-	TabularValidationReport tabularValidationReport = new TabularValidationReport();
-	getPersistenceManager().makePersistent(tabularValidationReport); // Generate ID right away so we have an ID to pass to the Algorithm
-	tabularValidationReport.setRevisionID(revisionID);
-	tabularValidationReport.setName(name);
-	tabularValidationReport.setDatetime(new Date());
-	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
-	tabularValidationReport.setEvaluationUnit(evalUnit);
-	return tabularValidationReport;
+	getPersistenceManager().makePersistent(validationReport);
     }
 
     private void calculateCohensKappa() {

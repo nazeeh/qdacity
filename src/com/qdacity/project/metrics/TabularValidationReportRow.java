@@ -18,25 +18,33 @@ import javax.jdo.annotations.PrimaryKey;
 	identityType = IdentityType.APPLICATION)
 public class TabularValidationReportRow implements Serializable {
 
-    public TabularValidationReportRow(Long tabularValidationReportId) {
-	assert (tabularValidationReportId != null);
-	this.tabularValidationReportId = tabularValidationReportId;
+    private final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
+
+    public TabularValidationReportRow(Long validationReportId) {
+	assert (this.validationReportId != null);
+	this.validationReportId = validationReportId;
     }
 
     public TabularValidationReportRow(TabularValidationReportRow copy) {
 	super();
 	this.rowCsvString = copy.rowCsvString;
-	this.tabularValidationReportId = copy.tabularValidationReportId;
+	this.validationReportId = copy.validationReportId;
     }
-    
+
     /**
-     * Use this constructor if you save a reportRow as plain csvString in the DataStore for efficiency reasons
-     * Be aware that a Row created with this constructor does not have a Key and is not in a Parent-Child
+     * Use this constructor if you save a reportRow as plain csvString in the
+     * DataStore for efficiency reasons Be aware that a Row created with this
+     * constructor does not have a Key and is not in a Parent-Child
+     *
      * @param csvString a valid csv String representing a row
      */
     public TabularValidationReportRow(String csvString) {
 	this.rowCsvString = csvString;
     }
+
+    public TabularValidationReportRow(List<String> cells) {
+	this.setRow(cells);
+   }
 
     @PrimaryKey
     @Persistent(
@@ -44,17 +52,17 @@ public class TabularValidationReportRow implements Serializable {
     private Key key;
 
     @Persistent
-    Long tabularValidationReportId;
+    Long validationReportId;
 
     @Persistent
     String rowCsvString; //Contains the row data as CSV String
 
-    public Long getTabularValidationReportId() {
-	return tabularValidationReportId;
+    public Long getValidationReportId() {
+	return validationReportId;
     }
 
-    public void setTabularValidationReportId(Long tabularValidationReportId) {
-	this.tabularValidationReportId = tabularValidationReportId;
+    public void setValidationReportId(Long validationReportId) {
+	this.validationReportId = validationReportId;
     }
 
     /**
@@ -63,7 +71,7 @@ public class TabularValidationReportRow implements Serializable {
      * @return the row as cells in a list
      */
     public List<String> getCells() {
-	return Arrays.asList(rowCsvString.split(TabularValidationReport.ROW_STRING_FORMAT_REGEXP));
+	return Arrays.asList(rowCsvString.split(ROW_STRING_FORMAT_REGEXP));
     }
 
     /**
@@ -79,7 +87,7 @@ public class TabularValidationReportRow implements Serializable {
 	}
 	this.rowCsvString = csvRow.substring(0, csvRow.length() - 1); //remove last comma
     }
-    
+
     @Override
     public String toString() {
 	return this.rowCsvString;
