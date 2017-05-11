@@ -9,6 +9,7 @@ export default class EditorCtrl {
 	constructor(easytree) {
 		this.easytree = easytree;
 		this.agreementMap = false;
+		this.isReadOnly = true;
 		this.setupFontSelector();
 		this.setupFontSizeSelector();
 
@@ -52,7 +53,7 @@ export default class EditorCtrl {
 				}
 			}
 		});
-		this.editor['readOnly']('true');
+		this.editor.readOnly(true);
 
 		var editorStyle = doc.createElement('link');
 		editorStyle.href = 'assets/css/editorView.css';
@@ -245,10 +246,9 @@ export default class EditorCtrl {
 	}
 
 	setReadOnly(value) {
-		this.editor.readOnly('false');
-		//resizeElements();
+		this.editor.readOnly(value);
+		this.isReadOnly = value;
 	}
-
 
 	setupFontSelector() {
 		var _this = this;

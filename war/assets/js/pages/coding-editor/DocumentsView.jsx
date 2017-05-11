@@ -1,5 +1,7 @@
 import React from 'react';
 
+import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
+
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -12,8 +14,10 @@ export default class DocumentsView extends React.Component {
 		this.isActive = this.isActive.bind(this);
 		this.getActiveDocument = this.getActiveDocument.bind(this);
 		this.getDocuments = this.getDocuments.bind(this);
+		this.saveDocument = this.saveDocument.bind(this);
 	}
 
+	// Adds a document and selects the new document as active
 	addDocument(pId, pTitle, pText) {
 		var doc = {};
 		doc.id = pId;
@@ -23,6 +27,7 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			documents: this.state.documents
 		});
+		this.setActiveDocument(doc.id);
 	}
 
 	renameDocument(pId, pNewTitle) {
@@ -58,12 +63,31 @@ export default class DocumentsView extends React.Component {
 		});
 		this.render();
 	}
+	
+	saveCurrentDocument(){
+			var doc = this.getDocument(this.state.selected);
+			doc.text = this.props.editorCtrl.getHTML();
+			this.setState({
+				documents: this.state.documents
+			});
+			this.saveDocument(doc);
+	}
+	
+	saveDocument(doc) {
+		doc.projectID = this.props.projectID;
+		var _this = this;
+		DocumentsEndpoint.updateTextDocument(doc).then(function (resp) { // FIXME not working
+		});
+	}
 
 	getDocuments() {
 		return this.state.documents;
 	}
-
+	
 	setActiveDocument(selectedID) {
+		if (this.props.editorCtrl.isReadOnly === false){
+			this.saveCurrentDocument();
+		}
 		this.setState({
 			selected: selectedID
 		});

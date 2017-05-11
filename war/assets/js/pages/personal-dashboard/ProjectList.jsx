@@ -78,7 +78,7 @@ export default class ProjectList extends React.Component {
 				var type = project.type;
 				if (typeof type == 'undefined') type = "PROJECT";
 				ProjectEndpoint.removeUser(project.id, type).then(function (resp) {
-					// remove project from state
+
 					_this.state.projects.splice(index, 1);
 					_this.setState({
 						projects: _this.state.projects
@@ -126,7 +126,6 @@ export default class ProjectList extends React.Component {
 	}
 
 	updateSearch(e) {
-		console.log(e.target.value);
 		this.setState({
 			search: e.target.value
 		});
@@ -230,7 +229,7 @@ export default class ProjectList extends React.Component {
 
 		function prjClick(prj) {
 			console.log('Link');
-			location.href = 'project-dashboard.html?project=' + prj.id + '&type=PROJECT'
+			location.href = 'project-dashboard.html?project=' + prj.id + '&type='+ prj.type;
 		}
 
 		const renderListItems = itemsToDisplay.map((project, index) => {

@@ -1,14 +1,13 @@
 package com.qdacity.project.metrics.tasks;
 
+import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,196 +20,269 @@ import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.CodeSystemEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
+import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.Agreement;
+import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.EvaluationMethod;
+import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ParagraphAgreement;
+import com.qdacity.project.metrics.TabularValidationReport;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
 
 public class DeferredEvaluation implements DeferredTask {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8021773396438274981L;
-	Long revisionID;
-	String name;
-	String docIDsString;
-	User user;
 
-	public DeferredEvaluation(Long revisionID, String name, String docIDsString, User user) {
-		super();
-		this.revisionID = revisionID;
-		this.name = name;
-		this.docIDsString = docIDsString;
-		this.user = user;
+    private static final long serialVersionUID = 8021773396438274981L;
+    Long revisionID;
+    String name;
+    User user;
+    private final EvaluationMethod evaluationMethod;
+    private final EvaluationUnit evalUnit;
+    private List<Long> orignalDocIDs;
+    private final List<Long> raterIds; //TODO?
+    private final List<Long> docIDs;
+    private List<ValidationProject> validationProjectsFromUsers;
+    private DeferredAlgorithmTaskQueue taskQueue;
+
+    public DeferredEvaluation(Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
+	super();
+	this.revisionID = revisionID;
+	this.name = name;
+	this.user = user;
+	this.evaluationMethod = EvaluationMethod.fromString(evaluationMethod);
+	this.evalUnit = EvaluationUnit.fromString(unitOfCoding);
+	this.raterIds = IdCsvStringToLongList.convert(raterIds);
+	this.docIDs = IdCsvStringToLongList.convert(docIDsString);
+    }
+
+    @Override
+    public void run() {
+	long startTime = System.nanoTime();
+
+	initValidationProjects();
+
+	taskQueue = new DeferredAlgorithmTaskQueue();
+
+	try {
+	    switch (evaluationMethod) {
+		case F_MEASURE:
+		    Collection<TextDocument> originalDocs;
+		    originalDocs = getOriginalDocs(docIDs);
+		    calculateFMeasure(originalDocs);
+		    break;
+		case KRIPPENDORFFS_ALPHA:
+		    calculateKrippendorffsAlpha();
+		    break;
+		case COHENS_CAPPA:
+		    calculateCohensKappa();
+		    break;
+	    }
+
+	} catch (Exception ex) {
+	    Logger.getLogger(DeferredEvaluation.class.getName()).log(Level.SEVERE, null, ex);
+	}
+	long elapsed = System.nanoTime() - startTime;
+	Logger.getLogger("logger").log(Level.WARNING, "Time for ValidationReport: " + elapsed);
+
+    }
+
+    private ValidationReport initValidationReportFMeasure() {
+	ValidationReport validationReport = new ValidationReport();
+	getPersistenceManager().makePersistent(validationReport); // Generate ID right away so we have an ID to pass to ValidationResults
+	validationReport.setRevisionID(revisionID);
+	validationReport.setName(name);
+	validationReport.setDatetime(new Date());
+	validationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	return validationReport;
+    }
+
+    /**
+     * prepares the validationProjectsFromUsers so it contains the project in
+     * the given revision from all users.
+     */
+    private void initValidationProjects() { //TODO auslagern
+	Query q;
+	q = getPersistenceManager().newQuery(ValidationProject.class, "revisionID  == :revisionID");
+
+	Map<String, Long> params = new HashMap<>();
+	params.put("revisionID", revisionID);
+	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params); //TODO Fehler! liefert nur eins?
+    }
+
+    private Collection<TextDocument> getOriginalDocs(List<Long> docIDs) throws UnauthorizedException {
+	TextDocumentEndpoint tde = new TextDocumentEndpoint();
+	Collection<TextDocument> originalDocs;
+	originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems(); // FIXME put in Memcache, so for each validationResult it does not have to be fetched again
+	orignalDocIDs = new ArrayList<>();
+	for (TextDocument textDocument : originalDocs) {
+
+	    if (docIDs.contains(textDocument.getId())) {
+		String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+		syncCache.put(keyString, textDocument, Expiration.byDeltaSeconds(300));
+
+		orignalDocIDs.add(textDocument.getId());
+	    }
+	}
+	return originalDocs;
+    }
+
+    private void calculateFMeasure(Collection<TextDocument> originalDocs) {
+	ValidationReport validationReport = initValidationReportFMeasure();
+	try {
+
+	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
+	    for (ValidationProject validationProject : validationProjectsFromUsers) {
+		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, docIDs, orignalDocIDs, validationReport.getId(), user);
+		Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
+		taskQueue.launchInTaskQueue(deferredValidation);
+	    }
+
+	    taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), validationReport.getId(), user);
+
+	    aggregateDocAgreement(validationReport);
+
+	    Logger.getLogger("logger").log(Level.INFO, "Generating Agreement Map for report : " + validationReport.getDocumentResults().size());
+
+	    FMeasure.generateAgreementMaps(validationReport.getDocumentResults(), originalDocs);
+
+	    getPersistenceManager().makePersistent(validationReport);
+
+	} catch (UnauthorizedException e) {
+	    Logger.getLogger("logger").log(Level.INFO, "User not authorized: " + user.getEmail());
+	    e.printStackTrace();
+	} catch (InterruptedException | ExecutionException e) {
+	    e.printStackTrace();
+	} finally {
+	    getPersistenceManager().close();
+	}
+    }
+
+    private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException {
+	List<ParagraphAgreement> validationCoderAvg = new ArrayList<>();
+	Map<Long, List<ParagraphAgreement>> agreementByDoc = new HashMap<>();
+
+	ValidationEndpoint ve = new ValidationEndpoint();
+	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
+	Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
+	for (ValidationResult validationResult : validationResults) {
+	    ParagraphAgreement resultParagraphAgreement = validationResult.getParagraphAgreement();
+	    if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) {
+		validationCoderAvg.add(resultParagraphAgreement);
+	    }
+
+	    List<DocumentResult> docResults = ve.listDocumentResults(validationResult.getId(), user);
+
+	    for (DocumentResult documentResult : docResults) {
+		Long revisionDocumentID = documentResult.getOriginDocumentID();
+
+		DocumentResult documentResultForAggregation = new DocumentResult(documentResult);
+		documentResultForAggregation.setDocumentID(revisionDocumentID);
+		report.addDocumentResult(documentResultForAggregation);
+
+		ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
+
+		if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
+		    List<ParagraphAgreement> agreementList = agreementByDoc.get(revisionDocumentID);
+		    if (agreementList == null) {
+			agreementList = new ArrayList<>();
+		    }
+		    agreementList.add(docAgreement);
+		    agreementByDoc.put(revisionDocumentID, agreementList);
+		    // agreementByDoc.putIfAbsent(key, value)
+		}
+	    }
 	}
 
-	@Override
-	public void run() {
-		long startTime = System.nanoTime();
-
-		List<String> docIDArray = Arrays.asList(docIDsString.split("\\s*,\\s*"));
-		List<Long> docIDs = new ArrayList<Long>();
-		for (String string : docIDArray) {
-			docIDs.add(Long.parseLong(string));
-		}
-
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			TextDocumentEndpoint tde = new TextDocumentEndpoint();
-			Query q;
-			q = mgr.newQuery(ValidationProject.class, "revisionID  == :revisionID");
-
-			Map<String, Long> params = new HashMap<String, Long>();
-			params.put("revisionID", revisionID);
-
-			Collection<TextDocument> originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems(); // FIXME put in Memcache, so for each validationResult it does not have to be fetched again
-			List<Long> orignalDocIDs = new ArrayList<Long>();
-			for (TextDocument textDocument : originalDocs) {
-
-				if (docIDs.contains(textDocument.getId())) {
-					String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
-					MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-					syncCache.put(keyString, textDocument, Expiration.byDeltaSeconds(300));
-
-					orignalDocIDs.add(textDocument.getId());
-				}
-			}
-
-			@SuppressWarnings("unchecked")
-			List<ValidationProject> validationProjects = (List<ValidationProject>) q.executeWithMap(params);
-
-			for (ValidationProject prj : validationProjects) {
-				prj.getId();
-			}
-
-			ValidationReport report = new ValidationReport();
-			mgr.makePersistent(report); // Generate ID right away so we have an ID to pass to ValidationResults
-
-			report.setRevisionID(revisionID);
-			report.setName(name);
-			report.setDatetime(new Date());
-
-			report.setProjectID(validationProjects.get(0).getProjectID());
-
-			List<Future<TaskHandle>> futures = new ArrayList<Future<TaskHandle>>();
-
-			for (ValidationProject validationProject : validationProjects) {
-				validationProject.getId(); // Lazy Fetch?
-				Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
-				DeferredValPrjEvaluation deferredResults = new DeferredValPrjEvaluation(validationProject, docIDs, orignalDocIDs, report.getId(), user);
-
-				Queue queue = QueueFactory.getQueue("ValidationResultQueue");
-
-				Future<TaskHandle> future = queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredResults));
-
-				futures.add(future);
-			}
-
-			Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
-
-			for (Future<TaskHandle> future : futures) {
-				Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + future.isDone());
-				future.get();
-
-			}
-
-			// Poll every 10 seconds. TODO: find better solution
-			List<ValidationResult> valResults = new ArrayList<ValidationResult>();
-			while (valResults.size() != validationProjects.size()) {
-
-				ValidationEndpoint ve = new ValidationEndpoint();
-				valResults = ve.listValidationResults(report.getId(), user);
-				Logger.getLogger("logger").log(Level.WARNING, " So many results " + valResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
-				if (valResults.size() != validationProjects.size()) {
-					Thread.sleep(10000);
-				}
-			}
-
-			Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
-			Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
-
-			aggregateDocAgreement(report);
-
-			Logger.getLogger("logger").log(Level.INFO, "Generating Agreement Map for report : " + report.getDocumentResults().size());
-
-			Agreement.generateAgreementMaps(report.getDocumentResults(), originalDocs);
-
-			mgr.makePersistent(report);
-
-		} catch (UnauthorizedException e) {
-			Logger.getLogger("logger").log(Level.INFO, "User not authorized: " + user.getEmail());
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			mgr.close();
-		}
-		long elapsed = System.nanoTime() - startTime;
-		Logger.getLogger("logger").log(Level.WARNING, "Time for ValidationReport: " + elapsed);
-
+	for (Long docID : agreementByDoc.keySet()) {
+	    ParagraphAgreement avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
+	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getfMeasure());
+	    report.setDocumentResultAverage(docID, avgDocAgreement);
 	}
 
-	private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException {
-		List<ParagraphAgreement> validationCoderAvg = new ArrayList<ParagraphAgreement>();
-		Map<Long, List<ParagraphAgreement>> agreementByDoc = new HashMap<Long, List<ParagraphAgreement>>();
+	ParagraphAgreement avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
+	report.setParagraphAgreement(avgReportAgreement);
+    }
 
-		ValidationEndpoint ve = new ValidationEndpoint();
-		List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
-		Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
-		for (ValidationResult validationResult : validationResults) {
-			ParagraphAgreement resultParagraphAgreement = validationResult.getParagraphAgreement();
-			if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) validationCoderAvg.add(resultParagraphAgreement);
+    private PersistenceManager pm = null;
 
-			List<DocumentResult> docResults = ve.listDocumentResults(validationResult.getId(), user);
+    private PersistenceManager getPersistenceManager() {
+	if (this.pm == null) {
+	    this.pm = PMF.get().getPersistenceManager();
+	}
+	return this.pm;
+    }
 
-			for (DocumentResult documentResult : docResults) {
-				Long revisionDocumentID = documentResult.getOriginDocumentID();
+    /**
+     * Calculate K's Alpha between all given users for every given document for
+     * every code in the codesystem for the given revision.
+     *
+     * @throws UnauthorizedException if user can not see documents of other
+     * users
+     */
+    private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
+	TabularValidationReport tabularValidationReport = initTabularValidationReport();
 
-				DocumentResult documentResultForAggregation = new DocumentResult(documentResult);
-				documentResultForAggregation.setDocumentID(revisionDocumentID);
-				report.addDocumentResult(documentResultForAggregation);
+	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
+	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+	
+	List<String> tableHead = new ArrayList<>();
+	tableHead.add("Documents \\ Codes");
+	for(Long codeId : codeIds) {
+	    tableHead.add(codeId+"");
+	}
+	tabularValidationReport.setHeadRow(tableHead);
 
-				ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
+	Map<String, List<TextDocument>> sameDocumentsFromDifferentRatersMap
+		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
+	//TODO nach Textdocumenten filtern!
 
-				if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
-					List<ParagraphAgreement> agreementList = agreementByDoc.get(revisionDocumentID);
-					if (agreementList == null) agreementList = new ArrayList<ParagraphAgreement>();
-					agreementList.add(docAgreement);
-					agreementByDoc.put(revisionDocumentID, agreementList);
-					// agreementByDoc.putIfAbsent(key, value)
-				}
-
-			}
-
-		}
-
-		for (Long docID : agreementByDoc.keySet()) {
-			ParagraphAgreement avgDocAgreement = Agreement.calculateAverageAgreement(agreementByDoc.get(docID));
-			Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measuzre of " + avgDocAgreement.getfMeasure());
-			report.setDocumentResultAverage(docID, avgDocAgreement);
-		}
-
-		ParagraphAgreement avgReportAgreement = Agreement.calculateAverageAgreement(validationCoderAvg);
-		report.setParagraphAgreement(avgReportAgreement);
+	//Convert TextDocuments to Reliability Data Matrix, which will be input for Krippendorffs Alpha
+	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
+	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
+	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
+	    //create all the tasks with the reliability Data
+	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, tabularValidationReport.getId(), documentTitle));
 	}
 
-	private static PersistenceManager getPersistenceManager() {
-		return PMF.get().getPersistenceManager();
-	}
+	//Now launch all the Tasks
+	taskQueue.launchListInTaskQueue(kAlphaTasks);
+
+	
+	//TODO wird nicht gehen!! brauchen wir hier eh nicht?
+	//taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), tabularValidationReport.getId(), user);
+	//TODO warten muss man trotzdem?
+	
+	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
+
+	getPersistenceManager().makePersistent(tabularValidationReport);
+    }
+
+    private TabularValidationReport initTabularValidationReport() {
+	TabularValidationReport tabularValidationReport = new TabularValidationReport();
+	getPersistenceManager().makePersistent(tabularValidationReport); // Generate ID right away so we have an ID to pass to the Algorithm
+	tabularValidationReport.setRevisionID(revisionID);
+	tabularValidationReport.setName(name);
+	tabularValidationReport.setDatetime(new Date());
+	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	tabularValidationReport.setEvaluationUnit(evalUnit);
+	return tabularValidationReport;
+    }
+
+    private void calculateCohensKappa() {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }
