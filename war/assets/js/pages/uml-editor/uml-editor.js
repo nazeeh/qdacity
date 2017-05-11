@@ -1,3 +1,5 @@
+import EdgeTypes from './EdgeTypes.js';
+import Helper from './Helper.js';
 import MyEditorView from './MyEditorView.js';
 
 import Account from '../../common/Account.jsx';
@@ -15,17 +17,6 @@ $script('https://apis.google.com/js/platform.js', function () {
 	$script('https://apis.google.com/js/client.js?onload=init', 'google-api');
 });
 
-
-var edgeTypes = {
-	NONE: 'none',
-	GENERALIZATION: 'generalization',
-	DEPENDENCY: 'dependency',
-	AGGREGATION: 'aggregation',
-	CONTAINMENT: 'containment',
-	ASSOCIATION: 'association',
-	DIRECTED_ASSOCIATION: 'directed_association',
-	REALIZATION: 'realization'
-};
 
 var project_id;
 var project_type;
@@ -49,7 +40,7 @@ window.init = function () {
 	}
 
 	let container = document.getElementById('graphContainer');
-	view = new MyEditorView(container, edgeTypes);
+	view = new MyEditorView(container);
 
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
@@ -114,7 +105,7 @@ function initGraph(codes, mmEntities) {
 		
 		var metaModelEntity = mmEntities.find(function(mmEntity) { return mmEntity.id == relations[i].metaModelEntityId;});
 		
-		var edgeType = getEdgeType(metaModelEntity);		
+		var edgeType = Helper.getEdgeType(metaModelEntity);		
 		
 		view.addEdge(start, end, edgeType);
 	}
@@ -124,29 +115,3 @@ function initGraph(codes, mmEntities) {
 }
 
 
-function getEdgeType(metaModelEntity) {
-	let mode = null;
-	
-	switch (metaModelEntity.name) {
-		case 'is a': {
-			mode = edgeTypes.GENERALIZATION;
-			break;
-		}
-		case 'is part of': {
-			mode = edgeTypes.AGGREGATION;
-			break;
-		}
-		case 'is related to': {
-			mode = edgeTypes.DIRECTED_ASSOCIATION;
-			break;
-		}
-		default: {
-			// TODO ERROR?
-			//alert("error??");
-			mode = edgeTypes.ASSOCIATION;
-			break;
-		}
-	}
-	
-	return mode;
-}
