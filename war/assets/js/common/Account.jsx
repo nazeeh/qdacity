@@ -68,6 +68,16 @@ export default class Account extends React.Component {
 		}
 		return isOwner;
 	}
+	
+	isValidationCoder(user, valPrj) {
+		var isValidationCoder = false;
+		if (typeof valPrj.validationCoders != 'undefined') {
+			valPrj.validationCoders.forEach(function (valCoderId) {
+				if (user.id === valCoderId) isValidationCoder = true;
+			});
+		}
+		return isValidationCoder;
+	}
 
 	registerCurrentUser(givenName, surName, email) {
 		var promise = new Promise(

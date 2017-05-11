@@ -1,17 +1,18 @@
 import AgreementStats from './AgreementStats';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
-import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import Project from './Project';
 import Account from '../../common/Account.jsx';
 import TextField from '../../common/modals/TextField';
-import Settings from '../../common/modals/Settings';
 import loadGAPIs from '../../common/GAPI';
 
 import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
 import UserList from "./UserList.jsx"
 import InviteUserField from "./InviteUserField.jsx"
 import ProjectStats from "./ProjectStats.jsx"
+import TitleRow from "./TitleRow/TitleRow.jsx"
+import PersonalReportList from "./PersonalReportList.jsx"
+import Description from "./Description.jsx";
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/URIjs/URI.min.js';
@@ -39,6 +40,8 @@ var revisionHistory;
 var userList;
 var inviteUserField;
 var projectStats;
+var titleRow;
+var description;
 
 function setupUI() {
 	if (account.isSignedIn()) {
@@ -51,7 +54,8 @@ function setupUI() {
 		userList = ReactDOM.render(<UserList projectType={project_type}  projectId={project_id} />, document.getElementById('userList'));
 		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
 		inviteUserField = ReactDOM.render(<InviteUserField projectType={project_type} projectId={project_id} />, document.getElementById('inviteUserField'));
-		
+		titleRow = ReactDOM.render(<TitleRow projectType={project_type} projectId={project_id} account={account} />, document.getElementById('titleRow'));
+		description = ReactDOM.render(<Description projectType={project_type} projectId={project_id} />, document.getElementById('projectDescription'));
 		setProjectProperties();
 		if (project_type === 'PROJECT'){
 			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project_id} />, document.getElementById('revisionHistoryTimeline'));
@@ -64,7 +68,6 @@ function setupUI() {
 		handleError(resp.code);
 	}
 }
-
 
 window.init = function () {
 	var urlParams = URI(window.location.search).query(true);
@@ -80,30 +83,16 @@ window.init = function () {
 	case 'VALIDATION':
 		$('#parentProject').show();
 		$('#validationReports').show();
-		$('#codingEditorBtn').removeClass('hidden');
-		$('#settingsBtn').addClass('hidden');
 		break;
 	default:
 		break;
 	}
-
-	$("#codingEditorBtn").click(function () {
-		location.href = 'coding-editor.html?project=' + project_id + '&type=' + project_type;
-	});
-
-	$("#settingsBtn").click(function () {
-		showSettingsModal();
-	});
 
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
 			account = accountModule;
 		}
 	);
-
-	document.getElementById('editDescriptionBtn').onclick = function () {
-		showDescriptionModal();
-	};
 	
 	document.getElementById('newRevisionBtn').onclick = function() {
 		showNewRevisionModal("Revision Comment");
@@ -120,39 +109,14 @@ function showNewRevisionModal(title){
 
 function setProjectProperties() {
 	ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
-		$("#project-name").html(resp.name);
-		$("#projectDescription").html(resp.description);
+		description.setDescription(resp.description);
 		project.setUmlEditorEnabled(resp.umlEditorEnabled);
-
+		titleRow.setProjectProperties(resp);
 		if (project_type === 'VALIDATION') {
 			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
-			setReportList(resp.projectID);
+			ReactDOM.render(<PersonalReportList projectType={project_type} projectId={project_id} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
+			 
 		}
-	});
-}
-
-function setReportList(parentProject) {
-	var validationEndpoint = new ValidationEndpoint();
-	var validationPromise = validationEndpoint.listReports(parentProject);
-	//FIXME clear list on reload
-	validationPromise.then(function (reports) {
-
-		for (var property in reports) {
-			if (reports.hasOwnProperty(property)) {
-				var reportArr = reports[property];
-				reportArr = reportArr || [];
-				for (var i = 0; i < reportArr.length; i++) {
-					var report = reportArr[i];
-					addReportToReportList(report.name, report.revisionID, report.id, report.datetime);
-
-				}
-			}
-		}
-		$(".studentReportLink").click(function (event) {
-			var repId = $(this).attr("repId");
-			showDocumentResults(repId, parentProject);
-		});
-
 	});
 }
 
@@ -199,36 +163,12 @@ function setBtnVisibility(userPromise){
 		
 		var isProjectOwner = account.isProjectOwner(user, project_id);
 		inviteUserField.setIsProjectOwner(isProjectOwner);
-		
+		description.setIsProjectOwner(isProjectOwner);
+		titleRow.setIsProjectOwner(isProjectOwner);
 		if (isProjectOwner) {
-			$('#codingEditorBtn').removeClass('hidden');
-			$('#settingsBtn').removeClass('hidden');
-			$('#editDescriptionBtn').removeClass('hidden');
 			$('#newRevisionBtn').removeClass('hidden');
 		} else {
-			$('#codingEditorBtn').addClass('hidden');
-			$('#settingsBtn').addClass('hidden');
-			$('#editDescriptionBtn').addClass('hidden');
 			$('#newRevisionBtn').addClass('hidden');
 		}
-	});
-}
-
-function showDescriptionModal() {
-	var modal = new TextField('Change the project description', 'Description');
-	modal.showModal().then(function (text) {
-		ProjectEndpoint.setDescription(project_id, project_type, text).then(function (resp) {
-			$("#projectDescription").html(text);
-		});
-	});
-}
-
-function showSettingsModal() {
-	var modal = new Settings();
-
-	modal.showModal(project.isUmlEditorEnabled()).then(function (data) {
-		ProjectEndpoint.setUmlEditorEnabled(project_id, project_type, data.umlEditorEnabled).then(function (resp) {
-			project.setUmlEditorEnabled(data.umlEditorEnabled);
-		});
 	});
 }
