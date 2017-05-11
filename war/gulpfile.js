@@ -1,7 +1,9 @@
-var gulp = require('gulp');
-var webpack = require('webpack-stream');
-var uglify = require('gulp-uglify');
-var beautify = require('gulp-beautify');
+const gulp = require('gulp');
+const webpack = require('webpack-stream');
+const uglify = require('gulp-uglify');
+const beautify = require('gulp-beautify');
+const jasmine = require('gulp-jasmine');
+ 
 var paths = {
   scripts: ['assets/js/**/*.js'],
   images: 'assets/img/**/*'
@@ -100,5 +102,9 @@ gulp.task('format', function() {
 gulp.task('watch',function() {
 	gulp.watch('assets/**/*.{js,jsx}',['bundle'])
 });
+
+gulp.task('test', () =>
+    gulp.src('./tests/*.js').pipe(jasmine())
+);
  
 gulp.task('default', ['bundle','watch']);
