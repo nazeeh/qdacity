@@ -3,6 +3,7 @@ const webpack = require('webpack-stream');
 const uglify = require('gulp-uglify');
 const beautify = require('gulp-beautify');
 const jasmine = require('gulp-jasmine');
+require('babel-core/register'); 
  
 var paths = {
   scripts: ['assets/js/**/*.js'],
