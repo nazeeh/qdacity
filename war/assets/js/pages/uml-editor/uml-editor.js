@@ -1,4 +1,3 @@
-import EdgeTypes from './EdgeTypes.js';
 import MetaModelMapper from './MetaModelMapper.js';
 import MyEditorView from './MyEditorView.js';
 

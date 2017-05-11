@@ -1,5 +1,5 @@
 
-const edgeTypes = {
+export const EdgeType = {
 	NONE: 'none',
 	GENERALIZATION: 'generalization',
 	DEPENDENCY: 'dependency',

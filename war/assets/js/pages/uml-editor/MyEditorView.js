@@ -1,3 +1,4 @@
+import { EdgeType } from './EdgeType.js';
 
 export default class MyEditorView {
     
@@ -65,21 +66,21 @@ export default class MyEditorView {
         style = {};
         style[mxConstants.STYLE_STARTARROW] = 'none';
         style[mxConstants.STYLE_ENDARROW] = 'none';
-        stylesheet.putCellStyle(edgeTypes.NONE, style);
+        stylesheet.putCellStyle(EdgeType.NONE, style);
         
         // Generalization
         style = {};
         style[mxConstants.STYLE_STARTARROW] = 'none';
         style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
         style[mxConstants.STYLE_ENDFILL] = 0;
-        stylesheet.putCellStyle(edgeTypes.GENERALIZATION, style);
+        stylesheet.putCellStyle(EdgeType.GENERALIZATION, style);
 
         // Dependency
         style = {};
         style[mxConstants.STYLE_STARTARROW] = 'none';
         style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
         style[mxConstants.STYLE_DASHED] = 1;
-        stylesheet.putCellStyle(edgeTypes.DEPENDENCY, style);
+        stylesheet.putCellStyle(EdgeType.DEPENDENCY, style);
 
         // Aggregation
         style = {};
@@ -87,7 +88,7 @@ export default class MyEditorView {
         style[mxConstants.STYLE_ENDARROW] = 'none';
         style[mxConstants.STYLE_STARTFILL] = 0;
         style[mxConstants.STYLE_STARTSIZE] = 20;
-        stylesheet.putCellStyle(edgeTypes.AGGREGATION, style);
+        stylesheet.putCellStyle(EdgeType.AGGREGATION, style);
 
         // Containment
         style = {};
@@ -95,19 +96,19 @@ export default class MyEditorView {
         style[mxConstants.STYLE_ENDARROW] = 'none';
         style[mxConstants.STYLE_STARTFILL] = 1;
         style[mxConstants.STYLE_STARTSIZE] = 20;
-        stylesheet.putCellStyle(edgeTypes.CONTAINMENT, style);
+        stylesheet.putCellStyle(EdgeType.CONTAINMENT, style);
 
         // Association
         style = {};
         style[mxConstants.STYLE_STARTARROW] = 'none';
         style[mxConstants.STYLE_ENDARROW] = 'none';
-        stylesheet.putCellStyle(edgeTypes.ASSOCIATION, style);
+        stylesheet.putCellStyle(EdgeType.ASSOCIATION, style);
         
         // Directed Association
         style = {};
         style[mxConstants.STYLE_STARTARROW] = 'none';
         style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
-        stylesheet.putCellStyle(edgeTypes.DIRECTED_ASSOCIATION, style);
+        stylesheet.putCellStyle(EdgeType.DIRECTED_ASSOCIATION, style);
 
         // Realization
         style = {};
@@ -115,7 +116,7 @@ export default class MyEditorView {
         style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
         style[mxConstants.STYLE_ENDFILL] = 0;
         style[mxConstants.STYLE_DASHED] = 1;
-        stylesheet.putCellStyle(edgeTypes.REALIZATION, style);
+        stylesheet.putCellStyle(EdgeType.REALIZATION, style);
     }
 	
 	addNode(name) {

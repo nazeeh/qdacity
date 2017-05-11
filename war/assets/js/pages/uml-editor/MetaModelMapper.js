@@ -1,3 +1,4 @@
+import { EdgeType } from './EdgeType.js';
 
 export default class MetaModelMapper {
     
@@ -6,21 +7,21 @@ export default class MetaModelMapper {
 		
 		switch (metaModelEntity.name) {
 			case 'is a': {
-				mode = edgeTypes.GENERALIZATION;
+				mode = EdgeType.GENERALIZATION;
 				break;
 			}
 			case 'is part of': {
-				mode = edgeTypes.AGGREGATION;
+				mode = EdgeType.AGGREGATION;
 				break;
 			}
 			case 'is related to': {
-				mode = edgeTypes.DIRECTED_ASSOCIATION;
+				mode = EdgeType.DIRECTED_ASSOCIATION;
 				break;
 			}
 			default: {
 				// TODO ERROR?
 				//alert("error??");
-				mode = edgeTypes.ASSOCIATION;
+				mode = EdgeType.ASSOCIATION;
 				break;
 			}
 		}
