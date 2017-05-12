@@ -93,4 +93,8 @@ public class TabularValidationReportRow implements Serializable {
 	return this.rowCsvString;
     }
 
+    public Key getKey() {
+	return key;
+    }
+
 }

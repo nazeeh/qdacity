@@ -87,10 +87,10 @@ public class ValidationEndpoint {
 	PersistenceManager mgr = getPersistenceManager();
 	try {
 	    Query q;
-	    q = mgr.newQuery(TabularValidationReportRow.class, " tabularValidationReportId  == :tabularValidationReportId ");
+	    q = mgr.newQuery(TabularValidationReportRow.class, " validationReportId  == :validationReportId ");
 
 	    Map<String, Long> params = new HashMap<>();
-	    params.put("tabularValidationReportId", ValidationReportId);
+	    params.put("validationReportId", ValidationReportId);
 
 	    tabularReportRows = (List<TabularValidationReportRow>) q.executeWithMap(params);
 	} finally {
@@ -261,6 +261,12 @@ public class ValidationEndpoint {
 
 			// Delete the actual report
 			mgr.deletePersistent(report);
+			// Delete Tabular Rows if existent
+			List<TabularValidationReportRow> tabularRows = listTabularReportsRows(repID, user);
+			for(TabularValidationReportRow row : tabularRows) {
+			    TabularValidationReportRow rowToDelete = mgr.getObjectById(TabularValidationReportRow.class, row.getKey());
+			    mgr.deletePersistent(rowToDelete);
+			}
 
 		} finally {
 			mgr.close();
