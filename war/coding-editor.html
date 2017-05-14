@@ -190,22 +190,23 @@
     				<span class="col-xs-10">
     					<b>Documents</b>
     					<br>
-    					
-    					<div class="btn-group projectsOnly">
-							<a id="btnUpdateDoc" class="btn btn-default" >
-								<i class="fa fa-pencil fa-1x"></i>
-							</a>
-							<a id="btnInsertDoc" class="btn btn-default" >
-								<i class="fa fa-plus fa-1x"></i>
-							</a>
-							<a id="btnRemoveDoc" class="btn btn-default" >
-								<i class="fa fa-trash fa-1x"></i>
-							</a>
-						</div>
+    					<span id="docToolBox"  class="collapse in">
+	    					<div class="btn-group projectsOnly">
+								<a id="btnUpdateDoc" class="btn btn-default" >
+									<i class="fa fa-pencil fa-1x"></i>
+								</a>
+								<a id="btnInsertDoc" class="btn btn-default" >
+									<i class="fa fa-plus fa-1x"></i>
+								</a>
+								<a id="btnRemoveDoc" class="btn btn-default" >
+									<i class="fa fa-trash fa-1x"></i>
+								</a>
+							</div>
+						</span>
 					</span>
     				<span class="col-xs-1">
 							<!-- <button class="toggleEditorPanel pull-right" data-toggle="collapse"  data-target="#document-section">-</button> -->
-								<a id="documentsToggleBtn" class="editorPanelTogel pull-right" aria-expanded="true" data-toggle="collapse"  data-target="#document-section">
+								<a id="documentsToggleBtn" class="editorPanelTogel pull-right" aria-expanded="true" data-toggle="collapse"  data-target="#docToolBox">
 									<i class="fa fa-compress fa-1x"></i>
 									<i class="fa fa-expand fa-1x"></i>
 								</a>
@@ -213,7 +214,7 @@
 						</div>
 					</div>
 				</div>
-				<div id="document-section" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;" class="collapse in">
+				<div id="document-section" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;">
 						<div id ="documentsLoadingDiv" class="loader">
 						  	<div id ="documentsLoaderMount" class="loaderMount"></div>
 						</div>
