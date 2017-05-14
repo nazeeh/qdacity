@@ -243,12 +243,12 @@ public class DeferredEvaluation implements DeferredTask {
     private void calculateKrippendorffsAlpha(ValidationReport validationReport) throws UnauthorizedException, ExecutionException, InterruptedException {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
-	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+	Map<String,Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
 
 	List<String> tableHead = new ArrayList<>();
 	tableHead.add("Documents \\ Codes");
-	for (Long codeId : codeIds) {
-	    tableHead.add(codeId + ""); //TODO get Name of Code From Codesystem
+	for (String codeName : codeNamesAndIds.keySet()) {
+	    tableHead.add(codeName + "");
 	}
 	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
 
@@ -259,7 +259,7 @@ public class DeferredEvaluation implements DeferredTask {
 	//Convert TextDocuments to Reliability Data Matrix, which will be input for Krippendorffs Alpha
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
-	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
+	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeNamesAndIds.values());
 	    //create all the tasks with the reliability Data
 	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle));
 	}

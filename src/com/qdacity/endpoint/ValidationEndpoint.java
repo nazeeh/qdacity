@@ -82,7 +82,7 @@ public class ValidationEndpoint {
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
-    public List<TabularValidationReportRow> listTabularReportsRows(@Named("ValidationReportId") Long ValidationReportId, User user) throws UnauthorizedException {
+    public List<TabularValidationReportRow> listTabularReportsRows(@Named("validationReportId") Long ValidationReportId, User user) throws UnauthorizedException {
 	List<TabularValidationReportRow> tabularReportRows = new ArrayList<>();
 	PersistenceManager mgr = getPersistenceManager();
 	try {
