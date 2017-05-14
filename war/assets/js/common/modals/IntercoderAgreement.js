@@ -156,9 +156,9 @@ export default class IntercoderAgreement extends VexModal {
                         var validationEndpoint = new ValidationEndpoint();
                         var tabularRowsPromise = validationEndpoint.listTabularValidationReportRows(this.report.id);
                         tabularRowsPromise.then(function (rows) {
-                            for(var i = 0; i< rows.undefined.length; i++) {
+                            for(var i = 0; i< rows.length; i++) {
                                 var cells = [0,0]; //Two empty hidden cells
-                                table.row.add(cells.concat(rows.undefined[i].cells));
+                                table.row.add(cells.concat(rows[i].cells));
                             }
                         });
 			for (var i = 0; i < this.results.length; i++) {

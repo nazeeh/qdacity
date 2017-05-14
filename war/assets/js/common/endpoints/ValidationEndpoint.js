@@ -36,12 +36,10 @@ export default class ProjectEndpoint {
 					'validationReportId': validationReportId
 				}).execute(function (resp) {
 					if (!resp.code) {
-						//Hashmap with list as value
-						var rowsByReport = {};
+						var rowsByReport = []; //array
 						if (typeof resp.items != 'undefined') {
 							for (var i = 0; i < resp.items.length; i++) {
-                                                                if (rowsByReport[resp.items[i].revisionID] === undefined) rowsByReport[resp.items[i].revisionID] = [];
-								rowsByReport[resp.items[i].revisionID].push(resp.items[i]);
+								rowsByReport.push(resp.items[i]);
 							}
 						}
 						resolve(rowsByReport);
