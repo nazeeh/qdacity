@@ -84,7 +84,7 @@ public class DeferredAlgorithmTaskQueue {
 	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
     }
     
-    public void waitForTasksWhichCreateAnTabularValidationReportRowToFinish(int amountRowsToWaitFor, Long validationReportId, User user) throws UnauthorizedException, InterruptedException {
+    public List<TabularValidationReportRow> waitForTasksWhichCreateAnTabularValidationReportRowToFinish(int amountRowsToWaitFor, Long validationReportId, User user) throws UnauthorizedException, InterruptedException {
 	ValidationEndpoint ve = new ValidationEndpoint();
 	
 	List<TabularValidationReportRow> rows = ve.listTabularReportsRows(validationReportId, user);
@@ -93,6 +93,8 @@ public class DeferredAlgorithmTaskQueue {
 	    rows = ve.listTabularReportsRows(validationReportId, user);
 	}
 	Logger.getLogger("logger").log(Level.INFO, "Report "+validationReportId+" finished");
+	
+	return rows;
 	
     }
 

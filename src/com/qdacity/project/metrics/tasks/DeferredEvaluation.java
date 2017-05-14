@@ -75,7 +75,7 @@ public class DeferredEvaluation implements DeferredTask {
 	initValidationProjects();
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
-	
+
 	ValidationReport validationReport = initValidationReport();
 
 	try {
@@ -164,7 +164,6 @@ public class DeferredEvaluation implements DeferredTask {
 	    Logger.getLogger("logger").log(Level.INFO, "Generating Agreement Map for report : " + validationReport.getDocumentResults().size());
 
 	    FMeasure.generateAgreementMaps(validationReport.getDocumentResults(), originalDocs);
-	    
 
 	    getPersistenceManager().makePersistent(validationReport);
 
@@ -221,7 +220,7 @@ public class DeferredEvaluation implements DeferredTask {
 	}
 
 	FMeasureResult avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
-	report.setAverageAgreementRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(avgReportAgreement,null, "Average"));
+	report.setAverageAgreementRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(avgReportAgreement, null, "Average"));
     }
 
     private PersistenceManager pm = null;
@@ -243,14 +242,18 @@ public class DeferredEvaluation implements DeferredTask {
     private void calculateKrippendorffsAlpha(ValidationReport validationReport) throws UnauthorizedException, ExecutionException, InterruptedException {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
-	Map<String,Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
 
 	List<String> tableHead = new ArrayList<>();
+	List<String> tableAverageHead = new ArrayList<>();
 	tableHead.add("Documents \\ Codes");
+	tableAverageHead.add("Codes");
 	for (String codeName : codeNamesAndIds.keySet()) {
 	    tableHead.add(codeName + "");
+	    tableAverageHead.add(codeName + "");
 	}
 	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
+	validationReport.setAverageAgreementHeader(new TabularValidationReportRow(tableAverageHead));
 
 	Map<String, List<TextDocument>> sameDocumentsFromDifferentRatersMap
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
@@ -268,16 +271,38 @@ public class DeferredEvaluation implements DeferredTask {
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
-	
-	taskQueue.waitForTasksWhichCreateAnTabularValidationReportRowToFinish(kAlphaTasks.size(), validationReport.getId(), user);
 
-	//TODO calculate average
-	
+	List<TabularValidationReportRow> resultRows = taskQueue.waitForTasksWhichCreateAnTabularValidationReportRowToFinish(kAlphaTasks.size(), validationReport.getId(), user);
+
+	validationReport.setAverageAgreement(calculateAverageAgreement(resultRows));
+
 	getPersistenceManager().makePersistent(validationReport);
     }
 
     private void calculateCohensKappa() {
 	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Calculates the averageAgreement for TabularValidationReportRows using simple average calculation.
+     * @param myRows the rows where you want to calculate the average
+     * @return a new row containing the average
+     */
+    private TabularValidationReportRow calculateAverageAgreement(List<TabularValidationReportRow> myRows) {
+	List<String> averageColumns = new ArrayList<>();
+	averageColumns.add("AVERAGE");
+	if (myRows.size() > 0) {
+	    List<String> masterCells = myRows.get(0).getCells();
+	    for(int i = 1; i<masterCells.size(); i++) { //SKIP first cell as it is just label
+		double sum = 0;
+		for (TabularValidationReportRow row : myRows) {
+		    sum += new Double(row.getCells().get(i));
+		}
+		double average = sum / myRows.size();
+		averageColumns.add(average+"");
+	    }
+	}
+	return new TabularValidationReportRow(averageColumns);
     }
 
 }
