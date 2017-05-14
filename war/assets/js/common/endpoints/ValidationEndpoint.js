@@ -28,6 +28,32 @@ export default class ProjectEndpoint {
 
 		return promise;
 	}
+        
+        listTabularValidationReportRows(validationReportId) {
+                var promise = new Promise(
+			function (resolve, reject) {
+				gapi.client.qdacity.validation.listTabularReportRows({
+					'validationReportId': validationReportId
+				}).execute(function (resp) {
+					if (!resp.code) {
+						//Hashmap with list as value
+						var rowsByReport = {};
+						if (typeof resp.items != 'undefined') {
+							for (var i = 0; i < resp.items.length; i++) {
+                                                                if (rowsByReport[resp.items[i].revisionID] === undefined) rowsByReport[resp.items[i].revisionID] = [];
+								rowsByReport[resp.items[i].revisionID].push(resp.items[i]);
+							}
+						}
+						resolve(rowsByReport);
+					} else {
+						reject(resp);
+					}
+				});
+			}
+		);
+
+		return promise;
+        }
 
 	deleteReport(repId) {
 		var apiMethod = gapi.client.qdacity.validation.deleteReport({
