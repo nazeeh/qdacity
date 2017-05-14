@@ -268,7 +268,11 @@ public class DeferredEvaluation implements DeferredTask {
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
+	
+	taskQueue.waitForTasksWhichCreateAnTabularValidationReportRowToFinish(kAlphaTasks.size(), validationReport.getId(), user);
 
+	//TODO calculate average
+	
 	getPersistenceManager().makePersistent(validationReport);
     }
 

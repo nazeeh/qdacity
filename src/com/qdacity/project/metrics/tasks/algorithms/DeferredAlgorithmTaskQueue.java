@@ -6,6 +6,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.ValidationEndpoint;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class DeferredAlgorithmTaskQueue {
 
     private final Queue taskQueue;
     private final List<Future<TaskHandle>> futures;
+    private long SLEEP_TIME = 10000;
 
     public DeferredAlgorithmTaskQueue() {
 	taskQueue = QueueFactory.getQueue("ValidationResultQueue");
@@ -75,11 +77,23 @@ public class DeferredAlgorithmTaskQueue {
 	    valResults = ve.listValidationResults(validationReportId, user);
 	    Logger.getLogger("logger").log(Level.WARNING, " So many results " + valResults.size() + " for report " + validationReportId + " at time " + System.currentTimeMillis());
 	    if (valResults.size() != amountValidationProjects) {
-		Thread.sleep(10000);
+		Thread.sleep(SLEEP_TIME);
 	    }
 	}
 	Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
 	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
+    }
+    
+    public void waitForTasksWhichCreateAnTabularValidationReportRowToFinish(int amountRowsToWaitFor, Long validationReportId, User user) throws UnauthorizedException, InterruptedException {
+	ValidationEndpoint ve = new ValidationEndpoint();
+	
+	List<TabularValidationReportRow> rows = ve.listTabularReportsRows(validationReportId, user);
+	while(rows.size() < amountRowsToWaitFor) {
+	    Thread.sleep(SLEEP_TIME);
+	    rows = ve.listTabularReportsRows(validationReportId, user);
+	}
+	Logger.getLogger("logger").log(Level.INFO, "Report "+validationReportId+" finished");
+	
     }
 
     private Future<TaskHandle> addToTaskQueue(DeferredAlgorithmEvaluation algorithmTask) {
