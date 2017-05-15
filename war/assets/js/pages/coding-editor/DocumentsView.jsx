@@ -7,7 +7,8 @@ export default class DocumentsView extends React.Component {
 		super(props);
 		this.state = {
 			documents: [],
-			selected: -1
+			selected: -1,
+			isExpanded: true
 		};
 		this.addDocument = this.addDocument.bind(this);
 		this.setActiveDocument = this.setActiveDocument.bind(this);
@@ -15,6 +16,27 @@ export default class DocumentsView extends React.Component {
 		this.getActiveDocument = this.getActiveDocument.bind(this);
 		this.getDocuments = this.getDocuments.bind(this);
 		this.saveDocument = this.saveDocument.bind(this);
+	}
+	
+	getStyles() {
+		return {
+			infoBox: {
+				backgroundColor: "#FAFAFA",
+				borderLeftStyle: "solid",
+				borderLeftWidth: "thick",
+				borderLeftColor: "#337ab7",
+				borderRightStyle: "solid",
+				borderRightWidth: "thick",
+				borderRightColor: "#337ab7",
+				textAlign: "center"
+			}
+		};
+	}
+	
+	toggleIsExpanded(){
+		this.setState({
+			isExpanded: !this.state.isExpanded
+		});
 	}
 
 	// Adds a document and selects the new document as active
@@ -117,10 +139,16 @@ export default class DocumentsView extends React.Component {
 
 	render() {
 		var _this = this;
+		const styles = this.getStyles();
+		if (!this.state.isExpanded){
+			return <div style={styles.infoBox}>
+		      <b>Current Document: {this.getActiveDocument().title}</b>
+		    </div>
+		}
 		return (
 			<div className="list-group">
         {
-          this.state.documents.map(function(doc) {
+          this.state.documents.map(function(doc) {	
             return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
           })
         }
