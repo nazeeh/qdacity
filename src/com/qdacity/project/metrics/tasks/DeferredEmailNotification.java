@@ -23,7 +23,7 @@ import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 
 public class DeferredEmailNotification implements DeferredTask {
 
@@ -75,7 +75,7 @@ public class DeferredEmailNotification implements DeferredTask {
 				msgBody += "</p>";
 				msgBody += "<p>";
 				msgBody += "<strong>Overall</strong> <br>";
-				FMeasureResult paragraphAgreement = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(result.getReportRow());
+				FMeasureResult paragraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(result.getReportRow());
 				msgBody += "F-Measure: " + paragraphAgreement.getFMeasure() + "<br>";
 				msgBody += "Recall: " + paragraphAgreement.getRecall() + "<br>";
 				msgBody += "Precision: " + paragraphAgreement.getPrecision() + "<br>";
@@ -88,7 +88,7 @@ public class DeferredEmailNotification implements DeferredTask {
 				for (DocumentResult documentResult : docResults) {
 					msgBody += "<p>";
 					msgBody += "<strong>" + documentResult.getDocumentName() + ":</strong><br>";
-					FMeasureResult documentPA = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(documentResult.getReportRow());
+					FMeasureResult documentPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(documentResult.getReportRow());
 					msgBody += "F-Measure: " + documentPA.getFMeasure() + "<br>";
 					msgBody += "Recall: " + documentPA.getRecall() + "<br>";
 					msgBody += "Precision: " + documentPA.getPrecision() + "<br><br>";
@@ -97,7 +97,7 @@ public class DeferredEmailNotification implements DeferredTask {
 
 				msgBody += "<p>";
 				msgBody += "You may compare these values to the average of this report<br>";
-				FMeasureResult reportPA = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(new TabularValidationReportRow(report.getAverageAgreementCsvString()));
+				FMeasureResult reportPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(report.getAverageAgreementCsvString()));
 				msgBody += "F-Measure: " + reportPA.getFMeasure() + "<br>";
 				msgBody += "Recall: " + reportPA.getRecall() + "<br>";
 				msgBody += "Precision: " + reportPA.getPrecision() + "<br><br>";

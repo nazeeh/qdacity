@@ -10,13 +10,13 @@ import java.util.List;
  * Can convert ParagraphAgreement Objects to TabularReportRow Objects and back.
  * This class could also be used for Data migration.
  */
-public class ParagraphAgreementConverter {
+public class FMeasureResultConverter {
     
     private static final int FMEASURE_INDEX = 1;
     private static final int RECALL_INDEX = 2;
     private static final int PRECISION_INDEX = 3;
     
-    public static FMeasureResult tabularValidationReportRowToParagraphAgreement(TabularValidationReportRow tabularReportRow) {
+    public static FMeasureResult tabularValidationReportRowToFMeasureResult(TabularValidationReportRow tabularReportRow) {
 	FMeasureResult paragraphAgreement = new FMeasureResult();
 	
 	if(tabularReportRow.getCells().size() < 4) {
@@ -30,14 +30,14 @@ public class ParagraphAgreementConverter {
 	return paragraphAgreement;
     }
     
-    public static TabularValidationReportRow paragraphAgreementToTabularValidationReportRow(FMeasureResult paragraphAgreement, Long tabularValidationReportId, String coderName) {
+    public static TabularValidationReportRow fmeasureResultToTabularValidationReportRow(FMeasureResult fmeasureResult, Long tabularValidationReportId, String coderName) {
 	TabularValidationReportRow tabularValidationReportRow = new TabularValidationReportRow(tabularValidationReportId);
 	
 	List<String> columns = new ArrayList<>();
 	columns.add(coderName);
-	columns.add(paragraphAgreement.getFMeasure()+"");
-	columns.add(paragraphAgreement.getRecall()+"");
-	columns.add(paragraphAgreement.getPrecision()+"");
+	columns.add(fmeasureResult.getFMeasure()+"");
+	columns.add(fmeasureResult.getRecall()+"");
+	columns.add(fmeasureResult.getPrecision()+"");
 	tabularValidationReportRow.setRow(columns);
 	
 	return tabularValidationReportRow;

@@ -1,6 +1,6 @@
 package com.qdacity.project.metrics;
 
-import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

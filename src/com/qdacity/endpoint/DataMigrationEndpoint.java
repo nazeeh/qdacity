@@ -9,7 +9,7 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +65,7 @@ public class DataMigrationEndpoint {
 
 	    pAgreements = (List<FMeasureResult>) q.execute(params);
 	    if (pAgreements.size() == 1) {
-		tabularValidationReportRow = ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(pAgreements.get(0), null, coderName);
+		tabularValidationReportRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(pAgreements.get(0), null, coderName);
 		mgr.makePersistent(tabularValidationReportRow);
 	    }
 	} finally {

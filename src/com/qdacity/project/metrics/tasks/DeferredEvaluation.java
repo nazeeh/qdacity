@@ -37,7 +37,7 @@ import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.ParagraphAgreementConverter;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
@@ -185,7 +185,7 @@ public class DeferredEvaluation implements DeferredTask {
 	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
 	Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
 	for (ValidationResult validationResult : validationResults) {
-	    FMeasureResult resultParagraphAgreement = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(validationResult.getReportRow());
+	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(validationResult.getReportRow());
 	    if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) {
 		validationCoderAvg.add(resultParagraphAgreement);
 	    }
@@ -199,7 +199,7 @@ public class DeferredEvaluation implements DeferredTask {
 		documentResultForAggregation.setDocumentID(revisionDocumentID);
 		report.addDocumentResult(documentResultForAggregation);
 
-		FMeasureResult docAgreement = ParagraphAgreementConverter.tabularValidationReportRowToParagraphAgreement(documentResultForAggregation.getReportRow());
+		FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(documentResultForAggregation.getReportRow());
 
 		if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
 		    List<FMeasureResult> agreementList = agreementByDoc.get(revisionDocumentID);
@@ -216,11 +216,11 @@ public class DeferredEvaluation implements DeferredTask {
 	for (Long docID : agreementByDoc.keySet()) {
 	    FMeasureResult avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
 	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getFMeasure());
-	    report.setDocumentResultAverage(docID, ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(avgDocAgreement, null, "Average"));
+	    report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgDocAgreement, null, "Average"));
 	}
 
 	FMeasureResult avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
-	report.setAverageAgreementRow(ParagraphAgreementConverter.paragraphAgreementToTabularValidationReportRow(avgReportAgreement, null, "Average"));
+	report.setAverageAgreementRow(FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgReportAgreement, null, "Average"));
     }
 
     private PersistenceManager pm = null;
