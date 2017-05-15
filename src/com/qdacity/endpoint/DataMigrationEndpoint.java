@@ -74,8 +74,43 @@ public class DataMigrationEndpoint {
 
 	return tabularValidationReportRow;
     }
+    
+   @ApiMethod(
+	    name = "migration.migrateV4toV5",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID}) 
+   public void migrateV4toV5(User user){
+       //assumption: Data only contains ValidationReports that have run an FMeasure!
+       migrateValidationReports();
+       migrateDocumentResults();
+       migrateValidationResults();
+       migrateParagraphAgreements();
+   }
 
     private static PersistenceManager getPersistenceManager() {
 	return PMF.get().getPersistenceManager();
+    }
+
+    private void migrateValidationReports() {
+	//TODO
+	//Column: paragraphAgreement -> avgAgreement (String) value: "Average, <fmeasure>, <recall>, <precision>"
+	//New column: avgAgreementHead (String) value: "Coder,FMeasure,Recall,Precision"
+	//New column: detailedAgreementHead (String) value: "Coder,FMeasure,Recall,Precision"
+	//New column: evaluationUnit (String) value: "paragraph"
+    }
+
+    private void migrateDocumentResults() {
+	//Column: paragraphAgreement -> reportRow (String) value: "<documentName>, <fmeasure>, <recall>, <precision>"
+	//TODO
+    }
+
+    private void migrateValidationResults() {
+	//Column: paragraphAgreement -> reportRow (String) value: "<coderName>, <fmeasure>, <recall>, <precision>"
+	//TODO
+    }
+
+    private void migrateParagraphAgreements() {
+	//TODO ParagraphAgreement -> TabularValidationReportRow
     }
 }
