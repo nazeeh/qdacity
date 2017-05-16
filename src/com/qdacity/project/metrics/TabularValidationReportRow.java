@@ -88,6 +88,10 @@ public class TabularValidationReportRow implements Serializable {
 	this.rowCsvString = csvRow.substring(0, csvRow.length() - 1); //remove last comma
     }
 
+    /**
+     * Returns CSV String representation of row contents
+     * @return 
+     */
     @Override
     public String toString() {
 	return this.rowCsvString;
