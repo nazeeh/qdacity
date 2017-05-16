@@ -57,7 +57,7 @@ export default class Description extends React.Component {
 		return (
 			<div className="box box-default">
 				<div className="box-header with-border">
-				<h3 className="box-title">Project Stats</h3>
+				<h3 className="box-title">Project Description</h3>
 				{this.renderEditBtn()}
 				</div>
 				<div className="box-body">
