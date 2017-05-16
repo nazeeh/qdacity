@@ -5,7 +5,6 @@ import MetaModelView from './MetaModelView.jsx';
 
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
-import DocumentsCtrl from './DocumentsCtrl';
 import EditorCtrl from './EditorCtrl';
 import Prompt from '../../common/modals/Prompt';
 import loadGAPIs from '../../common/GAPI';
@@ -51,7 +50,6 @@ var metaModelView;
 var codeRelationsView
 
 var documentsView;
-var documentsCtrl = {};
 
 var editorCtrl = {};
 
@@ -100,8 +98,6 @@ window.init = function () {
 	$("#footer").hide();
 	$('#navAccount').hide();
 
-	// the toggle is later hooked to the
-	// visibility of the toolbar
 	var urlParams = URI(window.location.search).query(true);
 
 	project_id = urlParams.project;
@@ -153,8 +149,6 @@ window.init = function () {
 		});
 	});
 
-	//$("#documentsToggleBtn").mouseup(resizeElements);
-
 	$('#document-section').on('hidden.bs.collapse', resizeElements);
 	$('#document-section').on('shown.bs.collapse', resizeElements);
 
@@ -174,7 +168,7 @@ window.init = function () {
 				var author = account.getProfile().getName();
 
 				editorCtrl.setCoding(codingID, activeID, getActiveCode().name, author);
-				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
+				documentsView.updateCurrentDocument(editorCtrl.getHTML());
 				easytree.getNode(activeID).codingCount++;
 				rebuildTree();
 			});
@@ -188,7 +182,7 @@ window.init = function () {
 			splitupCoding(slection, activeID).then(function (value) {
 				easytree.getNode(activeID).codingCount--;
 				rebuildTree();
-				documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
+				documentsView.updateCurrentDocument(editorCtrl.getHTML());
 				editorCtrl.addCodingBrackets();
 			});
 
@@ -224,7 +218,7 @@ window.init = function () {
 	}
 
 	document.getElementById('btnTxtSave').onclick = function () {
-		documentsCtrl.saveCurrentDoc(editorCtrl.getHTML());
+		documentsView.updateCurrentDocument(editorCtrl.getHTML());
 	}
 
 	$('#textdocument-menu').on('shown.bs.collapse', function () {
@@ -377,7 +371,7 @@ function removeAllCodings(codingID) {
 		var strippedText = elements.html();
 		if (strippedText !== originalText) {
 			doc.text = strippedText;
-			documentsCtrl.changeDocumentData(doc.id, doc.title, doc.text);
+			documentsView.changeDocumentData(doc);
 			if (activeDocId === doc.id) editorCtrl.setDocumentView(doc);
 		}
 	}
@@ -424,13 +418,12 @@ function fillCodeRelationsView() {
 
 function setDocumentList(projectID) {
 	if (typeof documentsView == 'undefined') {
-		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id}/>, document.getElementById('documentView'));
-		documentsCtrl = new DocumentsCtrl(documentsView, project_id);
+		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id} projectType={project_type}/>, document.getElementById('documentView'));
 		
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}
-		codingsView = new CodingsView(editorCtrl, documentsCtrl);
+		codingsView = new CodingsView(editorCtrl, documentsView);
 
 		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
 		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView}/>, document.getElementById('codeRelationsView'));
@@ -438,7 +431,7 @@ function setDocumentList(projectID) {
 
 	}
 
-	documentsCtrl.setupView(project_id, project_type, report).then(function (codeName) {
+	documentsView.setupView(project_id, project_type, report).then(function (codeName) {
 		addCodingCountToTree();
 		resizeElements();
 	});
