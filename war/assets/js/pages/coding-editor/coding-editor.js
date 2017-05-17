@@ -8,6 +8,7 @@ import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
 import Prompt from '../../common/modals/Prompt';
 import loadGAPIs from '../../common/GAPI';
+import Codesystem from './Codesystem/Codesystem.jsx';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
@@ -50,6 +51,8 @@ var metaModelView;
 var codeRelationsView
 
 var documentsView;
+
+var codesystemView
 
 var editorCtrl = {};
 
@@ -324,7 +327,7 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
-
+			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} codesystemId={codesystem_id}/>, document.getElementById('codesystemView'));
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}
@@ -419,7 +422,7 @@ function fillCodeRelationsView() {
 function setDocumentList(projectID) {
 	if (typeof documentsView == 'undefined') {
 		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id} projectType={project_type}/>, document.getElementById('documentView'));
-		
+
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}
