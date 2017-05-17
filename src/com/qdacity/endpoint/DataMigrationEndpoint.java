@@ -44,10 +44,11 @@ public class DataMigrationEndpoint {
 	//TODO Run everything in taskQUeues!!
 	//assumption: Data only contains ValidationReports that have run an FMeasure!
 	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	migrateValidationReports(user, datastore);
-	migrateDocumentResults(user, datastore);
-	migrateValidationResults(user, datastore);
+	migrateValidationReports(user, datastore); //TODO replace with V4toV5MigrationValidationReports Task
+	migrateDocumentResults(user, datastore); //TODO replace with V4toV5MigrationDocumentResults Task
+	migrateValidationResults(user, datastore); //TODO replace with V4toV5MigrationValidationResults Task
 	//Needs to be done last, as others used ParagraphAgreement
+	//TODO replace with V4toV5MigrationParagraphAgreements Task
 	migrateParagraphAgreements(user, datastore); //Gibt es überhaupt "freie" ParagraphAgreements? Oder sind schon alle abgefertigt mit den ersten drei Schritten?
     }
 
