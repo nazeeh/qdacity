@@ -142,7 +142,8 @@ public class DataMigrationEndpoint {
 	    cells.add(precision);
 	    TabularValidationReportRow newRow = new TabularValidationReportRow(cells);
 	    //TODO Key? kann ich den überhaupt manuell setzen? Das ist doch immer die Sache des DataStores.
-	    //TODO persist newRow
+	    //persist newRow via Peristence manager
+	    getPersistenceManager().makePersistent(newRow);
 	}
     }
 
