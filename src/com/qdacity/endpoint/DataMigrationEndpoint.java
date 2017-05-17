@@ -41,6 +41,7 @@ public class DataMigrationEndpoint {
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
     public void migrateV4toV5(User user) {
+	//TODO Run everything in taskQUeues!!
 	//assumption: Data only contains ValidationReports that have run an FMeasure!
 	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	migrateValidationReports(user, datastore);
@@ -64,9 +65,9 @@ public class DataMigrationEndpoint {
 	for (Entity report : reports) {
 	    //HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
 	    Entity avgParagraphAgreementEntity = (Entity) report.getProperty("paragraphAgreement"); //TODO funktioniert das überhaupt so?
-	    String fmeasure = (String) avgParagraphAgreementEntity.getProperty("fmeasure");
-	    String recall = (String) avgParagraphAgreementEntity.getProperty("recall");
-	    String precision = (String) avgParagraphAgreementEntity.getProperty("precision");
+	    String fmeasure = cleanForCsv((String) avgParagraphAgreementEntity.getProperty("fmeasure"));
+	    String recall = cleanForCsv((String) avgParagraphAgreementEntity.getProperty("recall"));
+	    String precision = cleanForCsv((String) avgParagraphAgreementEntity.getProperty("precision"));
 
 	    report.setProperty("reportRow", "Average," + fmeasure + "," + recall + "," + precision);
 	    report.setProperty("evaluationUnit", "paragraph");
@@ -85,9 +86,9 @@ public class DataMigrationEndpoint {
 	for (Entity result : docResults) {
 	    //HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
 	    Entity paragraphAgreementEntity = (Entity) result.getProperty("paragraphAgreement"); //TODO funktioniert das überhaupt so?
-	    String fmeasure = (String) paragraphAgreementEntity.getProperty("fmeasure");
-	    String recall = (String) paragraphAgreementEntity.getProperty("recall");
-	    String precision = (String) paragraphAgreementEntity.getProperty("precision");
+	    String fmeasure = cleanForCsv((String) paragraphAgreementEntity.getProperty("fmeasure"));
+	    String recall = cleanForCsv((String) paragraphAgreementEntity.getProperty("recall"));
+	    String precision = cleanForCsv((String) paragraphAgreementEntity.getProperty("precision"));
 
 	    String coderName = (String) result.getProperty("name");
 
@@ -107,9 +108,9 @@ public class DataMigrationEndpoint {
 
 	    //HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
 	    Entity paragraphAgreementEntity = (Entity) result.getProperty("paragraphAgreement"); //TODO funktioniert das überhaupt so?
-	    String fmeasure = (String) paragraphAgreementEntity.getProperty("fmeasure");
-	    String recall = (String) paragraphAgreementEntity.getProperty("recall");
-	    String precision = (String) paragraphAgreementEntity.getProperty("precision");
+	    String fmeasure = cleanForCsv((String) paragraphAgreementEntity.getProperty("fmeasure"));
+	    String recall = cleanForCsv((String) paragraphAgreementEntity.getProperty("recall"));
+	    String precision = cleanForCsv((String) paragraphAgreementEntity.getProperty("precision"));
 
 	    String coderName = (String) result.getProperty("name");
 
@@ -167,6 +168,10 @@ public class DataMigrationEndpoint {
 	PreparedQuery pq = datastore.prepare(q);
 
 	return pq.asIterable();
+    }
+    
+    private String cleanForCsv(String dirty) {
+	return dirty.replace(",", "&#44;");
     }
 
 }
