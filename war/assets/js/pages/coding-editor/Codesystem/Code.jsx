@@ -13,8 +13,9 @@ const codeSource = {
 
 const codeTarget = {
 
-  drop(props) {
-    window.alert("dropped in code "+ props.node.name);
+  drop(props, monitor, component) {
+  	const hasDroppedOnChild = monitor.didDrop();
+    if (!hasDroppedOnChild) window.alert("dropped in code "+ props.node.name);
   }
 };
 
