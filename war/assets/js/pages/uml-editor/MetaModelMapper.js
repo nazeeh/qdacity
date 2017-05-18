@@ -4,10 +4,14 @@ import {
 
 export default class MetaModelMapper {
 
-	static getEdgeType(metaModelEntity) {
+	static getEdgeType(metaModelEntity, source, destination, view) {
 		let mode = null;
 
-		switch (metaModelEntity.name) {
+		let relationName = metaModelEntity != null ? metaModelEntity.name : '';
+		let sourceName = source.code.mmElement != null ? source.code.mmElement.name : '';
+		let destinationName = destination.code.mmElement != null ? destination.code.mmElement.name : '';
+		
+		switch (relationName) {
 		case 'is a':
 			{
 				mode = EdgeType.GENERALIZATION;
@@ -20,9 +24,19 @@ export default class MetaModelMapper {
 			}
 		case 'is related to':
 			{
+				if (destinationName == 'Object' || destinationName == 'Actor' || destinationName == 'Place') {
+					view.addClassField(source.node, '+ ' + sourceName + ': type');
+					return;
+				}
+				
 				mode = EdgeType.DIRECTED_ASSOCIATION;
 				break;
 			}
+		case 'influences':
+		{
+			view.addClassMethod(source.node, '+ ' + destinationName + '(type): type');
+			return;
+		}
 		default:
 			{
 				// TODO ERROR?
@@ -31,6 +45,8 @@ export default class MetaModelMapper {
 			}
 		}
 
+
+		view.addEdge(source.node, destination.node, mode);
 		return mode;
 	}
 }

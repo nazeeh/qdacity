@@ -80,6 +80,11 @@ function initGraph(codes, mmEntities) {
 
 	for (var i = 0; i < codes.length; i++) {
 
+		let codeMMEntity = mmEntities.find(function (mmEntity) {
+			return mmEntity.id == codes[i].mmElementID;
+		});
+		codes[i].mmElement = codeMMEntity;
+		
 		var node = view.addNode(codes[i].name);
 		nodes.set(codes[i].codeID, {
 			'code': codes[i],
@@ -106,16 +111,14 @@ function initGraph(codes, mmEntities) {
 	for (var i = 0; i < relations.length; i++) {
 		var relation = relations[i];
 
-		var start = nodes.get(relation.start).node;
-		var end = nodes.get(relation.end).node;
-
+		let startCode = nodes.get(relation.start);
+		let endCode = nodes.get(relation.end);
+		
 		var metaModelEntity = mmEntities.find(function (mmEntity) {
 			return mmEntity.id == relations[i].metaModelEntityId;
 		});
 
-		var edgeType = MetaModelMapper.getEdgeType(metaModelEntity);
-
-		view.addEdge(start, end, edgeType);
+		var edgeType = MetaModelMapper.getEdgeType(metaModelEntity, startCode, endCode, view);
 	}
 
 
