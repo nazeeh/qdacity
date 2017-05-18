@@ -56,36 +56,36 @@ export default class Code extends React.Component {
 					</a>;
 		}
 		
-		renderNode(){
-			return <div className="node" style={{ marginLeft: (this.props.level * 15) + 'px' }}>
+		renderNode(level){
+			return <div 
+					className="node" 
+					style={{ marginLeft: (this.props.level * 15) + 'px' }}
+					key={"CS" + "_" + level}
+				>
 			            {this.renderIcon(this.props.node)}
 			            {this.props.node.name}
 			    </div>
 		}
 		
-		renderNodesRecursive(code, level, parentkey) {
+		renderNodesRecursive(code, level) {
 				const _this = this;
 				let count = 0;
 				const lst = [];
 				var node = this.props.node;
-				const key = (parentkey ? parentkey + '_' : '') + count;
-				const thisNode = _this.renderNode(code, level, key);
+				const thisNode = _this.renderNode(level);
 				var children = "";
 				lst.push(thisNode);
 				if (!node.collapsed && !node.leaf && node.children) {
 					children = node.children.map((childCode, index) => {
 						return (
-							<Code level={level + 1} node={childCode} key={key + "_" +index}></Code>
+							<Code level={level + 1} node={childCode} key={"CS" + "_" + level+ "_" +index}></Code>
 						);
 					});
 				}
 		
 
-				// the children divkey
-				const divkey = (parentkey ? parentkey : '') + 'ch';
-
 				return (
-					<div key={divkey + 'trans'} 
+					<div key={"CS" + "_" + level} 
 				     >
 	    				{lst}
 	    				{children}
@@ -98,7 +98,7 @@ export default class Code extends React.Component {
 			var _this = this;
 			return (
 				<div>
-			            {this.renderNodesRecursive(this.props.node, this.props.level, this.props.key)}
+			            {this.renderNodesRecursive(this.props.node, this.props.level)}
 			    </div>
 			);
 		}

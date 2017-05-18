@@ -22,8 +22,6 @@ export default class Codesystem extends React.Component {
 					}]
 				  }]
 			};
-			this.nodeIconClick = this.nodeIconClick.bind(this);
-			
 			this.init();
 		}
 
@@ -81,7 +79,7 @@ export default class Codesystem extends React.Component {
 
 			const renderRoots = codeSiblings.map((code, index) => {
 					return (
-						<Code level={level} node={code} key={parentkey + "_" +index}></Code>
+						<Code level={level} node={code} key={"CS" + "_" + level + "_"  +index}></Code>
 					);
 				});
 			return (
