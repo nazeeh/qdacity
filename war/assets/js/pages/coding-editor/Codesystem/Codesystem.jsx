@@ -6,8 +6,7 @@ import Code from './Code.jsx';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-@DragDropContext(HTML5Backend)
-export default class Codesystem extends React.Component {
+class Codesystem extends React.Component {
 		constructor(props) {
 			super(props);
 			this.codesystem = {};
@@ -105,3 +104,5 @@ export default class Codesystem extends React.Component {
 			);
 		}
 }
+
+export default DragDropContext(HTML5Backend)(Codesystem);

@@ -1,10 +1,40 @@
 import React from 'react';
 
-import { DragDropContext } from 'react-dnd';
+import PropTypes from 'prop-types';
+import { DragSource } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { DropTarget } from 'react-dnd';
 
-@DragDropContext(HTML5Backend)
-export default class Code extends React.Component {
+const codeSource = {
+  beginDrag() {
+    return {};
+  },
+};
+
+const codeTarget = {
+
+  drop(props) {
+    window.alert("dropped in code "+ props.node.name);
+  }
+};
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
+    isDragging: monitor.isDragging(),
+  };
+}
+
+function collectTarget(connect, monitor) {
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver(),
+    canDrop: monitor.canDrop()
+  };
+}
+
+class Code extends React.Component {
 		constructor(props) {
 			super(props);
 			this.codesystem = {};
@@ -111,7 +141,7 @@ export default class Code extends React.Component {
 				if (!node.collapsed && !node.leaf && node.children) {
 					children = node.children.map((childCode, index) => {
 						return (
-							<Code level={level + 1} node={childCode} selected={this.props.selected} setSelected={this.props.setSelected} key={"CS" + "_" + level+ "_" +index}></Code>
+							<DragAndDropCode level={level + 1} node={childCode} selected={this.props.selected} setSelected={this.props.setSelected} connectDragSource={this.props.connectDragSource} key={"CS" + "_" + level+ "_" +index}></DragAndDropCode>
 						);
 					});
 				}
@@ -127,12 +157,17 @@ export default class Code extends React.Component {
 		};
 		
 		render() {
+			const { connectDragSource, isDragging, connectDropTarget } = this.props;
 			const styles = this.getStyles();
 			var _this = this;
-			return (
+			return connectDropTarget(this.props.connectDragSource(
 				<div>
 			            {this.renderNodesRecursive(this.props.node, this.props.level)}
 			    </div>
-			);
+			));
 		}
 }
+
+const DragSourceCode = DragSource("code", codeSource, collect)(Code)
+const DragAndDropCode = DropTarget("code", codeTarget, collectTarget)(DragSourceCode)
+export default DragAndDropCode
