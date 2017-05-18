@@ -75,7 +75,7 @@ public class DeferredEmailNotification implements DeferredTask {
 				msgBody += "</p>";
 				msgBody += "<p>";
 				msgBody += "<strong>Overall</strong> <br>";
-				FMeasureResult paragraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(result.getReportRow());
+				FMeasureResult paragraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(result.getReportRow()));
 				msgBody += "F-Measure: " + paragraphAgreement.getFMeasure() + "<br>";
 				msgBody += "Recall: " + paragraphAgreement.getRecall() + "<br>";
 				msgBody += "Precision: " + paragraphAgreement.getPrecision() + "<br>";
@@ -88,7 +88,7 @@ public class DeferredEmailNotification implements DeferredTask {
 				for (DocumentResult documentResult : docResults) {
 					msgBody += "<p>";
 					msgBody += "<strong>" + documentResult.getDocumentName() + ":</strong><br>";
-					FMeasureResult documentPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(documentResult.getReportRow());
+					FMeasureResult documentPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResult.getReportRow()));
 					msgBody += "F-Measure: " + documentPA.getFMeasure() + "<br>";
 					msgBody += "Recall: " + documentPA.getRecall() + "<br>";
 					msgBody += "Precision: " + documentPA.getPrecision() + "<br><br>";

@@ -64,7 +64,7 @@ public class FMeasure {
 		FMeasureResult totalAgreement = calculateFMeasure(truePositiveCount, falsePositiveCount, falseNegativeCount);
 		
 
-		docResults.setReportRow(FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, null, coderName));
+		docResults.setReportRow(FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, null, coderName).toString());
 		docResults.setTruePositives(truePositives);
 		docResults.setFalsePositives(falsePositives);
 		docResults.setFalseNegatives(falseNegatives);

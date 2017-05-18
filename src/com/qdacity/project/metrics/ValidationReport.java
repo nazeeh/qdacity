@@ -191,7 +191,7 @@ public class ValidationReport {
 	public void setDocumentResultAverage(Long docID, TabularValidationReportRow averageAgreement) {
 		for (DocumentResult aggregated : documentResults) {
 			if (aggregated.getDocumentID().equals(docID)) {
-				aggregated.setReportRow(averageAgreement);
+				aggregated.setReportRow(averageAgreement.toString());
 			}
 		}
 	}

@@ -52,7 +52,7 @@ public class DocumentResult implements Serializable {
 		dependent = "true")
 	@Column(
 		name = "reportRow")
-	TabularValidationReportRow reportRow;
+	String reportRow;
 
 	@Persistent
 	List<String> truePositives;
@@ -75,7 +75,7 @@ public class DocumentResult implements Serializable {
 		super();
 		this.documentID = copy.documentID;
 		this.documentName = copy.documentName;
-		this.reportRow = new TabularValidationReportRow(copy.reportRow);
+		this.reportRow = copy.reportRow;
 		this.truePositives = copy.truePositives;
 		this.falsePositives = copy.falsePositives;
 		this.falseNegatives = copy.falseNegatives;
@@ -121,11 +121,11 @@ public class DocumentResult implements Serializable {
 		this.documentName = documentName;
 	}
 
-        public TabularValidationReportRow getReportRow() {
+        public String getReportRow() {
 		return reportRow;
 	}
 
-	public void setReportRow(TabularValidationReportRow reportRow) {
+	public void setReportRow(String reportRow) {
 	    this.reportRow = reportRow;
 	}
 

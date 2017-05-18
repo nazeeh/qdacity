@@ -185,7 +185,7 @@ public class DeferredEvaluation implements DeferredTask {
 	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
 	Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
 	for (ValidationResult validationResult : validationResults) {
-	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(validationResult.getReportRow());
+	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(validationResult.getReportRow()));
 	    if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) {
 		validationCoderAvg.add(resultParagraphAgreement);
 	    }
@@ -199,7 +199,7 @@ public class DeferredEvaluation implements DeferredTask {
 		documentResultForAggregation.setDocumentID(revisionDocumentID);
 		report.addDocumentResult(documentResultForAggregation);
 
-		FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(documentResultForAggregation.getReportRow());
+		FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResultForAggregation.getReportRow()));
 
 		if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
 		    List<FMeasureResult> agreementList = agreementByDoc.get(revisionDocumentID);

@@ -72,7 +72,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	    for (TextDocument recoded : recodedDocs) {
 		if (original.getTitle().equals(recoded.getTitle())) {
 		    DocumentResult documentAgreement = FMeasure.calculateParagraphAgreement(original, recoded, validationProject.getCreatorName());
-		    documentAgreements.add(FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(documentAgreement.getReportRow()));
+		    documentAgreements.add(FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentAgreement.getReportRow())));
 
 		    // valResult.addDocumentResult(documentAgreement);
 		    documentAgreement.setValidationResultID(valResult.getId());
@@ -90,7 +90,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	FMeasureResult totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
 	TabularValidationReportRow fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, validationReportId, validationProject.getCreatorName());
-	valResult.setReportRow(fmeasureRow);
+	valResult.setReportRow(fmeasureRow.toString());
 
 	valResult.setRevisionID(validationProject.getRevisionID());
 	valResult.setValidationProjectID(validationProject.getId());

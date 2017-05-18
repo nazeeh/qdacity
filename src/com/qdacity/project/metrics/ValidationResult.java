@@ -1,6 +1,5 @@
 package com.qdacity.project.metrics;
 
-import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,7 @@ public class ValidationResult implements Serializable {
 		dependent = "true")
 	@Column(
 		name = "reportRow") //TODO Migration: paragraphAgreement wird zu reportRow
-	TabularValidationReportRow reportRow;
+	String reportRow;
 
 	@Persistent
 	@OneToMany(
@@ -92,17 +91,18 @@ public class ValidationResult implements Serializable {
 		this.revisionID = ID;
 	}
 
-	public TabularValidationReportRow getReportRow() {
+	public String getReportRow() {
 		return reportRow;
 	}
 
-	public void setReportRow(TabularValidationReportRow reportRow) {
+	public void setReportRow(String reportRow) {
 	    this.reportRow = reportRow;
 	}
 	
 	public String getName() {
 	    if(reportRow != null) {
-		return reportRow.getCells().get(0);
+		TabularValidationReportRow row = new TabularValidationReportRow(reportRow);
+		return row.getCells().get(0);
 	    }
 	    else {
 		return "";

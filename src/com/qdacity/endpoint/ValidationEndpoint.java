@@ -63,11 +63,6 @@ public class ValidationEndpoint {
 			if(reports != null) {
 			    for (ValidationReport validationReport : reports) {
 				    List<DocumentResult> docresults = validationReport.getDocumentResults();
-				    if (docresults.size() > 0) {
-					    for (DocumentResult documentResult : docresults) {
-						documentResult.getReportRow().getCells();
-					    }
-				    }
 			    }
 			}
 		} finally {
@@ -118,13 +113,6 @@ public class ValidationEndpoint {
 
 			results = (List<ValidationResult>) q.execute(reportID);
 
-			// Lazy fetch
-			for (ValidationResult result : results) {
-			    if(result.getReportRow()!=null) {
-				result.getReportRow().getCells();
-			    }
-			}
-
 		} finally {
 			mgr.close();
 		}
@@ -149,11 +137,6 @@ public class ValidationEndpoint {
 
 			results = (List<DocumentResult>) q.execute(validationRresultID);
 
-			// Lazy fetch
-			for (DocumentResult result : results) {
-				result.getReportRow().getCells();
-				result.getAgreementMap();
-			}
 
 		} finally {
 			mgr.close();
@@ -256,7 +239,6 @@ public class ValidationEndpoint {
 			List<DocumentResult> docResults = report.getDocumentResults();
 			for (DocumentResult documentResult : docResults) {
 				documentResult.getAgreementMap();
-				documentResult.getReportRow().getCells();
 			}
 
 			// Delete the actual report
