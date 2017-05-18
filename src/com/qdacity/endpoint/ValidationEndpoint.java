@@ -70,30 +70,6 @@ public class ValidationEndpoint {
 		}
 		return reports;
 	}
-    
-    @SuppressWarnings("unchecked")
-    @ApiMethod(
-	    name = "validation.listTabularReportRows",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
-    public List<TabularValidationReportRow> listTabularReportsRows(@Named("validationReportId") Long ValidationReportId, User user) throws UnauthorizedException {
-	List<TabularValidationReportRow> tabularReportRows = new ArrayList<>();
-	PersistenceManager mgr = getPersistenceManager();
-	try {
-	    Query q;
-	    q = mgr.newQuery(TabularValidationReportRow.class, " validationReportId  == :validationReportId ");
-
-	    Map<String, Long> params = new HashMap<>();
-	    params.put("validationReportId", ValidationReportId);
-
-	    tabularReportRows = (List<TabularValidationReportRow>) q.executeWithMap(params);
-	} finally {
-	    mgr.close();
-	}
-
-	return tabularReportRows;
-    }
 
 	@SuppressWarnings("unchecked")
 	@ApiMethod(
@@ -243,12 +219,6 @@ public class ValidationEndpoint {
 
 			// Delete the actual report
 			mgr.deletePersistent(report);
-			// Delete Tabular Rows if existent
-			List<TabularValidationReportRow> tabularRows = listTabularReportsRows(repID, user);
-			for(TabularValidationReportRow row : tabularRows) {
-			    TabularValidationReportRow rowToDelete = mgr.getObjectById(TabularValidationReportRow.class, row.getKey());
-			    mgr.deletePersistent(rowToDelete);
-			}
 
 		} finally {
 			mgr.close();

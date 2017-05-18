@@ -13,13 +13,11 @@ import java.util.logging.Logger;
 public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvaluation {
 
     private final List<ReliabilityData> rData;
-    private final Long reportId;
     private final List<String> row;
 
-    public DeferredKrippendorffsAlphaEvaluation(List<ReliabilityData> rData, ValidationProject validationProject, User user, Long tabularValidationReportId, String documentTitle) {
-	super(validationProject, user);
+    public DeferredKrippendorffsAlphaEvaluation(List<ReliabilityData> rData, ValidationProject validationProject, User user, Long validationReportId, String documentTitle) {
+	super(validationProject, user, validationReportId);
 	this.rData = rData;
-	reportId = tabularValidationReportId;
 	row = new ArrayList<>();
 	row.add(documentTitle);
     }
@@ -31,11 +29,11 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 	    KrippendorffsAlphaCoefficient kac = new KrippendorffsAlphaCoefficient(reliabilityData, 2); //We are only checking one code at a time. So it is either set or not set.
 	    double result = kac.compute();
 	    row.add(result+"");
-	    Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: " + result + " adding to TabularValidationResult");
+	    Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: " + result + " adding to ValidationResult");
 	}
-	TabularValidationReportRow myRowResult = new TabularValidationReportRow(reportId);
-	myRowResult.setRow(row);
-	mgr.makePersistent(myRowResult);
+	valResult.setReportRow(new TabularValidationReportRow(row).toString());
+
+
     }
 
 }

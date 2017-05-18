@@ -58,11 +58,12 @@ public class DeferredAlgorithmTaskQueue {
      * @param amountValidationProjects how many tasks are you waiting for
      * @param validationReportId from which validationReport
      * @param user user which has the rights to see the results of the task
+     * @return the ValidationResults created by the tasks.
      * @throws ExecutionException
      * @throws UnauthorizedException
      * @throws InterruptedException
      */
-    public void waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
+    public List<ValidationResult> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
 	Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
 
 	for (Future<TaskHandle> future : futures) {
@@ -82,20 +83,8 @@ public class DeferredAlgorithmTaskQueue {
 	}
 	Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
 	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
-    }
-    
-    public List<TabularValidationReportRow> waitForTasksWhichCreateAnTabularValidationReportRowToFinish(int amountRowsToWaitFor, Long validationReportId, User user) throws UnauthorizedException, InterruptedException {
-	ValidationEndpoint ve = new ValidationEndpoint();
 	
-	List<TabularValidationReportRow> rows = ve.listTabularReportsRows(validationReportId, user);
-	while(rows.size() < amountRowsToWaitFor) {
-	    Thread.sleep(SLEEP_TIME);
-	    rows = ve.listTabularReportsRows(validationReportId, user);
-	}
-	Logger.getLogger("logger").log(Level.INFO, "Report "+validationReportId+" finished");
-	
-	return rows;
-	
+	return valResults;
     }
 
     private Future<TaskHandle> addToTaskQueue(DeferredAlgorithmEvaluation algorithmTask) {

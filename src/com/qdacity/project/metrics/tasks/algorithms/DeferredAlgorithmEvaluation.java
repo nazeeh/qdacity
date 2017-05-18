@@ -4,6 +4,7 @@ import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.metrics.ValidationResult;
 import javax.jdo.PersistenceManager;
 
 /**
@@ -16,9 +17,13 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     protected PersistenceManager mgr;
     protected final ValidationProject validationProject;
     protected final User user;
+    protected final Long validationReportId;
 
-    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user) {
+    protected ValidationResult valResult;
+
+    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId) {
 	this.validationProject = validationProject;
+	this.validationReportId = validationReportId;
 	this.user = user;
     }
 
@@ -27,7 +32,13 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	try {
 	    mgr = getPersistenceManager();
 	    mgr.setMultithreaded(true);
+	    valResult = new ValidationResult();
+	    valResult.setRevisionID(validationProject.getRevisionID());
+	    valResult.setValidationProjectID(validationProject.getId());
+	    valResult.setReportID(validationReportId);
+	    mgr.makePersistent(valResult); // make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	    runAlgorithm();
+	    mgr.makePersistent(valResult);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	} finally {

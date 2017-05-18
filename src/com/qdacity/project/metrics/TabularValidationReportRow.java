@@ -1,34 +1,19 @@
 package com.qdacity.project.metrics;
 
-import com.google.appengine.api.datastore.Key;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
 /**
  * A Row for the generic data structure TabularValidationReport. Make sure to
  * set a tabularValidationReportId
  */
-@PersistenceCapable(
-	identityType = IdentityType.APPLICATION)
 public class TabularValidationReportRow implements Serializable {
 
     private final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
 
-    public TabularValidationReportRow(Long validationReportId) {
-	assert (this.validationReportId != null);
-	this.validationReportId = validationReportId;
-    }
-
     public TabularValidationReportRow(TabularValidationReportRow copy) {
 	super();
 	this.rowCsvString = copy.rowCsvString;
-	this.validationReportId = copy.validationReportId;
     }
 
     /**
@@ -46,24 +31,7 @@ public class TabularValidationReportRow implements Serializable {
 	this.setRow(cells);
    }
 
-    @PrimaryKey
-    @Persistent(
-	    valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Key key;
-
-    @Persistent
-    Long validationReportId;
-
-    @Persistent
     String rowCsvString; //Contains the row data as CSV String
-
-    public Long getValidationReportId() {
-	return validationReportId;
-    }
-
-    public void setValidationReportId(Long validationReportId) {
-	this.validationReportId = validationReportId;
-    }
 
     /**
      * Retrieve the Row as List of Strings representing a cell.
@@ -95,10 +63,6 @@ public class TabularValidationReportRow implements Serializable {
     @Override
     public String toString() {
 	return this.rowCsvString;
-    }
-
-    public Key getKey() {
-	return key;
     }
 
 }

@@ -216,11 +216,11 @@ public class DeferredEvaluation implements DeferredTask {
 	for (Long docID : agreementByDoc.keySet()) {
 	    FMeasureResult avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
 	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getFMeasure());
-	    report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgDocAgreement, null, "Average"));
+	    report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgDocAgreement, "Average"));
 	}
 
 	FMeasureResult avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
-	report.setAverageAgreementRow(FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgReportAgreement, null, "Average"));
+	report.setAverageAgreementRow(FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgReportAgreement, "Average"));
     }
 
     private PersistenceManager pm = null;
@@ -234,7 +234,7 @@ public class DeferredEvaluation implements DeferredTask {
 
     /**
      * Calculate K's Alpha between all given users for every given document for
-     * every code in the codesystem for the given revision.
+     * every code in the codesystem for the given revisioin.
      *
      * @throws UnauthorizedException if user can not see documents of other
      * users
@@ -272,7 +272,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	List<TabularValidationReportRow> resultRows = taskQueue.waitForTasksWhichCreateAnTabularValidationReportRowToFinish(kAlphaTasks.size(), validationReport.getId(), user);
+	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), validationReport.getId(), user);
 
 	validationReport.setAverageAgreement(calculateAverageAgreement(resultRows));
 
@@ -288,15 +288,15 @@ public class DeferredEvaluation implements DeferredTask {
      * @param myRows the rows where you want to calculate the average
      * @return a new row containing the average
      */
-    private TabularValidationReportRow calculateAverageAgreement(List<TabularValidationReportRow> myRows) {
+    private TabularValidationReportRow calculateAverageAgreement(List<ValidationResult> myRows) {
 	List<String> averageColumns = new ArrayList<>();
 	averageColumns.add("AVERAGE");
 	if (myRows.size() > 0) {
-	    List<String> masterCells = myRows.get(0).getCells();
+	    List<String> masterCells = new TabularValidationReportRow(myRows.get(0).getReportRow()).getCells();
 	    for(int i = 1; i<masterCells.size(); i++) { //SKIP first cell as it is just label
 		double sum = 0;
-		for (TabularValidationReportRow row : myRows) {
-		    sum += new Double(row.getCells().get(i));
+		for (ValidationResult row : myRows) {
+		    sum += new Double(new TabularValidationReportRow(row.getReportRow()).getCells().get(i));
 		}
 		double average = sum / myRows.size();
 		averageColumns.add(average+"");

@@ -18,7 +18,6 @@ import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
-import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.tasks.DeferredDocResults;
 
@@ -26,20 +25,15 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
     List<Long> docIDs;
     List<Long> orignalDocIDs;
-    protected ValidationResult valResult;
-    protected final Long validationReportId;
 
     public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> docIDs, List<Long> orignalDocIDs, Long validationReportID, User user) {
-	super(validationPrj, user);
-	this.validationReportId = validationReportID;
+	super(validationPrj, user,validationReportID);
 	this.docIDs = docIDs; // FIXME dont need anymore, because only list of relevant textdocumentIDs is passed?
 	this.orignalDocIDs = orignalDocIDs;
     }
 
     @Override
     protected void runAlgorithm() throws Exception {
-	valResult = new ValidationResult();
-	mgr.makePersistent(valResult); // make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	TextDocumentEndpoint tde = new TextDocumentEndpoint();
 
 	Collection<TextDocument> originalDocs = new ArrayList<>();
@@ -89,13 +83,8 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	}
 
 	FMeasureResult totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
-	TabularValidationReportRow fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, validationReportId, validationProject.getCreatorName());
+	TabularValidationReportRow fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, validationProject.getCreatorName());
 	valResult.setReportRow(fmeasureRow.toString());
-
-	valResult.setRevisionID(validationProject.getRevisionID());
-	valResult.setValidationProjectID(validationProject.getId());
-	valResult.setReportID(validationReportId);
-	mgr.makePersistent(valResult);
     }
 
 }

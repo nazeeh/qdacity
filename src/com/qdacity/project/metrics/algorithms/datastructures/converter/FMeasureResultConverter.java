@@ -30,17 +30,14 @@ public class FMeasureResultConverter {
 	return paragraphAgreement;
     }
     
-    public static TabularValidationReportRow fmeasureResultToTabularValidationReportRow(FMeasureResult fmeasureResult, Long tabularValidationReportId, String coderName) {
-	TabularValidationReportRow tabularValidationReportRow = new TabularValidationReportRow(tabularValidationReportId);
-	
+    public static TabularValidationReportRow fmeasureResultToTabularValidationReportRow(FMeasureResult fmeasureResult, String coderName) {	
 	List<String> columns = new ArrayList<>();
 	columns.add(coderName);
 	columns.add(fmeasureResult.getFMeasure()+"");
 	columns.add(fmeasureResult.getRecall()+"");
 	columns.add(fmeasureResult.getPrecision()+"");
-	tabularValidationReportRow.setRow(columns);
 	
-	return tabularValidationReportRow;
+	return 	new TabularValidationReportRow(columns);
     }
     
 }
