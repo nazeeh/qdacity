@@ -17,8 +17,11 @@ export default class Code extends React.Component {
 
 		getStyles() {
 			return {
-				expander: {
+				noCaretPadding: {
 					paddingLeft: "18px"
+				},
+				caretSelected: {
+					color: "#fff"
 				},
 				node: { 
 					fontFamily: "tahoma, arial, helvetica",
@@ -26,15 +29,8 @@ export default class Code extends React.Component {
 					marginLeft: (this.props.level * 15) + 'px' 
 				}, 
 				nodeSelected: {
-					marginTop: '5px' ,
 					color: "#fff",
-					backgroundColor: "#337ab7",
-					borderLeftStyle: "solid",
-					borderLeftWidth: "thick",
-					borderLeftColor: "#fff",
-					borderRightStyle: "solid",
-					borderRightWidth: "thick",
-					borderRightColor: "#fff",
+					backgroundColor: "#337ab7"
 				}
 			}
 		}
@@ -44,6 +40,14 @@ export default class Code extends React.Component {
 			var nodeStyles = styles.node;
 			if (this.props.node == this.props.selected) Object.assign(nodeStyles, styles.nodeSelected);
 			return nodeStyles;
+		}
+		
+		styleExpander(){
+			var styles = this.getStyles();
+			var caretStyles = {};
+			if (!this.hasChildren()) Object.assign(caretStyles, styles.noCaretPadding);
+			if (this.props.node == this.props.selected) Object.assign(caretStyles, styles.caretSelected);
+			return caretStyles;
 		}
 		
 		nodeIconClick(node) {
@@ -64,18 +68,21 @@ export default class Code extends React.Component {
 			node.collapsed = true;
 			this.forceUpdate();
 		}
+		
+		hasChildren(){
+			return this.props.node.children.length != 0;
+		}
 
 		renderIcon(node) {
-			if (this.props.node.children.length == 0) {
-				return <a className="node-link" style={this.getStyles().expander} ></a>
+			var caret = ""
+			if (this.hasChildren()) {
+				var direction = this.props.node.collapsed ?  'right' : 'down';
+				var className = 'fa fa-caret-' + direction + ' fa-fw';
+				caret = <i className={className} />
 			}
 			
-		    var direction = this.props.node.collapsed ?  'right' : 'down';
-			
-		    var className = 'fa fa-caret-' + direction + ' fa-fw';
-			
-		    return <a className="node-link" onClick={() => this.nodeIconClick(node)}>
-						<i className={className} />
+		    return <a className="node-link" onClick={() => this.nodeIconClick(node)} style={this.styleExpander()}>
+						{caret}
 					</a>;
 		}
 		
@@ -83,9 +90,10 @@ export default class Code extends React.Component {
 		
 		renderNode(level){
 			return <div 
-					className="node" 
+					className="clickable node" 
 					style={this.styleNode()}
 					key={"CS" + "_" + level}
+					onClick={() => this.props.setSelected(this.props.node)}
 				>
 			            {this.renderIcon(this.props.node)}
 			            {this.props.node.name}
@@ -103,7 +111,7 @@ export default class Code extends React.Component {
 				if (!node.collapsed && !node.leaf && node.children) {
 					children = node.children.map((childCode, index) => {
 						return (
-							<Code level={level + 1} node={childCode} key={"CS" + "_" + level+ "_" +index}></Code>
+							<Code level={level + 1} node={childCode} selected={this.props.selected} setSelected={this.props.setSelected} key={"CS" + "_" + level+ "_" +index}></Code>
 						);
 					});
 				}

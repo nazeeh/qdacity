@@ -16,6 +16,7 @@ export default class Codesystem extends React.Component {
 				codesystem: []
 			};
 			this.init();
+			this.setSelected = this.setSelected.bind(this);
 		}
 
 		getStyles() {
@@ -70,13 +71,19 @@ export default class Codesystem extends React.Component {
 				currentCode.children = [];
 			}
 		}
+		
+		setSelected(code){
+			this.setState({
+				selected: code
+			});
+		}
 
 		renderNodes(codeSiblings, level) {
 			const _this = this;
 
 			const renderRoots = codeSiblings.map((code, index) => {
 					return (
-						<Code level={level} node={code} selected={this.state.selected} key={"CS" + "_" + level + "_"  +index}></Code>
+						<Code level={level} node={code} selected={this.state.selected} setSelected={this.setSelected} key={"CS" + "_" + level + "_"  +index}></Code>
 					);
 				});
 			return (
