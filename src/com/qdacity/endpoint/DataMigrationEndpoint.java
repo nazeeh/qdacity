@@ -49,7 +49,7 @@ public class DataMigrationEndpoint {
 	migrateValidationResults(user, datastore); //TODO replace with V4toV5MigrationValidationResults Task
 	//Needs to be done last, as others used ParagraphAgreement
 	//TODO replace with V4toV5MigrationParagraphAgreements Task
-	migrateParagraphAgreements(user, datastore); //Gibt es überhaupt "freie" ParagraphAgreements? Oder sind schon alle abgefertigt mit den ersten drei Schritten?
+	//migrateParagraphAgreements(user, datastore); //Gibt es überhaupt "freie" ParagraphAgreements? Oder sind schon alle abgefertigt mit den ersten drei Schritten?
     }
 
     private static PersistenceManager getPersistenceManager() {
@@ -74,8 +74,9 @@ public class DataMigrationEndpoint {
 	    report.setProperty("evaluationUnit", "paragraph");
 	    report.setProperty("avgAgreementHead", standardFMeasureHeader.toString());
 	    report.setProperty("detailedAgreementHead", standardFMeasureHeader.toString());
-	    report.removeProperty("paragraphAgreement");
+	    report.removeProperty("paragraphAgreement"); //muss man das tun?
 	    //TODO das ParagraphAgreement selbst muss man hier noch löschen! (oder passiert das automatisch?)
+	    datastore.delete(avgParagraphAgreementEntity.getKey());
 	}
 	//Persist all changes at once
 	datastore.put(reports);
@@ -124,7 +125,7 @@ public class DataMigrationEndpoint {
 	//Persist all changes at once
 	datastore.put(validationResults); //Funktioniert das so?
     }
-
+/*
     private void migrateParagraphAgreements(User user, DatastoreService datastore) {
 	//TODO all ParagraphAgreement -> TabularValidationReportRow
 	//As the Entity name changed this method looks different from the ones above!
@@ -147,7 +148,7 @@ public class DataMigrationEndpoint {
 	    getPersistenceManager().makePersistent(newRow);
 	}
     }
-
+*/
     private TabularValidationReportRow createStandardFMeasureHeader() {
 	List<String> cells = new ArrayList<>();
 	cells.add("Coder");
