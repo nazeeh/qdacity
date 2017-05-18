@@ -6,16 +6,23 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { DropTarget } from 'react-dnd';
 
 const codeSource = {
-  beginDrag() {
-    return {};
+  beginDrag(props, monitor, component) {
+    return {codeId: props.node.codeID};
   },
+  endDrag(props, monitor, component){
+
+  			window.alert("code " +props.node.name +" dropped in code "+ monitor.getDropResult().targetID);
+
+  }
 };
 
 const codeTarget = {
 
   drop(props, monitor, component) {
   	const hasDroppedOnChild = monitor.didDrop();
-    if (!hasDroppedOnChild) window.alert("dropped in code "+ props.node.name);
+    if (!hasDroppedOnChild){
+     	return {targetID: props.node.name};
+     }
   }
 };
 
