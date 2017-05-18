@@ -19,8 +19,31 @@ export default class Code extends React.Component {
 			return {
 				expander: {
 					paddingLeft: "18px"
+				},
+				node: { 
+					fontFamily: "tahoma, arial, helvetica",
+					fontSize: "10pt",
+					marginLeft: (this.props.level * 15) + 'px' 
+				}, 
+				nodeSelected: {
+					marginTop: '5px' ,
+					color: "#fff",
+					backgroundColor: "#337ab7",
+					borderLeftStyle: "solid",
+					borderLeftWidth: "thick",
+					borderLeftColor: "#fff",
+					borderRightStyle: "solid",
+					borderRightWidth: "thick",
+					borderRightColor: "#fff",
 				}
 			}
+		}
+		
+		styleNode(){
+			var styles = this.getStyles();
+			var nodeStyles = styles.node;
+			if (this.props.node == this.props.selected) Object.assign(nodeStyles, styles.nodeSelected);
+			return nodeStyles;
 		}
 		
 		nodeIconClick(node) {
@@ -56,10 +79,12 @@ export default class Code extends React.Component {
 					</a>;
 		}
 		
+		
+		
 		renderNode(level){
 			return <div 
 					className="node" 
-					style={{ marginLeft: (this.props.level * 15) + 'px' }}
+					style={this.styleNode()}
 					key={"CS" + "_" + level}
 				>
 			            {this.renderIcon(this.props.node)}
