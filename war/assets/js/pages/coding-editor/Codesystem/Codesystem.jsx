@@ -12,15 +12,8 @@ export default class Codesystem extends React.Component {
 			super(props);
 			this.codesystem = {};
 			this.state = {
-				 codesystem: [{
-					name: "Codesystem",
-					collapsed: false,
-					children:[{
-						name: "subcode",
-						collapsed: false,
-						children:[]
-					}]
-				  }]
+				slected: {},
+				codesystem: []
 			};
 			this.init();
 		}
@@ -51,8 +44,12 @@ export default class Codesystem extends React.Component {
 					rootCodes[i].collapsed = false;
 					_this.buildTree(rootCodes[i], codes, false)
 				}
-				
-				_this.setState({ codesystem : rootCodes});
+				var selected = {}
+				if (rootCodes.length > 0 ) selected = rootCodes[0];
+				_this.setState({ 
+					codesystem : rootCodes,
+					selected: selected
+				});
 			});
 		}
 		
