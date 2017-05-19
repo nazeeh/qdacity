@@ -16,6 +16,7 @@ class Codesystem extends React.Component {
 			};
 			this.init();
 			this.setSelected = this.setSelected.bind(this);
+			this.relocateCode = this.relocateCode.bind(this);
 		}
 
 		getStyles() {
@@ -76,13 +77,32 @@ class Codesystem extends React.Component {
 				selected: code
 			});
 		}
+		
+		getCodeByID(codeArr, codeID){
+			var _this = this;
+			var found;
+			for (var i in codeArr){
+				var code = codeArr[i];
+				if (code.codeID == codeID){
+					return code;
+				}
+				found = _this.getCodeByID(code.children, codeID);
+					if (found) return found;				
+			}
+		}
+		
+		relocateCode(movingNode, targetID){
+			window.alert("code " +movingNode.name +" dropped in code "+ targetID);
+			var targetNode = this.getCodeByID(this.state.codesystem, targetID);
+			window.alert("code " +movingNode.name +" dropped in code "+ targetNode.name);
+		}
 
 		renderNodes(codeSiblings, level) {
 			const _this = this;
 
 			const renderRoots = codeSiblings.map((code, index) => {
 					return (
-						<Code level={level} node={code} selected={this.state.selected} setSelected={this.setSelected} key={"CS" + "_" + level + "_"  +index}></Code>
+						<Code level={level} node={code} selected={this.state.selected} setSelected={this.setSelected} relocateCode={this.relocateCode} key={"CS" + "_" + level + "_"  +index}></Code>
 					);
 				});
 			return (

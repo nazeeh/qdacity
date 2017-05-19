@@ -10,9 +10,7 @@ const codeSource = {
     return {codeId: props.node.codeID};
   },
   endDrag(props, monitor, component){
-
-  			window.alert("code " +props.node.name +" dropped in code "+ monitor.getDropResult().targetID);
-
+  	props.relocateCode(props.node, monitor.getDropResult().targetID);
   }
 };
 
@@ -21,7 +19,7 @@ const codeTarget = {
   drop(props, monitor, component) {
   	const hasDroppedOnChild = monitor.didDrop();
     if (!hasDroppedOnChild){
-     	return {targetID: props.node.name};
+     	return {targetID: props.node.codeID};
      }
   }
 };
@@ -149,7 +147,7 @@ class Code extends React.Component {
 				if (!node.collapsed && !node.leaf && node.children) {
 					children = node.children.map((childCode, index) => {
 						return (
-							<DragAndDropCode level={level + 1} node={childCode} selected={this.props.selected} setSelected={this.props.setSelected} connectDragSource={this.props.connectDragSource} key={"CS" + "_" + level+ "_" +index}></DragAndDropCode>
+							<DragAndDropCode level={level + 1} node={childCode} selected={this.props.selected} setSelected={this.props.setSelected} relocateCode={this.props.relocateCode}  key={"CS" + "_" + level+ "_" +index}></DragAndDropCode>
 						);
 					});
 				}
