@@ -6,6 +6,9 @@ import Code from './Code.jsx';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
+
+
 class Codesystem extends React.Component {
 		constructor(props) {
 			super(props);
@@ -91,16 +94,34 @@ class Codesystem extends React.Component {
 			}
 		}
 		
+		updateSubCodeIDs(code){
+			code.subCodesIDs = [];
+			code.children.forEach((childCode) =>{
+				code.subCodesIDs.push(childCode.codeID);
+			})
+		}
+		
 		relocateCode(movingNode, targetID){
+			var relocationPromise = CodesEndpoint.relocateCode(movingNode.id, targetID);
 			var targetNode = this.getCodeByID(this.state.codesystem, targetID);
 			var sourceNode = this.getCodeByID(this.state.codesystem, movingNode.parentID);
 			var indexSrc = sourceNode.children.indexOf(movingNode);
-			if (indexSrc > -1) sourceNode.children.splice(indexSrc, 1);
 			
-			movingNode.parentID = targetID;
+			var _this = this;
+			relocationPromise.then(function (resp) {
 			
-			targetNode.children.push(movingNode);
-			this.forceUpdate();
+				sourceNode.children.splice(indexSrc, 1);
+				_this.updateSubCodeIDs(sourceNode);
+				
+				movingNode.parentID = targetID;
+				
+				targetNode.children.push(movingNode);
+				_this.updateSubCodeIDs(targetNode);
+				
+				_this.forceUpdate();
+				console.log("Updated logation of code:" + resp.id + " |  " + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+			});
+			 
 			
 		}
 
