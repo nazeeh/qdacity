@@ -92,9 +92,16 @@ class Codesystem extends React.Component {
 		}
 		
 		relocateCode(movingNode, targetID){
-			window.alert("code " +movingNode.name +" dropped in code "+ targetID);
 			var targetNode = this.getCodeByID(this.state.codesystem, targetID);
-			window.alert("code " +movingNode.name +" dropped in code "+ targetNode.name);
+			var sourceNode = this.getCodeByID(this.state.codesystem, movingNode.parentID);
+			var indexSrc = sourceNode.children.indexOf(movingNode);
+			if (indexSrc > -1) sourceNode.children.splice(indexSrc, 1);
+			
+			movingNode.parentID = targetID;
+			
+			targetNode.children.push(movingNode);
+			this.forceUpdate();
+			
 		}
 
 		renderNodes(codeSiblings, level) {
