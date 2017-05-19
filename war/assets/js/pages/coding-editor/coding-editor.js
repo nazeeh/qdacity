@@ -327,7 +327,7 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
-			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} codesystemId={codesystem_id} removeAllCodings={removeAllCodings}/>, document.getElementById('codesystemView'));
+			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} account={account} codesystemId={codesystem_id} removeAllCodings={removeAllCodings}/>, document.getElementById('codesystemView'));
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}

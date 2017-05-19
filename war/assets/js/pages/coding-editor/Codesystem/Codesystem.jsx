@@ -6,6 +6,8 @@ import Code from './Code.jsx';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+import CodesystemToolbar from "./CodesystemToolbar.jsx"
+
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
 
@@ -21,16 +23,15 @@ class Codesystem extends React.Component {
 			this.setSelected = this.setSelected.bind(this);
 			this.relocateCode = this.relocateCode.bind(this);
 			this.removeCode = this.removeCode.bind(this);
+			this.insertCode = this.insertCode.bind(this);
 		}
 
 		getStyles() {
 			return {
-				lightButton: {
-					backgroundColor: "#FAFAFA",
-					borderLeftStyle: "solid",
-					borderLeftWidth: "thick",
-					borderLeftColor: "#337ab7",
-					marginBottom: "3px"
+				toolBar: {
+					textAlign: "center",
+					position: "relative",
+					backgroundColor: "#e7e7e7"
 				}
 			}
 		}
@@ -97,22 +98,26 @@ class Codesystem extends React.Component {
 		
 		removeCode(){
 			var code = this.state.selected; 
-			if (code.codeID == 1) return; //root should not be removed
-			 
-			var _this = this;
-			CodesEndpoint.removeCode(code).then(function (resp) {
-				_this.props.removeAllCodings(code.codeID);
-				var parent = _this.getCodeByID(_this.state.codesystem, code.parentID)
-				var index = parent.children.indexOf(code);
-				parent.children.splice(index, 1);
-				_this.setState({
-					selected: parent
-				})
-				
-			});
+
+			this.props.removeAllCodings(code.codeID);
+			var parent = this.getCodeByID(this.state.codesystem, code.parentID)
+			var index = parent.children.indexOf(code);
+			parent.children.splice(index, 1);
+			this.setState({
+				selected: parent
+			})
 		}
 		
-		
+		insertCode(code){
+			code.children = [];
+			this.state.selected.children.push(code);
+			this.updateSubCodeIDs(this.state.selected);
+			var _this = this;
+			CodesEndpoint.updateCode(this.state.selected).then(function (resp2) {
+				_this.forceUpdate();
+			});
+			
+		}
 		
 		updateSubCodeIDs(code){
 			code.subCodesIDs = [];
@@ -168,7 +173,12 @@ class Codesystem extends React.Component {
 			const styles = this.getStyles();
 			var _this = this;
 			return (
-				<div className="codesystemView">{this.renderCodesystem()}</div>
+				<div>
+					<div style={styles.toolBar}>
+						<CodesystemToolbar selected={this.state.selected} account={this.props.account} removeCode={this.removeCode} insertCode={this.insertCode}></CodesystemToolbar>
+					</div>
+					<div className="codesystemView">{this.renderCodesystem()}</div>
+				</div>
 			);
 		}
 }
