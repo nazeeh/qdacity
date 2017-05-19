@@ -105,7 +105,10 @@ class Codesystem extends React.Component {
 				var parent = _this.getCodeByID(_this.state.codesystem, code.parentID)
 				var index = parent.children.indexOf(code);
 				parent.children.splice(index, 1);
-				_this.forceUpdate();
+				_this.setState({
+					selected: parent
+				})
+				
 			});
 		}
 		
