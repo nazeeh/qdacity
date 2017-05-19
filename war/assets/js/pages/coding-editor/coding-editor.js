@@ -156,7 +156,7 @@ window.init = function () {
 	$('#document-section').on('shown.bs.collapse', resizeElements);
 
 	document.getElementById('btnRemoveCode').onclick = function () {
-		deleteCode();
+		codesystemView.child.removeCode(); // codesystem is wrapped in DragAndDropContext. actual component is in child
 	}
 
 	document.getElementById('btnHideFooter').onclick = function () {
@@ -327,7 +327,7 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
-			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} codesystemId={codesystem_id}/>, document.getElementById('codesystemView'));
+			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} codesystemId={codesystem_id} removeAllCodings={removeAllCodings}/>, document.getElementById('codesystemView'));
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}

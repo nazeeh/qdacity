@@ -20,6 +20,7 @@ class Codesystem extends React.Component {
 			this.init();
 			this.setSelected = this.setSelected.bind(this);
 			this.relocateCode = this.relocateCode.bind(this);
+			this.removeCode = this.removeCode.bind(this);
 		}
 
 		getStyles() {
@@ -93,6 +94,22 @@ class Codesystem extends React.Component {
 					if (found) return found;				
 			}
 		}
+		
+		removeCode(){
+			var code = this.state.selected; 
+			if (code.codeID == 1) return; //root should not be removed
+			 
+			var _this = this;
+			CodesEndpoint.removeCode(code).then(function (resp) {
+				_this.props.removeAllCodings(code.codeID);
+				var parent = _this.getCodeByID(_this.state.codesystem, code.parentID)
+				var index = parent.children.indexOf(code);
+				parent.children.splice(index, 1);
+				_this.forceUpdate();
+			});
+		}
+		
+		
 		
 		updateSubCodeIDs(code){
 			code.subCodesIDs = [];
