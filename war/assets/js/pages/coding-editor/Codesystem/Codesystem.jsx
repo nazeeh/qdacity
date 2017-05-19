@@ -175,7 +175,17 @@ class Codesystem extends React.Component {
 			return (
 				<div>
 					<div style={styles.toolBar}>
-						<CodesystemToolbar selected={this.state.selected} account={this.props.account} removeCode={this.removeCode} insertCode={this.insertCode}></CodesystemToolbar>
+						<CodesystemToolbar 
+							projectID={this.props.projectID} 
+							projectType={this.props.projectType}
+							selected={this.state.selected} 
+							account={this.props.account} 
+							removeCode={this.removeCode} 
+							insertCode={this.insertCode} 
+							toggleCodingView={this.props.toggleCodingView}
+							editorCtrl={this.props.editorCtrl}
+							documentsView={this.props.documentsView}>
+						</CodesystemToolbar>
 					</div>
 					<div className="codesystemView">{this.renderCodesystem()}</div>
 				</div>

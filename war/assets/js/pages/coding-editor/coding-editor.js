@@ -138,13 +138,9 @@ window.init = function () {
 	});
 
 	document.getElementById('btnCodeProps').onclick = function () {
-		if ($("#footer").is(":visible")) {
-			hideCodingView();
-		} else {
-			showCodingView();
-		}
+		toggleCodingView();
 	}
-
+	
 	$("#btnInsertCode").on("click", function () {
 		var prompt = new Prompt('Give your code a name', 'Code Name');
 		prompt.showModal().then(function (codeName) {
@@ -236,6 +232,13 @@ window.init = function () {
 
 }
 
+function toggleCodingView(){
+	if ($("#footer").is(":visible")) {
+		hideCodingView();
+	} else {
+		showCodingView();
+	}
+}
 
 function createCodeMemoEditor() {
 	var codeMemoIFrame = document.getElementById('codeMemoEditor');
@@ -327,7 +330,7 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
-			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} account={account} codesystemId={codesystem_id} removeAllCodings={removeAllCodings}/>, document.getElementById('codesystemView'));
+			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} account={account} codesystemId={codesystem_id} removeAllCodings={removeAllCodings} toggleCodingView={toggleCodingView}  editorCtrl={editorCtrl}  documentsView={documentsView}/>, document.getElementById('codesystemView'));
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}
