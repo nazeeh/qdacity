@@ -78,53 +78,47 @@ public class DataMigrationEndpoint {
 	    Logger.getLogger("logger").log(Level.INFO, "Report "+report.getProperty("name")+ " report: "+report);
 	    //HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
 	    Entity avgParagraphAgreementEntity = getChildEntity(report, "paragraphAgreement", datastore);
-	    Logger.getLogger("logger").log(Level.INFO, "Reports avgParagraphAgreement: "+avgParagraphAgreementEntity.getProperty("ID"));
+	    Logger.getLogger("logger").log(Level.INFO, "Reports avgParagraphAgreement: "+avgParagraphAgreementEntity);
+	    Logger.getLogger("logger").log(Level.INFO, "Updating ParagraphAgreement: "+avgParagraphAgreementEntity.getKey());
 
 	    
-	    String fmeasure = cleanForCsv((Double) avgParagraphAgreementEntity.getProperty("fmeasure"));
+	    String fmeasure = cleanForCsv((Double) avgParagraphAgreementEntity.getProperty("fMeasure"));
 	    String recall = cleanForCsv((Double) avgParagraphAgreementEntity.getProperty("recall"));
 	    String precision = cleanForCsv((Double) avgParagraphAgreementEntity.getProperty("precision"));
 
-	    report.setProperty("reportRow", "Average," + fmeasure + "," + recall + "," + precision);
+	    Logger.getLogger("logger").log(Level.INFO, "reportRow.setProperty('reportRow', 'Average," + fmeasure + "," + recall + "," + precision+"')");
+	    report.setProperty("avgAgreement", "Average," + fmeasure + "," + recall + "," + precision);
 	    report.setProperty("evaluationUnit", "paragraph");
 	    report.setProperty("avgAgreementHead", standardFMeasureHeader.toString());
 	    report.setProperty("detailedAgreementHead", standardFMeasureHeader.toString());
+	    Logger.getLogger("logger").log(Level.INFO, "report.removeProperty(\"paragraphAgreement\");");
 	    report.removeProperty("paragraphAgreement"); //muss man das tun?
-	    //TODO das ParagraphAgreement selbst muss man hier noch l�schen! (oder passiert das automatisch?)
+	    //TODO das ParagraphAgreement selbst muss man hier noch l�schen!
 	    datastore.delete(avgParagraphAgreementEntity.getKey());
+	    //Persist changes
+	    datastore.put(report);
 	}
-	//Persist all changes at once
-	datastore.put(reports);
     }
     
     private Entity getChildEntity(Entity e, String name, DatastoreService datastore) throws EntityNotFoundException {
         //HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
-    	//Keys don't work here and I don't know why...
     	
     	Key key = (Key) e.getProperty(name);
     	if(key != null) {
     		String keyString = key.toString();
     		keyString = keyString.substring(keyString.lastIndexOf("/")+1);
     		Logger.getLogger("logger").log(Level.INFO, "Keystring "+keyString);
-    		Long id = Long.parseLong(keyString.substring(keyString.indexOf("(")+1, keyString.indexOf(")")));
-    		Key childKey = KeyFactory.createKey(e.getKey(), 
-    				keyString.substring(0,keyString.indexOf("(")), 
-    				id); //Das ergibt eigentlich wieder genau das was in key steht...
-    		
+    		Long id = Long.parseLong(keyString.substring(keyString.indexOf("(")+1, keyString.indexOf(")")));    		
     		Iterable<Entity> pas = listChildren("ParagraphAgreement", e.getKey(), datastore);
     		for(Entity pa : pas) {
-    			Logger.getLogger("logger").log(Level.INFO, "PA looks like "+pa);
+    			//Logger.getLogger("logger").log(Level.INFO, "PA looks like "+pa);
     			Logger.getLogger("logger").log(Level.INFO, "PA.getKey() looks like "+pa.getKey());
     			if(pa.getKey().toString().contains(id+"")) { //Niemals wahr??
     				Logger.getLogger("logger").log(Level.INFO, "PA with id"+id+ "found");
     				return pa;
     			}
-    			/*if(pa.getProperty("id").equals(id)) { NullPointerException, da es das Feld id nicht gibt
-    				Logger.getLogger("logger").log(Level.INFO, "PA has ID "+id);
-    				return pa;
-    			} */
     		}
-    		return (Entity) datastore.get(key); //Das hier schlägt immer fehl weil es den Key nicht gibt. WARUM?
+    		return (Entity) datastore.get(key); //Das hier schlägt immer fehl weil es den Key nicht gibt (Da der Key immer aus allen (großvater, Vater, Kind) besteht!
     		
     	}
 
@@ -147,19 +141,19 @@ public class DataMigrationEndpoint {
 	for (Entity result : docResults) {
 	    //HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
 	    Entity paragraphAgreementEntity = getChildEntity(result, "paragraphAgreement", datastore);
-	    String fmeasure = cleanForCsv((Double) paragraphAgreementEntity.getProperty("fmeasure"));
+	    String fmeasure = cleanForCsv((Double) paragraphAgreementEntity.getProperty("fMeasure"));
 	    String recall = cleanForCsv((Double) paragraphAgreementEntity.getProperty("recall"));
 	    String precision = cleanForCsv((Double) paragraphAgreementEntity.getProperty("precision"));
 
-	    String coderName = (String) result.getProperty("name");
+	    String coderName = (String) result.getProperty("documentName");
 
 	    result.setProperty("reportRow", coderName + "," + fmeasure + "," + recall + "," + precision);
 	    result.removeProperty("name");
 	    result.removeProperty("paragraphAgreement");
-	    //TODO das ParagraphAgreement selbst muss man hier noch l�schen! (oder passiert das automatisch?)
+	    //TODO das ParagraphAgreement selbst muss man hier noch l�schen!
+	    //persist changes
+	    datastore.put(result);
 	}
-	//Persist all changes at once
-	datastore.put(docResults);
     }
 
     private void migrateValidationResults(User user, DatastoreService datastore) throws EntityNotFoundException {
@@ -169,7 +163,7 @@ public class DataMigrationEndpoint {
 
 	    //HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
 	    Entity paragraphAgreementEntity = getChildEntity(result, "paragraphAgreement", datastore);
-	    String fmeasure = cleanForCsv((Double) paragraphAgreementEntity.getProperty("fmeasure"));
+	    String fmeasure = cleanForCsv((Double) paragraphAgreementEntity.getProperty("fMeasure"));
 	    String recall = cleanForCsv((Double) paragraphAgreementEntity.getProperty("recall"));
 	    String precision = cleanForCsv((Double) paragraphAgreementEntity.getProperty("precision"));
 
@@ -178,36 +172,13 @@ public class DataMigrationEndpoint {
 	    result.setProperty("reportRow", coderName + "," + fmeasure + "," + recall + "," + precision);
 	    result.removeProperty("name");
 	    result.removeProperty("paragraphAgreement");
-	    //TODO das ParagraphAgreement selbst muss man hier noch l�schen! (oder passiert das automatisch?)
-
-	}
-	//Persist all changes at once
-	datastore.put(validationResults); //Funktioniert das so?
-    }
-/*
-    private void migrateParagraphAgreements(User user, DatastoreService datastore) {
-	//TODO all ParagraphAgreement -> TabularValidationReportRow
-	//As the Entity name changed this method looks different from the ones above!
-	//HINT: as the class ParagraphAgreement has been renamed to FMeasureResult we need to access it manually in the DataStore.
-	for (Entity result : getAll("ParagraphAgreement", datastore)) {
-	    String fmeasure = (String) result.getProperty("fmeasure");
-	    String recall = (String) result.getProperty("recall");
-	    String precision = (String) result.getProperty("precision");
-	    Key key = result.getKey();
-	    Key parent = result.getParent();
-
-	    List<String> cells = new ArrayList<>();
-	    cells.add("TODO"); //TODO coderName �ber parent?
-	    cells.add(fmeasure);
-	    cells.add(recall);
-	    cells.add(precision);
-	    TabularValidationReportRow newRow = new TabularValidationReportRow(cells);
-	    //TODO Key? kann ich den �berhaupt manuell setzen? Das ist doch immer die Sache des DataStores.
-	    //persist newRow via Peristence manager
-	    getPersistenceManager().makePersistent(newRow);
+	    //TODO das ParagraphAgreement selbst muss man hier noch l�schen!
+	  
+	    //Persist changes
+	    datastore.put(result);
 	}
     }
-*/
+
     private TabularValidationReportRow createStandardFMeasureHeader() {
 	List<String> cells = new ArrayList<>();
 	cells.add("Coder");
