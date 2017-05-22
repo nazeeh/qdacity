@@ -99,13 +99,13 @@ export default class IntercoderAgreementByDoc extends VexModal {
 					"title": "Document",
 					"width": "20%",
 				}, {
-					"title": "F-Measure (Paragraph)",
+					"title": "F-Measure",
 					"width": "25%"
 				}, {
-					"title": "Recall (Paragraph)",
+					"title": "Recall",
 					"width": "25%"
 				}, {
-					"title": "Precision (Paragraph)",
+					"title": "Precision",
 					"width": "25%"
 				}]
 
@@ -118,7 +118,7 @@ export default class IntercoderAgreementByDoc extends VexModal {
 		if (typeof this.resultID != 'undefined') {
 			for (var i = 0; i < this.results.length; i++) {
 				var result = this.results[i];
-				table.row.add([result.documentName, result.paragraphAgreement.fmeasure, result.paragraphAgreement.recall, result.paragraphAgreement.precision]);
+				table.row.add(result.reportRow.split(","));
 			}
 		}
 
