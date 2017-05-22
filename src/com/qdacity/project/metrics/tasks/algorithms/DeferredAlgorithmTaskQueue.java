@@ -6,7 +6,6 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.ValidationEndpoint;
-import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationResult;
 import java.util.ArrayList;
 import java.util.List;
