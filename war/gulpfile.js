@@ -103,7 +103,7 @@ gulp.task('format', function() {
 });
  
 gulp.task('watch',function() {
-	gulp.watch('assets/**/*.{js,jsx}',['bundle'])
+	gulp.watch('assets/**/*.{js,jsx}',['bundle-task'])
 });
 
 gulp.task('test', () =>
