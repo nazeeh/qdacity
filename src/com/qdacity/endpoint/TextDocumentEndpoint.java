@@ -45,6 +45,25 @@ import com.qdacity.project.metrics.ValidationReport;
 		packagePath = "server.project"))
 public class TextDocumentEndpoint {
 
+    public static List<TextDocument> getAll(List<Long> textDocumentIds) {
+	List<TextDocument> textdocuments = new ArrayList<>();
+
+	PersistenceManager mgr = getPersistenceManager();
+	mgr.setMultithreaded(true);
+
+	//There is no IN operator in the Datastore. 
+	for (Long txId : textDocumentIds) {
+	    Query query = mgr.newQuery(TextDocument.class);
+	    query.setFilter("id == :theId");
+	    Map<String, Long> paramValues = new HashMap<>();
+	    paramValues.put("theId", txId);
+
+	    textdocuments.addAll((List<TextDocument>) query.executeWithMap(paramValues));
+	}
+
+	return textdocuments;
+    }
+
 	/**
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.

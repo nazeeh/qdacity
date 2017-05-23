@@ -262,9 +262,14 @@ public class DeferredEvaluation implements DeferredTask {
 	//Convert TextDocuments to Reliability Data Matrix, which will be input for Krippendorffs Alpha
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
-	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeNamesAndIds.values());
-	    //create all the tasks with the reliability Data
-	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle));
+	    //create all the tasks
+	    List<TextDocument> textDocuments = sameDocumentsFromDifferentRatersMap.get(documentTitle);
+	    //Unfortunetaly TextDocuments are too large to pass them to a DeferredTask, therefore we need to pass their Ids and load them again in the Task.
+	    ArrayList<Long> textDocumentIds = new ArrayList<>();
+	    for(TextDocument tx : textDocuments) {
+		textDocumentIds.add(tx.getId());
+	    }
+	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), textDocumentIds));
 	}
 
 	//Now launch all the Tasks
