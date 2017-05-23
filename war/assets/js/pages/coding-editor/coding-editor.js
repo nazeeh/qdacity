@@ -426,7 +426,7 @@ function setDocumentList(projectID) {
 	if (typeof documentsView == 'undefined') {
 		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id}/>, document.getElementById('documentView'));
 		documentsCtrl = new DocumentsCtrl(documentsView, project_id);
-		
+
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}

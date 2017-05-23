@@ -17,7 +17,7 @@ export default class DocumentsView extends React.Component {
 		this.getDocuments = this.getDocuments.bind(this);
 		this.saveDocument = this.saveDocument.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			infoBox: {
@@ -32,8 +32,8 @@ export default class DocumentsView extends React.Component {
 			}
 		};
 	}
-	
-	toggleIsExpanded(){
+
+	toggleIsExpanded() {
 		this.setState({
 			isExpanded: !this.state.isExpanded
 		});
@@ -140,7 +140,7 @@ export default class DocumentsView extends React.Component {
 	render() {
 		var _this = this;
 		const styles = this.getStyles();
-		if (!this.state.isExpanded){
+		if (!this.state.isExpanded) {
 			return <div style={styles.infoBox}>
 		      <b>Current Document: {this.getActiveDocument().title}</b>
 		    </div>

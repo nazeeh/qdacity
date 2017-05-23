@@ -84,7 +84,7 @@ function initGraph(codes, mmEntities) {
 			return mmEntity.id == codes[i].mmElementID;
 		});
 		codes[i].mmElement = codeMMEntity;
-		
+
 		var node = view.addNode(codes[i].name);
 		nodes.set(codes[i].codeID, {
 			'code': codes[i],
@@ -113,7 +113,7 @@ function initGraph(codes, mmEntities) {
 
 		let startCode = nodes.get(relation.start);
 		let endCode = nodes.get(relation.end);
-		
+
 		var metaModelEntity = mmEntities.find(function (mmEntity) {
 			return mmEntity.id == relations[i].metaModelEntityId;
 		});

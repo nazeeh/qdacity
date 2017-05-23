@@ -10,7 +10,7 @@ export default class MetaModelMapper {
 		let relationName = metaModelEntity != null ? metaModelEntity.name : '';
 		let sourceName = source.code.mmElement != null ? source.code.mmElement.name : '';
 		let destinationName = destination.code.mmElement != null ? destination.code.mmElement.name : '';
-		
+
 		switch (relationName) {
 		case 'is a':
 			{
@@ -28,15 +28,15 @@ export default class MetaModelMapper {
 					view.addClassField(source.node, '+ ' + sourceName + ': type');
 					return;
 				}
-				
+
 				mode = EdgeType.DIRECTED_ASSOCIATION;
 				break;
 			}
 		case 'influences':
-		{
-			view.addClassMethod(source.node, '+ ' + destinationName + '(type): type');
-			return;
-		}
+			{
+				view.addClassMethod(source.node, '+ ' + destinationName + '(type): type');
+				return;
+			}
 		default:
 			{
 				// TODO ERROR?
