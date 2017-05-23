@@ -16,7 +16,7 @@ export default class IntercoderAgreement extends VexModal {
                     
                     var headRow = report.averageAgreementHeaderCsvString.split(",");
                     var avgRow = report.averageAgreementCsvString.split(",");
-                    this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222;" class="centerParent">';
+                    this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;" class="centerParent">';
                     this.formElements += '<table class="centerChild">';
                     this.formElements += '<tr>';
                     for(var headCell in headRow) {
@@ -30,7 +30,7 @@ export default class IntercoderAgreement extends VexModal {
                     this.formElements += '</tr>';
                     this.formElements += '</table></div>';
                 }
-		this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222;"><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
+		this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;"><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
 
                 this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222;">Evaluation Unit: '+report.evaluationUnit+'</div>'
 
