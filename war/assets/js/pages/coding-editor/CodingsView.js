@@ -3,9 +3,9 @@ import 'script!../../../../components/Easytabs/jquery.easytabs.js';
 
 export default class CodingsView {
 
-	constructor(editorCtrl, documentsCtrl) {
+	constructor(editorCtrl, documentsView) {
 		this.editorCtrl = editorCtrl;
-		this.documentsCtrl = documentsCtrl;
+		this.documentsView = documentsView;
 
 		$("#codeTabs").easytabs({
 			animate: true,
@@ -51,7 +51,7 @@ export default class CodingsView {
 				$(this).addClass('selected');
 				var codingID = $(this).find("td").eq(0).html();
 
-				_this.documentsCtrl.setDocumentWithCoding(codingID, true);
+				_this.documentsView.setDocumentWithCoding(codingID);
 				_this.editorCtrl.activateCodingInEditor(codingID, true);
 
 			}

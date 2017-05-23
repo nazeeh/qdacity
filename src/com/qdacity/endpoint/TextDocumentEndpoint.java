@@ -137,11 +137,12 @@ public class TextDocumentEndpoint {
 				ValidationEndpoint ve = new ValidationEndpoint();
 				documentResults = ve.listDocumentResults(id, user);
 			}
-
-			for (DocumentResult documentResult : documentResults) {
-				documentResult.getAgreementMap().getTitle();
-				agreementMaps.add(documentResult.getAgreementMap());
+			if (documentResults.size() > 0) {
+				for (DocumentResult documentResult : documentResults) {
+					if (documentResult.getAgreementMap() != null) agreementMaps.add(documentResult.getAgreementMap());
+				}
 			}
+
 
 		} finally {
 			mgr.close();

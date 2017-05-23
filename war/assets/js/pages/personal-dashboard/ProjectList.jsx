@@ -246,7 +246,7 @@ export default class ProjectList extends React.Component {
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
 					</a>
-					<a href={"coding-editor.html?project="+project.id} className=" btn  fa-stack fa-lg" style={styles.listItemBtn} > 
+					<a href={"coding-editor.html?project="+project.id+"&type="+project.type} className=" btn  fa-stack fa-lg" style={styles.listItemBtn} > 
 						<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
 						<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
 					</a>

@@ -2,6 +2,8 @@ import React from 'react';
 
 import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
 
+import DocumentsToolbar from './DocumentsToolbar.jsx'
+
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -15,7 +17,10 @@ export default class DocumentsView extends React.Component {
 		this.isActive = this.isActive.bind(this);
 		this.getActiveDocument = this.getActiveDocument.bind(this);
 		this.getDocuments = this.getDocuments.bind(this);
+		this.removeActiveDocument = this.removeActiveDocument.bind(this);
 		this.saveDocument = this.saveDocument.bind(this);
+		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
+		this.changeDocumentData = this.changeDocumentData.bind(this);
 	}
 
 	getStyles() {
@@ -29,8 +34,49 @@ export default class DocumentsView extends React.Component {
 				borderRightWidth: "thick",
 				borderRightColor: "#337ab7",
 				textAlign: "center"
+			},
+			toolBar: {
+				textAlign: "center",
+				position: "relative",
+				backgroundColor: "#e7e7e7"
 			}
 		};
+	}
+
+	setupView(project_id, project_type, agreement_map) {
+		var _this = this;
+		var promise = new Promise(
+			function (resolve, reject) {
+
+				if (typeof agreement_map != 'undefined') {
+					DocumentsEndpoint.getAgreementMaps(agreement_map, project_type).then(function (resp) {
+						resp.items = resp.items || [];
+						for (var i = 0; i < resp.items.length; i++) {
+							_this.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
+						}
+						resolve();
+						$("#documentsLoadingDiv").addClass('hidden');
+					}).catch(function (resp) {
+						reject();
+						$("#documentsLoadingDiv").addClass('hidden');
+					});
+				} else {
+					DocumentsEndpoint.getDocuments(project_id, project_type).then(function (items) {
+						for (var i = 0; i < items.length; i++) {
+							_this.addDocument(items[i].id, items[i].title, items[i].text.value);
+						}
+						resolve();
+						$("#documentsLoadingDiv").addClass('hidden');
+					}).catch(function (resp) {
+						reject();
+						$("#documentsLoadingDiv").addClass('hidden');
+					});
+				}
+
+			}
+
+		);
+		return promise;
 	}
 
 	toggleIsExpanded() {
@@ -63,6 +109,20 @@ export default class DocumentsView extends React.Component {
 
 	}
 
+	updateCurrentDocument(text) {
+		var doc = this.getActiveDocument();
+		doc.text = text;
+		this.changeDocumentData(doc);
+	}
+
+	changeDocumentData(doc) {
+		var _this = this;
+		doc.projectID = this.props.projectID;
+		DocumentsEndpoint.updateTextDocument(doc).then(function (resp) {
+			_this.updateDocument(doc.id, doc.title, doc.text);
+		});
+	}
+
 	updateDocument(pId, pNewTitle, pText) {
 		var index = this.state.documents.findIndex(function (doc, index, array) {
 			return doc.id == pId;
@@ -75,9 +135,10 @@ export default class DocumentsView extends React.Component {
 
 	}
 
-	removeDocument(pId) {
+	removeActiveDocument() {
+		var _this = this;
 		var index = this.state.documents.findIndex(function (doc, index, array) {
-			return doc.id == pId;
+			return doc.id == _this.state.selected;
 		});
 		this.state.documents.splice(index, 1);
 		this.setState({
@@ -87,12 +148,15 @@ export default class DocumentsView extends React.Component {
 	}
 
 	saveCurrentDocument() {
-		var doc = this.getDocument(this.state.selected);
-		doc.text = this.props.editorCtrl.getHTML();
-		this.setState({
-			documents: this.state.documents
-		});
-		this.saveDocument(doc);
+		var doc = this.getActiveDocument();
+		if (typeof doc != "undefined") {
+			doc.text = this.props.editorCtrl.getHTML();
+			this.setState({
+				documents: this.state.documents
+			});
+			this.saveDocument(doc);
+		}
+
 	}
 
 	saveDocument(doc) {
@@ -117,7 +181,7 @@ export default class DocumentsView extends React.Component {
 
 	}
 
-	getActiveDocumentId(selectedID) {
+	getActiveDocumentId() {
 		return this.state.selected;
 	}
 
@@ -133,8 +197,39 @@ export default class DocumentsView extends React.Component {
 		return activeDoc;
 	}
 
+	setDocumentWithCoding(codingID) {
+		var documents = this.state.documents;
+		for (var i in documents) {
+			var doc = documents[i];
+			var elements = doc.text;
+
+			var foundArray = $(doc.text).find('coding[id=\'' + codingID + '\']');
+			if (foundArray.length > 0) {
+				this.setActiveDocument(doc.id);
+			}
+
+		}
+	}
+
 	isActive(value) {
 		return 'list-group-item clickable ' + ((value == this.state.selected) ? 'active' : 'default');
+	}
+
+	renderToolbar() {
+		if (this.props.projectType == "PROJECT") {
+			return (
+				<DocumentsToolbar 
+					projectID={this.props.projectID}  
+					document={this.getActiveDocument()} 
+					addDocument={this.addDocument} 
+					removeActiveDocument={this.removeActiveDocument} 
+					changeDocumentData={this.changeDocumentData}
+				/>
+			);
+		} else {
+			return null;
+		}
+
 	}
 
 	render() {
@@ -146,13 +241,18 @@ export default class DocumentsView extends React.Component {
 		    </div>
 		}
 		return (
+			<div>
+			<div  style={styles.toolBar}>
+				{this.renderToolbar()}
+			</div>
 			<div className="list-group">
-        {
-          this.state.documents.map(function(doc) {	
-            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
-          })
-        }
-      </div>
+	        {
+	          this.state.documents.map(function(doc) {	
+	            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
+	          })
+	        }
+	  		</div>
+     	</div>
 		);
 	}
 
