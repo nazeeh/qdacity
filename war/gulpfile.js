@@ -80,7 +80,9 @@ function prettify(){
 	});
 }
 
-gulp.task('bundle', function() {
+gulp.task('bundle', ['format','bundleonly']);
+
+gulp.task('bundleonly', function() {
 	return gulp.src('') //doesn't matter what to put as src, 
 						//since webpack.config fetches from entry points
 	.pipe(webpack( require('./webpack.config.js') )).on('error', handleError)
@@ -108,4 +110,4 @@ gulp.task('test', () =>
     gulp.src('./tests/*.js').pipe(jasmine())
 );
  
-gulp.task('default', ['bundle','watch']);
+gulp.task('default', ['bundleonly','watch']);
