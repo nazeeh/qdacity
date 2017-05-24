@@ -269,6 +269,7 @@ public class DeferredEvaluation implements DeferredTask {
 	    for(TextDocument tx : textDocuments) {
 		textDocumentIds.add(tx.getId());
 	    }
+	    //TODO put to Memcache
 	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), textDocumentIds));
 	}
 
