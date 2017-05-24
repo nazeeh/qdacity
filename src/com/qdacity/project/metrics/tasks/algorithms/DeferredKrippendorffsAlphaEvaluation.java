@@ -1,5 +1,8 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ValidationProject;
@@ -33,19 +36,21 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 
     @Override
     protected void runAlgorithm() throws Exception {
-	List<TextDocument> textDocuments = TextDocumentEndpoint.getAll(textDocumentIds);
-	
+
+	List<TextDocument> textDocuments = collectTextDocumentsfromMemcache(textDocumentIds);
+
 	List<ReliabilityData> rData = new ReliabilityDataGenerator(evalUnit).generate(textDocuments, codeIds);
 	Logger.getLogger("logger").log(Level.INFO, "Calculation of Kripp's Alpha");
-	for(ReliabilityData reliabilityData : rData) {
+	for (ReliabilityData reliabilityData : rData) {
 	    KrippendorffsAlphaCoefficient kac = new KrippendorffsAlphaCoefficient(reliabilityData, 2); //We are only checking one code at a time. So it is either set or not set.
 	    double result = kac.compute();
-	    row.add(result+"");
+	    row.add(result + "");
 	    Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: " + result + " adding to ValidationResult");
 	}
 	valResult.setReportRow(new TabularValidationReportRow(row).toString());
 
-
     }
+
+
 
 }

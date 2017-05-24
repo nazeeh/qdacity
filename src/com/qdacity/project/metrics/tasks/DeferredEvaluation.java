@@ -36,9 +36,7 @@ import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
-import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
@@ -134,10 +132,7 @@ public class DeferredEvaluation implements DeferredTask {
 	for (TextDocument textDocument : originalDocs) {
 
 	    if (docIDs.contains(textDocument.getId())) {
-		String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
-		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-		syncCache.put(keyString, textDocument, Expiration.byDeltaSeconds(300));
-
+		putuTextDocumentToMemcache(textDocument);
 		orignalDocIDs.add(textDocument.getId());
 	    }
 	}
@@ -259,18 +254,18 @@ public class DeferredEvaluation implements DeferredTask {
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
 	//TODO nach Textdocumenten filtern!
 
-	//Convert TextDocuments to Reliability Data Matrix, which will be input for Krippendorffs Alpha
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    //create all the tasks
 	    List<TextDocument> textDocuments = sameDocumentsFromDifferentRatersMap.get(documentTitle);
 	    //Unfortunetaly TextDocuments are too large to pass them to a DeferredTask, therefore we need to pass their Ids and load them again in the Task.
 	    ArrayList<Long> textDocumentIds = new ArrayList<>();
-	    for(TextDocument tx : textDocuments) {
+	    for (TextDocument tx : textDocuments) {
 		textDocumentIds.add(tx.getId());
+		putuTextDocumentToMemcache(tx);
 	    }
-	    //TODO put to Memcache
 	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), textDocumentIds));
+
 	}
 
 	//Now launch all the Tasks
@@ -285,12 +280,20 @@ public class DeferredEvaluation implements DeferredTask {
 	getPersistenceManager().makePersistent(validationReport);
     }
 
+    private void putuTextDocumentToMemcache(TextDocument tx) {
+	String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), tx.getId());
+	MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+	syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
+    }
+
     private void calculateCohensKappa() {
 	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
-     * Calculates the averageAgreement for TabularValidationReportRows using simple average calculation.
+     * Calculates the averageAgreement for TabularValidationReportRows using
+     * simple average calculation.
+     *
      * @param myRows the rows where you want to calculate the average
      * @return a new row containing the average
      */
@@ -299,13 +302,13 @@ public class DeferredEvaluation implements DeferredTask {
 	averageColumns.add("AVERAGE");
 	if (myRows.size() > 0) {
 	    List<String> masterCells = new TabularValidationReportRow(myRows.get(0).getReportRow()).getCells();
-	    for(int i = 1; i<masterCells.size(); i++) { //SKIP first cell as it is just label
+	    for (int i = 1; i < masterCells.size(); i++) { //SKIP first cell as it is just label
 		double sum = 0;
 		for (ValidationResult row : myRows) {
 		    sum += new Double(new TabularValidationReportRow(row.getReportRow()).getCells().get(i));
 		}
 		double average = sum / myRows.size();
-		averageColumns.add(average+"");
+		averageColumns.add(average + "");
 	    }
 	}
 	return new TabularValidationReportRow(averageColumns);

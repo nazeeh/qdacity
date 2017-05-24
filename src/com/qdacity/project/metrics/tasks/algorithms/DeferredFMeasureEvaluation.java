@@ -27,7 +27,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
     List<Long> orignalDocIDs;
 
     public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> docIDs, List<Long> orignalDocIDs, Long validationReportID, User user) {
-	super(validationPrj, user,validationReportID);
+	super(validationPrj, user, validationReportID);
 	this.docIDs = docIDs; // FIXME dont need anymore, because only list of relevant textdocumentIDs is passed?
 	this.orignalDocIDs = orignalDocIDs;
     }
@@ -36,18 +36,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
     protected void runAlgorithm() throws Exception {
 	TextDocumentEndpoint tde = new TextDocumentEndpoint();
 
-	Collection<TextDocument> originalDocs = new ArrayList<>();
-
-	for (Long docID : orignalDocIDs) {
-	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), docID);
-	    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	    syncCache.get(keyString);
-	    TextDocument origialDoc = (TextDocument) syncCache.get(keyString);
-	    if (origialDoc == null) {
-		origialDoc = mgr.getObjectById(TextDocument.class, docID);
-	    }
-	    originalDocs.add(origialDoc);
-	}
+	Collection<TextDocument> originalDocs = collectTextDocumentsfromMemcache(orignalDocIDs);
 
 	List<FMeasureResult> documentAgreements = new ArrayList<>();
 
