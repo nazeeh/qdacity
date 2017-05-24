@@ -9,7 +9,11 @@ import java.util.List;
  */
 public class TabularValidationReportRow implements Serializable {
 
-    private final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6855616324566422223L;
+	private final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
 
     public TabularValidationReportRow(TabularValidationReportRow copy) {
 	super();
