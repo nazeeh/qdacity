@@ -34,28 +34,12 @@ class V4toV5AgreementHelperMethods {
 
     protected static Entity getChildEntity(Entity e, String name, DatastoreService datastore) throws EntityNotFoundException {
 	//HINT: Problem: Class ParagraphAgreement does not exist any more. We need to deal with it manually.
-
 	Key key = (Key) e.getProperty(name);
 	if (key != null) {
-	    String keyString = key.toString();
-	    keyString = keyString.substring(keyString.lastIndexOf("/") + 1);
-	    Logger.getLogger("logger").log(Level.INFO, "Keystring " + keyString);
-	    Long id = Long.parseLong(keyString.substring(keyString.indexOf("(") + 1, keyString.indexOf(")")));
-	    Iterable<Entity> pas = listChildren("ParagraphAgreement", e.getKey(), datastore);
-	    for (Entity pa : pas) {
-		//Logger.getLogger("logger").log(Level.INFO, "PA looks like "+pa);
-		Logger.getLogger("logger").log(Level.INFO, "PA.getKey() looks like " + pa.getKey());
-		if (pa.getKey().toString().contains(id + "")) { //Niemals wahr??
-		    Logger.getLogger("logger").log(Level.INFO, "PA with id" + id + "found");
-		    return pa;
-		}
-	    }
-	    return (Entity) datastore.get(key); //Das hier schl‰gt immer fehl weil es den Key nicht gibt (Da der Key immer aus allen (groﬂvater, Vater, Kind) besteht!
-
+	    return (Entity) datastore.get(key);
 	}
-
-	Logger.getLogger("logger").log(Level.INFO, "Key for Entity " + e.getKey() + " Property " + name + " is NULL");
 	return null;
+
     }
 
     protected static TabularValidationReportRow createStandardFMeasureHeader() {
