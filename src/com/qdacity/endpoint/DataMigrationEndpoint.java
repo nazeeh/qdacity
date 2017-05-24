@@ -1,5 +1,9 @@
 package com.qdacity.endpoint;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -12,9 +16,6 @@ import com.qdacity.Constants;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationDocumentResults;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationReports;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationResults;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  * This Endpoint is intented to be used for Data migration when changes in the
@@ -54,7 +55,6 @@ public class DataMigrationEndpoint {
 	futures.add(taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(documentResultMigrationTask)));
 	futures.add(taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(validationResultMigrationTask)));
 
-	//migrateParagraphAgreements(user, datastore); not necessary as all ParagraphAgreements have been replaced in the steps before.
     }
 
 }
