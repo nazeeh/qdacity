@@ -282,27 +282,59 @@ public class TextDocumentEndpoint {
 	}
 	
 	/**
-	 * 
-	 * @param validationProjects
-	 * @param user
-	 * @return
+	 * For usage with Krippendorffs Alpha
+	 * @param validationProjects from which validation projects to get the documents from
+	 * @param docIDs filter for documents from the main project (will filter by title of the documents)
+	 * @param user with sufficient rights to get the documents
+	 * @return a HashMap grouped by Document name containig a list with the corresponding document Ids from the different users
 	 * @throws UnauthorizedException 
 	 */
-	public static Map<String, List<TextDocument>> getDocumentsFromDifferentValidationProjectsGroupedByName(List<ValidationProject> validationProjects, User user) throws UnauthorizedException {
+	public static Map<String, ArrayList<Long>> getDocumentsFromDifferentValidationProjectsGroupedByName(List<ValidationProject> validationProjects, List<Long> docIDs, User user) throws UnauthorizedException {
 	    	TextDocumentEndpoint tde = new TextDocumentEndpoint();
-		Map<String, List<TextDocument>> sameDocumentsFromDifferentRaters = new HashMap();
+		Map<String, ArrayList<Long>> sameDocumentsFromDifferentRaters = new HashMap();
 		
+		List<String> docTitles = getDocumentTitles(docIDs); //We need the names to filter for the actually wanted documents in this report.
+		//Not possible to filter by IDs as the IDs of the documents of the different rates are different!
 		for (ValidationProject project : validationProjects) {
-			//gets the documents from the validationProject of a user with the rights of our user.
+		    //gets the documents from the validationProject of a user with the rights of our user.
 		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), "VALIDATION", user).getItems();
 		    for(TextDocument doc : textDocuments) {
-			if(null == sameDocumentsFromDifferentRaters.get(doc.getTitle())) {
-			    sameDocumentsFromDifferentRaters.put(doc.getTitle(), new ArrayList<TextDocument>());
+			if(docTitles.contains(doc.getTitle())) {
+			    if(null == sameDocumentsFromDifferentRaters.get(doc.getTitle())) {
+				sameDocumentsFromDifferentRaters.put(doc.getTitle(), new ArrayList<Long>());
+			    }
+			    sameDocumentsFromDifferentRaters.get(doc.getTitle()).add(doc.getId());
 			}
-			sameDocumentsFromDifferentRaters.get(doc.getTitle()).add(doc);
 		    }
 		}
 		return sameDocumentsFromDifferentRaters;
+	}
+	
+	private static List<String> getDocumentTitles(List<Long> docIDs) {
+		PersistenceManager mgr = null;
+		List<TextDocument> tmpDocs;
+		List<String> docNames = new ArrayList<>();
+
+		try {
+			mgr = getPersistenceManager();
+			mgr.setMultithreaded(true);
+			for(Long id : docIDs) {
+			    Query query = mgr.newQuery(TextDocument.class);
+
+			    query.setFilter("id == :theID");
+			    Map<String, Long> paramValues = new HashMap<>();
+			    paramValues.put("theID", id);
+
+			    tmpDocs = (List<TextDocument>) query.executeWithMap(paramValues);
+
+			    for (TextDocument doc : tmpDocs) {
+				docNames.add(doc.getTitle());
+			    }
+			}
+		} finally {
+			mgr.close();
+		}
+		return docNames;
 	}
 
 }
