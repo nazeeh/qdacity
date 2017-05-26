@@ -67,6 +67,9 @@ class Code extends React.Component {
 				nodeSelected: {
 					color: "#fff",
 					backgroundColor: "#337ab7"
+				},
+				codeIcon:{
+					padding: "3px 4px 3px 0px"
 				}
 			}
 		}
@@ -109,7 +112,7 @@ class Code extends React.Component {
 			return this.props.node.children.length != 0;
 		}
 
-		renderIcon(node) {
+		renderExpander(node) {
 			var caret = ""
 			if (this.hasChildren()) {
 				var direction = this.props.node.collapsed ?  'right' : 'down';
@@ -122,7 +125,11 @@ class Code extends React.Component {
 					</a>;
 		}
 		
-		
+		renderIcon(node){
+			const iconStyle = this.getStyles().codeIcon;
+			iconStyle.color = node.color;
+			return <i className="fa fa-tag fa-lg" style={iconStyle}></i>
+		}
 		
 		renderNode(level){
 			return <div 
@@ -131,6 +138,7 @@ class Code extends React.Component {
 					key={"CS" + "_" + level}
 					onClick={() => this.props.setSelected(this.props.node)}
 				>
+			            {this.renderExpander(this.props.node)}
 			            {this.renderIcon(this.props.node)}
 			            {this.props.node.name}
 			    </div>
