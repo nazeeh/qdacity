@@ -1,18 +1,17 @@
 package com.qdacity.maintenance.tasks.v4tov5migration;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.qdacity.PMF;
 import com.qdacity.project.metrics.TabularValidationReportRow;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.jdo.PersistenceManager;
 
 /**
  * This class has package visibility intentionally!
@@ -21,15 +20,6 @@ class V4toV5AgreementHelperMethods {
 
     protected static PersistenceManager getPersistenceManager() {
 	return PMF.get().getPersistenceManager();
-    }
-
-    protected static Iterable<Entity> listChildren(String kind, Key ancestor, DatastoreService datastore) {
-	//from: http://stackoverflow.com/questions/12985028/java-appengnie-code-to-get-child-entity-from-datastore-not-working
-	Logger.getLogger("logger").log(Level.INFO, "Search entities based on parent");
-	Query query = new Query(kind);
-	query.setAncestor(ancestor);
-	PreparedQuery pq = datastore.prepare(query);
-	return pq.asIterable();
     }
 
     protected static Entity getChildEntity(Entity e, String name, DatastoreService datastore) throws EntityNotFoundException {
