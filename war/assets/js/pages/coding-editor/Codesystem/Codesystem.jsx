@@ -184,7 +184,8 @@ class Codesystem extends React.Component {
 							insertCode={this.insertCode} 
 							toggleCodingView={this.props.toggleCodingView}
 							editorCtrl={this.props.editorCtrl}
-							documentsView={this.props.documentsView}>
+							documentsView={this.props.documentsView}
+							umlEditorEnabled={this.props.umlEditorEnabled}>
 						</CodesystemToolbar>
 					</div>
 					<div className="codesystemView">{this.renderCodesystem()}</div>

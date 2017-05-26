@@ -330,7 +330,15 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
-			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} projectType={project_type} account={account} codesystemId={codesystem_id} removeAllCodings={removeAllCodings} toggleCodingView={toggleCodingView}  editorCtrl={editorCtrl}  documentsView={documentsView}/>, document.getElementById('codesystemView'));
+			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} 
+				projectType={project_type} 
+				account={account} 
+				codesystemId={codesystem_id} 
+				removeAllCodings={removeAllCodings} 
+				toggleCodingView={toggleCodingView}  
+				editorCtrl={editorCtrl}  
+				documentsView={documentsView} 
+				umlEditorEnabled={resp.umlEditorEnabled}/>, document.getElementById('codesystemView'));
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}

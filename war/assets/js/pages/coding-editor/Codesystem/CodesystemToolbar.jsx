@@ -108,6 +108,16 @@ export default class CodesystemToolbar extends React.Component {
 		return promise;
 	}
 	
+	renderUmlEditorBtn(){
+		if (!this.props.umlEditorEnabled) return "";
+		return (
+			<div className="btn-group">
+				<a className="btn btn-default" onClick={this.openUMLEditor}>
+					<i className="fa fa-external-link fa-1x"></i>
+				</a>
+			</div>
+		);
+	}
 	
 	render() {
 		const styles = this.getStyles();
@@ -139,11 +149,7 @@ export default class CodesystemToolbar extends React.Component {
 						</span>
 					</a>
 				</div>
-				<div className="btn-group">
-					<a className="btn btn-default" onClick={this.openUMLEditor}>
-						<i className="fa fa-external-link fa-1x"></i>
-					</a>
-				</div>
+				{this.renderUmlEditorBtn()}
 			</div>
 		);
 	}
