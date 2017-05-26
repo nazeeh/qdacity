@@ -20,6 +20,9 @@ export default class CodesystemToolbar extends React.Component {
 	
 	getStyles() {
 		return {
+			toolbar: {
+				paddingBottom: "2px"
+			},
 			settingsBtn: {
 				marginLeft: "5px"
 			},
@@ -139,9 +142,9 @@ export default class CodesystemToolbar extends React.Component {
 		const styles = this.getStyles();
 		
 		return ( 
-			<div>
+			<div style={styles.toolbar}>
 				<div className="btn-group" style={styles.btnGroup}>
-					
+					{this.renderAddRemoveCodeBtn()}
 					<a className="btn btn-default" onClick={this.props.toggleCodingView}>
 						<i className="fa  fa-list-alt  fa-1x"></i>
 					</a>
