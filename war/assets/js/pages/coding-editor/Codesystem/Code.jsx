@@ -62,7 +62,9 @@ class Code extends React.Component {
 				node: { 
 					fontFamily: "tahoma, arial, helvetica",
 					fontSize: "10pt",
-					marginLeft: (this.props.level * 15) + 'px' 
+					marginLeft: (this.props.level * 15) + 'px',
+					display: "flex",
+					alignItems: "center"
 				}, 
 				nodeSelected: {
 					color: "#fff",
@@ -70,6 +72,19 @@ class Code extends React.Component {
 				},
 				codeIcon:{
 					padding: "3px 4px 3px 0px"
+				},
+				codingBubble: {
+					backgroundColor: "rgb(231, 231, 231)",
+					border: "1px solid rgb(187, 187, 187)", 
+					textAlign: "center",
+					borderRadius: "10px",
+					color: "rgb(102, 102, 102)",
+					width: "35px", 
+					cursor: "pointer",
+					marginLeft: "auto",
+					marginTop: "1px",
+					marginBottom: "1px",
+					marginRight: "3px"
 				}
 			}
 		}
@@ -131,9 +146,19 @@ class Code extends React.Component {
 			return <i className="fa fa-tag fa-lg" style={iconStyle}></i>
 		}
 		
+		renderCodingCount(){
+			const style = this.getStyles().codingBubble;
+			return (
+				<span className="" style={style}>
+					0 
+				</span>
+			);
+		}
+		
 		renderNode(level){
-			return <div 
-					className="clickable node" 
+			return <div className=""> 
+			<div 
+					className="clickable" 
 					style={this.styleNode()}
 					key={"CS" + "_" + level}
 					onClick={() => this.props.setSelected(this.props.node)}
@@ -141,30 +166,29 @@ class Code extends React.Component {
 			            {this.renderExpander(this.props.node)}
 			            {this.renderIcon(this.props.node)}
 			            {this.props.node.name}
+			            {this.renderCodingCount()}
+			    </div>
 			    </div>
 		}
 		
 		renderNodesRecursive(code, level) {
 				const _this = this;
 				let count = 0;
-				const lst = [];
 				var node = this.props.node;
 				const thisNode = _this.renderNode(level);
 				var children = "";
-				lst.push(thisNode);
 				if (!node.collapsed && !node.leaf && node.children) {
 					children = node.children.map((childCode, index) => {
 						return (
 							<DragAndDropCode level={level + 1} node={childCode} selected={this.props.selected} setSelected={this.props.setSelected} relocateCode={this.props.relocateCode}  key={"CS" + "_" + level+ "_" +index}></DragAndDropCode>
 						);
 					});
-				}
-		
+				}	
 
 				return (
 					<div key={"CS" + "_" + level} 
 				     >
-	    				{lst}
+	    				{thisNode}
 	    				{children}
 					</div>
 				);
