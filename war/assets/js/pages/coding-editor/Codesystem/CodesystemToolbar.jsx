@@ -22,6 +22,9 @@ export default class CodesystemToolbar extends React.Component {
 		return {
 			settingsBtn: {
 				marginLeft: "5px"
+			},
+			btnGroup: {
+				padding: "0px 1px 0px 1px"
 			}
 			
 		};
@@ -111,7 +114,7 @@ export default class CodesystemToolbar extends React.Component {
 	renderUmlEditorBtn(){
 		if (!this.props.umlEditorEnabled) return "";
 		return (
-			<div className="btn-group">
+			<div className="btn-group" style={styles.btnGroup}>
 				<a className="btn btn-default" onClick={this.openUMLEditor}>
 					<i className="fa fa-external-link fa-1x"></i>
 				</a>
@@ -119,23 +122,31 @@ export default class CodesystemToolbar extends React.Component {
 		);
 	}
 	
+	renderAddRemoveCodeBtn(){
+		if (this.props.projectType != "PROJECT") return "";
+				
+		return ([
+			<a className="btn btn-default" onClick={this.insertCode}>
+				<i className="fa fa-plus fa-1x"></i>
+			</a>,
+			<a className="btn btn-default" onClick={this.removeCode}>
+				<i className="fa fa-trash fa-1x"></i>
+			</a>
+		 ]);
+	}
+	
 	render() {
 		const styles = this.getStyles();
 		
 		return ( 
 			<div>
-				<div className="btn-group">
-					<a className="btn btn-default" onClick={this.insertCode}>
-						<i className="fa fa-plus fa-1x"></i>
-					</a>
-					<a className="btn btn-default" onClick={this.removeCode}>
-						<i className="fa fa-trash fa-1x"></i>
-					</a>
+				<div className="btn-group" style={styles.btnGroup}>
+					
 					<a className="btn btn-default" onClick={this.props.toggleCodingView}>
 						<i className="fa  fa-list-alt  fa-1x"></i>
 					</a>
 				</div>
-				<div className="btn-group">
+				<div className="btn-group" style={styles.btnGroup}>
 					<a className="btn btn-default" onClick={this.applyCode}>
 						<span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
 							<i className="fa fa-tag fa-stack-2x"></i>
