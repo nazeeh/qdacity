@@ -47,7 +47,7 @@ export default class CodesystemToolbar extends React.Component {
 				author: _this.props.account.getProfile().getName(),
 				name: codeName,
 				subCodesIDs: new Array(),
-				parentID: _this.props.selected.id,
+				parentID: _this.props.selected.codeID,
 				codesystemID: _this.props.selected.codesystemID,
 				color: "#000000"
 			};
