@@ -38,7 +38,7 @@ public class Code {
 	
 	//Meta model element
 	@Persistent
-	Long mmElementID;
+	List<Long> mmElementIDs;
 	
 	@Persistent(
 		defaultFetchGroup = "true",
@@ -135,12 +135,12 @@ public class Code {
 		this.memo = memo;
 	}
 
-	public Long getMmElementID() {
-		return mmElementID;
+	public List<Long> getMmElementIDs() {
+		return mmElementIDs;
 	}
 
-	public void setMmElementID(Long mmElementID) {
-		this.mmElementID = mmElementID;
+	public void setMmElementIDs(List<Long> mmElementIDs) {
+		this.mmElementIDs = mmElementIDs;
 	}
 
 	public CodeBookEntry getCodeBookEntry() {
