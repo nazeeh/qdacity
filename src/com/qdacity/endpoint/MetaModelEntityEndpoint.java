@@ -20,6 +20,9 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.metamodel.MetaModelEntity;
 
+/**
+ * This class provides the public api interface for the MetaModelEntity.
+ */
 @Api(name = "qdacity",
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(
@@ -32,9 +35,9 @@ public class MetaModelEntityEndpoint {
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 			audiences = { Constants.WEB_CLIENT_ID })
-	public List<MetaModelEntity> listProject( @Named("metaModelId") Long metaModelId, User user) throws UnauthorizedException {
+	public List<MetaModelEntity> listEntities( @Named("metaModelId") Long metaModelId, User user) throws UnauthorizedException {
 
-		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
+		if (user == null) throw new UnauthorizedException("User not authorized");
 
 		PersistenceManager mgr = null;
 		List<MetaModelEntity> entities = null;
@@ -58,43 +61,6 @@ public class MetaModelEntityEndpoint {
 		}
 
 		return entities;
-	}
-
-	/**
-	 * Reads a MetaModelEntity with the given name from the database. Only one entity is returned.
-	 * 
-	 * @param name name of the entity
-	 * @param user required for authorization
-	 * @return the entity with the given name
-	 * @throws UnauthorizedException
-	 */
-	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "metaModelEntity.getMetaModelEntitiesByName",
-			path = "metaModelEntity",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
-	public List<MetaModelEntity> getMetaModelEntitiesByName(@Named("name") String name, User user) throws UnauthorizedException {
-
-		if (user == null) throw new UnauthorizedException("User not authorized");
-
-		List<MetaModelEntity> metaModelEntities = null;
-		
-		PersistenceManager mgr = getPersistenceManager();
-		try {			
-			Query query = mgr.newQuery(MetaModelEntity.class);
-			query.setFilter("name == :name");
-			
-			Map<String, String> params = new HashMap<>();
-			params.put("name", name);
-			
-			metaModelEntities = (List<MetaModelEntity>) query.executeWithMap(params);
-			
-		} finally {
-			mgr.close();
-		}
-		
-		return metaModelEntities;
 	}
 	
 	/**
@@ -125,6 +91,39 @@ public class MetaModelEntityEndpoint {
 		}
 		return metaModelEntity;
 	}
+	
+	
+	/**
+	 * Reads a MetaModelEntity with the given name from the database. Only one entity is returned.
+	 * 
+	 * @param name name of the entity
+	 * @param user required for authorization
+	 * @return the entity with the given name
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings("unchecked")
+	List<MetaModelEntity> getMetaModelEntitiesByName(String name, User user) throws UnauthorizedException {
+
+		if (user == null) throw new UnauthorizedException("User not authorized");
+
+		List<MetaModelEntity> metaModelEntities = null;
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {			
+			Query query = mgr.newQuery(MetaModelEntity.class);
+			query.setFilter("name == :name");
+			
+			Map<String, String> params = new HashMap<>();
+			params.put("name", name);
+			
+			metaModelEntities = (List<MetaModelEntity>) query.executeWithMap(params);
+			
+		} finally {
+			mgr.close();
+		}
+		
+		return metaModelEntities;
+	}	
 
 	/**
 	 * Checks whether the entity exists in the database.
