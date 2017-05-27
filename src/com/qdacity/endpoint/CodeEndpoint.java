@@ -132,7 +132,7 @@ public class CodeEndpoint {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 
-			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementIDs " + Joiner.on(", ").join(code.getMmElementIDs())); 
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementIDs " + code.getMmElementIDs()); 
 
 			Code codeDB = mgr.getObjectById(Code.class, code.getId());
 			code.setCodeID(codeDB.getCodeID());
