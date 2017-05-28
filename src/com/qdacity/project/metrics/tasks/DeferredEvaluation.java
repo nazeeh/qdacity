@@ -39,6 +39,7 @@ import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredFleissKappaEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
 
 public class DeferredEvaluation implements DeferredTask {
@@ -87,7 +88,7 @@ public class DeferredEvaluation implements DeferredTask {
 		    calculateKrippendorffsAlpha(validationReport);
 		    break;
 		case FLEISS_KAPPA:
-		    calculateFleissKappa();
+		    calculateFleissKappa(validationReport);
 		    break;
 	    }
 
@@ -147,7 +148,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
 	    for (ValidationProject validationProject : validationProjectsFromUsers) {
-		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, docIDs, orignalDocIDs, validationReport.getId(), user);
+		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, docIDs, orignalDocIDs, validationReport.getId(), user, evalUnit);
 		Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
 		taskQueue.launchInTaskQueue(deferredValidation);
 	    }
@@ -302,8 +303,43 @@ public class DeferredEvaluation implements DeferredTask {
 	return new TabularValidationReportRow(averageColumns);
     }
 
-    private void calculateFleissKappa() {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /**
+     * FleissKappa per Document per Code (as Codes are not Categories).
+     * @throws UnauthorizedException 
+     */
+    private void calculateFleissKappa(ValidationReport validationReport) throws Exception {
+	List<DeferredAlgorithmEvaluation> deferredEvals = new ArrayList<>();
+	
+	//get all Codes
+	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+	
+	//Amount Raters
+	int amountRaters = validationProjectsFromUsers.size();
+	if(amountRaters < 2) {
+	    throw new Exception("With less than two raters, there is no valid Fleiss Kappa Evaluation possible.");
+	}
+	
+	//get all Document Ids from every Rater
+	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
+		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
+	
+	List<String> headerCells = new ArrayList<>();
+	headerCells.add("Document: Code \\ Unit");
+	headerCells.add("ALL");
+	// TODO aus einem der Textdocumente schon die anzahl der Units holen :(
+	
+	
+	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
+
+	//Create Deferred Evaluations
+	for(String docName : sameDocumentsFromDifferentRatersMap.keySet()) {
+	    deferredEvals.add(new DeferredFleissKappaEvaluation(docIDs, codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, validationReport.getId(), evalUnit));
+	}
+	
+	//Run deferred Evaluations
+	taskQueue.launchListInTaskQueue(deferredEvals);
+	
+	getPersistenceManager().makePersistent(validationReport);
     }
 
 }

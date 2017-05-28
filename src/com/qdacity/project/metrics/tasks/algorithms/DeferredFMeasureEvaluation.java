@@ -16,6 +16,7 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
@@ -26,8 +27,8 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
     List<Long> docIDs;
     List<Long> orignalDocIDs;
 
-    public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> docIDs, List<Long> orignalDocIDs, Long validationReportID, User user) {
-	super(validationPrj, user, validationReportID);
+    public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> docIDs, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit) {
+	super(validationPrj, user, validationReportID, evalUnit);
 	this.docIDs = docIDs; // FIXME dont need anymore, because only list of relevant textdocumentIDs is passed?
 	this.orignalDocIDs = orignalDocIDs;
     }

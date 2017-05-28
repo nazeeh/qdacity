@@ -17,13 +17,11 @@ import java.util.logging.Logger;
 public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvaluation {
 
     private final List<String> row;
-    private final EvaluationUnit evalUnit;
     private final Collection<Long> codeIds;
     private final List<Long> textDocumentIds;
 
     public DeferredKrippendorffsAlphaEvaluation(ValidationProject validationProject, User user, Long validationReportId, String documentTitle, EvaluationUnit evalUnit, ArrayList<Long> codeIds, ArrayList<Long> textDocumentIds) {
-	super(validationProject, user, validationReportId);
-	this.evalUnit = evalUnit;
+	super(validationProject, user, validationReportId, evalUnit);
 	this.codeIds = codeIds;
 	row = new ArrayList<>();
 	row.add(documentTitle);

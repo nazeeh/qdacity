@@ -8,6 +8,7 @@ import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ValidationResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +25,15 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     protected final ValidationProject validationProject;
     protected final User user;
     protected final Long validationReportId;
+    protected final EvaluationUnit evalUnit;
 
     protected ValidationResult valResult;
 
-    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId) {
+    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit) {
 	this.validationProject = validationProject;
 	this.validationReportId = validationReportId;
 	this.user = user;
+	this.evalUnit = evalUnit;
     }
 
     @Override
