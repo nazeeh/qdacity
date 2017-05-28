@@ -21,7 +21,7 @@ public class FleissKappa {
      * @param numRaters how many raters are there in total
      * @return
      */
-    public FleissKappaResult compute(int[] data, int numRaters) {
+    public FleissKappaResult compute(Integer[] data, int numRaters) {
 	assert (numRaters > 1);
 	assert (data.length > 0);
 	FleissKappaResult result = new FleissKappaResult();
@@ -35,7 +35,7 @@ public class FleissKappa {
 	return result;
     }
 
-    private double calculateTotalCategoryAgreement(int[] data, int numRaters) {
+    private double calculateTotalCategoryAgreement(Integer[] data, int numRaters) {
 	int sumRatings = 0;
 	for(int i = 0; i<data.length; i++) {
 	    sumRatings += data[i];
@@ -44,7 +44,7 @@ public class FleissKappa {
 	return totalCategoryAgreement;
     }
 
-    private double[] calculateAgreementOfCodePerUnits(int[] data, int numRaters) {
+    private double[] calculateAgreementOfCodePerUnits(Integer[] data, int numRaters) {
 	double[] agreementOfCodePerUnits = new double[data.length];
 	for (int i = 0; i < data.length; i++) {
 	    assert (data[i] <= numRaters); //Otherwise there is a logical problem in the input data.
