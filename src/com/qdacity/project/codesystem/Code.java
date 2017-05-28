@@ -38,7 +38,7 @@ public class Code {
 	
 	//Meta model element
 	@Persistent
-	List<Long> mmElementIDs;
+	List<Long> mmElementIDs = new ArrayList<>();
 	
 	@Persistent(
 		defaultFetchGroup = "true",
