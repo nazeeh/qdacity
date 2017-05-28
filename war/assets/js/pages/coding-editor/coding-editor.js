@@ -204,7 +204,7 @@ window.init = function () {
 	}
 
 	document.getElementById('btnSaveMetaModelAttr').onclick = function () {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, metaModelView.getActiveElementId(), getActiveCode().relations);
+		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, metaModelView.getActiveElementIds(), getActiveCode().relations);
 
 	}
 
@@ -765,7 +765,7 @@ function codesystemStateChanged(nodes, nodesJson) {
 		if ($("#footer").is(":visible")) {
 			fillCodingTable(active_code);
 			fillPropertiesView(active_code);
-			metaModelView.setActiveId(getActiveCode().mmElementIDs);
+			metaModelView.setActiveIds(getActiveCode().mmElementIDs);
 			codeRelationsView.setRelations(getActiveCode().relations, easytree, getActiveCode().dbID, getActiveCode().id);
 			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
 			if (cbEditor.def != undefined) {

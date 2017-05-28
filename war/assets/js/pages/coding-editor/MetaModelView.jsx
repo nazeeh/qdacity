@@ -4,26 +4,36 @@ import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationE
 import MetaModelElement from './MetaModelElement';
 
 export default class MetaModelView extends React.Component {
+
 	constructor(props) {
 		super(props);
 
 		this.setActiveElement = this.setActiveElement.bind(this);
 
 		this.state = {
-			elements: [],
-			selected: -1
+			elements: {},
+			selected: []
 		};
 
 		this.init();
 	}
 
-	setActiveId(elementId) {
-		var idFilter = function (el) {
-			return el.getId() === elementId;
-		}
+	setActiveIds(elementIds) {
+		var _this = this;
 
-		var element = this.state.elements.find(idFilter);
-		if (typeof element != 'undefined') {
+		_this.resetSelection();
+
+		if (elementIds != null) {
+			elementIds.forEach((elementId) => _this.setActiveId(elementId));
+		} else {
+			this.setActiveId(null);
+		}
+	}
+
+	setActiveId(elementId) {
+		let element = this.getElement(elementId);
+
+		if (typeof element != 'undefined' && element != null) {
 			this.setActiveElement(element);
 		} else {
 			this.resetSelection();
@@ -31,71 +41,86 @@ export default class MetaModelView extends React.Component {
 				elements: this.state.elements
 			});
 		}
-
-
 	}
 
 	setActiveElement(element) {
 
-		this.resetSelection();
+		let group = this.state.elements[element.getGroup()];
+
+		this.resetSelectionForGroup(group);
 
 		element.toggleSelected();
 
-		this.state.selected = element.getId();
+		this.state.selected.push(element.getId());
 
-		this.selectGeneralizations(element.getId());
+		this.selectGeneralizations(element.getId(), group);
 
 		this.setState({
 			elements: this.state.elements
 		});
 	}
 
-	getActiveElementId() {
+	getActiveElementIds() {
 		return this.state.selected;
 	}
 
-	getElement(pId) {
-		var idFilter = function (el) {
-			return el.getId() === pId;
+	getElement(elementId) {
+		let idFilter = function (el) {
+			return el.getId() === elementId;
 		}
 
-		var element = this.state.elements.find(idFilter);
+		for (let key in this.state.elements) {
+			let element = this.state.elements[key].find(idFilter);
 
-		return element;
+			if (element != null) {
+				return element;
+			}
+		}
+
+		return null;
 	}
 
-	selectGeneralizations(elementID) {
-		var _this = this;
-		this.state.elements.forEach(function (el) {
+	selectGeneralizations(elementID, group) {
+		let _this = this;
+		group.forEach(function (el) {
 			if (el.hasSpecialization(elementID)) {
 				el.setSelected(true);
 				//recursion
-				_this.selectGeneralizations(el.getId());
+				_this.selectGeneralizations(el.getId(), group);
 			}
 		});
 	}
 
 	resetSelection() {
-		this.state.elements.forEach(function (el) {
+		for (let key in this.state.elements) {
+			this.resetSelectionForGroup(this.state.elements[key]);
+		}
+	}
+
+	resetSelectionForGroup(group) {
+		let _this = this;
+
+		group.forEach(function (el) {
 			el.setSelected(false);
+
+			let index = _this.state.selected.indexOf(el.id);
+			if (index > -1) {
+				_this.state.selected.splice(index, 1);
+			}
 		});
 	}
 
-	isActive(value) {
-		return ((value == this.state.selected) ? 'selected="selected"' : '');
-	}
-
 	init() {
-		var _this = this;
-		var relationsPromise = MetaModelRelationEndpoint.listRelations(1); // FIXME choose a configurable MM. MM with ID 1 is the default RE MM
+		let _this = this;
+		let relationsPromise = MetaModelRelationEndpoint.listRelations(1); // FIXME choose a configurable MM. MM with ID 1 is the default RE MM
 		MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
-			var entities = resp.items || [];
+			let entities = resp.items || [];
 
-			var entitiesById = {};
-			for (var i = 0; i < entities.length; i++) {
+			let entitiesById = {};
+			for (let i = 0; i < entities.length; i++) {
 
 
-				var element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type);
+				let element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type, entities[i].group);
 				if (_this.props.filter == entities[i].name) {
 					_this.setState({
 						selected: element.id
@@ -106,9 +131,9 @@ export default class MetaModelView extends React.Component {
 			}
 
 			relationsPromise.then(function (resp) {
-				var relations = resp.items || [];
-				for (var i = 0; i < relations.length; i++) {
-					var relation = relations[i];
+				let relations = resp.items || [];
+				for (let i = 0; i < relations.length; i++) {
+					let relation = relations[i];
 					switch (relation.type) {
 					case "Association":
 						break;
@@ -120,9 +145,20 @@ export default class MetaModelView extends React.Component {
 						;
 					}
 				}
-				var mmElements = $.map(entitiesById, function (val) {
-					return val;
-				});
+
+				let mmElements = {};
+				for (let id in entitiesById) {
+					let entity = entitiesById[id];
+
+					let group = entity.getGroup();
+
+					if (!mmElements.hasOwnProperty(group)) {
+						mmElements[group] = [];
+					}
+
+					mmElements[group].push(entity);
+				}
+
 				_this.setState({
 					elements: mmElements
 				});
@@ -131,25 +167,34 @@ export default class MetaModelView extends React.Component {
 	}
 
 	render() {
-		var _this = this;
-		var style = {
-			width: '250px',
-			fontSize: 17
+		let _this = this;
+
+		let blockStyle = {
+			display: "flex",
+			justifyContent: "center"
 		};
 
+		return (
+			<div style={blockStyle}>
+		        {Object.keys(_this.state.elements).map((key, index) => _this.renderGroup(_this.state.elements[key], key))}		        
+            </div>
+		);
+	}
 
+	renderGroup(elements, group) {
+		let _this = this;
 
-		var firstLevelSelected = -1;
+		let firstLevelSelected = -1;
 
-		var firstLevel = this.state.elements.map(function (mmElement) {
+		let firstLevel = elements.map(function (mmElement) {
 			if (mmElement.generalizations.length == 0 && (typeof _this.props.filter == "undefined" || _this.props.filter == mmElement.type)) {
 
-				var attributes = {
+				let attributes = {
 					value: mmElement.id,
 					onClick: _this.setActiveElement.bind(null, mmElement)
 				}
 
-				var classes = "btn btn-default";
+				let classes = "btn btn-default";
 
 				if (mmElement.isSelected()) {
 					firstLevelSelected = mmElement.id;
@@ -162,15 +207,15 @@ export default class MetaModelView extends React.Component {
 			}
 		})
 
-		var secondLevelSelected = -1;
-		var secondLevel = this.state.elements.map(function (mmElement) {
+		let secondLevelSelected = -1;
+		let secondLevel = elements.map(function (mmElement) {
 			if (mmElement.hasGeneralization(firstLevelSelected)) {
-				var attributes = {
+				let attributes = {
 					value: mmElement.id,
 					onClick: _this.setActiveElement.bind(null, mmElement)
 				}
 
-				var classes = "btn btn-default";
+				let classes = "btn btn-default";
 
 				if (mmElement.isSelected()) {
 					classes = "btn btn-primary";
@@ -181,13 +226,13 @@ export default class MetaModelView extends React.Component {
 			} else return null;
 		})
 
-		var thirdLevel = this.state.elements.map(function (mmElement) {
-			var attributes = {
+		let thirdLevel = elements.map(function (mmElement) {
+			let attributes = {
 				value: mmElement.id,
 				onClick: _this.setActiveElement.bind(null, mmElement)
 			}
 
-			var classes = "btn btn-default";
+			let classes = "btn btn-default";
 
 			if (mmElement.isSelected()) {
 				classes = "btn btn-primary";
@@ -197,29 +242,24 @@ export default class MetaModelView extends React.Component {
 			return null;
 		})
 
-		var blockStyle = {
-			display: "block"
-		};
 
-		var centerStyle = {
-			textAlign: "center"
+		let centerStyle = {
+			textAlign: "center",
+			margin: "0 10px"
 		};
 
 		return (
-			<div style={blockStyle}>
-      <div style={centerStyle} className="list-group">
-      	<div className="btn-group">
-      		{firstLevel}
-      	</div>
-      	<div style={centerStyle} className="list-group">
-      		{secondLevel}
-	    </div>
-	    <div style={centerStyle} className="list-group">
-      		{thirdLevel}
-	    </div>
-      </div>
-      </div>
-		);
+			<div key={"block" + group} style={centerStyle} className="list-group">
+                <div key={"firstLevel" + group} className="btn-group">
+                    {firstLevel}
+                </div>
+                <div key={"secondLevel" + group}  style={centerStyle} className="list-group">
+                    {secondLevel}
+                </div>
+                <div key={"thirdLevel" + group}  style={centerStyle} className="list-group">
+                    {thirdLevel}
+                </div>
+		    </div>);
 	}
 
 }
