@@ -39,8 +39,6 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	    mgr = getPersistenceManager();
 	    mgr.setMultithreaded(true);
 	    valResult = makeNextValidationResult();
-	    valResult.setReportID(validationReportId);
-	    mgr.makePersistent(valResult); // make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	    runAlgorithm();
 	    mgr.makePersistent(valResult);
 	} catch (Exception e) {
@@ -50,12 +48,17 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	}
     }
 
+    /**
+     * Creates and initially persists a validationResult, where only the reportRow is missing.
+     * Set the reportRow in this validationResult and make sure to persist it again.
+     * @return the newly created and initially persisted ValidationResult
+     */
     protected ValidationResult makeNextValidationResult() {
 	ValidationResult validationResult = new ValidationResult();
 	valResult.setRevisionID(validationProject.getRevisionID());
 	valResult.setValidationProjectID(validationProject.getId());
 	valResult.setReportID(validationReportId);
-	
+	mgr.makePersistent(validationResult);// make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	return validationResult;
     }
 
