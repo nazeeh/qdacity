@@ -89,7 +89,7 @@ public class MaintenanceEndpoint {
 		insertMetaModelEntity("", true, 1L, 1, "Dynamic Relationship", MetaModelEntityType.RELATIONSHIP, user);
 		insertMetaModelEntity("", true, 1L, 1, "Dynamic Aspect", MetaModelEntityType.PROPERTY, user);
 		insertMetaModelEntity("", false, 1L, 1, "causes", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", true, 1L, 2, "Category", MetaModelEntityType.OTHER, user);
+		insertMetaModelEntity("", true, 1L, 2, "Category", MetaModelEntityType.PROPERTY, user);
 		insertMetaModelEntity("", true, 1L, 1, "Aspect", MetaModelEntityType.PROPERTY, user);
 		insertMetaModelEntity("", false, 1L, 1, "is part of", MetaModelEntityType.RELATIONSHIP, user);
 		insertMetaModelEntity("assocation name", false, 1L, 1, "is related to", MetaModelEntityType.RELATIONSHIP, user);
@@ -100,7 +100,7 @@ public class MaintenanceEndpoint {
 		insertMetaModelEntity("", false, 1L, 1, "influences", MetaModelEntityType.RELATIONSHIP, user);
 		insertMetaModelEntity("", false, 1L, 1, "Actor", MetaModelEntityType.PROPERTY, user);
 		insertMetaModelEntity("", false, 1L, 1, "Process", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", true, 1L, 2, "Concept", MetaModelEntityType.OTHER, user);
+		insertMetaModelEntity("", true, 1L, 2, "Concept", MetaModelEntityType.PROPERTY, user);
 		insertMetaModelEntity("", true, 1L, 1, "Structural Aspect", MetaModelEntityType.PROPERTY, user);
 		insertMetaModelEntity("", true, 1L, 1, "Structural Relationship", MetaModelEntityType.RELATIONSHIP, user);
 		insertMetaModelEntity("", false, 1L, 1, "is consequence of", MetaModelEntityType.RELATIONSHIP, user);
