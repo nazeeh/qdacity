@@ -149,7 +149,7 @@ export default class RevisionHistory extends React.Component {
 			modal.addCheckBoxes('docs', documents);
 			
 			//TODO should not be hardcoded here
-            var methods = ["f-measure", "krippendorffs-alpha", "cohens-kappa"];
+            var methods = ["f-measure", "krippendorffs-alpha", "fleiss-kappa"];
             var units = ["paragraph", "sentence"];
             
             modal.addSelect("method", methods, "Evaluation Method");

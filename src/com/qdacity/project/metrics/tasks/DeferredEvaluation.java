@@ -86,8 +86,8 @@ public class DeferredEvaluation implements DeferredTask {
 		case KRIPPENDORFFS_ALPHA:
 		    calculateKrippendorffsAlpha(validationReport);
 		    break;
-		case COHENS_CAPPA:
-		    calculateCohensKappa();
+		case FLEISS_KAPPA:
+		    calculateFleissKappa();
 		    break;
 	    }
 
@@ -278,10 +278,6 @@ public class DeferredEvaluation implements DeferredTask {
 	syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
     }
 
-    private void calculateCohensKappa() {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     /**
      * Calculates the averageAgreement for TabularValidationReportRows using
      * simple average calculation.
@@ -304,6 +300,10 @@ public class DeferredEvaluation implements DeferredTask {
 	    }
 	}
 	return new TabularValidationReportRow(averageColumns);
+    }
+
+    private void calculateFleissKappa() {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
