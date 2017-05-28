@@ -38,9 +38,7 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	try {
 	    mgr = getPersistenceManager();
 	    mgr.setMultithreaded(true);
-	    valResult = new ValidationResult();
-	    valResult.setRevisionID(validationProject.getRevisionID());
-	    valResult.setValidationProjectID(validationProject.getId());
+	    valResult = makeNextValidationResult();
 	    valResult.setReportID(validationReportId);
 	    mgr.makePersistent(valResult); // make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	    runAlgorithm();
@@ -50,6 +48,15 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	} finally {
 	    mgr.close();
 	}
+    }
+
+    protected ValidationResult makeNextValidationResult() {
+	ValidationResult validationResult = new ValidationResult();
+	valResult.setRevisionID(validationProject.getRevisionID());
+	valResult.setValidationProjectID(validationProject.getId());
+	valResult.setReportID(validationReportId);
+	
+	return validationResult;
     }
 
     protected List<TextDocument> collectTextDocumentsfromMemcache(List<Long> textDocumentIds) {
