@@ -99,19 +99,17 @@ public class Authorization {
 	public static void checkAuthorization(MetaModelEntity metaModelEntity, User userLoggedIn) throws UnauthorizedException {
 		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
 
-		com.qdacity.user.User user = userEndpoint.getUser(userLoggedIn.getUserId(), userLoggedIn);
-		boolean allowed = user.getType().equals(UserType.ADMIN);
-		
-		if (!allowed) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
+		Boolean allowed = isUserAdmin(userLoggedIn);
+
+		if (!allowed) throw new UnauthorizedException("User is Not Authorized");
 	}
 
 	public static void checkAuthorization(MetaModelRelation metaModelRelation, User userLoggedIn) throws UnauthorizedException {
 		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
 
-		com.qdacity.user.User user = userEndpoint.getUser(userLoggedIn.getUserId(), userLoggedIn);
-		boolean allowed = user.getType().equals(UserType.ADMIN);
-		
-		if (!allowed) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
+		Boolean allowed = isUserAdmin(userLoggedIn);
+
+		if (!allowed) throw new UnauthorizedException("User is Not Authorized");
 	}
 
 	public static AuthorizationLevel checkAuthorization(ValidationProject project, com.qdacity.user.User user) throws UnauthorizedException {
@@ -131,8 +129,8 @@ public class Authorization {
 		throw new UnauthorizedException("User is Not Authorized.");
 	}
 	
-	private static Boolean isUserAdmin(User googleUser){
-		com.qdacity.user.User user = (com.qdacity.user.User) Cache.getOrLoad(googleUser.getUserId(), com.qdacity.user.User.class);
+	private static Boolean isUserAdmin(User googleUser) throws UnauthorizedException{
+		com.qdacity.user.User user = userEndpoint.getCurrentUser(googleUser);
 		if (user.getType() == UserType.ADMIN) return true;
 		return false;
 	}
@@ -140,10 +138,9 @@ public class Authorization {
 	public static void checkDatabaseInitalizationAuthorization(User userLoggedIn) throws UnauthorizedException {
 		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
 
-		com.qdacity.user.User user = userEndpoint.getUser(userLoggedIn.getUserId(), userLoggedIn);
-		boolean allowed = user.getType().equals(UserType.ADMIN);
-		
-		if (!allowed) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
+		Boolean allowed = isUserAdmin(userLoggedIn);
+
+		if (!allowed) throw new UnauthorizedException("User is Not Authorized");
 	}
 
 }

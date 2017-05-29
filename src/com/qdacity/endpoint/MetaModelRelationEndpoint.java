@@ -20,6 +20,10 @@ import com.qdacity.PMF;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
 
+
+/**
+ * This class provides the public api interface for the MetaModelRelation.
+ */
 @Api(name = "qdacity",
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(
@@ -35,7 +39,7 @@ public class MetaModelRelationEndpoint {
 			audiences = { Constants.WEB_CLIENT_ID })
 	public List<MetaModelRelation> listRelations( @Named("metaModelId") Long metaModelId, User user) throws UnauthorizedException {
 
-		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
+		if (user == null) throw new UnauthorizedException("User not authorized");
 
 		PersistenceManager mgr = null;
 		List<MetaModelRelation> relations = null;
