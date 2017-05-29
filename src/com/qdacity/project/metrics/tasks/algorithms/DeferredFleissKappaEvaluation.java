@@ -31,13 +31,13 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
     protected void runAlgorithm() throws Exception {
 	//prepare input data
 	List<TextDocument> txDocs = collectTextDocumentsfromMemcache(docIds);
-	Map<Long, Integer[]> inputMap = new FleissKappaInputDataGenerator(txDocs, codeNamesAndIds.values(), evalUnit).generateInputData();
+	List<Integer[]> inputArrays = new FleissKappaInputDataGenerator(txDocs, codeNamesAndIds.values(), evalUnit).generateInputData();
 
 	//run algorithm
 	FleissKappa kappa = new FleissKappa();
 	String[] codeNames = (String[]) codeNamesAndIds.keySet().toArray();
 	int index = 0;
-	for (Integer[] data : inputMap.values()) {
+	for (Integer[] data : inputArrays) {
 	    FleissKappaResult fleissKappaResult = kappa.compute(data, amountRaters);
 	    TabularValidationReportRow rowResult = FleissKappaResultConverter.toTabularValidationReportRow(docName, codeNames[index], fleissKappaResult);
 	    index++;

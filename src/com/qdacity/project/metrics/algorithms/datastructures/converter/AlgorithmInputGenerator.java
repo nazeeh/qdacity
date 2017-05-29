@@ -40,6 +40,33 @@ public abstract class AlgorithmInputGenerator {
 	return ratings;
     }
 
+    /**
+     *
+     * @return A List of List containing the applied codes per unit.
+     */
+    protected List<List<List<String>>> getDocumentUnitCodes() {
+	List<List<List<String>>> txDocsUnitCodesRaw = new ArrayList<>();
+
+	for (TextDocument document : sameDocumentsFromDifferentRaters) {
+	    Document parsedDocument = Jsoup.parse(document.getText().getValue());
+	    Elements paragraphs = parsedDocument.select(TextDocumentConstants.PARAGRAPH_TAG);
+	    if (evalUnit == EvaluationUnit.PARAGRAPH) {
+		for (int i = 0; i < paragraphs.size(); i++) {
+		    if (txDocsUnitCodesRaw.size() <= i) {
+			txDocsUnitCodesRaw.add(new ArrayList<List<String>>());
+		    }
+		    Elements codings = paragraphs.get(i).select(TextDocumentConstants.CODING_TAG);
+		    txDocsUnitCodesRaw.get(i).add(getAppliedCodes(codings));
+		}
+	    } else {
+		throw new UnsupportedOperationException("Evaluation Unit not supported yet."); //TODO
+	    }
+
+	}
+
+	return txDocsUnitCodesRaw;
+    }
+
     protected List<String> getAppliedCodes(Elements codings) {
 	List<String> originalCodeIDs = new ArrayList<>();
 	for (Element originalCoding : codings) {
