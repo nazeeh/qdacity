@@ -13,7 +13,7 @@ export default class ReportList extends React.Component {
 			itemsPerPage: 8,
 			search: ''
 		};
-		
+
 		this.paginationClick = this.paginationClick.bind(this);
 	}
 
@@ -38,47 +38,47 @@ export default class ReportList extends React.Component {
 			}
 		};
 	}
-	
-		
+
+
 	paginationClick(event) {
 		this.setState({
 			currentPage: Number(event.target.id)
 		});
 	}
-	
-	
+
+
 	isActivePage(page) {
 		return ((page == this.state.currentPage) ? 'active' : ' ');
 	}
-	
 
 
-	deleteReport(e, reportId, index){
+
+	deleteReport(e, reportId, index) {
 		var _this = this;
 		e.stopPropagation();
 		var validationEndpoint = new ValidationEndpoint();
-	
+
 		validationEndpoint.deleteReport(reportId)
-		.then(
-			function (val) {
-				alertify.success("Report has been deleted");
-				_this.state.reports.splice(index, 1);
-				_this.setState({
+			.then(
+				function (val) {
+					alertify.success("Report has been deleted");
+					_this.state.reports.splice(index, 1);
+					_this.setState({
 						reports: _this.state.reports
+					})
 				})
-			})
 	}
-	
-	showValidationReports(report){
+
+	showValidationReports(report) {
 		var agreementModal = new IntercoderAgreement(report);
 		agreementModal.showModal();
 	}
-	
-	
+
+
 	renderReportDeleteBtn(report, index) {
 		const styles = this.getStyles();
-	
-		if (this.props.isAdmin || this.props.isProjectOwner) 
+
+		if (this.props.isAdmin || this.props.isProjectOwner)
 			return <a onClick={(e) => this.deleteReport(e, report.id, index)} className="btn  fa-stack fa-lg" style={styles.listItemBtn}>
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>

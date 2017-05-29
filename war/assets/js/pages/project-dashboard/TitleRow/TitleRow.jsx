@@ -14,7 +14,7 @@ export default class TitleRow extends React.Component {
 			prjSettings: {}
 		};
 	}
-	
+
 	getStyles() {
 		return {
 			projectName: {
@@ -22,18 +22,18 @@ export default class TitleRow extends React.Component {
 			}
 		};
 	}
-	
-	setSettings(properties){
+
+	setSettings(properties) {
 		var settings = {
 			umlEditor: properties.umlEditorEnabled
 		};
-		
-		this.setState ({
-			prjSettings : settings
+
+		this.setState({
+			prjSettings: settings
 		});
 	}
-	
-	setIsValidationCoder(properties){
+
+	setIsValidationCoder(properties) {
 		var account = this.props.account;
 		account.getCurrentUser().then((user) => {
 			var isValidationCoder = account.isValidationCoder(user, properties);
@@ -41,27 +41,27 @@ export default class TitleRow extends React.Component {
 				isValidationCoder: isValidationCoder
 			});
 		});
-		
+
 	}
-	
-	setProjectProperties(properties){
+
+	setProjectProperties(properties) {
 		this.setSettings(properties);
 		this.setIsValidationCoder(properties);
 		this.setState({
 			prjName: properties.name
 		});
 	}
-	
-	setIsProjectOwner(pIsProjectOnwer){
+
+	setIsProjectOwner(pIsProjectOnwer) {
 		this.setState({
 			isProjectOwner: pIsProjectOnwer
 		});
 	}
-	
+
 	render() {
 		const styles = this.getStyles();
-		
-		return ( 
+
+		return (
 			<h2 className="page-header">
 			<i className="fa fa-newspaper-o"></i> 
 				<span style={styles.projectName}>

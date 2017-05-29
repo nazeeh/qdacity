@@ -10,6 +10,9 @@ import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.qdacity.endpoint.UserEndpoint;
+import com.qdacity.metamodel.MetaModelEntity;
+import com.qdacity.metamodel.MetaModelRelation;
 import com.qdacity.project.Project;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
@@ -19,6 +22,8 @@ import com.qdacity.user.UserType;
 
 public class Authorization {
 
+	private static UserEndpoint userEndpoint = new UserEndpoint();
+	
 	public static Boolean isUserAuthorized(User googleUser, Long projectID) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 
@@ -90,6 +95,24 @@ public class Authorization {
 		if (!authorized) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
 
 	}
+	
+	public static void checkAuthorization(MetaModelEntity metaModelEntity, User userLoggedIn) throws UnauthorizedException {
+		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
+
+		com.qdacity.user.User user = userEndpoint.getUser(userLoggedIn.getUserId(), userLoggedIn);
+		boolean allowed = user.getType().equals(UserType.ADMIN);
+		
+		if (!allowed) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
+	}
+
+	public static void checkAuthorization(MetaModelRelation metaModelRelation, User userLoggedIn) throws UnauthorizedException {
+		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
+
+		com.qdacity.user.User user = userEndpoint.getUser(userLoggedIn.getUserId(), userLoggedIn);
+		boolean allowed = user.getType().equals(UserType.ADMIN);
+		
+		if (!allowed) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
+	}
 
 	public static AuthorizationLevel checkAuthorization(ValidationProject project, com.qdacity.user.User user) throws UnauthorizedException {
 		if (user == null) throw new UnauthorizedException("User is Not Valid");
@@ -112,6 +135,15 @@ public class Authorization {
 		com.qdacity.user.User user = (com.qdacity.user.User) Cache.getOrLoad(googleUser.getUserId(), com.qdacity.user.User.class);
 		if (user.getType() == UserType.ADMIN) return true;
 		return false;
+	}
+
+	public static void checkDatabaseInitalizationAuthorization(User userLoggedIn) throws UnauthorizedException {
+		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
+
+		com.qdacity.user.User user = userEndpoint.getUser(userLoggedIn.getUserId(), userLoggedIn);
+		boolean allowed = user.getType().equals(UserType.ADMIN);
+		
+		if (!allowed) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
 	}
 
 }

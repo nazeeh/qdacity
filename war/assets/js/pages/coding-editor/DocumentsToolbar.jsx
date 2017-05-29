@@ -14,23 +14,23 @@ export default class DocumentsToolbar extends React.Component {
 		super(props);
 		this.state = {
 			isProjectOwner: false,
-			umlEditor : this.props.umlEditor
+			umlEditor: this.props.umlEditor
 		};
-		
+
 		this.addDocument = this.addDocument.bind(this);
 		this.removeDocumentFromProject = this.removeDocumentFromProject.bind(this);
 		this.changeTitle = this.changeTitle.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			settingsBtn: {
 				marginLeft: "5px"
 			}
-			
+
 		};
 	}
-	
+
 	addDocument() {
 		var _this = this;
 		var decider = new BinaryDecider('Empty Document or Upload?', 'New Text Document', 'Upload Documents');
@@ -120,7 +120,7 @@ export default class DocumentsToolbar extends React.Component {
 
 		}
 	}
-	
+
 	removeDocumentFromProject() {
 		var docId = this.props.document.id;
 		var _this = this;
@@ -130,17 +130,17 @@ export default class DocumentsToolbar extends React.Component {
 			_this.props.removeActiveDocument(docId);
 		});
 	}
-	
+
 	changeTitle() {
 		var doc = this.props.document;
 		doc.title = prompt("New name for document \"" + doc.title + "\"", "Title");
 		this.props.changeDocumentData(doc);
 	}
-	
+
 	render() {
 		const styles = this.getStyles();
-		
-		return ( 
+
+		return (
 			<div className="btn-group">
 				<a className="btn btn-default" onClick={this.changeTitle}>
 					<i className="fa fa-pencil fa-1x"></i>

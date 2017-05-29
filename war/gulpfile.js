@@ -1,7 +1,10 @@
-var gulp = require('gulp');
-var webpack = require('webpack-stream');
-var uglify = require('gulp-uglify');
-var beautify = require('gulp-beautify');
+const gulp = require('gulp');
+const webpack = require('webpack-stream');
+const uglify = require('gulp-uglify');
+const beautify = require('gulp-beautify');
+const jasmine = require('gulp-jasmine');
+require('babel-core/register'); 
+ 
 var paths = {
   scripts: ['assets/js/**/*.js'],
   images: 'assets/img/**/*'
@@ -77,7 +80,9 @@ function prettify(){
 	});
 }
 
-gulp.task('bundle', function() {
+gulp.task('bundle', ['format','bundle-task']);
+
+gulp.task('bundle-task', function() {
 	return gulp.src('') //doesn't matter what to put as src, 
 						//since webpack.config fetches from entry points
 	.pipe(webpack( require('./webpack.config.js') )).on('error', handleError)
@@ -98,7 +103,11 @@ gulp.task('format', function() {
 });
  
 gulp.task('watch',function() {
-	gulp.watch('assets/**/*.{js,jsx}',['bundle'])
+	gulp.watch('assets/**/*.{js,jsx}',['bundle-task'])
 });
+
+gulp.task('test', () =>
+    gulp.src('./tests/*.js').pipe(jasmine())
+);
  
-gulp.task('default', ['bundle','watch']);
+gulp.task('default', ['bundle-task','watch']);
