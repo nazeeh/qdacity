@@ -28,11 +28,11 @@ public class FleissKappaTest {
 		System.out.println("Unit 4: "+result.getAgreementOfCategoryPerUnits()[3]);
 		System.out.println("Unit 5: "+result.getAgreementOfCategoryPerUnits()[4]);
 		assert(result.getTotalCategoryAgreement() == 0.44);
-		assert(result.getAgreementOfCategoryPerUnits()[0] == 1);
+		assert(result.getAgreementOfCategoryPerUnits()[0] == 1.0);
 		assert(result.getAgreementOfCategoryPerUnits()[1] == 0.4);
 		assert(result.getAgreementOfCategoryPerUnits()[2] == 0.4);
-		assert(result.getAgreementOfCategoryPerUnits()[3] == 1);
-		assert(result.getAgreementOfCategoryPerUnits()[4] == 0.6);
+		assert(result.getAgreementOfCategoryPerUnits()[3] == 1.0);
+		assert(result.getAgreementOfCategoryPerUnits()[4] == 0.6000000000000001);
 	}
 
 }

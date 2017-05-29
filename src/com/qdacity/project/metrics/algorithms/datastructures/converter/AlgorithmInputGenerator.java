@@ -6,6 +6,8 @@ import com.qdacity.project.metrics.constants.TextDocumentConstants;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,6 +47,7 @@ public abstract class AlgorithmInputGenerator {
      * @return A List of List containing the applied codes per unit.
      */
     protected List<List<List<String>>> getDocumentUnitCodes() {
+	//Documents->Units->Codes->codeId(String)
 	List<List<List<String>>> txDocsUnitCodesRaw = new ArrayList<>();
 
 	for (TextDocument document : sameDocumentsFromDifferentRaters) {
@@ -56,6 +59,7 @@ public abstract class AlgorithmInputGenerator {
 			txDocsUnitCodesRaw.add(new ArrayList<List<String>>());
 		    }
 		    Elements codings = paragraphs.get(i).select(TextDocumentConstants.CODING_TAG);
+		    Logger.getLogger("logger").log(Level.INFO, "Unit "+i+ " get Codes");
 		    txDocsUnitCodesRaw.get(i).add(getAppliedCodes(codings));
 		}
 	    } else {
