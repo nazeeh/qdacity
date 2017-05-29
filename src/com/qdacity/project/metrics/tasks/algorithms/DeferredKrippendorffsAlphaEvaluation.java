@@ -33,7 +33,7 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 
 	List<TextDocument> textDocuments = collectTextDocumentsfromMemcache(textDocumentIds);
 
-	List<ReliabilityData> rData = new ReliabilityDataGenerator(evalUnit).generate(textDocuments, codeIds);
+	List<ReliabilityData> rData = new ReliabilityDataGenerator(textDocuments, codeIds, evalUnit).generate();
 	Logger.getLogger("logger").log(Level.INFO, "Calculation of Kripp's Alpha");
 	for (ReliabilityData reliabilityData : rData) {
 	    KrippendorffsAlphaCoefficient kac = new KrippendorffsAlphaCoefficient(reliabilityData, 2); //We are only checking one code at a time. So it is either set or not set.

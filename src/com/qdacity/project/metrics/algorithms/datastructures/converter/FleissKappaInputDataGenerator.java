@@ -6,23 +6,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class FleissKappaInputDataGenerator {
+public class FleissKappaInputDataGenerator extends AlgorithmInputGenerator  {
 
-    private final List<TextDocument> textDocuments;
-    private final Collection<Long> codeIds;
-    private final EvaluationUnit evalUnit;
-    
-
-    /**
-     * 
-     * @param textDocs needs to be the same document, but from different raters.
-     * @param codeIds
-     * @param evalUnit
-     */
-    public FleissKappaInputDataGenerator(List<TextDocument> textDocs, Collection<Long> codeIds, EvaluationUnit evalUnit) {
-	this.textDocuments = textDocs;
-	this.codeIds = codeIds;
-	this.evalUnit = evalUnit;
+    public FleissKappaInputDataGenerator(List<TextDocument> textDocuments, Collection<Long> codeIds, EvaluationUnit evalUnit) {
+	super(textDocuments, codeIds, evalUnit);
     }
 
     public Map<Long, Integer[]> generateInputData() {
