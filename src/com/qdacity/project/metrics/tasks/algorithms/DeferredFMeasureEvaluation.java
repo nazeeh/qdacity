@@ -14,10 +14,10 @@ import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
+import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.tasks.DeferredDocResults;
 
@@ -54,7 +54,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	    for (TextDocument recoded : recodedDocs) {
 		if (original.getTitle().equals(recoded.getTitle())) {
-		    DocumentResult documentAgreement = FMeasure.calculateParagraphAgreement(original, recoded, validationProject.getCreatorName());
+					DocumentResult documentAgreement = FMeasure.calculateParagraphAgreement(original, recoded);
 		    documentAgreements.add(FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentAgreement.getReportRow())));
 
 		    // valResult.addDocumentResult(documentAgreement);
