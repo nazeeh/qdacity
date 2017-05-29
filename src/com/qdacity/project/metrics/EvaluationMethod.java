@@ -19,7 +19,7 @@ public enum EvaluationMethod {
                 return EvaluationMethod.F_MEASURE;
             case "krippendorffs-alpha":
                 return EvaluationMethod.KRIPPENDORFFS_ALPHA;
-            case "fleiss-cappa":
+            case "fleiss-kappa":
                 return EvaluationMethod.FLEISS_KAPPA;
             default:
                 return EvaluationMethod.F_MEASURE;

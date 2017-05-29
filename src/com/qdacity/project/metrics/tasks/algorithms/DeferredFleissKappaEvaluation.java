@@ -11,6 +11,8 @@ import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKap
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaResultConverter;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 
@@ -30,20 +32,24 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
     @Override
     protected void runAlgorithm() throws Exception {
 	//prepare input data
+	Logger.getLogger("logger").log(Level.INFO, "Preparing Fleiss Kappa Input Data for  "+docName);
 	List<TextDocument> txDocs = collectTextDocumentsfromMemcache(docIds);
 	List<Integer[]> inputArrays = new FleissKappaInputDataGenerator(txDocs, codeNamesAndIds.values(), evalUnit).generateInputData();
 
 	//run algorithm
 	FleissKappa kappa = new FleissKappa();
-	String[] codeNames = (String[]) codeNamesAndIds.keySet().toArray();
+	String[] codeNames = (String[]) codeNamesAndIds.keySet().toArray(new String[codeNamesAndIds.keySet().size()]);
 	int index = 0;
+	Logger.getLogger("logger").log(Level.INFO, "Computing Fleiss Kappa...");
 	for (Integer[] data : inputArrays) {
 	    FleissKappaResult fleissKappaResult = kappa.compute(data, amountRaters);
 	    TabularValidationReportRow rowResult = FleissKappaResultConverter.toTabularValidationReportRow(docName, codeNames[index], fleissKappaResult);
 	    index++;
 	    //WARNING: this Task creates more than one ValidationResult, we need to create new ones on the fly.
 	    //save ReportRow in ValidationResult.
-	    valResult.setReportRow(rowResult.toString());
+	    String resultAsString = rowResult.toString();
+	    Logger.getLogger("logger").log(Level.INFO, "Fleiss Kappa Result: "+resultAsString);
+	    valResult.setReportRow(resultAsString);
 	    mgr.makePersistent(valResult);
 	    valResult = makeNextValidationResult();
 	} 
