@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class FleissKappaInputDataConverter {
+public class FleissKappaInputDataGenerator {
 
     private final List<TextDocument> textDocuments;
     private final Collection<Long> codeIds;
@@ -19,7 +19,7 @@ public class FleissKappaInputDataConverter {
      * @param codeIds
      * @param evalUnit
      */
-    public FleissKappaInputDataConverter(List<TextDocument> textDocs, Collection<Long> codeIds, EvaluationUnit evalUnit) {
+    public FleissKappaInputDataGenerator(List<TextDocument> textDocs, Collection<Long> codeIds, EvaluationUnit evalUnit) {
 	this.textDocuments = textDocs;
 	this.codeIds = codeIds;
 	this.evalUnit = evalUnit;

@@ -7,7 +7,7 @@ import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.algorithms.FleissKappa;
 import com.qdacity.project.metrics.algorithms.datastructures.FleissKappaResult;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaInputDataConverter;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaInputDataGenerator;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaResultConverter;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
     protected void runAlgorithm() throws Exception {
 	//prepare input data
 	List<TextDocument> txDocs = collectTextDocumentsfromMemcache(docIds);
-	Map<Long, Integer[]> inputMap = new FleissKappaInputDataConverter(txDocs, codeNamesAndIds.values(), evalUnit).generateInputData();
+	Map<Long, Integer[]> inputMap = new FleissKappaInputDataGenerator(txDocs, codeNamesAndIds.values(), evalUnit).generateInputData();
 
 	//run algorithm
 	FleissKappa kappa = new FleissKappa();
