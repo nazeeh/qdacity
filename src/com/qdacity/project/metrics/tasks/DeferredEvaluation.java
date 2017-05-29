@@ -326,9 +326,7 @@ public class DeferredEvaluation implements DeferredTask {
 	List<String> headerCells = new ArrayList<>();
 	headerCells.add("Document: Code \\ Unit");
 	headerCells.add("ALL");
-	// TODO aus einem der Textdocumente schon die anzahl der Units holen :(
-	
-	
+	// TODO aus einem der Textdocumente schon die anzahl der Units holen :(	
 	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
 
 	//Create Deferred Evaluations

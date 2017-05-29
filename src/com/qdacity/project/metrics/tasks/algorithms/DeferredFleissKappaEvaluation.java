@@ -32,7 +32,7 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
     @Override
     protected void runAlgorithm() throws Exception {
 	//prepare input data
-	Logger.getLogger("logger").log(Level.INFO, "Preparing Fleiss Kappa Input Data for  "+docName);
+	Logger.getLogger("logger").log(Level.INFO, "Preparing Fleiss Kappa Input Data for  " + docName);
 	List<TextDocument> txDocs = collectTextDocumentsfromMemcache(docIds);
 	List<Integer[]> inputArrays = new FleissKappaInputDataGenerator(txDocs, codeNamesAndIds.values(), evalUnit).generateInputData();
 
@@ -41,6 +41,7 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 	String[] codeNames = (String[]) codeNamesAndIds.keySet().toArray(new String[codeNamesAndIds.keySet().size()]);
 	int index = 0;
 	Logger.getLogger("logger").log(Level.INFO, "Computing Fleiss Kappa...");
+	int validationResults = 1;
 	for (Integer[] data : inputArrays) {
 	    FleissKappaResult fleissKappaResult = kappa.compute(data, amountRaters);
 	    TabularValidationReportRow rowResult = FleissKappaResultConverter.toTabularValidationReportRow(docName, codeNames[index], fleissKappaResult);
@@ -48,12 +49,15 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 	    //WARNING: this Task creates more than one ValidationResult, we need to create new ones on the fly.
 	    //save ReportRow in ValidationResult.
 	    String resultAsString = rowResult.toString();
-	    Logger.getLogger("logger").log(Level.INFO, "Fleiss Kappa Result: "+resultAsString);
+	    Logger.getLogger("logger").log(Level.INFO, "Fleiss Kappa Result: " + resultAsString);
 	    valResult.setReportRow(resultAsString);
 	    mgr.makePersistent(valResult);
-	    valResult = makeNextValidationResult();
-	} 
-	    
+	    if (validationResults <= data.length) { //prevent creating an empty one in the end
+		valResult = makeNextValidationResult();
+	    }
+	    validationResults++;
+	}
+
     }
 
 }

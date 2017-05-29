@@ -35,23 +35,24 @@ public class FleissKappa {
 	return result;
     }
 
-    private double calculateTotalCategoryAgreement(Integer[] data, int numRaters) {
-	int sumRatings = 0;
-	for(int i = 0; i<data.length; i++) {
+    private double calculateTotalCategoryAgreement(Integer[] data, double numRaters) {
+	double sumRatings = 0;
+	double dataLength = data.length;
+	for(int i = 0; i<dataLength; i++) {
 	    sumRatings += data[i];
 	}
-	double totalCategoryAgreement = sumRatings / (numRaters * data.length);
+	double totalCategoryAgreement = sumRatings / (numRaters * dataLength);
 	return totalCategoryAgreement;
     }
 
-    private double[] calculateAgreementOfCodePerUnits(Integer[] data, int numRaters) {
+    private double[] calculateAgreementOfCodePerUnits(Integer[] data, double numRaters) {
 	double[] agreementOfCodePerUnits = new double[data.length];
 	for (int i = 0; i < data.length; i++) {
 	    assert (data[i] <= numRaters); //Otherwise there is a logical problem in the input data.
-	    int ratingsForThisCode = data[i];
-	    int ratingsNotForThisCode = numRaters - data[i];
-	    int ratingsForThisCodeSquared = ratingsForThisCode * ratingsForThisCode;
-	    int ratingsNotForThisCodeSquared = ratingsNotForThisCode * ratingsNotForThisCode;
+	    double ratingsForThisCode = data[i];
+	    double ratingsNotForThisCode = numRaters - data[i];
+	    double ratingsForThisCodeSquared = ratingsForThisCode * ratingsForThisCode;
+	    double ratingsNotForThisCodeSquared = ratingsNotForThisCode * ratingsNotForThisCode;
 
 	    agreementOfCodePerUnits[i] = 1 / (numRaters * (numRaters - 1)) * (ratingsForThisCodeSquared + ratingsNotForThisCodeSquared - numRaters);
 	}

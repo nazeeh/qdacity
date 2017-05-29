@@ -22,16 +22,16 @@ public class FleissKappaTest {
 		FleissKappaResult result = new FleissKappa().compute(data, amountRaters);
 		
 		System.out.println("Category Agreement: "+result.getTotalCategoryAgreement());
-		assert(result.getTotalCategoryAgreement() == 0.44);
 		System.out.println("Unit 1: "+result.getAgreementOfCategoryPerUnits()[0]);
-		assert(result.getAgreementOfCategoryPerUnits()[0] == 1);
 		System.out.println("Unit 2: "+result.getAgreementOfCategoryPerUnits()[1]);
-		assert(result.getAgreementOfCategoryPerUnits()[1] == 0.4);
 		System.out.println("Unit 3: "+result.getAgreementOfCategoryPerUnits()[2]);
-		assert(result.getAgreementOfCategoryPerUnits()[2] == 0.4);
 		System.out.println("Unit 4: "+result.getAgreementOfCategoryPerUnits()[3]);
-		assert(result.getAgreementOfCategoryPerUnits()[3] == 1);
 		System.out.println("Unit 5: "+result.getAgreementOfCategoryPerUnits()[4]);
+		assert(result.getTotalCategoryAgreement() == 0.44);
+		assert(result.getAgreementOfCategoryPerUnits()[0] == 1);
+		assert(result.getAgreementOfCategoryPerUnits()[1] == 0.4);
+		assert(result.getAgreementOfCategoryPerUnits()[2] == 0.4);
+		assert(result.getAgreementOfCategoryPerUnits()[3] == 1);
 		assert(result.getAgreementOfCategoryPerUnits()[4] == 0.6);
 	}
 
