@@ -121,13 +121,9 @@ export default class MetaModelView extends React.Component {
 
 
 				let element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type, entities[i].group);
-				if (_this.props.filter == entities[i].name) {
-					_this.setState({
-						selected: element.id
-					});
-					element.setSelected(true);
-				}
+				//if (_this.props.filter == entities[i].type) {
 				entitiesById[element.id] = element;
+				//}
 			}
 
 			relationsPromise.then(function (resp) {
@@ -138,8 +134,8 @@ export default class MetaModelView extends React.Component {
 					case "Association":
 						break;
 					case "Generalization":
-						entitiesById[relation.src].addGeneralization(relation.dst);
-						entitiesById[relation.dst].addSpecialization(relation.src);
+						if (entitiesById.hasOwnProperty(relation.src)) entitiesById[relation.src].addGeneralization(relation.dst);
+						if (entitiesById.hasOwnProperty(relation.dst)) entitiesById[relation.dst].addSpecialization(relation.src);
 						break;
 					default:
 						;
@@ -184,10 +180,13 @@ export default class MetaModelView extends React.Component {
 	renderGroup(elements, group) {
 		let _this = this;
 
+		let drawFirstLevel = false;
+
 		let firstLevelSelected = -1;
 
 		let firstLevel = elements.map(function (mmElement) {
 			if (mmElement.generalizations.length == 0 && (typeof _this.props.filter == "undefined" || _this.props.filter == mmElement.type)) {
+				drawFirstLevel = true;
 
 				let attributes = {
 					value: mmElement.id,
@@ -245,21 +244,25 @@ export default class MetaModelView extends React.Component {
 
 		let centerStyle = {
 			textAlign: "center",
-			margin: "0 10px"
+			margin: "0 7px"
 		};
 
-		return (
-			<div key={"block" + group} style={centerStyle} className="list-group">
-                <div key={"firstLevel" + group} className="btn-group">
-                    {firstLevel}
-                </div>
-                <div key={"secondLevel" + group}  style={centerStyle} className="list-group">
-                    {secondLevel}
-                </div>
-                <div key={"thirdLevel" + group}  style={centerStyle} className="list-group">
-                    {thirdLevel}
-                </div>
-		    </div>);
+		if (drawFirstLevel) {
+			return (
+				<div key={"block" + group} style={centerStyle} className="list-group">
+                    <div key={"firstLevel" + group} className="btn-group">
+                        {firstLevel}
+                    </div>
+                    <div key={"secondLevel" + group}  style={centerStyle} className="list-group">
+                        {secondLevel}
+                    </div>
+                    <div key={"thirdLevel" + group}  style={centerStyle} className="list-group">
+                        {thirdLevel}
+                    </div>
+    		    </div>);
+		} else {
+			return null;
+		}
 	}
 
 }
