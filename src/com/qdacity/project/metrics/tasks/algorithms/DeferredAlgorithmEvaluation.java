@@ -43,7 +43,10 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	    mgr.setMultithreaded(true);
 	    valResult = makeNextValidationResult();
 	    runAlgorithm();
-	    mgr.makePersistent(valResult);
+	    if (valResult.getReportRow() != null
+		    && valResult.getReportRow() != "") {
+		mgr.makePersistent(valResult);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	} finally {
@@ -63,6 +66,7 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	newResult.setRevisionID(validationProject.getRevisionID());
 	newResult.setValidationProjectID(validationProject.getId());
 	newResult.setReportID(validationReportId);
+	newResult.setReportRow(null); //intentionally initialize with null!
 	mgr.makePersistent(newResult);// make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	return newResult;
     }
