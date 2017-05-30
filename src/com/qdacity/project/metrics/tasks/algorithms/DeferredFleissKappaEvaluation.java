@@ -52,7 +52,7 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 	    Logger.getLogger("logger").log(Level.INFO, "Fleiss Kappa Result: " + resultAsString);
 	    valResult.setReportRow(resultAsString);
 	    mgr.makePersistent(valResult);
-	    if (validationResults <= data.length) { //prevent creating an empty one in the end
+	    if (validationResults < data.length-2) { //prevent creating an empty one in the end
 		valResult = makeNextValidationResult();
 	    }
 	    validationResults++;

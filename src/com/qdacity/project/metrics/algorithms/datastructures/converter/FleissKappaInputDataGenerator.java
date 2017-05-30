@@ -27,6 +27,7 @@ public class FleissKappaInputDataGenerator extends AlgorithmInputGenerator {
 	Map<Long, Integer[]> inputDatas = new HashMap<>();
 	//Documents->Units->Codes
 	List<List<List<String>>> documentUnitCodes = getDocumentUnitCodes();
+	//Units->Codes of a Document
 	for (List<List<String>> singleDocumentUnitCodes : documentUnitCodes) {
 	    for (Long codeId : codeIds) {
 		Logger.getLogger("logger").log(Level.INFO, "Document has " + singleDocumentUnitCodes.size() + " units");
@@ -42,15 +43,6 @@ public class FleissKappaInputDataGenerator extends AlgorithmInputGenerator {
 		}
 		unit++;
 	    }
-	}
-	Logger.getLogger("logger").log(Level.INFO, "Input Data looks like:");
-	for (Integer[] data : inputDatas.values()) {
-	    String dataString = "[";
-	    for (Integer i : data) {
-		dataString += i + ",";
-	    }
-	    dataString += "]";
-	    Logger.getLogger("logger").log(Level.INFO, dataString);
 	}
 
 	return new ArrayList(inputDatas.values());

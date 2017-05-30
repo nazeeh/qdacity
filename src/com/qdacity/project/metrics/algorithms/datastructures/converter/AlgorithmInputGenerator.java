@@ -48,27 +48,25 @@ public abstract class AlgorithmInputGenerator {
      */
     protected List<List<List<String>>> getDocumentUnitCodes() {
 	//Documents->Units->Codes->codeId(String)
-	List<List<List<String>>> txDocsUnitCodesRaw = new ArrayList<>();
-
+	List<List<List<String>>> alltxDocUnitCodes = new ArrayList<>();
 	for (TextDocument document : sameDocumentsFromDifferentRaters) {
+	    List<List<String>> txDocUnitCodes = new ArrayList<>();
 	    Document parsedDocument = Jsoup.parse(document.getText().getValue());
 	    Elements paragraphs = parsedDocument.select(TextDocumentConstants.PARAGRAPH_TAG);
 	    if (evalUnit == EvaluationUnit.PARAGRAPH) {
 		for (int i = 0; i < paragraphs.size(); i++) {
-		    if (txDocsUnitCodesRaw.size() <= i) {
-			txDocsUnitCodesRaw.add(new ArrayList<List<String>>());
-		    }
 		    Elements codings = paragraphs.get(i).select(TextDocumentConstants.CODING_TAG);
-		    Logger.getLogger("logger").log(Level.INFO, "Unit "+i+ " get Codes");
-		    txDocsUnitCodesRaw.get(i).add(getAppliedCodes(codings));
+		    Logger.getLogger("logger").log(Level.INFO, "Unit " + i + " get Codes");
+		    List<String> appliedCodes = getAppliedCodes(codings);
+		    txDocUnitCodes.add(appliedCodes);
 		}
 	    } else {
 		throw new UnsupportedOperationException("Evaluation Unit not supported yet."); //TODO
 	    }
-
+	    alltxDocUnitCodes.add(txDocUnitCodes);
 	}
 
-	return txDocsUnitCodesRaw;
+	return alltxDocUnitCodes;
     }
 
     protected List<String> getAppliedCodes(Elements codings) {
