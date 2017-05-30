@@ -162,10 +162,8 @@ export default class ProjectList extends React.Component {
 				codeSystem.project = insertedProject.id;
 
 				CodesystemEndpoint.updateCodeSystem(codeSystem).then(function (updatedCodeSystem) {
-					_this.state.projects.push(insertedProject);
-					_this.setState({
-						projects: _this.state.projects
-					});
+					insertedProject.type = "PROJECT";
+					_this.addProject(insertedProject);
 				});
 			});
 		});

@@ -23,6 +23,7 @@ public class DeferredAlgorithmTaskQueue {
 
     private final Queue taskQueue;
     private final List<Future<TaskHandle>> futures;
+    private long SLEEP_TIME = 10000;
 
     public DeferredAlgorithmTaskQueue() {
 	taskQueue = QueueFactory.getQueue("ValidationResultQueue");
@@ -56,11 +57,12 @@ public class DeferredAlgorithmTaskQueue {
      * @param amountValidationProjects how many tasks are you waiting for
      * @param validationReportId from which validationReport
      * @param user user which has the rights to see the results of the task
+     * @return the ValidationResults created by the tasks.
      * @throws ExecutionException
      * @throws UnauthorizedException
      * @throws InterruptedException
      */
-    public void waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
+    public List<ValidationResult> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
 	Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
 
 	for (Future<TaskHandle> future : futures) {
@@ -75,11 +77,13 @@ public class DeferredAlgorithmTaskQueue {
 	    valResults = ve.listValidationResults(validationReportId, user);
 	    Logger.getLogger("logger").log(Level.WARNING, " So many results " + valResults.size() + " for report " + validationReportId + " at time " + System.currentTimeMillis());
 	    if (valResults.size() != amountValidationProjects) {
-		Thread.sleep(10000);
+		Thread.sleep(SLEEP_TIME);
 	    }
 	}
 	Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
 	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
+	
+	return valResults;
     }
 
     private Future<TaskHandle> addToTaskQueue(DeferredAlgorithmEvaluation algorithmTask) {

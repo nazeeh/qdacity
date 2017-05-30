@@ -19,8 +19,11 @@ import com.qdacity.Sendgrid;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.DocumentResult;
+import com.qdacity.project.metrics.FMeasureResult;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 
 public class DeferredEmailNotification implements DeferredTask {
 
@@ -72,9 +75,10 @@ public class DeferredEmailNotification implements DeferredTask {
 				msgBody += "</p>";
 				msgBody += "<p>";
 				msgBody += "<strong>Overall</strong> <br>";
-				msgBody += "F-Measure: " + result.getParagraphAgreement().getFMeasure() + "<br>";
-				msgBody += "Recall: " + result.getParagraphAgreement().getRecall() + "<br>";
-				msgBody += "Precision: " + result.getParagraphAgreement().getPrecision() + "<br>";
+				FMeasureResult paragraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(result.getReportRow()));
+				msgBody += "F-Measure: " + paragraphAgreement.getFMeasure() + "<br>";
+				msgBody += "Recall: " + paragraphAgreement.getRecall() + "<br>";
+				msgBody += "Precision: " + paragraphAgreement.getPrecision() + "<br>";
 				msgBody += "</p>";
 				msgBody += "<p>";
 				msgBody += "<strong>Document specific data:</strong><br>";
@@ -84,17 +88,19 @@ public class DeferredEmailNotification implements DeferredTask {
 				for (DocumentResult documentResult : docResults) {
 					msgBody += "<p>";
 					msgBody += "<strong>" + documentResult.getDocumentName() + ":</strong><br>";
-					msgBody += "F-Measure: " + documentResult.getParagraphAgreement().getFMeasure() + "<br>";
-					msgBody += "Recall: " + documentResult.getParagraphAgreement().getRecall() + "<br>";
-					msgBody += "Precision: " + documentResult.getParagraphAgreement().getPrecision() + "<br><br>";
+					FMeasureResult documentPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResult.getReportRow()));
+					msgBody += "F-Measure: " + documentPA.getFMeasure() + "<br>";
+					msgBody += "Recall: " + documentPA.getRecall() + "<br>";
+					msgBody += "Precision: " + documentPA.getPrecision() + "<br><br>";
 					msgBody += "</p>";
 				}
 
 				msgBody += "<p>";
 				msgBody += "You may compare these values to the average of this report<br>";
-				msgBody += "F-Measure: " + report.getParagraphAgreement().getFMeasure() + "<br>";
-				msgBody += "Recall: " + report.getParagraphAgreement().getRecall() + "<br>";
-				msgBody += "Precision: " + report.getParagraphAgreement().getPrecision() + "<br><br>";
+				FMeasureResult reportPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(report.getAverageAgreementCsvString()));
+				msgBody += "F-Measure: " + reportPA.getFMeasure() + "<br>";
+				msgBody += "Recall: " + reportPA.getRecall() + "<br>";
+				msgBody += "Precision: " + reportPA.getPrecision() + "<br><br>";
 				msgBody += "</p>";
 
 				msgBody += "<p>";

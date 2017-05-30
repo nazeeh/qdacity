@@ -10,9 +10,10 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
 
+//TODO needs to stay persistence cabable until datamigration is completed.
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
-public class ParagraphAgreement implements Serializable {
+public class FMeasureResult implements Serializable {
 	/**
 	 * 
 	 */
@@ -38,11 +39,11 @@ public class ParagraphAgreement implements Serializable {
 		dependent = "true")
 	double precision;
 
-	public ParagraphAgreement() {
+	public FMeasureResult() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ParagraphAgreement(ParagraphAgreement copy) {
+	public FMeasureResult(FMeasureResult copy) {
 		super();
 		this.fMeasure = copy.fMeasure;
 		this.recall = copy.recall;
@@ -71,14 +72,6 @@ public class ParagraphAgreement implements Serializable {
 
 	public void setPrecision(double paragraphPrecision) {
 		this.precision = paragraphPrecision;
-	}
-
-	public double getfMeasure() {
-		return fMeasure;
-	}
-
-	public void setfMeasure(double fMeasure) {
-		this.fMeasure = fMeasure;
 	}
 
 }

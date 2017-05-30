@@ -31,7 +31,7 @@ public class ReliabilityDataGenerator {
      * @param codeIds relevant codeIds
      * @return ReliabilityData derived from the given Documents
      */
-    public List<ReliabilityData> generate(Collection<TextDocument> sameDocumentFromDifferentRaters, List<Long> codeIds) {
+    public List<ReliabilityData> generate(Collection<TextDocument> sameDocumentFromDifferentRaters, Collection<Long> codeIds) {
 	int raters = sameDocumentFromDifferentRaters.size();
 	List<List<String>> ratings = new ArrayList<>();
 	List<ReliabilityData> rDatas = new ArrayList<>();

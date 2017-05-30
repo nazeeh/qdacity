@@ -32,13 +32,20 @@ public class ValidationReport {
 
 	@Persistent
 	Date datetime;
-
-	@Persistent(
-		defaultFetchGroup = "true",
-		dependent = "true")
-	@Column(
-		name = "paragraphAgreement")
-	ParagraphAgreement paragraphAgreement;
+	
+	//Hint: The following Rows are saved as csv Strings for efficiency
+	@Persistent
+	@Column(name = "avgAgreementHead")
+	String averageAgreementHeaderCsvString; //Hint: This used to be hardcoded in the Frontend in older Versions.
+	@Persistent
+	@Column(name = "avgAgreement")
+	String averageAgreementCsvString; //Hint: This used to be ParagraphAgreement in older Versions. Important for migration!
+	@Persistent
+	@Column(name = "detailedAgreementHead")
+	String detailedAgreementHeaderCsvString;
+	@Persistent
+	@Column(name = "evaluationUnit")
+	String evaluationUnit;
 
 	@Persistent(
 		defaultFetchGroup = "true")
@@ -92,7 +99,15 @@ public class ValidationReport {
 		if (validationResultIDs == null) validationResultIDs = new ArrayList<Long>();
 		validationResultIDs.add(result.getId());
 
-		if (paragraphAgreement == null) paragraphAgreement = new ParagraphAgreement();
+		//if (reportRow == null) reportRow = new TabularValidationReportRow(0); TODO why?
+	}
+	
+	public String getEvaluationUnit() { //Hint: needs to be String to be parseable
+	    return evaluationUnit;
+	}
+
+	public void setEvaluationUnit(EvaluationUnit evaluationUnit) {
+	    this.evaluationUnit = evaluationUnit.toString();
 	}
 
 	public String getName() {
@@ -111,14 +126,34 @@ public class ValidationReport {
 		this.datetime = datetime;
 	}
 
-	public ParagraphAgreement getParagraphAgreement() {
-		return paragraphAgreement;
+	public void setAverageAgreementRow(TabularValidationReportRow reportRow) {
+	    this.averageAgreementCsvString = reportRow.toString();
 	}
 
-	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
-		this.paragraphAgreement = paragraphAgreement;
+	public void setAverageAgreementHeader(TabularValidationReportRow averageAgreementHeaderCsvString) {
+	    this.averageAgreementHeaderCsvString = averageAgreementHeaderCsvString.toString();
 	}
 
+	public void setAverageAgreement(TabularValidationReportRow averageAgreementCsvString) {
+	    this.averageAgreementCsvString = averageAgreementCsvString.toString();
+	}
+
+	public void setDetailedAgreementHeader(TabularValidationReportRow detailedAgreementHeaderCsvString) {
+	    this.detailedAgreementHeaderCsvString = detailedAgreementHeaderCsvString.toString();
+	}
+
+	public String getAverageAgreementHeaderCsvString() {
+	    return averageAgreementHeaderCsvString;
+	}
+
+	public String getAverageAgreementCsvString() {
+	    return averageAgreementCsvString;
+	}
+
+	public String getDetailedAgreementHeaderCsvString() {
+	    return detailedAgreementHeaderCsvString;
+	}
+	
 	public List<DocumentResult> getDocumentResults() {
 		if (documentResults == null) documentResults = new ArrayList<DocumentResult>();
 		return documentResults;
@@ -153,10 +188,10 @@ public class ValidationReport {
 		return false;
 	}
 
-	public void setDocumentResultAverage(Long docID, ParagraphAgreement averageAgreement) {
+	public void setDocumentResultAverage(Long docID, TabularValidationReportRow averageAgreement) {
 		for (DocumentResult aggregated : documentResults) {
 			if (aggregated.getDocumentID().equals(docID)) {
-				aggregated.setParagraphAgreement(averageAgreement);
+				aggregated.setReportRow(averageAgreement.toString());
 			}
 		}
 	}
