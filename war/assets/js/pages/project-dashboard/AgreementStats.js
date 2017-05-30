@@ -38,13 +38,18 @@ export default class AgreementStats {
 				}
 
 			});
+			
+			if(_this.slickInitialized){
+				_this.documentResults.slick('unslick');
+				
+			} else {
+				_this.slickInitialized = true;
+			}
+			
 			_this.documentResults.slick({
 				dots: true
 			});
 		});
-
-
-
 	}
 
 	getHTML() {

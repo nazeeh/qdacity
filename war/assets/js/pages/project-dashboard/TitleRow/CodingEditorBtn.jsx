@@ -5,7 +5,7 @@ export default class SettingsBtn extends React.Component {
 		super(props);
 		this.redirectToCodingEditor = this.redirectToCodingEditor.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			settingsBtn: {
@@ -17,12 +17,12 @@ export default class SettingsBtn extends React.Component {
 	redirectToCodingEditor() {
 		location.href = 'coding-editor.html?project=' + this.props.projectId + '&type=' + this.props.projectType;
 	}
-	
+
 	render() {
-		if (this.props.isProjectOwner || this.props.isValidationCoder ){
+		if (this.props.isProjectOwner || this.props.isValidationCoder) {
 			const styles = this.getStyles();
-			
-			return ( 
+
+			return (
 				<button 
 					type="button" 
 					className="btn btn-default btn-sm pull-right"
@@ -35,6 +35,6 @@ export default class SettingsBtn extends React.Component {
 		} else {
 			return null;
 		}
-		
+
 	}
 }

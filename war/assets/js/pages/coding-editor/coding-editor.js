@@ -419,7 +419,7 @@ function fillCodeRelationsView() {
 function setDocumentList(projectID) {
 	if (typeof documentsView == 'undefined') {
 		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id} projectType={project_type}/>, document.getElementById('documentView'));
-		
+
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}

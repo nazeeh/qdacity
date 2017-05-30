@@ -68,7 +68,7 @@ export default class Account extends React.Component {
 		}
 		return isOwner;
 	}
-	
+
 	isValidationCoder(user, valPrj) {
 		var isValidationCoder = false;
 		if (typeof valPrj.validationCoders != 'undefined') {

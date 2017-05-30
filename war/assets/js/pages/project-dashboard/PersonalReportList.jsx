@@ -21,8 +21,8 @@ export default class PersonalReportList extends React.Component {
 			}
 		};
 	}
-	
-	init(){
+
+	init() {
 		var _this = this;
 		var validationEndpoint = new ValidationEndpoint();
 		var validationPromise = validationEndpoint.listReports(this.props.parentProject);
@@ -36,10 +36,10 @@ export default class PersonalReportList extends React.Component {
 						reports: reportArr
 					});
 				}
-			}	
+			}
 		})
 	}
-	
+
 	showDocumentResults(report) {
 		var _this = this;
 		ValidationEndpoint.getValidationResult(report.id, _this.props.projectId).then(function (resp) {
@@ -47,7 +47,7 @@ export default class PersonalReportList extends React.Component {
 			agreementByDoc.showModal();
 		});
 	}
-	
+
 
 	render() {
 		var _this = this;

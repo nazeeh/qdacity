@@ -20,7 +20,7 @@ export default class UserListCtrl extends React.Component {
 		modal.addTextInput('firstName', "First Name", '', user.givenName);
 		modal.addTextInput('lastName', "Last Name", '', user.surName);
 		modal.addTextInput('email', "Email", '', user.email);
-		modal.addSelect('type', ["USER","ADMIN"], "Type", user.type);
+		modal.addSelect('type', ["USER", "ADMIN"], "Type", user.type);
 		modal.showModal().then(function (data) {
 			_this.updateUser(data)
 		});

@@ -1,6 +1,5 @@
 package com.qdacity.project.metrics.tasks;
 
-import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -28,7 +27,6 @@ import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.EvaluationUnit;
@@ -36,9 +34,11 @@ import com.qdacity.project.metrics.FMeasureResult;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredFleissKappaEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
 

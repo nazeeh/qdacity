@@ -12,7 +12,7 @@ export default class ValPrjList extends React.Component {
 			itemsPerPage: 8,
 			search: ''
 		};
-		
+
 		this.paginationClick = this.paginationClick.bind(this);
 		this.updateSearch = this.updateSearch.bind(this);
 	}
@@ -42,25 +42,25 @@ export default class ValPrjList extends React.Component {
 			}
 		};
 	}
-	
-		
+
+
 	paginationClick(event) {
 		this.setState({
 			currentPage: Number(event.target.id)
 		});
 	}
-	
+
 	updateSearch(e) {
 		this.setState({
 			search: e.target.value
 		});
 
 	}
-	
+
 	isActivePage(page) {
 		return ((page == this.state.currentPage) ? 'active' : ' ');
 	}
-	
+
 	deleteValPrj(e, valPrjId, index) {
 		var _this = this;
 		e.stopPropagation();
@@ -75,25 +75,25 @@ export default class ValPrjList extends React.Component {
 				})
 			.catch(this.handleBadResponse);
 	}
-	
+
 	handleBadResponse(reason) {
 		alertify.error("There was an error");
 		console.log(reason.message);
 	}
-	
+
 	renderDeleteBtn(valPrj, index) {
 		const styles = this.getStyles();
-	
-		if (this.props.isAdmin || this.props.isProjectOwner) 
+
+		if (this.props.isAdmin || this.props.isProjectOwner)
 			return <a onClick={(e) => this.deleteValPrj(e,valPrj.id, index)} className="btn  fa-stack fa-lg" style={styles.listItemBtn}>
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>
 					</a>;
 		else return '';
 	}
-	
-	valPrjLink(valPrjId){
-		if (this.props.isAdmin || this.props.isProjectOwner) location.href ='coding-editor.html?project='+valPrjId+'&type=VALIDATION';
+
+	valPrjLink(valPrjId) {
+		if (this.props.isAdmin || this.props.isProjectOwner) location.href = 'coding-editor.html?project=' + valPrjId + '&type=VALIDATION';
 	}
 
 	render() {
@@ -102,7 +102,7 @@ export default class ValPrjList extends React.Component {
 		const styles = this.getStyles();
 
 		//Render Components
-		
+
 		//Render search and newPrjBtn
 		const renderSearch = <div>
 			<span className="searchfield" id="searchform" style={styles.search}> 
@@ -117,14 +117,14 @@ export default class ValPrjList extends React.Component {
 			</span>
 		
 		</div>
-		
+
 		// Render list items
 		var filteredList = this.state.validationProjects.filter(
 			(project) => {
 				return project.creatorName.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
 			}
 		);
-		
+
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
