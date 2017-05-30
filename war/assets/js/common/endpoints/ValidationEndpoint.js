@@ -28,7 +28,7 @@ export default class ProjectEndpoint {
 
 		return promise;
 	}
-        
+
 	deleteReport(repId) {
 		var apiMethod = gapi.client.qdacity.validation.deleteReport({
 			'reportID': repId

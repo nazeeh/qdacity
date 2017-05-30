@@ -38,14 +38,14 @@ export default class AgreementStats {
 				}
 
 			});
-			
-			if(_this.slickInitialized){
+
+			if (_this.slickInitialized) {
 				_this.documentResults.slick('unslick');
-				
+
 			} else {
 				_this.slickInitialized = true;
 			}
-			
+
 			_this.documentResults.slick({
 				dots: true
 			});
@@ -68,7 +68,7 @@ export default class AgreementStats {
 		data.addColumn('number', 'Precision');
 
 		report.documentResults.forEach(function (docResult) {
-                        var cells = docResult.reportRow.split(",");
+			var cells = docResult.reportRow.split(",");
 			data.addRow([cells[0], parseFloat(cells[1]), parseFloat(cells[2]), parseFloat(cells[3])]);
 		});
 

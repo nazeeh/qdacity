@@ -12,27 +12,27 @@ export default class IntercoderAgreement extends VexModal {
 
 	constructor(report) {
 		super();
-                if(report.averageAgreementCsvString && report.averageAgreementHeaderCsvString) {
-                    
-                    var headRow = report.averageAgreementHeaderCsvString.split(",");
-                    var avgRow = report.averageAgreementCsvString.split(",");
-                    this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;" class="centerParent">';
-                    this.formElements += '<table class="centerChild">';
-                    this.formElements += '<tr>';
-                    for(var headCell in headRow) {
-                        this.formElements += '<th  style="text-align: center;" >'+headRow[headCell]+'</th>';
-                    }
-                    this.formElements += '</tr>';
-                    this.formElements += '<tr>';
-                    for(var cell in avgRow) {
-                        this.formElements += '<td>'+avgRow[cell]+'</td>';
-                    }
-                    this.formElements += '</tr>';
-                    this.formElements += '</table></div>';
-                }
+		if (report.averageAgreementCsvString && report.averageAgreementHeaderCsvString) {
+
+			var headRow = report.averageAgreementHeaderCsvString.split(",");
+			var avgRow = report.averageAgreementCsvString.split(",");
+			this.formElements = '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;" class="centerParent">';
+			this.formElements += '<table class="centerChild">';
+			this.formElements += '<tr>';
+			for (var headCell in headRow) {
+				this.formElements += '<th  style="text-align: center;" >' + headRow[headCell] + '</th>';
+			}
+			this.formElements += '</tr>';
+			this.formElements += '<tr>';
+			for (var cell in avgRow) {
+				this.formElements += '<td>' + avgRow[cell] + '</td>';
+			}
+			this.formElements += '</tr>';
+			this.formElements += '</table></div>';
+		}
 		this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;"><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
 
-                this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222;">Evaluation Unit: '+report.evaluationUnit+'</div>'
+		this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222;">Evaluation Unit: ' + report.evaluationUnit + '</div>'
 
 		this.report = report;
 		this.results;
@@ -110,20 +110,24 @@ export default class IntercoderAgreement extends VexModal {
 		var _this = this;
 		// initialize if not initialized
 		if (!$.fn.dataTable.isDataTable('#agreementTable')) {
-                        var columnsArray = [{
-						className: "hidden",
-						"searchable": true
-					},
-					{
-						className: "hidden",
-						"searchable": true
-					}];
-                        var columnLabelsArray = this.report.detailedAgreementHeaderCsvString.split(',');
-                        var width = 100/columnLabelsArray.length;
-                        for(var col in columnLabelsArray) {
-                            columnsArray = columnsArray.concat([{ "title": columnLabelsArray[col], "width": ""+width+"%"}]);
-                        }
-                        
+			var columnsArray = [{
+					className: "hidden",
+					"searchable": true
+				},
+				{
+					className: "hidden",
+					"searchable": true
+				}
+			];
+			var columnLabelsArray = this.report.detailedAgreementHeaderCsvString.split(',');
+			var width = 100 / columnLabelsArray.length;
+			for (var col in columnLabelsArray) {
+				columnsArray = columnsArray.concat([{
+					"title": columnLabelsArray[col],
+					"width": "" + width + "%"
+				}]);
+			}
+
 			var table1 = $('#agreementTable').dataTable({
 				"iDisplayLength": 15,
 				"bLengthChange": false,
@@ -153,12 +157,12 @@ export default class IntercoderAgreement extends VexModal {
 
 		table.clear();
 		if (typeof this.report != 'undefined') {
-                        for (var i = 0; i < this.results.length; i++) {
-                                var result = this.results[i];
-                                var cells = [result.id, result.validationProjectID];
-                                table.row.add(cells.concat(result.reportRow.split(",")));
-                        }
-                        table.draw();
+			for (var i = 0; i < this.results.length; i++) {
+				var result = this.results[i];
+				var cells = [result.id, result.validationProjectID];
+				table.row.add(cells.concat(result.reportRow.split(",")));
+			}
+			table.draw();
 		}
 
 		$('#agreementTable tbody > tr').addClass("clickable");
