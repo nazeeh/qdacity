@@ -4,14 +4,18 @@ import {
 
 export default class MetaModelMapper {
 
-	static getEdgeType(metaModelEntity, source, destination, view) {
+	constructor(umlEditorView, mmEntities) {
+		this.umlEditorView = umlEditorView;
+		this.mmEntities = mmEntities;
+	}
+
+	map(metaModelEntity, source, destination) {
 		let mode = null;
 
-		let relationName = metaModelEntity != null ? metaModelEntity.name : '';
-		let sourceName = source.code.mmElement != null ? source.code.mmElement.name : '';
-		let destinationName = destination.code.mmElement != null ? destination.code.mmElement.name : '';
+		let codeSource = source.code;
+		let codeDestination = destination.code;
 
-		switch (relationName) {
+		switch (metaModelEntity.name) {
 		case 'is a':
 			{
 				mode = EdgeType.GENERALIZATION;
@@ -24,8 +28,8 @@ export default class MetaModelMapper {
 			}
 		case 'is related to':
 			{
-				if (destinationName == 'Object' || destinationName == 'Actor' || destinationName == 'Place') {
-					view.addClassField(source.node, '+ ' + sourceName + ': type');
+				if (this.codeHasMetaModelEntity(codeDestination, 'Object') || this.codeHasMetaModelEntity(codeDestination, 'Actor') || this.codeHasMetaModelEntity(codeDestination, 'Place')) {
+					this.umlEditorView.addClassField(source.node, '+ ' + codeSource.name + ': type');
 					return;
 				}
 
@@ -34,19 +38,32 @@ export default class MetaModelMapper {
 			}
 		case 'influences':
 			{
-				view.addClassMethod(source.node, '+ ' + destinationName + '(type): type');
+				this.umlEditorView.addClassMethod(source.node, '+ ' + codeDestination.name + '(type): type');
 				return;
 			}
 		default:
 			{
-				// TODO ERROR?
-				mode = EdgeType.NONE;
-				break;
+				return;
 			}
 		}
 
+		this.umlEditorView.addEdge(source.node, destination.node, mode);
+	}
 
-		view.addEdge(source.node, destination.node, mode);
-		return mode;
+	codeHasMetaModelEntity(code, entityName) {
+		if (!code) {
+			throw new Error('Code must not be null or undefined');
+		}
+
+		for (let mmElementIdKey in code.mmElementIDs) {
+			let mmElementId = code.mmElementIDs[mmElementIdKey];
+			var entity = this.mmEntities.find((e) => e.id == mmElementId);
+
+			if (entity != null && entity.name == entityName) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

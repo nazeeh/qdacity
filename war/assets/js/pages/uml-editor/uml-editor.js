@@ -1,5 +1,5 @@
 import MetaModelMapper from './MetaModelMapper.js';
-import MyEditorView from './MyEditorView.js';
+import UmlEditorView from './UmlEditorView.js';
 
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
@@ -22,8 +22,8 @@ var project_type;
 
 var account;
 
-var view;
-
+var umlEditorView;
+var metaModelMapper;
 
 window.init = function () {
 
@@ -37,9 +37,6 @@ window.init = function () {
 		// Displays an error message if the browser is not supported.
 		mxUtils.error('Browser is not supported!', 200, false);
 	}
-
-	let container = document.getElementById('graphContainer');
-	view = new MyEditorView(container);
 
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
@@ -75,25 +72,27 @@ function loadCodes(codesystem_id) {
 }
 
 function initGraph(codes, mmEntities) {
-	var nodes = new Map();
+
+	let container = document.getElementById('graphContainer');
+	umlEditorView = new UmlEditorView(container);
+
+	metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);
+
+
+	var nodes = {};
 	var relations = [];
 
 	for (var i = 0; i < codes.length; i++) {
+		// Add node to graph
+		var node = umlEditorView.addNode(codes[i].name);
 
-		let codeMMEntity = mmEntities.find(function (mmEntity) {
-			return mmEntity.id == codes[i].mmElementID;
-		});
-		codes[i].mmElement = codeMMEntity;
-
-		var node = view.addNode(codes[i].name);
-		nodes.set(codes[i].codeID, {
+		// Register code + node in map
+		nodes[codes[i].codeID] = {
 			'code': codes[i],
 			'node': node
-		});
+		};
 
-
-		console.log('add ' + codes[i].codeID + ' - ' + codes[i].name);
-
+		// Register code relations
 		if (codes[i].relations != null) {
 			for (var j = 0; j < codes[i].relations.length; j++) {
 				console.log(codes[i].codeID + ' is connected to ' + codes[i].relations[j].codeId);
@@ -105,22 +104,23 @@ function initGraph(codes, mmEntities) {
 				});
 			}
 		}
+
+		// Logging
+		console.log('add ' + codes[i].codeID + ' - ' + codes[i].name);
 	}
 
 
 	for (var i = 0; i < relations.length; i++) {
 		var relation = relations[i];
 
-		let startCode = nodes.get(relation.start);
-		let endCode = nodes.get(relation.end);
+		let startCode = nodes[relation.start];
+		let endCode = nodes[relation.end];
 
-		var metaModelEntity = mmEntities.find(function (mmEntity) {
-			return mmEntity.id == relations[i].metaModelEntityId;
-		});
+		var metaModelEntity = mmEntities.find((mmEntity) => mmEntity.id == relations[i].metaModelEntityId);
 
-		var edgeType = MetaModelMapper.getEdgeType(metaModelEntity, startCode, endCode, view);
+		var edgeType = metaModelMapper.map(metaModelEntity, startCode, endCode);
 	}
 
 
-	view.applyLayout();
+	umlEditorView.applyLayout();
 }
