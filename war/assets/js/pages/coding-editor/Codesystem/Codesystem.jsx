@@ -2,16 +2,16 @@ import React from 'react';
 
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import CodesystemEndpoint from '../../../common/endpoints/CodesystemEndpoint';
-import Code from './Code.jsx';
+import {DragAndDropCode} from './Code.jsx';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 import CodesystemToolbar from "./CodesystemToolbar.jsx"
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
+import SimpleCodesystem from './SimpleCodesystem.jsx';
 
-
-class Codesystem extends React.Component {
+class Codesystem extends SimpleCodesystem {
 		constructor(props) {
 			super(props);
 			this.codesystem = {};
@@ -19,7 +19,11 @@ class Codesystem extends React.Component {
 				slected: {},
 				codesystem: []
 			};
-			this.init();
+			if (!this.props.codesystem){
+				this.init();
+			} else {
+				this.state.codesystem = this.props.codesystem;
+			}
 			this.setSelected = this.setSelected.bind(this);
 			this.relocateCode = this.relocateCode.bind(this);
 			this.removeCode = this.removeCode.bind(this);
@@ -79,7 +83,7 @@ class Codesystem extends React.Component {
 		}
 		
 		setSelected(code){
-			this.props.updateCodeView(code);
+			if (!this.props.showSimpleView)this.props.updateCodeView(code);
 			this.setState({
 				selected: code
 			});
@@ -92,6 +96,14 @@ class Codesystem extends React.Component {
 		
 		getSelected(){
 			return this.state.selected;
+		}
+		
+		getCodesystem(){
+			return this.state.codesystem;
+		}
+		
+		getCodeByCodeID(codeID){
+			return this.getCodeByID(this.state.codesystem, codeID);
 		}
 		
 		getCodeByID(codeArr, codeID){
@@ -171,7 +183,8 @@ class Codesystem extends React.Component {
 
 			const renderRoots = codeSiblings.map((code, index) => {
 					return (
-						<Code
+						<DragAndDropCode
+							showSimpleView={this.props.showSimpleView}
 							documentsView={this.props.documentsView}
 							level={level} 
 							node={code} 
@@ -180,7 +193,7 @@ class Codesystem extends React.Component {
 							relocateCode={this.relocateCode} 
 							showFooter={this.props.showFooter}
 							key={"CS" + "_" + level + "_"  +index}>
-						</Code>
+						</DragAndDropCode>
 					);
 				});
 			return (

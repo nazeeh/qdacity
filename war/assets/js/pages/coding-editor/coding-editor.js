@@ -337,8 +337,10 @@ function setupUI() {
 			codesystem_id = resp.codesystemID;
 			setDocumentList(project_id);
 			listCodes();
-			codesystemView = ReactDOM.render(<Codesystem projectID={project_id} 
+			codesystemView = ReactDOM.render(<Codesystem 
+				projectID={project_id} 
 				projectType={project_type} 
+				showSimpleView={false}
 				account={account} 
 				codesystemId={codesystem_id} 
 				removeAllCodings={removeAllCodings} 
@@ -403,7 +405,7 @@ function removeAllCodings(codingID) {
 
 function showCodingView() {
 	showFooter();
-	var activeCode = codesystemView.getSelected();
+	var activeCode = codesystemView.child.getSelected();
 
 	fillCodingTable(activeCode);
 	fillPropertiesView(activeCode);
@@ -435,9 +437,22 @@ function fillPropertiesView(code) {
 }
 
 function fillCodeRelationsView() {
-	var code = getActiveCode();
+	var code = codesystemView.child.getSelected();
 
-	codeRelationsView.setRelations(code.relations, easytree, getActiveCode().dbID, getActiveCode().id);
+	codeRelationsView.setRelations(code.relations, code.id);
+}
+
+function getSelectedCode(){
+	return codesystemView.child.getSelected();
+}
+function updateSelectedCode(code){
+	codesystemView.child.updateSelected(code);
+}
+function getCodeByCodeID(codeID){
+	return codesystemView.child.getCodeByCodeID(codeID);
+}
+function getCodeSystem(){
+	return codesystemView.child.getCodesystem();
 }
 
 function setDocumentList(projectID) {
@@ -450,7 +465,7 @@ function setDocumentList(projectID) {
 		codingsView = new CodingsView(editorCtrl, documentsView);
 
 		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
-		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView}/>, document.getElementById('codeRelationsView'));
+		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
 
 
 	}
@@ -786,7 +801,7 @@ function updateCodeView(code){
 		fillCodingTable(code);
 		fillPropertiesView(code);
 		metaModelView.setActiveId(code.mmElementID);
-		codeRelationsView.setRelations(code.relations, easytree, code.id, code.codeID);
+		codeRelationsView.setRelations(code.relations, code.id);
 		if (codeMemoEditor != undefined) codeMemoEditor.setHTML(code.memo);
 		if (cbEditor.def != undefined) {
 			var codeBookEntry = code.codeBookEntry

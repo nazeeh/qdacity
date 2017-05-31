@@ -51,7 +51,7 @@ class Code extends React.Component {
 			};
 			this.renderCodingCount = this.renderCodingCount.bind(this);
 			
-			this.calculateCodingCount();
+			if (!this.props.showSimpleView) this.calculateCodingCount();
 		}
 
 		getStyles() {
@@ -208,19 +208,39 @@ class Code extends React.Component {
 				var children = "";
 				if (!node.collapsed && !node.leaf && node.children) {
 					children = node.children.map((childCode, index) => {
-						return (
-							<DragAndDropCode 
-								documentsView={this.props.documentsView}
-								level={level + 1}
-								node={childCode} 
-								selected={this.props.selected} 
-								setSelected={this.props.setSelected} 
-								relocateCode={this.props.relocateCode}
-								showFooter={this.props.showFooter}  
-								key={"CS" + "_" + level+ "_" +index}
-							>
-							</DragAndDropCode>
-						);
+						if (this.props.showSimpleView){
+							return (
+								<Code 
+									showSimpleView={this.props.showSimpleView}
+									documentsView={this.props.documentsView}
+									level={level + 1}
+									node={childCode} 
+									selected={this.props.selected} 
+									setSelected={this.props.setSelected} 
+									relocateCode={this.props.relocateCode}
+									show	Footer={this.props.showFooter}  
+									key={"CS" + "_" + level+ "_" +index}
+								>
+								</Code>
+							);
+						}
+						else {
+							return (
+								<DragAndDropCode 
+									showSimpleView={this.props.showSimpleView}
+									documentsView={this.props.documentsView}
+									level={level + 1}
+									node={childCode} 
+									selected={this.props.selected} 
+									setSelected={this.props.setSelected} 
+									relocateCode={this.props.relocateCode}
+									showFooter={this.props.showFooter}  
+									key={"CS" + "_" + level+ "_" +index}
+								>
+								</DragAndDropCode>
+							);
+						}
+						
 					});
 				}	
 
@@ -237,7 +257,13 @@ class Code extends React.Component {
 			const { connectDragSource, isDragging, connectDropTarget } = this.props;
 			const styles = this.getStyles();
 			var _this = this;
-			this. calculateCodingCount();
+			if (this.props.showSimpleView) {
+				return (<div>
+			            {this.renderNodesRecursive(this.props.node, this.props.level)}
+			    </div>);
+			}
+			
+			this.calculateCodingCount();
 			return connectDropTarget(this.props.connectDragSource(
 				<div>
 			            {this.renderNodesRecursive(this.props.node, this.props.level)}
@@ -248,4 +274,9 @@ class Code extends React.Component {
 
 const DragSourceCode = DragSource("code", codeSource, collect)(Code)
 const DragAndDropCode = DropTarget("code", codeTarget, collectTarget)(DragSourceCode)
-export default DragAndDropCode
+export {
+    DragAndDropCode,
+    Code
+};
+//export default DragAndDropCode
+

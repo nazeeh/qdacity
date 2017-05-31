@@ -5,7 +5,6 @@ import NewCodeRelation from '../../common/modals/NewCodeRelation';
 export default class CodeRelationsView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.codesystem = {};
 		this.state = {
 			relationships: [],
 			selected: -1,
@@ -47,26 +46,23 @@ export default class CodeRelationsView extends React.Component {
 		});
 	}
 
-	setRelations(relations, codesytem, pSourceId, pNodeId) {
+	setRelations(relations, pSourceId) {
 		var _this = this;
 		this.state.sourceCode = pSourceId;
-		this.codesystem = codesytem;
 		this.state.relationships = [];
-		this.state.nodeId = pNodeId;
 		this.setState({
 			relationships: this.state.relationships,
 			sourceCode: this.state.sourceCode,
-			nodeId: this.state.nodeId
 		});
 
 		if (typeof relations == 'undefined') return;
 
 		relations.forEach(function (relation) {
 			var mmElement = _this.props.metaModelView.getElement(relation.mmElementId);
-			var code = codesytem.getNode(relation.codeId);
+			var code = _this.props.getCodeByCodeID(relation.codeId);
 			var codeName = "undefined";
 			var mmElementName = "undefined";
-			if (code != null) codeName = code.text;
+			if (code != null) codeName = code.name;
 			if (mmElement != null) mmElementName = mmElement.name;
 			_this.addRelationship(relation.key.id, relation.codeId, codeName, relation.mmElementId, mmElementName);
 		});
@@ -104,14 +100,15 @@ export default class CodeRelationsView extends React.Component {
 
 	createRelationship() {
 		var _this = this;
-		var newRelationModal = new NewCodeRelation(this.props.metaModelView, this.codesystem);
+		var newRelationModal = new NewCodeRelation(this.props.metaModelView, this.props.getCodeSystem());
 		newRelationModal.showModal().then(function (data) {
 			var a = 1;
 			CodesEndpoint.addRelationship(_this.state.sourceCode, data.codeId, data.mmElementId).then(function (resp) {
 				var mmElementName = _this.props.metaModelView.getElement(data.mmElementId).name;
-				var code = _this.codesystem.getNode(_this.state.nodeId);
+				var code = _this.props.getSelectedCode();
 				code.relations = resp.relations;
-				_this.codesystem.rebuildTree();
+				_this.props.updateSelectedCode(code);
+				_this.setRelations(code.relations,code.id);
 			});
 		});
 	}
@@ -120,9 +117,9 @@ export default class CodeRelationsView extends React.Component {
 		var _this = this;
 		CodesEndpoint.removeRelationship(_this.state.sourceCode, relationshipId).then(function (resp) {
 			_this.removeRelationship(relationshipId);
-			var code = _this.codesystem.getNode(_this.state.nodeId);
+			var code = _this.props.getSelectedCode();
 			code.relations = resp.relations;
-			_this.codesystem.rebuildTree();
+			_this.props.updateSelectedCode(code);
 		});
 	}
 
