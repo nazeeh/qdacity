@@ -132,10 +132,10 @@ export default class CodesystemToolbar extends React.Component {
 		if (this.props.projectType != "PROJECT") return "";
 				
 		return ([
-			<a className="btn btn-default" onClick={this.insertCode}>
+			<a key="applyCodeBtn" className="btn btn-default" onClick={this.insertCode}>
 				<i className="fa fa-plus fa-1x"></i>
 			</a>,
-			<a className="btn btn-default" onClick={this.removeCode}>
+			<a key="removeCodeBtn" className="btn btn-default" onClick={this.removeCode}>
 				<i className="fa fa-trash fa-1x"></i>
 			</a>
 		 ]);
@@ -144,7 +144,7 @@ export default class CodesystemToolbar extends React.Component {
 	render() {
 		const styles = this.getStyles();
 		
-		return ( 
+		return (
 			<div style={styles.toolbar}>
 				<div className="btn-group" style={styles.btnGroup}>
 					{this.renderAddRemoveCodeBtn()}
