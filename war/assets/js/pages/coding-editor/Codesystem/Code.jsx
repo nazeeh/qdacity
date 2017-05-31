@@ -46,9 +46,12 @@ class Code extends React.Component {
 			this.codesystem = {};
 			this.state = {
 				node: this.props.node,
+				codingCount: 0,
 				level: this.props.level
 			};
 			this.renderCodingCount = this.renderCodingCount.bind(this);
+			
+			this.calculateCodingCount();
 		}
 
 		getStyles() {
@@ -87,6 +90,28 @@ class Code extends React.Component {
 					marginRight: "3px"
 				}
 			}
+		}
+		
+		calculateCodingCount(){
+			var codingCount = 0;
+			var documents = this.props.documentsView.getDocuments();
+			for (var index in documents) {
+				var doc = documents[index];
+				var elements = doc.text;
+				var foundArray = $('coding[code_id=\'' + this.state.node.codeID + '\']', elements).map(function () {
+					return $(this).attr('id');
+				});
+				var idsCounted = []; // When a coding spans multiple HTML blocks,
+				// then there will be multiple elements with
+				// the same ID
+				for (var j = 0; j < foundArray.length; j++) {
+					if ($.inArray(foundArray[j], idsCounted) != -1)
+						continue;
+					codingCount++;
+					idsCounted.push(foundArray[j]);
+				}
+			}
+			this.state.codingCount = codingCount;
 		}
 		
 		styleNode(){
@@ -154,7 +179,7 @@ class Code extends React.Component {
 					style={style}
 					onClick={this.props.showFooter}
 				>
-					0 
+					{this.state.codingCount}
 				</span>
 			);
 		}
@@ -185,6 +210,7 @@ class Code extends React.Component {
 					children = node.children.map((childCode, index) => {
 						return (
 							<DragAndDropCode 
+								documentsView={this.props.documentsView}
 								level={level + 1}
 								node={childCode} 
 								selected={this.props.selected} 

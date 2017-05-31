@@ -160,7 +160,8 @@ class Codesystem extends React.Component {
 
 			const renderRoots = codeSiblings.map((code, index) => {
 					return (
-						<Code 
+						<Code
+							documentsView={this.props.documentsView}
 							level={level} 
 							node={code} 
 							selected={this.state.selected} 
