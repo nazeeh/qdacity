@@ -215,10 +215,11 @@ window.init = function () {
 
 	// FIXME possibly move to CodingsView
 	document.getElementById('btnCodeBookEntrySave').onclick = function () {
-		var codeBookEntry = {};
-		codeBookEntry.definition = cbEditor.def.getHTML();
-		codeBookEntry.whenToUse = cbEditor.when.getHTML();
-		codeBookEntry.whenNotToUse = cbEditor.whenNot.getHTML();
+		var codeBookEntry = {
+				definition: cbEditor.def.getHTML(),
+				whenToUse: cbEditor.when.getHTML(),
+				whenNotToUse: cbEditor.whenNot.getHTML()
+		};
 		updateCodeBookEntry(codeBookEntry);
 	}
 
@@ -531,8 +532,9 @@ function updateCode(code) {
 }
 
 function updateCodeBookEntry(codeBookEntry) {
-	CodesEndpoint.setCodeBookEntry(getActiveCode().dbID, codeBookEntry).then(function (resp) {
-		updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry, resp.mmElementID, resp.relations);
+	CodesEndpoint.setCodeBookEntry(codesystemView.child.getSelected().id, codeBookEntry).then(function (resp) {
+		codesystemView.child.updateSelected(resp);
+		//updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry, resp.mmElementID, resp.relations);
 	});
 }
 
@@ -543,7 +545,6 @@ function relocateCode(code, newParentCode) {
 		console.log("Updated logation of code:" + resp.id + " |  " + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 	});
 }
-
 
 
 function setSubCodeIDs(node) {
