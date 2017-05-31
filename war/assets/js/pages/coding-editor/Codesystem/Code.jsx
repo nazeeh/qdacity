@@ -48,7 +48,7 @@ class Code extends React.Component {
 				node: this.props.node,
 				level: this.props.level
 			};
-			
+			this.renderCodingCount = this.renderCodingCount.bind(this);
 		}
 
 		getStyles() {
@@ -149,7 +149,11 @@ class Code extends React.Component {
 		renderCodingCount(){
 			const style = this.getStyles().codingBubble;
 			return (
-				<span className="" style={style}>
+				<span 
+					className="" 
+					style={style}
+					onClick={this.props.showFooter}
+				>
 					0 
 				</span>
 			);
@@ -180,7 +184,16 @@ class Code extends React.Component {
 				if (!node.collapsed && !node.leaf && node.children) {
 					children = node.children.map((childCode, index) => {
 						return (
-							<DragAndDropCode level={level + 1} node={childCode} selected={this.props.selected} setSelected={this.props.setSelected} relocateCode={this.props.relocateCode}  key={"CS" + "_" + level+ "_" +index}></DragAndDropCode>
+							<DragAndDropCode 
+								level={level + 1}
+								node={childCode} 
+								selected={this.props.selected} 
+								setSelected={this.props.setSelected} 
+								relocateCode={this.props.relocateCode}
+								showFooter={this.props.showFooter}  
+								key={"CS" + "_" + level+ "_" +index}
+							>
+							</DragAndDropCode>
 						);
 					});
 				}	

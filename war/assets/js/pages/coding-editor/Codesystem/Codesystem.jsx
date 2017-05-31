@@ -155,7 +155,15 @@ class Codesystem extends React.Component {
 
 			const renderRoots = codeSiblings.map((code, index) => {
 					return (
-						<Code level={level} node={code} selected={this.state.selected} setSelected={this.setSelected} relocateCode={this.relocateCode} key={"CS" + "_" + level + "_"  +index}></Code>
+						<Code 
+							level={level} 
+							node={code} 
+							selected={this.state.selected} 
+							setSelected={this.setSelected} 
+							relocateCode={this.relocateCode} 
+							showFooter={this.props.showFooter}
+							key={"CS" + "_" + level + "_"  +index}>
+						</Code>
 					);
 				});
 			return (

@@ -338,7 +338,9 @@ function setupUI() {
 				toggleCodingView={toggleCodingView}  
 				editorCtrl={editorCtrl}  
 				documentsView={documentsView} 
-				umlEditorEnabled={resp.umlEditorEnabled}/>, document.getElementById('codesystemView'));
+				umlEditorEnabled={resp.umlEditorEnabled}
+				showFooter={showFooter}
+			/>, document.getElementById('codesystemView'));
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}
