@@ -21,21 +21,21 @@ public class ReliabilityDataGenerator extends AlgorithmInputGenerator {
      */
     public List<ReliabilityData> generate() {
 	int raters = sameDocumentsFromDifferentRaters.size();
-	List<List<String>> ratings = new ArrayList<>();
+	//document->unit->ratings
+	List<List<List<String>>> ratings = TextDocumentAnalyzer.getDocumentUnitCodes(sameDocumentsFromDifferentRaters, evalUnit);
 	List<ReliabilityData> rDatas = new ArrayList<>();
 
-	for (TextDocument document : sameDocumentsFromDifferentRaters) {
-	    ratings.add(TextDocumentAnalyzer.split(document, evalUnit));
-	}
-
 	for (long codeId : codeIds) {
-	    ReliabilityData rData = new ReliabilityData(ratings.get(0).size(), raters); //TODO units nicht unbedingt gleich lang!! split nicht eindeutig!
+	    ReliabilityData rData = new ReliabilityData(ratings.get(0).size(), raters);
 	    for (int coder = 1; coder <= raters; coder++) {
 		for (int unit = 1; unit <= ratings.get(coder - 1).size(); unit++) {
 		    int valueToSet = 1; //1 not set
-		    if (ratings.get(coder - 1).get(unit - 1).equals(codeId + "")) {
-			//Only set 1 if code we are looking at right now is set.
-			valueToSet = 2; //set
+		    List<String> codesOfCurUnit = ratings.get(coder - 1).get(unit - 1);
+		    for(String code : codesOfCurUnit){
+			if (code.equals(codeId + "")) {
+			    //Only set 1 if code we are looking at right now is set.
+			    valueToSet = 2; //set
+			}
 		    }
 		    rData.set(unit, coder, valueToSet);
 		}

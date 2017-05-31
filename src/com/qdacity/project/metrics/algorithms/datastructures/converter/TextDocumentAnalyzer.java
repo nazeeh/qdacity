@@ -15,30 +15,6 @@ import org.jsoup.select.Elements;
 public class TextDocumentAnalyzer {
 
     /**
-     * Get the applied codes of a textDocument 
-     * @param document one document to get the codes from
-     * @param evalUnit which evaluation Unit
-     * @return List of Strings containing the codes
-     */
-    public static List<String> split(TextDocument document, EvaluationUnit evalUnit) {
-	//TODO revise this method!
-	Document parsedDocument = Jsoup.parse(document.getText().getValue());
-	Elements paragraphs = parsedDocument.select(TextDocumentConstants.PARAGRAPH_TAG);
-	List<String> ratings = new ArrayList<>();
-	if (evalUnit == EvaluationUnit.PARAGRAPH) {
-	    for (int i = 0; i < paragraphs.size(); i++) {
-		Elements codings = paragraphs.get(i).select(TextDocumentConstants.CODING_TAG);
-		//TODO Units sind hier nicht eindeutig wenn z.B. ein User einen Code nicht gesetzt hat!! Andere DS n�tig!
-		ratings.addAll(getAppliedCodes(codings)); //ACHTUNG: Hier kann es mehr als einen pro Unit geben!! ODER AUCH KEINEN
-	    }
-	} else {
-	    throw new UnsupportedOperationException("Evaluation Unit not supported yet."); //TODO
-	}
-
-	return ratings;
-    }
-
-    /**
      * Maps the Applied Codes per Unit per Rater of one document (by different Raters)
      * @param sameDocumentsFromDifferentRaters List of Ids of a document by different Raters. It has to be the same document
      * @param evalUnit which evaluation Unit
