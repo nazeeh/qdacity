@@ -15,17 +15,11 @@ export default class SimpleCodesystem extends React.Component {
 			this.setSelected = this.setSelected.bind(this);
 		}
 
-		
 		setSelected(code){
 			if (!this.props.showSimpleView)this.props.updateCodeView(code);
 			this.setState({
 				selected: code
 			});
-		}
-		
-		updateSelected(code){
-			Object.assign(this.state.selected, code);
-			this.forceUpdate();
 		}
 		
 		getSelected(){
@@ -53,30 +47,31 @@ export default class SimpleCodesystem extends React.Component {
 			}
 		}
 		
-		renderNodes(codeSiblings, level) {
-			const _this = this;
-
-			const renderRoots = codeSiblings.map((code, index) => {
+		renderRoots(codes){
+			return codes.map((code, index) => {
 					return (
 						<Code
 							showSimpleView={this.props.showSimpleView}
-							level={level} 
+							level={0} 
 							node={code} 
 							selected={this.state.selected} 
 							setSelected={this.setSelected} 
-							key={"CS" + "_" + level + "_"  +index}>
+							key={"CS" + "_" + 0 + "_"  +index}>
 						</Code>
 					);
 				});
+		}
+		
+		renderNodes(codeSiblings, level) {
 			return (
 				<div>
-    				{renderRoots}
+    				{this.renderRoots(codeSiblings)}
 				</div>
 			);
 		};
 
 		renderCodesystem() {
-			return this.renderNodes(this.state.codesystem, 0);
+			return this.renderNodes(this.state.codesystem);
 		}
 
 		render() {

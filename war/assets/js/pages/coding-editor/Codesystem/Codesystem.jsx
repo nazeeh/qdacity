@@ -19,12 +19,9 @@ class Codesystem extends SimpleCodesystem {
 				slected: {},
 				codesystem: []
 			};
-			if (!this.props.codesystem){
-				this.init();
-			} else {
-				this.state.codesystem = this.props.codesystem;
-			}
-			this.setSelected = this.setSelected.bind(this);
+			
+			this.init();
+
 			this.relocateCode = this.relocateCode.bind(this);
 			this.removeCode = this.removeCode.bind(this);
 			this.insertCode = this.insertCode.bind(this);
@@ -81,43 +78,14 @@ class Codesystem extends SimpleCodesystem {
 				currentCode.children = [];
 			}
 		}
-		
-		setSelected(code){
-			if (!this.props.showSimpleView)this.props.updateCodeView(code);
-			this.setState({
-				selected: code
-			});
-		}
+
 		
 		updateSelected(code){
 			Object.assign(this.state.selected, code);
 			this.forceUpdate();
 		}
+
 		
-		getSelected(){
-			return this.state.selected;
-		}
-		
-		getCodesystem(){
-			return this.state.codesystem;
-		}
-		
-		getCodeByCodeID(codeID){
-			return this.getCodeByID(this.state.codesystem, codeID);
-		}
-		
-		getCodeByID(codeArr, codeID){
-			var _this = this;
-			var found;
-			for (var i in codeArr){
-				var code = codeArr[i];
-				if (code.codeID == codeID){
-					return code;
-				}
-				found = _this.getCodeByID(code.children, codeID);
-					if (found) return found;				
-			}
-		}
 		
 		removeCode(){
 			var code = this.state.selected; 
@@ -177,34 +145,23 @@ class Codesystem extends SimpleCodesystem {
 			 
 			
 		}
-
-		renderNodes(codeSiblings, level) {
-			const _this = this;
-
-			const renderRoots = codeSiblings.map((code, index) => {
+		
+		renderRoots(codes){
+			return codes.map((code, index) => {
 					return (
 						<DragAndDropCode
 							showSimpleView={this.props.showSimpleView}
 							documentsView={this.props.documentsView}
-							level={level} 
+							level={0} 
 							node={code} 
 							selected={this.state.selected} 
 							setSelected={this.setSelected} 
 							relocateCode={this.relocateCode} 
 							showFooter={this.props.showFooter}
-							key={"CS" + "_" + level + "_"  +index}>
+							key={"CS" + "_" + 0 + "_"  +index}>
 						</DragAndDropCode>
 					);
 				});
-			return (
-				<div>
-    				{renderRoots}
-				</div>
-			);
-		};
-
-		renderCodesystem() {
-			return this.renderNodes(this.state.codesystem, 0);
 		}
 
 		render() {

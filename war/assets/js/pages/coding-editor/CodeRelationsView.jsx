@@ -135,7 +135,7 @@ export default class CodeRelationsView extends React.Component {
 	
         {
           this.state.relationships.map(function(rel) {
-            return <li className="clickable" style={styles.listItem}>
+            return <li key={rel.id} className="clickable" style={styles.listItem}>
             <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel.id)}}>
             <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
             <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
