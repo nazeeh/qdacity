@@ -177,6 +177,7 @@ public class DeferredEvaluation implements DeferredTask {
     private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException {
 	List<FMeasureResult> validationCoderAvg = new ArrayList<>();
 	Map<Long, List<FMeasureResult>> agreementByDoc = new HashMap<>();
+	Map<Long, String> documentNames = new HashMap<>();
 
 	ValidationEndpoint ve = new ValidationEndpoint();
 	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
@@ -190,30 +191,30 @@ public class DeferredEvaluation implements DeferredTask {
 	    List<DocumentResult> docResults = ve.listDocumentResults(validationResult.getId(), user);
 
 	    for (DocumentResult documentResult : docResults) {
-		Long revisionDocumentID = documentResult.getOriginDocumentID();
+				Long revisionDocumentID = documentResult.getOriginDocumentID();
+				documentNames.put(revisionDocumentID, documentResult.getDocumentName());
+				DocumentResult documentResultForAggregation = new DocumentResult(documentResult);
+				documentResultForAggregation.setDocumentID(revisionDocumentID);
+				report.addDocumentResult(documentResultForAggregation);
 
-		DocumentResult documentResultForAggregation = new DocumentResult(documentResult);
-		documentResultForAggregation.setDocumentID(revisionDocumentID);
-		report.addDocumentResult(documentResultForAggregation);
+				FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResultForAggregation.getReportRow()));
 
-		FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResultForAggregation.getReportRow()));
-
-		if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
-		    List<FMeasureResult> agreementList = agreementByDoc.get(revisionDocumentID);
-		    if (agreementList == null) {
-			agreementList = new ArrayList<>();
-		    }
-		    agreementList.add(docAgreement);
-		    agreementByDoc.put(revisionDocumentID, agreementList);
-		    // agreementByDoc.putIfAbsent(key, value)
-		}
+				if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
+					List<FMeasureResult> agreementList = agreementByDoc.get(revisionDocumentID);
+					if (agreementList == null) {
+						agreementList = new ArrayList<>();
+				}
+					agreementList.add(docAgreement);
+					agreementByDoc.put(revisionDocumentID, agreementList);
+					// agreementByDoc.putIfAbsent(key, value)
+				}
 	    }
 	}
 
 	for (Long docID : agreementByDoc.keySet()) {
 	    FMeasureResult avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
 	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getFMeasure());
-	    report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgDocAgreement, "Average"));
+			report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgDocAgreement, documentNames.get(docID)));
 	}
 
 	FMeasureResult avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
