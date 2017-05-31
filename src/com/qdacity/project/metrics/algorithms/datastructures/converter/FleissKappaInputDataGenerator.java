@@ -26,7 +26,7 @@ public class FleissKappaInputDataGenerator extends AlgorithmInputGenerator {
     public List<Integer[]> generateInputData() {
 	Map<Long, Integer[]> inputDatas = new HashMap<>();
 	//Documents->Units->Codes
-	List<List<List<String>>> documentUnitCodes = getDocumentUnitCodes();
+	List<List<List<String>>> documentUnitCodes = TextDocumentAnalyzer.getDocumentUnitCodes(sameDocumentsFromDifferentRaters, evalUnit);
 	//Units->Codes of a Document
 	for (List<List<String>> singleDocumentUnitCodes : documentUnitCodes) {
 	    for (Long codeId : codeIds) {

@@ -2,7 +2,6 @@ package com.qdacity.project.metrics.tasks.algorithms;
 
 import com.google.appengine.api.users.User;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.algorithms.KrippendorffsAlphaCoefficient;
@@ -18,20 +17,17 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 
     private final List<String> row;
     private final Collection<Long> codeIds;
-    private final List<Long> textDocumentIds;
+    
 
     public DeferredKrippendorffsAlphaEvaluation(ValidationProject validationProject, User user, Long validationReportId, String documentTitle, EvaluationUnit evalUnit, ArrayList<Long> codeIds, ArrayList<Long> textDocumentIds) {
-	super(validationProject, user, validationReportId, evalUnit);
+	super(validationProject, user, validationReportId, evalUnit, textDocumentIds);
 	this.codeIds = codeIds;
 	row = new ArrayList<>();
 	row.add(documentTitle);
-	this.textDocumentIds = textDocumentIds;
     }
 
     @Override
     protected void runAlgorithm() throws Exception {
-
-	List<TextDocument> textDocuments = collectTextDocumentsfromMemcache(textDocumentIds);
 
 	List<ReliabilityData> rData = new ReliabilityDataGenerator(textDocuments, codeIds, evalUnit).generate();
 	Logger.getLogger("logger").log(Level.INFO, "Calculation of Kripp's Alpha");

@@ -316,7 +316,7 @@ public class TextDocumentEndpoint {
 	}
 	
 	/**
-	 * Put a TextDocument to the Memcache to read it faster/cheaper later
+	 * Put a TextDocument to the Memcache to read it faster/cheaper later (within 300 seconds)
 	 * Hint: Not guarantee it is actually put to memcache!
 	 * @param tx the textdocument
 	 */
@@ -324,6 +324,27 @@ public class TextDocumentEndpoint {
 	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), tx.getId());
 	    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
 	    syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
+	}
+	
+	/**
+	 * Get the textdocuments from memcache or load them from database. Use this method after putTextDocumentToMemcache
+	 * @param textDocumentIds all the documents you want to collect
+	 * @return 
+	 */
+	public static List<TextDocument> collectTextDocumentsfromMemcache(List<Long> textDocumentIds) {
+	    PersistenceManager mgr = getPersistenceManager();
+	    List<TextDocument> textDocuments = new ArrayList<>();
+	    for (Long docID : textDocumentIds) { //Get Textdocuments from Memcache
+		String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), docID);
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+		syncCache.get(keyString);
+		TextDocument origialDoc = (TextDocument) syncCache.get(keyString);
+		if (origialDoc == null) {
+		    origialDoc = mgr.getObjectById(TextDocument.class, docID);
+		}
+		textDocuments.add(origialDoc);
+	    }
+	    return textDocuments;
 	}
 	
 	private static List<String> getDocumentTitles(List<Long> docIDs) {

@@ -25,7 +25,7 @@ public class ReliabilityDataGenerator extends AlgorithmInputGenerator {
 	List<ReliabilityData> rDatas = new ArrayList<>();
 
 	for (TextDocument document : sameDocumentsFromDifferentRaters) {
-	    ratings.add(split(document));
+	    ratings.add(TextDocumentAnalyzer.split(document, evalUnit));
 	}
 
 	for (long codeId : codeIds) {

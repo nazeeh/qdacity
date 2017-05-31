@@ -6,6 +6,7 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.EvaluationUnit;
@@ -26,14 +27,17 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     protected final User user;
     protected final Long validationReportId;
     protected final EvaluationUnit evalUnit;
+    protected final List<Long> textDocumentIds;
+    protected List<TextDocument> textDocuments;
 
     protected ValidationResult valResult;
 
-    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit) {
+    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit, List<Long> textDocumentIds) {
 	this.validationProject = validationProject;
 	this.validationReportId = validationReportId;
 	this.user = user;
 	this.evalUnit = evalUnit;
+	this.textDocumentIds = textDocumentIds;
     }
 
     @Override
@@ -41,6 +45,7 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	try {
 	    mgr = getPersistenceManager();
 	    mgr.setMultithreaded(true);
+	    textDocuments = TextDocumentEndpoint.collectTextDocumentsfromMemcache(textDocumentIds);
 	    valResult = makeNextValidationResult();
 	    runAlgorithm();
 	    if (valResult.getReportRow() != null
@@ -69,21 +74,6 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	newResult.setReportRow(null); //intentionally initialize with null!
 	mgr.makePersistent(newResult);// make persistent to generate ID which is passed to deferred persistence of DocumentResults
 	return newResult;
-    }
-
-    protected List<TextDocument> collectTextDocumentsfromMemcache(List<Long> textDocumentIds) {
-	List<TextDocument> textDocuments = new ArrayList<>();
-	for (Long docID : textDocumentIds) { //Get Textdocuments from Memcache
-	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), docID);
-	    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	    syncCache.get(keyString);
-	    TextDocument origialDoc = (TextDocument) syncCache.get(keyString);
-	    if (origialDoc == null) {
-		origialDoc = mgr.getObjectById(TextDocument.class, docID);
-	    }
-	    textDocuments.add(origialDoc);
-	}
-	return textDocuments;
     }
 
     protected abstract void runAlgorithm() throws Exception;

@@ -24,20 +24,15 @@ import com.qdacity.project.metrics.tasks.DeferredDocResults;
 
 public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
-    List<Long> docIDs;
     List<Long> orignalDocIDs;
 
-    public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> docIDs, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit) {
-	super(validationPrj, user, validationReportID, evalUnit);
-	this.docIDs = docIDs; // FIXME dont need anymore, because only list of relevant textdocumentIDs is passed?
-	this.orignalDocIDs = orignalDocIDs;
+    public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit) {
+	super(validationPrj, user, validationReportID, evalUnit, orignalDocIDs);
     }
 
     @Override
     protected void runAlgorithm() throws Exception {
 	TextDocumentEndpoint tde = new TextDocumentEndpoint();
-
-	Collection<TextDocument> originalDocs = collectTextDocumentsfromMemcache(orignalDocIDs);
 
 	List<FMeasureResult> documentAgreements = new ArrayList<>();
 
@@ -50,7 +45,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	}
 
-	for (TextDocument original : originalDocs) {// FIXME reverse order of the two loops to put the memcache operation here instead of preceding in its own loop
+	for (TextDocument original : textDocuments) {// FIXME reverse order of the two loops to put the memcache operation here instead of preceding in its own loop
 	    // if (!docIDs.contains(original.getId())) continue; // Exclude text documents that should not be considered
 
 	    for (TextDocument recoded : recodedDocs) {

@@ -36,6 +36,7 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.TextDocumentAnalyzer;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
@@ -148,7 +149,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
 	    for (ValidationProject validationProject : validationProjectsFromUsers) {
-		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, docIDs, orignalDocIDs, validationReport.getId(), user, evalUnit);
+		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, validationReport.getId(), user, evalUnit);
 		Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
 		taskQueue.launchInTaskQueue(deferredValidation);
 	    }
@@ -317,10 +318,18 @@ public class DeferredEvaluation implements DeferredTask {
 	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
 	
+	//Hint: You could potentially optimize here as the textDocuments need to be loaded again.
+	//They are put in the Memcace by TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName, but
+	// the maximum could be calculated at TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName already
+	// It optimizes the code, but makes it more unreadable, therefore I decided to keep it separated.
+	int documentUnitsMax = findMaxUnits(sameDocumentsFromDifferentRatersMap);
+	
 	List<String> headerCells = new ArrayList<>();
 	headerCells.add("Document: Code \\ Unit");
 	headerCells.add("ALL");
-	// TODO aus einem der Textdocumente schon die anzahl der Units holen :(	
+	for(int i = 1; i <=documentUnitsMax; i++){
+	    headerCells.add(""+i);
+	}
 	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
 
 	//Create Deferred Evaluations
@@ -333,6 +342,23 @@ public class DeferredEvaluation implements DeferredTask {
 	taskQueue.launchListInTaskQueue(deferredEvals);
 	
 	getPersistenceManager().makePersistent(validationReport);
+    }
+
+    private int findMaxUnits(Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap) {
+	Collection<ArrayList<Long>> documentIds = sameDocumentsFromDifferentRatersMap.values();
+	ArrayList<Long> allIds = new ArrayList<>();
+	for(ArrayList<Long> ids : documentIds) {
+	    allIds.addAll(ids);
+	}
+	List<TextDocument> txDocs = TextDocumentEndpoint.collectTextDocumentsfromMemcache(allIds);
+	int maximum = 0;
+	for(TextDocument tx : txDocs) {
+	    int tmp = TextDocumentAnalyzer.getAmountOfUnits(tx, evalUnit);
+	    if(tmp > maximum) {
+		maximum = tmp;
+	    }
+	}
+	return maximum;
     }
 
 }
