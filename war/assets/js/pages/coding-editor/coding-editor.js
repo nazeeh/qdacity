@@ -193,18 +193,24 @@ window.init = function () {
 	}
 
 	document.getElementById('btnCodeSave').onclick = function () {
-		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementID, getActiveCode().relations);
+		var code = codesystemView.child.getSelected();
+		code.author = $('#codePropAuthor').val();
+		code.name = $('#codePropName').val();
+		code.color = $('#codePropColor').val();
+		updateCode(code);
 
 	}
 
 	document.getElementById('btnCodeMemoSave').onclick = function () {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementID, getActiveCode().relations);
-
+		var code = codesystemView.child.getSelected();
+		code.memo = codeMemoEditor.getHTML();
+		updateCode(code);
 	}
 
 	document.getElementById('btnSaveMetaModelAttr').onclick = function () {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, metaModelView.getActiveElementId(), getActiveCode().relations);
-
+		var code = codesystemView.child.getSelected();
+		code.mmElementID = metaModelView.getActiveElementId()
+		updateCode(code);
 	}
 
 	// FIXME possibly move to CodingsView
@@ -517,23 +523,10 @@ function insertCode(_AuthorName, _CodeName) {
 }
 
 // Update Code function
-function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID, _mmElementID, _relations) {
-	// Build the Request Object
-	var requestData = {};
-	requestData.id = _ID;
-	requestData.codeID = _CodeID;
-	requestData.author = _AuthorName;
-	requestData.name = _CodeName;
-	requestData.color = _CodeColor;
-	requestData.memo = _Memo;
-	requestData.codesystemID = codesystem_id;
-	requestData.parentID = getActiveCode().parentID;
-	requestData.subCodesIDs = getActiveCode().subCodesIDs;
-	requestData.mmElementID = _mmElementID;
-	requestData.relations = _relations;
-	CodesEndpoint.updateCode(requestData).then(function (resp) {
-
-		updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry, resp.mmElementID, resp.relations);
+function updateCode(code) {
+	CodesEndpoint.updateCode(code).then(function (resp) {
+		codesystemView.child.updateSelected(resp);
+		//updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry, resp.mmElementID, resp.relations);
 	});
 }
 

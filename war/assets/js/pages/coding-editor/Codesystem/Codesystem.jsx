@@ -25,7 +25,6 @@ class Codesystem extends React.Component {
 			this.removeCode = this.removeCode.bind(this);
 			this.insertCode = this.insertCode.bind(this);
 			this.updateCodingCount = this.updateCodingCount.bind(this);
-			
 		}
 
 		getStyles() {
@@ -84,6 +83,11 @@ class Codesystem extends React.Component {
 			this.setState({
 				selected: code
 			});
+		}
+		
+		updateSelected(code){
+			Object.assign(this.state.selected, code);
+			this.forceUpdate();
 		}
 		
 		getSelected(){
