@@ -111,7 +111,7 @@ class Code extends React.Component {
 					idsCounted.push(foundArray[j]);
 				}
 			}
-			this.state.codingCount = codingCount;
+			this.state.node.codingCount = codingCount;
 		}
 		
 		styleNode(){
@@ -179,7 +179,7 @@ class Code extends React.Component {
 					style={style}
 					onClick={this.props.showFooter}
 				>
-					{this.state.codingCount}
+					{this.state.node.codingCount}
 				</span>
 			);
 		}
@@ -237,6 +237,7 @@ class Code extends React.Component {
 			const { connectDragSource, isDragging, connectDropTarget } = this.props;
 			const styles = this.getStyles();
 			var _this = this;
+			this. calculateCodingCount();
 			return connectDropTarget(this.props.connectDragSource(
 				<div>
 			            {this.renderNodesRecursive(this.props.node, this.props.level)}

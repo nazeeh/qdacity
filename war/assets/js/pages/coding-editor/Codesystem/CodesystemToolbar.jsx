@@ -73,6 +73,7 @@ export default class CodesystemToolbar extends React.Component {
 
 			_this.props.editorCtrl.setCoding(codingID, selected.codeID, selected.name, author);
 			_this.props.documentsView.updateCurrentDocument(_this.props.editorCtrl.getHTML());
+			_this.props.updateCodingCount();
 		});
 	}
 	

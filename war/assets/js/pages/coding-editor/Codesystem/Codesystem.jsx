@@ -24,6 +24,8 @@ class Codesystem extends React.Component {
 			this.relocateCode = this.relocateCode.bind(this);
 			this.removeCode = this.removeCode.bind(this);
 			this.insertCode = this.insertCode.bind(this);
+			this.updateCodingCount = this.updateCodingCount.bind(this);
+			
 		}
 
 		getStyles() {
@@ -124,6 +126,11 @@ class Codesystem extends React.Component {
 			
 		}
 		
+		updateCodingCount(){
+			this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(this.state.selected);
+			this.forceUpdate();
+		}
+		
 		updateSubCodeIDs(code){
 			code.subCodesIDs = [];
 			code.children.forEach((childCode) =>{
@@ -196,6 +203,7 @@ class Codesystem extends React.Component {
 							account={this.props.account} 
 							removeCode={this.removeCode} 
 							insertCode={this.insertCode} 
+							updateCodingCount={this.updateCodingCount}
 							toggleCodingView={this.props.toggleCodingView}
 							editorCtrl={this.props.editorCtrl}
 							documentsView={this.props.documentsView}
