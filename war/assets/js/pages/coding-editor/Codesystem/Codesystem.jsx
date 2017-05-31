@@ -58,6 +58,7 @@ class Codesystem extends SimpleCodesystem {
 					codesystem : rootCodes,
 					selected: selected
 				});
+				$("#codesystemLoadingDiv").addClass("hidden");
 			});
 		}
 		
@@ -150,7 +151,7 @@ class Codesystem extends SimpleCodesystem {
 			return codes.map((code, index) => {
 					return (
 						<DragAndDropCode
-							showSimpleView={this.props.showSimpleView}
+							showSimpleView={false}
 							documentsView={this.props.documentsView}
 							level={0} 
 							node={code} 

@@ -51,7 +51,7 @@ export default class SimpleCodesystem extends React.Component {
 			return codes.map((code, index) => {
 					return (
 						<Code
-							showSimpleView={this.props.showSimpleView}
+							showSimpleView={true}
 							level={0} 
 							node={code} 
 							selected={this.state.selected} 

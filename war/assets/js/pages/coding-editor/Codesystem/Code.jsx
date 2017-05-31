@@ -278,5 +278,4 @@ export {
     DragAndDropCode,
     Code
 };
-//export default DragAndDropCode
 
