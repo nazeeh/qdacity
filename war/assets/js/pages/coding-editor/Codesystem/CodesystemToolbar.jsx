@@ -84,6 +84,7 @@ export default class CodesystemToolbar extends React.Component {
 		this.splitupCoding(slection, selected.codeID).then(function (value) {
 			_this.props.documentsView.updateCurrentDocument(_this.props.editorCtrl.getHTML());
 			_this.props.editorCtrl.addCodingBrackets();
+			_this.props.updateCodingCount();
 		});
 	}
 	
@@ -92,6 +93,7 @@ export default class CodesystemToolbar extends React.Component {
 	}
 	
 	splitupCoding(selection, codeID) {
+		var _this = this;
 		var promise = new Promise(
 			function (resolve, reject) {
 				var anchor = $(selection._sel.anchorNode);
@@ -100,7 +102,7 @@ export default class CodesystemToolbar extends React.Component {
 				if (typeof codingID == 'undefined') codingID = anchor.parent().prev().find('coding[code_id=' + codeID + ']').last().attr('id'); // Case beginning of paragraph to middle of paragraph
 	
 				if (typeof codingID != 'undefined') {
-					ProjectEndpoint.incrCodingId(project_id, project_type).then(function (resp) {
+					ProjectEndpoint.incrCodingId(_this.props.projectID, _this.props.projectType).then(function (resp) {
 						anchor.nextAll('coding[id=' + codingID + ']').attr("id", resp.maxCodingID);
 						anchor.parentsUntil('p').parent().nextAll().find('coding[id=' + codingID + ']').attr("id", resp.maxCodingID);
 						anchor.parent().nextAll().find('coding[id=' + codingID + ']').attr("id", resp.maxCodingID); // Case beginning of paragraph to middle of paragraph
