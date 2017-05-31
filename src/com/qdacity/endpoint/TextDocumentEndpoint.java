@@ -22,7 +22,11 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.memcache.Expiration;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
@@ -282,7 +286,7 @@ public class TextDocumentEndpoint {
 	}
 	
 	/**
-	 * For usage with Krippendorffs Alpha
+	 * For usage with Krippendorffs Alpha or Fleiss Kappa. Automatically puts the documents to Memcache!
 	 * @param validationProjects from which validation projects to get the documents from
 	 * @param docIDs filter for documents from the main project (will filter by title of the documents)
 	 * @param user with sufficient rights to get the documents
@@ -305,9 +309,21 @@ public class TextDocumentEndpoint {
 			    }
 			    sameDocumentsFromDifferentRaters.get(doc.getTitle()).add(doc.getId());
 			}
+			putTextDocumentToMemcache(doc);
 		    }
 		}
 		return sameDocumentsFromDifferentRaters;
+	}
+	
+	/**
+	 * Put a TextDocument to the Memcache to read it faster/cheaper later
+	 * Hint: Not guarantee it is actually put to memcache!
+	 * @param tx the textdocument
+	 */
+	public static void putTextDocumentToMemcache(TextDocument tx) {
+	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), tx.getId());
+	    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+	    syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
 	}
 	
 	private static List<String> getDocumentTitles(List<Long> docIDs) {

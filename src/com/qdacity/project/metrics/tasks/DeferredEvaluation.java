@@ -133,7 +133,7 @@ public class DeferredEvaluation implements DeferredTask {
 	for (TextDocument textDocument : originalDocs) {
 
 	    if (docIDs.contains(textDocument.getId())) {
-		putuTextDocumentToMemcache(textDocument);
+		TextDocumentEndpoint.putTextDocumentToMemcache(textDocument);
 		orignalDocIDs.add(textDocument.getId());
 	    }
 	}
@@ -271,12 +271,6 @@ public class DeferredEvaluation implements DeferredTask {
 	validationReport.setAverageAgreement(calculateAverageAgreement(resultRows));
 
 	getPersistenceManager().makePersistent(validationReport);
-    }
-
-    private void putuTextDocumentToMemcache(TextDocument tx) {
-	String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), tx.getId());
-	MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
     }
 
     /**
