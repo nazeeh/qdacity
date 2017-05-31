@@ -78,9 +78,14 @@ class Codesystem extends React.Component {
 		}
 		
 		setSelected(code){
+			this.props.updateCodeView(code);
 			this.setState({
 				selected: code
 			});
+		}
+		
+		getSelected(){
+			return this.state.selected;
 		}
 		
 		getCodeByID(codeArr, codeID){

@@ -340,6 +340,7 @@ function setupUI() {
 				documentsView={documentsView} 
 				umlEditorEnabled={resp.umlEditorEnabled}
 				showFooter={showFooter}
+				updateCodeView={updateCodeView}
 			/>, document.getElementById('codesystemView'));
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
@@ -395,10 +396,10 @@ function removeAllCodings(codingID) {
 
 function showCodingView() {
 	showFooter();
-	var activeID = getActiveCode().id;
+	var activeCode = codesystemView.getSelected();
 
-	fillCodingTable(activeID);
-	fillPropertiesView(activeID);
+	fillCodingTable(activeCode);
+	fillPropertiesView(activeCode);
 	fillCodeRelationsView();
 	resizeHandler();
 }
@@ -412,17 +413,17 @@ function hideCodingView() {
 
 }
 
-function fillCodingTable(activeID) {
+function fillCodingTable(code) {
 	var documents = documentsView.getDocuments();
-	codingsView.fillCodingTable(activeID, documents);
+	codingsView.fillCodingTable(code.codeID, documents);
 }
 
 //FIXME possibly move to CodingsView
-function fillPropertiesView(codeID) {
-	$("#codePropName").val(getActiveCode().name);
-	$("#codePropAuthor").val(getActiveCode().author);
+function fillPropertiesView(code) {
+	$("#codePropName").val(code.name);
+	$("#codePropAuthor").val(code.author);
 	$("#codePropColor").colorpicker({
-		color: getActiveCode().color
+		color: code.color
 	});
 }
 
@@ -779,19 +780,25 @@ function codesystemStateChanged(nodes, nodesJson) {
 	if (initialized_easytree) {
 		var active_code = getActiveCode().id;
 		if ($("#footer").is(":visible")) {
-			fillCodingTable(active_code);
-			fillPropertiesView(active_code);
-			metaModelView.setActiveId(getActiveCode().mmElementID);
-			codeRelationsView.setRelations(getActiveCode().relations, easytree, getActiveCode().dbID, getActiveCode().id);
-			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
-			if (cbEditor.def != undefined) {
-				var codeBookEntry = getActiveCode().codeBookEntry
-				cbEditor.def.setHTML(codeBookEntry.definition);
-				cbEditor.when.setHTML(codeBookEntry.whenToUse);
-				cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
-			}
+			updateCodeView(active_code);
 		}
 	} else {
 		initialized_easytree = true;
+	}
+}
+
+function updateCodeView(code){
+	if ($("#footer").is(":visible")) {
+		fillCodingTable(code);
+		fillPropertiesView(code);
+		metaModelView.setActiveId(code.mmElementID);
+		codeRelationsView.setRelations(code.relations, easytree, code.id, code.codeID);
+		if (codeMemoEditor != undefined) codeMemoEditor.setHTML(code.memo);
+		if (cbEditor.def != undefined) {
+			var codeBookEntry = code.codeBookEntry
+			cbEditor.def.setHTML(codeBookEntry.definition);
+			cbEditor.when.setHTML(codeBookEntry.whenToUse);
+			cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
+		}
 	}
 }
