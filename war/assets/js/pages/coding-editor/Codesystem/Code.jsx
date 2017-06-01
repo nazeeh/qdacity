@@ -46,10 +46,7 @@ class Code extends SimpleCode {
 		constructor(props) {
 			super(props);
 			this.renderCodingCount = this.renderCodingCount.bind(this);
-			this.calculateCodingCount();
-			this.setState({
-				node: this.state.node
-			});
+
 		}
 
 		getStyles() {
@@ -90,27 +87,6 @@ class Code extends SimpleCode {
 			}
 		}
 		
-		calculateCodingCount(){
-			var codingCount = 0;
-			var documents = this.props.documentsView.getDocuments();
-			for (var index in documents) {
-				var doc = documents[index];
-				var elements = doc.text;
-				var foundArray = $('coding[code_id=\'' + this.state.node.codeID + '\']', elements).map(function () {
-					return $(this).attr('id');
-				});
-				var idsCounted = []; // When a coding spans multiple HTML blocks,
-				// then there will be multiple elements with
-				// the same ID
-				for (var j = 0; j < foundArray.length; j++) {
-					if ($.inArray(foundArray[j], idsCounted) != -1)
-						continue;
-					codingCount++;
-					idsCounted.push(foundArray[j]);
-				}
-			}
-			this.state.node.codingCount = codingCount;
-		}
 
 		// overriding super method
 		renderCodingCount(){
@@ -147,8 +123,6 @@ class Code extends SimpleCode {
 			const { connectDragSource, isDragging, connectDropTarget } = this.props;
 			const styles = this.getStyles();
 			var _this = this;
-
-			this.calculateCodingCount();
 			return connectDropTarget(this.props.connectDragSource(
 				<div>
 			            {this.renderNodesRecursive(this.props.node, this.props.level)}
