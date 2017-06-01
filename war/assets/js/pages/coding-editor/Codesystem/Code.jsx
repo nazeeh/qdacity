@@ -179,7 +179,7 @@ class Code extends React.Component {
 					style={style}
 					onClick={this.props.showFooter}
 				>
-					{this.state.node.codingCount}
+					{this.props.node.codingCount}
 				</span>
 			);
 		}

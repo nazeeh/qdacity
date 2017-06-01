@@ -14,7 +14,6 @@ import SimpleCodesystem from './SimpleCodesystem.jsx';
 class Codesystem extends SimpleCodesystem {
 		constructor(props) {
 			super(props);
-			this.codesystem = {};
 			this.state = {
 				slected: {},
 				codesystem: []
@@ -112,8 +111,11 @@ class Codesystem extends SimpleCodesystem {
 		}
 		
 		updateCodingCount(){
-			this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(this.state.selected);
-			this.forceUpdate();
+			this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(this.state.selected.codeID);
+			this.setState({
+					selected: this.state.selected,
+					codesystem: this.state.codesystem
+				});
 		}
 		
 		updateSubCodeIDs(code){
@@ -140,7 +142,9 @@ class Codesystem extends SimpleCodesystem {
 				targetNode.children.push(movingNode);
 				_this.updateSubCodeIDs(targetNode);
 				
-				_this.forceUpdate();
+				_this.setState({
+					codesystem: _this.state.codesystem
+				})
 				console.log("Updated logation of code:" + resp.id + " |  " + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 			});
 			 
