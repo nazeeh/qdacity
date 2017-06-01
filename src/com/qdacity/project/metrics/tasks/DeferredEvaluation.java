@@ -14,10 +14,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
@@ -36,7 +32,6 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.TextDocumentAnalyzer;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
@@ -109,6 +104,7 @@ public class DeferredEvaluation implements DeferredTask {
 	validationReport.setDatetime(new Date());
 	validationReport.setEvaluationUnit(evalUnit);
 	validationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	validationReport.setEvaluationType(evaluationMethod);
 	return validationReport;
     }
 
