@@ -329,7 +329,7 @@ public class DeferredEvaluation implements DeferredTask {
 	//Create Deferred Evaluations
 	for(String docName : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    Logger.getLogger("logger").log(Level.INFO, "Create Deferred Fleiss Kappa Task for Document "+docName);
-	    deferredEvals.add(new DeferredFleissKappaEvaluation(docIDs, codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, validationReport.getId(), evalUnit));
+	    deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, validationReport.getId(), evalUnit));
 	}
 	
 	//Run deferred Evaluations
