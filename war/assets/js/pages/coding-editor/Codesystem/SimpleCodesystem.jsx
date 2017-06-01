@@ -16,7 +16,6 @@ export default class SimpleCodesystem extends React.Component {
 		}
 
 		setSelected(code){
-			if (!this.props.showSimpleView)this.props.updateCodeView(code);
 			this.setState({
 				selected: code
 			});
