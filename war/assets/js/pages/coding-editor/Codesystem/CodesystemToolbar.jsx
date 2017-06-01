@@ -118,6 +118,7 @@ export default class CodesystemToolbar extends React.Component {
 	}
 	
 	renderUmlEditorBtn(){
+		const styles = this.getStyles();
 		if (!this.props.umlEditorEnabled) return "";
 		return (
 			<div className="btn-group" style={styles.btnGroup}>
