@@ -63,12 +63,13 @@ class Codesystem extends SimpleCodesystem {
 						}
 						var selected = {}
 						if (rootCodes.length > 0 ) selected = rootCodes[0];
-						
+						_this.sortCodes(rootCodes);
 						_this.setState({ 
 							codesystem : rootCodes,
 							selected: selected
 						});
 						$("#codesystemLoadingDiv").addClass("hidden");
+						
 						resolve();
 					});
 				}
@@ -132,8 +133,8 @@ class Codesystem extends SimpleCodesystem {
 		}
 		
 		initCodingCount(){
-			initCodingCountRecurive(this.state.codesystem);
-			setState({
+			this.initCodingCountRecurive(this.state.codesystem);
+			this.setState({
 				codesystem: this.state.codesystem
 			});
 			
@@ -143,7 +144,7 @@ class Codesystem extends SimpleCodesystem {
 			var _this = this;
 			codeSiblings.forEach((code)=>{
 				code.codingCount = this.props.documentsView.calculateCodingCount(code.codeID);
-				if (code.children) _this.initCodingCount(code.children); // recursion
+				if (code.children) _this.initCodingCountRecurive(code.children); // recursion
 			});			
 		}
 		updateCodingCount(){
@@ -177,10 +178,11 @@ class Codesystem extends SimpleCodesystem {
 				
 				targetNode.children.push(movingNode);
 				_this.updateSubCodeIDs(targetNode);
-				
+				_this.sortCodes(_this.state.codesystem);
 				_this.setState({
 					codesystem: _this.state.codesystem
 				})
+				
 				console.log("Updated logation of code:" + resp.id + " |  " + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 			});
 			 

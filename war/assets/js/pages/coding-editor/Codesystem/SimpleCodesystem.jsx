@@ -20,6 +20,19 @@ export default class SimpleCodesystem extends React.Component {
 		// Can be overwritten to notify other components on a new selection
 		notifyOnSelection(code){
 		}
+		
+		sortCodes(codeSiblings){
+			var _this = this;
+			codeSiblings.sort((a, b) => {
+			  return a.name > b.name;
+			});
+			
+			codeSiblings.forEach((code) => {
+				if (code.children){
+					_this.sortCodes(code.children);
+				}
+			})
+		}
 
 		setSelected(code){
 			this.notifyOnSelection(code);
