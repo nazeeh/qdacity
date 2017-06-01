@@ -1,10 +1,12 @@
 package com.qdacity.project.metrics;
 
+import java.io.Serializable;
+
 /**
  * Specifies the unit of coding to be evaluated by the metrics. 
  * TextDocuments will be split into units for evaluation.
  */
-public enum EvaluationUnit {
+public enum EvaluationUnit implements Serializable{
     PARAGRAPH,
     SENTENCE;
     

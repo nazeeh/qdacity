@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * An implementation for the Krippendorff's Alpha Coefficient TODO Using
+ * An implementation for the Krippendorff's Alpha Coefficient using
  * variable names as given in original formulas see, e.g.
  * <a>https://en.wikipedia.org/wiki/Krippendorff%27s_alpha</a>
  */
@@ -39,14 +39,18 @@ public class KrippendorffsAlphaCoefficient {
     public double compute() {
         // Formulas see e.g: https://en.wikipedia.org/wiki/Krippendorff%27s_alpha
         // alpha = 1 - ( D_o / D_e )
-    	Logger.getLogger("logger").log(Level.INFO, "cMatrix: "+cMatrix.toString()); //TODO
+    	Logger.getLogger("logger").log(Level.INFO, "cMatrix: "+cMatrix.toString());
         double observedDisagreement = computeObservedDisagreement();
         double disagreementExpectedByChance = computeDisagreementExpectedByChance();
-        Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Calculation: 1-" + observedDisagreement + "/" + disagreementExpectedByChance); //TODO
+        Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Calculation: 1-" + observedDisagreement + "/" + disagreementExpectedByChance);
 	if(disagreementExpectedByChance == 0) {
 	    return 1.0; //if there is no expected disagreement then there was only one rater, so alpha must be 1.
 	}
-        return 1.0 - (observedDisagreement / disagreementExpectedByChance);
+	double result = 1.0 - (observedDisagreement / disagreementExpectedByChance);
+	if(result < 0) {
+	    Logger.getLogger("logger").log(Level.INFO, "Result is below zero! "+result+ ". Alpha < 0 when disagreements are systematic and exceed what can be expected by chance. ");
+	}
+	return result;
     }
 
     private double computeObservedDisagreement() {
@@ -74,7 +78,8 @@ public class KrippendorffsAlphaCoefficient {
                 expDisagreementSum += sumRatings[c] * sumRatings[k] * nominalDifferenceFunction(c, k);
             }
         }
-        return expDisagreementSum / (cMatrix.getTotalPairableElements() - 1);
+        double result = expDisagreementSum / (cMatrix.getTotalPairableElements() - 1); 
+        return result;
     }
 
     /**

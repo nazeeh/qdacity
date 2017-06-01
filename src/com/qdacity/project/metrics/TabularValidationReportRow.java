@@ -1,59 +1,49 @@
 package com.qdacity.project.metrics;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
 /**
  * A Row for the generic data structure TabularValidationReport. Make sure to
  * set a tabularValidationReportId
  */
-@PersistenceCapable(
-	identityType = IdentityType.APPLICATION)
-public class TabularValidationReportRow {
+public class TabularValidationReportRow implements Serializable {
 
-    public TabularValidationReportRow(Long tabularValidationReportId) {
-	assert (tabularValidationReportId != null);
-	this.tabularValidationReportId = tabularValidationReportId;
-    }
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6855616324566422223L;
+	private final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
 
-    @PrimaryKey
-    @Persistent(
-	    valueStrategy = IdGeneratorStrategy.IDENTITY)
-    Long id;
-
-    @Persistent
-    Long tabularValidationReportId;
-
-    @Persistent
-    String rowCsvString; //Contains the row data as CSV String
-
-    public Long getId() {
-	return id;
-    }
-
-    public void setId(Long id) {
-	this.id = id;
-    }
-
-    public Long getTabularValidationReportId() {
-	return tabularValidationReportId;
-    }
-
-    public void setTabularValidationReportId(Long tabularValidationReportId) {
-	this.tabularValidationReportId = tabularValidationReportId;
+    public TabularValidationReportRow(TabularValidationReportRow copy) {
+	super();
+	this.rowCsvString = copy.rowCsvString;
     }
 
     /**
+     * Use this constructor if you save a reportRow as plain csvString in the
+     * DataStore for efficiency reasons Be aware that a Row created with this
+     * constructor does not have a Key and is not in a Parent-Child
+     *
+     * @param csvString a valid csv String representing a row
+     */
+    public TabularValidationReportRow(String csvString) {
+	this.rowCsvString = csvString;
+    }
+
+    public TabularValidationReportRow(List<String> cells) {
+	this.setRow(cells);
+   }
+
+    String rowCsvString; //Contains the row data as CSV String
+
+    /**
      * Retrieve the Row as List of Strings representing a cell.
+     *
      * @return the row as cells in a list
      */
     public List<String> getCells() {
-	return Arrays.asList(rowCsvString.split(TabularValidationReport.ROW_STRING_FORMAT_REGEXP));
+	return Arrays.asList(rowCsvString.split(ROW_STRING_FORMAT_REGEXP));
     }
 
     /**
@@ -67,7 +57,16 @@ public class TabularValidationReportRow {
 	for (String column : columns) {
 	    csvRow += column.replace(",", "&#44;") + ","; //replace commas with html entity befor making a csv String!
 	}
-	this.rowCsvString = csvRow.substring(0, csvRow.length()-1); //remove last comma
+	this.rowCsvString = csvRow.substring(0, csvRow.length() - 1); //remove last comma
+    }
+
+    /**
+     * Returns CSV String representation of row contents
+     * @return 
+     */
+    @Override
+    public String toString() {
+	return this.rowCsvString;
     }
 
 }

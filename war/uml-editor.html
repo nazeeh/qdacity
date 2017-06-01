@@ -27,8 +27,9 @@
 	<link href="assets/css/uml-editor.css" rel="stylesheet">
 	
     <!-- TODO use import -->
-    <script type="text/javascript">mxBasePath = '../../../../components/mxGraph';</script>
-	<script type="text/javascript" src="../../../../components/mxGraph/js/mxClient.js"></script>
+    <script type="text/javascript">mxBasePath = '../../../../components/mxGraph-js/javascript/src';</script>
+	<script type="text/javascript" src="../../../../components/mxGraph-js/javascript/mxClient.min.js"></script>
+	
 </head>
 
 <body>
@@ -90,7 +91,9 @@
 	</nav>
 
 	<div class="row no-gutters" style="padding-top: 51px;" >
-		<div id="content"></div>
+		<div id="content">
+			<div id="graphContainer" style="position:'relative'; overflow:'hidden'; width:'1200px'; height:'800px'; cursor:'default'"></div>
+		</div>
 	</div>
 	
 	<!-- Main JS Script -->

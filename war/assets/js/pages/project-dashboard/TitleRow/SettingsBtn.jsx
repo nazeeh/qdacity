@@ -9,11 +9,11 @@ export default class SettingsBtn extends React.Component {
 		super(props);
 		this.state = {
 			isProjectOwner: false,
-			umlEditor : this.props.umlEditor
+			umlEditor: this.props.umlEditor
 		};
 		this.showSettingsModal = this.showSettingsModal.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			settingsBtn: {
@@ -21,37 +21,37 @@ export default class SettingsBtn extends React.Component {
 			}
 		};
 	}
-	
-	setUmlEditor(pUseUmlEditor){
+
+	setUmlEditor(pUseUmlEditor) {
 		this.state = {
-			umlEditor : pUseUmlEditor
+			umlEditor: pUseUmlEditor
 		};
 	}
-	
-	setIsProjectOwner(pIsProjectOnwer){
+
+	setIsProjectOwner(pIsProjectOnwer) {
 		this.setState({
 			isProjectOwner: pIsProjectOnwer
 		});
 	}
-	
+
 	showSettingsModal() {
 		var modal = new Settings();
 		var _this = this;
 		modal.showModal(this.state.umlEditor).then(function (data) {
 			ProjectEndpoint.setUmlEditorEnabled(_this.props.projectId, _this.props.projectType, data.umlEditorEnabled).then(function (resp) {
 				_this.setState({
-					umlEditor : data.umlEditorEnabled
+					umlEditor: data.umlEditorEnabled
 				});
 			});
 		});
 	}
-	
+
 	render() {
 		if (!this.props.isProjectOwner) return null;
 
 		const styles = this.getStyles();
-		
-		return ( 
+
+		return (
 			<button 
 				type="button" 
 				className="btn btn-default btn-sm pull-right"

@@ -162,10 +162,8 @@ export default class ProjectList extends React.Component {
 				codeSystem.project = insertedProject.id;
 
 				CodesystemEndpoint.updateCodeSystem(codeSystem).then(function (updatedCodeSystem) {
-					_this.state.projects.push(insertedProject);
-					_this.setState({
-						projects: _this.state.projects
-					});
+					insertedProject.type = "PROJECT";
+					_this.addProject(insertedProject);
 				});
 			});
 		});
@@ -229,7 +227,7 @@ export default class ProjectList extends React.Component {
 
 		function prjClick(prj) {
 			console.log('Link');
-			location.href = 'project-dashboard.html?project=' + prj.id + '&type='+ prj.type;
+			location.href = 'project-dashboard.html?project=' + prj.id + '&type=' + prj.type;
 		}
 
 		const renderListItems = itemsToDisplay.map((project, index) => {

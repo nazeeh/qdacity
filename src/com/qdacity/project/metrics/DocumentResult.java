@@ -51,8 +51,8 @@ public class DocumentResult implements Serializable {
 		defaultFetchGroup = "true",
 		dependent = "true")
 	@Column(
-		name = "paragraphAgreement")
-	ParagraphAgreement paragraphAgreement;
+		name = "reportRow")
+	String reportRow;
 
 	@Persistent
 	List<String> truePositives;
@@ -69,14 +69,13 @@ public class DocumentResult implements Serializable {
 	AgreementMap agreementMap;
 
 	public DocumentResult() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public DocumentResult(DocumentResult copy) {
 		super();
 		this.documentID = copy.documentID;
 		this.documentName = copy.documentName;
-		this.paragraphAgreement = new ParagraphAgreement(copy.paragraphAgreement);
+		this.reportRow = copy.reportRow;
 		this.truePositives = copy.truePositives;
 		this.falsePositives = copy.falsePositives;
 		this.falseNegatives = copy.falseNegatives;
@@ -122,12 +121,12 @@ public class DocumentResult implements Serializable {
 		this.documentName = documentName;
 	}
 
-	public ParagraphAgreement getParagraphAgreement() {
-		return paragraphAgreement;
+        public String getReportRow() {
+		return reportRow;
 	}
 
-	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
-		this.paragraphAgreement = paragraphAgreement;
+	public void setReportRow(String reportRow) {
+	    this.reportRow = reportRow;
 	}
 
 	public List<String> getTruePositives() {

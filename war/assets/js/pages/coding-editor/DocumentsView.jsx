@@ -22,7 +22,7 @@ export default class DocumentsView extends React.Component {
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			infoBox: {
@@ -42,7 +42,7 @@ export default class DocumentsView extends React.Component {
 			}
 		};
 	}
-	
+
 	setupView(project_id, project_type, agreement_map) {
 		var _this = this;
 		var promise = new Promise(
@@ -130,13 +130,13 @@ export default class DocumentsView extends React.Component {
 		});
 
 	}
-	
+
 	updateCurrentDocument(text) {
 		var doc = this.getActiveDocument();
 		doc.text = text;
 		this.changeDocumentData(doc);
 	}
-	
+
 	changeDocumentData(doc) {
 		var _this = this;
 		doc.projectID = this.props.projectID;
@@ -168,19 +168,19 @@ export default class DocumentsView extends React.Component {
 		});
 		this.render();
 	}
-	
-	saveCurrentDocument(){
-			var doc = this.getActiveDocument();
-			if (typeof doc != "undefined"){
-				doc.text = this.props.editorCtrl.getHTML();
-				this.setState({
-					documents: this.state.documents
-				});
-				this.saveDocument(doc);
-			}
-			
+
+	saveCurrentDocument() {
+		var doc = this.getActiveDocument();
+		if (typeof doc != "undefined") {
+			doc.text = this.props.editorCtrl.getHTML();
+			this.setState({
+				documents: this.state.documents
+			});
+			this.saveDocument(doc);
+		}
+
 	}
-	
+
 	saveDocument(doc) {
 		doc.projectID = this.props.projectID;
 		var _this = this;
@@ -191,9 +191,9 @@ export default class DocumentsView extends React.Component {
 	getDocuments() {
 		return this.state.documents;
 	}
-	
+
 	setActiveDocument(selectedID) {
-		if (this.props.editorCtrl.isReadOnly === false){
+		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
 		this.setState({
@@ -218,7 +218,7 @@ export default class DocumentsView extends React.Component {
 		});
 		return activeDoc;
 	}
-	
+
 	setDocumentWithCoding(codingID) {
 		var documents = this.state.documents;
 		for (var i in documents) {
@@ -236,9 +236,9 @@ export default class DocumentsView extends React.Component {
 	isActive(value) {
 		return 'list-group-item clickable ' + ((value == this.state.selected) ? 'active' : 'default');
 	}
-	
-	renderToolbar(){
-		if (this.props.projectType =="PROJECT"){
+
+	renderToolbar() {
+		if (this.props.projectType == "PROJECT") {
 			return (
 				<DocumentsToolbar 
 					projectID={this.props.projectID}  
@@ -251,19 +251,19 @@ export default class DocumentsView extends React.Component {
 		} else {
 			return null;
 		}
-		
+
 	}
 
 	render() {
 		var _this = this;
 		const styles = this.getStyles();
-		if (!this.state.isExpanded){
+		if (!this.state.isExpanded) {
 			return <div style={styles.infoBox}>
 		      <b>Current Document: {this.getActiveDocument().title}</b>
 		    </div>
 		}
 		return (
-		<div>
+			<div>
 			<div  style={styles.toolBar}>
 				{this.renderToolbar()}
 			</div>

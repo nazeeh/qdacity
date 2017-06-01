@@ -6,13 +6,13 @@ export default class InviteUserField extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userEmail : '',
-			isProjectOwner : false
+			userEmail: '',
+			isProjectOwner: false
 		};
 		this.updateUserEmail = this.updateUserEmail.bind(this);
 		this.inviteUser = this.inviteUser.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			invitationField: {
@@ -20,20 +20,20 @@ export default class InviteUserField extends React.Component {
 			}
 		};
 	}
-	
+
 	updateUserEmail(e) {
 		this.setState({
 			userEmail: e.target.value
 		});
 
 	}
-	
-	setIsProjectOwner(pIsProjectOnwer){
+
+	setIsProjectOwner(pIsProjectOnwer) {
 		this.setState({
 			isProjectOwner: pIsProjectOnwer
 		});
 	}
-		
+
 	inviteUser() {
 		var _this = this;
 		ProjectEndpoint.inviteUser(this.props.projectId, this.state.userEmail).then(function (resp) {
@@ -45,12 +45,12 @@ export default class InviteUserField extends React.Component {
 
 	render() {
 		if (this.state.isProjectOwner === false) return null;
-		 
+
 		var _this = this;
 
 		const styles = this.getStyles();
-		
-		return ( <span className="searchfield" style={styles.invitationField}>
+
+		return (<span className="searchfield" style={styles.invitationField}>
 				<input 
 					type="text" 
 					placeholder="User Email"
@@ -61,8 +61,7 @@ export default class InviteUserField extends React.Component {
 				<button type="button" onClick={this.inviteUser}>
 					Invite
 				</button>
-			</span>
-		);
+			</span>);
 	}
 
 

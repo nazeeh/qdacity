@@ -11,12 +11,12 @@ export default class UserList extends React.Component {
 			currentPage: 1,
 			itemsPerPage: 5
 		};
-		
+
 		this.init();
-		
+
 		this.paginationClick = this.paginationClick.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			pagination: {
@@ -37,8 +37,8 @@ export default class UserList extends React.Component {
 			}
 		};
 	}
-	
-		
+
+
 	init() {
 
 		switch (this.props.projectType) {
@@ -50,17 +50,17 @@ export default class UserList extends React.Component {
 			break;
 		default:
 			break;
-	
+
 		}
 	}
-	
+
 	addOwners() {
 		var _this = this;
 		UserEndpoint.listUser(this.props.projectId).then(function (resp) {
 			resp.items = resp.items || [];
 			_this.setState({
-					users: resp.items
-				});
+				users: resp.items
+			});
 		});
 	}
 
@@ -73,24 +73,23 @@ export default class UserList extends React.Component {
 			});
 		});
 	}
-	
-		
+
+
 	paginationClick(event) {
 		this.setState({
 			currentPage: Number(event.target.id)
 		});
 	}
-	
-	
+
+
 	isActivePage(page) {
 		return ((page == this.state.currentPage) ? 'active' : ' ');
 	}
-	
-	renderPaginationIfNeccessary(){
-		if (this.state.users.length <= this.state.itemsPerPage){
+
+	renderPaginationIfNeccessary() {
+		if (this.state.users.length <= this.state.itemsPerPage) {
 			return '';
-		}
-		else{
+		} else {
 			//Render Pagination
 			const styles = this.getStyles();
 			const pageNumbers = [];
@@ -114,7 +113,7 @@ export default class UserList extends React.Component {
 					{renderPaginationItems}
             	</ul>
 		}
-		
+
 	}
 
 	render() {
@@ -137,7 +136,7 @@ export default class UserList extends React.Component {
 				</li>;
 		})
 
-		
+
 
 		return (
 			<div>

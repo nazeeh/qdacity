@@ -1,6 +1,5 @@
 package com.qdacity.project.metrics.tasks;
 
-import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -28,18 +27,18 @@ import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.EvaluationUnit;
-import com.qdacity.project.metrics.ParagraphAgreement;
-import com.qdacity.project.metrics.TabularValidationReport;
+import com.qdacity.project.metrics.FMeasureResult;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
-import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
+import com.qdacity.project.metrics.algorithms.FMeasure;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
 
 public class DeferredEvaluation implements DeferredTask {
@@ -75,15 +74,17 @@ public class DeferredEvaluation implements DeferredTask {
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
 
+	ValidationReport validationReport = initValidationReport();
+
 	try {
 	    switch (evaluationMethod) {
 		case F_MEASURE:
 		    Collection<TextDocument> originalDocs;
 		    originalDocs = getOriginalDocs(docIDs);
-		    calculateFMeasure(originalDocs);
+		    calculateFMeasure(originalDocs, validationReport);
 		    break;
 		case KRIPPENDORFFS_ALPHA:
-		    calculateKrippendorffsAlpha();
+		    calculateKrippendorffsAlpha(validationReport);
 		    break;
 		case COHENS_CAPPA:
 		    calculateCohensKappa();
@@ -98,12 +99,13 @@ public class DeferredEvaluation implements DeferredTask {
 
     }
 
-    private ValidationReport initValidationReportFMeasure() {
+    private ValidationReport initValidationReport() {
 	ValidationReport validationReport = new ValidationReport();
 	getPersistenceManager().makePersistent(validationReport); // Generate ID right away so we have an ID to pass to ValidationResults
 	validationReport.setRevisionID(revisionID);
 	validationReport.setName(name);
 	validationReport.setDatetime(new Date());
+	validationReport.setEvaluationUnit(evalUnit);
 	validationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
 	return validationReport;
     }
@@ -112,13 +114,14 @@ public class DeferredEvaluation implements DeferredTask {
      * prepares the validationProjectsFromUsers so it contains the project in
      * the given revision from all users.
      */
-    private void initValidationProjects() { //TODO auslagern
+    private void initValidationProjects() {
 	Query q;
 	q = getPersistenceManager().newQuery(ValidationProject.class, "revisionID  == :revisionID");
 
 	Map<String, Long> params = new HashMap<>();
 	params.put("revisionID", revisionID);
-	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params); //TODO Fehler! liefert nur eins?
+	//Hint: Only gets the validationProjects from Users, but not the project itself. This behaviour is wanted.
+	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params);
     }
 
     private Collection<TextDocument> getOriginalDocs(List<Long> docIDs) throws UnauthorizedException {
@@ -129,18 +132,17 @@ public class DeferredEvaluation implements DeferredTask {
 	for (TextDocument textDocument : originalDocs) {
 
 	    if (docIDs.contains(textDocument.getId())) {
-		String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
-		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-		syncCache.put(keyString, textDocument, Expiration.byDeltaSeconds(300));
-
+		putuTextDocumentToMemcache(textDocument);
 		orignalDocIDs.add(textDocument.getId());
 	    }
 	}
 	return originalDocs;
     }
 
-    private void calculateFMeasure(Collection<TextDocument> originalDocs) {
-	ValidationReport validationReport = initValidationReportFMeasure();
+    private void calculateFMeasure(Collection<TextDocument> originalDocs, ValidationReport validationReport) {
+	TabularValidationReportRow fmeasureHeaderRow = new TabularValidationReportRow("Coder,FMeasure,Recall,Precision");
+	validationReport.setAverageAgreementHeader(fmeasureHeaderRow);
+	validationReport.setDetailedAgreementHeader(fmeasureHeaderRow);
 	try {
 
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
@@ -171,14 +173,15 @@ public class DeferredEvaluation implements DeferredTask {
     }
 
     private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException {
-	List<ParagraphAgreement> validationCoderAvg = new ArrayList<>();
-	Map<Long, List<ParagraphAgreement>> agreementByDoc = new HashMap<>();
+	List<FMeasureResult> validationCoderAvg = new ArrayList<>();
+	Map<Long, List<FMeasureResult>> agreementByDoc = new HashMap<>();
+	Map<Long, String> documentNames = new HashMap<>();
 
 	ValidationEndpoint ve = new ValidationEndpoint();
 	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
 	Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
 	for (ValidationResult validationResult : validationResults) {
-	    ParagraphAgreement resultParagraphAgreement = validationResult.getParagraphAgreement();
+	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(validationResult.getReportRow()));
 	    if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) {
 		validationCoderAvg.add(resultParagraphAgreement);
 	    }
@@ -186,34 +189,34 @@ public class DeferredEvaluation implements DeferredTask {
 	    List<DocumentResult> docResults = ve.listDocumentResults(validationResult.getId(), user);
 
 	    for (DocumentResult documentResult : docResults) {
-		Long revisionDocumentID = documentResult.getOriginDocumentID();
+				Long revisionDocumentID = documentResult.getOriginDocumentID();
+				documentNames.put(revisionDocumentID, documentResult.getDocumentName());
+				DocumentResult documentResultForAggregation = new DocumentResult(documentResult);
+				documentResultForAggregation.setDocumentID(revisionDocumentID);
+				report.addDocumentResult(documentResultForAggregation);
 
-		DocumentResult documentResultForAggregation = new DocumentResult(documentResult);
-		documentResultForAggregation.setDocumentID(revisionDocumentID);
-		report.addDocumentResult(documentResultForAggregation);
+				FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResultForAggregation.getReportRow()));
 
-		ParagraphAgreement docAgreement = documentResultForAggregation.getParagraphAgreement();
-
-		if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
-		    List<ParagraphAgreement> agreementList = agreementByDoc.get(revisionDocumentID);
-		    if (agreementList == null) {
-			agreementList = new ArrayList<>();
-		    }
-		    agreementList.add(docAgreement);
-		    agreementByDoc.put(revisionDocumentID, agreementList);
-		    // agreementByDoc.putIfAbsent(key, value)
-		}
+				if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
+					List<FMeasureResult> agreementList = agreementByDoc.get(revisionDocumentID);
+					if (agreementList == null) {
+						agreementList = new ArrayList<>();
+				}
+					agreementList.add(docAgreement);
+					agreementByDoc.put(revisionDocumentID, agreementList);
+					// agreementByDoc.putIfAbsent(key, value)
+				}
 	    }
 	}
 
 	for (Long docID : agreementByDoc.keySet()) {
-	    ParagraphAgreement avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
-	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getfMeasure());
-	    report.setDocumentResultAverage(docID, avgDocAgreement);
+	    FMeasureResult avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
+	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getFMeasure());
+			report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgDocAgreement, documentNames.get(docID)));
 	}
 
-	ParagraphAgreement avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
-	report.setParagraphAgreement(avgReportAgreement);
+	FMeasureResult avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
+	report.setAverageAgreementRow(FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgReportAgreement, "Average"));
     }
 
     private PersistenceManager pm = null;
@@ -227,62 +230,81 @@ public class DeferredEvaluation implements DeferredTask {
 
     /**
      * Calculate K's Alpha between all given users for every given document for
-     * every code in the codesystem for the given revision.
+     * every code in the codesystem for the given revisioin.
      *
      * @throws UnauthorizedException if user can not see documents of other
      * users
      */
-    private void calculateKrippendorffsAlpha() throws UnauthorizedException, ExecutionException, InterruptedException {
-	TabularValidationReport tabularValidationReport = initTabularValidationReport();
+    private void calculateKrippendorffsAlpha(ValidationReport validationReport) throws UnauthorizedException, ExecutionException, InterruptedException {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
-	List<Long> codeIds = CodeSystemEndpoint.getCodeIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
-	
+	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+
 	List<String> tableHead = new ArrayList<>();
+	List<String> tableAverageHead = new ArrayList<>();
 	tableHead.add("Documents \\ Codes");
-	for(Long codeId : codeIds) {
-	    tableHead.add(codeId+"");
+	tableAverageHead.add("Codes");
+	for (String codeName : codeNamesAndIds.keySet()) {
+	    tableHead.add(codeName + "");
+	    tableAverageHead.add(codeName + "");
 	}
-	tabularValidationReport.setHeadRow(tableHead);
+	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
+	validationReport.setAverageAgreementHeader(new TabularValidationReportRow(tableAverageHead));
 
-	Map<String, List<TextDocument>> sameDocumentsFromDifferentRatersMap
-		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, user);
-	//TODO nach Textdocumenten filtern!
+	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
+		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
 
-	//Convert TextDocuments to Reliability Data Matrix, which will be input for Krippendorffs Alpha
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
-	    List<ReliabilityData> reliabilityData = new ReliabilityDataGenerator(evalUnit).generate(sameDocumentsFromDifferentRatersMap.get(documentTitle), codeIds);
-	    //create all the tasks with the reliability Data
-	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(reliabilityData, validationProjectsFromUsers.get(0), user, tabularValidationReport.getId(), documentTitle));
+	    //create all the tasks
+	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle)));
+
 	}
 
 	//Now launch all the Tasks
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
-	
-	//TODO wird nicht gehen!! brauchen wir hier eh nicht?
-	//taskQueue.waitForTasksToFinish(validationProjectsFromUsers.size(), tabularValidationReport.getId(), user);
-	//TODO warten muss man trotzdem?
-	
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	getPersistenceManager().makePersistent(tabularValidationReport);
+	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), validationReport.getId(), user);
+
+	validationReport.setAverageAgreement(calculateAverageAgreement(resultRows));
+
+	getPersistenceManager().makePersistent(validationReport);
     }
 
-    private TabularValidationReport initTabularValidationReport() {
-	TabularValidationReport tabularValidationReport = new TabularValidationReport();
-	getPersistenceManager().makePersistent(tabularValidationReport); // Generate ID right away so we have an ID to pass to the Algorithm
-	tabularValidationReport.setRevisionID(revisionID);
-	tabularValidationReport.setName(name);
-	tabularValidationReport.setDatetime(new Date());
-	tabularValidationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
-	tabularValidationReport.setEvaluationUnit(evalUnit);
-	return tabularValidationReport;
+    private void putuTextDocumentToMemcache(TextDocument tx) {
+	String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), tx.getId());
+	MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+	syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
     }
 
     private void calculateCohensKappa() {
 	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Calculates the averageAgreement for TabularValidationReportRows using
+     * simple average calculation.
+     *
+     * @param myRows the rows where you want to calculate the average
+     * @return a new row containing the average
+     */
+    private TabularValidationReportRow calculateAverageAgreement(List<ValidationResult> myRows) {
+	List<String> averageColumns = new ArrayList<>();
+	averageColumns.add("AVERAGE");
+	if (myRows.size() > 0) {
+	    List<String> masterCells = new TabularValidationReportRow(myRows.get(0).getReportRow()).getCells();
+	    for (int i = 1; i < masterCells.size(); i++) { //SKIP first cell as it is just label
+		double sum = 0;
+		for (ValidationResult row : myRows) {
+		    sum += new Double(new TabularValidationReportRow(row.getReportRow()).getCells().get(i));
+		}
+		double average = sum / myRows.size();
+		averageColumns.add(average + "");
+	    }
+	}
+	return new TabularValidationReportRow(averageColumns);
     }
 
 }

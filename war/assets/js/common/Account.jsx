@@ -68,7 +68,7 @@ export default class Account extends React.Component {
 		}
 		return isOwner;
 	}
-	
+
 	isValidationCoder(user, valPrj) {
 		var isValidationCoder = false;
 		if (typeof valPrj.validationCoders != 'undefined') {
@@ -122,10 +122,10 @@ export default class Account extends React.Component {
 											<p className="text-center small">
 											</p>
 										</div>
-										<div class="col-xs-7">
+										<div className="col-xs-7">
 											<span id="currentUserName">{this.state.name}</span>
 											<p id="currentUserEmail" className="text-muted small">{this.state.email}</p>
-											<div class="divider"></div>
+											<div className="divider"></div>
 											<a href="personal-dashboard.html" className="btn btn-primary btn-sm active">Personal Dashboard</a>
 										</div>
 									</div>

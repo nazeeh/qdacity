@@ -19,29 +19,29 @@ export default class RevisionHistory extends React.Component {
 			isAdmin: false,
 			isProjectOwner: false
 		};
-		
+
 		this.renderReports = this.renderReports.bind(this);
 		this.addRevision = this.addRevision.bind(this);
 	}
-	
+
 	getStyles() {
 		return {
 			pagination: {
 				listStyle: "none",
 				display: "flex"
 			},
-			createReportBtn:{
-				marginTop:"-6px",
+			createReportBtn: {
+				marginTop: "-6px",
 				padding: "5px 10px"
 			},
-			listItemBtn:{
-				float:"right",
-				margintop:"-18px"
+			listItemBtn: {
+				float: "right",
+				margintop: "-18px"
 			},
-			btnIcon:{
+			btnIcon: {
 				fontSize: "18px"
 			}
-			
+
 		};
 	}
 
@@ -54,62 +54,62 @@ export default class RevisionHistory extends React.Component {
 		var validationPromise = validationEndpoint.listReports(_this.props.projectID);
 
 		ProjectEndpoint.listRevisions(_this.props.projectID).then(function (revisionResp) {
-			
+
 			_this.setState({
 				revisions: revisionResp.items
 			});
 		});
 	}
-	
-	setRights(prjId, user){
-		var isAdmin =  user.type === "ADMIN";
-		
+
+	setRights(prjId, user) {
+		var isAdmin = user.type === "ADMIN";
+
 		var isProjectOwner = false;
 		if (typeof user.projects != 'undefined') isProjectOwner = user.projects.indexOf(prjId) !== -1;
-		
+
 		this.setState({
 			isAdmin: isAdmin,
-			isProjectOwner:isProjectOwner
+			isProjectOwner: isProjectOwner
 		});
 	}
-	
-	
-	setRevisions(pRevisions){
+
+
+	setRevisions(pRevisions) {
 		this.setState({
 			revisions: pRevisions
 		});
 	}
-	
-	setValidationProjects(pValidationProjects){
+
+	setValidationProjects(pValidationProjects) {
 		this.setState({
 			validationProjects: pValidationProjects
 		});
 	}
-	
-	setReports(pReports){
+
+	setReports(pReports) {
 		this.setState({
 			reports: pReports
 		});
 	}
-	
-	addRevision(pRevision){
+
+	addRevision(pRevision) {
 		this.state.revisions.unshift(pRevision);
 		this.setState({
 			revisions: this.state.revisions
 		});
 	}
-	
-	createNewRevision(prjId, comment){
-			var _this = this;
-        	ProjectEndpoint.createSnapshot(prjId, comment).then(function(resp) {
-            	alertify.success("New revision has been created");
-            	_this.addRevision(resp);
-            	
-	        }).catch(function(resp){
-	        	alertify.error("New revision has not been created");
-	    	});
-    }
-	
+
+	createNewRevision(prjId, comment) {
+		var _this = this;
+		ProjectEndpoint.createSnapshot(prjId, comment).then(function (resp) {
+			alertify.success("New revision has been created");
+			_this.addRevision(resp);
+
+		}).catch(function (resp) {
+			alertify.error("New revision has not been created");
+		});
+	}
+
 	requestValidationAccess(revId) {
 		var projectEndpoint = new ProjectEndpoint();
 
@@ -120,11 +120,11 @@ export default class RevisionHistory extends React.Component {
 				})
 			.catch(handleBadResponse);
 	}
-	
+
 	deleteRevision(revisionId, index) {
 		var _this = this;
 		var projectEndpoint = new ProjectEndpoint();
-		
+
 		projectEndpoint.deleteRevision(revisionId)
 			.then(
 				function (val) {
@@ -136,10 +136,10 @@ export default class RevisionHistory extends React.Component {
 				})
 			.catch(_this.handleBadResponse);
 	}
-	
-	
-	
-	createReport(revId){
+
+
+
+	createReport(revId) {
 		var projectEndpoint = new ProjectEndpoint();
 		DocumentsEndpoint.getDocuments(revId, "REVISION").then(function (documents) {
 			var modal = new CustomForm('Create Validation Report');
@@ -147,13 +147,13 @@ export default class RevisionHistory extends React.Component {
 			var documentTitles = [];
 
 			modal.addCheckBoxes('docs', documents);
-			
+
 			//TODO should not be hardcoded here
-            var methods = ["f-measure", "krippendorffs-alpha", "cohens-kappa"];
-            var units = ["paragraph", "sentence"];
-            
-            modal.addSelect("method", methods, "Evaluation Method");
-            modal.addSelect("unit", units, "Unit of Coding");
+			var methods = ["f-measure", "krippendorffs-alpha", "cohens-kappa"];
+			var units = ["paragraph", "sentence"];
+
+			modal.addSelect("method", methods, "Evaluation Method");
+			modal.addSelect("unit", units, "Unit of Coding");
 
 			modal.showModal().then(function (data) {
 				var selectedDocs = [];
@@ -166,29 +166,29 @@ export default class RevisionHistory extends React.Component {
 			});
 		});
 	}
-	
+
 	handleBadResponse(reason) {
 		alertify.error("There was an error");
 		console.log(reason.message);
 	}
-	
+
 	renderRevisionDeleteBtn(revision, index) {
-		if (this.state.isAdmin || this.state.isProjectOwner) 
+		if (this.state.isAdmin || this.state.isProjectOwner)
 			return <a  onClick={() => this.deleteRevision(revision.id, index)} className="btn btn-danger btn-xs pull-right">
 						Delete
 					</a>;
 		else return '';
 	}
-	
-	
-	renderReports (revId) {
+
+
+	renderReports(revId) {
 		if (!this.state.reports[revId]) return '';
 		var reports = this.state.reports[revId];
 
 		return [
-				<i key={'label_'+revId} className="fa fa-tachometer bg-grey">
+			<i key={'label_'+revId} className="fa fa-tachometer bg-grey">
 				</i>,
-				<div key={revId} className="timeline-item"> 
+			<div key={revId} className="timeline-item"> 
 					<h3 className="timeline-header timelineUserName">
 						<b> Reports </b> 
 					</h3>
@@ -196,21 +196,21 @@ export default class RevisionHistory extends React.Component {
 						<ReportList reports={reports} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner}/>
 					</div>
 				</div>
-			];
+		];
 	}
-	
-	renderCreateReportBtn(revId){
+
+	renderCreateReportBtn(revId) {
 		const styles = this.getStyles();
 		if (this.state.isAdmin || this.state.isProjectOwner) return <a onClick={() => this.createReport(revId)} className="btn btn-default btn-sm pull-right" style={styles.createReportBtn} >
 			<i style={styles.btnIcon} className="fa fa-plus-circle  pull-left"></i>
 						Create Report
-		</a> 
+		</a>
 		else return '';
 	}
-	
-	renderValidationProjects (revId) {
+
+	renderValidationProjects(revId) {
 		const styles = this.getStyles();
-		
+
 		if (!this.state.validationProjects[revId]) return '';
 		var validationProjects = this.state.validationProjects[revId];
 
@@ -227,7 +227,7 @@ export default class RevisionHistory extends React.Component {
 			</div>
 		];
 	}
-	
+
 
 	render() {
 		var _this = this;
@@ -235,7 +235,7 @@ export default class RevisionHistory extends React.Component {
 		const styles = this.getStyles();
 
 		//Render Components
-		
+
 		//Render Revision
 		const renderRevisions = this.state.revisions.map((revision, index) => {
 			return [
@@ -259,11 +259,11 @@ export default class RevisionHistory extends React.Component {
 				</li>,
 				<li>{_this.renderReports(revision.id)}</li>,
 				<li>{_this.renderValidationProjects(revision.id)}</li>
-				
-				];
+
+			];
 		});
-		
-		
+
+
 
 		return (
 			<div>

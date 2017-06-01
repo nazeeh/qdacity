@@ -36,11 +36,6 @@ public class ValidationResult implements Serializable {
 	@Persistent(
 		defaultFetchGroup = "true",
 		dependent = "true")
-	String name;
-
-	@Persistent(
-		defaultFetchGroup = "true",
-		dependent = "true")
 	Long validationProjectID;
 
 	@Persistent(
@@ -52,8 +47,8 @@ public class ValidationResult implements Serializable {
 		defaultFetchGroup = "true",
 		dependent = "true")
 	@Column(
-		name = "paragraphAgreement")
-	ParagraphAgreement paragraphAgreement;
+		name = "reportRow") //TODO Migration: paragraphAgreement wird zu reportRow
+	String reportRow;
 
 	@Persistent
 	@OneToMany(
@@ -96,20 +91,22 @@ public class ValidationResult implements Serializable {
 		this.revisionID = ID;
 	}
 
+	public String getReportRow() {
+		return reportRow;
+	}
+
+	public void setReportRow(String reportRow) {
+	    this.reportRow = reportRow;
+	}
+	
 	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public ParagraphAgreement getParagraphAgreement() {
-		return paragraphAgreement;
-	}
-
-	public void setParagraphAgreement(ParagraphAgreement paragraphAgreement) {
-		this.paragraphAgreement = paragraphAgreement;
+	    if(reportRow != null) {
+		TabularValidationReportRow row = new TabularValidationReportRow(reportRow);
+		return row.getCells().get(0);
+	    }
+	    else {
+		return "";
+	    }
 	}
 
 	public List<DocumentResult> getDocumentResults() {
