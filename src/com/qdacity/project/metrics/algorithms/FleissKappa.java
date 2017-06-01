@@ -1,6 +1,5 @@
 package com.qdacity.project.metrics.algorithms;
 
-import com.qdacity.project.metrics.algorithms.datastructures.FleissKappaResult;
 
 /**
  * Implementation of Fleiss' Kappa. Mathematical Details see:
@@ -21,41 +20,22 @@ public class FleissKappa {
      * @param numRaters how many raters are there in total
      * @return
      */
-    public FleissKappaResult compute(Integer[] data, int numRaters) {
+    public double compute(Integer[] data, int numRaters) {
 	assert (numRaters > 1);
 	assert (data.length > 0);
-	FleissKappaResult result = new FleissKappaResult();
 
-	double[] agreementOfCodePerUnits = calculateAgreementOfCodePerUnits(data, numRaters);
-	result.setAgreementOfCategoryPerUnits(agreementOfCodePerUnits);
-	
 	double totalCategoryAgreement = calculateTotalCategoryAgreement(data, numRaters);
-	result.setTotalCategoryAgreement(totalCategoryAgreement);
 
-	return result;
+	return totalCategoryAgreement;
     }
 
     private double calculateTotalCategoryAgreement(Integer[] data, double numRaters) {
 	double sumRatings = 0;
 	double dataLength = data.length;
-	for(int i = 0; i<dataLength; i++) {
+	for (int i = 0; i < dataLength; i++) {
 	    sumRatings += data[i];
 	}
 	double totalCategoryAgreement = sumRatings / (numRaters * dataLength);
 	return totalCategoryAgreement;
-    }
-
-    private double[] calculateAgreementOfCodePerUnits(Integer[] data, double numRaters) {
-	double[] agreementOfCodePerUnits = new double[data.length];
-	for (int i = 0; i < data.length; i++) {
-	    assert (data[i] <= numRaters); //Otherwise there is a logical problem in the input data.
-	    double ratingsForThisCode = data[i];
-	    double ratingsNotForThisCode = numRaters - data[i];
-	    double ratingsForThisCodeSquared = ratingsForThisCode * ratingsForThisCode;
-	    double ratingsNotForThisCodeSquared = ratingsNotForThisCode * ratingsNotForThisCode;
-
-	    agreementOfCodePerUnits[i] = 1 / (numRaters * (numRaters - 1)) * (ratingsForThisCodeSquared + ratingsNotForThisCodeSquared - numRaters);
-	}
-	return agreementOfCodePerUnits;
     }
 }

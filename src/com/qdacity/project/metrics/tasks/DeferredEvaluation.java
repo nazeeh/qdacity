@@ -318,19 +318,12 @@ public class DeferredEvaluation implements DeferredTask {
 	//get all Document Ids from every Rater
 	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
-	
-	//Hint: You could potentially optimize here as the textDocuments need to be loaded again.
-	//They are put in the Memcace by TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName, but
-	// the maximum could be calculated at TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName already
-	// It optimizes the code, but makes it more unreadable, therefore I decided to keep it separated.
-	int documentUnitsMax = findMaxUnits(sameDocumentsFromDifferentRatersMap);
-	
+
 	List<String> headerCells = new ArrayList<>();
-	headerCells.add("Document: Code \\ Unit");
-	headerCells.add("ALL");
-	for(int i = 1; i <=documentUnitsMax; i++){
-	    headerCells.add(""+i);
-	}
+	headerCells.add("Document \\ Code");
+	headerCells.add("Average All Codes");
+	headerCells.addAll(codeNamesAndIds.keySet());
+	
 	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
 
 	//Create Deferred Evaluations
@@ -343,23 +336,6 @@ public class DeferredEvaluation implements DeferredTask {
 	taskQueue.launchListInTaskQueue(deferredEvals);
 	
 	getPersistenceManager().makePersistent(validationReport);
-    }
-
-    private int findMaxUnits(Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap) {
-	Collection<ArrayList<Long>> documentIds = sameDocumentsFromDifferentRatersMap.values();
-	ArrayList<Long> allIds = new ArrayList<>();
-	for(ArrayList<Long> ids : documentIds) {
-	    allIds.addAll(ids);
-	}
-	List<TextDocument> txDocs = TextDocumentEndpoint.collectTextDocumentsfromMemcache(allIds);
-	int maximum = 0;
-	for(TextDocument tx : txDocs) {
-	    int tmp = TextDocumentAnalyzer.getAmountOfUnits(tx, evalUnit);
-	    if(tmp > maximum) {
-		maximum = tmp;
-	    }
-	}
-	return maximum;
     }
 
 }

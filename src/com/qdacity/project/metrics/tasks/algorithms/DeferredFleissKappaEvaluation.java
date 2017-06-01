@@ -5,9 +5,8 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.algorithms.FleissKappa;
-import com.qdacity.project.metrics.algorithms.datastructures.FleissKappaResult;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaInputDataGenerator;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaResultConverter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -16,10 +15,10 @@ import java.util.logging.Logger;
 public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 4694705956668305444L;
-	private final Map<String, Long> codeNamesAndIds;
+     *
+     */
+    private static final long serialVersionUID = 4694705956668305444L;
+    private final Map<String, Long> codeNamesAndIds;
     private final String docName;
     private final int amountRaters;
 
@@ -38,26 +37,36 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 
 	//run algorithm
 	FleissKappa kappa = new FleissKappa();
-	String[] codeNames = (String[]) codeNamesAndIds.keySet().toArray(new String[codeNamesAndIds.keySet().size()]);
-	int index = 0;
+	List<Double> categoryAgreementResults = new ArrayList<>();
 	Logger.getLogger("logger").log(Level.INFO, "Computing Fleiss Kappa...");
-	for (Integer[] data : inputArrays) {
-	    FleissKappaResult fleissKappaResult = kappa.compute(data, amountRaters);
-	    TabularValidationReportRow rowResult = FleissKappaResultConverter.toTabularValidationReportRow(docName, codeNames[index], fleissKappaResult);
-	    index++;
+	for (Integer[] data : inputArrays) { //looping through this array means looping through the Codes
+	    double categoryAgreement = kappa.compute(data, amountRaters);
+	    categoryAgreementResults.add(categoryAgreement);
 	    //WARNING: this Task creates more than one ValidationResult, we need to create new ones on the fly.
 	    //save ReportRow in ValidationResult.
-	    String resultAsString = rowResult.toString();
-	    Logger.getLogger("logger").log(Level.INFO, "Fleiss Kappa Result: " + resultAsString);
-
-	    if (valResult.getReportRow() != null) { //if the valResult was used already create a new one.
-		valResult = makeNextValidationResult();
-	    }
-
-	    valResult.setReportRow(resultAsString);
-	    mgr.makePersistent(valResult);
+	    Logger.getLogger("logger").log(Level.INFO, "Fleiss Kappa Result: " + categoryAgreement);
+	}
+	
+	double averageDocument = calculateAverage(categoryAgreementResults);
+	
+	List<String> reportRowCells = new ArrayList<>();
+	reportRowCells.add(docName);
+	reportRowCells.add(averageDocument+"");
+	for(Double agreement : categoryAgreementResults) {
+	    reportRowCells.add(agreement+"");
 	}
 
+	valResult.setReportRow(new TabularValidationReportRow(reportRowCells).toString());
+	mgr.makePersistent(valResult);
+
+    }
+
+    private double calculateAverage(List<Double> categoryAgreementResults) {
+	double sum = 0;
+	for(Double agreement : categoryAgreementResults) {
+	    sum += agreement;
+	}
+	return sum / categoryAgreementResults.size();
     }
 
 }
