@@ -109,7 +109,9 @@ window.init = function () {
 	$('#document-section').on('hidden.bs.collapse', resizeElements);
 	$('#document-section').on('shown.bs.collapse', resizeElements);
 
-
+	document.getElementById('btnHideFooter').onclick = function () {
+		hideCodingView();
+	}
 	document.getElementById('btnCodeSave').onclick = function () {
 		var code = codesystemView.child.getSelected();
 		code.author = $('#codePropAuthor').val();
