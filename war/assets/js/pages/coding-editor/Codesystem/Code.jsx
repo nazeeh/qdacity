@@ -5,6 +5,8 @@ import { DragSource } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DropTarget } from 'react-dnd';
 
+import SimpleCode from './SimpleCode.jsx';
+
 const codeSource = {
   beginDrag(props, monitor, component) {
     return {codeId: props.node.codeID};
@@ -40,18 +42,14 @@ function collectTarget(connect, monitor) {
   };
 }
 
-class Code extends React.Component {
+class Code extends SimpleCode {
 		constructor(props) {
 			super(props);
-			this.codesystem = {};
-			this.state = {
-				node: this.props.node,
-				codingCount: 0,
-				level: this.props.level
-			};
 			this.renderCodingCount = this.renderCodingCount.bind(this);
-			
-			if (!this.props.showSimpleView) this.calculateCodingCount();
+			this.calculateCodingCount();
+			this.setState({
+				node: this.state.node
+			});
 		}
 
 		getStyles() {
@@ -113,64 +111,8 @@ class Code extends React.Component {
 			}
 			this.state.node.codingCount = codingCount;
 		}
-		
-		styleNode(){
-			var styles = this.getStyles();
-			var nodeStyles = styles.node;
-			if (this.props.node == this.props.selected) Object.assign(nodeStyles, styles.nodeSelected);
-			return nodeStyles;
-		}
-		
-		styleExpander(){
-			var styles = this.getStyles();
-			var caretStyles = {};
-			if (!this.hasChildren()) Object.assign(caretStyles, styles.noCaretPadding);
-			if (this.props.node == this.props.selected) Object.assign(caretStyles, styles.caretSelected);
-			return caretStyles;
-		}
-		
-		nodeIconClick(node) {
-			if (node.collapsed) {
-				this.expandNode(node);
-			}
-			else {
-				this.collapseNode(node);
-			}
-		}
-		
-		expandNode(node) {
-			node.collapsed = false;
-			this.forceUpdate();
-		}
 
-		collapseNode(node) {
-			node.collapsed = true;
-			this.forceUpdate();
-		}
-		
-		hasChildren(){
-			return this.props.node.children.length != 0;
-		}
-
-		renderExpander(node) {
-			var caret = ""
-			if (this.hasChildren()) {
-				var direction = this.props.node.collapsed ?  'right' : 'down';
-				var className = 'fa fa-caret-' + direction + ' fa-fw';
-				caret = <i className={className} />
-			}
-			
-		    return <a className="node-link" onClick={() => this.nodeIconClick(node)} style={this.styleExpander()}>
-						{caret}
-					</a>;
-		}
-		
-		renderIcon(node){
-			const iconStyle = this.getStyles().codeIcon;
-			iconStyle.color = node.color;
-			return <i className="fa fa-tag fa-lg" style={iconStyle}></i>
-		}
-		
+		// overriding super method
 		renderCodingCount(){
 			const style = this.getStyles().codingBubble;
 			return (
@@ -184,85 +126,28 @@ class Code extends React.Component {
 			);
 		}
 		
-		renderNode(level){
-			return <div className=""> 
-			<div 
-					className="clickable" 
-					style={this.styleNode()}
-					key={"CS" + "_" + level}
-					onClick={() => this.props.setSelected(this.props.node)}
+		renderChild(childCode,level,index){
+			return (
+				<DragAndDropCode 
+					showSimpleView={this.props.showSimpleView}
+					documentsView={this.props.documentsView}
+					level={level + 1}
+					node={childCode} 
+					selected={this.props.selected} 
+					setSelected={this.props.setSelected} 
+					relocateCode={this.props.relocateCode}
+					showFooter={this.props.showFooter}  
+					key={"CS" + "_" + level+ "_" +index}
 				>
-			            {this.renderExpander(this.props.node)}
-			            {this.renderIcon(this.props.node)}
-			            {this.props.node.name}
-			            {this.renderCodingCount()}
-			    </div>
-			    </div>
+				</DragAndDropCode>
+			);
 		}
-		
-		renderNodesRecursive(code, level) {
-				const _this = this;
-				let count = 0;
-				var node = this.props.node;
-				const thisNode = _this.renderNode(level);
-				var children = "";
-				if (!node.collapsed && !node.leaf && node.children) {
-					children = node.children.map((childCode, index) => {
-						if (this.props.showSimpleView){
-							return (
-								<Code 
-									showSimpleView={this.props.showSimpleView}
-									documentsView={this.props.documentsView}
-									level={level + 1}
-									node={childCode} 
-									selected={this.props.selected} 
-									setSelected={this.props.setSelected} 
-									relocateCode={this.props.relocateCode}
-									show	Footer={this.props.showFooter}  
-									key={"CS" + "_" + level+ "_" +index}
-								>
-								</Code>
-							);
-						}
-						else {
-							return (
-								<DragAndDropCode 
-									showSimpleView={this.props.showSimpleView}
-									documentsView={this.props.documentsView}
-									level={level + 1}
-									node={childCode} 
-									selected={this.props.selected} 
-									setSelected={this.props.setSelected} 
-									relocateCode={this.props.relocateCode}
-									showFooter={this.props.showFooter}  
-									key={"CS" + "_" + level+ "_" +index}
-								>
-								</DragAndDropCode>
-							);
-						}
-						
-					});
-				}	
-
-				return (
-					<div key={"CS" + "_" + level} 
-				     >
-	    				{thisNode}
-	    				{children}
-					</div>
-				);
-		};
 		
 		render() {
 			const { connectDragSource, isDragging, connectDropTarget } = this.props;
 			const styles = this.getStyles();
 			var _this = this;
-			if (this.props.showSimpleView) {
-				return (<div>
-			            {this.renderNodesRecursive(this.props.node, this.props.level)}
-			    </div>);
-			}
-			
+
 			this.calculateCodingCount();
 			return connectDropTarget(this.props.connectDragSource(
 				<div>

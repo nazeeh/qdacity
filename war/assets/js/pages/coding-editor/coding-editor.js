@@ -247,7 +247,7 @@ function setupUI() {
 		$('#navSignin').hide();
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
-			setDocumentList(project_id);
+			var documentsLoaded = setDocumentList(project_id);
 			codesystemView = ReactDOM.render(<Codesystem 
 				projectID={project_id} 
 				projectType={project_type}
@@ -261,6 +261,16 @@ function setupUI() {
 				showFooter={showFooter}
 				updateCodeView={updateCodeView}
 			/>, document.getElementById('codesystemView'));
+			
+			var codesystemLoaded = codesystemView.child.init();
+			
+			documentsLoaded.then(() => {
+				codesystemLoaded.then(() => {
+					// Initialize coding count bubbles after both codesystem and documents are available
+					codesystemView.child.initCodingCount();
+					resizeElements();
+				});
+			});
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}
@@ -380,9 +390,7 @@ function setDocumentList(projectID) {
 
 	}
 
-	documentsView.setupView(project_id, project_type, report).then(function (codeName) {
-		resizeElements();
-	});
+	return documentsView.setupView(project_id, project_type, report);
 }
 
 

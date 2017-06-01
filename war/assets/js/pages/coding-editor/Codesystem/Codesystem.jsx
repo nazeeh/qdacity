@@ -11,6 +11,14 @@ import CodesystemToolbar from "./CodesystemToolbar.jsx"
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import SimpleCodesystem from './SimpleCodesystem.jsx';
 
+/*
+** Intended as primary codesystem component
+** Extende SimpleCodesystem by 
+** (1) adding a Toolbar for adding and removing codes.
+** (2) connecting the component to the code view and the text editor
+** (3) wrapping the component in a drag and drop context
+**
+*/
 class Codesystem extends SimpleCodesystem {
 		constructor(props) {
 			super(props);
@@ -18,13 +26,13 @@ class Codesystem extends SimpleCodesystem {
 				slected: {},
 				codesystem: []
 			};
-			
-			this.init();
 
 			this.relocateCode = this.relocateCode.bind(this);
 			this.removeCode = this.removeCode.bind(this);
 			this.insertCode = this.insertCode.bind(this);
 			this.updateCodingCount = this.updateCodingCount.bind(this);
+			this.initCodingCount = this.initCodingCount.bind(this);
+			this.init = this.init.bind(this);
 		}
 
 		getStyles() {
@@ -39,26 +47,39 @@ class Codesystem extends SimpleCodesystem {
 		
 		init() {
 			var _this = this;
-			CodesystemEndpoint.getCodeSystem(this.props.codesystemId).then(function (resp) {
-					
-				var codes = resp.items || [];
+			var promise = new Promise(
+				function (resolve, reject) {
+					CodesystemEndpoint.getCodeSystem(_this.props.codesystemId).then(function (resp) {
+							
+						var codes = resp.items || [];
+						
+						var rootCodes = codes.filter(function(code){
+						  return !code.parentID;
+						});
 				
-				var rootCodes = codes.filter(function(code){
-				  return !code.parentID;
-				});
-		
-				for (var i = 0; i < rootCodes.length; i++) {
-					rootCodes[i].collapsed = false;
-					_this.buildTree(rootCodes[i], codes, false)
+						for (var i = 0; i < rootCodes.length; i++) {
+							rootCodes[i].collapsed = false;
+							_this.buildTree(rootCodes[i], codes, false)
+						}
+						var selected = {}
+						if (rootCodes.length > 0 ) selected = rootCodes[0];
+						
+						_this.setState({ 
+							codesystem : rootCodes,
+							selected: selected
+						});
+						$("#codesystemLoadingDiv").addClass("hidden");
+						resolve();
+					});
 				}
-				var selected = {}
-				if (rootCodes.length > 0 ) selected = rootCodes[0];
-				_this.setState({ 
-					codesystem : rootCodes,
-					selected: selected
-				});
-				$("#codesystemLoadingDiv").addClass("hidden");
-			});
+			);
+			return promise;
+			
+		}
+		
+		// Overriding super method
+		notifyOnSelection(newCode){
+			this.props.updateCodeView(newCode);
 		}
 		
 		buildTree(currentCode, allCodes, currentNodeCollapsed){
@@ -110,6 +131,21 @@ class Codesystem extends SimpleCodesystem {
 			
 		}
 		
+		initCodingCount(){
+			initCodingCountRecurive(this.state.codesystem);
+			setState({
+				codesystem: this.state.codesystem
+			});
+			
+		}
+		
+		initCodingCountRecurive(codeSiblings){
+			var _this = this;
+			codeSiblings.forEach((code)=>{
+				code.codingCount = this.props.documentsView.calculateCodingCount(code.codeID);
+				if (code.children) _this.initCodingCount(code.children); // recursion
+			});			
+		}
 		updateCodingCount(){
 			this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(this.state.selected.codeID);
 			this.setState({

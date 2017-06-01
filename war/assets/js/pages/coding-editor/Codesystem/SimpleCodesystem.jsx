@@ -1,5 +1,6 @@
 import React from 'react';
 import {Code} from './Code.jsx';
+import SimpleCode from './SimpleCode.jsx';
 
 export default class SimpleCodesystem extends React.Component {
 		constructor(props) {
@@ -13,9 +14,15 @@ export default class SimpleCodesystem extends React.Component {
 			this.state.codesystem = this.props.codesystem;
 			
 			this.setSelected = this.setSelected.bind(this);
+			this.getCodesystem = this.getCodesystem.bind(this);
+		}
+		
+		// Can be overwritten to notify other components on a new selection
+		notifyOnSelection(code){
 		}
 
 		setSelected(code){
+			this.notifyOnSelection(code);
 			this.setState({
 				selected: code
 			});
@@ -49,14 +56,13 @@ export default class SimpleCodesystem extends React.Component {
 		renderRoots(codes){
 			return codes.map((code, index) => {
 					return (
-						<Code
-							showSimpleView={true}
+						<SimpleCode
 							level={0} 
 							node={code} 
 							selected={this.state.selected} 
 							setSelected={this.setSelected} 
 							key={"CS" + "_" + 0 + "_"  +index}>
-						</Code>
+						</SimpleCode>
 					);
 				});
 		}
