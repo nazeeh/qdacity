@@ -31,6 +31,7 @@ public enum EvaluationMethod {
 	}
     }
 
+    @Override
     public String toString() {
 	switch (this) {
 	    case F_MEASURE:
