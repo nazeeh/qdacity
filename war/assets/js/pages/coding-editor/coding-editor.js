@@ -85,6 +85,7 @@ window.init = function () {
 		project_type = "PROJECT";
 	}
 	if (project_type == "PROJECT") {
+		$('#settings').show();
 		$('.projectsOnly').removeClass('projectsOnly');
 	}
 	
