@@ -86,34 +86,35 @@ public class MaintenanceEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	private void initializeMetaModelEntities(User user) throws UnauthorizedException {
-		insertMetaModelEntity("", true, 1L, "Dynamic Relationship", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", true, 1L, "Dynamic Aspect", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", false, 1L, "causes", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", true, 1L, "Category", MetaModelEntityType.OTHER, user);
-		insertMetaModelEntity("", true, 1L, "Aspect", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", false, 1L, "is part of", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("assocation name", false, 1L, "is related to", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", false, 1L, "Activity", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", true, 1L, "Relationship", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", false, 1L, "Place", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", false, 1L, "Object", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", false, 1L, "influences", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", false, 1L, "Actor", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", false, 1L, "Process", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", true, 1L, "Concept", MetaModelEntityType.OTHER, user);
-		insertMetaModelEntity("", true, 1L, "Structural Aspect", MetaModelEntityType.PROPERTY, user);
-		insertMetaModelEntity("", true, 1L, "Structural Relationship", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", false, 1L, "is consequence of", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("association name", false, 1L, "performs", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", false, 1L, "is a", MetaModelEntityType.RELATIONSHIP, user);
-		insertMetaModelEntity("", false, 1L, "Property", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", true, 1L, 1, "Dynamic Relationship", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", true, 1L, 1, "Dynamic Aspect", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", false, 1L, 1, "causes", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", true, 1L, 2, "Category", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", true, 1L, 1, "Aspect", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", false, 1L, 1, "is part of", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("assocation name", false, 1L, 1, "is related to", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", false, 1L, 1, "Activity", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", true, 1L, 1, "Relationship", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", false, 1L, 1, "Place", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", false, 1L, 1, "Object", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", false, 1L, 1, "influences", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", false, 1L, 1, "Actor", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", false, 1L, 1, "Process", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", true, 1L, 2, "Concept", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", true, 1L, 1, "Structural Aspect", MetaModelEntityType.PROPERTY, user);
+		insertMetaModelEntity("", true, 1L, 1, "Structural Relationship", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", false, 1L, 1, "is consequence of", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("association name", false, 1L, 1, "performs", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", false, 1L, 1, "is a", MetaModelEntityType.RELATIONSHIP, user);
+		insertMetaModelEntity("", false, 1L, 2, "Property", MetaModelEntityType.PROPERTY, user);
 	}
 
-	private void insertMetaModelEntity(String attributes, boolean isAbstract, Long metaModelId, String name, MetaModelEntityType type, User user) throws UnauthorizedException {
+	private void insertMetaModelEntity(String attributes, boolean isAbstract, Long metaModelId, Integer group, String name, MetaModelEntityType type, User user) throws UnauthorizedException {
 		MetaModelEntity metaModelEntity = new MetaModelEntity();
 		metaModelEntity.setAttributes(attributes);
 		metaModelEntity.setIsAbstract(isAbstract);
 		metaModelEntity.setMetaModelId(metaModelId);
+		metaModelEntity.setGroup(group);
 		metaModelEntity.setName(name);
 		metaModelEntity.setType(type);
 		

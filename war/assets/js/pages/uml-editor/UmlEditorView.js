@@ -2,12 +2,16 @@ import {
 	EdgeType
 } from './EdgeType.js';
 
-export default class MyEditorView {
+export default class UmlEditorView {
 
 	constructor(container) {
 		this.graph = null;
 		this.layout = null;
 
+		this.init(container);
+	}
+
+	init(container) {
 		// Disables the context menu
 		mxEvent.disableContextMenu(container);
 
@@ -71,12 +75,6 @@ export default class MyEditorView {
 		const stylesheet = this.graph.getStylesheet();
 		let style;
 
-		// None
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = 'none';
-		style[mxConstants.STYLE_ENDARROW] = 'none';
-		stylesheet.putCellStyle(EdgeType.NONE, style);
-
 		// Generalization
 		style = {};
 		style[mxConstants.STYLE_STARTARROW] = 'none';
@@ -135,7 +133,7 @@ export default class MyEditorView {
 
 		var node;
 		try {
-			node = this.addClass(name); //this.graph.insertVertex(parent, null, name, 20, 20, 80, 30);
+			node = this.addClass(name);
 		} finally {
 			this.graph.getModel().endUpdate();
 		}

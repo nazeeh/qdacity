@@ -13,11 +13,14 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.google.appengine.labs.repackaged.com.google.common.base.Joiner;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
@@ -129,7 +132,7 @@ public class CodeEndpoint {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 
-			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementID " + code.getMmElementID());
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementIDs " + code.getMmElementIDs()); 
 
 			Code codeDB = mgr.getObjectById(Code.class, code.getId());
 			code.setCodeID(codeDB.getCodeID());
@@ -273,8 +276,8 @@ public class CodeEndpoint {
 			Authorization.checkAuthorization(code, user);
 
 			Long oldParentID = code.getParentID();
-			Code oldParent = getCode(oldParentID, code.getCodesystemID());
-			Code newParent = getCode(newParentID, code.getCodesystemID());
+			Code oldParent = getCode(oldParentID, code.getCodesystemID(), mgr);
+			Code newParent = getCode(newParentID, code.getCodesystemID(), mgr);
 
 			if (oldParent != null) {
 				oldParent.removeSubCodeID(code.getCodeID());
@@ -294,26 +297,21 @@ public class CodeEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Code getCode(Long codeID, Long Codesystem) {
+	private Code getCode(Long codeID, Long Codesystem, PersistenceManager mgr) {
 		Code code = null;
 
-		PersistenceManager mgr = getPersistenceManager();
-		try {
 
-			Query query = mgr.newQuery(Code.class);
+		Query query = mgr.newQuery(Code.class);
 
-			query.setFilter("codeID == :code && codesystemID == :codesystem");
-			Map<String, Long> params = new HashMap<String, Long>();
-			params.put("code", codeID);
-			params.put("codesystem", Codesystem);
+		query.setFilter("codeID == :code && codesystemID == :codesystem");
+		Map<String, Long> params = new HashMap<String, Long>();
+		params.put("code", codeID);
+		params.put("codesystem", Codesystem);
 
-			List<Code> codeList = ((List<Code>) query.executeWithMap(params));
+		List<Code> codeList = ((List<Code>) query.executeWithMap(params));
 
-			if (codeList.size() > 0) code = codeList.get(0);
+		if (codeList.size() > 0) code = codeList.get(0);
 
-		} finally {
-			mgr.close();
-		}
 		return code;
 	}
 

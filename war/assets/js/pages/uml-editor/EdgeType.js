@@ -1,5 +1,4 @@
 export const EdgeType = {
-	NONE: 'none',
 	GENERALIZATION: 'generalization',
 	DEPENDENCY: 'dependency',
 	AGGREGATION: 'aggregation',
