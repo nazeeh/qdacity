@@ -20,6 +20,9 @@ public class MetaModelEntity {
 	Long metaModelId;
 	
 	@Persistent
+	Integer group;
+	
+	@Persistent
 	String attributes;
 	
 	@Persistent
@@ -50,6 +53,14 @@ public class MetaModelEntity {
 
 	public void setMetaModelId(Long metaModelId) {
 		this.metaModelId = metaModelId;
+	}
+	
+	public Integer getGroup() {
+		return group;
+	}
+
+	public void setGroup(Integer group) {
+		this.group = group;
 	}
 
 	public String getAttributes() {
