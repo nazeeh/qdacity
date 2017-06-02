@@ -16,7 +16,7 @@ import com.qdacity.Constants;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationDocumentResults;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationReports;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationResults;
-import com.qdacity.maintenance.tasks.v4tov5migration.V5toV6MigrationValidationReports;
+import com.qdacity.maintenance.tasks.v6tov7Migration.V6toV7MigrationValidationReports;
 
 /**
  * This Endpoint is intented to be used for Data migration when changes in the
@@ -64,15 +64,15 @@ public class DataMigrationEndpoint {
      * @param user for access control
      */
     @ApiMethod(
-	    name = "migration.migrateV5toV6",
+	    name = "migration.migrateV6toV7",
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
-    public void migrateV5toV6(User user) {
+    public void migrateV6toV7(User user) {
 	Queue taskQueue = QueueFactory.getQueue("DataMigrationQueue");
 	List<Future<TaskHandle>> futures = new ArrayList<>();
 	//assumption: Data only contains ValidationReports that have run an FMeasure!
-	V5toV6MigrationValidationReports updateTask = new V5toV6MigrationValidationReports();
+	V6toV7MigrationValidationReports updateTask = new V6toV7MigrationValidationReports();
 	
 	futures.add(taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(updateTask)));
 
