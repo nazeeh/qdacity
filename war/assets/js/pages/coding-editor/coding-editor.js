@@ -176,7 +176,8 @@ function createCodeMemoEditor() {
 		// Create Squire instance
 		codeMemoEditor = new Squire(doc);
 
-		codeMemoEditor.setHTML(getSelectedCode().memo);
+		var memo = getSelectedCode().memo;
+		codeMemoEditor.setHTML(memo ? memo : '');
 	}
 }
 
@@ -431,7 +432,9 @@ function updateCodeView(code){
 		fillPropertiesView(code);
 		metaModelView.setActiveId(code.mmElementID);
 		codeRelationsView.setRelations(code.relations, code.id);
-		if (codeMemoEditor != undefined) codeMemoEditor.setHTML(code.memo);
+		if (codeMemoEditor != undefined){
+			codeMemoEditor.setHTML(code.memo ? code.memo : '');
+		}
 		if (cbEditor.def != undefined) {
 			var codeBookEntry = code.codeBookEntry
 			cbEditor.def.setHTML(codeBookEntry.definition);
