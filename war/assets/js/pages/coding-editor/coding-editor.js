@@ -231,11 +231,12 @@ function resizeElements() {
 	$("#editor").css({
 		height: $(window).height() - 52 - offsetFooter - offsetEditMenu
 	});
-
-	var codesystemTreeOffset = $("#easytree-section").offset().top
-	$("#easytree-section").css({
-		height: $(window).height() - codesystemTreeOffset - offsetFooter
-	});
+	
+	var codesystemTreeOffset = 0;
+	var offset = $("#codesystemTree").offset();
+	if ($("#codesystemTree").offset())codesystemTreeOffset = offset.top;
+	codesystemView.child.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
+	
 	editorCtrl.addCodingBrackets();
 }
 

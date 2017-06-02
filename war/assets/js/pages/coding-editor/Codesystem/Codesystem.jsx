@@ -24,7 +24,8 @@ class Codesystem extends SimpleCodesystem {
 			super(props);
 			this.state = {
 				slected: {},
-				codesystem: []
+				codesystem: [],
+				height: "100px"
 			};
 
 			this.relocateCode = this.relocateCode.bind(this);
@@ -41,8 +42,23 @@ class Codesystem extends SimpleCodesystem {
 					textAlign: "center",
 					position: "relative",
 					backgroundColor: "#e7e7e7"
+				},
+				codesystem: {
+					overflow: "auto"
 				}
 			}
+		}
+		
+		styleCodesystem(){
+			var style = this.getStyles().codesystem;
+			style.height = this.state.height;
+			return style;
+		}
+		
+		setHeight(height){
+			this.setState({
+				height: height
+			});
 		}
 		
 		init() {
@@ -227,7 +243,7 @@ class Codesystem extends SimpleCodesystem {
 							umlEditorEnabled={this.props.umlEditorEnabled}>
 						</CodesystemToolbar>
 					</div>
-					<div className="codesystemView">{this.renderCodesystem()}</div>
+					<div id="codesystemTree" className="codesystemView"  style={this.styleCodesystem()}>{this.renderCodesystem()}</div>
 				</div>
 			);
 		}
