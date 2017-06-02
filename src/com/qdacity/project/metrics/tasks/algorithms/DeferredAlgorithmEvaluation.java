@@ -6,8 +6,10 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ValidationResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +26,18 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     protected final ValidationProject validationProject;
     protected final User user;
     protected final Long validationReportId;
+    protected final EvaluationUnit evalUnit;
+    protected final List<Long> textDocumentIds;
+    protected List<TextDocument> textDocuments;
 
     protected ValidationResult valResult;
 
-    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId) {
+    public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit, List<Long> textDocumentIds) {
 	this.validationProject = validationProject;
 	this.validationReportId = validationReportId;
 	this.user = user;
+	this.evalUnit = evalUnit;
+	this.textDocumentIds = textDocumentIds;
     }
 
     @Override
@@ -38,13 +45,13 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	try {
 	    mgr = getPersistenceManager();
 	    mgr.setMultithreaded(true);
-	    valResult = new ValidationResult();
-	    valResult.setRevisionID(validationProject.getRevisionID());
-	    valResult.setValidationProjectID(validationProject.getId());
-	    valResult.setReportID(validationReportId);
-	    mgr.makePersistent(valResult); // make persistent to generate ID which is passed to deferred persistence of DocumentResults
+	    textDocuments = TextDocumentEndpoint.collectTextDocumentsfromMemcache(textDocumentIds);
+	    valResult = makeNextValidationResult();
 	    runAlgorithm();
-	    mgr.makePersistent(valResult);
+	    if (valResult.getReportRow() != null
+		    && valResult.getReportRow() != "") {
+		mgr.makePersistent(valResult);
+	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	} finally {
@@ -52,19 +59,21 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 	}
     }
 
-    protected List<TextDocument> collectTextDocumentsfromMemcache(List<Long> textDocumentIds) {
-	List<TextDocument> textDocuments = new ArrayList<>();
-	for (Long docID : textDocumentIds) { //Get Textdocuments from Memcache
-	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), docID);
-	    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	    syncCache.get(keyString);
-	    TextDocument origialDoc = (TextDocument) syncCache.get(keyString);
-	    if (origialDoc == null) {
-		origialDoc = mgr.getObjectById(TextDocument.class, docID);
-	    }
-	    textDocuments.add(origialDoc);
-	}
-	return textDocuments;
+    /**
+     * Creates and initially persists a validationResult, where only the
+     * reportRow is missing. Set the reportRow in this validationResult and make
+     * sure to persist it again.
+     *
+     * @return the newly created and initially persisted ValidationResult
+     */
+    protected ValidationResult makeNextValidationResult() {
+	ValidationResult newResult = new ValidationResult();
+	newResult.setRevisionID(validationProject.getRevisionID());
+	newResult.setValidationProjectID(validationProject.getId());
+	newResult.setReportID(validationReportId);
+	newResult.setReportRow(null); //intentionally initialize with null!
+	mgr.makePersistent(newResult);// make persistent to generate ID which is passed to deferred persistence of DocumentResults
+	return newResult;
     }
 
     protected abstract void runAlgorithm() throws Exception;

@@ -36,9 +36,11 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.TextDocumentAnalyzer;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
+import com.qdacity.project.metrics.tasks.algorithms.DeferredFleissKappaEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
 
 public class DeferredEvaluation implements DeferredTask {
@@ -86,8 +88,8 @@ public class DeferredEvaluation implements DeferredTask {
 		case KRIPPENDORFFS_ALPHA:
 		    calculateKrippendorffsAlpha(validationReport);
 		    break;
-		case COHENS_CAPPA:
-		    calculateCohensKappa();
+		case FLEISS_KAPPA:
+		    calculateFleissKappa(validationReport);
 		    break;
 	    }
 
@@ -132,7 +134,7 @@ public class DeferredEvaluation implements DeferredTask {
 	for (TextDocument textDocument : originalDocs) {
 
 	    if (docIDs.contains(textDocument.getId())) {
-		putuTextDocumentToMemcache(textDocument);
+		TextDocumentEndpoint.putTextDocumentToMemcache(textDocument);
 		orignalDocIDs.add(textDocument.getId());
 	    }
 	}
@@ -147,7 +149,7 @@ public class DeferredEvaluation implements DeferredTask {
 
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
 	    for (ValidationProject validationProject : validationProjectsFromUsers) {
-		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, docIDs, orignalDocIDs, validationReport.getId(), user);
+		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, validationReport.getId(), user, evalUnit);
 		Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
 		taskQueue.launchInTaskQueue(deferredValidation);
 	    }
@@ -273,16 +275,6 @@ public class DeferredEvaluation implements DeferredTask {
 	getPersistenceManager().makePersistent(validationReport);
     }
 
-    private void putuTextDocumentToMemcache(TextDocument tx) {
-	String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), tx.getId());
-	MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-	syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
-    }
-
-    private void calculateCohensKappa() {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     /**
      * Calculates the averageAgreement for TabularValidationReportRows using
      * simple average calculation.
@@ -305,6 +297,45 @@ public class DeferredEvaluation implements DeferredTask {
 	    }
 	}
 	return new TabularValidationReportRow(averageColumns);
+    }
+
+    /**
+     * FleissKappa per Document per Code (as Codes are not Categories).
+     * @throws UnauthorizedException 
+     */
+    private void calculateFleissKappa(ValidationReport validationReport) throws Exception {
+	List<DeferredAlgorithmEvaluation> deferredEvals = new ArrayList<>();
+	
+	//get all Codes
+	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+	
+	//Amount Raters
+	int amountRaters = validationProjectsFromUsers.size();
+	if(amountRaters < 2) {
+	    throw new Exception("With less than two raters, there is no valid Fleiss Kappa Evaluation possible.");
+	}
+	
+	//get all Document Ids from every Rater
+	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
+		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
+
+	List<String> headerCells = new ArrayList<>();
+	headerCells.add("Document \\ Code");
+	headerCells.add("Average All Codes");
+	headerCells.addAll(codeNamesAndIds.keySet());
+	
+	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
+
+	//Create Deferred Evaluations
+	for(String docName : sameDocumentsFromDifferentRatersMap.keySet()) {
+	    Logger.getLogger("logger").log(Level.INFO, "Create Deferred Fleiss Kappa Task for Document "+docName);
+	    deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, validationReport.getId(), evalUnit));
+	}
+	
+	//Run deferred Evaluations
+	taskQueue.launchListInTaskQueue(deferredEvals);
+	
+	getPersistenceManager().makePersistent(validationReport);
     }
 
 }
