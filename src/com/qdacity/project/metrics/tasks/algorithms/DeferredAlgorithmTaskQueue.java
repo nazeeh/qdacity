@@ -64,6 +64,9 @@ public class DeferredAlgorithmTaskQueue {
      * @throws InterruptedException
      */
     public List<ValidationResult> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
+	if (amountValidationProjects == 0) {
+	    return null;
+	}
 	Logger.getLogger("logger").log(Level.INFO, "Waiting for tasks: " + futures.size());
 
 	for (Future<TaskHandle> future : futures) {
@@ -83,8 +86,9 @@ public class DeferredAlgorithmTaskQueue {
 	}
 	Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
 	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
-	
+
 	return valResults;
+
     }
 
 	private boolean reportRowsExist(List<ValidationResult> valResults) {
