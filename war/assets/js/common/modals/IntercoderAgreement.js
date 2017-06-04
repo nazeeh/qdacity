@@ -44,18 +44,12 @@ export default class IntercoderAgreement extends VexModal {
 			function (resolve, reject) {
 
 				var formElements = _this.formElements;
-
-				vex.dialog.open({
-					message: "Intercoder Agreement",
-					contentCSS: {
-						width: '900px'
-					},
-					input: formElements,
-					buttons: [
-						$.extend({}, vex.dialog.buttons.YES, {
+                                var buttonArray = [$.extend({}, vex.dialog.buttons.YES, {
 							text: 'OK'
-						}),
-						$.extend({}, vex.dialog.buttons.NO, {
+						})];
+                                            
+                                if(_this.report.evaluationMethod === 'f-measure') {
+                                    buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
 							className: 'deciderBtn vex-dialog-button-primary',
 							text: "Send Email",
 							click: function ($vexContent, event) {
@@ -68,15 +62,23 @@ export default class IntercoderAgreement extends VexModal {
 								});
 
 							}
-						}),
-						$.extend({}, vex.dialog.buttons.NO, {
+						}));
+                                    buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
 							className: 'deciderBtn vex-dialog-button-primary',
 							text: "Agreement Maps",
 							click: function ($vexContent, event) {
 								window.location.href = 'coding-editor.html?project=' + _this.report.revisionID + '&type=REVISION&report=' + _this.report.id + '&parentproject=' + _this.report.projectID;
 							}
-						}),
-					],
+						}));
+                                }
+
+				vex.dialog.open({
+					message: "Intercoder Agreement",
+					contentCSS: {
+						width: '900px'
+					},
+					input: formElements,
+					buttons: buttonArray,
 					callback: function (data) {
 
 						if (data != false) {
