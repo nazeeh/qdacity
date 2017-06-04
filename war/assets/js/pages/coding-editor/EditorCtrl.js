@@ -6,8 +6,8 @@ import 'script!../../../../components/imagesloaded/imagesloaded.pkgd.min.js';
 
 export default class EditorCtrl {
 
-	constructor(easytree) {
-		this.easytree = easytree;
+	constructor(getCodeByCodeID) {
+		this.getCodeByCodeID = getCodeByCodeID;
 		this.agreementMap = false;
 		this.isReadOnly = true;
 		this.setupFontSelector();
@@ -199,7 +199,7 @@ export default class EditorCtrl {
 	}
 
 	getCodeColor(id, target) {
-		var node = this.easytree.getNode(id);
+		var node = this.getCodeByCodeID(id);
 		if (node != null) return node.color;
 		else return "#000";
 	}

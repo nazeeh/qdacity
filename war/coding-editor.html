@@ -38,8 +38,8 @@
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-<script src="https://fb.me/react-15.0.0.js"></script>
-    <script src="https://fb.me/react-dom-15.0.0.js"></script>
+<script src="https://unpkg.com/react@15/dist/react.js"></script>
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
 
 
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -215,47 +215,13 @@
 			<div id="codesystem-ui" style=" width: 100%; background-color: #f8f8f8; ">
 				<div style="background-color: #e7e7e7;">
 					<div style="text-align: center;">
-						<b>Code System</b><br>
-						<div class="btn-group">
-							<a id="btnInsertCode" class="btn btn-default collapse">
-								<i class="fa fa-plus fa-1x"></i>
-							</a>
-							<a id="btnRemoveCode" class="btn btn-default collapse">
-								<i class="fa fa-trash fa-1x"></i>
-							</a>
-							<a id="btnCodeProps" class="btn btn-default">
-								<i class="fa  fa-list-alt  fa-1x"></i>
-							</a>	
-						</div>
-						<div class="btn-group">
-							<a id="btnApplyCode" class="btn btn-default">
-								<span class="fa-stack fa-lg" style="font-size: 8px;">
-									<i class="fa fa-tag fa-stack-2x"></i>
-									<i class="fa fa-plus fa-stack-1x fa-inverse"></i>
-								</span>
-							</a>
-							<a id="btnRemoveCoding" class="btn btn-default">
-								<span class="fa-stack fa-lg" style="font-size: 8px;">
-									<i class="fa fa-tag fa-stack-2x"></i>
-									<i class="fa fa-minus fa-stack-1x fa-inverse"></i>
-								</span>
-							</a>
-						</div>
-						<div class="btn-group">
-							<a id="btnOpenUMLEditor" class="btn btn-default collapse">
-								<i class="fa fa-external-link fa-1x"></i>
-							</a>
-						</div>
+						<b>Code System</b>
 					</div>
 				</div>
 				<div id ="codesystemLoadingDiv" class="loader">
 						  	<div id ="codesystemLoaderMount" class="loaderMount"></div>
 				</div>
-				<div id="easytree-section"   class="codingEditorView" style="padding-left: 2px; padding-right: 2px; text-align: left; border: 2px solid #e7e7e7;">
-
-					<ul>
-					</ul>
-				</div>
+				<div id ="codesystemView"></div>
 			</div>
 		</div>
 		<div class="col-sm-8 col-md-9 col-lg-10" style="background-color: #FFF; margin-bottom: 50px;">

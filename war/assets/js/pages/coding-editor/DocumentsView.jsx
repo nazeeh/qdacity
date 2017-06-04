@@ -78,8 +78,30 @@ export default class DocumentsView extends React.Component {
 		);
 		return promise;
 	}
-
-	toggleIsExpanded() {
+	
+	calculateCodingCount(codID){
+			var codingCount = 0;
+			var documents = this.state.documents;
+			for (var index in documents) {
+				var doc = documents[index];
+				var elements = doc.text;
+				var foundArray = $('coding[code_id=\'' + codID + '\']', elements).map(function () {
+					return $(this).attr('id');
+				});
+				var idsCounted = []; // When a coding spans multiple HTML blocks,
+				// then there will be multiple elements with
+				// the same ID
+				for (var j = 0; j < foundArray.length; j++) {
+					if ($.inArray(foundArray[j], idsCounted) != -1)
+						continue;
+					codingCount++;
+					idsCounted.push(foundArray[j]);
+				}
+			}
+			return codingCount;
+		}
+	
+	toggleIsExpanded(){
 		this.setState({
 			isExpanded: !this.state.isExpanded
 		});
