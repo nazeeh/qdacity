@@ -2,6 +2,7 @@ import ReactLoading from '../ReactLoading.jsx';
 
 import VexModal from './VexModal';
 import IntercoderAgreementByDoc from './IntercoderAgreementByDoc';
+import IntercoderAgreementByCode from './IntercoderAgreementByCode';
 import BinaryDecider from './BinaryDecider';
 import ProjectEndpoint from '../endpoints/ProjectEndpoint';
 import ValidationEndpoint from '../endpoints/ValidationEndpoint';
@@ -147,6 +148,10 @@ export default class IntercoderAgreement extends VexModal {
 				var validationProjectID = $(this).find("td").eq(1).html();
 				var agreementByDoc = new IntercoderAgreementByDoc(resultID, validationProjectID, _this.report.projectID);
 				agreementByDoc.showModal();
+                            }
+                            if(_this.report.evaluationMethod === 'krippendorffs-alpha' || _this.report.evaluationMethod === 'fleiss-kappa') {
+                                var agreementByCode = new IntercoderAgreementByCode(_this.report.detailedAgreementHeaderCsvString, _this.results);
+				agreementByCode.showModal();
                             }
 			}
 		});
