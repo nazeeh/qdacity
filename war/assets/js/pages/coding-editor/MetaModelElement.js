@@ -1,8 +1,9 @@
 export default class MetaModelElement {
-	constructor(elementId, elementName, type) {
+	constructor(elementId, elementName, type, group) {
 		this.id = elementId;
 		this.name = elementName;
 		this.type = type;
+		this.group = group;
 		this.generalizations = [];
 		this.specializations = [];
 		this.selected = false;
@@ -11,6 +12,15 @@ export default class MetaModelElement {
 	getId() {
 		return this.id;
 	}
+
+	getGroup() {
+		return this.group;
+	}
+
+	setGroup(group) {
+		this.group = group;
+	}
+
 	setGeneralization(generalizations) {
 		this.generalizations = generalization;
 	}
