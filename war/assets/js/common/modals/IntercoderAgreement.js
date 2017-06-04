@@ -139,14 +139,15 @@ export default class IntercoderAgreement extends VexModal {
 			if ($(this).hasClass('selected')) {
 				$(this).removeClass('selected');
 			} else {
-
 				table.$('tr.selected').removeClass('selected');
 				$(this).addClass('selected');
 
+                            if(_this.report.evaluationMethod === 'f-measure') {   
 				var resultID = $(this).find("td").eq(0).html();
 				var validationProjectID = $(this).find("td").eq(1).html();
 				var agreementByDoc = new IntercoderAgreementByDoc(resultID, validationProjectID, _this.report.projectID);
 				agreementByDoc.showModal();
+                            }
 			}
 		});
 
