@@ -108,7 +108,7 @@ export default class CodeRelationsView extends React.Component {
 				var code = _this.props.getSelectedCode();
 				code.relations = resp.relations;
 				_this.props.updateSelectedCode(code);
-				_this.setRelations(code.relations,code.id);
+				_this.setRelations(code.relations, code.id);
 			});
 		});
 	}

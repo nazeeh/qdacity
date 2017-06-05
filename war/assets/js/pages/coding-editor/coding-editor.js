@@ -88,7 +88,7 @@ window.init = function () {
 		$('#settings').show();
 		$('.projectsOnly').removeClass('projectsOnly');
 	}
-	
+
 	if (typeof report != 'undefined') {
 		editorCtrl.showsAgreementMap(true);
 		//		React.render(<ReactSlider defaultValue={[0, 100]} withBars />, document.body);
@@ -136,9 +136,9 @@ window.init = function () {
 	// FIXME possibly move to CodingsView
 	document.getElementById('btnCodeBookEntrySave').onclick = function () {
 		var codeBookEntry = {
-				definition: cbEditor.def.getHTML(),
-				whenToUse: cbEditor.when.getHTML(),
-				whenNotToUse: cbEditor.whenNot.getHTML()
+			definition: cbEditor.def.getHTML(),
+			whenToUse: cbEditor.when.getHTML(),
+			whenNotToUse: cbEditor.whenNot.getHTML()
 		};
 		updateCodeBookEntry(codeBookEntry);
 	}
@@ -159,7 +159,7 @@ window.init = function () {
 
 }
 
-function toggleCodingView(){
+function toggleCodingView() {
 	if ($("#footer").is(":visible")) {
 		hideCodingView();
 	} else {
@@ -232,12 +232,12 @@ function resizeElements() {
 	$("#editor").css({
 		height: $(window).height() - 52 - offsetFooter - offsetEditMenu
 	});
-	
+
 	var codesystemTreeOffset = 0;
 	var offset = $("#codesystemTree").offset();
-	if ($("#codesystemTree").offset())codesystemTreeOffset = offset.top;
+	if ($("#codesystemTree").offset()) codesystemTreeOffset = offset.top;
 	codesystemView.child.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
-	
+
 	editorCtrl.addCodingBrackets();
 }
 
@@ -263,9 +263,9 @@ function setupUI() {
 				showFooter={showFooter}
 				updateCodeView={updateCodeView}
 			/>, document.getElementById('codesystemView'));
-			
+
 			var codesystemLoaded = codesystemView.child.init();
-			
+
 			documentsLoaded.then(() => {
 				codesystemLoaded.then(() => {
 					// Initialize coding count bubbles after both codesystem and documents are available
@@ -364,16 +364,19 @@ function fillCodeRelationsView() {
 	codeRelationsView.setRelations(code.relations, code.id);
 }
 
-function getSelectedCode(){
+function getSelectedCode() {
 	return codesystemView.child.getSelected();
 }
-function updateSelectedCode(code){
+
+function updateSelectedCode(code) {
 	codesystemView.child.updateSelected(code);
 }
-function getCodeByCodeID(codeID){
+
+function getCodeByCodeID(codeID) {
 	return codesystemView.child.getCodeByCodeID(codeID);
 }
-function getCodeSystem(){
+
+function getCodeSystem() {
 	return codesystemView.child.getCodesystem();
 }
 
@@ -426,13 +429,13 @@ function changeParentId(code, _newParent) {
 }
 
 
-function updateCodeView(code){
+function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		fillCodingTable(code);
 		fillPropertiesView(code);
 		metaModelView.setActiveId(code.mmElementID);
 		codeRelationsView.setRelations(code.relations, code.id);
-		if (codeMemoEditor != undefined){
+		if (codeMemoEditor != undefined) {
 			codeMemoEditor.setHTML(code.memo ? code.memo : '');
 		}
 		if (cbEditor.def != undefined) {
