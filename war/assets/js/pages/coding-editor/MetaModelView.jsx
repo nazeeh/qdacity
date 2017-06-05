@@ -121,9 +121,8 @@ export default class MetaModelView extends React.Component {
 
 
 				let element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type, entities[i].group);
-				//if (_this.props.filter == entities[i].type) {
+
 				entitiesById[element.id] = element;
-				//}
 			}
 
 			relationsPromise.then(function (resp) {

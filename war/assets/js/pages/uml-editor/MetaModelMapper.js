@@ -12,8 +12,8 @@ export default class MetaModelMapper {
 	map(metaModelEntity, source, destination) {
 		let mode = null;
 
-		let codeSource = source.code;
-		let codeDestination = destination.code;
+		let codeSource = source.getCode();
+		let codeDestination = destination.getCode();
 
 		switch (metaModelEntity.name) {
 		case 'is a':
@@ -29,7 +29,7 @@ export default class MetaModelMapper {
 		case 'is related to':
 			{
 				if (this.codeHasMetaModelEntity(codeDestination, 'Object') || this.codeHasMetaModelEntity(codeDestination, 'Actor') || this.codeHasMetaModelEntity(codeDestination, 'Place')) {
-					this.umlEditorView.addClassField(source.node, '+ ' + codeSource.name + ': type');
+					this.umlEditorView.addClassField(source.getNode(), '+ ' + codeSource.name + ': type');
 					return;
 				}
 
@@ -38,7 +38,7 @@ export default class MetaModelMapper {
 			}
 		case 'influences':
 			{
-				this.umlEditorView.addClassMethod(source.node, '+ ' + codeDestination.name + '(type): type');
+				this.umlEditorView.addClassMethod(source.getNode(), '+ ' + codeDestination.name + '(type): type');
 				return;
 			}
 		default:
@@ -47,7 +47,7 @@ export default class MetaModelMapper {
 			}
 		}
 
-		this.umlEditorView.addEdge(source.node, destination.node, mode);
+		this.umlEditorView.addEdge(source.getNode(), destination.getNode(), mode);
 	}
 
 	codeHasMetaModelEntity(code, entityName) {

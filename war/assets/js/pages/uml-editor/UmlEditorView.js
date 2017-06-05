@@ -1,12 +1,18 @@
 import {
 	EdgeType
 } from './EdgeType.js';
+import UmlClass from './UmlClass.js';
+
+import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
 export default class UmlEditorView {
 
-	constructor(container) {
+	constructor(codeSystemId, container) {
+		this.codeSystemId = codeSystemId;
 		this.graph = null;
 		this.layout = null;
+
+		this.umlClasses = [];
 
 		this.init(container);
 	}
@@ -43,7 +49,7 @@ export default class UmlEditorView {
 		this.layout.disableEdgeStyle = false;
 		this.layout.forceConstant = 180;
 
-		// Initializes the styles
+		// Initialize styles
 		this.initializeStyles();
 	}
 
@@ -126,29 +132,195 @@ export default class UmlEditorView {
 		stylesheet.putCellStyle(EdgeType.REALIZATION, style);
 	}
 
-	addNode(name) {
-		var parent = this.graph.getDefaultParent();
+	initCellsMovedEventHandler() {
+		let _this = this;
+
+		this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, event) {
+			let cells = event.properties.cells;
+			let dx = event.properties.dx;
+			let dy = event.properties.dy;
+
+			let umlCodePositions = [];
+
+			cells.forEach((cell) => {
+				if (cell.vertex == true) {
+					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getNode().getId() == cell.getId());
+					let code = umlClass.getCode();
+					let node = umlClass.getNode();
+
+					umlCodePositions.push({
+						'id': -1,
+						'codeId': code.codeID,
+						'codeSystemId': _this.codeSystemId,
+						'x': node.getGeometry().x,
+						'y': node.getGeometry().y
+					});
+				}
+			});
+
+			console.log('Updating ' + umlCodePositions.length + ' UmlCodePosition entries in the database...');
+
+			UmlCodePositionEndpoint.updateCodePositions(umlCodePositions).then(function () {
+				console.log('Updated ' + umlCodePositions.length + ' UmlCodePosition entries in the database.');
+			});
+		});
+	}
+
+	initGraph(codes, mmEntities, metaModelMapper) {
+		this.umlClasses = [];
+
+		let relations = [];
+
+		for (let i = 0; i < codes.length; i++) {
+			// Add node to graph
+			let node = this.addNode(codes[i].name);
+
+			// Logging
+			console.log('Added new node to the graph: ' + codes[i].name + ' (' + codes[i].codeID + ')');
+
+			// Register new entry
+			this.umlClasses.push(new UmlClass(codes[i], node));
+
+			// Register code relations
+			if (codes[i].relations != null) {
+				for (let j = 0; j < codes[i].relations.length; j++) {
+
+					let startCode = codes[i];
+					let relation = startCode.relations[j];
+
+					relations.push({
+						'start': startCode.codeID,
+						'end': relation.codeId,
+						'metaModelEntityId': relation.mmElementId
+					});
+				}
+			}
+		}
+
+		// Process code relations
+		for (let i = 0; i < relations.length; i++) {
+			let relation = relations[i];
+
+			let metaModelEntity = mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
+
+			let startUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.start);
+			let endUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.end);
+			let startCode = startUmlClass.getCode();
+			let endCode = endUmlClass.getCode();
+
+			// Logging
+			console.log('Connection between ' + startCode.name + ' (' + startCode.codeID + ') and ' + endCode.name + ' (' + endCode.codeID + ').');
+
+			metaModelMapper.map(metaModelEntity, startUmlClass, endUmlClass);
+		}
+
+		this.initPositions();
+	}
+
+	initPositions() {
+		let _this = this;
+
+		console.log('Loading UmlCodePosition entries from the database...');
+
+		UmlCodePositionEndpoint.listCodePositions(this.codeSystemId).then(function (resp) {
+			let umlCodePositions = resp.items || [];
+
+			console.log('Loaded ' + umlCodePositions.length + ' UmlCodePosition entries from the database. Found ' + _this.umlClasses.length + ' codes.');
+
+			if (umlCodePositions.length > 0) {
+				// Add cells moved event listener
+				_this.initCellsMovedEventHandler();
+
+				// Unregistered codes exist
+				if (umlCodePositions.length != _this.umlClasses.length) {
+					// Find new codes
+					let unregisteredUmlCodePositions = [];
+
+					_this.umlClasses.forEach((umlClass) => {
+						let exists = umlCodePositions.find((umlCodePosition) => umlCodePosition.codeId == umlClass.getCode().codeID) != null;
+
+						let code = umlClass.getCode();
+						let node = umlClass.getNode();
+
+						if (!exists) {
+							let umlCodePosition = {
+								'codeId': code.codeID,
+								'codeSystemId': _this.codeSystemId,
+								'x': node.getGeometry().x,
+								'y': node.getGeometry().y
+							};
+
+							unregisteredUmlCodePositions.push(umlCodePosition);
+							umlCodePositions.push(umlCodePosition);
+						}
+					});
+
+					console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
+
+					UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then(function () {
+						console.log('Inserted ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
+					});
+				}
+
+				umlCodePositions.forEach((umlCodePosition) => {
+					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == umlCodePosition.codeId);
+
+					_this.translateNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
+				});
+			} else {
+				console.log('Applying layout');
+
+				// Apply layout
+				_this.applyLayout();
+
+				// Add cells moved event listener 
+				// This happens after apply layout - otherwise apply layout triggers the event
+				_this.initCellsMovedEventHandler();
+
+				umlCodePositions = [];
+
+				_this.umlClasses.forEach((umlClass) => {
+					let code = umlClass.getCode();
+					let node = umlClass.getNode();
+
+					umlCodePositions.push({
+						'codeId': code.codeID,
+						'codeSystemId': _this.codeSystemId,
+						'x': node.getGeometry().x,
+						'y': node.getGeometry().y
+					});
+				});
+
+				console.log('Inserting ' + umlCodePositions.length + ' new UmlCodePosition entries into the database...');
+
+				UmlCodePositionEndpoint.insertCodePositions(umlCodePositions).then(function () {
+					console.log('Inserted ' + umlCodePositions.length + ' new UmlCodePosition entries into the database.');
+				});
+			}
+		});
+	}
+
+	applyLayout() {
+		let parent = this.graph.getDefaultParent();
 
 		this.graph.getModel().beginUpdate();
 
-		var node;
 		try {
-			node = this.addClass(name);
+			this.layout.execute(parent);
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
-
-		return node;
 	}
 
-	addEdge(v1, v2, edgeType) {
-		var parent = this.graph.getDefaultParent();
+
+	addEdge(nodeFrom, nodeTo, edgeType) {
+		let parent = this.graph.getDefaultParent();
 
 		this.graph.getModel().beginUpdate();
 
-		var edge;
+		let edge;
 		try {
-			edge = this.graph.insertEdge(parent, null, '', v1, v2, edgeType);
+			edge = this.graph.insertEdge(parent, null, '', nodeFrom, nodeTo, edgeType);
 
 		} finally {
 			this.graph.getModel().endUpdate();
@@ -157,17 +329,19 @@ export default class UmlEditorView {
 		return edge;
 	}
 
-	applyLayout() {
-		var parent = this.graph.getDefaultParent();
+	addNode(name) {
+		let parent = this.graph.getDefaultParent();
 
 		this.graph.getModel().beginUpdate();
 
+		let node;
 		try {
-			this.layout.execute(parent);
+			node = this.addClass(name);
 		} finally {
 			this.graph.getModel().endUpdate();
-			alert('done');
 		}
+
+		return node;
 	}
 
 	addClass(name) {
@@ -185,47 +359,47 @@ export default class UmlEditorView {
 
 		this.graph.addCell(cell);
 
-		this.recalculateVertexSize(cell);
+		this.recalculateNodeSize(cell);
 
 		return cell;
 	}
 
-	addClassField(vertex, text) {
+	addClassField(node, text) {
 		const simplefieldstyle = 'foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
 		let simplefield = new mxCell(text, new mxGeometry(0, 0, 160, 15), simplefieldstyle);
 		simplefield.vertex = true;
 
-		let fields = vertex.children[0];
+		let fields = node.children[0];
 		fields.insert(simplefield);
 
-		this.recalculateVertexSize(vertex);
+		this.recalculateNodeSize(node);
 	}
 
-	addClassMethod(vertex, text) {
+	addClassMethod(node, text) {
 		const simplefieldstyle = 'foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
 		let simplemethod = new mxCell(text, new mxGeometry(0, 0, 160, 15), simplefieldstyle);
 		simplemethod.vertex = true;
 
-		let methods = vertex.children[1];
+		let methods = node.children[1];
 		methods.insert(simplemethod);
 
-		this.recalculateVertexSize(vertex);
+		this.recalculateNodeSize(node);
 	}
 
-	recalculateVertexSize(vertex) {
-		let fields = vertex.children[0];
+	recalculateNodeSize(node) {
+		let fields = node.children[0];
 		let fieldsHeight = 5 + 5 + 15 * fields.getChildCount();
 
 
-		let methods = vertex.children[1];
+		let methods = node.children[1];
 		let methodsHeight = 5 + 5 + 15 * methods.getChildCount();
 
 
-		let oldGeo = vertex.getGeometry();
+		let oldGeo = node.getGeometry();
 		let width = oldGeo.width;
-		vertex.setGeometry(new mxGeometry(oldGeo.x, oldGeo.y, width, 30 + fieldsHeight + methodsHeight));
+		node.setGeometry(new mxGeometry(oldGeo.x, oldGeo.y, width, 30 + fieldsHeight + methodsHeight));
 
 		fields.setGeometry(new mxGeometry(0, 30, width, fieldsHeight));
 		methods.setGeometry(new mxGeometry(0, 30 + fieldsHeight, width, methodsHeight));
@@ -243,6 +417,19 @@ export default class UmlEditorView {
 				let child = methods.children[i];
 				child.setGeometry(new mxGeometry(0, i * 15, width, 15));
 			}
+		}
+	}
+
+	translateNode(node, x, y) {
+		this.graph.getModel().beginUpdate();
+
+		try {
+			let dx = (-node.getGeometry().x) + x;
+			let dy = (-node.getGeometry().y) + y;
+
+			this.graph.translateCell(node, dx, dy);
+		} finally {
+			this.graph.getModel().endUpdate();
 		}
 	}
 }
