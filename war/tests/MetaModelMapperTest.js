@@ -1,5 +1,6 @@
 import { EdgeType } from '../assets/js/pages/uml-editor/EdgeType.js';
 import MetaModelMapper from '../assets/js/pages/uml-editor/MetaModelMapper.js';
+import UmlClass from '../assets/js/pages/uml-editor/UmlClass.js';
 import UmlEditorView from '../assets/js/pages/uml-editor/UmlEditorView.js';
 
 describe("MetaModelMapper::map", function() {
@@ -18,15 +19,15 @@ describe("MetaModelMapper::map", function() {
 			// do nothing
 		}
 		
-		addEdge(v1, v2, mode) {
-			this.state = mode;
+		addEdge(nodeFrom, nodeTo, edgeType) {
+			this.state = edgeType;
 		}
 		
-		addClassField(vertex, text) {
+		addClassField(node, text) {
 			this.state = 'field' + text;
 		}
 		
-		addClassMethod(vertex, text) {
+		addClassMethod(node, text) {
 			this.state = 'method' + text;
 		}
 	}	
@@ -50,25 +51,19 @@ describe("MetaModelMapper::map", function() {
 		
 		metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);
 		
-		source = {
-			'code': {
-				'name': 'Test_Code_01', 
-				'mmElementIDs': []
-			},
-			'node': {
-				'dummy': true
-			}
-		};
+		source = new UmlClass({
+			'name': 'Test_Code_01', 
+			'mmElementIDs': []
+		}, {
+			'dummy': true
+		});
 
-		destination = {
-			'code': {
-				'name': 'Test_Code_02', 
-				'mmElementIDs': []
-			},
-			'node': {
-				'dummy': true
-			}
-		};
+		destination = new UmlClass({
+			'name': 'Test_Code_02', 
+			'mmElementIDs': []
+		}, {
+			'dummy': true
+		});
 	});
 
 	it('creates a generalization', function() {
