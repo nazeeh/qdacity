@@ -28,8 +28,6 @@ public class ReliabilityDataGeneratorTest {
 
     @Before
     public void init() {
-	generator = new ReliabilityDataGenerator(EvaluationUnit.PARAGRAPH);
-
 	textDocuments = new ArrayList<>();
 
 	TextDocument txt = new TextDocument();
@@ -103,12 +101,13 @@ public class ReliabilityDataGeneratorTest {
 	reliabilityData_SOLUTION.add(rData2);
 	reliabilityData_SOLUTION.add(rData3);
 	reliabilityData_SOLUTION.add(rData4);
+	generator = new ReliabilityDataGenerator(textDocuments, codeIds, EvaluationUnit.PARAGRAPH);
     }
 
     //@Ignore
     @Test
     public void test() {
-	List<ReliabilityData> rDataList = generator.generate(textDocuments, codeIds);
+	List<ReliabilityData> rDataList = generator.generate();
 
 	int rDataIdx = 0;
 	for (ReliabilityData rData : rDataList) {

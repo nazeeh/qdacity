@@ -8,6 +8,7 @@ import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
 import Prompt from '../../common/modals/Prompt';
 import loadGAPIs from '../../common/GAPI';
+import Codesystem from './Codesystem/Codesystem.jsx';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
@@ -19,7 +20,6 @@ import Slider from 'bootstrap-slider';
 
 import 'script!../../../../components/tooltipster/js/jquery.tooltipster.js';
 import 'script!../../../../components/filer/js/jquery.filer.min.js';
-import 'script!../../../../components/EasyTree/jquery.easytree.js';
 import 'script!../../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../../components/URIjs/URI.min.js';
 
@@ -51,6 +51,8 @@ var codeRelationsView
 
 var documentsView;
 
+var codesystemView
+
 var editorCtrl = {};
 
 window.init = function () {
@@ -58,7 +60,7 @@ window.init = function () {
 	ReactDOM.render(<ReactLoading />, document.getElementById('documentsLoaderMount'));
 	ReactDOM.render(<ReactLoading />, document.getElementById('codesystemLoaderMount'));
 
-	editorCtrl = new EditorCtrl(easytree);
+	editorCtrl = new EditorCtrl(getCodeByCodeID);
 
 
 	createCodeMemoEditor();
@@ -67,30 +69,6 @@ window.init = function () {
 
 	$('.tooltips').tooltipster();
 
-	// codesystem-ui
-	$('#btnApplyCode').tooltipster({
-		content: $('<span>Apply Code</span>'),
-	});
-
-	$('#btnRemoveCoding').tooltipster({
-		content: $('<span>Remove Coding</span>'),
-	});
-
-	$('#btnCodeProps').tooltipster({
-		content: $('<span>Code Properties</span>')
-	});
-
-	$('#btnRemoveCode').tooltipster({
-		content: $('<span>Delete Code</span>')
-	});
-
-	$('#btnInsertCode').tooltipster({
-		content: $('<span>New Code</span>')
-	});
-
-	$('#btnOpenUMLEditor').tooltipster({
-		content: $('<span>Open UML Editor</span>'),
-	});
 
 	$("#codePropColor").colorpicker();
 
@@ -107,13 +85,10 @@ window.init = function () {
 		project_type = "PROJECT";
 	}
 	if (project_type == "PROJECT") {
-		$('#btnInsertCode').show();
-		$('#btnRemoveCode').show();
 		$('#settings').show();
 		$('.projectsOnly').removeClass('projectsOnly');
-	} else {
-		easytree.options.enableDnd = false;
 	}
+	
 	if (typeof report != 'undefined') {
 		editorCtrl.showsAgreementMap(true);
 		//		React.render(<ReactSlider defaultValue={[0, 100]} withBars />, document.body);
@@ -130,90 +105,41 @@ window.init = function () {
 	);
 
 
-	$("#btnOpenUMLEditor").on("click", function () {
-		window.location.href = 'uml-editor.html?project=' + project_id + '&type=' + project_type;
-	});
-
-	document.getElementById('btnCodeProps').onclick = function () {
-		if ($("#footer").is(":visible")) {
-			hideCodingView();
-		} else {
-			showCodingView();
-		}
-	}
-
-	$("#btnInsertCode").on("click", function () {
-		var prompt = new Prompt('Give your code a name', 'Code Name');
-		prompt.showModal().then(function (codeName) {
-			insertCode(account.getProfile().getName(), codeName);
-		});
-	});
 
 	$('#document-section').on('hidden.bs.collapse', resizeElements);
 	$('#document-section').on('shown.bs.collapse', resizeElements);
 
-	document.getElementById('btnRemoveCode').onclick = function () {
-		deleteCode();
-	}
-
 	document.getElementById('btnHideFooter').onclick = function () {
 		hideCodingView();
 	}
-
-	document.getElementById('btnApplyCode').onclick = function () {
-		var activeID = getActiveCode().id;
-		if (typeof activeID != 'undefined') {
-			ProjectEndpoint.incrCodingId(project_id, project_type).then(function (resp) {
-				var codingID = resp.maxCodingID;
-				var author = account.getProfile().getName();
-
-				editorCtrl.setCoding(codingID, activeID, getActiveCode().name, author);
-				documentsView.updateCurrentDocument(editorCtrl.getHTML());
-				easytree.getNode(activeID).codingCount++;
-				rebuildTree();
-			});
-		}
-	}
-
-	document.getElementById('btnRemoveCoding').onclick = function () {
-		var activeID = getActiveCode().id;
-		if (typeof activeID != 'undefined') {
-			var slection = editorCtrl.removeCoding(activeID);
-			splitupCoding(slection, activeID).then(function (value) {
-				easytree.getNode(activeID).codingCount--;
-				rebuildTree();
-				documentsView.updateCurrentDocument(editorCtrl.getHTML());
-				editorCtrl.addCodingBrackets();
-			});
-
-
-		} else {
-			window.alert("No code selected.")
-		}
-
-	}
-
 	document.getElementById('btnCodeSave').onclick = function () {
-		updateCode(getActiveCode().memo, $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementIDs, getActiveCode().relations);
+		var code = codesystemView.child.getSelected();
+		code.author = $('#codePropAuthor').val();
+		code.name = $('#codePropName').val();
+		code.color = $('#codePropColor').val();
+		updateCode(code);
 
 	}
 
 	document.getElementById('btnCodeMemoSave').onclick = function () {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, getActiveCode().mmElementIDs, getActiveCode().relations);
-
+		var code = codesystemView.child.getSelected();
+		code.memo = codeMemoEditor.getHTML();
+		updateCode(code);
 	}
 
 	document.getElementById('btnSaveMetaModelAttr').onclick = function () {
-		updateCode(codeMemoEditor.getHTML(), $('#codePropAuthor').val(), $('#codePropName').val(), $('#codePropColor').val(), getActiveCode().dbID, getActiveCode().id, metaModelView.getActiveElementIds(), getActiveCode().relations);
-
+		var code = codesystemView.child.getSelected();
+		code.mmElementID = metaModelView.getActiveElementId()
+		updateCode(code);
 	}
 
 	// FIXME possibly move to CodingsView
 	document.getElementById('btnCodeBookEntrySave').onclick = function () {
-		var codeBookEntry = {};
-		codeBookEntry.definition = cbEditor.def.getHTML();
-		codeBookEntry.whenToUse = cbEditor.when.getHTML();
-		codeBookEntry.whenNotToUse = cbEditor.whenNot.getHTML();
+		var codeBookEntry = {
+				definition: cbEditor.def.getHTML(),
+				whenToUse: cbEditor.when.getHTML(),
+				whenNotToUse: cbEditor.whenNot.getHTML()
+		};
 		updateCodeBookEntry(codeBookEntry);
 	}
 
@@ -233,6 +159,13 @@ window.init = function () {
 
 }
 
+function toggleCodingView(){
+	if ($("#footer").is(":visible")) {
+		hideCodingView();
+	} else {
+		showCodingView();
+	}
+}
 
 function createCodeMemoEditor() {
 	var codeMemoIFrame = document.getElementById('codeMemoEditor');
@@ -243,7 +176,8 @@ function createCodeMemoEditor() {
 		// Create Squire instance
 		codeMemoEditor = new Squire(doc);
 
-		codeMemoEditor.setHTML(getActiveCode().memo);
+		var memo = getSelectedCode().memo;
+		codeMemoEditor.setHTML(memo ? memo : '');
 	}
 }
 
@@ -261,7 +195,7 @@ function createCodeBookEditor() {
 function initializeCodeBookEditor(pEditorId, pEditor, pEditorProp, pEntryProp) {
 	var cbWhenNotFrame = document.getElementById(pEditorId);
 	cbWhenNotFrame.onload = function (event) {
-		var codeBookEntry = getActiveCode().codeBookEntry;
+		var codeBookEntry = getSelectedCode().codeBookEntry;
 
 		var cbWhenNotFrame = document.getElementById(pEditorId);
 		var doc = cbWhenNotFrame.contentDocument;
@@ -298,21 +232,14 @@ function resizeElements() {
 	$("#editor").css({
 		height: $(window).height() - 52 - offsetFooter - offsetEditMenu
 	});
-
-	var codesystemTreeOffset = $("#easytree-section").offset().top
-	$("#easytree-section").css({
-		height: $(window).height() - codesystemTreeOffset - offsetFooter
-	});
+	
+	var codesystemTreeOffset = 0;
+	var offset = $("#codesystemTree").offset();
+	if ($("#codesystemTree").offset())codesystemTreeOffset = offset.top;
+	codesystemView.child.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
+	
 	editorCtrl.addCodingBrackets();
 }
-
-var easytree = $('#easytree-section').easytree({
-	enableDnd: true,
-	dropped: dropped,
-	stateChanged: codesystemStateChanged,
-	ordering: 'orderedFolder'
-});
-
 
 function setupUI() {
 	if (account.isSignedIn()) {
@@ -322,9 +249,30 @@ function setupUI() {
 		$('#navSignin').hide();
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
-			setDocumentList(project_id);
-			listCodes();
-
+			var documentsLoaded = setDocumentList(project_id);
+			codesystemView = ReactDOM.render(<Codesystem 
+				projectID={project_id} 
+				projectType={project_type}
+				account={account} 
+				codesystemId={codesystem_id} 
+				removeAllCodings={removeAllCodings} 
+				toggleCodingView={toggleCodingView}  
+				editorCtrl={editorCtrl}  
+				documentsView={documentsView} 
+				umlEditorEnabled={resp.umlEditorEnabled}
+				showFooter={showFooter}
+				updateCodeView={updateCodeView}
+			/>, document.getElementById('codesystemView'));
+			
+			var codesystemLoaded = codesystemView.child.init();
+			
+			documentsLoaded.then(() => {
+				codesystemLoaded.then(() => {
+					// Initialize coding count bubbles after both codesystem and documents are available
+					codesystemView.child.initCodingCount();
+					resizeElements();
+				});
+			});
 			if (resp.umlEditorEnabled) {
 				$('#btnOpenUMLEditor').show();
 			}
@@ -379,10 +327,10 @@ function removeAllCodings(codingID) {
 
 function showCodingView() {
 	showFooter();
-	var activeID = getActiveCode().id;
+	var activeCode = codesystemView.child.getSelected();
 
-	fillCodingTable(activeID);
-	fillPropertiesView(activeID);
+	fillCodingTable(activeCode);
+	fillPropertiesView(activeCode);
 	fillCodeRelationsView();
 	resizeHandler();
 }
@@ -396,24 +344,37 @@ function hideCodingView() {
 
 }
 
-function fillCodingTable(activeID) {
+function fillCodingTable(code) {
 	var documents = documentsView.getDocuments();
-	codingsView.fillCodingTable(activeID, documents);
+	codingsView.fillCodingTable(code.codeID, documents);
 }
 
 //FIXME possibly move to CodingsView
-function fillPropertiesView(codeID) {
-	$("#codePropName").val(getActiveCode().name);
-	$("#codePropAuthor").val(getActiveCode().author);
+function fillPropertiesView(code) {
+	$("#codePropName").val(code.name);
+	$("#codePropAuthor").val(code.author);
 	$("#codePropColor").colorpicker({
-		color: getActiveCode().color
+		color: code.color
 	});
 }
 
 function fillCodeRelationsView() {
-	var code = getActiveCode();
+	var code = codesystemView.child.getSelected();
 
-	codeRelationsView.setRelations(code.relations, easytree, getActiveCode().dbID, getActiveCode().id);
+	codeRelationsView.setRelations(code.relations, code.id);
+}
+
+function getSelectedCode(){
+	return codesystemView.child.getSelected();
+}
+function updateSelectedCode(code){
+	codesystemView.child.updateSelected(code);
+}
+function getCodeByCodeID(codeID){
+	return codesystemView.child.getCodeByCodeID(codeID);
+}
+function getCodeSystem(){
+	return codesystemView.child.getCodesystem();
 }
 
 function setDocumentList(projectID) {
@@ -426,140 +387,30 @@ function setDocumentList(projectID) {
 		codingsView = new CodingsView(editorCtrl, documentsView);
 
 		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
-		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView}/>, document.getElementById('codeRelationsView'));
+		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
 
 
 	}
 
-	documentsView.setupView(project_id, project_type, report).then(function (codeName) {
-		addCodingCountToTree();
-		resizeElements();
-	});
+	return documentsView.setupView(project_id, project_type, report);
 }
 
-
-// List Codes function that will execute the listCode call
-function listCodes() {
-	var codes = [];
-	CodesystemEndpoint.getCodeSystem(codesystem_id).then(function (resp) {
-		// clear codesystem in easytree object
-		easytree.rebuildTree([]);
-
-
-		resp.items = resp.items || [];
-
-		for (var i = 0; i < resp.items.length; i++) {
-			codes.push(resp.items[i]);
-		}
-
-		for (var i = 0; i < codes.length; i++) {
-			addNodeToTree(codes[i].codeID, codes[i].id, codes[i].name, codes[i].author, codes[i].color, codes[i].parentID, codes[i].subCodesIDs, codes[i].memo, codes[i].codeBookEntry, codes[i].mmElementIDs, codes[i].relations);
-		}
-
-		for (var i = 0; i < codes.length; i++) {
-			if (typeof codes[i].subCodesIDs != 'undefined') {
-				if (codes[i].subCodesIDs.length > 0) {
-
-					for (var j = 0; j < codes.length; j++) {
-						for (var k = 0; k < codes[i].subCodesIDs.length; k++) {
-							if (codes[i].subCodesIDs[k] == codes[j].codeID) {
-								relocateNode(codes[j].codeID, codes[i].codeID);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		activateRootNode();
-		addCodingCountToTree();
-		$("#codesystemLoadingDiv").addClass("hidden");
-
-	});
-}
-
-// Insert Code function
-function insertCode(_AuthorName, _CodeName) {
-	var activeID = getActiveCode().id;
-	// Build the Request Object
-	var requestData = {};
-	requestData.author = _AuthorName;
-	requestData.name = _CodeName;
-	requestData.subCodesIDs = new Array();
-	if (activeID != 'undefined') requestData.parentID = activeID;
-	requestData.codesystemID = codesystem_id;
-	requestData.color = "#000000";
-
-	CodesEndpoint.insertCode(requestData).then(function (resp) {
-		addNodeToTree(resp.codeID, resp.id, resp.name, resp.author, resp.color, resp.parentID, resp.subCodesIDs, resp.memo, resp.codeBookEntry, resp.mmElementIDs, resp.relations);
-		if (activeID != 'undefined') {
-			relocateNode(resp.codeID, activeID);
-			setSubCodeIDs(easytree.getNode(resp.parentID));
-		}
-	});
-}
 
 // Update Code function
-function updateCode(_Memo, _AuthorName, _CodeName, _CodeColor, _ID, _CodeID, _mmElementIDs, _relations) {
-	// Build the Request Object
-	var requestData = {};
-	requestData.id = _ID;
-	requestData.codeID = _CodeID;
-	requestData.author = _AuthorName;
-	requestData.name = _CodeName;
-	requestData.color = _CodeColor;
-	requestData.memo = _Memo;
-	requestData.codesystemID = codesystem_id;
-	requestData.parentID = getActiveCode().parentID;
-	requestData.subCodesIDs = getActiveCode().subCodesIDs;
-	requestData.mmElementIDs = _mmElementIDs;
-	requestData.relations = _relations;
-	CodesEndpoint.updateCode(requestData).then(function (resp) {
-
-		updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, resp.codeBookEntry, resp.mmElementIDs, resp.relations);
+function updateCode(code) {
+	CodesEndpoint.updateCode(code).then(function (resp) {
+		codesystemView.child.updateSelected(resp);
 	});
 }
 
 function updateCodeBookEntry(codeBookEntry) {
-	CodesEndpoint.setCodeBookEntry(getActiveCode().dbID, codeBookEntry).then(function (resp) {
-		updateNode(resp.codeID, resp.name, resp.author, resp.color, resp.memo, codeBookEntry, resp.mmElementIDs, resp.relations);
-	});
-}
-
-
-function relocateCode(code, newParentCode) {
-	CodesEndpoint.relocateCode(code.dbID, newParentCode.id).then(function (resp) {
-		code.parentID = newParentCode.id;
-		console.log("Updated logation of code:" + resp.id + " |  " + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
+	CodesEndpoint.setCodeBookEntry(codesystemView.child.getSelected().id, codeBookEntry).then(function (resp) {
+		codesystemView.child.updateSelected(resp);
 	});
 }
 
 
 
-function setSubCodeIDs(node) {
-	var _ID = node.dbID;
-	var subCodeIDs = getSubCodeIDs(node);
-
-	CodesEndpoint.getCode(_ID).then(function (resp) {
-
-		resp.subCodesIDs = subCodeIDs;
-
-		CodesEndpoint.updateCode(resp).then(function (resp2) {
-			console.log("Updated: ID" + resp2.id + " SubCodeIDs:" + resp2.subCodesIDs);
-		});
-	});
-}
-
-function getSubCodeIDs(node) {
-	var children = node.children;
-	var subCodeIDs = [];
-	if (typeof children == 'undefined') return subCodeIDs;
-
-	for (var i = children.length - 1; i >= 0; i--) {
-		subCodeIDs.push(children[i].id);
-	}
-	return subCodeIDs;
-}
 
 function changeParentId(code, _newParent) {
 	CodesEndpoint.getCode(code.dbID).then(function (resp) {
@@ -574,208 +425,21 @@ function changeParentId(code, _newParent) {
 	});
 }
 
-// Delete code function
-function deleteCode() {
-	var activeID = getActiveCode().dbID;
-	if (typeof activeID == 'undefined') {
-		window.alert("No code selected");
-		return;
-	} else {
-		// Build the Request Object
-		var requestData = {};
-		requestData.id = activeID;
-		CodesEndpoint.removeCode(requestData).then(function (resp) {
-			removeAllCodings(getActiveCode().id);
-			removeNodeFromTree(getActiveCode().id);
-		});
-	}
 
-}
-
-function addNodeToTree(id, dbID, name, author, color, parentID, subCodesIDs, memo, codeBookEntry, mmElementIDs, relations) {
-	var sourceNode = {};
-	sourceNode.text = name;
-	sourceNode.isFolder = true;
-	sourceNode.id = id;
-	sourceNode.dbID = dbID;
-	sourceNode.codingCount = 0;
-	sourceNode.uiIcon = "fa-tag fa-lg";
-	sourceNode.author = author;
-	sourceNode.color = color;
-	sourceNode.parentID = parentID;
-	sourceNode.codeBookEntry = codeBookEntry;
-	sourceNode.mmElementIDs = mmElementIDs;
-	sourceNode.subCodesIDs = subCodesIDs;
-	sourceNode.relations = relations;
-	if (typeof subCodesIDs == 'undefined') sourceNode.subCodesIDs = [];
-	if (memo == undefined) memo = "";
-	sourceNode.memo = memo;
-
-	sourceNode.onclick = function () {
-		window.alert("test");
-	}
-
-	easytree.addNode(sourceNode);
-	rebuildTree();
-}
-
-function addCodingCountToTree() {
-
-	var nodes = easytree.getAllNodes();
-	var codeIDs = getAllCodeIds(nodes);
-
-	for (var i = 0; i < codeIDs.length; i++) {
-		var codingCount = 0;
-		var documents = documentsView.getDocuments();
-		for (var index in documents) {
-			var doc = documents[index];
-			var elements = doc.text;
-			var foundArray = $('coding[code_id=\'' + codeIDs[i] + '\']', elements).map(function () {
-				return $(this).attr('id');
-			});
-			var idsCounted = []; // When a coding spans multiple HTML blocks,
-			// then there will be multiple elements with
-			// the same ID
-			for (var j = 0; j < foundArray.length; j++) {
-				if ($.inArray(foundArray[j], idsCounted) != -1)
-					continue;
-				codingCount++;
-				idsCounted.push(foundArray[j]);
-			}
+function updateCodeView(code){
+	if ($("#footer").is(":visible")) {
+		fillCodingTable(code);
+		fillPropertiesView(code);
+		metaModelView.setActiveId(code.mmElementID);
+		codeRelationsView.setRelations(code.relations, code.id);
+		if (codeMemoEditor != undefined){
+			codeMemoEditor.setHTML(code.memo ? code.memo : '');
 		}
-		var node = easytree.getNode(codeIDs[i]);
-
-		node.codingCount = codingCount;
-	}
-	rebuildTree();
-}
-
-function activateRootNode() {
-	easytree.getAllNodes()[0].isActive = true;
-}
-
-function rebuildTree() {
-	easytree.rebuildTree();
-	$(".codingCountBubble").click(showFooter).css('cursor', 'pointer');
-}
-
-function removeNodeFromTree(id) {
-
-	easytree.removeNode(id);
-	rebuildTree();
-}
-
-function relocateNode(id, target) {
-
-	var sourceNode = easytree.getNode(id);
-	sourceNode.isFolder = true;
-	var targetId = target;
-	easytree.removeNode(id);
-
-	easytree.addNode(sourceNode, target);
-	rebuildTree();
-}
-
-function updateNode(id, name, author, color, memo, codeBookEntry, mmElementIDs, relations) {
-
-	var sourceNode = easytree.getNode(id);
-	sourceNode.text = name;
-	sourceNode.author = author;
-	sourceNode.color = color;
-	sourceNode.memo = memo;
-	sourceNode.codeBookEntry = codeBookEntry;
-	sourceNode.mmElementIDs = mmElementIDs;
-	sourceNode.relations = relations;
-	rebuildTree();
-}
-
-function getCodeColor(id, target) {
-	var node = easytree.getNode(id);
-	if (node != null) return node.color;
-	else return "#000";
-}
-
-function getActiveCode() {
-	var nodes = easytree.getAllNodes();
-	var activeNode = getActiveNodeRecursive(nodes);
-
-	var code = {};
-	if (typeof activeNode == 'undefined') {
-		code.id = 'undefined';
-		code.dbID = 'undefined';
-		code.name = 'undefined';
-		code.author = 'undefined';
-		code.color = 'undefined';
-	} else {
-		code.id = activeNode.id;
-		code.dbID = activeNode.dbID;
-		code.name = activeNode.text;
-
-		code.author = activeNode.author;
-		code.color = activeNode.color;
-		code.parentID = activeNode.parentID;
-		code.subCodesIDs = activeNode.subCodesIDs;
-		code.memo = activeNode.memo;
-		code.codeBookEntry = activeNode.codeBookEntry;
-		code.mmElementIDs = activeNode.mmElementIDs;
-		code.relations = activeNode.relations;
-	}
-	return code;
-
-}
-
-function getActiveNodeRecursive(nodes) {
-	for (var i = 0; i < nodes.length; i++) {
-		if (nodes[i].isActive == true) {
-			return nodes[i];
+		if (cbEditor.def != undefined) {
+			var codeBookEntry = code.codeBookEntry
+			cbEditor.def.setHTML(codeBookEntry.definition);
+			cbEditor.when.setHTML(codeBookEntry.whenToUse);
+			cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
 		}
-		if (nodes[i].children && nodes[i].children.length > 0) {
-			var result = getActiveNodeRecursive(nodes[i].children);
-			if (typeof result != 'undefined')
-				return result;
-		}
-	}
-}
-
-function getAllCodeIds(nodes) {
-	var ids = [];
-	for (var i = 0; i < nodes.length; i++) {
-		ids.push(nodes[i].id);
-		if (nodes[i].children && nodes[i].children.length > 0) {
-
-			var result = getAllCodeIds(nodes[i].children);
-			ids = ids.concat(result);
-		}
-	}
-	return ids;
-}
-
-function dropped(event, nodes, isSourceNode, source, isTargetNode, target) {
-
-	if (isSourceNode && isTargetNode) { // internal to internal drop
-		relocateCode(source, target);
-	}
-}
-
-var initialized_easytree = false;
-
-function codesystemStateChanged(nodes, nodesJson) {
-	if (initialized_easytree) {
-		var active_code = getActiveCode().id;
-		if ($("#footer").is(":visible")) {
-			fillCodingTable(active_code);
-			fillPropertiesView(active_code);
-			metaModelView.setActiveIds(getActiveCode().mmElementIDs);
-			codeRelationsView.setRelations(getActiveCode().relations, easytree, getActiveCode().dbID, getActiveCode().id);
-			if (codeMemoEditor != undefined) codeMemoEditor.setHTML(getActiveCode().memo);
-			if (cbEditor.def != undefined) {
-				var codeBookEntry = getActiveCode().codeBookEntry
-				cbEditor.def.setHTML(codeBookEntry.definition);
-				cbEditor.when.setHTML(codeBookEntry.whenToUse);
-				cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
-			}
-		}
-	} else {
-		initialized_easytree = true;
 	}
 }

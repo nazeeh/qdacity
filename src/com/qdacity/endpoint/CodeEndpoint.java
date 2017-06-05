@@ -276,8 +276,8 @@ public class CodeEndpoint {
 			Authorization.checkAuthorization(code, user);
 
 			Long oldParentID = code.getParentID();
-			Code oldParent = getCode(oldParentID, code.getCodesystemID());
-			Code newParent = getCode(newParentID, code.getCodesystemID());
+			Code oldParent = getCode(oldParentID, code.getCodesystemID(), mgr);
+			Code newParent = getCode(newParentID, code.getCodesystemID(), mgr);
 
 			if (oldParent != null) {
 				oldParent.removeSubCodeID(code.getCodeID());
@@ -297,26 +297,21 @@ public class CodeEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Code getCode(Long codeID, Long Codesystem) {
+	private Code getCode(Long codeID, Long Codesystem, PersistenceManager mgr) {
 		Code code = null;
 
-		PersistenceManager mgr = getPersistenceManager();
-		try {
 
-			Query query = mgr.newQuery(Code.class);
+		Query query = mgr.newQuery(Code.class);
 
-			query.setFilter("codeID == :code && codesystemID == :codesystem");
-			Map<String, Long> params = new HashMap<String, Long>();
-			params.put("code", codeID);
-			params.put("codesystem", Codesystem);
+		query.setFilter("codeID == :code && codesystemID == :codesystem");
+		Map<String, Long> params = new HashMap<String, Long>();
+		params.put("code", codeID);
+		params.put("codesystem", Codesystem);
 
-			List<Code> codeList = ((List<Code>) query.executeWithMap(params));
+		List<Code> codeList = ((List<Code>) query.executeWithMap(params));
 
-			if (codeList.size() > 0) code = codeList.get(0);
+		if (codeList.size() > 0) code = codeList.get(0);
 
-		} finally {
-			mgr.close();
-		}
 		return code;
 	}
 

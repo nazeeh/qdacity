@@ -1,6 +1,6 @@
 import VexModal from './VexModal';
 import MetaModelView from '../../pages/coding-editor/MetaModelView.jsx';
-
+import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
 
 export default class NewCodeRelation extends VexModal {
 
@@ -44,7 +44,7 @@ export default class NewCodeRelation extends VexModal {
 
 						var relationship = {};
 						relationship.mmElementId = _this.mmRelationshipsView.getActiveElementIds()[0];
-						relationship.codeId = _this.getSelectedId();
+						relationship.codeId = _this.mmCodesystemView.getSelected().codeID;
 						if (data != false) {
 							resolve(relationship);
 						} else reject(relationship);
@@ -52,26 +52,7 @@ export default class NewCodeRelation extends VexModal {
 				});
 
 				_this.mmRelationshipsView = ReactDOM.render(<MetaModelView filter={"RELATIONSHIP"}/>, document.getElementById('mmRelationships'));
-
-				_this.easytree = $('#easytreeNewCode').easytree({
-					enableDnd: false,
-					ordering: 'orderedFolder',
-					minOpenLevels: 1
-				});
-				var originalNodes = _this.codeSystem.getAllNodes();
-
-
-				var deepCopy = [];
-				_this.codeSystem.getAllNodes().forEach(function (node) {
-					var node = jQuery.extend(true, {}, node);
-					_this.modifyNodeId(node);
-					deepCopy.push(node);
-
-				});
-
-				_this.easytree.rebuildTree(deepCopy);
-
-
+				_this.mmCodesystemView = ReactDOM.render(<SimpleCodesystem codesystem={_this.codeSystem} />, document.getElementById('easytreeNewCode'));
 			}
 		);
 

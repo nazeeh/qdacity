@@ -38,7 +38,7 @@ export default class ProjectStats extends React.Component {
 					<div className="col-lg-3 col-xs-6 small-gutter-right">
 						<div className="info-box">
 							<div className="info-box-icon bg-aqua">
-							<i className="ion ion-document"></i>
+							<i className="fa fa-file-o "></i>
 								
 							</div>
 							<div className="info-box-content">
@@ -54,7 +54,7 @@ export default class ProjectStats extends React.Component {
 					<div className="col-lg-3 col-xs-6 small-gutter">
 						<div className="info-box">
 							<div className="info-box-icon bg-yellow">
-							<i className="ion ion-ios-pricetag-outline"></i>
+							<i className="fa fa-tag"></i>
 								
 							</div>
 							<div className="info-box-content">
@@ -69,7 +69,7 @@ export default class ProjectStats extends React.Component {
 					<div className="col-lg-3 col-xs-6 small-gutter">
 						<div className="info-box">
 							<div className="info-box-icon bg-red">
-							<i className="ion ion-ios-pricetags"></i>
+							<i className="fa fa-tags"></i>
 								
 							</div>
 							<div className="info-box-content">
@@ -85,7 +85,7 @@ export default class ProjectStats extends React.Component {
 					<div className="col-lg-3 col-xs-6 small-gutter-left">
 					<div className="info-box">
 							<div className="info-box-icon bg-green">
-							<i className="ion ion-stats-bars"></i>
+							<i className="fa fa-bar-chart"></i>
 								
 							</div>
 							<div className="info-box-content">
