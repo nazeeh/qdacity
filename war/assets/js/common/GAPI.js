@@ -1,9 +1,10 @@
 import Account from './Account.jsx';
 
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
-var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com';
-var api_version = 'v7';
-var api_path = 'https://7-dot-qdacity-app.appspot.com/_ah/api'; //'https://localhost:8888/_ah/api' var api_version = 'v5';
+var client_id = '62776117166-iuu5qlid44hnas1ivvurlr0cku1f0hnc.apps.googleusercontent.com';
+var api_version = 'v1';
+var api_path = 'https://1-dot-felix-lo-qdacity.appspot.com/_ah/api'; //'https://localhost:8888/_ah/api' var api_version = 'v5';
+
 
 export default function loadGAPIs(allLoadedCallback) {
 	var _this = this;
