@@ -7,8 +7,10 @@ export default class UnmappedCodeView extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.umlEditorView = this.props.umlEditorView;
+
 		this.state = {
-			codes: this.props.umlEditorView.getUnmappedCodes()
+			codes: this.umlEditorView.getUnmappedCodes()
 		};
 	}
 
@@ -21,12 +23,14 @@ export default class UnmappedCodeView extends React.Component {
 	}
 
 	render() {
+		const _this = this;
+
 		const styles = this.getStyles();
 
 		return (
 			<ul className="list-group" style={styles.box}>
-                {this.state.codes.map(function(code, i){
-                    return <UnmappedCodeElement key={code.codeID} code={code} />;
+                {this.state.codes.map(function(code, i) {
+                    return <UnmappedCodeElement key={code.codeID} umlEditorView={_this.umlEditorView} code={code} />;
                 })}
             </ul>
 		);
