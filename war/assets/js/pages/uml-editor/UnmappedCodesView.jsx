@@ -1,5 +1,7 @@
 import React from 'react';
 
+import UnmappedCodeElement from './UnmappedCodeElement.jsx';
+
 export default class UnmappedCodeView extends React.Component {
 
 	constructor(props) {
@@ -10,20 +12,10 @@ export default class UnmappedCodeView extends React.Component {
 		};
 	}
 
-	componentDidMount() {
-		
-	}
-
 	getStyles() {
 		return {
 			box: {
 				margin: "10px 15px"
-			},
-			item: {
-
-			},
-			icon: {
-
 			}
 		};
 	}
@@ -34,10 +26,7 @@ export default class UnmappedCodeView extends React.Component {
 		return (
 			<ul className="list-group" style={styles.box}>
                 {this.state.codes.map(function(code, i){
-                    return ( 
-                    <li key={code.codeID} style={styles.item} className="list-group-item">
-                        {code.name}
-                    </li>);
+                    return <UnmappedCodeElement key={code.codeID} code={code} />;
                 })}
             </ul>
 		);
