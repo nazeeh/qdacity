@@ -144,7 +144,7 @@ export default class UmlEditorView {
 
 			cells.forEach((cell) => {
 				if (cell.vertex == true) {
-					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getNode().getId() == cell.getId());
+					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getNode() != null ? umlClass.getNode().getId() == cell.getId() : false);
 					let code = umlClass.getCode();
 					let node = umlClass.getNode();
 
@@ -333,6 +333,33 @@ export default class UmlEditorView {
 		}
 	}
 
+	addUnmappedCode(code) {
+		console.log('Add unmapped code ' + code.name + ' (' + code.codeID + ')');
+
+		let node = this.addNode(code.name);
+
+		let umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == code.codeID);
+		umlClass.setNode(node);
+	}
+
+	removeUnmappedCode(code) {
+		console.log('Remove unmapped code ' + code.name + ' (' + code.codeID + ')');
+
+		let umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == code.codeID);
+		let node = umlClass.getNode();
+		umlClass.setNode(null);
+
+		this.graph.getModel().beginUpdate();
+
+		try {
+			node.removeFromParent();
+
+			this.graph.refresh(node);
+
+		} finally {
+			this.graph.getModel().endUpdate();
+		}
+	}
 
 	addEdge(nodeFrom, nodeTo, edgeType) {
 		let parent = this.graph.getDefaultParent();

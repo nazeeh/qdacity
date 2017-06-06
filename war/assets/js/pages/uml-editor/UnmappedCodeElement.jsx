@@ -14,9 +14,19 @@ export default class UnmappedCodeElement extends React.Component {
 	}
 
 	toggleActive() {
+		this.setActive(!this.state.active);
+	}
+
+	setActive(isActive) {
 		this.setState({
-			active: !this.state.active
+			active: isActive
 		});
+
+		if (isActive) {
+			this.umlEditorView.addUnmappedCode(this.code);
+		} else {
+			this.umlEditorView.removeUnmappedCode(this.code);
+		}
 	}
 
 	getStyle() {
