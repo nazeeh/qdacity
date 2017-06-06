@@ -9,7 +9,19 @@ export default class MetaModelMapper {
 		this.mmEntities = mmEntities;
 	}
 
-	map(metaModelEntity, source, destination) {
+	mapCode(code) {
+		if (this.isValidNode(code)) {
+			return this.umlEditorView.addNode(code.name);
+		}
+
+		return null;
+	}
+
+	isValidNode(code) {
+		return this.codeHasMetaModelEntity(code, 'Category') || this.codeHasMetaModelEntity(code, 'Concept');
+	}
+
+	mapCodeRelation(metaModelEntity, source, destination) {
 		let mode = null;
 
 		let codeSource = source.getCode();
@@ -18,36 +30,57 @@ export default class MetaModelMapper {
 		switch (metaModelEntity.name) {
 		case 'is a':
 			{
+				if (!this.isValidNode(codeSource) || !this.isValidNode(codeDestination)) { // TODO DUPLICATE CODE?            ;;; SPLIT SWITCH? DIFFERENT FUNCTIONS?
+					return;
+				}
+
 				mode = EdgeType.GENERALIZATION;
+				this.umlEditorView.addEdge(source.getNode(), destination.getNode(), mode);
 				break;
 			}
 		case 'is part of':
 			{
+				if (!this.isValidNode(codeSource) || !this.isValidNode(codeDestination)) {
+					return;
+				}
+
 				mode = EdgeType.AGGREGATION;
+				this.umlEditorView.addEdge(source.getNode(), destination.getNode(), mode);
 				break;
 			}
 		case 'is related to':
 			{
 				if (this.codeHasMetaModelEntity(codeDestination, 'Object') || this.codeHasMetaModelEntity(codeDestination, 'Actor') || this.codeHasMetaModelEntity(codeDestination, 'Place')) {
+					if (!this.isValidNode(codeSource)) {
+						return;
+					}
+
 					this.umlEditorView.addClassField(source.getNode(), '+ ' + codeSource.name + ': type');
 					return;
 				}
 
+				if (!this.isValidNode(codeSource) || !this.isValidNode(codeDestination)) {
+					return;
+				}
+
 				mode = EdgeType.DIRECTED_ASSOCIATION;
+				this.umlEditorView.addEdge(source.getNode(), destination.getNode(), mode);
 				break;
 			}
 		case 'influences':
 			{
+				if (!this.isValidNode(codeSource)) {
+					return;
+				}
+
 				this.umlEditorView.addClassMethod(source.getNode(), '+ ' + codeDestination.name + '(type): type');
-				return;
+				break;
 			}
 		default:
 			{
-				return;
+				break;
 			}
 		}
-
-		this.umlEditorView.addEdge(source.getNode(), destination.getNode(), mode);
 	}
 
 	codeHasMetaModelEntity(code, entityName) {

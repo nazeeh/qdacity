@@ -173,7 +173,7 @@ export default class UmlEditorView {
 
 		for (let i = 0; i < codes.length; i++) {
 			// Add node to graph
-			let node = this.addNode(codes[i].name);
+			let node = metaModelMapper.mapCode(codes[i]);
 
 			// Logging
 			console.log('Added new node to the graph: ' + codes[i].name + ' (' + codes[i].codeID + ')');
@@ -211,7 +211,7 @@ export default class UmlEditorView {
 			// Logging
 			console.log('Connection between ' + startCode.name + ' (' + startCode.codeID + ') and ' + endCode.name + ' (' + endCode.codeID + ').');
 
-			metaModelMapper.map(metaModelEntity, startUmlClass, endUmlClass);
+			metaModelMapper.mapCodeRelation(metaModelEntity, startUmlClass, endUmlClass);
 		}
 
 		this.initPositions();
@@ -241,13 +241,20 @@ export default class UmlEditorView {
 
 						let code = umlClass.getCode();
 						let node = umlClass.getNode();
+						let x = 0;
+						let y = 0;
+
+						if (node != null) {
+							x = node.getGeometry().x;
+							y = node.getGeometry().y;
+						}
 
 						if (!exists) {
 							let umlCodePosition = {
 								'codeId': code.codeID,
 								'codeSystemId': _this.codeSystemId,
-								'x': node.getGeometry().x,
-								'y': node.getGeometry().y
+								'x': x,
+								'y': y
 							};
 
 							unregisteredUmlCodePositions.push(umlCodePosition);
@@ -265,7 +272,9 @@ export default class UmlEditorView {
 				umlCodePositions.forEach((umlCodePosition) => {
 					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == umlCodePosition.codeId);
 
-					_this.translateNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
+					if (umlClass.getNode() != null) {
+						_this.translateNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
+					}
 				});
 			} else {
 				console.log('Applying layout');
@@ -298,6 +307,18 @@ export default class UmlEditorView {
 				});
 			}
 		});
+	}
+
+	getUnmappedCodes() {
+		let unmappedCodes = [];
+
+		this.umlClasses.forEach((umlClass) => {
+			if (umlClass.getNode() == null) {
+				unmappedCodes.push(umlClass.getCode());
+			}
+		});
+
+		return unmappedCodes;
 	}
 
 	applyLayout() {
