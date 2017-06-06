@@ -29,9 +29,13 @@ export default class UnmappedCodeView extends React.Component {
 
 		return (
 			<ul className="list-group" style={styles.box}>
-                {this.state.codes.map(function(code, i) {
-                    return <UnmappedCodeElement key={code.codeID} umlEditorView={_this.umlEditorView} code={code} />;
-                })}
+                {this.state.codes.sort((code1, code2) => {
+                    if (code1.name < code2.name) return -1;
+                    if (code1.name > code2.name) return 1;
+                    return 0;
+                }).map((code, i) => 
+                    <UnmappedCodeElement key={code.codeID} umlEditorView={_this.umlEditorView} code={code} />
+                )}
             </ul>
 		);
 	}
