@@ -13,6 +13,7 @@ export default class IntercoderAgreement extends VexModal {
 
 	constructor(report) {
 		super();
+                this.formElements = '';
                 if(report.averageAgreementCsvString && report.averageAgreementHeaderCsvString) {
                     var headRow = report.averageAgreementHeaderCsvString.split(",");
                     var avgRow = report.averageAgreementCsvString.split(",");
