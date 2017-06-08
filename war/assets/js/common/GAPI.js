@@ -3,8 +3,8 @@ import Account from './Account.jsx';
 var scopes = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'; 
 var client_id = '98628102717-19mnq0ntljj8gptvs3fh5v51t5dqj32j.apps.googleusercontent.com'; 
 var api_version = 'v6'; 
-var api_path = 'https://qdacity-quality-metrics.appspot.com/_ah/api'; 
-//var api_path = 'https://localhost:8888/_ah/api';
+//var api_path = 'https://qdacity-quality-metrics.appspot.com/_ah/api'; 
+var api_path = 'http://localhost:8888/_ah/api';
 
 export default function loadGAPIs(allLoadedCallback) {
 	var _this = this;
