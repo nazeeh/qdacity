@@ -11,11 +11,13 @@ export default class IntercoderAgreementByCode extends VexModal {
         this.results = results;
     }
     showModal() {
+        var _this = this;
         vex.dialog.open({
             message: "Agreement By Code",
             contentCSS: {
                 width: '900px'
             },
+            input: _this.formElements,
             buttons: [
                 $.extend({}, vex.dialog.buttons.YES, {
                     text: 'OK'
