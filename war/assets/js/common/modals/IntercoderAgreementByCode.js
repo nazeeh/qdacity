@@ -5,7 +5,7 @@ import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTabl
 export default class IntercoderAgreementByCode extends VexModal {
     constructor(reportDetailHead, results) {
         super();
-        this.formElements = '<div id="intercoderAgreementByCode" style="text-align: center; background-color: #eee; font-color:#222;"><div id="loadingAnimationCodeAgreement" class="centerParent"><div id="reactLoadingCodeAgreement" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementByCodeTable"></table></div>';
+        this.formElements = '<div id="intercoderAgreementByCode" style="text-align: center; background-color: #eee; font-color:#222;"><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementByCodeTable"></table></div>';
 
         this.reportDetailHead = reportDetailHead;
         this.results = results;
