@@ -71,7 +71,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'is a'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe(EdgeType.GENERALIZATION);
 	});
@@ -81,7 +81,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'is part of'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe(EdgeType.AGGREGATION);
 	});
@@ -91,7 +91,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'is related to'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe(EdgeType.DIRECTED_ASSOCIATION);
 	});
@@ -101,7 +101,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'is consequence of'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe('');
 	});
@@ -111,7 +111,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'causes'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe('');
 	});
@@ -121,7 +121,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'performs'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe('');
 	});
@@ -131,7 +131,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'unknown value'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe('');
 	});
@@ -143,7 +143,7 @@ describe("MetaModelMapper::map", function() {
 		
 		destination.code.mmElementIDs = [1];
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe('field' + '+ Test_Code_01: type');
 	});
@@ -153,7 +153,7 @@ describe("MetaModelMapper::map", function() {
 			'name': 'influences'
 		};
 		
-		metaModelMapper.map(metaModelEntity, source, destination);
+		metaModelMapper.mapCodeRelation(metaModelEntity, source, destination);
 		
 		expect(umlEditorView.getState()).toBe('method' + '+ Test_Code_02(type): type');
 	});
