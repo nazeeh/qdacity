@@ -15,3 +15,6 @@ src/conf/
 war/nbproject/
 /nbbuild/
 /nbdist/
+src/com/qdacity/Constants.java
+war/WEB-INF/appengine-web.xml
+war/assets/js/common/GAPI.js
