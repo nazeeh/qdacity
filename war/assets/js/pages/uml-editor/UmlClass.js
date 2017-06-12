@@ -6,6 +6,9 @@ export default class UmlClass {
 
 		// The node object from the graph
 		this.node = node;
+		
+		// Saves the position in the graph
+		this.umlCodePosition;
 	}
 
 	getCode() {
@@ -22,5 +25,13 @@ export default class UmlClass {
 
 	setNode(node) {
 		this.node = node;
+	}
+
+	getUmlCodePosition() {
+		return this.umlCodePosition;
+	}
+
+	setUmlCodePosition(umlCodePosition) {
+		this.umlCodePosition = umlCodePosition;
 	}
 }
