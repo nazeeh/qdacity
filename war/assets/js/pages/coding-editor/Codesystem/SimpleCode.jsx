@@ -25,63 +25,63 @@ const StyledCodeIcon = styled.i `
 `;
 
 export default class SimpleCode extends React.Component {
-    constructor(props) {
-        super(props);
-        this.codesystem = {};
-        this.state = {
-            node: this.props.node,
-            level: this.props.level
-        };
-        this.renderCodingCount = this.renderCodingCount.bind(this);
-    }
+	constructor(props) {
+		super(props);
+		this.codesystem = {};
+		this.state = {
+			node: this.props.node,
+			level: this.props.level
+		};
+		this.renderCodingCount = this.renderCodingCount.bind(this);
+	}
 
-    nodeIconClick(node) {
-        if (node.collapsed) {
-            this.expandNode(node);
-        } else {
-            this.collapseNode(node);
-        }
-    }
+	nodeIconClick(node) {
+		if (node.collapsed) {
+			this.expandNode(node);
+		} else {
+			this.collapseNode(node);
+		}
+	}
 
-    expandNode(node) {
-        node.collapsed = false;
-        this.forceUpdate();
-    }
+	expandNode(node) {
+		node.collapsed = false;
+		this.forceUpdate();
+	}
 
-    collapseNode(node) {
-        node.collapsed = true;
-        this.forceUpdate();
-    }
+	collapseNode(node) {
+		node.collapsed = true;
+		this.forceUpdate();
+	}
 
-    hasChildren() {
-        return this.props.node.children.length != 0;
-    }
+	hasChildren() {
+		return this.props.node.children.length != 0;
+	}
 
-    renderExpander(node) {
-        var caret = ""
-        if (this.hasChildren()) {
-            var direction = this.props.node.collapsed ? 'right' : 'down';
-            var className = 'fa fa-caret-' + direction + ' fa-fw';
-            caret = <i className={className} />
-        }
+	renderExpander(node) {
+		var caret = ""
+		if (this.hasChildren()) {
+			var direction = this.props.node.collapsed ? 'right' : 'down';
+			var className = 'fa fa-caret-' + direction + ' fa-fw';
+			caret = <i className={className} />
+		}
 
-        return <StyledExpander hasChildren={this.hasChildren()} selected = {this.props.node == this.props.selected}  className="node-link" onClick={() => this.nodeIconClick(node)}>
+		return <StyledExpander hasChildren={this.hasChildren()} selected = {this.props.node == this.props.selected}  className="node-link" onClick={() => this.nodeIconClick(node)}>
                         {caret}
                     </StyledExpander>;
-    }
+	}
 
-    /* 
-     ** SimpleCode does not show a coding count
-     ** Can be overridden to add an optional UI for the coding count
-     */
-    renderCodingCount() {
-        return "";
-    }
+	/* 
+	 ** SimpleCode does not show a coding count
+	 ** Can be overridden to add an optional UI for the coding count
+	 */
+	renderCodingCount() {
+		return "";
+	}
 
 
 
-    renderNode(level) {
-        return <div className=""> 
+	renderNode(level) {
+		return <div className=""> 
             <StyledCode
                     selected = {this.props.node == this.props.selected} 
                     level={level}
@@ -95,11 +95,11 @@ export default class SimpleCode extends React.Component {
                         {this.renderCodingCount()}
                 </StyledCode>
                 </div>
-    }
+	}
 
-    renderChild(childCode, level, index) {
-        return (
-            <SimpleCode 
+	renderChild(childCode, level, index) {
+		return (
+			<SimpleCode 
                     documentsView={this.props.documentsView}
                     level={level + 1}
                     node={childCode} 
@@ -110,36 +110,36 @@ export default class SimpleCode extends React.Component {
                     key={"CS" + "_" + level+ "_" +index}
                 >
                 </SimpleCode>
-        );
-    }
+		);
+	}
 
-    renderNodesRecursive(code, level) {
-        const _this = this;
-        let count = 0;
-        var node = this.props.node;
-        const thisNode = _this.renderNode(level);
-        var children = "";
-        if (!node.collapsed && !node.leaf && node.children) {
-            children = node.children.map((childCode, index) => {
-                return _this.renderChild(childCode, level, index);
-            });
-        }
+	renderNodesRecursive(code, level) {
+		const _this = this;
+		let count = 0;
+		var node = this.props.node;
+		const thisNode = _this.renderNode(level);
+		var children = "";
+		if (!node.collapsed && !node.leaf && node.children) {
+			children = node.children.map((childCode, index) => {
+				return _this.renderChild(childCode, level, index);
+			});
+		}
 
-        return (
-            <div key={"CS" + "_" + level} 
+		return (
+			<div key={"CS" + "_" + level} 
                      >
                         {thisNode}
                         {children}
                     </div>
-        );
-    };
+		);
+	};
 
-    render() {
-        return (
-            <div>
+	render() {
+		return (
+			<div>
                        {this.renderNodesRecursive(this.props.node, this.props.level)}
                 </div>
-        );
+		);
 
-    }
+	}
 }
