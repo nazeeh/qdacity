@@ -1,6 +1,7 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,11 +87,13 @@ public class UmlCodePositionEndpoint {
 	public List<UmlCodePosition> insertCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
+		Collection<UmlCodePosition> result;
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			for (int i = 0; i < umlCodePositions.size(); i++) {		
 				UmlCodePosition umlCodePosition = umlCodePositions.get(i);
+				umlCodePosition.setId(null);
 				
 				// Check if user is authorized
 				Authorization.checkAuthorization(umlCodePosition, user);
@@ -102,15 +105,16 @@ public class UmlCodePositionEndpoint {
 				if (umlCodePosition.getId() != null && containsUmlCodePosition(umlCodePosition)) {
 					throw new EntityExistsException("MetaModelEntity already exists " + umlCodePosition.getId());
 				}
-				
-				UmlCodePosition newUmlCodePosition = mgr.makePersistent(umlCodePosition);
-				umlCodePositions.set(i, newUmlCodePosition);
 			}
+
+			// Persist
+			result = mgr.makePersistentAll(umlCodePositions);
+			
 		} finally {
 			mgr.close();
 		}
 		
-		return umlCodePositions;
+		return new ArrayList<>(result);
 	}
 
 	/**
@@ -126,6 +130,7 @@ public class UmlCodePositionEndpoint {
 	public List<UmlCodePosition> updateCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
+		Collection<UmlCodePosition> result;
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -147,14 +152,17 @@ public class UmlCodePositionEndpoint {
 				databaseObject.setX(umlCodePosition.getX());
 				databaseObject.setY(umlCodePosition.getY());
 				
-				UmlCodePosition newUmlCodePosition = mgr.makePersistent(databaseObject);
-				umlCodePositions.set(i, newUmlCodePosition);
+				umlCodePositions.set(i, databaseObject);
 			}
+
+			// Persist
+			result = mgr.makePersistentAll(umlCodePositions);
+			
 		} finally {
 			mgr.close();
 		}
 
-		return umlCodePositions;
+		return new ArrayList<>(result);
 	}
 	
 	/**
