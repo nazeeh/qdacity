@@ -1,48 +1,57 @@
 import React from 'react';
 
+import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
+
+import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
+
 export default class UnmappedCodeElement extends React.Component {
 
 	constructor(props) {
 		super(props);
 
 		this.umlEditorView = this.props.umlEditorView;
-		this.code = this.props.code;
-
-		this.state = {
-			active: false
-		};
+		this.codeId = this.props.codeId;
 	}
 
-	toggleActive() {
-		this.setActive(!this.state.active);
-	}
+	buttonClicked() {
+		const _this = this;
+		let code = this.umlEditorView.getCode(this.codeId);
+		let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
-	setActive(isActive) {
-		this.setState({
-			active: isActive
+		codeMetaModelModal.showModal().then(function (data) {
+			console.log('Closed modal');
+
+			if (code.mmElementIDs != data.ids) {
+				console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + code.mmElementIDs);
+
+				let oldMetaModelElementIds = code.mmElementIDs;
+				code.mmElementIDs = data.ids;
+
+				console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+
+				CodesEndpoint.updateCode(code).then(function (resp) {
+					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
+					_this.umlEditorView.exchangeCodeMetaModelEntities(resp.codeID, oldMetaModelElementIds);
+				});
+			}
 		});
-
-		if (isActive) {
-			this.umlEditorView.addUnmappedCode(this.code);
-		} else {
-			this.umlEditorView.removeUnmappedCode(this.code);
-		}
 	}
 
 	getStyle() {
 		return {
 			item: {
-				width: '250px'
+				display: 'block'
 			},
 			text: {
-				height: '30px',
-				lineHeight: '30px',
-				display: 'inline-block'
+				float: 'left',
+				height: '36px',
+				lineHeight: '36px',
+				display: 'inline-block',
+				marginLeft: '10px'
 			},
 			button: {
-				marginLeft: '10px',
-				right: '15px',
-				position: 'absolute'
+				float: 'right',
+				margin: '3px 10px 3px 0px'
 			}
 		};
 	}
@@ -52,16 +61,18 @@ export default class UnmappedCodeElement extends React.Component {
 
 		const style = this.getStyle();
 
-		const buttonClass = 'pull-right btn btn-sm ' + (this.state.active ? 'btn-primary' : 'btn-default');
-		const iconClass = 'fa ' + (this.state.active ? 'fa-eye' : 'fa-eye-slash');
+		const buttonClass = 'btn btn-sm btn-default';
+		const iconClass = 'fa fa-list-alt';
+
+		const name = _this.umlEditorView.getCode(_this.codeId).name;
 
 		return (
-			<li style={style.item} className="list-group-item">
+			<div style={style.item}>
                 
-		        <div style={style.text}>{_this.code.name}</div>
+		        <div style={style.text}>{name}</div>
 
-                <button style={style.button} type="button" className={buttonClass} onClick={_this.toggleActive.bind(_this)}><i className={iconClass}></i></button>
-            </li>
+		        <button style={style.button} type="button" className={buttonClass} onClick={_this.buttonClicked.bind(_this)}><i className={iconClass}></i></button>
+            </div>
 		);
 	}
 }
