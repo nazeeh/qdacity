@@ -96,12 +96,7 @@ public class UmlCodePositionEndpoint {
 				Authorization.checkAuthorization(umlCodePosition, user);
 
 				// Validate
-				if (umlCodePosition.getCodeId() == null || umlCodePosition.getCodeId() <= 0) {
-					throw new IllegalArgumentException("UmlCodePosition codeId may not be null or empty");
-				}
-				if (umlCodePosition.getCodeSystemId() == null || umlCodePosition.getCodeSystemId() <= 0) {
-					throw new IllegalArgumentException("UmlCodePosition codeSystemId may not be null or empty");
-				}
+				validateUmlCodePosition(umlCodePosition);
 				
 				// Entity exists?
 				if (umlCodePosition.getId() != null && containsUmlCodePosition(umlCodePosition)) {
@@ -140,6 +135,9 @@ public class UmlCodePositionEndpoint {
 				// Check if user is authorized
 				Authorization.checkAuthorization(umlCodePosition, user);
 				
+				// Validate
+				validateUmlCodePosition(umlCodePosition);
+				
 				UmlCodePosition databaseObject = mgr.getObjectById(UmlCodePosition.class, umlCodePosition.getId());
 								
 				if (databaseObject == null) {
@@ -157,6 +155,20 @@ public class UmlCodePositionEndpoint {
 		}
 
 		return umlCodePositions;
+	}
+	
+	/**
+	 * Checks whether an UmlCodePosition object is valid.
+	 * 
+	 * @param umlCodePosition
+	 */
+	private void validateUmlCodePosition(UmlCodePosition umlCodePosition) {
+		if (umlCodePosition.getCodeId() == null || umlCodePosition.getCodeId() <= 0) {
+			throw new IllegalArgumentException("UmlCodePosition codeId may not be null or empty");
+		}
+		if (umlCodePosition.getCodeSystemId() == null || umlCodePosition.getCodeSystemId() <= 0) {
+			throw new IllegalArgumentException("UmlCodePosition codeSystemId may not be null or empty");
+		}
 	}
 
 	/**
