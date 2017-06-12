@@ -6,7 +6,7 @@ export default class UmlClass {
 
 		// The node object from the graph
 		this.node = node;
-		
+
 		// Saves the position in the graph
 		this.umlCodePosition;
 	}
