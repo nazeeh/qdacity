@@ -9,6 +9,9 @@ const StyledCode = styled.div `
 	align-items: center;
 	color: ${props => props.selected ? '#fff' : '#000'};
 	background-color: ${props => props.selected ? '#337ab7' : ''};
+	&:hover {
+		background: #63a0d4;
+	}
 `;
 
 const StyledExpander = styled.a `
