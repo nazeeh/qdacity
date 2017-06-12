@@ -83,14 +83,15 @@ public class UmlCodePositionEndpoint {
 		name = "umlCodePosition.insertCodePositions",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public void insertCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
+	public List<UmlCodePosition> insertCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			for (UmlCodePosition umlCodePosition : umlCodePositions) {		
-
+			for (int i = 0; i < umlCodePositions.size(); i++) {		
+				UmlCodePosition umlCodePosition = umlCodePositions.get(i);
+				
 				// Check if user is authorized
 				Authorization.checkAuthorization(umlCodePosition, user);
 
@@ -107,11 +108,14 @@ public class UmlCodePositionEndpoint {
 					throw new EntityExistsException("MetaModelEntity already exists " + umlCodePosition.getId());
 				}
 				
-				mgr.makePersistent(umlCodePosition);
+				UmlCodePosition newUmlCodePosition = mgr.makePersistent(umlCodePosition);
+				umlCodePositions.set(i, newUmlCodePosition);
 			}
 		} finally {
 			mgr.close();
 		}
+		
+		return umlCodePositions;
 	}
 
 	/**
@@ -124,33 +128,20 @@ public class UmlCodePositionEndpoint {
 		name = "umlCodePosition.updateCodePositions",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public void updateCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
+	public List<UmlCodePosition> updateCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			for (UmlCodePosition umlCodePosition : umlCodePositions) {	
+			for (int i = 0; i < umlCodePositions.size(); i++) {		
+				UmlCodePosition umlCodePosition = umlCodePositions.get(i);
 
 				// Check if user is authorized
 				Authorization.checkAuthorization(umlCodePosition, user);
 				
-				UmlCodePosition databaseObject = null;
-				
-				if (umlCodePosition.getId() <= 0) {
-					Query query = mgr.newQuery(UmlCodePosition.class, " codeSystemId == :codeSystemId && codeId == :codeId");
-					query.setUnique(true);
-					
-					Map<String, Long> params = new HashMap<String, Long>();
-					params.put("codeSystemId", umlCodePosition.getCodeSystemId());
-					params.put("codeId", umlCodePosition.getCodeId());
-					
-					databaseObject = (UmlCodePosition) query.executeWithMap(params);
-				}
-				else {
-					databaseObject = mgr.getObjectById(UmlCodePosition.class, umlCodePosition.getId());
-				}
-				
+				UmlCodePosition databaseObject = mgr.getObjectById(UmlCodePosition.class, umlCodePosition.getId());
+								
 				if (databaseObject == null) {
 					throw new EntityNotFoundException("Object does not exist. id: " + umlCodePosition.getId() + ", codeSystemId: " + umlCodePosition.getCodeSystemId() + ", codeId: " + umlCodePosition.getCodeId());
 				}
@@ -158,11 +149,14 @@ public class UmlCodePositionEndpoint {
 				databaseObject.setX(umlCodePosition.getX());
 				databaseObject.setY(umlCodePosition.getY());
 				
-				mgr.makePersistent(databaseObject);
+				UmlCodePosition newUmlCodePosition = mgr.makePersistent(databaseObject);
+				umlCodePositions.set(i, newUmlCodePosition);
 			}
 		} finally {
 			mgr.close();
 		}
+
+		return umlCodePositions;
 	}
 
 	/**
