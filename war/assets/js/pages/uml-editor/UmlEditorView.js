@@ -2,6 +2,7 @@ import {
 	EdgeType
 } from './EdgeType.js';
 import UmlClass from './UmlClass.js';
+import UmlClassRelation from './UmlClassRelation.js';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
@@ -12,7 +13,12 @@ export default class UmlEditorView {
 		this.graph = null;
 		this.layout = null;
 
+		this.mmEntities;
+
 		this.umlClasses = [];
+		this.umlClassRelations = {};
+
+		this.metaModelMapper = null;
 
 		this.init(container);
 	}
@@ -167,30 +173,35 @@ export default class UmlEditorView {
 	}
 
 	initGraph(codes, mmEntities, metaModelMapper) {
+		this.mmEntities = mmEntities;
+		this.metaModelMapper = metaModelMapper;
 		this.umlClasses = [];
 
 		let relations = [];
 
 		for (let i = 0; i < codes.length; i++) {
+			// Register new entry
+			const umlClass = new UmlClass(codes[i], null);
+			this.umlClasses.push(umlClass);
+
 			// Add node to graph
-			let node = metaModelMapper.mapCode(codes[i]);
+			this.metaModelMapper.evaluateAndRunAction({
+				'sourceUmlClass': umlClass
+			});
 
 			// Logging
 			console.log('Added new node to the graph: ' + codes[i].name + ' (' + codes[i].codeID + ')');
-
-			// Register new entry
-			this.umlClasses.push(new UmlClass(codes[i], node));
 
 			// Register code relations
 			if (codes[i].relations != null) {
 				for (let j = 0; j < codes[i].relations.length; j++) {
 
-					let startCode = codes[i];
-					let relation = startCode.relations[j];
+					let sourceCode = codes[i];
+					let relation = sourceCode.relations[j];
 
 					relations.push({
-						'start': startCode.codeID,
-						'end': relation.codeId,
+						'source': sourceCode.codeID,
+						'destination': relation.codeId,
 						'metaModelEntityId': relation.mmElementId
 					});
 				}
@@ -201,17 +212,22 @@ export default class UmlEditorView {
 		for (let i = 0; i < relations.length; i++) {
 			let relation = relations[i];
 
-			let metaModelEntity = mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
+			let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
 
-			let startUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.start);
-			let endUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.end);
-			let startCode = startUmlClass.getCode();
-			let endCode = endUmlClass.getCode();
+			let sourceUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.source);
+			let sourceCode = sourceUmlClass.getCode();
+			let destinationUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.destination);
+			let destinationCode = destinationUmlClass.getCode();
 
 			// Logging
-			console.log('Connection between ' + startCode.name + ' (' + startCode.codeID + ') and ' + endCode.name + ' (' + endCode.codeID + ').');
+			console.log('Connection between ' + sourceCode.name + ' (' + sourceCode.codeID + ') and ' + destinationCode.name + ' (' + destinationCode.codeID + ').');
 
-			metaModelMapper.mapCodeRelation(metaModelEntity, startUmlClass, endUmlClass);
+			this.metaModelMapper.evaluateAndRunAction({
+				'sourceUmlClass': sourceUmlClass,
+				'destinationUmlClass': destinationUmlClass,
+				'relationMetaModelEntity': relationMetaModelEntity,
+				'relation': relation
+			});
 		}
 
 		this.initPositions();
@@ -309,6 +325,18 @@ export default class UmlEditorView {
 		});
 	}
 
+	getCode(codeId) {
+		for (let i = 0; i < this.umlClasses.length; i++) {
+			let umlClass = this.umlClasses[i];
+
+			if (umlClass.getCode().codeID == codeId) {
+				return umlClass.getCode();
+			}
+		}
+
+		return null;
+	}
+
 	getUnmappedCodes() {
 		let unmappedCodes = [];
 
@@ -319,6 +347,109 @@ export default class UmlEditorView {
 		});
 
 		return unmappedCodes;
+	}
+
+	exchangeCodeMetaModelEntities(codeId, oldMetaModelEntityIds) {
+		const umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == codeId);
+
+		const oldUmlClass = new UmlClass(Object.assign({}, umlClass.getCode()), umlClass.getNode());
+		oldUmlClass.getCode().mmElementIDs = oldMetaModelEntityIds;
+
+		console.log('Is it possible to apply new mappings?');
+
+		console.log('Check the outgoing relations...');
+
+		if (umlClass.getCode().relations != null) {
+			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
+				let relation = umlClass.getCode().relations[i];
+				let destinationUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.destination);
+				quark(relation, umlClass, destinationUmlClass, oldUmlClass, destinationUmlClass);
+			}
+		}
+
+		console.log('Done with the outgoing relations.');
+
+		console.log('Check the incoming relations...');
+
+		this.umlClasses.forEach((uml) => {
+			let umlCode = uml.getCode();
+			// Ignore the current code
+			if (umlCode.codeID != umlClass.getCode().codeID) {
+				if (umlCode.relations != null) {
+					umlCode.relations.forEach((relation) => {
+						if (relation.destination == umlClass.getCode().codeID) {
+							let sourceUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.source);
+							quark(relation, sourceUmlClass, umlClass, sourceUmlClass, oldUmlClass);
+						}
+					});
+
+					find((r) => r.destination == umlClass.getCode().codeID);
+
+					if (rel != null) {
+						arr.push(rel);
+					}
+				}
+			}
+		});
+
+		console.log('Done with the incoming relations.');
+
+		console.log('Check the node...');
+
+		let oldNodeAction = this.metaModelMapper.evaluateCode(oldUmlClass);
+		let newNodeAction = this.metaModelMapper.evaluateCode(umlClass);
+		console.log('Previous node action: ' + oldNodeAction);
+		console.log('Current node action: ' + newNodeAction);
+
+		if (oldNodeAction != newNodeAction) {
+			console.log('Something changed...');
+
+			console.log('Undo old action...');
+
+			this.metaModelMapper.undoAction(oldNodeAction, {
+				'sourceUmlClass': umlClass
+			});
+			this.metaModelMapper.runAction(newNodeAction, {
+				'sourceUmlClass': umlClass
+			});
+
+			console.log('Apply new action...');
+		}
+
+		console.log('Done with the node.');
+	}
+
+	quark(relation, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) { // TODO rename
+		let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
+
+		console.log('We are at relation ' + sourceUmlClass.getCode().name + ' -> ' + destinationUmlClass.getCode().name + ' now. (' + relationMetaModelEntity.name + ')');
+
+		let oldAction = this.metaModelMapper.evaluateCodeRelation(relationMetaModelEntity, oldActionSource, oldActionDestination);
+		let newAction = this.metaModelMapper.evaluateCodeRelation(relationMetaModelEntity, sourceUmlClass, destinationUmlClass);
+
+		console.log('Previous node action: ' + oldNodeAction);
+		console.log('Current node action: ' + newNodeAction);
+
+		if (oldAction != newAction) {
+			console.log('Something changed...');
+
+			if (!umlClassRelations.hasOwnProperty(this.metaModelMapper(calculateRelationIdentifier(relation)))) {
+				throw new Error("ERROR");
+			}
+
+			console.log('Undo old action...');
+
+			let params = {
+				'sourceUmlClass': sourceUmlClass,
+				'destinationUmlClass': destinationUmlClass,
+				'relationMetaModelEntity': relationMetaModelEntity,
+				'relation': relation
+			};
+			this.metaModelMapper.undoAction(oldAction, params);
+			this.metaModelMapper.runAction(newAction, params);
+
+			console.log('Apply new action...');
+		}
 	}
 
 	applyLayout() {
@@ -333,29 +464,14 @@ export default class UmlEditorView {
 		}
 	}
 
-	addUnmappedCode(code) {
-		console.log('Add unmapped code ' + code.name + ' (' + code.codeID + ')');
-
-		let node = this.addNode(code.name);
-
-		let umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == code.codeID);
-		umlClass.setNode(node);
-	}
-
-	removeUnmappedCode(code) {
-		console.log('Remove unmapped code ' + code.name + ' (' + code.codeID + ')');
-
-		let umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == code.codeID);
-		let node = umlClass.getNode();
-		umlClass.setNode(null);
-
+	translateNode(node, x, y) {
 		this.graph.getModel().beginUpdate();
 
 		try {
-			node.removeFromParent();
+			let dx = (-node.getGeometry().x) + x;
+			let dy = (-node.getGeometry().y) + y;
 
-			this.graph.refresh(node);
-
+			this.graph.translateCell(node, dx, dy);
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
@@ -377,6 +493,19 @@ export default class UmlEditorView {
 		return edge;
 	}
 
+	removeEdge(edge) {
+		this.graph.getModel().beginUpdate();
+
+		try {
+			edge.removeFromParent();
+
+			this.graph.refresh(edge);
+
+		} finally {
+			this.graph.getModel().endUpdate();
+		}
+	}
+
 	addNode(name) {
 		let parent = this.graph.getDefaultParent();
 
@@ -390,6 +519,19 @@ export default class UmlEditorView {
 		}
 
 		return node;
+	}
+
+	removeNode(node) {
+		this.graph.getModel().beginUpdate();
+
+		try {
+			node.removeFromParent();
+
+			this.graph.refresh(node);
+
+		} finally {
+			this.graph.getModel().endUpdate();
+		}
 	}
 
 	addClass(name) {
@@ -413,27 +555,77 @@ export default class UmlEditorView {
 	}
 
 	addClassField(node, text) {
-		const simplefieldstyle = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
+		const style = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
-		let simplefield = new mxCell(text, new mxGeometry(0, 0, 160, 15), simplefieldstyle);
-		simplefield.vertex = true;
+		let field = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
+		field.vertex = true;
 
 		let fields = node.children[0];
-		fields.insert(simplefield);
 
-		this.recalculateNodeSize(node);
+		this.graph.getModel().beginUpdate();
+
+		try {
+			fields.insert(field);
+
+			this.recalculateNodeSize(node);
+
+		} finally {
+			this.graph.getModel().endUpdate();
+		}
+		
+		return field;
+	}
+
+	removeClassField(node, field) {
+		this.graph.getModel().beginUpdate();
+
+		try {
+			field.removeFromParent();
+
+			this.graph.refresh(field);
+			
+			this.recalculateNodeSize(node);
+
+		} finally {
+			this.graph.getModel().endUpdate();
+		}
 	}
 
 	addClassMethod(node, text) {
-		const simplefieldstyle = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
+		const style = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
-		let simplemethod = new mxCell(text, new mxGeometry(0, 0, 160, 15), simplefieldstyle);
-		simplemethod.vertex = true;
+		let method = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
+		method.vertex = true;
 
 		let methods = node.children[1];
-		methods.insert(simplemethod);
+		
+		this.graph.getModel().beginUpdate();
 
-		this.recalculateNodeSize(node);
+		try {
+			methods.insert(method);
+	
+			this.recalculateNodeSize(node);
+
+		} finally {
+			this.graph.getModel().endUpdate();
+		}
+		
+		return method;
+	}
+
+	removeClassMethod(node, method) {
+		this.graph.getModel().beginUpdate();
+
+		try {
+			method.removeFromParent();
+
+			this.graph.refresh(method);
+			
+			this.recalculateNodeSize(node);
+
+		} finally {
+			this.graph.getModel().endUpdate();
+		}
 	}
 
 	recalculateNodeSize(node) {
@@ -465,19 +657,6 @@ export default class UmlEditorView {
 				let child = methods.children[i];
 				child.setGeometry(new mxGeometry(0, i * 15, width, 15));
 			}
-		}
-	}
-
-	translateNode(node, x, y) {
-		this.graph.getModel().beginUpdate();
-
-		try {
-			let dx = (-node.getGeometry().x) + x;
-			let dy = (-node.getGeometry().y) + y;
-
-			this.graph.translateCell(node, dx, dy);
-		} finally {
-			this.graph.getModel().endUpdate();
 		}
 	}
 }
