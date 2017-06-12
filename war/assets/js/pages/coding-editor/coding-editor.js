@@ -129,7 +129,7 @@ window.init = function () {
 
 	document.getElementById('btnSaveMetaModelAttr').onclick = function () {
 		var code = codesystemView.child.getSelected();
-		code.mmElementID = metaModelView.getActiveElementId()
+		code.mmElementIDs = metaModelView.getActiveElementIds()
 		updateCode(code);
 	}
 
@@ -433,7 +433,7 @@ function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		fillCodingTable(code);
 		fillPropertiesView(code);
-		metaModelView.setActiveId(code.mmElementID);
+		metaModelView.setActiveIds(code.mmElementIDs);
 		codeRelationsView.setRelations(code.relations, code.id);
 		if (codeMemoEditor != undefined) {
 			codeMemoEditor.setHTML(code.memo ? code.memo : '');

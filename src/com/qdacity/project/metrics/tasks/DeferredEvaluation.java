@@ -14,10 +14,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
@@ -36,7 +32,6 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.TextDocumentAnalyzer;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmTaskQueue;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
@@ -109,6 +104,7 @@ public class DeferredEvaluation implements DeferredTask {
 	validationReport.setDatetime(new Date());
 	validationReport.setEvaluationUnit(evalUnit);
 	validationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
+	validationReport.setEvaluationType(evaluationMethod);
 	return validationReport;
     }
 
@@ -276,7 +272,7 @@ public class DeferredEvaluation implements DeferredTask {
     }
 
     /**
-     * Calculates the averageAgreement for TabularValidationReportRows using
+     * Calculates the averageAgreement between ValidationResults using
      * simple average calculation.
      *
      * @param myRows the rows where you want to calculate the average
@@ -335,7 +331,35 @@ public class DeferredEvaluation implements DeferredTask {
 	//Run deferred Evaluations
 	taskQueue.launchListInTaskQueue(deferredEvals);
 	
+	int amountOfValidationResults = sameDocumentsFromDifferentRatersMap.keySet().size();
+	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, validationReport.getId(), user);
+	List<String> avgHeaderCells = new ArrayList<>();
+	avgHeaderCells.add("");
+	avgHeaderCells.addAll(sameDocumentsFromDifferentRatersMap.keySet());
+	validationReport.setAverageAgreement(calculateAverageAgreementPerRow(resultRows));
+	validationReport.setAverageAgreementHeader(new TabularValidationReportRow(avgHeaderCells));
+	
 	getPersistenceManager().makePersistent(validationReport);
+    }
+
+    /**
+     * calculates the average of each row and writes the result in one average row
+     * @param resultRows
+     * @return 
+     */
+    private TabularValidationReportRow calculateAverageAgreementPerRow(List<ValidationResult> resultRows) {
+	List<String> averagesPerRow = new ArrayList<>();
+	averagesPerRow.add("AVERAGE");
+	for(ValidationResult row : resultRows) {
+	    TabularValidationReportRow rowForAvg = new TabularValidationReportRow(row.getReportRow());
+	    double sum = 0;
+	    for(int i = 1; i < rowForAvg.getCells().size(); i++){
+		sum += new Double(rowForAvg.getCells().get(i));
+	    }
+	    double avg = sum / rowForAvg.getCells().size();
+	    averagesPerRow.add(""+avg);
+	}
+	return new TabularValidationReportRow(averagesPerRow);
     }
 
 }

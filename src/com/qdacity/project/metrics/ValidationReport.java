@@ -46,6 +46,8 @@ public class ValidationReport {
 	@Persistent
 	@Column(name = "evaluationUnit")
 	String evaluationUnit;
+	@Column(name = "evaluationMethod")
+	String evaluationMethod;
 
 	@Persistent(
 		defaultFetchGroup = "true")
@@ -110,6 +112,14 @@ public class ValidationReport {
 	    this.evaluationUnit = evaluationUnit.toString();
 	}
 
+	public String getEvaluationMethod() {
+	    return evaluationMethod;
+	}
+
+	public void setEvaluationType(EvaluationMethod evaluationMethod) {
+	    this.evaluationMethod = evaluationMethod.toString();
+	}
+	
 	public String getName() {
 		return name;
 	}
