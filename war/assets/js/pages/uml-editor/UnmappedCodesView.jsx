@@ -10,8 +10,14 @@ export default class UnmappedCodeView extends React.Component {
 		this.umlEditorView = this.props.umlEditorView;
 
 		this.state = {
-			codes: this.umlEditorView.getUnmappedCodes()
+			codes: []
 		};
+	}
+
+	update() {
+		this.setState({
+			codes: this.umlEditorView.getUnmappedCodes()
+		});
 	}
 
 	getStyles() {

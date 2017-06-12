@@ -27,6 +27,7 @@ var account;
 
 var umlEditorView;
 var metaModelMapper;
+var unmappedCodesView;
 
 window.init = function () {
 
@@ -80,8 +81,7 @@ function initGraph(codes, mmEntities, codesystem_id) {
 
 	metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);
 
-	umlEditorView.initGraph(codes, mmEntities, metaModelMapper);
+	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, document.getElementById('unmappedCodes'));
 
-	let unmappedCodesContainer = document.getElementById('unmappedCodes');
-	ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, unmappedCodesContainer);
+	umlEditorView.initGraph(codes, mmEntities, metaModelMapper, unmappedCodesView);
 }

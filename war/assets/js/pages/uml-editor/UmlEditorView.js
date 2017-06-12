@@ -18,6 +18,7 @@ export default class UmlEditorView {
 		this.umlClasses = [];
 		this.umlClassRelations = {};
 
+		this.unmappedCodesView = null;
 		this.metaModelMapper = null;
 
 		this.init(container);
@@ -172,16 +173,19 @@ export default class UmlEditorView {
 		});
 	}
 
-	initGraph(codes, mmEntities, metaModelMapper) {
+	initGraph(codes, mmEntities, metaModelMapper, unmappedCodesView) {
 		this.mmEntities = mmEntities;
 		this.metaModelMapper = metaModelMapper;
+		this.unmappedCodesView = unmappedCodesView;
 		this.umlClasses = [];
 
 		let relations = [];
 
 		for (let i = 0; i < codes.length; i++) {
 			// Register new entry
-			const umlClass = new UmlClass(codes[i], null);
+			const umlClass = new UmlClass();
+			umlClass.setCode(codes[i]);
+			umlClass.setNode(null);
 			this.umlClasses.push(umlClass);
 
 			// Add node to graph
@@ -231,6 +235,8 @@ export default class UmlEditorView {
 		}
 
 		this.initPositions();
+
+		this.onNodesChanged();
 	}
 
 	initPositions() {
@@ -349,6 +355,10 @@ export default class UmlEditorView {
 		return unmappedCodes;
 	}
 
+	onNodesChanged() {
+		this.unmappedCodesView.update();
+	}
+
 	exchangeCodeMetaModelEntities(codeId, oldMetaModelEntityIds) {
 		const umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == codeId);
 
@@ -363,7 +373,7 @@ export default class UmlEditorView {
 			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
 				let relation = umlClass.getCode().relations[i];
 				let destinationUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.destination);
-				quark(relation, umlClass, destinationUmlClass, oldUmlClass, destinationUmlClass);
+				checkSingleRelation(relation, umlClass, destinationUmlClass, oldUmlClass, destinationUmlClass);
 			}
 		}
 
@@ -379,7 +389,7 @@ export default class UmlEditorView {
 					umlCode.relations.forEach((relation) => {
 						if (relation.destination == umlClass.getCode().codeID) {
 							let sourceUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.source);
-							quark(relation, sourceUmlClass, umlClass, sourceUmlClass, oldUmlClass);
+							checkSingleRelation(relation, sourceUmlClass, umlClass, sourceUmlClass, oldUmlClass);
 						}
 					});
 
@@ -419,7 +429,7 @@ export default class UmlEditorView {
 		console.log('Done with the node.');
 	}
 
-	quark(relation, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) { // TODO rename
+	checkSingleRelation(relation, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
 		let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
 
 		console.log('We are at relation ' + sourceUmlClass.getCode().name + ' -> ' + destinationUmlClass.getCode().name + ' now. (' + relationMetaModelEntity.name + ')');
@@ -572,7 +582,7 @@ export default class UmlEditorView {
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
-		
+
 		return field;
 	}
 
@@ -583,7 +593,7 @@ export default class UmlEditorView {
 			field.removeFromParent();
 
 			this.graph.refresh(field);
-			
+
 			this.recalculateNodeSize(node);
 
 		} finally {
@@ -598,18 +608,18 @@ export default class UmlEditorView {
 		method.vertex = true;
 
 		let methods = node.children[1];
-		
+
 		this.graph.getModel().beginUpdate();
 
 		try {
 			methods.insert(method);
-	
+
 			this.recalculateNodeSize(node);
 
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
-		
+
 		return method;
 	}
 
@@ -620,7 +630,7 @@ export default class UmlEditorView {
 			method.removeFromParent();
 
 			this.graph.refresh(method);
-			
+
 			this.recalculateNodeSize(node);
 
 		} finally {

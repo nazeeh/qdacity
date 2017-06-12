@@ -142,6 +142,7 @@ export default class MetaModelMapper {
 	addNode(umlClass) {
 		const node = this.umlEditorView.addNode(umlClass.getCode().name);
 		umlClass.setNode(node);
+		this.umlEditorView.onNodesChanged();
 	}
 
 	addEdge(relation, sourceUmlClass, destinationUmlClass, edgeType) {
@@ -220,6 +221,7 @@ export default class MetaModelMapper {
 	undoAddNode(umlClass) {
 		this.umlEditorView.removeNode(umlClass.getNode());
 		umlClass.setNode(null);
+		this.umlEditorView.onNodesChanged();
 	}
 
 	undoAddEdge(relation) {
