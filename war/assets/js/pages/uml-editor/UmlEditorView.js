@@ -148,20 +148,21 @@ export default class UmlEditorView {
 					let code = umlClass.getCode();
 					let node = umlClass.getNode();
 
-					umlCodePositions.push({
-						'id': -1,
-						'codeId': code.codeID,
-						'codeSystemId': _this.codeSystemId,
-						'x': node.getGeometry().x,
-						'y': node.getGeometry().y
-					});
+					let umlCodePosition = umlClass.getUmlCodePosition();
+					umlCodePosition.x = node.getGeometry().x;
+					umlCodePosition.y = node.getGeometry().y;
+
+					umlCodePositions.push(umlCodePosition);
 				}
 			});
 
 			console.log('Updating ' + umlCodePositions.length + ' UmlCodePosition entries in the database...');
 
-			UmlCodePositionEndpoint.updateCodePositions(umlCodePositions).then(function () {
-				console.log('Updated ' + umlCodePositions.length + ' UmlCodePosition entries in the database.');
+			UmlCodePositionEndpoint.updateCodePositions(umlCodePositions).then((resp) => {
+				let updatedCodePositions = resp.items || [];
+				console.log('Updated ' + updatedCodePositions.length + ' UmlCodePosition entries in the database.');
+
+				_this.refreshUmlCodePositions(updatedCodePositions);
 			});
 		});
 	}
@@ -244,6 +245,7 @@ export default class UmlEditorView {
 
 						if (!exists) {
 							let umlCodePosition = {
+								'id': -1,
 								'codeId': code.codeID,
 								'codeSystemId': _this.codeSystemId,
 								'x': node.getGeometry().x,
@@ -257,13 +259,21 @@ export default class UmlEditorView {
 
 					console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
 
-					UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then(function () {
-						console.log('Inserted ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
+					UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then((resp) => {
+						let insertedCodePositions = resp.items || [];
+
+						console.log('Inserted ' + insertedCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
+
+						_this.refreshUmlCodePositions(insertedCodePositions);
 					});
 				}
 
 				umlCodePositions.forEach((umlCodePosition) => {
 					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == umlCodePosition.codeId);
+
+					if (umlCodePosition.id > -1) {
+						umlClass.setUmlCodePosition(umlCodePosition);
+					}
 
 					_this.translateNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
 				});
@@ -293,10 +303,22 @@ export default class UmlEditorView {
 
 				console.log('Inserting ' + umlCodePositions.length + ' new UmlCodePosition entries into the database...');
 
-				UmlCodePositionEndpoint.insertCodePositions(umlCodePositions).then(function () {
-					console.log('Inserted ' + umlCodePositions.length + ' new UmlCodePosition entries into the database.');
+				UmlCodePositionEndpoint.insertCodePositions(umlCodePositions).then((resp) => {
+					let insertedCodePositions = resp.items || [];
+
+					console.log('Inserted ' + insertedCodePositions.length + ' new UmlCodePosition entries into the database.');
+
+					_this.refreshUmlCodePositions(insertedCodePositions);
 				});
 			}
+		});
+	}
+
+	refreshUmlCodePositions(newUmlCodePositions) {
+		const _this = this;
+		newUmlCodePositions.forEach((newUmlCodePosition) => {
+			let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == newUmlCodePosition.codeId);
+			umlClass.setUmlCodePosition(newUmlCodePosition);
 		});
 	}
 
