@@ -85,7 +85,7 @@ gulp.task('bundle', ['format','bundle-task']);
 gulp.task('bundle-task', function() {
 	return gulp.src('') //doesn't matter what to put as src, 
 						//since webpack.config fetches from entry points
-	.pipe(webpack( require('./webpack.config.js') )).on('error', handleError)
+	.pipe(webpack(require('./webpack.config.js'))).on('error', handleError)
 	.pipe(gulp.dest('dist/js/'));
 });
 
@@ -103,11 +103,14 @@ gulp.task('format', function() {
 });
  
 gulp.task('watch',function() {
-	gulp.watch('assets/**/*.{js,jsx}',['bundle-task'])
+	return gulp.src('') //doesn't matter what to put as src, 
+						//since webpack.config fetches from entry points
+	.pipe(webpack( Object.assign(require('./webpack.config.js'), {watch:true}) )).on('error', handleError)
+	.pipe(gulp.dest('dist/js/'));
 });
 
 gulp.task('test', () =>
     gulp.src('./tests/*.js').pipe(jasmine())
 );
  
-gulp.task('default', ['bundle-task','watch']);
+gulp.task('default', ['watch']);

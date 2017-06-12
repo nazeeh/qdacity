@@ -51,7 +51,9 @@ module.exports = {
     ],
     stats: {
         // Nice colored output
-        colors: true
+        colors: true,
+		// Adds time to completion when bundling
+		timings: true
     },
     // Create Sourcemaps for the bundle
     
