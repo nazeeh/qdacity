@@ -4,7 +4,7 @@ import UmlEditorView from './UmlEditorView.js';
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
 
-import Toolbar from './Toolbar.jsx';
+import Toolbar from './toolbar/Toolbar.jsx';
 import UnmappedCodesView from './UnmappedCodesView.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
