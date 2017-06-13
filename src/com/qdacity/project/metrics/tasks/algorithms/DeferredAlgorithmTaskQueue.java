@@ -76,13 +76,12 @@ public class DeferredAlgorithmTaskQueue {
 	// Poll every 10 seconds. TODO: find better solution
 	List<ValidationResult> valResults = new ArrayList<>();
 		while (valResults.size() != amountValidationProjects || !reportRowsExist(valResults)) {
-	    //checking if all validationReports exists. If yes tasks must have finished.
-	    ValidationEndpoint ve = new ValidationEndpoint();
-	    valResults = ve.listValidationResults(validationReportId, user);
-	    Logger.getLogger("logger").log(Level.WARNING, " So many results " + valResults.size() + " for report " + validationReportId + " at time " + System.currentTimeMillis());
-	    if (valResults.size() != amountValidationProjects) {
-		Thread.sleep(SLEEP_TIME);
-	    }
+			// checking if all validationReports exists. If yes tasks must have finished.
+			ValidationEndpoint ve = new ValidationEndpoint();
+			valResults = ve.listValidationResults(validationReportId, user);
+			if (valResults.size() != amountValidationProjects || !reportRowsExist(valResults)) {
+				Thread.sleep(SLEEP_TIME);
+			}
 	}
 	Logger.getLogger("logger").log(Level.INFO, "All Tasks Done for tasks: ");
 	Logger.getLogger("logger").log(Level.INFO, "Is task finished? : " + futures.get(0).isDone());
@@ -94,7 +93,7 @@ public class DeferredAlgorithmTaskQueue {
 	private boolean reportRowsExist(List<ValidationResult> valResults) {
 		for (ValidationResult validationResult : valResults) {
 			if (validationResult.getReportRow() == null) {
-				Logger.getLogger("logger").log(Level.INFO, " All results as entities in the DB, but the reportRow has not been written for all");
+				Logger.getLogger("logger").log(Level.INFO, " All results as entities in the DB, but the reportRow has not been written for " + validationResult.getId());
 				return false;
 			}
 		}

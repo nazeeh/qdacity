@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -24,13 +25,11 @@ import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
-import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
 import com.qdacity.project.metrics.tasks.DeferredEvaluation;
 import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
-import javax.annotation.Nullable;
 
 
 @Api(
@@ -80,9 +79,8 @@ public class ValidationEndpoint {
 	public List<ValidationResult> listValidationResults(@Named("reportID") Long reportID, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		List<ValidationResult> results = new ArrayList<ValidationResult>();
-
+		mgr.setIgnoreCache(true); // TODO should probably only be set during generation of new reports, but if not set the report generation can run into an infinite loop
 		try {
-
 			Query q = mgr.newQuery(ValidationResult.class, "reportID  == :reportID");
 			Map<String, Long> params = new HashMap<String, Long>();
 			params.put("reportID", reportID);
