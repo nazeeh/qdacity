@@ -51,6 +51,16 @@ export default class UmlEditorView {
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
 
+		// Highlighting
+		var hoverHighlight = new mxCellTracker(this.graph, '#85C8E5');
+
+		// Styling
+		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8'; 
+		mxConstants.OUTLINE_COLOR = '#00A2E8';
+		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8'; 
+		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8'; 
+		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8'; 
+
 		// Enables layouting
 		this.layout = new mxFastOrganicLayout(this.graph);
 		this.layout.disableEdgeStyle = false;
