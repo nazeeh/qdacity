@@ -55,11 +55,11 @@ export default class UmlEditorView {
 		var hoverHighlight = new mxCellTracker(this.graph, '#85C8E5');
 
 		// Styling
-		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8'; 
+		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
 		mxConstants.OUTLINE_COLOR = '#00A2E8';
-		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8'; 
-		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8'; 
-		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8'; 
+		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
+		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
+		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
 
 		// Enables layouting
 		this.layout = new mxFastOrganicLayout(this.graph);
@@ -678,5 +678,13 @@ export default class UmlEditorView {
 				child.setGeometry(new mxGeometry(0, i * 15, width, 15));
 			}
 		}
+	}
+
+	zoomIn() {
+		this.graph.zoomIn();
+	}
+
+	zoomOut() {
+		this.graph.zoomOut();
 	}
 }
