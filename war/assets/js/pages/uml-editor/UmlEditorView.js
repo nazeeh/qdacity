@@ -687,4 +687,8 @@ export default class UmlEditorView {
 	zoomOut() {
 		this.graph.zoomOut();
 	}
+
+	zoom(percentage) {
+		this.graph.zoomTo(percentage / 100.0, false);
+	}
 }
