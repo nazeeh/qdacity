@@ -12,7 +12,7 @@ export default class Toolbar extends React.Component {
 		return {
 			container: {
 				padding: '8px 20px 8px 20px',
-				borderBottom: '1px solid #808080'
+				borderBottom: '1px solid #c0c0c0'
 			},
 			buttonZoomOut: {
 				marginLeft: '10px'
