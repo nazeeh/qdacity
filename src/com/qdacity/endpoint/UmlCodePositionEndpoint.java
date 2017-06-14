@@ -87,27 +87,32 @@ public class UmlCodePositionEndpoint {
 	public List<UmlCodePosition> insertCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
+
+		// List is empty
+		if (umlCodePositions.size() <= 0) {
+			return new ArrayList<>();
+		}
+		
+		UmlCodePosition firstUmlCodePosition = umlCodePositions.get(0);
+		
+		// Check if user is authorized
+		Authorization.checkAuthorization(firstUmlCodePosition, user);
+		
+		for (UmlCodePosition umlCodePosition : umlCodePositions) {
+			// Check authorization
+			if (!umlCodePosition.getCodeSystemId().equals(firstUmlCodePosition.getCodeSystemId())) {
+				throw new IllegalArgumentException("The CodeSystemIds for the codes are not equal. " + firstUmlCodePosition.getCodeSystemId() + " / " + umlCodePosition.getCodeSystemId());
+			}
+			
+			// Validate
+			validateUmlCodePosition(umlCodePosition);
+		}
+		
+		// Persist
 		Collection<UmlCodePosition> result;
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			for (int i = 0; i < umlCodePositions.size(); i++) {		
-				UmlCodePosition umlCodePosition = umlCodePositions.get(i);
-				umlCodePosition.setId(null);
-				
-				// Check if user is authorized
-				Authorization.checkAuthorization(umlCodePosition, user);
-
-				// Validate
-				validateUmlCodePosition(umlCodePosition);
-				
-				// Entity exists?
-				if (umlCodePosition.getId() != null && containsUmlCodePosition(umlCodePosition)) {
-					throw new EntityExistsException("MetaModelEntity already exists " + umlCodePosition.getId());
-				}
-			}
-
-			// Persist
 			result = mgr.makePersistentAll(umlCodePositions);
 			
 		} finally {
@@ -130,38 +135,43 @@ public class UmlCodePositionEndpoint {
 	public List<UmlCodePosition> updateCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
+
+		// List is empty
+		if (umlCodePositions.size() <= 0) {
+			return new ArrayList<>();
+		}
+		
+		UmlCodePosition firstUmlCodePosition = umlCodePositions.get(0);
+		
+		// Check if user is authorized
+		Authorization.checkAuthorization(firstUmlCodePosition, user);
+		
+		for (UmlCodePosition umlCodePosition : umlCodePositions) {
+			// Check authorization
+			if (!umlCodePosition.getCodeSystemId().equals(firstUmlCodePosition.getCodeSystemId())) {
+				throw new IllegalArgumentException("The CodeSystemIds for the codes are not equal. " + firstUmlCodePosition.getCodeSystemId() + " / " + umlCodePosition.getCodeSystemId());
+			}
+			
+			// Validate
+			validateUmlCodePosition(umlCodePosition);
+			
+			// Object exists
+			if (containsUmlCodePosition(umlCodePosition)) {
+				throw new EntityNotFoundException("Object does not exist. id: " + umlCodePosition.getId() + ", codeSystemId: " + umlCodePosition.getCodeSystemId() + ", codeId: " + umlCodePosition.getCodeId());				
+			}
+		}
+		
+		// Persist
 		Collection<UmlCodePosition> result;
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			for (int i = 0; i < umlCodePositions.size(); i++) {		
-				UmlCodePosition umlCodePosition = umlCodePositions.get(i);
-
-				// Check if user is authorized
-				Authorization.checkAuthorization(umlCodePosition, user);
-				
-				// Validate
-				validateUmlCodePosition(umlCodePosition);
-				
-				UmlCodePosition databaseObject = mgr.getObjectById(UmlCodePosition.class, umlCodePosition.getId());
-								
-				if (databaseObject == null) {
-					throw new EntityNotFoundException("Object does not exist. id: " + umlCodePosition.getId() + ", codeSystemId: " + umlCodePosition.getCodeSystemId() + ", codeId: " + umlCodePosition.getCodeId());
-				}
-				
-				databaseObject.setX(umlCodePosition.getX());
-				databaseObject.setY(umlCodePosition.getY());
-				
-				umlCodePositions.set(i, databaseObject);
-			}
-
-			// Persist
 			result = mgr.makePersistentAll(umlCodePositions);
 			
 		} finally {
 			mgr.close();
 		}
-
+		
 		return new ArrayList<>(result);
 	}
 	

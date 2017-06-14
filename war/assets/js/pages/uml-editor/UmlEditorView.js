@@ -245,7 +245,7 @@ export default class UmlEditorView {
 
 						if (!exists) {
 							let umlCodePosition = {
-								'id': -1,
+								//'id': 0,
 								'codeId': code.codeID,
 								'codeSystemId': _this.codeSystemId,
 								'x': node.getGeometry().x,
