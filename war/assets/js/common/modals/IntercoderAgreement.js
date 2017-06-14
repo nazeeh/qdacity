@@ -13,27 +13,27 @@ export default class IntercoderAgreement extends VexModal {
 
 	constructor(report) {
 		super();
-                this.formElements = '';
-                if(report.averageAgreementCsvString && report.averageAgreementHeaderCsvString) {
-                    var headRow = report.averageAgreementHeaderCsvString.split(",");
-                    var avgRow = report.averageAgreementCsvString.split(",");
-                    this.formElements = '<div id="intercoderAgreementAverage" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;" class="centerParent">';
-                    this.formElements += '<table class="centerChild">';
-                    this.formElements += '<tr>';
-                    for(var headCell in headRow) {
-                        this.formElements += '<th  style="text-align: center;" >'+headRow[headCell]+'</th>';
-                    }
-                    this.formElements += '</tr>';
-                    this.formElements += '<tr>';
-                    for(var cell in avgRow) {
-                        this.formElements += '<td>'+avgRow[cell]+'</td>';
-                    }
-                    this.formElements += '</tr>';
-                    this.formElements += '</table></div>';
-                }
+		this.formElements = '';
+		if (report.averageAgreementCsvString && report.averageAgreementHeaderCsvString) {
+			var headRow = report.averageAgreementHeaderCsvString.split(",");
+			var avgRow = report.averageAgreementCsvString.split(",");
+			this.formElements = '<div id="intercoderAgreementAverage" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;" class="centerParent">';
+			this.formElements += '<table class="centerChild">';
+			this.formElements += '<tr>';
+			for (var headCell in headRow) {
+				this.formElements += '<th  style="text-align: center;" >' + headRow[headCell] + '</th>';
+			}
+			this.formElements += '</tr>';
+			this.formElements += '<tr>';
+			for (var cell in avgRow) {
+				this.formElements += '<td>' + avgRow[cell] + '</td>';
+			}
+			this.formElements += '</tr>';
+			this.formElements += '</table></div>';
+		}
 		this.formElements += '<div id="intercoderAgreement" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;"><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="agreementTable"></table></div>';
 
-                this.formElements += '<div id="intercoderAgreementMetainformation" style="text-align: center; background-color: #eee; font-color:#222;">Evaluation Method: '+report.evaluationMethod+' | Evaluation Unit: '+report.evaluationUnit+'</div>'
+		this.formElements += '<div id="intercoderAgreementMetainformation" style="text-align: center; background-color: #eee; font-color:#222;">Evaluation Method: ' + report.evaluationMethod + ' | Evaluation Unit: ' + report.evaluationUnit + '</div>'
 
 		this.report = report;
 		this.results;
@@ -46,33 +46,33 @@ export default class IntercoderAgreement extends VexModal {
 			function (resolve, reject) {
 
 				var formElements = _this.formElements;
-                                var buttonArray = [$.extend({}, vex.dialog.buttons.YES, {
-							text: 'OK'
-						})];
-                                            
-                                if(_this.report.evaluationMethod === 'f-measure') {
-                                    buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
-							className: 'deciderBtn vex-dialog-button-primary',
-							text: "Send Email",
-							click: function ($vexContent, event) {
-								var decider = new BinaryDecider('Confirm sending out emails to all validation coders', 'Cancel', 'Yes, send email');
-								decider.showModal().then(function (value) {
-									if (value == 'optionB') {
-										var validationEndpoint = new ValidationEndpoint();
-										validationEndpoint.sendNotificationEmail(_this.report.id);
-									}
-								});
+				var buttonArray = [$.extend({}, vex.dialog.buttons.YES, {
+					text: 'OK'
+				})];
 
-							}
-						}));
-                                    buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
-							className: 'deciderBtn vex-dialog-button-primary',
-							text: "Agreement Maps",
-							click: function ($vexContent, event) {
-								window.location.href = 'coding-editor.html?project=' + _this.report.revisionID + '&type=REVISION&report=' + _this.report.id + '&parentproject=' + _this.report.projectID;
-							}
-						}));
-                                }
+				if (_this.report.evaluationMethod === 'f-measure') {
+					buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
+						className: 'deciderBtn vex-dialog-button-primary',
+						text: "Send Email",
+						click: function ($vexContent, event) {
+							var decider = new BinaryDecider('Confirm sending out emails to all validation coders', 'Cancel', 'Yes, send email');
+							decider.showModal().then(function (value) {
+								if (value == 'optionB') {
+									var validationEndpoint = new ValidationEndpoint();
+									validationEndpoint.sendNotificationEmail(_this.report.id);
+								}
+							});
+
+						}
+					}));
+					buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
+						className: 'deciderBtn vex-dialog-button-primary',
+						text: "Agreement Maps",
+						click: function ($vexContent, event) {
+							window.location.href = 'coding-editor.html?project=' + _this.report.revisionID + '&type=REVISION&report=' + _this.report.id + '&parentproject=' + _this.report.projectID;
+						}
+					}));
+				}
 
 				vex.dialog.open({
 					message: "Intercoder Agreement",
@@ -148,16 +148,16 @@ export default class IntercoderAgreement extends VexModal {
 				table.$('tr.selected').removeClass('selected');
 				$(this).addClass('selected');
 
-                            if(_this.report.evaluationMethod === 'f-measure') {   
-				var resultID = $(this).find("td").eq(0).html();
-				var validationProjectID = $(this).find("td").eq(1).html();
-				var agreementByDoc = new IntercoderAgreementByDoc(resultID, validationProjectID, _this.report.projectID);
-				agreementByDoc.showModal();
-                            }
-                            if(_this.report.evaluationMethod === 'krippendorffs-alpha' || _this.report.evaluationMethod === 'fleiss-kappa') {
-                                var agreementByCode = new IntercoderAgreementByCode(_this.report.detailedAgreementHeaderCsvString, _this.results);
-				agreementByCode.showModal();
-                            }
+				if (_this.report.evaluationMethod === 'f-measure') {
+					var resultID = $(this).find("td").eq(0).html();
+					var validationProjectID = $(this).find("td").eq(1).html();
+					var agreementByDoc = new IntercoderAgreementByDoc(resultID, validationProjectID, _this.report.projectID);
+					agreementByDoc.showModal();
+				}
+				if (_this.report.evaluationMethod === 'krippendorffs-alpha' || _this.report.evaluationMethod === 'fleiss-kappa') {
+					var agreementByCode = new IntercoderAgreementByCode(_this.report.detailedAgreementHeaderCsvString, _this.results);
+					agreementByCode.showModal();
+				}
 			}
 		});
 
