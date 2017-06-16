@@ -6,20 +6,15 @@ import MetaModelView from './MetaModelView.jsx';
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
-import Prompt from '../../common/modals/Prompt';
 import loadGAPIs from '../../common/GAPI';
 import Codesystem from './Codesystem/Codesystem.jsx';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
-import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 
 import $script from 'scriptjs';
 
-import Slider from 'bootstrap-slider';
-
 import 'script!../../../../components/tooltipster/js/jquery.tooltipster.js';
-import 'script!../../../../components/filer/js/jquery.filer.min.js';
 import 'script!../../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../../components/URIjs/URI.min.js';
 
