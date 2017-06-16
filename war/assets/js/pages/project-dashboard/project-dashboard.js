@@ -1,4 +1,4 @@
-import AgreementStats from './AgreementStats';
+import AgreementStats from './AgreementStats.jsx';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import Project from './Project';
@@ -34,7 +34,7 @@ var project_type;
 var account;
 
 var project;
-
+var agreementCharts;
 var revisionHistory;
 var usersPanel;
 var inviteUserField;
@@ -54,6 +54,7 @@ function setupUI() {
 		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
 		titleRow = ReactDOM.render(<TitleRow projectType={project_type} projectId={project_id} account={account} />, document.getElementById('titleRow'));
 		description = ReactDOM.render(<Description projectType={project_type} projectId={project_id} />, document.getElementById('projectDescription'));
+		agreementCharts = ReactDOM.render(<AgreementStats projectType={project_type} projectId={project_id} />, document.getElementById('agreementCharts'));
 		setProjectProperties();
 		if (project_type === 'PROJECT') {
 			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project_id} />, document.getElementById('revisionHistoryTimeline'));
@@ -141,12 +142,12 @@ function setRevisionHistory(userPromise) {
 
 			validationPromise.then(function (reports) {
 
-				var agreementStats = new AgreementStats("agreementStats");
+				//var agreementStats = new AgreementStats("agreementStats");
 
 				for (var i = 0; i < snapshots.length; i++) {
 					var revID = snapshots[i].id;
 					if (typeof reports[revID] != 'undefined') {
-						agreementStats.addReports(reports[revID]);
+						agreementCharts.addReports(reports[revID]);
 					}
 				}
 
