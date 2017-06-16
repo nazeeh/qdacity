@@ -29,8 +29,8 @@ export default class PersonalReportList extends React.Component {
 
 		validationPromise.then(function (reports) {
 			for (var property in reports) {
-				if (reports.hasOwnProperty(property)) {
-					var reportArr = reports[property];
+				if (reports.hasOwnProperty(property) && property == _this.props.project.revisionID) {
+					var reportArr = reports[property]
 					reportArr = reportArr || [];
 					_this.setState({
 						reports: reportArr
@@ -42,8 +42,8 @@ export default class PersonalReportList extends React.Component {
 
 	showDocumentResults(report) {
 		var _this = this;
-		ValidationEndpoint.getValidationResult(report.id, _this.props.projectId).then(function (resp) {
-			var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.projectId, _this.props.projectId, _this.props.projectType);
+		ValidationEndpoint.getValidationResult(report.id, _this.props.project.id).then(function (resp) {
+			var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.project.id, _this.props.project.id, _this.props.projectType);
 			agreementByDoc.showModal();
 		});
 	}

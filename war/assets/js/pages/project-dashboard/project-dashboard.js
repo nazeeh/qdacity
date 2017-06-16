@@ -114,7 +114,7 @@ function setProjectProperties() {
 		titleRow.setProjectProperties(resp);
 		if (project_type === 'VALIDATION') {
 			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
-			ReactDOM.render(<PersonalReportList projectType={project_type} projectId={project_id} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
+			ReactDOM.render(<PersonalReportList projectType={project_type} project={resp} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
 
 		}
 	});
