@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
 export default class InviteUserField extends React.Component {
 	constructor(props) {

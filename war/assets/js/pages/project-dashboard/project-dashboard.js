@@ -7,8 +7,8 @@ import TextField from '../../common/modals/TextField';
 import loadGAPIs from '../../common/GAPI';
 
 import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
-import UserList from "./UserList.jsx"
-import InviteUserField from "./InviteUserField.jsx"
+import UserList from "./Users/UserList.jsx"
+import InviteUserField from "./Users/InviteUserField.jsx"
 import ProjectStats from "./ProjectStats.jsx"
 import TitleRow from "./TitleRow/TitleRow.jsx"
 import PersonalReportList from "./PersonalReportList.jsx"
