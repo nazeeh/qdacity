@@ -6,8 +6,7 @@ export default class InviteUserField extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userEmail: '',
-			isProjectOwner: false
+			userEmail: ''
 		};
 		this.updateUserEmail = this.updateUserEmail.bind(this);
 		this.inviteUser = this.inviteUser.bind(this);
@@ -28,12 +27,6 @@ export default class InviteUserField extends React.Component {
 
 	}
 
-	setIsProjectOwner(pIsProjectOnwer) {
-		this.setState({
-			isProjectOwner: pIsProjectOnwer
-		});
-	}
-
 	inviteUser() {
 		var _this = this;
 		ProjectEndpoint.inviteUser(this.props.projectId, this.state.userEmail).then(function (resp) {
@@ -44,7 +37,7 @@ export default class InviteUserField extends React.Component {
 	}
 
 	render() {
-		if (this.state.isProjectOwner === false) return null;
+		if (this.props.isProjectOwner === false) return null;
 
 		var _this = this;
 

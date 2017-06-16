@@ -7,8 +7,7 @@ import TextField from '../../common/modals/TextField';
 import loadGAPIs from '../../common/GAPI';
 
 import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
-import UserList from "./Users/UserList.jsx"
-import InviteUserField from "./Users/InviteUserField.jsx"
+import Users from "./Users/Users.jsx"
 import ProjectStats from "./ProjectStats.jsx"
 import TitleRow from "./TitleRow/TitleRow.jsx"
 import PersonalReportList from "./PersonalReportList.jsx"
@@ -37,7 +36,7 @@ var account;
 var project;
 
 var revisionHistory;
-var userList;
+var usersPanel;
 var inviteUserField;
 var projectStats;
 var titleRow;
@@ -49,11 +48,10 @@ function setupUI() {
 		$('#navAccount').show();
 		$('#navSignin').hide();
 
-		var userPromise = account.getCurrentUser();
+		var userPromise = account.getCurrentUser(); 
 
-		userList = ReactDOM.render(<UserList projectType={project_type}  projectId={project_id} />, document.getElementById('userList'));
+		usersPanel = ReactDOM.render(<Users projectType={project_type}  projectId={project_id} />, document.getElementById('user-section'));
 		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
-		inviteUserField = ReactDOM.render(<InviteUserField projectType={project_type} projectId={project_id} />, document.getElementById('inviteUserField'));
 		titleRow = ReactDOM.render(<TitleRow projectType={project_type} projectId={project_id} account={account} />, document.getElementById('titleRow'));
 		description = ReactDOM.render(<Description projectType={project_type} projectId={project_id} />, document.getElementById('projectDescription'));
 		setProjectProperties();
@@ -170,7 +168,7 @@ function setBtnVisibility(userPromise) {
 	userPromise.then(function (user) {
 
 		var isProjectOwner = account.isProjectOwner(user, project_id);
-		inviteUserField.setIsProjectOwner(isProjectOwner);
+		usersPanel.setIsProjectOwner(isProjectOwner);
 		description.setIsProjectOwner(isProjectOwner);
 		titleRow.setIsProjectOwner(isProjectOwner);
 		if (isProjectOwner) {
