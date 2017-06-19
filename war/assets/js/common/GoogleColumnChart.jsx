@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StyledChart = styled.div `
-    height: 500px;
+    height: 200px;
 `;
 
 export default class GoogleColumnChart extends React.Component {
