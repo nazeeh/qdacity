@@ -2,26 +2,26 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StyledCode = styled.div `
-	font-family: tahoma, arial, helvetica;
-	font-size: 10pt;
-	margin-left:${props => (props.level * 15) + 'px' };
-	display: flex;
-	align-items: center;
-	color: ${props => props.selected ? '#fff' : '#000'};
-	background-color: ${props => props.selected ? '#337ab7' : ''};
-	&:hover {
-		background: #63a0d4;
-	}
+    font-family: tahoma, arial, helvetica;
+    font-size: 10pt;
+    margin-left:${props => (props.level * 15) + 'px' };
+    display: flex;
+    align-items: center;
+    color: ${props => props.selected ? '#fff' : '#000'};
+    background-color: ${props => props.selected ? '#337ab7' : ''};
+    &:hover {
+        background: #63a0d4;
+    }
 `;
 
 const StyledExpander = styled.a `
-	padding-left:${props => props.hasChildren ? '' : '18px'};
-	color: ${props => props.selected ? '#fff' : '#000'};
+    padding-left:${props => props.hasChildren ? '' : '18px'};
+    color: ${props => props.selected ? '#fff' : '#000'};
 `;
 
 const StyledCodeIcon = styled.i `
-	color: ${props => props.color};
-	padding-right: 4px;
+    color: ${props => props.color};
+    padding-right: 4px;
 `;
 
 export default class SimpleCode extends React.Component {
@@ -66,8 +66,8 @@ export default class SimpleCode extends React.Component {
 		}
 
 		return <StyledExpander hasChildren={this.hasChildren()} selected = {this.props.node == this.props.selected}  className="node-link" onClick={() => this.nodeIconClick(node)}>
-						{caret}
-					</StyledExpander>;
+                        {caret}
+                    </StyledExpander>;
 	}
 
 	/* 
@@ -82,34 +82,34 @@ export default class SimpleCode extends React.Component {
 
 	renderNode(level) {
 		return <div className=""> 
-			<StyledCode
-					selected = {this.props.node == this.props.selected} 
-					level={level}
-					className="clickable"
-					key={"CS" + "_" + level}
-					onClick={() => this.props.setSelected(this.props.node)}
-				>
-			            {this.renderExpander(this.props.node)}
-			            <StyledCodeIcon className="fa fa-tag fa-lg" color={this.props.node.color}/>
-			            {this.props.node.name}
-			            {this.renderCodingCount()}
-			    </StyledCode>
-			    </div>
+            <StyledCode
+                    selected = {this.props.node == this.props.selected} 
+                    level={level}
+                    className="clickable"
+                    key={"CS" + "_" + level}
+                    onClick={() => this.props.setSelected(this.props.node)}
+                >
+                        {this.renderExpander(this.props.node)}
+                        <StyledCodeIcon className="fa fa-tag fa-lg" color={this.props.node.color}/>
+                        {this.props.node.name}
+                        {this.renderCodingCount()}
+                </StyledCode>
+                </div>
 	}
 
 	renderChild(childCode, level, index) {
 		return (
 			<SimpleCode 
-					documentsView={this.props.documentsView}
-					level={level + 1}
-					node={childCode} 
-					selected={this.props.selected} 
-					setSelected={this.props.setSelected} 
-					relocateCode={this.props.relocateCode}
-					showFooter={this.props.showFooter}  
-					key={"CS" + "_" + level+ "_" +index}
-				>
-				</SimpleCode>
+                    documentsView={this.props.documentsView}
+                    level={level + 1}
+                    node={childCode} 
+                    selected={this.props.selected} 
+                    setSelected={this.props.setSelected} 
+                    relocateCode={this.props.relocateCode}
+                    showFooter={this.props.showFooter}  
+                    key={"CS" + "_" + level+ "_" +index}
+                >
+                </SimpleCode>
 		);
 	}
 
@@ -127,18 +127,18 @@ export default class SimpleCode extends React.Component {
 
 		return (
 			<div key={"CS" + "_" + level} 
-				     >
-	    				{thisNode}
-	    				{children}
-					</div>
+                     >
+                        {thisNode}
+                        {children}
+                    </div>
 		);
 	};
 
 	render() {
 		return (
 			<div>
-			           {this.renderNodesRecursive(this.props.node, this.props.level)}
-			    </div>
+                       {this.renderNodesRecursive(this.props.node, this.props.level)}
+                </div>
 		);
 
 	}

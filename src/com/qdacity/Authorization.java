@@ -18,6 +18,7 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.umleditor.UmlCodePosition;
 import com.qdacity.user.UserType;
 
 public class Authorization {
@@ -57,6 +58,20 @@ public class Authorization {
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 	}
 
+	public static void checkAuthorization(UmlCodePosition umlCodePosition, User user) throws UnauthorizedException {
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, umlCodePosition.getCodeSystemId());
+
+			Authorization.checkAuthorization(cs, user);
+
+		} finally {
+			mgr.close();
+		}
+	}
+	
 	public static void checkAuthorization(Code code, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();

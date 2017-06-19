@@ -28,7 +28,7 @@ export default class CodingBrackets {
 		var scrollHeight = $(editorDoc).find('html')[0].scrollHeight;
 
 		var svgElement = d3.select(svgContainer).append("svg")
-			.attr("width", 150)
+			.attr("width", 170)
 			.attr("height", scrollHeight); // FIXME Length of document
 
 		return svgElement;
@@ -67,7 +67,7 @@ export default class CodingBrackets {
 
 
 	addBracket(svgElement, codingId, name, color, startY, endY, offsetX, labelPosY) {
-		var pathRightX = 130;
+		var pathRightX = 150;
 		var pathLeftX = pathRightX - offsetX - 8;
 		var labelX = pathLeftX - 8;
 

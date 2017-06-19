@@ -1,5 +1,5 @@
 import React from 'react';
-import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import UserEndpoint from '../../../common/endpoints/UserEndpoint';
 
 
 export default class UserList extends React.Component {
