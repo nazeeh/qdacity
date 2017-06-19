@@ -8,6 +8,7 @@
   "dependencies": {
     "bootstrap-slider": "^9.7.1",
     "mxgraph": "^3.7.2-2",
+    "react-slick": "^0.14.11",
     "slick-carousel": "^1.6.0"
   },
   "devDependencies": {

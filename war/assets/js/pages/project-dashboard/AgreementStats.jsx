@@ -1,8 +1,9 @@
 import React from 'react';
+import Slider from 'react-slick';
 
 import GoogleColumnChart from '../../common/GoogleColumnChart.jsx';
 
-import 'script!slick-carousel';
+//import 'script!slick-carousel';
 
 
 export default class AgreementStats  extends React.Component{
@@ -41,6 +42,8 @@ export default class AgreementStats  extends React.Component{
 				height: "70%"
 			}
 		};
+		//this.componentDidMount = this.componentDidMount.bind(this);
+		
 /*var _this = this;
 google.charts.setOnLoadCallback(function () {
 		_this.forceUpdate();
@@ -84,6 +87,31 @@ google.charts.setOnLoadCallback(function () {
 		});*/
 	}
 	
+	
+	/*
+	
+	componentDidMount(){
+		var domElement = $(document.getElementById("agreementStats"));
+
+			domElement.slick({
+				dots: true
+			});
+			
+			
+			this.slickInitialized = false;
+	}
+	componentDidUpdate(){	
+	var domElement = $(document.getElementById("agreementStats"));
+
+domElement.slick('unslick');
+		domElement.slick({
+			dots: true
+		});
+		
+		
+		this.slickInitialized = false;
+	}
+	*/
 	renderReport(report, chartID) {
 		if (!report.documentResults) return '';
 		var data = new google.visualization.DataTable();
@@ -118,10 +146,20 @@ google.charts.setOnLoadCallback(function () {
 	}
 	
 	render(){
+		var settings = {
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1
+    };
+    
+
 		return (
-			<div>
-				{this.renderCharts()}
-			</div>
+			<Slider {...settings}>
+				<div><h3>one slide</h3></div>
+       			<div><h3>second slide</h3></div>
+			</Slider>
 		);
 	}
 }
