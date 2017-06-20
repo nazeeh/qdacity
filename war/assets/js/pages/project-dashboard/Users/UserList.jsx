@@ -131,7 +131,7 @@ export default class UserList extends React.Component {
 		}
 
 		const renderListItems = itemsToDisplay.map((user, index) => {
-			return <li className="clickable">
+			return <li key={index} className="clickable">
 					<span className="userName"> {user.givenName + " " + user.surName} </span>					
 				</li>;
 		})
