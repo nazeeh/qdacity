@@ -112,7 +112,7 @@ domElement.slick('unslick');
 		this.slickInitialized = false;
 	}
 	*/
-	renderReport(report, chartID) {
+	renderReport(report, chartID, index) {
 		if (!report.documentResults) return '';
 		var data = new google.visualization.DataTable();
 		data.addColumn('string', 'Document');
@@ -126,7 +126,7 @@ domElement.slick('unslick');
 		});
 		
 		return(
-			<GoogleColumnChart graphID={chartID} data={data} options={this.options}/> 
+			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index"} graphID={"agreementChartId_"+ report.id + "_" + index"} data={data} options={this.options}/> 
 		);
 
 	}
@@ -136,11 +136,11 @@ domElement.slick('unslick');
 		if (this.state.reports.length == 0) return (<div></div>);
 		return this.state.reports.map((report, index) => {
 			return (
-				<div>
-					<h4>
+				<div key={"agreementChartContainer_"+ report.id + "_" + index}>
+					<h4 key={"agreementChartHeader_"+ report.id + "_" + index"}>
 					<b>{report.name}</b>
 					</h4>
-					{_this.renderReport(report, "agreementChart_"+ report.id + "_" + index)}
+					{_this.renderReport(report, index)}
 				</div>
 			);
 		})
@@ -157,9 +157,12 @@ domElement.slick('unslick');
     
 
 		return (
+		<div>
+		
 			<Slider {...settings}>
 				{this.renderCharts()}
 			</Slider>
+		</div>
 		);
 	}
 }
