@@ -4,8 +4,6 @@ import styled from 'styled-components';
 
 import GoogleColumnChart from '../../common/GoogleColumnChart.jsx';
 
-//import 'script!slick-carousel';
-
 const StyledAgreementStats = styled.div `
     margin-left:25px;
 	margin-right:25px;
@@ -61,62 +59,8 @@ export default class AgreementStats extends React.Component {
 		this.setState({
 			reports: reports
 		});
-		/*		google.charts.setOnLoadCallback(function () {
-					reports.forEach(function (report) {
-						if (typeof report.documentResults != 'undefined') {
-							//Create node for report
-							var div = document.createElement("div");
-							_this.documentResults.append(div);
-
-							// Add chart
-							_this.drawReport(report, div);
-
-							// Prepend title
-							var title = document.createElement("h4");
-							title.innerHTML = "<b>" + report.name + "</b>";
-							div.insertBefore(title, div.firstChild);
-						}
-
-					});
-
-					if (_this.slickInitialized) {
-						_this.documentResults.slick('unslick');
-
-					} else {
-						_this.slickInitialized = true;
-					}
-
-					_this.documentResults.slick({
-						dots: true
-					});
-				});*/
 	}
 
-
-	/*
-	
-	componentDidMount(){
-		var domElement = $(document.getElementById("agreementStats"));
-
-			domElement.slick({
-				dots: true
-			});
-			
-			
-			this.slickInitialized = false;
-	}
-	componentDidUpdate(){	
-	var domElement = $(document.getElementById("agreementStats"));
-
-domElement.slick('unslick');
-		domElement.slick({
-			dots: true
-		});
-		
-		
-		this.slickInitialized = false;
-	}
-	*/
 	renderReport(report, index) {
 
 		var data = new google.visualization.DataTable();
