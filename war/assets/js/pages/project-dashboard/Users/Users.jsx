@@ -10,7 +10,7 @@ export default class Users extends React.Component {
 			isProjectOwner: false
 		};
 	}
-	
+
 	setIsProjectOwner(pIsProjectOnwer) {
 		this.setState({
 			isProjectOwner: pIsProjectOnwer
@@ -19,7 +19,7 @@ export default class Users extends React.Component {
 
 	render() {
 		return (
-		<div id="user-section">
+			<div id="user-section">
 			<div className="box box-default">
 				<div className="box-header with-border">
 					<h3 className="box-title">Users</h3>
