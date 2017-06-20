@@ -133,6 +133,7 @@ domElement.slick('unslick');
 	
 	renderCharts(){
 		var _this = this;
+		if (this.state.reports.length == 0) return (<div></div>);
 		return this.state.reports.map((report, index) => {
 			return (
 				<div>
@@ -157,8 +158,7 @@ domElement.slick('unslick');
 
 		return (
 			<Slider {...settings}>
-				<div><h3>one slide</h3></div>
-       			<div><h3>second slide</h3></div>
+				{this.renderCharts()}
 			</Slider>
 		);
 	}
