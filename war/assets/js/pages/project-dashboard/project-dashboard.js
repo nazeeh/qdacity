@@ -29,8 +29,6 @@ window.loadPlatform = function () {
 
 }
 
-var project_id;
-var project_type;
 var account;
 
 var project;
@@ -51,13 +49,13 @@ function setupUI() {
 		var userPromise = account.getCurrentUser();
 
 		usersPanel = ReactDOM.render(<Users project={project} />, document.getElementById('user-section'));
-		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
-		titleRow = ReactDOM.render(<TitleRow projectType={project_type} projectId={project_id} account={account} />, document.getElementById('titleRow'));
-		description = ReactDOM.render(<Description projectType={project_type} projectId={project_id} />, document.getElementById('projectDescription'));
-		agreementCharts = ReactDOM.render(<AgreementStats projectType={project_type} projectId={project_id} />, document.getElementById('agreementCharts'));
+		projectStats = ReactDOM.render(<ProjectStats  project={project} />, document.getElementById('projectStats'));
+		titleRow = ReactDOM.render(<TitleRow project={project} account={account} />, document.getElementById('titleRow'));
+		description = ReactDOM.render(<Description project={project} />, document.getElementById('projectDescription'));
+		agreementCharts = ReactDOM.render(<AgreementStats  />, document.getElementById('agreementCharts'));
 		setProjectProperties();
-		if (project_type === 'PROJECT') {
-			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project_id} />, document.getElementById('revisionHistoryTimeline'));
+		if (project.getType() === 'PROJECT') {
+			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project.getId()} />, document.getElementById('revisionHistoryTimeline'));
 			setRevisionHistory(userPromise);
 			setBtnVisibility(userPromise);
 		}
@@ -71,11 +69,12 @@ function setupUI() {
 window.init = function () {
 	var urlParams = URI(window.location.search).query(true);
 
-	project_id = urlParams.project;
-	project_type = urlParams.type;
-	project = new Project(urlParams.project, urlParams.type)
-	if (typeof project_type === "undefined") project_type = 'PROJECT';
-	switch (project_type) {
+	var projectId = urlParams.project;
+	var projectType = urlParams.type;
+	if (typeof projectType === "undefined") projectType = 'PROJECT';
+	project = new Project(urlParams.project, urlParams.type);
+	
+	switch (projectType) {
 	case 'PROJECT':
 		$('#revisionHistory').show();
 		break;
@@ -102,18 +101,18 @@ window.init = function () {
 function showNewRevisionModal(title) {
 	var modal = new TextField(title, 'Use this field to describe this revision in a few sentences');
 	modal.showModal().then(function (text) {
-		revisionHistory.createNewRevision(project_id, text);
+		revisionHistory.createNewRevision(project.getId(), text);
 	});
 }
 
 function setProjectProperties() {
-	ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
+	ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
 		description.setDescription(resp.description);
 		project.setUmlEditorEnabled(resp.umlEditorEnabled);
 		titleRow.setProjectProperties(resp);
-		if (project_type === 'VALIDATION') {
+		if (project.getType() === 'VALIDATION') {
 			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
-			ReactDOM.render(<PersonalReportList projectType={project_type} project={resp} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
+			ReactDOM.render(<PersonalReportList projectType={project.getType()} project={resp} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
 
 		}
 	});
@@ -122,9 +121,9 @@ function setProjectProperties() {
 function setRevisionHistory(userPromise) {
 	var validationEndpoint = new ValidationEndpoint();
 
-	var validationPromise = validationEndpoint.listReports(project_id);
+	var validationPromise = validationEndpoint.listReports(project.getId());
 
-	ProjectEndpoint.listRevisions(project_id).then(function (resp) {
+	ProjectEndpoint.listRevisions(project.getId()).then(function (resp) {
 		userPromise.then(function (user) {
 			resp.items = resp.items || [];
 			var snapshots = [];
@@ -154,7 +153,7 @@ function setRevisionHistory(userPromise) {
 				revisionHistory.setRevisions(snapshots);
 				revisionHistory.setValidationProjects(validationProjects);
 				revisionHistory.setReports(reports);
-				revisionHistory.setRights(project_id, user);
+				revisionHistory.setRights(project.getId(), user);
 
 			});
 		});
@@ -166,7 +165,7 @@ function setRevisionHistory(userPromise) {
 function setBtnVisibility(userPromise) {
 	userPromise.then(function (user) {
 
-		var isProjectOwner = account.isProjectOwner(user, project_id);
+		var isProjectOwner = account.isProjectOwner(user, project.getId());
 		usersPanel.setIsProjectOwner(isProjectOwner);
 		description.setIsProjectOwner(isProjectOwner);
 		titleRow.setIsProjectOwner(isProjectOwner);

@@ -16,7 +16,7 @@ export default class ProjectStats extends React.Component {
 
 	init() {
 		var _this = this;
-		ProjectEndpoint.getProjectStats(this.props.projectId, this.props.projectType).then(function (resp) {
+		ProjectEndpoint.getProjectStats(this.props.project.getId(), this.props.project.getType()).then(function (resp) {
 			_this.setState({
 				docCount: resp.documentCount,
 				codeCount: resp.codeCount,

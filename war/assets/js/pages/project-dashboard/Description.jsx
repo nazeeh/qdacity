@@ -30,7 +30,7 @@ export default class Description extends React.Component {
 		var _this = this;
 		var modal = new TextField('Change the project description', 'Description');
 		modal.showModal().then(function (text) {
-			ProjectEndpoint.setDescription(_this.props.projectId, _this.props.projectType, text).then(function (resp) {
+			ProjectEndpoint.setDescription(_this.props.project.getId(), _this.props.project.getType(), text).then(function (resp) {
 				_this.setState({
 					description: text
 				})
