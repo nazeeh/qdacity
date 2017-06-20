@@ -50,7 +50,7 @@ function setupUI() {
 
 		var userPromise = account.getCurrentUser();
 
-		usersPanel = ReactDOM.render(<Users projectType={project_type}  projectId={project_id} />, document.getElementById('user-section'));
+		usersPanel = ReactDOM.render(<Users project={project} />, document.getElementById('user-section'));
 		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));
 		titleRow = ReactDOM.render(<TitleRow projectType={project_type} projectId={project_id} account={account} />, document.getElementById('titleRow'));
 		description = ReactDOM.render(<Description projectType={project_type} projectId={project_id} />, document.getElementById('projectDescription'));

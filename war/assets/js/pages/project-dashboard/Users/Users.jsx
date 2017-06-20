@@ -26,10 +26,10 @@ export default class Users extends React.Component {
 				</div>
 				<div className="box-body">
 					<div className="List-menu">
-						<InviteUserField projectType={this.props.projectType} projectId={this.props.projectId} isProjectOwner={this.state.isProjectOwner}/>
+						<InviteUserField project={this.props.project} isProjectOwner={this.state.isProjectOwner}/>
 					</div>
 					<div>
-						<UserList projectType={this.props.projectType}  projectId={this.props.projectId} />
+						<UserList project={this.props.project} />
 					</div>
 				</div>
 			</div>
