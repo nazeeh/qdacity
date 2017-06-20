@@ -113,7 +113,7 @@ domElement.slick('unslick');
 	}
 	*/
 	renderReport(report, chartID, index) {
-		if (!report.documentResults) return '';
+		
 		var data = new google.visualization.DataTable();
 		data.addColumn('string', 'Document');
 		data.addColumn('number', 'F-Measure');
@@ -126,7 +126,7 @@ domElement.slick('unslick');
 		});
 		
 		return(
-			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index"} graphID={"agreementChartId_"+ report.id + "_" + index"} data={data} options={this.options}/> 
+			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index} graphID={"agreementChartId_"+ report.id + "_" + index} data={data} options={this.options}/> 
 		);
 
 	}
@@ -135,9 +135,10 @@ domElement.slick('unslick');
 		var _this = this;
 		if (this.state.reports.length == 0) return (<div></div>);
 		return this.state.reports.map((report, index) => {
+			if (!report.documentResults) return '';
 			return (
 				<div key={"agreementChartContainer_"+ report.id + "_" + index}>
-					<h4 key={"agreementChartHeader_"+ report.id + "_" + index"}>
+					<h4 key={"agreementChartHeader_"+ report.id + "_" + index}>
 					<b>{report.name}</b>
 					</h4>
 					{_this.renderReport(report, index)}
