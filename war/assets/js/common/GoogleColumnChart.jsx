@@ -10,15 +10,15 @@ export default class GoogleColumnChart extends React.Component {
 	constructor(props) {
 		super(props);
 	}
-	
-	componentDidMount(){
+
+	componentDidMount() {
 		this.drawChart();
 	}
-	componentDidUpdate(){
+	componentDidUpdate() {
 		this.drawChart();
 	}
 
-	drawChart(){
+	drawChart() {
 		var data = this.props.data;
 		var options = this.props.options;
 		var domElement = document.getElementById(this.props.graphID);
@@ -28,7 +28,7 @@ export default class GoogleColumnChart extends React.Component {
 
 	render() {
 		return (
-		<StyledChart id={this.props.graphID}>
+			<StyledChart id={this.props.graphID}>
 		</StyledChart>);
 	}
 

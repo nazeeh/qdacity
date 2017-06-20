@@ -48,7 +48,7 @@ function setupUI() {
 		$('#navAccount').show();
 		$('#navSignin').hide();
 
-		var userPromise = account.getCurrentUser(); 
+		var userPromise = account.getCurrentUser();
 
 		usersPanel = ReactDOM.render(<Users projectType={project_type}  projectId={project_id} />, document.getElementById('user-section'));
 		projectStats = ReactDOM.render(<ProjectStats  projectType={project_type} projectId={project_id} />, document.getElementById('projectStats'));

@@ -6,11 +6,11 @@ import GoogleColumnChart from '../../common/GoogleColumnChart.jsx';
 //import 'script!slick-carousel';
 
 
-export default class AgreementStats  extends React.Component{
+export default class AgreementStats extends React.Component {
 
 	constructor(props) {
 		super(props);
-		
+
 		google.charts.load('current', {
 			packages: ['corechart', 'bar']
 		});
@@ -19,7 +19,7 @@ export default class AgreementStats  extends React.Component{
 		this.state = {
 			reports: []
 		};
-		
+
 		this.options = {
 			title: 'Agreement by Document',
 			colors: ['#00a65a', '#5f5f5f', '#797979', '#929292', '#337ab7'],
@@ -43,11 +43,11 @@ export default class AgreementStats  extends React.Component{
 			}
 		};
 		//this.componentDidMount = this.componentDidMount.bind(this);
-		
-/*var _this = this;
-google.charts.setOnLoadCallback(function () {
-		_this.forceUpdate();
-		});*/
+
+		/*var _this = this;
+		google.charts.setOnLoadCallback(function () {
+				_this.forceUpdate();
+				});*/
 	}
 
 	addReports(reports) {
@@ -56,38 +56,38 @@ google.charts.setOnLoadCallback(function () {
 		this.setState({
 			reports: reports
 		});
-/*		google.charts.setOnLoadCallback(function () {
-			reports.forEach(function (report) {
-				if (typeof report.documentResults != 'undefined') {
-					//Create node for report
-					var div = document.createElement("div");
-					_this.documentResults.append(div);
+		/*		google.charts.setOnLoadCallback(function () {
+					reports.forEach(function (report) {
+						if (typeof report.documentResults != 'undefined') {
+							//Create node for report
+							var div = document.createElement("div");
+							_this.documentResults.append(div);
 
-					// Add chart
-					_this.drawReport(report, div);
+							// Add chart
+							_this.drawReport(report, div);
 
-					// Prepend title
-					var title = document.createElement("h4");
-					title.innerHTML = "<b>" + report.name + "</b>";
-					div.insertBefore(title, div.firstChild);
-				}
+							// Prepend title
+							var title = document.createElement("h4");
+							title.innerHTML = "<b>" + report.name + "</b>";
+							div.insertBefore(title, div.firstChild);
+						}
 
-			});
+					});
 
-			if (_this.slickInitialized) {
-				_this.documentResults.slick('unslick');
+					if (_this.slickInitialized) {
+						_this.documentResults.slick('unslick');
 
-			} else {
-				_this.slickInitialized = true;
-			}
+					} else {
+						_this.slickInitialized = true;
+					}
 
-			_this.documentResults.slick({
-				dots: true
-			});
-		});*/
+					_this.documentResults.slick({
+						dots: true
+					});
+				});*/
 	}
-	
-	
+
+
 	/*
 	
 	componentDidMount(){
@@ -113,7 +113,7 @@ domElement.slick('unslick');
 	}
 	*/
 	renderReport(report, index) {
-		
+
 		var data = new google.visualization.DataTable();
 		data.addColumn('string', 'Document');
 		data.addColumn('number', 'F-Measure');
@@ -124,14 +124,14 @@ domElement.slick('unslick');
 			var cells = docResult.reportRow.split(",");
 			data.addRow([cells[0], parseFloat(cells[1]), parseFloat(cells[2]), parseFloat(cells[3])]);
 		});
-		
-		return(
-			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index} graphID={"agreementChartId_"+ report.id + "_" + index} data={data} options={this.options}/> 
+
+		return (
+			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index} graphID={"agreementChartId_"+ report.id + "_" + index} data={data} options={this.options}/>
 		);
 
 	}
-	
-	renderCharts(){
+
+	renderCharts() {
 		var _this = this;
 		if (this.state.reports.length == 0) return (<div></div>);
 		return this.state.reports.map((report, index) => {
@@ -146,22 +146,22 @@ domElement.slick('unslick');
 			);
 		})
 	}
-	
-	render(){
-	// If infinite is set to true the last slide is copied in front of the first and the first after the last. 
-	// This also copies the IDs which GoogleChart uses to render content.
-	// Then, if the last slide is selected the content gets rendered into the invisible div inserted before the first.
+
+	render() {
+		// If infinite is set to true the last slide is copied in front of the first and the first after the last. 
+		// This also copies the IDs which GoogleChart uses to render content.
+		// Then, if the last slide is selected the content gets rendered into the invisible div inserted before the first.
 		var settings = {
-      dots: true,
-      infinite: false, 
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1
-    };
-    
+			dots: true,
+			infinite: false,
+			speed: 500,
+			slidesToShow: 1,
+			slidesToScroll: 1
+		};
+
 
 		return (
-		<div>
+			<div>
 		
 			<Slider {...settings}>
 				{this.renderCharts()}
