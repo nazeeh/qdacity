@@ -135,6 +135,8 @@ public class ProjectEndpoint {
 		AbstractProject project = null;
 		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Project " + id);
+
+			Authorization.isUserNotNull(user);
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
 			if (dbUser.getLastProjectId() != id) { // Check if lastProject property of user has to be updated

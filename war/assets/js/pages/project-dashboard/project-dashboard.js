@@ -142,8 +142,6 @@ function setRevisionHistory(userPromise) {
 
 			validationPromise.then(function (reports) {
 
-				//var agreementStats = new AgreementStats("agreementStats");
-
 				for (var i = 0; i < snapshots.length; i++) {
 					var revID = snapshots[i].id;
 					if (typeof reports[revID] != 'undefined') {
