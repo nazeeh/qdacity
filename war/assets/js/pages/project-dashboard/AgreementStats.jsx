@@ -1,10 +1,15 @@
 import React from 'react';
 import Slider from 'react-slick';
+import styled from 'styled-components';
 
 import GoogleColumnChart from '../../common/GoogleColumnChart.jsx';
 
 //import 'script!slick-carousel';
 
+const StyledAgreementStats = styled.div `
+    margin-left:25px;
+	margin-right:25px;
+`;
 
 export default class AgreementStats extends React.Component {
 
@@ -156,17 +161,17 @@ domElement.slick('unslick');
 			infinite: false,
 			speed: 500,
 			slidesToShow: 1,
-			slidesToScroll: 1
+			slidesToScroll: 1,
+			arrows: true
 		};
 
 
 		return (
-			<div>
-		
-			<Slider {...settings}>
-				{this.renderCharts()}
-			</Slider>
-		</div>
+			<StyledAgreementStats>
+				<Slider {...settings}>
+					{this.renderCharts()}
+				</Slider>
+			</StyledAgreementStats>
 		);
 	}
 }
