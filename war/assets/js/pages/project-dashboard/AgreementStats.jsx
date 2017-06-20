@@ -112,7 +112,7 @@ domElement.slick('unslick');
 		this.slickInitialized = false;
 	}
 	*/
-	renderReport(report, chartID, index) {
+	renderReport(report, index) {
 		
 		var data = new google.visualization.DataTable();
 		data.addColumn('string', 'Document');
@@ -148,9 +148,12 @@ domElement.slick('unslick');
 	}
 	
 	render(){
+	// If infinite is set to true the last slide is copied in front of the first and the first after the last. 
+	// This also copies the IDs which GoogleChart uses to render content.
+	// Then, if the last slide is selected the content gets rendered into the invisible div inserted before the first.
 		var settings = {
       dots: true,
-      infinite: true,
+      infinite: false, 
       speed: 500,
       slidesToShow: 1,
       slidesToScroll: 1
