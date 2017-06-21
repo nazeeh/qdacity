@@ -62,6 +62,7 @@ public class ValidationEndpoint {
 			if(reports != null) {
 			    for (ValidationReport validationReport : reports) {
 				    List<DocumentResult> docresults = validationReport.getDocumentResults();
+					for (DocumentResult documentResult : docresults);
 			    }
 			}
 		} finally {
