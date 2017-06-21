@@ -55,9 +55,8 @@ function setupUI() {
 		agreementCharts = ReactDOM.render(<AgreementStats  />, document.getElementById('agreementCharts'));
 		setProjectProperties();
 		if (project.getType() === 'PROJECT') {
-			revisionHistory = ReactDOM.render(<RevisionHistory projectID={project.getId()} />, document.getElementById('revisionHistoryTimeline'));
-			setRevisionHistory(userPromise);
-			setBtnVisibility(userPromise);
+			revisionHistory = ReactDOM.render(<RevisionHistory project={project}  agreementCharts={agreementCharts} userPromise={userPromise} />, document.getElementById('revisionHistoryTimeline'));
+			setBtnVisibility(userPromise); 
 		}
 
 	} else {
@@ -116,50 +115,6 @@ function setProjectProperties() {
 
 		}
 	});
-}
-
-function setRevisionHistory(userPromise) {
-	var validationEndpoint = new ValidationEndpoint();
-
-	var validationPromise = validationEndpoint.listReports(project.getId());
-
-	ProjectEndpoint.listRevisions(project.getId()).then(function (resp) {
-		userPromise.then(function (user) {
-			resp.items = resp.items || [];
-			var snapshots = [];
-			var validationProjects = {};
-			for (var i = 0; i < resp.items.length; i++) {
-				if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
-				else {
-					if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
-					validationProjects[resp.items[i].revisionID].push(resp.items[i]);
-				}
-			}
-			project.setRevisions(snapshots);
-			project.setValidationProjects(validationProjects);
-
-
-			validationPromise.then(function (reports) {
-
-				for (var i = 0; i < snapshots.length; i++) {
-					var revID = snapshots[i].id;
-					if (typeof reports[revID] != 'undefined') {
-						agreementCharts.addReports(reports[revID]);
-					}
-				}
-
-				project.setReports(reports);
-
-				revisionHistory.setRevisions(snapshots);
-				revisionHistory.setValidationProjects(validationProjects);
-				revisionHistory.setReports(reports);
-				revisionHistory.setRights(project.getId(), user);
-
-			});
-		});
-
-	});
-
 }
 
 function setBtnVisibility(userPromise) {

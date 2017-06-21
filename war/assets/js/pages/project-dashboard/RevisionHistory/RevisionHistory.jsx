@@ -22,6 +22,8 @@ export default class RevisionHistory extends React.Component {
 
 		this.renderReports = this.renderReports.bind(this);
 		this.addRevision = this.addRevision.bind(this);
+		
+		this.init();
 	}
 
 	getStyles() {
@@ -47,17 +49,46 @@ export default class RevisionHistory extends React.Component {
 
 	init() {
 		var _this = this;
-		_this.state.revisions = [];
+		var project = this.props.project;
 		var validationEndpoint = new ValidationEndpoint();
-
-
-		var validationPromise = validationEndpoint.listReports(_this.props.projectID);
-
-		ProjectEndpoint.listRevisions(_this.props.projectID).then(function (revisionResp) {
-
-			_this.setState({
-				revisions: revisionResp.items
+	
+		var validationPromise = validationEndpoint.listReports(project.getId());
+	
+		ProjectEndpoint.listRevisions(project.getId()).then(function (resp) {
+			_this.props.userPromise.then(function (user) {
+				resp.items = resp.items || [];
+				var snapshots = [];
+				var validationProjects = {};
+				for (var i = 0; i < resp.items.length; i++) {
+					if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
+					else {
+						if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
+						validationProjects[resp.items[i].revisionID].push(resp.items[i]);
+					}
+				}
+				project.setRevisions(snapshots);
+				project.setValidationProjects(validationProjects);
+	
+	
+				validationPromise.then(function (reports) {
+	
+					for (var i = 0; i < snapshots.length; i++) {
+						var revID = snapshots[i].id;
+						if (typeof reports[revID] != 'undefined') {
+							_this.props.agreementCharts.addReports(reports[revID]);
+						}
+					}
+	
+					project.setReports(reports);
+	
+					_this.setRevisions(snapshots);
+					_this.setValidationProjects(validationProjects);
+					_this.setReports(reports);
+					_this.setRights(project.getId(), user);
+	
+				});
 			});
+	
 		});
 	}
 
