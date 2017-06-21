@@ -7,6 +7,7 @@ export default class Project {
 		this.validationProjects = {}; // list indexed by revision ID
 		this.umlEditorEnabled = false;
 		this.parentID = undefined; // when the project is a validationproject this points to the project it is based on
+		this.revisionID = undefined;
 	}
 
 	getId() {
@@ -79,5 +80,13 @@ export default class Project {
 	
 	setParentID(parentID){
 		this.parentID = parentID;
+	}
+	
+	getRevisionID(){
+		return this.revisionID;
+	}
+	
+	setRevisionID(revisionID){
+		this.revisionID = revisionID;
 	}
 }

@@ -9,7 +9,7 @@ export default class PersonalReportList extends React.Component {
 		this.state = {
 			reports: []
 		};
-		this.init()
+		if (this.props.project.getType() == 'VALIDATION') this.init();
 	}
 
 
@@ -25,11 +25,11 @@ export default class PersonalReportList extends React.Component {
 	init() {
 		var _this = this;
 		var validationEndpoint = new ValidationEndpoint();
-		var validationPromise = validationEndpoint.listReports(this.props.parentProject);
+		var validationPromise = validationEndpoint.listReports(this.props.project.getParentID());
 
 		validationPromise.then(function (reports) {
 			for (var property in reports) {
-				if (reports.hasOwnProperty(property) && property == _this.props.project.revisionID) {
+				if (reports.hasOwnProperty(property) && property == _this.props.project.getRevisionID()) {
 					var reportArr = reports[property]
 					reportArr = reportArr || [];
 					_this.setState({
@@ -43,8 +43,8 @@ export default class PersonalReportList extends React.Component {
 	showDocumentResults(report) {
 		var _this = this;
 		if (report.evaluationMethod == 'f-measure') {
-			ValidationEndpoint.getValidationResult(report.id, _this.props.project.id).then(function (resp) {
-				var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.project.id, _this.props.project.id, _this.props.projectType);
+			ValidationEndpoint.getValidationResult(report.id, _this.props.project.getId()).then(function (resp) {
+				var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.project.getId(), _this.props.project.getId(), _this.props.project.getType());
 				agreementByDoc.showModal();
 			});
 		}
@@ -52,6 +52,7 @@ export default class PersonalReportList extends React.Component {
 
 
 	render() {
+		if (this.props.project.getType() != 'VALIDATION') return null;
 		var _this = this;
 
 		const styles = this.getStyles();

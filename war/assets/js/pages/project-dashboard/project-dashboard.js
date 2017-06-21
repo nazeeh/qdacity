@@ -84,14 +84,11 @@ function setProjectProperties() {
 	ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
 		description.setDescription(resp.description);
 		project.setUmlEditorEnabled(resp.umlEditorEnabled);
-		project.setParentID(resp.projectID);
+		project.setParentID(resp.projectID); // Only present for ValidationProject
+		project.setRevisionID(resp.revisionID); // Only present for ValidationProject
 		titleRow.setProjectProperties(resp);
 		ReactDOM.render(<ParentProject project={project} />, document.getElementById('parentProject'));
-		if (project.getType() === 'VALIDATION') {
-			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
-			ReactDOM.render(<PersonalReportList projectType={project.getType()} project={resp} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
-
-		}
+		ReactDOM.render(<PersonalReportList project={project} account={account} />, document.getElementById('personalReportList'));
 	});
 }
 
