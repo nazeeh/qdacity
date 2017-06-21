@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import ReportList from './ReportList.jsx';
 import ValPrjList from './ValPrjList.jsx';
@@ -9,6 +10,17 @@ import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import CustomForm from '../../../common/modals/CustomForm';
+
+const SyledCreateReportBtn = styled.a `
+	margin-top: -6px;
+	padding: 5px 10px;
+	color: black;
+`;
+
+const StyledBtnIcon = styled.i `
+	font-size: 18px;
+`;
+
 
 export default class RevisionHistory extends React.Component {
 	constructor(props) {
@@ -26,27 +38,6 @@ export default class RevisionHistory extends React.Component {
 		this.createNewRevision = this.createNewRevision.bind(this);
 		
 		this.init();
-	}
-
-	getStyles() {
-		return {
-			pagination: {
-				listStyle: "none",
-				display: "flex"
-			},
-			createReportBtn: {
-				marginTop: "-6px",
-				padding: "5px 10px"
-			},
-			listItemBtn: {
-				float: "right",
-				margintop: "-18px"
-			},
-			btnIcon: {
-				fontSize: "18px"
-			}
-
-		};
 	}
 
 	init() {
@@ -239,17 +230,15 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	renderCreateReportBtn(revId) {
-		const styles = this.getStyles();
-		if (this.state.isAdmin || this.state.isProjectOwner) return <a onClick={() => this.createReport(revId)} className="btn btn-default btn-sm pull-right" style={styles.createReportBtn} >
-			<i style={styles.btnIcon} className="fa fa-plus-circle  pull-left"></i>
-						Create Report
-		</a>
+		if (this.state.isAdmin || this.state.isProjectOwner) return (
+			<SyledCreateReportBtn onClick={() => this.createReport(revId)} className="btn btn-default btn-sm pull-right" >
+				<StyledBtnIcon className="fa fa-plus-circle  pull-left"></StyledBtnIcon>
+							Create Report
+			</SyledCreateReportBtn>);
 		else return '';
 	}
 
 	renderValidationProjects(revId) {
-		const styles = this.getStyles();
-
 		if (!this.state.validationProjects[revId]) return '';
 		var validationProjects = this.state.validationProjects[revId];
 
@@ -270,8 +259,6 @@ export default class RevisionHistory extends React.Component {
 
 	render() {
 		var _this = this;
-
-		const styles = this.getStyles();
 
 		//Render Components
 
