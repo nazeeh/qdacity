@@ -11,6 +11,7 @@ import ProjectStats from "./ProjectStats.jsx"
 import TitleRow from "./TitleRow/TitleRow.jsx"
 import PersonalReportList from "./PersonalReportList.jsx"
 import Description from "./Description.jsx";
+import ParentProject from "./ParentProject/ParentProject.jsx"
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/URIjs/URI.min.js';
@@ -45,12 +46,13 @@ function setupUI() {
 		$('#navSignin').hide();
 
 		var userPromise = account.getCurrentUser();
-
+		var projectPromise = ProjectEndpoint.getProject(project.getId(), project.getType());
 		usersPanel = ReactDOM.render(<Users project={project} />, document.getElementById('user-section'));
 		projectStats = ReactDOM.render(<ProjectStats  project={project} />, document.getElementById('projectStats'));
 		titleRow = ReactDOM.render(<TitleRow project={project} account={account} />, document.getElementById('titleRow'));
 		description = ReactDOM.render(<Description project={project} />, document.getElementById('projectDescription'));
 		agreementCharts = ReactDOM.render(<AgreementStats  />, document.getElementById('agreementCharts'));
+		
 		setProjectProperties();
 		if (project.getType() === 'PROJECT') {
 			revisionHistory = ReactDOM.render(<RevisionHistory project={project}  agreementCharts={agreementCharts} userPromise={userPromise} />, document.getElementById('revisionHistory'));
@@ -70,18 +72,6 @@ window.init = function () {
 	var projectType = urlParams.type;
 	if (typeof projectType === "undefined") projectType = 'PROJECT';
 	project = new Project(urlParams.project, urlParams.type);
-	
-	switch (projectType) {
-	case 'PROJECT':
-		$('#revisionHistory').show();
-		break;
-	case 'VALIDATION':
-		$('#parentProject').show();
-		$('#validationReports').show();
-		break;
-	default:
-		break;
-	}
 
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
@@ -94,7 +84,9 @@ function setProjectProperties() {
 	ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
 		description.setDescription(resp.description);
 		project.setUmlEditorEnabled(resp.umlEditorEnabled);
+		project.setParentID(resp.projectID);
 		titleRow.setProjectProperties(resp);
+		ReactDOM.render(<ParentProject project={project} />, document.getElementById('parentProject'));
 		if (project.getType() === 'VALIDATION') {
 			$('#parentProjectLink').attr('href', 'project-dashboard.html?project=' + resp.projectID + '&type=PROJECT');
 			ReactDOM.render(<PersonalReportList projectType={project.getType()} project={resp} parentProject={resp.projectID} account={account} />, document.getElementById('personalReportList'));
