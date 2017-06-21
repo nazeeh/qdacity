@@ -2,6 +2,7 @@ import React from 'react';
 
 import ReportList from './ReportList.jsx';
 import ValPrjList from './ValPrjList.jsx';
+import CreateRevisionBtn from './CreateRevisionBtn.jsx';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
@@ -22,6 +23,7 @@ export default class RevisionHistory extends React.Component {
 
 		this.renderReports = this.renderReports.bind(this);
 		this.addRevision = this.addRevision.bind(this);
+		this.createNewRevision = this.createNewRevision.bind(this);
 		
 		this.init();
 	}
@@ -89,6 +91,12 @@ export default class RevisionHistory extends React.Component {
 				});
 			});
 	
+		});
+	}
+	
+	setIsProjectOwner(pIsProjectOnwer) {
+		this.setState({
+			isProjectOwner: pIsProjectOnwer
 		});
 	}
 
@@ -298,10 +306,18 @@ export default class RevisionHistory extends React.Component {
 
 		return (
 			<div>
-				<ul className="timeline list">
+					<div className="box-header with-border">
+						<h3 className="box-title">Revision History</h3>
+						<CreateRevisionBtn createNewRevision={this.createNewRevision} project={this.props.project} isProjectOwner={this.state.isProjectOwner}/>
+					</div>
+					<div className="box-body">
+						<div id="revision-panel">
+						<ul className="timeline list">
 					{renderRevisions}
 	            </ul>
-     		</div>
+						</div>
+					</div>
+			</div>
 		);
 	}
 }

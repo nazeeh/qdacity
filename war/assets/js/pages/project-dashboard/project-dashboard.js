@@ -1,9 +1,8 @@
 import AgreementStats from './AgreementStats.jsx';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
-import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
+
 import Project from './Project';
 import Account from '../../common/Account.jsx';
-import TextField from '../../common/modals/TextField';
 import loadGAPIs from '../../common/GAPI';
 
 import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
@@ -35,7 +34,6 @@ var project;
 var agreementCharts;
 var revisionHistory;
 var usersPanel;
-var inviteUserField;
 var projectStats;
 var titleRow;
 var description;
@@ -55,7 +53,7 @@ function setupUI() {
 		agreementCharts = ReactDOM.render(<AgreementStats  />, document.getElementById('agreementCharts'));
 		setProjectProperties();
 		if (project.getType() === 'PROJECT') {
-			revisionHistory = ReactDOM.render(<RevisionHistory project={project}  agreementCharts={agreementCharts} userPromise={userPromise} />, document.getElementById('revisionHistoryTimeline'));
+			revisionHistory = ReactDOM.render(<RevisionHistory project={project}  agreementCharts={agreementCharts} userPromise={userPromise} />, document.getElementById('revisionHistory'));
 			setBtnVisibility(userPromise); 
 		}
 
@@ -90,18 +88,6 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
-
-	document.getElementById('newRevisionBtn').onclick = function () {
-		showNewRevisionModal("Revision Comment");
-	}
-
-}
-
-function showNewRevisionModal(title) {
-	var modal = new TextField(title, 'Use this field to describe this revision in a few sentences');
-	modal.showModal().then(function (text) {
-		revisionHistory.createNewRevision(project.getId(), text);
-	});
 }
 
 function setProjectProperties() {
@@ -124,10 +110,5 @@ function setBtnVisibility(userPromise) {
 		usersPanel.setIsProjectOwner(isProjectOwner);
 		description.setIsProjectOwner(isProjectOwner);
 		titleRow.setIsProjectOwner(isProjectOwner);
-		if (isProjectOwner) {
-			$('#newRevisionBtn').removeClass('hidden');
-		} else {
-			$('#newRevisionBtn').addClass('hidden');
-		}
 	});
 }
