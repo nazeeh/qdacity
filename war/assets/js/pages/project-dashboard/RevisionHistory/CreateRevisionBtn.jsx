@@ -7,7 +7,7 @@ export default class CreateRevisionBtn extends React.Component {
 	constructor(props) {
 		super(props);
 	}
-	
+
 	showNewRevisionModal() {
 		var _this = this;
 		var modal = new TextField('Revision Comment', 'Use this field to describe this revision in a few sentences');

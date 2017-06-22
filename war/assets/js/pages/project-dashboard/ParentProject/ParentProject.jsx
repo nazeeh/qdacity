@@ -4,8 +4,8 @@ export default class ParentProject extends React.Component {
 	constructor(props) {
 		super(props);
 	}
-	
-	render(){
+
+	render() {
 		if (this.props.project.getType() == 'PROJECT') return null;
 		return (
 			<div className=" box box-default">
@@ -18,5 +18,5 @@ export default class ParentProject extends React.Component {
 			</div>
 		);
 	}
-	
+
 }

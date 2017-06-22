@@ -28,11 +28,11 @@ export default class Project {
 		this.name = name;
 	}
 
-	getDescription(){
+	getDescription() {
 		return this.description;
 	}
 
-	setDescription(desc){
+	setDescription(desc) {
 		this.description = desc;
 	}
 
@@ -92,19 +92,19 @@ export default class Project {
 		return this.umlEditorEnabled;
 	}
 
-	getParentID(){
+	getParentID() {
 		return this.parentID;
 	}
 
-	setParentID(parentID){
+	setParentID(parentID) {
 		this.parentID = parentID;
 	}
 
-	getRevisionID(){
+	getRevisionID() {
 		return this.revisionID;
 	}
 
-	setRevisionID(revisionID){
+	setRevisionID(revisionID) {
 		this.revisionID = revisionID;
 	}
 }

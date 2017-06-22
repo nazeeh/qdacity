@@ -260,7 +260,7 @@ export default class RevisionHistory extends React.Component {
 	render() {
 		var _this = this;
 
-		if(this.props.project.type != "PROJECT") return null;
+		if (this.props.project.type != "PROJECT") return null;
 
 		//Render Revision
 		const renderRevisions = this.state.revisions.map((revision, index) => {

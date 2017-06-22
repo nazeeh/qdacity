@@ -16,23 +16,23 @@ export default class ProjectDashboard extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			project:this.props.project,
+			project: this.props.project,
 			reports: [],
-      		isProjectOwner: false,
+			isProjectOwner: false,
 			isValidationCoder: false
 		};
 
-    	this.init();
+		this.init();
 
 		this.addReports = this.addReports.bind(this);
 
 	}
 
-	init(){
-  	  this.userPromise = this.props.account.getCurrentUser();
-	  this.setUserRights();
-	  this.setProjectProperties();
-    }
+	init() {
+		this.userPromise = this.props.account.getCurrentUser();
+		this.setUserRights();
+		this.setProjectProperties();
+	}
 
 	setUserRights() {
 		var _this = this;
@@ -62,19 +62,19 @@ export default class ProjectDashboard extends React.Component {
 			project.setParentID(resp.projectID); // Only present for ValidationProject
 			project.setRevisionID(resp.revisionID); // Only present for ValidationProject
 			_this.setState({
-					project: project
+				project: project
 			});
 		});
 	}
 
-	addReports(newReports){
+	addReports(newReports) {
 		var reports = this.state.reports.concat(newReports);
 		this.setState({
 			reports: reports
 		});
 	}
 
-	render(){
+	render() {
 
 		return (
 			<div>
