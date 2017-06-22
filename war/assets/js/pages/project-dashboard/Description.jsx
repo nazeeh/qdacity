@@ -7,23 +7,10 @@ export default class Description extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			description: "",
-			isProjectOwner: false
+			description: this.props.project.description
 		};
 
 		this.showDescriptionModal = this.showDescriptionModal.bind(this);
-	}
-
-	setDescription(desc) {
-		this.setState({
-			description: desc
-		});
-	}
-
-	setIsProjectOwner(pIsProjectOnwer) {
-		this.setState({
-			isProjectOwner: pIsProjectOnwer
-		});
 	}
 
 	showDescriptionModal() {
@@ -31,18 +18,17 @@ export default class Description extends React.Component {
 		var modal = new TextField('Change the project description', 'Description');
 		modal.showModal().then(function (text) {
 			ProjectEndpoint.setDescription(_this.props.project.getId(), _this.props.project.getType(), text).then(function (resp) {
-				_this.setState({
-					description: text
-				})
+				_this.props.project.setDescription(text);
+				_this.forceUpdate();
 			});
 		});
 	}
 
 	renderEditBtn() {
-		if (!this.state.isProjectOwner) return "";
-		else return <div className="box-tools pull-right"> 
-				<button 
-					type="button" 
+		if (!this.props.isProjectOwner) return "";
+		else return <div className="box-tools pull-right">
+				<button
+					type="button"
 					className="btn btn-box-tool"
 					onClick={this.showDescriptionModal}
 				>
@@ -61,7 +47,7 @@ export default class Description extends React.Component {
 				{this.renderEditBtn()}
 				</div>
 				<div className="box-body">
-					{this.state.description}
+					{this.props.project.getDescription()}
 				</div>
 			</div>
 		);

@@ -63,8 +63,8 @@ export default class PersonalReportList extends React.Component {
 			var datetime = report.datetime;
 			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 			else datetime = "";
-			return <li 
-					className="studentReportLink listItem report" 
+			return <li
+					className="studentReportLink listItem report"
 					key={report.id}
 					onClick={() => this.showDocumentResults(report)}
 					>

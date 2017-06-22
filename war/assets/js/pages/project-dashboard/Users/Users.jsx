@@ -11,12 +11,6 @@ export default class Users extends React.Component {
 		};
 	}
 
-	setIsProjectOwner(pIsProjectOnwer) {
-		this.setState({
-			isProjectOwner: pIsProjectOnwer
-		});
-	}
-
 	render() {
 		return (
 			<div id="user-section">
@@ -26,7 +20,7 @@ export default class Users extends React.Component {
 				</div>
 				<div className="box-body">
 					<div className="List-menu">
-						<InviteUserField project={this.props.project} isProjectOwner={this.state.isProjectOwner}/>
+						<InviteUserField project={this.props.project} isProjectOwner={this.props.isProjectOwner}/>
 					</div>
 					<div>
 						<UserList project={this.props.project} />

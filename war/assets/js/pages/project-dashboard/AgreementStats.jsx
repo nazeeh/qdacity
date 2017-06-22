@@ -82,8 +82,8 @@ export default class AgreementStats extends React.Component {
 
 	renderCharts() {
 		var _this = this;
-		if (this.state.reports.length == 0) return (<div></div>);
-		return this.state.reports.map((report, index) => {
+		if (this.props.reports.length == 0) return (<div></div>);
+		return this.props.reports.map((report, index) => {
 			if (!report.documentResults) return '';
 			return (
 				<div key={"agreementChartContainer_"+ report.id + "_" + index}>
@@ -97,7 +97,7 @@ export default class AgreementStats extends React.Component {
 	}
 
 	render() {
-		// If infinite is set to true the last slide is copied in front of the first and the first after the last. 
+		// If infinite is set to true the last slide is copied in front of the first and the first after the last.
 		// This also copies the IDs which GoogleChart uses to render content.
 		// Then, if the last slide is selected the content gets rendered into the invisible div inserted before the first.
 		var settings = {

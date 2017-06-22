@@ -36,7 +36,7 @@ export default class RevisionHistory extends React.Component {
 		this.renderReports = this.renderReports.bind(this);
 		this.addRevision = this.addRevision.bind(this);
 		this.createNewRevision = this.createNewRevision.bind(this);
-		
+
 		this.init();
 	}
 
@@ -44,9 +44,9 @@ export default class RevisionHistory extends React.Component {
 		var _this = this;
 		var project = this.props.project;
 		var validationEndpoint = new ValidationEndpoint();
-	
+
 		var validationPromise = validationEndpoint.listReports(project.getId());
-	
+
 		ProjectEndpoint.listRevisions(project.getId()).then(function (resp) {
 			_this.props.userPromise.then(function (user) {
 				resp.items = resp.items || [];
@@ -61,30 +61,30 @@ export default class RevisionHistory extends React.Component {
 				}
 				project.setRevisions(snapshots);
 				project.setValidationProjects(validationProjects);
-	
-	
+
+
 				validationPromise.then(function (reports) {
-	
+
 					for (var i = 0; i < snapshots.length; i++) {
 						var revID = snapshots[i].id;
 						if (typeof reports[revID] != 'undefined') {
-							_this.props.agreementCharts.addReports(reports[revID]);
+							_this.props.addReports(reports[revID]);
 						}
 					}
-	
+
 					project.setReports(reports);
-	
+
 					_this.setRevisions(snapshots);
 					_this.setValidationProjects(validationProjects);
 					_this.setReports(reports);
 					_this.setRights(project.getId(), user);
-	
+
 				});
 			});
-	
+
 		});
 	}
-	
+
 	setIsProjectOwner(pIsProjectOnwer) {
 		this.setState({
 			isProjectOwner: pIsProjectOnwer
@@ -218,9 +218,9 @@ export default class RevisionHistory extends React.Component {
 		return [
 			<i key={'label_'+revId} className="fa fa-tachometer bg-grey">
 				</i>,
-			<div key={revId} className="timeline-item"> 
+			<div key={revId} className="timeline-item">
 					<h3 className="timeline-header timelineUserName">
-						<b> Reports </b> 
+						<b> Reports </b>
 					</h3>
 					<div className="timeline-body timelineContent">
 						<ReportList reports={reports} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner}/>
@@ -244,9 +244,9 @@ export default class RevisionHistory extends React.Component {
 
 		return [
 			<i key={'label_'+revId} className="fa fa-check bg-grey"></i>,
-			<div key={revId} className="timeline-item"> 
+			<div key={revId} className="timeline-item">
 				<h3 className="timeline-header timelineUserName">
-					<b> Validation Projects </b> 
+					<b> Validation Projects </b>
 					{this.renderCreateReportBtn(revId)}
 				</h3>
 				<div className="timeline-body timelineContent">
@@ -260,7 +260,7 @@ export default class RevisionHistory extends React.Component {
 	render() {
 		var _this = this;
 
-		//Render Components
+		if(this.props.project.type != "PROJECT") return null;
 
 		//Render Revision
 		const renderRevisions = this.state.revisions.map((revision, index) => {
