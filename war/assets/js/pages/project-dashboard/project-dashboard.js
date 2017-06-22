@@ -1,5 +1,4 @@
 import Project from './Project';
-import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
 
 import ProjectDashboard from "./ProjectDashboard.jsx"
@@ -41,8 +40,8 @@ function setupUI() {
 
 window.init = function () {
 	var urlParams = URI(window.location.search).query(true);
+	var projectType = (urlParams.type ? urlParams.type : 'PROJECT');
 
-	var projectType = (urlParams.type : urlParams.type : 'PROJECT');
 	project = new Project(urlParams.project, projectType);
 
 	loadGAPIs(setupUI).then(
