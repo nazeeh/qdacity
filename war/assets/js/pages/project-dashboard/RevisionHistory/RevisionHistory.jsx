@@ -286,7 +286,7 @@ export default class RevisionHistory extends React.Component {
 
 
 		return (
-			<div>
+			<div className="box box-default">
 					<div className="box-header with-border">
 						<h3 className="box-title">Revision History</h3>
 						<CreateRevisionBtn createNewRevision={this.createNewRevision} project={this.props.project} isProjectOwner={this.state.isProjectOwner}/>
