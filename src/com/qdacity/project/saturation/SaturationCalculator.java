@@ -5,7 +5,7 @@ public class SaturationCalculator {
     public SaturationResult calculateSaturation(Long projectId) {
 	SaturationResult result = new SaturationResult();
 	
-	//TODO
+	//TODO using SaturationParameters
 	
 	return result;
     }

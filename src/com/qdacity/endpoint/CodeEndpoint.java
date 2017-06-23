@@ -1,7 +1,6 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +22,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.logs.Change;
-import com.qdacity.logs.ChangeObject;
-import com.qdacity.logs.ChangeType;
+import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
@@ -98,7 +96,7 @@ public class CodeEndpoint {
 
 			// Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new Change(new Date(System.currentTimeMillis()), cs.getProject(), cs.getProjectType(), ChangeType.CREATED, user.getUserId(), ChangeObject.CODE, code.getId());
+			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code.getId());
 			mgr.makePersistent(change);
 
 		} finally {
@@ -132,10 +130,15 @@ public class CodeEndpoint {
 
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementIDs " + code.getMmElementIDs()); 
 
-			Code codeDB = mgr.getObjectById(Code.class, code.getId());
-			code.setCodeID(codeDB.getCodeID());
-			code.setCodeBookEntry(codeDB.getCodeBookEntry());
+			Code oldCode = mgr.getObjectById(Code.class, code.getId());
+			code.setCodeID(oldCode.getCodeID());
+			code.setCodeBookEntry(oldCode.getCodeBookEntry());
 			mgr.makePersistent(code);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeUpdateCodeChange(oldCode, code, cs.getProject(), cs.getProjectType(), user.getUserId());
+			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}
