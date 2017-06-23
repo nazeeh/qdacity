@@ -1,11 +1,15 @@
 export default class Project {
 	constructor(prjId, type) {
 		this.id = prjId;
+		this.name = "";
+		this.description = "";
 		this.type = type;
 		this.reports = {}; // hashmap indexed by revision ID
 		this.revisions = [];
 		this.validationProjects = {}; // list indexed by revision ID
 		this.umlEditorEnabled = false;
+		this.parentID = undefined; // when the project is a validationproject this points to the project it is based on
+		this.revisionID = undefined;
 	}
 
 	getId() {
@@ -14,6 +18,22 @@ export default class Project {
 
 	getType() {
 		return this.type;
+	}
+
+	getName() {
+		return this.name;
+	}
+
+	setName(name) {
+		this.name = name;
+	}
+
+	getDescription() {
+		return this.description;
+	}
+
+	setDescription(desc) {
+		this.description = desc;
 	}
 
 	setRevisions(revs) {
@@ -72,5 +92,19 @@ export default class Project {
 		return this.umlEditorEnabled;
 	}
 
+	getParentID() {
+		return this.parentID;
+	}
 
+	setParentID(parentID) {
+		this.parentID = parentID;
+	}
+
+	getRevisionID() {
+		return this.revisionID;
+	}
+
+	setRevisionID(revisionID) {
+		this.revisionID = revisionID;
+	}
 }

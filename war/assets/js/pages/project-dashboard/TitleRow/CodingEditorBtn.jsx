@@ -15,7 +15,7 @@ export default class SettingsBtn extends React.Component {
 	}
 
 	redirectToCodingEditor() {
-		location.href = 'coding-editor.html?project=' + this.props.projectId + '&type=' + this.props.projectType;
+		location.href = 'coding-editor.html?project=' + this.props.project.getId() + '&type=' + this.props.project.getType();
 	}
 
 	render() {

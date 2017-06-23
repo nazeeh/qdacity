@@ -8,7 +8,6 @@ export default class TitleRow extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isProjectOwner: false,
 			isValidationCoder: false,
 			prjName: "",
 			prjSettings: {}
@@ -33,43 +32,19 @@ export default class TitleRow extends React.Component {
 		});
 	}
 
-	setIsValidationCoder(properties) {
-		var account = this.props.account;
-		account.getCurrentUser().then((user) => {
-			var isValidationCoder = account.isValidationCoder(user, properties);
-			this.setState({
-				isValidationCoder: isValidationCoder
-			});
-		});
-
-	}
-
-	setProjectProperties(properties) {
-		this.setSettings(properties);
-		this.setIsValidationCoder(properties);
-		this.setState({
-			prjName: properties.name
-		});
-	}
-
-	setIsProjectOwner(pIsProjectOnwer) {
-		this.setState({
-			isProjectOwner: pIsProjectOnwer
-		});
-	}
 
 	render() {
 		const styles = this.getStyles();
-
+		var projectName = (this.props.project.name ? this.props.project.name : "")
 		return (
 			<h2 className="page-header">
-			<i className="fa fa-newspaper-o"></i> 
+			<i className="fa fa-newspaper-o"></i>
 				<span style={styles.projectName}>
-					{this.state.prjName}
+					{projectName}
 				</span>
-				
-				<SettingsBtn projectType={this.props.projectType} projectId={this.props.projectId} isProjectOwner={this.state.isProjectOwner} />
-				<CodingEditorBtn projectType={this.props.projectType} projectId={this.props.projectId} isProjectOwner={this.state.isProjectOwner}  isValidationCoder={this.state.isValidationCoder} />	            
+
+				<SettingsBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner} />
+				<CodingEditorBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner}  isValidationCoder={this.props.isValidationCoder} />
           </h2>
 		);
 	}

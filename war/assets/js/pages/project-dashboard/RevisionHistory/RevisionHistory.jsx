@@ -1,13 +1,26 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import ReportList from './ReportList.jsx';
 import ValPrjList from './ValPrjList.jsx';
+import CreateRevisionBtn from './CreateRevisionBtn.jsx';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import CustomForm from '../../../common/modals/CustomForm';
+
+const SyledCreateReportBtn = styled.a `
+	margin-top: -6px;
+	padding: 5px 10px;
+	color: black;
+`;
+
+const StyledBtnIcon = styled.i `
+	font-size: 18px;
+`;
+
 
 export default class RevisionHistory extends React.Component {
 	constructor(props) {
@@ -22,42 +35,53 @@ export default class RevisionHistory extends React.Component {
 
 		this.renderReports = this.renderReports.bind(this);
 		this.addRevision = this.addRevision.bind(this);
-	}
+		this.createNewRevision = this.createNewRevision.bind(this);
 
-	getStyles() {
-		return {
-			pagination: {
-				listStyle: "none",
-				display: "flex"
-			},
-			createReportBtn: {
-				marginTop: "-6px",
-				padding: "5px 10px"
-			},
-			listItemBtn: {
-				float: "right",
-				margintop: "-18px"
-			},
-			btnIcon: {
-				fontSize: "18px"
-			}
-
-		};
+		this.init();
 	}
 
 	init() {
 		var _this = this;
-		_this.state.revisions = [];
+		var project = this.props.project;
 		var validationEndpoint = new ValidationEndpoint();
 
+		var validationPromise = validationEndpoint.listReports(project.getId());
 
-		var validationPromise = validationEndpoint.listReports(_this.props.projectID);
+		ProjectEndpoint.listRevisions(project.getId()).then(function (resp) {
+			_this.props.userPromise.then(function (user) {
+				resp.items = resp.items || [];
+				var snapshots = [];
+				var validationProjects = {};
+				for (var i = 0; i < resp.items.length; i++) {
+					if (resp.items[i].revisionID === undefined) snapshots.push(resp.items[i]);
+					else {
+						if (validationProjects[resp.items[i].revisionID] === undefined) validationProjects[resp.items[i].revisionID] = [];
+						validationProjects[resp.items[i].revisionID].push(resp.items[i]);
+					}
+				}
+				project.setRevisions(snapshots);
+				project.setValidationProjects(validationProjects);
 
-		ProjectEndpoint.listRevisions(_this.props.projectID).then(function (revisionResp) {
 
-			_this.setState({
-				revisions: revisionResp.items
+				validationPromise.then(function (reports) {
+
+					for (var i = 0; i < snapshots.length; i++) {
+						var revID = snapshots[i].id;
+						if (typeof reports[revID] != 'undefined') {
+							_this.props.addReports(reports[revID]);
+						}
+					}
+
+					project.setReports(reports);
+
+					_this.setRevisions(snapshots);
+					_this.setValidationProjects(validationProjects);
+					_this.setReports(reports);
+					_this.setRights(project.getId(), user);
+
+				});
 			});
+
 		});
 	}
 
@@ -188,9 +212,9 @@ export default class RevisionHistory extends React.Component {
 		return [
 			<i key={'label_'+revId} className="fa fa-tachometer bg-grey">
 				</i>,
-			<div key={revId} className="timeline-item"> 
+			<div key={revId} className="timeline-item">
 					<h3 className="timeline-header timelineUserName">
-						<b> Reports </b> 
+						<b> Reports </b>
 					</h3>
 					<div className="timeline-body timelineContent">
 						<ReportList reports={reports} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner}/>
@@ -200,25 +224,23 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	renderCreateReportBtn(revId) {
-		const styles = this.getStyles();
-		if (this.state.isAdmin || this.state.isProjectOwner) return <a onClick={() => this.createReport(revId)} className="btn btn-default btn-sm pull-right" style={styles.createReportBtn} >
-			<i style={styles.btnIcon} className="fa fa-plus-circle  pull-left"></i>
-						Create Report
-		</a>
+		if (this.state.isAdmin || this.state.isProjectOwner) return (
+			<SyledCreateReportBtn onClick={() => this.createReport(revId)} className="btn btn-default btn-sm pull-right" >
+				<StyledBtnIcon className="fa fa-plus-circle  pull-left"></StyledBtnIcon>
+							Create Report
+			</SyledCreateReportBtn>);
 		else return '';
 	}
 
 	renderValidationProjects(revId) {
-		const styles = this.getStyles();
-
 		if (!this.state.validationProjects[revId]) return '';
 		var validationProjects = this.state.validationProjects[revId];
 
 		return [
 			<i key={'label_'+revId} className="fa fa-check bg-grey"></i>,
-			<div key={revId} className="timeline-item"> 
+			<div key={revId} className="timeline-item">
 				<h3 className="timeline-header timelineUserName">
-					<b> Validation Projects </b> 
+					<b> Validation Projects </b>
 					{this.renderCreateReportBtn(revId)}
 				</h3>
 				<div className="timeline-body timelineContent">
@@ -232,9 +254,7 @@ export default class RevisionHistory extends React.Component {
 	render() {
 		var _this = this;
 
-		const styles = this.getStyles();
-
-		//Render Components
+		if (this.props.project.type != "PROJECT") return null;
 
 		//Render Revision
 		const renderRevisions = this.state.revisions.map((revision, index) => {
@@ -267,10 +287,18 @@ export default class RevisionHistory extends React.Component {
 
 		return (
 			<div>
-				<ul className="timeline list">
+					<div className="box-header with-border">
+						<h3 className="box-title">Revision History</h3>
+						<CreateRevisionBtn createNewRevision={this.createNewRevision} project={this.props.project} isProjectOwner={this.state.isProjectOwner}/>
+					</div>
+					<div className="box-body">
+						<div id="revision-panel">
+						<ul className="timeline list">
 					{renderRevisions}
 	            </ul>
-     		</div>
+						</div>
+					</div>
+			</div>
 		);
 	}
 }
