@@ -250,7 +250,6 @@ function setupUI() {
 				projectType={project_type}
 				account={account}
 				codesystemId={codesystem_id}
-				removeAllCodings={removeAllCodings}
 				toggleCodingView={toggleCodingView}
 				editorCtrl={editorCtrl}
 				documentsView={documentsView}
@@ -274,25 +273,6 @@ function setupUI() {
 		});
 	} else {
 		$('#navAccount').hide();
-	}
-	//resizeHandler();
-}
-
-function removeAllCodings(codingID) {
-	var documents = documentsView.getDocuments();
-	var activeDocId = documentsView.getActiveDocumentId();
-
-	for (var i in documents) {
-		var doc = documents[i];
-		var elements = $('<div>' + doc.text + '</div>');
-		var originalText = elements.html();
-		elements.find('coding[code_id=\'' + codingID + '\']').contents().unwrap();
-		var strippedText = elements.html();
-		if (strippedText !== originalText) {
-			doc.text = strippedText;
-			documentsView.changeDocumentData(doc);
-			if (activeDocId === doc.id) editorCtrl.setDocumentView(doc);
-		}
 	}
 }
 
