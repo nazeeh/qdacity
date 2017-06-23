@@ -85,12 +85,6 @@ export default class RevisionHistory extends React.Component {
 		});
 	}
 
-	setIsProjectOwner(pIsProjectOnwer) {
-		this.setState({
-			isProjectOwner: pIsProjectOnwer
-		});
-	}
-
 	setRights(prjId, user) {
 		var isAdmin = user.type === "ADMIN";
 

@@ -12,16 +12,6 @@ export default class PersonalReportList extends React.Component {
 		if (this.props.project.getType() == 'VALIDATION') this.init();
 	}
 
-
-	getStyles() {
-		return {
-			listItemBtn: {
-				float: "right",
-				marginTop: "-15px"
-			}
-		};
-	}
-
 	init() {
 		var _this = this;
 		var validationEndpoint = new ValidationEndpoint();
