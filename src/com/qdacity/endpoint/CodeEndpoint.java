@@ -158,7 +158,7 @@ public class CodeEndpoint {
 			code = mgr.getObjectById(Code.class, codeID);
 			Authorization.checkAuthorization(code, user);
 
-			CodeBookEntry oldCodeBookEntry = code.getCodeBookEntry();
+			CodeBookEntry oldCodeBookEntry = new CodeBookEntry(code.getCodeBookEntry());
 			code.setCodeBookEntry(entry);
 			mgr.makePersistent(code);
 			

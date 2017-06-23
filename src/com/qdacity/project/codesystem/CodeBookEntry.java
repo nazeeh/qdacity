@@ -44,6 +44,14 @@ public class CodeBookEntry {
 		this.whenNotToUse = "<div></div>";
 		this.example = "<div></div>";
 	}
+	
+	public CodeBookEntry(CodeBookEntry copy) {
+	    this.definition = copy.definition;
+	    this.shortDefinition = copy.shortDefinition;
+	    this.whenNotToUse = copy.whenNotToUse;
+	    this.whenToUse = copy.whenToUse;
+	    this.example = copy.example;
+	}
 
 	public String getDefinition() {
 		return definition;
