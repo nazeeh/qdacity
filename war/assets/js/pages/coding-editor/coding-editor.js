@@ -245,15 +245,14 @@ function setupUI() {
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
 			var documentsLoaded = setDocumentList(project_id);
-			codesystemView = ReactDOM.render(<Codesystem 
-				projectID={project_id} 
+			codesystemView = ReactDOM.render(<Codesystem
+				projectID={project_id}
 				projectType={project_type}
-				account={account} 
-				codesystemId={codesystem_id} 
-				removeAllCodings={removeAllCodings} 
-				toggleCodingView={toggleCodingView}  
-				editorCtrl={editorCtrl}  
-				documentsView={documentsView} 
+				account={account}
+				codesystemId={codesystem_id}
+				toggleCodingView={toggleCodingView}
+				editorCtrl={editorCtrl}
+				documentsView={documentsView}
 				umlEditorEnabled={resp.umlEditorEnabled}
 				showFooter={showFooter}
 				updateCodeView={updateCodeView}
@@ -274,49 +273,6 @@ function setupUI() {
 		});
 	} else {
 		$('#navAccount').hide();
-	}
-	//resizeHandler();
-}
-
-function splitupCoding(selection, codeID) {
-	var promise = new Promise(
-		function (resolve, reject) {
-			var anchor = $(selection._sel.anchorNode);
-			var codingID = anchor.prev('coding[code_id=' + codeID + ']').attr('id');
-			if (typeof codingID == 'undefined') codingID = anchor.parentsUntil('p').parent().prev().find('coding[code_id=' + codeID + ']').last().attr('id');
-			if (typeof codingID == 'undefined') codingID = anchor.parent().prev().find('coding[code_id=' + codeID + ']').last().attr('id'); // Case beginning of paragraph to middle of paragraph
-
-			if (typeof codingID != 'undefined') {
-				ProjectEndpoint.incrCodingId(project_id, project_type).then(function (resp) {
-					anchor.nextAll('coding[id=' + codingID + ']').attr("id", resp.maxCodingID);
-					anchor.parentsUntil('p').parent().nextAll().find('coding[id=' + codingID + ']').attr("id", resp.maxCodingID);
-					anchor.parent().nextAll().find('coding[id=' + codingID + ']').attr("id", resp.maxCodingID); // Case beginning of paragraph to middle of paragraph
-					resolve();
-				});
-			} else {
-				resolve();
-			}
-		}
-	);
-
-	return promise;
-}
-
-function removeAllCodings(codingID) {
-	var documents = documentsView.getDocuments();
-	var activeDocId = documentsView.getActiveDocumentId();
-
-	for (var i in documents) {
-		var doc = documents[i];
-		var elements = $('<div>' + doc.text + '</div>');
-		var originalText = elements.html();
-		elements.find('coding[code_id=\'' + codingID + '\']').contents().unwrap();
-		var strippedText = elements.html();
-		if (strippedText !== originalText) {
-			doc.text = strippedText;
-			documentsView.changeDocumentData(doc);
-			if (activeDocId === doc.id) editorCtrl.setDocumentView(doc);
-		}
 	}
 }
 
@@ -404,22 +360,6 @@ function updateCode(code) {
 function updateCodeBookEntry(codeBookEntry) {
 	CodesEndpoint.setCodeBookEntry(codesystemView.child.getSelected().id, codeBookEntry).then(function (resp) {
 		codesystemView.child.updateSelected(resp);
-	});
-}
-
-
-
-
-function changeParentId(code, _newParent) {
-	CodesEndpoint.getCode(code.dbID).then(function (resp) {
-
-		resp.parentID = _newParent;
-
-		CodesEndpoint.updateCode(resp).then(function (resp2) {
-			console.log("Updated Code " + resp2.id + ":" + resp2.author + ":" + resp2.name + ":" + resp2.subCodesIDs);
-			code.parentID = _newParent;
-		});
-
 	});
 }
 

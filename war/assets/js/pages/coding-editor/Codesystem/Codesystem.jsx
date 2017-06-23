@@ -17,7 +17,7 @@ import SimpleCodesystem from './SimpleCodesystem.jsx';
 
 /*
  ** Intended as primary codesystem component
- ** Extende SimpleCodesystem by 
+ ** Extende SimpleCodesystem by
  ** (1) adding a Toolbar for adding and removing codes.
  ** (2) connecting the component to the code view and the text editor
  ** (3) wrapping the component in a drag and drop context
@@ -132,7 +132,7 @@ class Codesystem extends SimpleCodesystem {
 	removeCode() {
 		var code = this.state.selected;
 
-		this.props.removeAllCodings(code.codeID);
+		this.removeAllCodings(code.codeID);
 		var parent = this.getCodeByID(this.state.codesystem, code.parentID)
 		var index = parent.children.indexOf(code);
 		parent.children.splice(index, 1);
@@ -205,8 +205,24 @@ class Codesystem extends SimpleCodesystem {
 
 			console.log("Updated logation of code:" + resp.id + " |  " + resp.author + ":" + resp.name + ":" + resp.subCodesIDs);
 		});
+	}
 
+	removeAllCodings(codingID) {
+		var documents = this.props.documentsView.getDocuments();
+		var activeDocId = this.props.documentsView.getActiveDocumentId();
 
+		for (var i in documents) {
+			var doc = documents[i];
+			var elements = $('<div>' + doc.text + '</div>');
+			var originalText = elements.html();
+			elements.find('coding[code_id=\'' + codingID + '\']').contents().unwrap();
+			var strippedText = elements.html();
+			if (strippedText !== originalText) {
+				doc.text = strippedText;
+				this.props.documentsView.changeDocumentData(doc);
+				if (activeDocId === doc.id) this.props.editorCtrl.setDocumentView(doc);
+			}
+		}
 	}
 
 	renderRoots(codes) {
@@ -215,11 +231,11 @@ class Codesystem extends SimpleCodesystem {
 				<DragAndDropCode
 							showSimpleView={false}
 							documentsView={this.props.documentsView}
-							level={0} 
-							node={code} 
-							selected={this.state.selected} 
-							setSelected={this.setSelected} 
-							relocateCode={this.relocateCode} 
+							level={0}
+							node={code}
+							selected={this.state.selected}
+							setSelected={this.setSelected}
+							relocateCode={this.relocateCode}
 							showFooter={this.props.showFooter}
 							key={"CS" + "_" + 0 + "_"  +index}>
 						</DragAndDropCode>
@@ -233,13 +249,13 @@ class Codesystem extends SimpleCodesystem {
 		return (
 			<div>
 					<div style={styles.toolBar}>
-						<CodesystemToolbar 
-							projectID={this.props.projectID} 
+						<CodesystemToolbar
+							projectID={this.props.projectID}
 							projectType={this.props.projectType}
-							selected={this.state.selected} 
-							account={this.props.account} 
-							removeCode={this.removeCode} 
-							insertCode={this.insertCode} 
+							selected={this.state.selected}
+							account={this.props.account}
+							removeCode={this.removeCode}
+							insertCode={this.insertCode}
 							updateCodingCount={this.updateCodingCount}
 							toggleCodingView={this.props.toggleCodingView}
 							editorCtrl={this.props.editorCtrl}

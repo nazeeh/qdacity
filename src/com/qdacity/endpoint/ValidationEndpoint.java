@@ -63,7 +63,8 @@ public class ValidationEndpoint {
 			    for (ValidationReport validationReport : reports) {
 				    List<DocumentResult> docresults = validationReport.getDocumentResults();
 					try {
-						if (docresults != null) for (DocumentResult documentResult : docresults);
+						if (docresults != null) for (DocumentResult documentResult : docresults)
+							documentResult.getReportRow();
 					} catch (NullPointerException e) {
 						// should not happen, but if data (old data) for docresults is corrupt, we still want the reports
 						Logger.getLogger("logger").log(Level.WARNING, "docresults not null, but could not iterate through list");
