@@ -73,7 +73,15 @@ public class ChangeBuilder {
     }
 
     private void ifNotEqualPutToDiff(String oldValue, String newValue, Map<String, String[]> differences, String name) {
-	if (!oldValue.equals(newValue)) {
+	boolean changed = false;
+	if ((oldValue == null && newValue != null) || (oldValue != null && newValue == null)) {
+	    changed = true;
+	} else if (oldValue != null && newValue != null) {
+	    if (!oldValue.equals(newValue)) {
+		changed = true;
+	    }
+	}
+	if (changed) {
 	    String[] values = {oldValue, newValue};
 	    differences.put(name, values);
 	}
