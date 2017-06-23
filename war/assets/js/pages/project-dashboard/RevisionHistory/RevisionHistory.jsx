@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import ReportList from './ReportList.jsx';
 import ValPrjList from './ValPrjList.jsx';
 import CreateRevisionBtn from './CreateRevisionBtn.jsx';
+import ReCodeBtn from './ReCodeBtn.jsx';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
@@ -134,16 +135,6 @@ export default class RevisionHistory extends React.Component {
 		});
 	}
 
-	requestValidationAccess(revId) {
-		var projectEndpoint = new ProjectEndpoint();
-
-		projectEndpoint.requestValidationAccess(revId)
-			.then(
-				function (val) {
-					alertify.success("Request has been filed");
-				})
-			.catch(handleBadResponse);
-	}
 
 	deleteRevision(revisionId, index) {
 		var _this = this;
@@ -272,7 +263,7 @@ export default class RevisionHistory extends React.Component {
 							{revision.comment}
 						</div>
 						<div className="timeline-footer">
-							<a onClick={() => _this.requestValidationAccess(revision.id)} className="btn btn-info btn-xs ">Re-Code</a>
+							<ReCodeBtn revId={revision.id}/>
 							{_this.renderRevisionDeleteBtn(revision, index)}
 						</div>
 					</div>
