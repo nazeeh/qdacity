@@ -158,8 +158,15 @@ public class CodeEndpoint {
 			code = mgr.getObjectById(Code.class, codeID);
 			Authorization.checkAuthorization(code, user);
 
+			CodeBookEntry oldCodeBookEntry = code.getCodeBookEntry();
 			code.setCodeBookEntry(entry);
 			mgr.makePersistent(code);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			//this can be a set or an update, the change can cover both
+			Change change = new ChangeBuilder().makeUpdateCodeBookEntryChange(oldCodeBookEntry, entry, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}

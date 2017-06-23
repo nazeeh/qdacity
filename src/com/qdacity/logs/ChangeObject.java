@@ -3,7 +3,8 @@ package com.qdacity.logs;
 public enum ChangeObject {
 
 	CODE(1),
-	DOCUMENT(2);
+	CODEBOOK_ENTRY(2),
+	DOCUMENT(3);
 
 	private final int value;
 
