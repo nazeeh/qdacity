@@ -32,6 +32,8 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
@@ -179,6 +181,11 @@ public class TextDocumentEndpoint {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(textdocument);
+			
+			//Log Change
+			Change change = new ChangeBuilder().makeInsertTextDocumentChange(textdocument, textdocument.getProjectID(), user.getUserId());
+			mgr.makePersistent(change);
+			
 		} finally {
 			mgr.close();
 		}

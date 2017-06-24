@@ -4,6 +4,7 @@ import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
+import com.qdacity.project.data.TextDocument;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,20 @@ import java.util.Map;
  * Simplifies the process of creating a Change object.
  */
 public class ChangeBuilder {
+
+    /**
+     * Creates a Change Object for an insert Document Change. The Change contains the title of the document as new value.
+     * The text of the document is not saved in the change!
+     * @param textdocument
+     * @param projectID
+     * @param userId
+     * @return 
+     */
+    public Change makeInsertTextDocumentChange(TextDocument textdocument, Long projectID, String userId) {
+	Change change = new Change(now(), projectID, ProjectType.PROJECT, ChangeType.CREATED, userId, ChangeObject.DOCUMENT, textdocument.getId());
+	change.setNewValue("{\"title\":\""+textdocument.getTitle().replace("\"", "&quot;")+"\"}");
+	return change;
+    }
 
     public Change makeInsertCodeChange(Long projectID, ProjectType projectTyp, String userID, Code code) {
 	Change change = new Change(now(), projectID, projectTyp, ChangeType.CREATED, userID, ChangeObject.CODE, code.getId());
