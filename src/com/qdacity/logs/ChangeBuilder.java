@@ -3,6 +3,7 @@ package com.qdacity.logs;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
+import com.qdacity.project.codesystem.CodeRelation;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,12 @@ public class ChangeBuilder {
 	return new Change(now(), projectID, projectTyp, ChangeType.CREATED, userID, ChangeObject.CODE, codeId);
     }
     
+    public Change makeAddRelationShipChange(CodeRelation relation, Long projectID, ProjectType projectTyp, String userID, Long codeId) {
+	Change change = new Change(now(), projectID, projectTyp, ChangeType.CREATED, userID, ChangeObject.CODE_RELATIONSHIP, codeId);
+	//TODO as JSON change.setNewValue(); //TODO wie als JSON?
+	return change;
+    }
+    
     private static Date now() {
 	return new Date(System.currentTimeMillis());
     }
@@ -25,29 +32,29 @@ public class ChangeBuilder {
 	
 	Map<String, String[]> codeDiff = diffCode(oldCode, newCode);
 	
-	change.setOldValue(oldValuesToJson(codeDiff));
-	change.setNewValue(newValuesToJson(codeDiff));
+	change.setOldValue(oldValuesToPseudeJson(codeDiff));
+	change.setNewValue(newValuesToPseudoJson(codeDiff));
 	
 	return change;
 	
     }
     
-    private String oldValuesToJson(Map<String, String[]> codeDiff) {
-	return indexValuesToJson(codeDiff, 0);
+    private String oldValuesToPseudeJson(Map<String, String[]> codeDiff) {
+	return indexValuesToPseudoJSON(codeDiff, 0);
     }
     
-    private String newValuesToJson(Map<String, String[]> codeDiff) {
-	return indexValuesToJson(codeDiff, 1);
+    private String newValuesToPseudoJson(Map<String, String[]> codeDiff) {
+	return indexValuesToPseudoJSON(codeDiff, 1);
     }
     
-    private String indexValuesToJson(Map<String, String[]> codeDiff, int index) {
+    private String indexValuesToPseudoJSON(Map<String, String[]> codeDiff, int index) {
 	StringBuilder sb = new StringBuilder();
 	for (String attribute : codeDiff.keySet()) {
-	    sb.append("\"");
+	    sb.append("{\"");
 	    sb.append(attribute);
 	    sb.append("\":\"");
-	    sb.append(codeDiff.get(attribute)[index]);
-	    sb.append("\";");
+	    sb.append(codeDiff.get(attribute)[index].replace("\"", "&quot;"));
+	    sb.append("\"},");
 	}
 	return sb.toString();
     }
@@ -105,8 +112,8 @@ public class ChangeBuilder {
 	Change change = new Change(now(), projectId, projectType, ChangeType.MODIFIED, userId, ChangeObject.CODEBOOK_ENTRY, codeId);
 	Map<String, String[]> differences = diffCodeBookEntry(oldCodeBookEntry, newCodeBookEntry);
 	//TODO Test
-	change.setOldValue(oldValuesToJson(differences));
-	change.setNewValue(newValuesToJson(differences));
+	change.setOldValue(oldValuesToPseudeJson(differences));
+	change.setNewValue(newValuesToPseudoJson(differences));
 	
 	return change;
     }

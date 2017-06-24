@@ -193,6 +193,11 @@ public class CodeEndpoint {
 			for (CodeRelation codeRelation : relationships) {
 				codeRelation.getCodeId();
 			}
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeAddRelationShipChange(realtion, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}
