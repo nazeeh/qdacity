@@ -20,14 +20,40 @@ public class ChangeBuilder {
 	return change;
     }
 
+    public Change makeDeleteCodeChange(Code code, Long projectId, ProjectType projectType, String userId) {
+	Change change = new Change(now(), projectId, projectType, ChangeType.DELETED, userId, ChangeObject.CODE, code.getId());
+	Map<String, String[]> codeDiff = diffCode(code, nullCode());
+	change.setOldValue(oldValuesToPseudeJson(codeDiff));
+
+	return change;
+    }
+
     public Change makeAddRelationShipChange(CodeRelation relation, Long projectID, ProjectType projectTyp, String userID, Long codeId) {
 	Change change = new Change(now(), projectID, projectTyp, ChangeType.CREATED, userID, ChangeObject.CODE_RELATIONSHIP, codeId);
 	//TODO as JSON change.setNewValue(); //TODO wie als JSON?
 	return change;
     }
 
-    private static Date now() {
-	return new Date(System.currentTimeMillis());
+    /**
+     * Creates a CodeBookEntry change for a Code Hint: As a CodeBookEntry only
+     * makes sense for a Code we save the codeId of this change and not the
+     * codebookEntryId!
+     *
+     * @param oldCodeBookEntry
+     * @param newCodeBookEntry
+     * @param projectId
+     * @param projectType
+     * @param userId
+     * @param codeId
+     * @return
+     */
+    public Change makeUpdateCodeBookEntryChange(CodeBookEntry oldCodeBookEntry, CodeBookEntry newCodeBookEntry, Long projectId, ProjectType projectType, String userId, Long codeId) {
+	Change change = new Change(now(), projectId, projectType, ChangeType.MODIFIED, userId, ChangeObject.CODEBOOK_ENTRY, codeId);
+	Map<String, String[]> differences = diffCodeBookEntry(oldCodeBookEntry, newCodeBookEntry);
+	change.setOldValue(oldValuesToPseudeJson(differences));
+	change.setNewValue(newValuesToPseudoJson(differences));
+
+	return change;
     }
 
     public Change makeUpdateCodeChange(Code oldCode, Code newCode, Long projectId, ProjectType projectType, String userId) {
@@ -40,6 +66,10 @@ public class ChangeBuilder {
 
 	return change;
 
+    }
+
+    private static Date now() {
+	return new Date(System.currentTimeMillis());
     }
 
     private String oldValuesToPseudeJson(Map<String, String[]> codeDiff) {
@@ -99,28 +129,6 @@ public class ChangeBuilder {
 	}
     }
 
-    /**
-     * Creates a CodeBookEntry change for a Code Hint: As a CodeBookEntry only
-     * makes sense for a Code we save the codeId of this change and not the
-     * codebookEntryId!
-     *
-     * @param oldCodeBookEntry
-     * @param newCodeBookEntry
-     * @param projectId
-     * @param projectType
-     * @param userId
-     * @param codeId
-     * @return
-     */
-    public Change makeUpdateCodeBookEntryChange(CodeBookEntry oldCodeBookEntry, CodeBookEntry newCodeBookEntry, Long projectId, ProjectType projectType, String userId, Long codeId) {
-	Change change = new Change(now(), projectId, projectType, ChangeType.MODIFIED, userId, ChangeObject.CODEBOOK_ENTRY, codeId);
-	Map<String, String[]> differences = diffCodeBookEntry(oldCodeBookEntry, newCodeBookEntry);
-	change.setOldValue(oldValuesToPseudeJson(differences));
-	change.setNewValue(newValuesToPseudoJson(differences));
-
-	return change;
-    }
-
     private Map<String, String[]> diffCodeBookEntry(CodeBookEntry oldCodeBookEntry, CodeBookEntry newCodeBookEntry) {
 	Map<String, String[]> differences = new HashMap<>();
 	CodeBookEntry oldEntryToCheck = nullSafeCodeBookEntry(oldCodeBookEntry);
@@ -155,14 +163,6 @@ public class ChangeBuilder {
 	nullCode.setName(null);
 
 	return nullCode;
-    }
-
-    public Change makeDeleteCodeChange(Code code, Long projectId, ProjectType projectType, String userId) {
-	Change change = new Change(now(), projectId, projectType, ChangeType.DELETED, userId, ChangeObject.CODE, code.getId());
-	Map<String, String[]> codeDiff = diffCode(code, nullCode());
-	change.setOldValue(oldValuesToPseudeJson(codeDiff));
-
-	return change;
     }
 
 }
