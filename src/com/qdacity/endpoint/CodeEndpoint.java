@@ -96,7 +96,7 @@ public class CodeEndpoint {
 
 			// Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code.getId());
+			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
 			mgr.makePersistent(change);
 
 		} finally {
@@ -224,6 +224,8 @@ public class CodeEndpoint {
 			for (CodeRelation codeRelation : relationships) {
 				codeRelation.getCodeId();
 			}
+			
+			//TODO LOG
 		} finally {
 			mgr.close();
 		}
@@ -252,7 +254,13 @@ public class CodeEndpoint {
 
 			// Delete link from parent code
 			Query query = mgr.newQuery(Code.class);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeDeleteCodeChange(code, cs.getProject(), cs.getProjectType(), user.getUserId());
+			mgr.makePersistent(change);
 
+			//Actual Delete
 			query.setFilter("codeID == :code && codesystemID == :codesystem");
 			Map<String, Long> params = new HashMap<String, Long>();
 			params.put("code", code.getParentID());
@@ -302,6 +310,8 @@ public class CodeEndpoint {
 
 			mgr.makePersistent(newParent);
 			mgr.makePersistent(code);
+			
+			//TODO LOG
 
 		} finally {
 			mgr.close();
@@ -331,7 +341,7 @@ public class CodeEndpoint {
 	private void removeSubCodes(Code code) {
 		List<Long> subcodeIDs = code.getSubCodesIDs();
 
-		if (subcodeIDs.size() > 0) {
+		if (subcodeIDs != null && subcodeIDs.size() > 0) {
 			PersistenceManager mgr = getPersistenceManager();
 
 			for (Long subcodeID : subcodeIDs) {
@@ -344,6 +354,8 @@ public class CodeEndpoint {
 
 				@SuppressWarnings("unchecked")
 				Code subcode = ((List<Code>) query.executeWithMap(params)).get(0);
+				
+				//TODO LOG!
 
 				removeSubCodes(subcode);
 				mgr.deletePersistent(subcode);
