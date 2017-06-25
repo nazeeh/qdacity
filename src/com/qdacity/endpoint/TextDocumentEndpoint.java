@@ -380,5 +380,19 @@ public class TextDocumentEndpoint {
 		}
 		return docNames;
 	}
+	
+    public int countDocuments(Long projectId) {
+	PersistenceManager mgr = getPersistenceManager();
+	List<TextDocument> tmpDocs;
+
+	Query query = mgr.newQuery(TextDocument.class);
+	query.setFilter("projectID == :projectID");
+	Map<String, Long> paramValues = new HashMap<>();
+	paramValues.put("projectID", projectId);
+	//Hint: According to GAE JDO implementation, there is no other way of counting entities
+	tmpDocs = (List<TextDocument>) query.executeWithMap(paramValues);
+
+	return tmpDocs.size();
+    }
 
 }

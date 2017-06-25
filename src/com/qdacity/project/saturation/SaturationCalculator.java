@@ -3,7 +3,9 @@ package com.qdacity.project.saturation;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.endpoint.ChangeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
+import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeObject;
 import java.util.List;
 
 public class SaturationCalculator {
@@ -25,6 +27,7 @@ public class SaturationCalculator {
 	SaturationResult result = new SaturationResult(projectId);
 	
 	double documentSaturation = calculateDocumentSaturation();
+	//TODO weight documentSaturation
 	
 	double codeSaturation = calculateCodeSaturation();
 
@@ -32,11 +35,22 @@ public class SaturationCalculator {
     }
 
     private double calculateDocumentSaturation() {
-	//TODO
+	double numberOfNewDocuments = 0.0;
+	for(Change change : changes) {
+	    if(change.getObjectType().equals(ChangeObject.DOCUMENT)) {
+		numberOfNewDocuments += 1.0;
+	    }
+	}
+	double totalNumberOfDocuments = new TextDocumentEndpoint().countDocuments(projectId);
+	double numberOfDocumentsBeforeChange = totalNumberOfDocuments - numberOfNewDocuments;
+	
+	return 1.0 - (numberOfNewDocuments / numberOfDocumentsBeforeChange);
+	
     }
 
     private double calculateCodeSaturation() {
 	//TODO
+	return 0.0;
     }
     
 }
