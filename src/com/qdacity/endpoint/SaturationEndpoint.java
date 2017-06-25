@@ -23,7 +23,7 @@ public class SaturationEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public SaturationResult getCode(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
+	public SaturationResult getSaturation(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
 	    return new SaturationCalculator().calculateSaturation(projectId);
 	}
 }
