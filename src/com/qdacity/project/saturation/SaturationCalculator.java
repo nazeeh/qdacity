@@ -28,8 +28,10 @@ public class SaturationCalculator {
 	
 	double documentSaturation = calculateDocumentSaturation();
 	//TODO weight documentSaturation
+	result.setDocumentSaturation(documentSaturation);
 	
 	double codeSaturation = calculateCodeSaturation();
+	//TODO
 
 	return result;
     }
