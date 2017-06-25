@@ -51,6 +51,16 @@ export default class UmlEditorView {
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
 
+		// Highlighting
+		var hoverHighlight = new mxCellTracker(this.graph, '#85C8E5');
+
+		// Styling
+		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
+		mxConstants.OUTLINE_COLOR = '#00A2E8';
+		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
+		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
+		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
+
 		// Enables layouting
 		this.layout = new mxFastOrganicLayout(this.graph);
 		this.layout.disableEdgeStyle = false;
@@ -349,6 +359,14 @@ export default class UmlEditorView {
 		});
 	}
 	
+	addGraphEventListener(event, func) {
+		this.graph.addListener(event, func);
+	}
+
+	addGraphSelectionModelEventListener(event, func) {
+		this.graph.getSelectionModel().addListener(event, func);
+	}
+
 	getCode(codeId) {
 		for (let i = 0; i < this.umlClasses.length; i++) {
 			let umlClass = this.umlClasses[i];
@@ -390,8 +408,15 @@ export default class UmlEditorView {
 		if (umlClass.getCode().relations != null) {
 			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
 				let relation = umlClass.getCode().relations[i];
-				let destinationUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.destination);
-				checkSingleRelation(relation, umlClass, destinationUmlClass, oldUmlClass, destinationUmlClass);
+				let destinationUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.codeId);
+				let oldDestinationUmlClass = destinationUmlClass;
+
+				// Source == Destination
+				if (oldDestinationUmlClass.getCode().codeID == oldUmlClass.getCode().codeID) {
+					oldDestinationUmlClass = oldUmlClass;
+				}
+
+				this.checkSingleRelation(relation, umlClass, destinationUmlClass, oldUmlClass, oldDestinationUmlClass);
 			}
 		}
 
@@ -405,17 +430,18 @@ export default class UmlEditorView {
 			if (umlCode.codeID != umlClass.getCode().codeID) {
 				if (umlCode.relations != null) {
 					umlCode.relations.forEach((relation) => {
-						if (relation.destination == umlClass.getCode().codeID) {
-							let sourceUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.source);
-							checkSingleRelation(relation, sourceUmlClass, umlClass, sourceUmlClass, oldUmlClass);
+						if (relation.codeId == umlClass.getCode().codeID) {
+							let sourceUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == umlCode.codeID);
+							let oldSourceUmlClass = sourceUmlClass;
+
+							// Source == Destination
+							if (oldSourceUmlClass.getCode().codeID == oldUmlClass.getCode().codeID) {
+								oldSourceUmlClass = oldUmlClass;
+							}
+
+							this.checkSingleRelation(relation, sourceUmlClass, umlClass, oldSourceUmlClass, oldUmlClass);
 						}
 					});
-
-					find((r) => r.destination == umlClass.getCode().codeID);
-
-					if (rel != null) {
-						arr.push(rel);
-					}
 				}
 			}
 		});
@@ -448,20 +474,28 @@ export default class UmlEditorView {
 	}
 
 	checkSingleRelation(relation, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
-		let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
+		let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.mmElementId);
 
 		console.log('We are at relation ' + sourceUmlClass.getCode().name + ' -> ' + destinationUmlClass.getCode().name + ' now. (' + relationMetaModelEntity.name + ')');
 
 		let oldAction = this.metaModelMapper.evaluateCodeRelation(relationMetaModelEntity, oldActionSource, oldActionDestination);
 		let newAction = this.metaModelMapper.evaluateCodeRelation(relationMetaModelEntity, sourceUmlClass, destinationUmlClass);
 
-		console.log('Previous node action: ' + oldNodeAction);
-		console.log('Current node action: ' + newNodeAction);
+		console.log('Previous node action: ' + oldAction);
+		console.log('Current node action: ' + newAction);
 
 		if (oldAction != newAction) {
-			console.log('Something changed...');
+			console.log('Something changed.');
 
-			if (!umlClassRelations.hasOwnProperty(this.metaModelMapper(calculateRelationIdentifier(relation)))) {
+			relation = {
+				'source': sourceUmlClass.getCode().codeID,
+				'destination': relation.codeId,
+				'metaModelEntityId': relation.mmElementId
+			};
+
+			let relationIdentifier = this.metaModelMapper.calculateRelationIdentifier(relation);
+
+			if (!this.umlClassRelations.hasOwnProperty(relationIdentifier)) {
 				throw new Error("ERROR");
 			}
 
@@ -686,5 +720,17 @@ export default class UmlEditorView {
 				child.setGeometry(new mxGeometry(0, i * 15, width, 15));
 			}
 		}
+	}
+
+	zoomIn() {
+		this.graph.zoomIn();
+	}
+
+	zoomOut() {
+		this.graph.zoomOut();
+	}
+
+	zoom(percentage) {
+		this.graph.zoomTo(percentage / 100.0, false);
 	}
 }

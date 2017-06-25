@@ -22,9 +22,6 @@ export default class UnmappedCodeView extends React.Component {
 
 	getStyles() {
 		return {
-			container: {
-				width: '250px'
-			},
 			header: {
 				display: 'flex',
 				backgroundColor: '#e7e7e7',
@@ -52,7 +49,7 @@ export default class UnmappedCodeView extends React.Component {
 		const styles = this.getStyles();
 
 		return (
-			<div style={styles.container}>
+			<div>
                 <div style={styles.header}>
                     <span  style={styles.headerText}>Unmapped codes</span>
                 </div>

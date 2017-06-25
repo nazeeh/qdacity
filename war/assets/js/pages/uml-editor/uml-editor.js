@@ -4,6 +4,7 @@ import UmlEditorView from './UmlEditorView.js';
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
 
+import Toolbar from './toolbar/Toolbar.jsx';
 import UnmappedCodesView from './UnmappedCodesView.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
@@ -27,6 +28,7 @@ var account;
 
 var umlEditorView;
 var metaModelMapper;
+var toolbar;
 var unmappedCodesView;
 
 window.init = function () {
@@ -81,7 +83,9 @@ function initGraph(codes, mmEntities, codesystem_id) {
 
 	metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);
 
-	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, document.getElementById('unmappedCodes'));
+	toolbar = ReactDOM.render(<Toolbar umlEditorView={umlEditorView} />, document.getElementById('toolbar'));
+
+	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, document.getElementById('sidebar'));
 
 	umlEditorView.initGraph(codes, mmEntities, metaModelMapper, unmappedCodesView);
 }

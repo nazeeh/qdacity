@@ -167,6 +167,8 @@ export default class MetaModelMapper {
 
 	// TODO this does MAYBE not belong here
 	addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode) {
+		// TODO debug here with console.log
+		// Warum wird 2-2-XXXXXXXXXXX nciht hinzugefügt?
 		this.umlEditorView.umlClassRelations[this.calculateRelationIdentifier(relation)] = new UmlClassRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
@@ -183,32 +185,32 @@ export default class MetaModelMapper {
 			}
 		case Action.CREATE_NODE:
 			{
-				undoAddNode();
+				this.undoAddNode(sourceUmlClass);
 				break;
 			}
 		case Action.CREATE_GENERALIZATION:
 			{
-				undoAddEdge();
+				this.undoAddEdge(relation);
 				break;
 			}
 		case Action.CREATE_AGGREGATION:
 			{
-				undoAddEdge();
+				this.undoAddEdge(relation);
 				break;
 			}
 		case Action.CREATE_DIRECTED_ASSOCIATION:
 			{
-				undoAddEdge();
+				this.undoAddEdge(relation);
 				break;
 			}
 		case Action.ADD_CLASS_FIELD:
 			{
-				undoAddClassField();
+				this.undoAddClassField(relation);
 				break;
 			}
 		case Action.ADD_CLASS_METHOD:
 			{
-				undoAddClassMethod();
+				this.undoAddClassMethod(relation);
 				break;
 			}
 		default:
