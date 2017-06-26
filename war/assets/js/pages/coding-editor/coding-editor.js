@@ -2,6 +2,7 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 
 import CodeRelationsView from './CodeView/CodeRelationsView.jsx';
 import CodingsView from './CodeView/CodingsView.jsx';
+import CodeProperties from './CodeView/CodeProperties.jsx';
 import MetaModelView from './CodeView/MetaModelView.jsx';
 
 import Account from '../../common/Account.jsx';
@@ -40,6 +41,7 @@ var cbEditor = {
 
 var account;
 var codingsView;
+var codeProperties;
 
 var metaModelView;
 
@@ -290,7 +292,7 @@ function showCodingView() {
 	var activeCode = codesystemView.getSelected();
 
 	fillCodingTable(activeCode);
-	fillPropertiesView(activeCode);
+	codeProperties.updateData(activeCode);
 	fillCodeRelationsView();
 	resizeHandler();
 }
@@ -309,14 +311,6 @@ function fillCodingTable(code) {
 	codingsView.updateTable(code.codeID, documents);
 }
 
-//FIXME possibly move to CodingsView
-function fillPropertiesView(code) {
-	$("#codePropName").val(code.name);
-	$("#codePropAuthor").val(code.author);
-	$("#codePropColor").colorpicker({
-		color: code.color
-	});
-}
 
 function fillCodeRelationsView() {
 	var code = codesystemView.getSelected();
@@ -348,6 +342,7 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 		codingsView = ReactDOM.render(<CodingsView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codingtable'));
+		codeProperties = ReactDOM.render(<CodeProperties editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codeProperties'));
 
 		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
 		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
@@ -376,7 +371,7 @@ function updateCodeBookEntry(codeBookEntry) {
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		fillCodingTable(code);
-		fillPropertiesView(code);
+		codeProperties.updateData(code);
 		metaModelView.setActiveIds(code.mmElementIDs);
 		codeRelationsView.setRelations(code.relations, code.id);
 		if (codeMemoEditor != undefined) {
