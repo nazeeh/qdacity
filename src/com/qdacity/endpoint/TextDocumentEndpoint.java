@@ -381,7 +381,7 @@ public class TextDocumentEndpoint {
 		return docNames;
 	}
 	
-    public int countDocuments(Long projectId) {
+    public static int countDocuments(Long projectId) {
 	PersistenceManager mgr = getPersistenceManager();
 	List<TextDocument> tmpDocs;
 

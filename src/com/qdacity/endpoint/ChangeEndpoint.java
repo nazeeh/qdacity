@@ -97,7 +97,7 @@ public class ChangeEndpoint {
 		return CollectionResponse.<Change> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
 	
-    public List<Change> getAllChanges(Long projectId) {
+    public List<Change> getAllChanges(@Named("projectID") Long projectId) {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
 	Query query = pmr.newQuery(Change.class);

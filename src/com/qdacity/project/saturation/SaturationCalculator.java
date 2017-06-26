@@ -52,7 +52,7 @@ public class SaturationCalculator {
 		numberOfNewDocuments += 1.0;
 	    }
 	}
-	double totalNumberOfDocuments = new TextDocumentEndpoint().countDocuments(projectId);
+	double totalNumberOfDocuments = TextDocumentEndpoint.countDocuments(projectId);
 	double numberOfDocumentsBeforeChange = totalNumberOfDocuments - numberOfNewDocuments;
 	
 	return 1.0 - (numberOfNewDocuments / numberOfDocumentsBeforeChange);

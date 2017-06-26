@@ -41,11 +41,11 @@ public class SaturationEndpoint {
     }
 
     @ApiMethod(
-	    name = "saturation.getSaturation",
+	    name = "saturation.getSaturationParameters",
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
-    public void setSaturationParameters(@Named("saturationParams") SaturationParameters saturationParams, User user) throws UnauthorizedException {
+    public void setSaturationParameters(SaturationParameters saturationParams, User user) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
 	saturationParams.setCreationTime(new Date(System.currentTimeMillis()));
 
