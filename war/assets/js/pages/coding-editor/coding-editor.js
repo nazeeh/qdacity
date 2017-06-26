@@ -118,14 +118,6 @@ window.init = function () {
 	document.getElementById('btnHideFooter').onclick = function () {
 		hideCodingView();
 	}
-	document.getElementById('btnCodeSave').onclick = function () {
-		var code = codesystemView.getSelected();
-		code.author = $('#codePropAuthor').val();
-		code.name = $('#codePropName').val();
-		code.color = $('#codePropColor').val();
-		updateCode(code);
-
-	}
 
 	document.getElementById('btnCodeMemoSave').onclick = function () {
 		var code = codesystemView.getSelected();
@@ -342,7 +334,7 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 		codingsView = ReactDOM.render(<CodingsView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codingtable'));
-		codeProperties = ReactDOM.render(<CodeProperties editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codeProperties'));
+		codeProperties = ReactDOM.render(<CodeProperties editorCtrl={editorCtrl} documentsView={documentsView} updateCode={updateCode}/>, document.getElementById('codeProperties'));
 
 		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
 		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));

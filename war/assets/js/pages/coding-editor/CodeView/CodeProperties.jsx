@@ -70,7 +70,7 @@ export default class CodeProperties extends React.Component {
 					</tbody>
 				</table>
 
-				<StyledSaveBtn >
+				<StyledSaveBtn onClick={() => this.props.updateCode(this.state.code)}>
 					<a id="btnCodeSave" className="btn btn-default btn-default">
 						<i className="fa fa-floppy-o "></i>
 						Save
