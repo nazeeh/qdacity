@@ -1,9 +1,10 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
 
-import CodeRelationsView from './CodeView/CodeRelationsView.jsx';
+import MetaModel from './CodeView/MetaModel.jsx';
+//import CodeRelationsView from './CodeView/CodeRelationsView.jsx';
 import CodingsView from './CodeView/CodingsView.jsx';
 import CodeProperties from './CodeView/CodeProperties.jsx';
-import MetaModelView from './CodeView/MetaModelView.jsx';
+//import MetaModelView from './CodeView/MetaModelView.jsx';
 
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
@@ -43,6 +44,7 @@ var codingsView;
 var codeProperties;
 
 var metaModelView;
+var metaModel;
 
 var codeRelationsView
 
@@ -329,8 +331,9 @@ function setDocumentList(projectID) {
 		codingsView = ReactDOM.render(<CodingsView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codingtable'));
 		codeProperties = ReactDOM.render(<CodeProperties editorCtrl={editorCtrl} documentsView={documentsView} updateCode={updateCode}/>, document.getElementById('codeProperties'));
 
-		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
-		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
+		metaModel = ReactDOM.render(<MetaModel getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('metaModelAttributes'));
+		// metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
+		//codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
 
 
 	}
@@ -357,8 +360,9 @@ function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		codingsView.updateTable(code);
 		codeProperties.updateData(code);
-		metaModelView.setActiveIds(code.mmElementIDs);
-		codeRelationsView.setRelations(code.relations, code.id);
+		metaModel.setCode(code);
+		//metaModelView.setActiveIds(code.mmElementIDs);
+		//codeRelationsView.setRelations(code.relations, code.id);
 		if (codeMemoEditor != undefined) {
 			codeMemoEditor.setHTML(code.memo ? code.memo : '');
 		}

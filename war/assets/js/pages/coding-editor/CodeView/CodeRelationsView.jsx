@@ -50,15 +50,15 @@ export default class CodeRelationsView extends React.Component {
 		var _this = this;
 		this.state.sourceCode = pSourceId;
 		this.state.relationships = [];
-		this.setState({
-			relationships: this.state.relationships,
-			sourceCode: this.state.sourceCode,
-		});
+		// this.setState({
+		// 	relationships: this.state.relationships,
+		// 	sourceCode: this.state.sourceCode,
+		// });
 
 		if (typeof relations == 'undefined') return;
 
 		relations.forEach(function (relation) {
-			var mmElement = _this.props.metaModelView.getElement(relation.mmElementId);
+			var mmElement = _this.props.getElement(relation.mmElementId);
 			var code = _this.props.getCodeByCodeID(relation.codeId);
 			var codeName = "undefined";
 			var mmElementName = "undefined";
@@ -78,9 +78,9 @@ export default class CodeRelationsView extends React.Component {
 		rel.id = pRelId;
 
 		this.state.relationships.push(rel);
-		this.setState({
-			relationships: this.state.relationships
-		});
+		// this.setState({
+		// 	relationships: this.state.relationships
+		// });
 	}
 
 
@@ -124,6 +124,7 @@ export default class CodeRelationsView extends React.Component {
 	}
 
 	render() {
+		this.setRelations(this.props.code.relations, this.props.code.id);
 		const styles = this.getStyles();
 		var _this = this;
 		return (

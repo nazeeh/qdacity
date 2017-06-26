@@ -37,9 +37,9 @@ export default class MetaModelView extends React.Component {
 			this.setActiveElement(element);
 		} else {
 			this.resetSelection();
-			this.setState({
-				elements: this.state.elements
-			});
+			// this.setState({
+			// 	elements: this.state.elements
+			// });
 		}
 	}
 
@@ -55,9 +55,9 @@ export default class MetaModelView extends React.Component {
 
 		this.selectGeneralizations(element.getId(), group);
 
-		this.setState({
-			elements: this.state.elements
-		});
+		// this.setState({
+		// 	elements: this.state.elements
+		// });
 	}
 
 	getActiveElementIds() {
@@ -168,6 +168,8 @@ export default class MetaModelView extends React.Component {
 			display: "flex",
 			justifyContent: "center"
 		};
+
+		this.setActiveIds(this.props.code.mmElementIDs);
 
 		return (
 			<div style={blockStyle}>
