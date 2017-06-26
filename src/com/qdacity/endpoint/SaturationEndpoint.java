@@ -10,6 +10,7 @@ import com.qdacity.PMF;
 import com.qdacity.project.saturation.SaturationCalculator;
 import com.qdacity.project.saturation.SaturationParameters;
 import com.qdacity.project.saturation.SaturationResult;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,19 +44,9 @@ public class SaturationEndpoint {
 	    audiences = {Constants.WEB_CLIENT_ID})
     public void setSaturationParameters(@Named("saturationParams") SaturationParameters saturationParams, User user) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
-	Long projectId = saturationParams.getProjectId();
+	saturationParams.setCreationTime(new Date(System.currentTimeMillis()));
 
-	SaturationParameters existingParameters = getSaturationParameters(projectId);
-
-	SaturationParameters paramsToPersist = saturationParams;
-	//overwrite
-	if (existingParameters != null) {
-	    paramsToPersist = existingParameters;
-	    paramsToPersist.updateAllExceptID(saturationParams);
-	}
-
-	pmr.makePersistent(paramsToPersist);
-
+	pmr.makePersistent(saturationParams);
     }
 
     public SaturationParameters getSaturationParameters(@Named("projectId") Long projectId) throws UnauthorizedException {

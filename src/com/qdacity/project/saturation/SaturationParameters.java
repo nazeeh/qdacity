@@ -1,5 +1,6 @@
 package com.qdacity.project.saturation;
 
+import java.util.Date;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -14,6 +15,9 @@ public class SaturationParameters {
     Long id;
     @Persistent
     Long projectId;
+
+    @Persistent
+    Date creationTime;
 
     //Document Changes
     @Persistent
@@ -167,31 +171,12 @@ public class SaturationParameters {
 	this.updateCodeBookEntryWhenToUseChangeWeight = updateCodeBookEntryWhenToUseChangeWeight;
     }
 
-    /**
-     * Similar to a copy constructor, but not affecting the ID. Necessary when updating an existing Entity fromt he datastore
-     * @param copy 
-     */
-    public void updateAllExceptID(SaturationParameters copy) {
-	//Document Changes
-	this.insertDocumentChangeWeight = copy.insertDocumentChangeWeight;
-	
-	//Code Changes
-	this.insertCodeChangeWeight = copy.insertCodeChangeWeight;
-	this.updateCodeAuthorChangeWeight = copy.updateCodeAuthorChangeWeight;
-	this.updateCodeColorChangeWeight = copy.updateCodeColorChangeWeight;
-	this.updateCodeMemoChangeWeight = copy.updateCodeMemoChangeWeight;
-	this.updateCodeNameChangeWeight = copy.updateCodeNameChangeWeight;
-	this.updateCodeIdChangeWeight = copy.updateCodeIdChangeWeight;
-	//TODO relationships
-	this.deleteCodeChangeWeight = copy.deleteCodeChangeWeight;
-	
-	//CodeBookEntry Changes
-	this.updateCodeBookEntryDefinitionChangeWeight = copy.updateCodeBookEntryDefinitionChangeWeight;
-	this.updateCodeBookEntryExampleChangeWeight = copy.updateCodeBookEntryExampleChangeWeight;
-	this.updateCodeBookEntryShortDefinitionChangeWeight = copy.updateCodeBookEntryShortDefinitionChangeWeight;
-	this.updateCodeBookEntryWhenNotToUseChangeWeight = copy.updateCodeBookEntryWhenNotToUseChangeWeight;
-	this.updateCodeBookEntryWhenToUseChangeWeight = copy.updateCodeBookEntryWhenToUseChangeWeight;
+    public Date getCreationTime() {
+	return creationTime;
+    }
 
+    public void setCreationTime(Date creationTime) {
+	this.creationTime = creationTime;
     }
 
 }

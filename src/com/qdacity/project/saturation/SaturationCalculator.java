@@ -6,6 +6,7 @@ import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
+import java.util.Date;
 import java.util.List;
 
 public class SaturationCalculator {
@@ -13,7 +14,7 @@ public class SaturationCalculator {
     private final Long projectId;
     private final SaturationParameters params;
     private final List<Change> changes;
-
+    
     public SaturationCalculator(Long projectId) throws UnauthorizedException {
 	this.projectId = projectId;
 	SaturationEndpoint se = new SaturationEndpoint();
@@ -21,10 +22,9 @@ public class SaturationCalculator {
 	this.changes = new ChangeEndpoint().getAllChanges(projectId);
     }
     
-    
-    
     public SaturationResult calculateSaturation() {
-	SaturationResult result = new SaturationResult(projectId);
+	SaturationResult result = new SaturationResult();
+	result.setProjectId(projectId);
 	
 	double documentSaturation = calculateDocumentSaturation();
 	//TODO weight documentSaturation
@@ -33,13 +33,14 @@ public class SaturationCalculator {
 	double codeSaturation = calculateCodeSaturation();
 	//TODO
 
+	result.setCreationTime(new Date(System.currentTimeMillis()));
 	return result;
     }
-
+    
     private double calculateDocumentSaturation() {
 	double numberOfNewDocuments = 0.0;
-	for(Change change : changes) {
-	    if(change.getObjectType().equals(ChangeObject.DOCUMENT)) {
+	for (Change change : changes) {
+	    if (change.getObjectType().equals(ChangeObject.DOCUMENT)) {
 		numberOfNewDocuments += 1.0;
 	    }
 	}
@@ -49,7 +50,7 @@ public class SaturationCalculator {
 	return 1.0 - (numberOfNewDocuments / numberOfDocumentsBeforeChange);
 	
     }
-
+    
     private double calculateCodeSaturation() {
 	//TODO
 	return 0.0;
