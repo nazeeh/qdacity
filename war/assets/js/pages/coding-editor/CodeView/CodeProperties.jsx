@@ -39,10 +39,26 @@ export default class CodeProperties extends React.Component {
 		this.setState({code: this.state.code});
 	}
 
-	componentDidUpdate() {
+	changeColor(color) {
+		this.state.code.color = color;
+		this.setState({code: this.state.code});
+	}
+
+	componentDidMount() {
+		var _this = this;
 		$("#codePropColor").colorpicker({
 			color: this.state.code.color
 		});
+
+		$("#codePropColor").on("change.color", function(event, color){
+
+			var value = $("#codePropColor").colorpicker("val");
+		    if (_this.state.code.color != value) _this.changeColor(value);
+		});
+	}
+
+	componentDidUpdate(){
+		$("#codePropColor").colorpicker("val", this.state.code.color);
 	}
 
 	render(){
