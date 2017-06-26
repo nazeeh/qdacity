@@ -1,7 +1,7 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
 
 import CodeRelationsView from './CodeView/CodeRelationsView.jsx';
-import CodingsView from './CodeView/CodingsView.js';
+import CodingsView from './CodeView/CodingsView.jsx';
 import MetaModelView from './CodeView/MetaModelView.jsx';
 
 import Account from '../../common/Account.jsx';
@@ -52,6 +52,14 @@ var codesystemView
 var editorCtrl = {};
 
 window.init = function () {
+	$("#codeTabs").easytabs({
+		animate: true,
+		animationSpeed: 100,
+		panelActiveClass: "active-content-div",
+		defaultTab: "span#defaultCodeTab",
+		tabs: "> div > span",
+		updateHash: false
+	});
 
 	ReactDOM.render(<ReactLoading />, document.getElementById('documentsLoaderMount'));
 	ReactDOM.render(<ReactLoading />, document.getElementById('codesystemLoaderMount'));
@@ -298,7 +306,7 @@ function hideCodingView() {
 
 function fillCodingTable(code) {
 	var documents = documentsView.getDocuments();
-	codingsView.fillCodingTable(code.codeID, documents);
+	codingsView.updateTable(code.codeID, documents);
 }
 
 //FIXME possibly move to CodingsView
@@ -339,7 +347,7 @@ function setDocumentList(projectID) {
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}
-		codingsView = new CodingsView(editorCtrl, documentsView);
+		codingsView = ReactDOM.render(<CodingsView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codingtable'));
 
 		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
 		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));

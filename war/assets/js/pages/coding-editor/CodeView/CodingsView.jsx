@@ -1,23 +1,42 @@
 import 'script!../../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import 'script!../../../../../components/Easytabs/jquery.easytabs.js';
 
-export default class CodingsView {
+export default class CodingsView  extends React.Component {
 
-	constructor(editorCtrl, documentsView) {
-		this.editorCtrl = editorCtrl;
-		this.documentsView = documentsView;
+	constructor(props){
+		super(props);
 
-		$("#codeTabs").easytabs({
-			animate: true,
-			animationSpeed: 100,
-			panelActiveClass: "active-content-div",
-			defaultTab: "span#defaultCodeTab",
-			tabs: "> div > span",
-			updateHash: false
+		this.state = {
+			codeID: -1,
+			documents: []
+		};
+
+
+	}
+
+	setCodeID(codeID){
+		this.setState({
+			codeID: codeID
 		});
+	}
 
+	setDocuments(documents){
+		this.setState({
+			documents: documents
+		});
+	}
+
+	updateTable(codeID, documents){
+		this.setState({
+			codeID: codeID,
+			documents: documents
+		});
+	};
+
+	initTable(){
 		var dataSet = [];
-		var table = $('#example').dataTable({
+		var tableMount = $('#codingTableMount');
+		var table = tableMount.dataTable({
 			"iDisplayLength": 7,
 			"bLengthChange": false,
 			"data": dataSet,
@@ -42,7 +61,7 @@ export default class CodingsView {
 
 		});
 		var _this = this;
-		$('#example tbody').on('click', 'tr', function () {
+		$('#codingTableMount tbody').on('click', 'tr', function () {
 			if ($(this).hasClass('selected')) {
 				$(this).removeClass('selected');
 			} else {
@@ -51,25 +70,28 @@ export default class CodingsView {
 				$(this).addClass('selected');
 				var codingID = $(this).find("td").eq(0).html();
 
-				_this.documentsView.setDocumentWithCoding(codingID);
-				_this.editorCtrl.activateCodingInEditor(codingID, true);
+				_this.props.documentsView.setDocumentWithCoding(codingID);
+				_this.props.editorCtrl.activateCodingInEditor(codingID, true);
 
 			}
 		});
 	}
 
-	fillCodingTable(codeID, documents) {
-		var table = $('#example').DataTable();
+
+	fillCodingTable() {
+		var _this = this;
+
+		var table = $('#codingTableMount').DataTable();
 
 		table.clear();
 
 		var codings = [];
 
-		for (var i in documents) {
-			var doc = documents[i];
+		for (var i in _this.state.documents) {
+			var doc = _this.state.documents[i];
 			var elements = doc.text;
 			var found = $('coding', elements);
-			var foundArray = $('coding[code_id=\'' + codeID + '\']', elements).map(function () {
+			var foundArray = $('coding[code_id=\'' + _this.state.codeID + '\']', elements).map(function () {
 				var tmp = {};
 				tmp.id = $(this).attr('id');
 				tmp.code_id = $(this).attr('code_id');
@@ -89,5 +111,23 @@ export default class CodingsView {
 		}
 
 		table.draw();
+	}
+
+	componentDidMount() {
+		this.initTable();
+	}
+	componentDidUpdate() {
+		this.fillCodingTable();
+	}
+
+	render(){
+		return (
+			<div>
+				<table id="codingTableMount" className="display">
+
+				</table>
+			</div>
+
+		);
 	}
 }
