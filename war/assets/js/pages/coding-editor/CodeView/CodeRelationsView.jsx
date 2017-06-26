@@ -1,6 +1,6 @@
 import React from 'react';
-import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
-import NewCodeRelation from '../../common/modals/NewCodeRelation';
+import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
+import NewCodeRelation from '../../../common/modals/NewCodeRelation';
 
 export default class CodeRelationsView extends React.Component {
 	constructor(props) {
@@ -132,7 +132,7 @@ export default class CodeRelationsView extends React.Component {
 								<i className="fa fa-plus fa-lg "></i>
 								&nbsp;Add Relationship
 	  </li>
-	
+
         {
           this.state.relationships.map(function(rel) {
             return <li key={rel.id} className="clickable" style={styles.listItem}>
@@ -140,11 +140,11 @@ export default class CodeRelationsView extends React.Component {
             <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
             <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
             </a>
-            
+
             <span style={styles.relation}>{rel.name}</span>
             <br/>
-            <span style={styles.dstCode}> {rel.dstName}</span> 
-            
+            <span style={styles.dstCode}> {rel.dstName}</span>
+
             </li>
           })
         }

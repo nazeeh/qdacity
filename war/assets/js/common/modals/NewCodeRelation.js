@@ -1,5 +1,5 @@
 import VexModal from './VexModal';
-import MetaModelView from '../../pages/coding-editor/MetaModelView.jsx';
+import MetaModelView from '../../pages/coding-editor/CodeView/MetaModelView.jsx';
 import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
 
 export default class NewCodeRelation extends VexModal {

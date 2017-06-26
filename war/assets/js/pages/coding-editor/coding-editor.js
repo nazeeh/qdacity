@@ -1,7 +1,8 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
-import CodeRelationsView from './CodeRelationsView.jsx';
-import CodingsView from './CodingsView.js';
-import MetaModelView from './MetaModelView.jsx';
+
+import CodeRelationsView from './CodeView/CodeRelationsView.jsx';
+import CodingsView from './CodeView/CodingsView.js';
+import MetaModelView from './CodeView/MetaModelView.jsx';
 
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
