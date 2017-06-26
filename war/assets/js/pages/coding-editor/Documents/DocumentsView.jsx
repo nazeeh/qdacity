@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
+import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
@@ -240,11 +240,11 @@ export default class DocumentsView extends React.Component {
 	renderToolbar() {
 		if (this.props.projectType == "PROJECT") {
 			return (
-				<DocumentsToolbar 
-					projectID={this.props.projectID}  
-					document={this.getActiveDocument()} 
-					addDocument={this.addDocument} 
-					removeActiveDocument={this.removeActiveDocument} 
+				<DocumentsToolbar
+					projectID={this.props.projectID}
+					document={this.getActiveDocument()}
+					addDocument={this.addDocument}
+					removeActiveDocument={this.removeActiveDocument}
 					changeDocumentData={this.changeDocumentData}
 				/>
 			);
@@ -269,7 +269,7 @@ export default class DocumentsView extends React.Component {
 			</div>
 			<div className="list-group">
 	        {
-	          this.state.documents.map(function(doc) {	
+	          this.state.documents.map(function(doc) {
 	            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
 	          })
 	        }

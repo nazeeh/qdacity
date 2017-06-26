@@ -1,4 +1,4 @@
-import DocumentsView from './DocumentsView.jsx';
+import DocumentsView from './Documents/DocumentsView.jsx';
 import CodeRelationsView from './CodeRelationsView.jsx';
 import CodingsView from './CodingsView.js';
 import MetaModelView from './MetaModelView.jsx';
