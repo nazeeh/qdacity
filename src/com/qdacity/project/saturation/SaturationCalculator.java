@@ -19,14 +19,17 @@ public class SaturationCalculator {
 	this.projectId = projectId;
 	SaturationEndpoint se = new SaturationEndpoint();
 	this.params = se.getSaturationParameters(projectId);
+	//TODO get CHanges ab Zeitpunkt X! hier sind es immer alle changes!
 	this.changes = new ChangeEndpoint().getAllChanges(projectId);
     }
     
     public SaturationResult calculateSaturation() {
 	SaturationResult result = new SaturationResult();
 	result.setProjectId(projectId);
+	result.setSaturationParameters(params);
 	
 	double documentSaturation = calculateDocumentSaturation();
+	result.setDocumentSaturation(documentSaturation);
 	//TODO weight documentSaturation
 	result.setDocumentSaturation(documentSaturation);
 	

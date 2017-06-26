@@ -41,6 +41,7 @@ public class SaturationParameters {
     double deleteCodeChangeWeight;
 
     //CodeBookEntry Changes
+    @Persistent
     double updateCodeBookEntryDefinitionChangeWeight;
     @Persistent
     double updateCodeBookEntryExampleChangeWeight;

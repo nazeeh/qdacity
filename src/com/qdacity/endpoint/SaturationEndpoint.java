@@ -9,10 +9,9 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
-import com.qdacity.project.saturation.SaturationCalculator;
 import com.qdacity.project.saturation.SaturationParameters;
-import com.qdacity.project.saturation.SaturationResult;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +64,7 @@ public class SaturationEndpoint {
 
 	List<SaturationParameters> parameters = (List<SaturationParameters>) query.executeWithMap(paramValues);
 	if (parameters.isEmpty()) {
-	    return null;
+	    return new DefaultSaturationParameters();
 	}
 	return parameters.get(0);
     }
