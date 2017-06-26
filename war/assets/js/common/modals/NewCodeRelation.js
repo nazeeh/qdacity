@@ -43,7 +43,7 @@ export default class NewCodeRelation extends VexModal {
 					callback: function (data) {
 
 						var relationship = {};
-						
+
 						if (data != false) {
 							relationship.mmElementId = _this.mmRelationshipsView.getActiveElementIds()[0];
 							relationship.codeId = _this.mmCodesystemView.getSelected().codeID;
