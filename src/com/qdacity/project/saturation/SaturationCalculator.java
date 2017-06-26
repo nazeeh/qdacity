@@ -30,11 +30,16 @@ public class SaturationCalculator {
 	
 	double documentSaturation = calculateDocumentSaturation();
 	result.setDocumentSaturation(documentSaturation);
-	//TODO weight documentSaturation
+	//documentSaturation is not weighted by itself!
 	result.setDocumentSaturation(documentSaturation);
 	
+	//TODO weighting
 	double codeSaturation = calculateCodeSaturation();
+	result.setCodeSaturation(codeSaturation);
+	
 	//TODO
+	double totalSaturation = 0.0; //TODO needs weighting!
+	result.setTotalSaturation(totalSaturation);
 
 	result.setCreationTime(new Date(System.currentTimeMillis()));
 	return result;
