@@ -1,4 +1,16 @@
 import React from 'react'
+import styled from 'styled-components';
+
+
+const StyledColorPicker = styled.input `
+    width: 80px;
+`;
+
+const StyledSaveBtn = styled.div `
+    width: 8em;
+	text-align: center;
+	margin: 0 auto;
+`;
 
 export default class CodeProperties extends React.Component {
 	constructor(props) {
@@ -28,9 +40,9 @@ export default class CodeProperties extends React.Component {
 	}
 
 	componentDidUpdate() {
-		// $("#codePropColor").colorpicker({
-		// 	color: this.state.code.color
-		// });
+		$("#codePropColor").colorpicker({
+			color: this.state.code.color
+		});
 	}
 
 	render(){
@@ -50,22 +62,20 @@ export default class CodeProperties extends React.Component {
 							<td><span>Color: </span></td>
 							<td>
 								<div className="evo-cp-wrap">
-									<input id="codePropColor" type="text" className="colorPicker evo-cp0"/>
-									<div className="evo-pointer evo-colorind">
+									<StyledColorPicker id="codePropColor" type="text" className="colorPicker evo-cp0"/>
 
-									</div>
 								</div>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 
-				<div >
+				<StyledSaveBtn >
 					<a id="btnCodeSave" className="btn btn-default btn-default">
 						<i className="fa fa-floppy-o "></i>
 						Save
 					</a>
-				</div>
+				</StyledSaveBtn>
 			</div>
 		);
 	}
