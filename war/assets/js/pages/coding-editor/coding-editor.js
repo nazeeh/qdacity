@@ -17,7 +17,6 @@ import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import $script from 'scriptjs';
 
 import 'script!../../../../components/tooltipster/js/jquery.tooltipster.js';
-import 'script!../../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../../components/URIjs/URI.min.js';
 
 import 'script!../../../../assets/js/common/ErrorHandler.js'
@@ -283,7 +282,7 @@ function showCodingView() {
 	showFooter();
 	var activeCode = codesystemView.getSelected();
 
-	fillCodingTable(activeCode);
+	codingsView.updateTable(activeCode);
 	codeProperties.updateData(activeCode);
 	fillCodeRelationsView();
 	resizeHandler();
@@ -297,12 +296,6 @@ function hideCodingView() {
 	$("#footer").hide("clip", {}, 200, resizeElements);
 
 }
-
-function fillCodingTable(code) {
-	var documents = documentsView.getDocuments();
-	codingsView.updateTable(code.codeID, documents);
-}
-
 
 function fillCodeRelationsView() {
 	var code = codesystemView.getSelected();
@@ -362,7 +355,7 @@ function updateCodeBookEntry(codeBookEntry) {
 
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
-		fillCodingTable(code);
+		codingsView.updateTable(code);
 		codeProperties.updateData(code);
 		metaModelView.setActiveIds(code.mmElementIDs);
 		codeRelationsView.setRelations(code.relations, code.id);

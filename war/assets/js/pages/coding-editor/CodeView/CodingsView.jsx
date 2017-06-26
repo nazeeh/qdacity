@@ -26,9 +26,10 @@ export default class CodingsView  extends React.Component {
 		});
 	}
 
-	updateTable(codeID, documents){
+	updateTable(code){
+		var documents = this.props.documentsView.getDocuments();
 		this.setState({
-			codeID: codeID,
+			codeID: code.codeID,
 			documents: documents
 		});
 	};
