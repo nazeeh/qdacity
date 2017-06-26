@@ -108,7 +108,7 @@ window.init = function () {
 		hideCodingView();
 	}
 	document.getElementById('btnCodeSave').onclick = function () {
-		var code = codesystemView.child.getSelected();
+		var code = codesystemView.getSelected();
 		code.author = $('#codePropAuthor').val();
 		code.name = $('#codePropName').val();
 		code.color = $('#codePropColor').val();
@@ -117,13 +117,13 @@ window.init = function () {
 	}
 
 	document.getElementById('btnCodeMemoSave').onclick = function () {
-		var code = codesystemView.child.getSelected();
+		var code = codesystemView.getSelected();
 		code.memo = codeMemoEditor.getHTML();
 		updateCode(code);
 	}
 
 	document.getElementById('btnSaveMetaModelAttr').onclick = function () {
-		var code = codesystemView.child.getSelected();
+		var code = codesystemView.getSelected();
 		code.mmElementIDs = metaModelView.getActiveElementIds()
 		updateCode(code);
 	}
@@ -231,7 +231,7 @@ function resizeElements() {
 	var codesystemTreeOffset = 0;
 	var offset = $("#codesystemTree").offset();
 	if ($("#codesystemTree").offset()) codesystemTreeOffset = offset.top;
-	codesystemView.child.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
+	codesystemView.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
 
 	editorCtrl.addCodingBrackets();
 }
@@ -256,14 +256,14 @@ function setupUI() {
 				umlEditorEnabled={resp.umlEditorEnabled}
 				showFooter={showFooter}
 				updateCodeView={updateCodeView}
-			/>, document.getElementById('codesystemView'));
+			/>, document.getElementById('codesystemView')).child; // codesystem is wrapped in DnD components, therefore assign child
 
-			var codesystemLoaded = codesystemView.child.init();
+			var codesystemLoaded = codesystemView.init();
 
 			documentsLoaded.then(() => {
 				codesystemLoaded.then(() => {
 					// Initialize coding count bubbles after both codesystem and documents are available
-					codesystemView.child.initCodingCount();
+					codesystemView.initCodingCount();
 					resizeElements();
 				});
 			});
@@ -278,7 +278,7 @@ function setupUI() {
 
 function showCodingView() {
 	showFooter();
-	var activeCode = codesystemView.child.getSelected();
+	var activeCode = codesystemView.getSelected();
 
 	fillCodingTable(activeCode);
 	fillPropertiesView(activeCode);
@@ -310,25 +310,25 @@ function fillPropertiesView(code) {
 }
 
 function fillCodeRelationsView() {
-	var code = codesystemView.child.getSelected();
+	var code = codesystemView.getSelected();
 
 	codeRelationsView.setRelations(code.relations, code.id);
 }
 
 function getSelectedCode() {
-	return codesystemView.child.getSelected();
+	return codesystemView.getSelected();
 }
 
 function updateSelectedCode(code) {
-	codesystemView.child.updateSelected(code);
+	codesystemView.updateSelected(code);
 }
 
 function getCodeByCodeID(codeID) {
-	return codesystemView.child.getCodeByCodeID(codeID);
+	return codesystemView.getCodeByCodeID(codeID);
 }
 
 function getCodeSystem() {
-	return codesystemView.child.getCodesystem();
+	return codesystemView.getCodesystem();
 }
 
 function setDocumentList(projectID) {
@@ -353,13 +353,13 @@ function setDocumentList(projectID) {
 // Update Code function
 function updateCode(code) {
 	CodesEndpoint.updateCode(code).then(function (resp) {
-		codesystemView.child.updateSelected(resp);
+		codesystemView.updateSelected(resp);
 	});
 }
 
 function updateCodeBookEntry(codeBookEntry) {
-	CodesEndpoint.setCodeBookEntry(codesystemView.child.getSelected().id, codeBookEntry).then(function (resp) {
-		codesystemView.child.updateSelected(resp);
+	CodesEndpoint.setCodeBookEntry(codesystemView.getSelected().id, codeBookEntry).then(function (resp) {
+		codesystemView.updateSelected(resp);
 	});
 }
 
