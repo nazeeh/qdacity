@@ -63,7 +63,7 @@ export default class ButtonEditMetaModel extends React.Component {
 				CodesEndpoint.updateCode(code).then(function (resp) {
 					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
 					_this.umlEditorView.exchangeCodeMetaModelEntities(resp.codeID, oldMetaModelElementIds);
-					
+
 					// TODO: Clear selection? only if the node gets removed
 				});
 			}

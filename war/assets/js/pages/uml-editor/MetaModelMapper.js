@@ -142,6 +142,12 @@ export default class MetaModelMapper {
 	addNode(umlClass) {
 		const node = this.umlEditorView.addNode(umlClass.getCode().name);
 		umlClass.setNode(node);
+
+		const umlCodePosition = umlClass.getUmlCodePosition();
+		if (umlCodePosition != null) {
+			this.umlEditorView.translateNode(node, umlCodePosition.x, umlCodePosition.y);
+		}
+
 		this.umlEditorView.onNodesChanged();
 	}
 
@@ -169,6 +175,8 @@ export default class MetaModelMapper {
 	addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode) {
 		// TODO debug here with console.log
 		// Warum wird 2-2-XXXXXXXXXXX nciht hinzugefügt?
+		console.log("Add Relation for: " + this.calculateRelationIdentifier(relation));
+
 		this.umlEditorView.umlClassRelations[this.calculateRelationIdentifier(relation)] = new UmlClassRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 

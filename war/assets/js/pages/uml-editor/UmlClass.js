@@ -8,7 +8,7 @@ export default class UmlClass {
 		this.node = node;
 
 		// Saves the position in the graph
-		this.umlCodePosition;
+		this.umlCodePosition = null;
 	}
 
 	getCode() {

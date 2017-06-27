@@ -56,9 +56,13 @@ export default class UmlEditorView {
 
 		// Styling
 		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
+		mxConstants.VERTEX_SELECTION_DASHED = false;
+		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 2;
+		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
+		mxConstants.EDGE_SELECTION_DASHED = false;
+		mxConstants.EDGE_SELECTION_STROKEWIDTH = 2;
 		mxConstants.OUTLINE_COLOR = '#00A2E8';
 		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
-		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
 		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
 
 		// Enables layouting
@@ -264,6 +268,9 @@ export default class UmlEditorView {
 				// Add cells moved event listener
 				_this.initCellsMovedEventHandler();
 
+				// Set CodePositions
+				_this.refreshUmlCodePositions(umlCodePositions);
+
 				// Unregistered codes exist
 				if (umlCodePositions.length != _this.umlClasses.length) {
 					// Find new codes
@@ -352,13 +359,15 @@ export default class UmlEditorView {
 	}
 
 	refreshUmlCodePositions(newUmlCodePositions) {
+		console.log('Refreshing UmlCodePositions.');
+
 		const _this = this;
 		newUmlCodePositions.forEach((newUmlCodePosition) => {
 			let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == newUmlCodePosition.codeId);
 			umlClass.setUmlCodePosition(newUmlCodePosition);
 		});
 	}
-	
+
 	addGraphEventListener(event, func) {
 		this.graph.addListener(event, func);
 	}
@@ -403,6 +412,30 @@ export default class UmlEditorView {
 
 		console.log('Is it possible to apply new mappings?');
 
+		console.log('Check the node...');
+
+		let oldNodeAction = this.metaModelMapper.evaluateCode(oldUmlClass);
+		let newNodeAction = this.metaModelMapper.evaluateCode(umlClass);
+		console.log('Previous node action: ' + oldNodeAction);
+		console.log('Current node action: ' + newNodeAction);
+
+		if (oldNodeAction != newNodeAction) {
+			console.log('Something changed...');
+
+			console.log('Undo old action...');
+
+			this.metaModelMapper.undoAction(oldNodeAction, {
+				'sourceUmlClass': umlClass
+			});
+			this.metaModelMapper.runAction(newNodeAction, {
+				'sourceUmlClass': umlClass
+			});
+
+			console.log('Apply new action...');
+		}
+
+		console.log('Done with the node.');
+
 		console.log('Check the outgoing relations...');
 
 		if (umlClass.getCode().relations != null) {
@@ -446,31 +479,7 @@ export default class UmlEditorView {
 			}
 		});
 
-		console.log('Done with the incoming relations.');
-
-		console.log('Check the node...');
-
-		let oldNodeAction = this.metaModelMapper.evaluateCode(oldUmlClass);
-		let newNodeAction = this.metaModelMapper.evaluateCode(umlClass);
-		console.log('Previous node action: ' + oldNodeAction);
-		console.log('Current node action: ' + newNodeAction);
-
-		if (oldNodeAction != newNodeAction) {
-			console.log('Something changed...');
-
-			console.log('Undo old action...');
-
-			this.metaModelMapper.undoAction(oldNodeAction, {
-				'sourceUmlClass': umlClass
-			});
-			this.metaModelMapper.runAction(newNodeAction, {
-				'sourceUmlClass': umlClass
-			});
-
-			console.log('Apply new action...');
-		}
-
-		console.log('Done with the node.');
+		console.log('Done with the incoming relations.')
 	}
 
 	checkSingleRelation(relation, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
@@ -494,10 +503,6 @@ export default class UmlEditorView {
 			};
 
 			let relationIdentifier = this.metaModelMapper.calculateRelationIdentifier(relation);
-
-			if (!this.umlClassRelations.hasOwnProperty(relationIdentifier)) {
-				throw new Error("ERROR");
-			}
 
 			console.log('Undo old action...');
 
@@ -587,6 +592,9 @@ export default class UmlEditorView {
 		this.graph.getModel().beginUpdate();
 
 		try {
+			// Remove from selection
+			this.graph.getSelectionModel().removeCell(node);
+
 			node.removeFromParent();
 
 			this.graph.refresh(node);
