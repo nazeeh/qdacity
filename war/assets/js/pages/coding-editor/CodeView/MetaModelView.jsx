@@ -1,6 +1,6 @@
-import 'script!../../../../components/Easytabs/jquery.easytabs.js';
-import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
-import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
+import 'script!../../../../../components/Easytabs/jquery.easytabs.js';
+import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
+import MetaModelRelationEndpoint from '../../../common/endpoints/MetaModelRelationEndpoint';
 import MetaModelElement from './MetaModelElement';
 
 export default class MetaModelView extends React.Component {
@@ -171,7 +171,7 @@ export default class MetaModelView extends React.Component {
 
 		return (
 			<div style={blockStyle}>
-		        {Object.keys(_this.state.elements).map((key, index) => _this.renderGroup(_this.state.elements[key], key))}		        
+		        {Object.keys(_this.state.elements).map((key, index) => _this.renderGroup(_this.state.elements[key], key))}
             </div>
 		);
 	}
