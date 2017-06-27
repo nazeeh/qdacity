@@ -217,6 +217,14 @@ public class CodeEndpoint {
 			code = mgr.getObjectById(Code.class, codeID);
 			Authorization.checkAuthorization(code, user);
 
+			CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationId);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeRemoveRelationShipChange(relation, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			mgr.makePersistent(change);
+			
+			//Do actual Change
 			code.removeRelation(relationId);
 			mgr.makePersistent(code);
 
@@ -224,8 +232,6 @@ public class CodeEndpoint {
 			for (CodeRelation codeRelation : relationships) {
 				codeRelation.getCodeId();
 			}
-			
-			//TODO LOG
 		} finally {
 			mgr.close();
 		}

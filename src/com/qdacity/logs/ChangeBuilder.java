@@ -15,16 +15,18 @@ import java.util.Map;
 public class ChangeBuilder {
 
     /**
-     * Creates a Change Object for an insert Document Change. The Change contains the title of the document as new value.
-     * The text of the document is not saved in the change!
+     * Creates a Change Object for an insert Document Change. The Change
+     * contains the title of the document as new value. The text of the document
+     * is not saved in the change!
+     *
      * @param textdocument
      * @param projectID
      * @param userId
-     * @return 
+     * @return
      */
     public Change makeInsertTextDocumentChange(TextDocument textdocument, Long projectID, String userId) {
 	Change change = new Change(now(), projectID, ProjectType.PROJECT, ChangeType.CREATED, userId, ChangeObject.DOCUMENT, textdocument.getId());
-	change.setNewValue("{\"title\":\""+textdocument.getTitle().replace("\"", "&quot;")+"\"}");
+	change.setNewValue("{\"title\":\"" + textdocument.getTitle().replace("\"", "&quot;") + "\"}");
 	return change;
     }
 
@@ -43,9 +45,17 @@ public class ChangeBuilder {
 	return change;
     }
 
-    public Change makeAddRelationShipChange(CodeRelation relation, Long projectID, ProjectType projectTyp, String userID, Long codeId) {
-	Change change = new Change(now(), projectID, projectTyp, ChangeType.CREATED, userID, ChangeObject.CODE_RELATIONSHIP, codeId);
-	//TODO as JSON change.setNewValue(); //TODO wie als JSON?
+    public Change makeAddRelationShipChange(CodeRelation relation, Long projectID, ProjectType projectType, String userID, Long codeId) {
+	Change change = new Change(now(), projectID, projectType, ChangeType.CREATED, userID, ChangeObject.CODE_RELATIONSHIP, codeId);
+	String jsonChanges = generateCodeRelationChangesPseudoJSON(relation);
+	change.setNewValue(jsonChanges);
+	return change;
+    }
+
+    public Change makeRemoveRelationShipChange(CodeRelation relation, Long projectID, ProjectType projectType, String userID, Long codeID) {
+	Change change = new Change(now(), projectID, projectType, ChangeType.DELETED, userID, ChangeObject.CODE_RELATIONSHIP, codeID);
+	String jsonChanges = generateCodeRelationChangesPseudoJSON(relation);
+	change.setOldValue(jsonChanges);
 	return change;
     }
 
@@ -81,6 +91,11 @@ public class ChangeBuilder {
 
 	return change;
 
+    }
+
+    private String generateCodeRelationChangesPseudoJSON(CodeRelation relation) {
+	String jsonChanges = "{\"codeId\":\"" + relation.getCodeId() + "\",\"mmElementId\":\"" + relation.getMmElementId() + "\"}";
+	return jsonChanges;
     }
 
     private static Date now() {
