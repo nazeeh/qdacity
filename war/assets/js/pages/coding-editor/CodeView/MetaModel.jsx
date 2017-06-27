@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components';
 
 import MetaModelView from './MetaModelView.jsx';
 import CodeRelationsView from './CodeRelationsView.jsx';
@@ -6,6 +7,11 @@ import MetaModelElement from './MetaModelElement';
 
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
 
+const StyledSaveBtn = styled.div `
+    width: 8em;
+	text-align: center;
+	margin: 0 auto;
+`;
 export default class MetaModel extends React.Component {
 	constructor(props) {
 		super(props);
@@ -182,12 +188,12 @@ export default class MetaModel extends React.Component {
 					</div>
 				</div>
 
-				<div>
+				<StyledSaveBtn>
 					<a id="btnSaveMetaModelAttr" className="btn btn-default btn-default" onClick={() => this.saveSettings()} >
 						<i className="fa fa-floppy-o "></i>
 						Save
 					</a>
-				</div>
+				</StyledSaveBtn>
 			</div>
 
 		);
