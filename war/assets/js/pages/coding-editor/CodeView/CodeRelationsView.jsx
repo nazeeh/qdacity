@@ -100,15 +100,16 @@ export default class CodeRelationsView extends React.Component {
 
 	createRelationship() {
 		var _this = this;
-		var newRelationModal = new NewCodeRelation(this.props.metaModelView, this.props.getCodeSystem());
+		var newRelationModal = new NewCodeRelation(this.props.elements, this.props.getCodeSystem());
 		newRelationModal.showModal().then(function (data) {
 			var a = 1;
-			CodesEndpoint.addRelationship(_this.state.sourceCode, data.codeId, data.mmElementId).then(function (resp) {
-				var mmElementName = _this.props.metaModelView.getElement(data.mmElementId).name;
-				var code = _this.props.getSelectedCode();
+			CodesEndpoint.addRelationship(_this.state.sourceCode, data.codeId, data.mmElement.id).then(function (resp) {
+				var mmElementName = data.mmElement.name;
+				var code = _this.props.code;
 				code.relations = resp.relations;
 				_this.props.updateSelectedCode(code);
 				_this.setRelations(code.relations, code.id);
+				_this.forceUpdate();
 			});
 		});
 	}
@@ -120,6 +121,7 @@ export default class CodeRelationsView extends React.Component {
 			var code = _this.props.getSelectedCode();
 			code.relations = resp.relations;
 			_this.props.updateSelectedCode(code);
+			_this.forceUpdate();
 		});
 	}
 

@@ -178,7 +178,7 @@ export default class MetaModel extends React.Component {
 						<MetaModelView filter={"PROPERTY"} code={this.state.code} selected={this.state.selected} elements={this.state.elements} addSelected={this.addSelected} setActiveElement={this.setActiveElement} setElements={this.setElements}/>
 					</div>
 					<div className="col-sm-6">
-<CodeRelationsView {...this.props} code={this.state.code} getElement={this.getElement}/>
+						<CodeRelationsView {...this.props} code={this.state.code} getElement={this.getElement}  elements={this.state.elements}/>
 					</div>
 				</div>
 
