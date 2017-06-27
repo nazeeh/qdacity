@@ -21,7 +21,7 @@ export default class MetaModel extends React.Component {
 		this.setActiveElement = this.setActiveElement.bind(this);
 
 	}
-	// 
+	//
 	// init() {
 	// 	let _this = this;
 	// 	MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
@@ -165,6 +165,11 @@ export default class MetaModel extends React.Component {
 		});
 	};
 
+	saveSettings(){
+		this.state.code.mmElementIDs = this.state.elements;
+		this.props.updateCode(this.state.code);
+	}
+
 	render(){
 		return(
 			<div>
@@ -178,7 +183,7 @@ export default class MetaModel extends React.Component {
 				</div>
 
 				<div>
-					<a id="btnSaveMetaModelAttr" className="btn btn-default btn-default" >
+					<a id="btnSaveMetaModelAttr" className="btn btn-default btn-default" onClick={() => this.saveSettings()} >
 						<i className="fa fa-floppy-o "></i>
 						Save
 					</a>
