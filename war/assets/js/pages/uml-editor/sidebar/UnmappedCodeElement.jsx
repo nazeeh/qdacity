@@ -1,8 +1,8 @@
 import React from 'react';
 
-import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
+import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
-import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
+import UmlCodeMetaModelModal from '../../../common/modals/UmlCodeMetaModelModal';
 
 export default class UnmappedCodeElement extends React.Component {
 

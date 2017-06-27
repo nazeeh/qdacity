@@ -5,7 +5,7 @@ import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
 
 import Toolbar from './toolbar/Toolbar.jsx';
-import UnmappedCodesView from './UnmappedCodesView.jsx';
+import UnmappedCodesView from './sidebar/UnmappedCodesView.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
