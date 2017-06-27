@@ -3,7 +3,9 @@ import {
 } from './EdgeType.js';
 import UmlClass from './UmlClass.js';
 import UmlClassRelation from './UmlClassRelation.js';
+import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
 
+import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
 export default class UmlEditorView {
@@ -72,6 +74,9 @@ export default class UmlEditorView {
 
 		// Initialize styles
 		this.initializeStyles();
+
+		// Initialize events
+		this.initializeEvents();
 	}
 
 	initializeStyles() {
@@ -151,6 +156,64 @@ export default class UmlEditorView {
 		style[mxConstants.STYLE_ENDFILL] = 0;
 		style[mxConstants.STYLE_DASHED] = 1;
 		stylesheet.putCellStyle(EdgeType.REALIZATION, style);
+	}
+
+	initializeEvents() {
+		const _this = this;
+
+		let lastSelectedCells = [];
+
+		this.graph.getSelectionModel().addListener(mxEvent.CHANGE, function (sender, evt) {
+			var cells = sender.cells;
+
+			// remove last overlays
+			if (lastSelectedCells != null) {
+				lastSelectedCells.forEach((cell) => {
+					_this.graph.removeCellOverlays(cell);
+				});
+			}
+
+			// display overlay if one node selected
+			if (cells != null && cells.length == 1 && cells[0].vertex == true) {
+				var cell = cells[0];
+				var overlays = _this.graph.getCellOverlays(cell);
+
+				if (overlays == null) {
+					// Overlay MetaModel
+					var overlayMetaModel = new mxCellOverlay(new mxImage('assets/img/overlayButtonMetaModel.png', 34, 30), 'Edit MetaModel', mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP, new mxPoint(17, -22));
+					overlayMetaModel.cursor = 'pointer';
+
+					overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
+						let umlClass = _this.umlClasses.find((uml) => uml.getNode() != null && uml.getNode().mxObjectId == cell.mxObjectId);
+						let code = umlClass.getCode();
+
+						let codeMetaModelModal = new UmlCodeMetaModelModal(code);
+
+						codeMetaModelModal.showModal().then(function (data) {
+							console.log('Closed modal');
+
+							if (code.mmElementIDs != data.ids) {
+								console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + code.mmElementIDs);
+
+								let oldMetaModelElementIds = code.mmElementIDs;
+								code.mmElementIDs = data.ids;
+
+								console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+
+								CodesEndpoint.updateCode(code).then(function (resp) {
+									console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
+									_this.exchangeCodeMetaModelEntities(resp.codeID, oldMetaModelElementIds);
+								});
+							}
+						});
+					});
+
+					_this.graph.addCellOverlay(cell, overlayMetaModel);
+				}
+			}
+
+			lastSelectedCells = cells.slice(); // use a copy
+		});
 	}
 
 	initCellsMovedEventHandler() {
