@@ -209,6 +209,26 @@ export default class UmlEditorView {
 					});
 
 					_this.graph.addCellOverlay(cell, overlayMetaModel);
+
+					// Overlay AddMethod
+					var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
+					overlayAddMethod.cursor = 'pointer';
+
+					overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
+						mxUtils.alert('Overlay clicked');
+					});
+
+					_this.graph.addCellOverlay(cell, overlayAddMethod);
+
+					// Overlay AddField
+					var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15.5, -22));
+					overlayAddField.cursor = 'pointer';
+
+					overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
+						mxUtils.alert('Overlay clicked');
+					});
+
+					_this.graph.addCellOverlay(cell, overlayAddField);
 				}
 			}
 
