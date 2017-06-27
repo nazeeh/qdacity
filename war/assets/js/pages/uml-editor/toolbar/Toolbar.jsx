@@ -1,6 +1,5 @@
 import React from 'react';
 
-import ButtonEditMetaModel from './ButtonEditMetaModel.jsx';
 import ButtonZoomIn from './ButtonZoomIn.jsx';
 import ButtonZoomOut from './ButtonZoomOut.jsx';
 import ButtonZoomSelect from './ButtonZoomSelect.jsx';
@@ -30,7 +29,6 @@ export default class Toolbar extends React.Component {
     	        <ButtonZoomIn umlEditorView={_this.umlEditorView} />
                 <ButtonZoomOut umlEditorView={_this.umlEditorView} />
                 <ButtonZoomSelect umlEditorView={_this.umlEditorView} />
-                <ButtonEditMetaModel umlEditorView={_this.umlEditorView} />
             </div>
 		);
 	}
