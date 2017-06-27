@@ -166,7 +166,7 @@ export default class MetaModel extends React.Component {
 	};
 
 	saveSettings(){
-		this.state.code.mmElementIDs = this.state.elements;
+		this.state.code.mmElementIDs = this.state.selected;
 		this.props.updateCode(this.state.code);
 	}
 
