@@ -14,12 +14,20 @@ export default class Tabs extends React.Component {
 		this.state = {
 			activeIndex: 0
 		};
+
+		this.changeTab = this.changeTab.bind(this);
+	}
+
+	changeTab(tabIndex){
+		this.setState({
+			activeIndex: tabIndex
+		});
 	}
 
 	renderTabsHeader(){
 		return React.Children.map(this.props.children, (child, index) => {
 			return React.cloneElement(child, {
-				onClick : this.handleTabClick,
+				changeTab : this.changeTab,
 				tabIndex: index,
 				isActive: index === this.state.activeIndex
 			});

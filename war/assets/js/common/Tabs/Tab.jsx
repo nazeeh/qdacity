@@ -10,7 +10,7 @@ export default class Tab extends React.Component {
 
 	render(){
 		return(
-			<div>
+			<div onClick={() => this.props.changeTab(this.props.tabIndex)}>
 				{this.props.tabTitle}
 			</div>
 		);
