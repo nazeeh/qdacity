@@ -317,7 +317,10 @@ public class CodeEndpoint {
 			mgr.makePersistent(newParent);
 			mgr.makePersistent(code);
 			
-			//TODO LOG
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeRelocateCodeChange(code, oldParentID, cs.getProject(), cs.getProjectType(), user.getUserId());
+			mgr.makePersistent(change);
 
 		} finally {
 			mgr.close();

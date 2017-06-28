@@ -93,6 +93,13 @@ public class ChangeBuilder {
 
     }
 
+    public Change makeRelocateCodeChange(Code code, Long oldParentID, Long projectId, ProjectType projectType, String userId) {
+	Change change = new Change(now(),projectId, projectType, ChangeType.RELOCATE, userId, ChangeObject.CODE, code.getId());
+	change.setOldValue("{\"parentID\":\""+oldParentID+"\"}");
+	change.setNewValue("{\"parentID\":\""+code.getParentID()+"\"}");
+	return change;
+    }
+
     private String generateCodeRelationChangesPseudoJSON(CodeRelation relation) {
 	String jsonChanges = "{\"codeId\":\"" + relation.getCodeId() + "\",\"mmElementId\":\"" + relation.getMmElementId() + "\"}";
 	return jsonChanges;
