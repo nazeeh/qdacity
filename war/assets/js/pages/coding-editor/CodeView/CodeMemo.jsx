@@ -20,10 +20,11 @@ export default class ClassName extends React.Component {
 		this.state = {
 			code: {memo: ""}
 		};
+		this.changeMemo = this.changeMemo.bind(this);
 	}
 
 	changeMemo(event) {
-		this.state.memo = event.target.value;
+		this.state.code.memo = event.target.value;
 		this.forceUpdate();
 	}
 
@@ -39,8 +40,8 @@ export default class ClassName extends React.Component {
 			<div>
 				<StyledMemoField value={this.state.code.memo} onChange={this.changeMemo}>
 				</StyledMemoField>
-				<StyledSaveBtn>
-					<a id="btnSaveMetaModelAttr" className="btn btn-default btn-default" onClick={() => this.saveSettings()} >
+				<StyledSaveBtn >
+					<a className="btn btn-default btn-default" onClick={() => this.props.updateCode(this.state.code)} >
 						<i className="fa fa-floppy-o "></i>
 						Save
 					</a>
