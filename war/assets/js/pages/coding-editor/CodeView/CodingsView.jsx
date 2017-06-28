@@ -6,33 +6,33 @@ export default class CodingsView  extends React.Component {
 	constructor(props){
 		super(props);
 
-		this.state = {
-			codeID: -1,
-			documents: []
-		};
+		// this.state = {
+		// 	codeID: -1,
+		// 	documents: []
+		// };
 
 
 	}
 
-	setCodeID(codeID){
-		this.setState({
-			codeID: codeID
-		});
-	}
-
-	setDocuments(documents){
-		this.setState({
-			documents: documents
-		});
-	}
-
-	updateTable(code){
-		var documents = this.props.documentsView.getDocuments();
-		this.setState({
-			codeID: code.codeID,
-			documents: documents
-		});
-	};
+	// setCodeID(codeID){
+	// 	this.setState({
+	// 		codeID: codeID
+	// 	});
+	// }
+	//
+	// setDocuments(documents){
+	// 	this.setState({
+	// 		documents: documents
+	// 	});
+	// }
+	//
+	// updateTable(code){
+	// 	var documents = this.props.documentsView.getDocuments();
+	// 	this.setState({
+	// 		codeID: code.codeID,
+	// 		documents: documents
+	// 	});
+	// };
 
 	initTable(){
 		var dataSet = [];
@@ -88,11 +88,11 @@ export default class CodingsView  extends React.Component {
 
 		var codings = [];
 
-		for (var i in _this.state.documents) {
-			var doc = _this.state.documents[i];
+		for (var i in _this.props.documents) {
+			var doc = _this.props.documents[i];
 			var elements = doc.text;
 			var found = $('coding', elements);
-			var foundArray = $('coding[code_id=\'' + _this.state.codeID + '\']', elements).map(function () {
+			var foundArray = $('coding[code_id=\'' + _this.props.code.codeID + '\']', elements).map(function () {
 				var tmp = {};
 				tmp.id = $(this).attr('id');
 				tmp.code_id = $(this).attr('code_id');
@@ -116,6 +116,7 @@ export default class CodingsView  extends React.Component {
 
 	componentDidMount() {
 		this.initTable();
+		this.fillCodingTable();
 	}
 	componentDidUpdate() {
 		this.fillCodingTable();

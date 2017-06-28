@@ -22,6 +22,9 @@ export default class Tabs extends React.Component {
 		this.setState({
 			activeIndex: tabIndex
 		});
+		this.state.activeIndex = tabIndex;
+		this.forceUpdate();
+		this.props.tabChanged();
 	}
 
 	renderTabsHeader(){

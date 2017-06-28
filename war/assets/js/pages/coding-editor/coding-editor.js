@@ -2,12 +2,12 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 
 import MetaModel from './CodeView/MetaModel.jsx';
 //import CodeRelationsView from './CodeView/CodeRelationsView.jsx';
-import CodingsView from './CodeView/CodingsView.jsx';
+//import CodingsView from './CodeView/CodingsView.jsx';
 import CodeProperties from './CodeView/CodeProperties.jsx';
 //import MetaModelView from './CodeView/MetaModelView.jsx';
 import CodeMemo from './CodeView/CodeMemo.jsx';
 import CodeBookEntry from './CodeView/CodeBookEntry.jsx';
-
+import CodeView from './CodeView/CodeView.jsx';
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
@@ -49,6 +49,7 @@ var metaModelView;
 var metaModel;
 var codeMemo;
 var codeBookEntry;
+var codeView;
 
 var codeRelationsView
 
@@ -288,7 +289,8 @@ function showCodingView() {
 	showFooter();
 	var activeCode = codesystemView.getSelected();
 
-	codingsView.updateTable(activeCode);
+	//codingsView.updateTable(activeCode);
+	codeView.updateCode(activeCode);
 	codeProperties.updateData(activeCode);
 	codeMemo.updateData(activeCode);
 	codeBookEntry.updateData(activeCode)
@@ -334,12 +336,13 @@ function setDocumentList(projectID) {
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}
-		codingsView = ReactDOM.render(<CodingsView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codingtable'));
+		//codingsView = ReactDOM.render(<CodingsView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codingtable'));
 		codeProperties = ReactDOM.render(<CodeProperties editorCtrl={editorCtrl} documentsView={documentsView} updateCode={updateCode}/>, document.getElementById('codeProperties'));
 
 		metaModel = ReactDOM.render(<MetaModel getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode}  updateCode={updateCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('metaModelAttributes'));
 		codeMemo = ReactDOM.render(<CodeMemo  updateCode={updateCode} />, document.getElementById('codeMemo'));
 		codeBookEntry = ReactDOM.render(<CodeBookEntry  updateSelectedCode={updateSelectedCode} />, document.getElementById('codeBookEntry'));
+		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codeView'));
 		// metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
 		//codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
 
@@ -366,7 +369,8 @@ function updateCode(code) {
 
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
-		codingsView.updateTable(code);
+		//codingsView.updateTable(code);
+		codeView.updateCode(code);
 		codeProperties.updateData(code);
 		codeMemo.updateData(code);
 		codeBookEntry.updateData(code);
