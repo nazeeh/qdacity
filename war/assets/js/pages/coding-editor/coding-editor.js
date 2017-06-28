@@ -288,7 +288,7 @@ function showCodingView() {
 
 	codingsView.updateTable(activeCode);
 	codeProperties.updateData(activeCode);
-	codeMemo.updateData(activeCode.memo);
+	codeMemo.updateData(activeCode);
 	fillCodeRelationsView();
 	resizeHandler();
 }
@@ -364,7 +364,7 @@ function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		codingsView.updateTable(code);
 		codeProperties.updateData(code);
-		codeMemo.updateData(code.memo);
+		codeMemo.updateData(code);
 		metaModel.setCode(code);
 		//metaModelView.setActiveIds(code.mmElementIDs);
 		//codeRelationsView.setRelations(code.relations, code.id);
