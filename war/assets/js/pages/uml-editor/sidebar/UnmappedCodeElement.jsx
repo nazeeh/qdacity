@@ -18,7 +18,8 @@ export default class UnmappedCodeElement extends React.Component {
 		let code = this.umlEditorView.getCode(this.codeId);
 		let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
-		codeMetaModelModal.showModal().then(function (data) {
+		codeMetaModelModal.showModal(this.umlEditorView.getMetaModelEntities(), this.umlEditorView.getMetaModelRelations()).then(function (data) {
+			// TODO duplicate code in UmlEditorView.js
 			console.log('Closed modal');
 
 			if (code.mmElementIDs != data.ids) {

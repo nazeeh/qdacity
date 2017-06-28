@@ -16,6 +16,7 @@ export default class UmlEditorView {
 		this.layout = null;
 
 		this.mmEntities;
+		this.mmRelations;
 
 		this.umlClasses = [];
 		this.umlClassRelations = {};
@@ -189,7 +190,8 @@ export default class UmlEditorView {
 
 						let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
-						codeMetaModelModal.showModal().then(function (data) {
+						codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
+							// TODO duplicate code in UnmappedCodesView.jsx
 							console.log('Closed modal');
 
 							if (code.mmElementIDs != data.ids) {
@@ -271,8 +273,9 @@ export default class UmlEditorView {
 		});
 	}
 
-	initGraph(codes, mmEntities, metaModelMapper, unmappedCodesView) {
+	initGraph(codes, mmEntities, mmRelations, metaModelMapper, unmappedCodesView) {
 		this.mmEntities = mmEntities;
+		this.mmRelations = mmRelations;
 		this.metaModelMapper = metaModelMapper;
 		this.unmappedCodesView = unmappedCodesView;
 		this.umlClasses = [];
@@ -457,6 +460,14 @@ export default class UmlEditorView {
 
 	addGraphSelectionModelEventListener(event, func) {
 		this.graph.getSelectionModel().addListener(event, func);
+	}
+
+	getMetaModelEntities() {
+		return this.mmEntities;
+	}
+
+	getMetaModelRelations() {
+		return this.mmRelations;
 	}
 
 	getCode(codeId) {

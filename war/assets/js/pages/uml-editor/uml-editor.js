@@ -10,6 +10,7 @@ import UnmappedCodesView from './sidebar/UnmappedCodesView.jsx';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
+import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 
 import 'script!../../../../components/URIjs/URI.min.js';
@@ -72,12 +73,16 @@ function loadCodes(codesystem_id) {
 		MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
 			var mmEntities = resp.items || [];
 
-			initGraph(codes, mmEntities, codesystem_id);
+			MetaModelRelationEndpoint.listRelations(1).then(function (resp) {
+				var mmRelations = resp.items || [];
+
+				init(codes, mmEntities, mmRelations, codesystem_id);
+			});
 		});
 	});
 }
 
-function initGraph(codes, mmEntities, codesystem_id) {
+function init(codes, mmEntities, mmRelations, codesystem_id) {
 	let container = document.getElementById('graphContainer');
 	umlEditorView = new UmlEditorView(codesystem_id, container);
 
@@ -87,5 +92,5 @@ function initGraph(codes, mmEntities, codesystem_id) {
 
 	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, document.getElementById('sidebar'));
 
-	umlEditorView.initGraph(codes, mmEntities, metaModelMapper, unmappedCodesView);
+	umlEditorView.initGraph(codes, mmEntities, mmRelations, metaModelMapper, unmappedCodesView);
 }

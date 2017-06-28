@@ -10,7 +10,7 @@ export default class UmlCodeMetaModelModal extends VexModal {
 		this.meatModelView = null;
 	}
 
-	showModal() {
+	showModal(metaModelEntities, metaModelRelations) {
 		const _this = this;
 
 		let promise = new Promise(
@@ -45,8 +45,8 @@ export default class UmlCodeMetaModelModal extends VexModal {
 					}
 				});
 
-				_this.meatModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelView'));
-				_this.meatModelView.setActiveIds(_this.code.mmElementIDs); // Doesnt work.. not initialized yet
+				_this.meatModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"} metaModelEntities={metaModelEntities} metaModelRelations={metaModelRelations} />, document.getElementById('metaModelView'));
+				_this.meatModelView.setActiveIds(_this.code.mmElementIDs);
 			}
 		);
 
