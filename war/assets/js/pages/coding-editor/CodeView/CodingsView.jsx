@@ -5,34 +5,7 @@ export default class CodingsView  extends React.Component {
 
 	constructor(props){
 		super(props);
-
-		// this.state = {
-		// 	codeID: -1,
-		// 	documents: []
-		// };
-
-
 	}
-
-	// setCodeID(codeID){
-	// 	this.setState({
-	// 		codeID: codeID
-	// 	});
-	// }
-	//
-	// setDocuments(documents){
-	// 	this.setState({
-	// 		documents: documents
-	// 	});
-	// }
-	//
-	// updateTable(code){
-	// 	var documents = this.props.documentsView.getDocuments();
-	// 	this.setState({
-	// 		codeID: code.codeID,
-	// 		documents: documents
-	// 	});
-	// };
 
 	initTable(){
 		var dataSet = [];
