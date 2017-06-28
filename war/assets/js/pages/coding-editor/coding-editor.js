@@ -6,6 +6,7 @@ import CodingsView from './CodeView/CodingsView.jsx';
 import CodeProperties from './CodeView/CodeProperties.jsx';
 //import MetaModelView from './CodeView/MetaModelView.jsx';
 import CodeMemo from './CodeView/CodeMemo.jsx';
+import CodeBookEntry from './CodeView/CodeBookEntry.jsx';
 
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
@@ -47,6 +48,7 @@ var codeProperties;
 var metaModelView;
 var metaModel;
 var codeMemo;
+var codeBookEntry;
 
 var codeRelationsView
 
@@ -74,7 +76,7 @@ window.init = function () {
 
 	//createCodeMemoEditor();
 
-	createCodeBookEditor();
+	// createCodeBookEditor();
 
 	$('.tooltips').tooltipster();
 
@@ -135,14 +137,14 @@ window.init = function () {
 	// }
 
 	// FIXME possibly move to CodingsView
-	document.getElementById('btnCodeBookEntrySave').onclick = function () {
-		var codeBookEntry = {
-			definition: cbEditor.def.getHTML(),
-			whenToUse: cbEditor.when.getHTML(),
-			whenNotToUse: cbEditor.whenNot.getHTML()
-		};
-		updateCodeBookEntry(codeBookEntry);
-	}
+	// document.getElementById('btnCodeBookEntrySave').onclick = function () {
+	// 	var codeBookEntry = {
+	// 		definition: cbEditor.def.getHTML(),
+	// 		whenToUse: cbEditor.when.getHTML(),
+	// 		whenNotToUse: cbEditor.whenNot.getHTML()
+	// 	};
+	// 	updateCodeBookEntry(codeBookEntry);
+	// }
 
 	document.getElementById('btnTxtSave').onclick = function () {
 		documentsView.updateCurrentDocument(editorCtrl.getHTML());
@@ -182,32 +184,32 @@ function createCodeMemoEditor() {
 	}
 }
 
-function createCodeBookEditor() {
+// function createCodeBookEditor() {
+//
+// 	initializeCodeBookEditor('cbEditorDef', cbEditor, 'def', 'definition');
+//
+// 	initializeCodeBookEditor('cbEditorWhen', cbEditor, 'when', 'whenToUse');
+//
+// 	initializeCodeBookEditor('cbEditorWhenNot', cbEditor, 'whenNot', 'whenNotToUse');
+//
+// }
 
-	initializeCodeBookEditor('cbEditorDef', cbEditor, 'def', 'definition');
-
-	initializeCodeBookEditor('cbEditorWhen', cbEditor, 'when', 'whenToUse');
-
-	initializeCodeBookEditor('cbEditorWhenNot', cbEditor, 'whenNot', 'whenNotToUse');
-
-}
-
-
-function initializeCodeBookEditor(pEditorId, pEditor, pEditorProp, pEntryProp) {
-	var cbWhenNotFrame = document.getElementById(pEditorId);
-	cbWhenNotFrame.onload = function (event) {
-		var codeBookEntry = getSelectedCode().codeBookEntry;
-
-		var cbWhenNotFrame = document.getElementById(pEditorId);
-		var doc = cbWhenNotFrame.contentDocument;
-
-		// Create Squire instance
-		pEditor[pEditorProp] = new Squire(doc);
-		if (typeof codeBookEntry != 'undefined') {
-			pEditor[pEditorProp].setHTML(codeBookEntry[pEntryProp]);
-		}
-	}
-}
+//
+// function initializeCodeBookEditor(pEditorId, pEditor, pEditorProp, pEntryProp) {
+// 	var cbWhenNotFrame = document.getElementById(pEditorId);
+// 	cbWhenNotFrame.onload = function (event) {
+// 		var codeBookEntry = getSelectedCode().codeBookEntry;
+//
+// 		var cbWhenNotFrame = document.getElementById(pEditorId);
+// 		var doc = cbWhenNotFrame.contentDocument;
+//
+// 		// Create Squire instance
+// 		pEditor[pEditorProp] = new Squire(doc);
+// 		if (typeof codeBookEntry != 'undefined') {
+// 			pEditor[pEditorProp].setHTML(codeBookEntry[pEntryProp]);
+// 		}
+// 	}
+// }
 
 window.onresize = resizeHandler;
 
@@ -289,6 +291,7 @@ function showCodingView() {
 	codingsView.updateTable(activeCode);
 	codeProperties.updateData(activeCode);
 	codeMemo.updateData(activeCode);
+	codeBookEntry.updateData(activeCode)
 	fillCodeRelationsView();
 	resizeHandler();
 }
@@ -336,6 +339,7 @@ function setDocumentList(projectID) {
 
 		metaModel = ReactDOM.render(<MetaModel getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode}  updateCode={updateCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('metaModelAttributes'));
 		codeMemo = ReactDOM.render(<CodeMemo  updateCode={updateCode} />, document.getElementById('codeMemo'));
+		codeBookEntry = ReactDOM.render(<CodeBookEntry  updateSelectedCode={updateSelectedCode} />, document.getElementById('codeBookEntry'));
 		// metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
 		//codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
 
@@ -353,11 +357,11 @@ function updateCode(code) {
 	});
 }
 
-function updateCodeBookEntry(codeBookEntry) {
-	CodesEndpoint.setCodeBookEntry(codesystemView.getSelected().id, codeBookEntry).then(function (resp) {
-		codesystemView.updateSelected(resp);
-	});
-}
+// function updateCodeBookEntry(codeBookEntry) {
+// 	CodesEndpoint.setCodeBookEntry(codesystemView.getSelected().id, codeBookEntry).then(function (resp) {
+// 		codesystemView.updateSelected(resp);
+// 	});
+// }
 
 
 function updateCodeView(code) {
@@ -365,17 +369,18 @@ function updateCodeView(code) {
 		codingsView.updateTable(code);
 		codeProperties.updateData(code);
 		codeMemo.updateData(code);
+		codeBookEntry.updateData(code);
 		metaModel.setCode(code);
 		//metaModelView.setActiveIds(code.mmElementIDs);
 		//codeRelationsView.setRelations(code.relations, code.id);
-		if (codeMemoEditor != undefined) {
-			codeMemoEditor.setHTML(code.memo ? code.memo : '');
-		}
-		if (cbEditor.def != undefined) {
-			var codeBookEntry = code.codeBookEntry
-			cbEditor.def.setHTML(codeBookEntry.definition);
-			cbEditor.when.setHTML(codeBookEntry.whenToUse);
-			cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
-		}
+		// if (codeMemoEditor != undefined) {
+		// 	codeMemoEditor.setHTML(code.memo ? code.memo : '');
+		// }
+		// if (cbEditor.def != undefined) {
+		// 	var codeBookEntry = code.codeBookEntry
+		// 	cbEditor.def.setHTML(codeBookEntry.definition);
+		// 	cbEditor.when.setHTML(codeBookEntry.whenToUse);
+		// 	cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
+		// }
 	}
 }

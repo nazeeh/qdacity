@@ -6,6 +6,7 @@ const StyledMemoField = styled.textarea `
 	width:99%;
 	margin:10px 10px 5px 10px;
 	background-color: #FFF;
+	resize: none;
 `;
 
 const StyledSaveBtn = styled.div `
