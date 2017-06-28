@@ -1,7 +1,6 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
 
 import MetaModel from './CodeView/MetaModel.jsx';
-import CodeProperties from './CodeView/CodeProperties.jsx';
 import CodeMemo from './CodeView/CodeMemo.jsx';
 import CodeBookEntry from './CodeView/CodeBookEntry.jsx';
 import CodeView from './CodeView/CodeView.jsx';
@@ -39,7 +38,6 @@ var cbEditor = {
 };
 
 var account;
-var codeProperties;
 
 var metaModelView;
 var metaModel;
@@ -74,7 +72,7 @@ window.init = function () {
 	$('.tooltips').tooltipster();
 
 
-	$("#codePropColor").colorpicker();
+	
 
 
 	$("#footer").hide();
@@ -230,7 +228,6 @@ function showCodingView() {
 	var activeCode = codesystemView.getSelected();
 
 	codeView.updateCode(activeCode);
-	codeProperties.updateData(activeCode);
 	codeMemo.updateData(activeCode);
 	codeBookEntry.updateData(activeCode)
 	fillCodeRelationsView();
@@ -275,12 +272,11 @@ function setDocumentList(projectID) {
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}
-		codeProperties = ReactDOM.render(<CodeProperties editorCtrl={editorCtrl} documentsView={documentsView} updateCode={updateCode}/>, document.getElementById('codeProperties'));
 
 		metaModel = ReactDOM.render(<MetaModel getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode}  updateCode={updateCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('metaModelAttributes'));
 		codeMemo = ReactDOM.render(<CodeMemo  updateCode={updateCode} />, document.getElementById('codeMemo'));
 		codeBookEntry = ReactDOM.render(<CodeBookEntry  updateSelectedCode={updateSelectedCode} />, document.getElementById('codeBookEntry'));
-		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}/>, document.getElementById('codeView'));
+		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}/>, document.getElementById('codeView'));
 	}
 
 	return documentsView.setupView(project_id, project_type, report);
@@ -298,7 +294,6 @@ function updateCode(code) {
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		codeView.updateCode(code);
-		codeProperties.updateData(code);
 		codeMemo.updateData(code);
 		codeBookEntry.updateData(code);
 		metaModel.setCode(code);

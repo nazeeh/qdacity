@@ -16,50 +16,41 @@ const StyledSaveBtn = styled.div `
 export default class CodeProperties extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			code: {name:"",author:""}
-		};
 		this.changeName = this.changeName.bind(this);
 		this.changeAuthor = this.changeAuthor.bind(this);
-
 	}
 
-	updateData(code){
-		this.setState({
-			code: code
-		});
-	}
 
 	changeName(event) {
-		this.state.code.name = event.target.value;
-		this.setState({code: this.state.code});
+		this.props.code.name = event.target.value;
+		this.forceUpdate();
 	}
 
 	changeAuthor(event) {
-		this.state.code.author = event.target.value;
-		this.setState({code: this.state.code});
+		this.props.code.author = event.target.value;
+		this.forceUpdate();
 	}
 
 	changeColor(color) {
-		this.state.code.color = color;
-		this.setState({code: this.state.code});
+		this.props.code.color = color;
+		this.forceUpdate();
 	}
 
 	componentDidMount() {
 		var _this = this;
 		$("#codePropColor").colorpicker({
-			color: this.state.code.color
+			color: this.props.code.color
 		});
 
 		$("#codePropColor").on("change.color", function(event, color){
 
 			var value = $("#codePropColor").colorpicker("val");
-		    if (_this.state.code.color != value) _this.changeColor(value);
+		    if (_this.props.code.color != value) _this.changeColor(value);
 		});
 	}
 
 	componentDidUpdate(){
-		$("#codePropColor").colorpicker("val", this.state.code.color);
+		$("#codePropColor").colorpicker("val", this.props.code.color);
 	}
 
 	render(){
@@ -69,11 +60,11 @@ export default class CodeProperties extends React.Component {
 						<tbody>
 						<tr>
 							<td><span>Name: </span></td>
-							<td><input id="codePropName" type="text" value={this.state.code.name} onChange={this.changeName}/></td>
+							<td><input id="codePropName" type="text" value={this.props.code.name} onChange={this.changeName}/></td>
 						</tr>
 						<tr>
 							<td><span>Author: </span></td>
-							<td><input id="codePropAuthor" type="text" value={this.state.code.author} onChange={this.changeAuthor}/></td>
+							<td><input id="codePropAuthor" type="text" value={this.props.code.author} onChange={this.changeAuthor}/></td>
 						</tr>
 						<tr>
 							<td><span>Color: </span></td>
@@ -87,7 +78,7 @@ export default class CodeProperties extends React.Component {
 					</tbody>
 				</table>
 
-				<StyledSaveBtn onClick={() => this.props.updateCode(this.state.code)}>
+				<StyledSaveBtn onClick={() => this.props.updateCode(this.props.code)}>
 					<a id="btnCodeSave" className="btn btn-default btn-default">
 						<i className="fa fa-floppy-o "></i>
 						Save
