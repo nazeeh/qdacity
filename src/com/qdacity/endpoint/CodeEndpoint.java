@@ -254,17 +254,14 @@ public class CodeEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			Code code = mgr.getObjectById(Code.class, id);
-
+			if(code==null) { return; }
 			// Check if user is authorized
 			Authorization.checkAuthorization(code, user);
 
 			// Delete link from parent code
 			Query query = mgr.newQuery(Code.class);
 			
-			//Log change
-			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeDeleteCodeChange(code, cs.getProject(), cs.getProjectType(), user.getUserId());
-			mgr.makePersistent(change);
+			logRemoveCode(mgr, code, user);
 
 			//Actual Delete
 			query.setFilter("codeID == :code && codesystemID == :codesystem");
@@ -280,13 +277,20 @@ public class CodeEndpoint {
 				mgr.makePersistent(parentCode);
 			}
 
-			removeSubCodes(code);
+			removeSubCodes(code, user);
 
 			mgr.deletePersistent(code);
 
 		} finally {
 			mgr.close();
 		}
+	}
+
+	private void logRemoveCode(PersistenceManager mgr, Code code, User user) {
+	    //Log a code remove change
+	    CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+	    Change change = new ChangeBuilder().makeDeleteCodeChange(code, cs.getProject(), cs.getProjectType(), user.getUserId());
+	    mgr.makePersistent(change);
 	}
 
 	@ApiMethod(
@@ -347,7 +351,7 @@ public class CodeEndpoint {
 		return code;
 	}
 
-	private void removeSubCodes(Code code) {
+	private void removeSubCodes(Code code, User user) throws UnauthorizedException {
 		List<Long> subcodeIDs = code.getSubCodesIDs();
 
 		if (subcodeIDs != null && subcodeIDs.size() > 0) {
@@ -364,10 +368,11 @@ public class CodeEndpoint {
 				@SuppressWarnings("unchecked")
 				Code subcode = ((List<Code>) query.executeWithMap(params)).get(0);
 				
-				//TODO LOG!
-
-				removeSubCodes(subcode);
-				mgr.deletePersistent(subcode);
+				removeSubCodes(subcode, user);
+				
+				logRemoveCode(mgr, subcode, user);
+				
+				mgr.deletePersistent(subcode); 
 			}
 		}
 	}
