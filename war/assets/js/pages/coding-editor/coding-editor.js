@@ -187,8 +187,8 @@ function hideCodingView() {
 
 }
 
-function updateSelectedCode(code) {
-	codesystemView.updateSelected(code);
+function updateSelectedCode(code, persist) {
+	codesystemView.updateSelected(code, persist);
 }
 
 function getCodeByCodeID(codeID) {
@@ -207,17 +207,10 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 
-		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
+		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
 	}
 
 	return documentsView.setupView(project_id, project_type, report);
-}
-
-// Update Code function
-function updateCode(code) {
-	CodesEndpoint.updateCode(code).then(function (resp) {
-		codesystemView.updateSelected(resp);
-	});
 }
 
 function updateCodeView(code) {

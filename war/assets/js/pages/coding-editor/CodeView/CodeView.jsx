@@ -39,7 +39,7 @@ this.tabChanged = this.tabChanged.bind(this);
 
 	render(){
 		const {editorCtrl, documentsView} = this.props;
-		const {updateCode, updateSelectedCode, getCodeByCodeID, getCodeSystem} = this.props;
+		const {updateSelectedCode, getCodeByCodeID, getCodeSystem} = this.props;
 		return(
 			<div>
 				<StyledCloseFooterBtn onClick={this.props.hideCodingView}>
@@ -50,13 +50,13 @@ this.tabChanged = this.tabChanged.bind(this);
 						<CodingsView documents={this.state.documents} code={this.state.code} editorCtrl={editorCtrl} documentsView={documentsView}/>
 					</Tab>
 					<Tab tabTitle="Code Properties">
-						<CodeProperties code={this.state.code} editorCtrl={editorCtrl} documentsView={documentsView} updateCode={updateCode}/>
+						<CodeProperties code={this.state.code} editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode}/>
 					</Tab>
 					<Tab tabTitle="Meta Model">
-						<MetaModel code={this.state.code} updateSelectedCode={updateSelectedCode}  updateCode={updateCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>
+						<MetaModel code={this.state.code} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>
 					</Tab>
 					<Tab tabTitle="Code Memo">
-						<CodeMemo code={this.state.code} updateCode={updateCode} />
+						<CodeMemo code={this.state.code} updateSelectedCode={updateSelectedCode} />
 					</Tab>
 					<Tab tabTitle="Code Book Entry">
 						<CodeBookEntry code={this.state.code} updateSelectedCode={updateSelectedCode} />

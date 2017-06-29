@@ -35,7 +35,7 @@ export default class ClassName extends React.Component {
 				<StyledMemoField value={this.props.code.memo} onChange={this.changeMemo}>
 				</StyledMemoField>
 				<StyledSaveBtn >
-					<a className="btn btn-default btn-default" onClick={() => this.props.updateCode(this.props.code)} >
+					<a className="btn btn-default btn-default" onClick={() => this.props.updateSelectedCode(this.props.code, true)} >
 						<i className="fa fa-floppy-o "></i>
 						Save
 					</a>

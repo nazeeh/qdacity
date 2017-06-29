@@ -60,7 +60,7 @@ export default class MetaModel extends React.Component {
 
 		this.setActiveElement(element);
 		this.props.code.mmElementIDs = this.state.selected.slice(0);
-		this.props.updateCode(this.props.code);
+		this.props.updateSelectedCode(this.props.code, true);
 		this.forceUpdate();
 	}
 
@@ -71,7 +71,7 @@ export default class MetaModel extends React.Component {
 		this.resetSelectionForGroup(group);
 
 		element.toggleSelected();
-		
+
 		this.selectGeneralizations(element.getId(), group);
 		this.addSelected(element.getId());
 	}
@@ -136,7 +136,7 @@ export default class MetaModel extends React.Component {
 
 	saveSettings(){
 		this.props.code.mmElementIDs = this.state.selected;
-		this.props.updateCode(this.props.code);
+		this.props.updateSelectedCode(this.props.code, true);
 	}
 
 	render(){
