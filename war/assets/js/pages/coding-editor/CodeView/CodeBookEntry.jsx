@@ -3,6 +3,10 @@ import styled from 'styled-components';
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
+const StyledCodeviewComponent = styled.div `
+    padding: 8px 3px 0px 3px;
+`;
+
 const StyledEntry = styled.div `
     padding: 0 5px 0 5px;
 `;
@@ -62,7 +66,7 @@ export default class codeBookEntry extends React.Component {
 
 	render(){
 		return(
-			<div className="">
+			<StyledCodeviewComponent>
 				<StyledEntry className="col-sm-4">
 					<span className="codebookEntryCol">Definition</span>
 					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.definition)} onChange={this.changeDef} />
@@ -81,7 +85,7 @@ export default class codeBookEntry extends React.Component {
 						Save
 					</a>
 				</StyledSaveBtn>
-			</div>
+			</StyledCodeviewComponent>
 		);
 	}
 }
