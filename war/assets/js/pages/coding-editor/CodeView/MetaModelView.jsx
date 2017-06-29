@@ -38,10 +38,6 @@ export default class MetaModelView extends React.Component {
 		return null;
 	}
 
-
-
-
-
 	init() {
 		let _this = this;
 		let relationsPromise = MetaModelRelationEndpoint.listRelations(1); // FIXME choose a configurable MM. MM with ID 1 is the default RE MM

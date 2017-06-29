@@ -44,11 +44,6 @@ window.init = function () {
 
 
 	$('.tooltips').tooltipster();
-
-
-
-
-
 	$("#footer").hide();
 	$('#navAccount').hide();
 
@@ -169,9 +164,6 @@ function setupUI() {
 					resizeElements();
 				});
 			});
-			if (resp.umlEditorEnabled) {
-				$('#btnOpenUMLEditor').show();
-			}
 		});
 	} else {
 		$('#navAccount').hide();
@@ -195,11 +187,6 @@ function hideCodingView() {
 
 }
 
-
-function getSelectedCode() {
-	return codesystemView.getSelected();
-}
-
 function updateSelectedCode(code) {
 	codesystemView.updateSelected(code);
 }
@@ -220,12 +207,11 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 
-		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}  getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
+		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
 	}
 
 	return documentsView.setupView(project_id, project_type, report);
 }
-
 
 // Update Code function
 function updateCode(code) {
@@ -233,7 +219,6 @@ function updateCode(code) {
 		codesystemView.updateSelected(resp);
 	});
 }
-
 
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {

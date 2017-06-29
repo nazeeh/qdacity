@@ -19,7 +19,6 @@ export default class MetaModel extends React.Component {
 			elements: {},
 			selected: []
 		};
-		//this.init();
 		this.getElement = this.getElement.bind(this);
 		this.addSelected = this.addSelected.bind(this);
 		this.setElements = this.setElements.bind(this);
@@ -27,40 +26,6 @@ export default class MetaModel extends React.Component {
 		this.updateActiveElement = this.updateActiveElement.bind(this);
 
 	}
-	//
-	// init() {
-	// 	let _this = this;
-	// 	MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
-	// 		let entities = resp.items || [];
-	//
-	// 		let entitiesById = {};
-	// 		for (let i = 0; i < entities.length; i++) {
-	//
-	//
-	// 			let element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type, entities[i].group);
-	//
-	// 			entitiesById[element.id] = element;
-	// 		}
-	//
-	// 		let mmElements = {};
-	// 		for (let id in entitiesById) {
-	// 			let entity = entitiesById[id];
-	//
-	// 			let group = entity.getGroup();
-	//
-	// 			if (!mmElements.hasOwnProperty(group)) {
-	// 				mmElements[group] = [];
-	// 			}
-	//
-	// 			mmElements[group].push(entity);
-	// 		}
-	//
-	// 		_this.setState({
-	// 			elements: mmElements
-	// 		});
-	//
-	// 	});
-	// }
 
 	setElements(elements){
 		this.setState({
@@ -106,14 +71,9 @@ export default class MetaModel extends React.Component {
 		this.resetSelectionForGroup(group);
 
 		element.toggleSelected();
-
-		//this.state.selected.push(element.getId());
-
+		
 		this.selectGeneralizations(element.getId(), group);
 		this.addSelected(element.getId());
-		// this.setState({
-		// 	elements: this.state.elements
-		// });
 	}
 
 	selectGeneralizations(elementID, group) {
@@ -148,9 +108,6 @@ export default class MetaModel extends React.Component {
 
 	addSelected(id){
 		this.state.selected.push(id);
-		// this.setState({
-		// 	selected: this.state.selected
-		// })
 	}
 
 	getElement(elementId) {
@@ -188,7 +145,7 @@ export default class MetaModel extends React.Component {
 			<StyledCodeviewComponent>
 				<div>
 					<div className="col-sm-6">
-						<MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} addSelected={this.addSelected} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
+						<MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
 					</div>
 					<div className="col-sm-6">
 						<CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>

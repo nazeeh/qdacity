@@ -50,10 +50,6 @@ export default class CodeRelationsView extends React.Component {
 		var _this = this;
 		this.state.sourceCode = pSourceId;
 		this.state.relationships = [];
-		// this.setState({
-		// 	relationships: this.state.relationships,
-		// 	sourceCode: this.state.sourceCode,
-		// });
 
 		if (typeof relations == 'undefined') return;
 
@@ -78,9 +74,6 @@ export default class CodeRelationsView extends React.Component {
 		rel.id = pRelId;
 
 		this.state.relationships.push(rel);
-		// this.setState({
-		// 	relationships: this.state.relationships
-		// });
 	}
 
 
@@ -118,7 +111,7 @@ export default class CodeRelationsView extends React.Component {
 		var _this = this;
 		CodesEndpoint.removeRelationship(_this.state.sourceCode, relationshipId).then(function (resp) {
 			_this.removeRelationship(relationshipId);
-			var code = _this.props.getSelectedCode();
+			var code = _this.props.code;
 			code.relations = resp.relations;
 			_this.props.updateSelectedCode(code);
 			_this.forceUpdate();
