@@ -146,17 +146,9 @@ public class ChangeBuilder {
 	ifNotEqualPutToDiff(oldCode.getColor(), newCode.getColor(), differences, "color");
 	ifNotEqualPutToDiff(oldCode.getMemo(), newCode.getMemo(), differences, "memo");
 	ifNotEqualPutToDiff(oldCode.getName(), newCode.getName(), differences, "name");
-	Long oldCodeId = oldCode.getCodeID();
-	Long newCodeId = newCode.getCodeID();
-	String oldCodeIdString = "null";
-	String newCodeIdString = "null";
-	if(oldCodeId!=null) {
-	    oldCodeIdString = oldCodeId.toString();
-	}
-	if(newCodeId!=null) {
-	    newCodeIdString = newCodeId.toString();
-	}
-	ifNotEqualPutToDiff(oldCodeIdString, newCodeIdString, differences, "codeId");
+	
+	ifNotEqualPutToDiff(oldCode.getSubCodesIDs()==null?"null":oldCode.getSubCodesIDs().toString(), newCode.getSubCodesIDs()==null?"null":newCode.getSubCodesIDs().toString(), differences, "subCodeIDs");
+	ifNotEqualPutToDiff(oldCode.getCodeID()==null?"null":oldCode.getCodeID().toString(), newCode.getCodeID()==null?"null":newCode.getCodeID().toString(), differences, "codeId");
 
 	return differences;
     }
