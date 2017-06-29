@@ -7,6 +7,8 @@ import CodingsView from './CodingsView.jsx';
 import CodeProperties from './CodeProperties.jsx';
 import MetaModel from './MetaModel.jsx';
 import CodeMemo from './CodeMemo.jsx';
+import CodeBookEntry from './CodeBookEntry.jsx';
+
 
 
 export default class CodeView extends React.Component {
@@ -50,7 +52,7 @@ this.tabChanged = this.tabChanged.bind(this);
 						<CodeMemo code={this.state.code} updateCode={updateCode} />
 					</Tab>
 					<Tab tabTitle="Code Book Entry">
-						codeBookEntry
+						<CodeBookEntry code={this.state.code} updateSelectedCode={updateSelectedCode} />
 					</Tab>
 				</Tabs>
 			</div>

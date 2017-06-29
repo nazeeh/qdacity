@@ -23,45 +23,29 @@ const StyledSaveBtn = styled.div `
 export default class codeBookEntry extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			code : {
-				codeBookEntry : {
-					definition: "",
-					whenToUse: "",
-					whenNotToUse: ""
-				}
-			}
-		};
 		this.changeDef = this.changeDef.bind(this);
 		this.changeWhen = this.changeWhen.bind(this);
 		this.changeWhenNot = this.changeWhenNot.bind(this);
 	}
 
 	changeDef(event){
-		this.state.code.codeBookEntry.definition = this.addDiv(event.target.value);
+		this.props.code.codeBookEntry.definition = this.addDiv(event.target.value);
 		this.forceUpdate();
 	}
 
 	changeWhen(event){
-		this.state.code.codeBookEntry.whenToUse = this.addDiv(event.target.value);
+		this.props.code.codeBookEntry.whenToUse = this.addDiv(event.target.value);
 		this.forceUpdate();
 	}
 
 	changeWhenNot(event){
-		this.state.code.codeBookEntry.whenNotToUse = this.addDiv(event.target.value);
+		this.props.code.codeBookEntry.whenNotToUse = this.addDiv(event.target.value);
 		this.forceUpdate();
-	}
-
-	updateData(code){
-
-		this.setState({
-			code: code
-		});
 	}
 
 	updateCodeBookEntry() {
 		var _this = this;
-		CodesEndpoint.setCodeBookEntry(this.state.code.id, this.state.code.codeBookEntry).then(function (resp) {
+		CodesEndpoint.setCodeBookEntry(this.props.code.id, this.props.code.codeBookEntry).then(function (resp) {
 			_this.props.updateSelectedCode(resp);
 		});
 	}
@@ -81,15 +65,15 @@ export default class codeBookEntry extends React.Component {
 			<div className="">
 				<StyledEntry className="col-sm-4">
 					<span className="codebookEntryCol">Definition</span>
-					<StyledTextField value={this.removeDiv(this.state.code.codeBookEntry.definition)} onChange={this.changeDef} />
+					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.definition)} onChange={this.changeDef} />
 				</StyledEntry>
 				<StyledEntry className="col-sm-4">
 					<span className="codebookEntryCol">When To Use</span>
-					<StyledTextField value={this.removeDiv(this.state.code.codeBookEntry.whenToUse)} onChange={this.changeWhen} />
+					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.whenToUse)} onChange={this.changeWhen} />
 				</StyledEntry>
 				<StyledEntry className="col-sm-4">
 					<span className="codebookEntryCol">When Not To Use</span>
-					<StyledTextField value={this.removeDiv(this.state.code.codeBookEntry.whenNotToUse)} onChange={this.changeWhenNot} />
+					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.whenNotToUse)} onChange={this.changeWhenNot} />
 				</StyledEntry>
 				<StyledSaveBtn >
 					<a className="btn btn-default btn-default" onClick={() => this.updateCodeBookEntry()} >

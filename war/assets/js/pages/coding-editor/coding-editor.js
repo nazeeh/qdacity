@@ -1,7 +1,5 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
 
-import CodeMemo from './CodeView/CodeMemo.jsx';
-import CodeBookEntry from './CodeView/CodeBookEntry.jsx';
 import CodeView from './CodeView/CodeView.jsx';
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
@@ -39,7 +37,7 @@ var cbEditor = {
 var account;
 
 var codeMemo;
-var codeBookEntry;
+//var codeBookEntry;
 var codeView;
 
 var codeRelationsView
@@ -226,7 +224,7 @@ function showCodingView() {
 
 	codeView.updateCode(activeCode);
 	//codeMemo.updateData(activeCode);
-	codeBookEntry.updateData(activeCode)
+	//codeBookEntry.updateData(activeCode)
 	fillCodeRelationsView();
 	resizeHandler();
 }
@@ -270,7 +268,6 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 
-		codeBookEntry = ReactDOM.render(<CodeBookEntry  updateSelectedCode={updateSelectedCode} />, document.getElementById('codeBookEntry'));
 		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}  getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeView'));
 	}
 
