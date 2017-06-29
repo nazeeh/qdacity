@@ -23,6 +23,7 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
@@ -41,6 +42,7 @@ import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;
+import com.qdacity.util.DataStoreUtil;
 
 @Api(
 	name = "qdacity",
@@ -382,17 +384,8 @@ public class TextDocumentEndpoint {
 	}
 	
     public static int countDocuments(Long projectId) {
-	PersistenceManager mgr = getPersistenceManager();
-	List<TextDocument> tmpDocs;
-
-	Query query = mgr.newQuery(TextDocument.class);
-	query.setFilter("projectID == :projectID");
-	Map<String, Long> paramValues = new HashMap<>();
-	paramValues.put("projectID", projectId);
-	//Hint: According to GAE JDO implementation, there is no other way of counting entities
-	tmpDocs = (List<TextDocument>) query.executeWithMap(paramValues);
-
-	return tmpDocs.size();
+	Filter filter = new com.google.appengine.api.datastore.Query.FilterPredicate("projectID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, projectId);
+	return DataStoreUtil.countEntitiesWithFilter("TextDocument", filter);
     }
 
 }
