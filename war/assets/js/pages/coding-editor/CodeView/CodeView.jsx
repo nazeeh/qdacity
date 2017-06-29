@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components';
 
 import Tab from '../../../common/Tabs/Tab.jsx';
 import Tabs from '../../../common/Tabs/Tabs.jsx';
@@ -9,7 +10,10 @@ import MetaModel from './MetaModel.jsx';
 import CodeMemo from './CodeMemo.jsx';
 import CodeBookEntry from './CodeBookEntry.jsx';
 
-
+const StyledCloseFooterBtn = styled.a `
+    float: right;
+	color: black;
+`;
 
 export default class CodeView extends React.Component {
 	constructor(props) {
@@ -38,6 +42,9 @@ this.tabChanged = this.tabChanged.bind(this);
 		const {updateCode, getSelectedCode, updateSelectedCode, getCodeByCodeID, getCodeSystem} = this.props;
 		return(
 			<div>
+				<StyledCloseFooterBtn onClick={this.props.hideCodingView}>
+					<i className="fa fa-times-circle fa-2x fa-hover"></i>
+				</StyledCloseFooterBtn>
 				<Tabs tabChanged={this.tabChanged}>
 					<Tab tabTitle="Codings">
 						<CodingsView documents={this.state.documents} code={this.state.code} editorCtrl={editorCtrl} documentsView={documentsView}/>

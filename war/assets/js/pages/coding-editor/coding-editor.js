@@ -36,14 +36,6 @@ var codesystemView
 var editorCtrl = {};
 
 window.init = function () {
-	$("#codeTabs").easytabs({
-		animate: true,
-		animationSpeed: 100,
-		panelActiveClass: "active-content-div",
-		defaultTab: "span#defaultCodeTab",
-		tabs: "> div > span",
-		updateHash: false
-	});
 
 	ReactDOM.render(<ReactLoading />, document.getElementById('documentsLoaderMount'));
 	ReactDOM.render(<ReactLoading />, document.getElementById('codesystemLoaderMount'));
@@ -88,10 +80,6 @@ window.init = function () {
 	);
 	$('#document-section').on('hidden.bs.collapse', resizeElements);
 	$('#document-section').on('shown.bs.collapse', resizeElements);
-
-	document.getElementById('btnHideFooter').onclick = function () {
-		hideCodingView();
-	}
 
 	document.getElementById('btnTxtSave').onclick = function () {
 		documentsView.updateCurrentDocument(editorCtrl.getHTML());
@@ -232,7 +220,7 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 
-		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}  getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeView'));
+		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}  getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
 	}
 
 	return documentsView.setupView(project_id, project_type, report);
