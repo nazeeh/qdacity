@@ -55,7 +55,6 @@ public class SaturationEndpoint {
     public SaturationParameters getSaturationParameters(@Named("projectId") Long projectId) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
-	//check if Parameters already exist for this project and if yes, overwrite.
 	Query query = pmr.newQuery(SaturationParameters.class);
 
 	query.setFilter("projectId == :projectId");
@@ -66,6 +65,7 @@ public class SaturationEndpoint {
 	if (parameters.isEmpty()) {
 	    return new DefaultSaturationParameters();
 	}
+	//TODO ORDER BY creationTime to get always latest
 	return parameters.get(0);
     }
 
