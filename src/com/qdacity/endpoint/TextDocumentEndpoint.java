@@ -33,6 +33,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.project.AbstractProject;
@@ -243,22 +244,21 @@ public class TextDocumentEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public TextDocument applyCode(TextDocument textdocument,@Named("codeId") Long codeId, User user) throws UnauthorizedException {
+	public TextDocument applyCode(TextDocumentCodeContainer textDocumentCode, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (!containsTextDocument(textdocument)) {
+			if (!containsTextDocument(textDocumentCode.textDocument)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
-			mgr.makePersistent(textdocument);
+			mgr.makePersistent(textDocumentCode.textDocument);
 			
-			Code code = mgr.getObjectById(Code.class, codeId);
-			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeApplyCodeChange(textdocument, code, user, cs.getProjectType());
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, textDocumentCode.code.getCodesystemID());
+			Change change = new ChangeBuilder().makeApplyCodeChange(textDocumentCode.textDocument, textDocumentCode.code, user, cs.getProjectType());
 			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}
-		return textdocument;
+		return textDocumentCode.textDocument;
 	}
 
 	/**

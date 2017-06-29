@@ -138,12 +138,12 @@ export default class DocumentsView extends React.Component {
 		this.changeDocumentData(doc);
 	}
         
-        applyCodeToCurrentDocument(text, codeId) {
+        applyCodeToCurrentDocument(text, code) {
             var doc = this.getActiveDocument();
 	    doc.text = text;
             doc.projectID = this.props.projectID;
             var _this = this;
-            DocumentsEndpoint.applyCode(doc, codeId).then(function (resp) {
+            DocumentsEndpoint.applyCode(doc, code).then(function (resp) {
 		_this.updateDocument(doc.id, doc.title, doc.text);
             });
         }
