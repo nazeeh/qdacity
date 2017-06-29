@@ -27,23 +27,10 @@ var project_id;
 var project_type;
 var report;
 
-//var codeMemoEditor;
-var cbEditor = {
-	def: {},
-	when: {},
-	whenNot: {}
-};
-
 var account;
 
-var codeMemo;
-//var codeBookEntry;
 var codeView;
-
-var codeRelationsView
-
 var documentsView;
-
 var codesystemView
 
 var editorCtrl = {};
@@ -88,7 +75,6 @@ window.init = function () {
 
 	if (typeof report != 'undefined') {
 		editorCtrl.showsAgreementMap(true);
-		//		React.render(<ReactSlider defaultValue={[0, 100]} withBars />, document.body);
 		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + urlParams.parentproject + '&type=' + urlParams.parentprojecttype);
 	} else {
 		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id + '&type=' + project_type);
@@ -130,20 +116,6 @@ function toggleCodingView() {
 		showCodingView();
 	}
 }
-
-// function createCodeMemoEditor() {
-// 	var codeMemoIFrame = document.getElementById('codeMemoEditor');
-// 	codeMemoIFrame.onload = function (event) {
-// 		var codeMemoIFrame = document.getElementById('codeMemoEditor');
-// 		var doc = codeMemoIFrame.contentDocument;
-//
-// 		// Create Squire instance
-// 		codeMemoEditor = new Squire(doc);
-//
-// 		var memo = getSelectedCode().memo;
-// 		codeMemoEditor.setHTML(memo ? memo : '');
-// 	}
-// }
 
 window.onresize = resizeHandler;
 
@@ -223,9 +195,6 @@ function showCodingView() {
 	var activeCode = codesystemView.getSelected();
 
 	codeView.updateCode(activeCode);
-	//codeMemo.updateData(activeCode);
-	//codeBookEntry.updateData(activeCode)
-	fillCodeRelationsView();
 	resizeHandler();
 }
 
@@ -238,11 +207,6 @@ function hideCodingView() {
 
 }
 
-function fillCodeRelationsView() {
-	var code = codesystemView.getSelected();
-
-	codeRelationsView.setRelations(code.relations, code.id);
-}
 
 function getSelectedCode() {
 	return codesystemView.getSelected();
@@ -286,7 +250,5 @@ function updateCode(code) {
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		codeView.updateCode(code);
-		//codeMemo.updateData(code);
-		codeBookEntry.updateData(code);
 	}
 }
