@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.admin.AdminStats;
+import com.qdacity.util.DataStoreUtil;
 
 @Api(
 	name = "qdacity",
@@ -36,12 +37,12 @@ public class AdminEndpoint {
 
 		AdminStats statistics = new AdminStats();
 
-		int registeredUsers = countEntities("User");
+		int registeredUsers = DataStoreUtil.countEntities("User");
 
 		Filter activeUserFilter = new FilterPredicate("lastLogin", FilterOperator.GREATER_THAN, (new Date(new Date().getTime() - 2592000000L)));
-		int activeUsers = countEntitiesWithFilter("User", activeUserFilter);
+		int activeUsers = DataStoreUtil.countEntitiesWithFilter("User", activeUserFilter);
 
-		int projects = countEntities("Project");
+		int projects = DataStoreUtil.countEntities("Project");
 
 		statistics.setRegisteredUsers(registeredUsers);
 		statistics.setActiveUsers(activeUsers);
@@ -50,19 +51,6 @@ public class AdminEndpoint {
 		return statistics;
 	}
 	
-	private int countEntities(String entityName){
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query(entityName).setKeysOnly();
-		PreparedQuery pq = datastore.prepare(q);
-		return pq.countEntities(FetchOptions.Builder.withDefaults());
-	}
-	
-	private int countEntitiesWithFilter(String entityName, Filter filter) {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query q = new Query(entityName).setKeysOnly();
-		q.setFilter(filter);
-		PreparedQuery pq = datastore.prepare(q);
-		return pq.countEntities(FetchOptions.Builder.withDefaults());
-	}
+
 	
 }
