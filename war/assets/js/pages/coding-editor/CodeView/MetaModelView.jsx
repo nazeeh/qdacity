@@ -126,7 +126,7 @@ export default class MetaModelView extends React.Component {
 
 				let attributes = {
 					value: mmElement.id,
-					onClick: _this.props.setActiveElement.bind(null, mmElement)
+					onClick: _this.props.updateActiveElement.bind(null, mmElement)
 				}
 
 				let classes = "btn btn-default";
@@ -147,7 +147,7 @@ export default class MetaModelView extends React.Component {
 			if (mmElement.hasGeneralization(firstLevelSelected)) {
 				let attributes = {
 					value: mmElement.id,
-					onClick: _this.props.setActiveElement.bind(null, mmElement)
+					onClick: _this.props.updateActiveElement.bind(null, mmElement)
 				}
 
 				let classes = "btn btn-default";
@@ -164,7 +164,7 @@ export default class MetaModelView extends React.Component {
 		let thirdLevel = elements.map(function (mmElement) {
 			let attributes = {
 				value: mmElement.id,
-				onClick: _this.props.setActiveElement.bind(null, mmElement)
+				onClick: _this.props.updateActiveElement.bind(null, mmElement)
 			}
 
 			let classes = "btn btn-default";

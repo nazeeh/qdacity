@@ -1,6 +1,5 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
 
-import MetaModel from './CodeView/MetaModel.jsx';
 import CodeMemo from './CodeView/CodeMemo.jsx';
 import CodeBookEntry from './CodeView/CodeBookEntry.jsx';
 import CodeView from './CodeView/CodeView.jsx';
@@ -39,8 +38,6 @@ var cbEditor = {
 
 var account;
 
-var metaModelView;
-var metaModel;
 var codeMemo;
 var codeBookEntry;
 var codeView;
@@ -72,7 +69,7 @@ window.init = function () {
 	$('.tooltips').tooltipster();
 
 
-	
+
 
 
 	$("#footer").hide();
@@ -273,10 +270,9 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 
-		metaModel = ReactDOM.render(<MetaModel getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode}  updateCode={updateCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('metaModelAttributes'));
 		codeMemo = ReactDOM.render(<CodeMemo  updateCode={updateCode} />, document.getElementById('codeMemo'));
 		codeBookEntry = ReactDOM.render(<CodeBookEntry  updateSelectedCode={updateSelectedCode} />, document.getElementById('codeBookEntry'));
-		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}/>, document.getElementById('codeView'));
+		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}  getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeView'));
 	}
 
 	return documentsView.setupView(project_id, project_type, report);
@@ -296,6 +292,5 @@ function updateCodeView(code) {
 		codeView.updateCode(code);
 		codeMemo.updateData(code);
 		codeBookEntry.updateData(code);
-		metaModel.setCode(code);
 	}
 }

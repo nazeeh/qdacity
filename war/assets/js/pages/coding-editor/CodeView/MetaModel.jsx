@@ -25,6 +25,7 @@ export default class MetaModel extends React.Component {
 		this.addSelected = this.addSelected.bind(this);
 		this.setElements = this.setElements.bind(this);
 		this.setActiveElement = this.setActiveElement.bind(this);
+		this.updateActiveElement = this.updateActiveElement.bind(this);
 
 	}
 	//
@@ -88,10 +89,15 @@ export default class MetaModel extends React.Component {
 			this.setActiveElement(element);
 		} else {
 			this.resetSelection();
-			this.setState({
-				elements: this.state.elements
-			});
 		}
+	}
+
+	updateActiveElement(element){
+
+		this.setActiveElement(element);
+		this.props.code.mmElementIDs = this.state.selected.slice(0);
+		this.props.updateCode(this.props.code);
+		this.forceUpdate();
 	}
 
 	setActiveElement(element) {
@@ -143,9 +149,9 @@ export default class MetaModel extends React.Component {
 
 	addSelected(id){
 		this.state.selected.push(id);
-		this.setState({
-			selected: this.state.selected
-		})
+		// this.setState({
+		// 	selected: this.state.selected
+		// })
 	}
 
 	getElement(elementId) {
@@ -164,27 +170,29 @@ export default class MetaModel extends React.Component {
 		return null;
 	}
 
+
+
 	setCode(code){
-		this.setActiveIds(code.mmElementIDs);
 		this.setState({
 			code: code
 		});
 	};
 
 	saveSettings(){
-		this.state.code.mmElementIDs = this.state.selected;
-		this.props.updateCode(this.state.code);
+		this.props.code.mmElementIDs = this.state.selected;
+		this.props.updateCode(this.props.code);
 	}
 
 	render(){
+		this.setActiveIds(this.props.code.mmElementIDs);
 		return(
 			<div>
 				<div className= "row">
 					<div className="col-sm-6">
-						<MetaModelView filter={"PROPERTY"} code={this.state.code} selected={this.state.selected} elements={this.state.elements} addSelected={this.addSelected} setActiveElement={this.setActiveElement} setElements={this.setElements}/>
+						<MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} addSelected={this.addSelected} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
 					</div>
 					<div className="col-sm-6">
-						<CodeRelationsView {...this.props} code={this.state.code} getElement={this.getElement}  elements={this.state.elements}/>
+						<CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
 					</div>
 				</div>
 

@@ -5,6 +5,8 @@ import Tabs from '../../../common/Tabs/Tabs.jsx';
 
 import CodingsView from './CodingsView.jsx';
 import CodeProperties from './CodeProperties.jsx';
+import MetaModel from './MetaModel.jsx';
+
 
 export default class CodeView extends React.Component {
 	constructor(props) {
@@ -30,7 +32,7 @@ this.tabChanged = this.tabChanged.bind(this);
 
 	render(){
 		const {editorCtrl, documentsView} = this.props;
-		const {updateCode} = this.props;
+		const {updateCode, getSelectedCode, updateSelectedCode, getCodeByCodeID, getCodeSystem} = this.props;
 		return(
 			<div>
 				<Tabs tabChanged={this.tabChanged}>
@@ -41,7 +43,7 @@ this.tabChanged = this.tabChanged.bind(this);
 						<CodeProperties code={this.state.code} editorCtrl={editorCtrl} documentsView={documentsView} updateCode={updateCode}/>
 					</Tab>
 					<Tab tabTitle="Meta Model">
-						metaModel
+						<MetaModel code={this.state.code} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode}  updateCode={updateCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>
 					</Tab>
 					<Tab tabTitle="Code Memo">
 						codeMemo
