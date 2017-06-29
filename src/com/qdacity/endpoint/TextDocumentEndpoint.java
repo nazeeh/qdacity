@@ -36,8 +36,11 @@ import com.qdacity.PMF;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.project.AbstractProject;
+import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.codesystem.Code;
+import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
@@ -218,6 +221,40 @@ public class TextDocumentEndpoint {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 			mgr.makePersistent(textdocument);
+		} finally {
+			mgr.close();
+		}
+		return textdocument;
+	}
+	
+	/**
+	 * This method is used for applying a code to a TextDocument. If the entity does not
+	 * exist in the datastore, an exception is thrown.
+	 * It uses HTTP PUT method.
+	 *
+	 * @param textdocument the entity to be updated.
+	 * @param codeId the code which is applied
+	 * @param user
+	 * @return The updated entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "documents.applyCode",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public TextDocument applyCode(TextDocument textdocument,@Named("codeId") Long codeId, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (!containsTextDocument(textdocument)) {
+				throw new EntityNotFoundException("Object does not exist");
+			}
+			mgr.makePersistent(textdocument);
+			
+			Code code = mgr.getObjectById(Code.class, codeId);
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeApplyCodeChange(textdocument, code, user, cs.getProjectType());
+			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}

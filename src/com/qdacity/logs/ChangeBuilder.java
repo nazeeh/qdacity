@@ -1,5 +1,6 @@
 package com.qdacity.logs;
 
+import com.google.appengine.api.users.User;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
@@ -94,9 +95,17 @@ public class ChangeBuilder {
     }
 
     public Change makeRelocateCodeChange(Code code, Long oldParentID, Long projectId, ProjectType projectType, String userId) {
-	Change change = new Change(now(),projectId, projectType, ChangeType.RELOCATE, userId, ChangeObject.CODE, code.getId());
-	change.setOldValue("{\"parentID\":\""+oldParentID+"\"}");
-	change.setNewValue("{\"parentID\":\""+code.getParentID()+"\"}");
+	Change change = new Change(now(), projectId, projectType, ChangeType.RELOCATE, userId, ChangeObject.CODE, code.getId());
+	change.setOldValue("{\"parentID\":\"" + oldParentID + "\"}");
+	change.setNewValue("{\"parentID\":\"" + code.getParentID() + "\"}");
+	return change;
+    }
+
+    public Change makeApplyCodeChange(TextDocument textdocument, Code code, User user, ProjectType projectType) {
+	
+	Change change = new Change(now(), textdocument.getProjectID(), projectType, ChangeType.APPLY, user.getUserId(), ChangeObject.DOCUMENT, textdocument.getId());
+	change.setNewValue(code.getCodeID().toString());
+	
 	return change;
     }
 
@@ -146,9 +155,9 @@ public class ChangeBuilder {
 	ifNotEqualPutToDiff(oldCode.getColor(), newCode.getColor(), differences, "color");
 	ifNotEqualPutToDiff(oldCode.getMemo(), newCode.getMemo(), differences, "memo");
 	ifNotEqualPutToDiff(oldCode.getName(), newCode.getName(), differences, "name");
-	
-	ifNotEqualPutToDiff(oldCode.getSubCodesIDs()==null?"null":oldCode.getSubCodesIDs().toString(), newCode.getSubCodesIDs()==null?"null":newCode.getSubCodesIDs().toString(), differences, "subCodeIDs");
-	ifNotEqualPutToDiff(oldCode.getCodeID()==null?"null":oldCode.getCodeID().toString(), newCode.getCodeID()==null?"null":newCode.getCodeID().toString(), differences, "codeId");
+
+	ifNotEqualPutToDiff(oldCode.getSubCodesIDs() == null ? "null" : oldCode.getSubCodesIDs().toString(), newCode.getSubCodesIDs() == null ? "null" : newCode.getSubCodesIDs().toString(), differences, "subCodeIDs");
+	ifNotEqualPutToDiff(oldCode.getCodeID() == null ? "null" : oldCode.getCodeID().toString(), newCode.getCodeID() == null ? "null" : newCode.getCodeID().toString(), differences, "codeId");
 
 	return differences;
     }

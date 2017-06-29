@@ -21,6 +21,7 @@ export default class DocumentsView extends React.Component {
 		this.saveDocument = this.saveDocument.bind(this);
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
+		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
 	}
 
 	getStyles() {
@@ -136,6 +137,16 @@ export default class DocumentsView extends React.Component {
 		doc.text = text;
 		this.changeDocumentData(doc);
 	}
+        
+        applyCodeToCurrentDocument(text, codeId) {
+            var doc = this.getActiveDocument();
+	    doc.text = text;
+            doc.projectID = this.props.projectID;
+            var _this = this;
+            DocumentsEndpoint.applyCode(doc, codeId).then(function (resp) {
+		_this.updateDocument(doc.id, doc.title, doc.text);
+            });
+        }
 
 	changeDocumentData(doc) {
 		var _this = this;
