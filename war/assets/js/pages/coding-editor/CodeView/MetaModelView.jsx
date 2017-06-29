@@ -1,4 +1,3 @@
-import 'script!../../../../../components/Easytabs/jquery.easytabs.js';
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../../common/endpoints/MetaModelRelationEndpoint';
 import MetaModelElement from './MetaModelElement';
