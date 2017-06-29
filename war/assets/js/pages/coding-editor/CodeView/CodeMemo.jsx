@@ -18,31 +18,21 @@ const StyledSaveBtn = styled.div `
 export default class ClassName extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			code: {memo: ""}
-		};
 		this.changeMemo = this.changeMemo.bind(this);
 	}
 
 	changeMemo(event) {
-		this.state.code.memo = event.target.value;
+		this.props.code.memo = event.target.value;
 		this.forceUpdate();
-	}
-
-	updateData(code){
-		if (!code.memo) code.memo = "";
-		this.setState({
-			code: code
-		});
 	}
 
 	render(){
 		return(
 			<div>
-				<StyledMemoField value={this.state.code.memo} onChange={this.changeMemo}>
+				<StyledMemoField value={this.props.code.memo} onChange={this.changeMemo}>
 				</StyledMemoField>
 				<StyledSaveBtn >
-					<a className="btn btn-default btn-default" onClick={() => this.props.updateCode(this.state.code)} >
+					<a className="btn btn-default btn-default" onClick={() => this.props.updateCode(this.props.code)} >
 						<i className="fa fa-floppy-o "></i>
 						Save
 					</a>

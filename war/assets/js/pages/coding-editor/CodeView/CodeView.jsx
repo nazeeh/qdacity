@@ -6,6 +6,7 @@ import Tabs from '../../../common/Tabs/Tabs.jsx';
 import CodingsView from './CodingsView.jsx';
 import CodeProperties from './CodeProperties.jsx';
 import MetaModel from './MetaModel.jsx';
+import CodeMemo from './CodeMemo.jsx';
 
 
 export default class CodeView extends React.Component {
@@ -46,7 +47,7 @@ this.tabChanged = this.tabChanged.bind(this);
 						<MetaModel code={this.state.code} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode}  updateCode={updateCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>
 					</Tab>
 					<Tab tabTitle="Code Memo">
-						codeMemo
+						<CodeMemo code={this.state.code} updateCode={updateCode} />
 					</Tab>
 					<Tab tabTitle="Code Book Entry">
 						codeBookEntry

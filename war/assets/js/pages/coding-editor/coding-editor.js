@@ -29,7 +29,7 @@ var project_id;
 var project_type;
 var report;
 
-var codeMemoEditor;
+//var codeMemoEditor;
 var cbEditor = {
 	def: {},
 	when: {},
@@ -133,19 +133,19 @@ function toggleCodingView() {
 	}
 }
 
-function createCodeMemoEditor() {
-	var codeMemoIFrame = document.getElementById('codeMemoEditor');
-	codeMemoIFrame.onload = function (event) {
-		var codeMemoIFrame = document.getElementById('codeMemoEditor');
-		var doc = codeMemoIFrame.contentDocument;
-
-		// Create Squire instance
-		codeMemoEditor = new Squire(doc);
-
-		var memo = getSelectedCode().memo;
-		codeMemoEditor.setHTML(memo ? memo : '');
-	}
-}
+// function createCodeMemoEditor() {
+// 	var codeMemoIFrame = document.getElementById('codeMemoEditor');
+// 	codeMemoIFrame.onload = function (event) {
+// 		var codeMemoIFrame = document.getElementById('codeMemoEditor');
+// 		var doc = codeMemoIFrame.contentDocument;
+//
+// 		// Create Squire instance
+// 		codeMemoEditor = new Squire(doc);
+//
+// 		var memo = getSelectedCode().memo;
+// 		codeMemoEditor.setHTML(memo ? memo : '');
+// 	}
+// }
 
 window.onresize = resizeHandler;
 
@@ -225,7 +225,7 @@ function showCodingView() {
 	var activeCode = codesystemView.getSelected();
 
 	codeView.updateCode(activeCode);
-	codeMemo.updateData(activeCode);
+	//codeMemo.updateData(activeCode);
 	codeBookEntry.updateData(activeCode)
 	fillCodeRelationsView();
 	resizeHandler();
@@ -270,7 +270,6 @@ function setDocumentList(projectID) {
 			documentsView.toggleIsExpanded();
 		}
 
-		codeMemo = ReactDOM.render(<CodeMemo  updateCode={updateCode} />, document.getElementById('codeMemo'));
 		codeBookEntry = ReactDOM.render(<CodeBookEntry  updateSelectedCode={updateSelectedCode} />, document.getElementById('codeBookEntry'));
 		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView}  updateCode={updateCode}  getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeView'));
 	}
@@ -290,7 +289,7 @@ function updateCode(code) {
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
 		codeView.updateCode(code);
-		codeMemo.updateData(code);
+		//codeMemo.updateData(code);
 		codeBookEntry.updateData(code);
 	}
 }
