@@ -1,10 +1,13 @@
 import React from 'react'
 import styled from 'styled-components';
 
+const StyledCodeviewComponent = styled.div `
+    padding: 8px 8px 0px 8px;
+`;
+
 const StyledMemoField = styled.textarea `
     height:200px;
-	width:99%;
-	margin:10px 10px 5px 10px;
+	width:100%;
 	background-color: #FFF;
 	resize: none;
 `;
@@ -28,7 +31,7 @@ export default class ClassName extends React.Component {
 
 	render(){
 		return(
-			<div>
+			<StyledCodeviewComponent>
 				<StyledMemoField value={this.props.code.memo} onChange={this.changeMemo}>
 				</StyledMemoField>
 				<StyledSaveBtn >
@@ -37,7 +40,7 @@ export default class ClassName extends React.Component {
 						Save
 					</a>
 				</StyledSaveBtn>
-			</div>
+			</StyledCodeviewComponent>
 		);
 	}
 }

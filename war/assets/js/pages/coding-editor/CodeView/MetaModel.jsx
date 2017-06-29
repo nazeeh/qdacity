@@ -1,10 +1,15 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import MetaModelView from './MetaModelView.jsx';
 import CodeRelationsView from './CodeRelationsView.jsx';
 import MetaModelElement from './MetaModelElement';
 
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
+
+const StyledCodeviewComponent = styled.div `
+    padding: 8px 8px 0px 8px;
+`;
 
 export default class MetaModel extends React.Component {
 	constructor(props) {
@@ -180,8 +185,8 @@ export default class MetaModel extends React.Component {
 	render(){
 		this.setActiveIds(this.props.code.mmElementIDs);
 		return(
-			<div>
-				<div className= "row">
+			<StyledCodeviewComponent>
+				<div>
 					<div className="col-sm-6">
 						<MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} addSelected={this.addSelected} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
 					</div>
@@ -189,7 +194,7 @@ export default class MetaModel extends React.Component {
 						<CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
 					</div>
 				</div>
-			</div>
+			</StyledCodeviewComponent>
 
 		);
 	}
