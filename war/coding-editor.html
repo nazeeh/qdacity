@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 
-<!-- Bootstrap Core CSS --> 
+<!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
 
@@ -46,7 +46,6 @@
 
 <!-- EasyTree -->
 <link rel="stylesheet" type="text/css" href="components/EasyTree/skin-win8/ui.easytree.css">
-<link href="components/Easytabs/easytabs.css" rel="stylesheet">
 
 
 
@@ -132,7 +131,7 @@
 			<div class="row no-gutters" >
 			<div id="project-ui" style="float: left; width: 100%; background-color: #f8f8f8;">
 				<div style="background-color: #e7e7e7;">
-				
+
 					<div style="text-align: center;">
 
 
@@ -150,7 +149,7 @@
 							</p>
 							<div id="agreementMapSlider" class="agreementMapSlider"></div>
 						</div>
-						
+
 						<div class="row no-gutters" >
 						<div id="settings" class="collapse">
 						<div>
@@ -178,12 +177,12 @@
 			</div>
 			</div>
 
-						
+
 
 			<div id="documents-ui" style=" width: 100%; background-color: #f8f8f8;">
-			
+
 				<div style="background-color: #e7e7e7;">
-				
+
 					<div style="text-align: center; position:relative;">
 					<div class="row no-gutters" >
 					<span class="col-xs-1"></span>
@@ -274,111 +273,9 @@
 	</div>
 
 	<footer id="footer" class="footer">
-		<!-- <div style="float: right; background-color: #e7e7e7;"><i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover" ></i> </div>  -->
-		<!-- float: left; -->
-		<div id="codeTabs" class='tab-container'>
-			<span style="float: right;">
-				<i id="btnHideFooter" class="fa fa-times-circle fa-2x fa-hover"></i>
-			</span>
-			<div class='etabs'>
-				<span class='tab' id="defaultCodeTab">
-					<a href="#codingtable">Codings</a>
-				</span>
-				<span class='tab'>
-					<a href="#codeProperties">Code Properties</a>
-				</span>
-				<span class='tab'>
-					<a href="#metaModelAttributes">Meta Model</a>
-				</span>
-				<span class='tab'>
-					<a href="#codeMemo">Code Memo</a>
-				</span>
-				<span class='tab'>
-					<a href="#codeBookEntry">Code Book Entry</a>
-				</span>
-
-			</div>
-
-			<div class='panel-container'>
-				<div id="codingtable" style="text-align: center; background-color: #eee;"><table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table></div>
-				<div id="codeBookEntry" style="text-align: center; background-color: #eee;">
-				<div class="row no-gutters">
-					<div class=col-sm-4>
-						<span class="codebookEntryCol">Definition</span>
-						<iframe id="cbEditorDef"  style="height:200px; width:99%;   background-color: #FFF;"></iframe>
-					</div>
-					<div class=col-sm-4>
-						<span class="codebookEntryCol">When To Use</span>
-						<iframe id="cbEditorWhen"  style="height:200px; width:99%;  background-color: #FFF;"></iframe>
-					</div>
-					<div class=col-sm-4>
-						<span class="codebookEntryCol">When Not To Use</span>
-						<iframe id="cbEditorWhenNot"  style="height:200px; width:99%;   background-color: #FFF;"></iframe>
-					</div>
-				</div>
-				<div style="width: 8em; text-align: center; margin: 0 auto;">
-						<a id="btnCodeBookEntrySave" class="btn btn-default btn-default projectsOnly">
-							<i class="fa fa-floppy-o "></i>
-							Save
-						</a>
-					</div>
-				</div>
-				<div id="codeProperties" style="background-color: #eee;">
-					<table>
-						<tr>
-							<td><span>Name: </span></td>
-							<td><input id="codePropName" type="text" value="codePropName"></td>
-						</tr>
-						<tr>
-							<td><span>Author: </span></td>
-							<td><input id="codePropAuthor" type="text" value="codePropAuthor"></td>
-						</tr>
-						<tr>
-							<td><span>Color: </span></td>
-							<td><input id="codePropColor" style="width: 80px;" type="text" value="#000000"></td>
-						</tr>
-					</table>
-
-					<div style="width: 8em; text-align: center; margin: 0 auto;">
-						<a id="btnCodeSave" class="btn btn-default btn-default projectsOnly" >
-							<i class="fa fa-floppy-o "></i>
-							Save
-						</a>
-					</div>
-				</div>
-				<div id="metaModelAttributes" style="background-color: #eee;">
-					<div class= "row">
-						<div class="col-sm-6">
-							<div id="metaModelAttrSelector"></div>
-						</div>
-						<div class="col-sm-6">
-							<div id="codeRelationsView"></div>
-						</div>
-					</div>
-					
-					<div style="width: 8em; text-align: center; margin: 0 auto;">
-						<a id="btnSaveMetaModelAttr" class="btn btn-default btn-default projectsOnly" >
-							<i class="fa fa-floppy-o "></i>
-							Save
-						</a>
-					</div>
-				</div>
-				<div id="codeMemo" style="text-align: center; background-color: #eee;">
-					<iframe id="codeMemoEditor"  style="height:200px; width:99%;  margin:10px 10px 5px 10px;  background-color: #FFF;">
-					</iframe>
-					<div style="width: 8em; text-align: center; margin: 0 auto;">
-						<a id="btnCodeMemoSave" class="btn btn-default btn-default projectsOnly" >
-							<i class="fa fa-floppy-o "></i>
-							Save
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-
-
+		<div id ="codeView"></div>
 	</footer>
-	
+
 	<!-- Main JS Script -->
 	<script src="dist/js/coding-editor.dist.js" type="text/javascript" charset="utf-8"></script>
 

@@ -1,9 +1,6 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
 
-import CodeRelationsView from './CodeView/CodeRelationsView.jsx';
-import CodingsView from './CodeView/CodingsView.js';
-import MetaModelView from './CodeView/MetaModelView.jsx';
-
+import CodeView from './CodeView/CodeView.jsx';
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
@@ -16,7 +13,6 @@ import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import $script from 'scriptjs';
 
 import 'script!../../../../components/tooltipster/js/jquery.tooltipster.js';
-import 'script!../../../../components/colorpicker/evol.colorpicker.js';
 import 'script!../../../../components/URIjs/URI.min.js';
 
 import 'script!../../../../assets/js/common/ErrorHandler.js'
@@ -31,22 +27,10 @@ var project_id;
 var project_type;
 var report;
 
-var codeMemoEditor;
-var cbEditor = {
-	def: {},
-	when: {},
-	whenNot: {}
-};
-
 var account;
-var codingsView;
 
-var metaModelView;
-
-var codeRelationsView
-
+var codeView;
 var documentsView;
-
 var codesystemView
 
 var editorCtrl = {};
@@ -59,16 +43,7 @@ window.init = function () {
 	editorCtrl = new EditorCtrl(getCodeByCodeID);
 
 
-	createCodeMemoEditor();
-
-	createCodeBookEditor();
-
 	$('.tooltips').tooltipster();
-
-
-	$("#codePropColor").colorpicker();
-
-
 	$("#footer").hide();
 	$('#navAccount').hide();
 
@@ -87,7 +62,6 @@ window.init = function () {
 
 	if (typeof report != 'undefined') {
 		editorCtrl.showsAgreementMap(true);
-		//		React.render(<ReactSlider defaultValue={[0, 100]} withBars />, document.body);
 		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + urlParams.parentproject + '&type=' + urlParams.parentprojecttype);
 	} else {
 		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id + '&type=' + project_type);
@@ -99,45 +73,8 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
-
-
-
 	$('#document-section').on('hidden.bs.collapse', resizeElements);
 	$('#document-section').on('shown.bs.collapse', resizeElements);
-
-	document.getElementById('btnHideFooter').onclick = function () {
-		hideCodingView();
-	}
-	document.getElementById('btnCodeSave').onclick = function () {
-		var code = codesystemView.getSelected();
-		code.author = $('#codePropAuthor').val();
-		code.name = $('#codePropName').val();
-		code.color = $('#codePropColor').val();
-		updateCode(code);
-
-	}
-
-	document.getElementById('btnCodeMemoSave').onclick = function () {
-		var code = codesystemView.getSelected();
-		code.memo = codeMemoEditor.getHTML();
-		updateCode(code);
-	}
-
-	document.getElementById('btnSaveMetaModelAttr').onclick = function () {
-		var code = codesystemView.getSelected();
-		code.mmElementIDs = metaModelView.getActiveElementIds()
-		updateCode(code);
-	}
-
-	// FIXME possibly move to CodingsView
-	document.getElementById('btnCodeBookEntrySave').onclick = function () {
-		var codeBookEntry = {
-			definition: cbEditor.def.getHTML(),
-			whenToUse: cbEditor.when.getHTML(),
-			whenNotToUse: cbEditor.whenNot.getHTML()
-		};
-		updateCodeBookEntry(codeBookEntry);
-	}
 
 	document.getElementById('btnTxtSave').onclick = function () {
 		documentsView.updateCurrentDocument(editorCtrl.getHTML());
@@ -160,47 +97,6 @@ function toggleCodingView() {
 		hideCodingView();
 	} else {
 		showCodingView();
-	}
-}
-
-function createCodeMemoEditor() {
-	var codeMemoIFrame = document.getElementById('codeMemoEditor');
-	codeMemoIFrame.onload = function (event) {
-		var codeMemoIFrame = document.getElementById('codeMemoEditor');
-		var doc = codeMemoIFrame.contentDocument;
-
-		// Create Squire instance
-		codeMemoEditor = new Squire(doc);
-
-		var memo = getSelectedCode().memo;
-		codeMemoEditor.setHTML(memo ? memo : '');
-	}
-}
-
-function createCodeBookEditor() {
-
-	initializeCodeBookEditor('cbEditorDef', cbEditor, 'def', 'definition');
-
-	initializeCodeBookEditor('cbEditorWhen', cbEditor, 'when', 'whenToUse');
-
-	initializeCodeBookEditor('cbEditorWhenNot', cbEditor, 'whenNot', 'whenNotToUse');
-
-}
-
-
-function initializeCodeBookEditor(pEditorId, pEditor, pEditorProp, pEntryProp) {
-	var cbWhenNotFrame = document.getElementById(pEditorId);
-	cbWhenNotFrame.onload = function (event) {
-		var codeBookEntry = getSelectedCode().codeBookEntry;
-
-		var cbWhenNotFrame = document.getElementById(pEditorId);
-		var doc = cbWhenNotFrame.contentDocument;
-
-		// Create Squire instance
-		pEditor[pEditorProp] = new Squire(doc);
-		if (typeof codeBookEntry != 'undefined') {
-			pEditor[pEditorProp].setHTML(codeBookEntry[pEntryProp]);
-		}
 	}
 }
 
@@ -268,9 +164,6 @@ function setupUI() {
 					resizeElements();
 				});
 			});
-			if (resp.umlEditorEnabled) {
-				$('#btnOpenUMLEditor').show();
-			}
 		});
 	} else {
 		$('#navAccount').hide();
@@ -281,9 +174,7 @@ function showCodingView() {
 	showFooter();
 	var activeCode = codesystemView.getSelected();
 
-	fillCodingTable(activeCode);
-	fillPropertiesView(activeCode);
-	fillCodeRelationsView();
+	codeView.updateCode(activeCode);
 	resizeHandler();
 }
 
@@ -296,32 +187,8 @@ function hideCodingView() {
 
 }
 
-function fillCodingTable(code) {
-	var documents = documentsView.getDocuments();
-	codingsView.fillCodingTable(code.codeID, documents);
-}
-
-//FIXME possibly move to CodingsView
-function fillPropertiesView(code) {
-	$("#codePropName").val(code.name);
-	$("#codePropAuthor").val(code.author);
-	$("#codePropColor").colorpicker({
-		color: code.color
-	});
-}
-
-function fillCodeRelationsView() {
-	var code = codesystemView.getSelected();
-
-	codeRelationsView.setRelations(code.relations, code.id);
-}
-
-function getSelectedCode() {
-	return codesystemView.getSelected();
-}
-
-function updateSelectedCode(code) {
-	codesystemView.updateSelected(code);
+function updateSelectedCode(code, persist) {
+	codesystemView.updateSelected(code, persist);
 }
 
 function getCodeByCodeID(codeID) {
@@ -339,46 +206,15 @@ function setDocumentList(projectID) {
 		document.getElementById('documentsToggleBtn').onclick = function () {
 			documentsView.toggleIsExpanded();
 		}
-		codingsView = new CodingsView(editorCtrl, documentsView);
 
-		metaModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"}/>, document.getElementById('metaModelAttrSelector'));
-		codeRelationsView = ReactDOM.render(<CodeRelationsView metaModelView={metaModelView} getSelectedCode={getSelectedCode} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>, document.getElementById('codeRelationsView'));
-
-
+		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
 	}
 
 	return documentsView.setupView(project_id, project_type, report);
 }
 
-
-// Update Code function
-function updateCode(code) {
-	CodesEndpoint.updateCode(code).then(function (resp) {
-		codesystemView.updateSelected(resp);
-	});
-}
-
-function updateCodeBookEntry(codeBookEntry) {
-	CodesEndpoint.setCodeBookEntry(codesystemView.getSelected().id, codeBookEntry).then(function (resp) {
-		codesystemView.updateSelected(resp);
-	});
-}
-
-
 function updateCodeView(code) {
 	if ($("#footer").is(":visible")) {
-		fillCodingTable(code);
-		fillPropertiesView(code);
-		metaModelView.setActiveIds(code.mmElementIDs);
-		codeRelationsView.setRelations(code.relations, code.id);
-		if (codeMemoEditor != undefined) {
-			codeMemoEditor.setHTML(code.memo ? code.memo : '');
-		}
-		if (cbEditor.def != undefined) {
-			var codeBookEntry = code.codeBookEntry
-			cbEditor.def.setHTML(codeBookEntry.definition);
-			cbEditor.when.setHTML(codeBookEntry.whenToUse);
-			cbEditor.whenNot.setHTML(codeBookEntry.whenNotToUse);
-		}
+		codeView.updateCode(code);
 	}
 }
