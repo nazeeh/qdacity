@@ -1,7 +1,6 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,20 +12,17 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.lang.StringUtils;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
-import com.google.appengine.labs.repackaged.com.google.common.base.Joiner;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.logs.Change;
-import com.qdacity.logs.ChangeObject;
-import com.qdacity.logs.ChangeType;
+import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
@@ -100,7 +96,7 @@ public class CodeEndpoint {
 
 			// Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new Change(new Date(System.currentTimeMillis()), cs.getProject(), cs.getProjectType(), ChangeType.CREATED, user.getUserId(), ChangeObject.CODE, code.getId());
+			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
 			mgr.makePersistent(change);
 
 		} finally {
@@ -134,10 +130,15 @@ public class CodeEndpoint {
 
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementIDs " + code.getMmElementIDs()); 
 
-			Code codeDB = mgr.getObjectById(Code.class, code.getId());
-			code.setCodeID(codeDB.getCodeID());
-			code.setCodeBookEntry(codeDB.getCodeBookEntry());
+			Code oldCode = mgr.getObjectById(Code.class, code.getId());
+			code.setCodeID(oldCode.getCodeID());
+			code.setCodeBookEntry(oldCode.getCodeBookEntry());
 			mgr.makePersistent(code);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeUpdateCodeChange(oldCode, code, cs.getProject(), cs.getProjectType(), user.getUserId());
+			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}
@@ -157,8 +158,15 @@ public class CodeEndpoint {
 			code = mgr.getObjectById(Code.class, codeID);
 			Authorization.checkAuthorization(code, user);
 
+			CodeBookEntry oldCodeBookEntry = new CodeBookEntry(code.getCodeBookEntry());
 			code.setCodeBookEntry(entry);
 			mgr.makePersistent(code);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			//this can be a set or an update, the change can cover both
+			Change change = new ChangeBuilder().makeUpdateCodeBookEntryChange(oldCodeBookEntry, entry, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}
@@ -185,6 +193,11 @@ public class CodeEndpoint {
 			for (CodeRelation codeRelation : relationships) {
 				codeRelation.getCodeId();
 			}
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeAddRelationShipChange(realtion, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			mgr.makePersistent(change);
 		} finally {
 			mgr.close();
 		}
@@ -204,6 +217,14 @@ public class CodeEndpoint {
 			code = mgr.getObjectById(Code.class, codeID);
 			Authorization.checkAuthorization(code, user);
 
+			CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationId);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeRemoveRelationShipChange(relation, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			mgr.makePersistent(change);
+			
+			//Do actual Change
 			code.removeRelation(relationId);
 			mgr.makePersistent(code);
 
@@ -233,13 +254,16 @@ public class CodeEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			Code code = mgr.getObjectById(Code.class, id);
-
+			if(code==null) { return; }
 			// Check if user is authorized
 			Authorization.checkAuthorization(code, user);
 
 			// Delete link from parent code
 			Query query = mgr.newQuery(Code.class);
+			
+			logRemoveCode(mgr, code, user);
 
+			//Actual Delete
 			query.setFilter("codeID == :code && codesystemID == :codesystem");
 			Map<String, Long> params = new HashMap<String, Long>();
 			params.put("code", code.getParentID());
@@ -253,13 +277,20 @@ public class CodeEndpoint {
 				mgr.makePersistent(parentCode);
 			}
 
-			removeSubCodes(code);
+			removeSubCodes(code, user);
 
 			mgr.deletePersistent(code);
 
 		} finally {
 			mgr.close();
 		}
+	}
+
+	private void logRemoveCode(PersistenceManager mgr, Code code, User user) {
+	    //Log a code remove change
+	    CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+	    Change change = new ChangeBuilder().makeDeleteCodeChange(code, cs.getProject(), cs.getProjectType(), user.getUserId());
+	    mgr.makePersistent(change);
 	}
 
 	@ApiMethod(
@@ -289,6 +320,11 @@ public class CodeEndpoint {
 
 			mgr.makePersistent(newParent);
 			mgr.makePersistent(code);
+			
+			//Log change
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			Change change = new ChangeBuilder().makeRelocateCodeChange(code, oldParentID, cs.getProject(), cs.getProjectType(), user.getUserId());
+			mgr.makePersistent(change);
 
 		} finally {
 			mgr.close();
@@ -315,10 +351,10 @@ public class CodeEndpoint {
 		return code;
 	}
 
-	private void removeSubCodes(Code code) {
+	private void removeSubCodes(Code code, User user) throws UnauthorizedException {
 		List<Long> subcodeIDs = code.getSubCodesIDs();
 
-		if (subcodeIDs.size() > 0) {
+		if (subcodeIDs != null && subcodeIDs.size() > 0) {
 			PersistenceManager mgr = getPersistenceManager();
 
 			for (Long subcodeID : subcodeIDs) {
@@ -331,9 +367,12 @@ public class CodeEndpoint {
 
 				@SuppressWarnings("unchecked")
 				Code subcode = ((List<Code>) query.executeWithMap(params)).get(0);
-
-				removeSubCodes(subcode);
-				mgr.deletePersistent(subcode);
+				
+				removeSubCodes(subcode, user);
+				
+				logRemoveCode(mgr, subcode, user);
+				
+				mgr.deletePersistent(subcode); 
 			}
 		}
 	}

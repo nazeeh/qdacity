@@ -96,6 +96,20 @@ public class ChangeEndpoint {
 
 		return CollectionResponse.<Change> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
+	
+    public List<Change> getAllChanges(@Named("projectID") Long projectId) {
+	PersistenceManager pmr = getPersistenceManager();
+	pmr.setMultithreaded(true);
+	Query query = pmr.newQuery(Change.class);
+
+	query.setFilter("projectID == :projectID");
+	Map<String, Long> paramValues = new HashMap<>();
+	paramValues.put("projectID", projectId);
+
+	List<Change> changes = (List<Change>) query.executeWithMap(paramValues);
+
+	return changes;
+    }
 
 	@ApiMethod(
 		name = "changelog.listChangeStats",

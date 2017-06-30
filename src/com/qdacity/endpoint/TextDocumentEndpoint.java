@@ -23,6 +23,7 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
@@ -32,13 +33,20 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.project.AbstractProject;
+import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.codesystem.Code;
+import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;
+import com.qdacity.util.DataStoreUtil;
 
 @Api(
 	name = "qdacity",
@@ -179,6 +187,11 @@ public class TextDocumentEndpoint {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(textdocument);
+			
+			//Log Change
+			Change change = new ChangeBuilder().makeInsertTextDocumentChange(textdocument, textdocument.getProjectID(), user.getUserId());
+			mgr.makePersistent(change);
+			
 		} finally {
 			mgr.close();
 		}
@@ -213,6 +226,39 @@ public class TextDocumentEndpoint {
 			mgr.close();
 		}
 		return textdocument;
+	}
+	
+	/**
+	 * This method is used for applying a code to a TextDocument. If the entity does not
+	 * exist in the datastore, an exception is thrown.
+	 * It uses HTTP PUT method.
+	 *
+	 * @param textdocument the entity to be updated.
+	 * @param codeId the code which is applied
+	 * @param user
+	 * @return The updated entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "documents.applyCode",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public TextDocument applyCode(TextDocumentCodeContainer textDocumentCode, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (!containsTextDocument(textDocumentCode.textDocument)) {
+				throw new EntityNotFoundException("Object does not exist");
+			}
+			mgr.makePersistent(textDocumentCode.textDocument);
+			
+			CodeSystem cs = mgr.getObjectById(CodeSystem.class, textDocumentCode.code.getCodesystemID());
+			Change change = new ChangeBuilder().makeApplyCodeChange(textDocumentCode.textDocument, textDocumentCode.code, user, cs.getProjectType());
+			mgr.makePersistent(change);
+		} finally {
+			mgr.close();
+		}
+		return textDocumentCode.textDocument;
 	}
 
 	/**
@@ -373,5 +419,10 @@ public class TextDocumentEndpoint {
 		}
 		return docNames;
 	}
+	
+    public static int countDocuments(Long projectId) {
+	Filter filter = new com.google.appengine.api.datastore.Query.FilterPredicate("projectID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, projectId);
+	return DataStoreUtil.countEntitiesWithFilter("TextDocument", filter);
+    }
 
 }
