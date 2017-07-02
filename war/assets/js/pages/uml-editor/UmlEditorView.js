@@ -54,24 +54,25 @@ export default class UmlEditorView {
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
 
-		// Highlighting
-		var hoverHighlight = new mxCellTracker(this.graph, '#85C8E5');
-
 		// Styling
 		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
 		mxConstants.VERTEX_SELECTION_DASHED = false;
-		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 2;
+		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 1;
 		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
 		mxConstants.EDGE_SELECTION_DASHED = false;
-		mxConstants.EDGE_SELECTION_STROKEWIDTH = 2;
+		mxConstants.EDGE_SELECTION_STROKEWIDTH = 1;
 		mxConstants.OUTLINE_COLOR = '#00A2E8';
+		mxConstants.OUTLINE_STROKEWIDTH = 1;
 		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
+		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8';
+		mxConstants.OUTLINE_HIGHLIGHT_STROKEWIDTH = 1;
 		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
 
 		// Enables layouting
 		this.layout = new mxFastOrganicLayout(this.graph);
 		this.layout.disableEdgeStyle = false;
 		this.layout.forceConstant = 180;
+		this.layout.forceConstantSquared = 180 * 180;
 
 		// Initialize styles
 		this.initializeStyles();
@@ -377,7 +378,6 @@ export default class UmlEditorView {
 
 						if (!exists) {
 							let umlCodePosition = {
-								//'id': 0,
 								'codeId': code.codeID,
 								'codeSystemId': _this.codeSystemId,
 								'x': x,
@@ -423,11 +423,20 @@ export default class UmlEditorView {
 					let code = umlClass.getCode();
 					let node = umlClass.getNode();
 
+					// If the code is not mapped => assume position (0,0)
+					let x = 0;
+					let y = 0;
+
+					if (node != null) {
+						x = node.getGeometry().x;
+						y = node.getGeometry().y;
+					}
+
 					umlCodePositions.push({
 						'codeId': code.codeID,
 						'codeSystemId': _this.codeSystemId,
-						'x': node.getGeometry().x,
-						'y': node.getGeometry().y
+						'x': x,
+						'y': y
 					});
 				});
 
@@ -822,6 +831,8 @@ export default class UmlEditorView {
 				child.setGeometry(new mxGeometry(0, i * 15, width, 15));
 			}
 		}
+
+		this.graph.refresh(node);
 	}
 
 	zoomIn() {
