@@ -71,13 +71,12 @@ public class SaturationCalculator {
 	for (Entity changeEntity : changesWithModified) {
 	    String diffNew = changeEntity.getProperty("newValue").toString();
 	    String diffOld = changeEntity.getProperty("oldValue").toString();
-	    
-	    //TODO analyze details here
 
+	    //TODO analyze details here
 	    numChangedCodes -= 1.0;
 	}
 	assert (numChangedCodes == 0.0);
-	
+
 	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen stimmt so?
 	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
     }
@@ -104,21 +103,22 @@ public class SaturationCalculator {
      * @return
      */
     private double countChanges(ChangeObject changeObject, ChangeType changeType) {
+	Filter andFilter = makeFilterForThisProjectAndEpoch(changeObject, changeType);
+	return DataStoreUtil.countEntitiesWithFilter("Change", andFilter);
+    }
+
+    private Filter makeFilterForThisProjectAndEpoch(ChangeObject changeObject, ChangeType changeType) {
 	//See also: https://cloud.google.com/appengine/docs/standard/java/datastore/query-restrictions
 	Filter projectIdFilter = new Query.FilterPredicate("projectID", Query.FilterOperator.EQUAL, projectId);
 	Filter changeFromDates = new Query.FilterPredicate("datetime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, epochStart);
 	Filter changeObjectFilter = new Query.FilterPredicate("objectType", Query.FilterOperator.EQUAL, changeObject.toString());
 	Filter changeTypeFilter = new Query.FilterPredicate("changeType", Query.FilterOperator.EQUAL, changeType.toString());
 	Filter andFilter = CompositeFilterOperator.and(projectIdFilter, changeFromDates, changeObjectFilter, changeTypeFilter);
-	return DataStoreUtil.countEntitiesWithFilter("Change", andFilter);
+	return andFilter;
     }
 
     private Iterable<Entity> getChangesForObjectOfType(ChangeObject changeObject, ChangeType changeType) {
-	Filter projectIdFilter = new com.google.appengine.api.datastore.Query.FilterPredicate("projectID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, projectId);
-	Filter changeFromDates = new com.google.appengine.api.datastore.Query.FilterPredicate("datetime", com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN_OR_EQUAL, epochStart);
-	Filter changeObjectFilter = new com.google.appengine.api.datastore.Query.FilterPredicate("objectType", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, changeObject.toString());
-	Filter changeTypeFilter = new com.google.appengine.api.datastore.Query.FilterPredicate("changeType", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, changeType.toString());
-	Filter andFilter = CompositeFilterOperator.and(projectIdFilter, changeFromDates, changeObjectFilter, changeTypeFilter);
+	Filter andFilter = makeFilterForThisProjectAndEpoch(changeObject, changeType);
 
 	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change");
