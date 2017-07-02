@@ -1,12 +1,19 @@
 package com.qdacity.project.saturation;
 
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
+import com.qdacity.endpoint.ChangeEndpoint;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeType;
 import com.qdacity.util.DataStoreUtil;
@@ -48,7 +55,7 @@ public class SaturationCalculator {
 	//Changes
 	double numNewCodes = countChanges(ChangeObject.CODE, ChangeType.CREATED);
 	double numDeletedCodes = countChanges(ChangeObject.CODE, ChangeType.DELETED);
-	double numChangedCodes = countChanges(ChangeObject.CODE, ChangeType.MODIFIED); //TODO more details
+	double numChangedCodes = countChanges(ChangeObject.CODE, ChangeType.MODIFIED);
 	double numRelocatedCodes = countChanges(ChangeObject.CODE, ChangeType.RELOCATE);
 	double numAppliedCodes = countChanges(ChangeObject.DOCUMENT, ChangeType.APPLY);
 	//Project properties
@@ -58,7 +65,19 @@ public class SaturationCalculator {
 	result.setInsertCodeSaturation(saturation(numNewCodes, totalNumberOfCodesBeforeChanges));
 	result.setDeleteCodeSaturation(saturation(numDeletedCodes, totalNumberOfCodesBeforeChanges));
 
-	//TODO Changes einzeln, was genau verändert wurde... Da kann man sich die Changes dann tatsächlich holen und reinschauen. Aber man sollte sich halt nicht ALLE auf einmal holen (wegen vieler Code Applies)
+	//We need to look at modified changes in more detail
+	Iterable<Entity> changesWithModified = getChangesForObjectOfType(ChangeObject.CODE, ChangeType.MODIFIED);
+
+	for (Entity changeEntity : changesWithModified) {
+	    String diffNew = changeEntity.getProperty("newValue").toString();
+	    String diffOld = changeEntity.getProperty("oldValue").toString();
+	    
+	    //TODO analyze details here
+
+	    numChangedCodes -= 1.0;
+	}
+	assert (numChangedCodes == 0.0);
+	
 	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen stimmt so?
 	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
     }
@@ -92,6 +111,20 @@ public class SaturationCalculator {
 	Filter changeTypeFilter = new Query.FilterPredicate("changeType", Query.FilterOperator.EQUAL, changeType.toString());
 	Filter andFilter = CompositeFilterOperator.and(projectIdFilter, changeFromDates, changeObjectFilter, changeTypeFilter);
 	return DataStoreUtil.countEntitiesWithFilter("Change", andFilter);
+    }
+
+    private Iterable<Entity> getChangesForObjectOfType(ChangeObject changeObject, ChangeType changeType) {
+	Filter projectIdFilter = new com.google.appengine.api.datastore.Query.FilterPredicate("projectID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, projectId);
+	Filter changeFromDates = new com.google.appengine.api.datastore.Query.FilterPredicate("datetime", com.google.appengine.api.datastore.Query.FilterOperator.GREATER_THAN_OR_EQUAL, epochStart);
+	Filter changeObjectFilter = new com.google.appengine.api.datastore.Query.FilterPredicate("objectType", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, changeObject.toString());
+	Filter changeTypeFilter = new com.google.appengine.api.datastore.Query.FilterPredicate("changeType", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, changeType.toString());
+	Filter andFilter = CompositeFilterOperator.and(projectIdFilter, changeFromDates, changeObjectFilter, changeTypeFilter);
+
+	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change");
+	q.setFilter(andFilter);
+	PreparedQuery pq = datastore.prepare(q);
+	return pq.asIterable(FetchOptions.Builder.withDefaults());
     }
 
 }
