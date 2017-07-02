@@ -27,7 +27,7 @@ import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
 import com.qdacity.project.codesystem.CodeSystem;
-import com.qdacity.project.saturation.ChangeLogger;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(

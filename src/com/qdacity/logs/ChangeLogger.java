@@ -1,4 +1,4 @@
-package com.qdacity.project.saturation;
+package com.qdacity.logs;
 
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;

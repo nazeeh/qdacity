@@ -44,7 +44,7 @@ import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;
-import com.qdacity.project.saturation.ChangeLogger;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(
