@@ -1,27 +1,28 @@
 package com.qdacity.project.saturation;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.qdacity.endpoint.ChangeEndpoint;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
-import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
+import com.qdacity.logs.ChangeType;
+import com.qdacity.util.DataStoreUtil;
 import java.util.Date;
-import java.util.List;
 
 public class SaturationCalculator {
 
     private final Long projectId;
     private final SaturationParameters params;
-    private final List<Change> changes;
+    private final Date epochStart;
 
-    public SaturationCalculator(Long projectId) throws UnauthorizedException {
+    public SaturationCalculator(Long projectId, Date epochStart) throws UnauthorizedException {
 	this.projectId = projectId;
 	SaturationEndpoint se = new SaturationEndpoint();
 	this.params = se.getSaturationParameters(projectId);
-	//TODO get CHanges ab Zeitpunkt X! hier sind es immer alle changes!
-	this.changes = new ChangeEndpoint().getAllChanges(projectId);
+	this.epochStart = epochStart;
     }
 
     public SaturationResult calculateSaturation() {
@@ -31,15 +32,12 @@ public class SaturationCalculator {
 
 	double documentSaturation = calculateDocumentSaturation();
 	result.setDocumentSaturation(documentSaturation);
-	//documentSaturation is not weighted by itself!
 	result.setDocumentSaturation(documentSaturation);
 
-	//TODO weighting
 	double codeSaturation = calculateCodeSaturation();
 	result.setCodeSaturation(codeSaturation);
 
-	//TODO
-	double totalSaturation = 0.0; //TODO needs weighting!
+	double totalSaturation = (codeSaturation + documentSaturation) / 2.0;
 	result.setTotalSaturation(totalSaturation);
 
 	result.setCreationTime(new Date(System.currentTimeMillis()));
@@ -47,54 +45,56 @@ public class SaturationCalculator {
     }
 
     private double calculateDocumentSaturation() {
-	double numberOfNewDocuments = 0.0;
-	for (Change change : changes) {
-	    if (change.getObjectType().equals(ChangeObject.DOCUMENT)) {
-		numberOfNewDocuments += 1.0;
-	    }
-	}
+	double numberOfNewDocuments = countChanges(ChangeObject.DOCUMENT, ChangeType.CREATED);
 	double totalNumberOfDocuments = TextDocumentEndpoint.countDocuments(projectId);
 	double numberOfDocumentsBeforeChange = totalNumberOfDocuments - numberOfNewDocuments;
 
-	return 1.0 - (numberOfNewDocuments / numberOfDocumentsBeforeChange);
+	return 1.0 - activity(numberOfNewDocuments, numberOfDocumentsBeforeChange, params.getInsertDocumentChangeWeight());
 
     }
 
     private double calculateCodeSaturation() {
-	double numNewCodes = 0.0;
-	double numDeletedCodes = 0.0;
-	double numChangedCodes = 0.0;
-	double numRelocatedCodes = 0.0;
-	for (Change change : changes) {
-	    switch(change.getObjectType()) {
-		case CODE:
-		    switch(change.getChangeType()) {
-			case CREATED:
-			    numNewCodes += 1.0;
-			    break;
-			case MODIFIED:
-			    numChangedCodes +=1.0;
-			    //TODO einzelne Change arten ansehen?
-			    break;
-			case DELETED:
-			    numDeletedCodes += 1.0;
-			    break;
-			case RELOCATE:
-			    numRelocatedCodes += 1.0;
-			    break;
-		    }
-		    break;
-		case CODEBOOK_ENTRY:
-		    //TODO
-		    break;
-		    
-	    }
-
-	}
+	double numNewCodes = countChanges(ChangeObject.CODE, ChangeType.CREATED);
+	double numDeletedCodes = countChanges(ChangeObject.CODE, ChangeType.DELETED);
+	double numChangedCodes = countChanges(ChangeObject.CODE, ChangeType.MODIFIED);
+	double numRelocatedCodes = countChanges(ChangeObject.CODE, ChangeType.RELOCATE);
+	double numAppliedCodes = countChanges(ChangeObject.DOCUMENT, ChangeType.APPLY);
 	double numCurrentCodes = CodeEndpoint.countCodes(projectId);
 	double totalNumberOfCodesBeforeChanges = (numCurrentCodes - numNewCodes) + numDeletedCodes;
+	//activity
+	double activityNewCodes = activity(numNewCodes, totalNumberOfCodesBeforeChanges, params.getInsertCodeChangeWeight());
+	double activityDeleteCodes = activity(numDeletedCodes, totalNumberOfCodesBeforeChanges, params.getDeleteCodeChangeWeight());
+	//TODO Changes einzeln, was genau verändert wurde... Da kann man sich die Changes dann tatsächlich holen und reinschauen. Aber man sollte sich halt nicht ALLE auf einmal holen (wegen vieler Code Applies)
 
-	return 0.0;
+	//TODO einzelergebnisse sind eigentlich auch interessant. Persitieren!!
+	//saturation average of all activities
+	return 1 - 0; //1 - durchschnitt der aktivität...
+    }
+    
+    /**
+     * calculates the weighted activity for a change
+     * @param numberOfChangesOnObjectByType how many changes of the change exist
+     * @param totalNumberOfObjectsBeforeChanges how many objects potentially affected by these changes existed before the changes
+     * @param weight how important is this activity
+     * @return the activity between 0.0 and 1.0. Note that saturation is 1.0 - this result.
+     */
+    private double activity(double numberOfChangesOnObjectByType, double totalNumberOfObjectsBeforeChanges, double weight) {
+	return (weight * numberOfChangesOnObjectByType) / totalNumberOfObjectsBeforeChanges;
+    }
+    
+    /**
+     * count the changes by changeType for a changeObject from this project since the last epoch start
+     * @param changeObject
+     * @param changeType
+     * @return 
+     */
+    private double countChanges(ChangeObject changeObject, ChangeType changeType) {
+	Filter projectIdFilter = new Query.FilterPredicate("projectID", Query.FilterOperator.EQUAL, projectId);
+	Filter changeFromDates = new Query.FilterPredicate("datetime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, epochStart);
+	Filter changeObjectFilter = new Query.FilterPredicate("objectType", Query.FilterOperator.EQUAL, changeObject.toString());
+	Filter changeTypeFilter = new Query.FilterPredicate("changeType", Query.FilterOperator.EQUAL, changeType.toString());
+	Filter andFilter = CompositeFilterOperator.and(projectIdFilter, changeFromDates, changeObjectFilter,changeTypeFilter);
+	return DataStoreUtil.countEntitiesWithFilter("Change", andFilter);
     }
 
 }

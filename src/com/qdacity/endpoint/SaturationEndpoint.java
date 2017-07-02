@@ -35,7 +35,8 @@ public class SaturationEndpoint {
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
     public void getSaturation(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
-	DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId);
+	Date date = new Date(); //TODO start of epoch needs to be figured out somehow...
+	DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId, date);
 	Queue queue = QueueFactory.getDefaultQueue();
 	queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredSaturationTask));
     }

@@ -9,7 +9,7 @@ import javax.jdo.PersistenceManager;
 
 public class ChangeLogger {
 
-    private final static boolean DEFERRED = false;
+    private final static boolean DEFERRED = true;
 
     private static PersistenceManager getPersistenceManager() {
 	return PMF.get().getPersistenceManager();
