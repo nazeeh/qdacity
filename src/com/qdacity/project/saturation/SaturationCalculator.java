@@ -89,6 +89,7 @@ public class SaturationCalculator {
      * @return 
      */
     private double countChanges(ChangeObject changeObject, ChangeType changeType) {
+	//See also: https://cloud.google.com/appengine/docs/standard/java/datastore/query-restrictions
 	Filter projectIdFilter = new Query.FilterPredicate("projectID", Query.FilterOperator.EQUAL, projectId);
 	Filter changeFromDates = new Query.FilterPredicate("datetime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, epochStart);
 	Filter changeObjectFilter = new Query.FilterPredicate("objectType", Query.FilterOperator.EQUAL, changeObject.toString());

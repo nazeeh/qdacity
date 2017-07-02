@@ -36,7 +36,12 @@ public class SaturationParameters {
     double updateCodeNameChangeWeight;
     @Persistent
     double updateCodeIdChangeWeight;
-    //TODO relocate und relationships
+    @Persistent
+    double relocateCodeChangeWeight;
+    @Persistent
+    double insertCodeRelationShipChangeWeight;
+    @Persistent
+    double deleteCodeRelationShipChangeWeight;
     @Persistent
     double deleteCodeChangeWeight;
 
@@ -179,5 +184,31 @@ public class SaturationParameters {
     public void setCreationTime(Date creationTime) {
 	this.creationTime = creationTime;
     }
+
+    public double getRelocateCodeChangeWeight() {
+	return relocateCodeChangeWeight;
+    }
+
+    public void setRelocateCodeChangeWeight(double relocateCodeChangeWeight) {
+	this.relocateCodeChangeWeight = relocateCodeChangeWeight;
+    }
+
+    public double getInsertCodeRelationShipChangeWeight() {
+	return insertCodeRelationShipChangeWeight;
+    }
+
+    public void setInsertCodeRelationShipChangeWeight(double insertCodeRelationShipChangeWeight) {
+	this.insertCodeRelationShipChangeWeight = insertCodeRelationShipChangeWeight;
+    }
+
+    public double getDeleteCodeRelationShipChangeWeight() {
+	return deleteCodeRelationShipChangeWeight;
+    }
+
+    public void setDeleteCodeRelationShipChangeWeight(double deleteCodeRelationShipChangeWeight) {
+	this.deleteCodeRelationShipChangeWeight = deleteCodeRelationShipChangeWeight;
+    }
+    
+    
 
 }

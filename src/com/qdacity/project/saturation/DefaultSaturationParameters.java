@@ -19,7 +19,9 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	this.updateCodeMemoChangeWeight = 0.7;
 	this.updateCodeNameChangeWeight = 0.7;
 	this.updateCodeIdChangeWeight = 0.01;
-	//TODO relocate und relationships
+	this.relocateCodeChangeWeight = 0.9;
+	this.insertCodeRelationShipChangeWeight = 0.5;
+	this.deleteCodeRelationShipChangeWeight = 0.5;
 	this.deleteCodeChangeWeight = 1.0;
 	//CodeBookEntry Changes
 	this.updateCodeBookEntryDefinitionChangeWeight = 1.0;
