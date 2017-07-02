@@ -21,6 +21,7 @@ $script('https://apis.google.com/js/platform.js', function () {
 	$script('https://apis.google.com/js/client.js?onload=init', 'google-api');
 });
 
+var page_loaded;
 
 var project_id;
 var project_type;
@@ -36,6 +37,8 @@ window.init = function () {
 
 	var urlParams = URI(window.location.search).query(true);
 
+	page_loaded = false;
+	
 	project_id = urlParams.project;
 	project_type = urlParams.type;
 
@@ -53,6 +56,11 @@ window.init = function () {
 }
 
 function setupUI() {
+	if (page_loaded) {
+		return;
+	}
+	page_loaded = true;	
+	
 	if (account.isSignedIn()) {
 		var profile = account.getProfile();
 
