@@ -14,6 +14,8 @@ import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeType;
+import com.qdacity.logs.CodeBookEntryChangeDetail;
+import com.qdacity.logs.CodeChangeDetail;
 import com.qdacity.util.DataStoreUtil;
 import java.util.Date;
 
@@ -54,35 +56,109 @@ public class SaturationCalculator {
 	double numNewCodes = countChanges(ChangeObject.CODE, ChangeType.CREATED);
 	double numDeletedCodes = countChanges(ChangeObject.CODE, ChangeType.DELETED);
 	double numChangedCodes = countChanges(ChangeObject.CODE, ChangeType.MODIFIED);
+	//We need to look at modified changes in more detail
+	Iterable<Entity> changesWithModified = getChangesForObjectOfType(ChangeObject.CODE, ChangeType.MODIFIED);
+	double numAuthorChanged = 0.0;
+	double numCodeIdChanged = 0.0;
+	double numColorChanged = 0.0;
+	double numMemoChanged = 0.0;
+	double numNameChanged = 0.0;
+	//double numSubCodeIdsChanged = 0.0;
+	for (Entity changeEntity : changesWithModified) {
+	    String completeDiff = getCompleteDiff(changeEntity);
+
+	    if (completeDiff.contains(jsonize(CodeChangeDetail.AUTHOR))) {
+		numAuthorChanged += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeChangeDetail.CODE_ID))) {
+		numCodeIdChanged += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeChangeDetail.COLOR))) {
+		numColorChanged += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeChangeDetail.MEMO))) {
+		numMemoChanged += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeChangeDetail.NAME))) {
+		numNameChanged += 1.0;
+	    }
+	    /*if (completeDiff.contains(jsonize(CodeChangeDetail.SUBCODE_IDS))) {
+		numSubCodeIdsChanged += 1.0;
+	    }*/ //unnecessary
+	    numChangedCodes -= 1.0;
+	}
+	assert (numChangedCodes == 0.0);
+	Iterable<Entity> changesCodeBookWithModified = getChangesForObjectOfType(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED);
+	double numCodeBookDefinition = 0.0;
+	double numCodeBookExample = 0.0;
+	double numCodeBookShortdefinition = 0.0;
+	double numCodeBookWhenNotToUse = 0.0;
+	double numCodeBookWhenToUse = 0.0;
+	for (Entity changeEntity : changesCodeBookWithModified) {
+	    String completeDiff = getCompleteDiff(changeEntity);
+
+	    if (completeDiff.contains(jsonize(CodeBookEntryChangeDetail.DEFINITION))) {
+		numCodeBookDefinition += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeBookEntryChangeDetail.EXAMPLE))) {
+		numCodeBookExample += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeBookEntryChangeDetail.SHORTDEFINITION))) {
+		numCodeBookShortdefinition += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeBookEntryChangeDetail.WHENNOTTOUSE))) {
+		numCodeBookWhenNotToUse += 1.0;
+	    }
+	    if (completeDiff.contains(jsonize(CodeBookEntryChangeDetail.WHENTOUSE))) {
+		numCodeBookWhenToUse += 1.0;
+	    }
+	}
 	double numRelocatedCodes = countChanges(ChangeObject.CODE, ChangeType.RELOCATE);
 	double numAppliedCodes = countChanges(ChangeObject.DOCUMENT, ChangeType.APPLY);
 	//Project properties
 	double numCurrentCodes = CodeEndpoint.countCodes(projectId);
 	double totalNumberOfCodesBeforeChanges = (numCurrentCodes - numNewCodes) + numDeletedCodes;
-	//saturation
+
+	//calculate saturation
 	result.setInsertCodeSaturation(saturation(numNewCodes, totalNumberOfCodesBeforeChanges));
 	result.setDeleteCodeSaturation(saturation(numDeletedCodes, totalNumberOfCodesBeforeChanges));
+	//Code attributes
+	result.setUpdateCodeAuthorSaturation(saturation(numAuthorChanged, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeColorSaturation(saturation(numColorChanged, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeIdSaturation(saturation(numCodeIdChanged, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeMemoSaturation(saturation(numMemoChanged, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeNameSaturation(saturation(numNameChanged, totalNumberOfCodesBeforeChanges));
+	//CodeBookEntry attributes
+	result.setUpdateCodeBookEntryDefinitionSaturation(saturation(numCodeBookDefinition, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeBookEntryExampleSaturation(saturation(numCodeBookExample, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeBookEntryShortDefinitionSaturation(saturation(numCodeBookShortdefinition, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeBookEntryWhenNotToUseSaturation(saturation(numCodeBookWhenNotToUse, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeBookEntryWhenToUseSaturation(saturation(numCodeBookWhenToUse, totalNumberOfCodesBeforeChanges));
 
-	//We need to look at modified changes in more detail
-	Iterable<Entity> changesWithModified = getChangesForObjectOfType(ChangeObject.CODE, ChangeType.MODIFIED);
-
-	for (Entity changeEntity : changesWithModified) {
-	    String diffNew = changeEntity.getProperty("newValue").toString();
-	    String diffOld = changeEntity.getProperty("oldValue").toString();
-
-	    //TODO analyze details here
-	    numChangedCodes -= 1.0;
-	}
-	assert (numChangedCodes == 0.0);
-	
-	//TODO COdebook entries wie modified bei Codes
-
-	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen stimmt so?
+	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen macht keinen sinn! VIelleicht sollte man es ganz anders machen und einfach nur abspeicher wie oft welcher code benutzt wurde.
 	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
     }
 
+    private String getCompleteDiff(Entity changeEntity) {
+	String diffNew = changeEntity.getProperty("newValue").toString();
+	String diffOld = changeEntity.getProperty("oldValue").toString();
+	String completeDiff = diffOld + diffNew;
+	return completeDiff;
+    }
+
     /**
-     * calculates the saturation for a change
+     * for usage with String.contains to avoid wrong matches in texts of diff
+     *
+     * @param variableName
+     * @return
+     */
+    private String jsonize(String variableName) {
+	return "{\"" + variableName + "\":";
+    }
+
+    /**
+     * calculates the saturation for a change.
+     * In general saturation is 1 - activity
      *
      * @param numberOfChangesOnObjectByType how many changes of the change exist
      * @param totalNumberOfObjectsBeforeChanges how many objects potentially
@@ -119,7 +195,6 @@ public class SaturationCalculator {
 
     private Iterable<Entity> getChangesForObjectOfType(ChangeObject changeObject, ChangeType changeType) {
 	Filter andFilter = makeFilterForThisProjectAndEpoch(changeObject, changeType);
-
 	DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change");
 	q.setFilter(andFilter);
