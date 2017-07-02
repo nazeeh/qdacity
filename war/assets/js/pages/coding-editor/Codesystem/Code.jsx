@@ -18,7 +18,8 @@ const codeSource = {
 		};
 	},
 	endDrag(props, monitor, component) {
-		props.relocateCode(props.node, monitor.getDropResult().targetID);
+		const dropResults = monitor.getDropResult();
+		if (dropResults) props.relocateCode(props.node, monitor.getDropResult().targetID);
 	}
 };
 

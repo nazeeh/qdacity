@@ -3,6 +3,7 @@ const webpack = require('webpack-stream');
 const uglify = require('gulp-uglify');
 const beautify = require('gulp-beautify');
 const jasmine = require('gulp-jasmine');
+const size = require('gulp-size');
 require('babel-core/register'); 
  
 var paths = {
@@ -92,6 +93,7 @@ gulp.task('bundle-task', function() {
 gulp.task('minify', function() {
 	 return gulp.src('./dist/js/*.js', {base: './'})
       .pipe(uglify())
+	  .pipe(size({showFiles: true, gzip: true}))
       .pipe(gulp.dest('./'));
 });
 

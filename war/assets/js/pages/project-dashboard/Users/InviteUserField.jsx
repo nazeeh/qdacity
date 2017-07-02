@@ -1,13 +1,12 @@
 import React from 'react';
 
-import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
 export default class InviteUserField extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userEmail: '',
-			isProjectOwner: false
+			userEmail: ''
 		};
 		this.updateUserEmail = this.updateUserEmail.bind(this);
 		this.inviteUser = this.inviteUser.bind(this);
@@ -28,15 +27,9 @@ export default class InviteUserField extends React.Component {
 
 	}
 
-	setIsProjectOwner(pIsProjectOnwer) {
-		this.setState({
-			isProjectOwner: pIsProjectOnwer
-		});
-	}
-
 	inviteUser() {
 		var _this = this;
-		ProjectEndpoint.inviteUser(this.props.projectId, this.state.userEmail).then(function (resp) {
+		ProjectEndpoint.inviteUser(this.props.project.getId(), this.state.userEmail).then(function (resp) {
 			alertify.success(_this.state.userEmail + " has been invited");
 		}).catch(function (resp) {
 			alertify.error(_this.state.userEmail + " was not found");
@@ -44,7 +37,7 @@ export default class InviteUserField extends React.Component {
 	}
 
 	render() {
-		if (this.state.isProjectOwner === false) return null;
+		if (this.props.isProjectOwner === false) return null;
 
 		var _this = this;
 

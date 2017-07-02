@@ -9,28 +9,18 @@ export default class PersonalReportList extends React.Component {
 		this.state = {
 			reports: []
 		};
-		this.init()
-	}
-
-
-	getStyles() {
-		return {
-			listItemBtn: {
-				float: "right",
-				marginTop: "-15px"
-			}
-		};
+		if (this.props.project.getType() == 'VALIDATION') this.init();
 	}
 
 	init() {
 		var _this = this;
 		var validationEndpoint = new ValidationEndpoint();
-		var validationPromise = validationEndpoint.listReports(this.props.parentProject);
+		var validationPromise = validationEndpoint.listReports(this.props.project.getParentID());
 
 		validationPromise.then(function (reports) {
 			for (var property in reports) {
-				if (reports.hasOwnProperty(property)) {
-					var reportArr = reports[property];
+				if (reports.hasOwnProperty(property) && property == _this.props.project.getRevisionID()) {
+					var reportArr = reports[property]
 					reportArr = reportArr || [];
 					_this.setState({
 						reports: reportArr
@@ -42,14 +32,17 @@ export default class PersonalReportList extends React.Component {
 
 	showDocumentResults(report) {
 		var _this = this;
-		ValidationEndpoint.getValidationResult(report.id, _this.props.projectId).then(function (resp) {
-			var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.projectId, _this.props.projectId, _this.props.projectType);
-			agreementByDoc.showModal();
-		});
+		if (report.evaluationMethod == 'f-measure') {
+			ValidationEndpoint.getValidationResult(report.id, _this.props.project.getId()).then(function (resp) {
+				var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.project.getId(), _this.props.project.getId(), _this.props.project.getType());
+				agreementByDoc.showModal();
+			});
+		}
 	}
 
 
 	render() {
+		if (this.props.project.getType() != 'VALIDATION') return null;
 		var _this = this;
 
 		const styles = this.getStyles();
@@ -60,8 +53,8 @@ export default class PersonalReportList extends React.Component {
 			var datetime = report.datetime;
 			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 			else datetime = "";
-			return <li 
-					className="studentReportLink listItem report" 
+			return <li
+					className="studentReportLink listItem report"
 					key={report.id}
 					onClick={() => this.showDocumentResults(report)}
 					>

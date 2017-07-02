@@ -1,6 +1,5 @@
-import 'script!../../../../components/Easytabs/jquery.easytabs.js';
-import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
-import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
+import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
+import MetaModelRelationEndpoint from '../../../common/endpoints/MetaModelRelationEndpoint';
 import MetaModelElement from './MetaModelElement';
 
 export default class MetaModelView extends React.Component {
@@ -8,10 +7,8 @@ export default class MetaModelView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.setActiveElement = this.setActiveElement.bind(this);
-
 		this.state = {
-			elements: null, // {}
+			elements: {},
 			selected: []
 		};
 	}
@@ -20,50 +17,8 @@ export default class MetaModelView extends React.Component {
 		this.init(this.props.metaModelEntities, this.props.metaModelRelations);
 	}
 
-	setActiveIds(elementIds) {
-		var _this = this;
-
-		_this.resetSelection();
-
-		if (elementIds != null) {
-			elementIds.forEach((elementId) => _this.setActiveId(elementId));
-		} else {
-			this.setActiveId(null);
-		}
-	}
-
-	setActiveId(elementId) {
-		let element = this.getElement(elementId);
-
-		if (typeof element != 'undefined' && element != null) {
-			this.setActiveElement(element);
-		} else {
-			this.resetSelection();
-			this.setState({
-				elements: this.state.elements
-			});
-		}
-	}
-
-	setActiveElement(element) {
-
-		let group = this.state.elements[element.getGroup()];
-
-		this.resetSelectionForGroup(group);
-
-		element.toggleSelected();
-
-		this.state.selected.push(element.getId());
-
-		this.selectGeneralizations(element.getId(), group);
-
-		this.setState({
-			elements: this.state.elements
-		});
-	}
-
 	getActiveElementIds() {
-		return this.state.selected;
+		return this.props.selected;
 	}
 
 	getElement(elementId) {
@@ -71,8 +26,8 @@ export default class MetaModelView extends React.Component {
 			return el.getId() === elementId;
 		}
 
-		for (let key in this.state.elements) {
-			let element = this.state.elements[key].find(idFilter);
+		for (let key in this.props.elements) {
+			let element = this.props.elements[key].find(idFilter);
 
 			if (element != null) {
 				return element;
@@ -80,36 +35,6 @@ export default class MetaModelView extends React.Component {
 		}
 
 		return null;
-	}
-
-	selectGeneralizations(elementID, group) {
-		let _this = this;
-		group.forEach(function (el) {
-			if (el.hasSpecialization(elementID)) {
-				el.setSelected(true);
-				//recursion
-				_this.selectGeneralizations(el.getId(), group);
-			}
-		});
-	}
-
-	resetSelection() {
-		for (let key in this.state.elements) {
-			this.resetSelectionForGroup(this.state.elements[key]);
-		}
-	}
-
-	resetSelectionForGroup(group) {
-		let _this = this;
-
-		group.forEach(function (el) {
-			el.setSelected(false);
-
-			let index = _this.state.selected.indexOf(el.id);
-			if (index > -1) {
-				_this.state.selected.splice(index, 1);
-			}
-		});
 	}
 
 	init(metaModelEntities, metaModelRelations) {
@@ -176,6 +101,8 @@ export default class MetaModelView extends React.Component {
 			mmElements[group].push(entity);
 		}
 
+		_this.props.setElements(mmElements);
+
 		_this.state.elements = mmElements;
 		_this.forceUpdate();
 	}
@@ -188,10 +115,10 @@ export default class MetaModelView extends React.Component {
 			justifyContent: "center"
 		};
 
-		if (_this.state.elements != null) {
+		if (_this.props.elements != null) {
 			return (
 				<div style={blockStyle}>
-    		        {Object.keys(_this.state.elements).map((key, index) => _this.renderGroup(_this.state.elements[key], key))}		        
+                    {Object.keys(_this.props.elements).map((key, index) => _this.renderGroup(_this.props.elements[key], key))}           
                 </div>
 			);
 		} else {
@@ -212,7 +139,7 @@ export default class MetaModelView extends React.Component {
 
 				let attributes = {
 					value: mmElement.id,
-					onClick: _this.setActiveElement.bind(null, mmElement)
+					onClick: _this.props.updateActiveElement.bind(null, mmElement)
 				}
 
 				let classes = "btn btn-default";
@@ -233,7 +160,7 @@ export default class MetaModelView extends React.Component {
 			if (mmElement.hasGeneralization(firstLevelSelected)) {
 				let attributes = {
 					value: mmElement.id,
-					onClick: _this.setActiveElement.bind(null, mmElement)
+					onClick: _this.props.updateActiveElement.bind(null, mmElement)
 				}
 
 				let classes = "btn btn-default";
@@ -250,7 +177,7 @@ export default class MetaModelView extends React.Component {
 		let thirdLevel = elements.map(function (mmElement) {
 			let attributes = {
 				value: mmElement.id,
-				onClick: _this.setActiveElement.bind(null, mmElement)
+				onClick: _this.props.updateActiveElement.bind(null, mmElement)
 			}
 
 			let classes = "btn btn-default";
@@ -281,7 +208,7 @@ export default class MetaModelView extends React.Component {
                     <div key={"thirdLevel" + group}  style={centerStyle} className="list-group">
                         {thirdLevel}
                     </div>
-    		    </div>);
+                </div>);
 		} else {
 			return null;
 		}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DocumentsEndpoint from '../../common/endpoints/DocumentsEndpoint';
+import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
@@ -21,6 +21,7 @@ export default class DocumentsView extends React.Component {
 		this.saveDocument = this.saveDocument.bind(this);
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
+		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
 	}
 
 	getStyles() {
@@ -137,6 +138,16 @@ export default class DocumentsView extends React.Component {
 		this.changeDocumentData(doc);
 	}
 
+	applyCodeToCurrentDocument(text, code) {
+		var doc = this.getActiveDocument();
+		doc.text = text;
+		doc.projectID = this.props.projectID;
+		var _this = this;
+		DocumentsEndpoint.applyCode(doc, code).then(function (resp) {
+			_this.updateDocument(doc.id, doc.title, doc.text);
+		});
+	}
+
 	changeDocumentData(doc) {
 		var _this = this;
 		doc.projectID = this.props.projectID;
@@ -240,11 +251,11 @@ export default class DocumentsView extends React.Component {
 	renderToolbar() {
 		if (this.props.projectType == "PROJECT") {
 			return (
-				<DocumentsToolbar 
-					projectID={this.props.projectID}  
-					document={this.getActiveDocument()} 
-					addDocument={this.addDocument} 
-					removeActiveDocument={this.removeActiveDocument} 
+				<DocumentsToolbar
+					projectID={this.props.projectID}
+					document={this.getActiveDocument()}
+					addDocument={this.addDocument}
+					removeActiveDocument={this.removeActiveDocument}
 					changeDocumentData={this.changeDocumentData}
 				/>
 			);
@@ -269,7 +280,7 @@ export default class DocumentsView extends React.Component {
 			</div>
 			<div className="list-group">
 	        {
-	          this.state.documents.map(function(doc) {	
+	          this.state.documents.map(function(doc) {
 	            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
 	          })
 	        }

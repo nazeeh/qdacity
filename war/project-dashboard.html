@@ -47,8 +47,8 @@
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
 
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="https://fb.me/react-15.0.0.js"></script>
-    <script src="https://fb.me/react-dom-15.0.0.js"></script>
+<script src="https://unpkg.com/react@15/dist/react.js"></script>
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
 </head>
 
 <body>
@@ -113,84 +113,12 @@
 
 	<!-- Header -->
 	<div class="container main-content">
-	<div id="titleRow"></div>
-		<div class="row">
-			<div class="col-lg-7">
-				<div id="projectDescription"></div>
-				<div id="projectStats"></div>
-				<div class="box box-default">
-					<div class="box-header with-border">
-					<h3 class="box-title">Intercoder Agreement</h3>
-					</div>
-					<!-- /.panel-heading -->
-					<div class="box-body">
-					<div class="row" >
-					<div class="col-xs-12">
-					<div id="agreementStats" class="agreementStats"></div>
-					</div>
-						
-				</div>
-					</div>
-					<!-- /.panel-body -->
-				</div>
-				<div id="changeLog"></div>
-			</div>
-			<div class="col-lg-5">
-				<div id="user-section">
-					<div class="box box-default">
-						<div class="box-header with-border">
-							<h3 class="box-title">Users</h3>
-						</div>
-						<!-- /.panel-heading -->
-						<div class="box-body">
-							<div class="List-menu">
-								<div id="inviteUserField"></div>
-							</div>
-							<div>
-							<div id="userList">	</div>
-							</div>
-						</div>
-						<!-- /.panel-body -->
-					</div>
-				</div>
-				<div id="revisionHistory" class=" box box-default collapse">
-					<div class="box-header with-border">
-						<h3 class="box-title">Revision History</h3>
-						<a id="newRevisionBtn" class=" btn  btn-default btn-sm pull-right hidden" style="   padding: 5px 10px;" href="#">
-						<i style="font-size: 18px;" class="fa fa-plus-circle  pull-left"></i>
-						Create Revision
-						</a>
-					</div>
-					<!-- /.panel-heading -->
-					<div class="box-body">
-						<div id="revision-panel">
-						
-						<ul id="revisionHistoryTimeline" class="timeline list" style="margin-top:25px;">
-						</ul>
-						</div>
-					</div>
-					<!-- /.panel-body -->
-				</div>
-				
-				<div id="parentProject" class=" box box-default collapse">
-					<div class="box-header with-border">
-						<h3 class="box-title">Parent Project</h3>
-					</div>
-					<!-- /.panel-heading -->
-					<div class="box-body">
-						This is an validation project belonging to <a id="parentProjectLink">this parent project</a> 
-					</div>
-					<!-- /.panel-body -->
-				</div>
-				<div id="personalReportList"></div>
-			</div>
-		</div>
-		<!-- /.row -->
+		<div id="projectDashboard"></div>
 	</div>
 
 
  	<script src="dist/js/project-dashboard.dist.js"></script>
-	
+
 
 </body>
 

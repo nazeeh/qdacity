@@ -8,6 +8,7 @@
   "dependencies": {
     "bootstrap-slider": "^9.7.1",
     "mxgraph": "^3.7.2-2",
+    "react-slick": "^0.14.11",
     "slick-carousel": "^1.6.0"
   },
   "devDependencies": {
@@ -22,12 +23,13 @@
     "gulp": "^3.9.1",
     "gulp-beautify": "^2.0.1",
     "gulp-jasmine": "^2.4.2",
+    "gulp-size": "^2.1.0",
     "gulp-uglify": "^1.5.4",
     "react": "^15.2.1",
     "react-dnd": "^2.4.0",
     "react-dnd-html5-backend": "^2.4.1",
     "react-dom": "^15.2.1",
-    "react-loading": "0.0.9",
+    "react-loading": "0.1.2",
     "react-transition-group": "^1.1.1",
     "script-loader": "^0.7.0",
     "scriptjs": "^2.5.8",

@@ -3947,13 +3947,13 @@ proto.readOnly = function (readonly) {
     	this._body.setAttribute( 'contenteditable', 'false' );
 
     	this.removeEventListener( isPresto ? 'keypress' : 'keydown', onKey );
-
-    	
+    	this.removeEventListener( isIElt11 ? 'beforepaste' : 'paste', onPaste );
     }
     else if (readonly == false)
     	{
     	this._body.setAttribute( 'contenteditable', 'true' );
     	this.addEventListener( isPresto ? 'keypress' : 'keydown', onKey );
+    	this.addEventListener( isIElt11 ? 'beforepaste' : 'paste', onPaste );
     	}
 };
 

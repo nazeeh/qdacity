@@ -108,7 +108,6 @@ export default class ValPrjList extends React.Component {
 			<span className="searchfield" id="searchform" style={styles.search}> 
 				<input 
 					type="text" 
-					class="search" 
 					placeholder="Search" 
 					value={this.state.search}
 					onChange={this.updateSearch}

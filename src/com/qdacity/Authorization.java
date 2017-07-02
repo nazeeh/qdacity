@@ -52,7 +52,7 @@ public class Authorization {
 	}
 
 	public static void checkAuthorization(TextDocument textDocument, User user) throws UnauthorizedException {
-		if (user == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(user);
 
 		Boolean authorized = Authorization.isUserAuthorized(user, textDocument.getProjectID());
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
@@ -91,28 +91,28 @@ public class Authorization {
 	}
 
 	public static void checkAuthorization(Project project, User user) throws UnauthorizedException {
-		if (user == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorized(user, project.getId());
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 
 	}
 
 	public static void checkAuthorization(Long projectID, User user) throws UnauthorizedException {
-		if (user == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorized(user, projectID) || isUserAdmin(user);
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 
 	}
 
 	public static void checkAuthorization(com.qdacity.user.User userRequested, User userLoggedIn) throws UnauthorizedException {
-		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(userLoggedIn);
 		Boolean authorized = (userLoggedIn.getUserId().equals(userRequested.getId()));
 		if (!authorized) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
 
 	}
 	
 	public static void checkAuthorization(MetaModelEntity metaModelEntity, User userLoggedIn) throws UnauthorizedException {
-		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(userLoggedIn);
 
 		Boolean allowed = isUserAdmin(userLoggedIn);
 
@@ -120,7 +120,7 @@ public class Authorization {
 	}
 
 	public static void checkAuthorization(MetaModelRelation metaModelRelation, User userLoggedIn) throws UnauthorizedException {
-		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(userLoggedIn);
 
 		Boolean allowed = isUserAdmin(userLoggedIn);
 
@@ -128,7 +128,7 @@ public class Authorization {
 	}
 
 	public static AuthorizationLevel checkAuthorization(ValidationProject project, com.qdacity.user.User user) throws UnauthorizedException {
-		if (user == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(user);
 
 		if (user.getType() == UserType.ADMIN) return AuthorizationLevel.ADMIN;
 
@@ -151,11 +151,15 @@ public class Authorization {
 	}
 
 	public static void checkDatabaseInitalizationAuthorization(User userLoggedIn) throws UnauthorizedException {
-		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
+		isUserNotNull(userLoggedIn);
 
 		Boolean allowed = isUserAdmin(userLoggedIn);
 
 		if (!allowed) throw new UnauthorizedException("User is Not Authorized");
+	}
+
+	public static void isUserNotNull(Object userLoggedIn) throws UnauthorizedException {
+		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
 	}
 
 }

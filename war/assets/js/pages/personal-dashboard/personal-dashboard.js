@@ -3,6 +3,7 @@ import loadGAPIs from '../../common/GAPI';
 import Account from '../../common/Account.jsx';
 import ProjectList from "./ProjectList.jsx"
 import NotificationList from "./NotificationList.jsx"
+import WelcomePanel from "./WelcomePanel.jsx"
 
 import $script from 'scriptjs';
 $script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
@@ -18,9 +19,7 @@ function setupUI() {
 	if (account.isSignedIn()) {
 		$('#navAccount').show();
 		$('#navSignin').hide();
-		$('#welcomeName').html(account.getProfile().getGivenName());
-		$('#welcome').removeClass('hidden');
-
+		ReactDOM.render(<WelcomePanel account={account} />, document.getElementById('welcomePanel'));
 		projectList.init();
 		notificationList.init();
 	} else {

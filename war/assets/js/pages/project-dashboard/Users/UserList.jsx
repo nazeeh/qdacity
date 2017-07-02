@@ -1,5 +1,5 @@
 import React from 'react';
-import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import UserEndpoint from '../../../common/endpoints/UserEndpoint';
 
 
 export default class UserList extends React.Component {
@@ -41,7 +41,7 @@ export default class UserList extends React.Component {
 
 	init() {
 
-		switch (this.props.projectType) {
+		switch (this.props.project.getType()) {
 		case "VALIDATION":
 			this.addValidationCoders();
 			break;
@@ -56,7 +56,7 @@ export default class UserList extends React.Component {
 
 	addOwners() {
 		var _this = this;
-		UserEndpoint.listUser(this.props.projectId).then(function (resp) {
+		UserEndpoint.listUser(this.props.project.getId()).then(function (resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
@@ -66,7 +66,7 @@ export default class UserList extends React.Component {
 
 	addValidationCoders() {
 		var _this = this;
-		UserEndpoint.listValidationCoders(this.props.projectId).then(function (resp) {
+		UserEndpoint.listValidationCoders(this.props.project.getId()).then(function (resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
@@ -131,7 +131,7 @@ export default class UserList extends React.Component {
 		}
 
 		const renderListItems = itemsToDisplay.map((user, index) => {
-			return <li className="clickable">
+			return <li key={index} className="clickable">
 					<span className="userName"> {user.givenName + " " + user.surName} </span>					
 				</li>;
 		})
