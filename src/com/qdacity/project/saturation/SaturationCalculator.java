@@ -2,6 +2,7 @@ package com.qdacity.project.saturation;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.endpoint.ChangeEndpoint;
+import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.logs.Change;
@@ -62,6 +63,8 @@ public class SaturationCalculator {
     private double calculateCodeSaturation() {
 	double numNewCodes = 0.0;
 	double numDeletedCodes = 0.0;
+	double numChangedCodes = 0.0;
+	double numRelocatedCodes = 0.0;
 	for (Change change : changes) {
 	    switch(change.getObjectType()) {
 		case CODE:
@@ -70,11 +73,14 @@ public class SaturationCalculator {
 			    numNewCodes += 1.0;
 			    break;
 			case MODIFIED:
-			    //TODO
+			    numChangedCodes +=1.0;
+			    //TODO einzelne Change arten ansehen?
 			    break;
-			    //TODO wie mit changes an codes umgehen, wenn der code geändert und dann gelöscht wurde?
 			case DELETED:
 			    numDeletedCodes += 1.0;
+			    break;
+			case RELOCATE:
+			    numRelocatedCodes += 1.0;
 			    break;
 		    }
 		    break;
@@ -85,8 +91,8 @@ public class SaturationCalculator {
 	    }
 
 	}
-	double numCurrentCodes = 0.0; //TODO get from CodeEnpoint
-	double totalNumberOfCodesBeforeChanges = numCurrentCodes - numNewCodes + numDeletedCodes;
+	double numCurrentCodes = CodeEndpoint.countCodes(projectId);
+	double totalNumberOfCodesBeforeChanges = (numCurrentCodes - numNewCodes) + numDeletedCodes;
 
 	return 0.0;
     }

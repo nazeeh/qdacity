@@ -27,6 +27,7 @@ import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
 import com.qdacity.project.codesystem.CodeSystem;
+import com.qdacity.util.DataStoreUtil;
 
 @Api(
 	name = "qdacity",
@@ -392,6 +393,11 @@ public class CodeEndpoint {
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
+	}
+	
+	public static int countCodes(Long projectId) {
+	    com.google.appengine.api.datastore.Query.Filter filter = new com.google.appengine.api.datastore.Query.FilterPredicate("projectID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, projectId);
+	    return DataStoreUtil.countEntitiesWithFilter("Code", filter);
 	}
 
 }
