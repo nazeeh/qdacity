@@ -5,7 +5,6 @@ var client_id = '309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleuserco
 var api_version = 'v7';
 var api_path = 'https://7-dot-qdacity-app.appspot.com/_ah/api'; //'https://localhost:8888/_ah/api' var api_version = 'v5';
 
-
 export default function loadGAPIs(allLoadedCallback) {
 	var _this = this;
 	var promise = new Promise(
