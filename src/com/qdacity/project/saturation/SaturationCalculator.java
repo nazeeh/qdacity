@@ -9,11 +9,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
-import com.qdacity.endpoint.ChangeEndpoint;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
-import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeType;
 import com.qdacity.util.DataStoreUtil;
@@ -76,6 +74,8 @@ public class SaturationCalculator {
 	    numChangedCodes -= 1.0;
 	}
 	assert (numChangedCodes == 0.0);
+	
+	//TODO COdebook entries wie modified bei Codes
 
 	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen stimmt so?
 	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
