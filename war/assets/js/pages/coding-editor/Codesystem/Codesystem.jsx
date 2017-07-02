@@ -122,9 +122,19 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 
-	updateSelected(code) {
-		Object.assign(this.state.selected, code);
-		this.forceUpdate();
+	updateSelected(code, persist) {
+		if (!persist){
+			Object.assign(this.state.selected, code);
+			this.forceUpdate();
+		} else this.saveAndUpdate(code)
+
+	}
+
+	saveAndUpdate(code){
+		var _this = this;
+		CodesEndpoint.updateCode(code).then(function (resp) {
+			_this.updateSelected(resp, false);
+		});
 	}
 
 
