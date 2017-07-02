@@ -41,7 +41,7 @@ public class SaturationCalculator {
 	double numberOfNewDocuments = countChanges(ChangeObject.DOCUMENT, ChangeType.CREATED);
 	double totalNumberOfDocuments = TextDocumentEndpoint.countDocuments(projectId);
 	double numberOfDocumentsBeforeChange = totalNumberOfDocuments - numberOfNewDocuments;
-	result.setDocumentSaturation(saturation(activity(numberOfNewDocuments, numberOfDocumentsBeforeChange)));
+	result.setDocumentSaturation(saturation(numberOfNewDocuments, numberOfDocumentsBeforeChange));
     }
 
     private void calculateCodeSaturation(SaturationResult result) {
@@ -54,37 +54,26 @@ public class SaturationCalculator {
 	//Project properties
 	double numCurrentCodes = CodeEndpoint.countCodes(projectId);
 	double totalNumberOfCodesBeforeChanges = (numCurrentCodes - numNewCodes) + numDeletedCodes;
-	//activity
-	double activityNewCodes = activity(numNewCodes, totalNumberOfCodesBeforeChanges);
-	result.setInsertCodeSaturation(saturation(activityNewCodes));
-	double activityDeleteCodes = activity(numDeletedCodes, totalNumberOfCodesBeforeChanges);
-	result.setDeleteCodeSaturation(saturation(activityDeleteCodes));
+	//saturation
+	result.setInsertCodeSaturation(saturation(numNewCodes, totalNumberOfCodesBeforeChanges));
+	result.setDeleteCodeSaturation(saturation(numDeletedCodes, totalNumberOfCodesBeforeChanges));
 
 	//TODO Changes einzeln, was genau verändert wurde... Da kann man sich die Changes dann tatsächlich holen und reinschauen. Aber man sollte sich halt nicht ALLE auf einmal holen (wegen vieler Code Applies)
-	
-	double activityAppliedCodes = activity(numAppliedCodes, totalNumberOfCodesBeforeChanges); //TODO mit Anzahl Codes zu Bezug setzen stimmt so?
-	result.setApplyCodeSaturation(saturation(activityAppliedCodes));
-	double activityRelocateCodes = activity(numRelocatedCodes, totalNumberOfCodesBeforeChanges);
-	result.setRelocateCodeSaturation(saturation(activityRelocateCodes));
-
-    }
-
-    private double saturation(double activity) {
-	return 1.0 - activity;
+	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen stimmt so?
+	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
     }
 
     /**
-     * calculates the weighted activity for a change
+     * calculates the saturation for a change
      *
      * @param numberOfChangesOnObjectByType how many changes of the change exist
      * @param totalNumberOfObjectsBeforeChanges how many objects potentially
      * affected by these changes existed before the changes
      * @param weight how important is this activity
-     * @return the activity between 0.0 and 1.0. Note that saturation is 1.0 -
-     * this result.
+     * @return
      */
-    private double activity(double numberOfChangesOnObjectByType, double totalNumberOfObjectsBeforeChanges) {
-	return (numberOfChangesOnObjectByType) / totalNumberOfObjectsBeforeChanges;
+    private double saturation(double numberOfChangesOnObjectByType, double totalNumberOfObjectsBeforeChanges) {
+	return 1.0 - (numberOfChangesOnObjectByType / totalNumberOfObjectsBeforeChanges);
     }
 
     /**
