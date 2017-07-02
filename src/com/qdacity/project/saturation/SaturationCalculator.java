@@ -189,8 +189,12 @@ public class SaturationCalculator {
 
     private Filter makeFilterForThisProjectAndEpoch(ChangeObject changeObject, ChangeType changeType) {
 	//See also: https://cloud.google.com/appengine/docs/standard/java/datastore/query-restrictions
+	
 	Filter projectIdFilter = new Query.FilterPredicate("projectID", Query.FilterOperator.EQUAL, projectId);
-	Filter changeFromDates = new Query.FilterPredicate("datetime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, epochStart);
+	//Workaround for GAE behaviour, see:
+	//https://stackoverflow.com/questions/30616103/cant-query-by-date-in-appengine-org-datanucleus-store-types-sco-simple-date-i
+	java.util.Date compatibleDate = new Date(epochStart.getTime()); 
+	Filter changeFromDates = new Query.FilterPredicate("datetime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, compatibleDate);
 	Filter changeObjectFilter = new Query.FilterPredicate("objectType", Query.FilterOperator.EQUAL, changeObject.toString());
 	Filter changeTypeFilter = new Query.FilterPredicate("changeType", Query.FilterOperator.EQUAL, changeType.toString());
 	Filter andFilter = CompositeFilterOperator.and(projectIdFilter, changeFromDates, changeObjectFilter, changeTypeFilter);

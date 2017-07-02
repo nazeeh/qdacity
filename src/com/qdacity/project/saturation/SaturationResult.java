@@ -58,7 +58,7 @@ public class SaturationResult {
     private Date creationTime; //this is the maximum date for changes analyzed at the same time
     @Persistent
     private Date evaluationStartDate;
-    @Persistent(defaultFetchGroup = "true")
+    @Persistent
     private SaturationParameters saturationParameters; //As SaturationParameters can change over time, we need to keep track, which parameters were set here
 
     public double getDocumentSaturation() {

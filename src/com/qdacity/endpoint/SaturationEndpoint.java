@@ -49,7 +49,7 @@ public class SaturationEndpoint {
     public List<SaturationResult> getHistoricalSaturationResults(@Named("projectId") Long projectId) {
 	PersistenceManager mgr = getPersistenceManager();
 	Query query = mgr.newQuery(SaturationResult.class);
-	query.setFilter("projectId = :id");
+	query.setFilter("projectId == :id");
 	Map<String, Long> paramValues = new HashMap<>();
 	paramValues.put("id", projectId);
 
@@ -79,7 +79,9 @@ public class SaturationEndpoint {
 
 	List<SaturationParameters> parameters = (List<SaturationParameters>) query.executeWithMap(paramValues);
 	if (parameters.isEmpty()) {
-	    return new DefaultSaturationParameters();
+	    SaturationParameters defaultParams = new  DefaultSaturationParameters();
+	    //It is necessary to call a copy constructor here due to DataStore problems when persisting a sub-type
+	    return new SaturationParameters(defaultParams);
 	}
 	//TODO ORDER BY creationTime to get always latest
 	return parameters.get(0);

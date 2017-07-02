@@ -1,5 +1,6 @@
 package com.qdacity.project.saturation;
 
+import com.google.appengine.api.datastore.Key;
 import java.util.Date;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -12,7 +13,7 @@ public class SaturationParameters {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    Long id;
+    Key id;
     @Persistent
     Long projectId;
 
@@ -59,11 +60,36 @@ public class SaturationParameters {
     @Persistent
     double updateCodeBookEntryWhenToUseChangeWeight;
 
-    public Long getId() {
+    public SaturationParameters() {
+    }
+
+    public SaturationParameters(SaturationParameters copy) {
+	this.appliedCodesChangeWeight = copy.appliedCodesChangeWeight;
+	this.creationTime = copy.creationTime;
+	this.deleteCodeChangeWeight = copy.deleteCodeChangeWeight;
+	this.deleteCodeRelationShipChangeWeight = copy.deleteCodeRelationShipChangeWeight;
+	this.insertCodeChangeWeight = copy.insertCodeChangeWeight;
+	this.insertCodeRelationShipChangeWeight = copy.insertCodeRelationShipChangeWeight;
+	this.insertDocumentChangeWeight = copy.insertDocumentChangeWeight;
+	this.projectId = copy.projectId;
+	this.relocateCodeChangeWeight = copy.relocateCodeChangeWeight;
+	this.updateCodeAuthorChangeWeight = copy.updateCodeAuthorChangeWeight;
+	this.updateCodeBookEntryDefinitionChangeWeight = copy.updateCodeBookEntryDefinitionChangeWeight;
+	this.updateCodeBookEntryExampleChangeWeight = copy.updateCodeBookEntryExampleChangeWeight;
+	this.updateCodeBookEntryShortDefinitionChangeWeight = copy.updateCodeBookEntryShortDefinitionChangeWeight;
+	this.updateCodeBookEntryWhenNotToUseChangeWeight = copy.updateCodeBookEntryWhenNotToUseChangeWeight;
+	this.updateCodeBookEntryWhenToUseChangeWeight = copy.updateCodeBookEntryWhenToUseChangeWeight;
+	this.updateCodeColorChangeWeight = copy.updateCodeColorChangeWeight;
+	this.updateCodeIdChangeWeight = copy.updateCodeIdChangeWeight;
+	this.updateCodeMemoChangeWeight = copy.updateCodeMemoChangeWeight;
+	this.updateCodeNameChangeWeight = copy.updateCodeNameChangeWeight;
+    }
+
+    public Key getId() {
 	return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Key id) {
 	this.id = id;
     }
 
@@ -218,7 +244,5 @@ public class SaturationParameters {
     public void setAppliedCodesChangeWeight(double appliedCodesChangeWeight) {
 	this.appliedCodesChangeWeight = appliedCodesChangeWeight;
     }
-    
-    
 
 }
