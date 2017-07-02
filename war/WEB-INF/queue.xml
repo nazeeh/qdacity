@@ -9,6 +9,10 @@
 	<rate>5/s</rate>
 </queue>
 <queue>
+	<name>ChangeLogQueue</name>
+	<rate>5/s</rate>
+</queue>
+<queue>
 	<name>DocumentResultQueue</name>
 	<rate>10/s</rate>
 </queue>
