@@ -1,5 +1,6 @@
 import VexModal from './VexModal';
-import MetaModelView from '../../pages/coding-editor/MetaModelView.jsx';
+import MetaModelView from '../../pages/coding-editor/CodeView/MetaModelView.jsx';
+import MetaModelDialog from '../../pages/uml-editor/MetaModelDialog.jsx';
 
 export default class UmlCodeMetaModelModal extends VexModal {
 
@@ -7,11 +8,15 @@ export default class UmlCodeMetaModelModal extends VexModal {
 		super();
 
 		this.code = code;
-		this.meatModelView = null;
+		this.oldMetaModelElementIds = [];
+
+		this.metaModelDialog = null;
 	}
 
 	showModal(metaModelEntities, metaModelRelations) {
 		const _this = this;
+
+		this.oldMetaModelElementIds = this.code.mmElementIDs;
 
 		let promise = new Promise(
 			function (resolve, reject) {
@@ -32,10 +37,11 @@ export default class UmlCodeMetaModelModal extends VexModal {
 						}),
 					],
 					callback: function (data) {
-						ReactDOM.unmountComponentAtNode(document.getElementById('metaModelView'));
-
 						let result = {};
-						result.ids = _this.meatModelView.getActiveElementIds();
+						result.ids = _this.metaModelDialog.getActiveElementIds();
+						result.oldIds = _this.oldMetaModelElementIds;
+
+						ReactDOM.unmountComponentAtNode(document.getElementById('metaModelView'));
 
 						if (data != false) {
 							resolve(result);
@@ -45,16 +51,10 @@ export default class UmlCodeMetaModelModal extends VexModal {
 					}
 				});
 
-				_this.meatModelView = ReactDOM.render(<MetaModelView filter={"PROPERTY"} metaModelEntities={metaModelEntities} metaModelRelations={metaModelRelations} />, document.getElementById('metaModelView'));
-				_this.meatModelView.setActiveIds(_this.code.mmElementIDs);
+				_this.metaModelDialog = ReactDOM.render(<MetaModelDialog code={_this.code} updateSelectedCode={() => {}} metaModelEntities={metaModelEntities} metaModelRelations={metaModelRelations} />, document.getElementById('metaModelView'));
 			}
 		);
 
 		return promise;
 	}
-
-	getMetaModelView() {
-		return this.meatModelView;
-	}
-
 }

@@ -192,20 +192,19 @@ export default class UmlEditorView {
 						let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
 						codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
-							// TODO duplicate code in UnmappedCodesView.jsx
+							// TODO duplicate code in UnmappedCodeElement.jsx
 							console.log('Closed modal');
 
 							if (code.mmElementIDs != data.ids) {
-								console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + code.mmElementIDs);
+								console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
 
-								let oldMetaModelElementIds = code.mmElementIDs;
 								code.mmElementIDs = data.ids;
 
 								console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
 
 								CodesEndpoint.updateCode(code).then(function (resp) {
 									console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-									_this.exchangeCodeMetaModelEntities(resp.codeID, oldMetaModelElementIds);
+									_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
 								});
 							}
 						});
