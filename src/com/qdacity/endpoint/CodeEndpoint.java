@@ -27,6 +27,7 @@ import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
 import com.qdacity.project.codesystem.CodeSystem;
+import com.qdacity.project.saturation.ChangeLogger;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(
@@ -98,7 +99,7 @@ public class CodeEndpoint {
 			// Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 
 		} finally {
 			mgr.close();
@@ -139,7 +140,7 @@ public class CodeEndpoint {
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new ChangeBuilder().makeUpdateCodeChange(oldCode, code, cs.getProject(), cs.getProjectType(), user.getUserId());
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
 		}
@@ -167,7 +168,7 @@ public class CodeEndpoint {
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			//this can be a set or an update, the change can cover both
 			Change change = new ChangeBuilder().makeUpdateCodeBookEntryChange(oldCodeBookEntry, entry, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
 		}
@@ -198,7 +199,7 @@ public class CodeEndpoint {
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new ChangeBuilder().makeAddRelationShipChange(realtion, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
 		}
@@ -223,7 +224,7 @@ public class CodeEndpoint {
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new ChangeBuilder().makeRemoveRelationShipChange(relation, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 			
 			//Do actual Change
 			code.removeRelation(relationId);
@@ -291,7 +292,7 @@ public class CodeEndpoint {
 	    //Log a code remove change
 	    CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 	    Change change = new ChangeBuilder().makeDeleteCodeChange(code, cs.getProject(), cs.getProjectType(), user.getUserId());
-	    mgr.makePersistent(change);
+	    ChangeLogger.logChange(change);
 	}
 
 	@ApiMethod(
@@ -325,7 +326,7 @@ public class CodeEndpoint {
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new ChangeBuilder().makeRelocateCodeChange(code, oldParentID, cs.getProject(), cs.getProjectType(), user.getUserId());
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 
 		} finally {
 			mgr.close();
