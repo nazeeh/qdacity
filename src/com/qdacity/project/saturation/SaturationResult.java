@@ -6,7 +6,10 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
+/**
+ * Contains the unweighted saturations in the different categories.
+ * For calculation of an average (on the fronend) use the saturationParameters which are a childEntity
+ */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SaturationResult {
 
@@ -17,11 +20,7 @@ public class SaturationResult {
     private Long projectId;
 
     @Persistent
-    private double totalSaturation; //average over all
-    @Persistent
-    private double documentSaturation; //only insertDocument is equals to "insertDocumentSaturation" (left out)
-    @Persistent
-    private double codeSaturation; //average over all following {*XY*}Code*XY*saturations
+    private double insertDocumentSaturation;
     @Persistent
     private double insertCodeSaturation;
     @Persistent
@@ -38,6 +37,8 @@ public class SaturationResult {
     private double relocateCodeSaturation;
     @Persistent
     private double deleteCodeSaturation;
+    @Persistent
+    private double applyCodeSaturation;
     @Persistent
     private double insertCodeRelationShipSaturation;
     @Persistent
@@ -61,27 +62,11 @@ public class SaturationResult {
     private SaturationParameters saturationParameters; //As SaturationParameters can change over time, we need to keep track, which parameters were set here
 
     public double getDocumentSaturation() {
-	return documentSaturation;
+	return insertDocumentSaturation;
     }
 
     public void setDocumentSaturation(double documentSaturation) {
-	this.documentSaturation = documentSaturation;
-    }
-
-    public double getCodeSaturation() {
-	return codeSaturation;
-    }
-
-    public void setCodeSaturation(double codeSaturation) {
-	this.codeSaturation = codeSaturation;
-    }
-
-    public double getTotalSaturation() {
-	return totalSaturation;
-    }
-
-    public void setTotalSaturation(double totalSaturation) {
-	this.totalSaturation = totalSaturation;
+	this.insertDocumentSaturation = documentSaturation;
     }
 
     public SaturationParameters getSaturationParameters() {
@@ -242,6 +227,14 @@ public class SaturationResult {
 
     public void setEvaluationStartDate(Date evaluationStartDate) {
 	this.evaluationStartDate = evaluationStartDate;
+    }
+
+    public double getApplyCodeSaturation() {
+	return applyCodeSaturation;
+    }
+
+    public void setApplyCodeSaturation(double applyCodeSaturation) {
+	this.applyCodeSaturation = applyCodeSaturation;
     }
 
 }

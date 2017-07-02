@@ -44,6 +44,8 @@ public class SaturationParameters {
     double deleteCodeRelationShipChangeWeight;
     @Persistent
     double deleteCodeChangeWeight;
+    @Persistent
+    double appliedCodesChangeWeight;
 
     //CodeBookEntry Changes
     @Persistent
@@ -207,6 +209,14 @@ public class SaturationParameters {
 
     public void setDeleteCodeRelationShipChangeWeight(double deleteCodeRelationShipChangeWeight) {
 	this.deleteCodeRelationShipChangeWeight = deleteCodeRelationShipChangeWeight;
+    }
+
+    public double getAppliedCodesChangeWeight() {
+	return appliedCodesChangeWeight;
+    }
+
+    public void setAppliedCodesChangeWeight(double appliedCodesChangeWeight) {
+	this.appliedCodesChangeWeight = appliedCodesChangeWeight;
     }
     
     
