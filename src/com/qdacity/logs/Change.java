@@ -9,9 +9,10 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.qdacity.project.ProjectType;
+import java.io.Serializable;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Change {
+public class Change implements Serializable {
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	Long id;
