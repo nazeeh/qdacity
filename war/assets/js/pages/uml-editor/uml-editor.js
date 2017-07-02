@@ -35,10 +35,12 @@ var unmappedCodesView;
 
 window.init = function () {
 
+	window.onresize = resizeHandler;
+
 	var urlParams = URI(window.location.search).query(true);
 
 	page_loaded = false;
-	
+
 	project_id = urlParams.project;
 	project_type = urlParams.type;
 
@@ -59,8 +61,8 @@ function setupUI() {
 	if (page_loaded) {
 		return;
 	}
-	page_loaded = true;	
-	
+	page_loaded = true;
+
 	if (account.isSignedIn()) {
 		var profile = account.getProfile();
 
@@ -101,4 +103,26 @@ function init(codes, mmEntities, mmRelations, codesystem_id) {
 	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, document.getElementById('sidebar'));
 
 	umlEditorView.initGraph(codes, mmEntities, mmRelations, metaModelMapper, unmappedCodesView);
+
+	resizeHandler();
+}
+
+function resizeHandler() {
+	let windowHeight = $(window).height();
+	let offsetHeader = $("#header").outerHeight();
+
+	$("#sidebar").css({
+		height: windowHeight - offsetHeader
+	});
+
+	let editorHeight = windowHeight - offsetHeader;
+	let offsetToolbar = $("#toolbar").outerHeight();
+
+	$("#editor").css({
+		height: editorHeight
+	});
+
+	$("#graphContainer").css({
+		height: editorHeight - offsetToolbar
+	});
 }
