@@ -17,18 +17,49 @@ public class SaturationResult {
     private Long projectId;
 
     @Persistent
-    private double totalSaturation;
+    private double totalSaturation; //average over all
+    @Persistent
+    private double documentSaturation; //only insertDocument is equals to "insertDocumentSaturation" (left out)
+    @Persistent
+    private double codeSaturation; //average over all following {*XY*}Code*XY*saturations
+    @Persistent
+    private double insertCodeSaturation;
+    @Persistent
+    private double updateCodeAuthorSaturation;
+    @Persistent
+    private double updateCodeColorSaturation;
+    @Persistent
+    private double updateCodeMemoSaturation;
+    @Persistent
+    private double updateCodeNameSaturation;
+    @Persistent
+    private double updateCodeIdSaturation;
+    @Persistent
+    private double relocateCodeSaturation;
+    @Persistent
+    private double deleteCodeSaturation;
+    @Persistent
+    private double insertCodeRelationShipSaturation;
+    @Persistent
+    private double deleteCodeRelationShipSaturation;
+    @Persistent
+    private double updateCodeBookEntryDefinitionSaturation;
+    @Persistent
+    private double updateCodeBookEntryExampleSaturation;
+    @Persistent
+    private double updateCodeBookEntryShortDefinitionSaturation;
+    @Persistent
+    private double updateCodeBookEntryWhenNotToUseSaturation;
+    @Persistent
+    private double updateCodeBookEntryWhenToUseSaturation;
 
     @Persistent
-    private double documentSaturation;
+    private Date creationTime; //this is the maximum date for changes analyzed at the same time
     @Persistent
-    private double codeSaturation;
-    @Persistent
-    private Date creationTime;
+    private Date evaluationStartDate;
     @Persistent(defaultFetchGroup = "true")
     private SaturationParameters saturationParameters; //As SaturationParameters can change over time, we need to keep track, which parameters were set here
 
-    //TODO more attributes for more details
     public double getDocumentSaturation() {
 	return documentSaturation;
     }
@@ -83,6 +114,134 @@ public class SaturationResult {
 
     public void setCreationTime(Date creationTime) {
 	this.creationTime = creationTime;
+    }
+
+    public double getInsertCodeSaturation() {
+	return insertCodeSaturation;
+    }
+
+    public void setInsertCodeSaturation(double insertCodeSaturation) {
+	this.insertCodeSaturation = insertCodeSaturation;
+    }
+
+    public double getUpdateCodeAuthorSaturation() {
+	return updateCodeAuthorSaturation;
+    }
+
+    public void setUpdateCodeAuthorSaturation(double updateCodeAuthorSaturation) {
+	this.updateCodeAuthorSaturation = updateCodeAuthorSaturation;
+    }
+
+    public double getUpdateCodeColorSaturation() {
+	return updateCodeColorSaturation;
+    }
+
+    public void setUpdateCodeColorSaturation(double updateCodeColorSaturation) {
+	this.updateCodeColorSaturation = updateCodeColorSaturation;
+    }
+
+    public double getUpdateCodeMemoSaturation() {
+	return updateCodeMemoSaturation;
+    }
+
+    public void setUpdateCodeMemoSaturation(double updateCodeMemoSaturation) {
+	this.updateCodeMemoSaturation = updateCodeMemoSaturation;
+    }
+
+    public double getUpdateCodeNameSaturation() {
+	return updateCodeNameSaturation;
+    }
+
+    public void setUpdateCodeNameSaturation(double updateCodeNameSaturation) {
+	this.updateCodeNameSaturation = updateCodeNameSaturation;
+    }
+
+    public double getUpdateCodeIdSaturation() {
+	return updateCodeIdSaturation;
+    }
+
+    public void setUpdateCodeIdSaturation(double updateCodeIdSaturation) {
+	this.updateCodeIdSaturation = updateCodeIdSaturation;
+    }
+
+    public double getRelocateCodeSaturation() {
+	return relocateCodeSaturation;
+    }
+
+    public void setRelocateCodeSaturation(double relocateCodeSaturation) {
+	this.relocateCodeSaturation = relocateCodeSaturation;
+    }
+
+    public double getDeleteCodeSaturation() {
+	return deleteCodeSaturation;
+    }
+
+    public void setDeleteCodeSaturation(double deleteCodeSaturation) {
+	this.deleteCodeSaturation = deleteCodeSaturation;
+    }
+
+    public double getInsertCodeRelationShipSaturation() {
+	return insertCodeRelationShipSaturation;
+    }
+
+    public void setInsertCodeRelationShipSaturation(double insertCodeRelationShipSaturation) {
+	this.insertCodeRelationShipSaturation = insertCodeRelationShipSaturation;
+    }
+
+    public double getDeleteCodeRelationShipSaturation() {
+	return deleteCodeRelationShipSaturation;
+    }
+
+    public void setDeleteCodeRelationShipSaturation(double deleteCodeRelationShipSaturation) {
+	this.deleteCodeRelationShipSaturation = deleteCodeRelationShipSaturation;
+    }
+
+    public double getUpdateCodeBookEntryDefinitionSaturation() {
+	return updateCodeBookEntryDefinitionSaturation;
+    }
+
+    public void setUpdateCodeBookEntryDefinitionSaturation(double updateCodeBookEntryDefinitionSaturation) {
+	this.updateCodeBookEntryDefinitionSaturation = updateCodeBookEntryDefinitionSaturation;
+    }
+
+    public double getUpdateCodeBookEntryExampleSaturation() {
+	return updateCodeBookEntryExampleSaturation;
+    }
+
+    public void setUpdateCodeBookEntryExampleSaturation(double updateCodeBookEntryExampleSaturation) {
+	this.updateCodeBookEntryExampleSaturation = updateCodeBookEntryExampleSaturation;
+    }
+
+    public double getUpdateCodeBookEntryShortDefinitionSaturation() {
+	return updateCodeBookEntryShortDefinitionSaturation;
+    }
+
+    public void setUpdateCodeBookEntryShortDefinitionSaturation(double updateCodeBookEntryShortDefinitionSaturation) {
+	this.updateCodeBookEntryShortDefinitionSaturation = updateCodeBookEntryShortDefinitionSaturation;
+    }
+
+    public double getUpdateCodeBookEntryWhenNotToUseSaturation() {
+	return updateCodeBookEntryWhenNotToUseSaturation;
+    }
+
+    public void setUpdateCodeBookEntryWhenNotToUseSaturation(double updateCodeBookEntryWhenNotToUseSaturation) {
+	this.updateCodeBookEntryWhenNotToUseSaturation = updateCodeBookEntryWhenNotToUseSaturation;
+    }
+
+    public double getUpdateCodeBookEntryWhenToUseSaturation() {
+	return updateCodeBookEntryWhenToUseSaturation;
+    }
+
+    public void setUpdateCodeBookEntryWhenToUseSaturation(double updateCodeBookEntryWhenToUseSaturation) {
+	this.updateCodeBookEntryWhenToUseSaturation = updateCodeBookEntryWhenToUseSaturation;
+    }
+
+    public Date getEvaluationStartDate() {
+	return evaluationStartDate;
+    }
+
+    public void setEvaluationStartDate(Date evaluationStartDate) {
+	this.evaluationStartDate = evaluationStartDate;
     }
 
 }
