@@ -139,11 +139,15 @@ public class SaturationCalculator {
 	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
     }
 
+    /**
+     *
+     * @param changeEntity needs to be a "Change" Entity
+     * @return
+     */
     private String getCompleteDiff(Entity changeEntity) {
 	String diffNew = changeEntity.getProperty("newValue").toString();
 	String diffOld = changeEntity.getProperty("oldValue").toString();
-	String completeDiff = diffOld + diffNew;
-	return completeDiff;
+	return diffOld + diffNew;
     }
 
     /**
@@ -157,8 +161,8 @@ public class SaturationCalculator {
     }
 
     /**
-     * calculates the saturation for a change.
-     * In general saturation is 1 - activity
+     * calculates the saturation for a change. In general saturation is 1 -
+     * activity
      *
      * @param numberOfChangesOnObjectByType how many changes of the change exist
      * @param totalNumberOfObjectsBeforeChanges how many objects potentially

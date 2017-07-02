@@ -12,6 +12,7 @@ import com.qdacity.PMF;
 import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
 import com.qdacity.project.saturation.SaturationParameters;
+import com.qdacity.project.saturation.SaturationResult;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +36,24 @@ public class SaturationEndpoint {
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
     public void getSaturation(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
-	Date date = new Date(); //TODO start of epoch needs to be figured out somehow...
-	DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId, date);
+	DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId);
 	Queue queue = QueueFactory.getDefaultQueue();
 	queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredSaturationTask));
+    }
+
+    @ApiMethod(
+	    name = "saturation.getHistoricalSaturationResults",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public List<SaturationResult> getHistoricalSaturationResults(@Named("projectId") Long projectId) {
+	PersistenceManager mgr = getPersistenceManager();
+	Query query = mgr.newQuery(SaturationResult.class);
+	query.setFilter("projectId = :id");
+	Map<String, Long> paramValues = new HashMap<>();
+	paramValues.put("id", projectId);
+
+	return (List<SaturationResult>) query.executeWithMap(paramValues);
     }
 
     @ApiMethod(
