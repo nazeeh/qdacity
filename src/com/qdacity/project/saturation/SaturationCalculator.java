@@ -118,6 +118,9 @@ public class SaturationCalculator {
 	}
 	double numRelocatedCodes = countChanges(ChangeObject.CODE, ChangeType.RELOCATE);
 	double numAppliedCodes = countChanges(ChangeObject.DOCUMENT, ChangeType.APPLY);
+	
+	double numCodeRelationInsert = countChanges(ChangeObject.CODE_RELATIONSHIP, ChangeType.CREATED);
+	double numCodeRelationDeleted = countChanges(ChangeObject.CODE_RELATIONSHIP, ChangeType.DELETED);
 
 	//Project properties
 	double numCurrentCodes = CodeEndpoint.countCodes(project.getCodesystemID());
@@ -138,6 +141,8 @@ public class SaturationCalculator {
 		+ "numCodeBookWhenToUse " + numCodeBookWhenToUse + "\n"
 		+ "numRelocatedCodes " + numRelocatedCodes + "\n"
 		+ "numAppliedCodes " + numAppliedCodes + "\n"
+		+ "numCodeRelationInsert " + numCodeRelationInsert + "\n"
+		+ "numCodeRelationDeleted " + numCodeRelationDeleted + "\n"
 		+ "== PROJECT-PROPERTIES == \n"
 		+ "numCurrentCodes " + numCurrentCodes + "\n"
 		+ "totalNumberOfCodesBeforeChanges " + totalNumberOfCodesBeforeChanges + "\n"
@@ -158,6 +163,9 @@ public class SaturationCalculator {
 	result.setUpdateCodeBookEntryShortDefinitionSaturation(saturation(numCodeBookShortdefinition, totalNumberOfCodesBeforeChanges));
 	result.setUpdateCodeBookEntryWhenNotToUseSaturation(saturation(numCodeBookWhenNotToUse, totalNumberOfCodesBeforeChanges));
 	result.setUpdateCodeBookEntryWhenToUseSaturation(saturation(numCodeBookWhenToUse, totalNumberOfCodesBeforeChanges));
+	
+	result.setInsertCodeRelationShipSaturation(saturation(numCodeRelationInsert, totalNumberOfCodesBeforeChanges));
+	result.setDeleteCodeRelationShipSaturation(saturation(numCodeRelationDeleted, totalNumberOfCodesBeforeChanges));
 
 	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen macht keinen sinn! VIelleicht sollte man es ganz anders machen und einfach nur abspeicher wie oft welcher code benutzt wurde.
 	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
