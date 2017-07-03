@@ -22,6 +22,9 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -607,7 +610,7 @@ public class ProjectEndpoint {
 		mail.setFrom("QDAcity <support@qdacity.com>").setSubject("QDAcity Request Authorized").setText(" ").setHtml(message);
 
 		String fullName = validationCoder.getGivenName() + " " + validationCoder.getSurName();
-		fullName = fullName.replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");
+		fullName = fullName.replaceAll("ï¿½", "ae").replaceAll("ï¿½", "oe").replaceAll("ï¿½", "ue");
 		mail.addTo(validationCoder.getEmail(), fullName);
 
 		mail.send();
@@ -885,6 +888,11 @@ public class ProjectEndpoint {
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
+	}
+	
+	public Long getCodesystemId(Long projectId) {
+	    	Project project = (Project) Cache.getOrLoad(projectId, Project.class);;
+		return project.getCodesystemID();
 	}
 
 }
