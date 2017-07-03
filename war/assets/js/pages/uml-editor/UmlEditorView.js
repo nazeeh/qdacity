@@ -129,7 +129,38 @@ export default class UmlEditorView {
 			return cell.vertex == true && cell.parent == _this.graph.getDefaultParent();
 		};
 		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
-			console.log('connect');
+			const edgeType = evt.properties.cell.style;
+			const sourceNode = evt.properties.cell.source;
+			const destinationNode = evt.properties.cell.target;
+
+			const sourceUmlClass = null;
+			const destinationUmlClass = null;
+
+			// TODO following code should probably in MetaModelMapper
+			let metaModelElementId;
+
+			switch (edgeType) {
+			case EdgeType.GENERALIZATION:
+				{
+					break;
+				}
+			case EdgeType.AGGREGATION:
+				{
+					break;
+				}
+			case EdgeType.DIRECTED_ASSOCIATION:
+				{
+					break;
+				}
+			default:
+				{
+					throw new Error('EdgeType not implemented.');
+				}
+			}
+
+			CodesEndpoint.addRelationship(sourceUmlClass.getCode(), destinationUmlClass.getCode(), metaModelElementId).then(function (resp) {
+				// TODO update everything
+			});
 		});
 	}
 
@@ -238,7 +269,7 @@ export default class UmlEditorView {
 					overlayMetaModel.cursor = 'pointer';
 
 					overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
-						let umlClass = _this.umlClasses.find((uml) => uml.getNode() != null && uml.getNode().mxObjectId == cell.mxObjectId);
+						let umlClass = _this.getUmlClassByNode(cell);
 						let code = umlClass.getCode();
 
 						let codeMetaModelModal = new UmlCodeMetaModelModal(code);
@@ -351,7 +382,7 @@ export default class UmlEditorView {
 
 			cells.forEach((cell) => {
 				if (cell.vertex == true) {
-					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getNode() != null ? umlClass.getNode().getId() == cell.getId() : false);
+					let umlClass = _this.getUmlClassByNode(cell);
 					let code = umlClass.getCode();
 					let node = umlClass.getNode();
 
@@ -420,9 +451,9 @@ export default class UmlEditorView {
 
 			let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
 
-			let sourceUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.source);
+			let sourceUmlClass = this.getUmlClassByCodeId(relation.source);
 			let sourceCode = sourceUmlClass.getCode();
-			let destinationUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.destination);
+			let destinationUmlClass = this.getUmlClassByCodeId(relation.destination);
 			let destinationCode = destinationUmlClass.getCode();
 
 			// Logging
@@ -501,7 +532,7 @@ export default class UmlEditorView {
 				}
 
 				umlCodePositions.forEach((umlCodePosition) => {
-					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == umlCodePosition.codeId);
+					let umlClass = _this.getUmlClassByCodeId(umlCodePosition.codeId);
 
 					if (umlClass.getNode() != null) {
 						_this.translateNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
@@ -558,7 +589,7 @@ export default class UmlEditorView {
 
 		const _this = this;
 		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == newUmlCodePosition.codeId);
+			let umlClass = _this.getUmlClassByCodeId(newUmlCodePosition.codeId);
 			umlClass.setUmlCodePosition(newUmlCodePosition);
 		});
 	}
@@ -577,6 +608,22 @@ export default class UmlEditorView {
 
 	getMetaModelRelations() {
 		return this.mmRelations;
+	}
+
+	getUmlClassByCode(code) {
+		return this.getUmlClassByCodeId(code.codeID);
+	}
+
+	getUmlClassByCodeId(codeId) {
+		return this.umlClasses.find((umlClass) => umlClass.getCode() != null && umlClass.getCode().codeID == codeId);
+	}
+
+	getUmlClassByNode(node) {
+		return this.getUmlClassByNodeId(node.mxObjectId);
+	}
+
+	getUmlClassByNodeId(mxObjectId) {
+		return this.umlClasses.find((umlClass) => umlClass.getNode() != null && umlClass.getNode().mxObjectId == mxObjectId);
 	}
 
 	getCode(codeId) {
@@ -608,7 +655,7 @@ export default class UmlEditorView {
 	}
 
 	exchangeCodeMetaModelEntities(codeId, oldMetaModelEntityIds) {
-		const umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == codeId);
+		const umlClass = this.getUmlClassByCodeId(codeId);
 
 		const oldUmlClass = new UmlClass(Object.assign({}, umlClass.getCode()), umlClass.getNode());
 		oldUmlClass.getCode().mmElementIDs = oldMetaModelEntityIds;
@@ -644,7 +691,7 @@ export default class UmlEditorView {
 		if (umlClass.getCode().relations != null) {
 			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
 				let relation = umlClass.getCode().relations[i];
-				let destinationUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.codeId);
+				let destinationUmlClass = this.getUmlClassByCodeId(relation.codeId);
 				let oldDestinationUmlClass = destinationUmlClass;
 
 				// Source == Destination
@@ -667,7 +714,7 @@ export default class UmlEditorView {
 				if (umlCode.relations != null) {
 					umlCode.relations.forEach((relation) => {
 						if (relation.codeId == umlClass.getCode().codeID) {
-							let sourceUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == umlCode.codeID);
+							let sourceUmlClass = uml;
 							let oldSourceUmlClass = sourceUmlClass;
 
 							// Source == Destination
