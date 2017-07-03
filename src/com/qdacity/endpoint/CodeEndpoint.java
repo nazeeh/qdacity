@@ -396,8 +396,8 @@ public class CodeEndpoint {
 		return PMF.get().getPersistenceManager();
 	}
 	
-	public static int countCodes(Long projectId) {
-	    com.google.appengine.api.datastore.Query.Filter filter = new com.google.appengine.api.datastore.Query.FilterPredicate("projectID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, projectId);
+	public static int countCodes(Long codesystemID) {
+	    com.google.appengine.api.datastore.Query.Filter filter = new com.google.appengine.api.datastore.Query.FilterPredicate("codesystemID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, codesystemID);
 	    return DataStoreUtil.countEntitiesWithFilter("Code", filter);
 	}
 
