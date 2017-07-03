@@ -13,6 +13,7 @@ export default class UmlEditorView {
 	constructor(codeSystemId, container) {
 		this.codeSystemId = codeSystemId;
 		this.graph = null;
+		this.connectionHandler = null;
 		this.layout = null;
 
 		this.mmEntities;
@@ -51,9 +52,6 @@ export default class UmlEditorView {
 		this.graph.setSwimlaneSelectionEnabled(false);
 		this.graph.setCellsResizable(false);
 
-		// Enables rubberband selection
-		new mxRubberband(this.graph);
-
 		// Styling
 		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
 		mxConstants.VERTEX_SELECTION_DASHED = false;
@@ -67,18 +65,72 @@ export default class UmlEditorView {
 		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8';
 		mxConstants.OUTLINE_HIGHLIGHT_STROKEWIDTH = 1;
 		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
+		mxConstants.HIGHLIGHT_COLOR = '##00A2E8';
+		mxConstants.HIGHLIGHT_STROKEWIDTH = 1;
+		mxConstants.HIGHLIGHT_SIZE = 1;
 
-		// Enables layouting
-		this.layout = new mxFastOrganicLayout(this.graph);
-		this.layout.disableEdgeStyle = false;
-		this.layout.forceConstant = 180;
-		this.layout.forceConstantSquared = 180 * 180;
+		mxConstants.VALID_COLOR = '#00A2E8';
+		mxConstants.INVALID_COLOR = '#FF0000';
+
+		mxCellHighlight.prototype.spacing = 0;
+
+		// Enables rubberband selection
+		new mxRubberband(this.graph);
+
+		// GraphHandler
+		new mxGraphHandler(this.graph);
+
+		// Initialize layouting
+		this.initializeLayouting();
+
+		// Initialize connections
+		this.initializeConnections();
 
 		// Initialize styles
 		this.initializeStyles();
 
 		// Initialize events
 		this.initializeEvents();
+	}
+
+	initializeLayouting() {
+		// Enables layouting
+		this.layout = new mxFastOrganicLayout(this.graph);
+		this.layout.disableEdgeStyle = false;
+		this.layout.forceConstant = 180;
+		this.layout.forceConstantSquared = 180 * 180;
+	}
+
+	initializeConnections() {
+		const _this = this;
+
+		// Cell Marker
+		let cellMarker = new mxCellMarker(this.graph);
+
+		this.graph.addMouseListener({
+			mouseDown: function (sender, me) {},
+			mouseMove: function (sender, me) {},
+			mouseUp: function (sender, me) {
+				me.consumed = false;
+				cellMarker.process(me);
+			}
+		});
+
+		// Connection Handler
+		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
+			const edge = new mxCell('', new mxGeometry());
+			edge.setEdge(true);
+			edge.setStyle(style);
+			edge.geometry.relative = true;
+			return edge;
+		});
+		this.connectionHandler.livePreview = true;
+		this.connectionHandler.isValidTarget = function (cell) {
+			return cell.vertex == true && cell.parent == _this.graph.getDefaultParent();
+		};
+		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
+			console.log('connect');
+		});
 	}
 
 	initializeStyles() {
@@ -238,12 +290,22 @@ export default class UmlEditorView {
 					overlayAddEdge.cursor = 'pointer';
 
 					overlayAddEdge.addListener(mxEvent.CLICK, function (sender, evt2) {
+						const handleClick = function (edgeType) {
+							let edge = _this.graph.createEdge(null, null, null, null, null, edgeType);
+							let edgeState = new mxCellState(_this.graph.view, edge, _this.graph.getCellStyle(edge));
+
+							let cellState = _this.graph.getView().getState(_this.graph.getSelectionCell(), true);
+							_this.connectionHandler.start(cellState, 0, 0, edgeState);
+
+							_this.graph.removeCellOverlays(cell);
+						};
+
 						// Overlay AddGeneralization
 						var overlayAddGeneralization = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new generalization', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 50));
 						overlayAddGeneralization.cursor = 'pointer';
 
 						overlayAddGeneralization.addListener(mxEvent.CLICK, function (sender, evt2) {
-							mxUtils.alert('Overlay clicked');
+							handleClick(EdgeType.GENERALIZATION);
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddGeneralization);
@@ -253,7 +315,7 @@ export default class UmlEditorView {
 						overlayAddAggregation.cursor = 'pointer';
 
 						overlayAddAggregation.addListener(mxEvent.CLICK, function (sender, evt2) {
-							mxUtils.alert('Overlay clicked');
+							handleClick(EdgeType.AGGREGATION);
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddAggregation);
@@ -263,7 +325,7 @@ export default class UmlEditorView {
 						overlayAddAssociation.cursor = 'pointer';
 
 						overlayAddAssociation.addListener(mxEvent.CLICK, function (sender, evt2) {
-							mxUtils.alert('Overlay clicked');
+							handleClick(EdgeType.DIRECTED_ASSOCIATION);
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddAssociation);
