@@ -41,6 +41,7 @@ public class SaturationCalculator {
 	calculateCodeSaturation(result);
 
 	result.setCreationTime(new Date(System.currentTimeMillis()));
+	result.setEvaluationStartDate(epochStart);
 	return result;
     }
 
