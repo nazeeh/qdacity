@@ -607,7 +607,7 @@ public class ProjectEndpoint {
 		mail.setFrom("QDAcity <support@qdacity.com>").setSubject("QDAcity Request Authorized").setText(" ").setHtml(message);
 
 		String fullName = validationCoder.getGivenName() + " " + validationCoder.getSurName();
-		fullName = fullName.replaceAll("Ã¤", "ae").replaceAll("Ã¶", "oe").replaceAll("Ã¼", "ue");
+		fullName = fullName.replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");
 		mail.addTo(validationCoder.getEmail(), fullName);
 
 		mail.send();
