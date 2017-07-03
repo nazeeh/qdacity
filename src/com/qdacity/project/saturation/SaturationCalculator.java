@@ -9,15 +9,20 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
+import com.qdacity.Cache;
 import com.qdacity.endpoint.CodeEndpoint;
+import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeType;
 import com.qdacity.logs.CodeBookEntryChangeDetail;
 import com.qdacity.logs.CodeChangeDetail;
+import com.qdacity.project.Project;
 import com.qdacity.util.DataStoreUtil;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SaturationCalculator {
 
@@ -53,10 +58,11 @@ public class SaturationCalculator {
     }
 
     private void calculateCodeSaturation(SaturationResult result) {
+	Project project = (Project) Cache.getOrLoad(projectId, Project.class);
 	//Changes
 	double numNewCodes = countChanges(ChangeObject.CODE, ChangeType.CREATED);
 	double numDeletedCodes = countChanges(ChangeObject.CODE, ChangeType.DELETED);
-	double numChangedCodes = countChanges(ChangeObject.CODE, ChangeType.MODIFIED);
+	double numChangedCodes = countChanges(ChangeObject.CODE, ChangeType.MODIFIED); //actually unnecessary just for debugging
 	//We need to look at modified changes in more detail
 	Iterable<Entity> changesWithModified = getChangesForObjectOfType(ChangeObject.CODE, ChangeType.MODIFIED);
 	double numAuthorChanged = 0.0;
@@ -64,7 +70,6 @@ public class SaturationCalculator {
 	double numColorChanged = 0.0;
 	double numMemoChanged = 0.0;
 	double numNameChanged = 0.0;
-	//double numSubCodeIdsChanged = 0.0;
 	for (Entity changeEntity : changesWithModified) {
 	    String completeDiff = getCompleteDiff(changeEntity);
 
@@ -83,9 +88,6 @@ public class SaturationCalculator {
 	    if (completeDiff.contains(jsonize(CodeChangeDetail.NAME))) {
 		numNameChanged += 1.0;
 	    }
-	    /*if (completeDiff.contains(jsonize(CodeChangeDetail.SUBCODE_IDS))) {
-		numSubCodeIdsChanged += 1.0;
-	    }*/ //unnecessary
 	    numChangedCodes -= 1.0;
 	}
 	assert (numChangedCodes == 0.0);
@@ -116,9 +118,30 @@ public class SaturationCalculator {
 	}
 	double numRelocatedCodes = countChanges(ChangeObject.CODE, ChangeType.RELOCATE);
 	double numAppliedCodes = countChanges(ChangeObject.DOCUMENT, ChangeType.APPLY);
+
 	//Project properties
-	double numCurrentCodes = CodeEndpoint.countCodes(projectId);
+	double numCurrentCodes = CodeEndpoint.countCodes(project.getCodesystemID());
 	double totalNumberOfCodesBeforeChanges = (numCurrentCodes - numNewCodes) + numDeletedCodes;
+	
+	Logger.getLogger("logger").log(Level.INFO, "Number of Changes since " + epochStart + "\n"
+		+ "numNewCodes " + numNewCodes + "\n"
+		+ "numDeletedCodes " + numDeletedCodes + "\n"
+		+ "numAuthorChanged " + numAuthorChanged + "\n"
+		+ "numCodeIdChanged " + numCodeIdChanged + "\n"
+		+ "numColorChanged " + numColorChanged + "\n"
+		+ "numMemoChanged " + numMemoChanged + "\n"
+		+ "numNameChanged " + numNameChanged + "\n"
+		+ "numCodeBookDefinition " + numCodeBookDefinition + "\n"
+		+ "numCodeBookExample " + numCodeBookDefinition + "\n"
+		+ "numCodeBookShortdefinition " + numCodeBookShortdefinition + "\n"
+		+ "numCodeBookWhenNotToUse " + numCodeBookWhenNotToUse + "\n"
+		+ "numCodeBookWhenToUse " + numCodeBookWhenToUse + "\n"
+		+ "numRelocatedCodes " + numRelocatedCodes + "\n"
+		+ "numAppliedCodes " + numAppliedCodes + "\n"
+		+ "== PROJECT-PROPERTIES == \n"
+		+ "numCurrentCodes " + numCurrentCodes + "\n"
+		+ "totalNumberOfCodesBeforeChanges " + totalNumberOfCodesBeforeChanges + "\n"
+	);
 
 	//calculate saturation
 	result.setInsertCodeSaturation(saturation(numNewCodes, totalNumberOfCodesBeforeChanges));
@@ -172,6 +195,13 @@ public class SaturationCalculator {
      * @return
      */
     private double saturation(double numberOfChangesOnObjectByType, double totalNumberOfObjectsBeforeChanges) {
+	if (numberOfChangesOnObjectByType == 0) {
+	    return 1.0;  //no changes, so saturation is 1
+	}
+	if (totalNumberOfObjectsBeforeChanges == 0) {
+	    //numberOfChangesOnObjectByType is not 0 here!
+	    return 0.0; //nothing was there and something changed 
+	}
 	return 1.0 - (numberOfChangesOnObjectByType / totalNumberOfObjectsBeforeChanges);
     }
 
@@ -190,11 +220,11 @@ public class SaturationCalculator {
 
     private Filter makeFilterForThisProjectAndEpoch(ChangeObject changeObject, ChangeType changeType) {
 	//See also: https://cloud.google.com/appengine/docs/standard/java/datastore/query-restrictions
-	
+
 	Filter projectIdFilter = new Query.FilterPredicate("projectID", Query.FilterOperator.EQUAL, projectId);
 	//Workaround for GAE behaviour, see:
 	//https://stackoverflow.com/questions/30616103/cant-query-by-date-in-appengine-org-datanucleus-store-types-sco-simple-date-i
-	java.util.Date compatibleDate = new Date(epochStart.getTime()); 
+	java.util.Date compatibleDate = new Date(epochStart.getTime());
 	Filter changeFromDates = new Query.FilterPredicate("datetime", Query.FilterOperator.GREATER_THAN_OR_EQUAL, compatibleDate);
 	Filter changeObjectFilter = new Query.FilterPredicate("objectType", Query.FilterOperator.EQUAL, changeObject.toString());
 	Filter changeTypeFilter = new Query.FilterPredicate("changeType", Query.FilterOperator.EQUAL, changeType.toString());
