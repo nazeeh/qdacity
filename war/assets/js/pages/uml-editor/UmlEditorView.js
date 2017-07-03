@@ -223,7 +223,7 @@ export default class UmlEditorView {
 					_this.graph.addCellOverlay(cell, overlayAddMethod);
 
 					// Overlay AddField
-					var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15.5, -22));
+					var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15, -22));
 					overlayAddField.cursor = 'pointer';
 
 					overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
@@ -231,6 +231,45 @@ export default class UmlEditorView {
 					});
 
 					_this.graph.addCellOverlay(cell, overlayAddField);
+
+
+					// Overlay AddEdge
+					var overlayAddEdge = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new edge', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(23, 15));
+					overlayAddEdge.cursor = 'pointer';
+
+					overlayAddEdge.addListener(mxEvent.CLICK, function (sender, evt2) {
+						// Overlay AddGeneralization
+						var overlayAddGeneralization = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new generalization', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 50));
+						overlayAddGeneralization.cursor = 'pointer';
+
+						overlayAddGeneralization.addListener(mxEvent.CLICK, function (sender, evt2) {
+							mxUtils.alert('Overlay clicked');
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddGeneralization);
+
+						// Overlay AddAggregation
+						var overlayAddAggregation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new aggregation', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 15));
+						overlayAddAggregation.cursor = 'pointer';
+
+						overlayAddAggregation.addListener(mxEvent.CLICK, function (sender, evt2) {
+							mxUtils.alert('Overlay clicked');
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddAggregation);
+
+						// Overlay AddAssociation
+						var overlayAddAssociation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new association', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, -20));
+						overlayAddAssociation.cursor = 'pointer';
+
+						overlayAddAssociation.addListener(mxEvent.CLICK, function (sender, evt2) {
+							mxUtils.alert('Overlay clicked');
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddAssociation);
+					});
+
+					_this.graph.addCellOverlay(cell, overlayAddEdge);
 				}
 			}
 
