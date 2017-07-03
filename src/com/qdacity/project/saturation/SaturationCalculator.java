@@ -11,7 +11,6 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.qdacity.Cache;
 import com.qdacity.endpoint.CodeEndpoint;
-import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.logs.ChangeObject;

@@ -9,7 +9,6 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	this.creationTime = new Date(System.currentTimeMillis());
 
 	//TODO these values are set randomly just for a first test!
-	
 	//Document Changes
 	this.insertDocumentChangeWeight = 0.5;
 	//Code Changes

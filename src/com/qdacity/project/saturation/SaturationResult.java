@@ -6,9 +6,11 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
 /**
- * Contains the unweighted saturations in the different categories.
- * For calculation of an average (on the fronend) use the saturationParameters which are a childEntity
+ * Contains the unweighted saturations in the different categories. For
+ * calculation of an average (on the fronend) use the saturationParameters which
+ * are a childEntity
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SaturationResult {
