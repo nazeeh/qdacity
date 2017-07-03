@@ -79,12 +79,25 @@ public class SaturationEndpoint {
 
 	List<SaturationParameters> parameters = (List<SaturationParameters>) query.executeWithMap(paramValues);
 	if (parameters.isEmpty()) {
-	    SaturationParameters defaultParams = new  DefaultSaturationParameters();
+	    SaturationParameters defaultParams = new DefaultSaturationParameters();
 	    //It is necessary to call a copy constructor here due to DataStore problems when persisting a sub-type
 	    return new SaturationParameters(defaultParams);
 	}
 	//TODO ORDER BY creationTime to get always latest
 	return parameters.get(0);
+    }
+
+    @ApiMethod(
+	    name = "saturation.saveSaturationParameters",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public void saveSaturationParameters(SaturationParameters saturationParameters, User user) {
+	if(saturationParameters.getCreationTime() == null) {
+	    saturationParameters.setCreationTime(new Date());
+	}
+	getPersistenceManager().makePersistent(saturationParameters);
+
     }
 
     private static PersistenceManager getPersistenceManager() {
