@@ -4,12 +4,11 @@ import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.PMF;
-import com.qdacity.logs.Change;
 import javax.jdo.PersistenceManager;
 
 public class ChangeLogger {
 
-    private final static boolean DEFERRED = true;
+    private final static boolean DEFERRED = false; //TODO test performance
 
     private static PersistenceManager getPersistenceManager() {
 	return PMF.get().getPersistenceManager();
