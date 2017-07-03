@@ -199,7 +199,7 @@ public class SaturationCalculator {
      * @param totalNumberOfObjectsBeforeChanges how many objects potentially
      * affected by these changes existed before the changes
      * @param weight how important is this activity
-     * @return
+     * @return saturation between 0.0 and 1.0
      */
     private double saturation(double numberOfChangesOnObjectByType, double totalNumberOfObjectsBeforeChanges) {
 	if (numberOfChangesOnObjectByType == 0) {
@@ -209,7 +209,11 @@ public class SaturationCalculator {
 	    //numberOfChangesOnObjectByType is not 0 here!
 	    return 0.0; //nothing was there and something changed 
 	}
-	return 1.0 - (numberOfChangesOnObjectByType / totalNumberOfObjectsBeforeChanges);
+	double activity = numberOfChangesOnObjectByType / totalNumberOfObjectsBeforeChanges;
+	if(activity > 1.0) {
+	    return 0.0; //more changes than objects before changes means there is no saturation
+	}
+	return 1.0 - activity;
     }
 
     /**
