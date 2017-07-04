@@ -4,6 +4,7 @@ import {
 import UmlClass from './UmlClass.js';
 import UmlClassRelation from './UmlClassRelation.js';
 import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
+import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
@@ -17,8 +18,10 @@ export default class UmlEditorView {
 		this.connectionHandler = null;
 		this.layout = null;
 
-		this.mmEntities;
-		this.mmRelations;
+		this.codesystem = null;
+
+		this.mmEntities = null;
+		this.mmRelations = null;
 
 		this.umlClasses = [];
 		this.umlClassRelations = {};
@@ -328,7 +331,12 @@ export default class UmlEditorView {
 						overlayAddMethod.cursor = 'pointer';
 
 						overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
-							mxUtils.alert('Overlay clicked');
+							let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystem);
+
+							addMethodModal.showModal().then(function (data) {
+								console.log('Closed modal');
+								console.log(data.selectedCode);
+							});
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddMethod);
@@ -435,6 +443,7 @@ export default class UmlEditorView {
 	}
 
 	initGraph(codes, mmEntities, mmRelations, metaModelMapper, unmappedCodesView) {
+		this.codesystem = codes;
 		this.mmEntities = mmEntities;
 		this.mmRelations = mmRelations;
 		this.metaModelMapper = metaModelMapper;
@@ -443,10 +452,12 @@ export default class UmlEditorView {
 
 		let relations = [];
 
-		for (let i = 0; i < codes.length; i++) {
+		for (let i = 0; i < this.codesystem.length; i++) {
+			const code = this.codesystem[i];
+
 			// Register new entry
 			const umlClass = new UmlClass();
-			umlClass.setCode(codes[i]);
+			umlClass.setCode(code);
 			umlClass.setNode(null);
 			this.umlClasses.push(umlClass);
 
@@ -456,13 +467,13 @@ export default class UmlEditorView {
 			});
 
 			// Logging
-			console.log('Added new node to the graph: ' + codes[i].name + ' (' + codes[i].codeID + ')');
+			console.log('Added new node to the graph: ' + code.name + ' (' + code.codeID + ')');
 
 			// Register code relations
-			if (codes[i].relations != null) {
-				for (let j = 0; j < codes[i].relations.length; j++) {
+			if (code.relations != null) {
+				for (let j = 0; j < code.relations.length; j++) {
 
-					let sourceCode = codes[i];
+					let sourceCode = code;
 					let relation = sourceCode.relations[j];
 
 					relations.push({
