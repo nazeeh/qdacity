@@ -288,30 +288,30 @@ export default class MetaModelMapper {
 		return false;
 	}
 
+	getMetaModelEntityId(name) {
+		const mmEntity = this.mmEntities.find((mmEntity) => mmEntity.name == name);
+		return mmEntity.id;
+	}
+
 	addedEdge(edge, edgeType, sourceUmlClass, destinationUmlClass) {
 		const _this = this;
 
-		const getMetaModelEntityId = function (name) {
-			const mmEntity = _this.mmEntities.find((mmEntity) => mmEntity.name == name);
-			return mmEntity.id;
-		};
-
-		let metaModelElementId;
+		let metaModelEntityName;
 
 		switch (edgeType) {
 		case EdgeType.GENERALIZATION:
 			{
-				metaModelElementId = getMetaModelEntityId('is a');
+				metaModelEntityName = this.getMetaModelEntityId('is a');
 				break;
 			}
 		case EdgeType.AGGREGATION:
 			{
-				metaModelElementId = getMetaModelEntityId('is part of');
+				metaModelEntityName = this.getMetaModelEntityId('is part of');
 				break;
 			}
 		case EdgeType.DIRECTED_ASSOCIATION:
 			{
-				metaModelElementId = getMetaModelEntityId('is related to');
+				metaModelEntityName = this.getMetaModelEntityId('is related to');
 				break;
 			}
 		default:
@@ -320,7 +320,26 @@ export default class MetaModelMapper {
 			}
 		}
 
-		console.log('Adding new edge...');
+		this.addedRelation('edge', metaModelEntityName, edge, sourceUmlClass, destinationUmlClass);
+	}
+
+	addedMethod(methodNode, sourceUmlClass, destinationUmlClass) {
+		// Validate
+		// TODO handle this in another way
+		if (this.codeIsValidNode(destinationUmlClass.getCode())) {
+			alert('ERROR: Cant add a method if the destination code is an uml class.');
+			return;
+		}
+
+		this.addedRelation('method', 'influences', methodNode, sourceUmlClass, destinationUmlClass);
+	}
+
+	addedRelation(type, metaModelEntityName, relationNode, sourceUmlClass, destinationUmlClass) {
+		const _this = this;
+
+		let metaModelElementId = this.getMetaModelEntityId(metaModelEntityName);
+
+		console.log('Adding new ' + type + '...');
 
 		CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
 			let relation = {
@@ -329,9 +348,9 @@ export default class MetaModelMapper {
 				'metaModelEntityId': metaModelElementId
 			};
 
-			_this.addRelation(relation, sourceUmlClass, destinationUmlClass, edge);
+			_this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 
-			console.log('Added new edge.');
+			console.log('Added new ' + type + '.');
 		});
 	}
 }

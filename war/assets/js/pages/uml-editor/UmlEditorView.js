@@ -246,10 +246,12 @@ export default class UmlEditorView {
 
 			// display overlay if one node selected
 			if (cells != null && cells.length == 1) {
-				var cell = cells[0];
+				let cell = cells[0];
+
+				let sourceUmlClass = _this.getUmlClassByNode(cell);
 
 				if (_this.cellIsUmlClass(cell)) {
-					var overlays = _this.graph.getCellOverlays(cell);
+					let overlays = _this.graph.getCellOverlays(cell);
 
 					if (overlays == null) {
 						// Overlay MetaModel
@@ -292,7 +294,12 @@ export default class UmlEditorView {
 
 							addMethodModal.showModal().then(function (data) {
 								console.log('Closed modal');
-								console.log(data.selectedCode);
+
+								let destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
+
+								const methodNode = _this.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
+
+								_this.metaModelMapper.addedMethod(methodNode, sourceUmlClass, destinationUmlClass);
 							});
 						});
 
