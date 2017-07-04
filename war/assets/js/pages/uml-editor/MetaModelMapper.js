@@ -157,7 +157,7 @@ export default class MetaModelMapper {
 	}
 
 	addClassField(relation, sourceUmlClass, destinationUmlClass) {
-		const relationNode = this.umlEditorView.addClassField(sourceUmlClass.getNode(), '+ ' + sourceUmlClass.getCode().name + ': type');
+		const relationNode = this.umlEditorView.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
 		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
