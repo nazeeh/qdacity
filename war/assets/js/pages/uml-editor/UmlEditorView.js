@@ -295,7 +295,17 @@ export default class UmlEditorView {
 							addFieldModal.showModal().then(function (data) {
 								console.log('Closed modal');
 
-								let destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
+								const destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
+								const destinationCode = destinationUmlClass.getCode();
+
+								// Validate
+								// TODO handle this in another way
+								if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
+									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
+									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
+									alert('ERROR: Cant add a field if the destination code is an uml class.');
+									return;
+								}
 
 								const fieldNode = _this.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
 
@@ -316,6 +326,13 @@ export default class UmlEditorView {
 								console.log('Closed modal');
 
 								let destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
+
+								// Validate
+								// TODO handle this in another way
+								if (_this.metaModelMapper.codeIsValidNode(destinationUmlClass.getCode())) {
+									alert('ERROR: Cant add a method if the destination code is an uml class.');
+									return;
+								}
 
 								const methodNode = _this.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
 
