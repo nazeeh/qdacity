@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import CodesystemEndpoint from '../../../common/endpoints/CodesystemEndpoint';
@@ -14,6 +15,17 @@ import CodesystemToolbar from "./CodesystemToolbar.jsx"
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import SimpleCodesystem from './SimpleCodesystem.jsx';
+
+const StyledToolBar = styled.div `
+	text-align: center;
+	position: relative;
+	background-color: #e7e7e7;
+`;
+
+const StyledCodeSystem = styled.div `
+    height: ${props => props.height + "px"} !important;
+    overflow: auto;
+`;
 
 /*
  ** Intended as primary codesystem component
@@ -38,25 +50,6 @@ class Codesystem extends SimpleCodesystem {
 		this.updateCodingCount = this.updateCodingCount.bind(this);
 		this.initCodingCount = this.initCodingCount.bind(this);
 		this.init = this.init.bind(this);
-	}
-
-	getStyles() {
-		return {
-			toolBar: {
-				textAlign: "center",
-				position: "relative",
-				backgroundColor: "#e7e7e7"
-			},
-			codesystem: {
-				overflow: "auto"
-			}
-		}
-	}
-
-	styleCodesystem() {
-		var style = this.getStyles().codesystem;
-		style.height = this.state.height;
-		return style;
 	}
 
 	setHeight(height) {
@@ -254,11 +247,10 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	render() {
-		const styles = this.getStyles();
 		var _this = this;
 		return (
 			<div>
-					<div style={styles.toolBar}>
+					<StyledToolBar>
 						<CodesystemToolbar
 							projectID={this.props.projectID}
 							projectType={this.props.projectType}
@@ -272,8 +264,8 @@ class Codesystem extends SimpleCodesystem {
 							documentsView={this.props.documentsView}
 							umlEditorEnabled={this.props.umlEditorEnabled}>
 						</CodesystemToolbar>
-					</div>
-					<div id="codesystemTree" className="codesystemView"  style={this.styleCodesystem()}>{this.renderCodesystem()}</div>
+					</StyledToolBar>
+					<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>
 				</div>
 		);
 	}
