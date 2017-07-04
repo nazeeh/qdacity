@@ -13,6 +13,7 @@ export default class UmlEditorView {
 	constructor(codeSystemId, container) {
 		this.codeSystemId = codeSystemId;
 		this.graph = null;
+		this.cellMarker = null;
 		this.connectionHandler = null;
 		this.layout = null;
 
@@ -80,88 +81,17 @@ export default class UmlEditorView {
 		// GraphHandler
 		new mxGraphHandler(this.graph);
 
+		// Initialize styles
+		this.initializeStyles();
+
 		// Initialize layouting
 		this.initializeLayouting();
 
 		// Initialize connections
 		this.initializeConnections();
 
-		// Initialize styles
-		this.initializeStyles();
-
 		// Initialize events
 		this.initializeEvents();
-	}
-
-	initializeLayouting() {
-		// Enables layouting
-		this.layout = new mxFastOrganicLayout(this.graph);
-		this.layout.disableEdgeStyle = false;
-		this.layout.forceConstant = 180;
-		this.layout.forceConstantSquared = 180 * 180;
-	}
-
-	initializeConnections() {
-		const _this = this;
-
-		// Cell Marker
-		let cellMarker = new mxCellMarker(this.graph);
-
-		this.graph.addMouseListener({
-			mouseDown: function (sender, me) {},
-			mouseMove: function (sender, me) {},
-			mouseUp: function (sender, me) {
-				me.consumed = false;
-				cellMarker.process(me);
-			}
-		});
-
-		// Connection Handler
-		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
-			const edge = new mxCell('', new mxGeometry());
-			edge.setEdge(true);
-			edge.setStyle(style);
-			edge.geometry.relative = true;
-			return edge;
-		});
-		this.connectionHandler.livePreview = true;
-		this.connectionHandler.isValidTarget = function (cell) {
-			return cell.vertex == true && cell.parent == _this.graph.getDefaultParent();
-		};
-		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
-			const edgeType = evt.properties.cell.style;
-			const sourceNode = evt.properties.cell.source;
-			const destinationNode = evt.properties.cell.target;
-
-			const sourceUmlClass = null;
-			const destinationUmlClass = null;
-
-			// TODO following code should probably in MetaModelMapper
-			let metaModelElementId;
-
-			switch (edgeType) {
-			case EdgeType.GENERALIZATION:
-				{
-					break;
-				}
-			case EdgeType.AGGREGATION:
-				{
-					break;
-				}
-			case EdgeType.DIRECTED_ASSOCIATION:
-				{
-					break;
-				}
-			default:
-				{
-					throw new Error('EdgeType not implemented.');
-				}
-			}
-
-			CodesEndpoint.addRelationship(sourceUmlClass.getCode(), destinationUmlClass.getCode(), metaModelElementId).then(function (resp) {
-				// TODO update everything
-			});
-		});
 	}
 
 	initializeStyles() {
@@ -241,6 +171,92 @@ export default class UmlEditorView {
 		style[mxConstants.STYLE_ENDFILL] = 0;
 		style[mxConstants.STYLE_DASHED] = 1;
 		stylesheet.putCellStyle(EdgeType.REALIZATION, style);
+	}
+
+	initializeLayouting() {
+		// Enables layouting
+		this.layout = new mxFastOrganicLayout(this.graph);
+		this.layout.disableEdgeStyle = false;
+		this.layout.forceConstant = 180;
+		this.layout.forceConstantSquared = 180 * 180;
+	}
+
+	initializeConnections() {
+		const _this = this;
+
+		// Cell Marker
+		this.cellMarker = new mxCellMarker(this.graph);
+
+		this.graph.addMouseListener({
+			mouseDown: function (sender, me) {},
+			mouseMove: function (sender, me) {},
+			mouseUp: function (sender, me) {
+				me.consumed = false;
+				_this.cellMarker.process(me);
+			}
+		});
+
+		// Connection Handler
+		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
+			const edge = new mxCell('', new mxGeometry());
+			edge.setEdge(true);
+			edge.setStyle(style);
+			edge.geometry.relative = true;
+			return edge;
+		});
+		this.connectionHandler.livePreview = true;
+		this.connectionHandler.isValidTarget = function (cell) {
+			return cell.vertex == true && cell.parent == _this.graph.getDefaultParent();
+		};
+		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
+			const edgeType = evt.properties.cell.style;
+			const sourceNode = evt.properties.cell.source;
+			const destinationNode = evt.properties.cell.target;
+
+			const sourceUmlClass = _this.getUmlClassByNode(sourceNode);
+			const destinationUmlClass = _this.getUmlClassByNode(destinationNode);
+
+			// TODO following code should probably be in MetaModelMapper
+
+			const getMetaModelEntityId = function (name) {
+				const mmEntity = _this.mmEntities.find((mmEntity) => mmEntity.name == name);
+				return mmEntity.id;
+			};
+
+			let metaModelElementId;
+
+			switch (edgeType) {
+			case EdgeType.GENERALIZATION:
+				{
+					metaModelElementId = getMetaModelEntityId('is a');
+					break;
+				}
+			case EdgeType.AGGREGATION:
+				{
+					metaModelElementId = getMetaModelEntityId('is part of');
+					break;
+				}
+			case EdgeType.DIRECTED_ASSOCIATION:
+				{
+					metaModelElementId = getMetaModelEntityId('is related to');
+					break;
+				}
+			default:
+				{
+					throw new Error('EdgeType not implemented.');
+				}
+			}
+
+			CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
+				let relation = {
+					'source': sourceUmlClass.getCode().codeID,
+					'destination': destinationUmlClass.getCode().codeID,
+					'metaModelEntityId': metaModelElementId
+				};
+
+				_this.metaModelMapper.addRelation(relation, sourceUmlClass, destinationUmlClass, evt.cell);
+			});
+		});
 	}
 
 	initializeEvents() {
@@ -844,6 +860,8 @@ export default class UmlEditorView {
 		try {
 			// Remove from selection
 			this.graph.getSelectionModel().removeCell(node);
+
+			this.graph.getModel().remove(node);
 
 			node.removeFromParent();
 
