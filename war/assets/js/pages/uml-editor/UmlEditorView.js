@@ -225,50 +225,7 @@ export default class UmlEditorView {
 			const sourceUmlClass = _this.getUmlClassByNode(sourceNode);
 			const destinationUmlClass = _this.getUmlClassByNode(destinationNode);
 
-			// TODO following code should probably be in MetaModelMapper
-
-			const getMetaModelEntityId = function (name) {
-				const mmEntity = _this.mmEntities.find((mmEntity) => mmEntity.name == name);
-				return mmEntity.id;
-			};
-
-			let metaModelElementId;
-
-			switch (edgeType) {
-			case EdgeType.GENERALIZATION:
-				{
-					metaModelElementId = getMetaModelEntityId('is a');
-					break;
-				}
-			case EdgeType.AGGREGATION:
-				{
-					metaModelElementId = getMetaModelEntityId('is part of');
-					break;
-				}
-			case EdgeType.DIRECTED_ASSOCIATION:
-				{
-					metaModelElementId = getMetaModelEntityId('is related to');
-					break;
-				}
-			default:
-				{
-					throw new Error('EdgeType not implemented.');
-				}
-			}
-
-			console.log('Adding new edge...');
-
-			CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
-				let relation = {
-					'source': sourceUmlClass.getCode().codeID,
-					'destination': destinationUmlClass.getCode().codeID,
-					'metaModelEntityId': metaModelElementId
-				};
-
-				_this.metaModelMapper.addRelation(relation, sourceUmlClass, destinationUmlClass, evt.cell);
-
-				console.log('Added new edge.');
-			});
+			_this.metaModelMapper.addedEdge(evt.cell, edgeType, sourceUmlClass, destinationUmlClass);
 		});
 	}
 

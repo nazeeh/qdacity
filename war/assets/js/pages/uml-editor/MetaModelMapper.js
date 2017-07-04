@@ -3,6 +3,8 @@ import {
 } from './EdgeType.js';
 import UmlClassRelation from './UmlClassRelation.js';
 
+import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
+
 export const Action = {
 	DO_NOTHING: 0,
 	CREATE_NODE: 1,
@@ -284,5 +286,52 @@ export default class MetaModelMapper {
 		}
 
 		return false;
+	}
+
+	addedEdge(edge, edgeType, sourceUmlClass, destinationUmlClass) {
+		const _this = this;
+
+		const getMetaModelEntityId = function (name) {
+			const mmEntity = _this.mmEntities.find((mmEntity) => mmEntity.name == name);
+			return mmEntity.id;
+		};
+
+		let metaModelElementId;
+
+		switch (edgeType) {
+		case EdgeType.GENERALIZATION:
+			{
+				metaModelElementId = getMetaModelEntityId('is a');
+				break;
+			}
+		case EdgeType.AGGREGATION:
+			{
+				metaModelElementId = getMetaModelEntityId('is part of');
+				break;
+			}
+		case EdgeType.DIRECTED_ASSOCIATION:
+			{
+				metaModelElementId = getMetaModelEntityId('is related to');
+				break;
+			}
+		default:
+			{
+				throw new Error('EdgeType not implemented.');
+			}
+		}
+
+		console.log('Adding new edge...');
+
+		CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
+			let relation = {
+				'source': sourceUmlClass.getCode().codeID,
+				'destination': destinationUmlClass.getCode().codeID,
+				'metaModelEntityId': metaModelElementId
+			};
+
+			_this.addRelation(relation, sourceUmlClass, destinationUmlClass, edge);
+
+			console.log('Added new edge.');
+		});
 	}
 }
