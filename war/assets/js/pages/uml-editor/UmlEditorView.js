@@ -303,7 +303,7 @@ export default class UmlEditorView {
 								if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
 									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
 									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
-									alert('ERROR: Cant add a field if the destination code is an uml class.');
+									alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
 									return;
 								}
 
