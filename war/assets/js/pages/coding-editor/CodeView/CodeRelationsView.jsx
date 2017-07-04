@@ -1,6 +1,35 @@
 import React from 'react';
+import styled from 'styled-components';
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import NewCodeRelation from '../../../common/modals/NewCodeRelation';
+
+const StyledAddRelationBtn = styled.li `
+	background-color: #FAFAFA !important;
+	border-left-style: solid;
+	border-left-width: thick;
+	border-left-color: #337ab7;
+	margin-bottom: 3px;
+	&:hover {
+        background: #337ab7 !important;
+		color: #FFF;
+    }
+`;
+
+const StyledRelationItem = styled.li `
+	background-color: #DDD !important;
+	border-left-style: solid;
+	border-left-width: thick;
+	border-left-color: #444;
+`;
+
+const StyledRelationName = styled.span `
+	font-size: 12px;
+	font-weight: bold;
+`;
+
+const StyledCodeName = styled.span `
+	font-size: 16px;
+`;
 
 export default class CodeRelationsView extends React.Component {
 	constructor(props) {
@@ -12,31 +41,6 @@ export default class CodeRelationsView extends React.Component {
 		};
 		this.addRelationship = this.addRelationship.bind(this);
 		this.getrelationships = this.getrelationships.bind(this);
-	}
-
-	getStyles() {
-		return {
-			lightButton: {
-				backgroundColor: "#FAFAFA",
-				borderLeftStyle: "solid",
-				borderLeftWidth: "thick",
-				borderLeftColor: "#337ab7",
-				marginBottom: "3px"
-			},
-			listItem: {
-				backgroundColor: "#DDD",
-				borderLeftStyle: "solid",
-				borderLeftWidth: "thick",
-				borderLeftColor: "#444"
-			},
-			relation: {
-				fontSize: "12px",
-				fontWeight: "bold"
-			},
-			dstCode: {
-				fontSize: "16px"
-			}
-		};
 	}
 
 	setSourceCode(pId) {
@@ -120,28 +124,28 @@ export default class CodeRelationsView extends React.Component {
 
 	render() {
 		this.setRelations(this.props.code.relations, this.props.code.id);
-		const styles = this.getStyles();
 		var _this = this;
 		return (
 			<div className="list compactBoxList">
-      <li id="allRelationBtn"  className="btn-default clickable" style={styles.lightButton} onClick={() => {_this.createRelationship()}}>
+      <StyledAddRelationBtn className="btn-default clickable" onClick={() => {_this.createRelationship()}}>
 								<i className="fa fa-plus fa-lg "></i>
 								&nbsp;Add Relationship
-	  </li>
+	  </StyledAddRelationBtn>
 
         {
           this.state.relationships.map(function(rel) {
-            return <li key={rel.id} className="clickable" style={styles.listItem}>
-            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel.id)}}>
-            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
-            </a>
+            return(
+				<StyledRelationItem key={rel.id} className="clickable">
+		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel.id)}}>
+		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
+		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
+		            </a>
 
-            <span style={styles.relation}>{rel.name}</span>
-            <br/>
-            <span style={styles.dstCode}> {rel.dstName}</span>
-
-            </li>
+		            <StyledRelationName>{rel.name}</StyledRelationName>
+		            <br/>
+		            <StyledCodeName> {rel.dstName}</StyledCodeName>
+	            </StyledRelationItem>
+			);
           })
         }
       </div>
