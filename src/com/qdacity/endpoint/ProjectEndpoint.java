@@ -495,6 +495,10 @@ public class ProjectEndpoint {
 			CodeSystemEndpoint.setProject(cloneProject.getCodesystemID(), cloneProject.getId());
 
 			TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), false, user);
+			
+			//Every time a new Project revision is created a new Saturation needs to be calculated.
+			SaturationEndpoint se = new SaturationEndpoint();
+			se.getSaturation(projectID, user); //asynchronous, so request doesn't take too long.
 		} finally {
 			mgr.close();
 		}
