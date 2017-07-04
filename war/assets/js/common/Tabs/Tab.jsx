@@ -15,13 +15,12 @@ const StyledTab = styled.div `
 export default class Tab extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<StyledTab isActive={this.props.isActive} onClick={() => this.props.changeTab(this.props.tabIndex)}>
 				{this.props.tabTitle}
 			</StyledTab>

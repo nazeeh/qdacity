@@ -1,12 +1,12 @@
 import 'script!../../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
-export default class CodingsView  extends React.Component {
+export default class CodingsView extends React.Component {
 
-	constructor(props){
+	constructor(props) {
 		super(props);
 	}
 
-	initTable(){
+	initTable() {
 		var dataSet = [];
 		var tableMount = $('#codingTableMount');
 		var table = tableMount.dataTable({
@@ -94,7 +94,7 @@ export default class CodingsView  extends React.Component {
 		this.fillCodingTable();
 	}
 
-	render(){
+	render() {
 		return (
 			<div>
 				<table id="codingTableMount" className="display">

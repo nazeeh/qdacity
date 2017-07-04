@@ -21,8 +21,7 @@ export default class NewCodeRelation extends VexModal {
 
 	}
 
-	setActiveElement(element)
-	{
+	setActiveElement(element) {
 		var group = this.mmElements[element.getGroup()];
 		//Reset
 		group.forEach((el) => {

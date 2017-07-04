@@ -7,16 +7,15 @@ export default class MetaModelView extends React.Component {
 	constructor(props) {
 		super(props);
 
-
 		this.state = {
 			elements: {},
 			selected: []
 		};
-
-		this.init();
 	}
 
-
+	componentDidMount() {
+		this.init(this.props.metaModelEntities, this.props.metaModelRelations);
+	}
 
 	getActiveElementIds() {
 		return this.props.selected;
@@ -38,57 +37,74 @@ export default class MetaModelView extends React.Component {
 		return null;
 	}
 
-	init() {
-		let _this = this;
-		let relationsPromise = MetaModelRelationEndpoint.listRelations(1); // FIXME choose a configurable MM. MM with ID 1 is the default RE MM
-		MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
-			let entities = resp.items || [];
+	init(metaModelEntities, metaModelRelations) {
+		const _this = this;
 
-			let entitiesById = {};
-			for (let i = 0; i < entities.length; i++) {
+		if (metaModelEntities == null) {
+			MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
+				let entities = resp.items || [];
+				_this.initProcessEntities(entities, metaModelRelations);
+			});
+		} else {
+			_this.initProcessEntities(metaModelEntities, metaModelRelations);
+		}
+	}
 
+	initProcessEntities(entities, metaModelRelations) {
+		const _this = this;
 
-				let element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type, entities[i].group);
+		let entitiesById = {};
+		for (let i = 0; i < entities.length; i++) {
+			let element = new MetaModelElement(entities[i].id, entities[i].name, entities[i].type, entities[i].group);
 
-				entitiesById[element.id] = element;
+			entitiesById[element.id] = element;
+		}
+
+		if (metaModelRelations == null) {
+			// FIXME choose a configurable MM. MM with ID 1 is the default RE MM
+			MetaModelRelationEndpoint.listRelations(1).then(function (resp) {
+				let relations = resp.items || [];
+				_this.initProcessRelations(entitiesById, relations);
+			});
+		} else {
+			_this.initProcessRelations(entitiesById, metaModelRelations);
+		}
+	}
+
+	initProcessRelations(entitiesById, relations) {
+		const _this = this;
+
+		for (let i = 0; i < relations.length; i++) {
+			let relation = relations[i];
+			switch (relation.type) {
+			case "Association":
+				break;
+			case "Generalization":
+				if (entitiesById.hasOwnProperty(relation.src)) entitiesById[relation.src].addGeneralization(relation.dst);
+				if (entitiesById.hasOwnProperty(relation.dst)) entitiesById[relation.dst].addSpecialization(relation.src);
+				break;
+			default:
+				;
+			}
+		}
+
+		let mmElements = {};
+		for (let id in entitiesById) {
+			let entity = entitiesById[id];
+
+			let group = entity.getGroup();
+
+			if (!mmElements.hasOwnProperty(group)) {
+				mmElements[group] = [];
 			}
 
-			relationsPromise.then(function (resp) {
-				let relations = resp.items || [];
-				for (let i = 0; i < relations.length; i++) {
-					let relation = relations[i];
-					switch (relation.type) {
-					case "Association":
-						break;
-					case "Generalization":
-						if (entitiesById.hasOwnProperty(relation.src)) entitiesById[relation.src].addGeneralization(relation.dst);
-						if (entitiesById.hasOwnProperty(relation.dst)) entitiesById[relation.dst].addSpecialization(relation.src);
-						break;
-					default:
-						;
-					}
-				}
+			mmElements[group].push(entity);
+		}
 
-				let mmElements = {};
-				for (let id in entitiesById) {
-					let entity = entitiesById[id];
+		_this.props.setElements(mmElements);
 
-					let group = entity.getGroup();
-
-					if (!mmElements.hasOwnProperty(group)) {
-						mmElements[group] = [];
-					}
-
-					mmElements[group].push(entity);
-				}
-				_this.props.setElements(mmElements);
-				_this.setState({
-					elements: mmElements
-				});
-
-
-			});
-		});
+		_this.state.elements = mmElements;
+		_this.forceUpdate();
 	}
 
 	render() {
@@ -99,13 +115,15 @@ export default class MetaModelView extends React.Component {
 			justifyContent: "center"
 		};
 
-
-
-		return (
-			<div style={blockStyle}>
-		        {Object.keys(_this.props.elements).map((key, index) => _this.renderGroup(_this.props.elements[key], key))}
-            </div>
-		);
+		if (_this.props.elements != null) {
+			return (
+				<div style={blockStyle}>
+                    {Object.keys(_this.props.elements).map((key, index) => _this.renderGroup(_this.props.elements[key], key))}           
+                </div>
+			);
+		} else {
+			return null;
+		}
 	}
 
 	renderGroup(elements, group) {
@@ -190,7 +208,7 @@ export default class MetaModelView extends React.Component {
                     <div key={"thirdLevel" + group}  style={centerStyle} className="list-group">
                         {thirdLevel}
                     </div>
-    		    </div>);
+                </div>);
 		} else {
 			return null;
 		}

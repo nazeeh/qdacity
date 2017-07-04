@@ -32,17 +32,17 @@ export default class codeBookEntry extends React.Component {
 		this.changeWhenNot = this.changeWhenNot.bind(this);
 	}
 
-	changeDef(event){
+	changeDef(event) {
 		this.props.code.codeBookEntry.definition = this.addDiv(event.target.value);
 		this.forceUpdate();
 	}
 
-	changeWhen(event){
+	changeWhen(event) {
 		this.props.code.codeBookEntry.whenToUse = this.addDiv(event.target.value);
 		this.forceUpdate();
 	}
 
-	changeWhenNot(event){
+	changeWhenNot(event) {
 		this.props.code.codeBookEntry.whenNotToUse = this.addDiv(event.target.value);
 		this.forceUpdate();
 	}
@@ -54,18 +54,18 @@ export default class codeBookEntry extends React.Component {
 		});
 	}
 
-	removeDiv(str){
+	removeDiv(str) {
 		if (!str.startsWith("<div>")) return str;
-		return str.substring(5,str.length - 6);
+		return str.substring(5, str.length - 6);
 	}
 
-	addDiv(str){
+	addDiv(str) {
 		return "<div>" + str + "</div>";
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<StyledCodeviewComponent>
 				<StyledEntry className="col-sm-4">
 					<span className="codebookEntryCol">Definition</span>

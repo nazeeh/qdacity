@@ -20,27 +20,32 @@ export default class CodeView extends React.Component {
 		super(props);
 		this.state = {
 			code: {},
-			documents:  this.props.documentsView.getDocuments()
+			documents: this.props.documentsView.getDocuments()
 		};
-this.tabChanged = this.tabChanged.bind(this);
+		this.tabChanged = this.tabChanged.bind(this);
 	}
 
-	init(){
-	}
+	init() {}
 
-	updateCode(code){
+	updateCode(code) {
 		this.setState({
 			code: code
 		});
 	}
 
-	tabChanged(){
-	}
+	tabChanged() {}
 
-	render(){
-		const {editorCtrl, documentsView} = this.props;
-		const {updateSelectedCode, getCodeByCodeID, getCodeSystem} = this.props;
-		return(
+	render() {
+		const {
+			editorCtrl,
+			documentsView
+		} = this.props;
+		const {
+			updateSelectedCode,
+			getCodeByCodeID,
+			getCodeSystem
+		} = this.props;
+		return (
 			<div>
 				<StyledCloseFooterBtn onClick={this.props.hideCodingView}>
 					<i className="fa fa-times-circle fa-2x fa-hover"></i>

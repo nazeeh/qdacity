@@ -16,8 +16,13 @@
 	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
       
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	
+	<link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+      
+	<link rel="stylesheet" href="components/Vex/css/vex.css" />
+	<link rel="stylesheet" href="components/Vex/css/vex-theme-os.css" />
       
 	<link href="assets/css/common.css" rel="stylesheet">
 	<link href="assets/css/loader.css" rel="stylesheet">
@@ -34,7 +39,7 @@
 
 <body>
 	<!-- Navigation -->
-	<nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+	<nav id="header" class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
 		<div class="container topnav">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -91,8 +96,10 @@
 	</nav>
 
 	<div class="row no-gutters" style="padding-top: 51px;" >
-		<div id="content">
-			<div id="graphContainer" style="position:'relative'; overflow:'hidden'; width:'1200px'; height:'800px'; cursor:'default'"></div>
+		<div id="sidebar" class="col-sm-4 col-md-3 col-lg-2"></div>
+		<div id="editor" class="col-sm-8 col-md-9 col-lg-10">
+			<div id="toolbar" class="row no-gutters"></div>
+			<div id="graphContainer" style="overflow: hidden; cursor: default"></div>
 		</div>
 	</div>
 	

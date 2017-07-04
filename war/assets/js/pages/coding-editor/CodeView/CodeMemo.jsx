@@ -29,8 +29,8 @@ export default class ClassName extends React.Component {
 		this.forceUpdate();
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<StyledCodeviewComponent>
 				<StyledMemoField value={this.props.code.memo} onChange={this.changeMemo}>
 				</StyledMemoField>

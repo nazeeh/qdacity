@@ -18,7 +18,7 @@ export default class Tabs extends React.Component {
 		this.changeTab = this.changeTab.bind(this);
 	}
 
-	changeTab(tabIndex){
+	changeTab(tabIndex) {
 		this.setState({
 			activeIndex: tabIndex
 		});
@@ -27,25 +27,25 @@ export default class Tabs extends React.Component {
 		this.props.tabChanged();
 	}
 
-	renderTabsHeader(){
+	renderTabsHeader() {
 		return React.Children.map(this.props.children, (child, index) => {
 			return React.cloneElement(child, {
-				changeTab : this.changeTab,
+				changeTab: this.changeTab,
 				tabIndex: index,
 				isActive: index === this.state.activeIndex
 			});
 		});
 	}
 
-	renderActiveTab(){
+	renderActiveTab() {
 		return this.props.children.map((child, index) => {
 			if (index == this.state.activeIndex) return child.props.children;
 			return null;
 		});
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<div>
 				<StyledTabHeader>
 					{this.renderTabsHeader()}

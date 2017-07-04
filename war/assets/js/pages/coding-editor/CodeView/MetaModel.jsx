@@ -27,7 +27,7 @@ export default class MetaModel extends React.Component {
 
 	}
 
-	setElements(elements){
+	setElements(elements) {
 		this.setState({
 			elements: elements
 		});
@@ -56,7 +56,7 @@ export default class MetaModel extends React.Component {
 		}
 	}
 
-	updateActiveElement(element){
+	updateActiveElement(element) {
 
 		this.setActiveElement(element);
 		this.props.code.mmElementIDs = this.state.selected.slice(0);
@@ -106,7 +106,7 @@ export default class MetaModel extends React.Component {
 		});
 	}
 
-	addSelected(id){
+	addSelected(id) {
 		this.state.selected.push(id);
 	}
 
@@ -128,20 +128,20 @@ export default class MetaModel extends React.Component {
 
 
 
-	setCode(code){
+	setCode(code) {
 		this.setState({
 			code: code
 		});
 	};
 
-	saveSettings(){
+	saveSettings() {
 		this.props.code.mmElementIDs = this.state.selected;
 		this.props.updateSelectedCode(this.props.code, true);
 	}
 
-	render(){
+	render() {
 		this.setActiveIds(this.props.code.mmElementIDs);
-		return(
+		return (
 			<StyledCodeviewComponent>
 				<div>
 					<div className="col-sm-6">

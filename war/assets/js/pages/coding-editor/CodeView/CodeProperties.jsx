@@ -42,19 +42,19 @@ export default class CodeProperties extends React.Component {
 			color: this.props.code.color
 		});
 
-		$("#codePropColor").on("change.color", function(event, color){
+		$("#codePropColor").on("change.color", function (event, color) {
 
 			var value = $("#codePropColor").colorpicker("val");
-		    if (_this.props.code.color != value) _this.changeColor(value);
+			if (_this.props.code.color != value) _this.changeColor(value);
 		});
 	}
 
-	componentDidUpdate(){
+	componentDidUpdate() {
 		$("#codePropColor").colorpicker("val", this.props.code.color);
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<div className="active-content-div">
 					<table>
 						<tbody>
