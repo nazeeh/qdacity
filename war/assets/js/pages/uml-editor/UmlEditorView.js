@@ -207,7 +207,7 @@ export default class UmlEditorView {
 		this.connectionHandler.livePreview = true;
 
 		this.connectionHandler.isValidTarget = function (cell) {
-			return cell.vertex == true && cell.parent == _this.graph.getDefaultParent();
+			return _this.cellIsUmlClass(cell);
 		};
 
 		this.connectionHandler.getEdgeWidth = function (valid) {
@@ -252,7 +252,7 @@ export default class UmlEditorView {
 					throw new Error('EdgeType not implemented.');
 				}
 			}
-			
+
 			console.log('Adding new edge...');
 
 			CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
@@ -263,7 +263,7 @@ export default class UmlEditorView {
 				};
 
 				_this.metaModelMapper.addRelation(relation, sourceUmlClass, destinationUmlClass, evt.cell);
-				
+
 				console.log('Added new edge.');
 			});
 		});
@@ -285,110 +285,113 @@ export default class UmlEditorView {
 			}
 
 			// display overlay if one node selected
-			if (cells != null && cells.length == 1 && cells[0].vertex == true) {
+			if (cells != null && cells.length == 1) {
 				var cell = cells[0];
-				var overlays = _this.graph.getCellOverlays(cell);
 
-				if (overlays == null) {
-					// Overlay MetaModel
-					var overlayMetaModel = new mxCellOverlay(new mxImage('assets/img/overlayButtonMetaModel.png', 34, 30), 'Edit MetaModel', mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP, new mxPoint(17, -22));
-					overlayMetaModel.cursor = 'pointer';
+				if (_this.cellIsUmlClass(cell)) {
+					var overlays = _this.graph.getCellOverlays(cell);
 
-					overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
-						let umlClass = _this.getUmlClassByNode(cell);
-						let code = umlClass.getCode();
+					if (overlays == null) {
+						// Overlay MetaModel
+						var overlayMetaModel = new mxCellOverlay(new mxImage('assets/img/overlayButtonMetaModel.png', 34, 30), 'Edit MetaModel', mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP, new mxPoint(17, -22));
+						overlayMetaModel.cursor = 'pointer';
 
-						let codeMetaModelModal = new UmlCodeMetaModelModal(code);
+						overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
+							let umlClass = _this.getUmlClassByNode(cell);
+							let code = umlClass.getCode();
 
-						codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
-							// TODO duplicate code in UnmappedCodeElement.jsx
-							console.log('Closed modal');
+							let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
-							if (code.mmElementIDs != data.ids) {
-								console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
+							codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
+								// TODO duplicate code in UnmappedCodeElement.jsx
+								console.log('Closed modal');
 
-								code.mmElementIDs = data.ids;
+								if (code.mmElementIDs != data.ids) {
+									console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
 
-								console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+									code.mmElementIDs = data.ids;
 
-								CodesEndpoint.updateCode(code).then(function (resp) {
-									console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-									_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
-								});
-							}
-						});
-					});
+									console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
 
-					_this.graph.addCellOverlay(cell, overlayMetaModel);
-
-					// Overlay AddMethod
-					var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
-					overlayAddMethod.cursor = 'pointer';
-
-					overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
-						mxUtils.alert('Overlay clicked');
-					});
-
-					_this.graph.addCellOverlay(cell, overlayAddMethod);
-
-					// Overlay AddField
-					var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15, -22));
-					overlayAddField.cursor = 'pointer';
-
-					overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
-						mxUtils.alert('Overlay clicked');
-					});
-
-					_this.graph.addCellOverlay(cell, overlayAddField);
-
-
-					// Overlay AddEdge
-					var overlayAddEdge = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new edge', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(23, 15));
-					overlayAddEdge.cursor = 'pointer';
-
-					overlayAddEdge.addListener(mxEvent.CLICK, function (sender, evt2) {
-						const handleClick = function (edgeType) {
-							let edge = _this.graph.createEdge(null, null, null, null, null, edgeType);
-							let edgeState = new mxCellState(_this.graph.view, edge, _this.graph.getCellStyle(edge));
-
-							let cellState = _this.graph.getView().getState(_this.graph.getSelectionCell(), true);
-							_this.connectionHandler.start(cellState, 0, 0, edgeState);
-
-							_this.graph.removeCellOverlays(cell);
-						};
-
-						// Overlay AddGeneralization
-						var overlayAddGeneralization = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new generalization', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 50));
-						overlayAddGeneralization.cursor = 'pointer';
-
-						overlayAddGeneralization.addListener(mxEvent.CLICK, function (sender, evt2) {
-							handleClick(EdgeType.GENERALIZATION);
+									CodesEndpoint.updateCode(code).then(function (resp) {
+										console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
+										_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
+									});
+								}
+							});
 						});
 
-						_this.graph.addCellOverlay(cell, overlayAddGeneralization);
+						_this.graph.addCellOverlay(cell, overlayMetaModel);
 
-						// Overlay AddAggregation
-						var overlayAddAggregation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new aggregation', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 15));
-						overlayAddAggregation.cursor = 'pointer';
+						// Overlay AddMethod
+						var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
+						overlayAddMethod.cursor = 'pointer';
 
-						overlayAddAggregation.addListener(mxEvent.CLICK, function (sender, evt2) {
-							handleClick(EdgeType.AGGREGATION);
+						overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
+							mxUtils.alert('Overlay clicked');
 						});
 
-						_this.graph.addCellOverlay(cell, overlayAddAggregation);
+						_this.graph.addCellOverlay(cell, overlayAddMethod);
 
-						// Overlay AddAssociation
-						var overlayAddAssociation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new association', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, -20));
-						overlayAddAssociation.cursor = 'pointer';
+						// Overlay AddField
+						var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15, -22));
+						overlayAddField.cursor = 'pointer';
 
-						overlayAddAssociation.addListener(mxEvent.CLICK, function (sender, evt2) {
-							handleClick(EdgeType.DIRECTED_ASSOCIATION);
+						overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
+							mxUtils.alert('Overlay clicked');
 						});
 
-						_this.graph.addCellOverlay(cell, overlayAddAssociation);
-					});
+						_this.graph.addCellOverlay(cell, overlayAddField);
 
-					_this.graph.addCellOverlay(cell, overlayAddEdge);
+
+						// Overlay AddEdge
+						var overlayAddEdge = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new edge', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(23, 15));
+						overlayAddEdge.cursor = 'pointer';
+
+						overlayAddEdge.addListener(mxEvent.CLICK, function (sender, evt2) {
+							const handleClick = function (edgeType) {
+								let edge = _this.graph.createEdge(null, null, null, null, null, edgeType);
+								let edgeState = new mxCellState(_this.graph.view, edge, _this.graph.getCellStyle(edge));
+
+								let cellState = _this.graph.getView().getState(_this.graph.getSelectionCell(), true);
+								_this.connectionHandler.start(cellState, 0, 0, edgeState);
+
+								_this.graph.removeCellOverlays(cell);
+							};
+
+							// Overlay AddGeneralization
+							var overlayAddGeneralization = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new generalization', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 50));
+							overlayAddGeneralization.cursor = 'pointer';
+
+							overlayAddGeneralization.addListener(mxEvent.CLICK, function (sender, evt2) {
+								handleClick(EdgeType.GENERALIZATION);
+							});
+
+							_this.graph.addCellOverlay(cell, overlayAddGeneralization);
+
+							// Overlay AddAggregation
+							var overlayAddAggregation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new aggregation', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 15));
+							overlayAddAggregation.cursor = 'pointer';
+
+							overlayAddAggregation.addListener(mxEvent.CLICK, function (sender, evt2) {
+								handleClick(EdgeType.AGGREGATION);
+							});
+
+							_this.graph.addCellOverlay(cell, overlayAddAggregation);
+
+							// Overlay AddAssociation
+							var overlayAddAssociation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new association', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, -20));
+							overlayAddAssociation.cursor = 'pointer';
+
+							overlayAddAssociation.addListener(mxEvent.CLICK, function (sender, evt2) {
+								handleClick(EdgeType.DIRECTED_ASSOCIATION);
+							});
+
+							_this.graph.addCellOverlay(cell, overlayAddAssociation);
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddEdge);
+					}
 				}
 			}
 
@@ -618,6 +621,10 @@ export default class UmlEditorView {
 			let umlClass = _this.getUmlClassByCodeId(newUmlCodePosition.codeId);
 			umlClass.setUmlCodePosition(newUmlCodePosition);
 		});
+	}
+
+	cellIsUmlClass(cell) {
+		return cell.vertex == true && cell.parent == this.graph.getDefaultParent()
 	}
 
 	addGraphEventListener(event, func) {
