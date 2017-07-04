@@ -205,9 +205,15 @@ export default class UmlEditorView {
 			return edge;
 		});
 		this.connectionHandler.livePreview = true;
+
 		this.connectionHandler.isValidTarget = function (cell) {
 			return cell.vertex == true && cell.parent == _this.graph.getDefaultParent();
 		};
+
+		this.connectionHandler.getEdgeWidth = function (valid) {
+			return (valid) ? 1 : 1;
+		};
+
 		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
 			const edgeType = evt.properties.cell.style;
 			const sourceNode = evt.properties.cell.source;
@@ -246,6 +252,8 @@ export default class UmlEditorView {
 					throw new Error('EdgeType not implemented.');
 				}
 			}
+			
+			console.log('Adding new edge...');
 
 			CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
 				let relation = {
@@ -255,6 +263,8 @@ export default class UmlEditorView {
 				};
 
 				_this.metaModelMapper.addRelation(relation, sourceUmlClass, destinationUmlClass, evt.cell);
+				
+				console.log('Added new edge.');
 			});
 		});
 	}
