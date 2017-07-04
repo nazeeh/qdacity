@@ -14,7 +14,6 @@ export default class NewCodeRelation extends VexModal {
 
 		this.codeSystem = codeSystem;
 
-		this.easytree = {};
 		this.activeElement = -1;
 
 		this.setActiveElement = this.setActiveElement.bind(this);
@@ -94,12 +93,6 @@ export default class NewCodeRelation extends VexModal {
 				_this.modifyNodeId(childNode);
 			});
 		}
-	}
-
-	getSelectedId() {
-		var modifiedNodeId = this.getActiveNodeRecursive(this.easytree.getAllNodes()).id;
-
-		return modifiedNodeId.split("newCode")[0];
 	}
 
 
