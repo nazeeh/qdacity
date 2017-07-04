@@ -323,6 +323,21 @@ export default class MetaModelMapper {
 		this.addedRelation('edge', metaModelEntityName, edge, sourceUmlClass, destinationUmlClass);
 	}
 
+	addedField(fieldNode, sourceUmlClass, destinationUmlClass) {
+		// Validate
+		// TODO handle this in another way
+		const destinationCode = destinationUmlClass.getCode();
+		
+		if (!this.codeHasMetaModelEntity(destinationCode, 'Object')
+				&& !this.codeHasMetaModelEntity(destinationCode, 'Actor')
+				&& !this.codeHasMetaModelEntity(destinationCode, 'Place')) {
+			alert('ERROR: Cant add a field if the destination code is an uml class.');
+			return;
+		}
+
+		this.addedRelation('field', 'is related to', fieldNode, sourceUmlClass, destinationUmlClass);
+	}
+	
 	addedMethod(methodNode, sourceUmlClass, destinationUmlClass) {
 		// Validate
 		// TODO handle this in another way

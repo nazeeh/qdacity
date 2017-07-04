@@ -285,8 +285,28 @@ export default class UmlEditorView {
 
 						_this.graph.addCellOverlay(cell, overlayMetaModel);
 
+						// Overlay AddField
+						var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
+						overlayAddField.cursor = 'pointer';
+
+						overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
+							let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystem);
+
+							addFieldModal.showModal().then(function (data) {
+								console.log('Closed modal');
+
+								let destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
+
+								const fieldNode = _this.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
+
+								_this.metaModelMapper.addedField(fieldNode, sourceUmlClass, destinationUmlClass);
+							});
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddField);
+
 						// Overlay AddMethod
-						var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
+						var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15, -22));
 						overlayAddMethod.cursor = 'pointer';
 
 						overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
@@ -304,17 +324,6 @@ export default class UmlEditorView {
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddMethod);
-
-						// Overlay AddField
-						var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15, -22));
-						overlayAddField.cursor = 'pointer';
-
-						overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
-							mxUtils.alert('Overlay clicked');
-						});
-
-						_this.graph.addCellOverlay(cell, overlayAddField);
-
 
 						// Overlay AddEdge
 						var overlayAddEdge = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new edge', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(23, 15));
