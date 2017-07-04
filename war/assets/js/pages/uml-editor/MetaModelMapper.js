@@ -301,17 +301,17 @@ export default class MetaModelMapper {
 		switch (edgeType) {
 		case EdgeType.GENERALIZATION:
 			{
-				metaModelEntityName = this.getMetaModelEntityId('is a');
+				metaModelEntityName = 'is a';
 				break;
 			}
 		case EdgeType.AGGREGATION:
 			{
-				metaModelEntityName = this.getMetaModelEntityId('is part of');
+				metaModelEntityName = 'is part of';
 				break;
 			}
 		case EdgeType.DIRECTED_ASSOCIATION:
 			{
-				metaModelEntityName = this.getMetaModelEntityId('is related to');
+				metaModelEntityName = 'is related to';
 				break;
 			}
 		default:
