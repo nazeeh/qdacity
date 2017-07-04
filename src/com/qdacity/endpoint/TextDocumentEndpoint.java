@@ -37,15 +37,14 @@ import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.project.AbstractProject;
-import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(
@@ -190,7 +189,7 @@ public class TextDocumentEndpoint {
 			
 			//Log Change
 			Change change = new ChangeBuilder().makeInsertTextDocumentChange(textdocument, textdocument.getProjectID(), user.getUserId());
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 			
 		} finally {
 			mgr.close();
@@ -233,8 +232,7 @@ public class TextDocumentEndpoint {
 	 * exist in the datastore, an exception is thrown.
 	 * It uses HTTP PUT method.
 	 *
-	 * @param textdocument the entity to be updated.
-	 * @param codeId the code which is applied
+	 * @param textDocumentCode the textdocument and the code in a container 
 	 * @param user
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
@@ -254,7 +252,7 @@ public class TextDocumentEndpoint {
 			
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, textDocumentCode.code.getCodesystemID());
 			Change change = new ChangeBuilder().makeApplyCodeChange(textDocumentCode.textDocument, textDocumentCode.code, user, cs.getProjectType());
-			mgr.makePersistent(change);
+			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
 		}

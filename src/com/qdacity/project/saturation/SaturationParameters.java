@@ -1,5 +1,7 @@
 package com.qdacity.project.saturation;
 
+import com.google.appengine.api.datastore.Key;
+import java.io.Serializable;
 import java.util.Date;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -8,11 +10,11 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class SaturationParameters {
+public class SaturationParameters implements Serializable {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    Long id;
+    Key id;
     @Persistent
     Long projectId;
 
@@ -36,9 +38,16 @@ public class SaturationParameters {
     double updateCodeNameChangeWeight;
     @Persistent
     double updateCodeIdChangeWeight;
-    //TODO relocate und relationships
+    @Persistent
+    double relocateCodeChangeWeight;
+    @Persistent
+    double insertCodeRelationShipChangeWeight;
+    @Persistent
+    double deleteCodeRelationShipChangeWeight;
     @Persistent
     double deleteCodeChangeWeight;
+    @Persistent
+    double appliedCodesChangeWeight;
 
     //CodeBookEntry Changes
     @Persistent
@@ -52,11 +61,36 @@ public class SaturationParameters {
     @Persistent
     double updateCodeBookEntryWhenToUseChangeWeight;
 
-    public Long getId() {
+    public SaturationParameters() {
+    }
+
+    public SaturationParameters(SaturationParameters copy) {
+	this.appliedCodesChangeWeight = copy.appliedCodesChangeWeight;
+	this.creationTime = copy.creationTime;
+	this.deleteCodeChangeWeight = copy.deleteCodeChangeWeight;
+	this.deleteCodeRelationShipChangeWeight = copy.deleteCodeRelationShipChangeWeight;
+	this.insertCodeChangeWeight = copy.insertCodeChangeWeight;
+	this.insertCodeRelationShipChangeWeight = copy.insertCodeRelationShipChangeWeight;
+	this.insertDocumentChangeWeight = copy.insertDocumentChangeWeight;
+	this.projectId = copy.projectId;
+	this.relocateCodeChangeWeight = copy.relocateCodeChangeWeight;
+	this.updateCodeAuthorChangeWeight = copy.updateCodeAuthorChangeWeight;
+	this.updateCodeBookEntryDefinitionChangeWeight = copy.updateCodeBookEntryDefinitionChangeWeight;
+	this.updateCodeBookEntryExampleChangeWeight = copy.updateCodeBookEntryExampleChangeWeight;
+	this.updateCodeBookEntryShortDefinitionChangeWeight = copy.updateCodeBookEntryShortDefinitionChangeWeight;
+	this.updateCodeBookEntryWhenNotToUseChangeWeight = copy.updateCodeBookEntryWhenNotToUseChangeWeight;
+	this.updateCodeBookEntryWhenToUseChangeWeight = copy.updateCodeBookEntryWhenToUseChangeWeight;
+	this.updateCodeColorChangeWeight = copy.updateCodeColorChangeWeight;
+	this.updateCodeIdChangeWeight = copy.updateCodeIdChangeWeight;
+	this.updateCodeMemoChangeWeight = copy.updateCodeMemoChangeWeight;
+	this.updateCodeNameChangeWeight = copy.updateCodeNameChangeWeight;
+    }
+
+    public Key getId() {
 	return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Key id) {
 	this.id = id;
     }
 
@@ -178,6 +212,38 @@ public class SaturationParameters {
 
     public void setCreationTime(Date creationTime) {
 	this.creationTime = creationTime;
+    }
+
+    public double getRelocateCodeChangeWeight() {
+	return relocateCodeChangeWeight;
+    }
+
+    public void setRelocateCodeChangeWeight(double relocateCodeChangeWeight) {
+	this.relocateCodeChangeWeight = relocateCodeChangeWeight;
+    }
+
+    public double getInsertCodeRelationShipChangeWeight() {
+	return insertCodeRelationShipChangeWeight;
+    }
+
+    public void setInsertCodeRelationShipChangeWeight(double insertCodeRelationShipChangeWeight) {
+	this.insertCodeRelationShipChangeWeight = insertCodeRelationShipChangeWeight;
+    }
+
+    public double getDeleteCodeRelationShipChangeWeight() {
+	return deleteCodeRelationShipChangeWeight;
+    }
+
+    public void setDeleteCodeRelationShipChangeWeight(double deleteCodeRelationShipChangeWeight) {
+	this.deleteCodeRelationShipChangeWeight = deleteCodeRelationShipChangeWeight;
+    }
+
+    public double getAppliedCodesChangeWeight() {
+	return appliedCodesChangeWeight;
+    }
+
+    public void setAppliedCodesChangeWeight(double appliedCodesChangeWeight) {
+	this.appliedCodesChangeWeight = appliedCodesChangeWeight;
     }
 
 }
