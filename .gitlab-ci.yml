@@ -9,17 +9,15 @@ cache:
 
 
 before_script:
-  - export PATH=$PATH:/home/maven/apache-maven-3.5.0/bin
 
 
-after_script:
 after_script:
  
 deploy_production:
   stage: deploy
   environment: Production
   only:
-    - master
+    - configure-ci
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - cd war
