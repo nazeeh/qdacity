@@ -31,14 +31,35 @@ import javax.jdo.Query;
 public class SaturationEndpoint {
 
     @ApiMethod(
-	    name = "saturation.getSaturation",
+	    name = "saturation.calculateNewSaturation",
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
-    public void getSaturation(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
+    public void calculateNewSaturation(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
 	DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId);
 	Queue queue = QueueFactory.getDefaultQueue();
 	queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredSaturationTask));
+    }
+
+    /**
+     * Retrieves the latest SaturationResult from the Datastore for the given
+     * projectId. If there is no SaturationResult yet an empty SaturationResult
+     * (all values 0.0) with the default SaturationParameters is returned.
+     *
+     * @param projectId
+     * @return
+     */
+    public SaturationResult getLatestSaturation(@Named("projectId") Long projectId) {
+	List<SaturationResult> allSaturations = getHistoricalSaturationResults(projectId);
+	SaturationResult latestSaturation = new SaturationResult();
+	latestSaturation.setSaturationParameters(new DefaultSaturationParameters());
+	latestSaturation.setCreationTime(new Date(0));
+	for (SaturationResult sr : allSaturations) {
+	    if (sr.getCreationTime().after(latestSaturation.getCreationTime())) {
+		latestSaturation = sr;
+	    }
+	}
+	return latestSaturation;
     }
 
     @ApiMethod(
@@ -93,7 +114,7 @@ public class SaturationEndpoint {
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
     public void saveSaturationParameters(SaturationParameters saturationParameters, User user) {
-	if(saturationParameters.getCreationTime() == null) {
+	if (saturationParameters.getCreationTime() == null) {
 	    saturationParameters.setCreationTime(new Date());
 	}
 	getPersistenceManager().makePersistent(saturationParameters);

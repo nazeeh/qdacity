@@ -8,7 +8,8 @@ export default class ProjectStats extends React.Component {
 		this.state = {
 			docCount: "N/A",
 			codeCount: "N/A",
-			codingCount: "N/A"
+			codingCount: "N/A",
+                        saturation: "N/A"
 		};
 
 		this.init();
@@ -20,10 +21,36 @@ export default class ProjectStats extends React.Component {
 			_this.setState({
 				docCount: resp.documentCount,
 				codeCount: resp.codeCount,
-				codingCount: resp.codingCount
+				codingCount: resp.codingCount,
+                                saturation: resp.saturation
 			});
 		});
 	}
+        
+        calculateAvgSaturation() {
+            var sr = this.state.saturation;
+            var pr = sr.saturationParameters;
+            //TODO Parameter (Gewichtung) Berücksichtigen
+            var sum = sr.applyCodeSaturation
+                        + sr.deleteCodeRelationShipSaturation
+                        + sr.deleteCodeSaturation
+                        + sr.documentSaturation
+                        + sr.insertCodeRelationShipSaturation
+                        + sr.insertCodeSaturation
+                        + sr.relocateCodeSaturation
+                        + sr.updateCodeAuthorSaturation
+                        + sr.updateCodeBookEntryDefinitionSaturation
+                        + sr.updateCodeBookEntryExampleSaturation
+                        + sr.updateCodeBookEntryShortDefinitionSaturation
+                        + sr.updateCodeBookEntryWhenNotToUseSaturation
+                        + sr.updateCodeBookEntryWhenToUseSaturation
+                        + sr.updateCodeColorSaturation
+                        + sr.updateCodeIdSaturation
+                        + sr.updateCodeMemoSaturation
+                        + sr.updateCodeNameSaturation;
+            var avg = sum / 17;
+            return avg+"";
+        }
 
 	render() {
 		var _this = this;
@@ -90,7 +117,7 @@ export default class ProjectStats extends React.Component {
 							</div>
 							<div className="info-box-content">
 								<span className="info-box-text">Saturation</span>
-								<span className="info-box-number">N/A</span>
+								<span className="info-box-number">{this.calculateAvgSaturation()}</span>
 							</div>
 						</div>
 					</div>

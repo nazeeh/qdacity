@@ -498,7 +498,7 @@ public class ProjectEndpoint {
 			
 			//Every time a new Project revision is created a new Saturation needs to be calculated.
 			SaturationEndpoint se = new SaturationEndpoint();
-			se.getSaturation(projectID, user); //asynchronous, so request doesn't take too long.
+			se.calculateNewSaturation(projectID, user); //asynchronous, so request doesn't take too long.
 		} finally {
 			mgr.close();
 		}
