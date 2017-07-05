@@ -16,7 +16,7 @@ stages:
   - build
   - deploy
  
-deploy_production:
+build_production:
   stage: build
   environment: Production
   only:
