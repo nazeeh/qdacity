@@ -18,15 +18,12 @@ build_frontend_production:
   only:
     - configure-ci
   cache:
-    key: "node_modules"
+    key: "prod"
     untracked: true
     paths:
     - war/node_modules/
-  cache:
-    key: "js_dist"
-    untracked: true
-    paths:
     - war/dist/
+    
   script:
     - cd war
     - WAR=$(pwd)
@@ -40,7 +37,7 @@ build_backend_production:
   only:
     - configure-ci
   cache:
-    key: "classes"
+    key: "prod"
     untracked: true
     paths:
     - war/WEB-INF/classes
@@ -55,15 +52,12 @@ deploy_production:
   only:
     - configure-ci
   cache:
-    key: "js_dist"
+    key: "prod"
     untracked: true
     paths:
     - war/dist/
-  cache:
-      key: "classes"
-      untracked: true
-      paths:
-      - war/WEB-INF/classes
+    - war/WEB-INF/classes
+      
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - cd war
