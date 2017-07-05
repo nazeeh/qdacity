@@ -95,6 +95,12 @@ public class SaturationEndpoint {
 	pmr.makePersistent(saturationParams);
     }
 
+    /**
+     * Returns the latest SaturationParameters from the DataStore for the given projectId
+     * @param projectId
+     * @return
+     * @throws UnauthorizedException 
+     */
     public SaturationParameters getSaturationParameters(@Named("projectId") Long projectId) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
@@ -108,10 +114,17 @@ public class SaturationEndpoint {
 	if (parameters.isEmpty()) {
 	    SaturationParameters defaultParams = new DefaultSaturationParameters();
 	    //It is necessary to call a copy constructor here due to DataStore problems when persisting a sub-type
-	    return new SaturationParameters(defaultParams);
+	    SaturationParameters realParameters = new SaturationParameters(defaultParams);
+	    realParameters.setProjectId(projectId);
+	    return realParameters;
 	}
-	//TODO ORDER BY creationTime to get always latest
-	return parameters.get(0);
+	SaturationParameters toReturn = parameters.get(0);
+	for(SaturationParameters params : parameters) {
+	    if(params.getCreationTime().after(toReturn.getCreationTime())) {
+		toReturn = params;
+	    }
+	}
+	return toReturn;
     }
 
     @ApiMethod(
