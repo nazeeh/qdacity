@@ -18,7 +18,7 @@ build_frontend_production:
   only:
     - configure-ci
   cache:
-    key: "prod"
+    key: "$CI_COMMIT_REF_NAME"
     untracked: true
     paths:
     - war/node_modules/
@@ -37,7 +37,7 @@ build_backend_production:
   only:
     - configure-ci
   cache:
-    key: "prod"
+    key: "$CI_COMMIT_REF_NAME"
     untracked: true
     paths:
     - war/WEB-INF/classes
@@ -52,7 +52,7 @@ deploy_production:
   only:
     - configure-ci
   cache:
-    key: "prod"
+    key: "$CI_COMMIT_REF_NAME"
     untracked: true
     paths:
     - war/dist/
