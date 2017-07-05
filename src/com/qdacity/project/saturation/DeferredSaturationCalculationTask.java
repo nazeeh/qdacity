@@ -25,7 +25,7 @@ public class DeferredSaturationCalculationTask implements DeferredTask {
 	SaturationCalculator sCalc;
 	Date epochStart = new Date(0); //if there is no previous saturation result, we start from the very beginning
 	SaturationEndpoint se = new SaturationEndpoint();
-	List<SaturationResult> saturationResults = se.getHistoricalSaturationResults(projectId);
+	List<SaturationResult> saturationResults = se.getHistoricalSaturationResults(projectId, null);
 	for (SaturationResult sr : saturationResults) {
 	    if (sr.getCreationTime().after(epochStart)) {
 		epochStart = sr.getCreationTime();

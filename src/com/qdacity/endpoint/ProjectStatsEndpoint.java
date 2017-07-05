@@ -117,7 +117,7 @@ public class ProjectStatsEndpoint {
 		projectstats.setDocumentCount(documentCount);
 		projectstats.setCodeCount(codeCount);
 		projectstats.setCodingCount(codingCount);
-		projectstats.setSaturation(new SaturationEndpoint().getLatestSaturation(projectId));
+		projectstats.setSaturation(new SaturationEndpoint().getLatestSaturation(projectId, user));
 
 		return projectstats;
 	}

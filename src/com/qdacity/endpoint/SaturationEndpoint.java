@@ -47,10 +47,16 @@ public class SaturationEndpoint {
      * (all values 0.0) with the default SaturationParameters is returned.
      *
      * @param projectId
+     * @param user
      * @return
      */
-    public SaturationResult getLatestSaturation(@Named("projectId") Long projectId) {
-	List<SaturationResult> allSaturations = getHistoricalSaturationResults(projectId);
+    @ApiMethod(
+	    name = "saturation.getLatestSaturation",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
+    public SaturationResult getLatestSaturation(@Named("projectId") Long projectId, User user) {
+	List<SaturationResult> allSaturations = getHistoricalSaturationResults(projectId, user);
 	SaturationResult latestSaturation = new SaturationResult();
 	latestSaturation.setSaturationParameters(new DefaultSaturationParameters());
 	latestSaturation.setCreationTime(new Date(0));
@@ -67,7 +73,7 @@ public class SaturationEndpoint {
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
-    public List<SaturationResult> getHistoricalSaturationResults(@Named("projectId") Long projectId) {
+    public List<SaturationResult> getHistoricalSaturationResults(@Named("projectId") Long projectId, User user) {
 	PersistenceManager mgr = getPersistenceManager();
 	Query query = mgr.newQuery(SaturationResult.class);
 	query.setFilter("projectId == :id");
