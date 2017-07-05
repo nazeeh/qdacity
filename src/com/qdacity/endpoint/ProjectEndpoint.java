@@ -611,7 +611,8 @@ public class ProjectEndpoint {
 		mail.setFrom("QDAcity <support@qdacity.com>").setSubject("QDAcity Request Authorized").setText(" ").setHtml(message);
 
 		String fullName = validationCoder.getGivenName() + " " + validationCoder.getSurName();
-		fullName = fullName.replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");
+		// FIXME remove non-ascii characters from name
+		// fullName = fullName.replaceAll("ae", "ae").replaceAll("ae", "oe").replaceAll("ae", "ue");
 		mail.addTo(validationCoder.getEmail(), fullName);
 
 		mail.send();
