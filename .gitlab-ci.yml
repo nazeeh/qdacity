@@ -22,6 +22,11 @@ build_frontend_production:
     untracked: true
     paths:
     - war/node_modules/
+  cache:
+    key: "js_dist"
+    untracked: true
+    paths:
+    - war/dist/
   script:
     - cd war
     - WAR=$(pwd)
@@ -34,6 +39,11 @@ build_backend_production:
   environment: Production
   only:
     - configure-ci
+  cache:
+    key: "classes"
+    untracked: true
+    paths:
+    - war/WEB-INF/classes
   script:
     - mvn clean install
     - cp -R ./src/META-INF ./war/WEB-INF/classes
@@ -44,6 +54,16 @@ deploy_production:
   environment: Production
   only:
     - configure-ci
+  cache:
+    key: "js_dist"
+    untracked: true
+    paths:
+    - war/dist/
+  cache:
+      key: "classes"
+      untracked: true
+      paths:
+      - war/WEB-INF/classes
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - cd war
