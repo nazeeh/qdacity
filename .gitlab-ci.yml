@@ -37,7 +37,7 @@ build_backend_production:
     - mvn clean install
     - cp -R ./src/META-INF ./war/WEB-INF/classes
     
- 
+
 deploy_production:
   stage: deploy
   environment: Production
