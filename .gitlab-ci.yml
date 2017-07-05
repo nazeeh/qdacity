@@ -22,7 +22,10 @@ build_frontend_production:
     untracked: true
     paths:
     - war/node_modules/
-    - war/dist/
+  artifacts:
+    paths:
+      - war/dist/
+
     
   script:
     - cd war
