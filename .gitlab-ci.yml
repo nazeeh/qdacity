@@ -5,6 +5,7 @@ cache:
   untracked: true
   paths:
   - war/node_modules/
+  - .m2/repository
 
 
 
