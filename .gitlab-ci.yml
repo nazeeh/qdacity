@@ -16,7 +16,7 @@ stages:
   - build
   - deploy
  
-build_production:
+build_frontend_production:
   stage: build
   environment: Production
   only:
@@ -27,8 +27,14 @@ build_production:
     - echo $WAR
     - npm install 
     - gulp bundle
-    - cd ..
-    - mvn $MAVEN_CLI_OPTS clean install
+    
+build_backend_production:
+  stage: build
+  environment: Production
+  only:
+    - configure-ci
+  script:
+    - mvn clean install
     - cp -R ./src/META-INF ./war/WEB-INF/classes
     
  
