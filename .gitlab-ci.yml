@@ -27,4 +27,5 @@ deploy_production:
     - gulp bundle
     - cd ..
     - mvn clean install
+    - cp -R ./src/META-INF ./war/WEB-INF/classes
     - appcfg.sh --enable_jar_splitting  --enable_jar_classes --noisy --service_account_json_key_file=/tmp/$CI_PIPELINE_ID.json update $WAR
