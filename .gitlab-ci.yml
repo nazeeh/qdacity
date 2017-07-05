@@ -1,10 +1,6 @@
 image: java:7
 
-cache:
-  key: "node_modules"
-  untracked: true
-  paths:
-  - war/node_modules/
+
 
 
 before_script:
@@ -21,6 +17,11 @@ build_frontend_production:
   environment: Production
   only:
     - configure-ci
+  cache:
+    key: "node_modules"
+    untracked: true
+    paths:
+    - war/node_modules/
   script:
     - cd war
     - WAR=$(pwd)
