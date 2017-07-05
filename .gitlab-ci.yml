@@ -52,12 +52,6 @@ deploy_production:
   environment: Production
   only:
     - configure-ci
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    untracked: true
-    paths:
-    - war/dist/
-    - war/WEB-INF/classes
       
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
