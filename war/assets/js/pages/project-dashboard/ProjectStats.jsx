@@ -30,26 +30,30 @@ export default class ProjectStats extends React.Component {
         calculateAvgSaturation() {
             var sr = this.state.saturation;
             var pr = sr.saturationParameters;
-            //TODO Parameter (Gewichtung) Berücksichtigen
-            var sum = sr.applyCodeSaturation
-                        + sr.deleteCodeRelationShipSaturation
-                        + sr.deleteCodeSaturation
-                        + sr.documentSaturation
-                        + sr.insertCodeRelationShipSaturation
-                        + sr.insertCodeSaturation
-                        + sr.relocateCodeSaturation
-                        + sr.updateCodeAuthorSaturation
-                        + sr.updateCodeBookEntryDefinitionSaturation
-                        + sr.updateCodeBookEntryExampleSaturation
-                        + sr.updateCodeBookEntryShortDefinitionSaturation
-                        + sr.updateCodeBookEntryWhenNotToUseSaturation
-                        + sr.updateCodeBookEntryWhenToUseSaturation
-                        + sr.updateCodeColorSaturation
-                        + sr.updateCodeIdSaturation
-                        + sr.updateCodeMemoSaturation
-                        + sr.updateCodeNameSaturation;
-            var avg = sum / 17;
-            return avg+"";
+            var cf = 10; //correctiveFactor as the weights are between 0 and 1
+            if(pr != undefined) {
+                var sum = sr.applyCodeSaturation * ( pr.appliedCodesChangeWeight * cf )
+                            + sr.deleteCodeRelationShipSaturation * ( pr.deleteCodeRelationShipChangeWeight * cf )
+                            + sr.deleteCodeSaturation * ( pr.deleteCodeChangeWeight * cf )
+                            + sr.documentSaturation * ( pr.insertDocumentChangeWeight * cf )
+                            + sr.insertCodeRelationShipSaturation * ( pr.insertCodeRelationShipChangeWeight * cf )
+                            + sr.insertCodeSaturation * ( pr.insertCodeChangeWeight * cf )
+                            + sr.relocateCodeSaturation * ( pr.relocateCodeChangeWeight * cf )
+                            + sr.updateCodeAuthorSaturation * ( pr.updateCodeAuthorChangeWeight * cf )
+                            + sr.updateCodeBookEntryDefinitionSaturation * ( pr.updateCodeBookEntryDefinitionChangeWeight * cf )
+                            + sr.updateCodeBookEntryExampleSaturation * ( pr.updateCodeBookEntryExampleChangeWeight * cf )
+                            + sr.updateCodeBookEntryShortDefinitionSaturation * ( pr.updateCodeBookEntryShortDefinitionChangeWeight * cf )
+                            + sr.updateCodeBookEntryWhenNotToUseSaturation * ( pr.updateCodeBookEntryWhenNotToUseChangeWeight * cf )
+                            + sr.updateCodeBookEntryWhenToUseSaturation * ( pr.updateCodeBookEntryWhenToUseChangeWeight * cf )
+                            + sr.updateCodeColorSaturation * ( pr.updateCodeColorChangeWeight * cf )
+                            + sr.updateCodeIdSaturation * ( pr.updateCodeIdChangeWeight * cf )
+                            + sr.updateCodeMemoSaturation * ( pr.updateCodeMemoChangeWeight * cf )
+                            + sr.updateCodeNameSaturation * ( pr.updateCodeNameChangeWeight * cf);
+                var avg = sum / ( 17 * cf);
+                return avg+"";
+          } else {
+              return "N/A";
+          }
         }
 
 	render() {
