@@ -39,11 +39,9 @@ build_backend_production:
   environment: Production
   only:
     - configure-ci
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    untracked: true
+  artifacts:
     paths:
-    - war/WEB-INF/classes
+      - war/WEB-INF/classes
   script:
     - mvn clean install
     - cp -R ./src/META-INF ./war/WEB-INF/classes
