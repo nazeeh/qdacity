@@ -1,5 +1,6 @@
 package com.qdacity.project.metrics;
 
+import com.qdacity.project.saturation.SaturationResult;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.PrimaryKey;
@@ -13,7 +14,7 @@ public class ProjectStats {
 	int documentCount;
 	int codeCount;
 	int codingCount;
-	double saturation;
+	SaturationResult saturation;
 
 	public Long getId() {
 		return id;
@@ -47,11 +48,11 @@ public class ProjectStats {
 		this.codingCount = codingCount;
 	}
 
-	public double getSaturation() {
+	public SaturationResult getSaturation() {
 		return saturation;
 	}
 
-	public void setSaturation(double saturation) {
+	public void setSaturation(SaturationResult saturation) {
 		this.saturation = saturation;
 	}
 
