@@ -18,19 +18,15 @@ build_frontend_production:
   only:
     - configure-ci
   cache:
-    key: "$CI_COMMIT_REF_NAME"
+    key: "node_modules"
     untracked: true
     paths:
     - war/node_modules/
   artifacts:
     paths:
       - war/dist/
-
-    
   script:
     - cd war
-    - WAR=$(pwd)
-    - echo $WAR
     - npm install 
     - gulp bundle
     
@@ -52,10 +48,7 @@ deploy_production:
   environment: Production
   only:
     - configure-ci
-      
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
-    - cd war
-    - WAR=$(pwd)
-    - echo $WAR
+    - WAR=$(pwd)/war
     - appcfg.sh --enable_jar_splitting  --enable_jar_classes --noisy --service_account_json_key_file=/tmp/$CI_PIPELINE_ID.json update $WAR
