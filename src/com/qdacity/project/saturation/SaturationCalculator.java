@@ -123,6 +123,8 @@ public class SaturationCalculator {
 
 	//Project properties
 	double numCurrentCodes = CodeEndpoint.countCodes(project.getCodesystemID());
+	//TODO Gesamtzahl an Änderungen nehmen anstelle der größe des systems
+	//Als Strategy auslagern, dann kann man es konfigurierbar machen
 	double totalNumberOfCodesBeforeChanges = (numCurrentCodes - numNewCodes) + numDeletedCodes;
 	
 	Logger.getLogger("logger").log(Level.INFO, "Number of Changes since " + epochStart + "\n"
@@ -166,6 +168,7 @@ public class SaturationCalculator {
 	result.setInsertCodeRelationShipSaturation(saturation(numCodeRelationInsert, totalNumberOfCodesBeforeChanges));
 	result.setDeleteCodeRelationShipSaturation(saturation(numCodeRelationDeleted, totalNumberOfCodesBeforeChanges));
 
+	//Einfach nur Gesamtzahl nehmen
 	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen macht keinen sinn! VIelleicht sollte man es ganz anders machen und einfach nur abspeicher wie oft welcher code benutzt wurde.
 	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
     }
