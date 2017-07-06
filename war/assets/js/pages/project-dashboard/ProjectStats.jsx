@@ -67,7 +67,7 @@ export default class ProjectStats extends React.Component {
                             + sr.updateCodeIdSaturation * ( pr.updateCodeIdChangeWeight / sumParameters )
                             + sr.updateCodeMemoSaturation * ( pr.updateCodeMemoChangeWeight / sumParameters )
                             + sr.updateCodeNameSaturation * ( pr.updateCodeNameChangeWeight / sumParameters);
-                return weightedAvg+"";
+                return (weightedAvg*100).toFixed(2)+"%";
           } else {
               return "N/A";
           }
