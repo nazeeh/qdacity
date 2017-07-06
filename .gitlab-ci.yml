@@ -1,8 +1,8 @@
 image: java:7
 
-
-
-
+tags:
+    - qdacity
+    
 before_script:
 
 
