@@ -1,8 +1,5 @@
 image: java:7
 
-tags:
-    - qdacity
-    
 before_script:
 
 
@@ -13,6 +10,8 @@ stages:
   - deploy
  
 build_frontend_production:
+  tags:
+    - qdacity
   stage: build
   environment: Production
   only:
@@ -31,6 +30,8 @@ build_frontend_production:
     - gulp bundle
     
 build_backend_production:
+  tags:
+    - qdacity
   stage: build
   environment: Production
   only:
@@ -44,6 +45,8 @@ build_backend_production:
     
 
 deploy_production:
+  tags:
+    - qdacity
   stage: deploy
   environment: Production
   only:
