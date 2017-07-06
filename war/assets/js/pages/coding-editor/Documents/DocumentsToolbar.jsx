@@ -134,7 +134,7 @@ export default class DocumentsToolbar extends React.Component {
 	changeTitle() {
 		var doc = this.props.document;
 		const prompt = new Prompt("New name for document \"" + doc.title + "\"", doc.title);
-		prompt.showModal().then((value)=>{
+		prompt.showModal().then((value) => {
 			doc.title = value;
 			this.props.changeDocumentData(doc);
 		});
