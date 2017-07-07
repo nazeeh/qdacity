@@ -16,7 +16,7 @@ build_frontend_production:
   stage: build
   environment: Production
   only:
-    - configure-ci
+    - master
   cache:
     key: "node_modules"
     untracked: true
@@ -36,7 +36,7 @@ build_backend_production:
   stage: build
   environment: Production
   only:
-    - configure-ci
+    - master
   artifacts:
     paths:
       - war/WEB-INF/classes
@@ -51,7 +51,7 @@ deploy_production:
   stage: deploy
   environment: Production
   only:
-    - configure-ci
+    - master
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - WAR=$(pwd)/war
