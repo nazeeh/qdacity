@@ -12,26 +12,32 @@ export default class UmlEditor extends React.Component {
 		this.umlEditorView = null;
 		this.toolbar = null;
 		
-		this.codesystemId;
+		this.metaModelMapper = null;
 	}
 	
-	init(codes, mmEntities, mmRelations, codesystemId, unmappedCodesView) {
-	    this.codesystemId = codesystemId;
-	    
-		metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);
+	componentDidMount() {
+        this.metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);	   
 
-		umlEditorView.initGraph(codes, mmEntities, mmRelations, metaModelMapper, unmappedCodesView);
+        umlEditorView.initGraph(this.props.codes, this.props.mmEntities, this.props.mmRelations, this.metaModelMapper, this.props.unmappedCodesView);
 	}
 
     getToolbar() {
         return this.toolbar;
     }
+    
+    getUmlEditorView() {
+        return this.umlEditorView;
+    }
+    
+    getMetaModelMapper() {
+        return this.metaModelMapper
+    }
 
 	render() {
 		return (
-			<div id="editor" class="col-sm-8 col-md-9 col-lg-10">
-		        <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} umlEditorView={umlEditorView} className="row no-gutters" />
-                <UmlEditorView ref={(toolbar) => {this.umlEditorView = umlEditorView}} codesystemId={codesystemId} />
+			<div className="col-sm-8 col-md-9 col-lg-10">
+		        <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditorView={umlEditorView} />
+                <UmlEditorView ref={(toolbar) => {this.umlEditorView = umlEditorView}} codesystemId={this.props.codesystemId} />
 	        </div>
 		);
 	}

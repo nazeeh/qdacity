@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import {
 	EdgeType
@@ -10,6 +11,11 @@ import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
+
+const StyledGraphView = styled.div `
+    overflow: hidden;
+    cursor: default
+`;
 
 export default class UmlEditorView extends React.Component {
 
@@ -37,7 +43,7 @@ export default class UmlEditorView extends React.Component {
 	}
 
 	init(container) {
-	    const container = document.getElementById('umlGraphContainer');
+	    const container = this.refs.umlGraphContainer; // TODO probably need to do that in componentDidMount
 	    
 		// Disables the context menu
 		mxEvent.disableContextMenu(container);
@@ -1038,7 +1044,7 @@ export default class UmlEditorView extends React.Component {
 	
     render() {
         return (
-            <div id="umlGraphContainer" style="overflow: hidden; cursor: default"></div>
+            <StyledGraphView ref="umlGraphContainer"></StyledGraphView>
         );
     }
 }
