@@ -17,6 +17,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
+import org.json.JSONException;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -26,7 +28,6 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -611,7 +612,8 @@ public class ProjectEndpoint {
 		mail.setFrom("QDAcity <support@qdacity.com>").setSubject("QDAcity Request Authorized").setText(" ").setHtml(message);
 
 		String fullName = validationCoder.getGivenName() + " " + validationCoder.getSurName();
-		fullName = fullName.replaceAll("ä", "ae").replaceAll("ö", "oe").replaceAll("ü", "ue");
+		// FIXME remove non-ascii characters from name
+		// fullName = fullName.replaceAll("ae", "ae").replaceAll("ae", "oe").replaceAll("ae", "ue");
 		mail.addTo(validationCoder.getEmail(), fullName);
 
 		mail.send();

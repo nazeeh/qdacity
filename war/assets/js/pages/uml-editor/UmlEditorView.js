@@ -4,6 +4,7 @@ import {
 import UmlClass from './UmlClass.js';
 import UmlClassRelation from './UmlClassRelation.js';
 import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
+import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
@@ -13,10 +14,14 @@ export default class UmlEditorView {
 	constructor(codeSystemId, container) {
 		this.codeSystemId = codeSystemId;
 		this.graph = null;
+		this.cellMarker = null;
+		this.connectionHandler = null;
 		this.layout = null;
 
-		this.mmEntities;
-		this.mmRelations;
+		this.codesystem = null;
+
+		this.mmEntities = null;
+		this.mmRelations = null;
 
 		this.umlClasses = [];
 		this.umlClassRelations = {};
@@ -51,9 +56,6 @@ export default class UmlEditorView {
 		this.graph.setSwimlaneSelectionEnabled(false);
 		this.graph.setCellsResizable(false);
 
-		// Enables rubberband selection
-		new mxRubberband(this.graph);
-
 		// Styling
 		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
 		mxConstants.VERTEX_SELECTION_DASHED = false;
@@ -67,15 +69,29 @@ export default class UmlEditorView {
 		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8';
 		mxConstants.OUTLINE_HIGHLIGHT_STROKEWIDTH = 1;
 		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
+		mxConstants.HIGHLIGHT_COLOR = '##00A2E8';
+		mxConstants.HIGHLIGHT_STROKEWIDTH = 1;
+		mxConstants.HIGHLIGHT_SIZE = 1;
 
-		// Enables layouting
-		this.layout = new mxFastOrganicLayout(this.graph);
-		this.layout.disableEdgeStyle = false;
-		this.layout.forceConstant = 180;
-		this.layout.forceConstantSquared = 180 * 180;
+		mxConstants.VALID_COLOR = '#00A2E8';
+		mxConstants.INVALID_COLOR = '#FF0000';
+
+		mxCellHighlight.prototype.spacing = 0;
+
+		// Enables rubberband selection
+		new mxRubberband(this.graph);
+
+		// GraphHandler
+		new mxGraphHandler(this.graph);
 
 		// Initialize styles
 		this.initializeStyles();
+
+		// Initialize layouting
+		this.initializeLayouting();
+
+		// Initialize connections
+		this.initializeConnections();
 
 		// Initialize events
 		this.initializeEvents();
@@ -160,6 +176,59 @@ export default class UmlEditorView {
 		stylesheet.putCellStyle(EdgeType.REALIZATION, style);
 	}
 
+	initializeLayouting() {
+		// Enables layouting
+		this.layout = new mxFastOrganicLayout(this.graph);
+		this.layout.disableEdgeStyle = false;
+		this.layout.forceConstant = 180;
+		this.layout.forceConstantSquared = 180 * 180;
+	}
+
+	initializeConnections() {
+		const _this = this;
+
+		// Cell Marker
+		this.cellMarker = new mxCellMarker(this.graph);
+
+		this.graph.addMouseListener({
+			mouseDown: function (sender, me) {},
+			mouseMove: function (sender, me) {},
+			mouseUp: function (sender, me) {
+				me.consumed = false;
+				_this.cellMarker.process(me);
+			}
+		});
+
+		// Connection Handler
+		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
+			const edge = new mxCell('', new mxGeometry());
+			edge.setEdge(true);
+			edge.setStyle(style);
+			edge.geometry.relative = true;
+			return edge;
+		});
+		this.connectionHandler.livePreview = true;
+
+		this.connectionHandler.isValidTarget = function (cell) {
+			return _this.cellIsUmlClass(cell);
+		};
+
+		this.connectionHandler.getEdgeWidth = function (valid) {
+			return (valid) ? 1 : 1;
+		};
+
+		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
+			const edgeType = evt.properties.cell.style;
+			const sourceNode = evt.properties.cell.source;
+			const destinationNode = evt.properties.cell.target;
+
+			const sourceUmlClass = _this.getUmlClassByNode(sourceNode);
+			const destinationUmlClass = _this.getUmlClassByNode(destinationNode);
+
+			_this.metaModelMapper.addedEdge(evt.cell, edgeType, sourceUmlClass, destinationUmlClass);
+		});
+	}
+
 	initializeEvents() {
 		const _this = this;
 
@@ -176,61 +245,151 @@ export default class UmlEditorView {
 			}
 
 			// display overlay if one node selected
-			if (cells != null && cells.length == 1 && cells[0].vertex == true) {
-				var cell = cells[0];
-				var overlays = _this.graph.getCellOverlays(cell);
+			if (cells != null && cells.length == 1) {
+				let cell = cells[0];
 
-				if (overlays == null) {
-					// Overlay MetaModel
-					var overlayMetaModel = new mxCellOverlay(new mxImage('assets/img/overlayButtonMetaModel.png', 34, 30), 'Edit MetaModel', mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP, new mxPoint(17, -22));
-					overlayMetaModel.cursor = 'pointer';
+				let sourceUmlClass = _this.getUmlClassByNode(cell);
 
-					overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
-						let umlClass = _this.umlClasses.find((uml) => uml.getNode() != null && uml.getNode().mxObjectId == cell.mxObjectId);
-						let code = umlClass.getCode();
+				if (_this.cellIsUmlClass(cell)) {
+					let overlays = _this.graph.getCellOverlays(cell);
 
-						let codeMetaModelModal = new UmlCodeMetaModelModal(code);
+					if (overlays == null) {
+						// Overlay MetaModel
+						var overlayMetaModel = new mxCellOverlay(new mxImage('assets/img/overlayButtonMetaModel.png', 34, 30), 'Edit MetaModel', mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP, new mxPoint(17, -22));
+						overlayMetaModel.cursor = 'pointer';
 
-						codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
-							// TODO duplicate code in UnmappedCodeElement.jsx
-							console.log('Closed modal');
+						overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
+							let umlClass = _this.getUmlClassByNode(cell);
+							let code = umlClass.getCode();
 
-							if (code.mmElementIDs != data.ids) {
-								console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
+							let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
-								code.mmElementIDs = data.ids;
+							codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
+								// TODO duplicate code in UnmappedCodeElement.jsx
+								console.log('Closed modal');
 
-								console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+								if (code.mmElementIDs != data.ids) {
+									console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
 
-								CodesEndpoint.updateCode(code).then(function (resp) {
-									console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-									_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
-								});
-							}
+									code.mmElementIDs = data.ids;
+
+									console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+
+									CodesEndpoint.updateCode(code).then(function (resp) {
+										console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
+										_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
+									});
+								}
+							});
 						});
-					});
 
-					_this.graph.addCellOverlay(cell, overlayMetaModel);
+						_this.graph.addCellOverlay(cell, overlayMetaModel);
 
-					// Overlay AddMethod
-					var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
-					overlayAddMethod.cursor = 'pointer';
+						// Overlay AddField
+						var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
+						overlayAddField.cursor = 'pointer';
 
-					overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
-						mxUtils.alert('Overlay clicked');
-					});
+						overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
+							let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystem);
 
-					_this.graph.addCellOverlay(cell, overlayAddMethod);
+							addFieldModal.showModal().then(function (data) {
+								console.log('Closed modal');
 
-					// Overlay AddField
-					var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15.5, -22));
-					overlayAddField.cursor = 'pointer';
+								const destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
+								const destinationCode = destinationUmlClass.getCode();
 
-					overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
-						mxUtils.alert('Overlay clicked');
-					});
+								// Validate
+								// TODO handle this in another way
+								if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
+									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
+									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
+									alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
+									return;
+								}
 
-					_this.graph.addCellOverlay(cell, overlayAddField);
+								const fieldNode = _this.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
+
+								_this.metaModelMapper.addedField(fieldNode, sourceUmlClass, destinationUmlClass);
+							});
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddField);
+
+						// Overlay AddMethod
+						var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15, -22));
+						overlayAddMethod.cursor = 'pointer';
+
+						overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
+							let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystem);
+
+							addMethodModal.showModal().then(function (data) {
+								console.log('Closed modal');
+
+								let destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
+
+								// Validate
+								// TODO handle this in another way
+								if (_this.metaModelMapper.codeIsValidNode(destinationUmlClass.getCode())) {
+									alert('ERROR: Cant add a method if the destination code is an uml class.');
+									return;
+								}
+
+								const methodNode = _this.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
+
+								_this.metaModelMapper.addedMethod(methodNode, sourceUmlClass, destinationUmlClass);
+							});
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddMethod);
+
+						// Overlay AddEdge
+						var overlayAddEdge = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new edge', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(23, 15));
+						overlayAddEdge.cursor = 'pointer';
+
+						overlayAddEdge.addListener(mxEvent.CLICK, function (sender, evt2) {
+							const handleClick = function (edgeType) {
+								let edge = _this.graph.createEdge(null, null, null, null, null, edgeType);
+								let edgeState = new mxCellState(_this.graph.view, edge, _this.graph.getCellStyle(edge));
+
+								let cellState = _this.graph.getView().getState(_this.graph.getSelectionCell(), true);
+								_this.connectionHandler.start(cellState, 0, 0, edgeState);
+
+								_this.graph.removeCellOverlays(cell);
+							};
+
+							// Overlay AddGeneralization
+							var overlayAddGeneralization = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new generalization', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 50));
+							overlayAddGeneralization.cursor = 'pointer';
+
+							overlayAddGeneralization.addListener(mxEvent.CLICK, function (sender, evt2) {
+								handleClick(EdgeType.GENERALIZATION);
+							});
+
+							_this.graph.addCellOverlay(cell, overlayAddGeneralization);
+
+							// Overlay AddAggregation
+							var overlayAddAggregation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new aggregation', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 15));
+							overlayAddAggregation.cursor = 'pointer';
+
+							overlayAddAggregation.addListener(mxEvent.CLICK, function (sender, evt2) {
+								handleClick(EdgeType.AGGREGATION);
+							});
+
+							_this.graph.addCellOverlay(cell, overlayAddAggregation);
+
+							// Overlay AddAssociation
+							var overlayAddAssociation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new association', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, -20));
+							overlayAddAssociation.cursor = 'pointer';
+
+							overlayAddAssociation.addListener(mxEvent.CLICK, function (sender, evt2) {
+								handleClick(EdgeType.DIRECTED_ASSOCIATION);
+							});
+
+							_this.graph.addCellOverlay(cell, overlayAddAssociation);
+						});
+
+						_this.graph.addCellOverlay(cell, overlayAddEdge);
+					}
 				}
 			}
 
@@ -250,7 +409,7 @@ export default class UmlEditorView {
 
 			cells.forEach((cell) => {
 				if (cell.vertex == true) {
-					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getNode() != null ? umlClass.getNode().getId() == cell.getId() : false);
+					let umlClass = _this.getUmlClassByNode(cell);
 					let code = umlClass.getCode();
 					let node = umlClass.getNode();
 
@@ -274,6 +433,7 @@ export default class UmlEditorView {
 	}
 
 	initGraph(codes, mmEntities, mmRelations, metaModelMapper, unmappedCodesView) {
+		this.codesystem = codes;
 		this.mmEntities = mmEntities;
 		this.mmRelations = mmRelations;
 		this.metaModelMapper = metaModelMapper;
@@ -282,10 +442,12 @@ export default class UmlEditorView {
 
 		let relations = [];
 
-		for (let i = 0; i < codes.length; i++) {
+		for (let i = 0; i < this.codesystem.length; i++) {
+			const code = this.codesystem[i];
+
 			// Register new entry
 			const umlClass = new UmlClass();
-			umlClass.setCode(codes[i]);
+			umlClass.setCode(code);
 			umlClass.setNode(null);
 			this.umlClasses.push(umlClass);
 
@@ -295,13 +457,13 @@ export default class UmlEditorView {
 			});
 
 			// Logging
-			console.log('Added new node to the graph: ' + codes[i].name + ' (' + codes[i].codeID + ')');
+			console.log('Added new node to the graph: ' + code.name + ' (' + code.codeID + ')');
 
 			// Register code relations
-			if (codes[i].relations != null) {
-				for (let j = 0; j < codes[i].relations.length; j++) {
+			if (code.relations != null) {
+				for (let j = 0; j < code.relations.length; j++) {
 
-					let sourceCode = codes[i];
+					let sourceCode = code;
 					let relation = sourceCode.relations[j];
 
 					relations.push({
@@ -319,9 +481,9 @@ export default class UmlEditorView {
 
 			let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
 
-			let sourceUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.source);
+			let sourceUmlClass = this.getUmlClassByCodeId(relation.source);
 			let sourceCode = sourceUmlClass.getCode();
-			let destinationUmlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == relation.destination);
+			let destinationUmlClass = this.getUmlClassByCodeId(relation.destination);
 			let destinationCode = destinationUmlClass.getCode();
 
 			// Logging
@@ -400,7 +562,7 @@ export default class UmlEditorView {
 				}
 
 				umlCodePositions.forEach((umlCodePosition) => {
-					let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == umlCodePosition.codeId);
+					let umlClass = _this.getUmlClassByCodeId(umlCodePosition.codeId);
 
 					if (umlClass.getNode() != null) {
 						_this.translateNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
@@ -457,9 +619,13 @@ export default class UmlEditorView {
 
 		const _this = this;
 		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			let umlClass = _this.umlClasses.find((umlClass) => umlClass.getCode().codeID == newUmlCodePosition.codeId);
+			let umlClass = _this.getUmlClassByCodeId(newUmlCodePosition.codeId);
 			umlClass.setUmlCodePosition(newUmlCodePosition);
 		});
+	}
+
+	cellIsUmlClass(cell) {
+		return cell.vertex == true && cell.parent == this.graph.getDefaultParent()
 	}
 
 	addGraphEventListener(event, func) {
@@ -476,6 +642,22 @@ export default class UmlEditorView {
 
 	getMetaModelRelations() {
 		return this.mmRelations;
+	}
+
+	getUmlClassByCode(code) {
+		return this.getUmlClassByCodeId(code.codeID);
+	}
+
+	getUmlClassByCodeId(codeId) {
+		return this.umlClasses.find((umlClass) => umlClass.getCode() != null && umlClass.getCode().codeID == codeId);
+	}
+
+	getUmlClassByNode(node) {
+		return this.getUmlClassByNodeId(node.mxObjectId);
+	}
+
+	getUmlClassByNodeId(mxObjectId) {
+		return this.umlClasses.find((umlClass) => umlClass.getNode() != null && umlClass.getNode().mxObjectId == mxObjectId);
 	}
 
 	getCode(codeId) {
@@ -507,7 +689,7 @@ export default class UmlEditorView {
 	}
 
 	exchangeCodeMetaModelEntities(codeId, oldMetaModelEntityIds) {
-		const umlClass = this.umlClasses.find((umlClass) => umlClass.getCode().codeID == codeId);
+		const umlClass = this.getUmlClassByCodeId(codeId);
 
 		const oldUmlClass = new UmlClass(Object.assign({}, umlClass.getCode()), umlClass.getNode());
 		oldUmlClass.getCode().mmElementIDs = oldMetaModelEntityIds;
@@ -543,7 +725,7 @@ export default class UmlEditorView {
 		if (umlClass.getCode().relations != null) {
 			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
 				let relation = umlClass.getCode().relations[i];
-				let destinationUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == relation.codeId);
+				let destinationUmlClass = this.getUmlClassByCodeId(relation.codeId);
 				let oldDestinationUmlClass = destinationUmlClass;
 
 				// Source == Destination
@@ -566,7 +748,7 @@ export default class UmlEditorView {
 				if (umlCode.relations != null) {
 					umlCode.relations.forEach((relation) => {
 						if (relation.codeId == umlClass.getCode().codeID) {
-							let sourceUmlClass = this.umlClasses.find((uml) => uml.getCode().codeID == umlCode.codeID);
+							let sourceUmlClass = uml;
 							let oldSourceUmlClass = sourceUmlClass;
 
 							// Source == Destination
@@ -696,6 +878,8 @@ export default class UmlEditorView {
 		try {
 			// Remove from selection
 			this.graph.getSelectionModel().removeCell(node);
+
+			this.graph.getModel().remove(node);
 
 			node.removeFromParent();
 
