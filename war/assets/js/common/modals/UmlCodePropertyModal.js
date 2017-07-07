@@ -1,6 +1,5 @@
 import VexModal from './VexModal';
 import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
-import CodeSystem from '../../pages/coding-editor/Codesystem/Codesystem.jsx';
 
 export default class UmlCodePropertyModal extends VexModal {
 
