@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
 	EdgeType
 } from './EdgeType.js';
@@ -9,10 +11,12 @@ import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
-export default class UmlEditorView {
+export default class UmlEditorView extends React.Component {
 
-	constructor(codeSystemId, container) {
-		this.codeSystemId = codeSystemId;
+	constructor(props) {
+	    super(props);
+	    
+		this.codeSystemId = this.props.codeSystemId;
 		this.graph = null;
 		this.cellMarker = null;
 		this.connectionHandler = null;
@@ -29,10 +33,12 @@ export default class UmlEditorView {
 		this.unmappedCodesView = null;
 		this.metaModelMapper = null;
 
-		this.init(container);
+		this.init();
 	}
 
 	init(container) {
+	    const container = document.getElementById('umlGraphContainer');
+	    
 		// Disables the context menu
 		mxEvent.disableContextMenu(container);
 
@@ -1029,4 +1035,10 @@ export default class UmlEditorView {
 	zoom(percentage) {
 		this.graph.zoomTo(percentage / 100.0, false);
 	}
+	
+    render() {
+        return (
+            <div id="umlGraphContainer" style="overflow: hidden; cursor: default"></div>
+        );
+    }
 }

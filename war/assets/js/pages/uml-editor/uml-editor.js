@@ -1,5 +1,5 @@
 import MetaModelMapper from './MetaModelMapper.js';
-import UmlEditorView from './UmlEditorView.js';
+import UmlEditorView from './UmlEditorView.jsx';
 
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
