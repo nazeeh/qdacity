@@ -24,6 +24,7 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -35,7 +36,9 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
+import com.qdacity.logs.ChangeType;
 
 @Api(
 	name = "qdacity",
@@ -269,5 +272,5 @@ public class ChangeEndpoint {
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
-
+	
 }

@@ -151,13 +151,13 @@ public class ChangeBuilder {
     private Map<String, String[]> diffCode(Code oldCode, Code newCode) {
 	Map<String, String[]> differences = new HashMap<>();
 
-	ifNotEqualPutToDiff(oldCode.getAuthor(), newCode.getAuthor(), differences, "author"); //TODO namen auslagern! wichtig fuers parsen und analysieren des change typs spaeter
-	ifNotEqualPutToDiff(oldCode.getColor(), newCode.getColor(), differences, "color");
-	ifNotEqualPutToDiff(oldCode.getMemo(), newCode.getMemo(), differences, "memo");
-	ifNotEqualPutToDiff(oldCode.getName(), newCode.getName(), differences, "name");
+	ifNotEqualPutToDiff(oldCode.getAuthor(), newCode.getAuthor(), differences, CodeChangeDetail.AUTHOR);
+	ifNotEqualPutToDiff(oldCode.getColor(), newCode.getColor(), differences, CodeChangeDetail.COLOR);
+	ifNotEqualPutToDiff(oldCode.getMemo(), newCode.getMemo(), differences, CodeChangeDetail.MEMO);
+	ifNotEqualPutToDiff(oldCode.getName(), newCode.getName(), differences, CodeChangeDetail.NAME);
 
-	ifNotEqualPutToDiff(oldCode.getSubCodesIDs() == null ? "null" : oldCode.getSubCodesIDs().toString(), newCode.getSubCodesIDs() == null ? "null" : newCode.getSubCodesIDs().toString(), differences, "subCodeIDs");
-	ifNotEqualPutToDiff(oldCode.getCodeID() == null ? "null" : oldCode.getCodeID().toString(), newCode.getCodeID() == null ? "null" : newCode.getCodeID().toString(), differences, "codeId");
+	ifNotEqualPutToDiff(oldCode.getSubCodesIDs() == null ? "null" : oldCode.getSubCodesIDs().toString(), newCode.getSubCodesIDs() == null ? "null" : newCode.getSubCodesIDs().toString(), differences, CodeChangeDetail.SUBCODE_IDS);
+	ifNotEqualPutToDiff(oldCode.getCodeID() == null ? "null" : oldCode.getCodeID().toString(), newCode.getCodeID() == null ? "null" : newCode.getCodeID().toString(), differences, CodeChangeDetail.CODE_ID);
 
 	return differences;
     }
@@ -181,11 +181,11 @@ public class ChangeBuilder {
 	Map<String, String[]> differences = new HashMap<>();
 	CodeBookEntry oldEntryToCheck = nullSafeCodeBookEntry(oldCodeBookEntry);
 	CodeBookEntry newEntryToCheck = nullSafeCodeBookEntry(newCodeBookEntry);
-	ifNotEqualPutToDiff(oldEntryToCheck.getDefinition(), newEntryToCheck.getDefinition(), differences, "definition");
-	ifNotEqualPutToDiff(oldEntryToCheck.getExample(), newEntryToCheck.getExample(), differences, "example");
-	ifNotEqualPutToDiff(oldEntryToCheck.getShortDefinition(), newEntryToCheck.getShortDefinition(), differences, "shortDefinition");
-	ifNotEqualPutToDiff(oldEntryToCheck.getWhenNotToUse(), newEntryToCheck.getWhenNotToUse(), differences, "whenNotToUse");
-	ifNotEqualPutToDiff(oldEntryToCheck.getWhenToUse(), newEntryToCheck.getWhenToUse(), differences, "whenToUse");
+	ifNotEqualPutToDiff(oldEntryToCheck.getDefinition(), newEntryToCheck.getDefinition(), differences, CodeBookEntryChangeDetail.DEFINITION);
+	ifNotEqualPutToDiff(oldEntryToCheck.getExample(), newEntryToCheck.getExample(), differences, CodeBookEntryChangeDetail.EXAMPLE);
+	ifNotEqualPutToDiff(oldEntryToCheck.getShortDefinition(), newEntryToCheck.getShortDefinition(), differences, CodeBookEntryChangeDetail.SHORTDEFINITION);
+	ifNotEqualPutToDiff(oldEntryToCheck.getWhenNotToUse(), newEntryToCheck.getWhenNotToUse(), differences, CodeBookEntryChangeDetail.WHENNOTTOUSE);
+	ifNotEqualPutToDiff(oldEntryToCheck.getWhenToUse(), newEntryToCheck.getWhenToUse(), differences, CodeBookEntryChangeDetail.WHENTOUSE);
 
 	return differences;
     }

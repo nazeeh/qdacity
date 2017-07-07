@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import PropTypes from 'prop-types';
 import {
@@ -51,6 +52,20 @@ function collectTarget(connect, monitor) {
 	};
 }
 
+const StyledCodingBubble = styled.span `
+	background-color: rgb(231, 231, 231);
+	border: 1px solid rgb(187, 187, 187);
+	text-align: center;
+	border-radius: 10px;
+	color: rgb(102, 102, 102);
+	width: 35px;
+	cursor: pointer;
+	margin-left: auto;
+	margin-top: 1px;
+	margin-bottom: 1px;
+	margin-right: 3px;
+`;
+
 class Code extends SimpleCode {
 	constructor(props) {
 		super(props);
@@ -58,70 +73,26 @@ class Code extends SimpleCode {
 
 	}
 
-	getStyles() {
-		return {
-			noCaretPadding: {
-				paddingLeft: "18px"
-			},
-			caretSelected: {
-				color: "#fff"
-			},
-			node: {
-				fontFamily: "tahoma, arial, helvetica",
-				fontSize: "10pt",
-				marginLeft: (this.props.level * 15) + 'px',
-				display: "flex",
-				alignItems: "center"
-			},
-			nodeSelected: {
-				color: "#fff",
-				backgroundColor: "#337ab7"
-			},
-			codeIcon: {
-				padding: "3px 4px 3px 0px"
-			},
-			codingBubble: {
-				backgroundColor: "rgb(231, 231, 231)",
-				border: "1px solid rgb(187, 187, 187)",
-				textAlign: "center",
-				borderRadius: "10px",
-				color: "rgb(102, 102, 102)",
-				width: "35px",
-				cursor: "pointer",
-				marginLeft: "auto",
-				marginTop: "1px",
-				marginBottom: "1px",
-				marginRight: "3px"
-			}
-		}
-	}
-
-
 	// overriding super method
 	renderCodingCount() {
-		const style = this.getStyles().codingBubble;
 		return (
-			<span 
-					className="" 
-					style={style}
-					onClick={this.props.showFooter}
-				>
+			<StyledCodingBubble	onClick={this.props.showFooter}>
 					{this.props.node.codingCount}
-				</span>
+			</StyledCodingBubble>
 		);
 	}
 
 	renderChild(childCode, level, index) {
 		return (
-			<DragAndDropCode 
+			<DragAndDropCode
 					showSimpleView={this.props.showSimpleView}
 					documentsView={this.props.documentsView}
 					level={level + 1}
-					node={childCode} 
-					selected={this.props.selected} 
-					setSelected={this.props.setSelected} 
+					node={childCode}
+					selected={this.props.selected}
+					setSelected={this.props.setSelected}
 					relocateCode={this.props.relocateCode}
-					showFooter={this.props.showFooter}  
+					showFooter={this.props.showFooter}
 					key={"CS" + "_" + level+ "_" +index}
 				>
 				</DragAndDropCode>
@@ -134,7 +105,6 @@ class Code extends SimpleCode {
 			isDragging,
 			connectDropTarget
 		} = this.props;
-		const styles = this.getStyles();
 		var _this = this;
 		return connectDropTarget(this.props.connectDragSource(
 			<div>
