@@ -36,7 +36,7 @@ export default class UmlEditor extends React.Component {
 	render() {
 		return (
 			<div className="col-sm-8 col-md-9 col-lg-10">
-		        <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditorView={umlEditorView} />
+		        <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditor={this} />
                 <UmlEditorView ref={(toolbar) => {this.umlEditorView = umlEditorView}} codesystemId={this.props.codesystemId} />
 	        </div>
 		);

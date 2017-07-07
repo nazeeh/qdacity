@@ -5,11 +5,11 @@ export default class ButtonZoomIn extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlEditorView = this.props.umlEditorView;
+		this.umlEditor = this.props.umlEditor;
 	}
 
 	buttonClicked() {
-		this.umlEditorView.zoomIn();
+		this.umlEditor.getUmlEditorView().zoomIn();
 	}
 
 	render() {

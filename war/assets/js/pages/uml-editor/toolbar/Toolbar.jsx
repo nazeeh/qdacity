@@ -9,7 +9,7 @@ export default class Toolbar extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlEditorView = this.props.umlEditorView;
+		this.umlEditor = this.props.umlEditor;
 	}
 
 	getStyle() {
@@ -26,9 +26,9 @@ export default class Toolbar extends React.Component {
 
 		return (
 			<div style={style}>
-    	        <ButtonZoomIn umlEditorView={_this.umlEditorView} />
-                <ButtonZoomOut umlEditorView={_this.umlEditorView} />
-                <ButtonZoomSelect umlEditorView={_this.umlEditorView} />
+    	        <ButtonZoomIn umlEditor={_this.umlEditor} />
+                <ButtonZoomOut umlEditor={_this.umlEditor} />
+                <ButtonZoomSelect umlEditor={_this.umlEditor} />
             </div>
 		);
 	}
