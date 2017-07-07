@@ -9,10 +9,11 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.json.JSONException;
+
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
-import com.google.appengine.labs.repackaged.org.json.JSONException;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
