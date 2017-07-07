@@ -3,6 +3,8 @@ import {
 } from './EdgeType.js';
 import UmlClassRelation from './UmlClassRelation.js';
 
+import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
+
 export const Action = {
 	DO_NOTHING: 0,
 	CREATE_NODE: 1,
@@ -157,7 +159,7 @@ export default class MetaModelMapper {
 	}
 
 	addClassField(relation, sourceUmlClass, destinationUmlClass) {
-		const relationNode = this.umlEditorView.addClassField(sourceUmlClass.getNode(), '+ ' + sourceUmlClass.getCode().name + ': type');
+		const relationNode = this.umlEditorView.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
 		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
@@ -284,5 +286,68 @@ export default class MetaModelMapper {
 		}
 
 		return false;
+	}
+
+	getMetaModelEntityId(name) {
+		const mmEntity = this.mmEntities.find((mmEntity) => mmEntity.name == name);
+		return mmEntity.id;
+	}
+
+	addedEdge(edge, edgeType, sourceUmlClass, destinationUmlClass) {
+		const _this = this;
+
+		let metaModelEntityName;
+
+		switch (edgeType) {
+		case EdgeType.GENERALIZATION:
+			{
+				metaModelEntityName = 'is a';
+				break;
+			}
+		case EdgeType.AGGREGATION:
+			{
+				metaModelEntityName = 'is part of';
+				break;
+			}
+		case EdgeType.DIRECTED_ASSOCIATION:
+			{
+				metaModelEntityName = 'is related to';
+				break;
+			}
+		default:
+			{
+				throw new Error('EdgeType not implemented.');
+			}
+		}
+
+		this.addedRelation('edge', metaModelEntityName, edge, sourceUmlClass, destinationUmlClass);
+	}
+
+	addedField(fieldNode, sourceUmlClass, destinationUmlClass) {
+		this.addedRelation('field', 'is related to', fieldNode, sourceUmlClass, destinationUmlClass);
+	}
+
+	addedMethod(methodNode, sourceUmlClass, destinationUmlClass) {
+		this.addedRelation('method', 'influences', methodNode, sourceUmlClass, destinationUmlClass);
+	}
+
+	addedRelation(type, metaModelEntityName, relationNode, sourceUmlClass, destinationUmlClass) {
+		const _this = this;
+
+		let metaModelElementId = this.getMetaModelEntityId(metaModelEntityName);
+
+		console.log('Adding new ' + type + '...');
+
+		CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
+			let relation = {
+				'source': sourceUmlClass.getCode().codeID,
+				'destination': destinationUmlClass.getCode().codeID,
+				'metaModelEntityId': metaModelElementId
+			};
+
+			_this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
+
+			console.log('Added new ' + type + '.');
+		});
 	}
 }
