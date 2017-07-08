@@ -1,5 +1,6 @@
 import React from 'react';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import SaturationModal from '../../common/modals/SaturationModal';
 
 
 export default class ProjectStats extends React.Component {
@@ -72,6 +73,11 @@ export default class ProjectStats extends React.Component {
 			return "N/A";
 		}
 	}
+        
+        openSaturationDetails() {
+            var saturationModal = new SaturationModal(this.props.project.getId());
+            saturationModal.showModal();
+        }
 
 	render() {
 		var _this = this;
@@ -139,6 +145,7 @@ export default class ProjectStats extends React.Component {
 							<div className="info-box-content">
 								<span className="info-box-text">Saturation</span>
 								<span className="info-box-number">{this.calculateAvgSaturation()}</span>
+                                                                <span  onClick={() => this.openSaturationDetails()} className="clickable" >Details</span>
 							</div>
 						</div>
 					</div>
