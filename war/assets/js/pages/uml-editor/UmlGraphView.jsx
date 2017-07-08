@@ -17,7 +17,7 @@ const StyledGraphView = styled.div `
     cursor: default
 `;
 
-export default class UmlEditorView extends React.Component {
+export default class UmlGraphView extends React.Component {
 
 	constructor(props) {
 	    super(props);

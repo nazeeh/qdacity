@@ -1,5 +1,4 @@
 import MetaModelMapper from './MetaModelMapper.js';
-import UmlEditorView from './UmlEditorView.jsx';
 
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
@@ -91,7 +90,7 @@ function load(codesystem_id) {
 
 function init(codes, mmEntities, mmRelations, codesystem_id) {
 
-	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, document.getElementById('sidebar'));
+	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditor={umlEditor} />, document.getElementById('sidebar'));
 
 	umlEditor = ReactDOM.render(<UmlEditor codesystemId={codesystem_id} codes={codes} mmEntities={mmEntities} mmRelations={mmRelations} unmappedCodesView={unmappedCodesView} />, document.getElementById('TODO_RENAME_RENDER_UML_EDITOR'));
 

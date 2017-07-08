@@ -2,31 +2,31 @@ import React from 'react';
 
 import Toolbar from './toolbar/Toolbar.jsx';
 import MetaModelMapper from './MetaModelMapper.js';
-import UmlEditorView from './UmlEditorView.jsx';
+import UmlGraphView from './UmlGraphView.jsx';
 
 export default class UmlEditor extends React.Component {
     
 	constructor(props) {
 		super(props);
 
-		this.umlEditorView = null;
+		this.umlGraphView = null;
 		this.toolbar = null;
 		
 		this.metaModelMapper = null;
 	}
 	
 	componentDidMount() {
-        this.metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);	   
+        this.metaModelMapper = new MetaModelMapper(umlGraphView, mmEntities);	   
 
-        umlEditorView.initGraph(this.props.codes, this.props.mmEntities, this.props.mmRelations, this.metaModelMapper, this.props.unmappedCodesView);
+        umlGraphView.initGraph(this.props.codes, this.props.mmEntities, this.props.mmRelations, this.metaModelMapper, this.props.unmappedCodesView);
 	}
 
     getToolbar() {
         return this.toolbar;
     }
     
-    getUmlEditorView() {
-        return this.umlEditorView;
+    getUmlGraphView() {
+        return this.umlGraphView;
     }
     
     getMetaModelMapper() {
@@ -37,7 +37,7 @@ export default class UmlEditor extends React.Component {
 		return (
 			<div className="col-sm-8 col-md-9 col-lg-10">
 		        <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditor={this} />
-                <UmlEditorView ref={(toolbar) => {this.umlEditorView = umlEditorView}} codesystemId={this.props.codesystemId} />
+                <UmlGraphView ref={(toolbar) => {this.umlGraphView = umlGraphView}} codesystemId={this.props.codesystemId} />
 	        </div>
 		);
 	}

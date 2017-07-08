@@ -17,8 +17,8 @@ export const Action = {
 
 export default class MetaModelMapper {
 
-	constructor(umlEditorView, mmEntities) {
-		this.umlEditorView = umlEditorView;
+	constructor(umlGraphView, mmEntities) {
+		this.umlGraphView = umlGraphView;
 		this.mmEntities = mmEntities;
 	}
 
@@ -142,29 +142,29 @@ export default class MetaModelMapper {
 	}
 
 	addNode(umlClass) {
-		const node = this.umlEditorView.addNode(umlClass.getCode().name);
+		const node = this.umlGraphView.addNode(umlClass.getCode().name);
 		umlClass.setNode(node);
 
 		const umlCodePosition = umlClass.getUmlCodePosition();
 		if (umlCodePosition != null) {
-			this.umlEditorView.translateNode(node, umlCodePosition.x, umlCodePosition.y);
+			this.umlGraphView.translateNode(node, umlCodePosition.x, umlCodePosition.y);
 		}
 
-		this.umlEditorView.onNodesChanged();
+		this.umlGraphView.onNodesChanged();
 	}
 
 	addEdge(relation, sourceUmlClass, destinationUmlClass, edgeType) {
-		const relationNode = this.umlEditorView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
+		const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
 		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
 	addClassField(relation, sourceUmlClass, destinationUmlClass) {
-		const relationNode = this.umlEditorView.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
+		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
 		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
 	addClassMethod(relation, sourceUmlClass, destinationUmlClass) {
-		const relationNode = this.umlEditorView.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
+		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
 		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
@@ -179,7 +179,7 @@ export default class MetaModelMapper {
 		// Warum wird 2-2-XXXXXXXXXXX nciht hinzugefügt?
 		console.log("Add Relation for: " + this.calculateRelationIdentifier(relation));
 
-		this.umlEditorView.umlClassRelations[this.calculateRelationIdentifier(relation)] = new UmlClassRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
+		this.umlGraphView.umlClassRelations[this.calculateRelationIdentifier(relation)] = new UmlClassRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
 
@@ -231,9 +231,9 @@ export default class MetaModelMapper {
 	}
 
 	undoAddNode(umlClass) {
-		this.umlEditorView.removeNode(umlClass.getNode());
+		this.umlGraphView.removeNode(umlClass.getNode());
 		umlClass.setNode(null);
-		this.umlEditorView.onNodesChanged();
+		this.umlGraphView.onNodesChanged();
 	}
 
 	undoAddEdge(relation) {
@@ -251,9 +251,9 @@ export default class MetaModelMapper {
 	undoRelation(relation) {
 		const relationIdentifier = this.calculateRelationIdentifier(relation);
 
-		this.umlEditorView.removeEdge(this.umlEditorView.umlClassRelations[relationIdentifier].getRelationNode());
+		this.umlGraphView.removeEdge(this.umlGraphView.umlClassRelations[relationIdentifier].getRelationNode());
 
-		delete this.umlEditorView.umlClassRelations[relationIdentifier];
+		delete this.umlGraphView.umlClassRelations[relationIdentifier];
 	}
 
 
