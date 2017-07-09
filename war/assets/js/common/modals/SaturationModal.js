@@ -1,5 +1,4 @@
 import ReactLoading from '../ReactLoading.jsx';
-
 import VexModal from './VexModal';
 import IntercoderAgreementByDoc from './IntercoderAgreementByDoc';
 import IntercoderAgreementByCode from './IntercoderAgreementByCode';
@@ -8,7 +7,6 @@ import ProjectEndpoint from '../endpoints/ProjectEndpoint';
 import ValidationEndpoint from '../endpoints/ValidationEndpoint';
 import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
-
 export default class SaturationModal extends VexModal {
 
     constructor(projectId) {
@@ -16,7 +14,7 @@ export default class SaturationModal extends VexModal {
         this.formElements = '';
         this.projectId = projectId;
         this.results;
-        this.formElements += '<div id="saturation" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;"><div id="saturationMetaData"></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="saturationTable"></table><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div></div>';
+        this.formElements += '<div id="saturation" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;"><div id="saturationMetaData"></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="saturationTable"></table><div id="saturationChart"></div><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div></div>';
     }
 
     showModal() {
@@ -29,7 +27,6 @@ export default class SaturationModal extends VexModal {
                     var buttonArray = [$.extend({}, vex.dialog.buttons.YES, {
                             text: 'OK'
                         })];
-
                     vex.dialog.open({
                         message: "Saturation",
                         contentCSS: {
@@ -46,7 +43,6 @@ export default class SaturationModal extends VexModal {
                         }
                     });
                     ReactDOM.render(<ReactLoading color={'#444'} />, document.getElementById('reactLoading'));
-
                     gapi.client.qdacity.saturation.getHistoricalSaturationResults({
                         'projectId': _this.projectId
                     }).execute(function (resp) {
@@ -58,10 +54,8 @@ export default class SaturationModal extends VexModal {
                             // Log error
                         }
                     });
-
                 }
         );
-
         return promise;
     }
 
@@ -73,10 +67,6 @@ export default class SaturationModal extends VexModal {
         saturationOverviewhtml += '<p>Last calculation of saturation is from: ' + mostRecentSaturation.evaluationStartDate + ' to ' + mostRecentSaturation.creationTime + '</p>';
         saturationOverviewhtml += '<p>Parameters used from : ' + mostRecentSaturation.saturationParameters.creationTime + '</p>';
         $('#saturationMetaData').html(saturationOverviewhtml);
-        var saturations = this.results;
-        for (var i in saturations) {
-            //TODO prepare values for Diagram
-        }
     }
 
     getMostRecentSaturation() {
@@ -109,7 +99,6 @@ export default class SaturationModal extends VexModal {
         }
 
         var table = $('#saturationTable').DataTable();
-
         table.clear();
         var mrSat = this.getMostRecentSaturation();
         var pr = mrSat.saturationParameters;
