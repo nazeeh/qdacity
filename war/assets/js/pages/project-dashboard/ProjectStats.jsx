@@ -48,7 +48,6 @@ export default class ProjectStats extends React.Component {
 				+ pr.updateCodeBookEntryWhenNotToUseChangeWeight
 				+ pr.updateCodeBookEntryWhenToUseChangeWeight
 				+ pr.updateCodeColorChangeWeight
-				+ pr.updateCodeIdChangeWeight
 				+ pr.updateCodeMemoChangeWeight
 				+ pr.updateCodeNameChangeWeight;
 			var weightedAvg = sr.applyCodeSaturation * (pr.appliedCodesChangeWeight / sumParameters)
@@ -65,7 +64,6 @@ export default class ProjectStats extends React.Component {
 				+ sr.updateCodeBookEntryWhenNotToUseSaturation * (pr.updateCodeBookEntryWhenNotToUseChangeWeight / sumParameters)
 				+ sr.updateCodeBookEntryWhenToUseSaturation * (pr.updateCodeBookEntryWhenToUseChangeWeight / sumParameters)
 				+ sr.updateCodeColorSaturation * (pr.updateCodeColorChangeWeight / sumParameters)
-				+ sr.updateCodeIdSaturation * (pr.updateCodeIdChangeWeight / sumParameters)
 				+ sr.updateCodeMemoSaturation * (pr.updateCodeMemoChangeWeight / sumParameters)
 				+ sr.updateCodeNameSaturation * (pr.updateCodeNameChangeWeight / sumParameters);
 			return (weightedAvg * 100).toFixed(2) + "%";
