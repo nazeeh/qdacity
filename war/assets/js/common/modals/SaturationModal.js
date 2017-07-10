@@ -70,7 +70,19 @@ export default class SaturationModal extends VexModal {
     }
 
     getMostRecentSaturation() {
-        return this.results[this.results.length - 1];
+        if (this.results.length > 0) {
+            var mostRecenResult = this.results[0];
+            for (var i in this.results) {
+                var myDate = new Date(mostRecenResult.creationTime);
+                var otherDate = new Date(this.results[i].creationTime);
+                if (myDate < otherDate) {
+                    mostRecenResult = this.results[i];
+                }
+            }
+            return mostRecenResult;
+        } else {
+            return null;
+        }
     }
 
     setupDataTable() {
