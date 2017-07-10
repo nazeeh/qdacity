@@ -4,7 +4,11 @@ const uglify = require('gulp-uglify');
 const beautify = require('gulp-beautify');
 const jasmine = require('gulp-jasmine');
 const size = require('gulp-size');
+const argv = require('yargs').argv;
+const replace = require('gulp-replace');
 require('babel-core/register'); 
+
+const config = require('./api_config.json');
  
 var paths = {
   scripts: ['assets/js/**/*.js'],
@@ -81,12 +85,25 @@ function prettify(){
 	});
 }
 
+function setConfig(){
+	if (argv.api_path) config.api_path = argv.api_path; //CLI args overwrite JSON config
+	if (argv.local) config.api_path = 'https://localhost:8888/_ah/api';
+	if (argv.api_version) config.api_version = argv.api_version;
+	if (argv.client_id) config.client_id = argv.client_id;
+}
+
+gulp.task('bundle-ci', ['bundle', 'set-constants-ci']);
+
 gulp.task('bundle', ['format','bundle-task']);
 
 gulp.task('bundle-task', function() {
+	setConfig();
 	return gulp.src('') //doesn't matter what to put as src, 
 						//since webpack.config fetches from entry points
 	.pipe(webpack(require('./webpack.config.js'))).on('error', handleError)
+	.pipe(replace('$API_PATH$', config.api_path))
+	.pipe(replace('$API_VERSION$', config.api_version))
+	.pipe(replace('$CLIENT_ID$', config.client_id))
 	.pipe(gulp.dest('dist/js/'));
 });
 
@@ -105,9 +122,13 @@ gulp.task('format', function() {
 });
  
 gulp.task('watch',function() {
+	setConfig();
 	return gulp.src('') //doesn't matter what to put as src, 
 						//since webpack.config fetches from entry points
 	.pipe(webpack( Object.assign(require('./webpack.config.js'), {watch:true}) )).on('error', handleError)
+	.pipe(replace('$API_PATH$', config.api_path))
+	.pipe(replace('$API_VERSION$', config.api_version))
+	.pipe(replace('$CLIENT_ID$', config.client_id))
 	.pipe(gulp.dest('dist/js/'));
 });
 
