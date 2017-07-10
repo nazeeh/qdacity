@@ -25,6 +25,7 @@ build_frontend_production:
   artifacts:
     paths:
       - war/dist/
+    expire_in: 3 mos
   script:
     - cd war
     - npm install 
@@ -40,6 +41,7 @@ build_backend_production:
   artifacts:
     paths:
       - war/WEB-INF/classes
+    expire_in: 3 mos
   script:
     - mvn clean install
     - cp -R ./src/META-INF ./war/WEB-INF/classes
