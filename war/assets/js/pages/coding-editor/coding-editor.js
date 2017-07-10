@@ -6,6 +6,7 @@ import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
 import loadGAPIs from '../../common/GAPI';
 import Codesystem from './Codesystem/Codesystem.jsx';
+import PageViewChooser from './PageViewChooser.jsx';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
@@ -141,6 +142,9 @@ function setupUI() {
 		$('#navSignin').hide();
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
+
+			let pageViewChooser = ReactDOM.render(<PageViewChooser />, document.getElementById('pageViewChooser-ui'));
+
 			var documentsLoaded = setDocumentList(project_id);
 			codesystemView = ReactDOM.render(<Codesystem
 				projectID={project_id}
