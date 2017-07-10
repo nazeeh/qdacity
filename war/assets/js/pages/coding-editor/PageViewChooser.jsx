@@ -7,26 +7,37 @@ const StyledButtonGroup = styled.div `
     margin: 10px 0px 10px 0px;
 `;
 
+const VIEW_TEXT = 'text';
+const VIEW_UML = 'uml';
+
 export default class PageViewChooser extends React.Component {
 
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			view: 'text'
+			view: VIEW_TEXT
 		};
 	}
 
 	buttonTextEditorClicked() {
-		this.setState({
-			view: 'text'
-		});
+		this.setView(VIEW_TEXT);
 	}
 
 	buttonUmlEditorClicked() {
+		this.setView(VIEW_UML);
+	}
+
+	setView(view) {
+		const changed = this.state.view != view ? true : false;
+
 		this.setState({
-			view: 'uml'
+			view: view
 		});
+
+		if (changed) {
+			this.props.viewChanged(view);
+		}
 	}
 
 	render() {
@@ -34,8 +45,8 @@ export default class PageViewChooser extends React.Component {
 
 		const styleSelected = 'btn btn-primary active';
 		const styleDefault = 'btn btn-default';
-		const classButtonText = _this.state.view == 'text' ? styleSelected : styleDefault;
-		const classButtonUml = _this.state.view == 'uml' ? styleSelected : styleDefault;
+		const classButtonText = _this.state.view == VIEW_TEXT ? styleSelected : styleDefault;
+		const classButtonUml = _this.state.view == VIEW_UML ? styleSelected : styleDefault;
 
 		return (
 			<StyledButtonGroup className="btn-group">

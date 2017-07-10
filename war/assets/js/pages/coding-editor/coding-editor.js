@@ -143,7 +143,7 @@ function setupUI() {
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
 
-			let pageViewChooser = ReactDOM.render(<PageViewChooser />, document.getElementById('pageViewChooser-ui'));
+			let pageViewChooser = ReactDOM.render(<PageViewChooser viewChanged={viewChanged} />, document.getElementById('pageViewChooser-ui'));
 
 			var documentsLoaded = setDocumentList(project_id);
 			codesystemView = ReactDOM.render(<Codesystem
@@ -172,6 +172,10 @@ function setupUI() {
 	} else {
 		$('#navAccount').hide();
 	}
+}
+
+function viewChanged(view) {
+	alert(view);
 }
 
 function showCodingView() {
