@@ -3,7 +3,11 @@ import React from 'react';
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
 
-import {StyledPagination, StyledPaginationItem, StyledListItemBtn} from '../../../common/styles/List';
+import {
+	StyledPagination,
+	StyledPaginationItem,
+	StyledListItemBtn
+} from '../../../common/styles/List';
 
 export default class ReportList extends React.Component {
 	constructor(props) {

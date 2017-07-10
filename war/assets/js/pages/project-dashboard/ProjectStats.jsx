@@ -71,11 +71,11 @@ export default class ProjectStats extends React.Component {
 			return "N/A";
 		}
 	}
-        
-        openSaturationDetails() {
-            var saturationModal = new SaturationModal(this.props.project.getId());
-            saturationModal.showModal();
-        }
+
+	openSaturationDetails() {
+		var saturationModal = new SaturationModal(this.props.project.getId());
+		saturationModal.showModal();
+	}
 
 	render() {
 		var _this = this;

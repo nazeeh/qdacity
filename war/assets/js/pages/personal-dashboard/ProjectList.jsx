@@ -7,7 +7,11 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 
-import {StyledPagination, StyledPaginationItem, StyledListItemBtn} from '../../common/styles/List';
+import {
+	StyledPagination,
+	StyledPaginationItem,
+	StyledListItemBtn
+} from '../../common/styles/List';
 
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;

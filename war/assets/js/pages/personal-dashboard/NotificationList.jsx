@@ -2,7 +2,10 @@ import React from 'react';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
-import {StyledPagination, StyledPaginationItem} from '../../common/styles/List';
+import {
+	StyledPagination,
+	StyledPaginationItem
+} from '../../common/styles/List';
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js'
 

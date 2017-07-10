@@ -2,7 +2,10 @@ import React from 'react';
 
 import UserEndpoint from '../../../common/endpoints/UserEndpoint';
 
-import {StyledPagination, StyledPaginationItem} from '../../../common/styles/List';
+import {
+	StyledPagination,
+	StyledPaginationItem
+} from '../../../common/styles/List';
 
 export default class UserList extends React.Component {
 	constructor(props) {

@@ -3,7 +3,11 @@ import styled from 'styled-components';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
-import {StyledPagination, StyledPaginationItem, StyledListItemBtn} from '../../../common/styles/List';
+import {
+	StyledPagination,
+	StyledPaginationItem,
+	StyledListItemBtn
+} from '../../../common/styles/List';
 
 const StyledSearch = styled.span `
 	float: none;

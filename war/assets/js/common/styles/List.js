@@ -18,4 +18,8 @@ const StyledListItemBtn = styled.a `
 	margin-top: -15px;
 `;
 
-export { StyledPagination,  StyledPaginationItem, StyledListItemBtn};
+export {
+	StyledPagination,
+	StyledPaginationItem,
+	StyledListItemBtn
+};
