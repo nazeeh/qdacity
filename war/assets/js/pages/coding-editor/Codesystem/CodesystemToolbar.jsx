@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import Prompt from '../../../common/modals/Prompt';
 

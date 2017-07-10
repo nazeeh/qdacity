@@ -70,7 +70,7 @@ export default class SimpleCode extends React.Component {
                     </StyledExpander>;
 	}
 
-	/* 
+	/*
 	 ** SimpleCode does not show a coding count
 	 ** Can be overridden to add an optional UI for the coding count
 	 */
@@ -81,9 +81,9 @@ export default class SimpleCode extends React.Component {
 
 
 	renderNode(level) {
-		return <div className=""> 
+		return <div className="">
             <StyledCode
-                    selected = {this.props.node == this.props.selected} 
+                    selected = {this.props.node == this.props.selected}
                     level={level}
                     className="clickable"
                     key={"CS" + "_" + level}
@@ -99,14 +99,14 @@ export default class SimpleCode extends React.Component {
 
 	renderChild(childCode, level, index) {
 		return (
-			<SimpleCode 
+			<SimpleCode
                     documentsView={this.props.documentsView}
                     level={level + 1}
-                    node={childCode} 
-                    selected={this.props.selected} 
-                    setSelected={this.props.setSelected} 
+                    node={childCode}
+                    selected={this.props.selected}
+                    setSelected={this.props.setSelected}
                     relocateCode={this.props.relocateCode}
-                    showFooter={this.props.showFooter}  
+                    showFooter={this.props.showFooter}
                     key={"CS" + "_" + level+ "_" +index}
                 >
                 </SimpleCode>
@@ -126,7 +126,7 @@ export default class SimpleCode extends React.Component {
 		}
 
 		return (
-			<div key={"CS" + "_" + level} 
+			<div key={"CS" + "_" + level}
                      >
                         {thisNode}
                         {children}

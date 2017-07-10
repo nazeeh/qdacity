@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';

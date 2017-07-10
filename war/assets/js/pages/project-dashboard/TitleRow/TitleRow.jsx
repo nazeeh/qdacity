@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import Settings from '../../../common/modals/Settings';
 import SettingsBtn from "./SettingsBtn.jsx"

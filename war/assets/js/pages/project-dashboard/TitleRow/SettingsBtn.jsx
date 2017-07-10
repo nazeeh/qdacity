@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import Settings from '../../../common/modals/Settings';

@@ -1,4 +1,6 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import UserEndpoint from '../../../common/endpoints/UserEndpoint';
 
 const StyledPagination = styled.ul `
