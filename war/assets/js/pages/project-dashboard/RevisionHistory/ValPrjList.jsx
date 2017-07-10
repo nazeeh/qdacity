@@ -2,6 +2,29 @@ import React from 'react';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
+const StyledPagination = styled.ul `
+	list-style: none;
+	display: flex;
+`;
+
+const StyledPaginationItem = styled.a `
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	cursor: pointer;
+`;
+
+const StyledListItemBtn = styled.a `
+	float: right;
+	margin-top: -15px;
+`;
+
+const StyledSearch = styled.span `
+	float: none;
+	width: 100%;
+`;
+
 export default class ValPrjList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -16,33 +39,6 @@ export default class ValPrjList extends React.Component {
 		this.paginationClick = this.paginationClick.bind(this);
 		this.updateSearch = this.updateSearch.bind(this);
 	}
-
-
-	getStyles() {
-		return {
-			search: {
-				width: "100%",
-				float: "none"
-			},
-			pagination: {
-				listStyle: "none",
-				display: "flex"
-			},
-			paginationItem: {
-				color: "black",
-				float: "left",
-				padding: "8px 16px",
-				textDecoration: "none",
-				cursor: "pointer"
-
-			},
-			listItemBtn: {
-				float: "right",
-				marginTop: "-15px"
-			}
-		};
-	}
-
 
 	paginationClick(event) {
 		this.setState({
@@ -82,13 +78,11 @@ export default class ValPrjList extends React.Component {
 	}
 
 	renderDeleteBtn(valPrj, index) {
-		const styles = this.getStyles();
-
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <a onClick={(e) => this.deleteValPrj(e,valPrj.id, index)} className="btn  fa-stack fa-lg" style={styles.listItemBtn}>
+			return <StyledListItemBtn onClick={(e) => this.deleteValPrj(e,valPrj.id, index)} className="btn  fa-stack fa-lg">
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>
-					</a>;
+					</StyledListItemBtn>;
 		else return '';
 	}
 
@@ -99,22 +93,20 @@ export default class ValPrjList extends React.Component {
 	render() {
 		var _this = this;
 
-		const styles = this.getStyles();
-
 		//Render Components
 
 		//Render search and newPrjBtn
 		const renderSearch = <div>
-			<span className="searchfield" id="searchform" style={styles.search}> 
-				<input 
-					type="text" 
-					placeholder="Search" 
+			<StyledSearch className="searchfield" id="searchform">
+				<input
+					type="text"
+					placeholder="Search"
 					value={this.state.search}
 					onChange={this.updateSearch}
 				/>
 				<button type="button" id="search">Find!</button>
-			</span>
-		
+			</StyledSearch>
+
 		</div>
 
 		// Render list items
@@ -147,15 +139,14 @@ export default class ValPrjList extends React.Component {
 		}
 		const renderPagination = pageNumbers.map(pageNo => {
 			return (
-				<a
+				<StyledPaginationItem
 	              key={pageNo}
 	              id={pageNo}
 	              onClick={this.paginationClick}
-	              style={styles.paginationItem}
 	              className= {this.isActivePage(pageNo)}
 	            >
 	              {pageNo}
-	            </a>
+			  </StyledPaginationItem>
 			);
 		});
 
@@ -165,9 +156,9 @@ export default class ValPrjList extends React.Component {
 				<ul className="list compactBoxList">
 					{renderListItems}
 	            </ul>
-	            <ul className="pagination" style={styles.pagination}>
+	            <StyledPagination className="pagination">
 					{renderPagination}
-            	</ul>
+            	</StyledPagination>
      		</div>
 		);
 	}
