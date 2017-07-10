@@ -1,17 +1,13 @@
 import React from 'react';
 
+const StyledSettingsBtn = styled.button `
+	margin-left: 5px;
+`;
+
 export default class SettingsBtn extends React.Component {
 	constructor(props) {
 		super(props);
 		this.redirectToCodingEditor = this.redirectToCodingEditor.bind(this);
-	}
-
-	getStyles() {
-		return {
-			settingsBtn: {
-				marginLeft: "5px"
-			}
-		};
 	}
 
 	redirectToCodingEditor() {
@@ -20,17 +16,14 @@ export default class SettingsBtn extends React.Component {
 
 	render() {
 		if (this.props.isProjectOwner || this.props.isValidationCoder) {
-			const styles = this.getStyles();
-
 			return (
-				<button 
-					type="button" 
+				<StyledSettingsBtn
+					type="button"
 					className="btn btn-default btn-sm pull-right"
-					style={styles.settingsBtn}
 					onClick={this.redirectToCodingEditor}
 				>
 					<i className="fa fa-tags fa-lg"></i>&nbsp;&nbsp;<b>Coding Editor</b>
-				</button>
+				</StyledSettingsBtn>
 			);
 		} else {
 			return null;
