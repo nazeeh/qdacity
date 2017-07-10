@@ -1,6 +1,18 @@
 import React from 'react';
 import UserEndpoint from '../../../common/endpoints/UserEndpoint';
 
+const StyledPagination = styled.ul `
+	list-style: none;
+	display: flex;
+`;
+
+const StyledPaginationItem = styled.a `
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	cursor: pointer;
+`;
 
 export default class UserList extends React.Component {
 	constructor(props) {
@@ -16,28 +28,6 @@ export default class UserList extends React.Component {
 
 		this.paginationClick = this.paginationClick.bind(this);
 	}
-
-	getStyles() {
-		return {
-			pagination: {
-				listStyle: "none",
-				display: "flex"
-			},
-			paginationItem: {
-				color: "black",
-				float: "left",
-				padding: "8px 16px",
-				textDecoration: "none",
-				cursor: "pointer"
-
-			},
-			listItemBtn: {
-				float: "right",
-				marginTop: "-15px"
-			}
-		};
-	}
-
 
 	init() {
 
@@ -91,35 +81,31 @@ export default class UserList extends React.Component {
 			return '';
 		} else {
 			//Render Pagination
-			const styles = this.getStyles();
 			const pageNumbers = [];
 			for (let i = 1; i <= Math.ceil(this.state.users.length / this.state.itemsPerPage); i++) {
 				pageNumbers.push(i);
 			}
 			const renderPaginationItems = pageNumbers.map(pageNo => {
 				return (
-					<a
+					<StyledPaginationItem
 		              key={pageNo}
 		              id={pageNo}
 		              onClick={this.paginationClick}
-		              style={styles.paginationItem}
 		              className= {this.isActivePage(pageNo)}
 		            >
 		              {pageNo}
-		            </a>
+				  </StyledPaginationItem>
 				);
 			});
-			return <ul className="pagination" style={styles.pagination}  key={"pagination"}>
+			return <StyledPagination className="pagination" key={"pagination"}>
 					{renderPaginationItems}
-            	</ul>
+            	</StyledPagination>
 		}
 
 	}
 
 	render() {
 		var _this = this;
-
-		const styles = this.getStyles();
 
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
@@ -132,7 +118,7 @@ export default class UserList extends React.Component {
 
 		const renderListItems = itemsToDisplay.map((user, index) => {
 			return <li key={index} className="clickable">
-					<span className="userName"> {user.givenName + " " + user.surName} </span>					
+					<span className="userName"> {user.givenName + " " + user.surName} </span>
 				</li>;
 		})
 
