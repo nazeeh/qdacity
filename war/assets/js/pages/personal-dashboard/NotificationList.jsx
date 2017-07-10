@@ -1,23 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import {StyledPagination, StyledPaginationItem} from '../../common/styles/List';
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js'
-
-const StyledPagination = styled.ul `
-	list-style: none;
-	display: flex;
-`;
-
-const StyledPaginationItem = styled.a `
-	color: black;
-	float: left;
-	padding: 8px 16px;
-	text-decoration: none;
-	cursor: pointer;
-`;
 
 export default class NotificationList extends React.Component {
 	constructor(props) {

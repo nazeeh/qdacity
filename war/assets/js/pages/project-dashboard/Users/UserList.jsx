@@ -1,20 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
 
 import UserEndpoint from '../../../common/endpoints/UserEndpoint';
 
-const StyledPagination = styled.ul `
-	list-style: none;
-	display: flex;
-`;
-
-const StyledPaginationItem = styled.a `
-	color: black;
-	float: left;
-	padding: 8px 16px;
-	text-decoration: none;
-	cursor: pointer;
-`;
+import {StyledPagination, StyledPaginationItem} from '../../../common/styles/List';
 
 export default class UserList extends React.Component {
 	constructor(props) {

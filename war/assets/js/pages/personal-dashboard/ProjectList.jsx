@@ -7,23 +7,7 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 
-const StyledPagination = styled.ul `
-	list-style: none;
-	display: flex;
-`;
-
-const StyledPaginationItem = styled.a `
-	color: black;
-	float: left;
-	padding: 8px 16px;
-	text-decoration: none;
-	cursor: pointer;
-`;
-
-const StyledListItemBtn = styled.a `
-	float: right;
-	margin-top: -15px;
-`;
+import {StyledPagination, StyledPaginationItem, StyledListItemBtn} from '../../common/styles/List';
 
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
