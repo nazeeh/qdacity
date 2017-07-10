@@ -1,10 +1,5 @@
 import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
-import IntercoderAgreementByDoc from './IntercoderAgreementByDoc';
-import IntercoderAgreementByCode from './IntercoderAgreementByCode';
-import BinaryDecider from './BinaryDecider';
-import ProjectEndpoint from '../endpoints/ProjectEndpoint';
-import ValidationEndpoint from '../endpoints/ValidationEndpoint';
 import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
 export default class SaturationModal extends VexModal {
