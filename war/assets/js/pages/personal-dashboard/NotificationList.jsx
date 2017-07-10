@@ -5,6 +5,19 @@ import UserEndpoint from '../../common/endpoints/UserEndpoint';
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js'
 
+const StyledPagination = styled.ul `
+	list-style: none;
+	display: flex;
+`;
+
+const StyledPaginationItem = styled.a `
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	cursor: pointer;
+`;
+
 export default class NotificationList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -50,24 +63,6 @@ export default class NotificationList extends React.Component {
 		});
 	}
 
-
-	getStyles() {
-		return {
-			pagination: {
-				listStyle: "none",
-				display: "flex"
-			},
-			paginationItem: {
-				color: "black",
-				float: "left",
-				padding: "8px 16px",
-				textDecoration: "none",
-				cursor: "pointer"
-
-			}
-		};
-	}
-
 	acceptInvitation(notification) {
 		var _this = this;
 		ProjectEndpoint.addOwner(notification.project).then(function (resp) {
@@ -103,8 +98,6 @@ export default class NotificationList extends React.Component {
 	}
 
 	renderButtons(notification) {
-		const styles = this.getStyles();
-
 		switch (notification.type) {
 		case "INVITATION":
 			if (notification.settled) {
@@ -161,15 +154,13 @@ export default class NotificationList extends React.Component {
 	render() {
 		var _this = this;
 
-		const styles = this.getStyles();
-
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = this.state.notifications.slice(firstItem, lastItem);
 
 		const renderListItems = itemsToDisplay.map((notification, index) => {
-			return <li 
-					key={notification.id} 
+			return <li
+					key={notification.id}
 				>
 					<span dangerouslySetInnerHTML={{__html: notification.subject}}></span>
 					<br/>
@@ -185,15 +176,14 @@ export default class NotificationList extends React.Component {
 		}
 		const renderPagination = pageNumbers.map(pageNo => {
 			return (
-				<a
+				<StyledPaginationItem
 	              key={pageNo}
 	              id={pageNo}
 	              onClick={this.paginationClick}
-	              style={styles.paginationItem}
 	              className= {this.isActivePage(pageNo)}
 	            >
 	              {pageNo}
-	            </a>
+			  </StyledPaginationItem>
 			);
 		});
 
@@ -202,9 +192,9 @@ export default class NotificationList extends React.Component {
 				<ul className="list compactBoxList">
 					{renderListItems}
 	            </ul>
-	            <ul className="pagination" style={styles.pagination}>
+	            <StyledPagination className="pagination">
 					{renderPagination}
-            	</ul>
+            	</StyledPagination>
      		</div>
 		);
 	}
