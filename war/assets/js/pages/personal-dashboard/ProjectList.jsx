@@ -5,6 +5,28 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 
+const StyledPagination = styled.ul `
+	list-style: none;
+	display: flex;
+`;
+
+const StyledPaginationItem = styled.a `
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	cursor: pointer;
+`;
+
+const StyledListItemBtn = styled.a `
+	float: right;
+	margin-top: -15px;
+`;
+
+const StyledNewPrjBtn = styled.div `
+	padding-left: 5px;
+`;
+
 export default class ProjectList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -100,31 +122,6 @@ export default class ProjectList extends React.Component {
 		});
 	}
 
-
-	getStyles() {
-		return {
-			pagination: {
-				listStyle: "none",
-				display: "flex"
-			},
-			paginationItem: {
-				color: "black",
-				float: "left",
-				padding: "8px 16px",
-				textDecoration: "none",
-				cursor: "pointer"
-
-			},
-			listItemBtn: {
-				float: "right",
-				marginTop: "-15px"
-			},
-			newPrjBtn: {
-				paddingLeft: "5px"
-			}
-		};
-	}
-
 	updateSearch(e) {
 		this.setState({
 			search: e.target.value
@@ -170,12 +167,11 @@ export default class ProjectList extends React.Component {
 	}
 
 	renderDeleteBtn(project, index) {
-		const styles = this.getStyles();
 		if (typeof project.revisionID == "undefined") {
-			return <a onClick={(e) => this.deleteProject(e, project, index)} className=" btn  fa-stack fa-lg" style={styles.listItemBtn} > 
+			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn  fa-stack fa-lg">
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
-					</a>
+					</StyledListItemBtn>
 		} else {
 			return "";
 		}
@@ -184,35 +180,33 @@ export default class ProjectList extends React.Component {
 	render() {
 		var _this = this;
 
-		const styles = this.getStyles();
-
 		//Render Components
 
 		//Render search and newPrjBtn
 		const projectListMenu = <div className="projectlist-menu">
-			<span className="searchfield" id="searchform"> 
-				<input 
-					type="text" 
-					class="search" 
-					placeholder="Search" 
+			<span className="searchfield" id="searchform">
+				<input
+					type="text"
+					class="search"
+					placeholder="Search"
 					value={this.state.search}
 					onChange={this.updateSearch}
 				/>
 				<button type="button" id="search">Find!</button>
-				<div id="newProject" style={styles.newPrjBtn}>
-					<button 
-						id="newPrjBtn" 
+				<StyledNewPrjBtn id="newProject">
+					<button
+						id="newPrjBtn"
 						className="btn btn-primary" href="#"
 						onClick={this.showNewProjectModal}
-						 
+
 					>
 					<i className="fa fa-plus fa-fw"></i>
 					New
 					</button>
-				</div>
+				</StyledNewPrjBtn>
 
 			</span>
-		
+
 		</div>
 
 		//Rebder List Items
@@ -231,23 +225,23 @@ export default class ProjectList extends React.Component {
 		}
 
 		const renderListItems = itemsToDisplay.map((project, index) => {
-			return <li 
-					key={project.id} 
+			return <li
+					key={project.id}
 					className={this.isValidationProject(project)}
 					onClick={() => prjClick(project)}
 					href={'project-dashboard.html?project=' + project.id + "&type=PROJECT"}
-					
+
 				>
 					<span>{project.name}</span>
 					{this.renderDeleteBtn(project, index)}
-					<a onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" style={styles.listItemBtn} > 
+					<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" >
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
-					</a>
-					<a href={"coding-editor.html?project="+project.id+"&type="+project.type} className=" btn  fa-stack fa-lg" style={styles.listItemBtn} > 
+					</StyledListItemBtn>
+					<StyledListItemBtn href={"coding-editor.html?project="+project.id+"&type="+project.type} className=" btn  fa-stack fa-lg" >
 						<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
 						<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
-					</a>
+					</StyledListItemBtn>
 				</li>;
 		})
 
@@ -258,15 +252,14 @@ export default class ProjectList extends React.Component {
 		}
 		const renderPagination = pageNumbers.map(pageNo => {
 			return (
-				<a
+				<StyledPaginationItem
 	              key={pageNo}
 	              id={pageNo}
 	              onClick={this.paginationClick}
-	              style={styles.paginationItem}
 	              className= {this.isActivePage(pageNo)}
 	            >
 	              {pageNo}
-	            </a>
+			  </StyledPaginationItem>
 			);
 		});
 
@@ -276,9 +269,9 @@ export default class ProjectList extends React.Component {
 				<ul className="list compactBoxList">
 					{renderListItems}
 	            </ul>
-	            <ul className="pagination" style={styles.pagination}>
+	            <StyledPagination className="pagination">
 					{renderPagination}
-            	</ul>
+            	</StyledPagination>
      		</div>
 		);
 	}
