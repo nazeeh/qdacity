@@ -175,7 +175,15 @@ function setupUI() {
 }
 
 function viewChanged(view) {
-	alert(view);
+	if (view == 'text') {
+		$('#project-ui').show();
+		$('#documents-ui').show();
+		$('#editor').show();
+	} else if (view == 'uml') {
+		$('#project-ui').hide();
+		$('#documents-ui').hide();
+		$('#editor').hide();
+	}
 }
 
 function showCodingView() {
