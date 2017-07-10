@@ -147,7 +147,7 @@ export default class MetaModelMapper {
 
 		const umlCodePosition = umlClass.getUmlCodePosition();
 		if (umlCodePosition != null) {
-			this.umlGraphView.translateNode(node, umlCodePosition.x, umlCodePosition.y);
+			this.umlGraphView.moveNode(node, umlCodePosition.x, umlCodePosition.y);
 		}
 
 		this.umlGraphView.onNodesChanged();
