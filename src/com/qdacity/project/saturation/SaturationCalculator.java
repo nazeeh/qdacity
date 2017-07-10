@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.qdacity.Cache;
+import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
@@ -22,6 +23,7 @@ import com.qdacity.util.DataStoreUtil;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.jdo.PersistenceManager;
 
 public class SaturationCalculator {
 
@@ -36,10 +38,11 @@ public class SaturationCalculator {
 	this.epochStart = epochStart;
     }
 
-    public SaturationResult calculateSaturation() {
+    public SaturationResult calculateSaturation(PersistenceManager pmr) {
 	SaturationResult result = new SaturationResult();
+	pmr.makePersistent(result); //We need to persist it here because we will add a Child and we need an ID for that.
 	result.setProjectId(projectId);
-	result.setSaturationParameters(params);
+	result.setSaturationParameters(new SaturationParameters(params)); //we need to copy them due to DataStore restriction!
 
 	calculateDocumentSaturation(result);
 	calculateCodeSaturation(result);
