@@ -45,8 +45,6 @@ export default class PersonalReportList extends React.Component {
 		if (this.props.project.getType() != 'VALIDATION') return null;
 		var _this = this;
 
-		const styles = this.getStyles();
-
 		//Render Components
 
 		const renderListItems = this.state.reports.map((report, index) => {

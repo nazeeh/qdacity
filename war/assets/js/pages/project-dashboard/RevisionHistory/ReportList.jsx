@@ -3,6 +3,24 @@ import React from 'react';
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
 
+const StyledPagination = styled.ul `
+	list-style: none;
+	display: flex;
+`;
+
+const StyledPaginationItem = styled.a `
+	color: black;
+	float: left;
+	padding: 8px 16px;
+	text-decoration: none;
+	cursor: pointer;
+`;
+
+const StyledListItemBtn = styled.a `
+	float: right;
+	margin-top: -15px;
+`;
+
 export default class ReportList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -16,29 +34,6 @@ export default class ReportList extends React.Component {
 
 		this.paginationClick = this.paginationClick.bind(this);
 	}
-
-
-	getStyles() {
-		return {
-			pagination: {
-				listStyle: "none",
-				display: "flex"
-			},
-			paginationItem: {
-				color: "black",
-				float: "left",
-				padding: "8px 16px",
-				textDecoration: "none",
-				cursor: "pointer"
-
-			},
-			listItemBtn: {
-				float: "right",
-				marginTop: "-15px"
-			}
-		};
-	}
-
 
 	paginationClick(event) {
 		this.setState({
@@ -76,20 +71,16 @@ export default class ReportList extends React.Component {
 
 
 	renderReportDeleteBtn(report, index) {
-		const styles = this.getStyles();
-
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <a onClick={(e) => this.deleteReport(e, report.id, index)} className="btn  fa-stack fa-lg" style={styles.listItemBtn}>
+			return <StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn  fa-stack fa-lg">
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>
-					</a>;
+					</StyledListItemBtn>;
 		else return '';
 	}
 
 	render() {
 		var _this = this;
-
-		const styles = this.getStyles();
 
 		//Render Components
 
@@ -109,7 +100,7 @@ export default class ReportList extends React.Component {
 					<span className="reportName"> {report.name} </span>
 					{this.renderReportDeleteBtn(report, index)}
 					<span className="reportDate">{'[' + datetime + ']'}</span>
-					
+
 				</li>;
 		})
 
@@ -120,15 +111,14 @@ export default class ReportList extends React.Component {
 		}
 		const renderPagination = pageNumbers.map(pageNo => {
 			return (
-				<a
+				<StyledPaginationItem
 	              key={pageNo}
 	              id={pageNo}
 	              onClick={this.paginationClick}
-	              style={styles.paginationItem}
 	              className= {this.isActivePage(pageNo)}
 	            >
 	              {pageNo}
-	            </a>
+			  </StyledPaginationItem>
 			);
 		});
 
@@ -137,9 +127,9 @@ export default class ReportList extends React.Component {
 				<ul className="list compactBoxList">
 					{renderListItems}
 	            </ul>
-	            <ul className="pagination" style={styles.pagination}>
+	            <StyledPagination className="pagination">
 					{renderPagination}
-            	</ul>
+            	</StyledPagination>
      		</div>
 		);
 	}
