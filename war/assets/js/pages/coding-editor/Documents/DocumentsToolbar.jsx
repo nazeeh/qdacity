@@ -22,15 +22,6 @@ export default class DocumentsToolbar extends React.Component {
 		this.changeTitle = this.changeTitle.bind(this);
 	}
 
-	getStyles() {
-		return {
-			settingsBtn: {
-				marginLeft: "5px"
-			}
-
-		};
-	}
-
 	addDocument() {
 		var _this = this;
 		var decider = new BinaryDecider('Empty Document or Upload?', 'New Text Document', 'Upload Documents');
@@ -141,8 +132,6 @@ export default class DocumentsToolbar extends React.Component {
 	}
 
 	render() {
-		const styles = this.getStyles();
-
 		return (
 			<div className="btn-group">
 				<a className="btn btn-default" onClick={this.changeTitle}>

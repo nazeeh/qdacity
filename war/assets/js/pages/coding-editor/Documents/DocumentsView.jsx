@@ -4,6 +4,23 @@ import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
+const StyledInfoBox = styled.div `
+	background-color: #FAFAFA;
+	border-left-style: solid;
+	border-left-width: thick;
+	border-left-color: #337ab7;
+	border-right-style: solid;
+	border-right-width: thick;
+	border-right-color: #337ab7;
+	text-align: center;
+`;
+
+const StyledToolBar = styled.div `
+	text-align: center;
+	position: relative;
+	background-color: #e7e7e7;
+`;
+
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -22,26 +39,6 @@ export default class DocumentsView extends React.Component {
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
-	}
-
-	getStyles() {
-		return {
-			infoBox: {
-				backgroundColor: "#FAFAFA",
-				borderLeftStyle: "solid",
-				borderLeftWidth: "thick",
-				borderLeftColor: "#337ab7",
-				borderRightStyle: "solid",
-				borderRightWidth: "thick",
-				borderRightColor: "#337ab7",
-				textAlign: "center"
-			},
-			toolBar: {
-				textAlign: "center",
-				position: "relative",
-				backgroundColor: "#e7e7e7"
-			}
-		};
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -267,17 +264,16 @@ export default class DocumentsView extends React.Component {
 
 	render() {
 		var _this = this;
-		const styles = this.getStyles();
 		if (!this.state.isExpanded) {
-			return <div style={styles.infoBox}>
+			return <StyledInfoBox>
 		      <b>Current Document: {this.getActiveDocument().title}</b>
-		    </div>
+		    </StyledInfoBox>
 		}
 		return (
 			<div>
-			<div  style={styles.toolBar}>
+			<StyledToolBar>
 				{this.renderToolbar()}
-			</div>
+			</StyledToolBar>
 			<div className="list-group">
 	        {
 	          this.state.documents.map(function(doc) {
