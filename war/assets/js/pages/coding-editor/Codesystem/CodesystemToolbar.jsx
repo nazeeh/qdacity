@@ -5,6 +5,14 @@ import Prompt from '../../../common/modals/Prompt';
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
+const StyledToolBar = styled.div `
+    padding-bottom: 2px;
+`;
+
+const StyledBtnGroup = styled.div `
+    padding: 0px 1px 0px 1px;
+`;
+
 export default class CodesystemToolbar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -15,21 +23,6 @@ export default class CodesystemToolbar extends React.Component {
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
 		this.openUMLEditor = this.openUMLEditor.bind(this);
-	}
-
-	getStyles() {
-		return {
-			toolbar: {
-				paddingBottom: "2px"
-			},
-			settingsBtn: {
-				marginLeft: "5px"
-			},
-			btnGroup: {
-				padding: "0px 1px 0px 1px"
-			}
-
-		};
 	}
 
 	removeCode() {
@@ -121,11 +114,11 @@ export default class CodesystemToolbar extends React.Component {
 		const styles = this.getStyles();
 		if (!this.props.umlEditorEnabled) return "";
 		return (
-			<div className="btn-group" style={styles.btnGroup}>
+			<StyledBtnGroup className="btn-group">
 				<a className="btn btn-default" onClick={this.openUMLEditor}>
 					<i className="fa fa-external-link fa-1x"></i>
 				</a>
-			</div>
+			</StyledBtnGroup>
 		);
 	}
 
@@ -143,17 +136,15 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	render() {
-		const styles = this.getStyles();
-
 		return (
-			<div style={styles.toolbar}>
-				<div className="btn-group" style={styles.btnGroup}>
+			<StyledToolBar>
+				<StyledBtnGroup className="btn-group" >
 					{this.renderAddRemoveCodeBtn()}
 					<a className="btn btn-default" onClick={this.props.toggleCodingView}>
 						<i className="fa  fa-list-alt  fa-1x"></i>
 					</a>
-				</div>
-				<div className="btn-group" style={styles.btnGroup}>
+				</StyledBtnGroup>
+				<StyledBtnGroup className="btn-group"}>
 					<a className="btn btn-default" onClick={this.applyCode}>
 						<span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
 							<i className="fa fa-tag fa-stack-2x"></i>
@@ -166,9 +157,9 @@ export default class CodesystemToolbar extends React.Component {
 							<i className="fa fa-minus fa-stack-1x fa-inverse"></i>
 						</span>
 					</a>
-				</div>
+				</StyledBtnGroup>
 				{this.renderUmlEditorBtn()}
-			</div>
+			</StyledToolBar>
 		);
 	}
 
