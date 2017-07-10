@@ -132,7 +132,11 @@ public class ChangeBuilder {
 	    sb.append("{\"");
 	    sb.append(attribute);
 	    sb.append("\":\"");
-	    sb.append(codeDiff.get(attribute)[index].replace("\"", "&quot;"));
+	    if(codeDiff.get(attribute)[index]!=null){
+	    	sb.append(codeDiff.get(attribute)[index].replace("\"", "&quot;"));
+	    } else {
+	    	sb.append("null");
+	    }
 	    sb.append("\"},");
 	}
 	return sb.toString();

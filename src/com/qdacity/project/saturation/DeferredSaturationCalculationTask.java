@@ -27,17 +27,19 @@ public class DeferredSaturationCalculationTask implements DeferredTask {
 	SaturationEndpoint se = new SaturationEndpoint();
 	List<SaturationResult> saturationResults = se.getHistoricalSaturationResults(projectId, null);
 	for (SaturationResult sr : saturationResults) {
-	    if (sr.getCreationTime().after(epochStart)) {
-		epochStart = sr.getCreationTime();
+	    if (sr.getCreationTime() != null && sr.getCreationTime().after(epochStart)) {
+		epochStart = new Date(sr.getCreationTime().getTime());
 	    }
 	}
 
 	try {
 	    sCalc = new SaturationCalculator(projectId, epochStart);
-	    SaturationResult saturationResult = sCalc.calculateSaturation();
+	    SaturationResult saturationResult = sCalc.calculateSaturation(pmr);
 	    pmr.makePersistent(saturationResult);
 	} catch (UnauthorizedException ex) {
 	    Logger.getLogger(DeferredSaturationCalculationTask.class.getName()).log(Level.SEVERE, null, ex);
+	} finally {
+	    pmr.close();
 	}
     }
 

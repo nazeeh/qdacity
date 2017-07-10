@@ -10,6 +10,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.qdacity.Cache;
+import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
@@ -22,6 +23,7 @@ import com.qdacity.util.DataStoreUtil;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.jdo.PersistenceManager;
 
 public class SaturationCalculator {
 
@@ -36,10 +38,11 @@ public class SaturationCalculator {
 	this.epochStart = epochStart;
     }
 
-    public SaturationResult calculateSaturation() {
+    public SaturationResult calculateSaturation(PersistenceManager pmr) {
 	SaturationResult result = new SaturationResult();
+	pmr.makePersistent(result); //We need to persist it here because we will add a Child and we need an ID for that.
 	result.setProjectId(projectId);
-	result.setSaturationParameters(params);
+	result.setSaturationParameters(new SaturationParameters(params)); //we need to copy them due to DataStore restriction!
 
 	calculateDocumentSaturation(result);
 	calculateCodeSaturation(result);
@@ -52,6 +55,8 @@ public class SaturationCalculator {
     private void calculateDocumentSaturation(SaturationResult result) {
 	double numberOfNewDocuments = countChanges(ChangeObject.DOCUMENT, ChangeType.CREATED);
 	double totalNumberOfDocuments = TextDocumentEndpoint.countDocuments(projectId);
+	//counting the number of documents is correct here
+	//we could count the number of insert document changes instead, but it is the same number.
 	double numberOfDocumentsBeforeChange = totalNumberOfDocuments - numberOfNewDocuments;
 	result.setDocumentSaturation(saturation(numberOfNewDocuments, numberOfDocumentsBeforeChange));
     }
@@ -117,14 +122,17 @@ public class SaturationCalculator {
 	}
 	double numRelocatedCodes = countChanges(ChangeObject.CODE, ChangeType.RELOCATE);
 	double numAppliedCodes = countChanges(ChangeObject.DOCUMENT, ChangeType.APPLY);
-	
+
 	double numCodeRelationInsert = countChanges(ChangeObject.CODE_RELATIONSHIP, ChangeType.CREATED);
 	double numCodeRelationDeleted = countChanges(ChangeObject.CODE_RELATIONSHIP, ChangeType.DELETED);
 
 	//Project properties
 	double numCurrentCodes = CodeEndpoint.countCodes(project.getCodesystemID());
-	double totalNumberOfCodesBeforeChanges = (numCurrentCodes - numNewCodes) + numDeletedCodes;
-	
+	double numAppliedCodesTotal = countTotalChangesBeforeEpochStart(ChangeObject.DOCUMENT, ChangeType.APPLY);
+	double totalNumberOfChangesBeforeEpochStart = countAllCodeSystemChangesBeforeEpochStart();
+	//Alternative thought: Size of Code System. But it doesn't make much sense as it can not show developement over time
+	//double totalNumberOfCodes = (numCurrentCodes - numNewCodes) + numDeletedCodes;
+
 	Logger.getLogger("logger").log(Level.INFO, "Number of Changes since " + epochStart + "\n"
 		+ "numNewCodes " + numNewCodes + "\n"
 		+ "numDeletedCodes " + numDeletedCodes + "\n"
@@ -144,30 +152,41 @@ public class SaturationCalculator {
 		+ "numCodeRelationDeleted " + numCodeRelationDeleted + "\n"
 		+ "== PROJECT-PROPERTIES == \n"
 		+ "numCurrentCodes " + numCurrentCodes + "\n"
-		+ "totalNumberOfCodesBeforeChanges " + totalNumberOfCodesBeforeChanges + "\n"
+		+ "totalNumberOfCodesBeforeChanges " + totalNumberOfChangesBeforeEpochStart + "\n"
 	);
 
 	//calculate saturation
-	result.setInsertCodeSaturation(saturation(numNewCodes, totalNumberOfCodesBeforeChanges));
-	result.setDeleteCodeSaturation(saturation(numDeletedCodes, totalNumberOfCodesBeforeChanges));
+	result.setInsertCodeSaturation(saturation(numNewCodes, totalNumberOfChangesBeforeEpochStart));
+	result.setDeleteCodeSaturation(saturation(numDeletedCodes, totalNumberOfChangesBeforeEpochStart));
 	//Code attributes
-	result.setUpdateCodeAuthorSaturation(saturation(numAuthorChanged, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeColorSaturation(saturation(numColorChanged, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeIdSaturation(saturation(numCodeIdChanged, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeMemoSaturation(saturation(numMemoChanged, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeNameSaturation(saturation(numNameChanged, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeAuthorSaturation(saturation(numAuthorChanged, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeColorSaturation(saturation(numColorChanged, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeIdSaturation(saturation(numCodeIdChanged, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeMemoSaturation(saturation(numMemoChanged, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeNameSaturation(saturation(numNameChanged, totalNumberOfChangesBeforeEpochStart));
 	//CodeBookEntry attributes
-	result.setUpdateCodeBookEntryDefinitionSaturation(saturation(numCodeBookDefinition, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeBookEntryExampleSaturation(saturation(numCodeBookExample, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeBookEntryShortDefinitionSaturation(saturation(numCodeBookShortdefinition, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeBookEntryWhenNotToUseSaturation(saturation(numCodeBookWhenNotToUse, totalNumberOfCodesBeforeChanges));
-	result.setUpdateCodeBookEntryWhenToUseSaturation(saturation(numCodeBookWhenToUse, totalNumberOfCodesBeforeChanges));
-	
-	result.setInsertCodeRelationShipSaturation(saturation(numCodeRelationInsert, totalNumberOfCodesBeforeChanges));
-	result.setDeleteCodeRelationShipSaturation(saturation(numCodeRelationDeleted, totalNumberOfCodesBeforeChanges));
+	result.setUpdateCodeBookEntryDefinitionSaturation(saturation(numCodeBookDefinition, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeBookEntryExampleSaturation(saturation(numCodeBookExample, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeBookEntryShortDefinitionSaturation(saturation(numCodeBookShortdefinition, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeBookEntryWhenNotToUseSaturation(saturation(numCodeBookWhenNotToUse, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeBookEntryWhenToUseSaturation(saturation(numCodeBookWhenToUse, totalNumberOfChangesBeforeEpochStart));
 
-	result.setApplyCodeSaturation(saturation(numAppliedCodes, totalNumberOfCodesBeforeChanges)); //TODO mit Anzahl Codes zu Bezug setzen macht keinen sinn! VIelleicht sollte man es ganz anders machen und einfach nur abspeicher wie oft welcher code benutzt wurde.
-	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfCodesBeforeChanges));
+	result.setInsertCodeRelationShipSaturation(saturation(numCodeRelationInsert, totalNumberOfChangesBeforeEpochStart));
+	result.setDeleteCodeRelationShipSaturation(saturation(numCodeRelationDeleted, totalNumberOfChangesBeforeEpochStart));
+
+	result.setApplyCodeSaturation(saturation(numAppliedCodes, numAppliedCodesTotal)); //Hint: Only checking on Code Applies, not other changes
+	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfChangesBeforeEpochStart));
+    }
+
+    private double countAllCodeSystemChangesBeforeEpochStart() {
+	//Not counting Code Applies, only looking at CodeSystem Changes
+	return countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.CREATED)
+		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.DELETED)
+		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.MODIFIED)
+		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.RELOCATE)
+		+ countTotalChangesBeforeEpochStart(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED)
+		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE_RELATIONSHIP, ChangeType.CREATED)
+		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE_RELATIONSHIP, ChangeType.DELETED);
     }
 
     /**
@@ -210,7 +229,7 @@ public class SaturationCalculator {
 	    return 0.0; //nothing was there and something changed 
 	}
 	double activity = numberOfChangesOnObjectByType / totalNumberOfObjectsBeforeChanges;
-	if(activity > 1.0) {
+	if (activity > 1.0) {
 	    return 0.0; //more changes than objects before changes means there is no saturation
 	}
 	return 1.0 - activity;
@@ -226,6 +245,23 @@ public class SaturationCalculator {
      */
     private double countChanges(ChangeObject changeObject, ChangeType changeType) {
 	Filter andFilter = makeFilterForThisProjectAndEpoch(changeObject, changeType);
+	return DataStoreUtil.countEntitiesWithFilter("Change", andFilter);
+    }
+
+    /**
+     * Similar to count changes, but only counts changes until epoch Start
+     *
+     * @param changeObject
+     * @param changeType
+     * @return
+     */
+    private double countTotalChangesBeforeEpochStart(ChangeObject changeObject, ChangeType changeType) {
+	Filter projectIdFilter = new Query.FilterPredicate("projectID", Query.FilterOperator.EQUAL, projectId);
+	java.util.Date compatibleDate = new Date(epochStart.getTime());
+	Filter changeUntil = new Query.FilterPredicate("datetime", Query.FilterOperator.LESS_THAN, compatibleDate);
+	Filter changeObjectFilter = new Query.FilterPredicate("objectType", Query.FilterOperator.EQUAL, changeObject.toString());
+	Filter changeTypeFilter = new Query.FilterPredicate("changeType", Query.FilterOperator.EQUAL, changeType.toString());
+	Filter andFilter = CompositeFilterOperator.and(projectIdFilter, changeUntil, changeObjectFilter, changeTypeFilter);
 	return DataStoreUtil.countEntitiesWithFilter("Change", andFilter);
     }
 
