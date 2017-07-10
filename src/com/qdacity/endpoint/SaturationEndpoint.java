@@ -96,10 +96,12 @@ public class SaturationEndpoint {
     }
 
     /**
-     * Returns the latest SaturationParameters from the DataStore for the given projectId
+     * Returns the latest SaturationParameters from the DataStore for the given
+     * projectId
+     *
      * @param projectId
      * @return
-     * @throws UnauthorizedException 
+     * @throws UnauthorizedException
      */
     public SaturationParameters getSaturationParameters(@Named("projectId") Long projectId) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
@@ -119,8 +121,8 @@ public class SaturationEndpoint {
 	    return realParameters;
 	}
 	SaturationParameters toReturn = parameters.get(0);
-	for(SaturationParameters params : parameters) {
-	    if(params.getCreationTime().after(toReturn.getCreationTime())) {
+	for (SaturationParameters params : parameters) {
+	    if (params.getCreationTime().after(toReturn.getCreationTime())) {
 		toReturn = params;
 	    }
 	}
