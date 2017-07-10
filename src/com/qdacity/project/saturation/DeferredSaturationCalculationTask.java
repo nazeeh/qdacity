@@ -38,6 +38,8 @@ public class DeferredSaturationCalculationTask implements DeferredTask {
 	    pmr.makePersistent(saturationResult);
 	} catch (UnauthorizedException ex) {
 	    Logger.getLogger(DeferredSaturationCalculationTask.class.getName()).log(Level.SEVERE, null, ex);
+	} finally {
+	    pmr.close();
 	}
     }
 
