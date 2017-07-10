@@ -184,6 +184,7 @@ function viewChanged(view) {
 		$('#documents-ui').hide();
 		$('#editor').hide();
 	}
+	resizeHandler();
 }
 
 function showCodingView() {
