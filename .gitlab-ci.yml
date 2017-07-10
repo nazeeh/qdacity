@@ -28,6 +28,7 @@ build_frontend_production:
     expire_in: 3 mos
   script:
     - cd war
+    - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - npm install 
     - gulp bundle
     
