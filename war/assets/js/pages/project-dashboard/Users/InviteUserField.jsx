@@ -2,6 +2,10 @@ import React from 'react';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
+const StyledInvitationField = styled.span `
+	width: 100%;
+`;
+
 export default class InviteUserField extends React.Component {
 	constructor(props) {
 		super(props);
@@ -10,14 +14,6 @@ export default class InviteUserField extends React.Component {
 		};
 		this.updateUserEmail = this.updateUserEmail.bind(this);
 		this.inviteUser = this.inviteUser.bind(this);
-	}
-
-	getStyles() {
-		return {
-			invitationField: {
-				width: "100%"
-			}
-		};
 	}
 
 	updateUserEmail(e) {
@@ -41,11 +37,9 @@ export default class InviteUserField extends React.Component {
 
 		var _this = this;
 
-		const styles = this.getStyles();
-
-		return (<span className="searchfield" style={styles.invitationField}>
-				<input 
-					type="text" 
+		return (<StyledInvitationField className="searchfield">
+				<input
+					type="text"
 					placeholder="User Email"
 					value={this.state.userEmail}
 					onChange={this.updateUserEmail}
@@ -54,7 +48,7 @@ export default class InviteUserField extends React.Component {
 				<button type="button" onClick={this.inviteUser}>
 					Invite
 				</button>
-			</span>);
+			</StyledInvitationField>);
 	}
 
 

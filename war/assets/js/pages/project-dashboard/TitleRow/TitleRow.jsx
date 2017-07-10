@@ -4,6 +4,10 @@ import Settings from '../../../common/modals/Settings';
 import SettingsBtn from "./SettingsBtn.jsx"
 import CodingEditorBtn from "./CodingEditorBtn.jsx"
 
+const StyledProjectName = styled.span `
+	margin-left: 5px;
+`;
+
 export default class TitleRow extends React.Component {
 	constructor(props) {
 		super(props);
@@ -11,14 +15,6 @@ export default class TitleRow extends React.Component {
 			isValidationCoder: false,
 			prjName: "",
 			prjSettings: {}
-		};
-	}
-
-	getStyles() {
-		return {
-			projectName: {
-				marginLeft: "5px"
-			}
 		};
 	}
 
@@ -34,14 +30,13 @@ export default class TitleRow extends React.Component {
 
 
 	render() {
-		const styles = this.getStyles();
 		var projectName = (this.props.project.name ? this.props.project.name : "")
 		return (
 			<h2 className="page-header">
 			<i className="fa fa-newspaper-o"></i>
-				<span style={styles.projectName}>
+				<StyledProjectName>
 					{projectName}
-				</span>
+				</StyledProjectName>
 
 				<SettingsBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner} />
 				<CodingEditorBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner}  isValidationCoder={this.props.isValidationCoder} />
