@@ -1,6 +1,7 @@
 import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
 import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import SaturationAverage from '../../common/SaturationAverage';
 
 export default class SaturationModal extends VexModal {
 
@@ -86,7 +87,7 @@ export default class SaturationModal extends VexModal {
         data.addColumn('number', 'Code Color Changes');
         data.addColumn('number', 'Code Memo Changes');
         data.addColumn('number', 'Code Name Changes');
-        //TODO average
+        data.addColumn('number', 'Weighted Average');
 
         var rows = [];
         for (var i in this.results) {
@@ -108,8 +109,9 @@ export default class SaturationModal extends VexModal {
                 sat.updateCodeColorSaturation,
                 sat.updateCodeMemoSaturation,
                 sat.updateCodeNameSaturation,
+                new SaturationAverage(sat).calculateAvgSaturation(false)
             ];
-            //TODO average (and focus on average when opening diagram)
+            //TODO focus on average when opening diagram
             rows.push(oneDataSet);
         }
         data.addRows(rows);
