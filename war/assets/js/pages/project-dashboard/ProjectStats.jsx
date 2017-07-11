@@ -1,7 +1,7 @@
 import React from 'react';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import SaturationModal from '../../common/modals/SaturationModal';
-
+import SaturationAverage from '../../common/SaturationAverage';
 
 export default class ProjectStats extends React.Component {
 	constructor(props) {
@@ -26,50 +26,6 @@ export default class ProjectStats extends React.Component {
 				saturation: resp.saturation
 			});
 		});
-	}
-
-	calculateAvgSaturation() {
-		var sr = this.state.saturation;
-		var pr = sr.saturationParameters;
-		if (pr != undefined) {
-			//weights are set beween 0 and 1 and are > 1 in total. 
-			// we need to normalize them when calculating the weighted average
-			var sumParameters = pr.appliedCodesChangeWeight
-				+ pr.deleteCodeRelationShipChangeWeight
-				+ pr.deleteCodeChangeWeight
-				+ pr.insertDocumentChangeWeight
-				+ pr.insertCodeRelationShipChangeWeight
-				+ pr.insertCodeChangeWeight
-				+ pr.relocateCodeChangeWeight
-				+ pr.updateCodeAuthorChangeWeight
-				+ pr.updateCodeBookEntryDefinitionChangeWeight
-				+ pr.updateCodeBookEntryExampleChangeWeight
-				+ pr.updateCodeBookEntryShortDefinitionChangeWeight
-				+ pr.updateCodeBookEntryWhenNotToUseChangeWeight
-				+ pr.updateCodeBookEntryWhenToUseChangeWeight
-				+ pr.updateCodeColorChangeWeight
-				+ pr.updateCodeMemoChangeWeight
-				+ pr.updateCodeNameChangeWeight;
-			var weightedAvg = sr.applyCodeSaturation * (pr.appliedCodesChangeWeight / sumParameters)
-				+ sr.deleteCodeRelationShipSaturation * (pr.deleteCodeRelationShipChangeWeight / sumParameters)
-				+ sr.deleteCodeSaturation * (pr.deleteCodeChangeWeight / sumParameters)
-				+ sr.documentSaturation * (pr.insertDocumentChangeWeight / sumParameters)
-				+ sr.insertCodeRelationShipSaturation * (pr.insertCodeRelationShipChangeWeight / sumParameters)
-				+ sr.insertCodeSaturation * (pr.insertCodeChangeWeight / sumParameters)
-				+ sr.relocateCodeSaturation * (pr.relocateCodeChangeWeight / sumParameters)
-				+ sr.updateCodeAuthorSaturation * (pr.updateCodeAuthorChangeWeight / sumParameters)
-				+ sr.updateCodeBookEntryDefinitionSaturation * (pr.updateCodeBookEntryDefinitionChangeWeight / sumParameters)
-				+ sr.updateCodeBookEntryExampleSaturation * (pr.updateCodeBookEntryExampleChangeWeight / sumParameters)
-				+ sr.updateCodeBookEntryShortDefinitionSaturation * (pr.updateCodeBookEntryShortDefinitionChangeWeight / sumParameters)
-				+ sr.updateCodeBookEntryWhenNotToUseSaturation * (pr.updateCodeBookEntryWhenNotToUseChangeWeight / sumParameters)
-				+ sr.updateCodeBookEntryWhenToUseSaturation * (pr.updateCodeBookEntryWhenToUseChangeWeight / sumParameters)
-				+ sr.updateCodeColorSaturation * (pr.updateCodeColorChangeWeight / sumParameters)
-				+ sr.updateCodeMemoSaturation * (pr.updateCodeMemoChangeWeight / sumParameters)
-				+ sr.updateCodeNameSaturation * (pr.updateCodeNameChangeWeight / sumParameters);
-			return (weightedAvg * 100).toFixed(2) + "%";
-		} else {
-			return "N/A";
-		}
 	}
 
 	openSaturationDetails() {
@@ -142,7 +98,7 @@ export default class ProjectStats extends React.Component {
 							</div>
 							<div className="info-box-content">
 								<span className="info-box-text">Saturation</span>
-								<span className="info-box-number">{this.calculateAvgSaturation()}</span>
+								<span className="info-box-number">{new SaturationAverage(this.state.saturation).calculateAvgSaturation(true)}</span>
                                                                 <span  onClick={() => this.openSaturationDetails()} className="clickable" >Details</span>
 							</div>
 						</div>

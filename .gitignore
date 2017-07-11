@@ -15,3 +15,4 @@ src/conf/
 war/nbproject/
 /nbbuild/
 /nbdist/
+/war/api_config.json
