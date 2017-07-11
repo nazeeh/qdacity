@@ -62,7 +62,6 @@ export default class SaturationModal extends VexModal {
         var saturationOverviewhtml = '';
         saturationOverviewhtml += '<p>Last calculation of saturation is from: ' + mostRecentSaturation.evaluationStartDate + ' to ' + mostRecentSaturation.creationTime + '</p>';
         saturationOverviewhtml += '<p>Parameters used from : ' + mostRecentSaturation.saturationParameters.creationTime + '</p>';
-        saturationOverviewhtml += '<p>Diagram of historical developement</p>';
         $('#saturationMetaData').html(saturationOverviewhtml);
 
         this.drawDiagram();
@@ -71,6 +70,7 @@ export default class SaturationModal extends VexModal {
     drawDiagram() {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'X');
+        data.addColumn('number', 'Weighted Average');
         data.addColumn('number', 'Applied Codes');
         data.addColumn('number', 'Deleted Code Relationships');
         data.addColumn('number', 'Deleted Codes');
@@ -87,12 +87,12 @@ export default class SaturationModal extends VexModal {
         data.addColumn('number', 'Code Color Changes');
         data.addColumn('number', 'Code Memo Changes');
         data.addColumn('number', 'Code Name Changes');
-        data.addColumn('number', 'Weighted Average');
 
         var rows = [];
         for (var i in this.results) {
             var sat = this.results[i];
             var oneDataSet = [new Date(sat.creationTime),
+                new SaturationAverage(sat).calculateAvgSaturation(false),
                 sat.applyCodeSaturation,
                 sat.deleteCodeRelationShipSaturation,
                 sat.deleteCodeSaturation,
@@ -109,14 +109,13 @@ export default class SaturationModal extends VexModal {
                 sat.updateCodeColorSaturation,
                 sat.updateCodeMemoSaturation,
                 sat.updateCodeNameSaturation,
-                new SaturationAverage(sat).calculateAvgSaturation(false)
             ];
-            //TODO focus on average when opening diagram
             rows.push(oneDataSet);
         }
         data.addRows(rows);
 
         var options = {
+            title: 'Historical Developement of Saturation',
             hAxis: {
                 title: 'Time'
             },
@@ -124,8 +123,9 @@ export default class SaturationModal extends VexModal {
                 title: 'Saturation in percent'
             },
             series: {
-                1: {curveType: 'function'}
-            }
+                0: {lineWidth: 8} //highlighting the average
+            },
+            legend: {position: 'bottom'}
         };
 
         var chart = new google.visualization.LineChart(document.getElementById('saturationChart'));
