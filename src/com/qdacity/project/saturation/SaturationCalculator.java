@@ -10,7 +10,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.qdacity.Cache;
-import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
@@ -44,8 +43,12 @@ public class SaturationCalculator {
 	result.setProjectId(projectId);
 	result.setSaturationParameters(new SaturationParameters(params)); //we need to copy them due to DataStore restriction!
 
-	calculateDocumentSaturation(result);
-	calculateCodeSaturation(result);
+	if (!epochStart.equals(new Date(0))) {
+	    calculateDocumentSaturation(result);
+	    calculateCodeSaturation(result);
+	} else {
+	    setAllZero(result);
+	}
 
 	result.setCreationTime(new Date(System.currentTimeMillis()));
 	result.setEvaluationStartDate(epochStart);
@@ -215,20 +218,20 @@ public class SaturationCalculator {
      * activity
      *
      * @param numberOfChangesOnObjectByType how many changes of the change exist
-     * @param totalNumberOfObjectsBeforeChanges how many objects potentially
-     * affected by these changes existed before the changes
-     * @param weight how important is this activity
+     * @param totalNumberOfChangesForObjectTypeBeforeTheLastSaturation how many
+     * changes in total exist for this object and change type BEFORE the last
+     * saturation
      * @return saturation between 0.0 and 1.0
      */
-    private double saturation(double numberOfChangesOnObjectByType, double totalNumberOfObjectsBeforeChanges) {
+    private double saturation(double numberOfChangesOnObjectByType, double totalNumberOfChangesForObjectTypeBeforeTheLastSaturation) {
 	if (numberOfChangesOnObjectByType == 0) {
 	    return 1.0;  //no changes, so saturation is 1
 	}
-	if (totalNumberOfObjectsBeforeChanges == 0) {
+	if (totalNumberOfChangesForObjectTypeBeforeTheLastSaturation == 0) {
 	    //numberOfChangesOnObjectByType is not 0 here!
 	    return 0.0; //nothing was there and something changed 
 	}
-	double activity = numberOfChangesOnObjectByType / totalNumberOfObjectsBeforeChanges;
+	double activity = numberOfChangesOnObjectByType / totalNumberOfChangesForObjectTypeBeforeTheLastSaturation;
 	if (activity > 1.0) {
 	    return 0.0; //more changes than objects before changes means there is no saturation
 	}
@@ -286,6 +289,26 @@ public class SaturationCalculator {
 	q.setFilter(andFilter);
 	PreparedQuery pq = datastore.prepare(q);
 	return pq.asIterable(FetchOptions.Builder.withDefaults());
+    }
+
+    private void setAllZero(SaturationResult result) {
+	result.setApplyCodeSaturation(0);
+	result.setDeleteCodeRelationShipSaturation(0);
+	result.setDeleteCodeSaturation(0);
+	result.setDocumentSaturation(0);
+	result.setInsertCodeRelationShipSaturation(0);
+	result.setInsertCodeSaturation(0);
+	result.setRelocateCodeSaturation(0);
+	result.setUpdateCodeAuthorSaturation(0);
+	result.setUpdateCodeBookEntryDefinitionSaturation(0);
+	result.setUpdateCodeBookEntryExampleSaturation(0);
+	result.setUpdateCodeBookEntryShortDefinitionSaturation(0);
+	result.setUpdateCodeBookEntryWhenNotToUseSaturation(0);
+	result.setUpdateCodeBookEntryWhenToUseSaturation(0);
+	result.setUpdateCodeColorSaturation(0);
+	result.setUpdateCodeIdSaturation(0);
+	result.setUpdateCodeMemoSaturation(0);
+	result.setUpdateCodeNameSaturation(0);
     }
 
 }
