@@ -1,7 +1,7 @@
 import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
 import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
-import SaturationChart from '../SaturationChart.jsx';
+import SaturationChart from '../saturation/SaturationChart.jsx';
 
 export default class SaturationModal extends VexModal {
 

@@ -1,5 +1,5 @@
-import GoogleLineChart from '../common/GoogleLineChart.jsx';
-import SaturationAverage from '../common/SaturationAverage';
+import GoogleLineChart from '../GoogleLineChart.jsx';
+import SaturationAverage from '../saturation/SaturationAverage';
 
 export default class SaturationChart extends React.Component {
     constructor(props) {
