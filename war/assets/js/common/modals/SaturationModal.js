@@ -2,6 +2,7 @@ import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
 import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import SaturationAverage from '../../common/SaturationAverage';
+import GoogleLineChart from '../../common/GoogleLineChart.jsx';
 
 export default class SaturationModal extends VexModal {
 
@@ -128,8 +129,7 @@ export default class SaturationModal extends VexModal {
             legend: {position: 'bottom'}
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('saturationChart'));
-        chart.draw(data, options);
+        ReactDOM.render(<GoogleLineChart key={'saturationChart-' + this.projectId} graphID={'saturationChart'} data={data} options={options}/>, document.getElementById('saturationChart'));
     }
 
     getMostRecentSaturation() {
