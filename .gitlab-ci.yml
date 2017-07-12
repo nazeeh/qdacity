@@ -29,6 +29,7 @@ build_frontend_production:
   script:
     - cd war
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
+    - npm prune
     - npm install 
     - gulp bundle
     
