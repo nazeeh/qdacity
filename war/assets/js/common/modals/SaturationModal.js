@@ -1,8 +1,7 @@
 import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
 import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
-import SaturationAverage from '../../common/SaturationAverage';
-import GoogleLineChart from '../../common/GoogleLineChart.jsx';
+import SaturationChart from '../SaturationChart.jsx';
 
 export default class SaturationModal extends VexModal {
 
@@ -69,67 +68,7 @@ export default class SaturationModal extends VexModal {
     }
 
     drawDiagram() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('date', 'X');
-        data.addColumn('number', 'Weighted Average');
-        data.addColumn('number', 'Applied Codes');
-        data.addColumn('number', 'Deleted Code Relationships');
-        data.addColumn('number', 'Deleted Codes');
-        data.addColumn('number', 'New Documents');
-        data.addColumn('number', 'New Code Relationships');
-        data.addColumn('number', 'New Codes');
-        data.addColumn('number', 'Relocated Codes');
-        data.addColumn('number', 'Code Author Changes');
-        data.addColumn('number', 'CodeBookEntry Definition Changes');
-        data.addColumn('number', 'CodeBookEntry Exaple Changes');
-        data.addColumn('number', 'CodeBookEntry Short Definition Changes');
-        data.addColumn('number', 'CodeBookEntry When Not To Use Changes');
-        data.addColumn('number', 'CodeBookEntry When To Use Changes');
-        data.addColumn('number', 'Code Color Changes');
-        data.addColumn('number', 'Code Memo Changes');
-        data.addColumn('number', 'Code Name Changes');
-
-        var rows = [];
-        for (var i in this.results) {
-            var sat = this.results[i];
-            var oneDataSet = [new Date(sat.creationTime),
-                new SaturationAverage(sat).calculateAvgSaturation(false),
-                sat.applyCodeSaturation,
-                sat.deleteCodeRelationShipSaturation,
-                sat.deleteCodeSaturation,
-                sat.documentSaturation,
-                sat.insertCodeRelationShipSaturation,
-                sat.insertCodeSaturation,
-                sat.relocateCodeSaturation,
-                sat.updateCodeAuthorSaturation,
-                sat.updateCodeBookEntryDefinitionSaturation,
-                sat.updateCodeBookEntryExampleSaturation,
-                sat.updateCodeBookEntryShortDefinitionSaturation,
-                sat.updateCodeBookEntryWhenNotToUseSaturation,
-                sat.updateCodeBookEntryWhenToUseSaturation,
-                sat.updateCodeColorSaturation,
-                sat.updateCodeMemoSaturation,
-                sat.updateCodeNameSaturation,
-            ];
-            rows.push(oneDataSet);
-        }
-        data.addRows(rows);
-
-        var options = {
-            title: 'Historical Developement of Saturation',
-            hAxis: {
-                title: 'Time'
-            },
-            vAxis: {
-                title: 'Saturation in percent'
-            },
-            series: {
-                0: {lineWidth: 8} //highlighting the average
-            },
-            legend: {position: 'bottom'}
-        };
-
-        ReactDOM.render(<GoogleLineChart key={'saturationChart-' + this.projectId} graphID={'saturationChart'} data={data} options={options}/>, document.getElementById('saturationChart'));
+        ReactDOM.render(<SaturationChart key={'saturationChart-' + this.projectId} projectId={'saturationChart'} results={this.results} />, document.getElementById('saturationChart'));
     }
 
     getMostRecentSaturation() {
