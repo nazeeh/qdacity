@@ -38,8 +38,6 @@ export default class SaturationModal extends VexModal {
                     ReactDOM.render(<ReactLoading color={'#444'} />, document.getElementById('reactLoading'));
                     
                     ReactDOM.render(<SaturationView projectId={_this.projectId} />, document.getElementById('saturation'));
-                   // var saturationView = new SaturationView({"projectId": _this.projectId});
-                   // saturationView.showSaturationView();
                 }
         );
         return promise;
