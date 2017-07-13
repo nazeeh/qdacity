@@ -8,7 +8,7 @@ export default class SaturationModal extends VexModal {
         super();
         this.formElements = '';
         this.projectId = projectId;
-        this.formElements += '<div id="saturation" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;"><div id="saturationMetaData"></div><table cellpadding="0" cellspacing="0" border="0" class="display" id="saturationTable"></table><div style="height: 350px;" id="saturationChart"></div><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div></div>';
+        this.formElements += '<div id="saturation" style="text-align: center; background-color: #eee; font-color:#222; overflow:hidden; overflow-x: scroll;"><div id="saturationMetaData"></div><div id="satTable"></div><div style="height: 350px;" id="saturationChart"></div><div id="loadingAnimation" class="centerParent"><div id="reactLoading" class="centerChild"></div></div></div>';
     }
 
     showModal() {
@@ -36,8 +36,10 @@ export default class SaturationModal extends VexModal {
                         }
                     });
                     ReactDOM.render(<ReactLoading color={'#444'} />, document.getElementById('reactLoading'));
-                    var saturationView = new SaturationView({"projectId": _this.projectId});
-                    saturationView.showSaturationView();
+                    
+                    ReactDOM.render(<SaturationView projectId={_this.projectId} />, document.getElementById('saturation'));
+                   // var saturationView = new SaturationView({"projectId": _this.projectId});
+                   // saturationView.showSaturationView();
                 }
         );
         return promise;
