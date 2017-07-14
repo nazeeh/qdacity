@@ -3,15 +3,31 @@ import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTabl
 export default class SaturationDetails extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {"sat": props.saturation};
+
+        this.state = {
+            "sat": props.saturation,
+            "evalStartDate": "N/A",
+            "creationTime": "N/A",
+            "paramsCreationTime": "N/A"
+        };
     }
 
     componentDidMount() {
+        this.updateMetaInformation();
         this.initTable();
         this.drawDataTable();
     }
     componentDidUpdate() {
+        this.updateMetaInformation();
         this.drawDataTable();
+    }
+
+    updateMetaInformation() {
+        if (typeof this.state.sat !== 'undefined') {
+            this.state.evalStartDate = this.state.sat.evaluationStartDate;
+            this.state.creationTime = this.state.sat.creationTime;
+            this.state.paramsCreationTime = this.state.sat.saturationParameters.creationTime;
+        }
     }
 
     initTable() {
@@ -77,9 +93,11 @@ export default class SaturationDetails extends React.Component {
 
     render() {
         return(<div>
+            <p>Last calculation of saturation is from: {this.state.evalStartDate} to {this.state.creationTime}</p>
             <table id="saturationTable" className="display">
         
             </table>
+            <p>Parameters used from : {this.state.paramsCreationTime}</p>
         </div>);
     }
 

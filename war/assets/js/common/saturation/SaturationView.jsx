@@ -32,15 +32,12 @@ export default class SaturationView extends React.Component {
 
     showDetails() {
         this.prepareDataTable();
-        var saturationOverviewhtml = '';
-        saturationOverviewhtml += '<p>Last calculation of saturation is from: ' + this.state.mrSat.evaluationStartDate + ' to ' + this.state.mrSat.creationTime + '</p>';
-        saturationOverviewhtml += '<p>Parameters used from : ' + this.state.mrSat.saturationParameters.creationTime + '</p>';
-        $('#saturationMetaData').html(saturationOverviewhtml);
         this.drawDiagram();
     }
 
     drawDiagram() {
-        ReactDOM.render(<SaturationChart key={'saturationChart-' + this.projectId} projectId={'saturationChart'} results={this.state.results} />, document.getElementById('saturationChart'));
+        var satChart = new SaturationChart({"results": this.state.results});
+        satChart.drawChart();
     }
 
     getMostRecentSaturation() {
@@ -63,7 +60,6 @@ export default class SaturationView extends React.Component {
         var saturationDetails = new SaturationDetails({"saturation": this.state.mrSat});
         saturationDetails.initTable();
         saturationDetails.drawDataTable();
-        //ReactDOM.render(<SaturationDetails saturation={this.state.saturation} />, )
     }
 
     render() {
