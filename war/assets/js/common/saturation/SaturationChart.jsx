@@ -4,17 +4,16 @@ import SaturationAverage from '../saturation/SaturationAverage';
 export default class SaturationChart extends React.Component {
     constructor(props) {
         super(props);
-        this.results = props.results;
     }
 
     componentDidMount() {
         this.drawChart();
     }
     componentDidUpdate() {
-        this.drawChart();
+        if (this.props.results) this.drawChart();
     }
 
-    drawChart() {
+    drawChart() {    
         this.options = {
             title: 'Historical Developement of Saturation',
             hAxis: {
@@ -50,8 +49,8 @@ export default class SaturationChart extends React.Component {
         this.data.addColumn('number', 'Code Name Changes');
 
         var rows = [];
-        for (var i in this.results) {
-            var sat = this.results[i];
+        for (var i in this.props.results) {
+            var sat = this.props.results[i];
             var oneDataSet = [new Date(sat.creationTime),
                 new SaturationAverage(sat).calculateAvgSaturation(false),
                 sat.applyCodeSaturation,

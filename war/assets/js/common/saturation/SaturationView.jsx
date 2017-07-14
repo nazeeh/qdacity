@@ -3,16 +3,12 @@ import SaturationDetails from '../saturation/SaturationDetails.jsx';
 export default class SaturationView extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {'results': [], 'mrSat': null};
+        this.state = {'results': [], 'mrSat': undefined};
         this.projectId = props.projectId;
+        
+        this.showSaturationView();
     }
 
-    componentDidMount() {
-        this.showSaturationView();
-    }
-    componentDidUpdate() {
-        this.showSaturationView();
-    }
 
     showSaturationView() {
         var _this = this;
@@ -21,33 +17,26 @@ export default class SaturationView extends React.Component {
         }).execute(function (resp) {
             if (!resp.code) {
                 $('#loadingAnimation').addClass('hidden');
-                _this.state.results = resp.items || [];
-                _this.state.mrSat = _this.getMostRecentSaturation();
-                _this.showDetails();
+                var res = resp.items || [];
+                var sat = _this.getMostRecentSaturation(res);
+                _this.setState({
+                	results: res,
+                	mrSat: sat
+                });
             } else {
                 // Log error
             }
         });
     }
 
-    showDetails() {
-        this.prepareDataTable();
-        this.drawDiagram();
-    }
-
-    drawDiagram() {
-        var satChart = new SaturationChart({"results": this.state.results});
-        satChart.drawChart();
-    }
-
-    getMostRecentSaturation() {
-        if (this.state.results.length > 0) {
-            var mostRecenResult = this.state.results[0];
-            for (var i in this.state.results) {
+    getMostRecentSaturation(results) {
+        if (results.length > 0) {
+            var mostRecenResult = results[0];
+            for (var i in results) {
                 var myDate = new Date(mostRecenResult.creationTime);
-                var otherDate = new Date(this.state.results[i].creationTime);
+                var otherDate = new Date(results[i].creationTime);
                 if (myDate < otherDate) {
-                    mostRecenResult = this.state.results[i];
+                    mostRecenResult = results[i];
                 }
             }
             return mostRecenResult;
@@ -56,16 +45,10 @@ export default class SaturationView extends React.Component {
         }
     }
 
-    prepareDataTable() {
-        var saturationDetails = new SaturationDetails({"saturation": this.state.mrSat});
-        saturationDetails.initTable();
-        saturationDetails.drawDataTable();
-    }
-
     render() {
         return (
                 <div>
-                    <SaturationDetails saturation={this.state.saturation} />
+                    <SaturationDetails saturation={this.state.mrSat} />
                     <SaturationChart results={this.state.results} />
                 </div>
                 );
