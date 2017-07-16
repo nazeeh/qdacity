@@ -1,6 +1,6 @@
 export default class UmlClass {
 
-	constructor(code, node) {
+	constructor(code, node, umlCodePosition) {
 		// The code object from the database
 		this.code = code;
 
@@ -8,7 +8,7 @@ export default class UmlClass {
 		this.node = node;
 
 		// Saves the position in the graph
-		this.umlCodePosition = null;
+		this.umlCodePosition = umlCodePosition;
 	}
 
 	getCode() {
