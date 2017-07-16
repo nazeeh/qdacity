@@ -1,37 +1,43 @@
 import React from 'react';
 
+import UmlClass from './UmlClass.js';
+import UmlClassManager from './UmlClassManager.js';
+import UmlClassRelation from './UmlClassRelation.js';
+
 import Toolbar from './toolbar/Toolbar.jsx';
 import MetaModelMapper from './MetaModelMapper.js';
 import UmlGraphView from './UmlGraphView.jsx';
+
+import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
+import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
+import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
 export default class UmlEditor extends React.Component {
 
 	constructor(props) {
 		super(props);
 
+		this.codesystemId = this.props.codesystemId;
+		this.codesystemView = this.props.codesystemView;
+
 		this.umlGraphView = null;
 		this.toolbar = null;
 
 		this.metaModelMapper = null;
 
-		this.codesystem = this.props.codesystem;
-		this.mmEntities = this.props.mmEntities;
-		this.mmRelation = this.props.mmRelations;
+		this.mmEntities = null;
+		this.mmRelation = null;
 
-		/*
-        this.codeSystemId = this.props.codeSystemId;
+		this.codesystemLoaded = false;
+		this.metamodelLoaded = false;
 
-        this.codesystem = null;
-
-        this.umlClasses = [];
-        this.umlClassRelations = {};
-        */
+		this.umlClassManager = null;
+		
+		this.umlClassRelations = {};
 	}
 
 	componentDidMount() {
-		this.metaModelMapper = new MetaModelMapper(umlGraphView, mmEntities);
-
-		this.initialize(this.props.codes, this.props.mmEntities, this.props.mmRelations);
+		this.loadMetaModel();
 	}
 
 	getToolbar() {
@@ -46,19 +52,66 @@ export default class UmlEditor extends React.Component {
 		return this.metaModelMapper
 	}
 
+	loadMetaModel() {
+		const _this = this;
+
+		MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
+			_this.mmEntities = resp.items || [];
+
+			MetaModelRelationEndpoint.listRelations(1).then(function (resp) {
+				_this.mmRelations = resp.items || [];
+
+				_this.metaModelFinishedLoading();
+			});
+		});
+	}
+
+	metaModelFinishedLoading() {
+		this.metaModelLoaded = true;
+
+		if (this.codesystemLoaded) {
+			this.initialize();
+		}
+	}
+
+	codesystemFinishedLoading() {
+		this.codesystemLoaded = true;
+
+		if (this.metaModelLoaded) {
+			this.initialize();
+		}
+	}
+
 	initialize() {
-		this.umlClasses = [];
+		this.metaModelMapper = new MetaModelMapper(this.umlGraphView, this.mmEntities);
+		
+		this.umlClassManager = new UmlClassManager();
+		
+
+		// Convert codes into a simple array
+		let codes = [];
+
+		let convertCodeIntoSimpleArray = (code) => {
+			codes.push(code);
+
+			if (code.children) {
+				code.children.forEach(convertCodeIntoSimpleArray);
+			}
+		}
+
+		this.codesystemView.getCodesystem().forEach(convertCodeIntoSimpleArray);
+
 
 		let relations = [];
 
-		for (let i = 0; i < this.codesystem.length; i++) {
-			const code = this.codesystem[i];
+		for (let i = 0; i < codes.length; i++) {
+			const code = codes[i];
 
 			// Register new entry
 			const umlClass = new UmlClass();
 			umlClass.setCode(code);
 			umlClass.setNode(null);
-			this.umlClasses.push(umlClass);
+			this.umlClassManager.add(umlClass);
 
 			// Add node to graph
 			this.metaModelMapper.evaluateAndRunAction({
@@ -106,6 +159,8 @@ export default class UmlEditor extends React.Component {
 			});
 		}
 
+		return; // TODO
+
 		this.initializePositions();
 
 		this.onNodesChanged();
@@ -116,7 +171,7 @@ export default class UmlEditor extends React.Component {
 
 		console.log('Loading UmlCodePosition entries from the database...');
 
-		UmlCodePositionEndpoint.listCodePositions(this.codeSystemId).then(function (resp) {
+		UmlCodePositionEndpoint.listCodePositions(this.codesystemId).then(function (resp) {
 			let umlCodePositions = resp.items || [];
 
 			console.log('Loaded ' + umlCodePositions.length + ' UmlCodePosition entries from the database. Found ' + _this.umlClasses.length + ' codes.');
@@ -149,7 +204,7 @@ export default class UmlEditor extends React.Component {
 						if (!exists) {
 							let umlCodePosition = {
 								'codeId': code.codeID,
-								'codeSystemId': _this.codeSystemId,
+								'codesystemId': _this.codesystemId,
 								'x': x,
 								'y': y
 							};
@@ -181,11 +236,11 @@ export default class UmlEditor extends React.Component {
 				console.log('Applying layout');
 
 				// Apply layout
-				_this.applyLayout();
+				_this.umlGraphView.applyLayout();
 
 				// Add cells moved event listener 
 				// This happens after apply layout - otherwise apply layout triggers the event
-				_this.initCellsMovedEventHandler();
+				_this.umlGraphView.initCellsMovedEventHandler();
 
 				umlCodePositions = [];
 
@@ -204,7 +259,7 @@ export default class UmlEditor extends React.Component {
 
 					umlCodePositions.push({
 						'codeId': code.codeID,
-						'codeSystemId': _this.codeSystemId,
+						'codesystemId': _this.codesystemId,
 						'x': x,
 						'y': y
 					});
@@ -414,10 +469,10 @@ export default class UmlEditor extends React.Component {
 
 	render() {
 		return (
-			<div className="col-sm-8 col-md-9 col-lg-10">
+			<div>
 		        <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditor={this} />
-                <UmlGraphView ref={(toolbar) => {this.umlGraphView = umlGraphView}} umlEditor={this} />
-	        </div>
+		        <UmlGraphView ref={(umlGraphView) => {this.umlGraphView = umlGraphView}} umlEditor={this} />
+            </div>
 		);
 	}
 }

@@ -7,6 +7,7 @@ import EditorCtrl from './EditorCtrl';
 import loadGAPIs from '../../common/GAPI';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import PageViewChooser from './PageViewChooser.jsx';
+import UmlEditor from '../uml-editor/UmlEditor.jsx';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
@@ -33,6 +34,7 @@ var account;
 var codeView;
 var documentsView;
 var codesystemView
+var umlEditor;
 
 var editorCtrl = {};
 
@@ -136,6 +138,12 @@ function resizeElements() {
 
 function setupUI() {
 	if (account.isSignedIn()) {
+
+		// Is mxGraph supported?
+		if (!mxClient.isBrowserSupported()) {
+			mxUtils.error('Browser is not supported!', 200, false);
+		}
+
 		var profile = account.getProfile();
 
 		$('#navAccount').show();
@@ -159,10 +167,14 @@ function setupUI() {
 				updateCodeView={updateCodeView}
 			/>, document.getElementById('codesystemView')).child; // codesystem is wrapped in DnD components, therefore assign child
 
+			umlEditor = ReactDOM.render(<UmlEditor codesystemId={codesystem_id} codesystemView={codesystemView} />, document.getElementById('umlEditorContainer'));
+
 			var codesystemLoaded = codesystemView.init();
 
 			documentsLoaded.then(() => {
 				codesystemLoaded.then(() => {
+					umlEditor.codesystemFinishedLoading();
+
 					// Initialize coding count bubbles after both codesystem and documents are available
 					codesystemView.initCodingCount();
 					resizeElements();
@@ -179,10 +191,12 @@ function viewChanged(view) {
 		$('#project-ui').show();
 		$('#documents-ui').show();
 		$('#editor').show();
+		$('#umlEditorContainer').hide();
 	} else if (view == 'uml') {
 		$('#project-ui').hide();
 		$('#documents-ui').hide();
 		$('#editor').hide();
+		$('#umlEditorContainer').show();
 	}
 	resizeHandler();
 }

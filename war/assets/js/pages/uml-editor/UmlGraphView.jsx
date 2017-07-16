@@ -34,7 +34,7 @@ export default class UmlGraphView extends React.Component {
 		this.initialize();
 	}
 
-	initialize(container) {
+	initialize() {
 		const container = this.refs.umlGraphContainer;
 
 		// Disables the context menu
@@ -436,6 +436,9 @@ export default class UmlGraphView extends React.Component {
 		});
 	}
 
+	// TODO EMPTY DUMMY - TODO DELETE THIS METHOD
+	onNodesChanged() {}
+
 	applyLayout() {
 		let parent = this.graph.getDefaultParent();
 
@@ -664,8 +667,11 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	render() {
+		// mxGraph requires an element that is not a styled-component            
 		return (
-			<StyledGraphView ref="umlGraphContainer"></StyledGraphView>
+			<StyledGraphView>
+                <div ref="umlGraphContainer"></div>
+            </StyledGraphView>
 		);
 	}
 }

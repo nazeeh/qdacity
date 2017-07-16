@@ -18,6 +18,8 @@ export default class PageViewChooser extends React.Component {
 		this.state = {
 			view: VIEW_TEXT
 		};
+
+		this.props.viewChanged(VIEW_TEXT);
 	}
 
 	buttonTextEditorClicked() {
