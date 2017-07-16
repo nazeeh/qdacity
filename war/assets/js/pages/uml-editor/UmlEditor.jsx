@@ -301,7 +301,7 @@ export default class UmlEditor extends React.Component {
 
 	addEdge(umlClassRelation, edgeType) {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
 		const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
 
@@ -310,7 +310,7 @@ export default class UmlEditor extends React.Component {
 
 	addClassField(umlClassRelation) {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
 		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType');
 
@@ -319,7 +319,7 @@ export default class UmlEditor extends React.Component {
 
 	addClassMethod(umlClassRelation) {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
 		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType', ['TODO', 'ARGUMENTS']);
 
@@ -328,7 +328,7 @@ export default class UmlEditor extends React.Component {
 
 	addRelation(umlClassRelation, relationNode, relationType) {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
 		umlClassRelation.setRelationNode(relationNode);
 
