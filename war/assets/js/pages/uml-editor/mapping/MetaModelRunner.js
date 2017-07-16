@@ -76,32 +76,24 @@ export default class MetaModelRunner {
 			}
 		case MappingAction.CREATE_NODE:
 			{
-				this.umlEditor.undoAddNode(umlClass);
+				this.umlEditor.removeNode(umlClass);
 				break;
 			}
 		case MappingAction.CREATE_GENERALIZATION:
-			{
-				this.umlEditor.undoAddEdge(umlClassRelation);
-				break;
-			}
 		case MappingAction.CREATE_AGGREGATION:
-			{
-				this.umlEditor.undoAddEdge(umlClassRelation);
-				break;
-			}
 		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
 			{
-				this.umlEditor.undoAddEdge(umlClassRelation);
+				this.umlEditor.removeEdge(umlClassRelation);
 				break;
 			}
 		case MappingAction.ADD_CLASS_FIELD:
 			{
-				this.umlEditor.undoAddClassField(umlClassRelation);
+				this.umlEditor.removeClassField(umlClassRelation);
 				break;
 			}
 		case MappingAction.ADD_CLASS_METHOD:
 			{
-				this.umlEditor.undoAddClassMethod(umlClassRelation);
+				this.umlEditor.removeClassMethod(umlClassRelation);
 				break;
 			}
 		default:

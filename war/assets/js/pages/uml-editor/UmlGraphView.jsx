@@ -214,7 +214,7 @@ export default class UmlGraphView extends React.Component {
 		this.connectionHandler.livePreview = true;
 
 		this.connectionHandler.isValidTarget = function (cell) {
-			return _this.cellIsUmlClass(cell);
+			return _this.isCellUmlClass(cell);
 		};
 
 		this.connectionHandler.getEdgeWidth = function (valid) {
@@ -226,10 +226,7 @@ export default class UmlGraphView extends React.Component {
 			const sourceNode = evt.properties.cell.source;
 			const destinationNode = evt.properties.cell.target;
 
-			const sourceUmlClass = _this.getUmlClassByNode(sourceNode);
-			const destinationUmlClass = _this.getUmlClassByNode(destinationNode);
-
-			_this.metaModelMapper.addedEdge(evt.cell, edgeType, sourceUmlClass, destinationUmlClass);
+			_this.umlEditor.addedEdge(evt.cell, edgeType, sourceNode, destinationNode);
 		});
 	}
 
@@ -254,7 +251,7 @@ export default class UmlGraphView extends React.Component {
 
 				let sourceUmlClass = _this.getUmlClassByNode(cell);
 
-				if (_this.cellIsUmlClass(cell)) {
+				if (_this.isCellUmlClass(cell)) {
 					let overlays = _this.graph.getCellOverlays(cell);
 
 					if (overlays == null) {
@@ -669,6 +666,10 @@ export default class UmlGraphView extends React.Component {
 
 	zoom(percentage) {
 		this.graph.zoomTo(percentage / 100.0, false);
+	}
+
+	isCellUmlClass(cell) {
+		return cell.vertex == true && cell.parent == this.graph.getDefaultParent()
 	}
 
 	render() {
