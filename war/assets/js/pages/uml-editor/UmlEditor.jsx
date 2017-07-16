@@ -287,63 +287,63 @@ export default class UmlEditor extends React.Component {
 		return this.mmRelations;
 	}
 
-    addNode(umlClass) {
-        const node = this.umlGraphView.addNode(umlClass.getCode().name);
-        umlClass.setNode(node);
+	addNode(umlClass) {
+		const node = this.umlGraphView.addNode(umlClass.getCode().name);
+		umlClass.setNode(node);
 
-        const umlCodePosition = umlClass.getUmlCodePosition();
-        if (umlCodePosition != null) {
-            this.umlGraphView.moveNode(node, umlCodePosition.x, umlCodePosition.y);
-        }
+		const umlCodePosition = umlClass.getUmlCodePosition();
+		if (umlCodePosition != null) {
+			this.umlGraphView.moveNode(node, umlCodePosition.x, umlCodePosition.y);
+		}
 
-        console.log('Added new node to the graph: ' + umlClass.getCode().name + ' (' + umlClass.getCode().codeID + ')');
-    }
+		console.log('Added new node to the graph: ' + umlClass.getCode().name + ' (' + umlClass.getCode().codeID + ')');
+	}
 
-    addEdge(umlClassRelation, edgeType) {
-        const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-        const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+	addEdge(umlClassRelation, edgeType) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-        const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
+		const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
 
-        this.addRelation(umlClassRelation, relationNode, 'edge ' + edgeType);
-    }
+		this.addRelation(umlClassRelation, relationNode, 'edge ' + edgeType);
+	}
 
-    addClassField(umlClassRelation) {
-        const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-        const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+	addClassField(umlClassRelation) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-        const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType');
+		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType');
 
-        this.addRelation(umlClassRelation, relationNode, 'class field');
-    }
+		this.addRelation(umlClassRelation, relationNode, 'class field');
+	}
 
-    addClassMethod(umlClassRelation) {
-        const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-        const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+	addClassMethod(umlClassRelation) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-        const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType', ['TODO', 'ARGUMENTS']);
+		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType', ['TODO', 'ARGUMENTS']);
 
-        this.addRelation(umlClassRelation, relationNode, 'class method');
-    }
+		this.addRelation(umlClassRelation, relationNode, 'class method');
+	}
 
-    addRelation(umlClassRelation, relationNode, relationType) {
-        const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-        const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+	addRelation(umlClassRelation, relationNode, relationType) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-        umlClassRelation.setRelationNode(relationNode);
+		umlClassRelation.setRelationNode(relationNode);
 
-        console.log('Connection (' + relationType + ') between ' + sourceUmlClass.getCode().name + ' (' + sourceUmlClass.getCode().codeID + ') and ' + destinationUmlClass.getCode().name + ' (' + destinationUmlClass.getCode().codeID + ').');
-    }
+		console.log('Connection (' + relationType + ') between ' + sourceUmlClass.getCode().name + ' (' + sourceUmlClass.getCode().codeID + ') and ' + destinationUmlClass.getCode().name + ' (' + destinationUmlClass.getCode().codeID + ').');
+	}
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
 
 
 
