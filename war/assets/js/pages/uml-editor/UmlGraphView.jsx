@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import {
 	EdgeType
 } from './EdgeType.js';
-import UmlClass from './UmlClass.js';
-import UmlClassRelation from './UmlClassRelation.js';
+import UmlClass from './model/UmlClass.js';
+import UmlClassRelation from './model/UmlClassRelation.js';
 import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
