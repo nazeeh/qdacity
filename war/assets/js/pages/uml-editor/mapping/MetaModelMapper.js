@@ -11,15 +11,15 @@ export default class MetaModelMapper {
 
 	}
 
-	evaluateAction(sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
-		if (sourceUmlClass != null
-			&& destinationUmlClass == null
-			&& relationMetaModelEntity == null) {
-			return this.evaluateCode(sourceUmlClass);
-		} else if (sourceUmlClass != null
-			&& destinationUmlClass != null
-			&& relationMetaModelEntity != null) {
-			return this.evaluateCodeRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+	evaluateAction(params) {
+		let umlClass, umlClassRelation = this.convertParams(params);
+
+		if (umlClass != null
+			&& umlClassRelation == null) {
+			return this.evaluateCode(umlClass);
+		} else if (umlClass == null
+			&& umlClassRelation != null) {
+			return this.evaluateCodeRelation(umlClassRelation);
 		} else {
 			throw new Error('Invalid parameters');
 		}
@@ -33,11 +33,11 @@ export default class MetaModelMapper {
 		return MappingAction.DO_NOTHING;
 	}
 
-	evaluateCodeRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
-		let codeSource = sourceUmlClass.getCode();
-		let codeDestination = destinationUmlClass.getCode();
+	evaluateCodeRelation(umlClassRelation) {
+		let codeSource = umlClassRelation.getSourceUmlClass().getCode();
+		let codeDestination = umlClassRelation.getDestinationUmlClass().getCode();
 
-		switch (relationMetaModelEntity.name) {
+		switch (umlClassRelation.getRelationMetaModelEntity().name) {
 		case 'is a':
 			{
 				if (!this.isCodeValidNode(codeSource) || !this.isCodeValidNode(codeDestination)) {
@@ -112,7 +112,7 @@ export default class MetaModelMapper {
 	getClassMethodRelationEntityName() {
 		return 'influences';
 	}
-	
+
 	getEdgeTypeFromMappingAction(action) {
 		switch (action) {
 		case MappingAction.CREATE_GENERALIZATION:
@@ -153,5 +153,12 @@ export default class MetaModelMapper {
 		}
 
 		return false;
+	}
+
+	convertParams(params) {
+		let umlClass = params.hasOwnProperty('umlClass') ? params.umlClass : null;
+		let umlClassRelation = params.hasOwnProperty('umlClassRelation') ? params.umlClassRelation : null;
+
+		return [umlClass, umlClassRelation];
 	}
 }

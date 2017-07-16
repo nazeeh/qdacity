@@ -1,18 +1,12 @@
 export default class UmlClassRelation {
 
-	constructor(codeRelation, sourceUmlClass, destinationUmlClass, relationNode) {
-		this.codeRelation = codeRelation;
+	constructor(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, relationNode) {
 		this.sourceUmlClass = sourceUmlClass;
 		this.destinationUmlClass = destinationUmlClass;
+
+		this.relationMetaModelEntity = relationMetaModelEntity;
+
 		this.relationNode = relationNode;
-	}
-
-	getCodeRelation() {
-		return this.codeRelation;
-	}
-
-	setCodeRelation(codeRelation) {
-		this.codeRelation = codeRelation;
 	}
 
 	getSourceUmlClass() {
@@ -29,6 +23,14 @@ export default class UmlClassRelation {
 
 	setDestinationUmlClass(destinationUmlClass) {
 		this.destinationUmlClass = destinationUmlClass;
+	}
+
+	getRelationMetaModelEntity() {
+		return this.relationMetaModelEntity;
+	}
+
+	setRelationMetaModelEntity(relationMetaModelEntity) {
+		this.relationMetaModelEntity = relationMetaModelEntity;
 	}
 
 	getRelationNode() {

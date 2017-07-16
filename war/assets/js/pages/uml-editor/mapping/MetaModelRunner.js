@@ -15,13 +15,15 @@ export default class MetaModelMapper {
 		this.metaModelMapper = metaModelMapper;
 	}
 
-	evaluateAndRunAction(sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
-		const action = this.metaModelMapper.evaluateAction(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
-		this.runAction(action, sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+	evaluateAndRunAction(params) {
+		const action = this.metaModelMapper.evaluateAction(params);
+		this.runAction(action, params);
 		return action;
 	}
 
-	runAction(action, sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
+	runAction(action, params) {
+		let umlClass, umlClassRelation = this.metaModelMapper.convertParams(params);
+
 		switch (action) {
 		case MappingAction.DO_NOTHING:
 			{
@@ -29,32 +31,32 @@ export default class MetaModelMapper {
 			}
 		case MappingAction.CREATE_NODE:
 			{
-				this.umlEditor.addNode(sourceUmlClass);
+				this.umlEditor.addNode(umlClass);
 				break;
 			}
 		case MappingAction.CREATE_GENERALIZATION:
 			{
-				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
+				this.umlEditor.addEdge(umlClassRelation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
 				break;
 			}
 		case MappingAction.CREATE_AGGREGATION:
 			{
-				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
+				this.umlEditor.addEdge(umlClassRelation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
 				break;
 			}
 		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
 			{
-				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
+				this.umlEditor.addEdge(umlClassRelation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
 				break;
 			}
 		case MappingAction.ADD_CLASS_FIELD:
 			{
-				this.umlEditor.addClassField(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+				this.umlEditor.addClassField(umlClassRelation);
 				break;
 			}
 		case MappingAction.ADD_CLASS_METHOD:
 			{
-				this.umlEditor.addClassMethod(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+				this.umlEditor.addClassMethod(umlClassRelation);
 				break;
 			}
 		default:
@@ -64,7 +66,9 @@ export default class MetaModelMapper {
 		}
 	}
 
-	undoAction(action, sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
+	undoAction(action, params) {
+		let umlClass, umlClassRelation = this.metaModelMapper.convertParams(params);
+
 		switch (action) {
 		case MappingAction.DO_NOTHING:
 			{
@@ -72,32 +76,32 @@ export default class MetaModelMapper {
 			}
 		case MappingAction.CREATE_NODE:
 			{
-				this.umlEditor.undoAddNode(sourceUmlClass);
+				this.umlEditor.undoAddNode(umlClass);
 				break;
 			}
 		case MappingAction.CREATE_GENERALIZATION:
 			{
-				this.umlEditor.undoAddEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+				this.umlEditor.undoAddEdge(umlClassRelation);
 				break;
 			}
 		case MappingAction.CREATE_AGGREGATION:
 			{
-				this.umlEditor.undoAddEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+				this.umlEditor.undoAddEdge(umlClassRelation);
 				break;
 			}
 		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
 			{
-				this.umlEditor.undoAddEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+				this.umlEditor.undoAddEdge(umlClassRelation);
 				break;
 			}
 		case MappingAction.ADD_CLASS_FIELD:
 			{
-				this.umlEditor.undoAddClassField(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+				this.umlEditor.undoAddClassField(umlClassRelation);
 				break;
 			}
 		case MappingAction.ADD_CLASS_METHOD:
 			{
-				this.umlEditor.undoAddClassMethod(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+				this.umlEditor.undoAddClassMethod(umlClassRelation);
 				break;
 			}
 		default:
@@ -106,5 +110,4 @@ export default class MetaModelMapper {
 			}
 		}
 	}
-
 }

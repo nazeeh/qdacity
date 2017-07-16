@@ -25,10 +25,10 @@ export default class UmlEditor extends React.Component {
 		this.toolbar = null;
 
 		this.metaModelMapper = null;
-        this.metaModelRunner = null;
-        
-        this.umlClassManager = null;
-        this.umlClassRelations = {}; // TODO use manager?
+		this.metaModelRunner = null;
+
+		this.umlClassManager = null;
+		this.umlClassRelationManager = null;
 
 		this.mmEntities = null;
 		this.mmRelation = null;
@@ -85,11 +85,21 @@ export default class UmlEditor extends React.Component {
 
 	initialize() {
 		this.metaModelMapper = new MetaModelMapper();
-        this.metaModelRunner = new UmlClassManager(this, this.metaModelMapper);
+		this.metaModelRunner = new UmlClassManager(this, this.metaModelMapper);
 
 		this.umlClassManager = new UmlClassManager();
 
 
+		this.initializeUmlClasses();
+
+		this.initializeGraph();
+
+		return; // TODO
+
+		this.initializePositions();
+	}
+
+	initializeUmlClasses() {
 		// Convert codes into a simple array
 		let codes = [];
 
@@ -110,27 +120,17 @@ export default class UmlEditor extends React.Component {
 			const code = codes[i];
 
 			// Register new entry
-			const umlClass = new UmlClass();
-			umlClass.setCode(code);
-			umlClass.setNode(null);
+			const umlClass = new UmlClass(code, null);
 			this.umlClassManager.add(umlClass);
-
-			// Add node to graph
-			this.metaModelRunner.evaluateAndRunAction(umlClass);
-
-			// Logging
-			console.log('Added new node to the graph: ' + code.name + ' (' + code.codeID + ')');
 
 			// Register code relations
 			if (code.relations != null) {
 				for (let j = 0; j < code.relations.length; j++) {
-
-					let sourceCode = code;
-					let relation = sourceCode.relations[j];
+					const relation = code.relations[j];
 
 					relations.push({
-						'source': sourceCode.codeID,
-						'destination': relation.codeId,
+						'sourceId': code.codeID,
+						'destinationId': relation.codeId,
 						'metaModelEntityId': relation.mmElementId
 					});
 				}
@@ -139,32 +139,149 @@ export default class UmlEditor extends React.Component {
 
 		// Process code relations
 		for (let i = 0; i < relations.length; i++) {
-			let relation = relations[i];
+			const relation = relations[i];
+
+			let sourceUmlClass = this.umlClassManager.getByCodeId(relation.sourceId);
+			let destinationUmlClass = this.umlClassManager.getByCodeId(relation.destinationId);
 
 			let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
 
-			let sourceUmlClass = this.getUmlClassByCodeId(relation.source);
-			let sourceCode = sourceUmlClass.getCode();
-			let destinationUmlClass = this.getUmlClassByCodeId(relation.destination);
-			let destinationCode = destinationUmlClass.getCode();
-
-			// Logging
-			console.log('Connection between ' + sourceCode.name + ' (' + sourceCode.codeID + ') and ' + destinationCode.name + ' (' + destinationCode.codeID + ').');
-
-			this.metaModelMapper.evaluateAndRunAction({
-				'sourceUmlClass': sourceUmlClass,
-				'destinationUmlClass': destinationUmlClass,
-				'relationMetaModelEntity': relationMetaModelEntity,
-				'relation': relation
-			});
+			// Register new entry
+			const umlClassRelation = new UmlClassRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+			this.umlClassRelationManager.add(umlClassRelation);
 		}
-
-		return; // TODO
-
-		this.initializePositions();
-
-		this.onNodesChanged();
 	}
+
+	initializeGraph() {
+		this.umlClassManager.getAll().forEach((umlClass) => {
+			this.metaModelRunner.evaluateAndRunAction(umlClass);
+		});
+
+		this.umlClassRelationManager.getAll().forEach((umlClassRelation) => {
+			this.metaModelRunner.evaluateAndRunAction(null, umlClassRelation);
+		});
+	}
+
+	initializePositions() {
+		let _this = this;
+
+		console.log('Loading UmlCodePosition entries from the database...');
+
+		UmlCodePositionEndpoint.listCodePositions(this.codesystemId).then(function (resp) {
+			let umlCodePositions = resp.items || [];
+
+			console.log('Loaded ' + umlCodePositions.length + ' UmlCodePosition entries from the database. Found ' + _this.umlClasses.length + ' codes.');
+
+			if (umlCodePositions.length > 0) {
+				// Add cells moved event listener
+				_this.initCellsMovedEventHandler();
+
+				// Set CodePositions
+				_this.refreshUmlCodePositions(umlCodePositions);
+
+				// Unregistered codes exist
+				if (umlCodePositions.length != _this.umlClasses.length) {
+					// Find new codes
+					let unregisteredUmlCodePositions = [];
+
+					_this.umlClasses.forEach((umlClass) => {
+						let exists = umlCodePositions.find((umlCodePosition) => umlCodePosition.codeId == umlClass.getCode().codeID) != null;
+
+						let code = umlClass.getCode();
+						let node = umlClass.getNode();
+						let x = 0;
+						let y = 0;
+
+						if (node != null) {
+							x = node.getGeometry().x;
+							y = node.getGeometry().y;
+						}
+
+						if (!exists) {
+							let umlCodePosition = {
+								'codeId': code.codeID,
+								'codesystemId': _this.codesystemId,
+								'x': x,
+								'y': y
+							};
+
+							unregisteredUmlCodePositions.push(umlCodePosition);
+							umlCodePositions.push(umlCodePosition);
+						}
+					});
+
+					console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
+
+					UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then((resp) => {
+						let insertedCodePositions = resp.items || [];
+
+						console.log('Inserted ' + insertedCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
+
+						_this.refreshUmlCodePositions(insertedCodePositions);
+					});
+				}
+
+				umlCodePositions.forEach((umlCodePosition) => {
+					let umlClass = _this.getByCodeId(umlCodePosition.codeId);
+
+					if (umlClass.getNode() != null) {
+						_this.moveNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
+					}
+				});
+			} else {
+				console.log('Applying layout');
+
+				// Apply layout
+				_this.umlGraphView.applyLayout();
+
+				// Add cells moved event listener 
+				// This happens after apply layout - otherwise apply layout triggers the event
+				_this.umlGraphView.initCellsMovedEventHandler();
+
+				umlCodePositions = [];
+
+				_this.umlClasses.forEach((umlClass) => {
+					let code = umlClass.getCode();
+					let node = umlClass.getNode();
+
+					// If the code is not mapped => assume position (0,0)
+					let x = 0;
+					let y = 0;
+
+					if (node != null) {
+						x = node.getGeometry().x;
+						y = node.getGeometry().y;
+					}
+
+					umlCodePositions.push({
+						'codeId': code.codeID,
+						'codesystemId': _this.codesystemId,
+						'x': x,
+						'y': y
+					});
+				});
+
+				console.log('Inserting ' + umlCodePositions.length + ' new UmlCodePosition entries into the database...');
+
+				UmlCodePositionEndpoint.insertCodePositions(umlCodePositions).then((resp) => {
+					let insertedCodePositions = resp.items || [];
+
+					console.log('Inserted ' + insertedCodePositions.length + ' new UmlCodePosition entries into the database.');
+
+					_this.refreshUmlCodePositions(insertedCodePositions);
+				});
+			}
+		});
+	}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -181,10 +298,16 @@ export default class UmlEditor extends React.Component {
 			this.umlGraphView.moveNode(node, umlCodePosition.x, umlCodePosition.y);
 		}
 
+		// Logging
+		console.log('Added new node to the graph: ' + code.name + ' (' + code.codeID + ')');
+
 		this.umlGraphView.onNodesChanged();
 	}
 
 	addEdge(relation, sourceUmlClass, destinationUmlClass, edgeType) {
+		// Logging
+		console.log('Connection between ' + sourceCode.name + ' (' + sourceCode.codeID + ') and ' + destinationCode.name + ' (' + destinationCode.codeID + ').');
+
 		const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
 		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
@@ -308,124 +431,13 @@ export default class UmlEditor extends React.Component {
 
 
 
-	initializePositions() {
-		let _this = this;
-
-		console.log('Loading UmlCodePosition entries from the database...');
-
-		UmlCodePositionEndpoint.listCodePositions(this.codesystemId).then(function (resp) {
-			let umlCodePositions = resp.items || [];
-
-			console.log('Loaded ' + umlCodePositions.length + ' UmlCodePosition entries from the database. Found ' + _this.umlClasses.length + ' codes.');
-
-			if (umlCodePositions.length > 0) {
-				// Add cells moved event listener
-				_this.initCellsMovedEventHandler();
-
-				// Set CodePositions
-				_this.refreshUmlCodePositions(umlCodePositions);
-
-				// Unregistered codes exist
-				if (umlCodePositions.length != _this.umlClasses.length) {
-					// Find new codes
-					let unregisteredUmlCodePositions = [];
-
-					_this.umlClasses.forEach((umlClass) => {
-						let exists = umlCodePositions.find((umlCodePosition) => umlCodePosition.codeId == umlClass.getCode().codeID) != null;
-
-						let code = umlClass.getCode();
-						let node = umlClass.getNode();
-						let x = 0;
-						let y = 0;
-
-						if (node != null) {
-							x = node.getGeometry().x;
-							y = node.getGeometry().y;
-						}
-
-						if (!exists) {
-							let umlCodePosition = {
-								'codeId': code.codeID,
-								'codesystemId': _this.codesystemId,
-								'x': x,
-								'y': y
-							};
-
-							unregisteredUmlCodePositions.push(umlCodePosition);
-							umlCodePositions.push(umlCodePosition);
-						}
-					});
-
-					console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
-
-					UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then((resp) => {
-						let insertedCodePositions = resp.items || [];
-
-						console.log('Inserted ' + insertedCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
-
-						_this.refreshUmlCodePositions(insertedCodePositions);
-					});
-				}
-
-				umlCodePositions.forEach((umlCodePosition) => {
-					let umlClass = _this.getUmlClassByCodeId(umlCodePosition.codeId);
-
-					if (umlClass.getNode() != null) {
-						_this.moveNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
-					}
-				});
-			} else {
-				console.log('Applying layout');
-
-				// Apply layout
-				_this.umlGraphView.applyLayout();
-
-				// Add cells moved event listener 
-				// This happens after apply layout - otherwise apply layout triggers the event
-				_this.umlGraphView.initCellsMovedEventHandler();
-
-				umlCodePositions = [];
-
-				_this.umlClasses.forEach((umlClass) => {
-					let code = umlClass.getCode();
-					let node = umlClass.getNode();
-
-					// If the code is not mapped => assume position (0,0)
-					let x = 0;
-					let y = 0;
-
-					if (node != null) {
-						x = node.getGeometry().x;
-						y = node.getGeometry().y;
-					}
-
-					umlCodePositions.push({
-						'codeId': code.codeID,
-						'codesystemId': _this.codesystemId,
-						'x': x,
-						'y': y
-					});
-				});
-
-				console.log('Inserting ' + umlCodePositions.length + ' new UmlCodePosition entries into the database...');
-
-				UmlCodePositionEndpoint.insertCodePositions(umlCodePositions).then((resp) => {
-					let insertedCodePositions = resp.items || [];
-
-					console.log('Inserted ' + insertedCodePositions.length + ' new UmlCodePosition entries into the database.');
-
-					_this.refreshUmlCodePositions(insertedCodePositions);
-				});
-			}
-		});
-	}
 
 	refreshUmlCodePositions(newUmlCodePositions) {
 		console.log('Refreshing UmlCodePositions.');
 
 		const _this = this;
 		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			let umlClass = _this.getUmlClassByCodeId(newUmlCodePosition.codeId);
+			let umlClass = _this.getByCodeId(newUmlCodePosition.codeId);
 			umlClass.setUmlCodePosition(newUmlCodePosition);
 		});
 	}
@@ -448,22 +460,6 @@ export default class UmlEditor extends React.Component {
 
 	getMetaModelRelations() {
 		return this.mmRelations;
-	}
-
-	getUmlClassByCode(code) {
-		return this.getUmlClassByCodeId(code.codeID);
-	}
-
-	getUmlClassByCodeId(codeId) {
-		return this.umlClasses.find((umlClass) => umlClass.getCode() != null && umlClass.getCode().codeID == codeId);
-	}
-
-	getUmlClassByNode(node) {
-		return this.getUmlClassByNodeId(node.mxObjectId);
-	}
-
-	getUmlClassByNodeId(mxObjectId) {
-		return this.umlClasses.find((umlClass) => umlClass.getNode() != null && umlClass.getNode().mxObjectId == mxObjectId);
 	}
 
 	getCode(codeId) {
@@ -490,12 +486,8 @@ export default class UmlEditor extends React.Component {
 		return unmappedCodes;
 	}
 
-	onNodesChanged() {
-		this.unmappedCodesView.update();
-	}
-
 	exchangeCodeMetaModelEntities(codeId, oldMetaModelEntityIds) {
-		const umlClass = this.getUmlClassByCodeId(codeId);
+		const umlClass = this.getByCodeId(codeId);
 
 		const oldUmlClass = new UmlClass(Object.assign({}, umlClass.getCode()), umlClass.getNode());
 		oldUmlClass.getCode().mmElementIDs = oldMetaModelEntityIds;
@@ -531,7 +523,7 @@ export default class UmlEditor extends React.Component {
 		if (umlClass.getCode().relations != null) {
 			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
 				let relation = umlClass.getCode().relations[i];
-				let destinationUmlClass = this.getUmlClassByCodeId(relation.codeId);
+				let destinationUmlClass = this.getByCodeId(relation.codeId);
 				let oldDestinationUmlClass = destinationUmlClass;
 
 				// Source == Destination
