@@ -37,8 +37,8 @@ var editorCtrl = {};
 
 window.init = function () {
 
-	ReactDOM.render(<ReactLoading />, document.getElementById('documentsLoaderMount'));
-	ReactDOM.render(<ReactLoading />, document.getElementById('codesystemLoaderMount'));
+	ReactDOM.render(<ReactLoading color="#555"/>, document.getElementById('documentsLoaderMount'));
+	ReactDOM.render(<ReactLoading color="#555"/>, document.getElementById('codesystemLoaderMount'));
 
 	editorCtrl = new EditorCtrl(getCodeByCodeID);
 
