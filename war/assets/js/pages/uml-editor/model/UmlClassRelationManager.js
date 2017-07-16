@@ -4,11 +4,15 @@ export default class UmlClassRelation {
 		this.umlClassRelations = [];
 	}
 
+	size() {
+		return this.umlClassRelations.length;
+	}
+
 	getAll() {
 		return this.umlClassRelations;
 	}
 
-	add(umlClassRelations) {
-		this.umlClasses.push(umlClassRelation);
+	add(umlClassRelation) {
+		this.umlClassRelations.push(umlClassRelation);
 	}
 }

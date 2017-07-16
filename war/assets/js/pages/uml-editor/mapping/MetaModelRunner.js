@@ -8,7 +8,7 @@ import {
 import MetaModelMapper from './MetaModelMapper.js';
 import UmlEditor from '../UmlEditor.jsx';
 
-export default class MetaModelMapper {
+export default class MetaModelRunner {
 
 	constructor(umlEditor, metaModelMapper) {
 		this.umlEditor = umlEditor;
@@ -22,7 +22,7 @@ export default class MetaModelMapper {
 	}
 
 	runAction(action, params) {
-		let umlClass, umlClassRelation = this.metaModelMapper.convertParams(params);
+		const [umlClass, umlClassRelation] = this.metaModelMapper.convertParams(params);
 
 		switch (action) {
 		case MappingAction.DO_NOTHING:
@@ -67,7 +67,7 @@ export default class MetaModelMapper {
 	}
 
 	undoAction(action, params) {
-		let umlClass, umlClassRelation = this.metaModelMapper.convertParams(params);
+		const [umlClass, umlClassRelation] = this.metaModelMapper.convertParams(params);
 
 		switch (action) {
 		case MappingAction.DO_NOTHING:

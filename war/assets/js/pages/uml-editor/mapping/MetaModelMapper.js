@@ -7,12 +7,12 @@ import {
 
 export default class MetaModelMapper {
 
-	constructor() {
-
+	constructor(umlEditor) {
+		this.umlEditor = umlEditor;
 	}
 
 	evaluateAction(params) {
-		let umlClass, umlClassRelation = this.convertParams(params);
+		const [umlClass, umlClassRelation] = this.convertParams(params);
 
 		if (umlClass != null
 			&& umlClassRelation == null) {
@@ -145,7 +145,7 @@ export default class MetaModelMapper {
 
 		for (let mmElementIdKey in code.mmElementIDs) {
 			let mmElementId = code.mmElementIDs[mmElementIdKey];
-			var entity = this.mmEntities.find((e) => e.id == mmElementId);
+			var entity = this.umlEditor.getMetaModelEntities().find((e) => e.id == mmElementId);
 
 			if (entity != null && entity.name == entityName) {
 				return true;

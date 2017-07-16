@@ -4,6 +4,10 @@ export default class UmlClassManager {
 		this.umlClasses = [];
 	}
 
+	size() {
+		return this.umlClasses.length;
+	}
+
 	getAll() {
 		return this.umlClasses;
 	}
