@@ -279,6 +279,18 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
+	getMetaModelEntities() {
+		return this.mmEntities;
+	}
+
+	getMetaModelRelations() {
+		return this.mmRelations;
+	}
+
+
+
+
+
 
 
 
@@ -293,13 +305,6 @@ export default class UmlEditor extends React.Component {
 	}
 
 
-	getMetaModelEntities() {
-		return this.mmEntities;
-	}
-
-	getMetaModelRelations() {
-		return this.mmRelations;
-	}
 
 
 
@@ -325,42 +330,51 @@ export default class UmlEditor extends React.Component {
 			this.umlGraphView.moveNode(node, umlCodePosition.x, umlCodePosition.y);
 		}
 
-		// Logging
-		console.log('Added new node to the graph: ' + code.name + ' (' + code.codeID + ')');
-
-		this.umlGraphView.onNodesChanged();
+		console.log('Added new node to the graph: ' + umlClass.getCode().name + ' (' + umlClass.getCode().codeID + ')');
 	}
 
-	addEdge(relation, sourceUmlClass, destinationUmlClass, edgeType) {
-		// Logging
-		console.log('Connection between ' + sourceCode.name + ' (' + sourceCode.codeID + ') and ' + destinationCode.name + ' (' + destinationCode.codeID + ').');
+	addEdge(umlClassRelation, edgeType) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
 
 		const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
-		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
+
+		this.addRelation(umlClassRelation, relationNode, 'edge ' + edgeType);
 	}
 
-	addClassField(relation, sourceUmlClass, destinationUmlClass) {
+	addClassField(umlClassRelation) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+
 		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
-		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
+
+		this.addRelation(umlClassRelation, relationNode, 'class field');
 	}
 
-	addClassMethod(relation, sourceUmlClass, destinationUmlClass) {
+	addClassMethod(umlClassRelation) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+
 		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
-		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
+
+		this.addRelation(umlClassRelation, relationNode, 'class method');
 	}
 
+	addRelation(umlClassRelation, relationNode, relationType) {
+		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
+		const destainationUmlClass = umlClassRelation.getDestinationUmlClass();
+
+		umlClassRelation.setRelationNode(relationNode);
+
+		console.log('Connection (' + relationType + ') between ' + sourceUmlClass.getCode().name + ' (' + sourceUmlClass.getCode().codeID + ') and ' + destinationUmlClass.getCode().name + ' (' + destinationUmlClass.getCode().codeID + ').');
+	}
+
+
+
+	// TODO remove
 	// TODO this does NOT belong here
 	calculateRelationIdentifier(relation) {
 		return relation.destination + '--' + relation.source + '--' + relation.metaModelEntityId;
-	}
-
-	// TODO this does MAYBE not belong here
-	addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode) {
-		// TODO debug here with console.log
-		// Warum wird 2-2-XXXXXXXXXXX nciht hinzugefügt?
-		console.log("Add Relation for: " + this.calculateRelationIdentifier(relation));
-
-		this.umlGraphView.umlClassRelations[this.calculateRelationIdentifier(relation)] = new UmlClassRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
 	}
 
 
