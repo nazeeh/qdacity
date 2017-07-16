@@ -543,9 +543,11 @@ export default class UmlGraphView extends React.Component {
 		return cell;
 	}
 
-	addClassField(node, text) {
+	addClassField(node, name, returnType) {
 		const style = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
+		const text = '+ ' + name + ': ' + returnType;
+		
 		let field = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
 		field.vertex = true;
 
@@ -580,9 +582,15 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
-	addClassMethod(node, text) {
-		const style = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
-
+	addClassMethod(node, name, returnType, arguments) {
+        if (arguments == null) {
+            arguments = [];
+        }
+	    
+	    const style = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
+		
+		const text = '+ ' + name + '(' + arguments.join(', ') + '): ' + returnType;
+		
 		let method = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
 		method.vertex = true;
 
