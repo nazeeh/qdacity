@@ -5,7 +5,7 @@ export default class CodePositionEndpoint {
 
 	static listCodePositions(codeSystemId) {
 		var apiMethod = gapi.client.qdacity.umlCodePosition.listCodePositions({
-			'codeSystemId': codeSystemId
+			'codesystemId': codeSystemId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}

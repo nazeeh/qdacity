@@ -22,7 +22,7 @@ public class UmlCodePosition {
 	private Long codeId;
 
 	@Persistent
-	private Long codeSystemId;
+	private Long codesystemId;
 	
 	@Persistent
 	private double x;
@@ -50,12 +50,12 @@ public class UmlCodePosition {
 		this.codeId = codeId;
 	}
 
-	public Long getCodeSystemId() {
-		return codeSystemId;
+	public Long getCodesystemId() {
+		return codesystemId;
 	}
 
-	public void setCodeSystemId(Long codeSystemId) {
-		this.codeSystemId = codeSystemId;
+	public void setCodesystemId(Long codeSystemId) {
+		this.codesystemId = codeSystemId;
 	}
 
 	public double getX() {
