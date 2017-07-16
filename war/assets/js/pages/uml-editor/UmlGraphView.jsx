@@ -436,9 +436,6 @@ export default class UmlGraphView extends React.Component {
 		});
 	}
 
-	// TODO EMPTY DUMMY - TODO DELETE THIS METHOD
-	onNodesChanged() {}
-
 	applyLayout() {
 		let parent = this.graph.getDefaultParent();
 
