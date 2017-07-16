@@ -10,7 +10,7 @@ import UmlEditor from '../UmlEditor.jsx';
 
 export default class MetaModelMapper {
 
-	constructor(umlGraphView, mmEntities) {
+	constructor(umlEditor, metaModelMapper) {
 		this.umlEditor = umlEditor;
 		this.metaModelMapper = metaModelMapper;
 	}
