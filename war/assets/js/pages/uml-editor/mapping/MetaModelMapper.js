@@ -1,19 +1,12 @@
 import {
 	EdgeType
-} from './EdgeType.js';
-import UmlClassRelation from './UmlClassRelation.js';
+} from '../EdgeType.js';
+import {
+	MappingAction
+} from './MappingAction.js';
+import UmlClassRelation from '../UmlClassRelation.js';
 
-import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
-
-export const Action = {
-	DO_NOTHING: 0,
-	CREATE_NODE: 1,
-	CREATE_GENERALIZATION: 2,
-	CREATE_AGGREGATION: 3,
-	CREATE_DIRECTED_ASSOCIATION: 4,
-	ADD_CLASS_FIELD: 5,
-	ADD_CLASS_METHOD: 6
-};
+import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
 export default class MetaModelMapper {
 
@@ -38,10 +31,10 @@ export default class MetaModelMapper {
 
 	evaluateCode(umlClass) {
 		if (this.codeIsValidNode(umlClass.getCode())) {
-			return Action.CREATE_NODE;
+			return MappingAction.CREATE_NODE;
 		}
 
-		return Action.DO_NOTHING;
+		return MappingAction.DO_NOTHING;
 	}
 
 	evaluateCodeRelation(relationMetaModelEntity, sourceUmlClass, destinationUmlClass) {
@@ -52,18 +45,18 @@ export default class MetaModelMapper {
 		case 'is a':
 			{
 				if (!this.areBothCodesValidNodes(codeSource, codeDestination)) {
-					return Action.DO_NOTHING;
+					return MappingAction.DO_NOTHING;
 				}
 
-				return Action.CREATE_GENERALIZATION;
+				return MappingAction.CREATE_GENERALIZATION;
 			}
 		case 'is part of':
 			{
 				if (!this.areBothCodesValidNodes(codeSource, codeDestination)) {
-					return Action.DO_NOTHING;
+					return MappingAction.DO_NOTHING;
 				}
 
-				return Action.CREATE_AGGREGATION;
+				return MappingAction.CREATE_AGGREGATION;
 			}
 		case 'is related to':
 			{
@@ -72,27 +65,27 @@ export default class MetaModelMapper {
 					|| this.codeHasMetaModelEntity(codeDestination, 'Place')) {
 
 					if (this.codeIsValidNode(codeSource)) {
-						return Action.ADD_CLASS_FIELD;
+						return MappingAction.ADD_CLASS_FIELD;
 					}
 				}
 
 				if (!this.areBothCodesValidNodes(codeSource, codeDestination)) {
-					return Action.DO_NOTHING;
+					return MappingAction.DO_NOTHING;
 				}
 
-				return Action.CREATE_DIRECTED_ASSOCIATION;
+				return MappingAction.CREATE_DIRECTED_ASSOCIATION;
 			}
 		case 'influences':
 			{
 				if (!this.codeIsValidNode(codeSource)) {
-					return Action.DO_NOTHING;
+					return MappingAction.DO_NOTHING;
 				}
 
-				return Action.ADD_CLASS_METHOD;
+				return MappingAction.ADD_CLASS_METHOD;
 			}
 		}
 
-		return Action.DO_NOTHING;
+		return MappingAction.DO_NOTHING;
 	}
 
 	runAction(action, params) {
@@ -100,36 +93,36 @@ export default class MetaModelMapper {
 		let destinationUmlClass = params.hasOwnProperty('destinationUmlClass') ? params.destinationUmlClass : null;
 
 		switch (action) {
-		case Action.DO_NOTHING:
+		case MappingAction.DO_NOTHING:
 			{
 				break;
 			}
-		case Action.CREATE_NODE:
+		case MappingAction.CREATE_NODE:
 			{
 				this.addNode(sourceUmlClass);
 				break;
 			}
-		case Action.CREATE_GENERALIZATION:
+		case MappingAction.CREATE_GENERALIZATION:
 			{
 				this.addEdge(params.relation, sourceUmlClass, destinationUmlClass, EdgeType.GENERALIZATION);
 				break;
 			}
-		case Action.CREATE_AGGREGATION:
+		case MappingAction.CREATE_AGGREGATION:
 			{
 				this.addEdge(params.relation, sourceUmlClass, destinationUmlClass, EdgeType.AGGREGATION);
 				break;
 			}
-		case Action.CREATE_DIRECTED_ASSOCIATION:
+		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
 			{
 				this.addEdge(params.relation, sourceUmlClass, destinationUmlClass, EdgeType.DIRECTED_ASSOCIATION);
 				break;
 			}
-		case Action.ADD_CLASS_FIELD:
+		case MappingAction.ADD_CLASS_FIELD:
 			{
 				this.addClassField(params.relation, sourceUmlClass, destinationUmlClass);
 				break;
 			}
-		case Action.ADD_CLASS_METHOD:
+		case MappingAction.ADD_CLASS_METHOD:
 			{
 				this.addClassMethod(params.relation, sourceUmlClass, destinationUmlClass);
 				break;
@@ -189,36 +182,36 @@ export default class MetaModelMapper {
 		let relation = params.hasOwnProperty('relation') ? params.relation : null;
 
 		switch (action) {
-		case Action.DO_NOTHING:
+		case MappingAction.DO_NOTHING:
 			{
 				break;
 			}
-		case Action.CREATE_NODE:
+		case MappingAction.CREATE_NODE:
 			{
 				this.undoAddNode(sourceUmlClass);
 				break;
 			}
-		case Action.CREATE_GENERALIZATION:
+		case MappingAction.CREATE_GENERALIZATION:
 			{
 				this.undoAddEdge(relation);
 				break;
 			}
-		case Action.CREATE_AGGREGATION:
+		case MappingAction.CREATE_AGGREGATION:
 			{
 				this.undoAddEdge(relation);
 				break;
 			}
-		case Action.CREATE_DIRECTED_ASSOCIATION:
+		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
 			{
 				this.undoAddEdge(relation);
 				break;
 			}
-		case Action.ADD_CLASS_FIELD:
+		case MappingAction.ADD_CLASS_FIELD:
 			{
 				this.undoAddClassField(relation);
 				break;
 			}
-		case Action.ADD_CLASS_METHOD:
+		case MappingAction.ADD_CLASS_METHOD:
 			{
 				this.undoAddClassMethod(relation);
 				break;
