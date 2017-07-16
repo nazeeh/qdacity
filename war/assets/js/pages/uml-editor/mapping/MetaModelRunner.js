@@ -34,17 +34,17 @@ export default class MetaModelMapper {
 			}
 		case MappingAction.CREATE_GENERALIZATION:
 			{
-				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, EdgeType.GENERALIZATION);
+				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
 				break;
 			}
 		case MappingAction.CREATE_AGGREGATION:
 			{
-				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, EdgeType.AGGREGATION);
+				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
 				break;
 			}
 		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
 			{
-				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, EdgeType.DIRECTED_ASSOCIATION);
+				this.umlEditor.addEdge(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
 				break;
 			}
 		case MappingAction.ADD_CLASS_FIELD:

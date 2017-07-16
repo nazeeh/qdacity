@@ -112,6 +112,27 @@ export default class MetaModelMapper {
 	getClassMethodRelationEntityName() {
 		return 'influences';
 	}
+	
+	getEdgeTypeFromMappingAction(action) {
+		switch (action) {
+		case MappingAction.CREATE_GENERALIZATION:
+			{
+				return EdgeType.GENERALIZATION;
+			}
+		case MappingAction.CREATE_AGGREGATION:
+			{
+				return EdgeType.AGGREGATION;
+			}
+		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
+			{
+				return EdgeType.DIRECTED_ASSOCIATION;
+			}
+		default:
+			{
+				throw new Error('Unsupported action ' + action);
+			}
+		}
+	}
 
 	isCodeValidNode(code) {
 		return this.codeHasMetaModelEntity(code, 'Category') || this.codeHasMetaModelEntity(code, 'Concept');
