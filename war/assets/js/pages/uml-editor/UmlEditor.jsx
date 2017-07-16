@@ -5,7 +5,7 @@ import UmlClassManager from './UmlClassManager.js';
 import UmlClassRelation from './UmlClassRelation.js';
 
 import Toolbar from './toolbar/Toolbar.jsx';
-import MetaModelMapper from './MetaModelMapper.js';
+import MetaModelMapper from './mapping/MetaModelMapper.js';
 import UmlGraphView from './UmlGraphView.jsx';
 
 import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';

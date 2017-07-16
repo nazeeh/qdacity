@@ -1,5 +1,3 @@
-import MetaModelMapper from './MetaModelMapper.js';
-
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
 
