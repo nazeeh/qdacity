@@ -1,8 +1,9 @@
 import React from 'react';
 
-import UmlClass from './UmlClass.js';
-import UmlClassManager from './UmlClassManager.js';
-import UmlClassRelation from './UmlClassRelation.js';
+import UmlClass from './model/UmlClass.js';
+import UmlClassManager from './model/UmlClassManager.js';
+import UmlClassRelation from './model/UmlClassRelation.js';
+import UmlClassRelationManager from './model/UmlClassRelationManager.js';
 
 import Toolbar from './toolbar/Toolbar.jsx';
 import MetaModelMapper from './mapping/MetaModelMapper.js';
@@ -24,16 +25,16 @@ export default class UmlEditor extends React.Component {
 		this.toolbar = null;
 
 		this.metaModelMapper = null;
+        this.metaModelRunner = null;
+        
+        this.umlClassManager = null;
+        this.umlClassRelations = {}; // TODO use manager?
 
 		this.mmEntities = null;
 		this.mmRelation = null;
 
 		this.codesystemLoaded = false;
 		this.metamodelLoaded = false;
-
-		this.umlClassManager = null;
-
-		this.umlClassRelations = {};
 	}
 
 	componentDidMount() {
@@ -83,7 +84,8 @@ export default class UmlEditor extends React.Component {
 	}
 
 	initialize() {
-		this.metaModelMapper = new MetaModelMapper(this.umlGraphView, this.mmEntities);
+		this.metaModelMapper = new MetaModelMapper();
+        this.metaModelRunner = new UmlClassManager(this, this.metaModelMapper);
 
 		this.umlClassManager = new UmlClassManager();
 
@@ -114,9 +116,7 @@ export default class UmlEditor extends React.Component {
 			this.umlClassManager.add(umlClass);
 
 			// Add node to graph
-			this.metaModelMapper.evaluateAndRunAction({
-				'sourceUmlClass': umlClass
-			});
+			this.metaModelRunner.evaluateAndRunAction(umlClass);
 
 			// Logging
 			console.log('Added new node to the graph: ' + code.name + ' (' + code.codeID + ')');
