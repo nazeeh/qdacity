@@ -333,7 +333,7 @@ export default class UmlGraphView extends React.Component {
 
 								// Validate
 								// TODO handle this in another way
-								if (_this.metaModelMapper.codeIsValidNode(destinationUmlClass.getCode())) {
+								if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
 									alert('ERROR: Cant add a method if the destination code is an uml class.');
 									return;
 								}

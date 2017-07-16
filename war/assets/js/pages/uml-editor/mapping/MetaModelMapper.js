@@ -4,47 +4,43 @@ import {
 import {
 	MappingAction
 } from './MappingAction.js';
-import UmlClassRelation from '../UmlClassRelation.js';
-
-import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
 export default class MetaModelMapper {
 
-	constructor(umlGraphView, mmEntities) {
-		this.umlGraphView = umlGraphView;
-		this.mmEntities = mmEntities;
+	constructor() {
+
 	}
 
-	evaluateAction(params) {
-		if (params.hasOwnProperty('sourceUmlClass')
-			&& !params.hasOwnProperty('destinationUmlClass')) {
-			return this.evaluateCode(params.sourceUmlClass);
-		} else if (params.hasOwnProperty('sourceUmlClass')
-			&& params.hasOwnProperty('destinationUmlClass')
-			&& params.hasOwnProperty('relationMetaModelEntity')
-			&& params.hasOwnProperty('relation')) {
-			return this.evaluateCodeRelation(params.relationMetaModelEntity, params.sourceUmlClass, params.destinationUmlClass);
+	evaluateAction(sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
+		if (sourceUmlClass != null
+			&& destinationUmlClass == null
+			&& relationMetaModelEntity == null) {
+			return this.evaluateCode(sourceUmlClass);
+		} else if (sourceUmlClass != null
+			&& destinationUmlClass != null
+			&& relationMetaModelEntity != null) {
+			return this.evaluateCodeRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
 		} else {
 			throw new Error('Invalid parameters');
 		}
 	}
 
 	evaluateCode(umlClass) {
-		if (this.codeIsValidNode(umlClass.getCode())) {
+		if (this.isCodeValidNode(umlClass.getCode())) {
 			return MappingAction.CREATE_NODE;
 		}
 
 		return MappingAction.DO_NOTHING;
 	}
 
-	evaluateCodeRelation(relationMetaModelEntity, sourceUmlClass, destinationUmlClass) {
+	evaluateCodeRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
 		let codeSource = sourceUmlClass.getCode();
 		let codeDestination = destinationUmlClass.getCode();
 
 		switch (relationMetaModelEntity.name) {
 		case 'is a':
 			{
-				if (!this.areBothCodesValidNodes(codeSource, codeDestination)) {
+				if (!this.isCodeValidNode(codeSource) || !this.isCodeValidNode(codeDestination)) {
 					return MappingAction.DO_NOTHING;
 				}
 
@@ -52,7 +48,7 @@ export default class MetaModelMapper {
 			}
 		case 'is part of':
 			{
-				if (!this.areBothCodesValidNodes(codeSource, codeDestination)) {
+				if (!this.isCodeValidNode(codeSource) || !this.isCodeValidNode(codeDestination)) {
 					return MappingAction.DO_NOTHING;
 				}
 
@@ -64,12 +60,12 @@ export default class MetaModelMapper {
 					|| this.codeHasMetaModelEntity(codeDestination, 'Actor')
 					|| this.codeHasMetaModelEntity(codeDestination, 'Place')) {
 
-					if (this.codeIsValidNode(codeSource)) {
+					if (this.isCodeValidNode(codeSource)) {
 						return MappingAction.ADD_CLASS_FIELD;
 					}
 				}
 
-				if (!this.areBothCodesValidNodes(codeSource, codeDestination)) {
+				if (!this.isCodeValidNode(codeSource) || !this.isCodeValidNode(codeDestination)) {
 					return MappingAction.DO_NOTHING;
 				}
 
@@ -77,7 +73,7 @@ export default class MetaModelMapper {
 			}
 		case 'influences':
 			{
-				if (!this.codeIsValidNode(codeSource)) {
+				if (!this.isCodeValidNode(codeSource)) {
 					return MappingAction.DO_NOTHING;
 				}
 
@@ -88,179 +84,36 @@ export default class MetaModelMapper {
 		return MappingAction.DO_NOTHING;
 	}
 
-	runAction(action, params) {
-		let sourceUmlClass = params.hasOwnProperty('sourceUmlClass') ? params.sourceUmlClass : null;
-		let destinationUmlClass = params.hasOwnProperty('destinationUmlClass') ? params.destinationUmlClass : null;
-
-		switch (action) {
-		case MappingAction.DO_NOTHING:
+	getEdgeRelationEntityName(edgeType) {
+		switch (edgeType) {
+		case EdgeType.GENERALIZATION:
 			{
-				break;
+				return 'is a';
 			}
-		case MappingAction.CREATE_NODE:
+		case EdgeType.AGGREGATION:
 			{
-				this.addNode(sourceUmlClass);
-				break;
+				return 'is part of';
 			}
-		case MappingAction.CREATE_GENERALIZATION:
+		case EdgeType.DIRECTED_ASSOCIATION:
 			{
-				this.addEdge(params.relation, sourceUmlClass, destinationUmlClass, EdgeType.GENERALIZATION);
-				break;
-			}
-		case MappingAction.CREATE_AGGREGATION:
-			{
-				this.addEdge(params.relation, sourceUmlClass, destinationUmlClass, EdgeType.AGGREGATION);
-				break;
-			}
-		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
-			{
-				this.addEdge(params.relation, sourceUmlClass, destinationUmlClass, EdgeType.DIRECTED_ASSOCIATION);
-				break;
-			}
-		case MappingAction.ADD_CLASS_FIELD:
-			{
-				this.addClassField(params.relation, sourceUmlClass, destinationUmlClass);
-				break;
-			}
-		case MappingAction.ADD_CLASS_METHOD:
-			{
-				this.addClassMethod(params.relation, sourceUmlClass, destinationUmlClass);
-				break;
+				return 'is related to';
 			}
 		default:
 			{
-				throw new Error('Action not implemented');
+				throw new Error('EdgeType not implemented.');
 			}
 		}
 	}
 
-	addNode(umlClass) {
-		const node = this.umlGraphView.addNode(umlClass.getCode().name);
-		umlClass.setNode(node);
-
-		const umlCodePosition = umlClass.getUmlCodePosition();
-		if (umlCodePosition != null) {
-			this.umlGraphView.moveNode(node, umlCodePosition.x, umlCodePosition.y);
-		}
-
-		this.umlGraphView.onNodesChanged();
+	getClassFieldRelationEntityName() {
+		return 'is related to';
 	}
 
-	addEdge(relation, sourceUmlClass, destinationUmlClass, edgeType) {
-		const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
-		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
+	getClassMethodRelationEntityName() {
+		return 'influences';
 	}
 
-	addClassField(relation, sourceUmlClass, destinationUmlClass) {
-		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
-		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
-	}
-
-	addClassMethod(relation, sourceUmlClass, destinationUmlClass) {
-		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
-		this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
-	}
-
-	// TODO this does NOT belong here
-	calculateRelationIdentifier(relation) {
-		return relation.destination + '--' + relation.source + '--' + relation.metaModelEntityId;
-	}
-
-	// TODO this does MAYBE not belong here
-	addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode) {
-		// TODO debug here with console.log
-		// Warum wird 2-2-XXXXXXXXXXX nciht hinzugefügt?
-		console.log("Add Relation for: " + this.calculateRelationIdentifier(relation));
-
-		this.umlGraphView.umlClassRelations[this.calculateRelationIdentifier(relation)] = new UmlClassRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
-	}
-
-
-	undoAction(action, params) {
-		let sourceUmlClass = params.hasOwnProperty('sourceUmlClass') ? params.sourceUmlClass : null;
-		let destinationUmlClass = params.hasOwnProperty('destinationUmlClass') ? params.destinationUmlClass : null;
-		let relation = params.hasOwnProperty('relation') ? params.relation : null;
-
-		switch (action) {
-		case MappingAction.DO_NOTHING:
-			{
-				break;
-			}
-		case MappingAction.CREATE_NODE:
-			{
-				this.undoAddNode(sourceUmlClass);
-				break;
-			}
-		case MappingAction.CREATE_GENERALIZATION:
-			{
-				this.undoAddEdge(relation);
-				break;
-			}
-		case MappingAction.CREATE_AGGREGATION:
-			{
-				this.undoAddEdge(relation);
-				break;
-			}
-		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
-			{
-				this.undoAddEdge(relation);
-				break;
-			}
-		case MappingAction.ADD_CLASS_FIELD:
-			{
-				this.undoAddClassField(relation);
-				break;
-			}
-		case MappingAction.ADD_CLASS_METHOD:
-			{
-				this.undoAddClassMethod(relation);
-				break;
-			}
-		default:
-			{
-				throw new Error('Action not implemented');
-			}
-		}
-	}
-
-	undoAddNode(umlClass) {
-		this.umlGraphView.removeNode(umlClass.getNode());
-		umlClass.setNode(null);
-		this.umlGraphView.onNodesChanged();
-	}
-
-	undoAddEdge(relation) {
-		this.undoRelation(relation);
-	}
-
-	undoAddClassField(relation) {
-		this.undoRelation(relation);
-	}
-
-	undoAddClassMethod(relation) {
-		this.undoRelation(relation);
-	}
-
-	undoRelation(relation) {
-		const relationIdentifier = this.calculateRelationIdentifier(relation);
-
-		this.umlGraphView.removeEdge(this.umlGraphView.umlClassRelations[relationIdentifier].getRelationNode());
-
-		delete this.umlGraphView.umlClassRelations[relationIdentifier];
-	}
-
-
-	evaluateAndRunAction(params) {
-		const action = this.evaluateAction(params);
-		this.runAction(action, params);
-		return action;
-	}
-
-	areBothCodesValidNodes(codeSource, codeDestination) {
-		return this.codeIsValidNode(codeSource) && this.codeIsValidNode(codeDestination);
-	}
-
-	codeIsValidNode(code) {
+	isCodeValidNode(code) {
 		return this.codeHasMetaModelEntity(code, 'Category') || this.codeHasMetaModelEntity(code, 'Concept');
 	}
 
@@ -279,68 +132,5 @@ export default class MetaModelMapper {
 		}
 
 		return false;
-	}
-
-	getMetaModelEntityId(name) {
-		const mmEntity = this.mmEntities.find((mmEntity) => mmEntity.name == name);
-		return mmEntity.id;
-	}
-
-	addedEdge(edge, edgeType, sourceUmlClass, destinationUmlClass) {
-		const _this = this;
-
-		let metaModelEntityName;
-
-		switch (edgeType) {
-		case EdgeType.GENERALIZATION:
-			{
-				metaModelEntityName = 'is a';
-				break;
-			}
-		case EdgeType.AGGREGATION:
-			{
-				metaModelEntityName = 'is part of';
-				break;
-			}
-		case EdgeType.DIRECTED_ASSOCIATION:
-			{
-				metaModelEntityName = 'is related to';
-				break;
-			}
-		default:
-			{
-				throw new Error('EdgeType not implemented.');
-			}
-		}
-
-		this.addedRelation('edge', metaModelEntityName, edge, sourceUmlClass, destinationUmlClass);
-	}
-
-	addedField(fieldNode, sourceUmlClass, destinationUmlClass) {
-		this.addedRelation('field', 'is related to', fieldNode, sourceUmlClass, destinationUmlClass);
-	}
-
-	addedMethod(methodNode, sourceUmlClass, destinationUmlClass) {
-		this.addedRelation('method', 'influences', methodNode, sourceUmlClass, destinationUmlClass);
-	}
-
-	addedRelation(type, metaModelEntityName, relationNode, sourceUmlClass, destinationUmlClass) {
-		const _this = this;
-
-		let metaModelElementId = this.getMetaModelEntityId(metaModelEntityName);
-
-		console.log('Adding new ' + type + '...');
-
-		CodesEndpoint.addRelationship(sourceUmlClass.getCode().id, destinationUmlClass.getCode().codeID, metaModelElementId).then(function (resp) {
-			let relation = {
-				'source': sourceUmlClass.getCode().codeID,
-				'destination': destinationUmlClass.getCode().codeID,
-				'metaModelEntityId': metaModelElementId
-			};
-
-			_this.addRelation(relation, sourceUmlClass, destinationUmlClass, relationNode);
-
-			console.log('Added new ' + type + '.');
-		});
 	}
 }
