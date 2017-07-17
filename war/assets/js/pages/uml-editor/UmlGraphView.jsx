@@ -8,7 +8,6 @@ import UmlClass from './model/UmlClass.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
-import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
 const StyledGraphView = styled.div `

@@ -14,6 +14,7 @@ import UmlGraphView from './UmlGraphView.jsx';
 
 import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
 
+import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
@@ -329,6 +330,16 @@ export default class UmlEditor extends React.Component {
 		return this.mmRelations;
 	}
 
+	refreshUmlCodePositions(newUmlCodePositions) {
+		console.log('Refreshing UmlCodePositions.');
+
+		const _this = this;
+		newUmlCodePositions.forEach((newUmlCodePosition) => {
+			let umlClass = _this.umlClassManager.getByCodeId(newUmlCodePosition.codeId);
+			umlClass.setUmlCodePosition(newUmlCodePosition);
+		});
+	}
+
 	addNode(umlClass) {
 		const node = this.umlGraphView.addNode(umlClass.getCode().name);
 		umlClass.setNode(node);
@@ -401,6 +412,80 @@ export default class UmlEditor extends React.Component {
 		this.umlGraphView.removeClassMethod(node, umlClassRelation.getRelationNode());
 
 		umlClassRelation.setRelationNode(null);
+	}
+
+	overlayClickedMetaModel(cell) {
+		const _this = this;
+
+		let umlClass = _this.umlClassManager.getByNode(cell);
+		let code = umlClass.getCode();
+
+		let codeMetaModelModal = new UmlCodeMetaModelModal(code);
+
+		codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
+			// TODO duplicate code in UnmappedCodeElement.jsx
+			console.log('Closed modal');
+
+			if (code.mmElementIDs != data.ids) {
+				console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
+
+				code.mmElementIDs = data.ids;
+
+				console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+
+				CodesEndpoint.updateCode(code).then(function (resp) {
+					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
+					_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
+				});
+			}
+		});
+	}
+
+	overlayClickedClassField(cell) {
+		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystem);
+
+		addFieldModal.showModal().then(function (data) {
+			console.log('Closed modal');
+
+			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
+			const destinationCode = destinationUmlClass.getCode();
+
+			// Validate
+			// TODO handle this in another way
+			if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
+				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
+				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
+				alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
+				return;
+			}
+
+			const fieldNode = _this.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
+
+			_this.addedField(fieldNode, sourceUmlClass, destinationUmlClass);
+		});
+	}
+
+	overlayClickedClassMethod(cell) {
+		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystem);
+
+		addMethodModal.showModal().then(function (data) {
+			console.log('Closed modal');
+
+			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
+
+			// Validate
+			// TODO handle this in another way
+			if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
+				alert('ERROR: Cant add a method if the destination code is an uml class.');
+				return;
+			}
+
+			const methodNode = _this.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
+
+			_this.addedMethod(methodNode, sourceUmlClass, destinationUmlClass);
+		});
 	}
 
 	exchangeCodeMetaModelEntities(codeId, oldMetaModelEntityIds) {
@@ -518,99 +603,7 @@ export default class UmlEditor extends React.Component {
 		}
 	}
 
-	overlayClickedMetaModel(cell) {
-		const _this = this;
 
-		let umlClass = _this.umlClassManager.getByNode(cell);
-		let code = umlClass.getCode();
-
-		let codeMetaModelModal = new UmlCodeMetaModelModal(code);
-
-		codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
-			// TODO duplicate code in UnmappedCodeElement.jsx
-			console.log('Closed modal');
-
-			if (code.mmElementIDs != data.ids) {
-				console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
-
-				code.mmElementIDs = data.ids;
-
-				console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
-
-				CodesEndpoint.updateCode(code).then(function (resp) {
-					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-					_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
-				});
-			}
-		});
-	}
-
-	overlayClickedClassField(cell) {
-		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystem);
-
-		addFieldModal.showModal().then(function (data) {
-			console.log('Closed modal');
-
-			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
-			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
-			const destinationCode = destinationUmlClass.getCode();
-
-			// Validate
-			// TODO handle this in another way
-			if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
-				alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
-				return;
-			}
-
-			const fieldNode = _this.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
-
-			_this.addedField(fieldNode, sourceUmlClass, destinationUmlClass);
-		});
-	}
-
-	overlayClickedClassMethod(cell) {
-		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystem);
-
-		addMethodModal.showModal().then(function (data) {
-			console.log('Closed modal');
-
-			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
-			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
-
-			// Validate
-			// TODO handle this in another way
-			if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
-				alert('ERROR: Cant add a method if the destination code is an uml class.');
-				return;
-			}
-
-			const methodNode = _this.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
-
-			_this.addedMethod(methodNode, sourceUmlClass, destinationUmlClass);
-		});
-	}
-
-
-
-
-
-
-
-
-
-
-
-	refreshUmlCodePositions(newUmlCodePositions) {
-		console.log('Refreshing UmlCodePositions.');
-
-		const _this = this;
-		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			let umlClass = _this.umlClassManager.getByCodeId(newUmlCodePosition.codeId);
-			umlClass.setUmlCodePosition(newUmlCodePosition);
-		});
-	}
 
 
 
