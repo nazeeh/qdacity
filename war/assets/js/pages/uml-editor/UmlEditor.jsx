@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import UmlClass from './model/UmlClass.js';
 import UmlClassManager from './model/UmlClassManager.js';
@@ -16,6 +17,10 @@ import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
 import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
+
+const StyledUmlEditor = styled.div `
+    height: inherit;
+`;
 
 export default class UmlEditor extends React.Component {
 
@@ -655,10 +660,10 @@ export default class UmlEditor extends React.Component {
 
 	render() {
 		return (
-			<div>
+			<StyledUmlEditor>
                 <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditor={this} />
                 <UmlGraphView ref={(umlGraphView) => {this.umlGraphView = umlGraphView}} umlEditor={this} />
-            </div>
+            </StyledUmlEditor>
 		);
 	}
 

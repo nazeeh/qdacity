@@ -13,7 +13,8 @@ import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpo
 
 const StyledGraphView = styled.div `
     overflow: hidden;
-    cursor: default
+    cursor: default;
+    height: 100%;
 `;
 
 export default class UmlGraphView extends React.Component {
@@ -588,7 +589,7 @@ export default class UmlGraphView extends React.Component {
 		// mxGraph requires an element that is not a styled-component            
 		return (
 			<StyledGraphView>
-                <div ref="umlGraphContainer"></div>
+                <div ref="umlGraphContainer" style={{ height: '100%' }}></div>
             </StyledGraphView>
 		);
 	}

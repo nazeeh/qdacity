@@ -124,8 +124,12 @@ function resizeElements() {
 	if ($("#textdocument-menu").is(":visible")) {
 		offsetEditMenu += 45;
 	}
+	var editorHeight = $(window).height() - 52 - offsetFooter - offsetEditMenu;
 	$("#editor").css({
-		height: $(window).height() - 52 - offsetFooter - offsetEditMenu
+		height: editorHeight
+	});
+	$("#umlEditorContainer").css({
+		height: editorHeight
 	});
 
 	var codesystemTreeOffset = 0;
