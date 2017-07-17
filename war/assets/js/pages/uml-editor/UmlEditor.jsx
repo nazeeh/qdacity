@@ -340,6 +340,15 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
+	codeUpdated(code) {
+		const umlClass = this.umlClassManager.getByCode(code);
+		
+		// Update name
+		if (umlClass.getNode() != null) {
+		    this.umlGraphView.renameNode(umlClass.getNode(), umlClass.getCode().name);
+		}
+	}
+
 	addNode(umlClass) {
 		const node = this.umlGraphView.addNode(umlClass.getCode().name);
 		umlClass.setNode(node);

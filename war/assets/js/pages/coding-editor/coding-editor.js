@@ -235,6 +235,7 @@ function hideCodingView() {
 
 function updateSelectedCode(code, persist) {
 	codesystemView.updateSelected(code, persist);
+	umlEditor.codeUpdated(code);
 }
 
 function getCodeByCodeID(codeID) {

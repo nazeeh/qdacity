@@ -389,7 +389,25 @@ export default class UmlGraphView extends React.Component {
 
 		let node;
 		try {
-			node = this.addClass(name);
+			// TODO use proper style
+			let fields = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;line;html=1;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
+			fields.vertex = true;
+
+			let methods = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;html=1;strokeColor=none;strokeWidth=0;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
+			methods.vertex = true;
+
+			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;';
+			let cell = new mxCell(name, new mxGeometry(0, 0, 160, 0), style);
+			cell.vertex = true;
+			cell.insert(fields);
+			cell.insert(methods);
+
+			this.graph.addCell(cell);
+
+			this.recalculateNodeSize(cell);
+
+			node = cell;
+
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
@@ -428,25 +446,9 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
-	addClass(name) {
-		// TODO use proper style
-		let fields = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;line;html=1;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
-		fields.vertex = true;
-
-		let methods = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;html=1;strokeColor=none;strokeWidth=0;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
-		methods.vertex = true;
-
-		let style = 'fontSize=13;swimlane;html=1;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;';
-		let cell = new mxCell(name, new mxGeometry(0, 0, 160, 0), style);
-		cell.vertex = true;
-		cell.insert(fields);
-		cell.insert(methods);
-
-		this.graph.addCell(cell);
-
-		this.recalculateNodeSize(cell);
-
-		return cell;
+	renameNode(node, name) {
+		node.setValue(name);
+		this.graph.refresh(node);
 	}
 
 	addClassField(node, fieldName, fieldReturnType) {
