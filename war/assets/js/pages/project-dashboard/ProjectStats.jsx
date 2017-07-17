@@ -1,7 +1,7 @@
 import React from 'react';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import SaturationModal from '../../common/modals/SaturationModal';
-import SaturationAverage from '../../common/SaturationAverage';
+import SaturationAverage from '../../common/saturation/SaturationAverage';
 
 export default class ProjectStats extends React.Component {
 	constructor(props) {
