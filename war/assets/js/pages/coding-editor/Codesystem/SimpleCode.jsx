@@ -10,6 +10,7 @@ import {
 const StyledCode = styled.div `
     font-family: tahoma, arial, helvetica;
     font-size: 10pt;
+    font-weight: ${props => props.highlightNode ? 'bold' : 'normal'};
     margin-left:${props => (props.level * 15) + 'px' };
     display: flex;
     align-items: center;
