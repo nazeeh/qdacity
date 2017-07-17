@@ -23,7 +23,7 @@ window.init = function () {
 	signInLoader = ReactDOM.render(<ReactLoading />, document.getElementById('loaderMount'));
 	ReactDOM.render(<SigninWithGoogleBtn signIn={signIn} />, document.getElementById('signinGoogleBtn'));
 
-	loadGAPIs(() => {})).then(
+	loadGAPIs(() => {}).then(
 		function (accountModule) {
 			account = accountModule;
 		}
