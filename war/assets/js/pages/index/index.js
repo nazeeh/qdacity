@@ -1,3 +1,4 @@
+import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
@@ -20,22 +21,13 @@ function signout() {
 
 window.init = function () {
 	signInLoader = ReactDOM.render(<ReactLoading />, document.getElementById('loaderMount'));
+	ReactDOM.render(<SigninWithGoogleBtn signIn={signIn} />, document.getElementById('signinGoogleBtn'));
 
-	var isRegistered = getCookie("isRegistered");
-	if (isRegistered == "true") {
-		//window.location = "personal-dashboard.html"; 
-	}
-
-	loadGAPIs(setupUI).then(
+	loadGAPIs(() => {})).then(
 		function (accountModule) {
 			account = accountModule;
-			$('#signinGoogleBtn').click(signIn);
 		}
 	);
-}
-
-function setupUI() {
-
 }
 
 function redirect() {
@@ -79,32 +71,12 @@ function registerAccount() {
 }
 
 function signIn(event) {
-	event.preventDefault();
 	$('#signinGoogleBtn').hide();
 	$('.signin').css("display", "inline-block");
-	//signInLoader.show();
 
 	if (account.isSignedIn()) {
 		redirect();
 	} else {
 		account.changeAccount(redirect);
 	}
-}
-
-function setCookie(cname, cvalue, exdays) {
-	var d = new Date();
-	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-	var expires = "expires=" + d.toUTCString();
-	document.cookie = cname + "=" + cvalue + "; " + expires;
-}
-
-function getCookie(cname) {
-	var name = cname + "=";
-	var ca = document.cookie.split(';');
-	for (var i = 0; i < ca.length; i++) {
-		var c = ca[i];
-		while (c.charAt(0) == ' ') c = c.substring(1);
-		if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-	}
-	return "";
 }
