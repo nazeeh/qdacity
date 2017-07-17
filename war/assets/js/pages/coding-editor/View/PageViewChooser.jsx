@@ -1,14 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import {
+    PageView
+} from './PageView.js';
+
 const StyledButtonGroup = styled.div `
     display: flex;
     justify-content: center;
     margin: 10px 0px 10px 0px;
 `;
-
-const VIEW_TEXT = 'text';
-const VIEW_UML = 'uml';
 
 export default class PageViewChooser extends React.Component {
 
@@ -16,18 +17,18 @@ export default class PageViewChooser extends React.Component {
 		super(props);
 
 		this.state = {
-			view: VIEW_TEXT
+			view: PageView.TEXT
 		};
 
-		this.props.viewChanged(VIEW_TEXT);
+		this.props.viewChanged(PageView.TEXT);
 	}
 
 	buttonTextEditorClicked() {
-		this.setView(VIEW_TEXT);
+		this.setView(PageView.TEXT);
 	}
 
 	buttonUmlEditorClicked() {
-		this.setView(VIEW_UML);
+		this.setView(PageView.UML);
 	}
 
 	setView(view) {
@@ -47,8 +48,8 @@ export default class PageViewChooser extends React.Component {
 
 		const styleSelected = 'btn btn-primary active';
 		const styleDefault = 'btn btn-default';
-		const classButtonText = _this.state.view == VIEW_TEXT ? styleSelected : styleDefault;
-		const classButtonUml = _this.state.view == VIEW_UML ? styleSelected : styleDefault;
+		const classButtonText = _this.state.view == PageView.TEXT ? styleSelected : styleDefault;
+		const classButtonUml = _this.state.view == PageView.UML ? styleSelected : styleDefault;
 
 		return (
 			<StyledButtonGroup className="btn-group">
