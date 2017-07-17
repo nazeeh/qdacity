@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import {
-    PageView
+	PageView
 } from './PageView.js';
 
 const StyledButtonGroup = styled.div `
@@ -19,7 +19,9 @@ export default class PageViewChooser extends React.Component {
 		this.state = {
 			view: PageView.TEXT
 		};
+	}
 
+	componentDidMount() {
 		this.props.viewChanged(PageView.TEXT);
 	}
 

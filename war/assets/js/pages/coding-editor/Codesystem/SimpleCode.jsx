@@ -1,13 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import MetaModelMapper from '../../uml-editor/mapping/MetaModelMapper.js';
+
+import {
+	PageView
+} from '../View/PageView.js';
+
 const StyledCode = styled.div `
     font-family: tahoma, arial, helvetica;
     font-size: 10pt;
     margin-left:${props => (props.level * 15) + 'px' };
     display: flex;
     align-items: center;
-    color: ${props => props.selected ? '#fff' : '#000'};
+    color: ${props => props.selected ? (props.highlightNode ? '#ffaa00' : '#fff') : (props.highlightNode ? '#ffaa00' : '#000')};
     background-color: ${props => props.selected ? '#337ab7' : ''};
     &:hover {
         background: #63a0d4;
@@ -81,12 +87,15 @@ export default class SimpleCode extends React.Component {
 
 
 	renderNode(level) {
+		const highlightNode = this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(this.props.node);
+
 		return <div className=""> 
             <StyledCode
                     selected = {this.props.node == this.props.selected} 
                     level={level}
                     className="clickable"
                     key={"CS" + "_" + level}
+		            highlightNode={highlightNode}
                     onClick={() => this.props.setSelected(this.props.node)}
                 >
                         {this.renderExpander(this.props.node)}
@@ -108,6 +117,7 @@ export default class SimpleCode extends React.Component {
                     relocateCode={this.props.relocateCode}
                     showFooter={this.props.showFooter}  
                     key={"CS" + "_" + level+ "_" +index}
+		            pageView={this.props.pageView}
                 >
                 </SimpleCode>
 		);

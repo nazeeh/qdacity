@@ -1,4 +1,4 @@
 export const PageView = {
-	TEXT = 'text',
-	UML = 'uml'
+	TEXT: 'text',
+	UML: 'uml'
 };

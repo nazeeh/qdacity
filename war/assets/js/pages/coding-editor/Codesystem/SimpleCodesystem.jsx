@@ -9,9 +9,12 @@ export default class SimpleCodesystem extends React.Component {
 		super(props);
 		this.codesystem = {};
 		this.state = {
+			pageView: null,
 			slected: {},
 			codesystem: []
 		};
+
+		this.umlEditor = null;
 
 		this.state.codesystem = this.props.codesystem;
 
@@ -33,6 +36,16 @@ export default class SimpleCodesystem extends React.Component {
 				_this.sortCodes(code.children);
 			}
 		})
+	}
+
+	pageViewChanged(view) {
+		this.setState({
+			pageView: view
+		});
+	}
+
+	setUmlEditor(umlEditor) {
+		this.umlEditor = umlEditor;
 	}
 
 	setSelected(code) {
@@ -75,7 +88,9 @@ export default class SimpleCodesystem extends React.Component {
 							node={code} 
 							selected={this.state.selected} 
 							setSelected={this.setSelected} 
-							key={"CS" + "_" + 0 + "_"  +index}>
+							key={"CS" + "_" + 0 + "_"  +index}
+			                pageView={this.state.pageView}
+			                umlEditor={this.umlEditor}>
 						</SimpleCode>
 			);
 		});
@@ -94,7 +109,6 @@ export default class SimpleCodesystem extends React.Component {
 	}
 
 	render() {
-		var _this = this;
 		return (
 			<div className="codesystemView">{this.renderCodesystem()}</div>
 		);

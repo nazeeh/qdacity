@@ -134,6 +134,13 @@ export default class MetaModelMapper {
 		}
 	}
 
+	convertParams(params) {
+		let umlClass = params.hasOwnProperty('umlClass') ? params.umlClass : null;
+		let umlClassRelation = params.hasOwnProperty('umlClassRelation') ? params.umlClassRelation : null;
+
+		return [umlClass, umlClassRelation];
+	}
+
 	isCodeValidNode(code) {
 		return this.codeHasMetaModelEntity(code, 'Category') || this.codeHasMetaModelEntity(code, 'Concept');
 	}
@@ -153,12 +160,5 @@ export default class MetaModelMapper {
 		}
 
 		return false;
-	}
-
-	convertParams(params) {
-		let umlClass = params.hasOwnProperty('umlClass') ? params.umlClass : null;
-		let umlClassRelation = params.hasOwnProperty('umlClassRelation') ? params.umlClassRelation : null;
-
-		return [umlClass, umlClassRelation];
 	}
 }

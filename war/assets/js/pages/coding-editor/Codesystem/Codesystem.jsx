@@ -114,7 +114,6 @@ class Codesystem extends SimpleCodesystem {
 		}
 	}
 
-
 	updateSelected(code, persist) {
 		if (!persist) {
 			Object.assign(this.state.selected, code);
@@ -240,14 +239,15 @@ class Codesystem extends SimpleCodesystem {
 							setSelected={this.setSelected}
 							relocateCode={this.relocateCode}
 							showFooter={this.props.showFooter}
-							key={"CS" + "_" + 0 + "_"  +index}>
+							key={"CS" + "_" + 0 + "_"  +index}
+                            pageView={this.state.pageView}
+                            umlEditor={this.umlEditor}>
 						</DragAndDropCode>
 			);
 		});
 	}
 
 	render() {
-		var _this = this;
 		return (
 			<div>
 					<StyledToolBar>

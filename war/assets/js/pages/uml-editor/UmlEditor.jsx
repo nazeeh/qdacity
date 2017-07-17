@@ -442,6 +442,8 @@ export default class UmlEditor extends React.Component {
 	}
 
 	overlayClickedClassField(cell) {
+		const _this = this;
+
 		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystem);
 
 		addFieldModal.showModal().then(function (data) {
@@ -453,9 +455,9 @@ export default class UmlEditor extends React.Component {
 
 			// Validate
 			// TODO handle this in another way
-			if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
+			if (!_this.codeHasMetaModelEntity(destinationCode, 'Object')
+				&& !_this.codeHasMetaModelEntity(destinationCode, 'Actor')
+				&& !_this.codeHasMetaModelEntity(destinationCode, 'Place')) {
 				alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
 				return;
 			}
@@ -467,6 +469,8 @@ export default class UmlEditor extends React.Component {
 	}
 
 	overlayClickedClassMethod(cell) {
+		const _this = this;
+
 		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystem);
 
 		addMethodModal.showModal().then(function (data) {
@@ -477,7 +481,7 @@ export default class UmlEditor extends React.Component {
 
 			// Validate
 			// TODO handle this in another way
-			if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
+			if (_this.isCodeValidNode(destinationUmlClass.getCode())) {
 				alert('ERROR: Cant add a method if the destination code is an uml class.');
 				return;
 			}
