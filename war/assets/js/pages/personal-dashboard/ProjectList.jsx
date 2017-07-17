@@ -177,7 +177,6 @@ export default class ProjectList extends React.Component {
 			<span className="searchfield" id="searchform">
 				<input
 					type="text"
-					class="search"
 					placeholder="Search"
 					value={this.state.search}
 					onChange={this.updateSearch}
