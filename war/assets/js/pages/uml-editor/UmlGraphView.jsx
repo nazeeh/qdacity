@@ -6,7 +6,6 @@ import {
 } from './EdgeType.js';
 import UmlClass from './model/UmlClass.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
-import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
@@ -249,8 +248,6 @@ export default class UmlGraphView extends React.Component {
 			if (cells != null && cells.length == 1) {
 				let cell = cells[0];
 
-				let sourceUmlClass = _this.getUmlClassByNode(cell);
-
 				if (_this.isCellUmlClass(cell)) {
 					let overlays = _this.graph.getCellOverlays(cell);
 
@@ -260,28 +257,7 @@ export default class UmlGraphView extends React.Component {
 						overlayMetaModel.cursor = 'pointer';
 
 						overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
-							let umlClass = _this.getUmlClassByNode(cell);
-							let code = umlClass.getCode();
-
-							let codeMetaModelModal = new UmlCodeMetaModelModal(code);
-
-							codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
-								// TODO duplicate code in UnmappedCodeElement.jsx
-								console.log('Closed modal');
-
-								if (code.mmElementIDs != data.ids) {
-									console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
-
-									code.mmElementIDs = data.ids;
-
-									console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
-
-									CodesEndpoint.updateCode(code).then(function (resp) {
-										console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-										_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
-									});
-								}
-							});
+							_this.umlEditor.overlayClickedMetaModel(cell);
 						});
 
 						_this.graph.addCellOverlay(cell, overlayMetaModel);
@@ -291,27 +267,7 @@ export default class UmlGraphView extends React.Component {
 						overlayAddField.cursor = 'pointer';
 
 						overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
-							let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystem);
-
-							addFieldModal.showModal().then(function (data) {
-								console.log('Closed modal');
-
-								const destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
-								const destinationCode = destinationUmlClass.getCode();
-
-								// Validate
-								// TODO handle this in another way
-								if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
-									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
-									&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
-									alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
-									return;
-								}
-
-								const fieldNode = _this.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
-
-								_this.metaModelMapper.addedField(fieldNode, sourceUmlClass, destinationUmlClass);
-							});
+							_this.umlEditor.overlayClickedClassField();
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddField);
@@ -321,24 +277,7 @@ export default class UmlGraphView extends React.Component {
 						overlayAddMethod.cursor = 'pointer';
 
 						overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
-							let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystem);
-
-							addMethodModal.showModal().then(function (data) {
-								console.log('Closed modal');
-
-								let destinationUmlClass = _this.getUmlClassByCode(data.selectedCode);
-
-								// Validate
-								// TODO handle this in another way
-								if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
-									alert('ERROR: Cant add a method if the destination code is an uml class.');
-									return;
-								}
-
-								const methodNode = _this.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
-
-								_this.metaModelMapper.addedMethod(methodNode, sourceUmlClass, destinationUmlClass);
-							});
+							_this.umlEditor.overlayClickedClassMethod(cell);
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddMethod);
@@ -398,39 +337,8 @@ export default class UmlGraphView extends React.Component {
 		});
 	}
 
-	initCellsMovedEventHandler() {
-		let _this = this;
-
-		this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, event) {
-			let cells = event.properties.cells;
-			let dx = event.properties.dx;
-			let dy = event.properties.dy;
-
-			let umlCodePositions = [];
-
-			cells.forEach((cell) => {
-				if (cell.vertex == true) {
-					let umlClass = _this.getUmlClassByNode(cell);
-					let code = umlClass.getCode();
-					let node = umlClass.getNode();
-
-					let umlCodePosition = umlClass.getUmlCodePosition();
-					umlCodePosition.x = node.getGeometry().x;
-					umlCodePosition.y = node.getGeometry().y;
-
-					umlCodePositions.push(umlCodePosition);
-				}
-			});
-
-			console.log('Updating ' + umlCodePositions.length + ' UmlCodePosition entries in the database...');
-
-			UmlCodePositionEndpoint.updateCodePositions(umlCodePositions).then((resp) => {
-				let updatedCodePositions = resp.items || [];
-				console.log('Updated ' + updatedCodePositions.length + ' UmlCodePosition entries in the database.');
-
-				_this.refreshUmlCodePositions(updatedCodePositions);
-			});
-		});
+	addCellsMovedEventListener(listener) {
+		this.graph.addListener(mxEvent.CELLS_MOVED, listener);
 	}
 
 	applyLayout() {
@@ -521,6 +429,7 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	addClass(name) {
+		// TODO use proper style
 		let fields = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;line;html=1;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
 		fields.vertex = true;
 
@@ -541,6 +450,7 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	addClassField(node, fieldName, fieldReturnType) {
+		// TODO use proper style
 		const style = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
 		const text = '+ ' + fieldName + ': ' + fieldReturnType;
@@ -584,6 +494,7 @@ export default class UmlGraphView extends React.Component {
 			methodArguments = [];
 		}
 
+		// TODO use proper style
 		const style = 'selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
 		const text = '+ ' + methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
@@ -623,6 +534,7 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	recalculateNodeSize(node) {
+		// TODO use constants
 		let fields = node.children[0];
 		let fieldsHeight = 5 + 5 + 15 * fields.getChildCount();
 

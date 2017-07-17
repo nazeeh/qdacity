@@ -11,6 +11,8 @@ import MetaModelRunner from './mapping/MetaModelRunner.js';
 import Toolbar from './toolbar/Toolbar.jsx';
 import UmlGraphView from './UmlGraphView.jsx';
 
+import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
+
 import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
@@ -179,7 +181,7 @@ export default class UmlEditor extends React.Component {
 
 			if (umlCodePositions.length > 0) {
 				// Add cells moved event listener
-				_this.umlGraphView.initCellsMovedEventHandler();
+				_this.initCellsMovedEventListener();
 
 				// Set CodePositions
 				_this.refreshUmlCodePositions(umlCodePositions);
@@ -241,7 +243,7 @@ export default class UmlEditor extends React.Component {
 
 				// Add cells moved event listener 
 				// This happens after apply layout - otherwise apply layout triggers the event
-				_this.umlGraphView.initCellsMovedEventHandler();
+				_this.initCellsMovedEventListener();
 
 				umlCodePositions = [];
 
@@ -276,6 +278,41 @@ export default class UmlEditor extends React.Component {
 					_this.refreshUmlCodePositions(insertedCodePositions);
 				});
 			}
+		});
+	}
+
+	initCellsMovedEventListener() {
+		let _this = this;
+
+		this.umlGraphView.addCellsMovedEventListener(function (sender, event) {
+			let cells = event.properties.cells;
+			let dx = event.properties.dx;
+			let dy = event.properties.dy;
+
+			let umlCodePositions = [];
+
+			cells.forEach((cell) => {
+				if (cell.vertex == true) {
+					let umlClass = _this.umlClassManager.getByNode(cell);
+					let code = umlClass.getCode();
+					let node = umlClass.getNode();
+
+					let umlCodePosition = umlClass.getUmlCodePosition();
+					umlCodePosition.x = node.getGeometry().x;
+					umlCodePosition.y = node.getGeometry().y;
+
+					umlCodePositions.push(umlCodePosition);
+				}
+			});
+
+			console.log('Updating ' + umlCodePositions.length + ' UmlCodePosition entries in the database...');
+
+			UmlCodePositionEndpoint.updateCodePositions(umlCodePositions).then((resp) => {
+				let updatedCodePositions = resp.items || [];
+				console.log('Updated ' + updatedCodePositions.length + ' UmlCodePosition entries in the database.');
+
+				_this.refreshUmlCodePositions(updatedCodePositions);
+			});
 		});
 	}
 
@@ -476,11 +513,79 @@ export default class UmlEditor extends React.Component {
 		}
 	}
 
+	overlayClickedMetaModel(cell) {
+		const _this = this;
 
+		let umlClass = _this.umlClassManager.getByNode(cell);
+		let code = umlClass.getCode();
 
+		let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
+		codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
+			// TODO duplicate code in UnmappedCodeElement.jsx
+			console.log('Closed modal');
 
+			if (code.mmElementIDs != data.ids) {
+				console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
 
+				code.mmElementIDs = data.ids;
+
+				console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+
+				CodesEndpoint.updateCode(code).then(function (resp) {
+					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
+					_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
+				});
+			}
+		});
+	}
+
+	overlayClickedClassField(cell) {
+		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystem);
+
+		addFieldModal.showModal().then(function (data) {
+			console.log('Closed modal');
+
+			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
+			const destinationCode = destinationUmlClass.getCode();
+
+			// Validate
+			// TODO handle this in another way
+			if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
+				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
+				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
+				alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
+				return;
+			}
+
+			const fieldNode = _this.addClassField(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + ': type');
+
+			_this.addedField(fieldNode, sourceUmlClass, destinationUmlClass);
+		});
+	}
+
+	overlayClickedClassMethod(cell) {
+		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystem);
+
+		addMethodModal.showModal().then(function (data) {
+			console.log('Closed modal');
+
+			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
+
+			// Validate
+			// TODO handle this in another way
+			if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
+				alert('ERROR: Cant add a method if the destination code is an uml class.');
+				return;
+			}
+
+			const methodNode = _this.addClassMethod(sourceUmlClass.getNode(), '+ ' + destinationUmlClass.getCode().name + '(type): type');
+
+			_this.addedMethod(methodNode, sourceUmlClass, destinationUmlClass);
+		});
+	}
 
 
 
@@ -518,9 +623,9 @@ export default class UmlEditor extends React.Component {
 
 	addedRelation(relationType, metaModelEntityName, relationNode, soruceNode, destinationNode) {
 		const _this = this;
-		
-        const sourceUmlClass = this.umlClassManager.getByNode(sourceNode);
-        const destinationUmlClass = this.umlClassManager.getByNode(destinationNode);
+
+		const sourceUmlClass = this.umlClassManager.getByNode(sourceNode);
+		const destinationUmlClass = this.umlClassManager.getByNode(destinationNode);
 
 		let metaModelElementId = this.mmEntities.find((mmEntity) => mmEntity.name == metaModelEntityName).id;
 
@@ -538,6 +643,15 @@ export default class UmlEditor extends React.Component {
 			console.log('Added new ' + relationType + '.');
 		});
 	}
+
+
+
+
+
+
+
+
+
 
 	render() {
 		return (
