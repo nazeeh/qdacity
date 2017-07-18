@@ -2,6 +2,10 @@ import React from 'react';
 
 import Prompt from '../../../common/modals/Prompt';
 
+import {
+	PageView
+} from '../View/PageView.js';
+
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
@@ -142,6 +146,31 @@ export default class CodesystemToolbar extends React.Component {
 		]);
 	}
 
+	renderAddRemoveCodingBtn() {
+		if (this.props.pageView == PageView.UML) {
+			return "";
+		}
+
+		const styles = this.getStyles();
+
+		return (
+			<div className="btn-group" style={styles.btnGroup}>
+                <a className="btn btn-default" onClick={this.applyCode}>
+                    <span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
+                        <i className="fa fa-tag fa-stack-2x"></i>
+                        <i className="fa fa-plus fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+                <a className="btn btn-default" onClick={this.removeCoding}>
+                    <span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
+                        <i className="fa fa-tag fa-stack-2x"></i>
+                        <i className="fa fa-minus fa-stack-1x fa-inverse"></i>
+                    </span>
+                </a>
+            </div>
+		);
+	}
+
 	render() {
 		const styles = this.getStyles();
 
@@ -153,20 +182,7 @@ export default class CodesystemToolbar extends React.Component {
 						<i className="fa  fa-list-alt  fa-1x"></i>
 					</a>
 				</div>
-				<div className="btn-group" style={styles.btnGroup}>
-					<a className="btn btn-default" onClick={this.applyCode}>
-						<span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
-							<i className="fa fa-tag fa-stack-2x"></i>
-							<i className="fa fa-plus fa-stack-1x fa-inverse"></i>
-						</span>
-					</a>
-					<a className="btn btn-default" onClick={this.removeCoding}>
-						<span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
-							<i className="fa fa-tag fa-stack-2x"></i>
-							<i className="fa fa-minus fa-stack-1x fa-inverse"></i>
-						</span>
-					</a>
-				</div>
+				{this.renderAddRemoveCodingBtn()}
 				{this.renderUmlEditorBtn()}
 			</div>
 		);
