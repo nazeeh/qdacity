@@ -25,6 +25,7 @@ build_frontend_production:
   artifacts:
     paths:
       - war/dist/
+      - *.html
     expire_in: 3 mos
   script:
     - cd war
