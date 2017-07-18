@@ -5,21 +5,11 @@ export default class Settings extends VexModal {
 
 	constructor() {
 		super();
-                this.state = { 'saturationParams' : undefined };
+                this.state = { saturationParameters : undefined };
 	}
 
 	showModal(umlEditorEnabled, projectId) {
-                var _this = this;
-                gapi.client.qdacity.saturation.getSaturationParameters({
-                        'projectId': projectId
-                }).execute(function (resp) {
-                if (!resp.code) {
-                    _this.state.saturationParams = resp;
-                } else {
-                    // Log error
-                }
-                });
-                
+                var _this = this;              
 		var promise = new Promise(
 			function (resolve, reject) {
 
@@ -40,8 +30,7 @@ export default class Settings extends VexModal {
 				formElements += '<br>';
 				formElements += '</div>';
 				formElements += '</div>';
-
-
+                                
 				vex.dialog.open({
 					message: "Settings",
 					contentCSS: {
@@ -65,7 +54,7 @@ export default class Settings extends VexModal {
 						} else reject(data);
 					}
 				});
-                                ReactDOM.render(<SaturationSettings saturationParameters={_this.state.saturationParams} />, document.getElementById('saturationSettings'));
+                                ReactDOM.render(<SaturationSettings projectId={projectId} />, document.getElementById('saturationSettings'));
 			}
 		);
 
