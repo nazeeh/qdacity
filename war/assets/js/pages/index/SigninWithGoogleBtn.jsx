@@ -22,13 +22,12 @@ const StyledSigninBtn = styled.a `
 export default class SigninWithGoogleBtn extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<StyledSigninBtn id="signinGoogleBtn" className="btn btn-default" href="#" onClick={() => this.props.signIn()}>
 				<StyledBtnLabel>
 					<i className="fa fa-google fa-2x pull-left"></i>

@@ -7,29 +7,29 @@ const StyledChart = styled.div `
 `;
 
 export default class GoogleLineChart extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+	constructor(props) {
+		super(props);
+	}
 
-    componentDidMount() {
-        this.drawChart();
-    }
-    componentDidUpdate() {
-        this.drawChart();
-    }
+	componentDidMount() {
+		this.drawChart();
+	}
+	componentDidUpdate() {
+		this.drawChart();
+	}
 
-    drawChart() {
-        var data = this.props.data;
-        var options = this.props.options;
-        var domElement = document.getElementById(this.props.graphID);
-        var chart = new google.visualization.LineChart(domElement);
-        chart.draw(data, options);
-    }
+	drawChart() {
+		var data = this.props.data;
+		var options = this.props.options;
+		var domElement = document.getElementById(this.props.graphID);
+		var chart = new google.visualization.LineChart(domElement);
+		chart.draw(data, options);
+	}
 
-    render() {
-        return (
-                <StyledChart id={this.props.graphID}>
+	render() {
+		return (
+			<StyledChart id={this.props.graphID}>
                 </StyledChart>);
-    }
+	}
 
 }
