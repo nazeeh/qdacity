@@ -40,13 +40,10 @@ export default class PersonalDashboard extends React.Component {
 		return(
 			<div className="row">
 				<div className="col-lg-8">
-					<div>
 					  <WelcomePanel account={this.props.account}/>
-					</div>
-					<div id="changeLog"></div>
 				</div>
 				<div className="col-lg-4">
-					<div id="project-selection">
+					<div>
 						<div className="box box-default">
 							<div className="box-header with-border">
 								<h3 className="box-title">Projects</h3>
@@ -60,7 +57,7 @@ export default class PersonalDashboard extends React.Component {
 						<div className="box-header with-border">
 							<h3 className="box-title">Notifications</h3>
 						</div>
-						<div id="notifications" className="box-body">
+						<div className="box-body">
 							<NotificationList addProject={this.addProject}  />
 						</div>
 					</div>
