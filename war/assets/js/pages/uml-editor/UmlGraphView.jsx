@@ -341,6 +341,10 @@ export default class UmlGraphView extends React.Component {
 		this.graph.addListener(mxEvent.CELLS_MOVED, listener);
 	}
 
+	addSelectionChangedEventListener(listener) {
+		this.graph.getSelectionModel().addListener(mxEvent.CHANGE, listener);
+	}
+
 	applyLayout() {
 		let parent = this.graph.getDefaultParent();
 
@@ -351,6 +355,20 @@ export default class UmlGraphView extends React.Component {
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
+	}
+
+	clearSelection() {
+		this.graph.clearSelection();
+		this.graph.refresh();
+		this.graph.refresh(this.graph.getDefaultParent());
+	}
+
+	selectCell(cell) {
+		this.graph.setSelectionCell(cell);
+	}
+
+	isCellSelected(cell) {
+		return this.graph.isCellSelected(cell);
 	}
 
 	addEdge(nodeFrom, nodeTo, edgeType) {

@@ -172,7 +172,7 @@ function setupUI() {
 				documentsView={documentsView}
 				umlEditorEnabled={resp.umlEditorEnabled}
 				showFooter={showFooter}
-				updateCodeView={updateCodeView}
+				selectionChanged={selectionChanged}
 				insertCode={insertCode}
 				removeCode={removeCode}
 				umlEditor={umlEditor}
@@ -270,8 +270,10 @@ function setDocumentList(projectID) {
 	return documentsView.setupView(project_id, project_type, report);
 }
 
-function updateCodeView(code) {
+function selectionChanged(code) {
 	if ($("#footer").is(":visible")) {
 		codeView.updateCode(code);
 	}
+
+	umlEditor.codesystemSelectionChanged(code);
 }

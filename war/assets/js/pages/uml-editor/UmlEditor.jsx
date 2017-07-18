@@ -47,10 +47,6 @@ export default class UmlEditor extends React.Component {
 		this.metamodelLoaded = false;
 	}
 
-	componentDidMount() {
-		this.loadMetaModel();
-	}
-
 	getToolbar() {
 		return this.toolbar;
 	}
@@ -61,6 +57,18 @@ export default class UmlEditor extends React.Component {
 
 	getMetaModelMapper() {
 		return this.metaModelMapper
+	}
+
+	getMetaModelEntities() {
+		return this.mmEntities;
+	}
+
+	getMetaModelRelations() {
+		return this.mmRelations;
+	}
+
+	componentDidMount() {
+		this.loadMetaModel();
 	}
 
 	loadMetaModel() {
@@ -100,12 +108,31 @@ export default class UmlEditor extends React.Component {
 		this.umlClassManager = new UmlClassManager();
 		this.umlClassRelationManager = new UmlClassRelationManager();
 
+		this.initializeEventListeners();
 
 		this.initializeUmlClasses();
 
 		this.initializeGraph();
 
 		this.initializePositions();
+	}
+
+	initializeEventListeners() {
+		const _this = this;
+
+		this.umlGraphView.addSelectionChangedEventListener((sender, evt) => {
+			const cells = sender.cells;
+
+			if (cells != null && cells.length >= 1) {
+				const cell = cells[0];
+
+				if (_this.umlGraphView.isCellUmlClass(cell)) {
+					const umlClass = _this.umlClassManager.getByNode(cell);
+
+					this.codesystemView.setSelected(umlClass.getCode());
+				}
+			}
+		});
 	}
 
 	initializeUmlClasses() {
@@ -330,14 +357,6 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
-	getMetaModelEntities() {
-		return this.mmEntities;
-	}
-
-	getMetaModelRelations() {
-		return this.mmRelations;
-	}
-
 	refreshUmlCodePositions(newUmlCodePositions) {
 		console.log('Refreshing UmlCodePositions.');
 
@@ -391,6 +410,19 @@ export default class UmlEditor extends React.Component {
 		umlClass.getPreviousCode().mmElementIDs = currentMetaModelElementIDs.slice(); // copy
 
 		console.log('Finished updating a code.');
+	}
+
+	codesystemSelectionChanged(code) {
+		const umlClass = this.umlClassManager.getByCode(code);
+
+		// Prevent loops
+		if (!this.umlGraphView.isCellSelected(umlClass.getNode())) {
+			this.umlGraphView.clearSelection(this.umlClassManager.getAll());
+
+			if (umlClass.getNode() != null) {
+				this.umlGraphView.selectCell(umlClass.getNode());
+			}
+		}
 	}
 
 	addNode(umlClass) {

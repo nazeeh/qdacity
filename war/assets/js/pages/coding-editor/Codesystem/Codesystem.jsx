@@ -93,7 +93,7 @@ class Codesystem extends SimpleCodesystem {
 
 	// Overriding super method
 	notifyOnSelection(newCode) {
-		this.props.updateCodeView(newCode);
+		this.props.selectionChanged(newCode);
 	}
 
 	buildTree(currentCode, allCodes, currentNodeCollapsed) {

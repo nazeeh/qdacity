@@ -50,6 +50,7 @@ export default class SimpleCodesystem extends React.Component {
 
 	setSelected(code) {
 		this.notifyOnSelection(code);
+
 		this.setState({
 			selected: code
 		});
