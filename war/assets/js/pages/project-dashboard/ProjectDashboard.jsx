@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import ProjectEndpoint from 'endpoints/ProjectEndpoint';
 
 import TitleRow from "./TitleRow/TitleRow.jsx"
 import ProjectStats from "./ProjectStats.jsx"

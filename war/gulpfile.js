@@ -107,6 +107,13 @@ gulp.task('bundle-task', function() {
 	.pipe(gulp.dest('dist/js/'));
 });
 
+gulp.task('set-react-production', function() {
+	return gulp.src('./*.html', {base: './'})
+	.pipe(replace('react.js', 'react.min.js'))
+	.pipe(replace('react-dom.js', 'react-dom.min.js'))
+	.pipe(gulp.dest('./'));
+});
+
 gulp.task('minify', function() {
 	 return gulp.src('./dist/js/*.js', {base: './'})
       .pipe(uglify())

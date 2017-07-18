@@ -25,6 +25,7 @@ build_frontend_production:
   artifacts:
     paths:
       - war/dist/
+      - war/*.html
     expire_in: 3 mos
   script:
     - cd war
@@ -32,6 +33,8 @@ build_frontend_production:
     - npm prune
     - npm install 
     - gulp bundle
+    - gulp minify
+    - gulp set-react-production
     
 build_backend_production:
   tags:

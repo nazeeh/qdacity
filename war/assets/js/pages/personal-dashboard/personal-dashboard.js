@@ -1,10 +1,7 @@
 import loadGAPIs from '../../common/GAPI';
 
 import Account from '../../common/Account.jsx';
-import ProjectList from "./ProjectList.jsx"
-import NotificationList from "./NotificationList.jsx"
-import WelcomePanel from "./WelcomePanel.jsx"
-
+import PersonalDashboard from "./PersonalDashboard.jsx"
 import $script from 'scriptjs';
 $script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
 window.loadPlatform = function () {
@@ -12,16 +9,12 @@ window.loadPlatform = function () {
 }
 
 var account;
-var projectList;
-var notificationList;
 
 function setupUI() {
 	if (account.isSignedIn()) {
 		$('#navAccount').show();
 		$('#navSignin').hide();
-		ReactDOM.render(<WelcomePanel account={account} />, document.getElementById('welcomePanel'));
-		projectList.init();
-		notificationList.init();
+		ReactDOM.render(<PersonalDashboard account={account} />, document.getElementById('personalDashboard'));
 	} else {
 		$('#navAccount').hide();
 	}
@@ -31,9 +24,6 @@ window.init = function () {
 
 	$("#footer").hide();
 	$('#navAccount').hide();
-
-	projectList = ReactDOM.render(<ProjectList />, document.getElementById('projectList'));
-	notificationList = ReactDOM.render(<NotificationList projectList={projectList} />, document.getElementById('notificationList'));
 
 	loadGAPIs(setupUI).then(
 		function (accountModule) {

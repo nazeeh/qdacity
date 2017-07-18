@@ -21,29 +21,30 @@ export default class ProjectList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			projects: [],
 			// pagination
 			currentPage: 1,
 			itemsPerPage: 8,
 			search: ''
 		};
+
+		this.init();
+
 		this.paginationClick = this.paginationClick.bind(this);
 		this.updateSearch = this.updateSearch.bind(this);
 		this.showNewProjectModal = this.showNewProjectModal.bind(this);
 		this.createNewProject = this.createNewProject.bind(this);
-		this.addProject = this.addProject.bind(this);
 	}
 
 	init() {
 		var _this = this;
-		_this.state.projects = [];
+		var projectList = [];
 		var validationPrjPromise = ProjectEndpoint.listValidationProject();
 		ProjectEndpoint.listProject().then(function (resp) {
 			resp.items = resp.items || [];
 			resp.items.forEach(function (prj) {
 				prj.type = "PROJECT";
 			});
-			var projects = _this.state.projects.concat(resp.items)
+			var projects = projectList.concat(resp.items)
 
 			validationPrjPromise.then(function (resp2) {
 				resp2.items = resp2.items || [];
@@ -52,9 +53,7 @@ export default class ProjectList extends React.Component {
 				});
 				projects = projects.concat(resp2.items)
 				projects = _this.sortProjects(projects);
-				_this.setState({
-					projects: projects
-				});
+				_this.props.setProjects(projects);
 			});
 		});
 	}
@@ -66,13 +65,6 @@ export default class ProjectList extends React.Component {
 			return 0;
 		});
 		return projects;
-	}
-
-	addProject(project) {
-		this.state.projects.push(project);
-		this.setState({
-			projects: this.state.projects
-		});
 	}
 
 	paginationClick(event) {
@@ -90,11 +82,7 @@ export default class ProjectList extends React.Component {
 				var type = project.type;
 				if (typeof type == 'undefined') type = "PROJECT";
 				ProjectEndpoint.removeUser(project.id, type).then(function (resp) {
-
-					_this.state.projects.splice(index, 1);
-					_this.setState({
-						projects: _this.state.projects
-					});
+					_this.props.removeProject(index);
 				});
 			}
 		});
@@ -104,11 +92,8 @@ export default class ProjectList extends React.Component {
 		var _this = this;
 		e.stopPropagation();
 		ProjectEndpoint.removeProject(project.id).then(function (resp) {
-			// remove project from state
-			_this.state.projects.splice(index, 1);
-			_this.setState({
-				projects: _this.state.projects
-			});
+			// remove project from parent state
+			_this.props.removeProject(index);
 		});
 	}
 
@@ -150,7 +135,7 @@ export default class ProjectList extends React.Component {
 
 				CodesystemEndpoint.updateCodeSystem(codeSystem).then(function (updatedCodeSystem) {
 					insertedProject.type = "PROJECT";
-					_this.addProject(insertedProject);
+					_this.props.addProject(insertedProject);
 				});
 			});
 		});
@@ -177,7 +162,6 @@ export default class ProjectList extends React.Component {
 			<span className="searchfield" id="searchform">
 				<input
 					type="text"
-					class="search"
 					placeholder="Search"
 					value={this.state.search}
 					onChange={this.updateSearch}
@@ -200,7 +184,7 @@ export default class ProjectList extends React.Component {
 		</div>
 
 		//Rebder List Items
-		var filteredList = this.state.projects.filter(
+		var filteredList = this.props.projects.filter(
 			(project) => {
 				return project.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
 			}
@@ -237,7 +221,7 @@ export default class ProjectList extends React.Component {
 
 		//Render Pagination
 		const pageNumbers = [];
-		for (let i = 1; i <= Math.ceil(this.state.projects.length / this.state.itemsPerPage); i++) {
+		for (let i = 1; i <= Math.ceil(this.props.projects.length / this.state.itemsPerPage); i++) {
 			pageNumbers.push(i);
 		}
 		const renderPagination = pageNumbers.map(pageNo => {

@@ -12,7 +12,9 @@ module.exports = {
     },
 	resolve: {
     alias: {
-         "jquery": path.join(__dirname, "./assets/js/jquery-stub.js")
+         "jquery": path.join(__dirname, "./assets/js/jquery-stub.js"),
+		 "endpoints": path.resolve(__dirname, "./assets/js/common/endpoints"),
+		 "modals": path.resolve(__dirname, "./assets/js/common/modals"),
     }
 },
     output: {

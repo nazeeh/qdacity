@@ -1,4 +1,6 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
@@ -8,6 +10,28 @@ import {
 } from '../../common/styles/List';
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js'
+
+const StyledNotificationItem = styled.li `
+	display: flex !important;
+	align-items: center;
+`;
+
+const StyledNotificationInfo = styled.div `
+	flex-grow: 1;
+`;
+
+const StyledActionBtns = styled.div `
+	display: flex;
+	flex-direction: column;
+`;
+
+const StyledGreenIcon = styled.a `
+	color: green;
+`;
+
+const StyledGreyIcon = styled.a `
+	color: grey;
+`;
 
 export default class NotificationList extends React.Component {
 	constructor(props) {
@@ -19,6 +43,9 @@ export default class NotificationList extends React.Component {
 			itemsPerPage: 8,
 			search: ''
 		};
+
+		this.init();
+
 		this.paginationClick = this.paginationClick.bind(this);
 		this.acceptInvitation = this.acceptInvitation.bind(this);
 		this.settleNotification = this.settleNotification.bind(this);
@@ -57,7 +84,7 @@ export default class NotificationList extends React.Component {
 	acceptInvitation(notification) {
 		var _this = this;
 		ProjectEndpoint.addOwner(notification.project).then(function (resp) {
-			_this.props.projectList.addProject(resp);
+			_this.props.addProject(resp);
 		});
 
 		this.settleNotification(notification);
@@ -92,11 +119,11 @@ export default class NotificationList extends React.Component {
 		switch (notification.type) {
 		case "INVITATION":
 			if (notification.settled) {
-				return <a className=" fa-lg" style={{color:"green", float:"right", marginTop:"-15px"}}>
+				return <StyledGreenIcon className=" fa-lg">
 							<i  className="fa fa-check fa-2x "></i>
-						</a>
+						</StyledGreenIcon>
 			} else {
-				return <div style={{float:"right", marginTop:"-22px"}}>
+				return <StyledActionBtns>
 						<a className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}>
 							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 							<i className="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>
@@ -105,16 +132,16 @@ export default class NotificationList extends React.Component {
 							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
 							<i className="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>
 						</a>
-					</div>
+					</StyledActionBtns>
 			}
 			break;
 		case "VALIDATION_REQUEST":
 			if (notification.settled) {
-				return <a className=" fa-lg" style={{color:"green", float:"right", marginTop:"-15px"}}>
+				return <StyledGreenIcon className=" fa-lg">
 							<i  className="fa fa-check fa-2x "></i>
-						</a>
+						</StyledGreenIcon>
 			} else {
-				return <div style={{float:"right", marginTop:"-22px"}}>
+				return <StyledActionBtns>
 						<a className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}>
 							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 							<i className="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>
@@ -123,18 +150,18 @@ export default class NotificationList extends React.Component {
 							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
 							<i className="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>
 						</a>
-					</div>
+					</StyledActionBtns>
 			}
 			break;
 		case "POSTED_VALIDATION_REQUEST":
-			return <a className=" fa-lg" style={{color:"grey", float:"right", marginTop:"-20px"}} >
+			return <StyledGreyIcon className=" fa-lg">
 						<i  className="fa fa-key fa-2x "></i>
-					</a>
+					</StyledGreyIcon>
 			break;
 		case "VALIDATION_REQUEST_GRANTED":
-			return <a className=" fa-lg" style={{color:"green", float:"right", marginTop:"-20px"}}>
+			return <StyledGreenIcon className=" fa-lg">
 						<i  className="fa fa-key fa-2x "></i>
-					</a>
+					</StyledGreenIcon>
 			break;
 		default:
 			return "";
@@ -150,14 +177,16 @@ export default class NotificationList extends React.Component {
 		const itemsToDisplay = this.state.notifications.slice(firstItem, lastItem);
 
 		const renderListItems = itemsToDisplay.map((notification, index) => {
-			return <li
+			return <StyledNotificationItem
 					key={notification.id}
 				>
-					<span dangerouslySetInnerHTML={{__html: notification.subject}}></span>
-					<br/>
-					<span dangerouslySetInnerHTML={{__html: notification.message}}></span>
+					<StyledNotificationInfo>
+						<span dangerouslySetInnerHTML={{__html: notification.subject}}></span>
+						<br/>
+						<span dangerouslySetInnerHTML={{__html: notification.message}}></span>
+					</StyledNotificationInfo>
 					{this.renderButtons(notification)}
-				</li>;
+				</StyledNotificationItem>;
 		});
 
 		//Render Pagination
