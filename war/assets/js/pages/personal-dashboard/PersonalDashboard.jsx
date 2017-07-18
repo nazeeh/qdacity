@@ -16,7 +16,7 @@ export default class PersonalDashboard extends React.Component {
 		this.removeProject = this.removeProject.bind(this);
 	}
 
-	setProjects(projects){
+	setProjects(projects) {
 		this.setState({
 			projects: projects
 		});
@@ -29,15 +29,15 @@ export default class PersonalDashboard extends React.Component {
 		});
 	}
 
-	removeProject(index){
+	removeProject(index) {
 		this.state.projects.splice(index, 1);
 		this.setState({
 			projects: this.state.projects
 		});
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<div className="row">
 				<div className="col-lg-8">
 					  <WelcomePanel account={this.props.account}/>
