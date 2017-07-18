@@ -33,6 +33,7 @@ build_frontend_production:
     - npm install 
     - gulp bundle
     - gulp minify
+    - gulp set-react-production
     
 build_backend_production:
   tags:
