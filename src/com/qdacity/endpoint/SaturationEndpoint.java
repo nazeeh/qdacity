@@ -84,7 +84,7 @@ public class SaturationEndpoint {
     }
 
     @ApiMethod(
-	    name = "saturation.getSaturationParameters",
+	    name = "saturation.setSaturationParameters",
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
@@ -103,6 +103,11 @@ public class SaturationEndpoint {
      * @return
      * @throws UnauthorizedException
      */
+    @ApiMethod(
+	    name = "saturation.getSaturationParameters",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
     public SaturationParameters getSaturationParameters(@Named("projectId") Long projectId) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
