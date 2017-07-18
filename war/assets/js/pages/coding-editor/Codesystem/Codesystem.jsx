@@ -141,6 +141,8 @@ class Codesystem extends SimpleCodesystem {
 		this.setState({
 			selected: parent
 		})
+
+		this.props.removeCode(code);
 	}
 
 	insertCode(code) {
@@ -152,6 +154,7 @@ class Codesystem extends SimpleCodesystem {
 			_this.forceUpdate();
 		});
 
+		this.props.insertCode(code);
 	}
 
 	initCodingCount() {

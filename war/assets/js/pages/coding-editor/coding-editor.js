@@ -173,6 +173,8 @@ function setupUI() {
 				umlEditorEnabled={resp.umlEditorEnabled}
 				showFooter={showFooter}
 				updateCodeView={updateCodeView}
+				insertCode={insertCode}
+				removeCode={removeCode}
 				umlEditor={umlEditor}
 			/>, document.getElementById('codesystemView')).child; // codesystem is wrapped in DnD components, therefore assign child
 
@@ -236,6 +238,14 @@ function hideCodingView() {
 function updateSelectedCode(code, persist) {
 	codesystemView.updateSelected(code, persist);
 	umlEditor.codeUpdated(code);
+}
+
+function insertCode(code) {
+	umlEditor.codeUpdated(code);
+}
+
+function removeCode(code) {
+
 }
 
 function getCodeByCodeID(codeID) {

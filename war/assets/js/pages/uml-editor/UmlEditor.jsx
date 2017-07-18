@@ -202,15 +202,17 @@ export default class UmlEditor extends React.Component {
 
 						let code = umlClass.getCode();
 						let node = umlClass.getNode();
-						let x = 0;
-						let y = 0;
-
-						if (node != null) {
-							x = node.getGeometry().x;
-							y = node.getGeometry().y;
-						}
 
 						if (!exists) {
+							// If the code is not mapped => assume position (0,0)
+							let x = 0;
+							let y = 0;
+
+							if (node != null) {
+								x = node.getGeometry().x;
+								y = node.getGeometry().y;
+							}
+
 							let umlCodePosition = {
 								'codeId': code.codeID,
 								'codesystemId': _this.codesystemId,
@@ -223,15 +225,7 @@ export default class UmlEditor extends React.Component {
 						}
 					});
 
-					console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
-
-					UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then((resp) => {
-						let insertedCodePositions = resp.items || [];
-
-						console.log('Inserted ' + insertedCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
-
-						_this.refreshUmlCodePositions(insertedCodePositions);
-					});
+					_this.insertUnregisteredUmlCodePositions(unregisteredUmlCodePositions);
 				}
 
 				umlCodePositions.forEach((umlCodePosition) => {
@@ -322,6 +316,20 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
+	insertUnregisteredUmlCodePositions(unregisteredUmlCodePositions) {
+		const _this = this;
+
+		console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
+
+		UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then((resp) => {
+			let insertedCodePositions = resp.items || [];
+
+			console.log('Inserted ' + insertedCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
+
+			_this.refreshUmlCodePositions(insertedCodePositions);
+		});
+	}
+
 	getMetaModelEntities() {
 		return this.mmEntities;
 	}
@@ -341,12 +349,48 @@ export default class UmlEditor extends React.Component {
 	}
 
 	codeUpdated(code) {
-		const umlClass = this.umlClassManager.getByCode(code);
-		
+		console.log('Begin updating a code...');
+
+		let umlClass = this.umlClassManager.getByCode(code);
+
+		// Is the code new?
+		if (umlClass == null) {
+			umlClass = new UmlClass(code);
+			umlClass.getPreviousCode().mmElementIds = [];
+			this.umlClassManager.add(umlClass);
+
+			this.insertUnregisteredUmlCodePositions([{
+				'codeId': code.codeID,
+				'codesystemId': this.codesystemId,
+				'x': 0,
+				'y': 0
+			}]);
+		}
+
 		// Update name
 		if (umlClass.getNode() != null) {
-		    this.umlGraphView.renameNode(umlClass.getNode(), umlClass.getCode().name);
+			console.log('The name changed...');
+
+			this.umlGraphView.renameNode(umlClass.getNode(), code.name);
 		}
+
+		// Did the MetaModel change?
+		let previousMetaModelElementIDs = umlClass.getPreviousCode().mmElementIDs;
+		let currentMetaModelElementIDs = code.mmElementIDs != null ? code.mmElementIDs : [];
+
+		let mmElementIDsEqual = (previousMetaModelElementIDs.length == currentMetaModelElementIDs.length) && previousMetaModelElementIDs.every(function (element, index) {
+			return currentMetaModelElementIDs.indexOf(element) >= 0;
+		});
+
+		if (!mmElementIDsEqual) {
+			console.log('The MetaModel changed...');
+
+			this.exchangeCodeMetaModelEntities(code.codeID, previousMetaModelElementIDs);
+		}
+
+		umlClass.getPreviousCode().mmElementIDs = currentMetaModelElementIDs.slice(); // copy
+
+		console.log('Finished updating a code.');
 	}
 
 	addNode(umlClass) {
@@ -374,7 +418,7 @@ export default class UmlEditor extends React.Component {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
 		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType');
+		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO-returnType');
 
 		this.addRelation(umlClassRelation, relationNode, 'class field');
 	}
@@ -383,7 +427,7 @@ export default class UmlEditor extends React.Component {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
 		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO returnType', ['TODO', 'ARGUMENTS']);
+		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), destinationUmlClass.getCode().name + 'TODO-returnType', ['TODO', 'ARGUMENTS']);
 
 		this.addRelation(umlClassRelation, relationNode, 'class method');
 	}
@@ -538,6 +582,7 @@ export default class UmlEditor extends React.Component {
 		if (umlClass.getCode().relations != null) {
 			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
 				let relation = umlClass.getCode().relations[i];
+
 				let destinationUmlClass = this.umlClassManager.getByCodeId(relation.codeId);
 				let oldDestinationUmlClass = destinationUmlClass;
 
@@ -546,7 +591,7 @@ export default class UmlEditor extends React.Component {
 					oldDestinationUmlClass = oldUmlClass;
 				}
 
-				this.checkSingleRelation(relation, umlClass, destinationUmlClass, oldUmlClass, oldDestinationUmlClass);
+				this.checkSingleRelation(relation.mmElementId, umlClass, destinationUmlClass, oldUmlClass, oldDestinationUmlClass);
 			}
 		}
 
@@ -569,7 +614,7 @@ export default class UmlEditor extends React.Component {
 								oldSourceUmlClass = oldUmlClass;
 							}
 
-							this.checkSingleRelation(relation, sourceUmlClass, umlClass, oldSourceUmlClass, oldUmlClass);
+							this.checkSingleRelation(relation.mmElementId, sourceUmlClass, umlClass, oldSourceUmlClass, oldUmlClass);
 						}
 					});
 				}
@@ -579,13 +624,16 @@ export default class UmlEditor extends React.Component {
 		console.log('Done with the incoming relations.')
 	}
 
-	checkSingleRelation(relation, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
-		let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.mmElementId);
+	checkSingleRelation(relationMetaModelElementId, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
+		let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relationMetaModelElementId);
 
 		console.log('We are at relation ' + sourceUmlClass.getCode().name + ' -> ' + destinationUmlClass.getCode().name + ' now. (' + relationMetaModelEntity.name + ')');
 
-		let oldAction = this.metaModelMapper.evaluateCodeRelation(relationMetaModelEntity, oldActionSource, oldActionDestination);
-		let newAction = this.metaModelMapper.evaluateCodeRelation(relationMetaModelEntity, sourceUmlClass, destinationUmlClass);
+		let oldRelation = new UmlClassRelation(oldActionSource, oldActionDestination, relationMetaModelEntity);
+		let currentRelation = this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+
+		let oldAction = this.metaModelMapper.evaluateCodeRelation(oldRelation);
+		let newAction = this.metaModelMapper.evaluateCodeRelation(currentRelation);
 
 		console.log('Previous node action: ' + oldAction);
 		console.log('Current node action: ' + newAction);
@@ -593,26 +641,17 @@ export default class UmlEditor extends React.Component {
 		if (oldAction != newAction) {
 			console.log('Something changed.');
 
-			relation = {
-				'source': sourceUmlClass.getCode().codeID,
-				'destination': relation.codeId,
-				'metaModelEntityId': relation.mmElementId
-			};
+			this.metaModelRunner.undoAction(oldAction, {
+				umlClassRelation: currentRelation
+			});
 
-			let relationIdentifier = this.metaModelMapper.calculateRelationIdentifier(relation);
+			console.log('Undid old action.');
 
-			console.log('Undo old action...');
+			this.metaModelRunner.runAction(newAction, {
+				umlClassRelation: currentRelation
+			});
 
-			let params = {
-				'sourceUmlClass': sourceUmlClass,
-				'destinationUmlClass': destinationUmlClass,
-				'relationMetaModelEntity': relationMetaModelEntity,
-				'relation': relation
-			};
-			this.metaModelMapper.undoAction(oldAction, params);
-			this.metaModelMapper.runAction(newAction, params);
-
-			console.log('Apply new action...');
+			console.log('Applied new action.');
 		}
 	}
 
