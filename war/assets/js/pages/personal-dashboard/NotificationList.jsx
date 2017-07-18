@@ -19,6 +19,9 @@ export default class NotificationList extends React.Component {
 			itemsPerPage: 8,
 			search: ''
 		};
+
+		this.init();
+
 		this.paginationClick = this.paginationClick.bind(this);
 		this.acceptInvitation = this.acceptInvitation.bind(this);
 		this.settleNotification = this.settleNotification.bind(this);
@@ -57,7 +60,7 @@ export default class NotificationList extends React.Component {
 	acceptInvitation(notification) {
 		var _this = this;
 		ProjectEndpoint.addOwner(notification.project).then(function (resp) {
-			_this.props.projectList.addProject(resp);
+			_this.props.addProject(resp);
 		});
 
 		this.settleNotification(notification);
