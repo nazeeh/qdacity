@@ -29,7 +29,7 @@ export default class SaturationChart extends React.Component {
         };
 
         this.data = new google.visualization.DataTable();
-        this.data.addColumn('date', 'X');
+        this.data.addColumn('date', 'X');        
         this.data.addColumn('number', 'Weighted Average');
         this.data.addColumn('number', 'Applied Codes');
         this.data.addColumn('number', 'Deleted Code Relationships');
