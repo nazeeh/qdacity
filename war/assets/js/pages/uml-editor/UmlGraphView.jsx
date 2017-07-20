@@ -24,9 +24,16 @@ export default class UmlGraphView extends React.Component {
 		this.umlEditor = this.props.umlEditor;
 
 		this.graph = null;
+		this.layout = null;
+
 		this.cellMarker = null;
 		this.connectionHandler = null;
-		this.layout = null;
+
+		this.connectionEdgeStartCell = null;
+	}
+
+	isConnectingEdge() {
+		return this.connectionEdgeStartCell != null;
 	}
 
 	componentDidMount() {
@@ -190,17 +197,24 @@ export default class UmlGraphView extends React.Component {
 	initializeConnections() {
 		const _this = this;
 
+		this.connectionEdgeStartCell = null;
+
 		// Cell Marker
 		this.cellMarker = new mxCellMarker(this.graph);
 
-		this.graph.addMouseListener({
+		// Mouse listener
+		const connectionMouseListener = {
 			mouseDown: function (sender, me) {},
 			mouseMove: function (sender, me) {},
 			mouseUp: function (sender, me) {
-				me.consumed = false;
-				_this.cellMarker.process(me);
+				if (_this.isConnectingEdge()) {
+					me.consumed = false;
+					_this.cellMarker.process(me);
+				}
 			}
-		});
+		};
+
+		_this.graph.addMouseListener(connectionMouseListener);
 
 		// Connection Handler
 		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
@@ -217,10 +231,24 @@ export default class UmlGraphView extends React.Component {
 		};
 
 		this.connectionHandler.getEdgeWidth = function (valid) {
-			return (valid) ? 1 : 1;
+			return 1;
 		};
 
+		this.connectionHandler.addListener(mxEvent.START, function (sender, evt) {
+			_this.connectionEdgeStartCell = evt.properties.state.cell;
+		});
+
+		this.connectionHandler.addListener(mxEvent.RESET, function (sender, evt) {
+			_this.selectCell(_this.connectionEdgeStartCell);
+
+			_this.connectionEdgeStartCell = null;
+		});
+
 		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
+			_this.cellMarker.process(new mxMouseEvent());
+
+			_this.connectionEdgeStartCell = null;
+
 			const edgeType = evt.properties.cell.style;
 			const sourceNode = evt.properties.cell.source;
 			const destinationNode = evt.properties.cell.target;
@@ -292,6 +320,7 @@ export default class UmlGraphView extends React.Component {
 								let edgeState = new mxCellState(_this.graph.view, edge, _this.graph.getCellStyle(edge));
 
 								let cellState = _this.graph.getView().getState(_this.graph.getSelectionCell(), true);
+
 								_this.connectionHandler.start(cellState, 0, 0, edgeState);
 
 								_this.graph.removeCellOverlays(cell);
@@ -357,15 +386,20 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
+	resetConnectingEdge() {
+		this.connectionHandler.reset();
+	}
+
 	clearSelection() {
 		this.graph.clearSelection();
-		
-		// Bugfix: After clearing, old nodes are still rendered with the select effect
-		this.cellMarker.process(new mxMouseEvent());
 	}
 
 	selectCell(cell) {
 		this.graph.setSelectionCell(cell);
+	}
+
+	selectCells(cells) {
+		this.graph.setSelectionCells(cells);
 	}
 
 	isCellSelected(cell) {

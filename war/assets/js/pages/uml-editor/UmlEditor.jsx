@@ -417,8 +417,15 @@ export default class UmlEditor extends React.Component {
 
 		// Prevent loops
 		if (!this.umlGraphView.isCellSelected(umlClass.getNode())) {
+			// Reset edge if connecting
+			if (this.umlGraphView.isConnectingEdge()) {
+				this.umlGraphView.resetConnectingEdge();
+			}
+
+			// Clear selection
 			this.umlGraphView.clearSelection(this.umlClassManager.getAll());
 
+			// Select node
 			if (umlClass.getNode() != null) {
 				this.umlGraphView.selectCell(umlClass.getNode());
 			}
