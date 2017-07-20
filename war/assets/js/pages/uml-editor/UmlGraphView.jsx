@@ -359,8 +359,9 @@ export default class UmlGraphView extends React.Component {
 
 	clearSelection() {
 		this.graph.clearSelection();
-		this.graph.refresh();
-		this.graph.refresh(this.graph.getDefaultParent());
+		
+		// Bugfix: After clearing, old nodes are still rendered with the select effect
+		this.cellMarker.process(new mxMouseEvent());
 	}
 
 	selectCell(cell) {
