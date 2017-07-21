@@ -24,6 +24,8 @@ public class LetsencryptServlet extends HttpServlet {
 		challenges.put("XxOqKSdyggobVXCJcdp3qKJ0iUu6KX2GhKKBzEdkJ9I", "XxOqKSdyggobVXCJcdp3qKJ0iUu6KX2GhKKBzEdkJ9I.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
 		challenges.put("_d48LgtnIRQb7BrKkbcNfQ399NCGb-O5_gYA0Zc0-mQ", "_d48LgtnIRQb7BrKkbcNfQ399NCGb-O5_gYA0Zc0-mQ.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
 		challenges.put("QNXBg80jjbIP8iaIbCFBguREB40iycocTMw7XabtNOk", "QNXBg80jjbIP8iaIbCFBguREB40iycocTMw7XabtNOk.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
+		challenges.put("FuckIBHhjORcThPQBWhLavS_i9rWqOtEYRpXkZAjbow", "FuckIBHhjORcThPQBWhLavS_i9rWqOtEYRpXkZAjbow.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
+		challenges.put("33X8_n3LyQ6rZF4VimiVaiPj0pzP2FENuzGFCM-WE6Q", "33X8_n3LyQ6rZF4VimiVaiPj0pzP2FENuzGFCM-WE6Q.ksjKkyomkPeam8ULj6BQqQFbyDViwwuDAx8tg8uVuEc");
 	}
 
 	@Override
