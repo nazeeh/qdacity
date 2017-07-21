@@ -5,6 +5,17 @@ import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
+ const StyledDocumentsHeader = styled.div `
+	text-align: center;
+	position:relative;
+	background-color: #e7e7e7;
+ `;
+
+ const StyledContainer = styled.div `
+	 background-color: #e7e7e7;
+ `;
+
+
 const StyledInfoBox = styled.div `
 	background-color: #FAFAFA;
 	border-left-style: solid;
@@ -246,6 +257,11 @@ export default class DocumentsView extends React.Component {
 		return 'list-group-item clickable ' + ((value == this.state.selected) ? 'active' : 'default');
 	}
 
+	renderCollapseIcon(){
+		if (this.state.isExpanded) return (<i className="fa fa-compress fa-1x"></i>);
+		else return (<i className="fa fa-expand fa-1x"></i>);
+	}
+
 	renderToolbar() {
 		if (this.props.projectType == "PROJECT") {
 			return (
@@ -263,7 +279,7 @@ export default class DocumentsView extends React.Component {
 
 	}
 
-	render() {
+	renderDocuments(){
 		var _this = this;
 		if (!this.state.isExpanded) {
 			return <StyledInfoBox>
@@ -272,16 +288,41 @@ export default class DocumentsView extends React.Component {
 		}
 		return (
 			<div>
-			<StyledToolBar>
-				{this.renderToolbar()}
-			</StyledToolBar>
-			<div className="list-group">
-	        {
-	          this.state.documents.map(function(doc) {
-	            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
-	          })
-	        }
-	  		</div>
+				<StyledToolBar>
+					{this.renderToolbar()}
+				</StyledToolBar>
+				<div className="list-group">
+		        {
+		          this.state.documents.map(function(doc) {
+		            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
+		          })
+		        }
+		  		</div>
+			</div>
+		);
+	}
+
+	render() {
+		var _this = this;
+		return (
+			<div>
+				<StyledDocumentsHeader>
+					<div className="row no-gutters" >
+						<span className="col-xs-1"></span>
+						<span className="col-xs-10">
+							<b>Documents</b>
+							<br/>
+							<span id="docToolBox"  className="collapse in">
+							</span>
+						</span>
+						<span className="col-xs-1">
+							<a id="documentsToggleBtn" className="editorPanelTogel pull-right" onClick={() => this.toggleIsExpanded()}>
+								{this.renderCollapseIcon()}
+							</a>
+						</span>
+					</div>
+				</StyledDocumentsHeader>
+				{this.renderDocuments()}
      	</div>
 		);
 	}

@@ -203,10 +203,6 @@ function setDocumentList(projectID) {
 	if (typeof documentsView == 'undefined') {
 		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id} projectType={project_type}/>, document.getElementById('documentView'));
 
-		document.getElementById('documentsToggleBtn').onclick = function () {
-			documentsView.toggleIsExpanded();
-		}
-
 		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
 	}
 
