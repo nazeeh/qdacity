@@ -11,11 +11,6 @@ const StyledDocumentsHeader = styled.div `
 	background-color: #e7e7e7;
  `;
 
-const StyledContainer = styled.div `
-	 background-color: #e7e7e7;
- `;
-
-
 const StyledInfoBox = styled.div `
 	background-color: #FAFAFA;
 	border-left-style: solid;
