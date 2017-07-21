@@ -5,13 +5,13 @@ import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
- const StyledDocumentsHeader = styled.div `
+const StyledDocumentsHeader = styled.div `
 	text-align: center;
 	position:relative;
 	background-color: #e7e7e7;
  `;
 
- const StyledContainer = styled.div `
+const StyledContainer = styled.div `
 	 background-color: #e7e7e7;
  `;
 
@@ -257,7 +257,7 @@ export default class DocumentsView extends React.Component {
 		return 'list-group-item clickable ' + ((value == this.state.selected) ? 'active' : 'default');
 	}
 
-	renderCollapseIcon(){
+	renderCollapseIcon() {
 		if (this.state.isExpanded) return (<i className="fa fa-compress fa-1x"></i>);
 		else return (<i className="fa fa-expand fa-1x"></i>);
 	}
@@ -279,7 +279,7 @@ export default class DocumentsView extends React.Component {
 
 	}
 
-	renderDocuments(){
+	renderDocuments() {
 		var _this = this;
 		if (!this.state.isExpanded) {
 			return <StyledInfoBox>
