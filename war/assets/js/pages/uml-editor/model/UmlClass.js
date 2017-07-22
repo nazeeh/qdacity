@@ -5,10 +5,10 @@ export default class UmlClass {
 		this.code = code;
 
 		// Saves the state of a code before the latest change
-		this.previousCode = {
-			mmElementIDs: code.mmElementIDs != null ? code.mmElementIDs.slice() : [], // copy
-			relations: code.relations != null ? code.relations.map(relation => Object.assign({}, relation)) : [] // copy
-		};
+		this.setPreviousCode(
+			code.mmElementIDs != null ? code.mmElementIDs.slice() : [], // copy
+			code.relations != null ? code.relations.map(relation => Object.assign({}, relation)) : [] // copy
+		);
 
 		// The node object from the graph
 		this.node = node;
@@ -29,8 +29,11 @@ export default class UmlClass {
 		return this.previousCode;
 	}
 
-	setPreviousCode(previousCode) {
-		this.previousCode = previousCode;
+	setPreviousCode(mmElementIDs, relations) {
+		this.previousCode = {
+			mmElementIDs: mmElementIDs,
+			relations: relations
+		};
 	}
 
 	getNode() {

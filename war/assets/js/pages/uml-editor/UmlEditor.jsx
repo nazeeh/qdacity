@@ -385,10 +385,7 @@ export default class UmlEditor extends React.Component {
 		// Is the code new?
 		if (umlClass == null) {
 			umlClass = new UmlClass(code);
-			umlClass.setPreviousCode({
-				mmElementIds: [],
-				relations: []
-			});
+			umlClass.setPreviousCode([], []);
 			this.umlClassManager.add(umlClass);
 
 			this.insertUnregisteredUmlCodePositions([{
