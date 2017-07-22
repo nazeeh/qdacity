@@ -410,6 +410,13 @@ export default class UmlEditor extends React.Component {
 		umlClass.getPreviousCode().mmElementIDs = currentMetaModelElementIDs.slice(); // copy
 
 		console.log('Finished updating a code.');
+
+		// Select code if necessary
+		if (this.codesystemView.getSelected().codeID == code.codeID) {
+			if (umlClass.getNode() != null) {
+				this.umlGraphView.selectCell(umlClass.getNode());
+			}
+		}
 	}
 
 	codesystemSelectionChanged(code) {
@@ -493,15 +500,23 @@ export default class UmlEditor extends React.Component {
 	}
 
 	removeClassField(umlClassRelation) {
-		const node = umlClassRelation.getSourceUmlClass.getNode() != null ? umlClassRelation.getSourceUmlClass.getNode() : umlClassRelation.getDestinationUmlClass.getNode();
-		this.umlGraphView.removeClassField(node, umlClassRelation.getRelationNode());
+		const node = umlClassRelation.getSourceUmlClass().getNode() != null ? umlClassRelation.getSourceUmlClass().getNode() : umlClassRelation.getDestinationUmlClass().getNode();
+
+		// Node was not removed
+		if (node != null) {
+			this.umlGraphView.removeClassField(node, umlClassRelation.getRelationNode());
+		}
 
 		umlClassRelation.setRelationNode(null);
 	}
 
 	removeClassMethod(umlClassRelation) {
-		const node = umlClassRelation.getSourceUmlClass.getNode() != null ? umlClassRelation.getSourceUmlClass.getNode() : umlClassRelation.getDestinationUmlClass.getNode();
-		this.umlGraphView.removeClassMethod(node, umlClassRelation.getRelationNode());
+		const node = umlClassRelation.getSourceUmlClass().getNode() != null ? umlClassRelation.getSourceUmlClass().getNode() : umlClassRelation.getDestinationUmlClass().getNode();
+
+		// Node was not removed
+		if (node != null) {
+			this.umlGraphView.removeClassMethod(node, umlClassRelation.getRelationNode());
+		}
 
 		umlClassRelation.setRelationNode(null);
 	}
@@ -523,12 +538,18 @@ export default class UmlEditor extends React.Component {
 
 				code.mmElementIDs = data.ids;
 
-				console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+				_this.props.updateCode(code, true);
+				_this.props.refreshCodeView(code);
 
-				CodesEndpoint.updateCode(code).then(function (resp) {
-					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-					_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
-				});
+
+
+				// TODO REMOVE
+				//				console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
+				//
+				//				CodesEndpoint.updateCode(code).then(function (resp) {
+				//					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
+				//					_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
+				//				});
 			}
 		});
 	}
