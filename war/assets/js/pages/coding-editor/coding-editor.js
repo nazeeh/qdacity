@@ -249,7 +249,7 @@ function insertCode(code) {
 }
 
 function removeCode(code) {
-
+	umlEditor.codeRemoved(code);
 }
 
 function getCodeByCodeID(codeID) {

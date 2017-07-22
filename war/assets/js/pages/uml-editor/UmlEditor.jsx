@@ -414,7 +414,7 @@ export default class UmlEditor extends React.Component {
 		if (!mmElementIdsEqual) {
 			console.log('The MetaModel changed...');
 
-			this.exchangeCodeMetaModelEntities(code.codeID, previousMetaModelElementIds);
+			this.exchangeCodeMetaModelEntities(umlClass, previousMetaModelElementIds);
 		}
 
 		umlClass.getPreviousCode().mmElementIDs = currentMetaModelElementIds.slice(); // copy
@@ -493,6 +493,14 @@ export default class UmlEditor extends React.Component {
 				this.umlGraphView.selectCell(umlClass.getNode());
 			}
 		}
+	}
+
+	codeRemoved(code) {
+		let umlClass = this.umlClassManager.getByCode(code);
+
+		this.removeNode(umlClass);
+
+		this.umlClassManager.remove(umlClass);
 	}
 
 	codesystemSelectionChanged(code) {
@@ -672,9 +680,7 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
-	exchangeCodeMetaModelEntities(codeId, oldMetaModelEntityIds) {
-		const umlClass = this.umlClassManager.getByCodeId(codeId);
-
+	exchangeCodeMetaModelEntities(umlClass, oldMetaModelEntityIds) {
 		const oldUmlClass = new UmlClass(Object.assign({}, umlClass.getCode()), umlClass.getNode());
 		oldUmlClass.getCode().mmElementIDs = oldMetaModelEntityIds;
 

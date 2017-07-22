@@ -31,4 +31,9 @@ export default class UmlClassManager {
 	add(umlClass) {
 		this.umlClasses.push(umlClass);
 	}
+
+	remove(umlClass) {
+		let index = this.umlClasses.indexOf(umlClass);
+		this.umlClasses.splice(index, 1);
+	}
 }
