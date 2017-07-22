@@ -540,16 +540,6 @@ export default class UmlEditor extends React.Component {
 
 				_this.props.updateCode(code, true);
 				_this.props.refreshCodeView(code);
-
-
-
-				// TODO REMOVE
-				//				console.log('Updating the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database...');
-				//
-				//				CodesEndpoint.updateCode(code).then(function (resp) {
-				//					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-				//					_this.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
-				//				});
 			}
 		});
 	}
