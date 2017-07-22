@@ -67,6 +67,14 @@ export default class UmlEditor extends React.Component {
 		return this.mmRelations;
 	}
 
+	getMetaModelEntityById(id) {
+		return this.mmEntities.find((mmEntity) => mmEntity.id == id);
+	}
+
+	getMetaModelEntityByName(name) {
+		return this.mmEntities.find((mmEntity) => mmEntity.name == name);
+	}
+
 	componentDidMount() {
 		this.loadMetaModel();
 	}
@@ -180,7 +188,7 @@ export default class UmlEditor extends React.Component {
 			let sourceUmlClass = this.umlClassManager.getByCodeId(relation.sourceId);
 			let destinationUmlClass = this.umlClassManager.getByCodeId(relation.destinationId);
 
-			let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relation.metaModelEntityId);
+			let relationMetaModelEntity = this.getMetaModelEntityById(relation.metaModelEntityId);
 
 			// Register new entry
 			const umlClassRelation = new UmlClassRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
@@ -368,6 +376,8 @@ export default class UmlEditor extends React.Component {
 	}
 
 	codeUpdated(code) {
+		const _this = this;
+
 		console.log('Begin updating a code...');
 
 		let umlClass = this.umlClassManager.getByCode(code);
@@ -375,7 +385,10 @@ export default class UmlEditor extends React.Component {
 		// Is the code new?
 		if (umlClass == null) {
 			umlClass = new UmlClass(code);
-			umlClass.getPreviousCode().mmElementIds = [];
+			umlClass.setPreviousCode({
+				mmElementIds: [],
+				relations: []
+			});
 			this.umlClassManager.add(umlClass);
 
 			this.insertUnregisteredUmlCodePositions([{
@@ -394,20 +407,86 @@ export default class UmlEditor extends React.Component {
 		}
 
 		// Did the MetaModel change?
-		let previousMetaModelElementIDs = umlClass.getPreviousCode().mmElementIDs;
-		let currentMetaModelElementIDs = code.mmElementIDs != null ? code.mmElementIDs : [];
+		let previousMetaModelElementIds = umlClass.getPreviousCode().mmElementIDs;
+		let currentMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs : [];
 
-		let mmElementIDsEqual = (previousMetaModelElementIDs.length == currentMetaModelElementIDs.length) && previousMetaModelElementIDs.every(function (element, index) {
-			return currentMetaModelElementIDs.indexOf(element) >= 0;
+		let mmElementIdsEqual = (previousMetaModelElementIds.length == currentMetaModelElementIds.length) && previousMetaModelElementIds.every((element, index) => {
+			return currentMetaModelElementIds.indexOf(element) >= 0;
 		});
 
-		if (!mmElementIDsEqual) {
+		if (!mmElementIdsEqual) {
 			console.log('The MetaModel changed...');
 
-			this.exchangeCodeMetaModelEntities(code.codeID, previousMetaModelElementIDs);
+			this.exchangeCodeMetaModelEntities(code.codeID, previousMetaModelElementIds);
 		}
 
-		umlClass.getPreviousCode().mmElementIDs = currentMetaModelElementIDs.slice(); // copy
+		umlClass.getPreviousCode().mmElementIDs = currentMetaModelElementIds.slice(); // copy
+
+		// Did the relations change?
+		let previousRelations = umlClass.getPreviousCode().relations;
+		let currentRelations = code.relations != null ? code.relations : [];
+
+		let removedRelations = [];
+		let addedRelations = [];
+
+		previousRelations.forEach((previousRelation) => {
+			let exists = false;
+			currentRelations.forEach((currentRelation) => {
+				if (previousRelation.codeId == currentRelation.codeId
+					&& previousRelation.mmElementId == currentRelation.mmElementId) {
+					exists = true;
+				}
+			});
+
+			if (!exists) {
+				removedRelations.push(previousRelation);
+			}
+		});
+
+		currentRelations.forEach((currentRelation) => {
+			let exists = false;
+			previousRelations.forEach((previousRelation) => {
+				if (previousRelation.codeId == currentRelation.codeId
+					&& previousRelation.mmElementId == currentRelation.mmElementId) {
+					exists = true;
+				}
+			});
+
+			if (!exists) {
+				addedRelations.push(currentRelation);
+			}
+		});
+
+		removedRelations.forEach((removedRelation) => {
+			let sourceUmlClass = umlClass;
+			let destinationUmlClass = _this.umlClassManager.getByCodeId(removedRelation.codeId);
+
+			let relationMetaModelEntity = this.getMetaModelEntityById(removedRelation.mmElementId);
+
+			let umlClassRelation = _this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+
+			_this.metaModelRunner.evaluateAndUndoAction({
+				umlClassRelation: umlClassRelation
+			});
+
+			_this.umlClassRelationManager.remove(umlClassRelation);
+		});
+
+		addedRelations.forEach((addedRelation) => {
+			let sourceUmlClass = umlClass;
+			let destinationUmlClass = _this.umlClassManager.getByCodeId(addedRelation.codeId);
+
+			let relationMetaModelEntity = this.getMetaModelEntityById(addedRelation.mmElementId);
+
+			const umlClassRelation = new UmlClassRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+			_this.umlClassRelationManager.add(umlClassRelation);
+
+			_this.metaModelRunner.evaluateAndRunAction({
+				umlClassRelation: umlClassRelation
+			});
+		});
+
+		umlClass.getPreviousCode().relations = currentRelations.map(relation => Object.assign({}, relation)); // copy
 
 		console.log('Finished updating a code.');
 
@@ -540,6 +619,7 @@ export default class UmlEditor extends React.Component {
 
 				_this.props.updateCode(code, true);
 				_this.props.refreshCodeView(code);
+				0
 			}
 		});
 	}
@@ -675,7 +755,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	checkSingleRelation(relationMetaModelElementId, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
-		let relationMetaModelEntity = this.mmEntities.find((mmEntity) => mmEntity.id == relationMetaModelElementId);
+		let relationMetaModelEntity = this.getMetaModelEntityById(relationMetaModelElementId);
 
 		console.log('We are at relation ' + sourceUmlClass.getCode().name + ' -> ' + destinationUmlClass.getCode().name + ' now. (' + relationMetaModelEntity.name + ')');
 
@@ -727,7 +807,7 @@ export default class UmlEditor extends React.Component {
 		const sourceUmlClass = this.umlClassManager.getByNode(sourceNode);
 		const destinationUmlClass = this.umlClassManager.getByNode(destinationNode);
 
-		let metaModelElementId = this.mmEntities.find((mmEntity) => mmEntity.name == metaModelEntityName).id;
+		let metaModelElementId = this.getMetaModelEntityByName(metaModelEntityName).id;
 
 		console.log('Adding new ' + relationType + '...');
 

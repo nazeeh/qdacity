@@ -23,4 +23,9 @@ export default class UmlClassRelation {
 	add(umlClassRelation) {
 		this.umlClassRelations.push(umlClassRelation);
 	}
+
+	remove(umlClassRelation) {
+		let index = this.umlClassRelations.indexOf(umlClassRelation);
+		this.umlClassRelations.splice(index, 1);
+	}
 }

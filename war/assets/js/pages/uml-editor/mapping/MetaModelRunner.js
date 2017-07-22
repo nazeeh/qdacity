@@ -66,6 +66,12 @@ export default class MetaModelRunner {
 		}
 	}
 
+	evaluateAndUndoAction(params) {
+		const action = this.metaModelMapper.evaluateAction(params);
+		this.undoAction(action, params);
+		return action;
+	}
+
 	undoAction(action, params) {
 		const [umlClass, umlClassRelation] = this.metaModelMapper.convertParams(params);
 

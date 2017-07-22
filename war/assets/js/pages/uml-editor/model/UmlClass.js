@@ -6,7 +6,8 @@ export default class UmlClass {
 
 		// Saves the state of a code before the latest change
 		this.previousCode = {
-			mmElementIDs: code.mmElementIDs != null ? code.mmElementIDs.slice() : [] // copy
+			mmElementIDs: code.mmElementIDs != null ? code.mmElementIDs.slice() : [], // copy
+			relations: code.relations != null ? code.relations.map(relation => Object.assign({}, relation)) : [] // copy
 		};
 
 		// The node object from the graph
