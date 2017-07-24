@@ -6,6 +6,7 @@ import {
 
 import Index from './Index.jsx';
 import PersonalDashboard from "../personal-dashboard/PersonalDashboard.jsx"
+import ProjectDashboard from "../project-dashboard/ProjectDashboard.jsx"
 
 import Account from '../../common/Account.jsx';
 
@@ -16,9 +17,13 @@ import loadGAPIs from '../../common/GAPI';
 
 
 import $script from 'scriptjs';
-$script('https://apis.google.com/js/platform.js', function () {
-	$script('https://apis.google.com/js/client.js?onload=init', 'gapi');
-});
+$script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
+
+window.loadPlatform = function () {
+	$script('https://www.gstatic.com/charts/loader.js', function () { //load charts loader for google charts
+		$script('https://apis.google.com/js/platform.js?onload=init', 'google-api');
+	});
+}
 
 var account;
 var signInLoader;
@@ -35,6 +40,7 @@ window.init = function () {
 			<Router>
 				<div>
 					<Route path="/PersonalDashboard" render={()=><PersonalDashboard account={account} />}/>
+					<Route path="/ProjectDashboard" render={()=><ProjectDashboard account={account} />}/>
 					<Route exact path="/" render={()=><Index account={account}/>}/>
 				</div>
 			</Router>

@@ -195,7 +195,7 @@ export default class ProjectList extends React.Component {
 
 		function prjClick(prj) {
 			console.log('Link');
-			location.href = 'project-dashboard.html?project=' + prj.id + '&type=' + prj.type;
+			location.href = 'ProjectDashboard?project=' + prj.id + '&type=' + prj.type;
 		}
 
 		const renderListItems = itemsToDisplay.map((project, index) => {
@@ -203,7 +203,7 @@ export default class ProjectList extends React.Component {
 					key={project.id}
 					className={this.isValidationProject(project)}
 					onClick={() => prjClick(project)}
-					href={'project-dashboard.html?project=' + project.id + "&type=PROJECT"}
+					href={'ProjectDashboard?project=' + project.id + "&type=PROJECT"}
 
 				>
 					<span>{project.name}</span>

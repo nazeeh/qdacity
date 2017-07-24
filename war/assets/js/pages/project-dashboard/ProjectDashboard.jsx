@@ -13,6 +13,8 @@ import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
 import ParentProject from "./ParentProject/ParentProject.jsx"
 import PersonalReportList from "./PersonalReportList.jsx"
 
+import 'script!../../../../components/URIjs/URI.min.js';
+import 'script!../../../../components/alertify/alertify-0.3.js';
 
 export default class ProjectDashboard extends React.Component {
 	constructor(props) {

@@ -4,7 +4,7 @@ import loadGAPIs from '../../common/GAPI';
 import ProjectDashboard from "./ProjectDashboard.jsx"
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
-import 'script!../../../../components/URIjs/URI.min.js';
+
 import 'script!../../../../components/alertify/alertify-0.3.js';
 import 'script!../../../../components/AdminLTE/js/app.min.js';
 
@@ -16,7 +16,6 @@ window.loadPlatform = function () {
 	$script('https://www.gstatic.com/charts/loader.js', function () { //load charts loader for google charts
 		$script('https://apis.google.com/js/platform.js?onload=init', 'google-api');
 	});
-
 }
 
 var account;
