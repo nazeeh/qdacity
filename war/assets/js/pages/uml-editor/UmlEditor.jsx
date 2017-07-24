@@ -6,6 +6,9 @@ import UmlClassManager from './model/UmlClassManager.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
 import UmlClassRelationManager from './model/UmlClassRelationManager.js';
 
+import {
+	MappingAction
+} from './mapping/MappingAction.js';
 import MetaModelMapper from './mapping/MetaModelMapper.js';
 import MetaModelRunner from './mapping/MetaModelRunner.js';
 
@@ -54,6 +57,14 @@ export default class UmlEditor extends React.Component {
 
 	getUmlGraphView() {
 		return this.umlGraphView;
+	}
+
+	getUmlClassManager() {
+		return this.umlClassManager;
+	}
+
+	getUmlClassRelationManager() {
+		return this.umlClassRelationManager;
 	}
 
 	getMetaModelMapper() {
@@ -702,22 +713,17 @@ export default class UmlEditor extends React.Component {
 	overlayClickedClassField(cell) {
 		const _this = this;
 
-		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystemView);
+		const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+
+		const relationMetaModelEntityName = this.getMetaModelMapper().getClassFieldRelationEntityName();
+		const mappingAction = MappingAction.ADD_CLASS_FIELD;
+
+		let addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', sourceUmlClass.getCode(), _this.codesystemView, relationMetaModelEntityName, mappingAction);
 
 		addFieldModal.showModal().then(function (data) {
-			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
 			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
 
 			const destinationCode = destinationUmlClass.getCode();
-
-			// Validate
-			// TODO handle this in another way
-			if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
-				alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
-				return;
-			}
 
 			_this.createNewField(sourceUmlClass, destinationUmlClass);
 		});
@@ -726,18 +732,15 @@ export default class UmlEditor extends React.Component {
 	overlayClickedClassMethod(cell) {
 		const _this = this;
 
-		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystemView);
+		const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+
+		const relationMetaModelEntityName = this.getMetaModelMapper().getClassMethodRelationEntityName();
+		const mappingAction = MappingAction.ADD_CLASS_METHOD;
+
+		let addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', sourceUmlClass.getCode(), _this.codesystemView, relationMetaModelEntityName, mappingAction);
 
 		addMethodModal.showModal().then(function (data) {
-			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
 			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
-
-			// Validate
-			// TODO handle this in another way
-			if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
-				alert('ERROR: Cant add a method if the destination code is an uml class.');
-				return;
-			}
 
 			_this.createNewMethod(sourceUmlClass, destinationUmlClass);
 		});

@@ -2,67 +2,59 @@ import VexModal from './VexModal';
 
 import UmlCodePropertyCodesystem from '../../pages/uml-editor/UmlCodePropertyCodesystem.jsx';
 
+import UmlClassRelation from '../../pages/uml-editor/model/UmlClassRelation.js';
+
 export default class UmlCodePropertyModal extends VexModal {
 
-	constructor(headline, codesystemView) {
+	constructor(umlEditor, headline, sourceCode, codesystemView, relationMetaModelEntityName, mappingAction) {
 		super();
 
+		this.umlEditor = umlEditor;
 		this.headline = headline;
+		this.sourceCode = sourceCode;
 		this.codesystemView = codesystemView;
 
-		//		this.codesystem = codesystem;
-		//
-		//
-		//
-		//		// TODO copy paste code
-		//		let rootCodes = this.codesystem.filter(function (code) {
-		//			return !code.parentID;
-		//		});
-		//
-		//		for (var i = 0; i < rootCodes.length; i++) {
-		//			rootCodes[i].collapsed = false;
-		//			this.buildTree(rootCodes[i], this.codesystem, false)
-		//		}
-		//
-		//		this.sortCodes(rootCodes);
-		//
-		//		this.codesystem = rootCodes;
+		this.relationMetaModelEntityName = relationMetaModelEntityName;
+		this.mappingAction = mappingAction;
 	}
-
-	//	buildTree(currentCode, allCodes, currentNodeCollapsed) {
-	//		var _this = this;
-	//		currentCode.collapsed = currentNodeCollapsed;
-	//
-	//		if (currentCode.subCodesIDs) {
-	//			var subCodes = allCodes.filter(function (code) {
-	//				return currentCode.subCodesIDs.indexOf(code.codeID) != -1;
-	//			});
-	//			currentCode.children = subCodes;
-	//
-	//			subCodes.forEach((subCode) => {
-	//				_this.buildTree(subCode, allCodes, true)
-	//			});
-	//		} else {
-	//			currentCode.children = [];
-	//		}
-	//	}
-	//
-	//	sortCodes(codeSiblings) {
-	//		var _this = this;
-	//		codeSiblings.sort((a, b) => {
-	//			return a.name > b.name;
-	//		});
-	//
-	//		codeSiblings.forEach((code) => {
-	//			if (code.children) {
-	//				_this.sortCodes(code.children);
-	//			}
-	//		})
-	//	}
-
 
 	showModal(metaModelEntities, metaModelRelations) {
 		const _this = this;
+
+		const shouldHighlightNode = (code) => {
+			if (code == null) {
+				return false;
+			}
+
+			const sourceUmlClass = _this.umlEditor.getUmlClassManager().getByCode(_this.sourceCode);
+			const destinationUmlClass = _this.umlEditor.getUmlClassManager().getByCode(code);
+
+			const metaModelEntity = _this.umlEditor.getMetaModelEntityByName(_this.relationMetaModelEntityName);
+
+			const umlCodeRelation = new UmlClassRelation(sourceUmlClass, destinationUmlClass, metaModelEntity);
+
+			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) == _this.mappingAction;
+		}
+
+		const notifyOnSelected = (code) => {
+			let possibleSaveButtons = document.getElementsByClassName('vex-dialog-button-primary');
+
+			if (possibleSaveButtons == null || possibleSaveButtons.length != 1) {
+				throw new Error('Detected more than one (or none) possible vex save button.');
+			}
+
+			let saveButton = possibleSaveButtons[0];
+
+			if (shouldHighlightNode(code)) {
+				// Enable save
+				saveButton.disabled = false;
+				saveButton.classList.remove('vex-dialog-button-disabled');
+			} else {
+				// Disable save
+				saveButton.disabled = true;
+				saveButton.classList.add('vex-dialog-button-disabled');
+			}
+		};
 
 		let promise = new Promise(
 			function (resolve, reject) {
@@ -97,7 +89,8 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<UmlCodePropertyCodesystem codesystem={_this.codesystemView.getCodesystem()} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<UmlCodePropertyCodesystem context={_this} notifyOnSelected={notifyOnSelected} shouldHighlightNode={shouldHighlightNode} codesystem={_this.codesystemView.getCodesystem()} />, document.getElementById(codesystemContainerId));
+				notifyOnSelected(null);
 			}
 		);
 

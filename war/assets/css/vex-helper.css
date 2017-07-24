@@ -1,0 +1,5 @@
+
+.vex-dialog-button-disabled {
+	cursor: not-allowed !important;
+	background-color: #97BDE5 !important;
+}
