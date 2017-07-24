@@ -81,9 +81,9 @@ export default class SigninWithGoogleBtn extends React.Component {
 		$('.signin').css("display", "inline-block");
 
 		if (this.props.account.isSignedIn()) {
-			redirect();
+			this.redirect();
 		} else {
-			this.props.account.changeAccount(redirect);
+			this.props.account.changeAccount(this.redirect);
 		}
 	}
 
