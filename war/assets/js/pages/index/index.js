@@ -1,6 +1,7 @@
-import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
+
+import Index from './Index.jsx';
 import Account from '../../common/Account.jsx';
-import ReactLoading from '../../common/ReactLoading.jsx';
+
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/Vex/js/vex.combined.min.js';
@@ -20,8 +21,8 @@ function signout() {
 }
 
 window.init = function () {
-	signInLoader = ReactDOM.render(<ReactLoading />, document.getElementById('loaderMount'));
-	ReactDOM.render(<SigninWithGoogleBtn signIn={signIn} />, document.getElementById('signinGoogleBtn'));
+	//signInLoader = ReactDOM.render(<ReactLoading />, document.getElementById('loaderMount'));
+	ReactDOM.render(<Index signIn={signIn} />, document.getElementById('indexContent'));
 
 	loadGAPIs(() => {}).then(
 		function (accountModule) {
