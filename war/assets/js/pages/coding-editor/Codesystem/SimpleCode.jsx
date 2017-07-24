@@ -60,17 +60,33 @@ export default class SimpleCode extends React.Component {
 		return this.props.node.children.length != 0;
 	}
 
-	renderExpander(node) {
+	renderExpander(node, highlightNode) {
 		var caret = ""
 		if (this.hasChildren()) {
 			var direction = this.props.node.collapsed ? 'right' : 'down';
-			var className = 'fa fa-caret-' + direction + ' fa-fw';
-			caret = <i className={className} />
+			var caretClassName = 'fa fa-caret-' + direction + ' fa-fw';
+			caret = <i className={caretClassName} />
 		}
 
-		return <StyledExpander hasChildren={this.hasChildren()} selected = {this.props.node == this.props.selected}  className="node-link" onClick={() => this.nodeIconClick(node)}>
-                        {caret}
-                    </StyledExpander>;
+		const hasChildren = this.hasChildren();
+		const selected = this.props.node == this.props.selected;
+		const className = "node-link";
+		const onClick = () => this.nodeIconClick(node);
+
+		return this.renderSimpleExpander(hasChildren, selected, className, onClick, highlightNode, caret);
+	}
+
+	renderSimpleExpander(hasChildren, selected, className, onClick, highlightNode, caret) {
+		return (
+			<StyledExpander 
+                    hasChildren={hasChildren} 
+                    selected={selected} 
+                    className={className}
+                    onClick={onClick}
+		            highlightNode={highlightNode}>
+                    {caret}
+                </StyledExpander>
+		);
 	}
 
 	/*
@@ -107,13 +123,13 @@ export default class SimpleCode extends React.Component {
 		return (
 			<StyledCode
                         selected={selected}
-                highlightNode={highlightNode}
+                        highlightNode={highlightNode}
                         level={level}
                         className={className}
                         key={key}
 		                onClick={onClick}
                     >
-                    {this.renderExpander(this.props.node)}
+                    {this.renderExpander(this.props.node, highlightNode)}
                     {this.renderNodeIcon()}
                     {this.renderNodeName()}
                     {this.renderCodingCount()}
