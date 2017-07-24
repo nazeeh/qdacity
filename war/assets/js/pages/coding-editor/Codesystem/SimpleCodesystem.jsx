@@ -83,18 +83,29 @@ export default class SimpleCodesystem extends React.Component {
 
 	renderRoots(codes) {
 		return codes.map((code, index) => {
-			return (
-				<SimpleCode
-							level={0} 
-							node={code} 
-							selected={this.state.selected} 
-							setSelected={this.setSelected} 
-							key={"CS" + "_" + 0 + "_"  +index}
-			                pageView={this.state.pageView}
-			                umlEditor={this.umlEditor}>
-						</SimpleCode>
-			);
+			const level = 0;
+			const selected = this.state.selected;
+			const setSelected = this.setSelected;
+			const key = "CS" + "_" + 0 + "_" + index;
+			const pageView = this.state.pageView;
+			const umlEditor = this.umlEditor;
+
+			return this.renderRoot(code, level, selected, setSelected, key, pageView, umlEditor);
 		});
+	}
+
+	renderRoot(code, level, selected, setSelected, key, pageView, umlEditor) {
+		return (
+			<SimpleCode
+                        level={level} 
+                        node={code} 
+                        selected={selected} 
+                        setSelected={setSelected} 
+                        key={key}
+                        pageView={pageView}
+                        umlEditor={umlEditor}>
+                    </SimpleCode>
+		);
 	}
 
 	renderNodes(codeSiblings, level) {

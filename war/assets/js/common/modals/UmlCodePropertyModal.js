@@ -1,5 +1,6 @@
 import VexModal from './VexModal';
-import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
+
+import UmlCodePropertyCodesystem from '../../pages/uml-editor/UmlCodePropertyCodesystem.jsx';
 
 export default class UmlCodePropertyModal extends VexModal {
 
@@ -96,7 +97,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<SimpleCodesystem codesystem={_this.codesystemView.getCodesystem()} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<UmlCodePropertyCodesystem codesystem={_this.codesystemView.getCodesystem()} />, document.getElementById(codesystemContainerId));
 			}
 		);
 

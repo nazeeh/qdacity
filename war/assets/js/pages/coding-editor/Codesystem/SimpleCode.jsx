@@ -7,7 +7,7 @@ import {
 	PageView
 } from '../View/PageView.js';
 
-const StyledCode = styled.div `
+export const StyledCode = styled.div `
     font-family: tahoma, arial, helvetica;
     font-size: 10pt;
     font-weight: ${props => props.highlightNode ? 'bold' : 'normal'};
@@ -21,12 +21,12 @@ const StyledCode = styled.div `
     }
 `;
 
-const StyledExpander = styled.a `
+export const StyledExpander = styled.a `
     padding-left:${props => props.hasChildren ? '' : '18px'};
     color: ${props => props.selected ? '#fff' : '#000'};
 `;
 
-const StyledCodeIcon = styled.i `
+export const StyledCodeIcon = styled.i `
     color: ${props => props.color};
     padding-right: 4px;
 `;
@@ -85,40 +85,71 @@ export default class SimpleCode extends React.Component {
 		return "";
 	}
 
-
+	highlightNode() {
+		return this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(this.props.node);
+	}
 
 	renderNode(level) {
-		const highlightNode = this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(this.props.node);
+		const selected = this.props.node == this.props.selected;
+		const className = "clickable";
+		const key = "CS" + "_" + level;
+		const highlightNode = this.highlightNode();
+		const onClick = () => this.props.setSelected(this.props.node);
 
-		return <div className=""> 
-                <StyledCode
-                        selected = {this.props.node == this.props.selected}
+		return (
+			<div className="">
+		            {this.renderStyledNode(selected, level, className, key, highlightNode, onClick)}
+            </div>
+		);
+	}
+
+	renderStyledNode(selected, level, className, key, highlightNode, onClick) {
+		return (
+			<StyledCode
+                        selected={selected}
                         level={level}
-                        className="clickable"
-                        key={"CS" + "_" + level}
+                        className={className}
+                        key={key}
                         highlightNode={highlightNode}
-                        onClick={() => this.props.setSelected(this.props.node)}
+                        onClick={onClick}
                     >
-                            {this.renderExpander(this.props.node)}
-                            <StyledCodeIcon className="fa fa-tag fa-lg" color={this.props.node.color}/>
-                            {this.props.node.name}
-                            {this.renderCodingCount()}
+                    {this.renderExpander(this.props.node)}
+                    {this.renderNodeIcon()}
+                    {this.renderNodeName()}
+                    {this.renderCodingCount()}
                 </StyledCode>
-                </div>
+		);
+	}
+
+	renderNodeIcon() {
+		return (
+			<StyledCodeIcon className="fa fa-tag fa-lg" color={this.props.node.color}/>
+		);
+	}
+
+	renderNodeName() {
+		return (this.props.node.name);
 	}
 
 	renderChild(childCode, level, index) {
+		const newLevel = level + 1;
+		const key = "CS" + "_" + level + "_" + index;
+
+		return this.renderChildSimple(childCode, newLevel, key);
+	}
+
+	renderChildSimple(childCode, level, key) {
 		return (
 			<SimpleCode
                     documentsView={this.props.documentsView}
-                    level={level + 1}
+                    level={level}
                     node={childCode}
                     selected={this.props.selected}
                     setSelected={this.props.setSelected}
                     relocateCode={this.props.relocateCode}
                     showFooter={this.props.showFooter}
-                    key={"CS" + "_" + level+ "_" +index}
-		            pageView={this.props.pageView}
+                    key={key}
+                    pageView={this.props.pageView}
                 >
                 </SimpleCode>
 		);
