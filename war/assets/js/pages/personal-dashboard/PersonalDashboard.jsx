@@ -56,7 +56,7 @@ export default class PersonalDashboard extends React.Component {
 									<h3 className="box-title">Projects</h3>
 								</div>
 								<div className="box-body">
-									<ProjectList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} />
+									<ProjectList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
 								</div>
 							</div>
 						</div>

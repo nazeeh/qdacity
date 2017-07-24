@@ -34,7 +34,7 @@ window.init = function () {
 		ReactDOM.render(
 			<Router>
 				<div>
-					<Route path="/PersonalDashboard" render={()=><PersonalDashboard account={account} />}/>
+					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
 					<Route path="/ProjectDashboard" render={()=><ProjectDashboard account={account} />}/>
 					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
 				</div>
