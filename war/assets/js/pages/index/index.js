@@ -28,11 +28,6 @@ function signout() {
 }
 
 window.init = function () {
-	//signInLoader = ReactDOM.render(<ReactLoading />, document.getElementById('loaderMount'));
-
-
-
-	//ReactDOM.render(<Index signIn={signIn} />, document.getElementById('indexContent'));
 
 	loadGAPIs(() => {
 		if (account.isSignedIn()) {
@@ -58,7 +53,7 @@ window.init = function () {
 function redirect() {
 
 	account.getCurrentUser().then(function (value) {
-		window.location = "personal-dashboard.html";
+		window.location = "PersonalDashboard";
 	}, function (value) {
 		var acc = account;
 		var _this = this;
