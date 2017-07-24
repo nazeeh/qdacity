@@ -225,6 +225,7 @@ export default class UmlGraphView extends React.Component {
 			return edge;
 		});
 		this.connectionHandler.livePreview = true;
+		this.connectionHandler.select = false;
 
 		this.connectionHandler.isValidTarget = function (cell) {
 			return _this.isCellUmlClass(cell);
@@ -253,7 +254,9 @@ export default class UmlGraphView extends React.Component {
 			const sourceNode = evt.properties.cell.source;
 			const destinationNode = evt.properties.cell.target;
 
-			_this.umlEditor.addedEdge(evt.cell, edgeType, sourceNode, destinationNode);
+			_this.umlEditor.createNewEdge(sourceNode, destinationNode, edgeType, evt.cell);
+
+			_this.selectCell(sourceNode);
 		});
 	}
 
@@ -264,6 +267,10 @@ export default class UmlGraphView extends React.Component {
 
 		this.graph.getSelectionModel().addListener(mxEvent.CHANGE, function (sender, evt) {
 			var cells = sender.cells;
+
+			if (_this.isConnectingEdge()) {
+				return;
+			}
 
 			// remove last overlays
 			if (lastSelectedCells != null) {
@@ -295,7 +302,7 @@ export default class UmlGraphView extends React.Component {
 						overlayAddField.cursor = 'pointer';
 
 						overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
-							_this.umlEditor.overlayClickedClassField();
+							_this.umlEditor.overlayClickedClassField(cell);
 						});
 
 						_this.graph.addCellOverlay(cell, overlayAddField);
