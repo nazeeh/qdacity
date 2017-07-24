@@ -144,8 +144,6 @@ export default class CodesystemToolbar extends React.Component {
 			return "";
 		}
 
-		const styles = this.getStyles();
-
 		return (
 			<StyledBtnGroup className="btn-group">
                 <a className="btn btn-default" onClick={this.applyCode}>

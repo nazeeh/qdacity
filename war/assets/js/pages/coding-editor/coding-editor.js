@@ -140,7 +140,7 @@ function resizeElements() {
 	var codesystemTreeOffset = 0;
 	var offset = $("#codesystemTree").offset();
 	if ($("#codesystemTree").offset()) codesystemTreeOffset = offset.top;
-	codesystemView.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
+	if (codesystemView != null) codesystemView.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
 
 	editorCtrl.addCodingBrackets();
 }

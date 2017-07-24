@@ -15,7 +15,7 @@ public class MetaModelEntity {
 	
 	@Persistent
 	String name;
-	
+
 	@Persistent
 	Long metaModelId;
 	
