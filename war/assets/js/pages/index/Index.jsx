@@ -24,7 +24,7 @@ export default class Index extends React.Component {
 			                        <h3>QDA on steroids</h3>
 			                        <hr className="intro-divider"/>
 										<div>
-											<SigninWithGoogleBtn signIn={this.props.signIn} account={this.props.account} />
+											<SigninWithGoogleBtn account={this.props.account} />
 										</div>
 			                    </div>
 			                </div>

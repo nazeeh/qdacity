@@ -31,11 +31,60 @@ export default class SigninWithGoogleBtn extends React.Component {
 		};
 	}
 
+
+	redirect() {
+		var _this = this;
+		this.props.account.getCurrentUser().then(function (value) {
+			window.location = "PersonalDashboard";
+		}, function (value) {
+			var acc = _this.props.account;
+			var _this = this;
+			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account');
+			decider.showModal().then(function (value) {
+				if (value == 'optionA') _this.props.account.changeAccount(_this.redirect);
+				else _this.registerAccount();
+			});
+		});
+	}
+
+	registerAccount() {
+		var _this = this;
+		var googleProfile = _this.props.account.getProfile();
+		vex.dialog.open({
+			message: 'Please confirm:',
+			input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + googleProfile.getGivenName() + '" required />'
+				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + googleProfile.getFamilyName() + '" required />\n'
+				+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + googleProfile.getEmail() + '" required />\n\n',
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: 'Register'
+				}), $.extend({}, vex.dialog.buttons.NO, {
+					text: 'Cancel'
+				})
+			],
+			callback: function (data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				}
+				_this.props.account.registerCurrentUser(data.firstName, data.lastName, data.email).then(this.redirect);
+				return console.log('First', data.firstName, 'Last Name', data.lastName, 'Email', data.email);
+			}
+		});
+
+	}
+
 	signIn(){
 		this.setState({
 			loading: true
 		});
-		this.props.signIn()
+		$('#signinGoogleBtn').hide();
+		$('.signin').css("display", "inline-block");
+
+		if (this.props.account.isSignedIn()) {
+			redirect();
+		} else {
+			this.props.account.changeAccount(redirect);
+		}
 	}
 
 
