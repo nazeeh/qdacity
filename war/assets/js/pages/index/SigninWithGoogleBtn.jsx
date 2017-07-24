@@ -35,7 +35,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 	redirect() {
 		var _this = this;
 		this.props.account.getCurrentUser().then(function (value) {
-			window.location = "PersonalDashboard";
+			_this.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var acc = _this.props.account;
 			var _this = this;

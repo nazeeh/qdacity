@@ -29,7 +29,7 @@ export default class Index extends React.Component {
 			                        <h3>QDA on steroids</h3>
 			                        <hr className="intro-divider"/>
 										<div>
-											<SigninWithGoogleBtn account={this.props.account} />
+											<SigninWithGoogleBtn account={this.props.account} history={this.props.history} />
 										</div>
 			                    </div>
 			                </div>

@@ -36,7 +36,7 @@ window.init = function () {
 				<div>
 					<Route path="/PersonalDashboard" render={()=><PersonalDashboard account={account} />}/>
 					<Route path="/ProjectDashboard" render={()=><ProjectDashboard account={account} />}/>
-					<Route exact path="/" render={()=><Index account={account}/>}/>
+					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
 				</div>
 			</Router>
 			, document.getElementById('indexContent'));
