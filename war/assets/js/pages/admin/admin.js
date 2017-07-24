@@ -1,6 +1,5 @@
 import Account from '../../common/Account.jsx';
-import UserList from './UserList.jsx';
-import AdminStats from './AdminStats.jsx';
+import Admin from './Admin.jsx';
 import loadGAPIs from '../../common/GAPI';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 
@@ -28,6 +27,7 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
+/*
 
 	document.getElementById('navBtnSigninGoogle').onclick = function () {
 		account.changeAccount(setupUI);
@@ -48,7 +48,7 @@ window.init = function () {
 			findUsers(serachTerm);
 		}
 	});
-
+*/
 
 
 }
@@ -57,8 +57,8 @@ function setupUI() {
 	if (account.isSignedIn()) {
 		$('#navAccount').show();
 		$('#navSignin').hide();
-		userList = ReactDOM.render(<UserList />, document.getElementById('userList'));
-		adminStats = ReactDOM.render(<AdminStats />, document.getElementById('statistics'));
+
+		ReactDOM.render(<Admin />, document.getElementById('adminPage'));
 
 		// Setup for logged in user
 	} else {
