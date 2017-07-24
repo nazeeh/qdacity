@@ -3,18 +3,14 @@ import styled from 'styled-components';
 
 import MetaModelMapper from '../../uml-editor/mapping/MetaModelMapper.js';
 
-import {
-	PageView
-} from '../View/PageView.js';
-
 export const StyledCode = styled.div `
     font-family: tahoma, arial, helvetica;
     font-size: 10pt;
-    font-weight: ${props => props.highlightNode ? 'bold' : 'normal'};
+    font-weight: 'normal';
     margin-left:${props => (props.level * 15) + 'px' };
     display: flex;
     align-items: center;
-    color: ${props => props.selected ? (props.highlightNode ? '#ffaa00' : '#fff') : (props.highlightNode ? '#ffaa00' : '#000')};
+    color: ${props => props.selected ? '#fff' : '#000'};
     background-color: ${props => props.selected ? '#337ab7' : ''};
     &:hover {
         background: #63a0d4;
@@ -85,15 +81,19 @@ export default class SimpleCode extends React.Component {
 		return "";
 	}
 
-	highlightNode() {
-		return this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(this.props.node);
+	shouldHighlightNode(code) {
+		if (this.props.shouldHighlightNode == null) {
+			return false;
+		}
+
+		return this.props.shouldHighlightNode(code);
 	}
 
 	renderNode(level) {
 		const selected = this.props.node == this.props.selected;
 		const className = "clickable";
 		const key = "CS" + "_" + level;
-		const highlightNode = this.highlightNode();
+		const highlightNode = this.shouldHighlightNode(this.props.node);
 		const onClick = () => this.props.setSelected(this.props.node);
 
 		return (
@@ -103,15 +103,15 @@ export default class SimpleCode extends React.Component {
 		);
 	}
 
-	renderStyledNode(selected, level, className, key, highlightNode, onClick) {
+	renderStyledNode(selected, level, className, key, onClick, highlightNode) {
 		return (
 			<StyledCode
                         selected={selected}
+                highlightNode={highlightNode}
                         level={level}
                         className={className}
                         key={key}
-                        highlightNode={highlightNode}
-                        onClick={onClick}
+		                onClick={onClick}
                     >
                     {this.renderExpander(this.props.node)}
                     {this.renderNodeIcon()}
@@ -149,7 +149,7 @@ export default class SimpleCode extends React.Component {
                     relocateCode={this.props.relocateCode}
                     showFooter={this.props.showFooter}
                     key={key}
-                    pageView={this.props.pageView}
+		            shouldHighlightNode={this.props.shouldHighlightNode}
                 >
                 </SimpleCode>
 		);

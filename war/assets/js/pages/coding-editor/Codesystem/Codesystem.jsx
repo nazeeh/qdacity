@@ -11,6 +11,10 @@ import {
 } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+import {
+	PageView
+} from '../View/PageView.js';
+
 import CodesystemToolbar from "./CodesystemToolbar.jsx"
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
@@ -45,17 +49,31 @@ class Codesystem extends SimpleCodesystem {
 	constructor(props) {
 		super(props);
 		this.state = {
+			pageView: null,
 			slected: {},
 			codesystem: [],
 			height: "100px"
 		};
+
+		this.umlEditor = null;
 
 		this.relocateCode = this.relocateCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
 		this.updateCodingCount = this.updateCodingCount.bind(this);
 		this.initCodingCount = this.initCodingCount.bind(this);
+		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
 		this.init = this.init.bind(this);
+	}
+
+	pageViewChanged(view) {
+		this.setState({
+			pageView: view
+		});
+	}
+
+	setUmlEditor(umlEditor) {
+		this.umlEditor = umlEditor;
 	}
 
 	setHeight(height) {
@@ -236,24 +254,25 @@ class Codesystem extends SimpleCodesystem {
 		}
 	}
 
-	renderRoots(codes) {
-		return codes.map((code, index) => {
-			return (
-				<DragAndDropCode
-							showSimpleView={false}
-							documentsView={this.props.documentsView}
-							level={0}
-							node={code}
-							selected={this.state.selected}
-							setSelected={this.setSelected}
-							relocateCode={this.relocateCode}
-							showFooter={this.props.showFooter}
-							key={"CS" + "_" + 0 + "_"  +index}
-                            pageView={this.state.pageView}
-                            umlEditor={this.umlEditor}>
-						</DragAndDropCode>
-			);
-		});
+	shouldHighlightNode(code) {
+		return this.state.pageView == PageView.UML && this.umlEditor.getMetaModelMapper().isCodeValidNode(code);
+	}
+
+	renderRoot(code, level, key) {
+		return (
+			<DragAndDropCode
+                        showSimpleView={false}
+                        documentsView={this.props.documentsView}
+                        level={level}
+                        node={code}
+                        selected={this.state.selected}
+                        setSelected={this.setSelected}
+                        relocateCode={this.relocateCode}
+                        showFooter={this.props.showFooter}
+                        key={key}
+		                shouldHighlightNode={this.shouldHighlightNode}>
+                    </DragAndDropCode>
+		);
 	}
 
 	render() {
