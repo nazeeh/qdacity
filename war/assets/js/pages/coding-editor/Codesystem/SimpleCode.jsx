@@ -119,7 +119,7 @@ export default class SimpleCode extends React.Component {
 		);
 	}
 
-	renderStyledNode(selected, level, className, key, onClick, highlightNode) {
+	renderStyledNode(selected, level, className, key, highlightNode, onClick) {
 		return (
 			<StyledCode
                         selected={selected}
