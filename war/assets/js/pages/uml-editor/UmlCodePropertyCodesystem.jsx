@@ -10,16 +10,19 @@ export default class UmlCodePropertyCodesystem extends SimpleCodesystem {
 		super(props);
 	}
 
-	renderRoot(code, level, selected, setSelected, key, pageView, umlEditor) {
+	notifyOnSelection(code) {
+		this.props.notifyOnSelected(code);
+	}
+
+	renderRoot(code, level, key) {
 		return (
 			<UmlCodePropertyCode
-                    level={level} 
-                    node={code} 
-                    selected={selected} 
-                    setSelected={setSelected} 
-                    key={key}
-                    pageView={pageView}
-                    umlEditor={umlEditor}>
+                level={level} 
+                node={code} 
+                selected={this.state.selected} 
+                setSelected={this.setSelected} 
+                key={key}
+		        shouldHighlightNode={this.props.shouldHighlightNode}>
             </UmlCodePropertyCode>
 		);
 	}

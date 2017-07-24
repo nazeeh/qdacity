@@ -4,14 +4,25 @@ import styled from 'styled-components';
 import {
 	StyledCode
 } from '../coding-editor/Codesystem/SimpleCode.jsx';
+import {
+	StyledExpander
+} from '../coding-editor/Codesystem/SimpleCode.jsx';
 import SimpleCode from '../coding-editor/Codesystem/SimpleCode.jsx';
 
 const HighlightedCode = StyledCode.extend `
-    color: ${props => props.selected ? (props.highlightNode ? '#ff0000' : '#fff') : (props.highlightNode ? '#ffff00' : '#000')};
-    background-color: ${props => props.selected ? '#337ab7' : ''};
+    font-weight: ${props => props.highlightNode ? 'bold' : 'normal'};
+    
+    color: ${props => props.selected ? (props.highlightNode ? '#fff' : '#707070') : (props.highlightNode ? '#000' : '#707070')};
+    
+    background-color: ${props => props.selected ? (props.highlightNode ? '#337ab7' : '#d0d0d0') : ''};
     &:hover {
-        background: #63a0d4;
+        background: ${props => props.highlightNode ? '#63a0d4' : '#e0e0e0'};
     }
+`;
+
+const HighlightedExpander = StyledExpander.extend `
+    padding-left:${props => props.hasChildren ? '' : '18px'};
+    color: ${props => props.selected ? (props.highlightNode ? '#fff' : '#707070') : (props.highlightNode ? '#000' : '#707070')};
 `;
 
 export default class UmlCodePropertyCodesystem extends SimpleCode {
@@ -20,18 +31,14 @@ export default class UmlCodePropertyCodesystem extends SimpleCode {
 		super(props);
 	}
 
-	highlightNode() {
-		return true; //this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(this.props.node);
-	}
-
 	renderStyledNode(selected, level, className, key, highlightNode, onClick) {
 		return (
 			<HighlightedCode
                 selected={selected}
+                highlightNode={highlightNode}
                 level={level}
                 className={className}
                 key={key}
-                highlightNode={highlightNode}
                 onClick={onClick}
                 >
                 {this.renderExpander(this.props.node)}
@@ -39,6 +46,19 @@ export default class UmlCodePropertyCodesystem extends SimpleCode {
                 {this.renderNodeName()}
                 {this.renderCodingCount()}
             </HighlightedCode>
+		);
+	}
+
+	renderSimpleExpander(hasChildren, selected, className, onClick, highlightNode, caret) {
+		return (
+			<HighlightedExpander 
+                    hasChildren={hasChildren} 
+                    selected = {selected} 
+                    className={className}
+                    onClick={onClick}
+                    highlightNode={highlightNode}>
+                    {caret}
+                </HighlightedExpander>
 		);
 	}
 
@@ -53,7 +73,7 @@ export default class UmlCodePropertyCodesystem extends SimpleCode {
                 relocateCode={this.props.relocateCode}
                 showFooter={this.props.showFooter}
                 key={key}
-                pageView={this.props.pageView}
+		        shouldHighlightNode={this.props.shouldHighlightNode}
             >
             </UmlCodePropertyCodesystem>
 		);
