@@ -14,7 +14,7 @@ const HighlightedCode = StyledCode.extend `
     
     color: ${props => props.selected ? (props.highlightNode ? '#fff' : '#707070') : (props.highlightNode ? '#000' : '#707070')};
     
-    background-color: ${props => props.selected ? (props.highlightNode ? '#337ab7' : '#d0d0d0') : ''};
+    background-color: ${props => props.selected ? (props.highlightNode ? '#337ab7' : '#d3d3d3') : ''};
     &:hover {
         background: ${props => props.highlightNode ? '#63a0d4' : '#e0e0e0'};
     }
