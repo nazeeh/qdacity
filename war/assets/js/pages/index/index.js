@@ -26,11 +26,6 @@ window.loadPlatform = function () {
 }
 
 var account;
-var signInLoader;
-
-function signout() {
-	window.open("https://accounts.google.com/logout");
-}
 
 window.init = function () {
 
@@ -46,12 +41,8 @@ window.init = function () {
 			</Router>
 			, document.getElementById('indexContent'));
 		}
-	}).then(
-
-		function (accountModule) {
-
+	}).then((accountModule) => {
 			account = accountModule;
-
 		}
 	);
 }
