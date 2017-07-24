@@ -85,7 +85,7 @@ export default class ProjectDashboard extends React.Component {
 
 	render() {
 		return (
-			<div>
+			<div className="container main-content">
 				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} />
 				<div className="row">
 					<div className="col-lg-7">
