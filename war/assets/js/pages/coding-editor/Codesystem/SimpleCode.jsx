@@ -87,10 +87,10 @@ export default class SimpleCode extends React.Component {
 
 
 
-    renderNode(level) {
-        const highlightNode = this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(this.props.node);
+	renderNode(level) {
+		const highlightNode = this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(this.props.node);
 
-        return <div className=""> 
+		return <div className=""> 
                 <StyledCode
                         selected = {this.props.node == this.props.selected}
                         level={level}
@@ -105,7 +105,7 @@ export default class SimpleCode extends React.Component {
                             {this.renderCodingCount()}
                 </StyledCode>
                 </div>
-    }
+	}
 
 	renderChild(childCode, level, index) {
 		return (

@@ -31,7 +31,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 		};
 	}
 
-	signIn(){
+	signIn() {
 		this.setState({
 			loading: true
 		});

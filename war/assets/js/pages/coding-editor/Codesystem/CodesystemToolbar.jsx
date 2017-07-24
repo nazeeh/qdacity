@@ -147,7 +147,7 @@ export default class CodesystemToolbar extends React.Component {
 		const styles = this.getStyles();
 
 		return (
-	        <StyledBtnGroup className="btn-group">
+			<StyledBtnGroup className="btn-group">
                 <a className="btn btn-default" onClick={this.applyCode}>
                     <span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
                         <i className="fa fa-tag fa-stack-2x"></i>

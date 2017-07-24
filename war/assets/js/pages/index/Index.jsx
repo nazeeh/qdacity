@@ -5,13 +5,12 @@ import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
 export default class Index extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<div>
 				<a name="about"></a>
 			    <div className="intro-header">
