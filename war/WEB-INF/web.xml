@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
   <!-- Servlets -->
-
   
   <!-- Default page to serve -->
   <welcome-file-list>
@@ -38,6 +37,19 @@
   <servlet-class>com.qdacity.servlet.WarmupServlet</servlet-class>
   </servlet>
   
+  <servlet>
+    <servlet-name>page</servlet-name>
+    <jsp-file>/index.html</jsp-file>
+</servlet>
+<servlet-mapping>
+    <servlet-name>page</servlet-name>
+    <url-pattern>/</url-pattern>
+</servlet-mapping>
+<servlet-mapping>
+    <servlet-name>page</servlet-name>
+    <url-pattern>/PersonalDasboard</url-pattern>
+</servlet-mapping>
+  
   <security-constraint>
         <web-resource-collection>
             <web-resource-name>qdacity</web-resource-name>
@@ -47,6 +59,6 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
-  
+
 
 </web-app>

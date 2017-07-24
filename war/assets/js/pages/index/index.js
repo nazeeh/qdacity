@@ -1,5 +1,12 @@
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
 
 import Index from './Index.jsx';
+import PersonalDashboard from "../personal-dashboard/PersonalDashboard.jsx"
+
 import Account from '../../common/Account.jsx';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
@@ -22,11 +29,28 @@ function signout() {
 
 window.init = function () {
 	//signInLoader = ReactDOM.render(<ReactLoading />, document.getElementById('loaderMount'));
-	ReactDOM.render(<Index signIn={signIn} />, document.getElementById('indexContent'));
 
-	loadGAPIs(() => {}).then(
+
+
+	//ReactDOM.render(<Index signIn={signIn} />, document.getElementById('indexContent'));
+
+	loadGAPIs(() => {
+		if (account.isSignedIn()) {
+		ReactDOM.render(
+			<Router>
+				<div>
+					<Route path="/PersonalDashboard" render={()=><PersonalDashboard account={account} />}/>
+					<Route exact path="/" render={()=><Index signIn={signIn}/>}/>
+				</div>
+			</Router>
+			, document.getElementById('indexContent'));
+		}
+	}).then(
+
 		function (accountModule) {
+
 			account = accountModule;
+
 		}
 	);
 }
