@@ -5,11 +5,11 @@ export default class ButtonZoomSelect extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlEditorView = this.props.umlEditorView;
+		this.umlEditor = this.props.umlEditor;
 	}
 
 	buttonClicked(zoom) {
-		this.umlEditorView.zoom(zoom);
+		this.umlEditor.getUmlGraphView().zoom(zoom);
 	}
 
 	getStyles() {

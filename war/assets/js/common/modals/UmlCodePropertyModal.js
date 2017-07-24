@@ -3,62 +3,61 @@ import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesys
 
 export default class UmlCodePropertyModal extends VexModal {
 
-	constructor(headline, codesystem) {
+	constructor(headline, codesystemView) {
 		super();
 
 		this.headline = headline;
+		this.codesystemView = codesystemView;
 
-		this.codesystemView = null;
-
-		this.codesystem = codesystem;
-
-
-
-		// TODO copy paste code
-		let rootCodes = this.codesystem.filter(function (code) {
-			return !code.parentID;
-		});
-
-		for (var i = 0; i < rootCodes.length; i++) {
-			rootCodes[i].collapsed = false;
-			this.buildTree(rootCodes[i], this.codesystem, false)
-		}
-
-		this.sortCodes(rootCodes);
-
-		this.codesystem = rootCodes;
+		//		this.codesystem = codesystem;
+		//
+		//
+		//
+		//		// TODO copy paste code
+		//		let rootCodes = this.codesystem.filter(function (code) {
+		//			return !code.parentID;
+		//		});
+		//
+		//		for (var i = 0; i < rootCodes.length; i++) {
+		//			rootCodes[i].collapsed = false;
+		//			this.buildTree(rootCodes[i], this.codesystem, false)
+		//		}
+		//
+		//		this.sortCodes(rootCodes);
+		//
+		//		this.codesystem = rootCodes;
 	}
 
-	buildTree(currentCode, allCodes, currentNodeCollapsed) {
-		var _this = this;
-		currentCode.collapsed = currentNodeCollapsed;
-
-		if (currentCode.subCodesIDs) {
-			var subCodes = allCodes.filter(function (code) {
-				return currentCode.subCodesIDs.indexOf(code.codeID) != -1;
-			});
-			currentCode.children = subCodes;
-
-			subCodes.forEach((subCode) => {
-				_this.buildTree(subCode, allCodes, true)
-			});
-		} else {
-			currentCode.children = [];
-		}
-	}
-
-	sortCodes(codeSiblings) {
-		var _this = this;
-		codeSiblings.sort((a, b) => {
-			return a.name > b.name;
-		});
-
-		codeSiblings.forEach((code) => {
-			if (code.children) {
-				_this.sortCodes(code.children);
-			}
-		})
-	}
+	//	buildTree(currentCode, allCodes, currentNodeCollapsed) {
+	//		var _this = this;
+	//		currentCode.collapsed = currentNodeCollapsed;
+	//
+	//		if (currentCode.subCodesIDs) {
+	//			var subCodes = allCodes.filter(function (code) {
+	//				return currentCode.subCodesIDs.indexOf(code.codeID) != -1;
+	//			});
+	//			currentCode.children = subCodes;
+	//
+	//			subCodes.forEach((subCode) => {
+	//				_this.buildTree(subCode, allCodes, true)
+	//			});
+	//		} else {
+	//			currentCode.children = [];
+	//		}
+	//	}
+	//
+	//	sortCodes(codeSiblings) {
+	//		var _this = this;
+	//		codeSiblings.sort((a, b) => {
+	//			return a.name > b.name;
+	//		});
+	//
+	//		codeSiblings.forEach((code) => {
+	//			if (code.children) {
+	//				_this.sortCodes(code.children);
+	//			}
+	//		})
+	//	}
 
 
 	showModal(metaModelEntities, metaModelRelations) {
@@ -66,7 +65,8 @@ export default class UmlCodePropertyModal extends VexModal {
 
 		let promise = new Promise(
 			function (resolve, reject) {
-				let formElements = '<div id="codesystemView"></div>';
+				const codesystemContainerId = 'umlCodePropertyModalCodesystemView';
+				let formElements = '<div id="' + codesystemContainerId + '"></div>';
 
 				vex.dialog.open({
 					message: _this.headline,
@@ -86,7 +86,7 @@ export default class UmlCodePropertyModal extends VexModal {
 						let result = {};
 						result.selectedCode = _this.codesystemView.getSelected();
 
-						ReactDOM.unmountComponentAtNode(document.getElementById('codesystemView'));
+						ReactDOM.unmountComponentAtNode(document.getElementById(codesystemContainerId));
 
 						if (data != false) {
 							resolve(result);
@@ -96,7 +96,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<SimpleCodesystem codesystem={_this.codesystem} />, document.getElementById('codesystemView'));
+				_this.codesystemView = ReactDOM.render(<SimpleCodesystem codesystem={_this.codesystemView.getCodesystem()} />, document.getElementById(codesystemContainerId));
 			}
 		);
 

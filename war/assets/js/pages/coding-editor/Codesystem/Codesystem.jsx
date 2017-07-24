@@ -99,7 +99,7 @@ class Codesystem extends SimpleCodesystem {
 
 	// Overriding super method
 	notifyOnSelection(newCode) {
-		this.props.updateCodeView(newCode);
+		this.props.selectionChanged(newCode);
 	}
 
 	buildTree(currentCode, allCodes, currentNodeCollapsed) {
@@ -119,7 +119,6 @@ class Codesystem extends SimpleCodesystem {
 			currentCode.children = [];
 		}
 	}
-
 
 	updateSelected(code, persist) {
 		if (!persist) {
@@ -148,6 +147,8 @@ class Codesystem extends SimpleCodesystem {
 		this.setState({
 			selected: parent
 		})
+
+		this.props.removeCode(code);
 	}
 
 	insertCode(code) {
@@ -159,6 +160,7 @@ class Codesystem extends SimpleCodesystem {
 			_this.forceUpdate();
 		});
 
+		this.props.insertCode(code);
 	}
 
 	initCodingCount() {
@@ -246,14 +248,15 @@ class Codesystem extends SimpleCodesystem {
 							setSelected={this.setSelected}
 							relocateCode={this.relocateCode}
 							showFooter={this.props.showFooter}
-							key={"CS" + "_" + 0 + "_"  +index}>
+							key={"CS" + "_" + 0 + "_"  +index}
+                            pageView={this.state.pageView}
+                            umlEditor={this.umlEditor}>
 						</DragAndDropCode>
 			);
 		});
 	}
 
 	render() {
-		var _this = this;
 		return (
 			<div>
 				<StyledEditorCtrlHeader >
@@ -271,7 +274,8 @@ class Codesystem extends SimpleCodesystem {
 						toggleCodingView={this.props.toggleCodingView}
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
-						umlEditorEnabled={this.props.umlEditorEnabled}>
+                        umlEditorEnabled={this.props.umlEditorEnabled}
+                        pageView={this.state.pageView}>
 					</CodesystemToolbar>
 				</StyledToolBar>
 				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>

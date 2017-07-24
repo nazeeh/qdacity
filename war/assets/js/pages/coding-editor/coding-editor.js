@@ -1,11 +1,17 @@
 import DocumentsView from './Documents/DocumentsView.jsx';
 
+import {
+	PageView
+} from './View/PageView.js';
+
 import CodeView from './CodeView/CodeView.jsx';
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
 import loadGAPIs from '../../common/GAPI';
 import Codesystem from './Codesystem/Codesystem.jsx';
+import PageViewChooser from './View/PageViewChooser.jsx';
+import UmlEditor from '../uml-editor/UmlEditor.jsx';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
@@ -32,6 +38,8 @@ var account;
 var codeView;
 var documentsView;
 var codesystemView
+var umlEditor;
+var pageViewChooser;
 
 var editorCtrl = {};
 
@@ -121,8 +129,12 @@ function resizeElements() {
 	if ($("#textdocument-menu").is(":visible")) {
 		offsetEditMenu += 45;
 	}
+	var editorHeight = $(window).height() - 52 - offsetFooter - offsetEditMenu;
 	$("#editor").css({
-		height: $(window).height() - 52 - offsetFooter - offsetEditMenu
+		height: editorHeight
+	});
+	$("#umlEditorContainer").css({
+		height: editorHeight
 	});
 
 	var codesystemTreeOffset = 0;
@@ -135,13 +147,21 @@ function resizeElements() {
 
 function setupUI() {
 	if (account.isSignedIn()) {
+
+		// Is mxGraph supported?
+		if (!mxClient.isBrowserSupported()) {
+			mxUtils.error('Browser is not supported!', 200, false);
+		}
+
 		var profile = account.getProfile();
 
 		$('#navAccount').show();
 		$('#navSignin').hide();
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
+
 			var documentsLoaded = setDocumentList(project_id);
+
 			codesystemView = ReactDOM.render(<Codesystem
 				projectID={project_id}
 				projectType={project_type}
@@ -152,13 +172,23 @@ function setupUI() {
 				documentsView={documentsView}
 				umlEditorEnabled={resp.umlEditorEnabled}
 				showFooter={showFooter}
-				updateCodeView={updateCodeView}
+				selectionChanged={selectionChanged}
+				insertCode={insertCode}
+				removeCode={removeCode}
+				umlEditor={umlEditor}
 			/>, document.getElementById('codesystemView')).child; // codesystem is wrapped in DnD components, therefore assign child
+
+			umlEditor = ReactDOM.render(<UmlEditor codesystemId={codesystem_id} codesystemView={codesystemView} updateCode={updateSelectedCode} refreshCodeView={refreshCodeView} />, document.getElementById('umlEditorContainer'));
+			codesystemView.setUmlEditor(umlEditor);
+
+			pageViewChooser = ReactDOM.render(<PageViewChooser viewChanged={viewChanged} />, document.getElementById('pageViewChooser-ui'));
 
 			var codesystemLoaded = codesystemView.init();
 
 			documentsLoaded.then(() => {
 				codesystemLoaded.then(() => {
+					umlEditor.codesystemFinishedLoading();
+
 					// Initialize coding count bubbles after both codesystem and documents are available
 					codesystemView.initCodingCount();
 					resizeElements();
@@ -168,6 +198,24 @@ function setupUI() {
 	} else {
 		$('#navAccount').hide();
 	}
+}
+
+function viewChanged(view) {
+	if (view == PageView.TEXT) {
+		$('#project-ui').show();
+		$('#documents-ui').show();
+		$('#editor').show();
+		$('#umlEditorContainer').hide();
+	} else if (view == PageView.UML) {
+		$('#project-ui').hide();
+		$('#documents-ui').hide();
+		$('#editor').hide();
+		$('#umlEditorContainer').show();
+	}
+
+	codesystemView.pageViewChanged(view);
+
+	resizeHandler();
 }
 
 function showCodingView() {
@@ -189,6 +237,19 @@ function hideCodingView() {
 
 function updateSelectedCode(code, persist) {
 	codesystemView.updateSelected(code, persist);
+	umlEditor.codeUpdated(code);
+}
+
+function refreshCodeView(code) {
+	codeView.updateCode(code);
+}
+
+function insertCode(code) {
+	umlEditor.codeUpdated(code);
+}
+
+function removeCode(code) {
+	umlEditor.codeRemoved(code);
 }
 
 function getCodeByCodeID(codeID) {
@@ -209,8 +270,10 @@ function setDocumentList(projectID) {
 	return documentsView.setupView(project_id, project_type, report);
 }
 
-function updateCodeView(code) {
+function selectionChanged(code) {
 	if ($("#footer").is(":visible")) {
 		codeView.updateCode(code);
 	}
+
+	umlEditor.codesystemSelectionChanged(code);
 }

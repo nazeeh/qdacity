@@ -42,28 +42,28 @@ public class UmlCodePositionEndpoint {
 	/**
 	 * Returns a list of UmlCodePosition entities.
 	 * 
-	 * @param codeSystemId  specifies which CodePositionEntities will be returned
+	 * @param codesystemId  specifies which CodePositionEntities will be returned
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(
 		name = "umlCodePosition.listCodePositions",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public List<UmlCodePosition> listCodePositions(@Named("codeSystemId") Long codeSystemId, User user) throws UnauthorizedException {
+	public List<UmlCodePosition> listCodePositions(@Named("codesystemId") Long codesystemId, User user) throws UnauthorizedException {
 
 		// Check if user is authorized
 		final UmlCodePosition authCodePosition = new UmlCodePosition();
-		authCodePosition.setCodeSystemId(codeSystemId);
+		authCodePosition.setCodesystemId(codesystemId);
 		Authorization.checkAuthorization(authCodePosition, user);
 		
 		List<UmlCodePosition> umlCodePositions = new ArrayList<>();
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			Query query = mgr.newQuery(UmlCodePosition.class, " codeSystemId == :codeSystemId");
+			Query query = mgr.newQuery(UmlCodePosition.class, " codesystemId == :codesystemId");
 
 			Map<String, Long> params = new HashMap<String, Long>();
-			params.put("codeSystemId", codeSystemId);
+			params.put("codesystemId", codesystemId);
 			
 			umlCodePositions = (List<UmlCodePosition>) query.executeWithMap(params);
 
@@ -94,14 +94,14 @@ public class UmlCodePositionEndpoint {
 		}
 		
 		UmlCodePosition firstUmlCodePosition = umlCodePositions.get(0);
-		
+
 		// Check if user is authorized
 		Authorization.checkAuthorization(firstUmlCodePosition, user);
 		
 		for (UmlCodePosition umlCodePosition : umlCodePositions) {
 			// Check authorization
-			if (!umlCodePosition.getCodeSystemId().equals(firstUmlCodePosition.getCodeSystemId())) {
-				throw new IllegalArgumentException("The CodeSystemIds for the codes are not equal. " + firstUmlCodePosition.getCodeSystemId() + " / " + umlCodePosition.getCodeSystemId());
+			if (!umlCodePosition.getCodesystemId().equals(firstUmlCodePosition.getCodesystemId())) {
+				throw new IllegalArgumentException("The CodeSystemIds for the codes are not equal. " + firstUmlCodePosition.getCodesystemId() + " / " + umlCodePosition.getCodesystemId());
 			}
 			
 			// Validate
@@ -148,8 +148,8 @@ public class UmlCodePositionEndpoint {
 		
 		for (UmlCodePosition umlCodePosition : umlCodePositions) {
 			// Check authorization
-			if (!umlCodePosition.getCodeSystemId().equals(firstUmlCodePosition.getCodeSystemId())) {
-				throw new IllegalArgumentException("The CodeSystemIds for the codes are not equal. " + firstUmlCodePosition.getCodeSystemId() + " / " + umlCodePosition.getCodeSystemId());
+			if (!umlCodePosition.getCodesystemId().equals(firstUmlCodePosition.getCodesystemId())) {
+				throw new IllegalArgumentException("The CodeSystemIds for the codes are not equal. " + firstUmlCodePosition.getCodesystemId() + " / " + umlCodePosition.getCodesystemId());
 			}
 			
 			// Validate
@@ -157,7 +157,7 @@ public class UmlCodePositionEndpoint {
 			
 			// Object exists
 			if (containsUmlCodePosition(umlCodePosition)) {
-				throw new EntityNotFoundException("Object does not exist. id: " + umlCodePosition.getId() + ", codeSystemId: " + umlCodePosition.getCodeSystemId() + ", codeId: " + umlCodePosition.getCodeId());				
+				throw new EntityNotFoundException("Object does not exist. id: " + umlCodePosition.getId() + ", codesystemId: " + umlCodePosition.getCodesystemId() + ", codeId: " + umlCodePosition.getCodeId());				
 			}
 		}
 		
@@ -184,8 +184,8 @@ public class UmlCodePositionEndpoint {
 		if (umlCodePosition.getCodeId() == null || umlCodePosition.getCodeId() <= 0) {
 			throw new IllegalArgumentException("UmlCodePosition codeId may not be null or empty");
 		}
-		if (umlCodePosition.getCodeSystemId() == null || umlCodePosition.getCodeSystemId() <= 0) {
-			throw new IllegalArgumentException("UmlCodePosition codeSystemId may not be null or empty");
+		if (umlCodePosition.getCodesystemId() == null || umlCodePosition.getCodesystemId() <= 0) {
+			throw new IllegalArgumentException("UmlCodePosition codesystemId may not be null or empty");
 		}
 	}
 

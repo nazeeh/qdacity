@@ -1,6 +1,3 @@
-import MetaModelMapper from './MetaModelMapper.js';
-import UmlEditorView from './UmlEditorView.js';
-
 import Account from '../../common/Account.jsx';
 import loadGAPIs from '../../common/GAPI';
 
@@ -28,10 +25,7 @@ var project_type;
 
 var account;
 
-var umlEditorView;
-var metaModelMapper;
-var toolbar;
-var unmappedCodesView;
+var umlEditor;
 
 window.init = function () {
 
@@ -69,14 +63,14 @@ function setupUI() {
 		$('#navAccount').show();
 		$('#navSignin').hide();
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
-			loadCodes(resp.codesystemID);
+			load(resp.codesystemID);
 		});
 	} else {
 		$('#navAccount').hide();
 	}
 }
 
-function loadCodes(codesystem_id) {
+function load(codesystem_id) {
 	CodesystemEndpoint.getCodeSystem(codesystem_id).then(function (resp) {
 		var codes = resp.items || [];
 
@@ -93,16 +87,10 @@ function loadCodes(codesystem_id) {
 }
 
 function init(codes, mmEntities, mmRelations, codesystem_id) {
-	let container = document.getElementById('graphContainer');
-	umlEditorView = new UmlEditorView(codesystem_id, container);
 
-	metaModelMapper = new MetaModelMapper(umlEditorView, mmEntities);
+	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditor={umlEditor} />, document.getElementById('sidebar'));
 
-	toolbar = ReactDOM.render(<Toolbar umlEditorView={umlEditorView} />, document.getElementById('toolbar'));
-
-	unmappedCodesView = ReactDOM.render(<UnmappedCodesView umlEditorView={umlEditorView} />, document.getElementById('sidebar'));
-
-	umlEditorView.initGraph(codes, mmEntities, mmRelations, metaModelMapper, unmappedCodesView);
+	umlEditor = ReactDOM.render(<UmlEditor codesystemId={codesystem_id} codes={codes} mmEntities={mmEntities} mmRelations={mmRelations} unmappedCodesView={unmappedCodesView} />, document.getElementById('TODO_RENAME_RENDER_UML_EDITOR'));
 
 	resizeHandler();
 }
