@@ -1,4 +1,4 @@
-import Project from './Project';
+
 import loadGAPIs from '../../common/GAPI';
 
 import ProjectDashboard from "./ProjectDashboard.jsx"
@@ -29,7 +29,7 @@ function setupUI() {
 		$('#navAccount').show();
 		$('#navSignin').hide();
 
-		projectDashboard = ReactDOM.render(<ProjectDashboard project={project}  account={account}/>, document.getElementById('projectDashboard'));
+		projectDashboard = ReactDOM.render(<ProjectDashboard account={account}/>, document.getElementById('projectDashboard'));
 		projectDashboard.init();
 
 	} else {
@@ -39,11 +39,6 @@ function setupUI() {
 }
 
 window.init = function () {
-	var urlParams = URI(window.location.search).query(true);
-	var projectType = (urlParams.type ? urlParams.type : 'PROJECT');
-
-	project = new Project(urlParams.project, projectType);
-
 	loadGAPIs(setupUI).then(
 		function (accountModule) {
 			account = accountModule;
