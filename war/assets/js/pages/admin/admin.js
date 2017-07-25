@@ -1,7 +1,6 @@
 import Account from '../../common/Account.jsx';
 import Admin from './Admin.jsx';
 import loadGAPIs from '../../common/GAPI';
-import UserEndpoint from '../../common/endpoints/UserEndpoint';
 
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 
@@ -66,11 +65,11 @@ function setupUI() {
 	}
 }
 
-function findUsers(searchTerm) {
-	UserEndpoint.findUsers(searchTerm).then(function (resp) {
-		userList.setUsers(resp.items);
-	}).catch(function (resp) {
-		userList.setUsers(new []);
-		window.alert(resp.code);
-	});
-}
+// function findUsers(searchTerm) {
+// 	UserEndpoint.findUsers(searchTerm).then(function (resp) {
+// 		userList.setUsers(resp.items);
+// 	}).catch(function (resp) {
+// 		userList.setUsers(new []);
+// 		window.alert(resp.code);
+// 	});
+// }

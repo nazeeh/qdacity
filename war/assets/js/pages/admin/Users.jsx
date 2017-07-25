@@ -1,6 +1,8 @@
 import React from 'react'
 import UserList from './UserList.jsx';
 
+import UserEndpoint from '../../common/endpoints/UserEndpoint';
+
 export default class Users extends React.Component {
 	constructor(props) {
 		super(props);
@@ -10,11 +12,26 @@ export default class Users extends React.Component {
 		};
 
 		this.updateSearch = this.updateSearch.bind(this);
+		this.findUsers = this.findUsers.bind(this);
 	}
 
 	updateSearch(e) {
 		this.setState({
 			search: e.target.value
+		});
+	}
+
+	findUsers() {
+		var _this = this;
+		UserEndpoint.findUsers(this.state.search).then(function (resp) {
+			_this.setState({
+				users: resp.items
+			});
+		}).catch(function (resp) {
+			_this.setState({
+				users: new []
+			});
+			window.alert(resp.code);
 		});
 	}
 
@@ -34,7 +51,7 @@ export default class Users extends React.Component {
 								value={this.state.search}
 								onChange={this.updateSearch}
 							/>
-							<button id="userSearchFindBtn" type="button" id="search">Find!</button>
+							<button id="userSearchFindBtn" type="button" id="search" onClick={this.findUsers}>Find!</button>
 						</span>
 					</div>
 					<UserList />
