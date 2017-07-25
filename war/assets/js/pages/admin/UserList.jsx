@@ -11,16 +11,7 @@ export default class UserList extends React.Component {
 		this.updateUser = this.updateUser.bind(this);
 	}
 
-	// removeUser(pId) {
-	// 	var index = this.state.users.findIndex(function (user, index, array) {
-	// 		return user.id == pId;
-	// 	});
-	// 	this.state.users.splice(index, 1);
-	// 	this.setState({
-	// 		users: this.state.users
-	// 	});
-	// 	this.render();
-	// }
+
 
 	updateUser(basicInfo) {
 		const _this = this;
@@ -69,7 +60,7 @@ export default class UserList extends React.Component {
 
 
 			<div className="list-group">
-			<UserListCtrl user={activeUser} updateUser={this.updateUser}  test={1}/>
+			<UserListCtrl user={activeUser} updateUser={this.updateUser} removeUser={this.props.removeUser}  test={1}/>
 
 
         {

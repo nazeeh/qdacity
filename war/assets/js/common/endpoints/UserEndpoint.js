@@ -12,6 +12,13 @@ export default class ProjectEndpoint {
 
 	}
 
+	static removeUser(id) {
+		var apiMethod = gapi.client.qdacity.removeUser({
+			'id': id
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static updateUser(user) {
 		var apiMethod = gapi.client.qdacity.updateUser(user);
 		return Promisizer.makePromise(apiMethod);

@@ -13,6 +13,7 @@ export default class Users extends React.Component {
 
 		this.updateSearch = this.updateSearch.bind(this);
 		this.findUsers = this.findUsers.bind(this);
+		this.removeUser = this.removeUser.bind(this);
 	}
 
 	updateSearch(e) {
@@ -29,10 +30,23 @@ export default class Users extends React.Component {
 			});
 		}).catch(function (resp) {
 			_this.setState({
-				users: new []
+				users: []
 			});
 			window.alert(resp.code);
 		});
+	}
+
+	removeUser(pId) {
+		UserEndpoint.removeUser(pId).then(function (resp) {
+			var index = this.state.users.findIndex(function (user, index, array) {
+				return user.id == pId;
+			});
+			this.state.users.splice(index, 1);
+			this.setState({
+				users: this.state.users
+			});
+		});
+
 	}
 
 	render(){
@@ -54,7 +68,7 @@ export default class Users extends React.Component {
 							<button id="userSearchFindBtn" type="button" id="search" onClick={this.findUsers}>Find!</button>
 						</span>
 					</div>
-					<UserList  users={this.state.users} />
+					<UserList  users={this.state.users} removeUser={this.removeUser}/>
 					<ul id="user-list" className="list compactBoxList">
 					</ul>
 					<ul className="pagination"></ul>
