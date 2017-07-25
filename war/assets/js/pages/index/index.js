@@ -1,4 +1,3 @@
-
 import Index from './Index.jsx';
 import Account from '../../common/Account.jsx';
 

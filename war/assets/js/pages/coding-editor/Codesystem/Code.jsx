@@ -94,6 +94,8 @@ class Code extends SimpleCode {
 					relocateCode={this.props.relocateCode}
 					showFooter={this.props.showFooter}
 					key={"CS" + "_" + level+ "_" +index}
+		            pageView={this.props.pageView}
+		            umlEditor={this.props.umlEditor}
 				>
 				</DragAndDropCode>
 		);
