@@ -4,40 +4,21 @@ export default class UserList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			users: [],
 			selected: -1
 		};
 		this.selectUser = this.selectUser.bind(this);
 	}
 
-	setUsers(pUserList) {
-		this.state.users = pUserList;
-		this.setState({
-			users: pUserList
-		});
-	}
-
-	addUser(pUser) {
-		this.state.users.push(pUser);
-		this.setState({
-			users: this.state.users
-		});
-	}
-
-	removeUser(pId) {
-		var index = this.state.users.findIndex(function (user, index, array) {
-			return user.id == pId;
-		});
-		this.state.users.splice(index, 1);
-		this.setState({
-			users: this.state.users
-		});
-		this.render();
-	}
-
-	getUsers() {
-		return this.state.users;
-	}
+	// removeUser(pId) {
+	// 	var index = this.state.users.findIndex(function (user, index, array) {
+	// 		return user.id == pId;
+	// 	});
+	// 	this.state.users.splice(index, 1);
+	// 	this.setState({
+	// 		users: this.state.users
+	// 	});
+	// 	this.render();
+	// }
 
 	selectUser(selectedID) {
 		this.setState({
@@ -55,7 +36,7 @@ export default class UserList extends React.Component {
 
 	getUser(userId) {
 		var _this = this;
-		var selectedUser = this.state.users.find(function (user) {
+		var selectedUser = this.props.users.find(function (user) {
 			return user.id == userId;
 		});
 		return selectedUser;
@@ -74,10 +55,10 @@ export default class UserList extends React.Component {
 
 			<div className="list-group">
 			<UserListCtrl user={activeUser}  test={1}/>
-						
-      
+
+
         {
-          this.state.users.map(function(user) {
+          this.props.users.map(function(user) {
             return <a className= {_this.isActive(user.id)} key={user.id} href={"#"}  onClick={_this.selectUser.bind(null,user.id)}><span>{user.givenName} {user.surName}</span><span className="pull-right"><em>{user.email}</em></span></a>
           })
         }

@@ -54,7 +54,7 @@ export default class Users extends React.Component {
 							<button id="userSearchFindBtn" type="button" id="search" onClick={this.findUsers}>Find!</button>
 						</span>
 					</div>
-					<UserList />
+					<UserList  users={this.state.users} />
 					<ul id="user-list" className="list compactBoxList">
 					</ul>
 					<ul className="pagination"></ul>

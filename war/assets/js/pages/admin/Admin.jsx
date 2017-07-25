@@ -27,7 +27,7 @@ export default class Admin extends React.Component {
 				</div>
 				<div className="col-lg-4">
 					<div id="project-selection">
-						<Users />
+						<Users users={this.state.users}/>
 					</div>
 				</div>
 			</div>
