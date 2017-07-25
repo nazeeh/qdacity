@@ -170,7 +170,6 @@ function setupUI() {
 				toggleCodingView={toggleCodingView}
 				editorCtrl={editorCtrl}
 				documentsView={documentsView}
-				umlEditorEnabled={resp.umlEditorEnabled}
 				showFooter={showFooter}
 				selectionChanged={selectionChanged}
 				insertCode={insertCode}
@@ -178,10 +177,18 @@ function setupUI() {
 				umlEditor={umlEditor}
 			/>, document.getElementById('codesystemView')).child; // codesystem is wrapped in DnD components, therefore assign child
 
-			umlEditor = ReactDOM.render(<UmlEditor codesystemId={codesystem_id} codesystemView={codesystemView} updateCode={updateSelectedCode} refreshCodeView={refreshCodeView} />, document.getElementById('umlEditorContainer'));
+			umlEditor = ReactDOM.render(<UmlEditor 
+				codesystemId={codesystem_id} 
+				codesystemView={codesystemView} 
+				updateCode={updateSelectedCode} 
+				refreshCodeView={refreshCodeView} 
+			/>, document.getElementById('umlEditorContainer'));
 			codesystemView.setUmlEditor(umlEditor);
 
-			pageViewChooser = ReactDOM.render(<PageViewChooser viewChanged={viewChanged} />, document.getElementById('pageViewChooser-ui'));
+			pageViewChooser = ReactDOM.render(<PageViewChooser 
+				viewChanged={viewChanged}
+				umlEditorEnabled={resp.umlEditorEnabled} 
+			/>, document.getElementById('pageViewChooser-ui'));
 
 			var codesystemLoaded = codesystemView.init();
 

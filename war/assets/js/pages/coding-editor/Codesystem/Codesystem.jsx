@@ -293,7 +293,6 @@ class Codesystem extends SimpleCodesystem {
 						toggleCodingView={this.props.toggleCodingView}
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
-                        umlEditorEnabled={this.props.umlEditorEnabled}
                         pageView={this.state.pageView}>
 					</CodesystemToolbar>
 				</StyledToolBar>
