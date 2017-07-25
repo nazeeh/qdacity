@@ -48,6 +48,10 @@ export default class PageViewChooser extends React.Component {
 	render() {
 		const _this = this;
 
+		if (!this.props.umlEditorEnabled) {
+			return (null);
+		}
+
 		const styleSelected = 'btn btn-primary active';
 		const styleDefault = 'btn btn-default';
 		const classButtonText = _this.state.view == PageView.TEXT ? styleSelected : styleDefault;
