@@ -12,6 +12,7 @@ import loadGAPIs from '../../common/GAPI';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import PageViewChooser from './View/PageViewChooser.jsx';
 import UmlEditor from '../uml-editor/UmlEditor.jsx';
+import ProjectDashboardButton from './Settings/ProjectDashboardButton.jsx';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
@@ -32,6 +33,7 @@ var codesystem_id;
 var project_id;
 var project_type;
 var report;
+var urlParams;
 
 var account;
 
@@ -55,7 +57,7 @@ window.init = function () {
 	$("#footer").hide();
 	$('#navAccount').hide();
 
-	var urlParams = URI(window.location.search).query(true);
+	urlParams = URI(window.location.search).query(true);
 
 	project_id = urlParams.project;
 	project_type = urlParams.type;
@@ -70,9 +72,6 @@ window.init = function () {
 
 	if (typeof report != 'undefined') {
 		editorCtrl.showsAgreementMap(true);
-		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + urlParams.parentproject + '&type=' + urlParams.parentprojecttype);
-	} else {
-		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id + '&type=' + project_type);
 	}
 
 
@@ -189,6 +188,21 @@ function setupUI() {
 				viewChanged={viewChanged}
 				umlEditorEnabled={resp.umlEditorEnabled} 
 			/>, document.getElementById('pageViewChooser-ui'));
+
+
+			let projId = project_id;
+			let projType = project_type;
+
+			if (typeof report != 'undefined') {
+				projId = urlParams.parentproject;
+				projType = urlParams.parentprojecttype;
+			}
+
+			ReactDOM.render(<ProjectDashboardButton 
+					projectId={projId}
+					projectType={projType} 
+				/>, document.getElementById('projectDashboardButton-ui'));
+
 
 			var codesystemLoaded = codesystemView.init();
 
