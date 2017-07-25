@@ -26,30 +26,6 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
-/*
-
-	document.getElementById('navBtnSigninGoogle').onclick = function () {
-		account.changeAccount(setupUI);
-	};
-
-	$("#userSearchFindBtn").click(function (event) {
-		event.preventDefault();
-		var serachTerm = $('#userSearchTerm').val();
-		findUsers(serachTerm);
-		//window.alert($('#userSearchTerm').val());
-	});
-
-
-
-	$("#userSearchTerm").on('keyup', function (e) {
-		if (e.keyCode == 13) {
-			var serachTerm = $('#userSearchTerm').val();
-			findUsers(serachTerm);
-		}
-	});
-*/
-
-
 }
 
 function setupUI() {
@@ -64,12 +40,3 @@ function setupUI() {
 		$('#navAccount').hide();
 	}
 }
-
-// function findUsers(searchTerm) {
-// 	UserEndpoint.findUsers(searchTerm).then(function (resp) {
-// 		userList.setUsers(resp.items);
-// 	}).catch(function (resp) {
-// 		userList.setUsers(new []);
-// 		window.alert(resp.code);
-// 	});
-// }
