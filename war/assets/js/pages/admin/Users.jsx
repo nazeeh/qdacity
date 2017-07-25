@@ -5,10 +5,18 @@ export default class Users extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			users: []
+			users: [],
+			search: ''
 		};
+
+		this.updateSearch = this.updateSearch.bind(this);
 	}
 
+	updateSearch(e) {
+		this.setState({
+			search: e.target.value
+		});
+	}
 
 	render(){
 		return(
@@ -18,7 +26,14 @@ export default class Users extends React.Component {
 				</div>
 				<div className="box-body">
 					<div className="projectlist-menu">
-						<span className="searchfield" id="searchform"> <input id="userSearchTerm" type="text" className="search" placeholder="Search" />
+						<span className="searchfield" id="searchform">
+							<input
+								type="text"
+								className="search"
+								placeholder="Search"
+								value={this.state.search}
+								onChange={this.updateSearch}
+							/>
 							<button id="userSearchFindBtn" type="button" id="search">Find!</button>
 						</span>
 					</div>
