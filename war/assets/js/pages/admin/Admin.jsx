@@ -8,29 +8,38 @@ export default class Admin extends React.Component {
 		super(props);
 		this.state = {
 		};
+
+		if (this.props.account.isSignedIn()) {
+			$('#navAccount').show();
+			$('#navSignin').hide();
+		}
 	}
 
 
 	render(){
 		return(
-			<div className="row">
-				<div className="col-lg-8">
-					<div className="box box-default">
-						<div className="box-header with-border">
-							<h3 className="box-title">Statistics</h3>
+			<div className="container main-content">
+				<div className="row">
+					<div className="col-lg-8">
+						<div className="box box-default">
+							<div className="box-header with-border">
+								<h3 className="box-title">Statistics</h3>
+							</div>
+							<div className="box-body">
+								<AdminStats />
+							</div>
 						</div>
-						<div className="box-body">
-							<AdminStats />
-						</div>
+						<div id="changeLog"></div>
 					</div>
-					<div id="changeLog"></div>
-				</div>
-				<div className="col-lg-4">
-					<div id="project-selection">
-						<Users/>
+					<div className="col-lg-4">
+						<div id="project-selection">
+							<Users/>
+						</div>
 					</div>
 				</div>
 			</div>
+
+
 		);
 	}
 }

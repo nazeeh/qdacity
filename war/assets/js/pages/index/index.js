@@ -7,6 +7,7 @@ import {
 import Index from './Index.jsx';
 import PersonalDashboard from "../personal-dashboard/PersonalDashboard.jsx"
 import ProjectDashboard from "../project-dashboard/ProjectDashboard.jsx"
+import Admin from '../admin/Admin.jsx';
 
 import Account from '../../common/Account.jsx';
 
@@ -36,6 +37,7 @@ window.init = function () {
 				<div>
 					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
 					<Route path="/ProjectDashboard" render={()=><ProjectDashboard account={account} />}/>
+					<Route path="/Admin" render={()=><Admin account={account} />}/>
 					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
 				</div>
 			</Router>

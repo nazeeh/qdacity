@@ -33,7 +33,7 @@ function setupUI() {
 		$('#navAccount').show();
 		$('#navSignin').hide();
 
-		ReactDOM.render(<Admin />, document.getElementById('adminPage'));
+		ReactDOM.render(<Admin account={account}/>, document.getElementById('adminPage'));
 
 		// Setup for logged in user
 	} else {
