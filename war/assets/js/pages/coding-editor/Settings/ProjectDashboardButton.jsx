@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 const StyledLink = styled.a `
     text-align: center;
+    margin-bottom: 10px !important;
 `;
 
 export default class ProjectDashboardButton extends React.Component {
