@@ -1,4 +1,5 @@
 import UserListCtrl from './UserListCtrl.jsx';
+import UserEndpoint from '../../common/endpoints/UserEndpoint';
 
 export default class UserList extends React.Component {
 	constructor(props) {
@@ -7,6 +8,7 @@ export default class UserList extends React.Component {
 			selected: -1
 		};
 		this.selectUser = this.selectUser.bind(this);
+		this.updateUser = this.updateUser.bind(this);
 	}
 
 	// removeUser(pId) {
@@ -19,6 +21,19 @@ export default class UserList extends React.Component {
 	// 	});
 	// 	this.render();
 	// }
+
+	updateUser(basicInfo) {
+		const _this = this;
+		var user = this.getActiveUser();
+		user.givenName = basicInfo.firstName;
+		user.surName = basicInfo.lastName;
+		user.email = basicInfo.email;
+		user.type = basicInfo.type;
+
+		UserEndpoint.updateUser(user).then(function (resp) {
+			_this.forceUpdate();
+		});
+	}
 
 	selectUser(selectedID) {
 		this.setState({
@@ -54,7 +69,7 @@ export default class UserList extends React.Component {
 
 
 			<div className="list-group">
-			<UserListCtrl user={activeUser}  test={1}/>
+			<UserListCtrl user={activeUser} updateUser={this.updateUser}  test={1}/>
 
 
         {
