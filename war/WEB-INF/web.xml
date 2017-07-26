@@ -43,10 +43,6 @@
 </servlet>
 <servlet-mapping>
     <servlet-name>page</servlet-name>
-    <url-pattern>/</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
     <url-pattern>/PersonalDasboard</url-pattern>
 </servlet-mapping>
  <servlet-mapping>
