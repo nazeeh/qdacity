@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Project from './Project';
+
 import ProjectEndpoint from 'endpoints/ProjectEndpoint';
 
 import TitleRow from "./TitleRow/TitleRow.jsx"
@@ -11,12 +13,25 @@ import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
 import ParentProject from "./ParentProject/ParentProject.jsx"
 import PersonalReportList from "./PersonalReportList.jsx"
 
+import 'script!../../../../components/URIjs/URI.min.js';
+import 'script!../../../../components/alertify/alertify-0.3.js';
 
 export default class ProjectDashboard extends React.Component {
 	constructor(props) {
 		super(props);
+		var urlParams = URI(window.location.search).query(true);
+		var projectType = (urlParams.type ? urlParams.type : 'PROJECT');
+
+		var project = new Project(urlParams.project, projectType);
+
+		$('#qdactiy-logo').attr('href','PersonalDashboard');
+		if (this.props.account.isSignedIn()) {
+			$('#navAccount').show();
+			$('#navSignin').hide();
+		}
+
 		this.state = {
-			project: this.props.project,
+			project: project,
 			reports: [],
 			isProjectOwner: false,
 			isValidationCoder: false
@@ -37,7 +52,7 @@ export default class ProjectDashboard extends React.Component {
 	setUserRights() {
 		var _this = this;
 		this.userPromise.then(function (user) {
-			var isProjectOwner = _this.props.account.isProjectOwner(user, _this.props.project.getId());
+			var isProjectOwner = _this.props.account.isProjectOwner(user, _this.state.project.getId());
 			_this.setState({
 				isProjectOwner: isProjectOwner
 			});
@@ -46,7 +61,7 @@ export default class ProjectDashboard extends React.Component {
 
 	setProjectProperties() {
 		var _this = this;
-		var project = this.props.project;
+		var project = this.state.project;
 		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
 			_this.userPromise.then(function (user) {
 				var isValidationCoder = _this.props.account.isValidationCoder(user, resp);
@@ -75,9 +90,8 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-
 		return (
-			<div>
+			<div className="container main-content">
 				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} />
 				<div className="row">
 					<div className="col-lg-7">

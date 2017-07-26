@@ -5,7 +5,13 @@ import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
 export default class Index extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+		};
+
+		if (this.props.account.isSignedIn()) {
+			$('#navAccount').hide();
+			$('#navSignin').hide();
+		}
 	}
 
 
@@ -23,7 +29,7 @@ export default class Index extends React.Component {
 			                        <h3>QDA on steroids</h3>
 			                        <hr className="intro-divider"/>
 										<div>
-											<SigninWithGoogleBtn signIn={this.props.signIn} />
+											<SigninWithGoogleBtn account={this.props.account} history={this.props.history} />
 										</div>
 			                    </div>
 			                </div>

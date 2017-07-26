@@ -70,9 +70,9 @@ window.init = function () {
 
 	if (typeof report != 'undefined') {
 		editorCtrl.showsAgreementMap(true);
-		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + urlParams.parentproject + '&type=' + urlParams.parentprojecttype);
+		$(".projectDashboardLink").attr('href', 'ProjectDashboard?project=' + urlParams.parentproject + '&type=' + urlParams.parentprojecttype);
 	} else {
-		$(".projectDashboardLink").attr('href', 'project-dashboard.html?project=' + project_id + '&type=' + project_type);
+		$(".projectDashboardLink").attr('href', 'ProjectDashboard?project=' + project_id + '&type=' + project_type);
 	}
 
 
