@@ -20,7 +20,10 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
     }
 
     toPercent(value) {
-        return (value * 100).toFixed(2);
+        if(value!='undefined')
+            return (value * 100).toFixed(2);
+        else
+            return -1;
     }
 
     render() {
@@ -36,7 +39,7 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
                 let cellID = `cell${i}-${idx}`
                 if (idx > 0) {
                     //TODO saturationThreshold
-                    cell.push(<td key={cellID} id={cellID}><input type="number"  min="0" max="100"  defaultValue="-1" value="{saturationWeightsNames[i][idx]}" /></td>)
+                    cell.push(<td key={cellID} id={cellID}><input type="number"  min="0" max="100"  defaultValue="-1" value={this.toPercent(saturationWeightsNames[i][idx])} /></td>)
                 } else {
                     cell.push(<td key={cellID} id={cellID}>{saturationWeightsNames[i][idx]}</td>)
                 }
