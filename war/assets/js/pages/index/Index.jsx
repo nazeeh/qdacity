@@ -15,8 +15,8 @@ export default class Index extends React.Component {
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<div>
 				<a name="about"></a>
 			    <div className="intro-header">

@@ -9,17 +9,17 @@ export default class UnmappedCodeElement extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlEditorView = this.props.umlEditorView;
+		this.umlEditor = this.props.umlEditor;
 		this.codeId = this.props.codeId;
 	}
 
 	buttonClicked() {
 		const _this = this;
-		let code = this.umlEditorView.getCode(this.codeId);
+		let code = this.umlEditor.getUmlGraphView().getCode(this.codeId);
 		let codeMetaModelModal = new UmlCodeMetaModelModal(code);
 
-		codeMetaModelModal.showModal(this.umlEditorView.getMetaModelEntities(), this.umlEditorView.getMetaModelRelations()).then(function (data) {
-			// TODO duplicate code in UmlEditorView.js
+		codeMetaModelModal.showModal(this.umlEditor.getUmlGraphView().getMetaModelEntities(), this.umlEditor.getUmlGraphView().getMetaModelRelations()).then(function (data) {
+			// TODO duplicate code in UmlGraphView.jsx
 			console.log('Closed modal');
 
 			if (code.mmElementIDs != data.ids) {
@@ -31,7 +31,7 @@ export default class UnmappedCodeElement extends React.Component {
 
 				CodesEndpoint.updateCode(code).then(function (resp) {
 					console.log('Updated the mmElementIds for code ' + code.name + ' (' + code.codeID + ') in the database.');
-					_this.umlEditorView.exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
+					_this.umlEditor.getUmlGraphView().exchangeCodeMetaModelEntities(resp.codeID, data.oldIds);
 				});
 			}
 		});
@@ -64,7 +64,7 @@ export default class UnmappedCodeElement extends React.Component {
 		const buttonClass = 'btn btn-sm btn-default';
 		const iconClass = 'fa fa-list-alt';
 
-		const name = _this.umlEditorView.getCode(_this.codeId).name;
+		const name = _this.umlEditor.getUmlGraphView().getCode(_this.codeId).name;
 
 		return (
 			<div style={style.item}>

@@ -7,7 +7,7 @@ export default class UnmappedCodeView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlEditorView = this.props.umlEditorView;
+		this.umlEditor = this.props.umlEditor;
 
 		this.state = {
 			codes: []
@@ -16,7 +16,7 @@ export default class UnmappedCodeView extends React.Component {
 
 	update() {
 		this.setState({
-			codes: this.umlEditorView.getUnmappedCodes()
+			codes: this.umlEditor.getUmlGraphView().getUnmappedCodes()
 		});
 	}
 
@@ -59,7 +59,7 @@ export default class UnmappedCodeView extends React.Component {
                         if (code1.name > code2.name) return 1;
                         return 0;
                     }).map((code, i) => 
-                        <UnmappedCodeElement key={code.codeID} umlEditorView={_this.umlEditorView} codeId={code.codeID} />
+                        <UnmappedCodeElement key={code.codeID} umlEditor={_this.umlEditor} codeId={code.codeID} />
                     )}
                 </div>
             </div>
