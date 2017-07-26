@@ -5,11 +5,11 @@ export default class ButtonZoomOut extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlEditorView = this.props.umlEditorView;
+		this.umlEditor = this.props.umlEditor;
 	}
 
 	buttonClicked() {
-		this.umlEditorView.zoomOut();
+		this.umlEditor.getUmlGraphView().zoomOut();
 	}
 
 	getStyle() {

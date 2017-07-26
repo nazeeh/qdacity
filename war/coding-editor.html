@@ -55,6 +55,11 @@
 <link rel="stylesheet" href="components/tooltip/tooltip.css">
 <link href="components/colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
 
+
+<!-- mxGraph -->
+<script type="text/javascript">mxBasePath = 'components/mxGraph/javascript/src';</script>
+<script type="text/javascript" src="components/mxGraph/javascript/mxClient.min.js"></script>
+
 </head>
 <body>
 
@@ -71,7 +76,7 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<a class="navbar-brand topnav" href="personal-dashboard.html">QDAcity</a>
+						<a class="navbar-brand topnav" href="PersonalDashboard">QDAcity</a>
 					</div>
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -122,6 +127,8 @@
 	<div class="row no-gutters" style="padding-top: 51px;" >
 		<div class="col-sm-4 col-md-3 col-lg-2">
 
+			<div id="pageViewChooser-ui"></div>
+
 			<!-- SETTINGS -->
 			<div class="row no-gutters" >
 			<div id="project-ui" style="float: left; width: 100%; background-color: #f8f8f8;">
@@ -144,7 +151,7 @@
 							</p>
 							<div id="agreementMapSlider" class="agreementMapSlider"></div>
 						</div>
-
+						
 						<div class="row no-gutters" >
 						<div id="settings" class="collapse">
 						<div>
@@ -175,28 +182,6 @@
 
 
 			<div id="documents-ui" style=" width: 100%; background-color: #f8f8f8;">
-
-				<div style="background-color: #e7e7e7;">
-
-					<div style="text-align: center; position:relative;">
-					<div class="row no-gutters" >
-					<span class="col-xs-1"></span>
-    				<span class="col-xs-10">
-    					<b>Documents</b>
-    					<br>
-    					<span id="docToolBox"  class="collapse in">
-						</span>
-					</span>
-    				<span class="col-xs-1">
-							<!-- <button class="toggleEditorPanel pull-right" data-toggle="collapse"  data-target="#document-section">-</button> -->
-								<a id="documentsToggleBtn" class="editorPanelTogel pull-right" aria-expanded="true" data-toggle="collapse"  data-target="#docToolBox">
-									<i class="fa fa-compress fa-1x"></i>
-									<i class="fa fa-expand fa-1x"></i>
-								</a>
-					</span>
-						</div>
-					</div>
-				</div>
 				<div id="document-section" style="text-align: left; border: 2px solid #e7e7e7;">
 					<div id="documentView">
 					<div id ="documentsLoadingDiv" class="loader">
@@ -207,15 +192,10 @@
 			</div>
 
 			<div id="codesystem-ui" style=" width: 100%; background-color: #f8f8f8; ">
-				<div style="background-color: #e7e7e7;">
-					<div style="text-align: center;">
-						<b>Code System</b>
-					</div>
-				</div>
+				<div id ="codesystemView"></div>
 				<div id ="codesystemLoadingDiv" class="loader">
 						  	<div id ="codesystemLoaderMount" class="loaderMount"></div>
 				</div>
-				<div id ="codesystemView"></div>
 			</div>
 		</div>
 		<div class="col-sm-8 col-md-9 col-lg-10" style="background-color: #FFF; margin-bottom: 50px;">
@@ -262,6 +242,8 @@
 				</div>
 				<iframe id="editor" class="textEditor">
 				</iframe>
+				
+				<div id="umlEditorContainer"></div>
 			</div>
 
 		</div>

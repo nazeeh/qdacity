@@ -3,11 +3,8 @@ var webpack = require('webpack');
 
 module.exports = {
 	entry: {
-        'project-dashboard': './assets/js/pages/project-dashboard/project-dashboard.js',
-		'personal-dashboard' :  './assets/js/pages/personal-dashboard/personal-dashboard.js',
 		'index' : './assets/js/pages/index/index.js',
 		'coding-editor' : './assets/js/pages/coding-editor/coding-editor.js',
-		'admin' : './assets/js/pages/admin/admin.js',
 		'uml-editor' : './assets/js/pages/uml-editor/uml-editor.js',
     },
 	resolve: {

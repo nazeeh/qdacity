@@ -16,6 +16,12 @@ import CodesystemToolbar from "./CodesystemToolbar.jsx"
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import SimpleCodesystem from './SimpleCodesystem.jsx';
 
+const StyledEditorCtrlHeader = styled.div `
+	text-align: center;
+	position:relative;
+	background-color: #e7e7e7;
+ `;
+
 const StyledToolBar = styled.div `
 	text-align: center;
 	position: relative;
@@ -93,7 +99,7 @@ class Codesystem extends SimpleCodesystem {
 
 	// Overriding super method
 	notifyOnSelection(newCode) {
-		this.props.updateCodeView(newCode);
+		this.props.selectionChanged(newCode);
 	}
 
 	buildTree(currentCode, allCodes, currentNodeCollapsed) {
@@ -113,7 +119,6 @@ class Codesystem extends SimpleCodesystem {
 			currentCode.children = [];
 		}
 	}
-
 
 	updateSelected(code, persist) {
 		if (!persist) {
@@ -142,6 +147,8 @@ class Codesystem extends SimpleCodesystem {
 		this.setState({
 			selected: parent
 		})
+
+		this.props.removeCode(code);
 	}
 
 	insertCode(code) {
@@ -153,6 +160,7 @@ class Codesystem extends SimpleCodesystem {
 			_this.forceUpdate();
 		});
 
+		this.props.insertCode(code);
 	}
 
 	initCodingCount() {
@@ -240,33 +248,38 @@ class Codesystem extends SimpleCodesystem {
 							setSelected={this.setSelected}
 							relocateCode={this.relocateCode}
 							showFooter={this.props.showFooter}
-							key={"CS" + "_" + 0 + "_"  +index}>
+							key={"CS" + "_" + 0 + "_"  +index}
+                            pageView={this.state.pageView}
+                            umlEditor={this.umlEditor}>
 						</DragAndDropCode>
 			);
 		});
 	}
 
 	render() {
-		var _this = this;
 		return (
 			<div>
-					<StyledToolBar>
-						<CodesystemToolbar
-							projectID={this.props.projectID}
-							projectType={this.props.projectType}
-							selected={this.state.selected}
-							account={this.props.account}
-							removeCode={this.removeCode}
-							insertCode={this.insertCode}
-							updateCodingCount={this.updateCodingCount}
-							toggleCodingView={this.props.toggleCodingView}
-							editorCtrl={this.props.editorCtrl}
-							documentsView={this.props.documentsView}
-							umlEditorEnabled={this.props.umlEditorEnabled}>
-						</CodesystemToolbar>
-					</StyledToolBar>
-					<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>
-				</div>
+				<StyledEditorCtrlHeader >
+					<b>Code System</b>
+				</StyledEditorCtrlHeader>
+				<StyledToolBar>
+					<CodesystemToolbar
+						projectID={this.props.projectID}
+						projectType={this.props.projectType}
+						selected={this.state.selected}
+						account={this.props.account}
+						removeCode={this.removeCode}
+						insertCode={this.insertCode}
+						updateCodingCount={this.updateCodingCount}
+						toggleCodingView={this.props.toggleCodingView}
+						editorCtrl={this.props.editorCtrl}
+						documentsView={this.props.documentsView}
+                        umlEditorEnabled={this.props.umlEditorEnabled}
+                        pageView={this.state.pageView}>
+					</CodesystemToolbar>
+				</StyledToolBar>
+				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>
+			</div>
 		);
 	}
 }
