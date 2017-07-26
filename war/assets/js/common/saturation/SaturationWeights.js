@@ -6,22 +6,22 @@ export default class SaturationWeights {
     getNameAndWeightsArray() {
         var sp = this.saturationParameters;
         var saturationWeights = [
-            ['Applied Codes', sp.appliedCodesChangeWeight],
-            ['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight],
-            ['Deleted Codes', sp.deleteCodeChangeWeight],
-            ['New Documents', sp.insertDocumentChangeWeight],
-            ['New Code Relationships', sp.insertCodeRelationShipChangeWeight],
-            ['New Codes', sp.insertCodeChangeWeight],
-            ['Relocated Codes', sp.relocateCodeChangeWeight],
-            ['Code Author Changes', sp.updateCodeAuthorChangeWeight],
-            ['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight],
-            ['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight],
-            ['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight],
-            ['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight],
-            ['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight],
-            ['Code Color Changes', sp.updateCodeColorChangeWeight],
-            ['Code Memo Changes', sp.updateCodeMemoChangeWeight],
-            ['Code Name Changes', sp.updateCodeNameChangeWeight]
+            ['Applied Codes', sp.appliedCodesChangeWeight, sp.appliedCodesSaturationMaximum  ],
+            ['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight, sp.deleteCodeRelationShipSaturationMaximum  ],
+            ['Deleted Codes', sp.deleteCodeChangeWeight, sp.deleteCodeSaturationMaximum  ],
+            ['New Documents', sp.insertDocumentChangeWeight, sp.insertDocumentSaturationMaximum  ],
+            ['New Code Relationships', sp.insertCodeRelationShipChangeWeight, sp.insertCodeRelationShipSaturationMaximum  ],
+            ['New Codes', sp.insertCodeChangeWeight, sp.insertCodeSaturationMaximum  ],
+            ['Relocated Codes', sp.relocateCodeChangeWeight, sp.relocateCodeSaturationMaximum  ],
+            ['Code Author Changes', sp.updateCodeAuthorChangeWeight, sp.updateCodeAuthorSaturationMaximum  ],
+            ['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight, sp.updateCodeBookEntryDefinitionSaturationMaximum  ],
+            ['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight, sp.updateCodeBookEntryExampleSaturationMaximum  ],
+            ['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight, sp.updateCodeBookEntryShortDefinitionSaturationMaximum  ],
+            ['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight, sp.updateCodeBookEntryWhenNotToUseSaturationMaximum  ],
+            ['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight, sp.updateCodeBookEntryWhenToUseSaturationMaximum  ],
+            ['Code Color Changes', sp.updateCodeColorChangeWeight, sp.updateCodeColorSaturationMaximum  ],
+            ['Code Memo Changes', sp.updateCodeMemoChangeWeight, sp.updateCodeMemoSaturationMaximum  ],
+            ['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum  ]
         ];
 
         return saturationWeights;
