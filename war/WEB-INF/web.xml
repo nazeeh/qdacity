@@ -45,6 +45,10 @@
     <servlet-name>page</servlet-name>
     <url-pattern>/PersonalDashboard</url-pattern>
 </servlet-mapping>
+<servlet-mapping>
+    <servlet-name>page</servlet-name>
+    <url-pattern>/ProjectDashboard</url-pattern>
+</servlet-mapping>
  <servlet-mapping>
     <servlet-name>page</servlet-name>
     <url-pattern>/Admin</url-pattern>
