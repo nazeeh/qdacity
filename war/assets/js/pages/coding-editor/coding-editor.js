@@ -5,6 +5,8 @@ import {
 } from './View/PageView.js';
 
 import CodeView from './CodeView/CodeView.jsx';
+import CodingEditor from './CodingEditor.jsx';
+
 import Account from '../../common/Account.jsx';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import EditorCtrl from './EditorCtrl';
@@ -45,10 +47,10 @@ var editorCtrl = {};
 
 window.init = function () {
 
-	ReactDOM.render(<ReactLoading color="#555"/>, document.getElementById('documentsLoaderMount'));
-	ReactDOM.render(<ReactLoading color="#555"/>, document.getElementById('codesystemLoaderMount'));
+	//ReactDOM.render(<ReactLoading color="#555"/>, document.getElementById('documentsLoaderMount'));
+	//ReactDOM.render(<ReactLoading color="#555"/>, document.getElementById('codesystemLoaderMount'));
 
-	editorCtrl = new EditorCtrl(getCodeByCodeID);
+	//editorCtrl = new EditorCtrl(getCodeByCodeID);
 
 
 	$('.tooltips').tooltipster();
@@ -81,22 +83,22 @@ window.init = function () {
 			account = accountModule;
 		}
 	);
-	$('#document-section').on('hidden.bs.collapse', resizeElements);
-	$('#document-section').on('shown.bs.collapse', resizeElements);
-
-	document.getElementById('btnTxtSave').onclick = function () {
-		documentsView.updateCurrentDocument(editorCtrl.getHTML());
-	}
-
-	$('#textdocument-menu').on('shown.bs.collapse', function () {
-		editorCtrl.setReadOnly(false);
-		resizeElements();
-	})
-
-	$('#textdocument-menu').on('hidden.bs.collapse', function () {
-		editorCtrl.setReadOnly(true);
-		resizeElements();
-	})
+	// $('#document-section').on('hidden.bs.collapse', resizeElements);
+	// $('#document-section').on('shown.bs.collapse', resizeElements);
+	//
+	// document.getElementById('btnTxtSave').onclick = function () {
+	// 	documentsView.updateCurrentDocument(editorCtrl.getHTML());
+	// }
+	//
+	// $('#textdocument-menu').on('shown.bs.collapse', function () {
+	// 	editorCtrl.setReadOnly(false);
+	// 	resizeElements();
+	// })
+	//
+	// $('#textdocument-menu').on('hidden.bs.collapse', function () {
+	// 	editorCtrl.setReadOnly(true);
+	// 	resizeElements();
+	// })
 
 }
 
@@ -160,40 +162,41 @@ function setupUI() {
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
 
-			var documentsLoaded = setDocumentList(project_id);
+			codesystemView = ReactDOM.render(<CodingEditor/>, document.getElementById('codingEditor'));
+			//var documentsLoaded = setDocumentList(project_id);
 
-			codesystemView = ReactDOM.render(<Codesystem
-				projectID={project_id}
-				projectType={project_type}
-				account={account}
-				codesystemId={codesystem_id}
-				toggleCodingView={toggleCodingView}
-				editorCtrl={editorCtrl}
-				documentsView={documentsView}
-				umlEditorEnabled={resp.umlEditorEnabled}
-				showFooter={showFooter}
-				selectionChanged={selectionChanged}
-				insertCode={insertCode}
-				removeCode={removeCode}
-				umlEditor={umlEditor}
-			/>, document.getElementById('codesystemView')).child; // codesystem is wrapped in DnD components, therefore assign child
+			// codesystemView = ReactDOM.render(<Codesystem
+			// 	projectID={project_id}
+			// 	projectType={project_type}
+			// 	account={account}
+			// 	codesystemId={codesystem_id}
+			// 	toggleCodingView={toggleCodingView}
+			// 	editorCtrl={editorCtrl}
+			// 	documentsView={documentsView}
+			// 	umlEditorEnabled={resp.umlEditorEnabled}
+			// 	showFooter={showFooter}
+			// 	selectionChanged={selectionChanged}
+			// 	insertCode={insertCode}
+			// 	removeCode={removeCode}
+			// 	umlEditor={umlEditor}
+			// />, document.getElementById('codesystemView')).child; // codesystem is wrapped in DnD components, therefore assign child
 
-			umlEditor = ReactDOM.render(<UmlEditor codesystemId={codesystem_id} codesystemView={codesystemView} updateCode={updateSelectedCode} refreshCodeView={refreshCodeView} />, document.getElementById('umlEditorContainer'));
-			codesystemView.setUmlEditor(umlEditor);
+			//umlEditor = ReactDOM.render(<UmlEditor codesystemId={codesystem_id} codesystemView={codesystemView} updateCode={updateSelectedCode} refreshCodeView={refreshCodeView} />, document.getElementById('umlEditorContainer'));
+			//codesystemView.setUmlEditor(umlEditor);
 
-			pageViewChooser = ReactDOM.render(<PageViewChooser viewChanged={viewChanged} />, document.getElementById('pageViewChooser-ui'));
+			//pageViewChooser = ReactDOM.render(<PageViewChooser viewChanged={viewChanged} />, document.getElementById('pageViewChooser-ui'));
 
-			var codesystemLoaded = codesystemView.init();
+			//var codesystemLoaded = codesystemView.init();
 
-			documentsLoaded.then(() => {
-				codesystemLoaded.then(() => {
-					umlEditor.codesystemFinishedLoading();
-
-					// Initialize coding count bubbles after both codesystem and documents are available
-					codesystemView.initCodingCount();
-					resizeElements();
-				});
-			});
+			// documentsLoaded.then(() => {
+			// 	codesystemLoaded.then(() => {
+			// 		//umlEditor.codesystemFinishedLoading();
+			//
+			// 		// Initialize coding count bubbles after both codesystem and documents are available
+			// 		//codesystemView.initCodingCount();
+			// 		resizeElements();
+			// 	});
+			// });
 		});
 	} else {
 		$('#navAccount').hide();
@@ -261,13 +264,13 @@ function getCodeSystem() {
 }
 
 function setDocumentList(projectID) {
-	if (typeof documentsView == 'undefined') {
-		documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id} projectType={project_type}/>, document.getElementById('documentView'));
-
-		codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
-	}
-
-	return documentsView.setupView(project_id, project_type, report);
+	// if (typeof documentsView == 'undefined') {
+	// 	documentsView = ReactDOM.render(<DocumentsView editorCtrl={editorCtrl} projectID={project_id} projectType={project_type}/>, document.getElementById('documentView'));
+	//
+	// 	codeView = ReactDOM.render(<CodeView editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} hideCodingView={hideCodingView}/>, document.getElementById('codeView'));
+	// }
+	//
+	// return documentsView.setupView(project_id, project_type, report);
 }
 
 function selectionChanged(code) {
