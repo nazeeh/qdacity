@@ -11,6 +11,10 @@ import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SaturationParameters implements Serializable {
+    
+    private static final int LAST_SAT_RESULT_MIN = 1;
+    private static final int LAST_SAT_RESULT_MAX = 10;
+    
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -153,6 +157,12 @@ public class SaturationParameters implements Serializable {
     }
 
     public void setLastSatResults(int lastSatResults) {
+	if(lastSatResults > LAST_SAT_RESULT_MAX) {
+	    lastSatResults = LAST_SAT_RESULT_MAX;
+	}
+	if(lastSatResults < LAST_SAT_RESULT_MIN) {
+	    lastSatResults = LAST_SAT_RESULT_MIN;
+	}
 	this.lastSatResults = lastSatResults;
     }
 

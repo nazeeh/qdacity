@@ -13,7 +13,7 @@ import javax.jdo.annotations.PrimaryKey;
  * are a childEntity
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class SaturationResult {
+public class SaturationResult implements Comparable<SaturationResult> {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -228,7 +228,7 @@ public class SaturationResult {
     }
 
     public void setEvaluationStartDate(Date evaluationStartDate) {
-	this.evaluationStartDate = evaluationStartDate;
+	this.evaluationStartDate = new Date(evaluationStartDate.getTime());
     }
 
     public double getApplyCodeSaturation() {
@@ -237,6 +237,17 @@ public class SaturationResult {
 
     public void setApplyCodeSaturation(double applyCodeSaturation) {
 	this.applyCodeSaturation = applyCodeSaturation;
+    }
+
+    @Override
+    public int compareTo(SaturationResult t) {
+	if (getCreationTime() == null) {
+	    return -1;
+	}
+	if (t == null || t.getCreationTime() == null) {
+	    return 1;
+	}
+	return getCreationTime().compareTo(t.getCreationTime());
     }
 
 }
