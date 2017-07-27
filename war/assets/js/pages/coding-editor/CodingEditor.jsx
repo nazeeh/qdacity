@@ -1,10 +1,14 @@
 import React from 'react'
+import styled from 'styled-components';
 
 import DocumentsView from './Documents/DocumentsView.jsx';
 
 import EditorCtrl from './EditorCtrl';
 import Project from '../project-dashboard/Project';
 
+const StyledCodingEditor = styled.div `
+	padding-top: 51px;
+`;
 
 export default class CodingEditor extends React.Component {
 	constructor(props) {
@@ -35,7 +39,7 @@ export default class CodingEditor extends React.Component {
 
 	render(){
 		return(
-			<div>
+			<StyledCodingEditor>
 				<div className="row no-gutters"  >
 		<div className="col-sm-4 col-md-3 col-lg-2">
 
@@ -153,7 +157,7 @@ export default class CodingEditor extends React.Component {
 	<footer id="footer" className="footer">
 		<div id ="codeView"></div>
 	</footer>
-			</div>
+			</StyledCodingEditor>
 		);
 	}
 }
