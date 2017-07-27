@@ -9,21 +9,24 @@ import Project from '../project-dashboard/Project';
 export default class CodingEditor extends React.Component {
 	constructor(props) {
 		super(props);
-		this.editorCtrl = {}
 
 		//TODO shared code with project-dashboard
 		var urlParams = URI(window.location.search).query(true);
 		var projectType = (urlParams.type ? urlParams.type : 'PROJECT');
 		var project = new Project(urlParams.project, projectType);
 
+		this.report = urlParams.report;
 
 		this.state = {
-			project: project
+			project: project,
+			editorCtrl: {}
 		};
 	}
 
 	componentDidMount(){
-		this.editorCtrl = new EditorCtrl(this.getCodeByCodeID);
+		this.setState({
+			editorCtrl: new EditorCtrl(this.getCodeByCodeID)
+		});
 	}
 
 	getCodeByCodeID(codeID) {
@@ -85,7 +88,7 @@ export default class CodingEditor extends React.Component {
 			</div>
 			<div id="documents-ui" >
 				<div id="document-section" >
-					<DocumentsView editorCtrl={this.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()}/>
+					<DocumentsView editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
 				</div>
 			</div>
 
