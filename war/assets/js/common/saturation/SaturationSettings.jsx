@@ -38,13 +38,14 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
             for (var idx = 0; idx < 3; idx++) { 
                 let cellID = `cell${i}-${idx}`
                 if (idx > 0) {
-                    //TODO saturationThreshold
                     cell.push(<td key={cellID} id={cellID}><input type="number"  min="0" max="100"  defaultValue="-1" value={this.toPercent(saturationWeightsNames[i][idx])} /></td>)
                 } else {
                     cell.push(<td key={cellID} id={cellID}>{saturationWeightsNames[i][idx]}</td>)
                 }
             }
             rows.push(<tr key={i} id={rowID}>{cell}</tr>)
+            
+            //TODO speichern?
         }
         return(<div>
             <p><b>Saturation Configuration</b></p>
