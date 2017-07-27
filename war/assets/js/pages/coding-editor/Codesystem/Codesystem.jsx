@@ -46,10 +46,10 @@ class Codesystem extends SimpleCodesystem {
 		super(props);
 		this.state = {
 			slected: {},
+			codesystemID: -1,
 			codesystem: [],
 			height: "100px"
 		};
-
 		this.relocateCode = this.relocateCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
@@ -85,7 +85,8 @@ class Codesystem extends SimpleCodesystem {
 					_this.sortCodes(rootCodes);
 					_this.setState({
 						codesystem: rootCodes,
-						selected: selected
+						selected: selected,
+						codesystemID: _this.props.codesystemId,
 					});
 					$("#codesystemLoadingDiv").addClass("hidden");
 
@@ -257,6 +258,7 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	render() {
+		if (this.state.codesystemID != this.props.codesystemId) this.init(); // if codesystem ID changed, re-initialize
 		return (
 			<div>
 				<StyledEditorCtrlHeader >

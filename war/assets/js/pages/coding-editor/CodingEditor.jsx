@@ -8,6 +8,9 @@ import Codesystem from './Codesystem/Codesystem.jsx';
 import EditorCtrl from './EditorCtrl';
 import Project from '../project-dashboard/Project';
 
+import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+
+
 const StyledCodingEditor = styled.div `
 	padding-top: 51px;
 `;
@@ -27,6 +30,14 @@ export default class CodingEditor extends React.Component {
 			project: project,
 			editorCtrl: {}
 		};
+		const _this = this;
+		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
+			project.setCodesystemID(resp.codesystemID);
+			project.setUmlEditorEnabled(resp.umlEditorEnabled);
+			_this.setState({
+				project: project
+			});
+		});
 	}
 
 	componentDidMount(){
