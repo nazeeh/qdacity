@@ -4,10 +4,13 @@ import styled from 'styled-components';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import CodeView from './CodeView/CodeView.jsx';
-
+import PageViewChooser from './View/PageViewChooser.jsx';
 
 import EditorCtrl from './EditorCtrl';
 import Project from '../project-dashboard/Project';
+import {
+	PageView
+} from './View/PageView.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 
@@ -58,7 +61,9 @@ export default class CodingEditor extends React.Component {
 			project: project,
 			editorCtrl: {},
 			showCodingView: false,
-			selectedCode: {}
+			selectedCode: {},
+			selectedEditor: PageView.TEXT
+
 		};
 		const _this = this;
 		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
@@ -73,11 +78,19 @@ export default class CodingEditor extends React.Component {
 		this.hideCodingView = this.hideCodingView.bind(this);
 		this.selectionChanged = this.selectionChanged.bind(this);
 		this.updateSelectedCode = this.updateSelectedCode.bind(this);
+		this.viewChanged = this.viewChanged.bind(this);
 	}
+
 
 	componentDidMount() {
 		this.setState({
 			editorCtrl: new EditorCtrl(this.getCodeByCodeID)
+		});
+	}
+
+	viewChanged(view) {
+		this.setState({
+			selectedEditor: view
 		});
 	}
 
@@ -156,10 +169,11 @@ export default class CodingEditor extends React.Component {
 							</div>
 
 							<div className="row no-gutters" >
-							<div id="settings" className="collapse">
+							<div id="settings">
 							<div>
 								<b>Settings</b>
 							</div>
+							<PageViewChooser viewChanged={this.viewChanged} />
 							<div >
 
 
