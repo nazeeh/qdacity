@@ -39,7 +39,7 @@ export default class CodingEditor extends React.Component {
 			});
 		});
 
-		this.calculateCodingCount = this.calculateCodingCount.bind(this);
+		//this.calculateCodingCount = this.calculateCodingCount.bind(this);
 	}
 
 	componentDidMount(){
@@ -76,10 +76,6 @@ export default class CodingEditor extends React.Component {
 
 	}
 
-	//TODO possibly do without refs 
-	calculateCodingCount(codeID){
-		return this.documentsViewRef.calculateCodingCount(codeID)
-	}
 
 	render(){
 		return(
@@ -153,7 +149,7 @@ export default class CodingEditor extends React.Component {
 					selectionChanged={this.selectionChanged}
 					insertCode={this.insertCode}
 					removeCode={this.removeCode}
-					calculateCodingCount={this.calculateCodingCount}
+					documentsView = {this.documentsViewRef}
 				 />
 			</div>
 		</div>

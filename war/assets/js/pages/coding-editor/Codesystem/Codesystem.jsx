@@ -176,12 +176,12 @@ class Codesystem extends SimpleCodesystem {
 	initCodingCountRecurive(codeSiblings) {
 		var _this = this;
 		codeSiblings.forEach((code) => {
-			code.codingCount = this.props.calculateCodingCount(code.codeID);
+			code.codingCount = this.props.documentsView.calculateCodingCount(code.codeID);
 			if (code.children) _this.initCodingCountRecurive(code.children); // recursion
 		});
 	}
 	updateCodingCount() {
-		this.state.selected.codingCount = this.props.calculateCodingCount(this.state.selected.codeID);
+		this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(this.state.selected.codeID);
 		this.setState({
 			selected: this.state.selected,
 			codesystem: this.state.codesystem
