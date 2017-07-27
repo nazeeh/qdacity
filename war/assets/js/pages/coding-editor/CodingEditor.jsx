@@ -25,7 +25,7 @@ export default class CodingEditor extends React.Component {
 		var project = new Project(urlParams.project, projectType);
 
 		this.report = urlParams.report;
-
+		this.documentsViewRef = {};
 		this.state = {
 			project: project,
 			editorCtrl: {}
@@ -38,6 +38,8 @@ export default class CodingEditor extends React.Component {
 				project: project
 			});
 		});
+
+		this.calculateCodingCount = this.calculateCodingCount.bind(this);
 	}
 
 	componentDidMount(){
@@ -62,17 +64,22 @@ export default class CodingEditor extends React.Component {
 		//$("#footer").show("clip", {}, 200, resizeElements);
 	}
 
-selectionChanged() {
+	selectionChanged() {
 
-}
+	}
 
-insertCode() {
+	insertCode() {
 
-}
+	}
 
-removeCode() {
+	removeCode() {
 
-}
+	}
+
+	//TODO possibly do without refs 
+	calculateCodingCount(codeID){
+		return this.documentsViewRef.calculateCodingCount(codeID)
+	}
 
 	render(){
 		return(
@@ -129,7 +136,7 @@ removeCode() {
 			</div>
 			<div id="documents-ui" >
 				<div id="document-section" >
-					<DocumentsView editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
+					<DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
 				</div>
 			</div>
 
@@ -146,6 +153,7 @@ removeCode() {
 					selectionChanged={this.selectionChanged}
 					insertCode={this.insertCode}
 					removeCode={this.removeCode}
+					calculateCodingCount={this.calculateCodingCount}
 				 />
 			</div>
 		</div>
