@@ -1,12 +1,34 @@
 import React from 'react'
 
+import DocumentsView from './Documents/DocumentsView.jsx';
+
+import EditorCtrl from './EditorCtrl';
+import Project from '../project-dashboard/Project';
+
+
 export default class CodingEditor extends React.Component {
 	constructor(props) {
 		super(props);
+		this.editorCtrl = {}
+
+		//TODO shared code with project-dashboard
+		var urlParams = URI(window.location.search).query(true);
+		var projectType = (urlParams.type ? urlParams.type : 'PROJECT');
+		var project = new Project(urlParams.project, projectType);
+
+
 		this.state = {
+			project: project
 		};
 	}
 
+	componentDidMount(){
+		this.editorCtrl = new EditorCtrl(this.getCodeByCodeID);
+	}
+
+	getCodeByCodeID(codeID) {
+		//return codesystemView.getCodeByCodeID(codeID);
+	}
 
 	render(){
 		return(
@@ -63,11 +85,7 @@ export default class CodingEditor extends React.Component {
 			</div>
 			<div id="documents-ui" >
 				<div id="document-section" >
-					<div id="documentView">
-					<div id ="documentsLoadingDiv" className="loader">
-						  	<div id ="documentsLoaderMount" className="loaderMount"></div>
-						</div>
-					</div>
+					<DocumentsView editorCtrl={this.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()}/>
 				</div>
 			</div>
 
