@@ -16,7 +16,6 @@ const StyledCodingEditor = styled.div `
 	padding-top: 51px;
 	display: grid;
 	grid-template-columns: 3fr 15fr;
-	grid-template-rows:	1fr	300px;
 	grid-template-areas:
 		"sidebar editor"
 		"footer footer";
@@ -33,13 +32,13 @@ const StyledEditor = styled.div `
 `;
 
 const StyledFooter = styled.div `
-	grid-area: footer
+	grid-area: footer;
+	display: ${props => props.showCodingView ? 'block' : 'none'} !important;
 `;
 
 const StyledTextEditor = styled.iframe `
 	height: 80vh;
-	height: ${props => "calc(100vh - 300px)"} !important;
-	showCodingView
+	height: ${props => props.showCodingView ? 'calc(100vh - 300px)' : 'calc(100vh - 51px)'} !important;
 `;
 
 export default class CodingEditor extends React.Component {
@@ -56,7 +55,7 @@ export default class CodingEditor extends React.Component {
 		this.state = {
 			project: project,
 			editorCtrl: {},
-			showCodingView: true
+			showCodingView: false
 		};
 		const _this = this;
 		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
@@ -67,6 +66,7 @@ export default class CodingEditor extends React.Component {
 			});
 		});
 
+		this.toggleCodingView = this.toggleCodingView.bind(this);
 		//this.calculateCodingCount = this.calculateCodingCount.bind(this);
 	}
 
@@ -81,6 +81,9 @@ export default class CodingEditor extends React.Component {
 	}
 
 	toggleCodingView() {
+		this.setState({
+			showCodingView: !this.state.showCodingView
+		});
 		// if ($("#footer").is(":visible")) {
 		// 	hideCodingView();
 		// } else {
@@ -121,7 +124,7 @@ export default class CodingEditor extends React.Component {
 
 	render() {
 		return (
-		<StyledCodingEditor height={$(window).height()}>
+		<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
 				<div id="pageViewChooser-ui"></div>
 
@@ -242,7 +245,7 @@ export default class CodingEditor extends React.Component {
 				</div>
 
 			</StyledEditor>
-			<StyledFooter>
+			<StyledFooter  showCodingView={this.state.showCodingView}>
 				<CodeView
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}
