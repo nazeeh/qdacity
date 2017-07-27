@@ -26,6 +26,8 @@ export default class UmlGraphView extends React.Component {
 		this.graph = null;
 		this.layout = null;
 
+		this.panningHandler = null;
+
 		this.cellMarker = null;
 		this.connectionHandler = null;
 
@@ -102,6 +104,9 @@ export default class UmlGraphView extends React.Component {
 
 		// Initialize connections
 		this.initializeConnections();
+
+		// Initialize panning
+		this.initializePanning();
 
 		// Initialize events
 		this.initializeEvents();
@@ -258,6 +263,12 @@ export default class UmlGraphView extends React.Component {
 
 			_this.selectCell(sourceNode);
 		});
+	}
+
+	initializePanning() {
+		this.graph.setPanning(true);
+
+		this.panningHandler = new mxPanningHandler();
 	}
 
 	initializeEvents() {
