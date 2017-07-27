@@ -55,7 +55,8 @@ export default class CodingEditor extends React.Component {
 		this.state = {
 			project: project,
 			editorCtrl: {},
-			showCodingView: false
+			showCodingView: false,
+			selectedCode: {}
 		};
 		const _this = this;
 		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
@@ -68,6 +69,7 @@ export default class CodingEditor extends React.Component {
 
 		this.toggleCodingView = this.toggleCodingView.bind(this);
 		this.hideCodingView = this.hideCodingView.bind(this);
+		this.selectionChanged = this.selectionChanged.bind(this);
 	}
 
 	componentDidMount() {
@@ -95,8 +97,10 @@ export default class CodingEditor extends React.Component {
 		//$("#footer").show("clip", {}, 200, resizeElements);
 	}
 
-	selectionChanged() {
-
+	selectionChanged(newCode) {
+		this.setState({
+			selectedCode: newCode
+		});
 	}
 
 	insertCode() {
@@ -248,6 +252,7 @@ export default class CodingEditor extends React.Component {
 			</StyledEditor>
 			<StyledFooter  showCodingView={this.state.showCodingView}>
 				<CodeView
+					code={this.state.selectedCode}
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}
 					updateSelectedCode={this.updateSelectedCode}
