@@ -27,7 +27,7 @@ const StyledSideBar = styled.div `
 
 const StyledEditor = styled.div `
 	grid-area: editor;
-	height: calc(100vh - 300px );
+	height: calc(100vh - 350px );
 
 `;
 
@@ -37,8 +37,7 @@ const StyledFooter = styled.div `
 `;
 
 const StyledTextEditor = styled.iframe `
-	height: 80vh;
-	height: ${props => props.showCodingView ? 'calc(100vh - 300px)' : 'calc(100vh - 51px)'} !important;
+	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
 `;
 
 export default class CodingEditor extends React.Component {
