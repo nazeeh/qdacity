@@ -15,7 +15,7 @@ import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 const StyledCodingEditor = styled.div `
 	padding-top: 51px;
 	display: grid;
-	grid-template-columns: 3fr 15fr;
+	grid-template-columns: 3fr 14fr;
 	grid-template-areas:
 		"sidebar editor"
 		"footer footer";
@@ -51,6 +51,9 @@ export default class CodingEditor extends React.Component {
 
 		this.report = urlParams.report;
 		this.documentsViewRef = {};
+		this.codesystemViewRef = {};
+		this.umlEditorRef = {};
+
 		this.state = {
 			project: project,
 			editorCtrl: {},
@@ -69,6 +72,7 @@ export default class CodingEditor extends React.Component {
 		this.toggleCodingView = this.toggleCodingView.bind(this);
 		this.hideCodingView = this.hideCodingView.bind(this);
 		this.selectionChanged = this.selectionChanged.bind(this);
+		this.updateSelectedCode = this.updateSelectedCode.bind(this);
 	}
 
 	componentDidMount() {
@@ -122,8 +126,8 @@ export default class CodingEditor extends React.Component {
 
 
 	updateSelectedCode(code, persist) {
-		codesystemView.updateSelected(code, persist);
-		umlEditor.codeUpdated(code);
+		this.codesystemViewRef.updateSelected(code, persist);
+		//this.umlEditorRef.codeUpdated(code);
 	}
 
 	render() {
@@ -185,6 +189,7 @@ export default class CodingEditor extends React.Component {
 
 				<div id="codesystem-ui" >
 					<Codesystem
+						ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
 						projectID={this.state.project.getId()}
 						projectType={this.state.project.getType()}
 						account={this.props.account}
