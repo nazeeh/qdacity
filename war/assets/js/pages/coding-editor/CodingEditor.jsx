@@ -67,7 +67,7 @@ export default class CodingEditor extends React.Component {
 		});
 
 		this.toggleCodingView = this.toggleCodingView.bind(this);
-		//this.calculateCodingCount = this.calculateCodingCount.bind(this);
+		this.hideCodingView = this.hideCodingView.bind(this);
 	}
 
 	componentDidMount() {
@@ -112,8 +112,9 @@ export default class CodingEditor extends React.Component {
 	}
 
 	hideCodingView() {
-		//$("#footer").hide("clip", {}, 200, resizeElements);
-
+		this.setState({
+			showCodingView: false
+		});
 	}
 
 
