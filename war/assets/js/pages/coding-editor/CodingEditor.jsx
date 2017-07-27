@@ -5,6 +5,7 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import CodeView from './CodeView/CodeView.jsx';
 import PageViewChooser from './View/PageViewChooser.jsx';
+import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 
 import EditorCtrl from './EditorCtrl';
 import Project from '../project-dashboard/Project';
@@ -31,7 +32,6 @@ const StyledSideBar = styled.div `
 const StyledEditor = styled.div `
 	grid-area: editor;
 	height: calc(100vh - 350px );
-
 `;
 
 const StyledFooter = styled.div `
@@ -154,12 +154,7 @@ export default class CodingEditor extends React.Component {
 					<div >
 
 						<div >
-							<div className="list-group">
-								<a className="list-group-item projectDashboardLink clickable">
-									<i className="fa fa-home fa-fw "></i>
-									Project Dashboard
-								</a>
-							</div>
+							<ProjectDashboardBtn project={this.state.project}/>
 							<div id="agreementMapSettings" className="hidden">
 								<p>
 								  <span>Showing False Negatives >= </span>
