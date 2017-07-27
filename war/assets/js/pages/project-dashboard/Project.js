@@ -10,6 +10,7 @@ export default class Project {
 		this.umlEditorEnabled = false;
 		this.parentID = undefined; // when the project is a validationproject this points to the project it is based on
 		this.revisionID = undefined;
+		this.codesystemID = -1;
 	}
 
 	getId() {
@@ -98,6 +99,14 @@ export default class Project {
 
 	setParentID(parentID) {
 		this.parentID = parentID;
+	}
+
+	getCodesystemID() {
+		return this.codesystemID;
+	}
+
+	setCodesystemID(codesystemID) {
+		this.codesystemID = codesystemID;
 	}
 
 	getRevisionID() {

@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components';
 
 import DocumentsView from './Documents/DocumentsView.jsx';
+import Codesystem from './Codesystem/Codesystem.jsx';
+
 
 import EditorCtrl from './EditorCtrl';
 import Project from '../project-dashboard/Project';
@@ -36,6 +38,30 @@ export default class CodingEditor extends React.Component {
 	getCodeByCodeID(codeID) {
 		//return codesystemView.getCodeByCodeID(codeID);
 	}
+
+	toggleCodingView() {
+		// if ($("#footer").is(":visible")) {
+		// 	hideCodingView();
+		// } else {
+		// 	showCodingView();
+		// }
+	}
+
+	showFooter() {
+		//$("#footer").show("clip", {}, 200, resizeElements);
+	}
+
+selectionChanged() {
+
+}
+
+insertCode() {
+
+}
+
+removeCode() {
+
+}
 
 	render(){
 		return(
@@ -97,10 +123,19 @@ export default class CodingEditor extends React.Component {
 			</div>
 
 			<div id="codesystem-ui" >
-				<div id ="codesystemView"></div>
-				<div id ="codesystemLoadingDiv" className="loader">
-						  	<div id ="codesystemLoaderMount" className="loaderMount"></div>
-				</div>
+				<Codesystem
+					projectID={this.state.project.getId()}
+					projectType={this.state.project.getType()}
+					account={this.props.account}
+					codesystemId={this.state.project.getCodesystemID()}
+					toggleCodingView={this.toggleCodingView}
+					editorCtrl={this.state.editorCtrl}
+					umlEditorEnabled={this.state.project.isUmlEditorEnabled()}
+					showFooter={this.showFooter}
+					selectionChanged={this.selectionChanged}
+					insertCode={this.insertCode}
+					removeCode={this.removeCode}
+				 />
 			</div>
 		</div>
 		<div className="col-sm-8 col-md-9 col-lg-10" >

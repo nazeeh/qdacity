@@ -162,7 +162,7 @@ function setupUI() {
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			codesystem_id = resp.codesystemID;
 
-			codesystemView = ReactDOM.render(<CodingEditor/>, document.getElementById('codingEditor'));
+			codesystemView = ReactDOM.render(<CodingEditor account={account}/>, document.getElementById('codingEditor'));
 			//var documentsLoaded = setDocumentList(project_id);
 
 			// codesystemView = ReactDOM.render(<Codesystem
