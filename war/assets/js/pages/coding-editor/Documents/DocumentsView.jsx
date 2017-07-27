@@ -37,7 +37,7 @@ export default class DocumentsView extends React.Component {
 			isExpanded: true
 		};
 
-		this.setupView(this.props.projectID, this.props.projectType, this.props.report );
+		this.setupView(this.props.projectID, this.props.projectType, this.props.report);
 
 		this.addDocument = this.addDocument.bind(this);
 		this.setActiveDocument = this.setActiveDocument.bind(this);
@@ -63,7 +63,7 @@ export default class DocumentsView extends React.Component {
 							_this.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
 						}
 						resolve();
-					//	$("#documentsLoadingDiv").addClass('hidden');
+						//	$("#documentsLoadingDiv").addClass('hidden');
 					}).catch(function (resp) {
 						reject();
 						//$("#documentsLoadingDiv").addClass('hidden');

@@ -6,8 +6,7 @@ import AdminStats from './AdminStats.jsx';
 export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 
 		if (this.props.account.isSignedIn()) {
 			$('#navAccount').show();
@@ -16,8 +15,8 @@ export default class Admin extends React.Component {
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">

@@ -19,9 +19,9 @@ export default class EditorCtrl {
 
 		// Make sure we're in standards mode.
 		var doc = this.iframe.contentDocument;
-		$("#editor").css({
-			height: $(window).height() - 52
-		});
+		// $("#editor").css({
+		// 	height: $(window).height() - 52
+		// });
 		if (doc.compatMode !== 'CSS1Compat') {
 			doc.open();
 			doc.write('<!DOCTYPE html><title></title>');

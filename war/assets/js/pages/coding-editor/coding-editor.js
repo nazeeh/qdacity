@@ -110,41 +110,41 @@ function toggleCodingView() {
 	}
 }
 
-window.onresize = resizeHandler;
+//window.onresize = resizeHandler;
 
 function resizeHandler() {
-	var filteredParagraphs = $('p').filter(function () {
-		return $(this).attr("falsenegcount") > 0;
-	}).css("backgroundColor", "yellow");
-	setTimeout(function () {
-		resizeElements();
-	}, 250);
+	// var filteredParagraphs = $('p').filter(function () {
+	// 	return $(this).attr("falsenegcount") > 0;
+	// }).css("backgroundColor", "yellow");
+	// setTimeout(function () {
+	// 	resizeElements();
+	// }, 250);
 }
 
 function resizeElements() {
-	var offsetFooter = 0;
-	if ($("#footer").is(":visible")) {
-		offsetFooter += 341;
-	}
-
-	var offsetEditMenu = 0;
-	if ($("#textdocument-menu").is(":visible")) {
-		offsetEditMenu += 45;
-	}
-	var editorHeight = $(window).height() - 52 - offsetFooter - offsetEditMenu;
-	$("#editor").css({
-		height: editorHeight
-	});
-	$("#umlEditorContainer").css({
-		height: editorHeight
-	});
-
-	var codesystemTreeOffset = 0;
-	var offset = $("#codesystemTree").offset();
-	if ($("#codesystemTree").offset()) codesystemTreeOffset = offset.top;
-	if (codesystemView != null) codesystemView.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
-
-	editorCtrl.addCodingBrackets();
+	// var offsetFooter = 0;
+	// if ($("#footer").is(":visible")) {
+	// 	offsetFooter += 341;
+	// }
+	//
+	// var offsetEditMenu = 0;
+	// if ($("#textdocument-menu").is(":visible")) {
+	// 	offsetEditMenu += 45;
+	// }
+	// var editorHeight = $(window).height() - 52 - offsetFooter - offsetEditMenu;
+	// $("#editor").css({
+	// 	height: editorHeight
+	// });
+	// $("#umlEditorContainer").css({
+	// 	height: editorHeight
+	// });
+	//
+	// var codesystemTreeOffset = 0;
+	// var offset = $("#codesystemTree").offset();
+	// if ($("#codesystemTree").offset()) codesystemTreeOffset = offset.top;
+	// if (codesystemView != null) codesystemView.setHeight($(window).height() - codesystemTreeOffset - offsetFooter);
+	//
+	// editorCtrl.addCodingBrackets();
 }
 
 function setupUI() {
@@ -218,7 +218,7 @@ function viewChanged(view) {
 
 	codesystemView.pageViewChanged(view);
 
-	resizeHandler();
+	//resizeHandler();
 }
 
 function showCodingView() {
@@ -226,17 +226,17 @@ function showCodingView() {
 	var activeCode = codesystemView.getSelected();
 
 	codeView.updateCode(activeCode);
-	resizeHandler();
+	//resizeHandler();
 }
 
-function showFooter() {
-	$("#footer").show("clip", {}, 200, resizeElements);
-}
-
-function hideCodingView() {
-	$("#footer").hide("clip", {}, 200, resizeElements);
-
-}
+// function showFooter() {
+// 	$("#footer").show("clip", {}, 200, resizeElements);
+// }
+//
+// function hideCodingView() {
+// 	$("#footer").hide("clip", {}, 200, resizeElements);
+//
+// }
 
 function updateSelectedCode(code, persist) {
 	codesystemView.updateSelected(code, persist);
