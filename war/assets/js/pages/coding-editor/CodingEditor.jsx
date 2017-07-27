@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
+import CodeView from './CodeView/CodeView.jsx';
 
 
 import EditorCtrl from './EditorCtrl';
@@ -76,6 +77,20 @@ export default class CodingEditor extends React.Component {
 
 	}
 
+	getCodeSystem() {
+		//return codesystemView.getCodesystem();
+	}
+
+	hideCodingView() {
+		$("#footer").hide("clip", {}, 200, resizeElements);
+
+	}
+
+
+	updateSelectedCode(code, persist) {
+		codesystemView.updateSelected(code, persist);
+		umlEditor.codeUpdated(code);
+	}
 
 	render(){
 		return(
@@ -203,11 +218,15 @@ export default class CodingEditor extends React.Component {
 
 		</div>
 	</div>
+		<CodeView
+			editorCtrl={this.state.editorCtrl}
+			documentsView={this.documentsViewRef}
+			updateSelectedCode={this.updateSelectedCode}
+			getCodeByCodeID={this.getCodeByCodeID}
+			getCodeSystem={this.getCodeSystem}
+			hideCodingView={this.hideCodingView}/>
 
-	<footer id="footer" className="footer">
-		<div id ="codeView"></div>
-	</footer>
-			</StyledCodingEditor>
+	</StyledCodingEditor>
 		);
 	}
 }

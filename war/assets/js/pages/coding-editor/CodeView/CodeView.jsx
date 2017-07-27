@@ -20,7 +20,7 @@ export default class CodeView extends React.Component {
 		super(props);
 		this.state = {
 			code: {},
-			documents: this.props.documentsView.getDocuments()
+			documents: []
 		};
 		this.tabChanged = this.tabChanged.bind(this);
 	}

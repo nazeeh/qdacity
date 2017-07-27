@@ -54,7 +54,7 @@ window.init = function () {
 
 
 	$('.tooltips').tooltipster();
-	$("#footer").hide();
+
 	$('#navAccount').hide();
 
 	var urlParams = URI(window.location.search).query(true);
