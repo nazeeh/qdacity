@@ -99,6 +99,7 @@ export default class UmlEditor extends React.Component {
 		this.metaModelLoaded = true;
 
 		if (this.codesystemLoaded  && !this.initialized) {
+			this.initialized = true;
 			this.initialize();
 		}
 	}
@@ -107,6 +108,7 @@ export default class UmlEditor extends React.Component {
 		this.codesystemLoaded = true;
 
 		if (this.metaModelLoaded && !this.initialized) {
+			this.initialized = true;
 			this.initialize();
 		}
 	}
