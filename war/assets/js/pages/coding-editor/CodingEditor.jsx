@@ -47,12 +47,12 @@ const StyledSideBar = styled.div `
 
 const StyledEditor = styled.div `
 	grid-area: editor;
-	height: calc(100vh - 350px );
 `;
 
 const StyledFooter = styled.div `
 	grid-area: footer;
 	display: ${props => props.showCodingView ? 'block' : 'none'} !important;
+	z-index: 1;
 `;
 
 const StyledTextEditor = styled.iframe `
