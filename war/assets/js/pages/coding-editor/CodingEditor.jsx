@@ -101,6 +101,8 @@ export default class CodingEditor extends React.Component {
 		this.selectionChanged = this.selectionChanged.bind(this);
 		this.updateSelectedCode = this.updateSelectedCode.bind(this);
 		this.viewChanged = this.viewChanged.bind(this);
+		this.getCodeSystem = this.getCodeSystem.bind(this);
+		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
 	}
 
 
@@ -117,7 +119,7 @@ export default class CodingEditor extends React.Component {
 	}
 
 	getCodeByCodeID(codeID) {
-		//return codesystemView.getCodeByCodeID(codeID);
+		return this.codesystemViewRef.getCodeByCodeID(codeID);
 	}
 
 	toggleCodingView() {
@@ -150,7 +152,7 @@ export default class CodingEditor extends React.Component {
 	}
 
 	getCodeSystem() {
-		//return codesystemView.getCodesystem();
+		return this.codesystemViewRef.getCodesystem();
 	}
 
 	hideCodingView() {
