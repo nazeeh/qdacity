@@ -25,6 +25,7 @@ import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpo
 
 const StyledUmlEditor = styled.div `
     height: inherit;
+    border-left: 1px solid #B0B0B0;
 `;
 
 export default class UmlEditor extends React.Component {
