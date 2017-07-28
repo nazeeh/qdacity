@@ -110,6 +110,9 @@ export default class CodingEditor extends React.Component {
 		this.getCodeSystem = this.getCodeSystem.bind(this);
 		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
 		this.showCodingView = this.showCodingView.bind(this);
+		this.insertCode = this.insertCode.bind(this);
+		this.removeCode = this.removeCode.bind(this);
+
 	}
 
 
@@ -142,11 +145,11 @@ export default class CodingEditor extends React.Component {
 	}
 
 	insertCode() {
-
+		this.umlEditorRef.codeUpdated(code);
 	}
 
 	removeCode() {
-
+		this.umlEditorRef.codeRemoved(code);
 	}
 
 	getCodeSystem() {
