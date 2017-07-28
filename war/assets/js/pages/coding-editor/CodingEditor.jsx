@@ -37,6 +37,7 @@ const StyledSettingsPanel = styled.div `
 `;
 
 const StyledEditableToggle = styled.a `
+	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
 	color: #000;
 `;
 
@@ -64,6 +65,11 @@ const StyledUMLEditor = styled.div `
 	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
 	display: ${props => (props.selectedEditor === PageView.UML) ? 'block' : 'none'} !important;
 `;
+
+const StyledDocumentsView = styled.div `
+	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
+`;
+
 
 export default class CodingEditor extends React.Component {
 	constructor(props) {
@@ -194,7 +200,7 @@ export default class CodingEditor extends React.Component {
 							<div >
 
 
-								<StyledEditableToggle id="btnEditToggle" className="btn btn-sm edit-toggle collapsed" data-toggle="collapse" data-target="#textdocument-menu">
+								<StyledEditableToggle selectedEditor={this.state.selectedEditor} id="btnEditToggle" className="btn btn-sm edit-toggle collapsed" data-toggle="collapse" data-target="#textdocument-menu">
 									<span className="edit-toggle-off">
 										<i className="fa fa-toggle-off fa-2x"></i>
 									</span>
@@ -213,9 +219,9 @@ export default class CodingEditor extends React.Component {
 				</div>
 				</div>
 				<div id="documents-ui" >
-					<div id="document-section" >
+					<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
 						<DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
-					</div>
+					</StyledDocumentsView>
 				</div>
 
 				<div id="codesystem-ui" >
