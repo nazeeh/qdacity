@@ -93,6 +93,7 @@ class Codesystem extends SimpleCodesystem {
 					});
 					$("#codesystemLoadingDiv").addClass("hidden");
 					_this.props.umlEditor.codesystemFinishedLoading();
+					_this.props.selectionChanged(selected);
 					resolve();
 				});
 			}
