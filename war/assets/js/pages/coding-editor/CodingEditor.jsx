@@ -26,6 +26,21 @@ const StyledCodingEditor = styled.div `
 		"footer footer";
 `;
 
+const StyledPanelHeader = styled.div `
+	text-align: center;
+	position:relative;
+	background-color: #e7e7e7;
+ `;
+
+const StyledSettingsPanel = styled.div `
+	background-color: #f8f8f8;
+`;
+
+const StyledEditableToggle = styled.a `
+	color: #000;
+`;
+
+
 const StyledSideBar = styled.div `
 	grid-area: sidebar;
 `;
@@ -171,15 +186,15 @@ export default class CodingEditor extends React.Component {
 							</div>
 
 							<div className="row no-gutters" >
-							<div id="settings">
-							<div>
-								<b>Settings</b>
-							</div>
+							<StyledSettingsPanel>
+							<StyledPanelHeader>
+								<b>Editor</b>
+							</StyledPanelHeader>
 							<PageViewChooser viewChanged={this.viewChanged} />
 							<div >
 
 
-								<a id="btnEditToggle" className="btn btn-sm edit-toggle collapsed" data-toggle="collapse" data-target="#textdocument-menu">
+								<StyledEditableToggle id="btnEditToggle" className="btn btn-sm edit-toggle collapsed" data-toggle="collapse" data-target="#textdocument-menu">
 									<span className="edit-toggle-off">
 										<i className="fa fa-toggle-off fa-2x"></i>
 									</span>
@@ -187,11 +202,11 @@ export default class CodingEditor extends React.Component {
 										<i className="fa fa-toggle-on fa-2x"></i>
 									</span>
 									<span > Document Editable</span>
-								</a>
+								</StyledEditableToggle>
 
 
 							</div>
-							</div>
+							</StyledSettingsPanel>
 						</div>
 					</div>
 				</div>
