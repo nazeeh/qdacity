@@ -254,7 +254,7 @@ class Codesystem extends SimpleCodesystem {
 							showFooter={this.props.showFooter}
 							key={"CS" + "_" + 0 + "_"  +index}
                             pageView={this.state.pageView}
-                            umlEditor={this.umlEditor}>
+                            umlEditor={this.props.umlEditor}>
 						</DragAndDropCode>
 			);
 		});

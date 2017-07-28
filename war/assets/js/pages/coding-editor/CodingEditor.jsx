@@ -162,7 +162,7 @@ export default class CodingEditor extends React.Component {
 
 	updateSelectedCode(code, persist) {
 		this.codesystemViewRef.updateSelected(code, persist);
-		//this.umlEditorRef.codeUpdated(code);
+		this.umlEditorRef.codeUpdated(code);
 	}
 
 	render() {
