@@ -10,7 +10,7 @@ public class DefaultSaturationParameters extends SaturationParameters {
 
 	//TODO these values are set randomly just for a first test!
 	//Document Changes
-	this.insertDocumentChangeWeight = 0.5;
+	this.insertDocumentChangeWeight = 0;
 	//Code Changes
 	this.insertCodeChangeWeight = 1.0;
 	this.updateCodeAuthorChangeWeight = 0.01;
@@ -34,7 +34,7 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	this.lastSatResults = 3;
 	
 	//TODO set them all!
-	this.insertDocumentSaturationMaximum = 0.5;
+	this.insertDocumentSaturationMaximum = 1;
 	//Code Changes
 	this.insertCodeSaturationMaximum = 1.0;
 	this.updateCodeAuthorSaturationMaximum = 0.01;
