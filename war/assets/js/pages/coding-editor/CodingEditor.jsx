@@ -102,6 +102,8 @@ export default class CodingEditor extends React.Component {
 			});
 		});
 
+
+
 		this.toggleCodingView = this.toggleCodingView.bind(this);
 		this.hideCodingView = this.hideCodingView.bind(this);
 		this.selectionChanged = this.selectionChanged.bind(this);
@@ -112,9 +114,15 @@ export default class CodingEditor extends React.Component {
 		this.showCodingView = this.showCodingView.bind(this);
 		this.insertCode = this.insertCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
+		this.resizeElements = this.resizeElements.bind(this);
+
+		window.onresize = this.resizeElements;
 
 	}
 
+	resizeElements(){
+		this.state.editorCtrl.addCodingBrackets();
+	}
 
 	componentDidMount() {
 		this.setState({
@@ -308,7 +316,6 @@ export default class CodingEditor extends React.Component {
 					getCodeSystem={this.getCodeSystem}
 					hideCodingView={this.hideCodingView}/>
 			</StyledFooter>
-
 		</StyledCodingEditor>
 		);
 	}
