@@ -206,6 +206,7 @@ export default class CodingEditor extends React.Component {
 				<div id="codesystem-ui" >
 					<Codesystem
 						ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
+						umlEditor = {this.umlEditorRef}
 						projectID={this.state.project.getId()}
 						projectType={this.state.project.getType()}
 						account={this.props.account}
@@ -266,7 +267,7 @@ export default class CodingEditor extends React.Component {
 					<StyledTextEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
 					</StyledTextEditor>
 					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
-						<UmlEditor codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />
+						<UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />
 					</StyledUMLEditor>
 				</div>
 

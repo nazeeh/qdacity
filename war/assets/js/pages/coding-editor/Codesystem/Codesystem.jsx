@@ -50,6 +50,8 @@ class Codesystem extends SimpleCodesystem {
 			codesystem: [],
 			height: "100px"
 		};
+		this.initUMLEditor = false;
+
 		this.relocateCode = this.relocateCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
@@ -90,7 +92,7 @@ class Codesystem extends SimpleCodesystem {
 						codesystemID: _this.props.codesystemId,
 					});
 					$("#codesystemLoadingDiv").addClass("hidden");
-
+					_this.props.umlEditor.codesystemFinishedLoading();
 					resolve();
 				});
 			}
@@ -258,8 +260,10 @@ class Codesystem extends SimpleCodesystem {
 		});
 	}
 
+
+
 	render() {
-		if (this.state.codesystemID != this.props.codesystemId) this.init(); // if codesystem ID changed, re-initialize
+		if (this.state.codesystemID != this.props.codesystemId) this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize
 		return (
 			<div>
 				<StyledEditorCtrlHeader >

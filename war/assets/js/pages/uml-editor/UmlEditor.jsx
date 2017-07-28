@@ -29,8 +29,7 @@ export default class UmlEditor extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.codesystemId = this.props.codesystemId;
-		this.codesystemView = this.props.codesystemView;
+		this.initialized = false;
 
 		this.umlGraphView = null;
 		this.toolbar = null;
@@ -46,6 +45,8 @@ export default class UmlEditor extends React.Component {
 
 		this.codesystemLoaded = false;
 		this.metamodelLoaded = false;
+
+		this.codesystemFinishedLoading = this.codesystemFinishedLoading.bind(this);
 	}
 
 	getToolbar() {
@@ -97,7 +98,7 @@ export default class UmlEditor extends React.Component {
 	metaModelFinishedLoading() {
 		this.metaModelLoaded = true;
 
-		if (this.codesystemLoaded) {
+		if (this.codesystemLoaded  && !this.initialized) {
 			this.initialize();
 		}
 	}
@@ -105,7 +106,7 @@ export default class UmlEditor extends React.Component {
 	codesystemFinishedLoading() {
 		this.codesystemLoaded = true;
 
-		if (this.metaModelLoaded) {
+		if (this.metaModelLoaded && !this.initialized) {
 			this.initialize();
 		}
 	}
@@ -139,7 +140,7 @@ export default class UmlEditor extends React.Component {
 					if (_this.umlGraphView.isCellUmlClass(cell)) {
 						const umlClass = _this.umlClassManager.getByNode(cell);
 
-						this.codesystemView.setSelected(umlClass.getCode());
+						this.props.codesystemView.setSelected(umlClass.getCode());
 					}
 				}
 			}
@@ -158,7 +159,7 @@ export default class UmlEditor extends React.Component {
 			}
 		}
 
-		this.codesystemView.getCodesystem().forEach(convertCodeIntoSimpleArray);
+		this.props.codesystemView.getCodesystem().forEach(convertCodeIntoSimpleArray);
 
 
 		let relations = [];
@@ -218,7 +219,7 @@ export default class UmlEditor extends React.Component {
 
 		console.log('Loading UmlCodePosition entries from the database...');
 
-		UmlCodePositionEndpoint.listCodePositions(this.codesystemId).then(function (resp) {
+		UmlCodePositionEndpoint.listCodePositions(this.props.codesystemId).then(function (resp) {
 			let umlCodePositions = resp.items || [];
 
 			console.log('Loaded ' + umlCodePositions.length + ' UmlCodePosition entries from the database. Found ' + _this.umlClassManager.size() + ' codes.');
@@ -253,7 +254,7 @@ export default class UmlEditor extends React.Component {
 
 							let umlCodePosition = {
 								'codeId': code.codeID,
-								'codesystemId': _this.codesystemId,
+								'codesystemId': _this.props.codesystemId,
 								'x': x,
 								'y': y
 							};
@@ -279,7 +280,7 @@ export default class UmlEditor extends React.Component {
 				// Apply layout
 				_this.umlGraphView.applyLayout();
 
-				// Add cells moved event listener 
+				// Add cells moved event listener
 				// This happens after apply layout - otherwise apply layout triggers the event
 				_this.initCellsMovedEventListener();
 
@@ -300,7 +301,7 @@ export default class UmlEditor extends React.Component {
 
 					umlCodePositions.push({
 						'codeId': code.codeID,
-						'codesystemId': _this.codesystemId,
+						'codesystemId': _this.props.codesystemId,
 						'x': x,
 						'y': y
 					});
@@ -393,7 +394,7 @@ export default class UmlEditor extends React.Component {
 
 			this.insertUnregisteredUmlCodePositions([{
 				'codeId': code.codeID,
-				'codesystemId': this.codesystemId,
+				'codesystemId': this.props.codesystemId,
 				'x': 0,
 				'y': 0
 			}]);
@@ -494,7 +495,7 @@ export default class UmlEditor extends React.Component {
 		console.log('Finished updating a code.');
 
 		// Select code if necessary
-		if (this.codesystemView.getSelected().codeID == code.codeID) {
+		if (this.props.codesystemView.getSelected().codeID == code.codeID) {
 			if (umlClass.getNode() != null) {
 				this.umlGraphView.selectCell(umlClass.getNode());
 			}
@@ -702,7 +703,7 @@ export default class UmlEditor extends React.Component {
 	overlayClickedClassField(cell) {
 		const _this = this;
 
-		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.codesystemView);
+		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.props.codesystemView);
 
 		addFieldModal.showModal().then(function (data) {
 			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
@@ -726,7 +727,7 @@ export default class UmlEditor extends React.Component {
 	overlayClickedClassMethod(cell) {
 		const _this = this;
 
-		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.codesystemView);
+		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.props.codesystemView);
 
 		addMethodModal.showModal().then(function (data) {
 			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
