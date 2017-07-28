@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components';
 
+import UmlEditor from '../uml-editor/UmlEditor.jsx';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import CodeView from './CodeView/CodeView.jsx';
@@ -41,6 +42,12 @@ const StyledFooter = styled.div `
 
 const StyledTextEditor = styled.iframe `
 	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
+	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
+`;
+
+const StyledUMLEditor = styled.div `
+	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
+	display: ${props => (props.selectedEditor === PageView.UML) ? 'block' : 'none'} !important;
 `;
 
 export default class CodingEditor extends React.Component {
@@ -56,7 +63,7 @@ export default class CodingEditor extends React.Component {
 		this.documentsViewRef = {};
 		this.codesystemViewRef = {};
 		this.umlEditorRef = {};
-
+		this.codeViewRef = {};
 		this.state = {
 			project: project,
 			editorCtrl: {},
@@ -256,15 +263,17 @@ export default class CodingEditor extends React.Component {
 						<input id="txtSizeSpinner"  />
 
 					</div>
-					<StyledTextEditor showCodingView={this.state.showCodingView} id="editor" >
+					<StyledTextEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
 					</StyledTextEditor>
-
-					<div id="umlEditorContainer"></div>
+					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
+						<UmlEditor codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />
+					</StyledUMLEditor>
 				</div>
 
 			</StyledEditor>
 			<StyledFooter  showCodingView={this.state.showCodingView}>
 				<CodeView
+					ref={(c) => {if (c) this.codeViewRef = c;}}
 					code={this.state.selectedCode}
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}
