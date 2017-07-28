@@ -274,6 +274,34 @@ export default class UmlGraphView extends React.Component {
 	initializeEvents() {
 		const _this = this;
 
+		// Mouse wheel
+		mxEvent.addMouseWheelListener(function (wheelevt) {
+			// Check if the target is the uml editor
+			let targetIsUmlEditor = false;
+
+			let currentNode = wheelevt.target;
+			while (currentNode != null) {
+				if (currentNode.id == 'umlEditorContainer') {
+					targetIsUmlEditor = true;
+					break;
+				}
+
+				currentNode = currentNode.parentNode;
+			}
+
+			// Zoom
+			if (targetIsUmlEditor) {
+				const deltaY = wheelevt.deltaY;
+
+				if (deltaY < 0) {
+					_this.zoomIn();
+				} else {
+					_this.zoomOut();
+				}
+			}
+		});
+
+		// Selection changed
 		let lastSelectedCells = [];
 
 		this.graph.getSelectionModel().addListener(mxEvent.CHANGE, function (sender, evt) {
