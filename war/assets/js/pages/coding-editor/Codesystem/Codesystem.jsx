@@ -254,7 +254,7 @@ class Codesystem extends SimpleCodesystem {
 							relocateCode={this.relocateCode}
 							showFooter={this.props.showFooter}
 							key={"CS" + "_" + 0 + "_"  +index}
-                            pageView={this.state.pageView}
+                            pageView={this.props.pageView}
                             umlEditor={this.props.umlEditor}>
 						</DragAndDropCode>
 			);
@@ -283,7 +283,7 @@ class Codesystem extends SimpleCodesystem {
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
                         umlEditorEnabled={this.props.umlEditorEnabled}
-                        pageView={this.state.pageView}>
+                        pageView={this.props.pageView}>
 					</CodesystemToolbar>
 				</StyledToolBar>
 				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>
