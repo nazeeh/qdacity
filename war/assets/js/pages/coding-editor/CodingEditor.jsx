@@ -103,6 +103,7 @@ export default class CodingEditor extends React.Component {
 		this.viewChanged = this.viewChanged.bind(this);
 		this.getCodeSystem = this.getCodeSystem.bind(this);
 		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
+		this.showCodingView = this.showCodingView.bind(this);
 	}
 
 
@@ -126,15 +127,6 @@ export default class CodingEditor extends React.Component {
 		this.setState({
 			showCodingView: !this.state.showCodingView
 		});
-		// if ($("#footer").is(":visible")) {
-		// 	hideCodingView();
-		// } else {
-		// 	showCodingView();
-		// }
-	}
-
-	showFooter() {
-		//$("#footer").show("clip", {}, 200, resizeElements);
 	}
 
 	selectionChanged(newCode) {
@@ -158,6 +150,12 @@ export default class CodingEditor extends React.Component {
 	hideCodingView() {
 		this.setState({
 			showCodingView: false
+		});
+	}
+
+	showCodingView() {
+		this.setState({
+			showCodingView: true
 		});
 	}
 
@@ -231,7 +229,7 @@ export default class CodingEditor extends React.Component {
 						toggleCodingView={this.toggleCodingView}
 						editorCtrl={this.state.editorCtrl}
 						umlEditorEnabled={this.state.project.isUmlEditorEnabled()}
-						showFooter={this.showFooter}
+						showFooter={this.showCodingView}
 						selectionChanged={this.selectionChanged}
 						insertCode={this.insertCode}
 						removeCode={this.removeCode}
