@@ -21,6 +21,8 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.maxZoomPercentage = 150;
+
 		this.umlEditor = this.props.umlEditor;
 
 		this.graph = null;
@@ -670,15 +672,25 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	zoomIn() {
-		this.graph.zoomIn();
+		this.zoom(this.graph.zoomFactor);
 	}
 
 	zoomOut() {
-		this.graph.zoomOut();
+		this.zoom(1 / this.graph.zoomFactor);
 	}
 
-	zoom(percentage) {
-		this.graph.zoomTo(percentage / 100.0, false);
+	zoomTo(percentage) {
+		this.zoom((percentage / 100) / this.graph.view.scale);
+	}
+
+	zoom(value) {
+		this.graph.zoom(value);
+
+		this.props.onZoom(this.graph.view.scale * 100);
+
+		if (this.graph.view.scale > this.maxZoomPercentage / 100) {
+			this.zoomTo(this.maxZoomPercentage);
+		}
 	}
 
 	isCellUmlClass(cell) {

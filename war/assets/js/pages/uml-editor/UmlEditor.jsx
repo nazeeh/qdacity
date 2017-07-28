@@ -854,11 +854,15 @@ export default class UmlEditor extends React.Component {
 		}
 	}
 
+	onZoom(percentage) {
+		this.umlEditor.toolbar.onZoom(percentage);
+	}
+
 	render() {
 		return (
 			<StyledUmlEditor>
                 <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditor={this} />
-                <UmlGraphView ref={(umlGraphView) => {this.umlGraphView = umlGraphView}} umlEditor={this} />
+                <UmlGraphView ref={(umlGraphView) => {this.umlGraphView = umlGraphView}} umlEditor={this} onZoom={this.onZoom} />
             </StyledUmlEditor>
 		);
 	}

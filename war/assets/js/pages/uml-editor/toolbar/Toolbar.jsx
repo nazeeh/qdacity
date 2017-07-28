@@ -10,6 +10,7 @@ export default class Toolbar extends React.Component {
 		super(props);
 
 		this.umlEditor = this.props.umlEditor;
+		this.zoomSelect = null;
 	}
 
 	getStyle() {
@@ -17,6 +18,10 @@ export default class Toolbar extends React.Component {
 			padding: '8px 20px 8px 20px',
 			borderBottom: '1px solid #c0c0c0'
 		};
+	}
+
+	onZoom(percentage) {
+		this.zoomSelect.onZoom(percentage);
 	}
 
 	render() {
@@ -28,7 +33,7 @@ export default class Toolbar extends React.Component {
 			<div style={style}>
     	        <ButtonZoomIn umlEditor={_this.umlEditor} />
                 <ButtonZoomOut umlEditor={_this.umlEditor} />
-                <ButtonZoomSelect umlEditor={_this.umlEditor} />
+                <ButtonZoomSelect ref={(zoomSelect) => {this.zoomSelect = zoomSelect}} umlEditor={_this.umlEditor} />
             </div>
 		);
 	}
