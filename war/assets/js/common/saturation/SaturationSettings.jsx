@@ -45,12 +45,10 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
                 }
             }
             rows.push(<tr key={i} id={rowID}>{cell}</tr>)
-
-            //TODO speichern?
         }
         return(<div>
             <p><b>Saturation Configuration</b></p>
-            <p>Default interval for saturation: <input id="interval" type="number" value="-1" min="1" max="20"  defaultValue={this.state.saturationParameters.lastSatResults} /> revisions</p>
+            <p>Default interval for saturation: <input id="saturation-interval" type="number" min="1" max="20"  defaultValue={this.state.saturationParameters.lastSatResults} /> revisions</p>
             <table id="saturationOptionsTable" className="display">
                 <thead>
                     <tr><th>Change</th><th>Weight in %</th><th>Saturation at XX%</th></tr>

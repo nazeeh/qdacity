@@ -6,25 +6,65 @@ export default class SaturationWeights {
     getNameAndWeightsArray() {
         var sp = this.saturationParameters;
         var saturationWeights = [
-            ['Applied Codes', sp.appliedCodesChangeWeight, sp.appliedCodesSaturationMaximum  ],
-            ['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight, sp.deleteCodeRelationShipSaturationMaximum  ],
-            ['Deleted Codes', sp.deleteCodeChangeWeight, sp.deleteCodeSaturationMaximum  ],
-            ['New Documents', sp.insertDocumentChangeWeight, sp.insertDocumentSaturationMaximum  ],
-            ['New Code Relationships', sp.insertCodeRelationShipChangeWeight, sp.insertCodeRelationShipSaturationMaximum  ],
-            ['New Codes', sp.insertCodeChangeWeight, sp.insertCodeSaturationMaximum  ],
-            ['Relocated Codes', sp.relocateCodeChangeWeight, sp.relocateCodeSaturationMaximum  ],
-            ['Code Author Changes', sp.updateCodeAuthorChangeWeight, sp.updateCodeAuthorSaturationMaximum  ],
-            ['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight, sp.updateCodeBookEntryDefinitionSaturationMaximum  ],
-            ['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight, sp.updateCodeBookEntryExampleSaturationMaximum  ],
-            ['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight, sp.updateCodeBookEntryShortDefinitionSaturationMaximum  ],
-            ['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight, sp.updateCodeBookEntryWhenNotToUseSaturationMaximum  ],
-            ['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight, sp.updateCodeBookEntryWhenToUseSaturationMaximum  ],
-            ['Code Color Changes', sp.updateCodeColorChangeWeight, sp.updateCodeColorSaturationMaximum  ],
-            ['Code Memo Changes', sp.updateCodeMemoChangeWeight, sp.updateCodeMemoSaturationMaximum  ],
-            ['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum  ]
+            ['Applied Codes', sp.appliedCodesChangeWeight, sp.appliedCodesSaturationMaximum],
+            ['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight, sp.deleteCodeRelationShipSaturationMaximum],
+            ['Deleted Codes', sp.deleteCodeChangeWeight, sp.deleteCodeSaturationMaximum],
+            ['New Documents', sp.insertDocumentChangeWeight, sp.insertDocumentSaturationMaximum],
+            ['New Code Relationships', sp.insertCodeRelationShipChangeWeight, sp.insertCodeRelationShipSaturationMaximum],
+            ['New Codes', sp.insertCodeChangeWeight, sp.insertCodeSaturationMaximum],
+            ['Relocated Codes', sp.relocateCodeChangeWeight, sp.relocateCodeSaturationMaximum],
+            ['Code Author Changes', sp.updateCodeAuthorChangeWeight, sp.updateCodeAuthorSaturationMaximum],
+            ['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight, sp.updateCodeBookEntryDefinitionSaturationMaximum],
+            ['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight, sp.updateCodeBookEntryExampleSaturationMaximum],
+            ['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight, sp.updateCodeBookEntryShortDefinitionSaturationMaximum],
+            ['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight, sp.updateCodeBookEntryWhenNotToUseSaturationMaximum],
+            ['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight, sp.updateCodeBookEntryWhenToUseSaturationMaximum],
+            ['Code Color Changes', sp.updateCodeColorChangeWeight, sp.updateCodeColorSaturationMaximum],
+            ['Code Memo Changes', sp.updateCodeMemoChangeWeight, sp.updateCodeMemoSaturationMaximum],
+            ['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum]
         ];
 
         return saturationWeights;
+    }
+
+    getPropertyNamesArrayNoSuffix() {
+        var propertyNames = [
+            'insertDocument',
+            'insertCode',
+            'updateCodeAuthor',
+            'updateCodeColor',
+            'updateCodeMemo',
+            'updateCodeName',
+            'updateCodeId',
+            'relocateCode',
+            'insertCodeRelationShip',
+            'deleteCodeRelationShip',
+            'deleteCode',
+            'appliedCodes',
+            'updateCodeBookEntryDefinition',
+            'updateCodeBookEntryExample',
+            'updateCodeBookEntryShortDefinition',
+            'updateCodeBookEntryWhenNotToUse',
+            'updateCodeBookEntryWhenToUse'
+        ];
+
+        return propertyNames;
+    }
+
+    getPropertyNamesChangeWeight() {
+        var propNames = this.getPropertyNamesArrayNoSuffix();
+        for (var i in propNames) {
+            propNames[i] = propNames[i] + 'ChangeWeight';
+        }
+        return propNames;
+    }
+
+    getPropertyNamesSaturationMaximum() {
+        var propNames = this.getPropertyNamesArrayNoSuffix();
+        for (var i in propNames) {
+            propNames[i] = propNames[i] + 'SaturationMaximum';
+        }
+        return propNames;
     }
 
     getNameAndWeightsAndSaturationArray(saturation) {
