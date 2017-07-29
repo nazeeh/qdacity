@@ -20,7 +20,7 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
     }
 
     toPercent(value) {
-        if(value!='undefined')
+        if (value != 'undefined')
             return (value * 100).toFixed(2);
         else
             return -1;
@@ -35,21 +35,22 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
         for (var i in saturationWeightsNames) {
             let rowID = `row${i}`
             let cell = []
-            for (var idx = 0; idx < 3; idx++) { 
+            for (var idx = 0; idx < 3; idx++) {
                 let cellID = `cell${i}-${idx}`
+                let inputId = cellID + '-input';
                 if (idx > 0) {
-                    cell.push(<td key={cellID} id={cellID}><input type="number"  min="0" max="100"  defaultValue="-1" value={this.toPercent(saturationWeightsNames[i][idx])} /></td>)
+                    cell.push(<td key={cellID} id={cellID}><input id={inputId} type="number"  min="0" max="100"  defaultValue={this.toPercent(saturationWeightsNames[i][idx])} /></td>)
                 } else {
                     cell.push(<td key={cellID} id={cellID}>{saturationWeightsNames[i][idx]}</td>)
                 }
             }
             rows.push(<tr key={i} id={rowID}>{cell}</tr>)
-            
+
             //TODO speichern?
         }
         return(<div>
             <p><b>Saturation Configuration</b></p>
-            <p>Default interval for saturation: <input id="interval" type="number" value="-1" min="1" max="20"  defaultValue="-1" value={this.state.saturationParameters.lastSatResults} /> revisions</p>
+            <p>Default interval for saturation: <input id="interval" type="number" value="-1" min="1" max="20"  defaultValue={this.state.saturationParameters.lastSatResults} /> revisions</p>
             <table id="saturationOptionsTable" className="display">
                 <thead>
                     <tr><th>Change</th><th>Weight in %</th><th>Saturation at XX%</th></tr>
