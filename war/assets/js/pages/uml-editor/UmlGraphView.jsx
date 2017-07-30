@@ -21,7 +21,18 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.umlClassHeaderHeight = 25;
+		this.umlClassFieldHeight = 19;
+		this.umlClassFieldsEmptyHeight = 10;
+		this.umlClassFieldsOffsetTop = 3;
+		this.umlClassFieldsOffsetBottom = 3;
+		this.umlClassMethodHeight = 19;
+		this.umlClassMethodsEmptyHeight = 10;
+		this.umlClassMethodsOffsetTop = 3;
+		this.umlClassMethodsOffsetBottom = 3;
+
 		this.maxZoomPercentage = 150;
+
 
 		this.umlEditor = this.props.umlEditor;
 
@@ -147,6 +158,7 @@ export default class UmlGraphView extends React.Component {
 		style[mxConstants.STYLE_STARTARROW] = 'none';
 		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
 		style[mxConstants.STYLE_ENDFILL] = 0;
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
 		stylesheet.putCellStyle(EdgeType.GENERALIZATION, style);
 
 		// Dependency
@@ -154,6 +166,7 @@ export default class UmlGraphView extends React.Component {
 		style[mxConstants.STYLE_STARTARROW] = 'none';
 		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
 		style[mxConstants.STYLE_DASHED] = 1;
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
 		stylesheet.putCellStyle(EdgeType.DEPENDENCY, style);
 
 		// Aggregation
@@ -162,6 +175,7 @@ export default class UmlGraphView extends React.Component {
 		style[mxConstants.STYLE_ENDARROW] = 'none';
 		style[mxConstants.STYLE_STARTFILL] = 0;
 		style[mxConstants.STYLE_STARTSIZE] = 20;
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
 		stylesheet.putCellStyle(EdgeType.AGGREGATION, style);
 
 		// Containment
@@ -170,18 +184,21 @@ export default class UmlGraphView extends React.Component {
 		style[mxConstants.STYLE_ENDARROW] = 'none';
 		style[mxConstants.STYLE_STARTFILL] = 1;
 		style[mxConstants.STYLE_STARTSIZE] = 20;
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
 		stylesheet.putCellStyle(EdgeType.CONTAINMENT, style);
 
 		// Association
 		style = {};
 		style[mxConstants.STYLE_STARTARROW] = 'none';
 		style[mxConstants.STYLE_ENDARROW] = 'none';
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
 		stylesheet.putCellStyle(EdgeType.ASSOCIATION, style);
 
 		// Directed Association
 		style = {};
 		style[mxConstants.STYLE_STARTARROW] = 'none';
 		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
 		stylesheet.putCellStyle(EdgeType.DIRECTED_ASSOCIATION, style);
 
 		// Realization
@@ -190,6 +207,7 @@ export default class UmlGraphView extends React.Component {
 		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
 		style[mxConstants.STYLE_ENDFILL] = 0;
 		style[mxConstants.STYLE_DASHED] = 1;
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
 		stylesheet.putCellStyle(EdgeType.REALIZATION, style);
 	}
 
@@ -302,6 +320,15 @@ export default class UmlGraphView extends React.Component {
 				}
 			}
 		});
+
+		// Is cell selectable
+		this.graph.isCellSelectable = (cell) => {
+			if (this.isCellFieldsContainer(cell) || this.isCellMethodsContainer(cell) || this.isCellSeparator(cell)) {
+				return false;
+			} else {
+				return mxGraph.prototype.isCellSelectable(cell);
+			}
+		};
 
 		// Selection changed
 		let lastSelectedCells = [];
@@ -491,16 +518,29 @@ export default class UmlGraphView extends React.Component {
 		let node;
 		try {
 			// TODO use proper style
-			let fields = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;line;html=1;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
+
+			// separator
+			let separator1 = new mxCell('', new mxGeometry(0, 0, 0, 0), 'strokeColor=black;movable=0;foldable=0;');
+			separator1.vertex = true;
+
+			// fields
+			let fields = new mxCell('', new mxGeometry(0, 0, 0, 0), 'strokeColor=none;selectable=0;foldable=0;movable=0;html=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
 			fields.vertex = true;
 
+			// separator
+			let separator2 = new mxCell('', new mxGeometry(0, 0, 0, 0), 'strokeColor=black;movable=0;foldable=0;');
+			separator2.vertex = true;
+
+			// methods
 			let methods = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;html=1;strokeColor=none;strokeWidth=0;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
 			methods.vertex = true;
 
-			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;';
+			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
 			let cell = new mxCell(name, new mxGeometry(0, 0, 160, 0), style);
 			cell.vertex = true;
+			cell.insert(separator1);
 			cell.insert(fields);
+			cell.insert(separator2);
 			cell.insert(methods);
 
 			this.graph.addCell(cell);
@@ -561,7 +601,7 @@ export default class UmlGraphView extends React.Component {
 		let field = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
 		field.vertex = true;
 
-		let fields = node.children[0];
+		let fields = this.getFieldsContainer(node);
 
 		this.graph.getModel().beginUpdate();
 
@@ -605,7 +645,7 @@ export default class UmlGraphView extends React.Component {
 		let method = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
 		method.vertex = true;
 
-		let methods = node.children[1];
+		let methods = this.getMethodsContainer(node);
 
 		this.graph.getModel().beginUpdate();
 
@@ -637,36 +677,66 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	recalculateNodeSize(node) {
-		// TODO use constants
-		let fields = node.children[0];
-		let fieldsHeight = 5 + 5 + 15 * fields.getChildCount();
+		const oldGeo = node.getGeometry();
 
-
-		let methods = node.children[1];
-		let methodsHeight = 5 + 5 + 15 * methods.getChildCount();
-
-
-		let oldGeo = node.getGeometry();
 		let width = oldGeo.width;
-		node.setGeometry(new mxGeometry(oldGeo.x, oldGeo.y, width, 30 + fieldsHeight + methodsHeight));
+		let currentHeight = 0;
 
-		fields.setGeometry(new mxGeometry(0, 30, width, fieldsHeight));
-		methods.setGeometry(new mxGeometry(0, 30 + fieldsHeight, width, methodsHeight));
+		// Header
+		currentHeight += this.umlClassHeaderHeight;
 
+		// Separator 1
+		const separator1 = this.getSeparator1(node);
+		separator1.setGeometry(new mxGeometry(0, currentHeight, width, 0.05));
+
+		currentHeight += 1;
+
+		// Fields
+		const fields = this.getFieldsContainer(node);
+
+		let fieldsHeight = this.umlClassFieldsOffsetTop + this.umlClassFieldsOffsetBottom + fields.getChildCount() * this.umlClassFieldHeight;
+		if (fields.getChildCount() == 0) {
+			fieldsHeight += this.umlClassFieldsEmptyHeight;
+		}
+
+		fields.setGeometry(new mxGeometry(0, currentHeight, width, fieldsHeight));
 
 		if (fields.children != null) {
 			for (let i = 0; i < fields.children.length; i++) {
 				let child = fields.children[i];
-				child.setGeometry(new mxGeometry(0, i * 15, width, 15));
+				child.setGeometry(new mxGeometry(0, this.umlClassFieldsOffsetTop + i * this.umlClassFieldHeight, width, this.umlClassFieldHeight));
 			}
 		}
+
+		currentHeight += fieldsHeight;
+
+		// Separator 2
+		const separator2 = this.getSeparator2(node);
+		separator2.setGeometry(new mxGeometry(0, currentHeight, width, 0.05));
+
+		currentHeight += 1;
+
+		// Methods
+		const methods = this.getMethodsContainer(node);
+
+		let methodsHeight = this.umlClassMethodsOffsetTop + this.umlClassMethodsOffsetBottom + methods.getChildCount() * this.umlClassMethodHeight;
+		if (methods.getChildCount() == 0) {
+			methodsHeight += this.umlClassMethodsEmptyHeight;
+		}
+
+		methods.setGeometry(new mxGeometry(0, currentHeight, width, methodsHeight));
 
 		if (methods.children != null) {
 			for (let i = 0; i < methods.children.length; i++) {
 				let child = methods.children[i];
-				child.setGeometry(new mxGeometry(0, i * 15, width, 15));
+				child.setGeometry(new mxGeometry(0, this.umlClassMethodsOffsetTop + i * this.umlClassMethodHeight, width, this.umlClassMethodHeight));
 			}
 		}
+
+		currentHeight += methodsHeight;
+
+		// Node
+		node.setGeometry(new mxGeometry(oldGeo.x, oldGeo.y, width, currentHeight));
 
 		this.graph.refresh(node);
 	}
@@ -694,7 +764,54 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	isCellUmlClass(cell) {
-		return cell.vertex == true && cell.parent == this.graph.getDefaultParent()
+		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent() && cell.children != null && cell.children.length == this.getUmlClassChildrenCount();
+	}
+
+	isCellSeparator(cell) {
+		const parent = cell.parent;
+		return cell.vertex == true && this.isCellUmlClass(parent) && (this.getSeparator1(parent) == cell || this.getSeparator2(parent) == cell);
+	}
+
+	isCellFieldsContainer(cell) {
+		const parent = cell.parent;
+		return cell.vertex == true && this.isCellUmlClass(parent) && this.getFieldsContainer(parent) == cell;
+	}
+
+	isCellMethodsContainer(cell) {
+		const parent = cell.parent;
+		return cell.vertex == true && this.isCellUmlClass(parent) && this.getMethodsContainer(parent) == cell;
+	}
+
+	getUmlClassChildrenCount() {
+		return 4;
+	}
+
+	getFieldsContainer(cell) {
+		if (!this.isCellUmlClass(cell)) {
+			return null;
+		}
+		return cell.children[1];
+	}
+
+	getMethodsContainer(cell) {
+		if (!this.isCellUmlClass(cell)) {
+			return null;
+		}
+		return cell.children[3];
+	}
+
+	getSeparator1(cell) {
+		if (!this.isCellUmlClass(cell)) {
+			return null;
+		}
+		return cell.children[0];
+	}
+
+	getSeparator2(cell) {
+		if (!this.isCellUmlClass(cell)) {
+			return null;
+		}
+		return cell.children[2];
 	}
 
 	render() {
