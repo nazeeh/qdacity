@@ -60,13 +60,11 @@ export default class ButtonZoomSelect extends React.Component {
                 </button>
                 <ul style={styles.dropDown} className='dropdown-menu'>
                     <li><a onClick={_this.buttonClicked.bind(_this, 10)} href='#'>10 %</a></li>
-                    <li><a onClick={_this.buttonClicked.bind(_this, 25)} href='#'>25 %</a></li>
-                    <li><a onClick={_this.buttonClicked.bind(_this, 33)} href='#'>33 %</a></li>
+                    <li><a onClick={_this.buttonClicked.bind(_this, 30)} href='#'>30 %</a></li>
                     <li><a onClick={_this.buttonClicked.bind(_this, 50)} href='#'>50 %</a></li>
-                    <li><a onClick={_this.buttonClicked.bind(_this, 66)} href='#'>66 %</a></li>
-                    <li><a onClick={_this.buttonClicked.bind(_this, 75)} href='#'>75 %</a></li>
+                    <li><a onClick={_this.buttonClicked.bind(_this, 80)} href='#'>80 %</a></li>
                     <li><a onClick={_this.buttonClicked.bind(_this, 100)} href='#'>100 %</a></li>
-                    <li><a onClick={_this.buttonClicked.bind(_this, 125)} href='#'>125 %</a></li>
+                    <li><a onClick={_this.buttonClicked.bind(_this, 120)} href='#'>120 %</a></li>
                     <li><a onClick={_this.buttonClicked.bind(_this, 150)} href='#'>150 %</a></li>
                 </ul>
             </div>

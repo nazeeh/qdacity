@@ -31,6 +31,7 @@ export default class UmlGraphView extends React.Component {
 		this.umlClassMethodsOffsetTop = 3;
 		this.umlClassMethodsOffsetBottom = 3;
 
+		this.minZoomPercentage = 10;
 		this.maxZoomPercentage = 150;
 
 
@@ -742,14 +743,20 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	zoomIn() {
-		this.zoom(this.graph.zoomFactor);
+		this.zoomTo(this.graph.view.scale * 100 + 10);
 	}
 
 	zoomOut() {
-		this.zoom(1 / this.graph.zoomFactor);
+		this.zoomTo(this.graph.view.scale * 100 - 10);
 	}
 
 	zoomTo(percentage) {
+		if (percentage < this.minZoomPercentage) {
+			percentage = this.minZoomPercentage;
+		} else if (percentage > this.maxZoomPercentage) {
+			percentage = this.maxZoomPercentage;
+		}
+
 		this.zoom((percentage / 100) / this.graph.view.scale);
 	}
 
@@ -757,6 +764,10 @@ export default class UmlGraphView extends React.Component {
 		this.graph.zoom(value);
 
 		this.props.onZoom(this.graph.view.scale * 100);
+
+		if (this.graph.view.scale < this.minZoomPercentage / 100) {
+			this.zoomTo(this.minZoomPercentage);
+		}
 
 		if (this.graph.view.scale > this.maxZoomPercentage / 100) {
 			this.zoomTo(this.maxZoomPercentage);
