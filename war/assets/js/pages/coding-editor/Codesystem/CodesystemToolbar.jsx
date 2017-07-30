@@ -59,7 +59,7 @@ export default class CodesystemToolbar extends React.Component {
 			CodesEndpoint.insertCode(code).then(function (resp) {
 				_this.props.insertCode(resp);
 			});
-                        this.sleep(600); //TODO remove (sleep)
+                        _this.sleep(600); //TODO remove (sleep)
                     } //TODO remove
                     } //TODO remove
 		});
