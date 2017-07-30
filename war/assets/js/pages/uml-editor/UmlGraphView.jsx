@@ -23,10 +23,14 @@ export default class UmlGraphView extends React.Component {
 
 		this.umlClassHeaderHeight = 25;
 		this.umlClassFieldHeight = 19;
+		this.umlClassFieldOffsetLeft = 3;
+		this.umlClassFieldOffsetRight = 3;
 		this.umlClassFieldsEmptyHeight = 10;
 		this.umlClassFieldsOffsetTop = 3;
 		this.umlClassFieldsOffsetBottom = 3;
 		this.umlClassMethodHeight = 19;
+		this.umlClassMethodOffsetLeft = 3;
+		this.umlClassMethodOffsetRight = 3;
 		this.umlClassMethodsEmptyHeight = 10;
 		this.umlClassMethodsOffsetTop = 3;
 		this.umlClassMethodsOffsetBottom = 3;
@@ -705,7 +709,7 @@ export default class UmlGraphView extends React.Component {
 		if (fields.children != null) {
 			for (let i = 0; i < fields.children.length; i++) {
 				let child = fields.children[i];
-				child.setGeometry(new mxGeometry(0, this.umlClassFieldsOffsetTop + i * this.umlClassFieldHeight, width, this.umlClassFieldHeight));
+				child.setGeometry(new mxGeometry(this.umlClassFieldOffsetLeft, this.umlClassFieldsOffsetTop + i * this.umlClassFieldHeight, width - this.umlClassFieldOffsetLeft - this.umlClassFieldOffsetRight, this.umlClassFieldHeight));
 			}
 		}
 
@@ -730,7 +734,7 @@ export default class UmlGraphView extends React.Component {
 		if (methods.children != null) {
 			for (let i = 0; i < methods.children.length; i++) {
 				let child = methods.children[i];
-				child.setGeometry(new mxGeometry(0, this.umlClassMethodsOffsetTop + i * this.umlClassMethodHeight, width, this.umlClassMethodHeight));
+				child.setGeometry(new mxGeometry(this.umlClassMethodOffsetLeft, this.umlClassMethodsOffsetTop + i * this.umlClassMethodHeight, width - this.umlClassMethodOffsetLeft - this.umlClassMethodOffsetRight, this.umlClassMethodHeight));
 			}
 		}
 
