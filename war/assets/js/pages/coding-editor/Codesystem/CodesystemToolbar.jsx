@@ -59,11 +59,20 @@ export default class CodesystemToolbar extends React.Component {
 			CodesEndpoint.insertCode(code).then(function (resp) {
 				_this.props.insertCode(resp);
 			});
-                        new Promise(resolve => setTimeout(resolve, 600)); //TODO remove (sleep)
+                        this.sleep(600); //TODO remove (sleep)
                     } //TODO remove
                     } //TODO remove
 		});
 	}
+        //TODO remove
+    sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds) {
+                break;
+            }
+        }
+    }
 
 	applyCode() {
 		var _this = this;
