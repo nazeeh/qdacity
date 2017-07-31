@@ -8,7 +8,7 @@ import UmlClass from './model/UmlClass.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
-import HoverButtons from './HoverButtons.jsx';
+import HoverButtons from './hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
