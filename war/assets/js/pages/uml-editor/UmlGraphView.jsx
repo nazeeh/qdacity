@@ -503,24 +503,26 @@ export default class UmlGraphView extends React.Component {
 			const cellGeometry = cell.getGeometry();
 			const cellState = this.graph.view.getState(cell);
 
-			let offsetX = 0;
-			let offsetY = 0;
+			let width = cellGeometry.width * this.graph.view.scale;
+			let height = cellGeometry.height * this.graph.view.scale;
+			let x = cellState.x;
+			let y = cellState.y;
 
 			// Panning offset
 			if (this.panning) {
-				offsetX = this.graph.panningHandler.dx;
-				offsetY = this.graph.panningHandler.dy;
+				x += this.graph.panningHandler.dx;
+				y += this.graph.panningHandler.dy;
 			}
 
 			// Additional offset (when moving cells)
 			if (dx != null) {
-				offsetX += dx;
+				x += dx;
 			}
 			if (dy != null) {
-				offsetY += dy;
+				y += dy;
 			}
 
-			this.hoverButtons.update(cellState.x + offsetX, cellState.y + offsetY, cellGeometry.width, cellGeometry.height, this.graph.view.scale);
+			this.hoverButtons.update(x, y, width, height, this.graph.view.scale);
 		}
 	}
 
