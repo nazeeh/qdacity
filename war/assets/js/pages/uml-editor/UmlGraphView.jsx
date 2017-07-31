@@ -8,12 +8,14 @@ import UmlClass from './model/UmlClass.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
+import HoverButtons from './HoverButtons.jsx';
+
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
 const StyledGraphView = styled.div `
     overflow: hidden;
     cursor: default;
-    height: 100%;
+    height: calc(100% - 51px);
 `;
 
 export default class UmlGraphView extends React.Component {
@@ -41,15 +43,20 @@ export default class UmlGraphView extends React.Component {
 
 		this.umlEditor = this.props.umlEditor;
 
+		this.umlGraphContainer = null;
+		this.hoverButtons = null;
+
 		this.graph = null;
 		this.layout = null;
-
-		this.panningHandler = null;
 
 		this.cellMarker = null;
 		this.connectionHandler = null;
 
 		this.connectionEdgeStartCell = null;
+
+		this.panning = false;
+
+		this.lastSelectedCells = null;
 	}
 
 	isConnectingEdge() {
@@ -61,7 +68,7 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	initialize() {
-		const container = this.refs.umlGraphContainer;
+		const container = this.umlGraphContainer;
 
 		// Disables the context menu
 		mxEvent.disableContextMenu(container);
@@ -293,7 +300,7 @@ export default class UmlGraphView extends React.Component {
 	initializePanning() {
 		this.graph.setPanning(true);
 
-		this.panningHandler = new mxPanningHandler();
+		new mxPanningHandler();
 	}
 
 	initializeEvents() {
@@ -326,6 +333,23 @@ export default class UmlGraphView extends React.Component {
 			}
 		});
 
+		// Cells moved
+		this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {
+			_this.updateHoverButtons(null, evt.properties.dx * _this.graph.view.scale, evt.properties.dy * _this.graph.view.scale);
+		});
+
+		// Panning
+		this.graph.panningHandler.addListener(mxEvent.PAN_START, function (sender, evt) {
+			_this.panning = true;
+		});
+		this.graph.panningHandler.addListener(mxEvent.PAN_END, function (sender, evt) {
+			_this.panning = false;
+			_this.updateHoverButtons();
+		});
+		this.graph.panningHandler.addListener(mxEvent.PAN, function (sender, evt) {
+			_this.updateHoverButtons();
+		});
+
 		// Is cell selectable
 		this.graph.isCellSelectable = (cell) => {
 			if (this.isCellFieldsContainer(cell) || this.isCellMethodsContainer(cell) || this.isCellSeparator(cell)) {
@@ -336,7 +360,7 @@ export default class UmlGraphView extends React.Component {
 		};
 
 		// Selection changed
-		let lastSelectedCells = [];
+		this.lastSelectedCells = [];
 
 		this.graph.getSelectionModel().addListener(mxEvent.CHANGE, function (sender, evt) {
 			var cells = sender.cells;
@@ -346,10 +370,11 @@ export default class UmlGraphView extends React.Component {
 			}
 
 			// remove last overlays
-			if (lastSelectedCells != null) {
-				lastSelectedCells.forEach((cell) => {
+			if (_this.lastSelectedCells != null) {
+				_this.lastSelectedCells.forEach((cell) => {
 					_this.graph.removeCellOverlays(cell);
 				});
+				_this.hoverButtons.hide();
 			}
 
 			// display overlay if one node selected
@@ -357,6 +382,9 @@ export default class UmlGraphView extends React.Component {
 				let cell = cells[0];
 
 				if (_this.isCellUmlClass(cell)) {
+					_this.hoverButtons.show(cell);
+					_this.updateHoverButtons(cell);
+
 					let overlays = _this.graph.getCellOverlays(cell);
 
 					if (overlays == null) {
@@ -442,7 +470,7 @@ export default class UmlGraphView extends React.Component {
 				}
 			}
 
-			lastSelectedCells = cells.slice(); // use a copy
+			_this.lastSelectedCells = cells.slice(); // use a copy
 		});
 	}
 
@@ -463,6 +491,36 @@ export default class UmlGraphView extends React.Component {
 			this.layout.execute(parent);
 		} finally {
 			this.graph.getModel().endUpdate();
+		}
+	}
+
+	updateHoverButtons(cell, dx, dy) {
+		if (cell == null && this.lastSelectedCells != null && this.lastSelectedCells.length == 1) {
+			cell = this.lastSelectedCells[0];
+		}
+
+		if (cell != null) {
+			const cellGeometry = cell.getGeometry();
+			const cellState = this.graph.view.getState(cell);
+
+			let offsetX = 0;
+			let offsetY = 0;
+
+			// Panning offset
+			if (this.panning) {
+				offsetX = this.graph.panningHandler.dx;
+				offsetY = this.graph.panningHandler.dy;
+			}
+
+			// Additional offset (when moving cells)
+			if (dx != null) {
+				offsetX += dx;
+			}
+			if (dy != null) {
+				offsetY += dy;
+			}
+
+			this.hoverButtons.update(cellState.x + offsetX, cellState.y + offsetY, cellGeometry.width, cellGeometry.height, this.graph.view.scale);
 		}
 	}
 
@@ -771,11 +829,15 @@ export default class UmlGraphView extends React.Component {
 
 		if (this.graph.view.scale < this.minZoomPercentage / 100) {
 			this.zoomTo(this.minZoomPercentage);
+			return;
 		}
 
 		if (this.graph.view.scale > this.maxZoomPercentage / 100) {
 			this.zoomTo(this.maxZoomPercentage);
+			return;
 		}
+
+		this.updateHoverButtons();
 	}
 
 	isCellUmlClass(cell) {
@@ -830,10 +892,13 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	render() {
-		// mxGraph requires an element that is not a styled-component            
+		const _this = this;
+
+		// mxGraph requires an element that is not a styled-component
 		return (
 			<StyledGraphView>
-                <div ref="umlGraphContainer" style={{ height: '100%' }}></div>
+                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%' }}></div>
+                <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}}></HoverButtons>
             </StyledGraphView>
 		);
 	}
