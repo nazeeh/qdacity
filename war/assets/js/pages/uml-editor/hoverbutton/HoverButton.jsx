@@ -74,6 +74,11 @@ export default class HoverButton extends React.Component {
 		const [x, y, width, height] = this.getBounds();
 		const scale = this.props.scale;
 
+		// Dont display if out of bounds
+		if (x < 0 || y < this.getOffsetTop()) {
+			return null;
+		}
+
 		return (
 			<StyledButton x={x} y={y} width={width} height={height} scale={scale} onClick={this.onClick}>
 		        {this.renderContent(x, y, width, height)}
