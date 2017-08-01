@@ -1,6 +1,6 @@
 import styles from './styles.css'
 import CustomForm from '../../common/modals/CustomForm';
-import UserEndpoint from '../../common/endpoints/UserEndpoint';
+
 
 export default class UserListCtrl extends React.Component {
 	constructor(props) {
@@ -10,7 +10,8 @@ export default class UserListCtrl extends React.Component {
 			test: this.props.test
 		};
 		this.showUserInfo = this.showUserInfo.bind(this);
-		this.updateUser = this.updateUser.bind(this);
+		this.removeUser = this.removeUser.bind(this);
+
 	}
 
 	showUserInfo() {
@@ -22,7 +23,7 @@ export default class UserListCtrl extends React.Component {
 		modal.addTextInput('email', "Email", '', user.email);
 		modal.addSelect('type', ["USER", "ADMIN"], "Type", user.type);
 		modal.showModal().then(function (data) {
-			_this.updateUser(data)
+			_this.props.updateUser(data)
 		});
 	}
 
@@ -30,27 +31,20 @@ export default class UserListCtrl extends React.Component {
 		this.state.user = user;
 	}
 
-	updateUser(basicInfo) {
-		var user = this.props.user;
-		user.givenName = basicInfo.firstName;
-		user.surName = basicInfo.lastName;
-		user.email = basicInfo.email;
-		user.type = basicInfo.type;
-
-		UserEndpoint.updateUser(user).then(function (resp) {});
+	removeUser(){
+		this.props.removeUser(this.props.user.id);
 	}
-
 
 	render() {
 		var _this = this;
 		var classes = 'btnUpdateDoc ' + styles.block;
 		return (
-			<div className={styles.center}> 
+			<div className={styles.center}>
 	      	<div className={classes}>
 				<a id="btnUserInfo" className="btn btn-default" onClick={_this.showUserInfo.bind(null, null)}>
 					<i className="fa fa-pencil fa-1x"></i>
 				</a>
-				<a id="btnRemoveUser" className="btn btn-default" href="#">
+				<a id="btnRemoveUser" className="btn btn-default" href="#" onClick={this.removeUser}>
 					<i className="fa fa-trash fa-1x"></i>
 				</a>
 			</div>

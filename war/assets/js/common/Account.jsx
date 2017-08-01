@@ -126,7 +126,7 @@ export default class Account extends React.Component {
 											<span id="currentUserName">{this.state.name}</span>
 											<p id="currentUserEmail" className="text-muted small">{this.state.email}</p>
 											<div className="divider"></div>
-											<a href="personal-dashboard.html" className="btn btn-primary btn-sm active">Personal Dashboard</a>
+											<a href="PersonalDashboard" className="btn btn-primary btn-sm active">Personal Dashboard</a>
 										</div>
 									</div>
 								</div>
