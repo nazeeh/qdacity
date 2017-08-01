@@ -440,16 +440,14 @@ export default class UmlGraphView extends React.Component {
 			this.hoverButtons.update(x, y, width, height, this.graph.view.scale);
 		}
 	}
-	
+
 	startConnecting(edgeType) {
-        let edge = this.graph.createEdge(null, null, null, null, null, edgeType);
-        let edgeState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
-        
-        let cellState = this.graph.getView().getState(this.graph.getSelectionCell(), true);
-        
-        this.connectionHandler.start(cellState, 0, 0, edgeState);
-        
-        this.graph.removeCellOverlays(cell);
+		let edge = this.graph.createEdge(null, null, null, null, null, edgeType);
+		let edgeState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
+
+		let cellState = this.graph.getView().getState(this.graph.getSelectionCell(), true);
+
+		this.connectionHandler.start(cellState, 0, 0, edgeState);
 	}
 
 	resetConnectingEdge() {
