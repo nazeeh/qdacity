@@ -193,7 +193,7 @@ export default class CodingEditor extends React.Component {
 					<div >
 
 						<div >
-							<ProjectDashboardBtn project={this.state.project}/>
+							<ProjectDashboardBtn project={this.state.project} history={this.props.history}/>
 							<div id="agreementMapSettings" className="hidden">
 								<p>
 								  <span>Showing False Negatives >= </span>

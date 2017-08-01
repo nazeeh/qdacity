@@ -12,11 +12,14 @@ export default class ProjectDashboardBtn extends React.Component {
 		};
 	}
 
+	projectDashboardBtnClick(prj){
+		this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
+	}
 
 	render(){
 		return(
 			<div className="list-group">
-				<StyledPrjDasboardBtn className="list-group-item clickable" href={"ProjectDashboard?project="+ this.props.project.getId() +"&type="+ this.props.project.getType()}>
+				<StyledPrjDasboardBtn className="list-group-item clickable" onClick={() => {this.projectDashboardBtnClick(this.props.project);}}>
 					<i className="fa fa-home fa-fw "></i>
 					Project Dashboard
 				</StyledPrjDasboardBtn>
