@@ -37,7 +37,7 @@ window.init = function () {
 				<Router>
 				<div>
 					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
-					<Route path="/ProjectDashboard" render={()=><ProjectDashboard account={account} />}/>
+					<Route path="/ProjectDashboard" render={(props)=><ProjectDashboard account={account} {...props} />}/>
 					<Route path="/Admin" render={()=><Admin account={account} />}/>
 					<Route path="/CodingEditor" render={()=><CodingEditor account={account}/>}/>
 					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
