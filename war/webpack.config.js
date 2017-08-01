@@ -8,7 +8,6 @@ module.exports = {
 		'index' : './assets/js/pages/index/index.js',
 		'coding-editor' : './assets/js/pages/coding-editor/coding-editor.js',
 		'admin' : './assets/js/pages/admin/admin.js',
-		'uml-editor' : './assets/js/pages/uml-editor/uml-editor.js',
     },
 	resolve: {
     alias: {

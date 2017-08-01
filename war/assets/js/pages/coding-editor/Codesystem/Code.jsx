@@ -10,6 +10,9 @@ import {
 	DropTarget
 } from 'react-dnd';
 
+import {
+	StyledCode
+} from './SimpleCode.jsx';
 import SimpleCode from './SimpleCode.jsx';
 
 const codeSource = {
@@ -52,6 +55,11 @@ function collectTarget(connect, monitor) {
 	};
 }
 
+const AdvancedStyledCode = StyledCode.extend `
+    font-weight: ${props => props.highlightNode ? 'bold' : 'normal'};
+    color: ${props => props.selected ? (props.highlightNode ? '#ffaa00' : '#fff') : (props.highlightNode ? '#ffaa00' : '#000')};
+`;
+
 const StyledCodingBubble = styled.span `
 	background-color: rgb(231, 231, 231);
 	border: 1px solid rgb(187, 187, 187);
@@ -82,22 +90,39 @@ class Code extends SimpleCode {
 		);
 	}
 
-	renderChild(childCode, level, index) {
+	renderStyledNode(selected, level, className, key, highlightNode, onClick) {
+		return (
+			<AdvancedStyledCode
+                selected={selected}
+                highlightNode={highlightNode}
+                level={level}
+                className={className}
+                key={key}
+                onClick={onClick}
+                >
+                {this.renderExpander(this.props.node)}
+                {this.renderNodeIcon()}
+                {this.renderNodeName()}
+                {this.renderCodingCount()}
+            </AdvancedStyledCode>
+		);
+	}
+
+	renderChildSimple(childCode, level, key) {
 		return (
 			<DragAndDropCode
-					showSimpleView={this.props.showSimpleView}
-					documentsView={this.props.documentsView}
-					level={level + 1}
-					node={childCode}
-					selected={this.props.selected}
-					setSelected={this.props.setSelected}
-					relocateCode={this.props.relocateCode}
-					showFooter={this.props.showFooter}
-					key={"CS" + "_" + level+ "_" +index}
-		            pageView={this.props.pageView}
-		            umlEditor={this.props.umlEditor}
-				>
-				</DragAndDropCode>
+                    showSimpleView={this.props.showSimpleView}
+                    documentsView={this.props.documentsView}
+                    level={level}
+                    node={childCode}
+                    selected={this.props.selected}
+                    setSelected={this.props.setSelected}
+                    relocateCode={this.props.relocateCode}
+                    showFooter={this.props.showFooter}
+                    key={key}
+		            shouldHighlightNode={this.props.shouldHighlightNode}
+                >
+                </DragAndDropCode>
 		);
 	}
 

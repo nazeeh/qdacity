@@ -27,7 +27,6 @@ export default class CodesystemToolbar extends React.Component {
 		this.insertCode = this.insertCode.bind(this);
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
-		this.openUMLEditor = this.openUMLEditor.bind(this);
 	}
 
 	removeCode() {
@@ -86,10 +85,6 @@ export default class CodesystemToolbar extends React.Component {
 		});
 	}
 
-	openUMLEditor() {
-		window.location.href = 'uml-editor.html?project=' + this.props.projectID + '&type=' + this.props.projectType;
-	}
-
 	splitupCoding(selection, codeID) {
 		var _this = this;
 		var promise = new Promise(
@@ -113,17 +108,6 @@ export default class CodesystemToolbar extends React.Component {
 		);
 
 		return promise;
-	}
-
-	renderUmlEditorBtn() {
-		if (!this.props.umlEditorEnabled) return "";
-		return (
-			<StyledBtnGroup className="btn-group">
-				<a className="btn btn-default" onClick={this.openUMLEditor}>
-					<i className="fa fa-external-link fa-1x"></i>
-				</a>
-			</StyledBtnGroup>
-		);
 	}
 
 	renderAddRemoveCodeBtn() {
@@ -172,7 +156,6 @@ export default class CodesystemToolbar extends React.Component {
 					</a>
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}
-				{this.renderUmlEditorBtn()}
 			</StyledToolBar>
 		);
 	}
