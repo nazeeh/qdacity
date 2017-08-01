@@ -10,7 +10,7 @@ export default class ChangeMetaModelButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		alert('CLICKED');
+		this.props.umlEditor.overlayClickedMetaModel(this.props.cell);
 	}
 
 	getImageClassName() {

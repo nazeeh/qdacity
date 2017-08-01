@@ -31,7 +31,7 @@ export default class HoverButton extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.onClick = this.onClick.bind();
+		this.onClick = this.onClick.bind(this);
 	}
 
 	onClick() {
