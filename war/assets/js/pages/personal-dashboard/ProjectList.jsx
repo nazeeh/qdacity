@@ -33,6 +33,7 @@ export default class ProjectList extends React.Component {
 		this.updateSearch = this.updateSearch.bind(this);
 		this.showNewProjectModal = this.showNewProjectModal.bind(this);
 		this.createNewProject = this.createNewProject.bind(this);
+		this.editorClick = this.editorClick.bind(this);
 	}
 
 	init() {
@@ -152,6 +153,11 @@ export default class ProjectList extends React.Component {
 		}
 	}
 
+	editorClick(e, prj, index){
+		e.stopPropagation();
+		this.props.history.push('/CodingEditor?project=' + prj.id + '&type=' + prj.type);
+	}
+
 	render() {
 		var _this = this;
 
@@ -210,7 +216,7 @@ export default class ProjectList extends React.Component {
 						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
 						<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
 					</StyledListItemBtn>
-					<StyledListItemBtn href={"coding-editor.html?project="+project.id+"&type="+project.type} className=" btn  fa-stack fa-lg" >
+					<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn  fa-stack fa-lg" >
 						<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
 						<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
 					</StyledListItemBtn>

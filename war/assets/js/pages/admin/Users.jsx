@@ -49,8 +49,8 @@ export default class Users extends React.Component {
 
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<div className="box box-default">
 				<div className="box-header with-border">
 					<h3 className="box-title">Users</h3>

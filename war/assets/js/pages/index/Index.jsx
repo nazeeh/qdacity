@@ -5,8 +5,7 @@ import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
 export default class Index extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 
 		if (this.props.account.isSignedIn()) {
 			$('#navAccount').hide();

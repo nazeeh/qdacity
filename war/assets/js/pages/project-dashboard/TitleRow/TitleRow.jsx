@@ -40,7 +40,7 @@ export default class TitleRow extends React.Component {
 				</StyledProjectName>
 
 				<SettingsBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner} />
-				<CodingEditorBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner}  isValidationCoder={this.props.isValidationCoder} />
+				<CodingEditorBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner}  isValidationCoder={this.props.isValidationCoder} history={this.props.history}/>
           </h2>
 		);
 	}
