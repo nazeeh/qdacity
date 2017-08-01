@@ -26,6 +26,12 @@ const StyledCodingEditor = styled.div `
 		"footer footer";
 `;
 
+const StyledTextEditorMenu = styled.div `
+	text-align: center;
+	padding-top: 10px;
+	background-color: #e7e7e7;
+`
+
 const StyledPageViewChooser = styled.div `
 	display: ${props => (props.umlEditorEnabled) ? 'block' : 'none'} !important;
 `;
@@ -263,7 +269,7 @@ export default class CodingEditor extends React.Component {
 			<StyledEditor>
 
 				<div id="textdocument-ui">
-					<div id="textdocument-menu" className="collapse" aria-expanded="false" >
+					<StyledTextEditorMenu id="textdocument-menu" className="collapse" aria-expanded="false" >
 
 
 						<a id="btnTxtSave" className="btn btn-default btn-default" >
@@ -301,7 +307,7 @@ export default class CodingEditor extends React.Component {
 						<label >Font Size: </label>
 						<input id="txtSizeSpinner"  />
 
-					</div>
+					</StyledTextEditorMenu>
 					<StyledTextEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
 					</StyledTextEditor>
 					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
