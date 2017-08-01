@@ -372,9 +372,6 @@ export default class UmlGraphView extends React.Component {
 
 			// remove last overlays
 			if (_this.lastSelectedCells != null) {
-				_this.lastSelectedCells.forEach((cell) => {
-					_this.graph.removeCellOverlays(cell);
-				});
 				_this.hoverButtons.hide();
 			}
 
@@ -385,89 +382,6 @@ export default class UmlGraphView extends React.Component {
 				if (_this.isCellUmlClass(cell)) {
 					_this.hoverButtons.show(cell);
 					_this.updateHoverButtons(cell);
-
-					let overlays = _this.graph.getCellOverlays(cell);
-
-					if (overlays == null) {
-						// Overlay MetaModel
-						var overlayMetaModel = new mxCellOverlay(new mxImage('assets/img/overlayButtonMetaModel.png', 34, 30), 'Edit MetaModel', mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP, new mxPoint(17, -22));
-						overlayMetaModel.cursor = 'pointer';
-
-						overlayMetaModel.addListener(mxEvent.CLICK, function (sender, evt2) {
-							_this.umlEditor.overlayClickedMetaModel(cell);
-						});
-
-						_this.graph.addCellOverlay(cell, overlayMetaModel);
-
-						// Overlay AddField
-						var overlayAddField = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new field', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-54, -22));
-						overlayAddField.cursor = 'pointer';
-
-						overlayAddField.addListener(mxEvent.CLICK, function (sender, evt2) {
-							_this.umlEditor.overlayClickedClassField(cell);
-						});
-
-						_this.graph.addCellOverlay(cell, overlayAddField);
-
-						// Overlay AddMethod
-						var overlayAddMethod = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddMethod.png', 31, 30), 'Add new method', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(-15, -22));
-						overlayAddMethod.cursor = 'pointer';
-
-						overlayAddMethod.addListener(mxEvent.CLICK, function (sender, evt2) {
-							_this.umlEditor.overlayClickedClassMethod(cell);
-						});
-
-						_this.graph.addCellOverlay(cell, overlayAddMethod);
-
-						// Overlay AddEdge
-						var overlayAddEdge = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new edge', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(23, 15));
-						overlayAddEdge.cursor = 'pointer';
-
-						overlayAddEdge.addListener(mxEvent.CLICK, function (sender, evt2) {
-							const handleClick = function (edgeType) {
-								let edge = _this.graph.createEdge(null, null, null, null, null, edgeType);
-								let edgeState = new mxCellState(_this.graph.view, edge, _this.graph.getCellStyle(edge));
-
-								let cellState = _this.graph.getView().getState(_this.graph.getSelectionCell(), true);
-
-								_this.connectionHandler.start(cellState, 0, 0, edgeState);
-
-								_this.graph.removeCellOverlays(cell);
-							};
-
-							// Overlay AddGeneralization
-							var overlayAddGeneralization = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new generalization', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 50));
-							overlayAddGeneralization.cursor = 'pointer';
-
-							overlayAddGeneralization.addListener(mxEvent.CLICK, function (sender, evt2) {
-								handleClick(EdgeType.GENERALIZATION);
-							});
-
-							_this.graph.addCellOverlay(cell, overlayAddGeneralization);
-
-							// Overlay AddAggregation
-							var overlayAddAggregation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new aggregation', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, 15));
-							overlayAddAggregation.cursor = 'pointer';
-
-							overlayAddAggregation.addListener(mxEvent.CLICK, function (sender, evt2) {
-								handleClick(EdgeType.AGGREGATION);
-							});
-
-							_this.graph.addCellOverlay(cell, overlayAddAggregation);
-
-							// Overlay AddAssociation
-							var overlayAddAssociation = new mxCellOverlay(new mxImage('assets/img/overlayButtonAddField.png', 31, 30), 'Add new association', mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP, new mxPoint(62, -20));
-							overlayAddAssociation.cursor = 'pointer';
-
-							overlayAddAssociation.addListener(mxEvent.CLICK, function (sender, evt2) {
-								handleClick(EdgeType.DIRECTED_ASSOCIATION);
-							});
-
-							_this.graph.addCellOverlay(cell, overlayAddAssociation);
-						});
-
-						_this.graph.addCellOverlay(cell, overlayAddEdge);
-					}
 				}
 			}
 
@@ -525,6 +439,17 @@ export default class UmlGraphView extends React.Component {
 
 			this.hoverButtons.update(x, y, width, height, this.graph.view.scale);
 		}
+	}
+	
+	startConnecting(edgeType) {
+        let edge = this.graph.createEdge(null, null, null, null, null, edgeType);
+        let edgeState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
+        
+        let cellState = this.graph.getView().getState(this.graph.getSelectionCell(), true);
+        
+        this.connectionHandler.start(cellState, 0, 0, edgeState);
+        
+        this.graph.removeCellOverlays(cell);
 	}
 
 	resetConnectingEdge() {
