@@ -8,6 +8,7 @@ import Index from './Index.jsx';
 import PersonalDashboard from "../personal-dashboard/PersonalDashboard.jsx"
 import ProjectDashboard from "../project-dashboard/ProjectDashboard.jsx"
 import Admin from '../admin/Admin.jsx';
+import CodingEditor from '../coding-editor/CodingEditor.jsx';
 
 import Account from '../../common/Account.jsx';
 
@@ -38,6 +39,7 @@ window.init = function () {
 					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
 					<Route path="/ProjectDashboard" render={()=><ProjectDashboard account={account} />}/>
 					<Route path="/Admin" render={()=><Admin account={account} />}/>
+					<Route path="/CodingEditor" render={()=><CodingEditor account={account}/>}/>
 					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
 				</div>
 			</Router>, document.getElementById('indexContent'));
