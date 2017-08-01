@@ -10,7 +10,9 @@ export default class AddEdgeButton extends ImageHoverButton {
 	}
 
 	onClick() {
-
+		this.props.hoverButtons.getAddEdgeAggregationButton().show();
+		this.props.hoverButtons.getAddEdgeGeneralizationButton().show();
+		this.props.hoverButtons.getAddEdgeAssociationButton().show();
 	}
 
 	getImageClassName() {

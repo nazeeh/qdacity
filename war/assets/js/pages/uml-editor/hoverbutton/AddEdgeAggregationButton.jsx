@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import {
-    EdgeType
+	EdgeType
 } from '../EdgeType.js';
 
 import ImageHoverButton from './ImageHoverButton.jsx';
@@ -13,9 +13,9 @@ export default class AddEdgeAggregationButton extends ImageHoverButton {
 		super(props);
 	}
 
-    onClick() {
-        this.props.umlEditor.getUmlGraphView().startConnecting(EdgeType.AGGREGATION);
-    }
+	onClick() {
+		this.props.umlEditor.getUmlGraphView().startConnecting(EdgeType.AGGREGATION);
+	}
 
 	getImageClassName() {
 		return 'fa-plus';
@@ -28,10 +28,10 @@ export default class AddEdgeAggregationButton extends ImageHoverButton {
 		const sizeY = 32;
 
 		const offsetToNode = 6;
-        const offsetToButton = 6;
+		const offsetToButton = 6;
 
 		const x = this.props.x + this.props.width + offsetToNode + sizeX * this.props.scale + offsetToButton * this.props.scale;
-		const y = this.props.y + offsetTop;
+		const y = this.props.y + offsetTop - offsetToButton * this.props.scale - sizeY * this.props.scale;
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
 

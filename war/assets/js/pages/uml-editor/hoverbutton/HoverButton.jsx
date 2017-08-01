@@ -31,7 +31,23 @@ export default class HoverButton extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.state = {
+			show: this.props.show != null ? this.props.show : true
+		};
+
 		this.onClick = this.onClick.bind(this);
+	}
+
+	show() {
+		this.setState({
+			show: true
+		});
+	}
+
+	hide() {
+		this.setState({
+			show: false
+		});
 	}
 
 	onClick() {
@@ -51,6 +67,10 @@ export default class HoverButton extends React.Component {
 	}
 
 	render() {
+		if (!this.state.show) {
+			return null;
+		}
+
 		const [x, y, width, height] = this.getBounds();
 		const scale = this.props.scale;
 

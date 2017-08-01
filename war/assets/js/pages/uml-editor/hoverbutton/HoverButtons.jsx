@@ -8,6 +8,9 @@ import ChangeMetaModelButton from './ChangeMetaModelButton.jsx';
 import AddFieldButton from './AddFieldButton.jsx';
 import AddMethodButton from './AddMethodButton.jsx';
 import AddEdgeButton from './AddEdgeButton.jsx';
+import AddEdgeGeneralizationButton from './AddEdgeGeneralizationButton.jsx';
+import AddEdgeAggregationButton from './AddEdgeAggregationButton.jsx';
+import AddEdgeAssociationButton from './AddEdgeAssociationButton.jsx';
 
 
 const test1 = (props) => {
@@ -58,6 +61,10 @@ export default class HoverButtons extends React.Component {
 			height: 0,
 			scale: 1
 		};
+
+		this.addEdgeGeneralizationButton = null;
+		this.addEdgeAggregationButton = null;
+		this.addEdgeAssociationButton = null;
 	}
 
 	show(cell) {
@@ -84,7 +91,21 @@ export default class HoverButtons extends React.Component {
 		});
 	}
 
+	getAddEdgeAggregationButton() {
+		return this.addEdgeAggregationButton;
+	}
+
+	getAddEdgeGeneralizationButton() {
+		return this.addEdgeGeneralizationButton;
+	}
+
+	getAddEdgeAssociationButton() {
+		return this.addEdgeAssociationButton;
+	}
+
 	render() {
+		const _this = this;
+
 		if (!this.state.show) {
 			return null;
 		}
@@ -93,8 +114,13 @@ export default class HoverButtons extends React.Component {
 			<div>               
                 <ChangeMetaModelButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></ChangeMetaModelButton>
                 <AddFieldButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddFieldButton>
+                
                 <AddMethodButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddMethodButton>
-                <AddEdgeButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeButton>
+                
+                <AddEdgeButton hoverButtons={this} umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeButton>
+                <AddEdgeGeneralizationButton ref={(addEdgeGeneralizationButton) => {_this.addEdgeGeneralizationButton = addEdgeGeneralizationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeGeneralizationButton>
+                <AddEdgeAggregationButton ref={(addEdgeAggregationButton) => {_this.addEdgeAggregationButton = addEdgeAggregationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeAggregationButton>
+                <AddEdgeAssociationButton ref={(addEdgeAssociationButton) => {_this.addEdgeAssociationButton = addEdgeAssociationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeAssociationButton>
             </div>
 		);
 	}
