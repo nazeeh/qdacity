@@ -448,6 +448,8 @@ export default class UmlGraphView extends React.Component {
 		let cellState = this.graph.getView().getState(this.graph.getSelectionCell(), true);
 
 		this.connectionHandler.start(cellState, 0, 0, edgeState);
+
+		this.hoverButtons.hide();
 	}
 
 	resetConnectingEdge() {
