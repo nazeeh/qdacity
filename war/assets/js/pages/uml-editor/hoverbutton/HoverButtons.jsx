@@ -7,7 +7,7 @@ import styled, {
 import ChangeMetaModelButton from './ChangeMetaModelButton.jsx';
 import AddFieldButton from './AddFieldButton.jsx';
 import AddMethodButton from './AddMethodButton.jsx';
-
+import AddEdgeButton from './AddEdgeButton.jsx';
 
 
 const test1 = (props) => {
@@ -94,6 +94,7 @@ export default class HoverButtons extends React.Component {
                 <ChangeMetaModelButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></ChangeMetaModelButton>
                 <AddFieldButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddFieldButton>
                 <AddMethodButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddMethodButton>
+                <AddEdgeButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeButton>
             </div>
 		);
 	}
