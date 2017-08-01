@@ -59,9 +59,10 @@ export default class CodingsView extends React.Component {
 		table.clear();
 
 		var codings = [];
-
-		for (var i in _this.props.documents) {
-			var doc = _this.props.documents[i];
+		if (!_this.props.documentsView.getDocuments) return;
+		const docs = _this.props.documentsView.getDocuments()
+		for (var i in docs) {
+			var doc = docs[i];
 			var elements = doc.text;
 			var found = $('coding', elements);
 			var foundArray = $('coding[code_id=\'' + _this.props.code.codeID + '\']', elements).map(function () {

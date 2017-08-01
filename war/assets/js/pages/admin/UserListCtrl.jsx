@@ -31,7 +31,7 @@ export default class UserListCtrl extends React.Component {
 		this.state.user = user;
 	}
 
-	removeUser(){
+	removeUser() {
 		this.props.removeUser(this.props.user.id);
 	}
 

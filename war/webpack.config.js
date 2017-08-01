@@ -3,9 +3,7 @@ var webpack = require('webpack');
 
 module.exports = {
 	entry: {
-		'index' : './assets/js/pages/index/index.js',
-		'coding-editor' : './assets/js/pages/coding-editor/coding-editor.js',
-		'uml-editor' : './assets/js/pages/uml-editor/uml-editor.js',
+		'index' : './assets/js/pages/index/index.js'
     },
 	resolve: {
     alias: {
