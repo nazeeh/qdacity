@@ -245,6 +245,11 @@ export default class EditorCtrl {
 		return this.editor.getHTML()
 	}
 
+	toggleReadOnly(){
+		this.isReadOnly = !this.isReadOnly;
+		this.editor.readOnly(this.isReadOnly);
+	}
+
 	setReadOnly(value) {
 		this.editor.readOnly(value);
 		this.isReadOnly = value;
