@@ -26,6 +26,9 @@ const StyledCodingEditor = styled.div `
 		"footer footer";
 `;
 
+const StyledPageViewChooser = styled.div `
+	display: ${props => (props.umlEditorEnabled) ? 'block' : 'none'} !important;
+`;
 const StyledPanelHeader = styled.div `
 	text-align: center;
 	position:relative;
@@ -207,7 +210,9 @@ export default class CodingEditor extends React.Component {
 							<StyledPanelHeader>
 								<b>Editor</b>
 							</StyledPanelHeader>
-							<PageViewChooser viewChanged={this.viewChanged} />
+							<StyledPageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()}>
+								<PageViewChooser viewChanged={this.viewChanged} />
+							</StyledPageViewChooser>
 							<div >
 
 
