@@ -37,6 +37,10 @@ export default class ProjectDashboard extends React.Component {
 			isValidationCoder: false
 		};
 
+		$("body").css({
+			overflow: "auto"
+		});
+
 		this.init();
 
 		this.addReports = this.addReports.bind(this);

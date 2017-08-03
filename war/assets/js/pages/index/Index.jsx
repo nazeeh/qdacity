@@ -11,6 +11,10 @@ export default class Index extends React.Component {
 			$('#navAccount').hide();
 			$('#navSignin').hide();
 		}
+
+		$("body").css({
+			overflow: "auto"
+		});
 	}
 
 
