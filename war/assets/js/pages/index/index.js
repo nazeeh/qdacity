@@ -31,20 +31,18 @@ var account;
 
 window.init = function () {
 
-	loadGAPIs(() => {
-		if (account.isSignedIn()) {
-			ReactDOM.render(
-				<Router>
-				<div>
-					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
-					<Route path="/ProjectDashboard" render={(props)=><ProjectDashboard account={account} {...props} />}/>
-					<Route path="/Admin" render={()=><Admin account={account} />}/>
-					<Route path="/CodingEditor" render={(props)=><CodingEditor account={account} {...props}/>}/>
-					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
-				</div>
-			</Router>, document.getElementById('indexContent'));
-		}
-	}).then((accountModule) => {
+
+	loadGAPIs(() => {}).then((accountModule) => {
 		account = accountModule;
+		ReactDOM.render(
+			<Router>
+			<div>
+				<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
+				<Route path="/ProjectDashboard" render={(props)=><ProjectDashboard account={account} {...props} />}/>
+				<Route path="/Admin" render={()=><Admin account={account} />}/>
+				<Route path="/CodingEditor" render={(props)=><CodingEditor account={account} {...props}/>}/>
+				<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
+			</div>
+		</Router>, document.getElementById('indexContent'));
 	});
 }
