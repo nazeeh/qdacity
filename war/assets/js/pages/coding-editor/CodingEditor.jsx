@@ -192,6 +192,7 @@ export default class CodingEditor extends React.Component {
 	}
 
 	render() {
+		if (!this.props.account.getProfile) return null;
 		return (
 		<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
