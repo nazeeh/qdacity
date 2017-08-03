@@ -47,6 +47,7 @@ export default class PersonalDashboard extends React.Component {
 	}
 
 	render() {
+		if (!this.props.account.getProfile) return null;
 		return (
 			<div className="container main-content">
 				<div className="row">
