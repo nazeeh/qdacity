@@ -23,9 +23,9 @@ export default class Account extends React.Component {
 		this.auth2.currentUser.listen(function (googleUser) {
 			if (googleUser.isSignedIn()) {
 				_this.setUser(_this.getProfile());
-				_this.props.callback();
+				_this.props.callback(_this);
 			} else {
-				_this.props.callback();
+				_this.props.callback(_this);
 			}
 		});
 	}

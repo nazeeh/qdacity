@@ -1,14 +1,5 @@
-import {
-	BrowserRouter as Router,
-	Route,
-	Link
-} from 'react-router-dom'
 
-import Index from './Index.jsx';
-import PersonalDashboard from "../personal-dashboard/PersonalDashboard.jsx"
-import ProjectDashboard from "../project-dashboard/ProjectDashboard.jsx"
-import Admin from '../admin/Admin.jsx';
-import CodingEditor from '../coding-editor/CodingEditor.jsx';
+import App from '../App.jsx';
 
 import Account from '../../common/Account.jsx';
 
@@ -33,31 +24,36 @@ var account = {
 
 window.init = function () {
 
-
 	loadGAPIs(() => {
 
 
-		if (account.isSignedIn()) {
-			ReactDOM.render(
-				<Router>
-				<div>
-					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
-					<Route path="/ProjectDashboard" render={(props)=><ProjectDashboard account={account} {...props} />}/>
-					<Route path="/Admin" render={()=><Admin account={account} />}/>
-					<Route path="/CodingEditor" render={(props)=><CodingEditor account={account} {...props}/>}/>
-					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
-				</div>
-			</Router>, document.getElementById('indexContent'));
-		} else {
-			ReactDOM.render(
-				<Router>
-				<div>
-					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
-				</div>
-			</Router>, document.getElementById('indexContent'));
-		}
-	}).then((accountModule) => {
-		account = accountModule;
+		// if (account.isSignedIn()) {
+		// 	ReactDOM.render(
+		// 		<Router>
+		// 		<div>
+		// 			<Route path="/" render={(props)=><Index ref={(c) => this.account = c} {...props}/>}/>
+		// 			<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
+		// 			<Route path="/ProjectDashboard" render={(props)=><ProjectDashboard account={account} {...props} />}/>
+		// 			<Route path="/Admin" render={()=><Admin account={account} />}/>
+		// 			<Route path="/CodingEditor" render={(props)=><CodingEditor account={account} {...props}/>}/>
+		// 			<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
+		// 		</div>
+		// 	</Router>, document.getElementById('indexContent'));
+		// } else {
+		// 	ReactDOM.render(
+		// 		<Router>
+		// 		<div>
+		// 			<Route path="/" render={(props)=><Index ref={(c) => this.account = c} {...props}/>}/>
+		// 			<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
+		// 		</div>
+		// 	</Router>, document.getElementById('indexContent'));
+		// }
+	}).then((apiCfg) => {
+		var account = {
+			isSignedIn: () => {return false;}
+		};
+		ReactDOM.render(
+			<App apiCfg={apiCfg}/>, document.getElementById('indexContent'));
 
 	});
 }
