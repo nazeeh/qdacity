@@ -7,11 +7,6 @@ export default class Index extends React.Component {
 		super(props);
 		this.state = {};
 
-		if (this.props.account.isSignedIn()) {
-			$('#navAccount').hide();
-			$('#navSignin').hide();
-		}
-
 		$("body").css({
 			overflow: "auto"
 		});

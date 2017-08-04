@@ -60,13 +60,9 @@ function setupUI() {
 	if (account.isSignedIn()) {
 		var profile = account.getProfile();
 
-		$('#navAccount').show();
-		$('#navSignin').hide();
 		ProjectEndpoint.getProject(project_id, project_type).then(function (resp) {
 			load(resp.codesystemID);
 		});
-	} else {
-		$('#navAccount').hide();
 	}
 }
 

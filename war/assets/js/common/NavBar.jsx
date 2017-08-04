@@ -1,7 +1,15 @@
 import React from 'react'
+import styled from 'styled-components';
 
 import Account from './Account.jsx';
 
+const StyledAccountTab = styled.li `
+	display: ${props => props.loggedIn ? 'block' : 'none'} !important;
+`;
+
+const StyledSigninTab = styled.li `
+	display: ${props => props.loggedIn ? 'none' : 'block'} !important;
+`;
 export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -32,39 +40,40 @@ export default class NavBar extends React.Component {
 							<ul className="nav navbar-nav navbar-right">
 								<li><a href="index.html#about">About</a></li>
 								<li><a href="index.html#contact">Contact</a></li>
-
-								<li id="navAccount" className="dropdown">
+								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
 									<a href="#" className="dropdown-toggle" data-toggle="dropdown">
 										Account <b className="caret"></b>
 									</a>
 			 						<div id="accountView" className="dropdown-menu">
 										<Account ref={(c) => this.account = c} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback} />
 									</div>
-								</li>
-								<li id="navSignin" className="dropdown"><a href="#" className="dropdown-toggle" data-toggle="dropdown">
-										Sign In <b className="caret"></b>
-									</a>
-									<ul className="dropdown-menu">
-										<li>
-											<div className="navbar-content">
-												<div className="row">
-													<div className="col-md-12">
-														<a id="navBtnSigninGoogle" className="btn  btn-primary" href="#">
-															<i className="fa fa-google fa-2x pull-left"></i>
-															<span >Sign in with Google</span>
-														</a>
-													</div>
-												</div>
-											</div>
-											<div className="navbar-footer">
-												<div className="navbar-footer-content">
+								</StyledAccountTab>
+								<StyledSigninTab  loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
+									<a href="#" className="dropdown-toggle" data-toggle="dropdown">
+											Sign In <b className="caret"></b>
+										</a>
+										<ul className="dropdown-menu">
+											<li>
+												<div className="navbar-content">
 													<div className="row">
-														<div className="col-md-12"></div>
+														<div className="col-md-12">
+															<a id="navBtnSigninGoogle" className="btn  btn-primary" href="#">
+																<i className="fa fa-google fa-2x pull-left"></i>
+																<span >Sign in with Google</span>
+															</a>
+														</div>
 													</div>
 												</div>
-											</div>
-										</li>
-									</ul></li>
+												<div className="navbar-footer">
+													<div className="navbar-footer-content">
+														<div className="row">
+															<div className="col-md-12"></div>
+														</div>
+													</div>
+												</div>
+											</li>
+										</ul>
+								</StyledSigninTab>
 							</ul>
 						</div>
 					</div>

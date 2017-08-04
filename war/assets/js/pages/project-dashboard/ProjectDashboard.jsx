@@ -24,11 +24,6 @@ export default class ProjectDashboard extends React.Component {
 
 		var project = new Project(urlParams.project, projectType);
 
-		if (this.props.account.isSignedIn()) {
-			$('#navAccount').show();
-			$('#navSignin').hide();
-		}
-
 		this.state = {
 			project: project,
 			reports: [],

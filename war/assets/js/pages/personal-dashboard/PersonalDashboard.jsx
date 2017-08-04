@@ -10,12 +10,7 @@ export default class PersonalDashboard extends React.Component {
 		this.state = {
 			projects: []
 		};
-
-		if (this.props.account.isSignedIn()) {
-			$('#navAccount').show();
-			$('#navSignin').hide();
-		}
-
+		
 		this.setProjects = this.setProjects.bind(this);
 		this.addProject = this.addProject.bind(this);
 		this.removeProject = this.removeProject.bind(this);
