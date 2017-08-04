@@ -44,8 +44,6 @@ export default class CodesystemToolbar extends React.Component {
 		var _this = this;
 		var prompt = new Prompt('Give your code a name', 'Code Name');
 		prompt.showModal().then(function (codeName) {
-                    for(var i=0; i<10; i++) { //TODO remove
-                        for(var j=0; j<10; j++) { //TODO remove
 			// Build the Request Object
 			var code = {
 				author: _this.props.account.getProfile().getName(),
@@ -59,9 +57,6 @@ export default class CodesystemToolbar extends React.Component {
 			CodesEndpoint.insertCode(code).then(function (resp) {
 				_this.props.insertCode(resp);
 			});
-                        _this.sleep(600); //TODO remove (sleep)
-                    } //TODO remove
-                    } //TODO remove
 		});
 	}
         //TODO remove
