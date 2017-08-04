@@ -15,8 +15,13 @@ export default class Account extends React.Component {
 			scope: this.props.scope
 		});
 		this.signin();
+
+		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 	}
 
+	redirectToPersonalDashbaord() {
+		this.props.history.push('/PersonalDashboard');
+	}
 
 	signin() {
 		var _this = this;
@@ -117,34 +122,34 @@ export default class Account extends React.Component {
 	render() {
 		return (
 			<div>
-								<div className="navbar-content">
-									<div className="row">
-										<div className="col-xs-5">
-											<img id="currentUserPicture" src={this.state.picSrc} alt="" className="img-responsive" />
-											<p className="text-center small">
-											</p>
-										</div>
-										<div className="col-xs-7">
-											<span id="currentUserName">{this.state.name}</span>
-											<p id="currentUserEmail" className="text-muted small">{this.state.email}</p>
-											<div className="divider"></div>
-											<a href="PersonalDashboard" className="btn btn-primary btn-sm active">Personal Dashboard</a>
-										</div>
-									</div>
-								</div>
-								<div className="navbar-footer">
-									<div className="navbar-footer-content">
-										<div className="row">
-											<div className="col-xs-6">
-												<a id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}>Switch User</a>
-											</div>
-											<div className="col-xs-6">
-												<a id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={this.signout.bind(this)}>Sign Out</a>
-											</div>
-										</div>
-									</div>
-								</div>
-								</div>
+				<div className="navbar-content">
+					<div className="row">
+						<div className="col-xs-5">
+							<img id="currentUserPicture" src={this.state.picSrc} alt="" className="img-responsive" />
+							<p className="text-center small">
+							</p>
+						</div>
+						<div className="col-xs-7">
+							<span id="currentUserName">{this.state.name}</span>
+							<p id="currentUserEmail" className="text-muted small">{this.state.email}</p>
+							<div className="divider"></div>
+							<a onClick={this.redirectToPersonalDashbaord} className="btn btn-primary btn-sm active">Personal Dashboard</a>
+						</div>
+					</div>
+				</div>
+				<div className="navbar-footer">
+					<div className="navbar-footer-content">
+						<div className="row">
+							<div className="col-xs-6">
+								<a id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}>Switch User</a>
+							</div>
+							<div className="col-xs-6">
+								<a id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={this.signout.bind(this)}>Sign Out</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 		);
 	}

@@ -44,7 +44,7 @@ export default class NavBar extends React.Component {
 										Account <b className="caret"></b>
 									</a>
 			 						<div id="accountView" className="dropdown-menu">
-										<Account ref={(c) => this.account = c} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback} />
+										<Account ref={(c) => this.account = c} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback}  history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
 								<StyledSigninTab  loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
