@@ -13,13 +13,13 @@ export default class EditorCtrl {
 		this.setupFontSelector();
 		this.setupFontSizeSelector();
 
-		this.iframe = document.getElementById('editor');
+		this.iframe = document.getElementById('textEditor');
 
 
 
 		// Make sure we're in standards mode.
 		var doc = this.iframe.contentDocument;
-		// $("#editor").css({
+		// $("#textEditor").css({
 		// 	height: $(window).height() - 52
 		// });
 		if (doc.compatMode !== 'CSS1Compat') {
@@ -120,7 +120,7 @@ export default class EditorCtrl {
 
 	addTooltipsToEditor(doc) {
 		var elements = doc.text;
-		var foundArray = $("#editor").contents().find('coding');
+		var foundArray = $("#textEditor").contents().find('coding');
 
 		foundArray = foundArray.toArray();
 
@@ -136,8 +136,8 @@ export default class EditorCtrl {
 
 	highlightAgreementMap(maxValue) {
 		$("#maxFalseNeg").html(maxValue);
-		var all = $("#editor").contents().find('p');
-		var filtered = $("#editor").contents().find('p').filter(function () {
+		var all = $("#textEditor").contents().find('p');
+		var filtered = $("#textEditor").contents().find('p').filter(function () {
 			var falseNegCount = $(this).attr('falsenegcount');
 			return falseNegCount >= maxValue;
 		});
@@ -148,7 +148,7 @@ export default class EditorCtrl {
 
 	getMaxFalseNeg() {
 		var max = 0;
-		$("#editor").contents().find('p').each(function () {
+		$("#textEditor").contents().find('p').each(function () {
 			var falsenegcount = $(this).attr('falsenegcount');
 			if (falsenegcount > max) max = falsenegcount;
 		});
@@ -170,7 +170,7 @@ export default class EditorCtrl {
 
 	getCodingsFromText(text) {
 		var codingMap = {};
-		var codingNodes = $("#editor").contents().find('coding');
+		var codingNodes = $("#textEditor").contents().find('coding');
 		if (codingNodes.length > 0) {
 			var codingData = {};
 			var currentID = -1;
@@ -207,7 +207,7 @@ export default class EditorCtrl {
 	activateCodingInEditor(codingID, scrollToSection) {
 		var range;
 		range = document.createRange();
-		var codingNodes = $("#editor").contents().find('coding[id=\'' + codingID + '\']');
+		var codingNodes = $("#textEditor").contents().find('coding[id=\'' + codingID + '\']');
 		var startNode = codingNodes[0];
 		var endNode = codingNodes[codingNodes.length - 1];
 
@@ -219,7 +219,7 @@ export default class EditorCtrl {
 		//Scroll to selection
 		if (scrollToSection) {
 			var offset = startNode.offsetTop;
-			$("#editor").contents().scrollTop(offset);
+			$("#textEditor").contents().scrollTop(offset);
 		}
 
 		//			}
@@ -245,7 +245,7 @@ export default class EditorCtrl {
 		return this.editor.getHTML()
 	}
 
-	toggleReadOnly(){
+	toggleReadOnly() {
 		this.isReadOnly = !this.isReadOnly;
 		this.editor.readOnly(this.isReadOnly);
 	}

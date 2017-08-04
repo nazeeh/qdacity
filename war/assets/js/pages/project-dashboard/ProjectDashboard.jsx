@@ -24,12 +24,6 @@ export default class ProjectDashboard extends React.Component {
 
 		var project = new Project(urlParams.project, projectType);
 
-		$('#qdactiy-logo').attr('href', 'PersonalDashboard');
-		if (this.props.account.isSignedIn()) {
-			$('#navAccount').show();
-			$('#navSignin').hide();
-		}
-
 		this.state = {
 			project: project,
 			reports: [],
@@ -94,6 +88,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
+		if (!this.props.account.getProfile) return null;
 		return (
 			<div className="container main-content">
 				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} history={this.props.history}/>

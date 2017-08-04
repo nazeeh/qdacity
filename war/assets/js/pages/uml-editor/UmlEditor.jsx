@@ -110,7 +110,7 @@ export default class UmlEditor extends React.Component {
 	metaModelFinishedLoading() {
 		this.metaModelLoaded = true;
 
-		if (this.codesystemLoaded  && !this.initialized) {
+		if (this.codesystemLoaded && !this.initialized) {
 			this.initialized = true;
 			this.initialize();
 		}

@@ -71,58 +71,7 @@
 <body>
 
     <!-- Navigation -->
-	<nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
-		<div class="container topnav">
-			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
-				</button>
-				<a id="qdactiy-logo" class="navbar-brand topnav" >QDAcity</a>
-			</div>
-			<!-- Collect the nav links, forms, and other content for toggling -->
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="index.html#about">About</a></li>
-					<li><a href="index.html#contact">Contact</a></li>
-
-					<li id="navAccount" class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-							Account <b class="caret"></b>
-						</a>
- 						<div id="accountView" class="dropdown-menu"></div>
-					</li>
-					<li id="navSignin" class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
-							Sign In <b class="caret"></b>
-						</a>
-						<ul class="dropdown-menu">
-							<li>
-								<div class="navbar-content">
-									<div class="row">
-										<div class="col-md-12" style="text-align: center; padding-bottom: 15px;">
-											<a id="navBtnSigninGoogle" class="btn  btn-primary" href="#">
-												<i class="fa fa-google fa-2x pull-left"></i>
-												<span style="font-size: 18px;">Sign in with Google</span>
-											</a>
-										</div>
-									</div>
-								</div>
-								<div class="navbar-footer">
-									<div class="navbar-footer-content">
-										<div class="row">
-											<div class="col-md-12"></div>
-										</div>
-									</div>
-								</div>
-							</li>
-						</ul></li>
-				</ul>
-			</div>
-			<!-- /.navbar-collapse -->
-		</div>
-
-		<!-- /.container -->
-	</nav>
+	<div id="navBar"></div>
 	<div id=indexContent></div>
 
     <script src="dist/js/index.dist.js"></script>
