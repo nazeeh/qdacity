@@ -53,7 +53,14 @@ export default class Settings extends VexModal {
                                                             saturationParameters[saturationMaximumNames[i]] = $('#cell'+i+'-2-input').prop('value');
                                                         }
                                                         saturationParameters['lastSatResults'] = $('#saturation-interval').prop('value');
-                                                        gapi.client.qdacity.saturation.setSaturationParameters(saturationParameters); 
+                                                        gapi.client.qdacity.saturation.setSaturationParameters(saturationParameters).execute(function (resp) {
+                                                            if(!resp.code) {
+                                                                
+                                                            } else {
+                                                                console.log(resp.code);
+                                                  
+                                                            }
+                                                        }); 
 							vex.close($vexContent.data().vex.id);
 						}
 					}), $.extend({}, vex.dialog.buttons.NO, {
