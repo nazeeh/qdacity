@@ -29,20 +29,41 @@
 		<link href="assets/css/common.css" rel="stylesheet">
 		<link href="assets/css/IntercoderAgreement.css" rel="stylesheet">
 
-		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
-		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
+
 		<link href="components/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
+		<link rel="stylesheet" type="text/css" charset="utf-8" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
 		<!-- ProjectDashboard -->
 		<link href="assets/css/customTimeline.css" rel="stylesheet">
 		<link href="assets/css/agreementStats.css" rel="stylesheet">
 		<link href="components/Alertify/css/alertify.core.css" rel="stylesheet">
 		<link href="components/Alertify/css/alertify.default.css" rel="stylesheet">
 
+		<!-- CodingEditor -->
+		<link href="assets/css/coding-editor.css" rel="stylesheet">
+		<link href="assets/css/documentView.css" rel="stylesheet">
+		<link href="assets/css/footer.css" rel="stylesheet">
+		<link href="assets/css/CodesystemView.css" rel="stylesheet">
+		<link href="components/tooltipster/css/tooltipster.css" rel="stylesheet">
+		<link href="assets/css/agreementMap.css" rel="stylesheet">
+		<link href="components/filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
+		<link href="components/filer/css/themes/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
+		<link href="components/colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+		<script type="text/javascript">mxBasePath = 'components/mxGraph/javascript/src';</script>
+		<script type="text/javascript" src="components/mxGraph/javascript/mxClient.min.js"></script>
+
+
 	    <!-- Custom Fonts -->
 	    <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 	    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
 		<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+
+		<!-- CodingEditor -->
+		<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
 		<script src="https://unpkg.com/react@15/dist/react.js"></script>
 		<script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
 </head>

@@ -46,9 +46,11 @@ class Codesystem extends SimpleCodesystem {
 		super(props);
 		this.state = {
 			slected: {},
+			codesystemID: -1,
 			codesystem: [],
 			height: "100px"
 		};
+		this.initUMLEditor = false;
 
 		this.relocateCode = this.relocateCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
@@ -83,12 +85,15 @@ class Codesystem extends SimpleCodesystem {
 					var selected = {}
 					if (rootCodes.length > 0) selected = rootCodes[0];
 					_this.sortCodes(rootCodes);
+					_this.initCodingCountRecurive(rootCodes);
 					_this.setState({
 						codesystem: rootCodes,
-						selected: selected
+						selected: selected,
+						codesystemID: _this.props.codesystemId,
 					});
 					$("#codesystemLoadingDiv").addClass("hidden");
-
+					_this.props.umlEditor.codesystemFinishedLoading();
+					_this.props.selectionChanged(selected);
 					resolve();
 				});
 			}
@@ -249,14 +254,17 @@ class Codesystem extends SimpleCodesystem {
 							relocateCode={this.relocateCode}
 							showFooter={this.props.showFooter}
 							key={"CS" + "_" + 0 + "_"  +index}
-                            pageView={this.state.pageView}
-                            umlEditor={this.umlEditor}>
+                            pageView={this.props.pageView}
+                            umlEditor={this.props.umlEditor}>
 						</DragAndDropCode>
 			);
 		});
 	}
 
+
+
 	render() {
+		if (this.state.codesystemID != this.props.codesystemId) this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize
 		return (
 			<div>
 				<StyledEditorCtrlHeader >
@@ -275,7 +283,7 @@ class Codesystem extends SimpleCodesystem {
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
                         umlEditorEnabled={this.props.umlEditorEnabled}
-                        pageView={this.state.pageView}>
+                        pageView={this.props.pageView}>
 					</CodesystemToolbar>
 				</StyledToolBar>
 				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>

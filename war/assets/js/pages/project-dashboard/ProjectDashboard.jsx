@@ -24,7 +24,7 @@ export default class ProjectDashboard extends React.Component {
 
 		var project = new Project(urlParams.project, projectType);
 
-		$('#qdactiy-logo').attr('href','PersonalDashboard');
+		$('#qdactiy-logo').attr('href', 'PersonalDashboard');
 		if (this.props.account.isSignedIn()) {
 			$('#navAccount').show();
 			$('#navSignin').hide();
@@ -36,6 +36,10 @@ export default class ProjectDashboard extends React.Component {
 			isProjectOwner: false,
 			isValidationCoder: false
 		};
+
+		$("body").css({
+			overflow: "auto"
+		});
 
 		this.init();
 
@@ -92,7 +96,7 @@ export default class ProjectDashboard extends React.Component {
 	render() {
 		return (
 			<div className="container main-content">
-				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} />
+				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} history={this.props.history}/>
 				<div className="row">
 					<div className="col-lg-7">
 						<Description project={this.state.project} isProjectOwner={this.state.isProjectOwner} />

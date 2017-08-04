@@ -1,3 +1,7 @@
+body{
+	overflow: auto; 
+}
+
 .main-content {
 	margin-top:70px;
 }

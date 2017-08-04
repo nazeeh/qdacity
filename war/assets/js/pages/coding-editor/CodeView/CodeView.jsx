@@ -19,19 +19,12 @@ export default class CodeView extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			code: {},
-			documents: this.props.documentsView.getDocuments()
+			documents: []
 		};
 		this.tabChanged = this.tabChanged.bind(this);
 	}
 
 	init() {}
-
-	updateCode(code) {
-		this.setState({
-			code: code
-		});
-	}
 
 	tabChanged() {}
 
@@ -52,19 +45,19 @@ export default class CodeView extends React.Component {
 				</StyledCloseFooterBtn>
 				<Tabs tabChanged={this.tabChanged}>
 					<Tab tabTitle="Codings">
-						<CodingsView documents={this.state.documents} code={this.state.code} editorCtrl={editorCtrl} documentsView={documentsView}/>
+						<CodingsView documents={this.state.documents} code={this.props.code} editorCtrl={editorCtrl} documentsView={documentsView}/>
 					</Tab>
 					<Tab tabTitle="Code Properties">
-						<CodeProperties code={this.state.code} editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode}/>
+						<CodeProperties code={this.props.code} editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode}/>
 					</Tab>
 					<Tab tabTitle="Meta Model">
-						<MetaModel code={this.state.code} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>
+						<MetaModel code={this.props.code} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>
 					</Tab>
 					<Tab tabTitle="Code Memo">
-						<CodeMemo code={this.state.code} updateSelectedCode={updateSelectedCode} />
+						<CodeMemo code={this.props.code} updateSelectedCode={updateSelectedCode} />
 					</Tab>
 					<Tab tabTitle="Code Book Entry">
-						<CodeBookEntry code={this.state.code} updateSelectedCode={updateSelectedCode} />
+						<CodeBookEntry code={this.props.code} updateSelectedCode={updateSelectedCode} />
 					</Tab>
 				</Tabs>
 			</div>

@@ -29,6 +29,8 @@ export default class SigninWithGoogleBtn extends React.Component {
 		this.state = {
 			loading: false
 		};
+
+		this.redirect = this.redirect.bind(this);
 	}
 
 
@@ -73,7 +75,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	}
 
-	signIn(){
+	signIn() {
 		this.setState({
 			loading: true
 		});
