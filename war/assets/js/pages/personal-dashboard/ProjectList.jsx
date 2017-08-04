@@ -153,7 +153,7 @@ export default class ProjectList extends React.Component {
 		}
 	}
 
-	editorClick(e, prj, index){
+	editorClick(e, prj, index) {
 		e.stopPropagation();
 		this.props.history.push('/CodingEditor?project=' + prj.id + '&type=' + prj.type);
 	}

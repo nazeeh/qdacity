@@ -1,4 +1,3 @@
-
 import App from '../App.jsx';
 
 import Account from '../../common/Account.jsx';
@@ -19,7 +18,9 @@ window.loadPlatform = function () {
 }
 
 var account = {
-	isSignedIn: () => {return false;}
+	isSignedIn: () => {
+		return false;
+	}
 };
 
 window.init = function () {
@@ -50,7 +51,9 @@ window.init = function () {
 		// }
 	}).then((apiCfg) => {
 		var account = {
-			isSignedIn: () => {return false;}
+			isSignedIn: () => {
+				return false;
+			}
 		};
 		ReactDOM.render(
 			<App apiCfg={apiCfg}/>, document.getElementById('indexContent'));

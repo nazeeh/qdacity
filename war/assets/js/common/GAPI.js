@@ -15,7 +15,10 @@ export default function loadGAPIs(allLoadedCallback) {
 			var callback = function () {
 				if (--apisToLoad == 0) {
 					//account = ReactDOM.render(<Account client_id={client_id} scopes={scopes} callback={allLoadedCallback} />, document.getElementById('accountView'));
-					resolve({client_id: client_id, scopes: scopes, });
+					resolve({
+						client_id: client_id,
+						scopes: scopes,
+					});
 				}
 			}
 			apisToLoad = 2;

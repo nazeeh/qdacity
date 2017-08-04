@@ -14,16 +14,15 @@ const StyledTextEditor = styled.iframe `
 export default class TextEditor extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
 	componentDidMount() {
 		this.props.initEditorCtrl();
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<StyledTextEditor id = "textEditor"  selectedEditor={this.props.selectedEditor} showCodingView={this.props.showCodingView}>
 			</StyledTextEditor>
 		);

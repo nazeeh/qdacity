@@ -13,8 +13,7 @@ const StyledSigninTab = styled.li `
 export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 
 		this.account = {};
 
@@ -26,9 +25,9 @@ export default class NavBar extends React.Component {
 	}
 
 
-	render(){
-		return(
-				<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+	render() {
+		return (
+			<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
 					<div className="container topnav">
 						<div className="navbar-header">
 							<button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">

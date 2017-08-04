@@ -127,7 +127,7 @@ export default class CodingEditor extends React.Component {
 
 	}
 
-	init(){
+	init() {
 		const _this = this;
 		var project = this.state.project;
 		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
@@ -139,7 +139,7 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
-	resizeElements(){
+	resizeElements() {
 		this.state.editorCtrl.addCodingBrackets();
 	}
 
@@ -211,7 +211,7 @@ export default class CodingEditor extends React.Component {
 		if (this.state.project.getCodesystemID() == -1) this.init();
 		//if (!this.state.editorCtrl.setDocumentView) return null;
 		return (
-		<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
+			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
 				<div id="pageViewChooser-ui"></div>
 

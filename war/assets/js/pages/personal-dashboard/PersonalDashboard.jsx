@@ -10,7 +10,7 @@ export default class PersonalDashboard extends React.Component {
 		this.state = {
 			projects: []
 		};
-		
+
 		this.setProjects = this.setProjects.bind(this);
 		this.addProject = this.addProject.bind(this);
 		this.removeProject = this.removeProject.bind(this);
