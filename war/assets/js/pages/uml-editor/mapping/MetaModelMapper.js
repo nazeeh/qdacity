@@ -60,7 +60,7 @@ export default class MetaModelMapper {
 					|| this.codeHasMetaModelEntity(codeDestination, 'Actor')
 					|| this.codeHasMetaModelEntity(codeDestination, 'Place')) {
 
-					if (this.isCodeValidNode(codeSource)) {
+					if (this.isCodeValidNode(codeSource) && this.codeHasMetaModelEntity(codeDestination, 'Property')) {
 						return MappingAction.ADD_CLASS_FIELD;
 					}
 				}
@@ -73,11 +73,9 @@ export default class MetaModelMapper {
 			}
 		case 'influences':
 			{
-				if (!this.isCodeValidNode(codeSource)) {
-					return MappingAction.DO_NOTHING;
+				if (this.isCodeValidNode(codeSource) && this.codeHasMetaModelEntity(codeDestination, 'Property')) {
+					return MappingAction.ADD_CLASS_METHOD;
 				}
-
-				return MappingAction.ADD_CLASS_METHOD;
 			}
 		}
 
