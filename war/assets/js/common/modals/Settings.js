@@ -1,6 +1,7 @@
 import VexModal from './VexModal';
 import SaturationSettings from '../saturation/SaturationSettings.jsx';
 import SaturationWeights from '../saturation/SaturationWeights.js'
+import SaturationEndpoint from '../endpoints/SaturationEndpoint.js'
 
 export default class Settings extends VexModal {
 
@@ -53,14 +54,7 @@ export default class Settings extends VexModal {
                                                             saturationParameters[saturationMaximumNames[i]] = $('#cell'+i+'-2-input').prop('value');
                                                         }
                                                         saturationParameters['lastSatResults'] = $('#saturation-interval').prop('value');
-                                                        gapi.client.qdacity.saturation.setSaturationParameters(saturationParameters).execute(function (resp) {
-                                                            if(!resp.code) {
-                                                                
-                                                            } else {
-                                                                console.log(resp.code);
-                                                  
-                                                            }
-                                                        }); 
+                                                        new SaturationEndpoint().setSaturationParameters(saturationParameters);
 							vex.close($vexContent.data().vex.id);
 						}
 					}), $.extend({}, vex.dialog.buttons.NO, {
