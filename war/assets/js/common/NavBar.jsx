@@ -9,6 +9,12 @@ export default class NavBar extends React.Component {
 		};
 
 		this.account = {};
+
+		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
+	}
+
+	redirectToPersonalDashbaord() {
+		this.props.history.push('/PersonalDashboard');
 	}
 
 
@@ -20,7 +26,7 @@ export default class NavBar extends React.Component {
 							<button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
 								<span className="sr-only">Toggle navigation</span> <span className="icon-bar"></span> <span className="icon-bar"></span> <span className="icon-bar"></span>
 							</button>
-							<a id="qdactiy-logo" className="navbar-brand topnav" >QDAcity</a>
+							<a className="navbar-brand topnav clickable" onClick={this.redirectToPersonalDashbaord}>QDAcity</a>
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">

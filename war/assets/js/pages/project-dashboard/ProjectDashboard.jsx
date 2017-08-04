@@ -24,7 +24,6 @@ export default class ProjectDashboard extends React.Component {
 
 		var project = new Project(urlParams.project, projectType);
 
-		$('#qdactiy-logo').attr('href', 'PersonalDashboard');
 		if (this.props.account.isSignedIn()) {
 			$('#navAccount').show();
 			$('#navSignin').hide();
