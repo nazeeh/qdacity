@@ -100,15 +100,6 @@ export default class CodingEditor extends React.Component {
 
 		};
 		const _this = this;
-		// ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
-		// 	project.setCodesystemID(resp.codesystemID);
-		// 	project.setUmlEditorEnabled(resp.umlEditorEnabled);
-		// 	_this.setState({
-		// 		project: project
-		// 	});
-		// });
-
-
 
 		this.toggleCodingView = this.toggleCodingView.bind(this);
 		this.hideCodingView = this.hideCodingView.bind(this);
@@ -143,11 +134,6 @@ export default class CodingEditor extends React.Component {
 		this.state.editorCtrl.addCodingBrackets();
 	}
 
-	// componentDidMount() {
-	// 	this.setState({
-	// 		editorCtrl: new EditorCtrl(this.getCodeByCodeID)
-	// 	});
-	// }
 	initEditorCtrl() {
 		this.setState({
 			editorCtrl: new EditorCtrl(this.getCodeByCodeID)
@@ -209,7 +195,6 @@ export default class CodingEditor extends React.Component {
 	render() {
 		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
 		if (this.state.project.getCodesystemID() == -1) this.init();
-		//if (!this.state.editorCtrl.setDocumentView) return null;
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
