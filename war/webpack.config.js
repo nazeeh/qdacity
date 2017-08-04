@@ -4,8 +4,7 @@ var webpack = require('webpack');
 module.exports = {
 	entry: {
 		'index' : './assets/js/pages/index/index.js',
-		'coding-editor' : './assets/js/pages/coding-editor/coding-editor.js',
-		'admin' : './assets/js/pages/admin/admin.js'
+		'coding-editor' : './assets/js/pages/coding-editor/coding-editor.js'
     },
 	resolve: {
     alias: {

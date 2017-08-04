@@ -1,7 +1,7 @@
 import {
-  BrowserRouter as Router,
-  Route,
-  Link
+	BrowserRouter as Router,
+	Route,
+	Link
 } from 'react-router-dom'
 
 import Index from './Index.jsx';
@@ -32,19 +32,17 @@ window.init = function () {
 
 	loadGAPIs(() => {
 		if (account.isSignedIn()) {
-		ReactDOM.render(
-			<Router>
+			ReactDOM.render(
+				<Router>
 				<div>
 					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={account}  {...props}/>}/>
 					<Route path="/ProjectDashboard" render={()=><ProjectDashboard account={account} />}/>
 					<Route path="/Admin" render={()=><Admin account={account} />}/>
 					<Route exact path="/" render={(props)=><Index account={account}  {...props}/>}/>
 				</div>
-			</Router>
-			, document.getElementById('indexContent'));
+			</Router>, document.getElementById('indexContent'));
 		}
 	}).then((accountModule) => {
-			account = accountModule;
-		}
-	);
+		account = accountModule;
+	});
 }
