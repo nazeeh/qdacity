@@ -50,10 +50,11 @@ export default class Settings extends VexModal {
                                                         var changeWeightNames = saturationWeights.getPropertyNamesChangeWeight();
                                                         var saturationMaximumNames = saturationWeights.getPropertyNamesSaturationMaximum();
                                                         for(var i in changeWeightNames) {
-                                                            saturationParameters[changeWeightNames[i]] = $('#cell'+i+'-1-input').prop('value');
-                                                            saturationParameters[saturationMaximumNames[i]] = $('#cell'+i+'-2-input').prop('value');
+                                                            saturationParameters[changeWeightNames[i]] = $('#cell'+i+'-1-input').prop('value') / 100;
+                                                            saturationParameters[saturationMaximumNames[i]] = $('#cell'+i+'-2-input').prop('value') / 100;
                                                         }
                                                         saturationParameters['lastSatResults'] = $('#saturation-interval').prop('value');
+                                                        saturationParameters['projectId'] = projectId;
                                                         new SaturationEndpoint().setSaturationParameters(saturationParameters);
 							vex.close($vexContent.data().vex.id);
 						}
