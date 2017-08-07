@@ -16,6 +16,12 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	// - How much impact has this change on the theory building out of the code system?
 	// - Is this change relevant for theoretical saturation?
 	//____________________________
+	setSaturationWeights();
+	setSaturationMaxima();
+
+    }
+
+    private void setSaturationWeights() {
 	//===== SATURATION WEIGHTS =============
 	//Question: How important is this change type for the average saturation?
 	//Document Changes
@@ -37,9 +43,11 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	this.updateCodeBookEntryShortDefinitionChangeWeight = 1.0; //Same as Definition Change
 	this.updateCodeBookEntryWhenNotToUseChangeWeight = 0.75;//It usually clarifies in which context a code should be used. This is quite important
 	this.updateCodeBookEntryWhenToUseChangeWeight = 0.75;//It usually clarifies in which context a code should be used. This is quite important
+    }
 
+    private void setSaturationMaxima() {
 	//===== SATURATION MAXIMA =============
-	//Here the question is: 
+	//Here the question is:
 	//In order to reach 100% saturation, should a change like this still appear? 
 	//If not it needs to be 1.0 (100%) stable otherwise we can be a little lower.
 	this.insertDocumentSaturationMaximum = 1; //Default weight is set to 0, so this should be 1, in case a user edits the weight they want to see something immediately
@@ -60,7 +68,6 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	this.updateCodeBookEntryShortDefinitionSaturationMaximum = 1.0; //same as definition
 	this.updateCodeBookEntryWhenNotToUseSaturationMaximum = 0.9;//same as example
 	this.updateCodeBookEntryWhenToUseSaturationMaximum = 0.9;//same as example
-
     }
 
 }
