@@ -65,10 +65,8 @@ export default class DocumentsView extends React.Component {
 							_this.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
 						}
 						resolve();
-						//	$("#documentsLoadingDiv").addClass('hidden');
 					}).catch(function (resp) {
 						reject();
-						//$("#documentsLoadingDiv").addClass('hidden');
 					});
 				} else {
 					DocumentsEndpoint.getDocuments(project_id, project_type).then(function (items) {
@@ -76,10 +74,8 @@ export default class DocumentsView extends React.Component {
 							_this.addDocument(items[i].id, items[i].title, items[i].text.value);
 						}
 						resolve();
-						//$("#documentsLoadingDiv").addClass('hidden');
 					}).catch(function (resp) {
 						reject();
-						//$("#documentsLoadingDiv").addClass('hidden');
 					});
 				}
 
