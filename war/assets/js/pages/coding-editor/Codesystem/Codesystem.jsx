@@ -51,7 +51,6 @@ class Codesystem extends SimpleCodesystem {
 	constructor(props) {
 		super(props);
 		this.state = {
-			pageView: null,
 			slected: {},
 			codesystemID: -1,
 			codesystem: [],
@@ -68,12 +67,6 @@ class Codesystem extends SimpleCodesystem {
 		this.initCodingCount = this.initCodingCount.bind(this);
 		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
 		this.init = this.init.bind(this);
-	}
-
-	pageViewChanged(view) {
-		this.setState({
-			pageView: view
-		});
 	}
 
 	setUmlEditor(umlEditor) {
@@ -262,7 +255,7 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	shouldHighlightNode(code) {
-		return this.state.pageView == PageView.UML && this.umlEditor.getMetaModelMapper().isCodeValidNode(code);
+		return this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(code);
 	}
 
 	renderRoot(code, level, key) {
