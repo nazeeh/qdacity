@@ -4,20 +4,24 @@ import java.util.Date;
 
 public class DefaultSaturationParameters extends SaturationParameters {
 
-    //TODO this is a hardcoded soultion which requires rebuilding the application if it gets changed...
     public DefaultSaturationParameters() {
 	this.creationTime = new Date(System.currentTimeMillis());
 
-	//TODO these values are set randomly just for a first test!
+	//Hint: The set values here are subject to further research
+	// Research Question: Which preset fits best to most of the QDAcity use cases?
+	
+	//All values here were set following this guideline:
+	// - How much impact has this change on the theory building out of the code system
+	// - Is this change relevant for theoretical saturation
+	
 	//Document Changes
-	this.insertDocumentChangeWeight = 0;
+	this.insertDocumentChangeWeight = 0; //this is more related to data / topic saturation than theoretical saturation
 	//Code Changes
-	this.insertCodeChangeWeight = 1.0;
-	this.updateCodeAuthorChangeWeight = 0.01;
-	this.updateCodeColorChangeWeight = 0.5;
-	this.updateCodeMemoChangeWeight = 0.7;
-	this.updateCodeNameChangeWeight = 0.7;
-	this.updateCodeIdChangeWeight = 0.01;
+	this.insertCodeChangeWeight = 1.0; //definitely important as it changes the code system
+	this.updateCodeAuthorChangeWeight = 0.0; //does not have impact on the theory
+	this.updateCodeColorChangeWeight = 0.0; //does not habe impact on the theory
+	this.updateCodeMemoChangeWeight = 0.5; //depending on usage of this attribute it could be important for theory
+	this.updateCodeNameChangeWeight = 1.0; //definitely important
 	this.relocateCodeChangeWeight = 0.9;
 	this.insertCodeRelationShipChangeWeight = 0.5;
 	this.deleteCodeRelationShipChangeWeight = 0.5;
@@ -41,7 +45,6 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	this.updateCodeColorSaturationMaximum = 0.5;
 	this.updateCodeMemoSaturationMaximum = 0.7;
 	this.updateCodeNameSaturationMaximum = 0.7;
-	this.updateCodeIdSaturationMaximum = 0.01;
 	this.relocateCodeSaturationMaximum = 0.9;
 	this.insertCodeRelationShipSaturationMaximum = 0.5;
 	this.deleteCodeRelationShipSaturationMaximum = 0.5;
