@@ -4,6 +4,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.SaturationEndpoint;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,16 +24,9 @@ public class DeferredSaturationCalculationTask implements DeferredTask {
     public void run() {
 	PersistenceManager pmr = getPersistenceManager();
 	SaturationCalculator sCalc;
-	Date epochStart = new Date(0); //if there is no previous saturation result, we start from the very beginning
-	SaturationEndpoint se = new SaturationEndpoint();
-	List<SaturationResult> saturationResults = se.getHistoricalSaturationResults(projectId, null);
-	for (SaturationResult sr : saturationResults) {
-	    if (sr.getCreationTime() != null && sr.getCreationTime().after(epochStart)) {
-		epochStart = new Date(sr.getCreationTime().getTime());
-	    }
-	}
-
 	try {
+	    Date epochStart = findEpochStart();
+
 	    sCalc = new SaturationCalculator(projectId, epochStart);
 	    SaturationResult saturationResult = sCalc.calculateSaturation(pmr);
 	    pmr.makePersistent(saturationResult);
@@ -41,6 +35,18 @@ public class DeferredSaturationCalculationTask implements DeferredTask {
 	} finally {
 	    pmr.close();
 	}
+    }
+
+    private Date findEpochStart() throws UnauthorizedException {
+	SaturationEndpoint se = new SaturationEndpoint();
+	SaturationParameters sp = se.getSaturationParameters(projectId);
+	int nthLast = sp.getLastSatResults();
+	List<SaturationResult> saturationResults = se.getHistoricalSaturationResults(projectId, null);
+	Collections.sort(saturationResults); //Sorts by creation time as SaturationResult implements comparable
+	if (saturationResults.size() >= nthLast) {
+	    return saturationResults.get(saturationResults.size()-nthLast).getCreationTime();
+	}
+	return new Date(0); //if there is no n-th last saturation result, we start from the very beginning of UNIX time;
     }
 
     private static PersistenceManager getPersistenceManager() {

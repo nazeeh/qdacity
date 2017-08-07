@@ -10,7 +10,7 @@ public class DefaultSaturationParameters extends SaturationParameters {
 
 	//TODO these values are set randomly just for a first test!
 	//Document Changes
-	this.insertDocumentChangeWeight = 0.5;
+	this.insertDocumentChangeWeight = 0;
 	//Code Changes
 	this.insertCodeChangeWeight = 1.0;
 	this.updateCodeAuthorChangeWeight = 0.01;
@@ -29,6 +29,32 @@ public class DefaultSaturationParameters extends SaturationParameters {
 	this.updateCodeBookEntryShortDefinitionChangeWeight = 1.0;
 	this.updateCodeBookEntryWhenNotToUseChangeWeight = 0.5;
 	this.updateCodeBookEntryWhenToUseChangeWeight = 0.7;
+	
+	
+	this.lastSatResults = 3;
+	
+	//TODO set them all!
+	this.insertDocumentSaturationMaximum = 1;
+	//Code Changes
+	this.insertCodeSaturationMaximum = 1.0;
+	this.updateCodeAuthorSaturationMaximum = 0.01;
+	this.updateCodeColorSaturationMaximum = 0.5;
+	this.updateCodeMemoSaturationMaximum = 0.7;
+	this.updateCodeNameSaturationMaximum = 0.7;
+	this.updateCodeIdSaturationMaximum = 0.01;
+	this.relocateCodeSaturationMaximum = 0.9;
+	this.insertCodeRelationShipSaturationMaximum = 0.5;
+	this.deleteCodeRelationShipSaturationMaximum = 0.5;
+	this.deleteCodeSaturationMaximum = 1.0;
+	this.appliedCodesSaturationMaximum = 0.01;
+	//CodeBookEntry Changes
+	this.updateCodeBookEntryDefinitionSaturationMaximum = 1.0;
+	this.updateCodeBookEntryExampleSaturationMaximum = 0.5;
+	this.updateCodeBookEntryShortDefinitionSaturationMaximum = 1.0;
+	this.updateCodeBookEntryWhenNotToUseSaturationMaximum = 0.5;
+	this.updateCodeBookEntryWhenToUseSaturationMaximum = 0.7;
+	
+	
     }
 
 }

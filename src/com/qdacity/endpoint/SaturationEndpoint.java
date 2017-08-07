@@ -7,6 +7,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
+import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.saturation.DefaultSaturationParameters;
@@ -79,16 +80,20 @@ public class SaturationEndpoint {
 	query.setFilter("projectId == :id");
 	Map<String, Long> paramValues = new HashMap<>();
 	paramValues.put("id", projectId);
-
-	return (List<SaturationResult>) query.executeWithMap(paramValues);
+	List<SaturationResult> lazySatResults = (List<SaturationResult>) query.executeWithMap(paramValues);
+	for(SaturationResult sr: lazySatResults) {
+	    sr.getCreationTime(); //Lazy fetch
+	}
+	return lazySatResults;
     }
 
     @ApiMethod(
-	    name = "saturation.getSaturationParameters",
+	    name = "saturation.setSaturationParameters",
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
     public void setSaturationParameters(SaturationParameters saturationParams, User user) throws UnauthorizedException {
+	Authorization.checkAuthorization(saturationParams.getProjectId(), user);
 	PersistenceManager pmr = getPersistenceManager();
 	saturationParams.setCreationTime(new Date(System.currentTimeMillis()));
 
@@ -103,6 +108,11 @@ public class SaturationEndpoint {
      * @return
      * @throws UnauthorizedException
      */
+    @ApiMethod(
+	    name = "saturation.getSaturationParameters",
+	    scopes = {Constants.EMAIL_SCOPE},
+	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
+	    audiences = {Constants.WEB_CLIENT_ID})
     public SaturationParameters getSaturationParameters(@Named("projectId") Long projectId) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
