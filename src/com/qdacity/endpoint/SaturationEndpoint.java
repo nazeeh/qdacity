@@ -7,6 +7,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
+import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.saturation.DefaultSaturationParameters;
@@ -91,7 +92,8 @@ public class SaturationEndpoint {
 	    scopes = {Constants.EMAIL_SCOPE},
 	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
 	    audiences = {Constants.WEB_CLIENT_ID})
-    public void setSaturationParameters(SaturationParameters saturationParams) throws UnauthorizedException {
+    public void setSaturationParameters(SaturationParameters saturationParams, User user) throws UnauthorizedException {
+	Authorization.checkAuthorization(saturationParams.getProjectId(), user);
 	PersistenceManager pmr = getPersistenceManager();
 	saturationParams.setCreationTime(new Date(System.currentTimeMillis()));
 
