@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import ReactLoading from '../../../common/ReactLoading.jsx';
+
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import CodesystemEndpoint from '../../../common/endpoints/CodesystemEndpoint';
 import {
@@ -280,8 +282,19 @@ class Codesystem extends SimpleCodesystem {
 		);
 	}
 
+	renderCodesystemContent(){
+		if(this.state.codesystem.length != 0){
+			return this.renderCodesystem();
+		} else {
+			return <ReactLoading color={"#020202"}/>;
+		}
+	}
+
+
 	render() {
-		if (this.state.codesystemID != this.props.codesystemId) this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize
+		if (this.state.codesystem != this.props.codesystemId){
+			this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
+		}
 		return (
 			<div>
 				<StyledEditorCtrlHeader >
@@ -302,7 +315,10 @@ class Codesystem extends SimpleCodesystem {
                         pageView={this.props.pageView}>
 					</CodesystemToolbar>
 				</StyledToolBar>
-				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>
+
+				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>
+					{this.renderCodesystemContent()}
+				</StyledCodeSystem>
 			</div>
 		);
 	}

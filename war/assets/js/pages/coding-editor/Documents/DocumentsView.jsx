@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import ReactLoading from '../../../common/ReactLoading.jsx';
+
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
@@ -300,6 +302,14 @@ export default class DocumentsView extends React.Component {
 		);
 	}
 
+	renderDocumentsContent(){
+		if(this.state.documents.length != 0){
+			return this.renderDocuments();
+		} else {
+			return <ReactLoading color={"#020202"}/>;
+		}
+	}
+
 	render() {
 		var _this = this;
 		return (
@@ -320,7 +330,7 @@ export default class DocumentsView extends React.Component {
 						</span>
 					</div>
 				</StyledDocumentsHeader>
-				{this.renderDocuments()}
+				{this.renderDocumentsContent()}
      	</div>
 		);
 	}
