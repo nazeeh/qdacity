@@ -36,10 +36,18 @@ export default class DocumentsView extends React.Component {
 		this.state = {
 			documents: [],
 			selected: -1,
-			isExpanded: true
+			isExpanded: true,
+			loading: true
 		};
 
-		this.setupView(this.props.projectID, this.props.projectType, this.props.report);
+		var setupPromise = this.setupView(this.props.projectID, this.props.projectType, this.props.report);
+
+		const _this = this;
+		setupPromise.then(() => {
+			_this.setState({
+				loading: false
+			});
+		});
 
 		this.addDocument = this.addDocument.bind(this);
 		this.setActiveDocument = this.setActiveDocument.bind(this);
@@ -299,7 +307,7 @@ export default class DocumentsView extends React.Component {
 	}
 
 	renderDocumentsContent(){
-		if(this.state.documents.length != 0){
+		if(!this.state.loading){
 			return this.renderDocuments();
 		} else {
 			return <ReactLoading color={"#020202"}/>;
