@@ -41,9 +41,6 @@ export default class UmlGraphView extends React.Component {
 		this.minZoomPercentage = 10;
 		this.maxZoomPercentage = 150;
 
-
-		this.umlEditor = this.props.umlEditor;
-
 		this.umlGraphContainer = null;
 		this.hoverButtons = null;
 
@@ -292,7 +289,7 @@ export default class UmlGraphView extends React.Component {
 			const sourceNode = evt.properties.cell.source;
 			const destinationNode = evt.properties.cell.target;
 
-			_this.umlEditor.createNewEdge(sourceNode, destinationNode, edgeType, evt.cell);
+			_this.props.umlEditor.createNewEdge(sourceNode, destinationNode, edgeType, evt.cell);
 
 			_this.selectCell(sourceNode);
 		});
@@ -826,7 +823,7 @@ export default class UmlGraphView extends React.Component {
 		return (
 			<StyledGraphView>
                 <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%' }}></div>
-                <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.umlEditor}></HoverButtons>
+                <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.props.umlEditor}></HoverButtons>
             </StyledGraphView>
 		);
 	}
