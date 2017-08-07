@@ -9,12 +9,9 @@ export default class SimpleCodesystem extends React.Component {
 		super(props);
 		this.codesystem = {};
 		this.state = {
-			pageView: null,
 			slected: {},
 			codesystem: []
 		};
-
-		this.umlEditor = null;
 
 		this.state.codesystem = this.props.codesystem;
 
@@ -36,16 +33,6 @@ export default class SimpleCodesystem extends React.Component {
 				_this.sortCodes(code.children);
 			}
 		})
-	}
-
-	pageViewChanged(view) {
-		this.setState({
-			pageView: view
-		});
-	}
-
-	setUmlEditor(umlEditor) {
-		this.umlEditor = umlEditor;
 	}
 
 	setSelected(code) {
@@ -83,18 +70,24 @@ export default class SimpleCodesystem extends React.Component {
 
 	renderRoots(codes) {
 		return codes.map((code, index) => {
-			return (
-				<SimpleCode
-							level={0} 
-							node={code} 
-							selected={this.state.selected} 
-							setSelected={this.setSelected} 
-							key={"CS" + "_" + 0 + "_"  +index}
-			                pageView={this.state.pageView}
-			                umlEditor={this.umlEditor}>
-						</SimpleCode>
-			);
+			const level = 0;
+			const key = "CS" + "_" + 0 + "_" + index;
+
+			return this.renderRoot(code, level, key);
 		});
+	}
+
+	renderRoot(code, level, key) {
+		return (
+			<SimpleCode
+                        level={level} 
+                        node={code} 
+                        selected={this.state.selected} 
+                        setSelected={this.setSelected} 
+                        key={key}
+		                shouldHighlightNode={this.props.shouldHighlightNode}>
+                    </SimpleCode>
+		);
 	}
 
 	renderNodes(codeSiblings, level) {

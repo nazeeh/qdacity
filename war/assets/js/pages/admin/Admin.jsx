@@ -7,15 +7,11 @@ export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
-
-		if (this.props.account.isSignedIn()) {
-			$('#navAccount').show();
-			$('#navSignin').hide();
-		}
 	}
 
 
 	render() {
+		if (!this.props.account.getProfile) return null;
 		return (
 			<div className="container main-content">
 				<div className="row">

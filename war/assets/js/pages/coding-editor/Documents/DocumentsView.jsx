@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import ReactLoading from '../../../common/ReactLoading.jsx';
+
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
@@ -34,10 +36,18 @@ export default class DocumentsView extends React.Component {
 		this.state = {
 			documents: [],
 			selected: -1,
-			isExpanded: true
+			isExpanded: true,
+			loading: true
 		};
 
-		this.setupView(this.props.projectID, this.props.projectType, this.props.report);
+		var setupPromise = this.setupView(this.props.projectID, this.props.projectType, this.props.report);
+
+		const _this = this;
+		setupPromise.then(() => {
+			_this.setState({
+				loading: false
+			});
+		});
 
 		this.addDocument = this.addDocument.bind(this);
 		this.setActiveDocument = this.setActiveDocument.bind(this);
@@ -63,10 +73,8 @@ export default class DocumentsView extends React.Component {
 							_this.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
 						}
 						resolve();
-						//	$("#documentsLoadingDiv").addClass('hidden');
 					}).catch(function (resp) {
 						reject();
-						//$("#documentsLoadingDiv").addClass('hidden');
 					});
 				} else {
 					DocumentsEndpoint.getDocuments(project_id, project_type).then(function (items) {
@@ -74,10 +82,8 @@ export default class DocumentsView extends React.Component {
 							_this.addDocument(items[i].id, items[i].title, items[i].text.value);
 						}
 						resolve();
-						//$("#documentsLoadingDiv").addClass('hidden');
 					}).catch(function (resp) {
 						reject();
-						//$("#documentsLoadingDiv").addClass('hidden');
 					});
 				}
 
@@ -300,6 +306,14 @@ export default class DocumentsView extends React.Component {
 		);
 	}
 
+	renderDocumentsContent(){
+		if(!this.state.loading){
+			return this.renderDocuments();
+		} else {
+			return <ReactLoading color={"#020202"}/>;
+		}
+	}
+
 	render() {
 		var _this = this;
 		return (
@@ -320,7 +334,7 @@ export default class DocumentsView extends React.Component {
 						</span>
 					</div>
 				</StyledDocumentsHeader>
-				{this.renderDocuments()}
+				{this.renderDocumentsContent()}
      	</div>
 		);
 	}

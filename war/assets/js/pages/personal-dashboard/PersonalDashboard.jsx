@@ -11,12 +11,6 @@ export default class PersonalDashboard extends React.Component {
 			projects: []
 		};
 
-		$('#qdactiy-logo').attr('href', 'PersonalDashboard');
-		if (this.props.account.isSignedIn()) {
-			$('#navAccount').show();
-			$('#navSignin').hide();
-		}
-
 		this.setProjects = this.setProjects.bind(this);
 		this.addProject = this.addProject.bind(this);
 		this.removeProject = this.removeProject.bind(this);
@@ -47,6 +41,7 @@ export default class PersonalDashboard extends React.Component {
 	}
 
 	render() {
+		if (!this.props.account.getProfile) return null;
 		return (
 			<div className="container main-content">
 				<div className="row">

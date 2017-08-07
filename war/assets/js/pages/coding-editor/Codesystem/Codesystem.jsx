@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import ReactLoading from '../../../common/ReactLoading.jsx';
+
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import CodesystemEndpoint from '../../../common/endpoints/CodesystemEndpoint';
 import {
@@ -10,6 +12,10 @@ import {
 	DragDropContext
 } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+
+import {
+	PageView
+} from '../View/PageView.js';
 
 import CodesystemToolbar from "./CodesystemToolbar.jsx"
 
@@ -52,12 +58,19 @@ class Codesystem extends SimpleCodesystem {
 		};
 		this.initUMLEditor = false;
 
+		this.umlEditor = null;
+
 		this.relocateCode = this.relocateCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
 		this.updateCodingCount = this.updateCodingCount.bind(this);
 		this.initCodingCount = this.initCodingCount.bind(this);
+		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
 		this.init = this.init.bind(this);
+	}
+
+	setUmlEditor(umlEditor) {
+		this.umlEditor = umlEditor;
 	}
 
 	setHeight(height) {
@@ -241,30 +254,40 @@ class Codesystem extends SimpleCodesystem {
 		}
 	}
 
-	renderRoots(codes) {
-		return codes.map((code, index) => {
-			return (
-				<DragAndDropCode
-							showSimpleView={false}
-							documentsView={this.props.documentsView}
-							level={0}
-							node={code}
-							selected={this.state.selected}
-							setSelected={this.setSelected}
-							relocateCode={this.relocateCode}
-							showFooter={this.props.showFooter}
-							key={"CS" + "_" + 0 + "_"  +index}
-                            pageView={this.props.pageView}
-                            umlEditor={this.props.umlEditor}>
-						</DragAndDropCode>
-			);
-		});
+	shouldHighlightNode(code) {
+		return this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(code);
+	}
+
+	renderRoot(code, level, key) {
+		return (
+			<DragAndDropCode
+                        showSimpleView={false}
+                        documentsView={this.props.documentsView}
+                        level={level}
+                        node={code}
+                        selected={this.state.selected}
+                        setSelected={this.setSelected}
+                        relocateCode={this.relocateCode}
+                        showFooter={this.props.showFooter}
+                        key={key}
+		                shouldHighlightNode={this.shouldHighlightNode}>
+                    </DragAndDropCode>
+		);
+	}
+
+	renderCodesystemContent(){
+		if(this.state.codesystem.length != 0){
+			return this.renderCodesystem();
+		} else {
+			return <ReactLoading color={"#020202"}/>;
+		}
 	}
 
 
-
 	render() {
-		if (this.state.codesystemID != this.props.codesystemId) this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize
+		if (this.state.codesystemID != this.props.codesystemId){
+			this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
+		}
 		return (
 			<div>
 				<StyledEditorCtrlHeader >
@@ -282,11 +305,13 @@ class Codesystem extends SimpleCodesystem {
 						toggleCodingView={this.props.toggleCodingView}
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
-                        umlEditorEnabled={this.props.umlEditorEnabled}
                         pageView={this.props.pageView}>
 					</CodesystemToolbar>
 				</StyledToolBar>
-				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>{this.renderCodesystem()}</StyledCodeSystem>
+
+				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>
+					{this.renderCodesystemContent()}
+				</StyledCodeSystem>
 			</div>
 		);
 	}

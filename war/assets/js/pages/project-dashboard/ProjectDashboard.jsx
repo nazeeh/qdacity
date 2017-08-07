@@ -24,12 +24,6 @@ export default class ProjectDashboard extends React.Component {
 
 		var project = new Project(urlParams.project, projectType);
 
-		$('#qdactiy-logo').attr('href', 'PersonalDashboard');
-		if (this.props.account.isSignedIn()) {
-			$('#navAccount').show();
-			$('#navSignin').hide();
-		}
-
 		this.state = {
 			project: project,
 			reports: [],
@@ -41,16 +35,15 @@ export default class ProjectDashboard extends React.Component {
 			overflow: "auto"
 		});
 
-		this.init();
-
 		this.addReports = this.addReports.bind(this);
-
 	}
 
 	init() {
-		this.userPromise = this.props.account.getCurrentUser();
-		this.setUserRights();
-		this.setProjectProperties();
+		if (!this.userPromise){
+			this.userPromise = this.props.account.getCurrentUser();
+			this.setUserRights();
+			this.setProjectProperties();
+		}
 	}
 
 	setUserRights() {
@@ -94,6 +87,9 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
+		if (!this.props.account.getProfile) return null;
+		this.init();
+
 		return (
 			<div className="container main-content">
 				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} history={this.props.history}/>
@@ -104,15 +100,9 @@ export default class ProjectDashboard extends React.Component {
 						<div className="box box-default">
 							<div className="box-header with-border">
 							<h3 className="box-title">Intercoder Agreement</h3>
-								<AgreementStats  reports={this.state.reports}/>
 							</div>
 							<div className="box-body">
-							<div className="row" >
-							<div className="col-xs-12">
-							<div id="agreementStats1" className="agreementStats"></div>
-							</div>
-
-						</div>
+								<AgreementStats  reports={this.state.reports}/>
 							</div>
 						</div>
 						<div id="changeLog"></div>

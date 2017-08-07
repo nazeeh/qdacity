@@ -8,16 +8,15 @@ const StyledPrjDasboardBtn = styled.a `
 export default class ProjectDashboardBtn extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
-	projectDashboardBtnClick(prj){
+	projectDashboardBtnClick(prj) {
 		this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<div className="list-group">
 				<StyledPrjDasboardBtn className="list-group-item clickable" onClick={() => {this.projectDashboardBtnClick(this.props.project);}}>
 					<i className="fa fa-home fa-fw "></i>

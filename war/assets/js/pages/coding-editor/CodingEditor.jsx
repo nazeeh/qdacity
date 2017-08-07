@@ -7,6 +7,7 @@ import Codesystem from './Codesystem/Codesystem.jsx';
 import CodeView from './CodeView/CodeView.jsx';
 import PageViewChooser from './View/PageViewChooser.jsx';
 import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
+import TextEditor from './TextEditor.jsx';
 
 import EditorCtrl from './EditorCtrl';
 import Project from '../project-dashboard/Project';
@@ -65,10 +66,6 @@ const StyledFooter = styled.div `
 	z-index: 1;
 `;
 
-const StyledTextEditor = styled.iframe `
-	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
-	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
-`;
 
 const StyledUMLEditor = styled.div `
 	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
@@ -103,15 +100,6 @@ export default class CodingEditor extends React.Component {
 
 		};
 		const _this = this;
-		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
-			project.setCodesystemID(resp.codesystemID);
-			project.setUmlEditorEnabled(resp.umlEditorEnabled);
-			_this.setState({
-				project: project
-			});
-		});
-
-
 
 		this.toggleCodingView = this.toggleCodingView.bind(this);
 		this.hideCodingView = this.hideCodingView.bind(this);
@@ -124,16 +112,29 @@ export default class CodingEditor extends React.Component {
 		this.insertCode = this.insertCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
 		this.resizeElements = this.resizeElements.bind(this);
+		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 
 		window.onresize = this.resizeElements;
 
 	}
 
-	resizeElements(){
+	init() {
+		const _this = this;
+		var project = this.state.project;
+		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
+			project.setCodesystemID(resp.codesystemID);
+			project.setUmlEditorEnabled(resp.umlEditorEnabled);
+			_this.setState({
+				project: project
+			});
+		});
+	}
+
+	resizeElements() {
 		this.state.editorCtrl.addCodingBrackets();
 	}
 
-	componentDidMount() {
+	initEditorCtrl() {
 		this.setState({
 			editorCtrl: new EditorCtrl(this.getCodeByCodeID)
 		});
@@ -192,8 +193,10 @@ export default class CodingEditor extends React.Component {
 	}
 
 	render() {
+		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
+		if (this.state.project.getCodesystemID() == -1) this.init();
 		return (
-		<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
+			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
 				<div id="pageViewChooser-ui"></div>
 
@@ -217,7 +220,7 @@ export default class CodingEditor extends React.Component {
 								<b>Editor</b>
 							</StyledPanelHeader>
 							<StyledPageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()}>
-								<PageViewChooser viewChanged={this.viewChanged} />
+								<PageViewChooser viewChanged={this.viewChanged}/>
 							</StyledPageViewChooser>
 							<div >
 
@@ -308,8 +311,7 @@ export default class CodingEditor extends React.Component {
 						<input id="txtSizeSpinner"  />
 
 					</StyledTextEditorMenu>
-					<StyledTextEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
-					</StyledTextEditor>
+						<TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
 					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
 						<UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />
 					</StyledUMLEditor>

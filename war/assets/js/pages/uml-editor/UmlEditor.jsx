@@ -6,6 +6,9 @@ import UmlClassManager from './model/UmlClassManager.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
 import UmlClassRelationManager from './model/UmlClassRelationManager.js';
 
+import {
+	MappingAction
+} from './mapping/MappingAction.js';
 import MetaModelMapper from './mapping/MetaModelMapper.js';
 import MetaModelRunner from './mapping/MetaModelRunner.js';
 
@@ -22,6 +25,7 @@ import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpo
 
 const StyledUmlEditor = styled.div `
     height: inherit;
+    border-left: 1px solid #B0B0B0;
 `;
 
 export default class UmlEditor extends React.Component {
@@ -55,6 +59,14 @@ export default class UmlEditor extends React.Component {
 
 	getUmlGraphView() {
 		return this.umlGraphView;
+	}
+
+	getUmlClassManager() {
+		return this.umlClassManager;
+	}
+
+	getUmlClassRelationManager() {
+		return this.umlClassRelationManager;
 	}
 
 	getMetaModelMapper() {
@@ -98,7 +110,7 @@ export default class UmlEditor extends React.Component {
 	metaModelFinishedLoading() {
 		this.metaModelLoaded = true;
 
-		if (this.codesystemLoaded  && !this.initialized) {
+		if (this.codesystemLoaded && !this.initialized) {
 			this.initialized = true;
 			this.initialize();
 		}
@@ -705,22 +717,17 @@ export default class UmlEditor extends React.Component {
 	overlayClickedClassField(cell) {
 		const _this = this;
 
-		let addFieldModal = new UmlCodePropertyModal('Add new Field', _this.props.codesystemView);
+		const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+
+		const relationMetaModelEntityName = this.getMetaModelMapper().getClassFieldRelationEntityName();
+		const mappingAction = MappingAction.ADD_CLASS_FIELD;
+
+		let addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', sourceUmlClass.getCode(), _this.codesystemView, relationMetaModelEntityName, mappingAction);
 
 		addFieldModal.showModal().then(function (data) {
-			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
 			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
 
 			const destinationCode = destinationUmlClass.getCode();
-
-			// Validate
-			// TODO handle this in another way
-			if (!_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Object')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Actor')
-				&& !_this.metaModelMapper.codeHasMetaModelEntity(destinationCode, 'Place')) {
-				alert('ERROR: Cant add a field if the destination code is not an Object/Actor/Place.');
-				return;
-			}
 
 			_this.createNewField(sourceUmlClass, destinationUmlClass);
 		});
@@ -729,18 +736,15 @@ export default class UmlEditor extends React.Component {
 	overlayClickedClassMethod(cell) {
 		const _this = this;
 
-		let addMethodModal = new UmlCodePropertyModal('Add new Method', _this.props.codesystemView);
+		const sourceUmlClass = _this.umlClassManager.getByNode(cell);
+
+		const relationMetaModelEntityName = this.getMetaModelMapper().getClassMethodRelationEntityName();
+		const mappingAction = MappingAction.ADD_CLASS_METHOD;
+
+		let addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', sourceUmlClass.getCode(), _this.codesystemView, relationMetaModelEntityName, mappingAction);
 
 		addMethodModal.showModal().then(function (data) {
-			const sourceUmlClass = _this.umlClassManager.getByNode(cell);
 			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
-
-			// Validate
-			// TODO handle this in another way
-			if (_this.metaModelMapper.isCodeValidNode(destinationUmlClass.getCode())) {
-				alert('ERROR: Cant add a method if the destination code is an uml class.');
-				return;
-			}
 
 			_this.createNewMethod(sourceUmlClass, destinationUmlClass);
 		});
@@ -854,11 +858,17 @@ export default class UmlEditor extends React.Component {
 		}
 	}
 
+	onZoom(percentage) {
+		this.umlEditor.toolbar.onZoom(percentage);
+	}
+
 	render() {
+		const _this = this;
+
 		return (
 			<StyledUmlEditor>
-                <Toolbar ref={(toolbar) => {this.toolbar = toolbar}} className="row no-gutters" umlEditor={this} />
-                <UmlGraphView ref={(umlGraphView) => {this.umlGraphView = umlGraphView}} umlEditor={this} />
+                <Toolbar ref={(toolbar) => {_this.toolbar = toolbar}} className="row no-gutters" umlEditor={_this} />
+                <UmlGraphView ref={(umlGraphView) => {_this.umlGraphView = umlGraphView}} umlEditor={_this} onZoom={_this.onZoom} />
             </StyledUmlEditor>
 		);
 	}

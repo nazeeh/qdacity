@@ -3,6 +3,13 @@ import styled from 'styled-components';
 
 import TextField from '../../../common/modals/TextField';
 
+const StyledCreateRevisionBtn = styled.button `
+	margin-left: 5px;
+	& > i {
+    	padding-right: 5px;
+  }
+`;
+
 export default class CreateRevisionBtn extends React.Component {
 	constructor(props) {
 		super(props);
@@ -19,13 +26,13 @@ export default class CreateRevisionBtn extends React.Component {
 	render() {
 		if (this.props.isProjectOwner) {
 			return (
-				<button 
-					type="button" 
+				<StyledCreateRevisionBtn
+					type="button"
 					className="btn btn-default btn-sm pull-right"
 					onClick={() => this.showNewRevisionModal()}
 				>
-					<i className="fa fa-plus-circle fa-lg"></i>&nbsp;&nbsp;<b>Create Revision</b>
-				</button>
+					<i className="fa fa-plus-circle fa-lg"></i><b>Create Revision</b>
+				</StyledCreateRevisionBtn>
 			);
 		} else {
 			return null;
