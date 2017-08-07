@@ -7,6 +7,8 @@ import GoogleColumnChart from '../../common/GoogleColumnChart.jsx';
 const StyledAgreementStats = styled.div `
     margin-left:25px;
 	margin-right:25px;
+	padding-top: 5px;
+	padding-bottom: 20px;
 `;
 
 export default class AgreementStats extends React.Component {

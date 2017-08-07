@@ -100,15 +100,9 @@ export default class ProjectDashboard extends React.Component {
 						<div className="box box-default">
 							<div className="box-header with-border">
 							<h3 className="box-title">Intercoder Agreement</h3>
-								<AgreementStats  reports={this.state.reports}/>
 							</div>
 							<div className="box-body">
-							<div className="row" >
-							<div className="col-xs-12">
-							<div id="agreementStats1" className="agreementStats"></div>
-							</div>
-
-						</div>
+								<AgreementStats  reports={this.state.reports}/>
 							</div>
 						</div>
 						<div id="changeLog"></div>
