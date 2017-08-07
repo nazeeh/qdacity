@@ -220,7 +220,7 @@ export default class CodingEditor extends React.Component {
 								<b>Editor</b>
 							</StyledPanelHeader>
 							<StyledPageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()}>
-								<PageViewChooser viewChanged={this.viewChanged} />
+								<PageViewChooser viewChanged={this.viewChanged}/>
 							</StyledPageViewChooser>
 							<div >
 
