@@ -35,16 +35,15 @@ export default class ProjectDashboard extends React.Component {
 			overflow: "auto"
 		});
 
-		this.init();
-
 		this.addReports = this.addReports.bind(this);
-
 	}
 
 	init() {
-		this.userPromise = this.props.account.getCurrentUser();
-		this.setUserRights();
-		this.setProjectProperties();
+		if (!this.userPromise){
+			this.userPromise = this.props.account.getCurrentUser();
+			this.setUserRights();
+			this.setProjectProperties();
+		}
 	}
 
 	setUserRights() {
@@ -89,6 +88,8 @@ export default class ProjectDashboard extends React.Component {
 
 	render() {
 		if (!this.props.account.getProfile) return null;
+		this.init();
+
 		return (
 			<div className="container main-content">
 				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} history={this.props.history}/>
