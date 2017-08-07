@@ -23,7 +23,9 @@ const codeSource = {
 	},
 	endDrag(props, monitor, component) {
 		const dropResults = monitor.getDropResult();
-		if (dropResults) props.relocateCode(props.node, monitor.getDropResult().targetID);
+		if (dropResults && props.node.codeID != dropResults.targetID){
+			props.relocateCode(props.node, dropResults.targetID);
+		}
 	}
 };
 
