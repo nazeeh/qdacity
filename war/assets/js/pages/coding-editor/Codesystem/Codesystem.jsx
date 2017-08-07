@@ -292,7 +292,7 @@ class Codesystem extends SimpleCodesystem {
 
 
 	render() {
-		if (this.state.codesystem != this.props.codesystemId){
+		if (this.state.codesystemID != this.props.codesystemId){
 			this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
 		}
 		return (
