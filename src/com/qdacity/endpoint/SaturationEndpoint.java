@@ -81,7 +81,7 @@ public class SaturationEndpoint {
 	Map<String, Long> paramValues = new HashMap<>();
 	paramValues.put("id", projectId);
 	List<SaturationResult> lazySatResults = (List<SaturationResult>) query.executeWithMap(paramValues);
-	for(SaturationResult sr: lazySatResults) {
+	for (SaturationResult sr : lazySatResults) {
 	    sr.getCreationTime(); //Lazy fetch
 	}
 	return lazySatResults;

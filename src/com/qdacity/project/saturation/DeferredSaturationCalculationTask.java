@@ -44,7 +44,7 @@ public class DeferredSaturationCalculationTask implements DeferredTask {
 	List<SaturationResult> saturationResults = se.getHistoricalSaturationResults(projectId, null);
 	Collections.sort(saturationResults); //Sorts by creation time as SaturationResult implements comparable
 	if (saturationResults.size() >= nthLast) {
-	    return saturationResults.get(saturationResults.size()-nthLast).getCreationTime();
+	    return saturationResults.get(saturationResults.size() - nthLast).getCreationTime();
 	}
 	return new Date(0); //if there is no n-th last saturation result, we start from the very beginning of UNIX time;
     }
