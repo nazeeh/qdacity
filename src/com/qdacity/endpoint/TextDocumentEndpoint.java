@@ -227,7 +227,6 @@ public class TextDocumentEndpoint {
 		return textdocument;
 	}
 	
-	
 	/**
 	 * This method is used for applying a code to a TextDocument. If the entity does not
 	 * exist in the datastore, an exception is thrown.
@@ -253,8 +252,7 @@ public class TextDocumentEndpoint {
 			
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, textDocumentCode.code.getCodesystemID());
 			Change change = new ChangeBuilder().makeApplyCodeChange(textDocumentCode.textDocument, textDocumentCode.code, user, cs.getProjectType());
-			ChangeLogger.logChange(change);
-			
+			ChangeLogger.logChange(change);	
 		} finally {
 			mgr.close();
 		}
