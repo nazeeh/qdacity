@@ -18,6 +18,11 @@ const StyledBtnGroup = styled.div `
     padding: 0px 1px 0px 1px;
 `;
 
+
+const StyledBtnStack = styled.span `
+		font-size: 8px;
+`;
+
 export default class CodesystemToolbar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -43,7 +48,7 @@ export default class CodesystemToolbar extends React.Component {
 		var _this = this;
 		var prompt = new Prompt('Give your code a name', 'Code Name');
 		prompt.showModal().then(function (codeName) {
-			
+
                         // Build the Request Object
 			var code = {
 				author: _this.props.account.getProfile().getName(),
@@ -131,16 +136,16 @@ export default class CodesystemToolbar extends React.Component {
 		return (
 			<StyledBtnGroup className="btn-group">
                 <a className="btn btn-default" onClick={this.applyCode}>
-                    <span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
+                    <StyledBtnStack className="fa-stack fa-lg">
                         <i className="fa fa-tag fa-stack-2x"></i>
                         <i className="fa fa-plus fa-stack-1x fa-inverse"></i>
-                    </span>
+                    </StyledBtnStack>
                 </a>
                 <a className="btn btn-default" onClick={this.removeCoding}>
-                    <span className="fa-stack fa-lg" style={{fontSize: "8px"}}>
+                    <StyledBtnStack className="fa-stack fa-lg">
                         <i className="fa fa-tag fa-stack-2x"></i>
                         <i className="fa fa-minus fa-stack-1x fa-inverse"></i>
-                    </span>
+                    </StyledBtnStack>
                 </a>
             </StyledBtnGroup>
 		);
