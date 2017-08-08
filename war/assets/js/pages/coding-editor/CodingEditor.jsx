@@ -265,6 +265,7 @@ export default class CodingEditor extends React.Component {
 				<StyledSideBarCodesystem>
 						<Codesystem
 							ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
+							codingViewIsVisible ={this.state.showCodingView}
 							pageView = {this.state.selectedEditor}
 							umlEditor = {this.umlEditorRef}
 							projectID={this.state.project.getId()}

@@ -39,7 +39,7 @@ const StyledToolBar = styled.div `
 `;
 
 const StyledCodeSystem = styled.div `
-    height: ${props => props.height + "px" } !important;
+    height: ${props => props.height - (props.codingViewIsVisible ? 300 : 0) + "px" } !important;
 
     overflow: auto;
 `;
@@ -324,7 +324,7 @@ class Codesystem extends SimpleCodesystem {
 					</CodesystemToolbar>
 				</StyledToolBar>
 
-				<StyledCodeSystem  ref={(c) => this.codesystemRef = c} id="codesystemTree" className="codesystemView" height={height}>
+				<StyledCodeSystem  ref={(c) => this.codesystemRef = c} id="codesystemTree" className="codesystemView" height={height} codingViewIsVisible={this.props.codingViewIsVisible}>
 					{this.renderCodesystemContent()}
 				</StyledCodeSystem>
 			</StyledCodeSystemView>
