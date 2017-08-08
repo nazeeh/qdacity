@@ -227,6 +227,8 @@ public class TextDocumentEndpoint {
 		return textdocument;
 	}
 	
+	private final static Map<Long, Integer> projectCodeApplies = new HashMap<>();
+	
 	/**
 	 * This method is used for applying a code to a TextDocument. If the entity does not
 	 * exist in the datastore, an exception is thrown.
@@ -253,6 +255,24 @@ public class TextDocumentEndpoint {
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, textDocumentCode.code.getCodesystemID());
 			Change change = new ChangeBuilder().makeApplyCodeChange(textDocumentCode.textDocument, textDocumentCode.code, user, cs.getProjectType());
 			ChangeLogger.logChange(change);
+			
+			//Count Changes and trigger saturation if necessary
+			Long projectId = textDocumentCode.textDocument.getProjectID();
+			synchronized(projectCodeApplies) { //TODO is it ok? (actually projectCodeApplies.get(projectId) would be fine too)
+			    Integer codeAppliesCount = projectCodeApplies.get(projectId);
+			    if(codeAppliesCount == null) {
+				projectCodeApplies.put(projectId, 1);
+			    } else {
+				if(codeAppliesCount < 10) { //TODO treshold
+				    projectCodeApplies.put(projectId, codeAppliesCount + 1);
+				} else {
+				    projectCodeApplies.remove(projectId); //cleanup always, so the HashMap stays small
+				    //Trigger new Saturation Calculation (asynchronous)
+				    new SaturationEndpoint().calculateNewSaturation(projectId, user);
+				}
+			    }
+			}
+			
 		} finally {
 			mgr.close();
 		}
