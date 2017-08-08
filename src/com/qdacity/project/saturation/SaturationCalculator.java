@@ -131,8 +131,8 @@ public class SaturationCalculator {
 
 	//Project properties
 	double numCurrentCodes = CodeEndpoint.countCodes(project.getCodesystemID());
-	double numAppliedCodesTotal = countTotalChangesBeforeEpochStart(ChangeObject.DOCUMENT, ChangeType.APPLY);
-	double totalNumberOfChangesBeforeEpochStart = countAllCodeSystemChangesBeforeEpochStart();
+	//Alternative thought: All Code System Changes before this epoch:
+	//double totalNumberOfChangesBeforeEpochStart = countAllCodeSystemChangesBeforeEpochStart();
 	//Alternative thought: Size of Code System. But it doesn't make much sense as it can not show developement over time
 	//double totalNumberOfCodes = (numCurrentCodes - numNewCodes) + numDeletedCodes;
 
@@ -155,41 +155,32 @@ public class SaturationCalculator {
 		+ "numCodeRelationDeleted " + numCodeRelationDeleted + "\n"
 		+ "== PROJECT-PROPERTIES == \n"
 		+ "numCurrentCodes " + numCurrentCodes + "\n"
-		+ "totalNumberOfCodesBeforeChanges " + totalNumberOfChangesBeforeEpochStart + "\n"
 	);
 
 	//calculate saturation
-	result.setInsertCodeSaturation(saturation(numNewCodes, totalNumberOfChangesBeforeEpochStart));
-	result.setDeleteCodeSaturation(saturation(numDeletedCodes, totalNumberOfChangesBeforeEpochStart));
+	result.setInsertCodeSaturation(saturation(numNewCodes, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.CREATED)));
+	result.setDeleteCodeSaturation(saturation(numDeletedCodes, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.DELETED)));
 	//Code attributes
-	result.setUpdateCodeAuthorSaturation(saturation(numAuthorChanged, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeColorSaturation(saturation(numColorChanged, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeIdSaturation(saturation(numCodeIdChanged, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeMemoSaturation(saturation(numMemoChanged, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeNameSaturation(saturation(numNameChanged, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeAuthorSaturation(saturation(numAuthorChanged, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.MODIFIED)));
+	result.setUpdateCodeColorSaturation(saturation(numColorChanged, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.MODIFIED)));
+	result.setUpdateCodeIdSaturation(saturation(numCodeIdChanged, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.MODIFIED)));
+	result.setUpdateCodeMemoSaturation(saturation(numMemoChanged, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.MODIFIED)));
+	result.setUpdateCodeNameSaturation(saturation(numNameChanged, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.MODIFIED)));
 	//CodeBookEntry attributes
-	result.setUpdateCodeBookEntryDefinitionSaturation(saturation(numCodeBookDefinition, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeBookEntryExampleSaturation(saturation(numCodeBookExample, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeBookEntryShortDefinitionSaturation(saturation(numCodeBookShortdefinition, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeBookEntryWhenNotToUseSaturation(saturation(numCodeBookWhenNotToUse, totalNumberOfChangesBeforeEpochStart));
-	result.setUpdateCodeBookEntryWhenToUseSaturation(saturation(numCodeBookWhenToUse, totalNumberOfChangesBeforeEpochStart));
+	result.setUpdateCodeBookEntryDefinitionSaturation(saturation(numCodeBookDefinition, countTotalChangesBeforeEpochStart(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED)));
+	result.setUpdateCodeBookEntryExampleSaturation(saturation(numCodeBookExample, countTotalChangesBeforeEpochStart(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED)));
+	result.setUpdateCodeBookEntryShortDefinitionSaturation(saturation(numCodeBookShortdefinition, countTotalChangesBeforeEpochStart(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED)));
+	result.setUpdateCodeBookEntryWhenNotToUseSaturation(saturation(numCodeBookWhenNotToUse, countTotalChangesBeforeEpochStart(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED)));
+	result.setUpdateCodeBookEntryWhenToUseSaturation(saturation(numCodeBookWhenToUse, countTotalChangesBeforeEpochStart(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED)));
 
-	result.setInsertCodeRelationShipSaturation(saturation(numCodeRelationInsert, totalNumberOfChangesBeforeEpochStart));
-	result.setDeleteCodeRelationShipSaturation(saturation(numCodeRelationDeleted, totalNumberOfChangesBeforeEpochStart));
+	//Insert/Delete Code Relationships
+	result.setInsertCodeRelationShipSaturation(saturation(numCodeRelationInsert, countTotalChangesBeforeEpochStart(ChangeObject.CODE_RELATIONSHIP, ChangeType.CREATED)));
+	result.setDeleteCodeRelationShipSaturation(saturation(numCodeRelationDeleted, countTotalChangesBeforeEpochStart(ChangeObject.CODE_RELATIONSHIP, ChangeType.DELETED)));
 
-	result.setApplyCodeSaturation(saturation(numAppliedCodes, numAppliedCodesTotal)); //Hint: Only checking on Code Applies, not other changes
-	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, totalNumberOfChangesBeforeEpochStart));
-    }
-
-    private double countAllCodeSystemChangesBeforeEpochStart() {
-	//Not counting Code Applies, only looking at CodeSystem Changes
-	return countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.CREATED)
-		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.DELETED)
-		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.MODIFIED)
-		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.RELOCATE)
-		+ countTotalChangesBeforeEpochStart(ChangeObject.CODEBOOK_ENTRY, ChangeType.MODIFIED)
-		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE_RELATIONSHIP, ChangeType.CREATED)
-		+ countTotalChangesBeforeEpochStart(ChangeObject.CODE_RELATIONSHIP, ChangeType.DELETED);
+	//Apply Code
+	result.setApplyCodeSaturation(saturation(numAppliedCodes, countTotalChangesBeforeEpochStart(ChangeObject.DOCUMENT, ChangeType.APPLY)));
+	//Relocate Code
+	result.setRelocateCodeSaturation(saturation(numRelocatedCodes, countTotalChangesBeforeEpochStart(ChangeObject.CODE, ChangeType.RELOCATE)));
     }
 
     /**
