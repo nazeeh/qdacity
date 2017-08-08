@@ -23,7 +23,9 @@ const StyledCodingEditor = styled.div `
 	display: grid;
 	grid-template-columns: 3fr 14fr;
 	grid-template-areas:
-		"sidebar editor"
+		"sidebarEdior editor"
+		"sidebarDocuments editor"
+		"sidebarCodesystem editor"
 		"footer footer";
 `;
 
@@ -53,7 +55,18 @@ const StyledEditableToggle = styled.a `
 
 
 const StyledSideBar = styled.div `
-	grid-area: sidebar;
+`;
+
+const StyledSideBarEditor = styled.div `
+	grid-area: sidebarEdior;
+`;
+
+const StyledSideBarDocuments = styled.div `
+	grid-area: sidebarDocuments;
+`;
+
+const StyledSideBarCodesystem = styled.div `
+	grid-area: sidebarCodesystem;
 `;
 
 const StyledEditor = styled.div `
@@ -132,6 +145,7 @@ export default class CodingEditor extends React.Component {
 
 	resizeElements() {
 		this.state.editorCtrl.addCodingBrackets();
+		this.forceUpdate();
 	}
 
 	initEditorCtrl() {
@@ -198,76 +212,75 @@ export default class CodingEditor extends React.Component {
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
-				<div id="pageViewChooser-ui"></div>
-
-				<div className="row no-gutters" >
-				<div id="project-ui" >
-					<div >
-
+				<StyledSideBarEditor>
+					<div id="project-ui" >
 						<div >
-							<ProjectDashboardBtn project={this.state.project} history={this.props.history}/>
-							<div id="agreementMapSettings" className="hidden">
-								<p>
-								  <span>Showing False Negatives >= </span>
-								  <span id="maxFalseNeg" className="falseNegValue"></span>
-								</p>
-								<div id="agreementMapSlider" className="agreementMapSlider"></div>
-							</div>
 
-							<div className="row no-gutters" >
-							<StyledSettingsPanel>
-							<StyledPanelHeader>
-								<b>Editor</b>
-							</StyledPanelHeader>
-							<StyledPageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()}>
-								<PageViewChooser viewChanged={this.viewChanged}/>
-							</StyledPageViewChooser>
 							<div >
+								<ProjectDashboardBtn project={this.state.project} history={this.props.history}/>
+								<div id="agreementMapSettings" className="hidden">
+									<p>
+									  <span>Showing False Negatives >= </span>
+									  <span id="maxFalseNeg" className="falseNegValue"></span>
+									</p>
+									<div id="agreementMapSlider" className="agreementMapSlider"></div>
+								</div>
+
+								<div className="row no-gutters" >
+								<StyledSettingsPanel>
+								<StyledPanelHeader>
+									<b>Editor</b>
+								</StyledPanelHeader>
+								<StyledPageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()}>
+									<PageViewChooser viewChanged={this.viewChanged}/>
+								</StyledPageViewChooser>
+								<div >
 
 
-								<StyledEditableToggle selectedEditor={this.state.selectedEditor}  onClick={() => {this.state.editorCtrl.toggleReadOnly();}} id="btnEditToggle" className="btn btn-sm edit-toggle collapsed" data-toggle="collapse" data-target="#textdocument-menu">
-									<span className="edit-toggle-off" >
-										<i className="fa fa-toggle-off fa-2x"></i>
-									</span>
-									<span className="edit-toggle-on" >
-										<i className="fa fa-toggle-on fa-2x"></i>
-									</span>
-									<span > Document Editable</span>
-								</StyledEditableToggle>
+									<StyledEditableToggle selectedEditor={this.state.selectedEditor}  onClick={() => {this.state.editorCtrl.toggleReadOnly();}} id="btnEditToggle" className="btn btn-sm edit-toggle collapsed" data-toggle="collapse" data-target="#textdocument-menu">
+										<span className="edit-toggle-off" >
+											<i className="fa fa-toggle-off fa-2x"></i>
+										</span>
+										<span className="edit-toggle-on" >
+											<i className="fa fa-toggle-on fa-2x"></i>
+										</span>
+										<span > Document Editable</span>
+									</StyledEditableToggle>
 
 
+								</div>
+								</StyledSettingsPanel>
 							</div>
-							</StyledSettingsPanel>
 						</div>
 					</div>
-				</div>
-				</div>
-				</div>
-				<div id="documents-ui" >
-					<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
-						<DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
-					</StyledDocumentsView>
-				</div>
-
-				<div id="codesystem-ui" >
-					<Codesystem
-						ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
-						pageView = {this.state.selectedEditor}
-						umlEditor = {this.umlEditorRef}
-						projectID={this.state.project.getId()}
-						projectType={this.state.project.getType()}
-						account={this.props.account}
-						codesystemId={this.state.project.getCodesystemID()}
-						toggleCodingView={this.toggleCodingView}
-						editorCtrl={this.state.editorCtrl}
-						umlEditorEnabled={this.state.project.isUmlEditorEnabled()}
-						showFooter={this.showCodingView}
-						selectionChanged={this.selectionChanged}
-						insertCode={this.insertCode}
-						removeCode={this.removeCode}
-						documentsView = {this.documentsViewRef}
-					 />
-				</div>
+					</div>
+				</StyledSideBarEditor>
+				<StyledSideBarDocuments>
+					<div id="documents-ui" >
+						<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
+							<DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
+						</StyledDocumentsView>
+					</div>
+				</StyledSideBarDocuments>
+				<StyledSideBarCodesystem>
+						<Codesystem
+							ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
+							pageView = {this.state.selectedEditor}
+							umlEditor = {this.umlEditorRef}
+							projectID={this.state.project.getId()}
+							projectType={this.state.project.getType()}
+							account={this.props.account}
+							codesystemId={this.state.project.getCodesystemID()}
+							toggleCodingView={this.toggleCodingView}
+							editorCtrl={this.state.editorCtrl}
+							umlEditorEnabled={this.state.project.isUmlEditorEnabled()}
+							showFooter={this.showCodingView}
+							selectionChanged={this.selectionChanged}
+							insertCode={this.insertCode}
+							removeCode={this.removeCode}
+							documentsView = {this.documentsViewRef}
+						 />
+				</StyledSideBarCodesystem>
 			</StyledSideBar>
 			<StyledEditor>
 

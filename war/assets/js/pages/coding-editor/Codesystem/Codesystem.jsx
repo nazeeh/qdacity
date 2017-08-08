@@ -22,6 +22,10 @@ import CodesystemToolbar from "./CodesystemToolbar.jsx"
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import SimpleCodesystem from './SimpleCodesystem.jsx';
 
+const StyledCodeSystemView = styled.div `
+ `;
+
+
 const StyledEditorCtrlHeader = styled.div `
 	text-align: center;
 	position:relative;
@@ -35,7 +39,8 @@ const StyledToolBar = styled.div `
 `;
 
 const StyledCodeSystem = styled.div `
-    height: ${props => props.height + "px"} !important;
+    height: ${props => props.height + "px" } !important;
+
     overflow: auto;
 `;
 
@@ -56,6 +61,8 @@ class Codesystem extends SimpleCodesystem {
 			codesystem: [],
 			height: "100px"
 		};
+
+		this.codesystemTop = 0;
 		this.initUMLEditor = false;
 
 		this.umlEditor = null;
@@ -283,13 +290,21 @@ class Codesystem extends SimpleCodesystem {
 		}
 	}
 
+	componentDidMount() {
+	    this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
+	  }
+	  componentDidUpdate() {
+  	    this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
+  	  }
+
 
 	render() {
 		if (this.state.codesystemID != this.props.codesystemId){
 			this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
 		}
+		const height = $(window).height() - this.codesystemTop;
 		return (
-			<div>
+			<StyledCodeSystemView >
 				<StyledEditorCtrlHeader >
 					<b>Code System</b>
 				</StyledEditorCtrlHeader>
@@ -309,10 +324,10 @@ class Codesystem extends SimpleCodesystem {
 					</CodesystemToolbar>
 				</StyledToolBar>
 
-				<StyledCodeSystem id="codesystemTree" className="codesystemView" height={this.state.height}>
+				<StyledCodeSystem  ref={(c) => this.codesystemRef = c} id="codesystemTree" className="codesystemView" height={height}>
 					{this.renderCodesystemContent()}
 				</StyledCodeSystem>
-			</div>
+			</StyledCodeSystemView>
 		);
 	}
 }
