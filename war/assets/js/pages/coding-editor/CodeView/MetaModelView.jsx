@@ -1,6 +1,18 @@
+import styled from 'styled-components';
+
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../../common/endpoints/MetaModelRelationEndpoint';
 import MetaModelElement from './MetaModelElement';
+
+const StyledMetaModelView = styled.div `
+	display: flex;
+	justify-content: center;
+`;
+
+const StyleElementGroup = styled.div `
+	text-align: center;
+	margin: 0 7px;
+`;
 
 export default class MetaModelView extends React.Component {
 
@@ -110,16 +122,11 @@ export default class MetaModelView extends React.Component {
 	render() {
 		let _this = this;
 
-		let blockStyle = {
-			display: "flex",
-			justifyContent: "center"
-		};
-
 		if (_this.props.elements != null) {
 			return (
-				<div style={blockStyle}>
-                    {Object.keys(_this.props.elements).map((key, index) => _this.renderGroup(_this.props.elements[key], key))}           
-                </div>
+				<StyledMetaModelView>
+                    {Object.keys(_this.props.elements).map((key, index) => _this.renderGroup(_this.props.elements[key], key))}
+                </StyledMetaModelView>
 			);
 		} else {
 			return null;
@@ -190,25 +197,19 @@ export default class MetaModelView extends React.Component {
 			return null;
 		})
 
-
-		let centerStyle = {
-			textAlign: "center",
-			margin: "0 7px"
-		};
-
 		if (drawFirstLevel) {
 			return (
-				<div key={"block" + group} style={centerStyle} className="list-group">
+				<StyleElementGroup key={"block" + group} className="list-group">
                     <div key={"firstLevel" + group} className="btn-group">
                         {firstLevel}
                     </div>
-                    <div key={"secondLevel" + group}  style={centerStyle} className="list-group">
+                    <StyleElementGroup key={"secondLevel" + group} className="list-group">
                         {secondLevel}
-                    </div>
-                    <div key={"thirdLevel" + group}  style={centerStyle} className="list-group">
+                    </StyleElementGroup>
+                    <StyleElementGroup key={"thirdLevel" + group} className="list-group">
                         {thirdLevel}
-                    </div>
-                </div>);
+                    </StyleElementGroup>
+                </StyleElementGroup>);
 		} else {
 			return null;
 		}
