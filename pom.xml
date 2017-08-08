@@ -171,6 +171,7 @@
   <build>
     <!-- for hot reload of the web application-->
 	<sourceDirectory>src</sourceDirectory>
+	<testSourceDirectory>test</testSourceDirectory> 
     <outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
     <plugins>
 		<plugin>
