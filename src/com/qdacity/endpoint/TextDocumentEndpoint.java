@@ -252,7 +252,7 @@ public class TextDocumentEndpoint {
 			
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, textDocumentCode.code.getCodesystemID());
 			Change change = new ChangeBuilder().makeApplyCodeChange(textDocumentCode.textDocument, textDocumentCode.code, user, cs.getProjectType());
-			ChangeLogger.logChange(change);	
+			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
 		}
