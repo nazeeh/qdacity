@@ -1,6 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const StyledZoomSelector = styled.div `
+	margin-left: 10px;
+	display: inline-block;
+	width: 75px;
+`;
+
+const StyledZoomBtn = styled.button `
+	width: 75px;
+`;
+
+const StyledCaret = styled.span `
+	margin-left: 5px !important;
+`;
+
+const StyledDropDown = styled.ul `
+	min-width: 90px;
+`;
+
 export default class ButtonZoomSelect extends React.Component {
 
 	constructor(props) {
@@ -28,37 +46,16 @@ export default class ButtonZoomSelect extends React.Component {
 		return (rounded) + '%';
 	}
 
-	getStyles() {
-		return {
-			container: {
-				marginLeft: '10px',
-				display: 'inline-block',
-				width: '75px'
-			},
-			button: {
-				width: '75px'
-			},
-			caret: {
-				marginLeft: '5px',
-			},
-			dropDown: {
-				minWidth: '90px'
-			}
-		};
-	}
-
 	render() {
 		const _this = this;
 
-		const styles = this.getStyles();
-
 		return (
-			<div className='dropdown' style={styles.container}>
-                <button className='btn btn-default dropdown-toggle' style={styles.button} type='button' data-toggle='dropdown'>
+			<StyledZoomSelector className='dropdown'>
+                <StyledZoomBtn className='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'>
 		            {this.state.zoomValue}
-                    <span className='caret' style={styles.caret}></span>
-                </button>
-                <ul style={styles.dropDown} className='dropdown-menu'>
+                    <StyledCaret className='caret'></StyledCaret>
+                </StyledZoomBtn>
+                <StyledDropDown className='dropdown-menu'>
                     <li><a onClick={_this.buttonClicked.bind(_this, 10)} href='#'>10 %</a></li>
                     <li><a onClick={_this.buttonClicked.bind(_this, 30)} href='#'>30 %</a></li>
                     <li><a onClick={_this.buttonClicked.bind(_this, 50)} href='#'>50 %</a></li>
@@ -66,8 +63,8 @@ export default class ButtonZoomSelect extends React.Component {
                     <li><a onClick={_this.buttonClicked.bind(_this, 100)} href='#'>100 %</a></li>
                     <li><a onClick={_this.buttonClicked.bind(_this, 120)} href='#'>120 %</a></li>
                     <li><a onClick={_this.buttonClicked.bind(_this, 150)} href='#'>150 %</a></li>
-                </ul>
-            </div>
+                </StyledDropDown>
+            </StyledZoomSelector>
 		);
 	}
 
