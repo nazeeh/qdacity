@@ -11,10 +11,9 @@ import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SaturationParameters implements Serializable {
-    
+
     private static final int LAST_SAT_RESULT_MIN = 1;
     private static final int LAST_SAT_RESULT_MAX = 10;
-    
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -43,8 +42,6 @@ public class SaturationParameters implements Serializable {
     double updateCodeMemoChangeWeight;
     @Persistent
     double updateCodeNameChangeWeight;
-    @Persistent
-    double updateCodeIdChangeWeight;
     @Persistent
     double relocateCodeChangeWeight;
     @Persistent
@@ -84,8 +81,6 @@ public class SaturationParameters implements Serializable {
     double updateCodeMemoSaturationMaximum;
     @Persistent
     double updateCodeNameSaturationMaximum;
-    @Persistent
-    double updateCodeIdSaturationMaximum;
     @Persistent
     double relocateCodeSaturationMaximum;
     @Persistent
@@ -129,7 +124,6 @@ public class SaturationParameters implements Serializable {
 	this.updateCodeBookEntryWhenNotToUseChangeWeight = copy.updateCodeBookEntryWhenNotToUseChangeWeight;
 	this.updateCodeBookEntryWhenToUseChangeWeight = copy.updateCodeBookEntryWhenToUseChangeWeight;
 	this.updateCodeColorChangeWeight = copy.updateCodeColorChangeWeight;
-	this.updateCodeIdChangeWeight = copy.updateCodeIdChangeWeight;
 	this.updateCodeMemoChangeWeight = copy.updateCodeMemoChangeWeight;
 	this.updateCodeNameChangeWeight = copy.updateCodeNameChangeWeight;
 	this.appliedCodesSaturationMaximum = copy.appliedCodesSaturationMaximum;
@@ -146,7 +140,6 @@ public class SaturationParameters implements Serializable {
 	this.updateCodeBookEntryWhenNotToUseSaturationMaximum = copy.updateCodeBookEntryWhenNotToUseSaturationMaximum;
 	this.updateCodeBookEntryWhenToUseSaturationMaximum = copy.updateCodeBookEntryWhenToUseSaturationMaximum;
 	this.updateCodeColorSaturationMaximum = copy.updateCodeColorSaturationMaximum;
-	this.updateCodeIdSaturationMaximum = copy.updateCodeIdSaturationMaximum;
 	this.updateCodeMemoSaturationMaximum = copy.updateCodeMemoSaturationMaximum;
 	this.updateCodeNameSaturationMaximum = copy.updateCodeNameSaturationMaximum;
 	this.lastSatResults = copy.lastSatResults;
@@ -157,10 +150,10 @@ public class SaturationParameters implements Serializable {
     }
 
     public void setLastSatResults(int lastSatResults) {
-	if(lastSatResults > LAST_SAT_RESULT_MAX) {
+	if (lastSatResults > LAST_SAT_RESULT_MAX) {
 	    lastSatResults = LAST_SAT_RESULT_MAX;
 	}
-	if(lastSatResults < LAST_SAT_RESULT_MIN) {
+	if (lastSatResults < LAST_SAT_RESULT_MIN) {
 	    lastSatResults = LAST_SAT_RESULT_MIN;
 	}
 	this.lastSatResults = lastSatResults;
@@ -228,14 +221,6 @@ public class SaturationParameters implements Serializable {
 
     public void setUpdateCodeNameChangeWeight(double updateCodeNameChangeWeight) {
 	this.updateCodeNameChangeWeight = updateCodeNameChangeWeight;
-    }
-
-    public double getUpdateCodeIdChangeWeight() {
-	return updateCodeIdChangeWeight;
-    }
-
-    public void setUpdateCodeIdChangeWeight(double updateCodeIdChangeWeight) {
-	this.updateCodeIdChangeWeight = updateCodeIdChangeWeight;
     }
 
     public double getDeleteCodeChangeWeight() {
@@ -372,14 +357,6 @@ public class SaturationParameters implements Serializable {
 
     public void setUpdateCodeNameSaturationMaximum(double updateCodeNameSaturationMaximum) {
 	this.updateCodeNameSaturationMaximum = updateCodeNameSaturationMaximum;
-    }
-
-    public double getUpdateCodeIdSaturationMaximum() {
-	return updateCodeIdSaturationMaximum;
-    }
-
-    public void setUpdateCodeIdSaturationMaximum(double updateCodeIdSaturationMaximum) {
-	this.updateCodeIdSaturationMaximum = updateCodeIdSaturationMaximum;
     }
 
     public double getRelocateCodeSaturationMaximum() {
