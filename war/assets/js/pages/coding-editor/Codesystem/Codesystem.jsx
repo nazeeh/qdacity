@@ -160,7 +160,7 @@ class Codesystem extends SimpleCodesystem {
                     _this.updateSelected(resp, false);
                 });
                 _this.saveAndUpdate(code);
-            }, 10);
+            }, 600);
         }
 	
 
