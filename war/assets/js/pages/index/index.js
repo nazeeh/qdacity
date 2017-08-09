@@ -9,12 +9,19 @@ import loadGAPIs from '../../common/GAPI';
 
 
 import $script from 'scriptjs';
+
+var chartScriptPromise = new Promise(
+	function (resolve, reject) {
+		$script('https://www.gstatic.com/charts/loader.js', ()=>{
+			resolve();
+		});
+	}
+);
+
 $script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
 
 window.loadPlatform = function () {
-	$script('https://www.gstatic.com/charts/loader.js', function () { //load charts loader for google charts
 		$script('https://apis.google.com/js/platform.js?onload=init', 'google-api');
-	});
 }
 
 var account = {
@@ -34,7 +41,7 @@ window.init = function () {
 			}
 		};
 		ReactDOM.render(
-			<App apiCfg={apiCfg}/>, document.getElementById('indexContent'));
+			<App apiCfg={apiCfg} chartScriptPromise={chartScriptPromise}/>, document.getElementById('indexContent'));
 
 	});
 }

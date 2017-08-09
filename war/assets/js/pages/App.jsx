@@ -32,7 +32,7 @@ export default class App extends React.Component {
 				<div>
 					<Route path="/" render={(props)=><NavBar client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} callback={(acc)=> {this.account= acc; this.forceUpdate()} } {...props}/>}/>
 					<Route path="/PersonalDashboard" render={(props)=><PersonalDashboard account={this.account}  {...props}/>}/>
-					<Route path="/ProjectDashboard" render={(props)=><ProjectDashboard account={this.account} {...props} />}/>
+					<Route path="/ProjectDashboard" render={(props)=><ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />}/>
 					<Route path="/Admin" render={()=><Admin account={this.account} />}/>
 					<Route path="/CodingEditor" render={(props)=><CodingEditor account={this.account} {...props}/>}/>
 					<Route exact path="/" render={(props)=><Index account={this.account}  {...props}/>}/>

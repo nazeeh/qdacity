@@ -28,13 +28,18 @@ export default class ProjectDashboard extends React.Component {
 			project: project,
 			reports: [],
 			isProjectOwner: false,
-			isValidationCoder: false
+			isValidationCoder: false,
+			googleChartsLoaded: false
 		};
 
 		$("body").css({
 			overflow: "auto"
 		});
-
+		this.props.chartScriptPromise.then(()=>{
+			this.setState({
+				googleChartsLoaded: true
+			});
+		});
 		this.addReports = this.addReports.bind(this);
 	}
 
@@ -86,6 +91,11 @@ export default class ProjectDashboard extends React.Component {
 		});
 	}
 
+	renderAgreementStats(){
+		if (!this.state.googleChartsLoaded) return null;
+		return <AgreementStats  reports={this.state.reports} chartScriptPromise={this.props.chartScriptPromise}/>
+	}
+
 	render() {
 		if (!this.props.account.getProfile) return null;
 		this.init();
@@ -102,7 +112,7 @@ export default class ProjectDashboard extends React.Component {
 							<h3 className="box-title">Intercoder Agreement</h3>
 							</div>
 							<div className="box-body">
-								<AgreementStats  reports={this.state.reports}/>
+								{this.renderAgreementStats()}
 							</div>
 						</div>
 						<div id="changeLog"></div>
