@@ -108,7 +108,7 @@ gulp.task('bundle-task', function() {
 });
 
 gulp.task('set-react-production', function() {
-	return gulp.src('./*.html', {base: './'})
+	return gulp.src('./*.jsp', {base: './'})
 	.pipe(replace('react.js', 'react.min.js'))
 	.pipe(replace('react-dom.js', 'react-dom.min.js'))
 	.pipe(gulp.dest('./'));
