@@ -18,11 +18,21 @@ var chartScriptPromise = new Promise(
 	}
 );
 
-$script('https://apis.google.com/js/client.js?onload=loadPlatform', 'client');
+var googleClientPromise = new Promise(
+	function (resolve, reject) {
+		$script('https://apis.google.com/js/client.js', ()=>{
+			resolve();
+		});
+	}
+);
 
-window.loadPlatform = function () {
-		$script('https://apis.google.com/js/platform.js?onload=init', 'google-api');
-}
+var googlePlatformPromise = new Promise(
+	function (resolve, reject) {
+		$script('https://apis.google.com/js/platform.js', ()=>{
+			resolve();
+		});
+	}
+);
 
 var account = {
 	isSignedIn: () => {
@@ -30,7 +40,16 @@ var account = {
 	}
 };
 
-window.init = function () {
+window.onload = function(){
+	googleClientPromise.then(()=>{
+		googlePlatformPromise.then(()=>{
+			init();
+		});
+	});
+
+}
+
+const init = function () {
 
 	loadGAPIs(() => {
 
