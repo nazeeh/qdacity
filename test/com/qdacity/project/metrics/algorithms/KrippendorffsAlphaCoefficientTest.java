@@ -14,8 +14,8 @@ public class KrippendorffsAlphaCoefficientTest {
 
         double computedAlpha = alpha.compute();
         System.out.println("RESULT (nominal): " + computedAlpha);
-        System.out.println("SHOULD BE (nominal) 1-(1+2)/9.72 =  0.691");
-        assert(computedAlpha == 0.691);
+        System.out.println("SHOULD BE (nominal) 1-(1+2)/9.72 =  0.691358024691358");
+        assert(computedAlpha == 0.691358024691358);
     }
 
    
