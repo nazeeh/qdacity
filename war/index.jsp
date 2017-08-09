@@ -51,7 +51,6 @@
 		<link href="components/colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 		<script type="text/javascript">mxBasePath = 'components/mxGraph/javascript/src';</script>
-		<script type="text/javascript" src="components/mxGraph/javascript/mxClient.min.js"></script>
 
 
 	    <!-- Custom Fonts -->
