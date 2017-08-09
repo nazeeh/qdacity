@@ -22,7 +22,6 @@
 
 		<!-- ProjectDashboard CSS -->
 		<link href="assets/css/project-list.css" rel="stylesheet">
-		<link href="assets/css/notificationList.css" rel="stylesheet">
 		<link href="assets/css/search-box.css" rel="stylesheet">
 		<link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
 		<link href="assets/css/dashboard.css" rel="stylesheet">
