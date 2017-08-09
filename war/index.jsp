@@ -60,7 +60,6 @@
 		<script src="//code.jquery.com/jquery-1.10.2.js"></script>
 
 		<!-- CodingEditor -->
-		<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
 		<script src="https://unpkg.com/react@15/dist/react.js"></script>

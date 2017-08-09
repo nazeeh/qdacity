@@ -1,7 +1,9 @@
 import React from 'react'
 import styled from 'styled-components';
-
+import 'script!../../../../../components/jQuery-UI/jquery-ui.min.js';
 import 'script!../../../../../components/colorpicker/evol.colorpicker.js';
+
+
 
 const StyledColorPicker = styled.input `
     width: 80px;
