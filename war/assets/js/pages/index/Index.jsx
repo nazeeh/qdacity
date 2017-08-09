@@ -48,7 +48,7 @@ export default class Index extends React.Component {
 
 			                </div>
 			                <div className="col-lg-5 col-lg-offset-2 col-sm-6">
-			                    <img className="img-responsive" src="assets/img/notes.png" alt=""/>
+			                    <img className="img-responsive" src="assets/img/notes.jpg" alt=""/>
 			                </div>
 			            </div>
 
