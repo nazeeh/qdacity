@@ -1,12 +1,13 @@
-import App from '../App.jsx';
+import 'script!../../../../components/jQuery/jquery.js';
+import 'script!../../../../components/bootstrap/bootstrap.min.js';
+import 'script!../../../../components/Vex/js/vex.combined.min.js';
 
+import App from '../App.jsx';
 import Account from '../../common/Account.jsx';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
-import 'script!../../../../components/bootstrap/bootstrap.min.js';
-import 'script!../../../../components/Vex/js/vex.combined.min.js';
-import loadGAPIs from '../../common/GAPI';
 
+import loadGAPIs from '../../common/GAPI';
 
 import $script from 'scriptjs';
 
