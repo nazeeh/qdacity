@@ -39,7 +39,6 @@
 
 		<!-- CodingEditor -->
 		<link href="assets/css/coding-editor.css" rel="stylesheet">
-		<link href="assets/css/documentView.css" rel="stylesheet">
 		<link href="assets/css/footer.css" rel="stylesheet">
 		<link href="assets/css/CodesystemView.css" rel="stylesheet">
 		<link href="components/tooltipster/css/tooltipster.css" rel="stylesheet">
