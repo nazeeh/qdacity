@@ -22,7 +22,7 @@
 
 		<!-- ProjectDashboard CSS -->
 		<link href="assets/css/project-list.css" rel="stylesheet">
-		<link href="components/AdminLTE/css/AdminLTE.css" rel="stylesheet">
+		<link href="components/AdminLTE/css/AdminLTE.min.css" rel="stylesheet">
 		<link href="assets/css/dashboard.css" rel="stylesheet">
 		<link href="assets/css/common.css" rel="stylesheet">
 		<link href="assets/css/IntercoderAgreement.css" rel="stylesheet">
@@ -47,7 +47,7 @@
 		<link href="components/filer/css/jquery.filer.css" type="text/css" rel="stylesheet" />
 		<link href="components/filer/css/themes/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
 		<link href="components/colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css">
 		<script type="text/javascript">mxBasePath = 'components/mxGraph/javascript/src';</script>
 
 
