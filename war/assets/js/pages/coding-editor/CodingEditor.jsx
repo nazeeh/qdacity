@@ -109,9 +109,18 @@ export default class CodingEditor extends React.Component {
 			editorCtrl: {},
 			showCodingView: false,
 			selectedCode: {},
-			selectedEditor: PageView.TEXT
+			selectedEditor: PageView.TEXT,
+			mxGraphLoaded: false
 
 		};
+
+		this.props.mxGraphPromise.then(()=>{
+			this.setState({
+				mxGraphLoaded: true
+			});
+		});
+
+
 		const _this = this;
 
 		this.toggleCodingView = this.toggleCodingView.bind(this);
@@ -204,6 +213,11 @@ export default class CodingEditor extends React.Component {
 	updateSelectedCode(code, persist) {
 		this.codesystemViewRef.updateSelected(code, persist);
 		this.umlEditorRef.codeUpdated(code);
+	}
+
+	renderUMLEditor(){
+		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />;
+		return null;
 	}
 
 	render() {
@@ -327,7 +341,7 @@ export default class CodingEditor extends React.Component {
 					</StyledTextEditorMenu>
 						<TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
 					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
-						<UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />
+						{this.renderUMLEditor()}
 					</StyledUMLEditor>
 				</div>
 

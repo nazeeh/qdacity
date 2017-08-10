@@ -12,7 +12,7 @@ import HoverButtons from './hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
-import 'script!../../../../components/mxGraph/javascript/mxClient.min.js';
+
 
 const StyledGraphView = styled.div `
     overflow: hidden;

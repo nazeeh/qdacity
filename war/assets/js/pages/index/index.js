@@ -21,15 +21,24 @@ var chartScriptPromise = new Promise(
 
 var googleClientPromise = new Promise(
 	function (resolve, reject) {
-		$script('https://apis.google.com/js/client.js', ()=>{
+		window.resolveClient = resolve;
+	}
+);
+
+$script('https://apis.google.com/js/client.js?onload=resolveClient', '');
+
+
+var googlePlatformPromise = new Promise(
+	function (resolve, reject) {
+		$script('https://apis.google.com/js/platform.js', ()=>{
 			resolve();
 		});
 	}
 );
 
-var googlePlatformPromise = new Promise(
+var mxGraphPromise = new Promise(
 	function (resolve, reject) {
-		$script('https://apis.google.com/js/platform.js', ()=>{
+		$script('../../components/mxGraph/javascript/mxClient.min.js', ()=>{
 			resolve();
 		});
 	}
@@ -61,7 +70,7 @@ const init = function () {
 			}
 		};
 		ReactDOM.render(
-			<App apiCfg={apiCfg} chartScriptPromise={chartScriptPromise}/>, document.getElementById('indexContent'));
+			<App apiCfg={apiCfg} chartScriptPromise={chartScriptPromise}  mxGraphPromise={mxGraphPromise}/>, document.getElementById('indexContent'));
 
 	});
 }
