@@ -13,6 +13,7 @@ const StyledButton = styled.div `
     background-color: white;
     
     cursor: pointer;
+    pointer-events: auto;
     
     &:hover {
         background-color: #e6e6e6;
