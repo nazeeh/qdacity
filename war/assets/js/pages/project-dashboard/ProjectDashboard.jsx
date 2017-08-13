@@ -35,7 +35,7 @@ export default class ProjectDashboard extends React.Component {
 		$("body").css({
 			overflow: "auto"
 		});
-		this.props.chartScriptPromise.then(()=>{
+		this.props.chartScriptPromise.then(() => {
 			this.setState({
 				googleChartsLoaded: true
 			});
@@ -44,7 +44,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	init() {
-		if (!this.userPromise){
+		if (!this.userPromise) {
 			this.userPromise = this.props.account.getCurrentUser();
 			this.setUserRights();
 			this.setProjectProperties();
@@ -91,7 +91,7 @@ export default class ProjectDashboard extends React.Component {
 		});
 	}
 
-	renderAgreementStats(){
+	renderAgreementStats() {
 		if (!this.state.googleChartsLoaded) return null;
 		return <AgreementStats  reports={this.state.reports} chartScriptPromise={this.props.chartScriptPromise}/>
 	}

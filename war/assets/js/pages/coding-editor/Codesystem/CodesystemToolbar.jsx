@@ -49,7 +49,7 @@ export default class CodesystemToolbar extends React.Component {
 		var prompt = new Prompt('Give your code a name', 'Code Name');
 		prompt.showModal().then(function (codeName) {
 
-                        // Build the Request Object
+			// Build the Request Object
 			var code = {
 				author: _this.props.account.getProfile().getName(),
 				name: codeName,

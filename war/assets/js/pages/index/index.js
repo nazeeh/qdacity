@@ -13,7 +13,7 @@ import $script from 'scriptjs';
 
 var chartScriptPromise = new Promise(
 	function (resolve, reject) {
-		$script('https://www.gstatic.com/charts/loader.js', ()=>{
+		$script('https://www.gstatic.com/charts/loader.js', () => {
 			resolve();
 		});
 	}
@@ -30,7 +30,7 @@ $script('https://apis.google.com/js/client.js?onload=resolveClient', '');
 
 var googlePlatformPromise = new Promise(
 	function (resolve, reject) {
-		$script('https://apis.google.com/js/platform.js', ()=>{
+		$script('https://apis.google.com/js/platform.js', () => {
 			resolve();
 		});
 	}
@@ -38,7 +38,7 @@ var googlePlatformPromise = new Promise(
 
 var mxGraphPromise = new Promise(
 	function (resolve, reject) {
-		$script('../../components/mxGraph/javascript/mxClient.min.js', ()=>{
+		$script('../../components/mxGraph/javascript/mxClient.min.js', () => {
 			resolve();
 		});
 	}
@@ -50,9 +50,9 @@ var account = {
 	}
 };
 
-window.onload = function(){
-	googleClientPromise.then(()=>{
-		googlePlatformPromise.then(()=>{
+window.onload = function () {
+	googleClientPromise.then(() => {
+		googlePlatformPromise.then(() => {
 			init();
 		});
 	});

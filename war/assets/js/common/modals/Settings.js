@@ -7,11 +7,13 @@ export default class Settings extends VexModal {
 
 	constructor() {
 		super();
-                this.state = { saturationParameters : undefined };
+		this.state = {
+			saturationParameters: undefined
+		};
 	}
 
 	showModal(umlEditorEnabled, projectId) {
-                var _this = this;              
+		var _this = this;
 		var promise = new Promise(
 			function (resolve, reject) {
 
@@ -22,7 +24,7 @@ export default class Settings extends VexModal {
 
 				var checked = '';
 				if (umlEditorEnabled) checked = ' checked';
-                                
+
 				formElements += '<div class="checkbox">';
 				formElements += '<label><input id="settingsUmlEditorEnabled" type="checkbox" value=""' + checked + '>Enable UML Editor</label>';
 				formElements += '</div>';
@@ -32,7 +34,7 @@ export default class Settings extends VexModal {
 				formElements += '<br>';
 				formElements += '</div>';
 				formElements += '</div>';
-                                
+
 				vex.dialog.open({
 					message: "Settings",
 					contentCSS: {
@@ -45,17 +47,17 @@ export default class Settings extends VexModal {
 							$vexContent.data().vex.value = {
 								'umlEditorEnabled': $('#settingsUmlEditorEnabled').prop('checked')
 							};
-                                                        var saturationParameters = {};
-                                                        var saturationWeights = new SaturationWeights();
-                                                        var changeWeightNames = saturationWeights.getPropertyNamesChangeWeight();
-                                                        var saturationMaximumNames = saturationWeights.getPropertyNamesSaturationMaximum();
-                                                        for(var i in changeWeightNames) {
-                                                            saturationParameters[changeWeightNames[i]] = $('#cell'+i+'-1-input').prop('value') / 100;
-                                                            saturationParameters[saturationMaximumNames[i]] = $('#cell'+i+'-2-input').prop('value') / 100;
-                                                        }
-                                                        saturationParameters['lastSatResults'] = $('#saturation-interval').prop('value');
-                                                        saturationParameters['projectId'] = projectId;
-                                                        new SaturationEndpoint().setSaturationParameters(saturationParameters);
+							var saturationParameters = {};
+							var saturationWeights = new SaturationWeights();
+							var changeWeightNames = saturationWeights.getPropertyNamesChangeWeight();
+							var saturationMaximumNames = saturationWeights.getPropertyNamesSaturationMaximum();
+							for (var i in changeWeightNames) {
+								saturationParameters[changeWeightNames[i]] = $('#cell' + i + '-1-input').prop('value') / 100;
+								saturationParameters[saturationMaximumNames[i]] = $('#cell' + i + '-2-input').prop('value') / 100;
+							}
+							saturationParameters['lastSatResults'] = $('#saturation-interval').prop('value');
+							saturationParameters['projectId'] = projectId;
+							new SaturationEndpoint().setSaturationParameters(saturationParameters);
 							vex.close($vexContent.data().vex.id);
 						}
 					}), $.extend({}, vex.dialog.buttons.NO, {
@@ -67,7 +69,7 @@ export default class Settings extends VexModal {
 						} else reject(data);
 					}
 				});
-                                ReactDOM.render(<SaturationSettings projectId={projectId} />, document.getElementById('saturationSettings'));
+				ReactDOM.render(<SaturationSettings projectId={projectId} />, document.getElementById('saturationSettings'));
 			}
 		);
 
