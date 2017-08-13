@@ -18,15 +18,13 @@ export default class ChangeMetaModelButton extends ImageHoverButton {
 	}
 
 	getBounds() {
-		const offsetTop = this.getOffsetTop();
-
 		const sizeX = 34;
 		const sizeY = 32;
 
 		const offsetToNode = 6;
 
 		const x = this.props.x;
-		const y = (this.props.y + offsetTop) - (this.props.scale * sizeY) - offsetToNode * this.props.scale;
+		const y = this.props.y - (this.props.scale * sizeY) - offsetToNode * this.props.scale;
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
 

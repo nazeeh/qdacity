@@ -13,10 +13,6 @@ export default class Toolbar extends React.Component {
 		this.zoomSelect = null;
 	}
 
-	getHeight() {
-		return 51;
-	}
-
 	getStyle() {
 		return {
 			padding: '8px 20px 8px 20px',

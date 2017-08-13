@@ -54,10 +54,6 @@ export default class HoverButton extends React.Component {
 
 	}
 
-	getOffsetTop() {
-		return this.props.umlEditor.getToolbar().getHeight();
-	}
-
 	getBounds() {
 		return [0, 0, 0, 0];
 	}
@@ -75,7 +71,7 @@ export default class HoverButton extends React.Component {
 		const scale = this.props.scale;
 
 		// Dont display if out of bounds
-		if (x < 0 || y < this.getOffsetTop()) {
+		if (x < 0 || y < 0) {
 			return null;
 		}
 
