@@ -70,12 +70,14 @@ h2 {
 }
 
 .fa-editor-btn {
+	margin-top: 6px;
     color: #61B329;
     cursor: pointer; cursor: hand;
     z-index:999;
 }
 
 .fa-editor-btn-circle {
+
     color: #BCED91;
     z-index:999;
 }
@@ -87,6 +89,8 @@ h2 {
 }
 
 .fa-cancel-btn {
+	margin-top: 6px;
+	margin-left: 1px;
     color: #61B329;
     cursor: pointer; cursor: hand;
     z-index:999;

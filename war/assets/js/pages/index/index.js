@@ -2,11 +2,13 @@ import 'script!../../../../components/jQuery/jquery.js';
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/Vex/js/vex.combined.min.js';
 
+
 import "../../../css/common.css";
 import "../../../css/navbar-account.css";
 import "../../../css/landing-page.css";
 import "../../../../components/Vex/css/vex.css";
 import "../../../../components/Vex/css/vex-theme-os.css";
+import "../../../../components/bootstrap/dist/bootstrap.min.css";
 
 import App from '../App.jsx';
 import Account from '../../common/Account.jsx';

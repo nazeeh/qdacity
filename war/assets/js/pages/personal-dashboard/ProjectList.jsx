@@ -10,7 +10,8 @@ import CustomForm from '../../common/modals/CustomForm';
 import {
 	StyledPagination,
 	StyledPaginationItem,
-	StyledListItemBtn
+	StyledListItemBtn,
+	StyledListItem
 } from '../../common/styles/List';
 
 const StyledNewPrjBtn = styled.div `
@@ -233,7 +234,7 @@ export default class ProjectList extends React.Component {
 		}
 
 		const renderListItems = itemsToDisplay.map((project, index) => {
-			return <li
+			return <StyledListItem
 					key={project.id}
 					className={this.isValidationProject(project)}
 					onClick={() => prjClick(project)}
@@ -249,7 +250,7 @@ export default class ProjectList extends React.Component {
 						<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
 						<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
 					</StyledListItemBtn>
-				</li>;
+				</StyledListItem>;
 		})
 
 		//Render Pagination

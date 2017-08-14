@@ -13,13 +13,25 @@ const StyledPaginationItem = styled.a `
 	cursor: pointer;
 `;
 
+const StyledListItem = styled.li `
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+`;
+
 const StyledListItemBtn = styled.a `
-	float: right;
 	margin-top: -15px;
+	align-self:center;
+	float: right;
+ 	font-size: 19px;
+	& > i {
+	}
 `;
 
 export {
 	StyledPagination,
 	StyledPaginationItem,
-	StyledListItemBtn
+	StyledListItemBtn,
+	StyledListItem
 };

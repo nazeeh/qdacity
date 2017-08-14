@@ -11,9 +11,6 @@
 
 	    <title>QDAcity</title>
 
-	    <!-- Bootstrap Core CSS -->
-	    <link href="components/bootstrap/bootstrap.min.css" rel="stylesheet">
-
 		<!-- ProjectDashboard CSS -->
 		<link href="assets/css/project-list.css" rel="stylesheet">
 		<link href="components/AdminLTE/css/AdminLTE.min.css" rel="stylesheet">
