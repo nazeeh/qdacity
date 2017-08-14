@@ -28,9 +28,6 @@
 		<script type="text/javascript">var mxLoadResources = false;</script>
 
 
-	    <!-- Custom Fonts -->
-	    <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
 
 
 		<script src="https://unpkg.com/react@15/dist/react.js"></script>
