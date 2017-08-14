@@ -48,16 +48,16 @@ export default class SaturationDetails extends React.Component {
 			var table = $('#saturationTable').DataTable();
 			table.clear();
 
-            var saturationNameAndWeightsAndSaturation = new SaturationWeights(this.props.saturation.saturationParameters).getNameAndWeightsAndSaturationArray(this.props.saturation);
+			var saturationNameAndWeightsAndSaturation = new SaturationWeights(this.props.saturation.saturationParameters).getNameAndWeightsAndSaturationArray(this.props.saturation);
 
-            for (var i in saturationNameAndWeightsAndSaturation) {
-                if(saturationNameAndWeightsAndSaturation[i][1] > 0) { //only show if weighted.
-                    table.row.add([saturationNameAndWeightsAndSaturation[i][0], this.toPercent(saturationNameAndWeightsAndSaturation[i][3]), this.toPercent(saturationNameAndWeightsAndSaturation[i][1]), this.toPercent(saturationNameAndWeightsAndSaturation[i][2])]);
-                }
-            }
-            table.draw();
-        }
-    }
+			for (var i in saturationNameAndWeightsAndSaturation) {
+				if (saturationNameAndWeightsAndSaturation[i][1] > 0) { //only show if weighted.
+					table.row.add([saturationNameAndWeightsAndSaturation[i][0], this.toPercent(saturationNameAndWeightsAndSaturation[i][3]), this.toPercent(saturationNameAndWeightsAndSaturation[i][1]), this.toPercent(saturationNameAndWeightsAndSaturation[i][2])]);
+				}
+			}
+			table.draw();
+		}
+	}
 
 	toPercent(value) {
 		return (value * 100).toFixed(2) + "%";

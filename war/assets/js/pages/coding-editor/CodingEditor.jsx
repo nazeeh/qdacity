@@ -114,7 +114,7 @@ export default class CodingEditor extends React.Component {
 
 		};
 
-		this.props.mxGraphPromise.then(()=>{
+		this.props.mxGraphPromise.then(() => {
 			this.setState({
 				mxGraphLoaded: true
 			});
@@ -215,7 +215,7 @@ export default class CodingEditor extends React.Component {
 		this.umlEditorRef.codeUpdated(code);
 	}
 
-	renderUMLEditor(){
+	renderUMLEditor() {
 		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />;
 		return null;
 	}

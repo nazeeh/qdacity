@@ -22,8 +22,6 @@ export default class AddEdgeAggregationButton extends ImageHoverButton {
 	}
 
 	getBounds() {
-		const offsetTop = this.getOffsetTop();
-
 		const sizeX = 34;
 		const sizeY = 32;
 
@@ -31,7 +29,7 @@ export default class AddEdgeAggregationButton extends ImageHoverButton {
 		const offsetToButton = 6;
 
 		const x = this.props.x + this.props.width + offsetToNode * this.props.scale + sizeX * this.props.scale + offsetToButton * this.props.scale;
-		const y = this.props.y + offsetTop - offsetToButton * this.props.scale - sizeY * this.props.scale;
+		const y = this.props.y - offsetToButton * this.props.scale - sizeY * this.props.scale;
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
 

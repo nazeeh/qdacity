@@ -38,6 +38,8 @@
 		<link href="components/colorpicker/evol.colorpicker.css" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css">
 		<script type="text/javascript">mxBasePath = 'components/mxGraph/javascript/src';</script>
+		<!-- Disable mxGraph resource loading -->
+		<script type="text/javascript">var mxLoadResources = false;</script>
 
 
 	    <!-- Custom Fonts -->
