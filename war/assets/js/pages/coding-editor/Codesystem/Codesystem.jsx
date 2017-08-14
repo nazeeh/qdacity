@@ -155,12 +155,9 @@ class Codesystem extends SimpleCodesystem {
 
 	saveAndUpdate(code) {
 		var _this = this;
-            setTimeout(function () { //TODO remove this line
                 CodesEndpoint.updateCode(code).then(function (resp) {
                     _this.updateSelected(resp, false);
                 });
-                _this.saveAndUpdate(code); //TODO remove this line
-            }, 600); //TODO remove this line
         }
 	
 
