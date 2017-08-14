@@ -185,7 +185,7 @@ export default class MetaModel extends React.Component {
 			<StyledCodeviewComponent>
 				<div>
     		        <div className="checkbox">
-    		            <label><input ref={(checkbox) => { _this.checkbox = checkbox; }} type="checkbox" value="" onClick={this.checkboxClicked}></input>Code represents a relation</label>
+    		            <label><input ref={(checkbox) => { _this.checkbox = checkbox; }} type="checkbox" checked={this.state.mode == Mode.DEFAULT ? false : true} onClick={this.checkboxClicked}></input>Code represents a relation</label>
     		        </div>
 					{ this.renderContent() }
 				</div>
