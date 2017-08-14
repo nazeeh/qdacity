@@ -34,8 +34,6 @@ import "../../../../components/Vex/css/vex.css";
 import "../../../../components/Vex/css/vex-theme-os.css";
 import "../../../../components/bootstrap/dist/bootstrap.min.css";
 
-//Font-Awesome
-import "../../../../components/font-awesome/css/font-awesome.min.css";
 
 
 
