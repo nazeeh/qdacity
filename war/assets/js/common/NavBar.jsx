@@ -10,6 +10,11 @@ const StyledAccountTab = styled.li `
 const StyledSigninTab = styled.li `
 	display: ${props => props.loggedIn ? 'none' : 'block'} !important;
 `;
+
+const StyledNavbarItem = styled.a `
+	color: #323232 !important;
+`;
+
 export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
@@ -33,24 +38,24 @@ export default class NavBar extends React.Component {
 							<button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
 								<span className="sr-only">Toggle navigation</span> <span className="icon-bar"></span> <span className="icon-bar"></span> <span className="icon-bar"></span>
 							</button>
-							<a className="navbar-brand topnav clickable" onClick={this.redirectToPersonalDashbaord}>QDAcity</a>
+							<StyledNavbarItem className="navbar-brand topnav clickable" onClick={this.redirectToPersonalDashbaord}>QDAcity</StyledNavbarItem>
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
-								<li><a href="index.html#about">About</a></li>
-								<li><a href="index.html#contact">Contact</a></li>
+								<li><StyledNavbarItem href="/#about">About</StyledNavbarItem></li>
+								<li><StyledNavbarItem href="/#contact">Contact</StyledNavbarItem></li>
 								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
-									<a href="#" className="dropdown-toggle" data-toggle="dropdown">
+									<StyledNavbarItem href="#" className="dropdown-toggle" data-toggle="dropdown">
 										Account <b className="caret"></b>
-									</a>
+									</StyledNavbarItem>
 			 						<div id="accountView" className="dropdown-menu">
 										<Account ref={(c) => this.account = c} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback}  history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
 								<StyledSigninTab  loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
-									<a href="#" className="dropdown-toggle" data-toggle="dropdown">
+									<StyledNavbarItem href="#" className="dropdown-toggle" data-toggle="dropdown">
 											Sign In <b className="caret"></b>
-										</a>
+										</StyledNavbarItem>
 										<ul className="dropdown-menu">
 											<li>
 												<div className="navbar-content">
