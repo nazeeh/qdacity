@@ -11,13 +11,6 @@
 
 	    <title>QDAcity</title>
 
-		<!-- ProjectDashboard CSS -->
-		<link href="assets/css/project-list.css" rel="stylesheet">
-		<link href="components/AdminLTE/css/AdminLTE.min.css" rel="stylesheet">
-		<link href="assets/css/dashboard.css" rel="stylesheet">
-		<link href="assets/css/IntercoderAgreement.css" rel="stylesheet">
-
-
 		<link href="components/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
 		<link rel="stylesheet" type="text/css" charset="utf-8" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
