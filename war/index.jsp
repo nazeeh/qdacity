@@ -24,7 +24,6 @@
 		<link href="assets/css/project-list.css" rel="stylesheet">
 		<link href="components/AdminLTE/css/AdminLTE.min.css" rel="stylesheet">
 		<link href="assets/css/dashboard.css" rel="stylesheet">
-		<link href="assets/css/common.css" rel="stylesheet">
 		<link href="assets/css/IntercoderAgreement.css" rel="stylesheet">
 
 
