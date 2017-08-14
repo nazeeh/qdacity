@@ -11,20 +11,33 @@ const StyledCodeviewComponent = styled.div `
     padding: 8px 8px 0px 8px;
 `;
 
+const Mode = {
+	DEFAULT: 0,
+	RELATIONSHIP: 1
+};
+
 export default class MetaModel extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			code: {},
 			elements: {},
-			selected: []
+			selected: [],
+			mode: Mode.DEFAULT
 		};
+
+		// TODO rename
+		this.checkbox = null;
+
 		this.getElement = this.getElement.bind(this);
 		this.addSelected = this.addSelected.bind(this);
 		this.setElements = this.setElements.bind(this);
 		this.setActiveElement = this.setActiveElement.bind(this);
 		this.updateActiveElement = this.updateActiveElement.bind(this);
 
+		// TODO rename
+		this.checkboxClicked = this.checkboxClicked.bind(this);
 	}
 
 	setElements(elements) {
@@ -139,20 +152,44 @@ export default class MetaModel extends React.Component {
 		this.props.updateSelectedCode(this.props.code, true);
 	}
 
+	// TODO rename
+	checkboxClicked() {
+		this.setState({
+			mode: this.checkbox.checked ? Mode.RELATIONSHIP : Mode.DEFAULT
+		});
+	}
+
+	renderContent() {
+		if (this.state.mode == Mode.DEFAULT) {
+			return (
+				<div>
+                    <div className="col-sm-6">
+                        <MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
+                    </div>
+                    <div className="col-sm-6">
+                        <CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
+                    </div>
+                </div>
+			);
+		} else {
+			return null;
+		}
+	}
+
 	render() {
+		const _this = this;
+
 		this.setActiveIds(this.props.code.mmElementIDs);
+
 		return (
 			<StyledCodeviewComponent>
 				<div>
-					<div className="col-sm-6">
-						<MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
-					</div>
-					<div className="col-sm-6">
-						<CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
-					</div>
+    		        <div className="checkbox">
+    		            <label><input ref={(checkbox) => { _this.checkbox = checkbox; }} type="checkbox" value="" onClick={this.checkboxClicked}></input>Code represents a relation</label>
+    		        </div>
+					{ this.renderContent() }
 				</div>
 			</StyledCodeviewComponent>
-
 		);
 	}
 }
