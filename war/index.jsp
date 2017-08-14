@@ -14,12 +14,6 @@
 	    <!-- Bootstrap Core CSS -->
 	    <link href="components/bootstrap/bootstrap.min.css" rel="stylesheet">
 
-	    <!-- Custom CSS -->
-	    <link href="assets/css/landing-page.css" rel="stylesheet">
-	    <link href="assets/css/navbar-account.css" rel="stylesheet">
-	    <link rel="stylesheet" href="components/Vex/css/vex.css" />
-		<link rel="stylesheet" href="components/Vex/css/vex-theme-os.css" />
-
 		<!-- ProjectDashboard CSS -->
 		<link href="assets/css/project-list.css" rel="stylesheet">
 		<link href="components/AdminLTE/css/AdminLTE.min.css" rel="stylesheet">
