@@ -21,7 +21,9 @@ const StyledNewPrjBtn = styled.div `
 const StyledProjectListMenu = styled.div `
 	display:flex;
 	flex-direction:row;
+	height: 34px !important;
 	& > .searchfield{
+		height: inherit !important;
 		flex:1;
 		margin-right: 5px;
 	}
@@ -46,6 +48,11 @@ const StyledSearchField = styled.div `
 	  border-radius: 0px 5px 5px 0px;
 	}
 `;
+
+const StyledProjectList = styled.ul `
+	padding-top: 5px;
+`;
+
 
 export default class ProjectList extends React.Component {
 	constructor(props) {
@@ -274,9 +281,9 @@ export default class ProjectList extends React.Component {
 		return (
 			<div>
 				{projectListMenu}
-				<ul className="list compactBoxList">
+				<StyledProjectList className="list compactBoxList">
 					{renderListItems}
-	            </ul>
+	            </StyledProjectList>
 	            <StyledPagination className="pagination">
 					{renderPagination}
             	</StyledPagination>
