@@ -20,7 +20,7 @@ const StyledBtnGroup = styled.div `
 
 
 const StyledBtnStack = styled.span `
-		font-size: 8px;
+		font-size: 8px !important;
 `;
 
 export default class CodesystemToolbar extends React.Component {
