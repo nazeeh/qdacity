@@ -155,13 +155,13 @@ class Codesystem extends SimpleCodesystem {
 
 	saveAndUpdate(code) {
 		var _this = this;
-                CodesEndpoint.updateCode(code).then(function (resp) {
-                    _this.updateSelected(resp, false);
-                });
-        }
-	
+		CodesEndpoint.updateCode(code).then(function (resp) {
+			_this.updateSelected(resp, false);
+		});
+	}
 
-            
+
+
 	removeCode() {
 		var code = this.state.selected;
 
