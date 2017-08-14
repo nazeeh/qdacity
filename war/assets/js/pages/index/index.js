@@ -16,6 +16,15 @@ import "../../../css/agreementStats.css";
 import "../../../../components/Alertify/css/alertify.core.css";
 import "../../../../components/Alertify/css/alertify.default.css";
 
+// Coding Editor
+import "../../../css/coding-editor.css";
+import "../../../css/footer.css";
+import "../../../css/CodesystemView.css";
+import "../../../../components/tooltipster/css/tooltipster.css";
+import "../../../css/agreementMap.css";
+import "../../../../components/filer/css/jquery.filer.css";
+import "../../../../components/filer/css/themes/jquery.filer-dragdropbox-theme.css";
+import "../../../../components/colorpicker/evol.colorpicker.css";
 
 // Common Styles
 import "../../../css/common.css";
