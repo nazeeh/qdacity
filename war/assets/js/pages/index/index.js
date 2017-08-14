@@ -8,6 +8,15 @@ import "../../../../components/AdminLTE/css/AdminLTE.min.css";
 import "../../../css/dashboard.css";
 import "../../../css/IntercoderAgreement.css";
 
+// Project Dashboard Styles
+import "../../../../components/DataTables-1.10.7/media/css/jquery.dataTables.css";
+import "../../../../components/slick/slick.min.css";
+import "../../../css/customTimeline.css";
+import "../../../css/agreementStats.css";
+import "../../../../components/Alertify/css/alertify.core.css";
+import "../../../../components/Alertify/css/alertify.default.css";
+
+
 // Common Styles
 import "../../../css/common.css";
 import "../../../css/navbar-account.css";

@@ -11,14 +11,7 @@
 
 	    <title>QDAcity</title>
 
-		<link href="components/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet">
-		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
 		<link rel="stylesheet" type="text/css" charset="utf-8" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
-		<!-- ProjectDashboard -->
-		<link href="assets/css/customTimeline.css" rel="stylesheet">
-		<link href="assets/css/agreementStats.css" rel="stylesheet">
-		<link href="components/Alertify/css/alertify.core.css" rel="stylesheet">
-		<link href="components/Alertify/css/alertify.default.css" rel="stylesheet">
 
 		<!-- CodingEditor -->
 		<link href="assets/css/coding-editor.css" rel="stylesheet">
