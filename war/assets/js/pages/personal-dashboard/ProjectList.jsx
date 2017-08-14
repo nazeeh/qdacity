@@ -17,6 +17,35 @@ const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
 `;
 
+const StyledProjectListMenu = styled.div `
+	display:flex;
+	flex-direction:row;
+	& > .searchfield{
+		flex:1;
+		margin-right: 5px;
+	}
+`;
+
+const StyledSearchField = styled.div `
+	display:flex;
+	flex-direction:row;
+	width: 100px;
+	margin-bottom: 5px;
+	& > input[type=text] {
+		flex:1;
+	    padding:0.3em;
+	    border:0.2em solid #337ab7;
+	    border-radius: 5px 0px 0px 5px;
+	}
+	& > button {
+	  padding:0.6em 0.8em;
+	  background-color:#337ab7;
+	  color:white;
+	  border:none;
+	  border-radius: 0px 5px 5px 0px;
+	}
+`;
+
 export default class ProjectList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -164,8 +193,8 @@ export default class ProjectList extends React.Component {
 		//Render Components
 
 		//Render search and newPrjBtn
-		const projectListMenu = <div className="projectlist-menu">
-			<span className="searchfield" id="searchform">
+		const projectListMenu = <StyledProjectListMenu>
+			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					type="text"
 					placeholder="Search"
@@ -185,9 +214,9 @@ export default class ProjectList extends React.Component {
 					</button>
 				</StyledNewPrjBtn>
 
-			</span>
+			</StyledSearchField>
 
-		</div>
+		</StyledProjectListMenu>
 
 		//Rebder List Items
 		var filteredList = this.props.projects.filter(

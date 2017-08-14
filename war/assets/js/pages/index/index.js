@@ -1,12 +1,19 @@
-import App from '../App.jsx';
+import 'script!../../../../components/jQuery/jquery.js';
+import 'script!../../../../components/bootstrap/bootstrap.min.js';
+import 'script!../../../../components/Vex/js/vex.combined.min.js';
 
+import "../../../css/common.css";
+import "../../../css/navbar-account.css";
+import "../../../css/landing-page.css";
+import "../../../../components/Vex/css/vex.css";
+import "../../../../components/Vex/css/vex-theme-os.css";
+
+import App from '../App.jsx';
 import Account from '../../common/Account.jsx';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
-import 'script!../../../../components/bootstrap/bootstrap.min.js';
-import 'script!../../../../components/Vex/js/vex.combined.min.js';
-import loadGAPIs from '../../common/GAPI';
 
+import loadGAPIs from '../../common/GAPI';
 
 import $script from 'scriptjs';
 
@@ -20,15 +27,24 @@ var chartScriptPromise = new Promise(
 
 var googleClientPromise = new Promise(
 	function (resolve, reject) {
-		$script('https://apis.google.com/js/client.js', ()=>{
+		window.resolveClient = resolve;
+	}
+);
+
+$script('https://apis.google.com/js/client.js?onload=resolveClient', '');
+
+
+var googlePlatformPromise = new Promise(
+	function (resolve, reject) {
+		$script('https://apis.google.com/js/platform.js', ()=>{
 			resolve();
 		});
 	}
 );
 
-var googlePlatformPromise = new Promise(
+var mxGraphPromise = new Promise(
 	function (resolve, reject) {
-		$script('https://apis.google.com/js/platform.js', ()=>{
+		$script('../../components/mxGraph/javascript/mxClient.min.js', ()=>{
 			resolve();
 		});
 	}
@@ -60,7 +76,7 @@ const init = function () {
 			}
 		};
 		ReactDOM.render(
-			<App apiCfg={apiCfg} chartScriptPromise={chartScriptPromise}/>, document.getElementById('indexContent'));
+			<App apiCfg={apiCfg} chartScriptPromise={chartScriptPromise}  mxGraphPromise={mxGraphPromise}/>, document.getElementById('indexContent'));
 
 	});
 }

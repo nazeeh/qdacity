@@ -30,6 +30,14 @@ const StyledToolBar = styled.div `
 	background-color: #e7e7e7;
 `;
 
+const StyledDocumentList = styled.div `
+	margin:2px 0px 2px 0px;
+`;
+
+const StyledDocumentItem = styled.a `
+	padding: 2px 2px !important;
+`;
+
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -295,13 +303,13 @@ export default class DocumentsView extends React.Component {
 				<StyledToolBar>
 					{this.renderToolbar()}
 				</StyledToolBar>
-				<div className="list-group">
+				<StyledDocumentList>
 		        {
 		          this.state.documents.map(function(doc) {
-		            return <a className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</a>
+		            return <StyledDocumentItem className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
 		          })
 		        }
-		  		</div>
+		  		</StyledDocumentList>
 			</div>
 		);
 	}
