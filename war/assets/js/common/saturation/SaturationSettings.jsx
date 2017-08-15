@@ -31,21 +31,28 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
             return null;
 
         let rows = [];
-        var saturationWeightsNames = new SaturationWeights(this.state.saturationParameters).getNameAndWeightsArray();
-        for (var i in saturationWeightsNames) {
-            let rowID = `row${i}`
-            let cell = []
-            for (var idx = 0; idx < 3; idx++) {
-                let cellID = `cell${i}-${idx}`
-                let inputId = cellID + '-input';
-                if (idx > 0) {
-                    cell.push(<td key={cellID} id={cellID}><input id={inputId} type="number"  min="0" max="100"  defaultValue={this.toPercent(saturationWeightsNames[i][idx])} /></td>)
-                } else {
-                    cell.push(<td key={cellID} id={cellID}>{saturationWeightsNames[i][idx]}</td>)
+        var satWeights = new SaturationWeights(this.state.saturationParameters);
+        var saturationWeightsNames = satWeights.getNameAndWeightsArray();
+        var satCategories = satWeights.getCategorizedArray();
+        for (var cat in satCategories) {
+            rows.push(<tr><td colspan="3"><b>{cat}</b></td></tr>);
+            for (var catIdx in satCategories[cat]) {
+                var i = satCategories[cat][catIdx];
+                let rowID = `row${i}`
+                let cell = []
+                for (var idx = 0; idx < 3; idx++) {
+                    let cellID = `cell${i}-${idx}`
+                    let inputId = cellID + '-input';
+                    if (idx > 0) {
+                        cell.push(<td key={cellID} id={cellID}><input id={inputId} type="number"  min="0" max="100"  defaultValue={this.toPercent(saturationWeightsNames[i][idx])} /></td>)
+                    } else {
+                        cell.push(<td key={cellID} id={cellID}>{saturationWeightsNames[i][idx]}</td>)
+                    }
                 }
+                rows.push(<tr key={i} id={rowID}>{cell}</tr>)
             }
-            rows.push(<tr key={i} id={rowID}>{cell}</tr>)
         }
+
         return(<div>
             <p><b>Saturation Configuration</b></p>
             <p>Default interval for saturation: <input id="saturation-interval" type="number" min="1" max="20"  defaultValue={this.state.saturationParameters.lastSatResults} /> revisions</p>
