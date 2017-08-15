@@ -30,9 +30,15 @@ export default BtnSm.extend `
 	border-color: #ccc;
 	border-radius: 0px;
 	&:hover {
-      background-color: #e7e7e7;
+		background-color: black;
+		color: white;
     }
 	&:focus {
-      background-color: #e7e7e7;
+		background-color: black;
+		color: white;
     }
+	&:active {
+		background-color: black;
+		color: white;
+	}
 `;
