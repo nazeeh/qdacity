@@ -25,20 +25,23 @@ const BtnSm = Btn.extend `
 
 
 export default BtnSm.extend `
-	color: #333;
-	background-color: #fff;
-	border-color: #ccc;
+	color: ${props => props.theme.fgDefault};
+	background-color:  ${props => props.theme.bgDefault};
+	border-color: ${props => props.theme.borderDefault};
 	border-radius: 0px;
 	&:hover {
-		background-color: black;
-		color: white;
+		background-color:  ${props => props.theme.borderDefaultHighlight};
+		border-color:  ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
     }
 	&:focus {
-		background-color: black;
-		color: white;
+		background-color:  ${props => props.theme.borderDefaultHighlight};
+		border-color:  ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
     }
 	&:active {
-		background-color: black;
-		color: white;
+		background-color:  ${props => props.theme.borderDefaultHighlight};
+		border-color:  ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
 	}
 `;

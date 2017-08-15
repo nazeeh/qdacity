@@ -5,6 +5,7 @@ import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
 import BtnDefault from '../../../common/styles/Btn.jsx';
 
+
 const StyledSearchField = styled.div `
 	float: none;
 	width: 100%;
@@ -15,15 +16,16 @@ const StyledSearchField = styled.div `
 	& > input[type=text] {
 		flex:1;
 	    padding:0.3em;
-		border 1px solid #ccc;
+		border 1px solid ;
+		border-color: ${props => props.theme.borderDefault};
 		&:hover {
-			border-color: black;
+			border-color: ${props => props.theme.borderDefaultHighlight};
 		}
 		&:focus {
-			border-color: black;
+			border-color: ${props => props.theme.borderDefaultHighlight};
 		}
 		&:active {
-			border-color: black;
+			border-color: ${props => props.theme.borderDefaultHighlight};
 		}
 	}
 
