@@ -185,11 +185,11 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
-	insertCode() {
+	insertCode(code) {
 		this.umlEditorRef.codeUpdated(code);
 	}
 
-	removeCode() {
+	removeCode(code) {
 		this.umlEditorRef.codeRemoved(code);
 	}
 
