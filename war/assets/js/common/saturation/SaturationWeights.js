@@ -26,6 +26,14 @@ export default class SaturationWeights {
 
         return saturationWeights;
     }
+    
+    getCategoryForIndex(i) {
+        var catArr = this.getCategorizedArray();
+        for(var category in catArr) {
+            if ( i in catArr[category] ) return category;
+        }
+        return "NONE"
+    }
 
     getCategorizedArray() {
         //categorization can be redefined here.

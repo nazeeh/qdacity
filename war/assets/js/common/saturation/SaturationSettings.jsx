@@ -35,7 +35,7 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
         var saturationWeightsNames = satWeights.getNameAndWeightsArray();
         var satCategories = satWeights.getCategorizedArray();
         for (var cat in satCategories) {
-            rows.push(<tr><td colspan="3"><b>{cat}</b></td></tr>);
+            rows.push(<tr><td colspan="3"><b> - {cat} - </b></td></tr>);
             for (var catIdx in satCategories[cat]) {
                 var i = satCategories[cat][catIdx];
                 let rowID = `row${i}`
