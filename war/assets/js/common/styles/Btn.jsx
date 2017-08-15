@@ -12,9 +12,11 @@ const Btn = styled.button `
 	white-space: nowrap;
 	vertical-align: middle;
 	cursor: pointer;
+	background-image: none;
+	border: 1px solid transparent;
 `;
 
-const BtnSm = btn.extend `
+const BtnSm = Btn.extend `
 	padding: 5px 10px;
 	font-size: 12px;
 	line-height: 1.5;
@@ -28,6 +30,9 @@ export default BtnSm.extend `
 	border-color: #ccc;
 	border-radius: 0px;
 	&:hover {
+      background-color: #e7e7e7;
+    }
+	&:focus {
       background-color: #e7e7e7;
     }
 `;
