@@ -48,4 +48,33 @@ const BtnDefault =  BtnSm.extend `
 		color: ${props => props.theme.fgDefaultHighlight};
 	}
 `;
-export default BtnDefault;
+
+const BtnPrimary =  BtnSm.extend `
+	color: ${props => props.theme.fgPrimary};
+	background-color:  ${props => props.theme.bgPrimary};
+	border-color: ${props => props.theme.borderPrimary};
+	border-radius: 0px;
+	&:hover {
+		background-color:  ${props => props.theme.borderPrimaryHighlight};
+		border-color:  ${props => props.theme.borderPrimaryHighlight};
+		color: ${props => props.theme.fgPrimaryHighlight};
+		& > span > .fa-inverse {
+			color: ${props => props.theme.fgPrimary};
+		}
+    }
+	&:focus {
+		background-color:  ${props => props.theme.borderPrimaryHighlight};
+		border-color:  ${props => props.theme.borderPrimaryHighlight};
+		color: ${props => props.theme.fgPrimaryHighlight};
+    }
+	&:active {
+		background-color:  ${props => props.theme.borderPrimaryHighlight};
+		border-color:  ${props => props.theme.borderPrimaryHighlight};
+		color: ${props => props.theme.fgPrimaryHighlight};
+	}
+`;
+
+export {
+	BtnDefault,
+	BtnPrimary
+};

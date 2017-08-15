@@ -10,7 +10,7 @@ import {
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
-import BtnDefault from '../../../common/styles/Btn.jsx';
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
 
 const StyledToolBar = styled.div `
     padding-bottom: 2px;

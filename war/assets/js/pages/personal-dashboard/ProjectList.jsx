@@ -15,7 +15,7 @@ import {
 } from '../../common/styles/List';
 
 import StyledSearchField from '../../common/styles/SearchField.jsx';
-import BtnDefault from '../../common/styles/Btn.jsx';
+import {BtnDefault} from '../../common/styles/Btn.jsx';
 
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;

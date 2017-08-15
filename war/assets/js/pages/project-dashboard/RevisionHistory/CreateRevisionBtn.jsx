@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import TextField from '../../../common/modals/TextField';
 
-import BtnDefault from '../../../common/styles/Btn.jsx';
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
 
 const StyledCreateRevisionBtn = BtnDefault.extend `
 	margin-left: 5px;

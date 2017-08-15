@@ -10,7 +10,7 @@ import 'script!../../../../../components/filer/js/jquery.filer.min.js';
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 import UploadEndpoint from '../../../common/endpoints/UploadEndpoint';
 
-import BtnDefault from '../../../common/styles/Btn.jsx';
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
 
 const StyledBtnGroup = styled.div `
     padding: 0px 2px 2px 2px;

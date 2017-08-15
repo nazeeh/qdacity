@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import BtnDefault from '../../../common/styles/Btn.jsx';
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
 
 const StyledSettingsBtn = BtnDefault.extend  `
 	margin-left: 5px;
