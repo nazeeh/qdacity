@@ -31,7 +31,7 @@ import "../../../css/common.css";
 import "../../../css/navbar-account.css";
 import "../../../css/landing-page.css";
 import "../../../../components/Vex/css/vex.css";
-import "../../../../components/Vex/css/vex-theme-os.css";
+import "../../../../components/Vex/css/vex-theme-wireframe.css";
 import "../../../../components/bootstrap/dist/bootstrap.min.css";
 
 

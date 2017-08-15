@@ -38,7 +38,8 @@ export default class Settings extends VexModal {
 				vex.dialog.open({
 					message: "Settings",
 					contentCSS: {
-						width: '600px'
+						width: '600px',
+						"margin-top": '-100px'
 					},
 					input: formElements,
 					buttons: [$.extend({}, vex.dialog.buttons.YES, {

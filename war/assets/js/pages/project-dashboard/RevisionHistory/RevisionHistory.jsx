@@ -12,10 +12,10 @@ import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import CustomForm from '../../../common/modals/CustomForm';
 
-const SyledCreateReportBtn = styled.a `
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
+
+const SyledCreateReportBtn = BtnDefault.extend `
 	margin-top: -6px;
-	padding: 5px 10px;
-	color: black;
 `;
 
 const StyledBtnIcon = styled.i `
@@ -216,8 +216,8 @@ export default class RevisionHistory extends React.Component {
 
 	renderCreateReportBtn(revId) {
 		if (this.state.isAdmin || this.state.isProjectOwner) return (
-			<SyledCreateReportBtn onClick={() => this.createReport(revId)} className="btn btn-default btn-sm pull-right" >
-				<StyledBtnIcon className="fa fa-plus-circle  pull-left"></StyledBtnIcon>
+			<SyledCreateReportBtn onClick={() => this.createReport(revId)} className=" pull-right" >
+				<StyledBtnIcon className="fa fa-plus-circle"></StyledBtnIcon>
 							Create Report
 			</SyledCreateReportBtn>);
 		else return '';

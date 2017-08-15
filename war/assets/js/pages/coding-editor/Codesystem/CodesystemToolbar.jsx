@@ -10,12 +10,14 @@ import {
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
+
 const StyledToolBar = styled.div `
     padding-bottom: 2px;
 `;
 
 const StyledBtnGroup = styled.div `
-    padding: 0px 1px 0px 1px;
+    padding: 0px 2px 2px 2px;
 `;
 
 
@@ -119,12 +121,12 @@ export default class CodesystemToolbar extends React.Component {
 		if (this.props.projectType != "PROJECT") return "";
 
 		return ([
-			<a key="applyCodeBtn" className="btn btn-default" onClick={this.insertCode}>
+			<BtnDefault key="applyCodeBtn" className="btn btn-default" onClick={this.insertCode}>
 				<i className="fa fa-plus fa-1x"></i>
-			</a>,
-			<a key="removeCodeBtn" className="btn btn-default" onClick={this.removeCode}>
+			</BtnDefault>,
+			<BtnDefault key="removeCodeBtn" className="btn btn-default" onClick={this.removeCode}>
 				<i className="fa fa-trash fa-1x"></i>
-			</a>
+			</BtnDefault>
 		]);
 	}
 
@@ -135,18 +137,18 @@ export default class CodesystemToolbar extends React.Component {
 
 		return (
 			<StyledBtnGroup className="btn-group">
-                <a className="btn btn-default" onClick={this.applyCode}>
+                <BtnDefault className="btn btn-default" onClick={this.applyCode}>
                     <StyledBtnStack className="fa-stack fa-lg">
                         <i className="fa fa-tag fa-stack-2x"></i>
-                        <i className="fa fa-plus fa-stack-1x fa-inverse"></i>
+						<i className="fa fa-plus fa-stack-1x fa-inverse"></i>
                     </StyledBtnStack>
-                </a>
-                <a className="btn btn-default" onClick={this.removeCoding}>
+                </BtnDefault>
+                <BtnDefault className="btn btn-default" onClick={this.removeCoding}>
                     <StyledBtnStack className="fa-stack fa-lg">
                         <i className="fa fa-tag fa-stack-2x"></i>
                         <i className="fa fa-minus fa-stack-1x fa-inverse"></i>
                     </StyledBtnStack>
-                </a>
+                </BtnDefault>
             </StyledBtnGroup>
 		);
 	}
@@ -156,9 +158,9 @@ export default class CodesystemToolbar extends React.Component {
 			<StyledToolBar>
 				<StyledBtnGroup className="btn-group" >
 					{this.renderAddRemoveCodeBtn()}
-					<a className="btn btn-default" onClick={this.props.toggleCodingView}>
+					<BtnDefault className="btn btn-default" onClick={this.props.toggleCodingView}>
 						<i className="fa  fa-list-alt  fa-1x"></i>
-					</a>
+					</BtnDefault>
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}
 			</StyledToolBar>
