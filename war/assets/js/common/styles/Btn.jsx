@@ -24,7 +24,7 @@ const BtnSm = Btn.extend `
 
 
 
-export default BtnSm.extend `
+const BtnDefault =  BtnSm.extend `
 	color: ${props => props.theme.fgDefault};
 	background-color:  ${props => props.theme.bgDefault};
 	border-color: ${props => props.theme.borderDefault};
@@ -33,6 +33,9 @@ export default BtnSm.extend `
 		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
 		color: ${props => props.theme.fgDefaultHighlight};
+		& > span > .fa-inverse {
+			color: ${props => props.theme.fgDefault};
+		}
     }
 	&:focus {
 		background-color:  ${props => props.theme.borderDefaultHighlight};
@@ -45,3 +48,4 @@ export default BtnSm.extend `
 		color: ${props => props.theme.fgDefaultHighlight};
 	}
 `;
+export default BtnDefault;
