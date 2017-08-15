@@ -1,34 +1,39 @@
 import SaturationWeights from '../saturation/SaturationWeights.js'
 
-        export default class SaturationSettings extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {projectId: props.projectId, saturationParameters: undefined};
-    }
+export default class SaturationSettings extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			projectId: props.projectId,
+			saturationParameters: undefined
+		};
+	}
 
-    componentDidMount() {
-        this.init();
-    }
+	componentDidMount() {
+		this.init();
+	}
 
-    init() {
-        var _this = this;
-        gapi.client.qdacity.saturation.getSaturationParameters({
-            'projectId': this.state.projectId
-        }).execute(function (resp) {
-            _this.setState({saturationParameters: resp});
-        });
-    }
+	init() {
+		var _this = this;
+		gapi.client.qdacity.saturation.getSaturationParameters({
+			'projectId': this.state.projectId
+		}).execute(function (resp) {
+			_this.setState({
+				saturationParameters: resp
+			});
+		});
+	}
 
-    toPercent(value) {
-        if (value != 'undefined')
-            return (value * 100).toFixed(2);
-        else
-            return -1;
-    }
+	toPercent(value) {
+		if (value != 'undefined')
+			return (value * 100).toFixed(2);
+		else
+			return -1;
+	}
 
-    render() {
-        if (!this.state.saturationParameters)
-            return null;
+	render() {
+		if (!this.state.saturationParameters)
+			return null;
 
         let rows = [];
         var satWeights = new SaturationWeights(this.state.saturationParameters);
@@ -65,6 +70,6 @@ import SaturationWeights from '../saturation/SaturationWeights.js'
                 </tbody>
             </table>
         </div>);
-    }
+	}
 
 }

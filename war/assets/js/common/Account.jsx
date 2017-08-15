@@ -1,5 +1,5 @@
 //import AccountView from './AccountView.jsx';
-
+import {BtnDefault, BtnPrimary} from './styles/Btn.jsx';
 export default class Account extends React.Component {
 
 
@@ -133,7 +133,7 @@ export default class Account extends React.Component {
 							<span id="currentUserName">{this.state.name}</span>
 							<p id="currentUserEmail" className="text-muted small">{this.state.email}</p>
 							<div className="divider"></div>
-							<a onClick={this.redirectToPersonalDashbaord} className="btn btn-primary btn-sm active">Personal Dashboard</a>
+							<BtnPrimary onClick={this.redirectToPersonalDashbaord}>Personal Dashboard</BtnPrimary>
 						</div>
 					</div>
 				</div>
@@ -141,10 +141,10 @@ export default class Account extends React.Component {
 					<div className="navbar-footer-content">
 						<div className="row">
 							<div className="col-xs-6">
-								<a id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}>Switch User</a>
+								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}>Switch User</BtnDefault>
 							</div>
 							<div className="col-xs-6">
-								<a id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={this.signout.bind(this)}>Sign Out</a>
+								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={this.signout.bind(this)}>Sign Out</BtnDefault>
 							</div>
 						</div>
 					</div>

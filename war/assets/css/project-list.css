@@ -70,7 +70,6 @@ h2 {
 }
 
 .fa-editor-btn {
-    color: #61B329;
     cursor: pointer; cursor: hand;
     z-index:999;
 }
@@ -87,7 +86,6 @@ h2 {
 }
 
 .fa-cancel-btn {
-    color: #61B329;
     cursor: pointer; cursor: hand;
     z-index:999;
 }

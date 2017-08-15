@@ -314,8 +314,8 @@ export default class DocumentsView extends React.Component {
 		);
 	}
 
-	renderDocumentsContent(){
-		if(!this.state.loading){
+	renderDocumentsContent() {
+		if (!this.state.loading) {
 			return this.renderDocuments();
 		} else {
 			return <ReactLoading color={"#020202"}/>;

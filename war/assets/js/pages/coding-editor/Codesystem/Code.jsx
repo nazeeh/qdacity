@@ -23,7 +23,7 @@ const codeSource = {
 	},
 	endDrag(props, monitor, component) {
 		const dropResults = monitor.getDropResult();
-		if (dropResults && props.node.codeID != dropResults.targetID){
+		if (dropResults && props.node.codeID != dropResults.targetID) {
 			props.relocateCode(props.node, dropResults.targetID);
 		}
 	}

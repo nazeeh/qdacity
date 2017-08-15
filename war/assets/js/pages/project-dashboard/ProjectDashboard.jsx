@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import Project from './Project';
 
@@ -15,6 +16,10 @@ import PersonalReportList from "./PersonalReportList.jsx"
 
 import 'script!../../../../components/URIjs/URI.min.js';
 import 'script!../../../../components/alertify/alertify-0.3.js';
+
+const StyledDashboard = styled.div `
+	margin-top: 35px;
+`;
 
 export default class ProjectDashboard extends React.Component {
 	constructor(props) {
@@ -35,7 +40,7 @@ export default class ProjectDashboard extends React.Component {
 		$("body").css({
 			overflow: "auto"
 		});
-		this.props.chartScriptPromise.then(()=>{
+		this.props.chartScriptPromise.then(() => {
 			this.setState({
 				googleChartsLoaded: true
 			});
@@ -44,7 +49,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	init() {
-		if (!this.userPromise){
+		if (!this.userPromise) {
 			this.userPromise = this.props.account.getCurrentUser();
 			this.setUserRights();
 			this.setProjectProperties();
@@ -91,7 +96,7 @@ export default class ProjectDashboard extends React.Component {
 		});
 	}
 
-	renderAgreementStats(){
+	renderAgreementStats() {
 		if (!this.state.googleChartsLoaded) return null;
 		return <AgreementStats  reports={this.state.reports} chartScriptPromise={this.props.chartScriptPromise}/>
 	}
@@ -101,7 +106,7 @@ export default class ProjectDashboard extends React.Component {
 		this.init();
 
 		return (
-			<div className="container main-content">
+			<StyledDashboard className="container main-content">
 				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} history={this.props.history}/>
 				<div className="row">
 					<div className="col-lg-7">
@@ -125,7 +130,7 @@ export default class ProjectDashboard extends React.Component {
 						{(this.state.project.getParentID() ? (<PersonalReportList project={this.state.project} account={this.props.account} />) : "" )}
 					</div>
 				</div>
-		  	</div>
+		  	</StyledDashboard>
 		);
 	}
 }

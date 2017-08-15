@@ -282,8 +282,8 @@ class Codesystem extends SimpleCodesystem {
 		);
 	}
 
-	renderCodesystemContent(){
-		if(this.state.codesystem.length != 0){
+	renderCodesystemContent() {
+		if (this.state.codesystem.length != 0) {
 			return this.renderCodesystem();
 		} else {
 			return <ReactLoading color={"#020202"}/>;
@@ -291,15 +291,15 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	componentDidMount() {
-	    this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
-	  }
-	  componentDidUpdate() {
-  	    this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
-  	  }
+		this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
+	}
+	componentDidUpdate() {
+		this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
+	}
 
 
 	render() {
-		if (this.state.codesystemID != this.props.codesystemId){
+		if (this.state.codesystemID != this.props.codesystemId) {
 			this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
 		}
 		const height = $(window).height() - this.codesystemTop;

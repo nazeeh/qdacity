@@ -10,8 +10,12 @@ import CustomForm from '../../common/modals/CustomForm';
 import {
 	StyledPagination,
 	StyledPaginationItem,
-	StyledListItemBtn
+	StyledListItemBtn,
+	StyledListItem
 } from '../../common/styles/List';
+
+import StyledSearchField from '../../common/styles/SearchField.jsx';
+import {BtnDefault} from '../../common/styles/Btn.jsx';
 
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
@@ -21,30 +25,16 @@ const StyledProjectListMenu = styled.div `
 	display:flex;
 	flex-direction:row;
 	& > .searchfield{
+		height: inherit !important;
 		flex:1;
-		margin-right: 5px;
 	}
 `;
 
-const StyledSearchField = styled.div `
-	display:flex;
-	flex-direction:row;
-	width: 100px;
-	margin-bottom: 5px;
-	& > input[type=text] {
-		flex:1;
-	    padding:0.3em;
-	    border:0.2em solid #337ab7;
-	    border-radius: 5px 0px 0px 5px;
-	}
-	& > button {
-	  padding:0.6em 0.8em;
-	  background-color:#337ab7;
-	  color:white;
-	  border:none;
-	  border-radius: 0px 5px 5px 0px;
-	}
+
+const StyledProjectList = styled.ul `
+	padding-top: 5px;
 `;
+
 
 export default class ProjectList extends React.Component {
 	constructor(props) {
@@ -201,17 +191,16 @@ export default class ProjectList extends React.Component {
 					value={this.state.search}
 					onChange={this.updateSearch}
 				/>
-				<button type="button" id="search">Find!</button>
 				<StyledNewPrjBtn id="newProject">
-					<button
+					<BtnDefault
 						id="newPrjBtn"
-						className="btn btn-primary" href="#"
+						href="#"
 						onClick={this.showNewProjectModal}
 
 					>
 					<i className="fa fa-plus fa-fw"></i>
-					New
-					</button>
+					New Project
+					</BtnDefault>
 				</StyledNewPrjBtn>
 
 			</StyledSearchField>
@@ -233,7 +222,7 @@ export default class ProjectList extends React.Component {
 		}
 
 		const renderListItems = itemsToDisplay.map((project, index) => {
-			return <li
+			return <StyledListItem
 					key={project.id}
 					className={this.isValidationProject(project)}
 					onClick={() => prjClick(project)}
@@ -249,7 +238,7 @@ export default class ProjectList extends React.Component {
 						<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
 						<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
 					</StyledListItemBtn>
-				</li>;
+				</StyledListItem>;
 		})
 
 		//Render Pagination
@@ -273,9 +262,9 @@ export default class ProjectList extends React.Component {
 		return (
 			<div>
 				{projectListMenu}
-				<ul className="list compactBoxList">
+				<StyledProjectList className="list compactBoxList">
 					{renderListItems}
-	            </ul>
+	            </StyledProjectList>
 	            <StyledPagination className="pagination">
 					{renderPagination}
             	</StyledPagination>

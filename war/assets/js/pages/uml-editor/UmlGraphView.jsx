@@ -313,7 +313,7 @@ export default class UmlGraphView extends React.Component {
 
 			let currentNode = wheelevt.target;
 			while (currentNode != null) {
-				if (currentNode.id == 'umlEditorContainer') {
+				if (currentNode.id == 'editor') {
 					targetIsUmlEditor = true;
 					break;
 				}

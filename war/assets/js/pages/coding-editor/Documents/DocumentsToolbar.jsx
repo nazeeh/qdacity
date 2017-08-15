@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import DocumentsView from './DocumentsView.jsx';
 import BinaryDecider from '../../../common/modals/BinaryDecider.js';
@@ -8,6 +9,12 @@ import 'script!../../../../../components/filer/js/jquery.filer.min.js';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 import UploadEndpoint from '../../../common/endpoints/UploadEndpoint';
+
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
+
+const StyledBtnGroup = styled.div `
+    padding: 0px 2px 2px 2px;
+`;
 
 export default class DocumentsToolbar extends React.Component {
 	constructor(props) {
@@ -133,17 +140,17 @@ export default class DocumentsToolbar extends React.Component {
 
 	render() {
 		return (
-			<div className="btn-group">
-				<a className="btn btn-default" onClick={this.changeTitle}>
+			<StyledBtnGroup>
+				<BtnDefault onClick={this.changeTitle}>
 					<i className="fa fa-pencil fa-1x"></i>
-				</a>
-				<a className="btn btn-default" onClick={this.addDocument}>
+				</BtnDefault>
+				<BtnDefault  onClick={this.addDocument}>
 					<i className="fa fa-plus fa-1x"></i>
-				</a>
-				<a className="btn btn-default" onClick={this.removeDocumentFromProject}>
+				</BtnDefault>
+				<BtnDefault onClick={this.removeDocumentFromProject}>
 					<i className="fa fa-trash fa-1x"></i>
-				</a>
-			</div>
+				</BtnDefault>
+			</StyledBtnGroup>
 		);
 	}
 
