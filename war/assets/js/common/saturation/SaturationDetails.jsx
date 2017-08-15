@@ -1,7 +1,7 @@
 import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import SaturationWeights from '../saturation/SaturationWeights'
 
-export default class SaturationDetails extends React.Component {
+        export default class SaturationDetails extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -20,16 +20,20 @@ export default class SaturationDetails extends React.Component {
         var dataSet = [];
         var tableMount = $('#saturationTable');
         var columnsArray = [];
-        var columnLabelsArray = ['Change Type', 'Saturation', 'Weight (Importance)', 'Configured Maximum', 'Category'];
-        var width = 100 / (columnLabelsArray.length - 1);
+        var columnLabelsArray = ['Change Type', 'Saturation', 'Weight (Importance)', 'Configured Maximum'];
+        var width = 100 / (columnLabelsArray.length);
         for (var col in columnLabelsArray) {
-            if (col < 4) {
                 columnsArray = columnsArray.concat([{
                         "title": columnLabelsArray[col],
                         "width": "" + width + "%"
                     }]);
-            }
+            
         }
+        columnsArray = columnsArray.concat([{
+                "title": "Category", //Category column should be invisible
+                "width": "0%",
+                className: "hidden",
+            }]);
 
         var table = tableMount.dataTable({
             "paging": false,
@@ -39,7 +43,7 @@ export default class SaturationDetails extends React.Component {
             "autoWidth": false,
             "columns": columnsArray,
             "aaSorting": [
-              //  [4, 'asc'],
+                [4, 'asc'],
                 [1, 'asc'],
                 [2, 'desc']
             ],
@@ -62,7 +66,7 @@ export default class SaturationDetails extends React.Component {
             }
         });
     }
-    
+
     drawDataTable() {
         if (typeof this.props.saturation !== 'undefined') {
             var table = $('#saturationTable').DataTable();
@@ -77,7 +81,7 @@ export default class SaturationDetails extends React.Component {
                 }
             }
             table.draw();
-           
+
         }
     }
 
@@ -89,12 +93,12 @@ export default class SaturationDetails extends React.Component {
         if (!this.props.saturation)
             return null;
         return (<div>
-    <p>Last calculation of saturation is from: {this.props.saturation.evalStartDate} to {this.props.saturation.creationTime}</p>
-    <table id="saturationTable" className="display">
-
-    </table>
-    <p>Parameters used from : {this.props.saturation.saturationParameters.creationTime}</p>
-</div>);
+            <p>Last calculation of saturation is from: {this.props.saturation.evalStartDate} to {this.props.saturation.creationTime}</p>
+            <table id="saturationTable" className="display">
+        
+            </table>
+            <p>Parameters used from : {this.props.saturation.saturationParameters.creationTime}</p>
+        </div>);
     }
 
 }

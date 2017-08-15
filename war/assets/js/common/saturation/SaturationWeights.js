@@ -28,11 +28,16 @@ export default class SaturationWeights {
     }
     
     getCategoryForIndex(i) {
+        var integer = parseInt(i,10);
         var catArr = this.getCategorizedArray();
         for(var category in catArr) {
-            if ( i in catArr[category] ) return category;
+            for(var idx in catArr[category]) {
+                if(catArr[category][idx] === integer) {
+                    return category;
+                }
+            }
         }
-        return "NONE"
+        return "NO CATEGORY FOR INDEX "+i;
     }
 
     getCategorizedArray() {
