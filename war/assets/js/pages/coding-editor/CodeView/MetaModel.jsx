@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import MetaModelView from './MetaModelView.jsx';
 import CodeRelationsView from './CodeRelationsView.jsx';
 import MetaModelElement from './MetaModelElement';
+import SimpleCodesystem from '../Codesystem/SimpleCodesystem.jsx';
 
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
 
@@ -159,20 +160,46 @@ export default class MetaModel extends React.Component {
 		});
 	}
 
+	renderMetaModelView() {
+		let filter = "";
+
+		if (this.state.mode == Mode.DEFAULT) {
+			filter = "PROPERTY";
+		} else {
+			filter = "RELATIONSHIP";
+		}
+
+		return (
+			<div className="col-sm-6">
+                <MetaModelView filter={filter} code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
+            </div>
+		);
+	}
+
 	renderContent() {
 		if (this.state.mode == Mode.DEFAULT) {
 			return (
 				<div>
-                    <div className="col-sm-6">
-                        <MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
-                    </div>
+			        { this.renderMetaModelView() }
                     <div className="col-sm-6">
                         <CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
                     </div>
                 </div>
 			);
 		} else {
-			return null;
+			return (
+				<div>
+                    { this.renderMetaModelView() }
+                    <div className="col-sm-3">
+                        Source-Code:
+			            <SimpleCodesystem codesystem={this.props.getCodeSystem()} />
+			        </div>
+                    <div className="col-sm-3">
+                        Destination-Code:
+                        <SimpleCodesystem codesystem={this.props.getCodeSystem()} />
+		            </div>
+                </div>
+			);
 		}
 	}
 
