@@ -3,6 +3,7 @@ import React from 'react';
 import ButtonZoomIn from './ButtonZoomIn.jsx';
 import ButtonZoomOut from './ButtonZoomOut.jsx';
 import ButtonZoomSelect from './ButtonZoomSelect.jsx';
+import ButtonApplyLayout from './ButtonApplyLayout.jsx';
 
 export default class Toolbar extends React.Component {
 
@@ -34,6 +35,7 @@ export default class Toolbar extends React.Component {
     	        <ButtonZoomIn umlEditor={_this.umlEditor} />
                 <ButtonZoomOut umlEditor={_this.umlEditor} />
                 <ButtonZoomSelect ref={(zoomSelect) => {this.zoomSelect = zoomSelect}} umlEditor={_this.umlEditor} />
+                <ButtonApplyLayout umlEditor={_this.umlEditor} />
             </div>
 		);
 	}
