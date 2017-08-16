@@ -18,7 +18,7 @@ export default {
 	lightGreen: '#c0dd1a',
 	lightGreenAccent: 'acc617',
 	darkGreen: '#3fad35',
-	darkGreenAccent: '#399b30',
+	darkGreenAccent: '#3c763d',
 	rubyRed: '#e82240',
 	rubyRedAccent: '#b80b0b',
 	yellow: '#ffec21',
