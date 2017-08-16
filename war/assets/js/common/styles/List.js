@@ -24,14 +24,14 @@ const StyledBoxList = styled.ul`
 `;
 
 const StyledListItem = styled.li `
-	height: 40px;
+	height: auto;
 	width: 100%;
 	display: flex;
 	flex: 0 0 100%;
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	padding:12px;
+	padding: 0px 10px;
 	margin-bottom: 5px;
 	border: 1px solid transparent;
 	&:hover{
