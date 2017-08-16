@@ -31,7 +31,7 @@ const StyledListItem = styled.li `
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0px 10px;
+	padding: 5px 10px;
 	margin-bottom: 5px;
 	border: 1px solid transparent;
 	&:hover{
