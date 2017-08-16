@@ -9,16 +9,23 @@ import {
 	StyledPagination,
 	StyledPaginationItem,
 	StyledBoxList,
-	StyledListItemDefault
+	StyledListItemDefault,
+	StyledListItemBtn
 } from '../../common/styles/List';
 
 const StyledNotificationInfo = styled.div `
 	flex-grow: 1;
+
+
 `;
 
 const StyledActionBtns = styled.div `
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	& > button {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
 `;
 
 const StyledGreenIcon = styled.a `
@@ -120,14 +127,12 @@ export default class NotificationList extends React.Component {
 						</StyledGreenIcon>
 			} else {
 				return <StyledActionBtns>
-						<a className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-							<i className="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>
-						</a>
-						<a className=" btn  fa-stack fa-lg notificationAccept"  onClick={() => this.acceptInvitation(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-							<i className="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>
-						</a>
+						<StyledListItemBtn className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+							<i className="fa fa-times"></i>
+						</StyledListItemBtn>
+						<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitation(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+							<i className="fa fa-check"></i>
+						</StyledListItemBtn>
 					</StyledActionBtns>
 			}
 			break;
@@ -138,14 +143,12 @@ export default class NotificationList extends React.Component {
 						</StyledGreenIcon>
 			} else {
 				return <StyledActionBtns>
-						<a className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-							<i className="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>
-						</a>
-						<a className=" btn  fa-stack fa-lg notificationAccept"  onClick={() => this.createValidationProject(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-							<i className="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>
-						</a>
+						<StyledListItemBtn className=" btn fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+							<i className="fa fa-times"></i>
+						</StyledListItemBtn>
+						<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.createValidationProject(notification)}  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+							<i className="fa fa-check"></i>
+						</StyledListItemBtn>
 					</StyledActionBtns>
 			}
 			break;
