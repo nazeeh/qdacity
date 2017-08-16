@@ -6,7 +6,9 @@ import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import {
 	StyledPagination,
 	StyledPaginationItem,
-	StyledListItemBtn
+	StyledListItemBtn,
+	StyledBoxList,
+	StyledListItemDefault
 } from '../../../common/styles/List';
 
 const StyledSearchField = styled.span `
@@ -132,10 +134,10 @@ export default class ValPrjList extends React.Component {
 
 		const renderListItems = itemsToDisplay.map((valPrj, index) => {
 
-			return <li key={valPrj.id} onClick={() => this.valPrjLink(valPrj.id)}  className="clickable">
+			return <StyledListItemDefault key={valPrj.id} onClick={() => this.valPrjLink(valPrj.id)} clickable={true}>
 					<span> {valPrj.creatorName} </span>
 					{this.renderDeleteBtn(valPrj, index)}
-				</li>;
+				</StyledListItemDefault>;
 		})
 
 		//Render Pagination
@@ -159,9 +161,9 @@ export default class ValPrjList extends React.Component {
 		return (
 			<div>
 				{renderSearch}
-				<ul className="list compactBoxList">
+				<StyledBoxList>
 					{renderListItems}
-	            </ul>
+	            </StyledBoxList>
 	            <StyledPagination className="pagination">
 					{renderPagination}
             	</StyledPagination>

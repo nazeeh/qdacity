@@ -6,15 +6,10 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import {
 	StyledPagination,
-	StyledPaginationItem
+	StyledPaginationItem,
+	StyledBoxList,
+	StyledListItemDefault
 } from '../../common/styles/List';
-
-import 'script!../../../../components/bootstrap/bootstrap.min.js'
-
-const StyledNotificationItem = styled.li `
-	display: flex !important;
-	align-items: center;
-`;
 
 const StyledNotificationInfo = styled.div `
 	flex-grow: 1;
@@ -177,7 +172,7 @@ export default class NotificationList extends React.Component {
 		const itemsToDisplay = this.state.notifications.slice(firstItem, lastItem);
 
 		const renderListItems = itemsToDisplay.map((notification, index) => {
-			return <StyledNotificationItem
+			return <StyledListItemDefault
 					key={notification.id}
 				>
 					<StyledNotificationInfo>
@@ -186,7 +181,7 @@ export default class NotificationList extends React.Component {
 						<span dangerouslySetInnerHTML={{__html: notification.message}}></span>
 					</StyledNotificationInfo>
 					{this.renderButtons(notification)}
-				</StyledNotificationItem>;
+				</StyledListItemDefault>;
 		});
 
 		//Render Pagination
@@ -209,9 +204,9 @@ export default class NotificationList extends React.Component {
 
 		return (
 			<div>
-				<ul className="list compactBoxList">
+				<StyledBoxList>
 					{renderListItems}
-	            </ul>
+	            </StyledBoxList>
 	            <StyledPagination className="pagination">
 					{renderPagination}
             	</StyledPagination>
