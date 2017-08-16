@@ -12,7 +12,8 @@ import {
 	StyledPagination,
 	StyledPaginationItem,
 	StyledListItemBtn,
-	StyledListItem
+	StyledListItemPrimary,
+	StyledListItemDefault
 } from '../../common/styles/List';
 
 import StyledSearchField from '../../common/styles/SearchField.jsx';
@@ -130,7 +131,8 @@ export default class ProjectList extends React.Component {
 	}
 
 	isValidationProject(project) {
-		return 'clickable ' + ((project.type == "VALIDATION") ? 'validationProjectItem' : ' ');
+		if (project.type == "VALIDATION") return true;
+		return false;
 	}
 
 	showNewProjectModal() {
@@ -221,27 +223,33 @@ export default class ProjectList extends React.Component {
 		function prjClick(prj) {
 			_this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
 		}
-
+		const renderListItemContent = (project, index) => {
+			return([
+			<span>{project.name}</span>,
+			<div>
+				{this.renderDeleteBtn(project, index)}
+				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" >
+					<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
+					<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
+				</StyledListItemBtn>
+				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn  fa-stack fa-lg" >
+					<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
+					<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
+				</StyledListItemBtn>
+			</div>
+			]
+			)
+		}
 		const renderListItems = itemsToDisplay.map((project, index) => {
-			return <StyledListItem
-					key={project.id}
-					className={this.isValidationProject(project)}
-					onClick={() => prjClick(project)}
-
-				>
-					<span>{project.name}</span>
-					<div>
-						{this.renderDeleteBtn(project, index)}
-						<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" >
-							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-							<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
-						</StyledListItemBtn>
-						<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn  fa-stack fa-lg" >
-							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-							<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
-						</StyledListItemBtn>
-					</div>
-				</StyledListItem>;
+			if (this.isValidationProject(project)){
+				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)}>
+						{renderListItemContent(project, index)}
+					</StyledListItemDefault>;
+			} else {
+				return <StyledListItemPrimary key={project.id} onClick={() => prjClick(project)}>
+						{renderListItemContent(project, index)}
+					</StyledListItemPrimary>;
+			}
 		})
 
 		//Render Pagination

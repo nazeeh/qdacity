@@ -21,7 +21,6 @@ const StyledBoxList = styled.ul`
 	flex-shrink: 0;
 `;
 
-
 const StyledListItem = styled.li `
 	height: 40px;
 	width: 100%;
@@ -32,10 +31,50 @@ const StyledListItem = styled.li `
 	align-items: center;
 	padding:12px;
 	margin-bottom: 5px;
-	background-color: ${props => props.theme.bgPrimary};
 	border: 1px solid transparent;
-	border-color:  ${props => props.theme.borderPrimary};
+`;
 
+const StyledListItemPrimary = StyledListItem.extend `
+	background-color: ${props => props.theme.bgPrimary};
+	border-color:  ${props => props.theme.borderPrimary};
+	&:hover {
+		background-color:  ${props => props.theme.borderPrimaryHighlight};
+		border-color:  ${props => props.theme.borderPrimaryHighlight};
+		color: ${props => props.theme.fgPrimaryHighlight};
+		& > span > .fa-inverse {
+			color: ${props => props.theme.fgPrimary};
+		}
+    }
+	&:focus {
+		background-color:  ${props => props.theme.borderPrimaryHighlight};
+		border-color:  ${props => props.theme.borderPrimaryHighlight};
+		color: ${props => props.theme.fgPrimaryHighlight};
+    }
+	&:active {
+		background-color:  ${props => props.theme.borderPrimaryHighlight};
+		border-color:  ${props => props.theme.borderPrimaryHighlight};
+		color: ${props => props.theme.fgPrimaryHighlight};
+	}
+`;
+
+const StyledListItemDefault = StyledListItem.extend `
+	background-color: ${props => props.theme.bgDefault};
+	border-color:  ${props => props.theme.borderDefault};
+	&:hover {
+		background-color:  ${props => props.theme.borderDefaultHighlight};
+		border-color:  ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
+    }
+	&:focus {
+		background-color:  ${props => props.theme.borderDefaultHighlight};
+		border-color:  ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
+    }
+	&:active {
+		background-color:  ${props => props.theme.borderDefaultHighlight};
+		border-color:  ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
+	}
 `;
 
 const StyledListItemBtn = styled.a `
@@ -51,5 +90,6 @@ export {
 	StyledPagination,
 	StyledPaginationItem,
 	StyledListItemBtn,
-	StyledListItem
+	StyledListItemPrimary,
+	StyledListItemDefault
 };
