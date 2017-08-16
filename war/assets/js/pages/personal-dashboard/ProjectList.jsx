@@ -8,6 +8,7 @@ import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 
 import {
+	StyledBoxList,
 	StyledPagination,
 	StyledPaginationItem,
 	StyledListItemBtn,
@@ -31,7 +32,7 @@ const StyledProjectListMenu = styled.div `
 `;
 
 
-const StyledProjectList = styled.ul `
+const StyledProjectList = StyledBoxList.extend `
 	padding-top: 5px;
 `;
 
@@ -229,15 +230,17 @@ export default class ProjectList extends React.Component {
 
 				>
 					<span>{project.name}</span>
-					{this.renderDeleteBtn(project, index)}
-					<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" >
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
-					</StyledListItemBtn>
-					<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn  fa-stack fa-lg" >
-						<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-						<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
-					</StyledListItemBtn>
+					<div>
+						{this.renderDeleteBtn(project, index)}
+						<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" >
+							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
+							<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
+						</StyledListItemBtn>
+						<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn  fa-stack fa-lg" >
+							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
+							<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
+						</StyledListItemBtn>
+					</div>
 				</StyledListItem>;
 		})
 
@@ -262,7 +265,7 @@ export default class ProjectList extends React.Component {
 		return (
 			<div>
 				{projectListMenu}
-				<StyledProjectList className="list compactBoxList">
+				<StyledProjectList className="">
 					{renderListItems}
 	            </StyledProjectList>
 	            <StyledPagination className="pagination">
