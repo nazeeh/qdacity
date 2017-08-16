@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Theme from '../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
@@ -18,7 +19,7 @@ import {
 
 import StyledSearchField from '../../common/styles/SearchField.jsx';
 import {BtnDefault} from '../../common/styles/Btn.jsx';
-import Theme from '../../common/styles/Theme.js';
+
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
 `;
