@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Theme from '../../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
@@ -87,9 +88,8 @@ export default class ValPrjList extends React.Component {
 
 	renderDeleteBtn(valPrj, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <StyledListItemBtn onClick={(e) => this.deleteValPrj(e,valPrj.id, index)} className="btn  fa-stack fa-lg">
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>
+			return <StyledListItemBtn onClick={(e) => this.deleteValPrj(e,valPrj.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash"></i>
 					</StyledListItemBtn>;
 		else return '';
 	}

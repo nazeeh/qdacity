@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import {BtnSm} from './Btn.jsx';
+
 const StyledPagination = styled.ul `
 	list-style: none;
 	display: flex;
@@ -41,23 +43,20 @@ const StyledListItemPrimary = StyledListItem.extend `
 	background-color: ${props => props.theme.bgPrimary};
 	border-color:  ${props => props.theme.borderPrimary};
 	&:hover {
-		background-color:  ${props => props.theme.borderPrimaryHighlight};
 		border-color:  ${props => props.theme.borderPrimaryHighlight};
-		color: ${props => props.theme.fgPrimaryHighlight};
+		font-weight: bold;
 		& > span > .fa-inverse {
 			color: ${props => props.theme.fgPrimary};
 		}
 
     }
 	&:focus {
-		background-color:  ${props => props.theme.borderPrimaryHighlight};
 		border-color:  ${props => props.theme.borderPrimaryHighlight};
-		color: ${props => props.theme.fgPrimaryHighlight};
+		font-weight: bold;
     }
 	&:active {
-		background-color:  ${props => props.theme.borderPrimaryHighlight};
 		border-color:  ${props => props.theme.borderPrimaryHighlight};
-		color: ${props => props.theme.fgPrimaryHighlight};
+		font-weight: bold;
 	}
 `;
 
@@ -65,27 +64,39 @@ const StyledListItemDefault = StyledListItem.extend `
 	background-color: ${props => props.theme.bgDefault};
 	border-color:  ${props => props.theme.borderDefault};
 	&:hover {
-		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
-		color: ${props => props.theme.fgDefaultHighlight};
+		font-weight: bold;
     }
 	&:focus {
-		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
-		color: ${props => props.theme.fgDefaultHighlight};
+		font-weight: bold;
     }
 	&:active {
-		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
-		color: ${props => props.theme.fgDefaultHighlight};
+		font-weight: bold;
 	}
 `;
 
-const StyledListItemBtn = styled.a `
-	margin-top: -15px;
+const StyledListItemBtn = BtnSm.extend `
+	background-color: rgba(0, 0, 0, 0.0);
+	color: ${props => props.color};
+	border-color: ${props => props.color};
 	align-self:center;
  	font-size: 19px;
+	border: 1px solid;
+	margin: 0px 2px 0px 2px;
+	padding: 4px 6px;
+	&:hover{
+		color: ${props => props.colorAccent} !important;
+		border-color: ${props => props.colorAccent} !important;
+	}
 	& > i {
+		color: inherit !important;
+		border-color: inherit !important;
+		&:hover{
+			color: ${props => props.colorAccent} !important;
+			border-color: ${props => props.colorAccent} !important;
+		}
 	}
 `;
 
