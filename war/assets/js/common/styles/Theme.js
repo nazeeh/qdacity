@@ -1,4 +1,6 @@
 export default {
+	defaultPaneBg: '#f8f8f8',
+
 	borderDefault: '#ccc',
 	borderDefaultHighlight: 'black',
 	bgDefault: 'white',
