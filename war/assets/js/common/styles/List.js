@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import {BtnSm} from './Btn.jsx';
+
 const StyledPagination = styled.ul `
 	list-style: none;
 	display: flex;
@@ -81,11 +83,27 @@ const StyledListItemDefault = StyledListItem.extend `
 	}
 `;
 
-const StyledListItemBtn = styled.a `
-	margin-top: -15px;
+const StyledListItemBtn = BtnSm.extend `
+	background-color: rgba(0, 0, 0, 0.0);
+	color: ${props => props.color};
+	border-color: ${props => props.color};
 	align-self:center;
  	font-size: 19px;
+	border: 1px solid;
+	margin: 0px 1px 0px 1px;
+	padding-left: 5px;
+	padding-right: 5px;
+	&:hover{
+		color: ${props => props.colorAccent} !important;
+		border-color: ${props => props.colorAccent} !important;
+	}
 	& > i {
+		color: inherit !important;
+		border-color: inherit !important;
+		&:hover{
+			color: ${props => props.colorAccent} !important;
+			border-color: ${props => props.colorAccent} !important;
+		}
 	}
 `;
 

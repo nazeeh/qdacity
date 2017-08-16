@@ -20,6 +20,7 @@ const BtnSm = Btn.extend `
 	padding: 5px 10px;
 	font-size: 12px;
 	line-height: 1.5;
+	border-radius: 0px;
 `;
 
 
@@ -28,7 +29,6 @@ const BtnDefault =  BtnSm.extend `
 	color: ${props => props.theme.fgDefault};
 	background-color:  ${props => props.theme.bgDefault};
 	border-color: ${props => props.theme.borderDefault};
-	border-radius: 0px;
 	&:hover {
 		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
@@ -76,5 +76,6 @@ const BtnPrimary =  BtnSm.extend `
 
 export {
 	BtnDefault,
-	BtnPrimary
+	BtnPrimary,
+	BtnSm
 };
