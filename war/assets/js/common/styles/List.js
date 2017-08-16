@@ -32,6 +32,9 @@ const StyledListItem = styled.li `
 	padding:12px;
 	margin-bottom: 5px;
 	border: 1px solid transparent;
+	&:hover{
+		cursor: ${props => (props.clickable ? 'pointer' : 'initial')};
+	}
 `;
 
 const StyledListItemPrimary = StyledListItem.extend `
@@ -44,6 +47,7 @@ const StyledListItemPrimary = StyledListItem.extend `
 		& > span > .fa-inverse {
 			color: ${props => props.theme.fgPrimary};
 		}
+
     }
 	&:focus {
 		background-color:  ${props => props.theme.borderPrimaryHighlight};

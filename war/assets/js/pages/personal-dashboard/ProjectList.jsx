@@ -242,11 +242,11 @@ export default class ProjectList extends React.Component {
 		}
 		const renderListItems = itemsToDisplay.map((project, index) => {
 			if (this.isValidationProject(project)){
-				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)}>
+				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)} clickable={true}>
 						{renderListItemContent(project, index)}
 					</StyledListItemDefault>;
 			} else {
-				return <StyledListItemPrimary key={project.id} onClick={() => prjClick(project)}>
+				return <StyledListItemPrimary key={project.id} onClick={() => prjClick(project)} clickable={true}>
 						{renderListItemContent(project, index)}
 					</StyledListItemPrimary>;
 			}
