@@ -43,23 +43,20 @@ const StyledListItemPrimary = StyledListItem.extend `
 	background-color: ${props => props.theme.bgPrimary};
 	border-color:  ${props => props.theme.borderPrimary};
 	&:hover {
-		background-color:  ${props => props.theme.borderPrimaryHighlight};
 		border-color:  ${props => props.theme.borderPrimaryHighlight};
-		color: ${props => props.theme.fgPrimaryHighlight};
+		font-weight: bold;
 		& > span > .fa-inverse {
 			color: ${props => props.theme.fgPrimary};
 		}
 
     }
 	&:focus {
-		background-color:  ${props => props.theme.borderPrimaryHighlight};
 		border-color:  ${props => props.theme.borderPrimaryHighlight};
-		color: ${props => props.theme.fgPrimaryHighlight};
+		font-weight: bold;
     }
 	&:active {
-		background-color:  ${props => props.theme.borderPrimaryHighlight};
 		border-color:  ${props => props.theme.borderPrimaryHighlight};
-		color: ${props => props.theme.fgPrimaryHighlight};
+		font-weight: bold;
 	}
 `;
 
@@ -67,19 +64,16 @@ const StyledListItemDefault = StyledListItem.extend `
 	background-color: ${props => props.theme.bgDefault};
 	border-color:  ${props => props.theme.borderDefault};
 	&:hover {
-		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
-		color: ${props => props.theme.fgDefaultHighlight};
+		font-weight: bold;
     }
 	&:focus {
-		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
-		color: ${props => props.theme.fgDefaultHighlight};
+		font-weight: bold;
     }
 	&:active {
-		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
-		color: ${props => props.theme.fgDefaultHighlight};
+		font-weight: bold;
 	}
 `;
 
@@ -90,9 +84,8 @@ const StyledListItemBtn = BtnSm.extend `
 	align-self:center;
  	font-size: 19px;
 	border: 1px solid;
-	margin: 0px 1px 0px 1px;
-	padding-left: 5px;
-	padding-right: 5px;
+	margin: 0px 2px 0px 2px;
+	padding: 4px 6px;
 	&:hover{
 		color: ${props => props.colorAccent} !important;
 		border-color: ${props => props.colorAccent} !important;

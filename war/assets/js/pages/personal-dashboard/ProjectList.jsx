@@ -232,7 +232,7 @@ export default class ProjectList extends React.Component {
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
 				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-					<i className="fa fa-pencil"></i>
+					<i className="fa fa-tags"></i>
 				</StyledListItemBtn>
 			</div>
 			]

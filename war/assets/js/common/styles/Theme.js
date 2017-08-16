@@ -20,7 +20,7 @@ export default {
 	darkGreen: '#3fad35',
 	darkGreenAccent: '#399b30',
 	rubyRed: '#e82240',
-	rubyRedAccent: '#d01f39',
+	rubyRedAccent: '#b80b0b',
 	yellow: '#ffec21',
 	yellowAccent: '#e5d41e'
 }
