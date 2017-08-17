@@ -3,6 +3,7 @@ import React from 'react'
 import ProjectList from "./ProjectList.jsx"
 import NotificationList from "./NotificationList.jsx"
 import WelcomePanel from "./WelcomePanel.jsx"
+import AdvertPanel from "./AdvertPanel.jsx"
 
 export default class PersonalDashboard extends React.Component {
 	constructor(props) {
@@ -47,6 +48,7 @@ export default class PersonalDashboard extends React.Component {
 				<div className="row">
 					<div className="col-lg-8">
 						  <WelcomePanel account={this.props.account}  history={this.props.history}/>
+						  <AdvertPanel/>
 					</div>
 					<div className="col-lg-4">
 						<div>
