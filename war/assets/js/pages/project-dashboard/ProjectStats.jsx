@@ -1,7 +1,13 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import SaturationModal from '../../common/modals/SaturationModal';
 import SaturationAverage from '../../common/saturation/SaturationAverage';
+
+const StyledBoxContent = styled.div `
+	margin: 0px 0px;
+`;
 
 export default class ProjectStats extends React.Component {
 	constructor(props) {
@@ -42,7 +48,7 @@ export default class ProjectStats extends React.Component {
 				<h3 className="box-title">Project Stats</h3>
 				</div>
 				<div className="box-body">
-				<div className="row content" >
+				<StyledBoxContent className="row" >
 					<div className="col-lg-3 col-xs-6 small-gutter-right small-gutter-left">
 						<div className="info-box">
 							<div className="info-box-icon bg-aqua">
@@ -104,7 +110,7 @@ export default class ProjectStats extends React.Component {
 						</div>
 					</div>
 
-				</div>
+				</StyledBoxContent>
 				</div>
 			</div>
 		);
