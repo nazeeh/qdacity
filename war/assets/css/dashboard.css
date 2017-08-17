@@ -18,8 +18,9 @@ body{
 }
 .info-box-text{
 	margin-left:-35px!important;
-	
-	
+	font-family: sans-serif;
+	font-size: 12px;
+
 }
 .info-box-number{
 	 margin-left:-35px!important;
