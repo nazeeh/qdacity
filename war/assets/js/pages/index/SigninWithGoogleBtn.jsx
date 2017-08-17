@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 
 import ReactLoading from '../../common/ReactLoading.jsx';
-
+import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
 
 const StyledBtnText = styled.span `
@@ -35,16 +35,15 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 
 	redirect() {
-		var _this = this;
+		var that = this;
 		this.props.account.getCurrentUser().then(function (value) {
 			_this.props.history.push('/PersonalDashboard');
 		}, function (value) {
-			var acc = _this.props.account;
-			var _this = this;
+			var acc = that.props.account;
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
-				if (value == 'optionA') _this.props.account.changeAccount(_this.redirect);
-				else _this.registerAccount();
+				if (value == 'optionA') that.props.account.changeAccount(that.redirect);
+				else that.registerAccount();
 			});
 		});
 	}
