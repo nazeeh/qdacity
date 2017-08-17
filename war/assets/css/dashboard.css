@@ -19,7 +19,8 @@ body{
 .info-box-text{
 	margin-left:-35px!important;
 	font-family: sans-serif;
-	font-size: 12px;
+	font-size: 15px;
+	text-transform: none !important;
 
 }
 .info-box-number{
