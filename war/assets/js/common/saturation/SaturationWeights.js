@@ -22,21 +22,8 @@ export default class SaturationWeights {
             ['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum] //13
         ];
 
-        return saturationWeights;
-    }
-    
-    getCategoryForIndex(i) {
-        var integer = parseInt(i,10);
-        var catArr = this.getCategorizedArray();
-        for(var category in catArr) {
-            for(var idx in catArr[category]) {
-                if(catArr[category][idx] === integer) {
-                    return category;
-                }
-            }
-        }
-        return "NO CATEGORY FOR INDEX "+i;
-    }
+		return saturationWeights;
+	}
 
     getCategorizedArray() {
         //categorization can be redefined here.

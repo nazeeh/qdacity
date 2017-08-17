@@ -3,7 +3,9 @@ import styled from 'styled-components';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
-import {BtnDefault} from '../../../common/styles/Btn.jsx';
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
 import StyledSearchField from '../../../common/styles/SearchField.jsx';
 
 export default class InviteUserField extends React.Component {

@@ -1,5 +1,7 @@
-//import AccountView from './AccountView.jsx';
-import {BtnDefault, BtnPrimary} from './styles/Btn.jsx';
+import {
+	BtnDefault,
+	BtnPrimary
+} from './styles/Btn.jsx';
 export default class Account extends React.Component {
 
 

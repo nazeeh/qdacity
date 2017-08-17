@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import Settings from '../../../common/modals/Settings';
 
-import {BtnDefault} from '../../../common/styles/Btn.jsx';
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
 
 const StyledSettingsBtn = BtnDefault.extend `
 	margin-left: 5px;

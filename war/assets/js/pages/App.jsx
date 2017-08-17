@@ -5,7 +5,9 @@ import {
 	Link
 } from 'react-router-dom'
 
-import {ThemeProvider} from 'styled-components';
+import {
+	ThemeProvider
+} from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
 import NavBar from '../common/NavBar.jsx';

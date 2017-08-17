@@ -18,7 +18,9 @@ import {
 } from '../../common/styles/List';
 
 import StyledSearchField from '../../common/styles/SearchField.jsx';
-import {BtnDefault} from '../../common/styles/Btn.jsx';
+import {
+	BtnDefault
+} from '../../common/styles/Btn.jsx';
 
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
@@ -225,9 +227,9 @@ export default class ProjectList extends React.Component {
 			_this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
 		}
 		const renderListItemContent = (project, index) => {
-			return([
-			<span>{project.name}</span>,
-			<div>
+			return ([
+				<span>{project.name}</span>,
+				<div>
 				{this.renderDeleteBtn(project, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
@@ -236,11 +238,10 @@ export default class ProjectList extends React.Component {
 					<i className="fa fa-tags"></i>
 				</StyledListItemBtn>
 			</div>
-			]
-			)
+			])
 		}
 		const renderListItems = itemsToDisplay.map((project, index) => {
-			if (this.isValidationProject(project)){
+			if (this.isValidationProject(project)) {
 				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)} clickable={true}>
 						{renderListItemContent(project, index)}
 					</StyledListItemDefault>;
