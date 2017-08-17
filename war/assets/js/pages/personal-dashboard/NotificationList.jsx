@@ -127,7 +127,7 @@ export default class NotificationList extends React.Component {
 						</StyledGreenIcon>
 			} else {
 				return <StyledActionBtns>
-						<StyledListItemBtn className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 							<i className="fa fa-times"></i>
 						</StyledListItemBtn>
 						<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitation(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
