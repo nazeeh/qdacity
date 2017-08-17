@@ -46,7 +46,7 @@ export default class PersonalDashboard extends React.Component {
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
-						  <WelcomePanel account={this.props.account}/>
+						  <WelcomePanel account={this.props.account}  history={this.props.history}/>
 					</div>
 					<div className="col-lg-4">
 						<div>
