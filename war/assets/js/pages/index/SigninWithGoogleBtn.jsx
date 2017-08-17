@@ -37,7 +37,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 	redirect() {
 		var that = this;
 		this.props.account.getCurrentUser().then(function (value) {
-			_this.props.history.push('/PersonalDashboard');
+			that.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var acc = that.props.account;
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account');
