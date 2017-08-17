@@ -25,7 +25,7 @@ const BtnSm = Btn.extend `
 
 
 
-const BtnDefault =  BtnSm.extend `
+const BtnDefault = BtnSm.extend `
 	color: ${props => props.theme.fgDefault};
 	background-color:  ${props => props.theme.bgDefault};
 	border-color: ${props => props.theme.borderDefault};
@@ -49,7 +49,7 @@ const BtnDefault =  BtnSm.extend `
 	}
 `;
 
-const BtnPrimary =  BtnSm.extend `
+const BtnPrimary = BtnSm.extend `
 	color: ${props => props.theme.fgPrimary};
 	background-color:  ${props => props.theme.bgPrimary};
 	border-color: ${props => props.theme.borderPrimary};

@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 
-import {BtnSm} from './Btn.jsx';
+import {
+	BtnSm
+} from './Btn.jsx';
 
 const StyledPagination = styled.ul `
 	list-style: none;
@@ -15,7 +17,7 @@ const StyledPaginationItem = styled.a `
 	cursor: pointer;
 `;
 
-const StyledBoxList = styled.ul`
+const StyledBoxList = styled.ul `
 	width: 100%;
 	font-family:sans-serif;
 	margin:0;

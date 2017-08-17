@@ -12,7 +12,9 @@ import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import CustomForm from '../../../common/modals/CustomForm';
 
-import {BtnDefault} from '../../../common/styles/Btn.jsx';
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
 
 const SyledCreateReportBtn = BtnDefault.extend `
 	margin-top: -6px;
