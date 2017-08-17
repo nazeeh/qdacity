@@ -3,8 +3,11 @@ import React from 'react';
 import UserEndpoint from '../../../common/endpoints/UserEndpoint';
 
 import {
+	StyledBoxList,
 	StyledPagination,
-	StyledPaginationItem
+	StyledPaginationItem,
+	StyledListItemBtn,
+	StyledListItemDefault
 } from '../../../common/styles/List';
 
 export default class UserList extends React.Component {
@@ -110,18 +113,18 @@ export default class UserList extends React.Component {
 		}
 
 		const renderListItems = itemsToDisplay.map((user, index) => {
-			return <li key={index} className="clickable">
-					<span className="userName"> {user.givenName + " " + user.surName} </span>
-				</li>;
+			return <StyledListItemDefault key={index} className="clickable">
+					<span > {user.givenName + " " + user.surName} </span>
+				</StyledListItemDefault>;
 		})
 
 
 
 		return (
 			<div>
-				<ul className="list compactBoxList" key={"itemList"}>
+				<StyledBoxList key={"itemList"}>
 					{renderListItems}
-	            </ul>
+	            </StyledBoxList>
 				{this.renderPaginationIfNeccessary()}
      		</div>
 		);
