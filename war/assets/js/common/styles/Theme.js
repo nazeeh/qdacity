@@ -14,4 +14,13 @@ export default {
 	bgPrimaryHighlight: 'black',
 	fgPrimary: '#5b94d9',
 	fgPrimaryHighlight: 'white',
+
+	lightGreen: '#c0dd1a',
+	lightGreenAccent: 'acc617',
+	darkGreen: '#3fad35',
+	darkGreenAccent: '#3c763d',
+	rubyRed: '#e82240',
+	rubyRedAccent: '#b80b0b',
+	yellow: '#ffec21',
+	yellowAccent: '#e5d41e'
 }

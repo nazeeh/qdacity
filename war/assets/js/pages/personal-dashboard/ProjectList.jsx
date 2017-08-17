@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Theme from '../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
@@ -165,10 +166,10 @@ export default class ProjectList extends React.Component {
 	}
 
 	renderDeleteBtn(project, index) {
+
 		if (typeof project.revisionID == "undefined") {
-			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn  fa-stack fa-lg">
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
+			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash "></i>
 					</StyledListItemBtn>
 		} else {
 			return "";
@@ -228,13 +229,11 @@ export default class ProjectList extends React.Component {
 			<span>{project.name}</span>,
 			<div>
 				{this.renderDeleteBtn(project, index)}
-				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" >
-					<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-					<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
+				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
-				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn  fa-stack fa-lg" >
-					<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-					<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
+				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+					<i className="fa fa-tags"></i>
 				</StyledListItemBtn>
 			</div>
 			]

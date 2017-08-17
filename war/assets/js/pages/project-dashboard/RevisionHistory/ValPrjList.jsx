@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Theme from '../../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
@@ -11,26 +12,30 @@ import {
 	StyledListItemDefault
 } from '../../../common/styles/List';
 
-const StyledSearchField = styled.span `
-	float: none;
-	width: 100%;
-	display:flex;
-	flex-direction:row;
-	margin-bottom: 5px;
-	& > input[type=text] {
-		flex:1;
-	    padding:0.3em;
-	    border:0.2em solid #337ab7;
-	    border-radius: 5px 0px 0px 5px;
-	}
-	& > button {
-	  padding:0.6em 0.8em;
-	  background-color:#337ab7;
-	  color:white;
-	  border:none;
-	  border-radius: 0px 5px 5px 0px;
-	}
-`;
+import StyledSearchField from '../../../common/styles/SearchField.jsx';
+import {BtnDefault} from '../../../common/styles/Btn.jsx';
+
+
+// const StyledSearchField = styled.span `
+// 	float: none;
+// 	width: 100%;
+// 	display:flex;
+// 	flex-direction:row;
+// 	margin-bottom: 5px;
+// 	& > input[type=text] {
+// 		flex:1;
+// 	    padding:0.3em;
+// 	    border:0.2em solid #337ab7;
+// 	    border-radius: 5px 0px 0px 5px;
+// 	}
+// 	& > button {
+// 	  padding:0.6em 0.8em;
+// 	  background-color:#337ab7;
+// 	  color:white;
+// 	  border:none;
+// 	  border-radius: 0px 5px 5px 0px;
+// 	}
+// `;
 
 
 export default class ValPrjList extends React.Component {
@@ -87,9 +92,8 @@ export default class ValPrjList extends React.Component {
 
 	renderDeleteBtn(valPrj, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <StyledListItemBtn onClick={(e) => this.deleteValPrj(e,valPrj.id, index)} className="btn  fa-stack fa-lg">
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>
+			return <StyledListItemBtn onClick={(e) => this.deleteValPrj(e,valPrj.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash"></i>
 					</StyledListItemBtn>;
 		else return '';
 	}
@@ -112,7 +116,9 @@ export default class ValPrjList extends React.Component {
 					value={this.state.search}
 					onChange={this.updateSearch}
 				/>
-				<button type="button" id="search">Find!</button>
+				<BtnDefault type="button">
+					<i className="fa fa-search  fa-lg"></i>
+				</BtnDefault>
 			</StyledSearchField>
 
 		</div>

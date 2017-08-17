@@ -1,4 +1,5 @@
 import React from 'react';
+import Theme from '../../../common/styles/Theme.js';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
@@ -62,9 +63,8 @@ export default class ReportList extends React.Component {
 
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn  fa-stack fa-lg">
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>
+			return <StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash"></i>
 					</StyledListItemBtn>;
 		else return '';
 	}

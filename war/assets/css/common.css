@@ -1,5 +1,5 @@
 body{
-	overflow: auto; 
+	overflow: auto;
 }
 
 .main-content {
@@ -12,16 +12,16 @@ body{
 }
 
 .small-gutter {
-    padding-left:5px;
-    padding-right:5px;
+    padding-left:3px !important;
+    padding-right:3px !important;
 }
 
 .small-gutter-left {
-    padding-left:5px;
+    padding-left:3px !important;
 }
 
 .small-gutter-right {
-    padding-right:5px;
+    padding-right:3px !important;
 }
 
 .hoverHand:hover{
