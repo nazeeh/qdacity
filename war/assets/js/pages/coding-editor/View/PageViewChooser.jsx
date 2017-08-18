@@ -17,12 +17,12 @@ export default class PageViewChooser extends React.Component {
 		super(props);
 
 		this.state = {
-			view: PageView.TEXT
+			view: PageView.CODING
 		};
 	}
 
 	componentDidMount() {
-		this.props.viewChanged(PageView.TEXT);
+		this.props.viewChanged(PageView.CODING);
 	}
 
 	buttonCodingEditorClicked() {
