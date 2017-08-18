@@ -86,7 +86,7 @@ const StyledUMLEditor = styled.div `
 `;
 
 const StyledDocumentsView = styled.div `
-	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
+	display: ${props => (props.selectedEditor != PageView.UML) ? 'block' : 'none'} !important;
 `;
 
 
