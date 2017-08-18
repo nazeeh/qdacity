@@ -25,6 +25,10 @@ export default class PageViewChooser extends React.Component {
 		this.props.viewChanged(PageView.TEXT);
 	}
 
+	buttonCodingEditorClicked() {
+		this.setView(PageView.TEXT);
+	}
+
 	buttonTextEditorClicked() {
 		this.setView(PageView.TEXT);
 	}
@@ -55,6 +59,7 @@ export default class PageViewChooser extends React.Component {
 
 		return (
 			<StyledButtonGroup className="btn-group">
+				<button type="button" className={classButtonText} onClick={_this.buttonCodingEditorClicked.bind(_this)}>Coding-Editor</button>
 		        <button type="button" className={classButtonText} onClick={_this.buttonTextEditorClicked.bind(_this)}>Text-Editor</button>
 		        <button type="button" className={classButtonUml} onClick={_this.buttonUmlEditorClicked.bind(_this)}>Uml-Editor</button>
 		    </StyledButtonGroup>
