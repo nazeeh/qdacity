@@ -8,7 +8,9 @@ import javax.jdo.PersistenceManager;
 
 public class ChangeLogger {
 
-    private final static boolean DEFERRED = true; //TODO Test//Deferred Change Logging performs better on basic instance
+    //As automated tests revealed (see masther thesis schoepe):
+    //Deferred Change Logging performs better on basic instance and on F4 instance
+    private final static boolean DEFERRED = true;
 
     private static PersistenceManager getPersistenceManager() {
 	return PMF.get().getPersistenceManager();

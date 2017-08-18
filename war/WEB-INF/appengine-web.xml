@@ -16,8 +16,6 @@
     <max-pending-latency>2s</max-pending-latency>
     <max-concurrent-requests>50</max-concurrent-requests>
   </automatic-scaling>
-  <instance-class>F4</instance-class>
-  
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
