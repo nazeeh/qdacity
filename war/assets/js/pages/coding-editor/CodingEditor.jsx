@@ -30,6 +30,7 @@ const StyledCodingEditor = styled.div `
 `;
 
 const StyledTextEditorMenu = styled.div `
+	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
 	text-align: center;
 	padding-top: 10px;
 	background-color: #e7e7e7;
@@ -109,7 +110,7 @@ export default class CodingEditor extends React.Component {
 			editorCtrl: {},
 			showCodingView: false,
 			selectedCode: {},
-			selectedEditor: PageView.TEXT,
+			selectedEditor: PageView.CODING,
 			mxGraphLoaded: false
 
 		};
@@ -164,6 +165,14 @@ export default class CodingEditor extends React.Component {
 	}
 
 	viewChanged(view) {
+		if (this.state.editorCtrl.setReadOnly ) {
+			if (view ===  PageView.TEXT){
+				this.state.editorCtrl.setReadOnly(false);
+			} else {
+				this.state.editorCtrl.setReadOnly(true);
+			}
+		}
+
 		this.setState({
 			selectedEditor: view
 		});
@@ -300,7 +309,7 @@ export default class CodingEditor extends React.Component {
 			<StyledEditor>
 
 				<div id="textdocument-ui">
-					<StyledTextEditorMenu id="textdocument-menu" className="collapse" aria-expanded="false" >
+					<StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
 
 
 						<a id="btnTxtSave" className="btn btn-default btn-default" >
