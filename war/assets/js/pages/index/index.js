@@ -25,6 +25,7 @@ import "../../../css/agreementMap.css";
 import "../../../../components/filer/css/jquery.filer.css";
 import "../../../../components/filer/css/themes/jquery.filer-dragdropbox-theme.css";
 import "../../../../components/colorpicker/evol.colorpicker.css";
+import "../../../../components/mxGraph/javascript/src/css/common.css";
 
 // Common Styles
 import "../../../css/common.css";
