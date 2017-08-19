@@ -16,10 +16,12 @@
 
 
 		<link rel="preload" href="components/font-awesome/css/font-awesome.min.css" as="style">
-		<!-- mxGraph Config -->
-		<script type="text/javascript">mxBasePath = 'components/mxGraph/javascript/src';</script>
-		<!-- Disable mxGraph resource loading -->
-		<script type="text/javascript">var mxLoadResources = false;</script>
+		<!-- mxGraph Config and disable mxGraph resource loading -->
+		<script type="text/javascript">
+			mxBasePath = 'components/mxGraph/javascript/src';
+			var mxLoadResources = false;
+			var mxLoadStylesheets = false;
+		</script>
 
 		<script src="https://unpkg.com/react@15.6.0/dist/react.js"></script>
 		<script src="https://unpkg.com/react-dom@15.6.0/dist/react-dom.js"></script>
