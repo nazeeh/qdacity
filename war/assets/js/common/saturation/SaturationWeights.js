@@ -70,6 +70,21 @@ export default class SaturationWeights {
         }
         return "NO CATEGORY FOR INDEX "+i;
     }
+    
+    getCompleteCategory(saturation, category) {
+        var catIds = this.getCategorizedArray()[category];
+        var completeArray = this.getNameAndWeightsAndSaturationArray(saturation);
+        if(catIds !== 'undefined') {
+            var retArr = [];
+            for(var i in catIds) {
+                var realId = catIds[i];
+                retArr.concat(completeArray[realId]);
+            }
+            return retArr;
+        } else {
+            return 'undefined';
+        }
+    }
 
 
         getPropertyNamesArrayNoSuffix() {

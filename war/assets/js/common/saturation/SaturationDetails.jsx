@@ -49,6 +49,9 @@ export default class SaturationDetails extends React.Component {
 			],
 			//see: https://www.datatables.net/examples/advanced_init/row_grouping.html
 			//https://datatables.net/reference/option/drawCallback
+                        
+                        //TODO use averageForCategory from SaturationAverage and show only categories
+                        
 			"drawCallback": function (settings) {
 				var api = this.api();
 				var rows = api.rows({
