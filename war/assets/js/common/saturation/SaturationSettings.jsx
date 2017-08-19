@@ -39,8 +39,11 @@ export default class SaturationSettings extends React.Component {
 		var satWeights = new SaturationWeights(this.state.saturationParameters);
 		var saturationWeightsNames = satWeights.getNameAndWeightsArray();
 		var satCategories = satWeights.getCategorizedArray();
+                var catId = 0;
 		for (var cat in satCategories) {
-			rows.push(<tr><td colspan="3"><b> - {cat} - </b></td></tr>);
+                        let catHtmlClass= "category-"+catId;
+                        catId = catId +1;
+			rows.push(<tr data-toggle="collapse" data-target={catHtmlClass} classname="accordion-toggle" ><th colspan="3">{cat} <span>+</span></th></tr>);
 			for (var catIdx in satCategories[cat]) {
 				var i = satCategories[cat][catIdx];
 				let rowID = `row${i}`
@@ -54,7 +57,7 @@ export default class SaturationSettings extends React.Component {
 						cell.push(<td key={cellID} id={cellID}>{saturationWeightsNames[i][idx]}</td>)
 					}
 				}
-				rows.push(<tr key={i} id={rowID}>{cell}</tr>)
+				rows.push(<tr class={catHtmlClass} key={i} id={rowID}>{cell}</tr>)
 			}
 		}
 
@@ -69,7 +72,8 @@ export default class SaturationSettings extends React.Component {
                     {rows}
                 </tbody>
             </table>
-        </div>);
+        </div>
+        );
 	}
 
 }
