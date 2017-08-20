@@ -31,6 +31,11 @@ const StyledCodeName = styled.span `
 	font-size: 16px;
 `;
 
+const StyledButton = styled.a `
+    margin-top: 9px;
+    margin-right: 10px;
+`;
+
 export default class CodeRelationsView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -126,6 +131,22 @@ export default class CodeRelationsView extends React.Component {
 
 	}
 
+	goToRelationshipCode(relation) {
+
+	}
+
+	renderCreateRelationshipCodeButton(relation) {
+		return (
+			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.createRelationshipCode(rel.id)}}><i className="fa fa-plus"></i>  Create relationship code</StyledButton>
+		);
+	}
+
+	renderGoToRelationshipCodeButton(relation) {
+		return (
+			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.goToRelationshipCode(rel.id)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledButton>
+		);
+	}
+
 	render() {
 		this.setRelations(this.props.code.relations, this.props.code.id);
 		var _this = this;
@@ -144,11 +165,10 @@ export default class CodeRelationsView extends React.Component {
     		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
     		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
 		            </a>
-                    <a className="pull-right btn fa-stack fa-lg" onClick={() => {_this.createRelationshipCode(rel)}}>
-                        <i className="fa fa-square fa-stack-2x fa-hover"></i>
-                        <i className="fa fa-plus fa-stack-1x fa-inverse"></i>
-                    </a>
-
+                    
+		            {_this.renderCreateRelationshipCodeButton(rel)}
+                    {_this.renderGoToRelationshipCodeButton(rel)}
+                    
 		            <StyledRelationName>{rel.name}</StyledRelationName>
 		            <br/>
 		            <StyledCodeName> {rel.dstName}</StyledCodeName>
