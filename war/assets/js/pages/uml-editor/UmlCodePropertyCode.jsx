@@ -25,7 +25,7 @@ const HighlightedExpander = StyledExpander.extend `
     color: ${props => props.selected ? (props.highlightNode ? '#fff' : '#707070') : (props.highlightNode ? '#000' : '#707070')};
 `;
 
-export default class UmlCodePropertyCodesystem extends SimpleCode {
+export default class UmlCodePropertyCode extends SimpleCode {
 
 	constructor(props) {
 		super(props);
@@ -64,7 +64,7 @@ export default class UmlCodePropertyCodesystem extends SimpleCode {
 
 	renderChildSimple(childCode, level, key) {
 		return (
-			<UmlCodePropertyCodesystem
+			<UmlCodePropertyCode
                 documentsView={this.props.documentsView}
                 level={level}
                 node={childCode}
@@ -75,7 +75,7 @@ export default class UmlCodePropertyCodesystem extends SimpleCode {
                 key={key}
 		        shouldHighlightNode={this.props.shouldHighlightNode}
             >
-            </UmlCodePropertyCodesystem>
+            </UmlCodePropertyCode>
 		);
 	}
 }
