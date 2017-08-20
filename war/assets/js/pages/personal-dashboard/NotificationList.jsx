@@ -1,28 +1,31 @@
 import React from 'react';
 import styled from 'styled-components';
+import Theme from '../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import {
 	StyledPagination,
-	StyledPaginationItem
+	StyledPaginationItem,
+	StyledBoxList,
+	StyledListItemDefault,
+	StyledListItemBtn
 } from '../../common/styles/List';
-
-import 'script!../../../../components/bootstrap/bootstrap.min.js'
-
-const StyledNotificationItem = styled.li `
-	display: flex !important;
-	align-items: center;
-`;
 
 const StyledNotificationInfo = styled.div `
 	flex-grow: 1;
+
+
 `;
 
 const StyledActionBtns = styled.div `
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	& > button {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
 `;
 
 const StyledGreenIcon = styled.a `
@@ -124,14 +127,12 @@ export default class NotificationList extends React.Component {
 						</StyledGreenIcon>
 			} else {
 				return <StyledActionBtns>
-						<a className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-							<i className="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>
-						</a>
-						<a className=" btn  fa-stack fa-lg notificationAccept"  onClick={() => this.acceptInvitation(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-							<i className="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>
-						</a>
+						<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+							<i className="fa fa-times"></i>
+						</StyledListItemBtn>
+						<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitation(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+							<i className="fa fa-check"></i>
+						</StyledListItemBtn>
 					</StyledActionBtns>
 			}
 			break;
@@ -142,14 +143,12 @@ export default class NotificationList extends React.Component {
 						</StyledGreenIcon>
 			} else {
 				return <StyledActionBtns>
-						<a className=" btn  fa-stack fa-lg" onClick={() => this.settleNotification(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-							<i className="fa fa-times fa-stack-1x fa-inverse fa-cancel-btn"></i>
-						</a>
-						<a className=" btn  fa-stack fa-lg notificationAccept"  onClick={() => this.createValidationProject(notification)}>
-							<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-							<i className="fa fa-check fa-stack-1x fa-inverse fa-editor-btn"></i>
-						</a>
+						<StyledListItemBtn className=" btn fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+							<i className="fa fa-times"></i>
+						</StyledListItemBtn>
+						<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.createValidationProject(notification)}  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+							<i className="fa fa-check"></i>
+						</StyledListItemBtn>
 					</StyledActionBtns>
 			}
 			break;
@@ -177,7 +176,7 @@ export default class NotificationList extends React.Component {
 		const itemsToDisplay = this.state.notifications.slice(firstItem, lastItem);
 
 		const renderListItems = itemsToDisplay.map((notification, index) => {
-			return <StyledNotificationItem
+			return <StyledListItemDefault
 					key={notification.id}
 				>
 					<StyledNotificationInfo>
@@ -186,7 +185,7 @@ export default class NotificationList extends React.Component {
 						<span dangerouslySetInnerHTML={{__html: notification.message}}></span>
 					</StyledNotificationInfo>
 					{this.renderButtons(notification)}
-				</StyledNotificationItem>;
+				</StyledListItemDefault>;
 		});
 
 		//Render Pagination
@@ -209,9 +208,9 @@ export default class NotificationList extends React.Component {
 
 		return (
 			<div>
-				<ul className="list compactBoxList">
+				<StyledBoxList>
 					{renderListItems}
-	            </ul>
+	            </StyledBoxList>
 	            <StyledPagination className="pagination">
 					{renderPagination}
             	</StyledPagination>

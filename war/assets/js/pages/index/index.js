@@ -2,6 +2,42 @@ import 'script!../../../../components/jQuery/jquery.js';
 import 'script!../../../../components/bootstrap/bootstrap.min.js';
 import 'script!../../../../components/Vex/js/vex.combined.min.js';
 
+// Personal Dasboard Styles
+import "../../../css/project-list.css";
+import "../../../../components/AdminLTE/css/AdminLTE.min.css";
+import "../../../css/dashboard.css";
+import "../../../css/IntercoderAgreement.css";
+
+// Project Dashboard Styles
+import "../../../../components/DataTables-1.10.7/media/css/jquery.dataTables.css";
+import "../../../../components/slick/slick.min.css";
+import "../../../css/customTimeline.css";
+import "../../../css/agreementStats.css";
+import "../../../../components/Alertify/css/alertify.core.css";
+import "../../../../components/Alertify/css/alertify.default.css";
+
+// Coding Editor
+import "../../../css/coding-editor.css";
+import "../../../css/footer.css";
+import "../../../css/CodesystemView.css";
+import "../../../../components/tooltipster/css/tooltipster.css";
+import "../../../css/agreementMap.css";
+import "../../../../components/filer/css/jquery.filer.css";
+import "../../../../components/filer/css/themes/jquery.filer-dragdropbox-theme.css";
+import "../../../../components/colorpicker/evol.colorpicker.css";
+import "../../../../components/mxGraph/javascript/src/css/common.css";
+
+// Common Styles
+import "../../../css/common.css";
+import "../../../css/navbar-account.css";
+import "../../../css/landing-page.css";
+import "../../../../components/Vex/css/vex.css";
+import "../../../../components/Vex/css/vex-theme-wireframe.css";
+import "../../../../components/bootstrap/dist/bootstrap.min.css";
+
+
+
+
 import App from '../App.jsx';
 import Account from '../../common/Account.jsx';
 

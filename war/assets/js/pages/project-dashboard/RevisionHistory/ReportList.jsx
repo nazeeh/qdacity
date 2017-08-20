@@ -1,4 +1,5 @@
 import React from 'react';
+import Theme from '../../../common/styles/Theme.js';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
@@ -6,7 +7,9 @@ import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
 import {
 	StyledPagination,
 	StyledPaginationItem,
-	StyledListItemBtn
+	StyledListItemBtn,
+	StyledBoxList,
+	StyledListItemDefault
 } from '../../../common/styles/List';
 
 export default class ReportList extends React.Component {
@@ -60,9 +63,8 @@ export default class ReportList extends React.Component {
 
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn  fa-stack fa-lg">
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-trash  fa-stack-1x fa-inverse fa-cancel-btn"></i>
+			return <StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash"></i>
 					</StyledListItemBtn>;
 		else return '';
 	}
@@ -84,12 +86,14 @@ export default class ReportList extends React.Component {
 			var datetime = report.datetime;
 			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 			else datetime = "";
-			return <li key={report.id} onClick={() => this.showValidationReports(report)}  className="clickable">
+			return <StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
 					<span className="reportName"> {report.name} </span>
-					{this.renderReportDeleteBtn(report, index)}
-					<span className="reportDate">{'[' + datetime + ']'}</span>
+					<span>
+						<span >{'[' + datetime + '] '}</span>
+						<span>{this.renderReportDeleteBtn(report, index)}</span>
+					</span>
 
-				</li>;
+				</StyledListItemDefault>;
 		})
 
 		//Render Pagination
@@ -112,9 +116,9 @@ export default class ReportList extends React.Component {
 
 		return (
 			<div>
-				<ul className="list compactBoxList">
+				<StyledBoxList>
 					{renderListItems}
-	            </ul>
+	            </StyledBoxList>
 	            <StyledPagination className="pagination">
 					{renderPagination}
             	</StyledPagination>

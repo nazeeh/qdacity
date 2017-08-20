@@ -52,7 +52,7 @@ export default class IntercoderAgreement extends VexModal {
 
 				if (_this.report.evaluationMethod === 'f-measure') {
 					buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
-						className: 'deciderBtn vex-dialog-button-primary',
+						className: 'vex-dialog-button-primary',
 						text: "Send Email",
 						click: function ($vexContent, event) {
 							var decider = new BinaryDecider('Confirm sending out emails to all validation coders', 'Cancel', 'Yes, send email');
@@ -66,7 +66,7 @@ export default class IntercoderAgreement extends VexModal {
 						}
 					}));
 					buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
-						className: 'deciderBtn vex-dialog-button-primary',
+						className: 'vex-dialog-button-primary',
 						text: "Agreement Maps",
 						click: function ($vexContent, event) {
 							window.location.href = 'coding-editor.html?project=' + _this.report.revisionID + '&type=REVISION&report=' + _this.report.id + '&parentproject=' + _this.report.projectID;

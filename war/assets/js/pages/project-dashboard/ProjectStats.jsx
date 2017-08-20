@@ -1,7 +1,13 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import SaturationModal from '../../common/modals/SaturationModal';
 import SaturationAverage from '../../common/saturation/SaturationAverage';
+
+const StyledBoxContent = styled.div `
+	margin: 0px 0px;
+`;
 
 export default class ProjectStats extends React.Component {
 	constructor(props) {
@@ -42,12 +48,12 @@ export default class ProjectStats extends React.Component {
 				<h3 className="box-title">Project Stats</h3>
 				</div>
 				<div className="box-body">
-				<div className="row" >
-					<div className="col-lg-3 col-xs-6 small-gutter-right">
+				<StyledBoxContent className="row" >
+					<div className="col-lg-3 col-xs-6 small-gutter-right small-gutter-left">
 						<div className="info-box">
 							<div className="info-box-icon bg-aqua">
 							<i className="fa fa-file-o "></i>
-								
+
 							</div>
 							<div className="info-box-content">
 								<span className="info-box-text">Documents</span>
@@ -57,13 +63,13 @@ export default class ProjectStats extends React.Component {
 							</div>
 						</div>
 					</div>
-					
-			
+
+
 					<div className="col-lg-3 col-xs-6 small-gutter">
 						<div className="info-box">
 							<div className="info-box-icon bg-yellow">
 							<i className="fa fa-tag"></i>
-								
+
 							</div>
 							<div className="info-box-content">
 								<span className="info-box-text">Codes</span>
@@ -73,12 +79,12 @@ export default class ProjectStats extends React.Component {
 							</div>
 						</div>
 					</div>
-					
+
 					<div className="col-lg-3 col-xs-6 small-gutter">
 						<div className="info-box">
 							<div className="info-box-icon bg-red">
 							<i className="fa fa-tags"></i>
-								
+
 							</div>
 							<div className="info-box-content">
 								<span className="info-box-text">Codings</span>
@@ -87,14 +93,14 @@ export default class ProjectStats extends React.Component {
 								</span>
 							</div>
 						</div>
-						
+
 					</div>
-					
-					<div className="col-lg-3 col-xs-6 small-gutter-left">
+
+					<div className="col-lg-3 col-xs-6 small-gutter-left small-gutter-right">
 					<div className="info-box">
 							<div className="info-box-icon bg-green">
 							<i className="fa fa-bar-chart"></i>
-								
+
 							</div>
 							<div className="info-box-content">
 								<span className="info-box-text">Saturation</span>
@@ -103,8 +109,8 @@ export default class ProjectStats extends React.Component {
 							</div>
 						</div>
 					</div>
-					
-				</div>
+
+				</StyledBoxContent>
 				</div>
 			</div>
 		);

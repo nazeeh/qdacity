@@ -30,10 +30,17 @@ module.exports = {
                   presets: ['es2015', 'react'],
                 },
             },
-			  {
-    test: /\.css$/, 
-    loader: 'style-loader!css-loader?modules=true&localIdentName=[name]__[local]___[hash:base64:5]'
-}
+			{
+				test: /\.css$/, 
+				loader: 'style-loader!css-loader?modules=false&minimize=true&localIdentName=[name]__[local]___[hash:base64:5]'
+			},
+			{
+				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
+				loader: 'url-loader',
+				options: {
+				  limit: 10000
+				}
+			}
         ]
     },
   

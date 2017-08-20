@@ -6,25 +6,77 @@ export default class SaturationWeights {
 	getNameAndWeightsArray() {
 		var sp = this.saturationParameters;
 		var saturationWeights = [
-			['Applied Codes', sp.appliedCodesChangeWeight, sp.appliedCodesSaturationMaximum],
-			['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight, sp.deleteCodeRelationShipSaturationMaximum],
-			['Deleted Codes', sp.deleteCodeChangeWeight, sp.deleteCodeSaturationMaximum],
-			['New Documents', sp.insertDocumentChangeWeight, sp.insertDocumentSaturationMaximum],
-			['New Code Relationships', sp.insertCodeRelationShipChangeWeight, sp.insertCodeRelationShipSaturationMaximum],
-			['New Codes', sp.insertCodeChangeWeight, sp.insertCodeSaturationMaximum],
-			['Relocated Codes', sp.relocateCodeChangeWeight, sp.relocateCodeSaturationMaximum],
-			['Code Author Changes', sp.updateCodeAuthorChangeWeight, sp.updateCodeAuthorSaturationMaximum],
-			['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight, sp.updateCodeBookEntryDefinitionSaturationMaximum],
-			['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight, sp.updateCodeBookEntryExampleSaturationMaximum],
-			['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight, sp.updateCodeBookEntryShortDefinitionSaturationMaximum],
-			['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight, sp.updateCodeBookEntryWhenNotToUseSaturationMaximum],
-			['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight, sp.updateCodeBookEntryWhenToUseSaturationMaximum],
-			['Code Color Changes', sp.updateCodeColorChangeWeight, sp.updateCodeColorSaturationMaximum],
-			['Code Memo Changes', sp.updateCodeMemoChangeWeight, sp.updateCodeMemoSaturationMaximum],
-			['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum]
+			['Applied Codes', sp.appliedCodesChangeWeight, sp.appliedCodesSaturationMaximum], //0
+			['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight, sp.deleteCodeRelationShipSaturationMaximum], //1
+			['Deleted Codes', sp.deleteCodeChangeWeight, sp.deleteCodeSaturationMaximum], //2
+			['New Documents', sp.insertDocumentChangeWeight, sp.insertDocumentSaturationMaximum], //3
+			['New Code Relationships', sp.insertCodeRelationShipChangeWeight, sp.insertCodeRelationShipSaturationMaximum], //4
+			['New Codes', sp.insertCodeChangeWeight, sp.insertCodeSaturationMaximum], //5
+			['Relocated Codes', sp.relocateCodeChangeWeight, sp.relocateCodeSaturationMaximum], //6
+			['Code Author Changes', sp.updateCodeAuthorChangeWeight, sp.updateCodeAuthorSaturationMaximum], //7
+			['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight, sp.updateCodeBookEntryDefinitionSaturationMaximum], //8
+			['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight, sp.updateCodeBookEntryExampleSaturationMaximum], //9
+			['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight, sp.updateCodeBookEntryShortDefinitionSaturationMaximum], //10
+			['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight, sp.updateCodeBookEntryWhenNotToUseSaturationMaximum], //11
+			['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight, sp.updateCodeBookEntryWhenToUseSaturationMaximum], //12
+			['Code Color Changes', sp.updateCodeColorChangeWeight, sp.updateCodeColorSaturationMaximum], //13
+			['Code Memo Changes', sp.updateCodeMemoChangeWeight, sp.updateCodeMemoSaturationMaximum], //14
+			['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum] //15
 		];
 
 		return saturationWeights;
+	}
+
+	getCategoryForIndex(i) {
+		var integer = parseInt(i, 10);
+		var catArr = this.getCategorizedArray();
+		for (var category in catArr) {
+			for (var idx in catArr[category]) {
+				if (catArr[category][idx] === integer) {
+					return category;
+				}
+			}
+		}
+		return "NO CATEGORY FOR INDEX " + i;
+	}
+
+	getCategorizedArray() {
+		//categorization can be redefined here.
+		//Other js code just expects this structure, 
+		//but is not dependent on the actual categories
+		//meaning "Title" : [<indices of NameAndWeightsArray which are in this category>]
+		//make sure not to use a index twice
+		var catArray = {
+			"Code applies": [
+				0
+			],
+			"Insert/Delete Codes": [
+				5,
+				2
+			],
+			"Code Changes": [
+				6,
+				7,
+				13,
+				14,
+				15
+			],
+			"Codebook Entry Changes": [
+				8,
+				9,
+				10,
+				11,
+				12
+			],
+			"Code Relationship Changes": [
+				4,
+				1
+			],
+			"Document Changes": [
+				3
+			]
+		}
+		return catArray;
 	}
 
 	getPropertyNamesArrayNoSuffix() {

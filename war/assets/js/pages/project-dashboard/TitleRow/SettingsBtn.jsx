@@ -4,7 +4,11 @@ import styled from 'styled-components';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import Settings from '../../../common/modals/Settings';
 
-const StyledSettingsBtn = styled.button `
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
+
+const StyledSettingsBtn = BtnDefault.extend `
 	margin-left: 5px;
 	& > i {
     	padding-right: 5px;
@@ -51,7 +55,7 @@ export default class SettingsBtn extends React.Component {
 		return (
 			<StyledSettingsBtn
 				type="button"
-				className="btn btn-default btn-sm pull-right"
+				className="pull-right"
 				onClick={this.showSettingsModal}
 			>
 				<i className="fa fa-cog fa-lg"></i><span><b>Settings</b></span>

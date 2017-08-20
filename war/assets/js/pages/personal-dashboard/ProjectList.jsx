@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Theme from '../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
@@ -8,10 +9,18 @@ import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 
 import {
+	StyledBoxList,
 	StyledPagination,
 	StyledPaginationItem,
-	StyledListItemBtn
+	StyledListItemBtn,
+	StyledListItemPrimary,
+	StyledListItemDefault
 } from '../../common/styles/List';
+
+import StyledSearchField from '../../common/styles/SearchField.jsx';
+import {
+	BtnDefault
+} from '../../common/styles/Btn.jsx';
 
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
@@ -21,30 +30,16 @@ const StyledProjectListMenu = styled.div `
 	display:flex;
 	flex-direction:row;
 	& > .searchfield{
+		height: inherit !important;
 		flex:1;
-		margin-right: 5px;
 	}
 `;
 
-const StyledSearchField = styled.div `
-	display:flex;
-	flex-direction:row;
-	width: 100px;
-	margin-bottom: 5px;
-	& > input[type=text] {
-		flex:1;
-	    padding:0.3em;
-	    border:0.2em solid #337ab7;
-	    border-radius: 5px 0px 0px 5px;
-	}
-	& > button {
-	  padding:0.6em 0.8em;
-	  background-color:#337ab7;
-	  color:white;
-	  border:none;
-	  border-radius: 0px 5px 5px 0px;
-	}
+
+const StyledProjectList = StyledBoxList.extend `
+	padding-top: 5px;
 `;
+
 
 export default class ProjectList extends React.Component {
 	constructor(props) {
@@ -139,7 +134,8 @@ export default class ProjectList extends React.Component {
 	}
 
 	isValidationProject(project) {
-		return 'clickable ' + ((project.type == "VALIDATION") ? 'validationProjectItem' : ' ');
+		if (project.type == "VALIDATION") return true;
+		return false;
 	}
 
 	showNewProjectModal() {
@@ -172,10 +168,10 @@ export default class ProjectList extends React.Component {
 	}
 
 	renderDeleteBtn(project, index) {
+
 		if (typeof project.revisionID == "undefined") {
-			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn  fa-stack fa-lg">
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
+			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash "></i>
 					</StyledListItemBtn>
 		} else {
 			return "";
@@ -201,17 +197,16 @@ export default class ProjectList extends React.Component {
 					value={this.state.search}
 					onChange={this.updateSearch}
 				/>
-				<button type="button" id="search">Find!</button>
 				<StyledNewPrjBtn id="newProject">
-					<button
+					<BtnDefault
 						id="newPrjBtn"
-						className="btn btn-primary" href="#"
+						href="#"
 						onClick={this.showNewProjectModal}
 
 					>
 					<i className="fa fa-plus fa-fw"></i>
-					New
-					</button>
+					New Project
+					</BtnDefault>
 				</StyledNewPrjBtn>
 
 			</StyledSearchField>
@@ -231,25 +226,30 @@ export default class ProjectList extends React.Component {
 		function prjClick(prj) {
 			_this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
 		}
-
+		const renderListItemContent = (project, index) => {
+			return ([
+				<span>{project.name}</span>,
+				<div>
+				{this.renderDeleteBtn(project, index)}
+				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+					<i className="fa fa-sign-out"></i>
+				</StyledListItemBtn>
+				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+					<i className="fa fa-tags"></i>
+				</StyledListItemBtn>
+			</div>
+			])
+		}
 		const renderListItems = itemsToDisplay.map((project, index) => {
-			return <li
-					key={project.id}
-					className={this.isValidationProject(project)}
-					onClick={() => prjClick(project)}
-
-				>
-					<span>{project.name}</span>
-					{this.renderDeleteBtn(project, index)}
-					<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn  fa-stack fa-lg" >
-						<i className="fa fa-circle fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-						<i className="fa fa-sign-out fa-stack-1x fa-inverse fa-cancel-btn"></i>
-					</StyledListItemBtn>
-					<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn  fa-stack fa-lg" >
-						<i className="fa fa-circle fa-stack-2x fa-editor-btn-circle fa-hover"></i>
-						<i className="fa fa-pencil fa-stack-1x fa-inverse fa-editor-btn"></i>
-					</StyledListItemBtn>
-				</li>;
+			if (this.isValidationProject(project)) {
+				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)} clickable={true}>
+						{renderListItemContent(project, index)}
+					</StyledListItemDefault>;
+			} else {
+				return <StyledListItemPrimary key={project.id} onClick={() => prjClick(project)} clickable={true}>
+						{renderListItemContent(project, index)}
+					</StyledListItemPrimary>;
+			}
 		})
 
 		//Render Pagination
@@ -273,9 +273,9 @@ export default class ProjectList extends React.Component {
 		return (
 			<div>
 				{projectListMenu}
-				<ul className="list compactBoxList">
+				<StyledProjectList className="">
 					{renderListItems}
-	            </ul>
+	            </StyledProjectList>
 	            <StyledPagination className="pagination">
 					{renderPagination}
             	</StyledPagination>

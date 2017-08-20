@@ -16,7 +16,7 @@ export default class BinaryDecider extends VexModal {
 				vex.dialog.open({
 					message: _this.message,
 					contentCSS: {
-						width: '500px'
+						width: '600px'
 					},
 					buttons: [
 						$.extend({}, vex.dialog.buttons.NO, {
