@@ -78,7 +78,7 @@ export default class SaturationWeights {
             var retArr = [];
             for(var i in catIds) {
                 var realId = catIds[i];
-                retArr.concat(completeArray[realId]);
+                retArr = retArr.concat([completeArray[realId]]);
             }
             return retArr;
         } else {

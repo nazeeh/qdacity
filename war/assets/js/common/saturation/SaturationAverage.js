@@ -62,7 +62,7 @@ export default class SaturationAverage {
             var pr = sr.saturationParameters;
             var satWeights = new SaturationWeights(pr);
             var completeCategory = satWeights.getCompleteCategory(sr, category);
-            var avgWeightedMaxSat;
+            var avgWeightedMaxSat = 0;
             var avgWeights;
             var avgMaxima;
            
@@ -75,8 +75,8 @@ export default class SaturationAverage {
             for(var i in completeCategory) {
                avgWeightedMaxSat = avgWeightedMaxSat + (this.max1(completeCategory[i][3]/completeCategory[i][2])*(completeCategory[i][1] / catWeights));
             }            
-            avgWeights = catWeights / completeCategory.size();
-            avgMaxima = allMaxima / completeCategory.size();
+            avgWeights = catWeights / completeCategory.length;
+            avgMaxima = allMaxima / completeCategory.length;
             return [avgWeightedMaxSat, avgWeights, avgMaxima];
         }
 }
