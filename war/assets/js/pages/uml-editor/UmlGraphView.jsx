@@ -6,7 +6,6 @@ import {
 } from './EdgeType.js';
 import UmlClass from './model/UmlClass.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
-import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
 import HoverButtons from './hoverbutton/HoverButtons.jsx';
 
