@@ -6,16 +6,18 @@ import UmlClassRelation from '../../pages/uml-editor/model/UmlClassRelation.js';
 
 export default class UmlCodePropertyModal extends VexModal {
 
-	constructor(umlEditor, headline, sourceCode, codesystemView, relationMetaModelEntityName, mappingAction) {
+	constructor(umlEditor, headline, sourceCode, codesystem, relationMetaModelEntityName, mappingAction) {
 		super();
 
 		this.umlEditor = umlEditor;
 		this.headline = headline;
 		this.sourceCode = sourceCode;
-		this.codesystemView = codesystemView;
+		this.codesystem = codesystem;
 
 		this.relationMetaModelEntityName = relationMetaModelEntityName;
 		this.mappingAction = mappingAction;
+
+		this.codesystemView = null;
 	}
 
 	showModal(metaModelEntities, metaModelRelations) {
@@ -89,7 +91,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<UmlCodePropertyCodesystem context={_this} notifyOnSelected={notifyOnSelected} shouldHighlightNode={shouldHighlightNode} codesystem={_this.codesystemView.getCodesystem()} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<UmlCodePropertyCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} shouldHighlightNode={shouldHighlightNode} codesystem={_this.codesystem.getCodesystem()} />, document.getElementById(codesystemContainerId));
 				notifyOnSelected(null);
 			}
 		);
