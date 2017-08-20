@@ -72,6 +72,7 @@ public class CodeEndpoint {
 	 * It uses HTTP POST method.
 	 *
 	 * @param code the entity to be inserted.
+	 * @param relationId specifies the relation if the code is a relationship-code
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
@@ -79,7 +80,7 @@ public class CodeEndpoint {
 		name = "codes.insertCode",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public Code insertCode(Code code, User user) throws UnauthorizedException {
+	public Code insertCode(Code code, Long relationId, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
 		Long codesystemId = code.getCodesystemID();
@@ -95,6 +96,19 @@ public class CodeEndpoint {
 
 			if (code.getCodeBookEntry() == null) code.setCodeBookEntry(new CodeBookEntry());
 
+			// Create relationship code
+			if (relationId != null) {
+				Query query = mgr.newQuery(CodeRelation.class);
+				query.setUnique(true);
+				query.setFilter("id == :id");
+				
+				Map<String, Long> params = new HashMap<String, Long>();
+				params.put("id", relationId);
+				
+				CodeRelation relation = (CodeRelation) query.executeWithMap(params);
+				code.setRelationshipCode(relation);
+			}
+			
 			mgr.makePersistent(code);
 
 			// Log change

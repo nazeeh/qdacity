@@ -4,8 +4,11 @@ export default class CodesEndpoint {
 	constructor() {}
 
 
-	static insertCode(code) {
-		var apiMethod = gapi.client.qdacity.codes.insertCode(code);
+	static insertCode(code, relationId) {
+		var apiMethod = gapi.client.qdacity.codes.insertCode({
+			'code': code,
+			'relationId': relationId
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
