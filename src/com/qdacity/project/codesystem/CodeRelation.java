@@ -1,5 +1,6 @@
 package com.qdacity.project.codesystem;
 
+import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -26,6 +27,9 @@ public class CodeRelation {
 		dependent = "true")
 	Long codeId;
 
+	@Column(name = "relationshipCode")
+	Code relationshipCode;
+
 	public Key getKey() {
 		return key;
 	}
@@ -48,5 +52,13 @@ public class CodeRelation {
 
 	public void setCodeId(Long codeId) {
 		this.codeId = codeId;
+	}
+
+	public Code getRelationshipCode() {
+		return relationshipCode;
+	}
+
+	public void setRelationshipCode(Code relationshipCode) {
+		this.relationshipCode = relationshipCode;
 	}
 }

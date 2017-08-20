@@ -55,6 +55,9 @@ public class Code {
 		name = "relations")
 	List<CodeRelation> relations;
 
+	@Column(name = "relationshipCode")
+	CodeRelation relationshipCode;
+
 	public Long getId() {
 		return id;
 	}
@@ -182,4 +185,11 @@ public class Code {
 		}
 	}
 
+	public CodeRelation getRelationshipCode() {
+		return relationshipCode;
+	}
+
+	public void setRelationshipCode(CodeRelation relationshipCode) {
+		this.relationshipCode = relationshipCode;
+	}
 }
