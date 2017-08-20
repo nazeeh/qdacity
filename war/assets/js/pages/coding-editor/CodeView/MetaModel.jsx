@@ -12,11 +12,6 @@ const StyledCodeviewComponent = styled.div `
     padding: 8px 8px 0px 8px;
 `;
 
-const Mode = {
-	DEFAULT: 0,
-	RELATIONSHIP: 1
-};
-
 export default class MetaModel extends React.Component {
 	constructor(props) {
 		super(props);
@@ -24,21 +19,14 @@ export default class MetaModel extends React.Component {
 		this.state = {
 			code: {},
 			elements: {},
-			selected: [],
-			mode: Mode.DEFAULT
+			selected: []
 		};
-
-		// TODO rename
-		this.checkbox = null;
 
 		this.getElement = this.getElement.bind(this);
 		this.addSelected = this.addSelected.bind(this);
 		this.setElements = this.setElements.bind(this);
 		this.setActiveElement = this.setActiveElement.bind(this);
 		this.updateActiveElement = this.updateActiveElement.bind(this);
-
-		// TODO rename
-		this.checkboxClicked = this.checkboxClicked.bind(this);
 	}
 
 	setElements(elements) {
@@ -79,6 +67,18 @@ export default class MetaModel extends React.Component {
 	}
 
 	setActiveElement(element) {
+		const _this = this;
+
+		// Compare element with selection
+		this.state.selected.forEach((selectedId) => {
+			const selected = _this.getElement(selectedId);
+
+			if (element.type != selected.type) {
+				const groupId = _this.state.elements[selected.getGroup()];
+				_this.resetSelectionForGroup(groupId);
+			}
+		});
+
 
 		let group = this.state.elements[element.getGroup()];
 
@@ -153,43 +153,18 @@ export default class MetaModel extends React.Component {
 		this.props.updateSelectedCode(this.props.code, true);
 	}
 
-	// TODO rename
-	checkboxClicked() {
-		this.setState({
-			mode: this.checkbox.checked ? Mode.RELATIONSHIP : Mode.DEFAULT
-		});
-	}
-
-	renderMetaModelView() {
-		let filter = "";
-
-		if (this.state.mode == Mode.DEFAULT) {
-			filter = "PROPERTY";
-		} else {
-			filter = "RELATIONSHIP";
-		}
-
-		return (
-			<div className="col-sm-6">
-                <MetaModelView filter={filter} code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
-            </div>
-		);
-	}
-
-	renderContent() {
-		if (this.state.mode == Mode.DEFAULT) {
+	renderContent(isRelationship) {
+		if (!isRelationship) {
 			return (
 				<div>
-			        { this.renderMetaModelView() }
                     <div className="col-sm-6">
                         <CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
                     </div>
-                </div>
+		        </div>
 			);
 		} else {
 			return (
 				<div>
-                    { this.renderMetaModelView() }
                     <div className="col-sm-3">
                         Source-Code:
 			            <SimpleCodesystem codesystem={this.props.getCodeSystem()} />
@@ -204,17 +179,23 @@ export default class MetaModel extends React.Component {
 	}
 
 	render() {
-		const _this = this;
-
 		this.setActiveIds(this.props.code.mmElementIDs);
+
+		let isRelationship = false;
+
+		this.state.selected.forEach(selected => {
+			if (selected.type == "RELATIONSHIP") {
+				isRelationship = true;
+			}
+		});
 
 		return (
 			<StyledCodeviewComponent>
-				<div>
-    		        <div className="checkbox">
-    		            <label><input ref={(checkbox) => { _this.checkbox = checkbox; }} type="checkbox" checked={this.state.mode == Mode.DEFAULT ? false : true} onClick={this.checkboxClicked}></input>Code represents a relation</label>
-    		        </div>
-					{ this.renderContent() }
+				<div>   
+    		        <div className="col-sm-6">
+		                <MetaModelView code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
+    	            </div>
+		            {this.renderContent(isRelationship)}
 				</div>
 			</StyledCodeviewComponent>
 		);
