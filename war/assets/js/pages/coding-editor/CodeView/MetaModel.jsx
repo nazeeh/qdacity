@@ -179,11 +179,14 @@ export default class MetaModel extends React.Component {
 	}
 
 	render() {
+		const _this = this;
+
 		this.setActiveIds(this.props.code.mmElementIDs);
 
 		let isRelationship = false;
 
-		this.state.selected.forEach(selected => {
+		this.state.selected.forEach(selectedId => {
+			const selected = _this.getElement(selectedId);
 			if (selected.type == "RELATIONSHIP") {
 				isRelationship = true;
 			}
