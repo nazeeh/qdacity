@@ -1,8 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import {
 	Code
 } from './Code.jsx';
 import SimpleCode from './SimpleCode.jsx';
+
+const StyledSimpleCodesystem = styled.div `
+    height: ${props => props.height } !important;
+    max-height: ${props => props.maxHeight } !important;
+    overflow: auto;
+`;
 
 export default class SimpleCodesystem extends React.Component {
 	constructor(props) {
@@ -10,7 +18,9 @@ export default class SimpleCodesystem extends React.Component {
 		this.codesystem = {};
 		this.state = {
 			slected: {},
-			codesystem: []
+			codesystem: [],
+			height: this.props.height,
+			maxHeight: this.props.maxHeight
 		};
 
 		this.state.codesystem = this.props.codesystem;
@@ -20,7 +30,23 @@ export default class SimpleCodesystem extends React.Component {
 	}
 
 	// Can be overwritten to notify other components on a new selection
-	notifyOnSelection(code) {}
+	notifyOnSelection(code) {
+		if (this.props.notifyOnSelected != null) {
+			this.props.notifyOnSelected(code);
+		}
+	}
+
+	setHeight(height) {
+		this.setState({
+			height: height
+		});
+	}
+
+	setMaxHeight(maxHeight) {
+		this.setState({
+			maxHeight: maxHeight
+		});
+	}
 
 	sortCodes(codeSiblings) {
 		var _this = this;
@@ -93,8 +119,8 @@ export default class SimpleCodesystem extends React.Component {
 	renderNodes(codeSiblings, level) {
 		return (
 			<div>
-    				{this.renderRoots(codeSiblings)}
-				</div>
+				{this.renderRoots(codeSiblings)}
+			</div>
 		);
 	};
 
@@ -103,8 +129,25 @@ export default class SimpleCodesystem extends React.Component {
 	}
 
 	render() {
+		let height = null;
+		let maxHeight = null;
+
+		if (this.state.height != null) {
+			height = this.state.height + "px";
+		} else {
+			height = "auto";
+		}
+
+		if (this.state.maxHeight != null) {
+			maxHeight = this.state.maxHeight + "px";
+		} else {
+			maxHeight = "auto";
+		}
+
 		return (
-			<div className="codesystemView">{this.renderCodesystem()}</div>
+			<StyledSimpleCodesystem height={height} maxHeight={maxHeight} className="codesystemView">
+		        {this.renderCodesystem()}
+	        </StyledSimpleCodesystem>
 		);
 	}
 }

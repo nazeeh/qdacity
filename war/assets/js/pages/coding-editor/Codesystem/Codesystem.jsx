@@ -80,12 +80,6 @@ class Codesystem extends SimpleCodesystem {
 		this.umlEditor = umlEditor;
 	}
 
-	setHeight(height) {
-		this.setState({
-			height: height
-		});
-	}
-
 	init() {
 		var _this = this;
 		var promise = new Promise(
