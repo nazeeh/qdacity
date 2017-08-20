@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import MetaModelView from './MetaModelView.jsx';
 import CodeRelationsView from './CodeRelationsView.jsx';
 import MetaModelElement from './MetaModelElement';
+import SimpleCodesystem from '../Codesystem/SimpleCodesystem.jsx';
 
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
 
@@ -14,17 +15,18 @@ const StyledCodeviewComponent = styled.div `
 export default class MetaModel extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			code: {},
 			elements: {},
 			selected: []
 		};
+
 		this.getElement = this.getElement.bind(this);
 		this.addSelected = this.addSelected.bind(this);
 		this.setElements = this.setElements.bind(this);
 		this.setActiveElement = this.setActiveElement.bind(this);
 		this.updateActiveElement = this.updateActiveElement.bind(this);
-
 	}
 
 	setElements(elements) {
@@ -65,6 +67,18 @@ export default class MetaModel extends React.Component {
 	}
 
 	setActiveElement(element) {
+		const _this = this;
+
+		// Compare element with selection
+		this.state.selected.forEach((selectedId) => {
+			const selected = _this.getElement(selectedId);
+
+			if (element.type != selected.type) {
+				const groupId = _this.state.elements[selected.getGroup()];
+				_this.resetSelectionForGroup(groupId);
+			}
+		});
+
 
 		let group = this.state.elements[element.getGroup()];
 
@@ -139,20 +153,51 @@ export default class MetaModel extends React.Component {
 		this.props.updateSelectedCode(this.props.code, true);
 	}
 
+	renderContent(isRelationship) {
+		if (!isRelationship) {
+			return (
+				<div>
+                    <div className="col-sm-6">
+                        <CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
+                    </div>
+		        </div>
+			);
+		} else {
+			return (
+				<div>
+                    <div className="col-sm-3">
+                        Source-Code:
+			            <SimpleCodesystem codesystem={this.props.getCodeSystem()} />
+			        </div>
+                    <div className="col-sm-3">
+                        Destination-Code:
+                        <SimpleCodesystem codesystem={this.props.getCodeSystem()} />
+		            </div>
+                </div>
+			);
+		}
+	}
+
 	render() {
 		this.setActiveIds(this.props.code.mmElementIDs);
+
+		let isRelationship = false;
+
+		this.state.selected.forEach(selected => {
+			if (selected.type == "RELATIONSHIP") {
+				isRelationship = true;
+			}
+		});
+
 		return (
 			<StyledCodeviewComponent>
-				<div>
-					<div className="col-sm-6">
-						<MetaModelView filter={"PROPERTY"} code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
-					</div>
-					<div className="col-sm-6">
-						<CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement}  elements={this.state.elements}/>
-					</div>
+				<div>   
+    		        <div className="col-sm-6">
+		                <MetaModelView code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
+    	            </div>
+		            {this.renderContent(isRelationship)}
 				</div>
 			</StyledCodeviewComponent>
-
 		);
 	}
 }
