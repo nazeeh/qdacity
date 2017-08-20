@@ -27,6 +27,8 @@ export default class MetaModel extends React.Component {
 		this.setElements = this.setElements.bind(this);
 		this.setActiveElement = this.setActiveElement.bind(this);
 		this.updateActiveElement = this.updateActiveElement.bind(this);
+		this.relatinoshipSourceChanged = this.relatinoshipSourceChanged.bind(this);
+		this.relatinoshipDestinationChanged = this.relatinoshipDestinationChanged.bind(this);
 	}
 
 	setElements(elements) {
@@ -153,6 +155,14 @@ export default class MetaModel extends React.Component {
 		this.props.updateSelectedCode(this.props.code, true);
 	}
 
+	relatinoshipSourceChanged(sourceCode) {
+		
+	}
+
+	relatinoshipDestinationChanged(destinationCode) {
+		
+	}
+
 	renderContent(isRelationship) {
 		if (!isRelationship) {
 			return (
@@ -167,11 +177,11 @@ export default class MetaModel extends React.Component {
 				<div>
                     <div className="col-sm-3">
                         Source-Code:
-			            <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} />
+			            <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} />
 			        </div>
                     <div className="col-sm-3">
                         Destination-Code:
-                        <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} />
+                        <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipDestinationChanged} />
 		            </div>
                 </div>
 			);
