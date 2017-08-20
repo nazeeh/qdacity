@@ -122,6 +122,10 @@ export default class CodeRelationsView extends React.Component {
 		});
 	}
 
+	createRelationshipCode(relation) {
+
+	}
+
 	render() {
 		this.setRelations(this.props.code.relations, this.props.code.id);
 		var _this = this;
@@ -137,9 +141,13 @@ export default class CodeRelationsView extends React.Component {
             return(
 				<StyledRelationItem key={rel.id} className="clickable">
 		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel.id)}}>
-		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
+    		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
+    		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
 		            </a>
+                    <a className="pull-right btn fa-stack fa-lg" onClick={() => {_this.createRelationshipCode(rel)}}>
+                        <i className="fa fa-square fa-stack-2x fa-hover"></i>
+                        <i className="fa fa-plus fa-stack-1x fa-inverse"></i>
+                    </a>
 
 		            <StyledRelationName>{rel.name}</StyledRelationName>
 		            <br/>
