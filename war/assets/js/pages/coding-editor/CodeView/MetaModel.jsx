@@ -167,11 +167,11 @@ export default class MetaModel extends React.Component {
 				<div>
                     <div className="col-sm-3">
                         Source-Code:
-			            <SimpleCodesystem codesystem={this.props.getCodeSystem()} />
+			            <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} />
 			        </div>
                     <div className="col-sm-3">
                         Destination-Code:
-                        <SimpleCodesystem codesystem={this.props.getCodeSystem()} />
+                        <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} />
 		            </div>
                 </div>
 			);
