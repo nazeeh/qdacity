@@ -11,6 +11,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.datanucleus.annotations.Unowned;
+
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
 public class Code {
@@ -54,8 +56,9 @@ public class Code {
 	@Column(
 		name = "relations")
 	List<CodeRelation> relations;
-
+	
 	@Column(name = "relationshipCode")
+	@Unowned
 	CodeRelation relationshipCode;
 
 	public Long getId() {
