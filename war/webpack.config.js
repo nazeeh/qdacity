@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
 	entry: {
@@ -32,7 +33,7 @@ module.exports = {
             },
 			{
 				test: /\.css$/, 
-				loader: 'style-loader!css-loader?modules=false&minimize=true&localIdentName=[name]__[local]___[hash:base64:5]'
+				loaders: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader?modules=false&minimize=true&localIdentName=[name]__[local]___[hash:base64:5]' })
 			},
 			{
 				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
@@ -49,9 +50,11 @@ module.exports = {
         new webpack.NoErrorsPlugin(),
 		new webpack.DefinePlugin({
     'process.env': {
-      'NODE_ENV': JSON.stringify('production')
+      'NODE_ENV': JSON.stringify('production'),
     }
-  })
+  }),
+  
+	  new ExtractTextPlugin("styles.css")
     ],
     stats: {
         // Nice colored output

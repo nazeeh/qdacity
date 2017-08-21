@@ -5,7 +5,7 @@ import DocumentsView from './DocumentsView.jsx';
 import BinaryDecider from '../../../common/modals/BinaryDecider.js';
 import FileUpload from '../../../common/modals/FileUpload.js';
 import Prompt from '../../../common/modals/Prompt.js';
-import 'script!../../../../../components/filer/js/jquery.filer.min.js';
+import 'script-loader!../../../../../components/filer/js/jquery.filer.min.js';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 import UploadEndpoint from '../../../common/endpoints/UploadEndpoint';
