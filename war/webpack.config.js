@@ -23,15 +23,6 @@ module.exports = {
         react: "React"
     },
     module: {
-        loaders: [
-			{
-				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
-				loader: 'url-loader',
-				options: {
-				  limit: 10000
-				}
-			}
-        ],
 		rules: [
 			{
 				test: path.join(__dirname, 'assets/js'),
@@ -45,12 +36,23 @@ module.exports = {
 			{
 				test: /\.css$/, 
 				use: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: "css-loader"
-        })
+				  fallback: "style-loader",
+				  use: "css-loader"
+				})
+			},
+			{
+				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
+				use: [
+				  {
+					loader: 'url-loader',
+					options: {
+					  limit: 10000
+					}
+				  }
+				]
 			}
 		]
-    },
+	},
   
     plugins: [
         // Avoid publishing files when compilation fails
