@@ -7,7 +7,11 @@ import {
 
 
 const StyledTextEditor = styled.iframe `
-	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
+	height: ${props => {
+		let codingViewOffset = props.showCodingView ? '350px' : '51px'
+		let menuOffset = (props.selectedEditor === PageView.TEXT) ? '44px' : '0px'
+		return 'calc(100vh - '+menuOffset+' - '+codingViewOffset+')';
+	}} !important;
 	display: ${props => (props.selectedEditor != PageView.UML) ? 'block' : 'none'} !important;
 `;
 
