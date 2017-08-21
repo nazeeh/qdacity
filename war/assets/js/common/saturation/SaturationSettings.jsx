@@ -43,7 +43,7 @@ export default class SaturationSettings extends React.Component {
                 for (var cat in satCategories) {
                     let key = 'catKey-'+i;
                     let id = 'catId-'+i;
-                    saturationSettings.push(<SaturationCategorySettings key={key} id={id} category={cat} saturationParameters={this.state.saturationParameters} ></SaturationCategorySettings>);
+                    saturationSettings.push(<SaturationCategorySettings catIdx={satWeights.getArtificialCategoryIndex(cat)} key={key} id={id} category={cat} saturationParameters={this.state.saturationParameters} ></SaturationCategorySettings>);
                     i = i+1;
                 }
 

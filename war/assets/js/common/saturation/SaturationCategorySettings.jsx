@@ -6,7 +6,8 @@ export default class SaturationCategorySettings extends React.Component {
         this.state = {
             isExpanded: false,
             category: props.category,
-            saturationParameters: props.saturationParameters
+            saturationParameters: props.saturationParameters,
+            categoryIdx: props.catIdx
         };
     }
 
@@ -59,11 +60,18 @@ export default class SaturationCategorySettings extends React.Component {
             avgWeights = avgWeights / catIndices.length;
             avgMax = avgMax / catIndices.length;
 
+            let rowId = "row-category-" + this.state.categoryIdx;
+            let cellId1 = "cell-category-" + this.state.categoryIdx + "-1";
+            let cellId2 = "cell-category-" + this.state.categoryIdx + "-2";
+            let cellId2input = "input-category-" + this.state.categoryIdx + "-1";
+            let cellId3 = "cell-category-" + this.state.categoryIdx + "-3";
+            let cellId3input = "input-category-" + this.state.categoryIdx + "-2";
+
             let label = this.state.category + " (Average):";
-            cell.push(<td width="50%" >{label}</td>);
-            cell.push(<td width="25%"><input  type="number"  min="0" max="100"  defaultValue={this.toPercent(avgWeights)} /></td>);
-            cell.push(<td width="25%"><input  type="number"  min="0" max="100"  defaultValue={this.toPercent(avgMax)} /></td>);
-            rows.push(<tr>{cell}</tr>);
+            cell.push(<td id={cellId1} key={cellId1} width="50%" >{label}</td>);
+            cell.push(<td id={cellId2} key={cellId2} width="25%"><input id={cellId2input}  type="number"  min="0" max="100"  defaultValue={this.toPercent(avgWeights)} /></td>);
+            cell.push(<td id={cellId3} key={cellId3} width="25%"><input id={cellId3input} type="number"  min="0" max="100"  defaultValue={this.toPercent(avgMax)} /></td>);
+            rows.push(<tr id={rowId} kex={rowId} >{cell}</tr>);
         }
 
         let fullCollapsibleText = this.props.category + " " + collapsibleText;
