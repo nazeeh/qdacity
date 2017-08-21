@@ -128,7 +128,8 @@ export default class CodeRelationsView extends React.Component {
 	}
 
 	createRelationshipCode(relation) {
-
+		const name = this.props.code.name + " " + relation.name + " " + relation.dstName;
+		this.props.createCode(name, relation.id, relation.codeId, true);
 	}
 
 	goToRelationshipCode(relation) {
@@ -136,14 +137,16 @@ export default class CodeRelationsView extends React.Component {
 	}
 
 	renderCreateRelationshipCodeButton(relation) {
+		const _this = this;
 		return (
-			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.createRelationshipCode(rel.id)}}><i className="fa fa-plus"></i>  Create relationship code</StyledButton>
+			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledButton>
 		);
 	}
 
 	renderGoToRelationshipCodeButton(relation) {
+		const _this = this;
 		return (
-			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.goToRelationshipCode(rel.id)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledButton>
+			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledButton>
 		);
 	}
 

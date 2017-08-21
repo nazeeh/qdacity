@@ -36,7 +36,8 @@ export default class CodeView extends React.Component {
 		const {
 			updateSelectedCode,
 			getCodeByCodeID,
-			getCodeSystem
+			getCodeSystem,
+			createCode
 		} = this.props;
 		return (
 			<div>
@@ -51,7 +52,7 @@ export default class CodeView extends React.Component {
 						<CodeProperties code={this.props.code} editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode}/>
 					</Tab>
 					<Tab tabTitle="Meta Model">
-						<MetaModel code={this.props.code} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem}/>
+						<MetaModel code={this.props.code} updateSelectedCode={updateSelectedCode} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} createCode={createCode} />
 					</Tab>
 					<Tab tabTitle="Code Memo">
 						<CodeMemo code={this.props.code} updateSelectedCode={updateSelectedCode} />
