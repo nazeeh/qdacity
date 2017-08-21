@@ -36,8 +36,15 @@ module.exports = {
 			{
 				test: /\.css$/, 
 				use: ExtractTextPlugin.extract({
-				  fallback: "style-loader",
-				  use: "css-loader"
+					fallback: "style-loader",
+					use: [
+						{
+							loader: 'css-loader',
+							options: {
+							  minimize: true
+							}
+						}
+					]
 				})
 			},
 			{
@@ -46,7 +53,7 @@ module.exports = {
 				  {
 					loader: 'url-loader',
 					options: {
-					  limit: 1000000
+					  limit: 10000
 					}
 				  }
 				]
