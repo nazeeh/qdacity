@@ -6,7 +6,7 @@ import IntercoderAgreementByCode from './IntercoderAgreementByCode';
 import BinaryDecider from './BinaryDecider';
 import ProjectEndpoint from '../endpoints/ProjectEndpoint';
 import ValidationEndpoint from '../endpoints/ValidationEndpoint';
-import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
 
 export default class IntercoderAgreement extends VexModal {
