@@ -24,17 +24,6 @@ module.exports = {
     },
     module: {
         loaders: [
-            {
-                loader: 'babel-loader',
-                test: path.join(__dirname, 'assets/js'),
-                query: {
-                  presets: ['es2015', 'react'],
-                },
-            },
-			{
-				test: /\.css$/, 
-				loaders: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader?modules=false&minimize=true&localIdentName=[name]__[local]___[hash:base64:5]' })
-			},
 			{
 				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
 				loader: 'url-loader',
@@ -42,7 +31,25 @@ module.exports = {
 				  limit: 10000
 				}
 			}
-        ]
+        ],
+		rules: [
+			{
+				test: path.join(__dirname, 'assets/js'),
+				use: {
+					loader: 'babel-loader',
+					options: {
+					  presets: ['es2015', 'react']
+					}
+				}
+			},
+			{
+				test: /\.css$/, 
+				use: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: "css-loader"
+        })
+			}
+		]
     },
   
     plugins: [
@@ -54,7 +61,10 @@ module.exports = {
     }
   }),
   
-	  new ExtractTextPlugin("styles.css")
+	  new ExtractTextPlugin({
+		  filename: "styles.css",
+		  allChunks: true
+	  })
     ],
     stats: {
         // Nice colored output
