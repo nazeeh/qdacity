@@ -17,12 +17,16 @@ export default class PageViewChooser extends React.Component {
 		super(props);
 
 		this.state = {
-			view: PageView.TEXT
+			view: PageView.CODING
 		};
 	}
 
 	componentDidMount() {
-		this.props.viewChanged(PageView.TEXT);
+		this.props.viewChanged(PageView.CODING);
+	}
+
+	buttonCodingEditorClicked() {
+		this.setView(PageView.CODING);
 	}
 
 	buttonTextEditorClicked() {
@@ -50,11 +54,13 @@ export default class PageViewChooser extends React.Component {
 
 		const styleSelected = 'btn btn-primary active';
 		const styleDefault = 'btn btn-default';
+		const classButtonCoding = _this.state.view == PageView.CODING ? styleSelected : styleDefault;
 		const classButtonText = _this.state.view == PageView.TEXT ? styleSelected : styleDefault;
 		const classButtonUml = _this.state.view == PageView.UML ? styleSelected : styleDefault;
 
 		return (
 			<StyledButtonGroup className="btn-group">
+				<button type="button" className={classButtonCoding} onClick={_this.buttonCodingEditorClicked.bind(_this)}>Coding-Editor</button>
 		        <button type="button" className={classButtonText} onClick={_this.buttonTextEditorClicked.bind(_this)}>Text-Editor</button>
 		        <button type="button" className={classButtonUml} onClick={_this.buttonUmlEditorClicked.bind(_this)}>Uml-Editor</button>
 		    </StyledButtonGroup>
