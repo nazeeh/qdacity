@@ -1,3 +1,5 @@
+import SaturationWeights from '../saturation/SaturationWeights.js';
+
 export default class SaturationAverage {
 	constructor(saturation) {
 		this.saturation = saturation;
@@ -9,10 +11,8 @@ export default class SaturationAverage {
 		if (pr != undefined) {
 			//weights are set beween 0 and 1 and are > 1 in total. 
 			// we need to normalize them when calculating the weighted average
-			var sumParameters = pr.appliedCodesChangeWeight
-				+ pr.deleteCodeRelationShipChangeWeight
+			var sumParameters = pr.deleteCodeRelationShipChangeWeight
 				+ pr.deleteCodeChangeWeight
-				+ pr.insertDocumentChangeWeight
 				+ pr.insertCodeRelationShipChangeWeight
 				+ pr.insertCodeChangeWeight
 				+ pr.relocateCodeChangeWeight
@@ -25,10 +25,8 @@ export default class SaturationAverage {
 				+ pr.updateCodeColorChangeWeight
 				+ pr.updateCodeMemoChangeWeight
 				+ pr.updateCodeNameChangeWeight;
-			var weightedAvg = this.max1(sr.applyCodeSaturation / pr.appliedCodesSaturationMaximum) * (pr.appliedCodesChangeWeight / sumParameters)
-				+ this.max1(sr.deleteCodeRelationShipSaturation / pr.deleteCodeRelationShipSaturationMaximum) * (pr.deleteCodeRelationShipChangeWeight / sumParameters)
+			var weightedAvg = this.max1(sr.deleteCodeRelationShipSaturation / pr.deleteCodeRelationShipSaturationMaximum) * (pr.deleteCodeRelationShipChangeWeight / sumParameters)
 				+ this.max1(sr.deleteCodeSaturation / pr.deleteCodeSaturationMaximum) * (pr.deleteCodeChangeWeight / sumParameters)
-				+ this.max1(sr.documentSaturation / pr.insertDocumentSaturationMaximum) * (pr.insertDocumentChangeWeight / sumParameters)
 				+ this.max1(sr.insertCodeRelationShipSaturation / pr.insertCodeRelationShipSaturationMaximum) * (pr.insertCodeRelationShipChangeWeight / sumParameters)
 				+ this.max1(sr.insertCodeSaturation / pr.insertCodeSaturationMaximum) * (pr.insertCodeChangeWeight / sumParameters)
 				+ this.max1(sr.relocateCodeSaturation / pr.relocateCodeSaturationMaximum) * (pr.relocateCodeChangeWeight / sumParameters)
@@ -58,4 +56,27 @@ export default class SaturationAverage {
 		else
 			return value;
 	}
+        
+        averageForCategory(category) {
+            var sr = this.saturation;
+            var pr = sr.saturationParameters;
+            var satWeights = new SaturationWeights(pr);
+            var completeCategory = satWeights.getCompleteCategory(sr, category);
+            var avgWeightedMaxSat = 0;
+            var avgWeights;
+            var avgMaxima;
+           
+           var catWeights = 0;
+           var allMaxima = 0;
+            for(var i in completeCategory) {
+                catWeights = catWeights + completeCategory[i][1];
+                allMaxima = allMaxima + completeCategory[i][2];
+            }
+            for(var i in completeCategory) {
+               avgWeightedMaxSat = avgWeightedMaxSat + (this.max1(completeCategory[i][3]/completeCategory[i][2])*(completeCategory[i][1] / catWeights));
+            }            
+            avgWeights = catWeights / completeCategory.length;
+            avgMaxima = allMaxima / completeCategory.length;
+            return [avgWeightedMaxSat, avgWeights, avgMaxima];
+        }
 }
