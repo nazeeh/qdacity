@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -79,8 +80,14 @@ public class CodeEndpoint {
 	@ApiMethod(
 		name = "codes.insertCode",
 		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public Code insertCode(Code code, Long relationId, User user) throws UnauthorizedException {
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code insertCode(
+			@Named("relationId") @Nullable Long relationId, 
+			@Named("relationSourceCodeId") @Nullable Long relationSourceCodeId,
+			Code code,
+			User user) throws UnauthorizedException {
+
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
 		Long codesystemId = code.getCodesystemID();
@@ -97,15 +104,10 @@ public class CodeEndpoint {
 			if (code.getCodeBookEntry() == null) code.setCodeBookEntry(new CodeBookEntry());
 
 			// Create relationship code
-			if (relationId != null) {
-				Query query = mgr.newQuery(CodeRelation.class);
-				query.setUnique(true);
-				query.setFilter("id == :id");
-				
-				Map<String, Long> params = new HashMap<String, Long>();
-				params.put("id", relationId);
-				
-				CodeRelation relation = (CodeRelation) query.executeWithMap(params);
+			if (relationId != null && relationSourceCodeId != null) {
+				Key relationKey = KeyFactory.createKey(KeyFactory.createKey("Code", relationSourceCodeId), "CodeRelation", relationId);
+				CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationKey);
+
 				code.setRelationshipCode(relation);
 			}
 			
