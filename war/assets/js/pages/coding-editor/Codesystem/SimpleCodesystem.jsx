@@ -64,6 +64,18 @@ export default class SimpleCodesystem extends React.Component {
 	setSelected(code) {
 		this.notifyOnSelection(code);
 
+		// Expand all parents
+		let parentID = code.parentID;
+
+		while (parentID != null) {
+			const parent = this.getCodeByCodeID(parentID);
+
+			parent.collapsed = false;
+
+			parentID = parent.parentID;
+		}
+
+		// Set selection
 		this.setState({
 			selected: code
 		});
