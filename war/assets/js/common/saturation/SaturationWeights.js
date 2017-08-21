@@ -88,22 +88,22 @@ export default class SaturationWeights {
 
 
         getPropertyNamesArrayNoSuffix() {
+            //Order needs to be same as getNameAndWeightsArray!
 		var propertyNames = [
-			'updateCodeAuthor',
-			'updateCodeColor',
-			'updateCodeMemo',
-			'updateCodeName',
-			'updateCodeId',
-			'relocateCode',
-			'insertCodeRelationShip',
-			'deleteCodeRelationShip',
-			'deleteCode',
-			'appliedCodes',
-			'updateCodeBookEntryDefinition',
-			'updateCodeBookEntryExample',
-			'updateCodeBookEntryShortDefinition',
-			'updateCodeBookEntryWhenNotToUse',
-			'updateCodeBookEntryWhenToUse'
+			'deleteCodeRelationShip', //0
+			'deleteCode', //1
+			'insertCodeRelationShip', //2
+                        'insertCode', //3
+			'relocateCode', //4
+			'updateCodeAuthor', //5
+			'updateCodeBookEntryDefinition', //6
+			'updateCodeBookEntryExample', //7
+			'updateCodeBookEntryShortDefinition', //8
+			'updateCodeBookEntryWhenNotToUse', //9
+			'updateCodeBookEntryWhenToUse', //10
+			'updateCodeColor', //11
+			'updateCodeMemo', //12
+			'updateCodeName', //13
 		];
 
 		return propertyNames;
