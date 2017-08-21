@@ -52,20 +52,7 @@ export default class CodesystemToolbar extends React.Component {
 		var _this = this;
 		var prompt = new Prompt('Give your code a name', 'Code Name');
 		prompt.showModal().then(function (codeName) {
-
-			// Build the Request Object
-			var code = {
-				author: _this.props.account.getProfile().getName(),
-				name: codeName,
-				subCodesIDs: new Array(),
-				parentID: _this.props.selected.codeID,
-				codesystemID: _this.props.selected.codesystemID,
-				color: "#000000"
-			};
-
-			CodesEndpoint.insertCode(code).then(function (resp) {
-				_this.props.insertCode(resp);
-			});
+			_this.props.createCode(codeName);
 		});
 	}
 
