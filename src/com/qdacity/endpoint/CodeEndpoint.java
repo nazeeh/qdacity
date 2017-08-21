@@ -105,10 +105,15 @@ public class CodeEndpoint {
 
 			// Create relationship code
 			if (relationId != null && relationSourceCodeId != null) {
+				// set the relation
 				Key relationKey = KeyFactory.createKey(KeyFactory.createKey("Code", relationSourceCodeId), "CodeRelation", relationId);
 				CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationKey);
-
 				code.setRelationshipCode(relation);
+
+				// set the MetaModel
+				final List<Long> mmElementIds = new ArrayList<>();
+				mmElementIds.add(relation.getMmElementId());
+				code.setMmElementIDs(mmElementIds);
 			}
 			
 			mgr.makePersistent(code);
