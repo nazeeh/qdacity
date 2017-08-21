@@ -94,6 +94,8 @@ public class CodeEndpoint {
 		Long codeId = CodeSystemEndpoint.getAndIncrCodeId(codesystemId);
 		if (code.getSubCodesIDs() == null) code.setSubCodesIDs(new ArrayList<Long>());
 
+		final boolean isRelationshipCode = (relationId != null && relationSourceCodeId != null);
+		
 		code.setCodeID(codeId);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -104,10 +106,12 @@ public class CodeEndpoint {
 			if (code.getCodeBookEntry() == null) code.setCodeBookEntry(new CodeBookEntry());
 
 			// Create relationship code
-			if (relationId != null && relationSourceCodeId != null) {
+			CodeRelation relation = null;
+			
+			if (isRelationshipCode) {
 				// set the relation
 				Key relationKey = KeyFactory.createKey(KeyFactory.createKey("Code", relationSourceCodeId), "CodeRelation", relationId);
-				CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationKey);
+				relation = mgr.getObjectById(CodeRelation.class, relationKey);
 				code.setRelationshipCode(relation);
 
 				// set the MetaModel
@@ -116,8 +120,15 @@ public class CodeEndpoint {
 				code.setMmElementIDs(mmElementIds);
 			}
 			
+			// Save the code
 			mgr.makePersistent(code);
 
+			// Link the code with the relation
+			if (isRelationshipCode) {
+				relation.setRelationshipCodeId(code.getCodeID());
+				mgr.makePersistent(relation);				
+			}
+			
 			// Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);

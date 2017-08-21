@@ -8,6 +8,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
@@ -27,8 +28,8 @@ public class CodeRelation {
 		dependent = "true")
 	Long codeId;
 
-	@Column(name = "relationshipCode")
-	Code relationshipCode;
+	@Column(name = "relationshipCodeId")
+	Long relationshipCodeId;
 
 	public Key getKey() {
 		return key;
@@ -54,11 +55,11 @@ public class CodeRelation {
 		this.codeId = codeId;
 	}
 
-	public Code getRelationshipCode() {
-		return relationshipCode;
+	public Long getRelationshipCodeId() {
+		return relationshipCodeId;
 	}
 
-	public void setRelationshipCode(Code relationshipCode) {
-		this.relationshipCode = relationshipCode;
+	public void setRelationshipCodeId(Long relationshipCodeId) {
+		this.relationshipCodeId = relationshipCodeId;
 	}
 }
