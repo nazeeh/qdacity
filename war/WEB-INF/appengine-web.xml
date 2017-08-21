@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-  <application>qdacity-quality-metrics</application>
-  <version>6</version>
+  <application>qdacity-app</application>
+  <version>7</version>
   <ssl-enabled>true</ssl-enabled>
   <warmup-requests-enabled>true</warmup-requests-enabled>
   <inbound-services>
@@ -16,6 +16,7 @@
     <max-pending-latency>2s</max-pending-latency>
     <max-concurrent-requests>50</max-concurrent-requests>
   </automatic-scaling>
+  
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>

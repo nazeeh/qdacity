@@ -30,6 +30,7 @@ const StyledCodingEditor = styled.div `
 `;
 
 const StyledTextEditorMenu = styled.div `
+	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
 	text-align: center;
 	padding-top: 10px;
 	background-color: #e7e7e7;
@@ -86,7 +87,7 @@ const StyledUMLEditor = styled.div `
 `;
 
 const StyledDocumentsView = styled.div `
-	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
+	display: ${props => (props.selectedEditor != PageView.UML) ? 'block' : 'none'} !important;
 `;
 
 
@@ -109,7 +110,7 @@ export default class CodingEditor extends React.Component {
 			editorCtrl: {},
 			showCodingView: false,
 			selectedCode: {},
-			selectedEditor: PageView.TEXT,
+			selectedEditor: PageView.CODING,
 			mxGraphLoaded: false
 
 		};
@@ -164,6 +165,14 @@ export default class CodingEditor extends React.Component {
 	}
 
 	viewChanged(view) {
+		if (this.state.editorCtrl.setReadOnly ) {
+			if (view ===  PageView.TEXT){
+				this.state.editorCtrl.setReadOnly(false);
+			} else {
+				this.state.editorCtrl.setReadOnly(true);
+			}
+		}
+
 		this.setState({
 			selectedEditor: view
 		});
@@ -242,27 +251,12 @@ export default class CodingEditor extends React.Component {
 
 								<div className="row no-gutters" >
 								<StyledSettingsPanel>
-								<StyledPanelHeader>
-									<b>Editor</b>
-								</StyledPanelHeader>
-								<StyledPageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()}>
-									<PageViewChooser viewChanged={this.viewChanged}/>
-								</StyledPageViewChooser>
-								<div >
-
-
-									<StyledEditableToggle selectedEditor={this.state.selectedEditor}  onClick={() => {this.state.editorCtrl.toggleReadOnly();}} id="btnEditToggle" className="btn btn-sm edit-toggle collapsed" data-toggle="collapse" data-target="#textdocument-menu">
-										<span className="edit-toggle-off" >
-											<i className="fa fa-toggle-off fa-2x"></i>
-										</span>
-										<span className="edit-toggle-on" >
-											<i className="fa fa-toggle-on fa-2x"></i>
-										</span>
-										<span > Document Editable</span>
-									</StyledEditableToggle>
-
-
-								</div>
+									<StyledPanelHeader>
+										<b>Editor</b>
+									</StyledPanelHeader>
+									<StyledPageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()}>
+										<PageViewChooser viewChanged={this.viewChanged}/>
+									</StyledPageViewChooser>
 								</StyledSettingsPanel>
 							</div>
 						</div>
@@ -300,7 +294,7 @@ export default class CodingEditor extends React.Component {
 			<StyledEditor>
 
 				<div id="textdocument-ui">
-					<StyledTextEditorMenu id="textdocument-menu" className="collapse" aria-expanded="false" >
+					<StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
 
 
 						<a id="btnTxtSave" className="btn btn-default btn-default" >

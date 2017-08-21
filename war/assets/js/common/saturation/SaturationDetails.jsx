@@ -1,4 +1,4 @@
-import 'script!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import SaturationWeights from '../saturation/SaturationWeights';
 import SaturationAverage from '../saturation/SaturationAverage';
 import SaturationCategoryDetail from '../saturation/SaturationCategoryDetail.jsx';
