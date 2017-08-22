@@ -1,5 +1,5 @@
 import 'script-loader!../../../../components/jQuery/jquery.js';
-import 'script-loader!../../../../components/Vex/js/vex.combined.min.js';
+import 'script-loader!../../../../components/Vex/js/vex.min.js';
 
 // Personal Dasboard Styles
 import "../../../css/project-list.css";
