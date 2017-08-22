@@ -1,5 +1,4 @@
 import 'script-loader!../../../../components/jQuery/jquery.js';
-import 'script-loader!../../../../components/bootstrap/bootstrap.min.js';
 import 'script-loader!../../../../components/Vex/js/vex.combined.min.js';
 
 // Personal Dasboard Styles
@@ -35,8 +34,8 @@ import "../../../../components/Vex/css/vex.css";
 import "../../../../components/Vex/css/vex-theme-wireframe.css";
 import "../../../../components/bootstrap/dist/bootstrap.min.css";
 
-
-
+import Dropdown from '../../common/dropdown.js';
+Dropdown.initDropDown();
 
 import App from '../App.jsx';
 import Account from '../../common/Account.jsx';

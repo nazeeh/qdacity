@@ -29,6 +29,13 @@ export default class NavBar extends React.Component {
 		this.props.history.push('/PersonalDashboard');
 	}
 
+	showAccountDropdown(){
+		document.getElementById("accountView").classList.toggle("show");
+	}
+
+	showSigninDropdown(){
+		document.getElementById("signinView").classList.toggle("show");
+	}
 
 	render() {
 		return (
@@ -45,18 +52,18 @@ export default class NavBar extends React.Component {
 								<li><StyledNavbarItem href="/#about">About</StyledNavbarItem></li>
 								<li><StyledNavbarItem href="/#contact">Contact</StyledNavbarItem></li>
 								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
-									<StyledNavbarItem href="#" className="dropdown-toggle" data-toggle="dropdown">
+									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showAccountDropdown}>
 										Account <b className="caret"></b>
 									</StyledNavbarItem>
-			 						<div id="accountView" className="dropdown-menu">
+			 						<div id="accountView" className="dropdown-menu dropdownContent">
 										<Account ref={(c) => this.account = c} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback}  history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
 								<StyledSigninTab  loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
-									<StyledNavbarItem href="#" className="dropdown-toggle" data-toggle="dropdown">
+									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showSigninDropdown}>
 											Sign In <b className="caret"></b>
 										</StyledNavbarItem>
-										<ul className="dropdown-menu">
+										<ul  id="signinView" className="dropdown-menu dropdownContent">
 											<li>
 												<div className="navbar-content">
 													<div className="row">

@@ -45,3 +45,15 @@ body{
 	display: inline-block;
 	float: none;
 }
+
+.dropdownContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownContent {
+    display: none;
+    position: absolute;
+}
+
+.show {display:block;}
