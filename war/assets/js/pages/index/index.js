@@ -55,23 +55,6 @@ var chartScriptPromise = new Promise(
 	}
 );
 
-var googleClientPromise = new Promise(
-	function (resolve, reject) {
-		window.resolveClient = resolve;
-	}
-);
-
-$script('https://apis.google.com/js/client.js?onload=resolveClient', '');
-
-
-var googlePlatformPromise = new Promise(
-	function (resolve, reject) {
-		$script('https://apis.google.com/js/platform.js', () => {
-			resolve();
-		});
-	}
-);
-
 var mxGraphPromise = new Promise(
 	function (resolve, reject) {
 		$script('../../components/mxGraph/javascript/mxClient.min.js', () => {

@@ -18,7 +18,20 @@
 		<link rel="preload" href="components/font-awesome/css/font-awesome.min.css" as="style">
 		<!-- mxGraph Config and disable mxGraph resource loading -->
 		<script type="text/javascript">
-			mxBasePath = 'components/mxGraph/javascript/src';
+			var googleClientPromise = new Promise(function (resolve, reject) {
+					window.resolveClient = resolve;
+				}
+			);
+			var googlePlatformPromise = new Promise(
+				function (resolve, reject) {
+					window.resolvePlatform = resolve;
+				}
+			);
+		</script>
+		<script src="https://apis.google.com/js/client.js?onload=resolveClient" async></script>
+		<script src="https://apis.google.com/js/platform.js?onload=resolvePlatform" async></script>
+
+		<script type="text/javascript">
 			var mxLoadResources = false;
 			var mxLoadStylesheets = false;
 		</script>
