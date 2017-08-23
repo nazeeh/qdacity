@@ -9,14 +9,6 @@
 	    <meta name="author" content="">
 
 	    <title>QDAcity</title>
-
-		<!-- Themes -->
-		<link rel="stylesheet" type="text/css" charset="utf-8" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
-		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css">
-
-		<link rel="stylesheet" type="text/css" href="dist/js/styles.css">
-		<link rel="preload" href="components/font-awesome/css/font-awesome.min.css" as="style">
-		<!-- mxGraph Config and disable mxGraph resource loading -->
 		<script type="text/javascript">
 			var googleClientPromise = new Promise(function (resolve, reject) {
 					window.resolveClient = resolve;
@@ -30,6 +22,15 @@
 		</script>
 		<script src="https://apis.google.com/js/client.js?onload=resolveClient" async></script>
 		<script src="https://apis.google.com/js/platform.js?onload=resolvePlatform" async></script>
+
+		<!-- Themes -->
+		<link rel="preload" href="components/font-awesome/css/font-awesome.min.css" as="style">
+		<link rel="stylesheet" type="text/css" charset="utf-8" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>
+		<link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css">
+		<link rel="stylesheet" type="text/css" href="dist/js/styles.css">
+
+		<!-- mxGraph Config and disable mxGraph resource loading -->
+
 
 		<script type="text/javascript">
 			var mxLoadResources = false;
