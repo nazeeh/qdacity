@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 import 'script-loader!../../../../components/jQuery/jquery.js';
 import 'script-loader!../../../../components/Vex/js/vex.min.js';
 

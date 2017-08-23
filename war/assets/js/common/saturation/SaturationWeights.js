@@ -27,7 +27,7 @@ export default class SaturationWeights {
 
     getCategorizedArray() {
         //categorization can be redefined here.
-        //Other js code just expects this structure, 
+        //Other js code just expects this structure,
         //but is not dependent on the actual categories
         //meaning "Title" : [<indices of NameAndWeightsArray which are in this category>]
         //make sure not to use a index twice

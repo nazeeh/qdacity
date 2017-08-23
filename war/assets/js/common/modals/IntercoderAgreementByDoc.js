@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 import ReactLoading from '../ReactLoading.jsx';
 
 import VexModal from './VexModal';

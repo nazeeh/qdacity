@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 import VexModal from './VexModal';
 
 import UmlCodePropertyCodesystem from '../../pages/uml-editor/UmlCodePropertyCodesystem.jsx';

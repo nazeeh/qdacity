@@ -1,3 +1,5 @@
+import React from 'react';
+
 import styled from 'styled-components';
 
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';

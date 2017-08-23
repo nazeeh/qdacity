@@ -1,3 +1,5 @@
+import React from 'react';
+
 import SaturationWeights from '../saturation/SaturationWeights.js'
 import SaturationCategorySettings from '../saturation/SaturationCategorySettings.jsx'
 
@@ -35,7 +37,7 @@ export default class SaturationSettings extends React.Component {
 	render() {
 		if (!this.state.saturationParameters)
 			return null;
-                    
+
 		var satWeights = new SaturationWeights(this.state.saturationParameters);
 		var satCategories = satWeights.getCategorizedArray();
                 let saturationSettings = [];

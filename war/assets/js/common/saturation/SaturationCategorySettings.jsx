@@ -1,3 +1,5 @@
+import React from 'react';
+
 import SaturationWeights from '../saturation/SaturationWeights';
 
 export default class SaturationCategorySettings extends React.Component {
@@ -80,7 +82,7 @@ export default class SaturationCategorySettings extends React.Component {
             <b>{fullCollapsibleText}</b>
         </p>
         <table id="saturationOptionsTable" className="display" width="100%">
-    
+
             <tbody>
                 {rows}
             </tbody>

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import SaturationWeights from '../saturation/SaturationWeights';
 import SaturationAverage from '../saturation/SaturationAverage';
@@ -85,7 +87,7 @@ export default class SaturationDetails extends React.Component {
         return (<div>
             <p>Last calculation of saturation is from: {this.props.saturation.evaluationStartDate} to {this.props.saturation.creationTime}</p>
             <table id="saturationTable" className="display">
-        
+
             </table>
             <p>Parameters used from : {this.props.saturation.saturationParameters.creationTime}</p>
         </div>

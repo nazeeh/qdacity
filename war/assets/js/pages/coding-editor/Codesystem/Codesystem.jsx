@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+
 import styled from 'styled-components';
 
 import ReactLoading from '../../../common/ReactLoading.jsx';

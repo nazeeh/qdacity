@@ -1,3 +1,5 @@
+import React from 'react';
+
 import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
 
 export default class AdminStats extends React.Component {
@@ -50,19 +52,19 @@ export default class AdminStats extends React.Component {
 						</div>
 					</div>
 				</div>
-				
+
 				<div className="col-lg-4 col-xs-6 small-gutter-left">
 					<div className="info-box">
 						<div className="info-box-icon bg-red">
 							<i className="fa fa-folder" aria-hidden="true"></i>
-							
+
 						</div>
 						<div className="info-box-content">
 							<span className="info-box-text">Projects</span>
 							<span id="topStatsCodings" className="info-box-number">{this.state.projects}</span>
 						</div>
 					</div>
-					
+
 				</div>
 			</div>
 		);

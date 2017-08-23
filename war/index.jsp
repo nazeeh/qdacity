@@ -36,8 +36,6 @@
 			var mxLoadStylesheets = false;
 		</script>
 
-		<script src="https://unpkg.com/react@15.6.0/dist/react.js"></script>
-		<script src="https://unpkg.com/react-dom@15.6.0/dist/react-dom.js"></script>
 </head>
 
 <body>

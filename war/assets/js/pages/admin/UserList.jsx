@@ -1,3 +1,5 @@
+import React from 'react';
+
 import UserListCtrl from './UserListCtrl.jsx';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 

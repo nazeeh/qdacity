@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 import VexModal from './VexModal';
 import SaturationSettings from '../saturation/SaturationSettings.jsx';
 import SaturationWeights from '../saturation/SaturationWeights.js'
@@ -55,13 +57,13 @@ export default class Settings extends VexModal {
 							for (var i in changeWeightNames) {
                                                                 var changeWeightInputValue = $('#cell' + i + '-1-input').prop('value');
                                                                 var saturationMaxInputValue = $('#cell' + i + '-2-input').prop('value');
-                                                                if(typeof changeWeightInputValue === 'undefined') { 
+                                                                if(typeof changeWeightInputValue === 'undefined') {
                                                                     //if true, then we applied an average, so lets look up the average
                                                                     var categoryIdx = saturationWeights.getArtificialCategoryIndex(saturationWeights.getCategoryForIndex(i));
                                                                     changeWeightInputValue = $("#input-category-" + categoryIdx + "-1").prop('value');
                                                                     saturationMaxInputValue = $("#input-category-" + categoryIdx + "-2").prop('value');
                                                                 }
-                                                                
+
 								saturationParameters[changeWeightNames[i]] = changeWeightInputValue / 100;
 								saturationParameters[saturationMaximumNames[i]] = saturationMaxInputValue / 100;
 							}
