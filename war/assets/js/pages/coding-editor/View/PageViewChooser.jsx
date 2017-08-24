@@ -10,6 +10,9 @@ const StyledButtonGroup = styled.div `
     justify-content: center;
     margin: 10px 0px 10px 0px;
 `;
+const StyledEditorBtn = styled.button `
+	display: ${props => props.showBtn ? 'block' : 'none'};
+`;
 
 export default class PageViewChooser extends React.Component {
 
@@ -60,9 +63,9 @@ export default class PageViewChooser extends React.Component {
 
 		return (
 			<StyledButtonGroup className="btn-group">
-				<button type="button" className={classButtonCoding} onClick={_this.buttonCodingEditorClicked.bind(_this)}>Coding-Editor</button>
-		        <button type="button" className={classButtonText} onClick={_this.buttonTextEditorClicked.bind(_this)}>Text-Editor</button>
-		        <button type="button" className={classButtonUml} onClick={_this.buttonUmlEditorClicked.bind(_this)}>Uml-Editor</button>
+				<StyledEditorBtn showBtn={true} type="button" className={classButtonCoding} onClick={_this.buttonCodingEditorClicked.bind(_this)}>Coding-Editor</StyledEditorBtn>
+		        <StyledEditorBtn showBtn={true} className={classButtonText} onClick={_this.buttonTextEditorClicked.bind(_this)}>Text-Editor</StyledEditorBtn>
+		        <StyledEditorBtn showBtn={this.props.umlEditorEnabled} type="button" className={classButtonUml} onClick={_this.buttonUmlEditorClicked.bind(_this)}>Uml-Editor</StyledEditorBtn>
 		    </StyledButtonGroup>
 		);
 	}
