@@ -56,7 +56,11 @@ public class Code {
 	@Column(
 		name = "relations")
 	List<CodeRelation> relations;
-	
+
+	@Persistent(
+		defaultFetchGroup = "true")
+	@Element(
+		dependent = "true")
 	@Column(name = "relationshipCode")
 	@Unowned
 	CodeRelation relationshipCode;

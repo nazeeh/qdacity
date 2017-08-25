@@ -1,6 +1,5 @@
 package com.qdacity.project.codesystem;
 
-import javax.jdo.annotations.Column;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -8,7 +7,6 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.datanucleus.annotations.Unowned;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
@@ -28,7 +26,9 @@ public class CodeRelation {
 		dependent = "true")
 	Long codeId;
 
-	@Column(name = "relationshipCodeId")
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
 	Long relationshipCodeId;
 
 	public Key getKey() {

@@ -96,6 +96,7 @@ public class CodeEndpoint {
 
 		final boolean isRelationshipCode = (relationId != null && relationSourceCodeId != null);
 		
+		code.setRelations(null);
 		code.setCodeID(codeId);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -121,12 +122,12 @@ public class CodeEndpoint {
 			}
 			
 			// Save the code
-			mgr.makePersistent(code);
+			code = mgr.makePersistent(code);
 
 			// Link the code with the relation
 			if (isRelationshipCode) {
 				relation.setRelationshipCodeId(code.getCodeID());
-				mgr.makePersistent(relation);				
+				relation = mgr.makePersistent(relation);								
 			}
 			
 			// Log change
@@ -157,27 +158,38 @@ public class CodeEndpoint {
 	public Code updateCode(Code code, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
+		
+		Code stored = null;
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (!containsCode(code)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
-
+			
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementIDs " + code.getMmElementIDs()); 
 
-			Code oldCode = mgr.getObjectById(Code.class, code.getId());
-			code.setCodeID(oldCode.getCodeID());
-			code.setCodeBookEntry(oldCode.getCodeBookEntry());
-			mgr.makePersistent(code);
-			
+			stored = mgr.getObjectById(Code.class, code.getId());
+			stored.setAuthor(code.getAuthor());
+			stored.setCodesystemID(code.getCodesystemID());
+			stored.setColor(code.getColor());
+			stored.setMemo(code.getMemo());
+			stored.setMmElementIDs(code.getMmElementIDs());
+			stored.setName(code.getName());
+			stored.setParentID(code.getParentID());
+			stored.setSubCodesIDs(code.getSubCodesIDs());
+			stored.setRelationshipCode(code.getRelationshipCode());
+
+			stored = mgr.makePersistent(stored);
+
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeUpdateCodeChange(oldCode, code, cs.getProject(), cs.getProjectType(), user.getUserId());
+			Change change = new ChangeBuilder().makeUpdateCodeChange(stored, code, cs.getProject(), cs.getProjectType(), user.getUserId());
 			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
 		}
-		return code;
+		return stored;
 	}
 
 	@ApiMethod(
