@@ -173,16 +173,19 @@ export default class MetaModel extends React.Component {
 		        </div>
 			);
 		} else {
+			const sourceCode = null; // TODO the relation does not have the source id
+			const destinationCode = this.props.getCodeByCodeID(this.props.code.relationshipCode.codeId);
+
 			return (
 				<div>
                     <div className="col-sm-3">
                         Source-Code:
-			            <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} />
-			        </div>
+                        <SimpleCodesystem height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} />
+                    </div>
                     <div className="col-sm-3">
                         Destination-Code:
-                        <SimpleCodesystem height="200" codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipDestinationChanged} />
-		            </div>
+                        <SimpleCodesystem height="200" selected={destinationCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipDestinationChanged} />
+                    </div>
                 </div>
 			);
 		}

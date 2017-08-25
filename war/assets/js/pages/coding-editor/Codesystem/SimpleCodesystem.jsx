@@ -17,7 +17,7 @@ export default class SimpleCodesystem extends React.Component {
 		super(props);
 		this.codesystem = {};
 		this.state = {
-			slected: {},
+			selected: this.props.selected ? this.props.selected : {},
 			codesystem: [],
 			height: this.props.height,
 			maxHeight: this.props.maxHeight
@@ -27,6 +27,8 @@ export default class SimpleCodesystem extends React.Component {
 
 		this.setSelected = this.setSelected.bind(this);
 		this.getCodesystem = this.getCodesystem.bind(this);
+
+		this.expandParents(this.state.selected);
 	}
 
 	// Can be overwritten to notify other components on a new selection
@@ -64,6 +66,15 @@ export default class SimpleCodesystem extends React.Component {
 	setSelected(code) {
 		this.notifyOnSelection(code);
 
+		this.expandParents(code);
+
+		// Set selection
+		this.setState({
+			selected: code
+		});
+	}
+
+	expandParents(code) {
 		// Expand all parents
 		let parentID = code.parentID;
 
@@ -74,11 +85,6 @@ export default class SimpleCodesystem extends React.Component {
 
 			parentID = parent.parentID;
 		}
-
-		// Set selection
-		this.setState({
-			selected: code
-		});
 	}
 
 	getSelected() {

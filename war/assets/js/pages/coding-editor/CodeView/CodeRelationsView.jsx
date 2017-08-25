@@ -67,20 +67,22 @@ export default class CodeRelationsView extends React.Component {
 			var code = _this.props.getCodeByCodeID(relation.codeId);
 			var codeName = "undefined";
 			var mmElementName = "undefined";
+			var relationshipCodeId = relation.relationshipCodeId;
 			if (code != null) codeName = code.name;
 			if (mmElement != null) mmElementName = mmElement.name;
-			_this.addRelationship(relation.key.id, relation.codeId, codeName, relation.mmElementId, mmElementName);
+			_this.addRelationship(relation.key.id, relation.codeId, codeName, relation.mmElementId, mmElementName, relationshipCodeId);
 		});
 
 	}
 
-	addRelationship(pRelId, pDstCodeId, pDstCodeName, pMmElementId, pName) {
+	addRelationship(pRelId, pDstCodeId, pDstCodeName, pMmElementId, pName, relationshipCodeId) {
 		var rel = {};
 		rel.dst = pDstCodeId;
 		rel.dstName = pDstCodeName;
 		rel.mmElementId = pMmElementId;
 		rel.name = pName;
 		rel.id = pRelId;
+		rel.relationshipCodeId = relationshipCodeId;
 
 		this.state.relationships.push(rel);
 	}
@@ -138,16 +140,26 @@ export default class CodeRelationsView extends React.Component {
 
 	renderCreateRelationshipCodeButton(relation) {
 		const _this = this;
-		return (
-			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledButton>
-		);
+
+		if (relation.relationshipCodeId == null) {
+			return (
+				<StyledButton className="pull-right btn btn-default" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledButton>
+			);
+		} else {
+			return null;
+		}
 	}
 
 	renderGoToRelationshipCodeButton(relation) {
 		const _this = this;
-		return (
-			<StyledButton className="pull-right btn btn-default" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledButton>
-		);
+
+		if (relation.relationshipCodeId != null) {
+			return (
+				<StyledButton className="pull-right btn btn-default" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledButton>
+			);
+		} else {
+			return null;
+		}
 	}
 
 	render() {
