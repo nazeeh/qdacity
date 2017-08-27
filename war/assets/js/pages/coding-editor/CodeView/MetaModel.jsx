@@ -184,7 +184,7 @@ export default class MetaModel extends React.Component {
 				<div>
                     <div className="col-sm-3">
                         Source-Code:
-                        <SimpleCodesystem context={this} height="200" selected={sourceCode} notifyOnSelected={this.relatinoshipSourceChanged} shouldHighlightNode={shouldHighlightNode} codesystem={this.props.getCodeSystem()} />                        
+                        <SimpleCodesystem height="200" selected={sourceCode} notifyOnSelected={this.relatinoshipSourceChanged} shouldHighlightNode={shouldHighlightNode} codesystem={this.props.getCodeSystem()} />                        
                     </div>
                     <div className="col-sm-3">
                         Destination-Code:

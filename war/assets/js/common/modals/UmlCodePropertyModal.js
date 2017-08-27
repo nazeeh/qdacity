@@ -107,7 +107,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<SimpleCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} getTextColor={getTextColor} getBackgroundHoverColor={getBackgroundHoverColor} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<SimpleCodesystem maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} getTextColor={getTextColor} getBackgroundHoverColor={getBackgroundHoverColor} />, document.getElementById(codesystemContainerId));
 				notifyOnSelected(null);
 			}
 		);
