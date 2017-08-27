@@ -176,11 +176,15 @@ export default class MetaModel extends React.Component {
 			const sourceCode = this.props.getCodeById(this.props.code.relationshipCode.key.parent.id);
 			const destinationCode = this.props.getCodeByCodeID(this.props.code.relationshipCode.codeId);
 
+			let shouldHighlightNode = (code) => {
+				return false;
+			};
+
 			return (
 				<div>
                     <div className="col-sm-3">
                         Source-Code:
-                        <SimpleCodesystem height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} />
+                        <SimpleCodesystem context={this} height="200" selected={sourceCode} notifyOnSelected={this.relatinoshipSourceChanged} shouldHighlightNode={shouldHighlightNode} codesystem={this.props.getCodeSystem()} />                        
                     </div>
                     <div className="col-sm-3">
                         Destination-Code:

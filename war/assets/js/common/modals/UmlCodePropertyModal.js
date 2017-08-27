@@ -1,6 +1,6 @@
 import VexModal from './VexModal';
 
-import AdvancedCodesystem from '../../pages/coding-editor/Codesystem/AdvancedCodesystem.jsx';
+import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
 
 import UmlClassRelation from '../../pages/uml-editor/model/UmlClassRelation.js';
 
@@ -23,7 +23,7 @@ export default class UmlCodePropertyModal extends VexModal {
 	showModal(metaModelEntities, metaModelRelations) {
 		const _this = this;
 
-		const shouldHighlightNode = (code) => {
+		const codeIsNotValid = (code) => {
 			if (code == null) {
 				return false;
 			}
@@ -35,8 +35,37 @@ export default class UmlCodePropertyModal extends VexModal {
 
 			const umlCodeRelation = new UmlClassRelation(sourceUmlClass, destinationUmlClass, metaModelEntity);
 
-			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) == _this.mappingAction;
+			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) != _this.mappingAction;
 		}
+
+		const getTextColor = (code, selected) => {
+			if (codeIsNotValid(code)) {
+				if (selected) {
+					return '#707070';
+				} else {
+					return '#707070';
+				}
+			}
+			return null;
+		};
+
+		const getBackgroundColor = (code, selected) => {
+			if (codeIsNotValid(code)) {
+				if (selected) {
+					return '#d3d3d3';
+				} else {
+					return '';
+				}
+			}
+			return null;
+		};
+
+		const getBackgroundHoverColor = (code, selected) => {
+			if (codeIsNotValid(code)) {
+				return '#e0e0e0';
+			}
+			return null;
+		};
 
 		const notifyOnSelected = (code) => {
 			let possibleSaveButtons = document.getElementsByClassName('vex-dialog-button-primary');
@@ -47,14 +76,12 @@ export default class UmlCodePropertyModal extends VexModal {
 
 			let saveButton = possibleSaveButtons[0];
 
-			if (shouldHighlightNode(code)) {
-				// Enable save
-				saveButton.disabled = false;
-				saveButton.classList.remove('vex-dialog-button-disabled');
-			} else {
+			if (codeIsNotValid(code)) {
 				// Disable save
 				saveButton.disabled = true;
-				saveButton.classList.add('vex-dialog-button-disabled');
+			} else {
+				// Enable save
+				saveButton.disabled = false;
 			}
 		};
 
@@ -91,7 +118,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<AdvancedCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} shouldHighlightNode={shouldHighlightNode} codesystem={_this.codesystem.getCodesystem()} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<SimpleCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} getTextColor={getTextColor} getBackgroundColor={getBackgroundColor} getBackgroundHoverColor={getBackgroundHoverColor} />, document.getElementById(codesystemContainerId));
 				notifyOnSelected(null);
 			}
 		);

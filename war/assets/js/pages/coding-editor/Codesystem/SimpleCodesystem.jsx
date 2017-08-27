@@ -31,7 +31,6 @@ export default class SimpleCodesystem extends React.Component {
 		this.expandParents(this.state.selected);
 	}
 
-	// Can be overwritten to notify other components on a new selection
 	notifyOnSelection(code) {
 		if (this.props.notifyOnSelected != null) {
 			this.props.notifyOnSelected(code);
@@ -147,13 +146,17 @@ export default class SimpleCodesystem extends React.Component {
 	renderRoot(code, level, key) {
 		return (
 			<SimpleCode
-                        level={level} 
-                        node={code} 
-                        selected={this.state.selected} 
-                        setSelected={this.setSelected} 
-                        key={key}
-		                shouldHighlightNode={this.props.shouldHighlightNode}>
-                    </SimpleCode>
+                    level={level} 
+                    node={code} 
+                    selected={this.state.selected} 
+                    setSelected={this.setSelected} 
+                    key={key}
+                    getFontWeight={this.props.getFontWeight}
+                    getTextColor={this.props.getTextColor}
+                    getBackgroundColor={this.props.getBackgroundColor}
+                    getBackgroundHoverColor={this.props.getBackgroundHoverColor}
+                >
+                </SimpleCode>
 		);
 	}
 

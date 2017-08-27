@@ -294,7 +294,12 @@ class Codesystem extends SimpleCodesystem {
                         relocateCode={this.relocateCode}
                         showFooter={this.props.showFooter}
                         key={key}
-		                shouldHighlightNode={this.shouldHighlightNode}>
+		                shouldHighlightNode={this.shouldHighlightNode}
+                        getFontWeight={this.props.getFontWeight}
+                        getTextColor={this.props.getTextColor}
+                        getBackgroundColor={this.props.getBackgroundColor}
+                        getBackgroundHoverColor={this.props.getBackgroundHoverColor}
+		            >
                     </DragAndDropCode>
 		);
 	}

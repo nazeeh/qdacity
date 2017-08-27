@@ -10,9 +10,6 @@ import {
 	DropTarget
 } from 'react-dnd';
 
-import {
-	StyledCode
-} from './SimpleCode.jsx';
 import SimpleCode from './SimpleCode.jsx';
 
 const codeSource = {
@@ -57,11 +54,6 @@ function collectTarget(connect, monitor) {
 	};
 }
 
-const AdvancedStyledCode = StyledCode.extend `
-    font-weight: ${props => props.highlightNode ? 'bold' : 'normal'};
-    color: ${props => props.selected ? (props.highlightNode ? '#ffaa00' : '#fff') : (props.highlightNode ? '#ffaa00' : '#000')};
-`;
-
 const StyledCodingBubble = styled.span `
 	background-color: rgb(231, 231, 231);
 	border: 1px solid rgb(187, 187, 187);
@@ -79,8 +71,22 @@ const StyledCodingBubble = styled.span `
 class Code extends SimpleCode {
 	constructor(props) {
 		super(props);
-		this.renderCodingCount = this.renderCodingCount.bind(this);
 
+		this.renderCodingCount = this.renderCodingCount.bind(this);
+	}
+
+	doGetFontWeight(code, selected) {
+		if (this.props.shouldHighlightNode(code)) {
+			return 'bold';
+		}
+		return null;
+	}
+
+	doGetTextColor(code, selected) {
+		if (this.props.shouldHighlightNode(code)) {
+			return '#ffaa00';
+		}
+		return null;
 	}
 
 	// overriding super method
@@ -89,24 +95,6 @@ class Code extends SimpleCode {
 			<StyledCodingBubble	onClick={this.props.showFooter}>
 					{this.props.node.codingCount}
 			</StyledCodingBubble>
-		);
-	}
-
-	renderStyledNode(selected, level, className, key, highlightNode, onClick) {
-		return (
-			<AdvancedStyledCode
-                selected={selected}
-                highlightNode={highlightNode}
-                level={level}
-                className={className}
-                key={key}
-                onClick={onClick}
-                >
-                {this.renderExpander(this.props.node)}
-                {this.renderNodeIcon()}
-                {this.renderNodeName()}
-                {this.renderCodingCount()}
-            </AdvancedStyledCode>
 		);
 	}
 
@@ -122,7 +110,11 @@ class Code extends SimpleCode {
                     relocateCode={this.props.relocateCode}
                     showFooter={this.props.showFooter}
                     key={key}
-		            shouldHighlightNode={this.props.shouldHighlightNode}
+                    shouldHighlightNode={this.props.shouldHighlightNode}
+		            getFontWeight={this.props.getFontWeight}
+                    getTextColor={this.props.getTextColor}
+                    getBackgroundColor={this.props.getBackgroundColor}
+                    getBackgroundHoverColor={this.props.getBackgroundHoverColor}
                 >
                 </DragAndDropCode>
 		);
