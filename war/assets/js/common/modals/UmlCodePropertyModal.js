@@ -42,20 +42,6 @@ export default class UmlCodePropertyModal extends VexModal {
 			return !codeIsNotValid(code);
 		}
 
-		const getTextColor = (code, selected) => {
-			if (codeIsNotValid(code)) {
-				return '#707070';
-			}
-			return null;
-		};
-
-		const getBackgroundHoverColor = (code, selected) => {
-			if (codeIsNotValid(code)) {
-				return '#e0e0e0';
-			}
-			return null;
-		};
-
 		const notifyOnSelected = (code) => {
 			let possibleSaveButtons = document.getElementsByClassName('vex-dialog-button-primary');
 
@@ -107,7 +93,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<SimpleCodesystem maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} getTextColor={getTextColor} getBackgroundHoverColor={getBackgroundHoverColor} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<SimpleCodesystem maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} />, document.getElementById(codesystemContainerId));
 				notifyOnSelected(null);
 			}
 		);
