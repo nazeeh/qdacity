@@ -135,7 +135,7 @@ export default class CodeRelationsView extends React.Component {
 	}
 
 	goToRelationshipCode(relation) {
-
+		this.props.selectCode(this.props.getCodeByCodeID(relation.relationshipCodeId));
 	}
 
 	renderCreateRelationshipCodeButton(relation) {
