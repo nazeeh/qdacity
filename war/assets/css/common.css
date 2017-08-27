@@ -45,3 +45,8 @@ body{
 	display: inline-block;
 	float: none;
 }
+
+.vex-dialog-button:disabled,
+.vex-dialog-button[disabled] {
+	cursor: not-allowed !important;
+}

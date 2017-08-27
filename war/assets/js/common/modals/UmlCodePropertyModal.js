@@ -25,7 +25,7 @@ export default class UmlCodePropertyModal extends VexModal {
 
 		const codeIsNotValid = (code) => {
 			if (code == null) {
-				return false;
+				return true;
 			}
 
 			const sourceUmlClass = _this.umlEditor.getUmlClassManager().getByCode(_this.sourceCode);
@@ -38,20 +38,13 @@ export default class UmlCodePropertyModal extends VexModal {
 			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) != _this.mappingAction;
 		}
 
+		const isCodeSelectable = (code) => {
+			return !codeIsNotValid(code);
+		}
+
 		const getTextColor = (code, selected) => {
 			if (codeIsNotValid(code)) {
 				return '#707070';
-			}
-			return null;
-		};
-
-		const getBackgroundColor = (code, selected) => {
-			if (codeIsNotValid(code)) {
-				if (selected) {
-					return '#d3d3d3';
-				} else {
-					return '';
-				}
 			}
 			return null;
 		};
@@ -114,7 +107,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<SimpleCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} getTextColor={getTextColor} getBackgroundColor={getBackgroundColor} getBackgroundHoverColor={getBackgroundHoverColor} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<SimpleCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} getTextColor={getTextColor} getBackgroundHoverColor={getBackgroundHoverColor} />, document.getElementById(codesystemContainerId));
 				notifyOnSelected(null);
 			}
 		);
