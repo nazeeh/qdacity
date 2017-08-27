@@ -95,11 +95,34 @@ export default class SimpleCodesystem extends React.Component {
 		return this.state.codesystem;
 	}
 
-	getCodeByCodeID(codeID) {
-		return this.getCodeByID(this.state.codesystem, codeID);
+	getCodeById(id) {
+		const _this = this;
+
+		const find = (codeArr, id) => {
+			for (var i in codeArr) {
+				var code = codeArr[i];
+
+				if (code.id == id) {
+					return code;
+				}
+
+				let found = find(code.children, id);
+				if (found) {
+					return found;
+				}
+			}
+
+			return null;
+		};
+
+		return find(this.state.codesystem, id);
 	}
 
-	getCodeByID(codeArr, codeID) {
+	getCodeByCodeID(codeID) {
+		return this.getCodeByCodeIDAndCodes(this.state.codesystem, codeID);
+	}
+
+	getCodeByCodeIDAndCodes(codeArr, codeID) {
 		var _this = this;
 		var found;
 		for (var i in codeArr) {
@@ -107,7 +130,7 @@ export default class SimpleCodesystem extends React.Component {
 			if (code.codeID == codeID) {
 				return code;
 			}
-			found = _this.getCodeByID(code.children, codeID);
+			found = _this.getCodeByCodeIDAndCodes(code.children, codeID);
 			if (found) return found;
 		}
 	}

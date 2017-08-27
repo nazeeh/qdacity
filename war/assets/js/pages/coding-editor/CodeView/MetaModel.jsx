@@ -173,7 +173,7 @@ export default class MetaModel extends React.Component {
 		        </div>
 			);
 		} else {
-			const sourceCode = null; // TODO the relation does not have the source id
+			const sourceCode = this.props.getCodeById(this.props.code.relationshipCode.key.parent.id);
 			const destinationCode = this.props.getCodeByCodeID(this.props.code.relationshipCode.codeId);
 
 			return (

@@ -129,6 +129,7 @@ export default class CodingEditor extends React.Component {
 		this.updateSelectedCode = this.updateSelectedCode.bind(this);
 		this.viewChanged = this.viewChanged.bind(this);
 		this.getCodeSystem = this.getCodeSystem.bind(this);
+		this.getCodeById = this.getCodeById.bind(this);
 		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
 		this.showCodingView = this.showCodingView.bind(this);
 		this.createCode = this.createCode.bind(this);
@@ -168,6 +169,10 @@ export default class CodingEditor extends React.Component {
 		this.setState({
 			selectedEditor: view
 		});
+	}
+
+	getCodeById(id) {
+		return this.codesystemViewRef.getCodeById(id);
 	}
 
 	getCodeByCodeID(codeID) {
@@ -358,6 +363,7 @@ export default class CodingEditor extends React.Component {
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}
 					updateSelectedCode={this.updateSelectedCode}
+					getCodeById={this.getCodeById}
 					getCodeByCodeID={this.getCodeByCodeID}
 					getCodeSystem={this.getCodeSystem}
 					createCode={this.createCode}

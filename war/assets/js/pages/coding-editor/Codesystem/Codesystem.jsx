@@ -161,7 +161,7 @@ class Codesystem extends SimpleCodesystem {
 		var code = this.state.selected;
 
 		this.removeAllCodings(code.codeID);
-		var parent = this.getCodeByID(this.state.codesystem, code.parentID)
+		var parent = this.getCodeByCodeIDAndCodes(this.state.codesystem, code.parentID)
 		var index = parent.children.indexOf(code);
 		parent.children.splice(index, 1);
 		this.setState({
@@ -237,8 +237,8 @@ class Codesystem extends SimpleCodesystem {
 
 	relocateCode(movingNode, targetID) {
 		var relocationPromise = CodesEndpoint.relocateCode(movingNode.id, targetID);
-		var targetNode = this.getCodeByID(this.state.codesystem, targetID);
-		var sourceNode = this.getCodeByID(this.state.codesystem, movingNode.parentID);
+		var targetNode = this.getCodeByCodeIDAndCodes(this.state.codesystem, targetID);
+		var sourceNode = this.getCodeByCodeIDAndCodes(this.state.codesystem, movingNode.parentID);
 		var indexSrc = sourceNode.children.indexOf(movingNode);
 
 		var _this = this;
