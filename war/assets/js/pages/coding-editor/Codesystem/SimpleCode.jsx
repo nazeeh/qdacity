@@ -166,6 +166,8 @@ export default class SimpleCode extends React.Component {
 		if (color == null) {
 			return '#63a0d4';
 		}
+
+		return color;
 	}
 
 	doGetBackgroundHoverColor(code, selected) {

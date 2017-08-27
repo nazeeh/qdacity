@@ -40,11 +40,7 @@ export default class UmlCodePropertyModal extends VexModal {
 
 		const getTextColor = (code, selected) => {
 			if (codeIsNotValid(code)) {
-				if (selected) {
-					return '#707070';
-				} else {
-					return '#707070';
-				}
+				return '#707070';
 			}
 			return null;
 		};
