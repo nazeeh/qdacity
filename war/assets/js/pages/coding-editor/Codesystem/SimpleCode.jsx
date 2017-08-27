@@ -10,7 +10,7 @@ export const StyledCode = styled.div `
     margin-left:${props => (props.level * 15) + 'px' };
     display: flex;
     align-items: center;
-    cursor: ${props => props.isCodeSelectable ? 'default' : 'not-allowed'} +  ' !important';
+    cursor: ${props => props.isCodeSelectable ? 'default' : 'not-allowed !important'};
     color: ${props => props.textColor};
     background-color: ${props => props.backgroundColor};
     &:hover {
@@ -186,7 +186,7 @@ export default class SimpleCode extends React.Component {
 		const textColor = this.getTextColor(this.props.node, selected);
 		const backgroundColor = this.getBackgroundColor(this.props.node, selected);
 		const backgroundHoverColor = this.getBackgroundHoverColor(this.props.node, selected);
-		const isCodeSelectable = (this.props.isCodeSelectable != null ? this.props.isCodeSelectable(code) : true);
+		const isCodeSelectable = (this.props.isCodeSelectable != null ? this.props.isCodeSelectable(this.props.node) : true);
 		const onClick = () => {
 			if (isCodeSelectable) {
 				this.props.setSelected(this.props.node);
