@@ -151,6 +151,7 @@ export default class SimpleCodesystem extends React.Component {
                     selected={this.state.selected} 
                     setSelected={this.setSelected} 
                     key={key}
+		            isCodeSelectable = {this.props.isCodeSelectable}
                     getFontWeight={this.props.getFontWeight}
                     getTextColor={this.props.getTextColor}
                     getBackgroundColor={this.props.getBackgroundColor}

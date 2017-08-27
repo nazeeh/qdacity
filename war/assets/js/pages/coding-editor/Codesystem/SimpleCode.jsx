@@ -10,6 +10,7 @@ export const StyledCode = styled.div `
     margin-left:${props => (props.level * 15) + 'px' };
     display: flex;
     align-items: center;
+    cursor: ${props => props.isCodeSelectable ? 'default' : 'not-allowed'} +  ' !important';
     color: ${props => props.textColor};
     background-color: ${props => props.backgroundColor};
     &:hover {
@@ -185,19 +186,25 @@ export default class SimpleCode extends React.Component {
 		const textColor = this.getTextColor(this.props.node, selected);
 		const backgroundColor = this.getBackgroundColor(this.props.node, selected);
 		const backgroundHoverColor = this.getBackgroundHoverColor(this.props.node, selected);
-		const onClick = () => this.props.setSelected(this.props.node);
+		const isCodeSelectable = (this.props.isCodeSelectable != null ? this.props.isCodeSelectable(code) : true);
+		const onClick = () => {
+			if (isCodeSelectable) {
+				this.props.setSelected(this.props.node);
+			}
+		}
 
 		return (
 			<div className="">
-		            {this.renderStyledNode(selected, level, className, key, onClick, fontWeight, textColor, backgroundColor, backgroundHoverColor)}
+		            {this.renderStyledNode(selected, level, className, key, onClick, isCodeSelectable, fontWeight, textColor, backgroundColor, backgroundHoverColor)}
             </div>
 		);
 	}
 
-	renderStyledNode(selected, level, className, key, onClick, fontWeight, textColor, backgroundColor, backgroundHoverColor) {
+	renderStyledNode(selected, level, className, key, onClick, isCodeSelectable, fontWeight, textColor, backgroundColor, backgroundHoverColor) {
 		return (
 			<StyledCode
                         selected={selected} 
+		                isCodeSelectable={isCodeSelectable}
 		                fontWeight={fontWeight}
                         textColor={textColor}
         		        backgroundColor={backgroundColor}
@@ -243,6 +250,7 @@ export default class SimpleCode extends React.Component {
                     relocateCode={this.props.relocateCode}
                     showFooter={this.props.showFooter}
                     key={key}
+		            isCodeSelectable = {this.props.isCodeSelectable}
                     getFontWeight={this.props.getFontWeight}
     		        getTextColor={this.props.getTextColor}
                     getBackgroundColor={this.props.getBackgroundColor}

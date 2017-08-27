@@ -294,6 +294,7 @@ class Codesystem extends SimpleCodesystem {
                         relocateCode={this.relocateCode}
                         showFooter={this.props.showFooter}
                         key={key}
+		                isCodeSelectable = {this.props.isCodeSelectable}
 		                shouldHighlightNode={this.shouldHighlightNode}
                         getFontWeight={this.props.getFontWeight}
                         getTextColor={this.props.getTextColor}

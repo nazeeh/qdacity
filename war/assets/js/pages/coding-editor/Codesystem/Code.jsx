@@ -110,6 +110,7 @@ class Code extends SimpleCode {
                     relocateCode={this.props.relocateCode}
                     showFooter={this.props.showFooter}
                     key={key}
+                    isCodeSelectable = {this.props.isCodeSelectable}
                     shouldHighlightNode={this.props.shouldHighlightNode}
 		            getFontWeight={this.props.getFontWeight}
                     getTextColor={this.props.getTextColor}
