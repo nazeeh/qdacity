@@ -1,6 +1,6 @@
 import VexModal from './VexModal';
 
-import UmlCodePropertyCodesystem from '../../pages/uml-editor/UmlCodePropertyCodesystem.jsx';
+import AdvancedCodesystem from '../../pages/coding-editor/Codesystem/AdvancedCodesystem.jsx';
 
 import UmlClassRelation from '../../pages/uml-editor/model/UmlClassRelation.js';
 
@@ -91,7 +91,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<UmlCodePropertyCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} shouldHighlightNode={shouldHighlightNode} codesystem={_this.codesystem.getCodesystem()} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<AdvancedCodesystem context={_this} maxHeight="500" notifyOnSelected={notifyOnSelected} shouldHighlightNode={shouldHighlightNode} codesystem={_this.codesystem.getCodesystem()} />, document.getElementById(codesystemContainerId));
 				notifyOnSelected(null);
 			}
 		);
