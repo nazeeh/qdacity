@@ -119,10 +119,14 @@ export default class SimpleCode extends React.Component {
 		color = this.doGetTextColor(code, selected);
 
 		if (color == null) {
-			if (selected) {
-				color = '#fff';
+			if (this.props.isCodeSelectable != null && !this.props.isCodeSelectable(code)) {
+				color = '#707070';
 			} else {
-				color = '#000';
+				if (selected) {
+					color = '#fff';
+				} else {
+					color = '#000';
+				}
 			}
 		}
 
@@ -165,7 +169,11 @@ export default class SimpleCode extends React.Component {
 		color = this.doGetBackgroundHoverColor(code, selected);
 
 		if (color == null) {
-			return '#63a0d4';
+			if (this.props.isCodeSelectable != null && !this.props.isCodeSelectable(code)) {
+				color = '#e0e0e0';
+			} else {
+				color = '#63a0d4';
+			}
 		}
 
 		return color;
