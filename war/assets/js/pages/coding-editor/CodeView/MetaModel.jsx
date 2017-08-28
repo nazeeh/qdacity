@@ -7,6 +7,7 @@ import MetaModelElement from './MetaModelElement';
 import SimpleCodesystem from '../Codesystem/SimpleCodesystem.jsx';
 
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
+import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
 const StyledCodeviewComponent = styled.div `
     padding: 8px 8px 0px 8px;
@@ -156,11 +157,79 @@ export default class MetaModel extends React.Component {
 	}
 
 	relatinoshipSourceChanged(sourceCode) {
+		this.updateRelationShipCode(sourceCode, null);
 
+		// TODO
+		// Change metamodel
+		//	    change the metamodel id for the relationship
+		//	    change the metamodel id for the relationship-code
 	}
 
 	relatinoshipDestinationChanged(destinationCode) {
+		this.updateRelationShipCode(null, destinationCode);
+	}
 
+	updateRelationShipCode(newSourceCode, newDestinationCode) {
+		const _this = this;
+
+		let relation = this.props.code.relationshipCode;
+
+		CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
+			// Update the code
+			const storedCode = _this.props.getCodeByCodeID(resp.codeID);
+			storedCode.relations = resp.relations;
+
+			// Select relation source and destination
+			let newRelationSourceId = null;
+
+			if (newSourceCode != null) {
+				newRelationSourceId = newSourceCode.id;
+			} else {
+				newRelationSourceId = relation.key.parent.id;
+			}
+
+			let newRelationDestinationCodeId = null;
+
+			if (newDestinationCode != null) {
+				newRelationDestinationCodeId = newDestinationCode.codeID;
+			} else {
+				newRelationDestinationCodeId = relation.codeId;
+			}
+
+			CodesEndpoint.addRelationship(newRelationSourceId, newRelationDestinationCodeId, relation.mmElementId).then((resp2) => {
+				// Update the code
+				const storedCode2 = _this.props.getCodeByCodeID(resp2.codeID);
+				storedCode2.relations = resp2.relations;
+
+				// Find relation
+				let newRelation = null;
+
+				for (let i = 0; i < resp2.relations.length; i++) {
+					let rel = resp2.relations[i];
+
+					if (rel.mmElementId == relation.mmElementId
+						&& rel.codeId == newRelationDestinationCodeId
+						&& rel.key.parent.id == newRelationSourceId) {
+						newRelation = rel;
+						break;
+					}
+				}
+
+				CodesEndpoint.updateRelationshipCode(_this.props.code.id, resp2.id, newRelation.key.id).then((resp3) => {
+					_this.props.code.relationshipCode = resp3.relationshipCode;
+
+					// Update the relation
+					for (let i = 0; i < storedCode2.relations.length; i++) {
+						let rel = storedCode2.relations[i];
+
+						if (rel.key.id == newRelation.key.id) {
+							rel.relationshipCodeId = resp3.id;
+							break;
+						}
+					}
+				});
+			});
+		});
 	}
 
 	renderContent(isRelationship) {
