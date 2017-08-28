@@ -9,6 +9,7 @@ import {
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+import Confirm from '../../../common/modals/Confirm';
 
 import {
 	BtnDefault
@@ -41,11 +42,16 @@ export default class CodesystemToolbar extends React.Component {
 	removeCode() {
 		var code = this.props.selected;
 		if (code.codeID == 1) return; //root should not be removed
-
 		var _this = this;
-		CodesEndpoint.removeCode(code).then(function (resp) {
-			_this.props.removeCode(code.codeID);
+		var confirm = new Confirm('Do you want to delete the code '+ code.name + '?');
+		confirm.showModal().then(function () {
+			CodesEndpoint.removeCode(code).then(function (resp) {
+				_this.props.removeCode(code.codeID);
+			});
 		});
+
+
+
 	}
 
 	insertCode() {

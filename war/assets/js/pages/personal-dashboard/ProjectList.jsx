@@ -118,7 +118,7 @@ export default class ProjectList extends React.Component {
 		var _this = this;
 		e.stopPropagation();
 		var confirm = new Confirm('Do you want to delete the project '+ project.name + '?');
-		confirm.showModal().then(function (codeName) {
+		confirm.showModal().then(function () {
 			ProjectEndpoint.removeProject(project.id).then(function (resp) {
 				// remove project from parent state
 				_this.props.removeProject(index);
