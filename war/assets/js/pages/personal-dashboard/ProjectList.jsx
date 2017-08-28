@@ -7,6 +7,7 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
+import Confirm from '../../common/modals/Confirm';
 
 import {
 	StyledBoxList,
@@ -116,10 +117,14 @@ export default class ProjectList extends React.Component {
 	deleteProject(e, project, index) {
 		var _this = this;
 		e.stopPropagation();
-		ProjectEndpoint.removeProject(project.id).then(function (resp) {
-			// remove project from parent state
-			_this.props.removeProject(index);
+		var confirm = new Confirm('Do you want to delete the project '+ project.name + '?');
+		confirm.showModal().then(function (codeName) {
+			ProjectEndpoint.removeProject(project.id).then(function (resp) {
+				// remove project from parent state
+				_this.props.removeProject(index);
+			});
 		});
+
 	}
 
 	updateSearch(e) {
