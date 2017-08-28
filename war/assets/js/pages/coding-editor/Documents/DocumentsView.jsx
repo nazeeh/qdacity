@@ -31,13 +31,27 @@ const StyledToolBar = styled.div `
 `;
 
 const StyledDocumentList = styled.div `
-	margin:2px 0px 2px 0px;
+
+	margin:5px 5px 5px 5px;
 `;
 
 const StyledDocumentItem = styled.a `
 	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
-	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''} !important;
+	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
 	padding: 2px 2px !important;
+	position: relative;
+	display: block;
+	padding: 10px 15px;
+	margin-bottom: -1px;
+	background-color: #fff;
+	border: 1px solid ;
+	border-color: ${props => props.theme.borderPrimary} !important;
+	&:hover {
+		text-decoration: none;
+		cursor: pointer;
+		background-color: ${props => props.theme.borderPrimary};
+		color: ${props => props.theme.fgPrimaryHighlight};
+	}
 `;
 
 export default class DocumentsView extends React.Component {
@@ -303,7 +317,7 @@ export default class DocumentsView extends React.Component {
 				<StyledDocumentList>
 		        {
 		          this.state.documents.map(function(doc) {
-		            return <StyledDocumentItem active={doc.id == _this.state.selected} className="list-group-item clickable" key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
+		            return <StyledDocumentItem active={doc.id == _this.state.selected} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
 		          })
 		        }
 		  		</StyledDocumentList>
