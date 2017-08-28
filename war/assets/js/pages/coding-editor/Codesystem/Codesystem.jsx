@@ -185,20 +185,20 @@ class Codesystem extends SimpleCodesystem {
 		};
 
 		CodesEndpoint.insertCode(code, relationId, relationSourceCodeId).then(function (resp) {
-            // Update the relation
-            if (relationId != null && relationSourceCodeId != null) {
-                let relationSourceCode = _this.getCodeById(relationSourceCodeId);
-                for (let i = 0; i < relationSourceCode.relations.length; i++) {
-                    let rel = relationSourceCode.relations[i];
+			// Update the relation
+			if (relationId != null && relationSourceCodeId != null) {
+				let relationSourceCode = _this.getCodeById(relationSourceCodeId);
+				for (let i = 0; i < relationSourceCode.relations.length; i++) {
+					let rel = relationSourceCode.relations[i];
 
-                    if (rel.key.id == relationId) {
-                        rel.relationshipCodeId = resp.id;
-                        break;
-                    }
-                }
-            }
-		    
-		    _this.insertCode(resp);
+					if (rel.key.id == relationId) {
+						rel.relationshipCodeId = resp.id;
+						break;
+					}
+				}
+			}
+
+			_this.insertCode(resp);
 
 			if (select) {
 				_this.setSelected(resp);
