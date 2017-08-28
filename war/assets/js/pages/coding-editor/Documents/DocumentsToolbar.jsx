@@ -5,6 +5,8 @@ import DocumentsView from './DocumentsView.jsx';
 import BinaryDecider from '../../../common/modals/BinaryDecider.js';
 import FileUpload from '../../../common/modals/FileUpload.js';
 import Prompt from '../../../common/modals/Prompt.js';
+import Confirm from '../../../common/modals/Confirm';
+
 import 'script-loader!../../../../../components/filer/js/jquery.filer.min.js';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
@@ -124,11 +126,15 @@ export default class DocumentsToolbar extends React.Component {
 	removeDocumentFromProject() {
 		var docId = this.props.document.id;
 		var _this = this;
-		var requestData = {};
-		requestData.id = docId;
-		DocumentsEndpoint.removeTextDocument(requestData).then(function (resp) {
-			_this.props.removeActiveDocument(docId);
+		var confirm = new Confirm('Do you want to delete the document '+ this.props.document.title + '?');
+		confirm.showModal().then(function () {
+			var requestData = {};
+			requestData.id = docId;
+			DocumentsEndpoint.removeTextDocument(requestData).then(function (resp) {
+				_this.props.removeActiveDocument(docId);
+			});
 		});
+
 	}
 
 	changeTitle() {
