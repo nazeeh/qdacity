@@ -51,7 +51,7 @@ const BtnDefault = BtnSm.extend `
 
 const BtnPrimary = BtnSm.extend `
 	color: ${props => props.active ? props.theme.fgPrimaryHighlight : props.theme.fgPrimary};
-	background-color: ${props => props.active ? props.theme.borderPrimaryHighlight : props.theme.bgPrimary};
+	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : props.theme.bgPrimary};
 	border-color: ${props => props.theme.borderPrimary};
 	border-radius: 0px;
 	&:hover {

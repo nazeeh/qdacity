@@ -11,7 +11,7 @@ export const StyledCode = styled.div `
     display: flex;
     align-items: center;
     color: ${props => props.selected ? '#fff' : '#000'};
-    background-color: ${props => props.selected ? '#337ab7' : ''};
+    background-color: ${props => props.selected ? props.theme.bgPrimaryHighlight : ''};
     &:hover {
         background: #63a0d4;
     }
@@ -78,9 +78,9 @@ export default class SimpleCode extends React.Component {
 
 	renderSimpleExpander(hasChildren, selected, className, onClick, highlightNode, caret) {
 		return (
-			<StyledExpander 
-                    hasChildren={hasChildren} 
-                    selected={selected} 
+			<StyledExpander
+                    hasChildren={hasChildren}
+                    selected={selected}
                     className={className}
                     onClick={onClick}
 		            highlightNode={highlightNode}>
