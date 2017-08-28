@@ -5,12 +5,17 @@ import {
 	PageView
 } from './PageView.js';
 
+import {
+	BtnDefault,
+	BtnPrimary
+} from '../../../common/styles/Btn.jsx';
+
 const StyledButtonGroup = styled.div `
     display: flex;
     justify-content: center;
     margin: 10px 0px 10px 0px;
 `;
-const StyledEditorBtn = styled.button `
+const StyledEditorBtn = BtnPrimary.extend `
 	display: ${props => props.showBtn ? 'block' : 'none'};
 `;
 
@@ -53,19 +58,11 @@ export default class PageViewChooser extends React.Component {
 	}
 
 	render() {
-		const _this = this;
-
-		const styleSelected = 'btn btn-primary active';
-		const styleDefault = 'btn btn-default';
-		const classButtonCoding = _this.state.view == PageView.CODING ? styleSelected : styleDefault;
-		const classButtonText = _this.state.view == PageView.TEXT ? styleSelected : styleDefault;
-		const classButtonUml = _this.state.view == PageView.UML ? styleSelected : styleDefault;
-
 		return (
 			<StyledButtonGroup className="btn-group">
-				<StyledEditorBtn showBtn={true} type="button" className={classButtonCoding} onClick={_this.buttonCodingEditorClicked.bind(_this)}>Coding-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={true} className={classButtonText} onClick={_this.buttonTextEditorClicked.bind(_this)}>Text-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={this.props.umlEditorEnabled} type="button" className={classButtonUml} onClick={_this.buttonUmlEditorClicked.bind(_this)}>Uml-Editor</StyledEditorBtn>
+				<StyledEditorBtn showBtn={true} active={this.state.view == PageView.CODING} type="button" className="btn" onClick={this.buttonCodingEditorClicked.bind(this)}>Coding-Editor</StyledEditorBtn>
+		        <StyledEditorBtn showBtn={true} active={this.state.view == PageView.TEXT} className="btn" onClick={this.buttonTextEditorClicked.bind(this)}>Text-Editor</StyledEditorBtn>
+		        <StyledEditorBtn showBtn={this.props.umlEditorEnabled} active={this.state.view == PageView.UML} type="button" className="btn" onClick={this.buttonUmlEditorClicked.bind(this)}>Uml-Editor</StyledEditorBtn>
 		    </StyledButtonGroup>
 		);
 	}
