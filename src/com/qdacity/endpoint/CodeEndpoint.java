@@ -192,6 +192,52 @@ public class CodeEndpoint {
 		return stored;
 	}
 
+	/**
+	 * This method is used for updating an existing relationship-code entity. 
+	 * It updates the relationship field of the code and the code-field of the relationship.
+	 * 
+	 * @param relationshipCodeId the id of the relation-ship code
+	 * @param relationSourceId the id of the source-code of the relation
+	 * @param relationId the id of the relation
+	 * @return The updated entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "codes.updateRelationshipCode",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code updateRelationshipCode(
+			@Named("relationshipCodeId") Long relationshipCodeId, 
+			@Named("relationSourceId") Long relationSourceId, 
+			@Named("relationId") Long relationId,
+			User user) throws UnauthorizedException {
+
+		Code code = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {	
+			// Set the relationship for the relationship-code
+			code = getCode(relationshipCodeId, user);
+			
+			Authorization.checkAuthorization(code, user);
+			
+			Key relationKey = KeyFactory.createKey(KeyFactory.createKey("Code", relationSourceId), "CodeRelation", relationId);
+			CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationKey);
+			
+			code.setRelationshipCode(relation);
+	
+			code = mgr.makePersistent(code);
+			
+			// Save the code in the relationship
+			relation.setRelationshipCodeId(code.getCodeID());
+			relation = mgr.makePersistent(relation);								
+		} finally {
+			mgr.close();
+		}
+		
+		return code;
+	}
+	
 	@ApiMethod(
 		name = "codes.setCodeBookEntry",
 		scopes = { Constants.EMAIL_SCOPE },
