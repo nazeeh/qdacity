@@ -33,6 +33,14 @@ export default class CodesEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static updateRelationshipCodeMetaModel(relationshipCodeId, newMetaModelId) {
+		var apiMethod = gapi.client.qdacity.codes.updateRelationshipCodeMetaModel({
+			'relationshipCodeId': relationshipCodeId,
+			'newMetaModelId': newMetaModelId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static removeCode(code) {
 		var apiMethod = gapi.client.qdacity.codes.removeCode(code);
 		return Promisizer.makePromise(apiMethod);

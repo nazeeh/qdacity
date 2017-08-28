@@ -238,6 +238,50 @@ public class CodeEndpoint {
 		return code;
 	}
 	
+	/**
+	 * This method is used for updating an existing relationship-code entity. 
+	 * It updates the metaModel field of the code and the metaModel of the relation
+	 * 
+	 * @param relationshipCodeId the id of the relation-ship code
+	 * @param newMetaModelId the new metaModel
+	 * @return The updated entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "codes.updateRelationshipCodeMetaModel",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code updateRelationshipCodeMetaModel(
+			@Named("relationshipCodeId") Long relationshipCodeId, 
+			@Named("newMetaModelId") Long newMetaModelId,
+			User user) throws UnauthorizedException {
+
+		Code code = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {	
+			// Update the metaModel of the code
+			code = getCode(relationshipCodeId, user);
+			
+			Authorization.checkAuthorization(code, user);
+			
+			List<Long> newMetaModelElementIds = new ArrayList<>();
+			newMetaModelElementIds.add(newMetaModelId);
+			code.setMmElementIDs(newMetaModelElementIds);
+	
+			code = mgr.makePersistent(code);
+			
+			// Update the metaModel of the relation
+			CodeRelation relation = code.getRelationshipCode();
+			relation.setMmElementId(newMetaModelId);
+			relation = mgr.makePersistent(relation);								
+		} finally {
+			mgr.close();
+		}
+		
+		return code;
+	}
+	
 	@ApiMethod(
 		name = "codes.setCodeBookEntry",
 		scopes = { Constants.EMAIL_SCOPE },
