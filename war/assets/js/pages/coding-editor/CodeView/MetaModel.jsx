@@ -290,7 +290,7 @@ export default class MetaModel extends React.Component {
 		};
 
 		const addNewRelationship = (newRelationSourceId, newRelationDestinationCodeId, relationMetaModelId) => {
-			CodesEndpoint.addRelationship(newRelationSourceId, newRelationDestinationCodeId, relationMetaModelId).then((resp2) => {
+			CodesEndpoint.addRelationship(newRelationSourceId, newRelationDestinationCodeId, relationMetaModelId, false).then((resp2) => {
 				// Update the code
 				const relationSourceCode = _this.props.getCodeByCodeID(resp2.codeID);
 				relationSourceCode.relations = resp2.relations;

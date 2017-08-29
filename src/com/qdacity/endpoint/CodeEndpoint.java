@@ -317,7 +317,7 @@ public class CodeEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public Code addRelationship(@Named("sourceCode") Long codeID, CodeRelation realtion, User user) throws UnauthorizedException {
+	public Code addRelationship(@Named("sourceCode") Long codeID, @Named("createIfItExists") Boolean createIfItExists, CodeRelation relation, User user) throws UnauthorizedException {
 		// Fixme Authorization
 		Code code = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -325,17 +325,29 @@ public class CodeEndpoint {
 			code = mgr.getObjectById(Code.class, codeID);
 			Authorization.checkAuthorization(code, user);
 
-			code.addRelation(realtion);
-			mgr.makePersistent(code);
-
-			List<CodeRelation> relationships = code.getRelations();
-			for (CodeRelation codeRelation : relationships) {
-				codeRelation.getCodeId();
+			// Does the relation exist?
+			boolean relationExists = false;
+			for (CodeRelation rel : code.getRelations()) {
+				if (relation.getCodeId().equals(rel.getCodeId()) &&
+					relation.getMmElementId().equals(rel.getMmElementId())) {
+					relationExists = true;
+					break;
+				}
+			}
+			
+			if (createIfItExists || (!createIfItExists && !relationExists)) {
+				code.addRelation(relation);
+				mgr.makePersistent(code);
+	
+				List<CodeRelation> relationships = code.getRelations();
+				for (CodeRelation codeRelation : relationships) {
+					codeRelation.getCodeId();
+				}
 			}
 			
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeAddRelationShipChange(realtion, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			Change change = new ChangeBuilder().makeAddRelationShipChange(relation, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
 			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();

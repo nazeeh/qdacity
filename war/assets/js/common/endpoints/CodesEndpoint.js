@@ -68,9 +68,14 @@ export default class CodesEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static addRelationship(srcId, dstId, mmElementId) {
+	static addRelationship(srcId, dstId, mmElementId, createIfItExists) {
+		if (createIfItExists == null) {
+			createIfItExists = true;
+		}
+
 		var apiMethod = gapi.client.qdacity.codes.addRelationship({
-			'sourceCode': srcId
+			'sourceCode': srcId,
+			'createIfItExists': createIfItExists
 		}, {
 			'codeId': dstId,
 			'mmElementId': mmElementId
