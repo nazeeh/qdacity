@@ -1,4 +1,13 @@
 import React from 'react'
+import styled from 'styled-components';
+
+export const StyledTextSegment = styled.div `
+    font-size: 10pt;
+    margin: 5px;
+    display: block;
+    background-color: ${props => props.selected ? props.theme.bgPrimaryHighlight : ''};
+
+`;
 
 export default class CodingInstances extends React.Component {
 	constructor(props) {
@@ -41,14 +50,17 @@ export default class CodingInstances extends React.Component {
 		}
 
 		return textSegments.map((segment, index) => {
-			return (<div>{segment.val}</div>);
+			if (segment.val === "") return;
+			return (<div>
+						<StyledTextSegment>{segment.val}</StyledTextSegment>
+						<hr/>
+					</div>);
 		});
 	}
 
 	render(){
 		return(
 			<div>
-				List of codings
 				{this.renderList()}
 			</div>
 		);
