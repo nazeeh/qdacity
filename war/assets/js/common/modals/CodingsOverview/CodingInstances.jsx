@@ -34,25 +34,32 @@ export default class CodingInstances extends React.Component {
 
 			});
 			foundArray = foundArray.toArray();
-			textSegments = textSegments.concat(foundArray);
+
 
 			var idsAdded = []; // When a coding spans multiple HTML blocks, then
 			// there will be multiple elements with the same ID
 
 
+			var groupedSegments = {};
+			for (var i = 0; i < foundArray.length; i++) {
+			  var id = foundArray[i].id;
+			  if (!groupedSegments[id]) {
+			    groupedSegments[id] = "";
+			  }
+			  groupedSegments[id] += foundArray[i].val;
+			}
+			foundArray = [];
+			for (var id in groupedSegments) {
+			  foundArray.push(groupedSegments[id]);
+			}
 
-			// for (var j = 0; j < foundArray.length; j++) {
-			// 	if ($.inArray(foundArray[j].id, idsAdded) != -1)
-			// 		continue;
-			// 	table.row.add([foundArray[j].id, doc.title, foundArray[j].author]);
-			// 	idsAdded.push(foundArray[j].id);
-			// }
+			textSegments = textSegments.concat(foundArray);
 		}
 
 		return textSegments.map((segment, index) => {
-			if (segment.val === "") return;
+			if (segment === "") return;
 			return (<div>
-						<StyledTextSegment>{segment.val}</StyledTextSegment>
+						<StyledTextSegment>{segment}</StyledTextSegment>
 						<hr/>
 					</div>);
 		});
