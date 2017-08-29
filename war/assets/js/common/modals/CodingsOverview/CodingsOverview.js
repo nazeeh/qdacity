@@ -13,7 +13,7 @@ export default class CodingsOverview extends VexModal {
 	}
 
 
-	showModal() {
+	showModal(codeID, documentsView) {
 
 		var _this = this;
 		var promise = new Promise(
@@ -40,7 +40,7 @@ export default class CodingsOverview extends VexModal {
 					}
 				});
 
-				_this.mmRelationshipsView = ReactDOM.render(<CodingInstances />, document.getElementById('overviewMount'));
+				_this.mmRelationshipsView = ReactDOM.render(<CodingInstances codeID={codeID} documentsView={documentsView}/>, document.getElementById('overviewMount'));
 			}
 		);
 

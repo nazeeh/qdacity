@@ -38,6 +38,7 @@ export default class CodesystemToolbar extends React.Component {
 		this.insertCode = this.insertCode.bind(this);
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
+		this.showCodingsOverview = this.showCodingsOverview.bind(this);
 	}
 
 	removeCode() {
@@ -128,7 +129,7 @@ export default class CodesystemToolbar extends React.Component {
 
 	showCodingsOverview(){
 		var overview = new CodingsOverview('Do you want to delete the code ?');
-		overview.showModal().then(function () {
+		overview.showModal(this.props.selected.codeID, this.props.documentsView).then(function () {
 
 		});
 	}
