@@ -79,7 +79,7 @@ export default class ValPrjList extends React.Component {
 	}
 
 	valPrjLink(valPrjId) {
-		if (this.props.isAdmin || this.props.isProjectOwner) location.href = 'coding-editor.html?project=' + valPrjId + '&type=VALIDATION';
+		if (this.props.isAdmin || this.props.isProjectOwner) this.props.history.push('/CodingEditor?project=' + valPrjId + '&type=VALIDATION');
 	}
 
 	render() {

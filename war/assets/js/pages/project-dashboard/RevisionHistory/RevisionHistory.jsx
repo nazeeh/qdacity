@@ -237,7 +237,7 @@ export default class RevisionHistory extends React.Component {
 					{this.renderCreateReportBtn(revId)}
 				</h3>
 				<div className="timeline-body timelineContent">
-					<ValPrjList validationProjects={validationProjects} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner}/>
+					<ValPrjList validationProjects={validationProjects} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner} history={this.props.history}/>
 				</div>
 			</div>
 		];
