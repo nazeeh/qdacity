@@ -20,16 +20,10 @@ export default class SettingsBtn extends React.Component {
 		super(props);
 		this.state = {
 			isProjectOwner: false,
-			umlEditor: this.props.umlEditor
 		};
 		this.showSettingsModal = this.showSettingsModal.bind(this);
 	}
 
-	setUmlEditor(pUseUmlEditor) {
-		this.state = {
-			umlEditor: pUseUmlEditor
-		};
-	}
 
 	setIsProjectOwner(pIsProjectOnwer) {
 		this.setState({
@@ -40,11 +34,9 @@ export default class SettingsBtn extends React.Component {
 	showSettingsModal() {
 		var modal = new Settings();
 		var _this = this;
-		modal.showModal(this.state.umlEditor, this.props.project.getId()).then(function (data) {
+		modal.showModal(this.props.umlEditor, this.props.project.getId()).then(function (data) {
 			ProjectEndpoint.setUmlEditorEnabled(_this.props.project.getId(), _this.props.project.getType(), data.umlEditorEnabled).then(function (resp) {
-				_this.setState({
-					umlEditor: data.umlEditorEnabled
-				});
+				_this.props.setSettings({umlEditor: data.umlEditorEnabled})
 			});
 		});
 	}
