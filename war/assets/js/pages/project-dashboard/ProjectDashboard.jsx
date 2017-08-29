@@ -126,7 +126,7 @@ export default class ProjectDashboard extends React.Component {
 						<Users project={this.state.project}  isProjectOwner={this.state.isProjectOwner}/>
 						<RevisionHistory project={this.state.project}  addReports={this.addReports} userPromise={this.userPromise} />
 
-						<ParentProject project={this.state.project} />
+						<ParentProject project={this.state.project} history={this.props.history}/>
 						{(this.state.project.getParentID() ? (<PersonalReportList project={this.state.project} account={this.props.account} />) : "" )}
 					</div>
 				</div>
