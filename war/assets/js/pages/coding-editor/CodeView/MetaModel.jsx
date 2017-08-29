@@ -23,6 +23,9 @@ export default class MetaModel extends React.Component {
 			selected: []
 		};
 
+		this.sourceCodeCodesystemRef = null;
+		this.destinationCodeCodesystemRef = null;
+
 		this.getElement = this.getElement.bind(this);
 		this.addSelected = this.addSelected.bind(this);
 		this.setElements = this.setElements.bind(this);
@@ -61,8 +64,41 @@ export default class MetaModel extends React.Component {
 	}
 
 	updateActiveElement(element) {
+
+		const previousMetaModelElementIds = (this.props.code.mmElementIDs != null ? this.props.code.mmElementIDs.slice(0) : []);
+
 		this.setActiveElement(element);
 		this.props.code.mmElementIDs = this.state.selected.slice(0);
+
+		if (element.type == 'RELATIONSHIP') {
+			if (previousMetaModelElementIds.length != 0) {
+				for (let i = 0; i < previousMetaModelElementIds.length; i++) {
+					if (this.getElement(previousMetaModelElementIds[i]).type != 'RELATIONSHIP') {
+						// Changed from normal code to relationship code
+						this.convertNormalCodeToRelationshipCode();
+						return;
+					}
+				}
+			} else {
+				// Changed from normal code to relationship code
+				this.convertNormalCodeToRelationshipCode();
+				return;
+			}
+		} else {
+			if (previousMetaModelElementIds.length != 0) {
+				for (let i = 0; i < previousMetaModelElementIds.length; i++) {
+					if (this.getElement(previousMetaModelElementIds[i]).type == 'RELATIONSHIP') {
+						// Changed from relationship code to normal code
+						this.convertRelationshipCodeToNormalCode();
+						return;
+					}
+				}
+			} else {
+				// Changed from relationship code to normal code
+				this.convertRelationshipCodeToNormalCode();
+				return;
+			}
+		}
 
 		if (!this.isRelationshipCode()) {
 			this.props.updateSelectedCode(this.props.code, true);
@@ -174,6 +210,46 @@ export default class MetaModel extends React.Component {
 		return isRelationship;
 	}
 
+	convertRelationshipCodeToNormalCode() {
+		const _this = this;
+
+		let relation = this.props.code.relationshipCode;
+
+		CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
+			// Update the code
+			const storedCode = _this.props.getCodeByCodeID(resp.codeID);
+			storedCode.relations = resp.relations;
+
+			// Update metamodel and set relationshipCode to null
+			_this.props.code.relationshipCode = null;
+
+			_this.props.updateSelectedCode(_this.props.code, true);
+		});
+	}
+
+	convertNormalCodeToRelationshipCode() {
+		const _this = this;
+
+		CodesEndpoint.removeAllRelationships(this.props.code.id).then((resp) => {
+			// Update the code
+			const storedCode = _this.props.getCodeByCodeID(resp.codeID);
+			storedCode.relations = resp.relations;
+
+			// Update metamodel
+			_this.props.updateSelectedCode(_this.props.code, true);
+		});
+
+
+
+		// convert normal code to relationship code
+		// - delete all relations
+		// - change metamodel
+
+		// TODO
+		// - prevent adding a relation until all parameters fit
+		//   => properly add the relation then   
+	}
+
 	relationshipCodeMetaModelChanged() {
 		const _this = this;
 
@@ -203,34 +279,27 @@ export default class MetaModel extends React.Component {
 	updateRelationShipCode(newSourceCode, newDestinationCode) {
 		const _this = this;
 
-		let relation = this.props.code.relationshipCode;
+		const updateCode = (relationSourceCode, newRelation) => {
+			CodesEndpoint.updateRelationshipCode(_this.props.code.id, relationSourceCode.id, newRelation.key.id).then((resp3) => {
+				_this.props.code.relationshipCode = resp3.relationshipCode;
 
-		CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
-			// Update the code
-			const storedCode = _this.props.getCodeByCodeID(resp.codeID);
-			storedCode.relations = resp.relations;
+				// Update the relation
+				for (let i = 0; i < relationSourceCode.relations.length; i++) {
+					let rel = relationSourceCode.relations[i];
 
-			// Select relation source and destination
-			let newRelationSourceId = null;
+					if (rel.key.id == newRelation.key.id) {
+						rel.relationshipCodeId = resp3.id;
+						break;
+					}
+				}
+			});
+		};
 
-			if (newSourceCode != null) {
-				newRelationSourceId = newSourceCode.id;
-			} else {
-				newRelationSourceId = relation.key.parent.id;
-			}
-
-			let newRelationDestinationCodeId = null;
-
-			if (newDestinationCode != null) {
-				newRelationDestinationCodeId = newDestinationCode.codeID;
-			} else {
-				newRelationDestinationCodeId = relation.codeId;
-			}
-
-			CodesEndpoint.addRelationship(newRelationSourceId, newRelationDestinationCodeId, relation.mmElementId).then((resp2) => {
+		const addNewRelationship = (newRelationSourceId, newRelationDestinationCodeId, relationMetaModelId) => {
+			CodesEndpoint.addRelationship(newRelationSourceId, newRelationDestinationCodeId, relationMetaModelId).then((resp2) => {
 				// Update the code
-				const storedCode2 = _this.props.getCodeByCodeID(resp2.codeID);
-				storedCode2.relations = resp2.relations;
+				const relationSourceCode = _this.props.getCodeByCodeID(resp2.codeID);
+				relationSourceCode.relations = resp2.relations;
 
 				// Find relation
 				let newRelation = null;
@@ -238,7 +307,7 @@ export default class MetaModel extends React.Component {
 				for (let i = 0; i < resp2.relations.length; i++) {
 					let rel = resp2.relations[i];
 
-					if (rel.mmElementId == relation.mmElementId
+					if (rel.mmElementId == relationMetaModelId
 						&& rel.codeId == newRelationDestinationCodeId
 						&& rel.key.parent.id == newRelationSourceId) {
 						newRelation = rel;
@@ -246,24 +315,69 @@ export default class MetaModel extends React.Component {
 					}
 				}
 
-				CodesEndpoint.updateRelationshipCode(_this.props.code.id, resp2.id, newRelation.key.id).then((resp3) => {
-					_this.props.code.relationshipCode = resp3.relationshipCode;
-
-					// Update the relation
-					for (let i = 0; i < storedCode2.relations.length; i++) {
-						let rel = storedCode2.relations[i];
-
-						if (rel.key.id == newRelation.key.id) {
-							rel.relationshipCodeId = resp3.id;
-							break;
-						}
-					}
-				});
+				updateCode(relationSourceCode, newRelation);
 			});
-		});
+		};
+
+		const removeOldRelationship = (relation) => {
+			CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
+				// Update the code
+				const storedCode = _this.props.getCodeByCodeID(resp.codeID);
+				storedCode.relations = resp.relations;
+
+				// Select relation source and destination
+				let newRelationSourceId = null;
+
+				if (newSourceCode != null) {
+					newRelationSourceId = newSourceCode.id;
+				} else {
+					newRelationSourceId = relation.key.parent.id;
+				}
+
+				let newRelationDestinationCodeId = null;
+
+				if (newDestinationCode != null) {
+					newRelationDestinationCodeId = newDestinationCode.codeID;
+				} else {
+					newRelationDestinationCodeId = relation.codeId;
+				}
+
+				addNewRelationship(newRelationSourceId, newRelationDestinationCodeId, relation.mmElementId);
+			});
+		};
+
+
+		let relation = this.props.code.relationshipCode;
+
+		// Remove relation, add relation, update relationship-code
+		if (relation != null) {
+			removeOldRelationship(relation);
+		}
+		// Create a relation
+		else {
+			let sourceId = null;
+			let destinationCodeId = null;
+
+			if (newSourceCode != null) {
+				sourceId = newSourceCode.id;
+			} else {
+				sourceId = this.sourceCodeCodesystemRef.getSelected().id;
+			}
+			if (newDestinationCode != null) {
+				destinationCodeId = newDestinationCode.codeID;
+			} else {
+				destinationCodeId = this.destinationCodeCodesystemRef.getSelected().codeID;
+			}
+
+			if (sourceId != null && destinationCodeId != null) {
+				addNewRelationship(sourceId, destinationCodeId, this.props.code.mmElementIDs[0]);
+			}
+		}
 	}
 
 	renderContent() {
+		const _this = this;
+
 		if (!this.isRelationshipCode()) {
 			return (
 				<div>
@@ -273,22 +387,22 @@ export default class MetaModel extends React.Component {
 		        </div>
 			);
 		} else {
-			const sourceCode = this.props.getCodeById(this.props.code.relationshipCode.key.parent.id);
-			const destinationCode = this.props.getCodeByCodeID(this.props.code.relationshipCode.codeId);
+			const sourceCode = (this.props.code.relationshipCode ? this.props.getCodeById(this.props.code.relationshipCode.key.parent.id) : null);
+			const destinationCode = (this.props.code.relationshipCode ? this.props.getCodeByCodeID(this.props.code.relationshipCode.codeId) : null);
 
 			let isCodeSelectable = (code) => {
-				return code.relationshipCode == null;
+				return code.relationshipCode == null && code.id != _this.props.code.id;
 			};
 
 			return (
 				<div>
                     <div className="col-sm-3">
                         Source-Code:
-                        <SimpleCodesystem height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} isCodeSelectable={isCodeSelectable} />                        
+                        <SimpleCodesystem ref={(c) => {if (c) this.sourceCodeCodesystemRef = c;}} height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} isCodeSelectable={isCodeSelectable} />                        
                     </div>
                     <div className="col-sm-3">
                         Destination-Code:
-                        <SimpleCodesystem height="200" selected={destinationCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipDestinationChanged} isCodeSelectable={isCodeSelectable} />
+                        <SimpleCodesystem ref={(c) => {if (c) this.destinationCodeCodesystemRef = c;}} height="200" selected={destinationCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipDestinationChanged} isCodeSelectable={isCodeSelectable} />
                     </div>
                 </div>
 			);
