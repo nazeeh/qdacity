@@ -43,6 +43,7 @@ const StyledPanelHeader = styled.div `
  `;
 
 const StyledSettingsPanel = styled.div `
+	display: ${props => (props.showPanel) ? 'block' : 'none'} !important;
 	background-color: #f8f8f8;
 `;
 
@@ -247,7 +248,7 @@ export default class CodingEditor extends React.Component {
 								</div>
 
 								<div className="row no-gutters" >
-								<StyledSettingsPanel>
+								<StyledSettingsPanel showPanel={this.state.project.getType() === "PROJECT"}>
 									<StyledPanelHeader>
 										<b>Editor</b>
 									</StyledPanelHeader>
