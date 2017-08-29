@@ -85,4 +85,11 @@ export default class CodesEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static removeAllRelationships(id) {
+		var apiMethod = gapi.client.qdacity.codes.removeAllRelationships({
+			'id': id
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
 }

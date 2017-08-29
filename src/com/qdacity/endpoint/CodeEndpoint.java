@@ -273,8 +273,10 @@ public class CodeEndpoint {
 			
 			// Update the metaModel of the relation
 			CodeRelation relation = code.getRelationshipCode();
-			relation.setMmElementId(newMetaModelId);
-			relation = mgr.makePersistent(relation);								
+			if (relation != null) {
+				relation.setMmElementId(newMetaModelId);
+				relation = mgr.makePersistent(relation);
+			}
 		} finally {
 			mgr.close();
 		}
@@ -374,6 +376,22 @@ public class CodeEndpoint {
 			mgr.close();
 		}
 		return code;
+	}
+	
+	@ApiMethod(
+			name = "codes.removeAllRelationships",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+	public Code removeAllRelationships(@Named("id") Long id, User user) throws UnauthorizedException {
+		Code code = getCode(id, user);
+		Code result = code;
+		
+		for (CodeRelation relation : code.getRelations()) {
+			result = removeRelationship(id, relation.getKey().getId(), user);
+		}
+		
+		return result;
 	}
 
 	/**
