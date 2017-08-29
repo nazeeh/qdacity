@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 
 import VexModal from '../VexModal';
-import MetaModelView from './CodingInstances.jsx';
+import CodingInstances from './CodingInstances.jsx';
 
 export default class CodingsOverview extends VexModal {
 
@@ -22,7 +22,7 @@ export default class CodingsOverview extends VexModal {
 				var formElements = _this.formElements;
 
 				vex.dialog.open({
-					message: "New Code Relationship",
+					message: "Coded text segments",
 					contentCSS: {
 						width: '900px'
 					},
