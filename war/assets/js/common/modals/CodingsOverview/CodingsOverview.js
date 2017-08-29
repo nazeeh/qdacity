@@ -5,7 +5,7 @@ import MetaModelView from './CodingInstances.jsx';
 
 export default class CodingsOverview extends VexModal {
 
-	constructor(mmElements, codeSystem) {
+	constructor() {
 		super();
 		this.formElements = '<div id="codingsOverview"><div id="overviewMount"></div></div>';
 		//this.setActiveElement = this.setActiveElement.bind(this);
