@@ -237,17 +237,7 @@ export default class MetaModel extends React.Component {
 
 			// Update metamodel
 			_this.props.updateSelectedCode(_this.props.code, true);
-		});
-
-
-
-		// convert normal code to relationship code
-		// - delete all relations
-		// - change metamodel
-
-		// TODO
-		// - prevent adding a relation until all parameters fit
-		//   => properly add the relation then   
+		});  
 	}
 
 	relationshipCodeMetaModelChanged() {
