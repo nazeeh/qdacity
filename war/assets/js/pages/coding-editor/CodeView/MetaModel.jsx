@@ -237,13 +237,15 @@ export default class MetaModel extends React.Component {
 
 			// Update metamodel
 			_this.props.updateSelectedCode(_this.props.code, true);
-		});  
+		});
 	}
 
 	relationshipCodeMetaModelChanged() {
 		const _this = this;
 
 		CodesEndpoint.updateRelationshipCodeMetaModel(this.props.code.id, this.props.code.mmElementIDs[0]).then((resp) => {
+			_this.props.code.relationshipCode.mmElementId = _this.props.code.mmElementIDs[0];
+
 			// Update the relation
 			let code = _this.props.getCodeById(resp.relationshipCode.key.parent.id);
 
