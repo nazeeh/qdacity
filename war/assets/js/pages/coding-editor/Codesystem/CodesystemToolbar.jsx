@@ -10,6 +10,7 @@ import {
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import Confirm from '../../../common/modals/Confirm';
+import CodingsOverview from '../../../common/modals/CodingsOverview/CodingsOverview';
 
 import {
 	BtnDefault
@@ -37,6 +38,7 @@ export default class CodesystemToolbar extends React.Component {
 		this.insertCode = this.insertCode.bind(this);
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
+		this.showCodingsOverview = this.showCodingsOverview.bind(this);
 	}
 
 	removeCode() {
@@ -125,6 +127,13 @@ export default class CodesystemToolbar extends React.Component {
 		return promise;
 	}
 
+	showCodingsOverview(){
+		var overview = new CodingsOverview('Do you want to delete the code ?');
+		overview.showModal(this.props.selected.codeID, this.props.documentsView).then(function () {
+
+		});
+	}
+
 	renderAddRemoveCodeBtn() {
 		if (this.props.projectType != "PROJECT") return "";
 
@@ -168,6 +177,11 @@ export default class CodesystemToolbar extends React.Component {
 					{this.renderAddRemoveCodeBtn()}
 					<BtnDefault className="btn btn-default" onClick={this.props.toggleCodingView}>
 						<i className="fa  fa-list-alt  fa-1x"></i>
+					</BtnDefault>
+				</StyledBtnGroup>
+				<StyledBtnGroup className="btn-group">
+					<BtnDefault key="codingsOverview" className="btn btn-default" onClick={this.showCodingsOverview}>
+						<i className="fa fa-list fa-1x"></i>
 					</BtnDefault>
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}
