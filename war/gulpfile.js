@@ -116,7 +116,22 @@ gulp.task('set-react-production', function() {
 
 gulp.task('minify', function() {
 	 return gulp.src('./dist/js/*.js', {base: './'})
-      .pipe(uglify())
+	  .pipe(uglify(
+		{
+			mangle: { 
+				toplevel: true, 
+				eval : true , 
+			}, 
+			compress: {
+				unused: true, 
+				pure_getters: true, 
+				evaluate:true, 
+				booleans:true,
+				hoist_funs :true,
+				collapse_vars :true,
+				drop_console: true,
+			}
+		}))
 	  .pipe(size({showFiles: true, gzip: true}))
       .pipe(gulp.dest('./'));
 });
