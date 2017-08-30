@@ -163,8 +163,8 @@ export default class CodingEditor extends React.Component {
 	}
 
 	viewChanged(view) {
-		if (this.state.editorCtrl.setReadOnly ) {
-			if (view ===  PageView.TEXT){
+		if (this.state.editorCtrl.setReadOnly) {
+			if (view === PageView.TEXT) {
 				this.state.editorCtrl.setReadOnly(false);
 			} else {
 				this.state.editorCtrl.setReadOnly(true);

@@ -29,11 +29,11 @@ export default class NavBar extends React.Component {
 		this.props.history.push('/PersonalDashboard');
 	}
 
-	showAccountDropdown(){
+	showAccountDropdown() {
 		document.getElementById("accountView").classList.toggle("show");
 	}
 
-	showSigninDropdown(){
+	showSigninDropdown() {
 		document.getElementById("signinView").classList.toggle("show");
 	}
 

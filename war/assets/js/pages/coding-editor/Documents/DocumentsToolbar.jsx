@@ -126,7 +126,7 @@ export default class DocumentsToolbar extends React.Component {
 	removeDocumentFromProject() {
 		var docId = this.props.document.id;
 		var _this = this;
-		var confirm = new Confirm('Do you want to delete the document '+ this.props.document.title + '?');
+		var confirm = new Confirm('Do you want to delete the document ' + this.props.document.title + '?');
 		confirm.showModal().then(function () {
 			var requestData = {};
 			requestData.id = docId;

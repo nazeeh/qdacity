@@ -19,11 +19,10 @@ export const StyledDocumentTitle = styled.div `
 export default class CodingInstances extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
-	renderSegmentsForDoc(key, docTitle, textSegments){
+	renderSegmentsForDoc(key, docTitle, textSegments) {
 		const segments = textSegments.map((segment, index) => {
 			if (segment === "") return;
 			return (<div>
@@ -33,7 +32,7 @@ export default class CodingInstances extends React.Component {
 		});
 
 		if (segments.length == 0) return null;
-		return(
+		return (
 			<div>
 				<StyledDocumentTitle>
 					{docTitle}
@@ -45,10 +44,10 @@ export default class CodingInstances extends React.Component {
 	}
 
 
-	renderList(){
+	renderList() {
 		const _this = this;
 		if (!this.props.documentsView.getDocuments) return;
-		let textSegments= {};
+		let textSegments = {};
 		const docs = this.props.documentsView.getDocuments()
 		for (var i in docs) {
 			var doc = docs[i];
@@ -72,29 +71,28 @@ export default class CodingInstances extends React.Component {
 
 			var groupedSegments = {};
 			for (var i = 0; i < foundArray.length; i++) {
-			  var id = foundArray[i].id;
-			  if (!groupedSegments[id]) {
-			    groupedSegments[id] = "";
-			  }
-			  if (foundArray[i].val != "") groupedSegments[id] += foundArray[i].val + "\n";
+				var id = foundArray[i].id;
+				if (!groupedSegments[id]) {
+					groupedSegments[id] = "";
+				}
+				if (foundArray[i].val != "") groupedSegments[id] += foundArray[i].val + "\n";
 			}
 			foundArray = [];
 			for (var id in groupedSegments) {
-			  foundArray.push(groupedSegments[id]);
+				foundArray.push(groupedSegments[id]);
 			}
-			if ( !textSegments[doc.title] ) textSegments[doc.title] = [];
+			if (!textSegments[doc.title]) textSegments[doc.title] = [];
 			textSegments[doc.title] = textSegments[doc.title].concat(foundArray);
 		}
 
 		return Object.keys(textSegments).map((title, i) => {
-				return _this.renderSegmentsForDoc(i, title, textSegments[title]);
-			}
-		);
+			return _this.renderSegmentsForDoc(i, title, textSegments[title]);
+		});
 	}
 
-	render(){
+	render() {
 		const codingInstances = this.renderList();
-		return(
+		return (
 			<div>
 				{codingInstances}
 			</div>

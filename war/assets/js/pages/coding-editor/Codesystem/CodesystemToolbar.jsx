@@ -45,7 +45,7 @@ export default class CodesystemToolbar extends React.Component {
 		var code = this.props.selected;
 		if (code.codeID == 1) return; //root should not be removed
 		var _this = this;
-		var confirm = new Confirm('Do you want to delete the code '+ code.name + '?');
+		var confirm = new Confirm('Do you want to delete the code ' + code.name + '?');
 		confirm.showModal().then(function () {
 			CodesEndpoint.removeCode(code).then(function (resp) {
 				_this.props.removeCode(code.codeID);
@@ -127,7 +127,7 @@ export default class CodesystemToolbar extends React.Component {
 		return promise;
 	}
 
-	showCodingsOverview(){
+	showCodingsOverview() {
 		var overview = new CodingsOverview('Do you want to delete the code ?');
 		overview.showModal(this.props.selected.codeID, this.props.documentsView).then(function () {
 

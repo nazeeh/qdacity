@@ -40,14 +40,14 @@ export default class SaturationSettings extends React.Component {
 
 		var satWeights = new SaturationWeights(this.state.saturationParameters);
 		var satCategories = satWeights.getCategorizedArray();
-                let saturationSettings = [];
-                var i = 0;
-                for (var cat in satCategories) {
-                    let key = 'catKey-'+i;
-                    let id = 'catId-'+i;
-                    saturationSettings.push(<SaturationCategorySettings catIdx={satWeights.getArtificialCategoryIndex(cat)} key={key} id={id} category={cat} saturationParameters={this.state.saturationParameters} ></SaturationCategorySettings>);
-                    i = i+1;
-                }
+		let saturationSettings = [];
+		var i = 0;
+		for (var cat in satCategories) {
+			let key = 'catKey-' + i;
+			let id = 'catId-' + i;
+			saturationSettings.push(<SaturationCategorySettings catIdx={satWeights.getArtificialCategoryIndex(cat)} key={key} id={id} category={cat} saturationParameters={this.state.saturationParameters} ></SaturationCategorySettings>);
+			i = i + 1;
+		}
 
 		return (<div>
             <p><b>Saturation Configuration</b></p>
@@ -60,8 +60,7 @@ export default class SaturationSettings extends React.Component {
             <div>
                     {saturationSettings}
             </div>
-        </div>
-        );
+        </div>);
 	}
 
 }

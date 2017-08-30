@@ -36,7 +36,9 @@ export default class SettingsBtn extends React.Component {
 		var _this = this;
 		modal.showModal(this.props.umlEditor, this.props.project.getId()).then(function (data) {
 			ProjectEndpoint.setUmlEditorEnabled(_this.props.project.getId(), _this.props.project.getType(), data.umlEditorEnabled).then(function (resp) {
-				_this.props.setSettings({umlEditor: data.umlEditorEnabled})
+				_this.props.setSettings({
+					umlEditor: data.umlEditorEnabled
+				})
 			});
 		});
 	}
