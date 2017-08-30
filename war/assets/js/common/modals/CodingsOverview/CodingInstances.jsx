@@ -31,6 +31,8 @@ export default class CodingInstances extends React.Component {
 						<hr/>
 					</div>);
 		});
+
+		if (segments.length == 0) return null;
 		return(
 			<div>
 				<StyledDocumentTitle>
