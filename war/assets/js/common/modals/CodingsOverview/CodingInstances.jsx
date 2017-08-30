@@ -10,6 +10,12 @@ export const StyledTextSegment = styled.div `
 
 `;
 
+export const StyledDocumentTitle = styled.div `
+    font-size: 12pt;
+    font-weight: bold;
+
+`;
+
 export default class CodingInstances extends React.Component {
 	constructor(props) {
 		super(props);
@@ -17,9 +23,30 @@ export default class CodingInstances extends React.Component {
 		};
 	}
 
+	renderSegmentsForDoc(key, docTitle, textSegments){
+		const segments = textSegments.map((segment, index) => {
+			if (segment === "") return;
+			return (<div>
+						<StyledTextSegment>{segment}</StyledTextSegment>
+						<hr/>
+					</div>);
+		});
+		return(
+			<div>
+				<StyledDocumentTitle>
+					{docTitle}
+				</StyledDocumentTitle>
+				{segments}
+			</div>
+
+		);
+	}
+
+
 	renderList(){
+		const _this = this;
 		if (!this.props.documentsView.getDocuments) return;
-		let textSegments= [];
+		let textSegments= {};
 		const docs = this.props.documentsView.getDocuments()
 		for (var i in docs) {
 			var doc = docs[i];
@@ -53,23 +80,21 @@ export default class CodingInstances extends React.Component {
 			for (var id in groupedSegments) {
 			  foundArray.push(groupedSegments[id]);
 			}
-
-			textSegments = textSegments.concat(foundArray);
+			if ( !textSegments[doc.title] ) textSegments[doc.title] = [];
+			textSegments[doc.title] = textSegments[doc.title].concat(foundArray);
 		}
 
-		return textSegments.map((segment, index) => {
-			if (segment === "") return;
-			return (<div>
-						<StyledTextSegment>{segment}</StyledTextSegment>
-						<hr/>
-					</div>);
-		});
+		return Object.keys(textSegments).map((title, i) => {
+				return _this.renderSegmentsForDoc(i, title, textSegments[title]);
+			}
+		);
 	}
 
 	render(){
+		const codingInstances = this.renderList();
 		return(
 			<div>
-				{this.renderList()}
+				{codingInstances}
 			</div>
 		);
 	}
