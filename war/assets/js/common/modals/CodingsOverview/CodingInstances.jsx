@@ -6,6 +6,7 @@ export const StyledTextSegment = styled.div `
     margin: 5px;
     display: block;
     background-color: ${props => props.selected ? props.theme.bgPrimaryHighlight : ''};
+	word-wrap: break-word;
 
 `;
 
@@ -46,7 +47,7 @@ export default class CodingInstances extends React.Component {
 			  if (!groupedSegments[id]) {
 			    groupedSegments[id] = "";
 			  }
-			  groupedSegments[id] += foundArray[i].val;
+			  if (foundArray[i].val != "") groupedSegments[id] += foundArray[i].val + "\n";
 			}
 			foundArray = [];
 			for (var id in groupedSegments) {
