@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 import VexModal from './VexModal';
 
 import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';

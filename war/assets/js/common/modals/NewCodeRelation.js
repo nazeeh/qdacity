@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom';
+
 import VexModal from './VexModal';
 import MetaModelView from '../../pages/coding-editor/CodeView/MetaModelView.jsx';
 import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';

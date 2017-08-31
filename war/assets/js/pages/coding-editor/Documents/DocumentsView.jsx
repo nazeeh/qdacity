@@ -31,11 +31,27 @@ const StyledToolBar = styled.div `
 `;
 
 const StyledDocumentList = styled.div `
-	margin:2px 0px 2px 0px;
+
+	margin:5px 5px 5px 5px;
 `;
 
 const StyledDocumentItem = styled.a `
+	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
+	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
 	padding: 2px 2px !important;
+	position: relative;
+	display: block;
+	padding: 10px 15px;
+	margin-bottom: -1px;
+	background-color: #fff;
+	border: 1px solid ;
+	border-color: ${props => props.theme.borderPrimary} !important;
+	&:hover {
+		text-decoration: none;
+		cursor: pointer;
+		background-color: ${props => props.theme.borderPrimary};
+		color: ${props => props.theme.fgPrimaryHighlight};
+	}
 `;
 
 export default class DocumentsView extends React.Component {
@@ -59,7 +75,6 @@ export default class DocumentsView extends React.Component {
 
 		this.addDocument = this.addDocument.bind(this);
 		this.setActiveDocument = this.setActiveDocument.bind(this);
-		this.isActive = this.isActive.bind(this);
 		this.getActiveDocument = this.getActiveDocument.bind(this);
 		this.getDocuments = this.getDocuments.bind(this);
 		this.removeActiveDocument = this.removeActiveDocument.bind(this);
@@ -265,10 +280,6 @@ export default class DocumentsView extends React.Component {
 		}
 	}
 
-	isActive(value) {
-		return 'list-group-item clickable ' + ((value == this.state.selected) ? 'active' : 'default');
-	}
-
 	renderCollapseIcon() {
 		if (this.state.isExpanded) return (<i className="fa fa-compress fa-1x"></i>);
 		else return (<i className="fa fa-expand fa-1x"></i>);
@@ -306,7 +317,7 @@ export default class DocumentsView extends React.Component {
 				<StyledDocumentList>
 		        {
 		          this.state.documents.map(function(doc) {
-		            return <StyledDocumentItem className= {_this.isActive(doc.id)} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
+		            return <StyledDocumentItem active={doc.id == _this.state.selected} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
 		          })
 		        }
 		  		</StyledDocumentList>

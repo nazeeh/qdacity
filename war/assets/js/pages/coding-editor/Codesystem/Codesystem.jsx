@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+
 import styled from 'styled-components';
 
 import ReactLoading from '../../../common/ReactLoading.jsx';
@@ -327,19 +329,11 @@ class Codesystem extends SimpleCodesystem {
 		}
 	}
 
-	componentDidMount() {
-		this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
-	}
-	componentDidUpdate() {
-		this.codesystemTop = ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top;
-	}
-
-
 	render() {
 		if (this.state.codesystemID != this.props.codesystemId) {
 			this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
 		}
-		const height = $(window).height() - this.codesystemTop;
+		const height = $(window).height() - (this.codesystemRef ? ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top : 0);
 		return (
 			<StyledCodeSystemView >
 				<StyledEditorCtrlHeader >

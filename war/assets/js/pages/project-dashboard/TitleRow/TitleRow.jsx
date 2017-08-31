@@ -15,18 +15,14 @@ export default class TitleRow extends React.Component {
 		this.state = {
 			isValidationCoder: false,
 			prjName: "",
-			prjSettings: {}
 		};
+
+		this.setSettings = this.setSettings.bind(this);
 	}
 
 	setSettings(properties) {
-		var settings = {
-			umlEditor: properties.umlEditorEnabled
-		};
-
-		this.setState({
-			prjSettings: settings
-		});
+		this.props.project.umlEditorEnabled = properties.umlEditor;
+		this.forceUpdate();
 	}
 
 
@@ -39,7 +35,7 @@ export default class TitleRow extends React.Component {
 					{projectName}
 				</StyledProjectName>
 
-				<SettingsBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner} />
+				<SettingsBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner} umlEditor={this.props.project.umlEditorEnabled} setSettings={this.setSettings}/>
 				<CodingEditorBtn project={this.props.project} isProjectOwner={this.props.isProjectOwner}  isValidationCoder={this.props.isValidationCoder} history={this.props.history}/>
           </h2>
 		);

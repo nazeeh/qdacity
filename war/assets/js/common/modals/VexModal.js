@@ -1,4 +1,4 @@
-import 'script!../../../../components/Vex/js/vex.combined.min.js';
+import 'script-loader!../../../../components/Vex/js/vex.combined.min.js';
 
 export default class VexModal {
 

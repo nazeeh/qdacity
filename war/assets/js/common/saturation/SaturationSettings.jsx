@@ -1,4 +1,7 @@
+import React from 'react';
+
 import SaturationWeights from '../saturation/SaturationWeights.js'
+import SaturationCategorySettings from '../saturation/SaturationCategorySettings.jsx'
 
 export default class SaturationSettings extends React.Component {
 	constructor(props) {
@@ -35,40 +38,28 @@ export default class SaturationSettings extends React.Component {
 		if (!this.state.saturationParameters)
 			return null;
 
-		let rows = [];
 		var satWeights = new SaturationWeights(this.state.saturationParameters);
-		var saturationWeightsNames = satWeights.getNameAndWeightsArray();
 		var satCategories = satWeights.getCategorizedArray();
+		let saturationSettings = [];
+		var i = 0;
 		for (var cat in satCategories) {
-			rows.push(<tr><td colspan="3"><b> - {cat} - </b></td></tr>);
-			for (var catIdx in satCategories[cat]) {
-				var i = satCategories[cat][catIdx];
-				let rowID = `row${i}`
-				let cell = []
-				for (var idx = 0; idx < 3; idx++) {
-					let cellID = `cell${i}-${idx}`
-					let inputId = cellID + '-input';
-					if (idx > 0) {
-						cell.push(<td key={cellID} id={cellID}><input id={inputId} type="number"  min="0" max="100"  defaultValue={this.toPercent(saturationWeightsNames[i][idx])} /></td>)
-					} else {
-						cell.push(<td key={cellID} id={cellID}>{saturationWeightsNames[i][idx]}</td>)
-					}
-				}
-				rows.push(<tr key={i} id={rowID}>{cell}</tr>)
-			}
+			let key = 'catKey-' + i;
+			let id = 'catId-' + i;
+			saturationSettings.push(<SaturationCategorySettings catIdx={satWeights.getArtificialCategoryIndex(cat)} key={key} id={id} category={cat} saturationParameters={this.state.saturationParameters} ></SaturationCategorySettings>);
+			i = i + 1;
 		}
 
 		return (<div>
             <p><b>Saturation Configuration</b></p>
             <p>Default interval for saturation: <input id="saturation-interval" type="number" min="1" max="20"  defaultValue={this.state.saturationParameters.lastSatResults} /> revisions</p>
-            <table id="saturationOptionsTable" className="display">
+            <table id="saturationOptionsTable" className="display" width="100%">
                 <thead>
-                    <tr><th>Change</th><th>Weight in %</th><th>Saturation at XX%</th></tr>
+                    <tr><th width="50%">Change</th><th width="25%">Weight in %</th><th width="25%">Saturation at XX%</th></tr>
                 </thead>
-                <tbody>
-                    {rows}
-                </tbody>
             </table>
+            <div>
+                    {saturationSettings}
+            </div>
         </div>);
 	}
 

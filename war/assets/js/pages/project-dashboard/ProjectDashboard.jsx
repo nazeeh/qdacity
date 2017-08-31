@@ -14,8 +14,8 @@ import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
 import ParentProject from "./ParentProject/ParentProject.jsx"
 import PersonalReportList from "./PersonalReportList.jsx"
 
-import 'script!../../../../components/URIjs/URI.min.js';
-import 'script!../../../../components/alertify/alertify-0.3.js';
+import 'script-loader!../../../../components/URIjs/URI.min.js';
+import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 
 const StyledDashboard = styled.div `
 	margin-top: 35px;
@@ -124,9 +124,9 @@ export default class ProjectDashboard extends React.Component {
 					</div>
 					<div className="col-lg-5">
 						<Users project={this.state.project}  isProjectOwner={this.state.isProjectOwner}/>
-						<RevisionHistory project={this.state.project}  addReports={this.addReports} userPromise={this.userPromise} />
+						<RevisionHistory project={this.state.project}  addReports={this.addReports} userPromise={this.userPromise} history={this.props.history} />
 
-						<ParentProject project={this.state.project} />
+						<ParentProject project={this.state.project} history={this.props.history}/>
 						{(this.state.project.getParentID() ? (<PersonalReportList project={this.state.project} account={this.props.account} />) : "" )}
 					</div>
 				</div>

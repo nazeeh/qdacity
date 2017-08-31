@@ -3,6 +3,8 @@ import styled from 'styled-components';
 
 import MetaModelMapper from '../../uml-editor/mapping/MetaModelMapper.js';
 
+import Theme from '../../common/styles/Theme.js';
+
 export const StyledCode = styled.div `
     font-family: tahoma, arial, helvetica;
     font-size: 10pt;
@@ -13,6 +15,7 @@ export const StyledCode = styled.div `
     cursor: ${props => props.isCodeSelectable ? 'default' : 'not-allowed !important'};
     color: ${props => props.textColor};
     background-color: ${props => props.backgroundColor};
+    
     &:hover {
         background: ${props => props.backgroundHoverColor};
     }
@@ -147,7 +150,7 @@ export default class SimpleCode extends React.Component {
 
 		if (color == null) {
 			if (selected) {
-				return '#337ab7';
+				return Theme.bgPrimaryHighlight;
 			} else {
 				return '';
 			}

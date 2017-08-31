@@ -1,6 +1,19 @@
 import React from 'react'
+import styled from 'styled-components';
 
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
+
+const StyledIntroBanner = styled.div `
+	background: url(../assets/img/intro-bg.jpg) no-repeat center center;
+	background-size: cover;
+`;
+
+const StyledFooterBanner = styled.div `
+	background: url(../assets/img/banner-bg.jpg) no-repeat center center;
+	background-size: cover;
+`;
+
+
 
 export default class Index extends React.Component {
 	constructor(props) {
@@ -17,7 +30,7 @@ export default class Index extends React.Component {
 		return (
 			<div>
 				<a name="about"></a>
-			    <div className="intro-header">
+			    <StyledIntroBanner className="intro-header">
 			        <div className="container">
 
 			            <div className="row">
@@ -33,8 +46,7 @@ export default class Index extends React.Component {
 			                </div>
 			            </div>
 			        </div>
-
-			    </div>
+			    </StyledIntroBanner>
 				<a  name="services"></a>
 			    <div className="content-section-a">
 
@@ -95,7 +107,7 @@ export default class Index extends React.Component {
 			        </div>
 			    </div>
 				<a  name="contact"></a>
-			    <div className="banner">
+			    <StyledFooterBanner className="banner">
 
 			        <div className="container">
 
@@ -119,7 +131,7 @@ export default class Index extends React.Component {
 			            </div>
 
 			        </div>
-			    </div>
+			    </StyledFooterBanner>
 			</div>
 		);
 	}

@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
 	entry: {
@@ -19,39 +20,61 @@ module.exports = {
     externals: {
         // require("jquery") is external and available
         //  on the global var jQuery
-        react: "React"
+        //react: "React"
     },
     module: {
-        loaders: [
-            {
-                loader: 'babel-loader',
-                test: path.join(__dirname, 'assets/js'),
-                query: {
-                  presets: ['es2015', 'react'],
-                },
-            },
+		rules: [
+			{
+				test: path.join(__dirname, 'assets/js'),
+				use: {
+					loader: 'babel-loader',
+					options: {
+					  presets: ['es2015', 'react'],
+					  plugins: ['transform-react-inline-elements'],
+					}
+				}
+			},
 			{
 				test: /\.css$/, 
-				loader: 'style-loader!css-loader?modules=false&minimize=true&localIdentName=[name]__[local]___[hash:base64:5]'
+				use: ExtractTextPlugin.extract({
+					fallback: "style-loader",
+					use: [
+						{
+							loader: 'css-loader',
+							options: {
+							  minimize: true
+							}
+						}
+					]
+				})
 			},
 			{
 				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
-				loader: 'url-loader',
-				options: {
-				  limit: 10000
-				}
+				use: [
+				  {
+					loader: 'url-loader',
+					options: {
+					  limit: 10000
+					}
+				  }
+				]
 			}
-        ]
-    },
+		]
+	},
   
     plugins: [
         // Avoid publishing files when compilation fails
         new webpack.NoErrorsPlugin(),
 		new webpack.DefinePlugin({
     'process.env': {
-      'NODE_ENV': JSON.stringify('production')
+      'NODE_ENV': JSON.stringify('production'),
     }
-  })
+  }),
+  
+	  new ExtractTextPlugin({
+		  filename: "styles.css",
+		  allChunks: true
+	  })
     ],
     stats: {
         // Nice colored output

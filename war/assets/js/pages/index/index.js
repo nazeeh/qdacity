@@ -1,6 +1,6 @@
-import 'script!../../../../components/jQuery/jquery.js';
-import 'script!../../../../components/bootstrap/bootstrap.min.js';
-import 'script!../../../../components/Vex/js/vex.combined.min.js';
+import ReactDOM from 'react-dom';
+
+import 'script-loader!../../../../components/jQuery/jquery.js';
 
 // Personal Dasboard Styles
 import "../../../css/project-list.css";
@@ -35,8 +35,8 @@ import "../../../../components/Vex/css/vex.css";
 import "../../../../components/Vex/css/vex-theme-wireframe.css";
 import "../../../../components/bootstrap/dist/bootstrap.min.css";
 
-
-
+import Dropdown from '../../common/dropdown.js';
+Dropdown.initDropDown();
 
 import App from '../App.jsx';
 import Account from '../../common/Account.jsx';
@@ -50,23 +50,6 @@ import $script from 'scriptjs';
 var chartScriptPromise = new Promise(
 	function (resolve, reject) {
 		$script('https://www.gstatic.com/charts/loader.js', () => {
-			resolve();
-		});
-	}
-);
-
-var googleClientPromise = new Promise(
-	function (resolve, reject) {
-		window.resolveClient = resolve;
-	}
-);
-
-$script('https://apis.google.com/js/client.js?onload=resolveClient', '');
-
-
-var googlePlatformPromise = new Promise(
-	function (resolve, reject) {
-		$script('https://apis.google.com/js/platform.js', () => {
 			resolve();
 		});
 	}

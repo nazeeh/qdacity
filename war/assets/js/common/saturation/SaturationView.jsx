@@ -1,3 +1,5 @@
+import React from 'react';
+
 import SaturationChart from '../saturation/SaturationChart.jsx';
 import SaturationDetails from '../saturation/SaturationDetails.jsx';
 export default class SaturationView extends React.Component {

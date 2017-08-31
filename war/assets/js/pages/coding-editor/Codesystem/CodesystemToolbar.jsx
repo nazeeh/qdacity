@@ -9,6 +9,8 @@ import {
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+import Confirm from '../../../common/modals/Confirm';
+import CodingsOverview from '../../../common/modals/CodingsOverview/CodingsOverview';
 
 import {
 	BtnDefault
@@ -36,6 +38,7 @@ export default class CodesystemToolbar extends React.Component {
 		this.insertCode = this.insertCode.bind(this);
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
+		this.showCodingsOverview = this.showCodingsOverview.bind(this);
 	}
 
 	removeCode() {
@@ -44,57 +47,60 @@ export default class CodesystemToolbar extends React.Component {
 		var code = this.props.selected;
 		if (code.codeID == 1) return; //root should not be removed
 
-		CodesEndpoint.removeCode(code).then(function (resp) {
-			_this.props.removeCode(code.codeID);
+        var confirm = new Confirm('Do you want to delete the code ' + code.name + '?');
+        confirm.showModal().then(function () {
+            CodesEndpoint.removeCode(code).then(function (resp) {
+                _this.props.removeCode(code.codeID);
 
-			// Code is a relationship-code
-			if (code.relationshipCode != null) {
-				// delete the relationshipCodeId of the relation
-				let sourceCode = _this.props.getCodeById(code.relationshipCode.key.parent.id);
+                // Code is a relationship-code
+                if (code.relationshipCode != null) {
+                    // delete the relationshipCodeId of the relation
+                    let sourceCode = _this.props.getCodeById(code.relationshipCode.key.parent.id);
 
-				// find the relation
-				let relation = null;
+                    // find the relation
+                    let relation = null;
 
-				for (let i = 0; i < sourceCode.relations.length; i++) {
-					if (sourceCode.relations[i].key.id == code.relationshipCode.key.id) {
-						relation = sourceCode.relations[i];
-						break;
-					}
-				}
+                    for (let i = 0; i < sourceCode.relations.length; i++) {
+                        if (sourceCode.relations[i].key.id == code.relationshipCode.key.id) {
+                            relation = sourceCode.relations[i];
+                            break;
+                        }
+                    }
 
-				relation.relationshipCodeId = null;
-			}
+                    relation.relationshipCodeId = null;
+                }
 
-			// Check the relations of the code. If a relationship belongs to a relationship-code
-			// => update the relationship-code and set the relation to null	
-			let updateRelation = (relation) => {
-				if (relation.relationshipCodeId != null) {
-					let relationshipCode = _this.props.getCodeById(relation.relationshipCodeId);
-					relationshipCode.relationshipCode = null;
-					relationshipCode.mmElementIDs = [];
+                // Check the relations of the code. If a relationship belongs to a relationship-code
+                // => update the relationship-code and set the relation to null 
+                let updateRelation = (relation) => {
+                    if (relation.relationshipCodeId != null) {
+                        let relationshipCode = _this.props.getCodeById(relation.relationshipCodeId);
+                        relationshipCode.relationshipCode = null;
+                        relationshipCode.mmElementIDs = [];
 
-					CodesEndpoint.updateCode(relationshipCode).then((resp2) => {
-						// Do nothing
-					});
-				}
-			};
+                        CodesEndpoint.updateCode(relationshipCode).then((resp2) => {
+                            // Do nothing
+                        });
+                    }
+                };
 
-			let checkCode = (c) => {
-				if (c.relations != null) {
-					for (let i = 0; i < c.relations.length; i++) {
-						updateRelation(c.relations[i]);
-					}
-				}
+                let checkCode = (c) => {
+                    if (c.relations != null) {
+                        for (let i = 0; i < c.relations.length; i++) {
+                            updateRelation(c.relations[i]);
+                        }
+                    }
 
-				if (c.children != null) {
-					for (let i = 0; i < c.children.length; i++) {
-						checkCode(c.children[i]);
-					}
-				}
-			};
+                    if (c.children != null) {
+                        for (let i = 0; i < c.children.length; i++) {
+                            checkCode(c.children[i]);
+                        }
+                    }
+                };
 
-			checkCode(code);
-		});
+                checkCode(code);
+            });
+        });
 	}
 
 	insertCode() {
@@ -155,6 +161,13 @@ export default class CodesystemToolbar extends React.Component {
 		return promise;
 	}
 
+	showCodingsOverview() {
+		var overview = new CodingsOverview('Do you want to delete the code ?');
+		overview.showModal(this.props.selected.codeID, this.props.documentsView).then(function () {
+
+		});
+	}
+
 	renderAddRemoveCodeBtn() {
 		if (this.props.projectType != "PROJECT") return "";
 
@@ -198,6 +211,11 @@ export default class CodesystemToolbar extends React.Component {
 					{this.renderAddRemoveCodeBtn()}
 					<BtnDefault className="btn btn-default" onClick={this.props.toggleCodingView}>
 						<i className="fa  fa-list-alt  fa-1x"></i>
+					</BtnDefault>
+				</StyledBtnGroup>
+				<StyledBtnGroup className="btn-group">
+					<BtnDefault key="codingsOverview" className="btn btn-default" onClick={this.showCodingsOverview}>
+						<i className="fa fa-list fa-1x"></i>
 					</BtnDefault>
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}

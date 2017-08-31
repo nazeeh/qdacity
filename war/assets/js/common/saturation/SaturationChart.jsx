@@ -1,3 +1,5 @@
+import React from 'react';
+
 import GoogleLineChart from '../GoogleLineChart.jsx';
 import SaturationAverage from '../saturation/SaturationAverage';
 

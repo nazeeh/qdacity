@@ -50,3 +50,15 @@ body{
 .vex-dialog-button[disabled] {
 	cursor: not-allowed !important;
 }
+
+.dropdownContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownContent {
+    display: none;
+    position: absolute;
+}
+
+.show {display:block;}

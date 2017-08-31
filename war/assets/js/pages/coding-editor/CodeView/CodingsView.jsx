@@ -1,4 +1,6 @@
-import 'script!../../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import React from 'react';
+
+import 'script-loader!../../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
 export default class CodingsView extends React.Component {
 
