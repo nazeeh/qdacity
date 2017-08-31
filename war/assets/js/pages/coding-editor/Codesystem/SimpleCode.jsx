@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import MetaModelMapper from '../../uml-editor/mapping/MetaModelMapper.js';
 
-import Theme from '../../common/styles/Theme.js';
+import Theme from '../../../common/styles/Theme.js';
 
 export const StyledCode = styled.div `
     font-family: tahoma, arial, helvetica;
