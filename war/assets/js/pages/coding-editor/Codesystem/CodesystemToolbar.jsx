@@ -39,12 +39,61 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	removeCode() {
+		const _this = this;
+
 		var code = this.props.selected;
 		if (code.codeID == 1) return; //root should not be removed
 
-		var _this = this;
 		CodesEndpoint.removeCode(code).then(function (resp) {
 			_this.props.removeCode(code.codeID);
+
+			// Code is a relationship-code
+			if (code.relationshipCode != null) {
+				// delete the relationshipCodeId of the relation
+				let sourceCode = _this.props.getCodeById(code.relationshipCode.key.parent.id);
+
+				// find the relation
+				let relation = null;
+
+				for (let i = 0; i < sourceCode.relations.length; i++) {
+					if (sourceCode.relations[i].key.id == code.relationshipCode.key.id) {
+						relation = sourceCode.relations[i];
+						break;
+					}
+				}
+
+				relation.relationshipCodeId = null;
+			}
+
+			// Check the relations of the code. If a relationship belongs to a relationship-code
+			// => update the relationship-code and set the relation to null	
+			let updateRelation = (relation) => {
+				if (relation.relationshipCodeId != null) {
+					let relationshipCode = _this.props.getCodeById(relation.relationshipCodeId);
+					relationshipCode.relationshipCode = null;
+					relationshipCode.mmElementIDs = [];
+
+					CodesEndpoint.updateCode(relationshipCode).then((resp2) => {
+						// Do nothing
+					});
+				}
+			};
+
+			let checkCode = (c) => {
+				if (c.relations != null) {
+					for (let i = 0; i < c.relations.length; i++) {
+						updateRelation(c.relations[i]);
+					}
+				}
+
+				if (c.children != null) {
+					for (let i = 0; i < c.children.length; i++) {
+						checkCode(c.children[i]);
+					}
+				}
+			};
+
+			checkCode(code);
 		});
 	}
 

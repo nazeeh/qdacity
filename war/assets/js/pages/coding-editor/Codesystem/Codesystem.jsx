@@ -75,6 +75,7 @@ class Codesystem extends SimpleCodesystem {
 		this.initCodingCount = this.initCodingCount.bind(this);
 		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
 		this.init = this.init.bind(this);
+		this.getCodeById = this.getCodeById.bind(this);
 	}
 
 	setUmlEditor(umlEditor) {
@@ -356,7 +357,8 @@ class Codesystem extends SimpleCodesystem {
 						toggleCodingView={this.props.toggleCodingView}
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
-                        pageView={this.props.pageView}>
+                        pageView={this.props.pageView}
+					    getCodeById={this.getCodeById}>
 					</CodesystemToolbar>
 				</StyledToolBar>
 

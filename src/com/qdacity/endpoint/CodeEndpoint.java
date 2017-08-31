@@ -425,7 +425,18 @@ public class CodeEndpoint {
 			if(code==null) { return; }
 			// Check if user is authorized
 			Authorization.checkAuthorization(code, user);
-
+			
+			// Was the code a relationship-code?
+			// => clear the relationshipCodeId of the relation
+			if (code.getRelationshipCode() != null) {
+				Key relationKey = code.getRelationshipCode().getKey();
+				CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationKey);
+				
+				relation.setRelationshipCodeId(null);
+		
+				mgr.makePersistent(relation);
+			}
+			
 			// Delete link from parent code
 			Query query = mgr.newQuery(Code.class);
 			
