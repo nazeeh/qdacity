@@ -118,14 +118,26 @@ export default class CodeRelationsView extends React.Component {
 		});
 	}
 
-	deleteRelationship(relationshipId) {
+	deleteRelationship(relation) {
 		var _this = this;
-		CodesEndpoint.removeRelationship(_this.state.sourceCode, relationshipId).then(function (resp) {
-			_this.removeRelationship(relationshipId);
+		CodesEndpoint.removeRelationship(_this.state.sourceCode, relation.id).then(function (resp) {
+			// If the relationship belongs to a relationship-code, update the relationship-code and set the relation to null
+			if (relation.relationshipCodeId != null) {
+				let relationshipCode = _this.props.getCodeById(relation.relationshipCodeId);
+				relationshipCode.relationshipCode = null;
+				relationshipCode.mmElementIDs = [];
+
+				CodesEndpoint.updateCode(relationshipCode).then((resp2) => {
+					// Do nothing
+				});
+			}
+
+			_this.removeRelationship(relation.id);
 			var code = _this.props.code;
 			code.relations = resp.relations;
 			_this.props.updateSelectedCode(code);
 			_this.forceUpdate();
+
 		});
 	}
 
@@ -176,7 +188,7 @@ export default class CodeRelationsView extends React.Component {
           this.state.relationships.map(function(rel) {
             return(
 				<StyledRelationItem key={rel.id} className="clickable">
-		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel.id)}}>
+		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
     		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
     		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
 		            </a>
