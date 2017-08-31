@@ -554,7 +554,9 @@ export default class UmlGraphView extends React.Component {
 
 			this.graph.getModel().remove(node);
 
-			node.removeFromParent();
+			if (node != null) {
+				node.removeFromParent();
+			}
 
 			this.graph.refresh(node);
 
