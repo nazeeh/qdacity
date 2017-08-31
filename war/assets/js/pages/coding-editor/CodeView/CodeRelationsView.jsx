@@ -174,38 +174,51 @@ export default class CodeRelationsView extends React.Component {
 		}
 	}
 
-	render() {
-		this.setRelations(this.props.code.relations, this.props.code.id);
-		var _this = this;
-		return (
-			<div className="list compactBoxList">
-      <StyledAddRelationBtn className="btn-default clickable" onClick={() => {_this.createRelationship()}}>
-								<i className="fa fa-plus fa-lg "></i>
-								&nbsp;Add Relationship
-	  </StyledAddRelationBtn>
+	renderOutgoingRelations() {
+        var _this = this;
+        
+	    this.setRelations(this.props.code.relations, this.props.code.id);
+	    
+        return (
+            <div className="list compactBoxList">
+                <StyledAddRelationBtn className="btn-default clickable" onClick={() => {_this.createRelationship()}}>
+                    <i className="fa fa-plus fa-lg "></i>
+                    &nbsp;Add Relationship
+                </StyledAddRelationBtn>
 
-        {
-          this.state.relationships.map(function(rel) {
-            return(
-				<StyledRelationItem key={rel.id} className="clickable">
-		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
-    		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-    		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
-		            </a>
-                    
-		            {_this.renderCreateRelationshipCodeButton(rel)}
-                    {_this.renderGoToRelationshipCodeButton(rel)}
-                    
-		            <StyledRelationName>{rel.name}</StyledRelationName>
-		            <br/>
-		            <StyledCodeName> {rel.dstName}</StyledCodeName>
-	            </StyledRelationItem>
-			);
-          })
-        }
-      </div>
+                {
+                    this.state.relationships.map(function(rel) {
+                        return(
+                            <StyledRelationItem key={rel.id} className="clickable">
+                                <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
+                                    <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
+                                    <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
+                                </a>
+                            
+                                {_this.renderCreateRelationshipCodeButton(rel)}
+                                {_this.renderGoToRelationshipCodeButton(rel)}
+                            
+                                <StyledRelationName>{rel.name}</StyledRelationName>
+                                <br/>
+                                <StyledCodeName> {rel.dstName}</StyledCodeName>
+                            </StyledRelationItem>
+                        );
+                    })
+                }
+            </div>
+        );
+	}
+                
+    renderIncomingRelations() {
+        
+    }
+	
+	render() {
+		return (
+	        <div>
+		        {this.renderOutgoingRelations()}
+		        {this.renderIncomingRelations()}
+            </div>
 		);
 	}
-
-
 }
