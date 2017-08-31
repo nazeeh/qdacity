@@ -11,8 +11,6 @@ import HoverButtons from './hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
-
-
 const StyledGraphView = styled.div `
     overflow: hidden;
     cursor: default;
