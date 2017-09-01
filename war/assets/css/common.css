@@ -46,6 +46,11 @@ body{
 	float: none;
 }
 
+.vex-dialog-button:disabled,
+.vex-dialog-button[disabled] {
+	cursor: not-allowed !important;
+}
+
 .dropdownContainer {
     position: relative;
     display: inline-block;

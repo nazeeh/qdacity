@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -72,20 +73,30 @@ public class CodeEndpoint {
 	 * It uses HTTP POST method.
 	 *
 	 * @param code the entity to be inserted.
+	 * @param relationId specifies the relation if the code is a relationship-code
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(
 		name = "codes.insertCode",
 		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public Code insertCode(Code code, User user) throws UnauthorizedException {
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code insertCode(
+			@Named("relationId") @Nullable Long relationId, 
+			@Named("relationSourceCodeId") @Nullable Long relationSourceCodeId,
+			Code code,
+			User user) throws UnauthorizedException {
+
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
 		Long codesystemId = code.getCodesystemID();
 		Long codeId = CodeSystemEndpoint.getAndIncrCodeId(codesystemId);
 		if (code.getSubCodesIDs() == null) code.setSubCodesIDs(new ArrayList<Long>());
 
+		final boolean isRelationshipCode = (relationId != null && relationSourceCodeId != null);
+		
+		code.setRelations(null);
 		code.setCodeID(codeId);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -95,8 +106,30 @@ public class CodeEndpoint {
 
 			if (code.getCodeBookEntry() == null) code.setCodeBookEntry(new CodeBookEntry());
 
-			mgr.makePersistent(code);
+			// Create relationship code
+			CodeRelation relation = null;
+			
+			if (isRelationshipCode) {
+				// set the relation
+				Key relationKey = KeyFactory.createKey(KeyFactory.createKey("Code", relationSourceCodeId), "CodeRelation", relationId);
+				relation = mgr.getObjectById(CodeRelation.class, relationKey);
+				code.setRelationshipCode(relation);
 
+				// set the MetaModel
+				final List<Long> mmElementIds = new ArrayList<>();
+				mmElementIds.add(relation.getMmElementId());
+				code.setMmElementIDs(mmElementIds);
+			}
+			
+			// Save the code
+			code = mgr.makePersistent(code);
+
+			// Link the code with the relation
+			if (isRelationshipCode) {
+				relation.setRelationshipCodeId(code.getCodeID());
+				relation = mgr.makePersistent(relation);								
+			}
+			
 			// Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
@@ -125,29 +158,132 @@ public class CodeEndpoint {
 	public Code updateCode(Code code, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
+		
+		Code stored = null;
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (!containsCode(code)) {
 				throw new EntityNotFoundException("Object does not exist");
 			}
-
+			
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " MetaModelElementIDs " + code.getMmElementIDs()); 
 
-			Code oldCode = mgr.getObjectById(Code.class, code.getId());
-			code.setCodeID(oldCode.getCodeID());
-			code.setCodeBookEntry(oldCode.getCodeBookEntry());
-			mgr.makePersistent(code);
-			
+			stored = mgr.getObjectById(Code.class, code.getId());
+			stored.setAuthor(code.getAuthor());
+			stored.setCodesystemID(code.getCodesystemID());
+			stored.setColor(code.getColor());
+			stored.setMemo(code.getMemo());
+			stored.setMmElementIDs(code.getMmElementIDs());
+			stored.setName(code.getName());
+			stored.setParentID(code.getParentID());
+			stored.setSubCodesIDs(code.getSubCodesIDs());
+			stored.setRelationshipCode(code.getRelationshipCode());
+
+			stored = mgr.makePersistent(stored);
+
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeUpdateCodeChange(oldCode, code, cs.getProject(), cs.getProjectType(), user.getUserId());
+			Change change = new ChangeBuilder().makeUpdateCodeChange(stored, code, cs.getProject(), cs.getProjectType(), user.getUserId());
 			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
 		}
-		return code;
+		return stored;
 	}
 
+	/**
+	 * This method is used for updating an existing relationship-code entity. 
+	 * It updates the relationship field of the code and the code-field of the relationship.
+	 * 
+	 * @param relationshipCodeId the id of the relation-ship code
+	 * @param relationSourceId the id of the source-code of the relation
+	 * @param relationId the id of the relation
+	 * @return The updated entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "codes.updateRelationshipCode",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code updateRelationshipCode(
+			@Named("relationshipCodeId") Long relationshipCodeId, 
+			@Named("relationSourceId") Long relationSourceId, 
+			@Named("relationId") Long relationId,
+			User user) throws UnauthorizedException {
+
+		Code code = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {	
+			// Set the relationship for the relationship-code
+			code = getCode(relationshipCodeId, user);
+			
+			Authorization.checkAuthorization(code, user);
+			
+			Key relationKey = KeyFactory.createKey(KeyFactory.createKey("Code", relationSourceId), "CodeRelation", relationId);
+			CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationKey);
+			
+			code.setRelationshipCode(relation);
+	
+			code = mgr.makePersistent(code);
+			
+			// Save the code in the relationship
+			relation.setRelationshipCodeId(code.getCodeID());
+			relation = mgr.makePersistent(relation);								
+		} finally {
+			mgr.close();
+		}
+		
+		return code;
+	}
+	
+	/**
+	 * This method is used for updating an existing relationship-code entity. 
+	 * It updates the metaModel field of the code and the metaModel of the relation
+	 * 
+	 * @param relationshipCodeId the id of the relation-ship code
+	 * @param newMetaModelId the new metaModel
+	 * @return The updated entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "codes.updateRelationshipCodeMetaModel",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Code updateRelationshipCodeMetaModel(
+			@Named("relationshipCodeId") Long relationshipCodeId, 
+			@Named("newMetaModelId") Long newMetaModelId,
+			User user) throws UnauthorizedException {
+
+		Code code = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {	
+			// Update the metaModel of the code
+			code = getCode(relationshipCodeId, user);
+			
+			Authorization.checkAuthorization(code, user);
+			
+			List<Long> newMetaModelElementIds = new ArrayList<>();
+			newMetaModelElementIds.add(newMetaModelId);
+			code.setMmElementIDs(newMetaModelElementIds);
+	
+			code = mgr.makePersistent(code);
+			
+			// Update the metaModel of the relation
+			CodeRelation relation = code.getRelationshipCode();
+			if (relation != null) {
+				relation.setMmElementId(newMetaModelId);
+				relation = mgr.makePersistent(relation);
+			}
+		} finally {
+			mgr.close();
+		}
+		
+		return code;
+	}
+	
 	@ApiMethod(
 		name = "codes.setCodeBookEntry",
 		scopes = { Constants.EMAIL_SCOPE },
@@ -181,7 +317,7 @@ public class CodeEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public Code addRelationship(@Named("sourceCode") Long codeID, CodeRelation realtion, User user) throws UnauthorizedException {
+	public Code addRelationship(@Named("sourceCode") Long codeID, @Named("createIfItExists") Boolean createIfItExists, CodeRelation relation, User user) throws UnauthorizedException {
 		// Fixme Authorization
 		Code code = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -189,17 +325,29 @@ public class CodeEndpoint {
 			code = mgr.getObjectById(Code.class, codeID);
 			Authorization.checkAuthorization(code, user);
 
-			code.addRelation(realtion);
-			mgr.makePersistent(code);
-
-			List<CodeRelation> relationships = code.getRelations();
-			for (CodeRelation codeRelation : relationships) {
-				codeRelation.getCodeId();
+			// Does the relation exist?
+			boolean relationExists = false;
+			for (CodeRelation rel : code.getRelations()) {
+				if (relation.getCodeId().equals(rel.getCodeId()) &&
+					relation.getMmElementId().equals(rel.getMmElementId())) {
+					relationExists = true;
+					break;
+				}
+			}
+			
+			if (createIfItExists || (!createIfItExists && !relationExists)) {
+				code.addRelation(relation);
+				mgr.makePersistent(code);
+	
+				List<CodeRelation> relationships = code.getRelations();
+				for (CodeRelation codeRelation : relationships) {
+					codeRelation.getCodeId();
+				}
 			}
 			
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeAddRelationShipChange(realtion, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			Change change = new ChangeBuilder().makeAddRelationShipChange(relation, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
 			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
@@ -241,6 +389,22 @@ public class CodeEndpoint {
 		}
 		return code;
 	}
+	
+	@ApiMethod(
+			name = "codes.removeAllRelationships",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+	public Code removeAllRelationships(@Named("id") Long id, User user) throws UnauthorizedException {
+		Code code = getCode(id, user);
+		Code result = code;
+		
+		for (CodeRelation relation : code.getRelations()) {
+			result = removeRelationship(id, relation.getKey().getId(), user);
+		}
+		
+		return result;
+	}
 
 	/**
 	 * This method removes the entity with primary key id.
@@ -261,7 +425,18 @@ public class CodeEndpoint {
 			if(code==null) { return; }
 			// Check if user is authorized
 			Authorization.checkAuthorization(code, user);
-
+			
+			// Was the code a relationship-code?
+			// => clear the relationshipCodeId of the relation
+			if (code.getRelationshipCode() != null) {
+				Key relationKey = code.getRelationshipCode().getKey();
+				CodeRelation relation = mgr.getObjectById(CodeRelation.class, relationKey);
+				
+				relation.setRelationshipCodeId(null);
+		
+				mgr.makePersistent(relation);
+			}
+			
 			// Delete link from parent code
 			Query query = mgr.newQuery(Code.class);
 			

@@ -3,23 +3,27 @@ import styled from 'styled-components';
 
 import MetaModelMapper from '../../uml-editor/mapping/MetaModelMapper.js';
 
+import Theme from '../../../common/styles/Theme.js';
+
 export const StyledCode = styled.div `
     font-family: tahoma, arial, helvetica;
     font-size: 10pt;
-    font-weight: 'normal';
+    font-weight: ${props => props.fontWeight};
     margin-left:${props => (props.level * 15) + 'px' };
     display: flex;
     align-items: center;
-    color: ${props => props.selected ? '#fff' : '#000'};
-    background-color: ${props => props.selected ? props.theme.bgPrimaryHighlight : ''};
+    cursor: ${props => props.isCodeSelectable ? 'default' : 'not-allowed !important'};
+    color: ${props => props.textColor};
+    background-color: ${props => props.backgroundColor};
+    
     &:hover {
-        background: #63a0d4;
+        background: ${props => props.backgroundHoverColor};
     }
 `;
 
 export const StyledExpander = styled.a `
     padding-left:${props => props.hasChildren ? '' : '18px'};
-    color: ${props => props.selected ? '#fff' : '#000'};
+    color: ${props => props.color};
 `;
 
 export const StyledCodeIcon = styled.i `
@@ -60,7 +64,7 @@ export default class SimpleCode extends React.Component {
 		return this.props.node.children.length != 0;
 	}
 
-	renderExpander(node, highlightNode) {
+	renderExpander(node, textColor) {
 		var caret = ""
 		if (this.hasChildren()) {
 			var direction = this.props.node.collapsed ? 'right' : 'down';
@@ -73,19 +77,15 @@ export default class SimpleCode extends React.Component {
 		const className = "node-link";
 		const onClick = () => this.nodeIconClick(node);
 
-		return this.renderSimpleExpander(hasChildren, selected, className, onClick, highlightNode, caret);
-	}
-
-	renderSimpleExpander(hasChildren, selected, className, onClick, highlightNode, caret) {
 		return (
-			<StyledExpander
-                    hasChildren={hasChildren}
-                    selected={selected}
-                    className={className}
-                    onClick={onClick}
-		            highlightNode={highlightNode}>
-                    {caret}
-                </StyledExpander>
+			<StyledExpander 
+	                    hasChildren={hasChildren} 
+	                    selected={selected} 
+	                    className={className}
+	                    onClick={onClick}
+	                    color={textColor}>
+	                    {caret}
+	                </StyledExpander>
 		);
 	}
 
@@ -97,39 +97,135 @@ export default class SimpleCode extends React.Component {
 		return "";
 	}
 
-	shouldHighlightNode(code) {
-		if (this.props.shouldHighlightNode == null) {
-			return false;
+	getFontWeight(code, selected) {
+		let weight = null;
+
+		weight = this.doGetFontWeight(code, selected);
+
+		if (weight == null) {
+			return 'normal';
 		}
 
-		return this.props.shouldHighlightNode(code);
+		return weight;
+	}
+
+	doGetFontWeight(code, selected) {
+		if (this.props.getFontWeight != null) {
+			return this.props.getFontWeight(code, selected);
+		}
+		return null;
+	}
+
+	getTextColor(code, selected) {
+		let color = null;
+
+		color = this.doGetTextColor(code, selected);
+
+		if (color == null) {
+			if (this.props.isCodeSelectable != null && !this.props.isCodeSelectable(code)) {
+				color = '#707070';
+			} else {
+				if (selected) {
+					color = '#fff';
+				} else {
+					color = '#000';
+				}
+			}
+		}
+
+		return color;
+	}
+
+	doGetTextColor(code, selected) {
+		if (this.props.getTextColor != null) {
+			return this.props.getTextColor(code, selected);
+		}
+		return null;
+	}
+
+	getBackgroundColor(code, selected) {
+		let color = null;
+
+		color = this.doGetBackgroundColor(code, selected);
+
+		if (color == null) {
+			if (selected) {
+				return Theme.bgPrimaryHighlight;
+			} else {
+				return '';
+			}
+		}
+
+		return color;
+	}
+
+	doGetBackgroundColor(code, selected) {
+		if (this.props.getBackgroundColor != null) {
+			return this.props.getBackgroundColor(code, selected);
+		}
+		return null;
+	}
+
+	getBackgroundHoverColor(code, selected) {
+		let color = null;
+
+		color = this.doGetBackgroundHoverColor(code, selected);
+
+		if (color == null) {
+			if (this.props.isCodeSelectable != null && !this.props.isCodeSelectable(code)) {
+				color = '#e0e0e0';
+			} else {
+				color = '#63a0d4';
+			}
+		}
+
+		return color;
+	}
+
+	doGetBackgroundHoverColor(code, selected) {
+		if (this.props.getBackgroundHoverColor != null) {
+			return this.props.getBackgroundHoverColor(code, selected);
+		}
+		return null;
 	}
 
 	renderNode(level) {
 		const selected = this.props.node == this.props.selected;
 		const className = "clickable";
 		const key = "CS" + "_" + level;
-		const highlightNode = this.shouldHighlightNode(this.props.node);
-		const onClick = () => this.props.setSelected(this.props.node);
+		const fontWeight = this.getFontWeight(this.props.node, selected);
+		const textColor = this.getTextColor(this.props.node, selected);
+		const backgroundColor = this.getBackgroundColor(this.props.node, selected);
+		const backgroundHoverColor = this.getBackgroundHoverColor(this.props.node, selected);
+		const isCodeSelectable = (this.props.isCodeSelectable != null ? this.props.isCodeSelectable(this.props.node) : true);
+		const onClick = () => {
+			if (isCodeSelectable) {
+				this.props.setSelected(this.props.node);
+			}
+		}
 
 		return (
 			<div className="">
-		            {this.renderStyledNode(selected, level, className, key, highlightNode, onClick)}
+		            {this.renderStyledNode(selected, level, className, key, onClick, isCodeSelectable, fontWeight, textColor, backgroundColor, backgroundHoverColor)}
             </div>
 		);
 	}
 
-	renderStyledNode(selected, level, className, key, highlightNode, onClick) {
+	renderStyledNode(selected, level, className, key, onClick, isCodeSelectable, fontWeight, textColor, backgroundColor, backgroundHoverColor) {
 		return (
 			<StyledCode
-                        selected={selected}
-                        highlightNode={highlightNode}
+                        selected={selected} 
+		                isCodeSelectable={isCodeSelectable}
+		                fontWeight={fontWeight}
+                        textColor={textColor}
+        		        backgroundColor={backgroundColor}
+        		        backgroundHoverColor={backgroundHoverColor}
                         level={level}
                         className={className}
                         key={key}
 		                onClick={onClick}
                     >
-                    {this.renderExpander(this.props.node, highlightNode)}
+                    {this.renderExpander(this.props.node, textColor)}
                     {this.renderNodeIcon()}
                     {this.renderNodeName()}
                     {this.renderCodingCount()}
@@ -165,7 +261,11 @@ export default class SimpleCode extends React.Component {
                     relocateCode={this.props.relocateCode}
                     showFooter={this.props.showFooter}
                     key={key}
-		            shouldHighlightNode={this.props.shouldHighlightNode}
+		            isCodeSelectable = {this.props.isCodeSelectable}
+                    getFontWeight={this.props.getFontWeight}
+    		        getTextColor={this.props.getTextColor}
+                    getBackgroundColor={this.props.getBackgroundColor}
+                    getBackgroundHoverColor={this.props.getBackgroundHoverColor}
                 >
                 </SimpleCode>
 		);

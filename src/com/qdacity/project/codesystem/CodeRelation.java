@@ -26,6 +26,11 @@ public class CodeRelation {
 		dependent = "true")
 	Long codeId;
 
+	@Persistent(
+		defaultFetchGroup = "true",
+		dependent = "true")
+	Long relationshipCodeId;
+
 	public Key getKey() {
 		return key;
 	}
@@ -48,5 +53,13 @@ public class CodeRelation {
 
 	public void setCodeId(Long codeId) {
 		this.codeId = codeId;
+	}
+
+	public Long getRelationshipCodeId() {
+		return relationshipCodeId;
+	}
+
+	public void setRelationshipCodeId(Long relationshipCodeId) {
+		this.relationshipCodeId = relationshipCodeId;
 	}
 }

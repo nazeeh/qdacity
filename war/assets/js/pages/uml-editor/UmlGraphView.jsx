@@ -6,13 +6,10 @@ import {
 } from './EdgeType.js';
 import UmlClass from './model/UmlClass.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
-import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
 import HoverButtons from './hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
-
-
 
 const StyledGraphView = styled.div `
     overflow: hidden;
@@ -555,7 +552,9 @@ export default class UmlGraphView extends React.Component {
 
 			this.graph.getModel().remove(node);
 
-			node.removeFromParent();
+			if (node != null) {
+				node.removeFromParent();
+			}
 
 			this.graph.refresh(node);
 

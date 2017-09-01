@@ -4,13 +4,40 @@ export default class CodesEndpoint {
 	constructor() {}
 
 
-	static insertCode(code) {
-		var apiMethod = gapi.client.qdacity.codes.insertCode(code);
+	static insertCode(code, relationId, relationSourceCodeId) {
+		if (relationId == undefined) {
+			relationId = null;
+		}
+		if (relationSourceCodeId == undefined) {
+			relationSourceCodeId = null;
+		}
+
+		var apiMethod = gapi.client.qdacity.codes.insertCode({
+			'relationId': relationId,
+			'relationSourceCodeId': relationSourceCodeId
+		}, code);
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static updateCode(code) {
 		var apiMethod = gapi.client.qdacity.codes.updateCode(code);
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static updateRelationshipCode(relationshipCodeId, relationSourceId, relationId) {
+		var apiMethod = gapi.client.qdacity.codes.updateRelationshipCode({
+			'relationshipCodeId': relationshipCodeId,
+			'relationSourceId': relationSourceId,
+			'relationId': relationId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static updateRelationshipCodeMetaModel(relationshipCodeId, newMetaModelId) {
+		var apiMethod = gapi.client.qdacity.codes.updateRelationshipCodeMetaModel({
+			'relationshipCodeId': relationshipCodeId,
+			'newMetaModelId': newMetaModelId
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
@@ -41,9 +68,14 @@ export default class CodesEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static addRelationship(srcId, dstId, mmElementId) {
+	static addRelationship(srcId, dstId, mmElementId, createIfItExists) {
+		if (createIfItExists == null) {
+			createIfItExists = true;
+		}
+
 		var apiMethod = gapi.client.qdacity.codes.addRelationship({
-			'sourceCode': srcId
+			'sourceCode': srcId,
+			'createIfItExists': createIfItExists
 		}, {
 			'codeId': dstId,
 			'mmElementId': mmElementId
@@ -55,6 +87,13 @@ export default class CodesEndpoint {
 		var apiMethod = gapi.client.qdacity.codes.removeRelationship({
 			'codeId': codeId,
 			'relationshipId': relationshipId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static removeAllRelationships(id) {
+		var apiMethod = gapi.client.qdacity.codes.removeAllRelationships({
+			'id': id
 		});
 		return Promisizer.makePromise(apiMethod);
 	}

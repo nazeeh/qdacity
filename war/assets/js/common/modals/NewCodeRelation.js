@@ -80,7 +80,7 @@ export default class NewCodeRelation extends VexModal {
 				});
 
 				_this.mmRelationshipsView = ReactDOM.render(<MetaModelView filter={"RELATIONSHIP"} elements={_this.mmElements} updateActiveElement={_this.setActiveElement} setElements={()=>{}}/>, document.getElementById('mmRelationships'));
-				_this.mmCodesystemView = ReactDOM.render(<SimpleCodesystem codesystem={_this.codeSystem} />, document.getElementById('easytreeNewCode'));
+				_this.mmCodesystemView = ReactDOM.render(<SimpleCodesystem codesystem={_this.codeSystem} maxHeight="500" />, document.getElementById('easytreeNewCode'));
 			}
 		);
 

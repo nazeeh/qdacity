@@ -128,8 +128,11 @@ export default class CodingEditor extends React.Component {
 		this.updateSelectedCode = this.updateSelectedCode.bind(this);
 		this.viewChanged = this.viewChanged.bind(this);
 		this.getCodeSystem = this.getCodeSystem.bind(this);
+		this.getCodeById = this.getCodeById.bind(this);
 		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
 		this.showCodingView = this.showCodingView.bind(this);
+		this.createCode = this.createCode.bind(this);
+		this.selectCode = this.selectCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
 		this.resizeElements = this.resizeElements.bind(this);
@@ -176,6 +179,10 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
+	getCodeById(id) {
+		return this.codesystemViewRef.getCodeById(id);
+	}
+
 	getCodeByCodeID(codeID) {
 		return this.codesystemViewRef.getCodeByCodeID(codeID);
 	}
@@ -186,17 +193,25 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
+	selectCode(code) {
+		this.codesystemViewRef.setSelected(code);
+	}
+
 	selectionChanged(newCode) {
 		this.setState({
 			selectedCode: newCode
 		});
 	}
 
-	insertCode() {
+	createCode(name, relationId, relationSourceCodeId, select) {
+		this.codesystemViewRef.createCode(name, relationId, relationSourceCodeId, select);
+	}
+
+	insertCode(code) {
 		this.umlEditorRef.codeUpdated(code);
 	}
 
-	removeCode() {
+	removeCode(code) {
 		this.umlEditorRef.codeRemoved(code);
 	}
 
@@ -345,8 +360,11 @@ export default class CodingEditor extends React.Component {
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}
 					updateSelectedCode={this.updateSelectedCode}
+					getCodeById={this.getCodeById}
 					getCodeByCodeID={this.getCodeByCodeID}
 					getCodeSystem={this.getCodeSystem}
+					createCode={this.createCode}
+					selectCode={this.selectCode}
 					hideCodingView={this.hideCodingView}/>
 			</StyledFooter>
 		</StyledCodingEditor>

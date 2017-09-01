@@ -7,6 +7,7 @@ import ReactLoading from '../../../common/ReactLoading.jsx';
 
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import CodesystemEndpoint from '../../../common/endpoints/CodesystemEndpoint';
+import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import {
 	DragAndDropCode
 } from './Code.jsx';
@@ -71,21 +72,16 @@ class Codesystem extends SimpleCodesystem {
 
 		this.relocateCode = this.relocateCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
-		this.insertCode = this.insertCode.bind(this);
+		this.createCode = this.createCode.bind(this);
 		this.updateCodingCount = this.updateCodingCount.bind(this);
 		this.initCodingCount = this.initCodingCount.bind(this);
 		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
 		this.init = this.init.bind(this);
+		this.getCodeById = this.getCodeById.bind(this);
 	}
 
 	setUmlEditor(umlEditor) {
 		this.umlEditor = umlEditor;
-	}
-
-	setHeight(height) {
-		this.setState({
-			height: height
-		});
 	}
 
 	init() {
@@ -168,7 +164,7 @@ class Codesystem extends SimpleCodesystem {
 		var code = this.state.selected;
 
 		this.removeAllCodings(code.codeID);
-		var parent = this.getCodeByID(this.state.codesystem, code.parentID)
+		var parent = this.getCodeByCodeIDAndCodes(this.state.codesystem, code.parentID)
 		var index = parent.children.indexOf(code);
 		parent.children.splice(index, 1);
 		this.setState({
@@ -176,6 +172,41 @@ class Codesystem extends SimpleCodesystem {
 		})
 
 		this.props.removeCode(code);
+	}
+
+	createCode(name, relationId, relationSourceCodeId, select) {
+		const _this = this;
+
+		// Build the Request Object
+		var code = {
+			author: this.props.account.getProfile().getName(),
+			name: name,
+			subCodesIDs: new Array(),
+			parentID: _this.state.selected.codeID,
+			codesystemID: _this.state.selected.codesystemID,
+			color: "#000000"
+		};
+
+		CodesEndpoint.insertCode(code, relationId, relationSourceCodeId).then(function (resp) {
+			// Update the relation
+			if (relationId != null && relationSourceCodeId != null) {
+				let relationSourceCode = _this.getCodeById(relationSourceCodeId);
+				for (let i = 0; i < relationSourceCode.relations.length; i++) {
+					let rel = relationSourceCode.relations[i];
+
+					if (rel.key.id == relationId) {
+						rel.relationshipCodeId = resp.id;
+						break;
+					}
+				}
+			}
+
+			_this.insertCode(resp);
+
+			if (select) {
+				_this.setSelected(resp);
+			}
+		});
 	}
 
 	insertCode(code) {
@@ -222,8 +253,8 @@ class Codesystem extends SimpleCodesystem {
 
 	relocateCode(movingNode, targetID) {
 		var relocationPromise = CodesEndpoint.relocateCode(movingNode.id, targetID);
-		var targetNode = this.getCodeByID(this.state.codesystem, targetID);
-		var sourceNode = this.getCodeByID(this.state.codesystem, movingNode.parentID);
+		var targetNode = this.getCodeByCodeIDAndCodes(this.state.codesystem, targetID);
+		var sourceNode = this.getCodeByCodeIDAndCodes(this.state.codesystem, movingNode.parentID);
 		var indexSrc = sourceNode.children.indexOf(movingNode);
 
 		var _this = this;
@@ -279,7 +310,13 @@ class Codesystem extends SimpleCodesystem {
                         relocateCode={this.relocateCode}
                         showFooter={this.props.showFooter}
                         key={key}
-		                shouldHighlightNode={this.shouldHighlightNode}>
+		                isCodeSelectable = {this.props.isCodeSelectable}
+		                shouldHighlightNode={this.shouldHighlightNode}
+                        getFontWeight={this.props.getFontWeight}
+                        getTextColor={this.props.getTextColor}
+                        getBackgroundColor={this.props.getBackgroundColor}
+                        getBackgroundHoverColor={this.props.getBackgroundHoverColor}
+		            >
                     </DragAndDropCode>
 		);
 	}
@@ -309,12 +346,13 @@ class Codesystem extends SimpleCodesystem {
 						selected={this.state.selected}
 						account={this.props.account}
 						removeCode={this.removeCode}
-						insertCode={this.insertCode}
+						createCode={this.createCode}
 						updateCodingCount={this.updateCodingCount}
 						toggleCodingView={this.props.toggleCodingView}
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
-                        pageView={this.props.pageView}>
+                        pageView={this.props.pageView}
+					    getCodeById={this.getCodeById}>
 					</CodesystemToolbar>
 				</StyledToolBar>
 

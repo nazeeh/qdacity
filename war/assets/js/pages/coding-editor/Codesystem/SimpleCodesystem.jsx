@@ -1,26 +1,53 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import {
 	Code
 } from './Code.jsx';
 import SimpleCode from './SimpleCode.jsx';
+
+const StyledSimpleCodesystem = styled.div `
+    height: ${props => props.height } !important;
+    max-height: ${props => props.maxHeight } !important;
+    overflow: auto;
+`;
 
 export default class SimpleCodesystem extends React.Component {
 	constructor(props) {
 		super(props);
 		this.codesystem = {};
 		this.state = {
-			slected: {},
-			codesystem: []
+			selected: this.props.selected ? this.props.selected : {},
+			codesystem: [],
+			height: this.props.height,
+			maxHeight: this.props.maxHeight
 		};
 
 		this.state.codesystem = this.props.codesystem;
 
 		this.setSelected = this.setSelected.bind(this);
 		this.getCodesystem = this.getCodesystem.bind(this);
+
+		this.expandParents(this.state.selected);
 	}
 
-	// Can be overwritten to notify other components on a new selection
-	notifyOnSelection(code) {}
+	notifyOnSelection(code) {
+		if (this.props.notifyOnSelected != null) {
+			this.props.notifyOnSelected(code);
+		}
+	}
+
+	setHeight(height) {
+		this.setState({
+			height: height
+		});
+	}
+
+	setMaxHeight(maxHeight) {
+		this.setState({
+			maxHeight: maxHeight
+		});
+	}
 
 	sortCodes(codeSiblings) {
 		var _this = this;
@@ -38,9 +65,25 @@ export default class SimpleCodesystem extends React.Component {
 	setSelected(code) {
 		this.notifyOnSelection(code);
 
+		this.expandParents(code);
+
+		// Set selection
 		this.setState({
 			selected: code
 		});
+	}
+
+	expandParents(code) {
+		// Expand all parents
+		let parentID = code.parentID;
+
+		while (parentID != null) {
+			const parent = this.getCodeByCodeID(parentID);
+
+			parent.collapsed = false;
+
+			parentID = parent.parentID;
+		}
 	}
 
 	getSelected() {
@@ -51,11 +94,34 @@ export default class SimpleCodesystem extends React.Component {
 		return this.state.codesystem;
 	}
 
-	getCodeByCodeID(codeID) {
-		return this.getCodeByID(this.state.codesystem, codeID);
+	getCodeById(id) {
+		const _this = this;
+
+		const find = (codeArr, id) => {
+			for (var i in codeArr) {
+				var code = codeArr[i];
+
+				if (code.id == id) {
+					return code;
+				}
+
+				let found = find(code.children, id);
+				if (found) {
+					return found;
+				}
+			}
+
+			return null;
+		};
+
+		return find(this.state.codesystem, id);
 	}
 
-	getCodeByID(codeArr, codeID) {
+	getCodeByCodeID(codeID) {
+		return this.getCodeByCodeIDAndCodes(this.state.codesystem, codeID);
+	}
+
+	getCodeByCodeIDAndCodes(codeArr, codeID) {
 		var _this = this;
 		var found;
 		for (var i in codeArr) {
@@ -63,7 +129,7 @@ export default class SimpleCodesystem extends React.Component {
 			if (code.codeID == codeID) {
 				return code;
 			}
-			found = _this.getCodeByID(code.children, codeID);
+			found = _this.getCodeByCodeIDAndCodes(code.children, codeID);
 			if (found) return found;
 		}
 	}
@@ -80,21 +146,26 @@ export default class SimpleCodesystem extends React.Component {
 	renderRoot(code, level, key) {
 		return (
 			<SimpleCode
-                        level={level} 
-                        node={code} 
-                        selected={this.state.selected} 
-                        setSelected={this.setSelected} 
-                        key={key}
-		                shouldHighlightNode={this.props.shouldHighlightNode}>
-                    </SimpleCode>
+                    level={level} 
+                    node={code} 
+                    selected={this.state.selected} 
+                    setSelected={this.setSelected} 
+                    key={key}
+		            isCodeSelectable = {this.props.isCodeSelectable}
+                    getFontWeight={this.props.getFontWeight}
+                    getTextColor={this.props.getTextColor}
+                    getBackgroundColor={this.props.getBackgroundColor}
+                    getBackgroundHoverColor={this.props.getBackgroundHoverColor}
+                >
+                </SimpleCode>
 		);
 	}
 
 	renderNodes(codeSiblings, level) {
 		return (
 			<div>
-    				{this.renderRoots(codeSiblings)}
-				</div>
+				{this.renderRoots(codeSiblings)}
+			</div>
 		);
 	};
 
@@ -103,8 +174,25 @@ export default class SimpleCodesystem extends React.Component {
 	}
 
 	render() {
+		let height = null;
+		let maxHeight = null;
+
+		if (this.state.height != null) {
+			height = this.state.height + "px";
+		} else {
+			height = "auto";
+		}
+
+		if (this.state.maxHeight != null) {
+			maxHeight = this.state.maxHeight + "px";
+		} else {
+			maxHeight = "auto";
+		}
+
 		return (
-			<div className="codesystemView">{this.renderCodesystem()}</div>
+			<StyledSimpleCodesystem height={height} maxHeight={maxHeight} className="codesystemView">
+		        {this.renderCodesystem()}
+	        </StyledSimpleCodesystem>
 		);
 	}
 }

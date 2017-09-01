@@ -31,6 +31,11 @@ const StyledCodeName = styled.span `
 	font-size: 16px;
 `;
 
+const StyledButton = styled.a `
+    margin-top: 9px;
+    margin-right: 10px;
+`;
+
 export default class CodeRelationsView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -62,20 +67,22 @@ export default class CodeRelationsView extends React.Component {
 			var code = _this.props.getCodeByCodeID(relation.codeId);
 			var codeName = "undefined";
 			var mmElementName = "undefined";
+			var relationshipCodeId = relation.relationshipCodeId;
 			if (code != null) codeName = code.name;
 			if (mmElement != null) mmElementName = mmElement.name;
-			_this.addRelationship(relation.key.id, relation.codeId, codeName, relation.mmElementId, mmElementName);
+			_this.addRelationship(relation.key.id, relation.codeId, codeName, relation.mmElementId, mmElementName, relationshipCodeId);
 		});
 
 	}
 
-	addRelationship(pRelId, pDstCodeId, pDstCodeName, pMmElementId, pName) {
+	addRelationship(pRelId, pDstCodeId, pDstCodeName, pMmElementId, pName, relationshipCodeId) {
 		var rel = {};
 		rel.dst = pDstCodeId;
 		rel.dstName = pDstCodeName;
 		rel.mmElementId = pMmElementId;
 		rel.name = pName;
 		rel.id = pRelId;
+		rel.relationshipCodeId = relationshipCodeId;
 
 		this.state.relationships.push(rel);
 	}
@@ -111,15 +118,60 @@ export default class CodeRelationsView extends React.Component {
 		});
 	}
 
-	deleteRelationship(relationshipId) {
+	deleteRelationship(relation) {
 		var _this = this;
-		CodesEndpoint.removeRelationship(_this.state.sourceCode, relationshipId).then(function (resp) {
-			_this.removeRelationship(relationshipId);
+		CodesEndpoint.removeRelationship(_this.state.sourceCode, relation.id).then(function (resp) {
+			// If the relationship belongs to a relationship-code, update the relationship-code and set the relation to null
+			if (relation.relationshipCodeId != null) {
+				let relationshipCode = _this.props.getCodeById(relation.relationshipCodeId);
+				relationshipCode.relationshipCode = null;
+				relationshipCode.mmElementIDs = [];
+
+				CodesEndpoint.updateCode(relationshipCode).then((resp2) => {
+					// Do nothing
+				});
+			}
+
+			_this.removeRelationship(relation.id);
 			var code = _this.props.code;
 			code.relations = resp.relations;
 			_this.props.updateSelectedCode(code);
 			_this.forceUpdate();
+
 		});
+	}
+
+	createRelationshipCode(relation) {
+		const name = this.props.code.name + " " + relation.name + " " + relation.dstName;
+		this.props.createCode(name, relation.id, this.state.sourceCode, true);
+	}
+
+	goToRelationshipCode(relation) {
+		this.props.selectCode(this.props.getCodeById(relation.relationshipCodeId));
+	}
+
+	renderCreateRelationshipCodeButton(relation) {
+		const _this = this;
+
+		if (relation.relationshipCodeId == null) {
+			return (
+				<StyledButton className="pull-right btn btn-default" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledButton>
+			);
+		} else {
+			return null;
+		}
+	}
+
+	renderGoToRelationshipCodeButton(relation) {
+		const _this = this;
+
+		if (relation.relationshipCodeId != null) {
+			return (
+				<StyledButton className="pull-right btn btn-default" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledButton>
+			);
+		} else {
+			return null;
+		}
 	}
 
 	render() {
@@ -136,11 +188,14 @@ export default class CodeRelationsView extends React.Component {
           this.state.relationships.map(function(rel) {
             return(
 				<StyledRelationItem key={rel.id} className="clickable">
-		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel.id)}}>
-		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
+		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
+    		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
+    		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
 		            </a>
-
+                    
+		            {_this.renderCreateRelationshipCodeButton(rel)}
+                    {_this.renderGoToRelationshipCodeButton(rel)}
+                    
 		            <StyledRelationName>{rel.name}</StyledRelationName>
 		            <br/>
 		            <StyledCodeName> {rel.dstName}</StyledCodeName>

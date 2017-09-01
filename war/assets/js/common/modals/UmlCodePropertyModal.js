@@ -2,30 +2,32 @@ import ReactDOM from 'react-dom';
 
 import VexModal from './VexModal';
 
-import UmlCodePropertyCodesystem from '../../pages/uml-editor/UmlCodePropertyCodesystem.jsx';
+import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
 
 import UmlClassRelation from '../../pages/uml-editor/model/UmlClassRelation.js';
 
 export default class UmlCodePropertyModal extends VexModal {
 
-	constructor(umlEditor, headline, sourceCode, codesystemView, relationMetaModelEntityName, mappingAction) {
+	constructor(umlEditor, headline, sourceCode, codesystem, relationMetaModelEntityName, mappingAction) {
 		super();
 
 		this.umlEditor = umlEditor;
 		this.headline = headline;
 		this.sourceCode = sourceCode;
-		this.codesystemView = codesystemView;
+		this.codesystem = codesystem;
 
 		this.relationMetaModelEntityName = relationMetaModelEntityName;
 		this.mappingAction = mappingAction;
+
+		this.codesystemView = null;
 	}
 
 	showModal(metaModelEntities, metaModelRelations) {
 		const _this = this;
 
-		const shouldHighlightNode = (code) => {
+		const codeIsNotValid = (code) => {
 			if (code == null) {
-				return false;
+				return true;
 			}
 
 			const sourceUmlClass = _this.umlEditor.getUmlClassManager().getByCode(_this.sourceCode);
@@ -35,7 +37,11 @@ export default class UmlCodePropertyModal extends VexModal {
 
 			const umlCodeRelation = new UmlClassRelation(sourceUmlClass, destinationUmlClass, metaModelEntity);
 
-			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) == _this.mappingAction;
+			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) != _this.mappingAction;
+		}
+
+		const isCodeSelectable = (code) => {
+			return !codeIsNotValid(code);
 		}
 
 		const notifyOnSelected = (code) => {
@@ -47,14 +53,12 @@ export default class UmlCodePropertyModal extends VexModal {
 
 			let saveButton = possibleSaveButtons[0];
 
-			if (shouldHighlightNode(code)) {
-				// Enable save
-				saveButton.disabled = false;
-				saveButton.classList.remove('vex-dialog-button-disabled');
-			} else {
+			if (codeIsNotValid(code)) {
 				// Disable save
 				saveButton.disabled = true;
-				saveButton.classList.add('vex-dialog-button-disabled');
+			} else {
+				// Enable save
+				saveButton.disabled = false;
 			}
 		};
 
@@ -91,7 +95,7 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<UmlCodePropertyCodesystem context={_this} notifyOnSelected={notifyOnSelected} shouldHighlightNode={shouldHighlightNode} codesystem={_this.codesystemView.getCodesystem()} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(<SimpleCodesystem maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} />, document.getElementById(codesystemContainerId));
 				notifyOnSelected(null);
 			}
 		);
