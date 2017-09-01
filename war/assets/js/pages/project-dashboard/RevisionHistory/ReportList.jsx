@@ -57,7 +57,7 @@ export default class ReportList extends React.Component {
 
 	showValidationReports(report) {
 		var agreementModal = new IntercoderAgreement(report);
-		agreementModal.showModal();
+		if (this.props.isProjectOwner) agreementModal.showModal();
 	}
 
 
