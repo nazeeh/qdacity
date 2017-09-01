@@ -3,7 +3,11 @@ import styled from 'styled-components';
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import NewCodeRelation from '../../../common/modals/NewCodeRelation';
 
-const StyledAddRelationBtn = styled.li `
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
+
+const StyledAddRelationBtn = BtnDefault.extend `
 	background-color: #FAFAFA !important;
 	border-left-style: solid;
 	border-left-width: thick;
@@ -31,9 +35,13 @@ const StyledCodeName = styled.span `
 	font-size: 16px;
 `;
 
-const StyledButton = styled.a `
-    margin-top: 9px;
+const StyledRelationshipCodeButton = BtnDefault.extend `
+    margin-top: 3px;
     margin-right: 10px;
+    height: 32px;
+`;
+
+const StyledDeleteButton = BtnDefault.extend `
 `;
 
 export default class CodeRelationsView extends React.Component {
@@ -155,7 +163,7 @@ export default class CodeRelationsView extends React.Component {
 
 		if (relation.relationshipCodeId == null) {
 			return (
-				<StyledButton className="pull-right btn btn-default" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledButton>
+				<StyledRelationshipCodeButton className="pull-right" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledRelationshipCodeButton>
 			);
 		} else {
 			return null;
@@ -167,7 +175,7 @@ export default class CodeRelationsView extends React.Component {
 
 		if (relation.relationshipCodeId != null) {
 			return (
-				<StyledButton className="pull-right btn btn-default" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledButton>
+				<StyledRelationshipCodeButton className="pull-right" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledRelationshipCodeButton>
 			);
 		} else {
 			return null;
@@ -188,7 +196,7 @@ export default class CodeRelationsView extends React.Component {
           this.state.relationships.map(function(rel) {
             return(
 				<StyledRelationItem key={rel.id} className="clickable">
-		            <a className="pull-right  btn  fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
+		            <a className="pull-right fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
     		            <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
     		            <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
 		            </a>
