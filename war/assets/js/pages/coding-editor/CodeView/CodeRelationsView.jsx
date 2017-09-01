@@ -150,7 +150,6 @@ export default class CodeRelationsView extends React.Component {
 		var _this = this;
 		var newRelationModal = new NewCodeRelation(this.props.elements, this.props.getCodeSystem());
 		newRelationModal.showModal().then(function (data) {
-			var a = 1;
 			CodesEndpoint.addRelationship(_this.state.sourceCode, data.codeId, data.mmElement.id).then(function (resp) {
 				var mmElementName = data.mmElement.name;
 				var code = _this.props.code;
@@ -182,6 +181,22 @@ export default class CodeRelationsView extends React.Component {
 			_this.props.updateSelectedCode(code);
 			_this.forceUpdate();
 
+		});
+	}
+
+	createIncomingRelationship() {
+		var _this = this;
+
+		var newRelationModal = new NewCodeRelation(this.props.elements, this.props.getCodeSystem());
+
+		newRelationModal.showModal().then(function (data) {
+
+			CodesEndpoint.addRelationship(data.id, _this.props.code.codeID, data.mmElement.id).then(function (resp) {
+				let sourceCode = _this.props.getCodeById(data.id);
+				sourceCode.relations = resp.relations;
+
+				_this.forceUpdate();
+			});
 		});
 	}
 
@@ -271,11 +286,11 @@ export default class CodeRelationsView extends React.Component {
 			<div className="col-sm-5 list compactBoxList">
 		        <StyledHeadline>Incoming relations</StyledHeadline>
 
-                {_this.renderAddRelationButton(() => {})}
+                {_this.renderAddRelationButton(() => {_this.createIncomingRelationship()})}
 
                 {
                     _this.state.incomingRelationships.map((rel) => {
-                        return(
+                        return (
                             <StyledRelationItem key={rel.id}>
                                 <StyledCodeName highlight="true">{rel.sourceName}</StyledCodeName>
                                 <StyledRelationName>{' ' + rel.name}</StyledRelationName>
