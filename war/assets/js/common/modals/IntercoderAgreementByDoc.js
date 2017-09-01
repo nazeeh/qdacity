@@ -44,7 +44,7 @@ export default class IntercoderAgreementByDoc extends VexModal {
 							text: 'OK'
 						}),
 						$.extend({}, vex.dialog.buttons.NO, {
-							className: 'deciderBtn vex-dialog-button-primary',
+							className: 'vex-dialog-button-primary',
 							text: "Agreement Maps",
 							click: function ($vexContent, event) {
 								window.location.href = 'coding-editor.html?project=' + _this.validationProjectID + '&type=VALIDATION&report=' + _this.resultID + '&parentproject=' + _this.projectID + '&parentprojecttype=' + _this.projectType;
