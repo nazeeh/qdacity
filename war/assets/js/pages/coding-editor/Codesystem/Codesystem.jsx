@@ -200,7 +200,7 @@ class Codesystem extends SimpleCodesystem {
 					}
 				}
 			}
-
+			resp.codingCount = 0;
 			_this.insertCode(resp);
 
 			if (select) {
