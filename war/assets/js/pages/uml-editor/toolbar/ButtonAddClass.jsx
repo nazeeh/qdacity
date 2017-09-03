@@ -15,7 +15,10 @@ export default class ButtonAddClass extends React.Component {
 	}
 
 	buttonClicked() {
-		// TODO
+	    let codeName = 'name';
+	    let mmElementIDs = [1234];
+	    
+	    this.props.createCode(codeName, mmElementIDs);
 	}
 
 	render() {

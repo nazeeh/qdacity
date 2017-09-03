@@ -31,7 +31,7 @@ export default class Toolbar extends React.Component {
 
 		return (
 			<StyledToolbar>
-                <ButtonAddClass umlEditor={_this.umlEditor} />
+                <ButtonAddClass umlEditor={_this.umlEditor} createCode={_this.props.createCode}/>
 		        
     	        <ButtonZoomIn umlEditor={_this.umlEditor} />
                 <ButtonZoomOut umlEditor={_this.umlEditor} />
