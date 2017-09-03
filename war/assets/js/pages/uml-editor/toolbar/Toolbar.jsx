@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import ButtonAddClass from './ButtonAddClass.jsx';
 import ButtonZoomIn from './ButtonZoomIn.jsx';
 import ButtonZoomOut from './ButtonZoomOut.jsx';
 import ButtonZoomSelect from './ButtonZoomSelect.jsx';
@@ -30,6 +31,8 @@ export default class Toolbar extends React.Component {
 
 		return (
 			<StyledToolbar>
+                <ButtonAddClass umlEditor={_this.umlEditor} />
+		        
     	        <ButtonZoomIn umlEditor={_this.umlEditor} />
                 <ButtonZoomOut umlEditor={_this.umlEditor} />
                 <ButtonZoomSelect ref={(zoomSelectRef) => {if (zoomSelectRef) this.zoomSelectRef = zoomSelectRef}} umlEditor={_this.umlEditor} />
