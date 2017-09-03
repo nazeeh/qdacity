@@ -7,10 +7,16 @@ import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
 
+const StyledRelationsView = styled.div `
+    display: flex;
+    flex-direction: column;
+`;
+
 const StyledHeadline = styled.div `
-    font-size: 15px;
-    margin-bottom: 6px;
+    font-size: 17px;
+    margin-top: 3px;
     font-weight: bold;
+    float: left;
 `;
 
 const StyledAddRelationBtn = BtnDefault.extend `
@@ -18,7 +24,8 @@ const StyledAddRelationBtn = BtnDefault.extend `
 	border-left-style: solid;
 	border-left-width: thick;
 	border-left-color: #337ab7;
-	margin-bottom: 3px;
+	margin-bottom: 7px;
+	float: right;
 	&:hover {
         background: #337ab7 !important;
 		color: #FFF;
@@ -256,32 +263,37 @@ export default class CodeRelationsView extends React.Component {
 		this.setRelations(this.props.code.relations, this.props.code.id);
 
 		return (
-            <div className="col-sm-7 list compactBoxList">
-                <StyledHeadline>Outgoing relations</StyledHeadline>
+			<StyledRelationsView className="col-sm-7">
+                <div>
+                    <StyledHeadline>Outgoing relations</StyledHeadline>
+    
+                    {_this.renderAddRelationButton(() => {_this.createRelationship()})}
+                </div>
 
-                {_this.renderAddRelationButton(() => {_this.createRelationship()})}
 
-                {
-                    this.state.relationships.map(function(rel) {
-                        return (
-                            <StyledRelationItem key={rel.id} className="clickable">
-                                <a className="pull-right fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
-                                    <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-                                    <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
-                                </a>
-                            
-                                {_this.renderCreateRelationshipCodeButton(rel)}
-                                {_this.renderGoToRelationshipCodeButton(rel)}
-
-                                <StyledCodeName>{rel.sourceName}</StyledCodeName>
-                                <br/>
-                                <StyledRelationName>{rel.name + ' '}</StyledRelationName>
-                                <StyledCodeName highlight="true"> {rel.destinationName}</StyledCodeName>
-                            </StyledRelationItem>
-                        );
-                    })
-                }
-            </div>
+                <div className="list compactBoxList">
+                    {
+                        this.state.relationships.map(function(rel) {
+                            return (
+                                <StyledRelationItem key={rel.id} className="clickable">
+                                    <a className="pull-right fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
+                                        <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
+                                        <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
+                                    </a>
+                                
+                                    {_this.renderCreateRelationshipCodeButton(rel)}
+                                    {_this.renderGoToRelationshipCodeButton(rel)}
+    
+                                    <StyledCodeName>{rel.sourceName}</StyledCodeName>
+                                    <br/>
+                                    <StyledRelationName>{rel.name + ' '}</StyledRelationName>
+                                    <StyledCodeName highlight="true"> {rel.destinationName}</StyledCodeName>
+                                </StyledRelationItem>
+                            );
+                        })
+                    }
+                </div>
+            </StyledRelationsView>
 		);
 	}
 
@@ -291,24 +303,28 @@ export default class CodeRelationsView extends React.Component {
 		this.setIncomingRelations(this.props.code);
 
 		return (
-			<div className="col-sm-5 list compactBoxList">
-		        <StyledHeadline>Incoming relations</StyledHeadline>
-
-                {_this.renderAddRelationButton(() => {_this.createIncomingRelationship()})}
-
-                {
-                    _this.state.incomingRelationships.map((rel) => {
-                        return (
-                            <StyledRelationItem key={rel.id}>
-                                <StyledCodeName highlight="true">{rel.sourceName}</StyledCodeName>
-                                <StyledRelationName>{' ' + rel.name}</StyledRelationName>
-                                <br/>
-                                <StyledCodeName>{rel.destinationName}</StyledCodeName>
-                            </StyledRelationItem>
-                        );
-                    })
-                }
-            </div>
+			<StyledRelationsView className="col-sm-5">
+		        <div>
+    		        <StyledHeadline>Incoming relations</StyledHeadline>
+    
+                    {_this.renderAddRelationButton(() => {_this.createIncomingRelationship()})}
+		        </div>
+		        
+                <div className="list compactBoxList">
+                    {
+                        _this.state.incomingRelationships.map((rel) => {
+                            return (
+                                <StyledRelationItem key={rel.id}>
+                                    <StyledCodeName highlight="true">{rel.sourceName}</StyledCodeName>
+                                    <StyledRelationName>{' ' + rel.name}</StyledRelationName>
+                                    <br/>
+                                    <StyledCodeName>{rel.destinationName}</StyledCodeName>
+                                </StyledRelationItem>
+                            );
+                        })
+                    }
+                </div>
+            </StyledRelationsView>
 		);
 	}
 
