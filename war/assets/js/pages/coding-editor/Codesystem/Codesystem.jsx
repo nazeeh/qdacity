@@ -174,7 +174,7 @@ class Codesystem extends SimpleCodesystem {
 		this.props.removeCode(code);
 	}
 
-	createCode(name, relationId, relationSourceCodeId, select) {
+	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
 		const _this = this;
 
 		// Build the Request Object
@@ -184,7 +184,8 @@ class Codesystem extends SimpleCodesystem {
 			subCodesIDs: new Array(),
 			parentID: _this.state.selected.codeID,
 			codesystemID: _this.state.selected.codesystemID,
-			color: "#000000"
+			color: "#000000",
+			mmElementIDs: (mmElementIDs != null ? mmElementIDs : [])
 		};
 
 		CodesEndpoint.insertCode(code, relationId, relationSourceCodeId).then(function (resp) {

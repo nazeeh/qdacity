@@ -217,7 +217,7 @@ export default class CodeRelationsView extends React.Component {
 
 	createRelationshipCode(relation) {
 		const name = this.props.code.name + " " + relation.name + " " + relation.destinationName;
-		this.props.createCode(name, relation.id, this.state.sourceCode, true);
+		this.props.createCode(name, null, relation.id, this.state.sourceCode, true);
 	}
 
 	goToRelationshipCode(relation) {

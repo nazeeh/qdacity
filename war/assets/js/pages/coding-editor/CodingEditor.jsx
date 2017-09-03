@@ -203,8 +203,8 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
-	createCode(name, relationId, relationSourceCodeId, select) {
-		this.codesystemViewRef.createCode(name, relationId, relationSourceCodeId, select);
+	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
+		this.codesystemViewRef.createCode(name, mmElementIDs, relationId, relationSourceCodeId, select);
 	}
 
 	insertCode(code) {
