@@ -215,16 +215,18 @@ export default class MetaModel extends React.Component {
 
 		let relation = this.props.code.relationshipCode;
 
-		CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
-			// Update the code
-			const storedCode = _this.props.getCodeByCodeID(resp.codeID);
-			storedCode.relations = resp.relations;
+		if (relation != null) {
+			CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
+				// Update the code
+				const storedCode = _this.props.getCodeByCodeID(resp.codeID);
+				storedCode.relations = resp.relations;
 
-			// Update metamodel and set relationshipCode to null
-			_this.props.code.relationshipCode = null;
+				// Update metamodel and set relationshipCode to null
+				_this.props.code.relationshipCode = null;
 
-			_this.props.updateSelectedCode(_this.props.code, true);
-		});
+				_this.props.updateSelectedCode(_this.props.code, true);
+			});
+		}
 	}
 
 	convertNormalCodeToRelationshipCode() {
