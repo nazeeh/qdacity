@@ -265,7 +265,7 @@ export default class CodingEditor extends React.Component {
 								<div className="row no-gutters" >
 								<StyledSettingsPanel showPanel={this.state.project.getType() === "PROJECT"}>
 									<StyledPanelHeader>
-										<b>Editor</b>
+										<b>Project</b>
 									</StyledPanelHeader>
 									<div>
 										<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged}/>
