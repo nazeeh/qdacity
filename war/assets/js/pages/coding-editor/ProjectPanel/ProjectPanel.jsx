@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import PageViewChooser  from './PageViewChooser.jsx';
 
 export default class ProjectPanel extends React.Component {
 	constructor(props) {
@@ -11,6 +12,7 @@ export default class ProjectPanel extends React.Component {
 	render(){
 		return(
 			<div>
+				<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
 			</div>
 		);
 	}

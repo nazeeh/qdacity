@@ -5,7 +5,7 @@ import UmlEditor from '../uml-editor/UmlEditor.jsx';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import CodeView from './CodeView/CodeView.jsx';
-import PageViewChooser from './View/PageViewChooser.jsx';
+import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
 import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 import TextEditor from './TextEditor.jsx';
 
@@ -268,7 +268,7 @@ export default class CodingEditor extends React.Component {
 										<b>Editor</b>
 									</StyledPanelHeader>
 									<div>
-										<PageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged}/>
+										<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged}/>
 									</div>
 								</StyledSettingsPanel>
 							</div>

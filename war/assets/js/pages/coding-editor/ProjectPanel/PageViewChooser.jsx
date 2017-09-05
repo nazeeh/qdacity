@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import {
 	PageView
-} from './PageView.js';
+} from '../View/PageView.js';
 
 import {
 	BtnDefault,
