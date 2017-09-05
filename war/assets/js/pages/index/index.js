@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import 'script-loader!../../../../components/jQuery/jquery.js';
 
 // Personal Dasboard Styles
+import "../../../css/project-list.css";
 import "../../../../components/AdminLTE/css/AdminLTE.min.css";
 import "../../../css/dashboard.css";
 import "../../../css/IntercoderAgreement.css";
