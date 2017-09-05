@@ -21,7 +21,7 @@ const StyledPaginationItem = styled.a `
 	background-color: ${props => (props.active ? props.theme.bgPrimaryHighlight : '')};
 	color: ${props => (props.active ? props.theme.fgPrimaryHighlight  : '')};
 	&:hover{
-		background-color: ${props => (props.active ? props.theme.bgPrimaryHighlight : props.theme.borderDefault)};
+		background-color: ${props => (props.active ? props.theme.bgPrimaryHighlight : props.theme.defaultPaneBg)};
 		color: ${props => (props.active ? props.theme.fgPrimaryHighlight  : props.theme.fgDefault)};
 		text-decoration: none;
 	}
