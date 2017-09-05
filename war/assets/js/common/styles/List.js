@@ -20,6 +20,11 @@ const StyledPaginationItem = styled.a `
 	cursor: pointer;
 	background-color: ${props => (props.active ? '#5b94d9' : '')};
 	color: ${props => (props.active ? 'white' : '')};
+	&:hover{
+		background-color: ${props => (props.active ? '#5b94d9' : '#ddd')};
+		color: ${props => (props.active ? 'white' : 'black')};
+		text-decoration: none;
+	}
 `;
 
 const StyledBoxList = styled.ul `
