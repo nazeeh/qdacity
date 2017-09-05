@@ -36,16 +36,7 @@ const StyledTextEditorMenu = styled.div `
 	background-color: #e7e7e7;
 `
 
-const StyledPanelHeader = styled.div `
-	text-align: center;
-	position:relative;
-	background-color: #e7e7e7;
- `;
 
-const StyledSettingsPanel = styled.div `
-	display: ${props => (props.showPanel) ? 'block' : 'none'} !important;
-	background-color: #f8f8f8;
-`;
 
 const StyledEditableToggle = styled.a `
 	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
@@ -262,14 +253,7 @@ export default class CodingEditor extends React.Component {
 								</div>
 
 								<div className="row no-gutters" >
-								<StyledSettingsPanel showPanel={this.state.project.getType() === "PROJECT"}>
-									<StyledPanelHeader>
-										<b>Project</b>
-									</StyledPanelHeader>
-									<div>
-										<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} project={this.state.project} history={this.props.history}/>
-									</div>
-								</StyledSettingsPanel>
+									<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} project={this.state.project} history={this.props.history}/>
 							</div>
 						</div>
 					</div>
