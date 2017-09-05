@@ -23,22 +23,47 @@ const StyledPanelHeader = styled.div `
 	text-align: center;
 	position:relative;
 	background-color: #e7e7e7;
+	padding-bottom: 5px;
  `;
+
+const StyledExpanderToggle = styled.a `
+	margin-right: 2px;
+	margin-top: 0px;
+	font-size: 20px;
+	color: grey;
+	cursor: pointer;
+`
 
 export default class ProjectPanel extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			isExpanded: true,
 		};
 	}
 
+	toggleIsExpanded() {
+		this.setState({
+			isExpanded: !this.state.isExpanded
+		});
+	}
+
+	renderCollapseIcon() {
+		if (this.state.isExpanded) return (<i className="fa fa-compress fa-1x"></i>);
+		else return (<i className="fa fa-expand fa-1x"></i>);
+	}
 
 	render(){
 		return(
 			<StyledSettingsPanel showPanel={this.props.project.getType() === "PROJECT"}>
 				<StyledPanelHeader>
 					<b>Project</b>
+
+					<StyledExpanderToggle id="projectPanelToggleBtn" className="pull-right" onClick={() => this.toggleIsExpanded()}>
+						{this.renderCollapseIcon()}
+					</StyledExpanderToggle>
 				</StyledPanelHeader>
+
 				<StyledPanelContent>
 					<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
 					<StyledSearchField className="searchfield" id="searchform">
