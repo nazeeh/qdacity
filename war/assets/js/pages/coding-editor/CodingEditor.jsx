@@ -253,7 +253,6 @@ export default class CodingEditor extends React.Component {
 						<div >
 
 							<div >
-								<ProjectDashboardBtn project={this.state.project} history={this.props.history}/>
 								<div id="agreementMapSettings" className="hidden">
 									<p>
 									  <span>Showing False Negatives >= </span>
@@ -268,7 +267,7 @@ export default class CodingEditor extends React.Component {
 										<b>Project</b>
 									</StyledPanelHeader>
 									<div>
-										<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged}/>
+										<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} project={this.state.project} history={this.props.history}/>
 									</div>
 								</StyledSettingsPanel>
 							</div>

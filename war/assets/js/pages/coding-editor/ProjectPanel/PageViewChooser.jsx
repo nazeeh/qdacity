@@ -13,7 +13,8 @@ import {
 const StyledButtonGroup = styled.div `
     display: flex;
     justify-content: center;
-    margin: 10px 0px 10px 0px;
+
+	padding-bottom: 5px;
 `;
 const StyledEditorBtn = BtnPrimary.extend `
 	display: ${props => props.showBtn ? 'block' : 'none'};

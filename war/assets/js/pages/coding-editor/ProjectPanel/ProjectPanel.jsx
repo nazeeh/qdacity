@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import ProjectDashboardBtn from '../ProjectDashboardBtn.jsx';
 import PageViewChooser  from './PageViewChooser.jsx';
 import StyledSearchField from '../../../common/styles/SearchField.jsx';
 import {
@@ -9,7 +10,7 @@ import {
 
 const StyledPanelContent = styled.div `
 
-	margin:0px 5px 0px 5px;
+	margin:5px 5px 0px 5px;
 `;
 
 export default class ProjectPanel extends React.Component {
@@ -24,7 +25,7 @@ export default class ProjectPanel extends React.Component {
 		return(
 			<div>
 				<StyledPanelContent>
-					<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
+					<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
 					<StyledSearchField className="searchfield" id="searchform">
 						<input
 							type="text"
@@ -36,6 +37,7 @@ export default class ProjectPanel extends React.Component {
 							<i className="fa fa-search  fa-lg"></i>
 						</BtnDefault>
 					</StyledSearchField>
+					<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
 				</StyledPanelContent>
 			</div>
 		);
