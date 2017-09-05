@@ -7,6 +7,9 @@ import {
 const StyledPagination = styled.ul `
 	list-style: none;
 	display: flex;
+	padding-left: 0;
+	margin: 20px 0;
+	border-radius: 4px;
 `;
 
 const StyledPaginationItem = styled.a `
@@ -15,6 +18,8 @@ const StyledPaginationItem = styled.a `
 	padding: 8px 16px;
 	text-decoration: none;
 	cursor: pointer;
+	background-color: ${props => (props.active ? '#5b94d9' : '')};
+	color: ${props => (props.active ? 'white' : '')};
 `;
 
 const StyledBoxList = styled.ul `
