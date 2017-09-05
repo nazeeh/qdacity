@@ -240,23 +240,15 @@ export default class CodingEditor extends React.Component {
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
 				<StyledSideBarEditor>
-					<div id="project-ui" >
-						<div >
-
-							<div >
-								<div id="agreementMapSettings" className="hidden">
-									<p>
-									  <span>Showing False Negatives >= </span>
-									  <span id="maxFalseNeg" className="falseNegValue"></span>
-									</p>
-									<div id="agreementMapSlider" className="agreementMapSlider"></div>
-								</div>
-
-								<div className="row no-gutters" >
-									<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} project={this.state.project} history={this.props.history}/>
-							</div>
+					<div>
+						<div id="agreementMapSettings" className="hidden">
+							<p>
+							  <span>Showing False Negatives >= </span>
+							  <span id="maxFalseNeg" className="falseNegValue"></span>
+							</p>
+							<div id="agreementMapSlider" className="agreementMapSlider"></div>
 						</div>
-					</div>
+						<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} project={this.state.project} history={this.props.history}/>
 					</div>
 				</StyledSideBarEditor>
 				<StyledSideBarDocuments>
