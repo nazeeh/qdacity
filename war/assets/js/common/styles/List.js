@@ -18,11 +18,11 @@ const StyledPaginationItem = styled.a `
 	padding: 8px 16px;
 	text-decoration: none;
 	cursor: pointer;
-	background-color: ${props => (props.active ? '#5b94d9' : '')};
-	color: ${props => (props.active ? 'white' : '')};
+	background-color: ${props => (props.active ? props.theme.bgPrimaryHighlight : '')};
+	color: ${props => (props.active ? props.theme.fgPrimaryHighlight  : '')};
 	&:hover{
-		background-color: ${props => (props.active ? '#5b94d9' : '#ddd')};
-		color: ${props => (props.active ? 'white' : 'black')};
+		background-color: ${props => (props.active ? props.theme.bgPrimaryHighlight : props.theme.borderDefault)};
+		color: ${props => (props.active ? props.theme.fgPrimaryHighlight  : props.theme.fgDefault)};
 		text-decoration: none;
 	}
 `;
