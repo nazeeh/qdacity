@@ -2,11 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 import ProjectDashboardBtn from '../ProjectDashboardBtn.jsx';
+import ProjectSearch from './ProjectSearch.jsx';
 import PageViewChooser  from './PageViewChooser.jsx';
-import StyledSearchField from '../../../common/styles/SearchField.jsx';
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
 
 
 const StyledSettingsPanel = styled.div `
@@ -45,34 +42,15 @@ export default class ProjectPanel extends React.Component {
 		super(props);
 		this.state = {
 			isExpanded: true,
-			search: "",
 		};
 
-		this.updateSearch = this.updateSearch.bind(this);
-		this.searchProject = this.searchProject.bind(this);
-	}
 
-	updateSearch(e) {
-		this.setState({
-			search: e.target.value
-		});
 	}
 
 	toggleIsExpanded() {
 		this.setState({
 			isExpanded: !this.state.isExpanded
 		});
-	}
-
-	searchProject(){
-		if (!this.props.documentsView.getDocuments) return;
-		const docs =this.props.documentsView.getDocuments()
-		for (var i in docs) {
-			var doc = docs[i];
-			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1){
-			    alert(doc.text);
-			}
-		}
 	}
 
 	renderCollapseIcon() {
@@ -85,17 +63,7 @@ export default class ProjectPanel extends React.Component {
 		return (
 			<StyledPanelContent>
 				<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
-				<StyledSearchField className="searchfield" id="searchform">
-					<input
-						type="text"
-						placeholder="Search for anything"
-						value={this.state.search}
-						onChange={this.updateSearch}
-					/>
-					<BtnDefault type="button" onClick={() => this.searchProject()}>
-						<i className="fa fa-search  fa-lg"></i>
-					</BtnDefault>
-				</StyledSearchField>
+				<ProjectSearch documentsView = {this.props.documentsView}/>
 				<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
 		);
