@@ -14,6 +14,9 @@ import Project from '../project-dashboard/Project';
 import {
 	PageView
 } from './View/PageView.js';
+import {
+	BottomPanelType
+} from './BottomPanel/BottomPanelType.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 
@@ -100,6 +103,7 @@ export default class CodingEditor extends React.Component {
 			showCodingView: false,
 			selectedCode: {},
 			selectedEditor: PageView.CODING,
+			bottomPanelType: BottomPanelType.CODEVIEW,
 			mxGraphLoaded: false
 
 		};
@@ -331,6 +335,7 @@ export default class CodingEditor extends React.Component {
 			<StyledFooter  showCodingView={this.state.showCodingView}>
 				<BottomPanel
 					ref={(c) => {if (c) this.codeViewRef = c;}}
+					panelType = {this.state.bottomPanelType}
 					code={this.state.selectedCode}
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}
