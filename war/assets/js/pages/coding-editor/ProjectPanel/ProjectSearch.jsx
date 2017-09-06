@@ -32,8 +32,10 @@ export default class ProjectSearch extends React.Component {
 				documents.push(doc);
 			}
 		}
-
-		this.props.setSearchResults(documents);
+		let results = {
+			documentResults: documents
+		}
+		this.props.setSearchResults(results);
 	}
 
 

@@ -103,8 +103,8 @@ export default class CodingEditor extends React.Component {
 			showCodingView: false,
 			selectedCode: {},
 			selectedEditor: PageView.CODING,
-			bottomPanelType: BottomPanelType.CODEVIEW,
-			searchResults: {},
+			bottomPanelType: BottomPanelType.SEARCHRESULTS,
+			searchResults: {documentResults: []},
 			mxGraphLoaded: false
 
 		};
@@ -133,6 +133,7 @@ export default class CodingEditor extends React.Component {
 		this.removeCode = this.removeCode.bind(this);
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
+		this.setSearchResults = this.setSearchResults.bind(this);
 
 		window.onresize = this.resizeElements;
 
@@ -343,6 +344,7 @@ export default class CodingEditor extends React.Component {
 				<BottomPanel
 					ref={(c) => {if (c) this.codeViewRef = c;}}
 					panelType = {this.state.bottomPanelType}
+					searchResults = {this.state.searchResults}
 					code={this.state.selectedCode}
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}

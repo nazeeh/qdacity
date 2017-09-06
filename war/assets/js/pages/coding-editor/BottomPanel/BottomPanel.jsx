@@ -24,7 +24,7 @@ export default class BottomPanel extends React.Component {
 	renderPanel(){
 		if (this.props.panelType === BottomPanelType.SEARCHRESULTS){
 			this.updateCode = (() => {});
-			return (<SearchResults />);
+			return (<SearchResults searchResults={this.props.searchResults}/>);
 		}
 		if (this.props.panelType === BottomPanelType.CODEVIEW) return (<CodeView ref={(c) => {if (c) this.updateCode = c.updateCode;}} {...this.props}/>);
 	}

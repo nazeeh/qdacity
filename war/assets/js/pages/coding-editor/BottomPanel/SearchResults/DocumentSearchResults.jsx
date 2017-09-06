@@ -11,7 +11,11 @@ export default class DocumentSearchResults extends React.Component {
 	render(){
 		return(
 			<div>
-				{"Document Results"}
+				{
+					this.props.documentResults.map(function(doc) {
+					  return doc.title;
+					})
+				}
 			</div>
 		);
 	}

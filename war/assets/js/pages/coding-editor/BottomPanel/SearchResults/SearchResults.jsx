@@ -18,7 +18,7 @@ export default class SearchResutls extends React.Component {
 			<div>
 				<Tabs tabChanged={this.tabChanged}>
                     <Tab tabTitle="Documents">
-                        <DocumentSearchResults/>
+                        <DocumentSearchResults documentResults = {this.props.searchResults.documentResults}/>
                     </Tab>
 					<Tab tabTitle="Memos">
                         {"Coming soon"}
