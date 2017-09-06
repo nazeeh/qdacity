@@ -23,13 +23,17 @@ export default class ProjectSearch extends React.Component {
 
 	searchProject(){
 		if (!this.props.documentsView.getDocuments) return;
-		const docs =this.props.documentsView.getDocuments()
+		const docs =this.props.documentsView.getDocuments();
+		let documents = [];
 		for (var i in docs) {
 			var doc = docs[i];
 			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1){
 			    alert(doc.text);
+				documents.push(doc);
 			}
 		}
+
+		this.props.setSearchResults(documents);
 	}
 
 

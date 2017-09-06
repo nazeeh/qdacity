@@ -63,7 +63,7 @@ export default class ProjectPanel extends React.Component {
 		return (
 			<StyledPanelContent>
 				<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
-				<ProjectSearch documentsView = {this.props.documentsView}/>
+				<ProjectSearch documentsView = {this.props.documentsView} setSearchResults={this.props.setSearchResults}/>
 				<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
 		);

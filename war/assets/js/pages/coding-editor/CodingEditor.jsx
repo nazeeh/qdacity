@@ -104,6 +104,7 @@ export default class CodingEditor extends React.Component {
 			selectedCode: {},
 			selectedEditor: PageView.CODING,
 			bottomPanelType: BottomPanelType.CODEVIEW,
+			searchResults: {},
 			mxGraphLoaded: false
 
 		};
@@ -171,6 +172,12 @@ export default class CodingEditor extends React.Component {
 
 		this.setState({
 			selectedEditor: view
+		});
+	}
+
+	setSearchResults(results){
+		this.setState({
+			searchResults: results
 		});
 	}
 
@@ -252,7 +259,7 @@ export default class CodingEditor extends React.Component {
 							</p>
 							<div id="agreementMapSlider" className="agreementMapSlider"></div>
 						</div>
-						<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} project={this.state.project} history={this.props.history} documentsView = {this.documentsViewRef} />
+						<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} setSearchResults = {this.setSearchResults} project={this.state.project} history={this.props.history} documentsView = {this.documentsViewRef} />
 					</div>
 				</StyledSideBarEditor>
 				<StyledSideBarDocuments>
