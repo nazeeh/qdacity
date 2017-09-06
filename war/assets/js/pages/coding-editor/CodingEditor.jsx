@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import UmlEditor from '../uml-editor/UmlEditor.jsx';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
-import CodeView from './CodeView/CodeView.jsx';
+import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
 import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 import TextEditor from './TextEditor.jsx';
@@ -329,7 +329,7 @@ export default class CodingEditor extends React.Component {
 
 			</StyledEditor>
 			<StyledFooter  showCodingView={this.state.showCodingView}>
-				<CodeView
+				<BottomPanel
 					ref={(c) => {if (c) this.codeViewRef = c;}}
 					code={this.state.selectedCode}
 					editorCtrl={this.state.editorCtrl}
