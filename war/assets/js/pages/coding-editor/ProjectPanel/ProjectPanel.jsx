@@ -35,6 +35,9 @@ const StyledExpanderToggle = styled.a `
 	font-size: 20px;
 	color: grey;
 	cursor: pointer;
+	&:hover{
+		color:black;
+	}
 `
 
 export default class ProjectPanel extends React.Component {
@@ -42,13 +45,27 @@ export default class ProjectPanel extends React.Component {
 		super(props);
 		this.state = {
 			isExpanded: true,
+			search: "",
 		};
+
+		this.updateSearch = this.updateSearch.bind(this);
+		this.searchProject = this.searchProject.bind(this);
+	}
+
+	updateSearch(e) {
+		this.setState({
+			search: e.target.value
+		});
 	}
 
 	toggleIsExpanded() {
 		this.setState({
 			isExpanded: !this.state.isExpanded
 		});
+	}
+
+	searchProject(){
+		window.alert(this.state.search);
 	}
 
 	renderCollapseIcon() {
@@ -68,7 +85,7 @@ export default class ProjectPanel extends React.Component {
 						value={this.state.search}
 						onChange={this.updateSearch}
 					/>
-					<BtnDefault type="button">
+					<BtnDefault type="button" onClick={() => this.searchProject()}>
 						<i className="fa fa-search  fa-lg"></i>
 					</BtnDefault>
 				</StyledSearchField>
