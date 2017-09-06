@@ -3,16 +3,22 @@ import styled from 'styled-components';
 
 
 const StyledTable = styled.div `
-	padding-top: 51px;
 	display: grid;
-	grid-template-columns: 3fr 14fr;
+	grid-template-columns:  1fr;
 	grid-template-areas:
 		"tableHeader"
 		"tableContent";
 `;
 
 const StyledTableHeader = styled.div `
+	display: grid;
 	grid-area: tableHeader;
+	grid-template-columns:  ${props => props.columns};
+	width: 100%;
+`;
+
+const StyledTableHeaderElement = styled.div `
+
 `;
 
 export default class Table extends React.Component {
@@ -26,10 +32,10 @@ export default class Table extends React.Component {
 	render(){
 		return(
 			<StyledTable>
-				<StyledTableHeader>
+				<StyledTableHeader columns={this.props.columns}>
 					{
 						this.props.tableHeader.map(function(headerElement) {
-						  return tableHeader;
+						  return (<div>{headerElement}</div>);
 						})
 					}
 				</StyledTableHeader>
