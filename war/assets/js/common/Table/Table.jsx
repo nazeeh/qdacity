@@ -17,6 +17,15 @@ const StyledTableHeader = styled.div `
 	width: 100%;
 `;
 
+const StyledTableContent = styled.div `
+	grid-area: tableContent;
+`;
+
+const StyledTableRow = styled.div `
+	display: grid;
+	grid-template-columns:  ${props => props.columns};
+`;
+
 const StyledTableHeaderElement = styled.div `
 
 `;
@@ -30,6 +39,7 @@ export default class Table extends React.Component {
 
 
 	render(){
+		const _this = this;
 		return(
 			<StyledTable>
 				<StyledTableHeader columns={this.props.columns}>
@@ -39,6 +49,21 @@ export default class Table extends React.Component {
 						})
 					}
 				</StyledTableHeader>
+				<StyledTableContent columns={this.props.columns}>
+					{
+						this.props.tableContent.map(function(tableRow) {
+						  return (
+							  <StyledTableRow  columns={_this.props.columns} >
+								  {
+									  tableRow.map((tableCell) => {
+									  	return(tableCell);
+								  	  })
+							  	  }
+							  </StyledTableRow>
+						  );
+						})
+					}
+				</StyledTableContent>
 			</StyledTable>
 		);
 	}

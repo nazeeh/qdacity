@@ -10,14 +10,16 @@ export default class DocumentSearchResults extends React.Component {
 	}
 
 	render(){
+		let tableContent = [];
+		let results = this.props.documentResults;
+		for (var i = 0; i < results.length; i++) {
+			let result = results[i];
+			tableContent.push([result.title, ""]);
+		}
+
 		return(
 			<div>
-			{
-				this.props.documentResults.map(function(doc) {
-				  return doc.title;
-				})
-			}
-			<Table columns={"1fr 1fr"} tableHeader={["Document","Excerpt"]}>
+			<Table columns={"1fr 1fr"} tableHeader={["Document","Excerpt"]} tableContent={tableContent}>
 
 			</Table>
 			</div>
