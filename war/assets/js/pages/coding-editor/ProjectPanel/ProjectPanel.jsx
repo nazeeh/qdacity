@@ -65,7 +65,14 @@ export default class ProjectPanel extends React.Component {
 	}
 
 	searchProject(){
-		window.alert(this.state.search);
+		if (!this.props.documentsView.getDocuments) return;
+		const docs =this.props.documentsView.getDocuments()
+		for (var i in docs) {
+			var doc = docs[i];
+			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1){
+			    alert(doc.text);
+			}
+		}
 	}
 
 	renderCollapseIcon() {
