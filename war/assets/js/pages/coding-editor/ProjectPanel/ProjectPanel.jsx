@@ -13,17 +13,20 @@ const StyledSettingsPanel = styled.div `
 	display: ${props => (props.showPanel) ? 'block' : 'none'} !important;
 	background-color: #f8f8f8;
 `;
-const StyledPanelContent = styled.div `
 
+const StyledPanelContent = styled.div `
 	margin:5px 5px 0px 5px;
 `;
-
 
 const StyledPanelHeader = styled.div `
 	text-align: center;
 	position:relative;
 	background-color: #e7e7e7;
 	padding-bottom: 5px;
+ `;
+
+ const StyledPanelTitle = styled.b `
+ 	padding-left: 17.14px;
  `;
 
 const StyledExpanderToggle = styled.a `
@@ -53,32 +56,38 @@ export default class ProjectPanel extends React.Component {
 		else return (<i className="fa fa-expand fa-1x"></i>);
 	}
 
+	renderPanelContent(){
+		if (!this.state.isExpanded) return null;
+		return (
+			<StyledPanelContent>
+				<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
+				<StyledSearchField className="searchfield" id="searchform">
+					<input
+						type="text"
+						placeholder="Search for anything"
+						value={this.state.search}
+						onChange={this.updateSearch}
+					/>
+					<BtnDefault type="button">
+						<i className="fa fa-search  fa-lg"></i>
+					</BtnDefault>
+				</StyledSearchField>
+				<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
+			</StyledPanelContent>
+		);
+	}
+
 	render(){
 		return(
 			<StyledSettingsPanel showPanel={this.props.project.getType() === "PROJECT"}>
 				<StyledPanelHeader>
-					<b>Project</b>
+					<StyledPanelTitle>Project</StyledPanelTitle>
 
-					<StyledExpanderToggle id="projectPanelToggleBtn" className="pull-right" onClick={() => this.toggleIsExpanded()}>
+					<StyledExpanderToggle className="pull-right" onClick={() => this.toggleIsExpanded()}>
 						{this.renderCollapseIcon()}
 					</StyledExpanderToggle>
 				</StyledPanelHeader>
-
-				<StyledPanelContent>
-					<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
-					<StyledSearchField className="searchfield" id="searchform">
-						<input
-							type="text"
-							placeholder="Search for anything"
-							value={this.state.search}
-							onChange={this.updateSearch}
-						/>
-						<BtnDefault type="button">
-							<i className="fa fa-search  fa-lg"></i>
-						</BtnDefault>
-					</StyledSearchField>
-					<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
-				</StyledPanelContent>
+				{this.renderPanelContent()}
 			</StyledSettingsPanel>
 
 		);
