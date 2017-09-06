@@ -1,7 +1,10 @@
 import React from 'react'
 import styled from 'styled-components';
 
+
 import CodeView from '../CodeView/CodeView.jsx';
+import SearchResults from './SearchResults/SearchResults.jsx';
+
 import {
 	BottomPanelType
 } from './BottomPanelType.js';
@@ -19,7 +22,10 @@ export default class BottomPanel extends React.Component {
 	}
 
 	renderPanel(){
-		if (this.props.panelType === BottomPanelType.SEARCHRESULTS) return null;
+		if (this.props.panelType === BottomPanelType.SEARCHRESULTS){
+			this.updateCode = (() => {});
+			return (<SearchResults />);
+		}
 		if (this.props.panelType === BottomPanelType.CODEVIEW) return (<CodeView ref={(c) => {if (c) this.updateCode = c.updateCode;}} {...this.props}/>);
 	}
 
