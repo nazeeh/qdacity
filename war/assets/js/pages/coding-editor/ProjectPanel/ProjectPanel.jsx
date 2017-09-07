@@ -49,10 +49,12 @@ export default class ProjectPanel extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			showSearchBar: false,
 			isExpanded: true,
 		};
 
-
+		this.showSearchBar = this.showSearchBar.bind(this);
+		this.setSearchResults = this.setSearchResults.bind(this);
 	}
 
 	toggleIsExpanded() {
@@ -66,15 +68,40 @@ export default class ProjectPanel extends React.Component {
 		else return (<i className="fa fa-expand fa-1x"></i>);
 	}
 
+	showSearchBar(){
+		this.setState({
+			showSearchBar: true
+		});
+	}
+
+	hideSearchBar(){
+		this.setState({
+			showSearchBar: false
+		});
+	}
+	setSearchResults(results){
+		this.setState({
+			showSearchBar: false
+		});
+		this.props.setSearchResults(results);
+	}
+
+
 	renderPanelContent(){
 		if (!this.state.isExpanded) return null;
 		return (
 			<StyledPanelContent>
 				<StyledTopBtns>
 					<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
-					<SearchProjectBtn project={this.props.project} history={this.props.history}/>
+					<SearchProjectBtn project={this.props.project} showSearchBar={this.showSearchBar} history={this.props.history}/>
 				</StyledTopBtns>
-				<ProjectSearch documentsView = {this.props.documentsView} codesystemView={this.props.codesystemView} setSearchResults={this.props.setSearchResults}/>
+				{
+					(() =>{
+						if (!this.state.showSearchBar) return null;
+						return (<ProjectSearch documentsView = {this.props.documentsView} codesystemView={this.props.codesystemView} setSearchResults={this.setSearchResults}/>);
+					})()
+
+				}
 				<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
 		);

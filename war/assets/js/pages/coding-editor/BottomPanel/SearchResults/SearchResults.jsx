@@ -19,10 +19,10 @@ export default class SearchResutls extends React.Component {
 			<div>
 				<Tabs tabChanged={this.tabChanged}>
                     <Tab tabTitle="Documents">
-                        <DocumentSearchResults documentResults = {this.props.searchResults.documentResults}/>
+                        <DocumentSearchResults documentResults = {this.props.searchResults? this.props.searchResults.documentResults : []}/>
                     </Tab>
 					<Tab tabTitle="Memos">
-                        <MemoSearchResults memoResults = {this.props.searchResults.memoResults}/>
+                        <MemoSearchResults memoResults = {this.props.searchResults ? this.props.searchResults.memoResults : []}/>
                     </Tab>
                 </Tabs>
 			</div>

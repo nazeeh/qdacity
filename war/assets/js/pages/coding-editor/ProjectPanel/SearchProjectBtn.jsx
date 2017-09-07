@@ -19,13 +19,9 @@ export default class SearchProjectBtn extends React.Component {
 		this.state = {};
 	}
 
-	projectSearchBtnClick(prj) {
-
-	}
-
 	render() {
 		return (
-			<StyledPrjSearchBtn  onClick={() => {this.projectSearchBtnClick();}}>
+			<StyledPrjSearchBtn  onClick={this.props.showSearchBar}>
 				<i className="fa fa-search fa-lg"></i>
 				<span>Search Project</span>
 			</StyledPrjSearchBtn>
