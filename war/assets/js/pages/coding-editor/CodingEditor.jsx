@@ -271,7 +271,7 @@ export default class CodingEditor extends React.Component {
 							</p>
 							<div id="agreementMapSlider" className="agreementMapSlider"></div>
 						</div>
-						<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged} setSearchResults = {this.setSearchResults} project={this.state.project} history={this.props.history} documentsView = {this.documentsViewRef} />
+						<ProjectPanel umlEditorEnabled={this.state.project.isUmlEditorEnabled()} codesystemView={this.codesystemViewRef} viewChanged={this.viewChanged} setSearchResults = {this.setSearchResults} project={this.state.project} history={this.props.history} documentsView = {this.documentsViewRef} />
 					</div>
 				</StyledSideBarEditor>
 				<StyledSideBarDocuments>

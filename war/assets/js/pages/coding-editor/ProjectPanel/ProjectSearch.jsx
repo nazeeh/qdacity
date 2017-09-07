@@ -22,21 +22,34 @@ export default class ProjectSearch extends React.Component {
 	}
 
 	searchProject(){
-		if (!this.props.documentsView.getDocuments) return;
-		const docs =this.props.documentsView.getDocuments();
+
+		let results = {
+			documentResults: this.searchDocuments(),
+			memoResults: this.searchMemos()
+		}
+		this.props.setSearchResults(results);
+	}
+
+	searchDocuments(){
 		let documents = [];
+		if (!this.props.documentsView.getDocuments) return documents;
+		const docs =this.props.documentsView.getDocuments();
 		for (var i in docs) {
 			var doc = docs[i];
 			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1){
 				documents.push(doc);
 			}
 		}
-		let results = {
-			documentResults: documents
-		}
-		this.props.setSearchResults(results);
+		return documents;
 	}
 
+	searchMemos(){
+		let codesystem = this.props.codesystemView.getCodesystem();
+		for (var i in codesystem) {
+			var code = codesystem[i];
+			alert(code);
+		}
+	}
 
 	render(){
 		return(
