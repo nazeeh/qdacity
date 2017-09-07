@@ -4,6 +4,7 @@ import Tab from '../../../../common/Tabs/Tab.jsx';
 import Tabs from '../../../../common/Tabs/Tabs.jsx';
 
 import DocumentSearchResults from './DocumentSearchResults.jsx';
+import MemoSearchResults from './MemoSearchResults.jsx';
 
 export default class SearchResutls extends React.Component {
 	constructor(props) {
@@ -21,7 +22,7 @@ export default class SearchResutls extends React.Component {
                         <DocumentSearchResults documentResults = {this.props.searchResults.documentResults}/>
                     </Tab>
 					<Tab tabTitle="Memos">
-                        {"Coming soon"}
+                        <MemoSearchResults memoResults = {this.props.searchResults.memoResults}/>
                     </Tab>
                 </Tabs>
 			</div>
