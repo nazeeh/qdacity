@@ -64,6 +64,7 @@ export default class ProjectSearch extends React.Component {
 					placeholder="Search for anything"
 					value={this.state.search}
 					onChange={this.updateSearch}
+					onKeyPress={(e) => { if (e.key === 'Enter') this.searchProject();}}
 				/>
 				<BtnDefault type="button" onClick={() => this.searchProject()}>
 					<i className="fa fa-search  fa-lg"></i>
