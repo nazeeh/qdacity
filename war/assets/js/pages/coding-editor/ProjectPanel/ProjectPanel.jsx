@@ -104,7 +104,7 @@ export default class ProjectPanel extends React.Component {
 					})()
 
 				}
-				<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
+				<PageViewChooser umlEditorEnabled={this.props.project.isUmlEditorEnabled()} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
 		);
 	}
