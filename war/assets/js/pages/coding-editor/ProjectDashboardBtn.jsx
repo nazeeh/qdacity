@@ -3,12 +3,11 @@ import styled from 'styled-components';
 import {
 	BtnDefault
 } from '../../common/styles/Btn.jsx';
+
 const StyledPrjDasboardBtn = BtnDefault.extend `
 	text-align: center;
 	width: 100%;
 	margin-bottom:5px;
-	padding-top: 2px;
-	padding-bottom: 2px;
 
 	&> span {
 		margin-left: 5px;
@@ -29,7 +28,7 @@ export default class ProjectDashboardBtn extends React.Component {
 		return (
 			<StyledPrjDasboardBtn  onClick={() => {this.projectDashboardBtnClick(this.props.project);}}>
 				<i className="fa fa-home fa-lg"></i>
-				<span>Go to Project Dashboard</span>
+				<span>Project Dashboard</span>
 			</StyledPrjDasboardBtn>
 		);
 	}

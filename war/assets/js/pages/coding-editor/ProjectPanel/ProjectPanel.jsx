@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import ProjectDashboardBtn from '../ProjectDashboardBtn.jsx';
+import SearchProjectBtn from './SearchProjectBtn.jsx';
 import ProjectSearch from './ProjectSearch.jsx';
 import PageViewChooser  from './PageViewChooser.jsx';
 
@@ -24,6 +25,13 @@ const StyledPanelHeader = styled.div `
 
  const StyledPanelTitle = styled.b `
  	padding-left: 17.14px;
+ `;
+
+ const StyledTopBtns = styled.div `
+	display: grid;
+	grid-template-columns:  1fr 1fr;
+	grid-column-gap: 5px;
+
  `;
 
 const StyledExpanderToggle = styled.a `
@@ -62,7 +70,10 @@ export default class ProjectPanel extends React.Component {
 		if (!this.state.isExpanded) return null;
 		return (
 			<StyledPanelContent>
-				<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
+				<StyledTopBtns>
+					<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
+					<SearchProjectBtn project={this.props.project} history={this.props.history}/>
+				</StyledTopBtns>
 				<ProjectSearch documentsView = {this.props.documentsView} codesystemView={this.props.codesystemView} setSearchResults={this.props.setSearchResults}/>
 				<PageViewChooser umlEditorEnabled={this.props.umlEditorEnabled} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
