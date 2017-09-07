@@ -178,7 +178,9 @@ export default class CodingEditor extends React.Component {
 
 	setSearchResults(results){
 		this.setState({
-			searchResults: results
+			searchResults: results,
+			bottomPanelType: BottomPanelType.SEARCHRESULTS,
+			showCodingView: true
 		});
 	}
 
@@ -192,7 +194,8 @@ export default class CodingEditor extends React.Component {
 
 	toggleCodingView() {
 		this.setState({
-			showCodingView: !this.state.showCodingView
+			showCodingView: !this.state.showCodingView,
+			bottomPanelType: BottomPanelType.CODEVIEW,
 		});
 	}
 
@@ -230,6 +233,14 @@ export default class CodingEditor extends React.Component {
 
 	showCodingView() {
 		this.setState({
+			bottomPanelType: BottomPanelType.CODEVIEW,
+			showCodingView: true
+		});
+	}
+
+	showSearchResults(){
+		this.setState({
+			bottomPanelType: BottomPanelType.SEARCHRESULTS,
 			showCodingView: true
 		});
 	}
