@@ -65,7 +65,7 @@ export default class Table extends React.Component {
 							  <StyledTableRow  columns={_this.props.columns} >
 								  {
 									  tableRow.map((tableCell) => {
-									  	return(tableCell);
+									  	return(<div>{tableCell}</div>);
 								  	  })
 							  	  }
 							  </StyledTableRow>
