@@ -44,12 +44,13 @@ export default class ProjectSearch extends React.Component {
 	}
 
 	searchMemos(){
-		let codesystem = this.props.codesystemView.getCodesystem();
+		let codesystem = this.props.codesystemView.getAllCodes();
 		for (var i in codesystem) {
 			var code = codesystem[i];
 			alert(code);
 		}
 	}
+
 
 	render(){
 		return(
