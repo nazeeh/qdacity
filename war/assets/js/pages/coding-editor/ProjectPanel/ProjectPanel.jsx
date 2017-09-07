@@ -53,7 +53,7 @@ export default class ProjectPanel extends React.Component {
 			isExpanded: true,
 		};
 
-		this.showSearchBar = this.showSearchBar.bind(this);
+		this.toggleSearchBar = this.toggleSearchBar.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
 	}
 
@@ -68,9 +68,9 @@ export default class ProjectPanel extends React.Component {
 		else return (<i className="fa fa-expand fa-1x"></i>);
 	}
 
-	showSearchBar(){
+	toggleSearchBar(){
 		this.setState({
-			showSearchBar: true
+			showSearchBar: !this.state.showSearchBar
 		});
 		this.forceUpdate();
 		this.props.resizeElements();
@@ -95,7 +95,7 @@ export default class ProjectPanel extends React.Component {
 			<StyledPanelContent>
 				<StyledTopBtns>
 					<ProjectDashboardBtn project={this.props.project} history={this.props.history}/>
-					<SearchProjectBtn project={this.props.project} showSearchBar={this.showSearchBar} history={this.props.history}/>
+					<SearchProjectBtn project={this.props.project} toggleSearchBar={this.toggleSearchBar} history={this.props.history}/>
 				</StyledTopBtns>
 				{
 					(() =>{

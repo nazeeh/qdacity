@@ -21,7 +21,7 @@ export default class SearchProjectBtn extends React.Component {
 
 	render() {
 		return (
-			<StyledPrjSearchBtn  onClick={this.props.showSearchBar}>
+			<StyledPrjSearchBtn  onClick={this.props.toggleSearchBar}>
 				<i className="fa fa-search fa-lg"></i>
 				<span>Search Project</span>
 			</StyledPrjSearchBtn>

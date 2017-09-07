@@ -194,7 +194,7 @@ export default class CodingEditor extends React.Component {
 
 	toggleCodingView() {
 		let showCodingView = !this.state.showCodingView
-		if (BottomPanelType.SEARCHRESULTS) showCodingView = true;
+		if (this.state.bottomPanelType === BottomPanelType.SEARCHRESULTS) showCodingView = true;
 		this.setState({
 			showCodingView: showCodingView,
 			bottomPanelType: BottomPanelType.CODEVIEW,
