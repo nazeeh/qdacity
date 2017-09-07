@@ -28,7 +28,6 @@ export default class ProjectSearch extends React.Component {
 		for (var i in docs) {
 			var doc = docs[i];
 			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1){
-			    alert(doc.text);
 				documents.push(doc);
 			}
 		}

@@ -14,7 +14,12 @@ const StyledTableHeader = styled.div `
 	display: grid;
 	grid-area: tableHeader;
 	grid-template-columns:  ${props => props.columns};
+	border-bottom:  2px solid;
+	border-color: ${props => props.theme.borderDefaultHighlight};
 	width: 100%;
+	font-weight: bold;
+	font-size: 1.1em;
+	padding: 5px;
 `;
 
 const StyledTableContent = styled.div `
@@ -24,6 +29,10 @@ const StyledTableContent = styled.div `
 const StyledTableRow = styled.div `
 	display: grid;
 	grid-template-columns:  ${props => props.columns};
+	border-bottom:  1px solid;
+	border-color: ${props => props.theme.borderDefault};
+	padding: 2px 0px 2px 0px;
+
 `;
 
 const StyledTableHeaderElement = styled.div `
