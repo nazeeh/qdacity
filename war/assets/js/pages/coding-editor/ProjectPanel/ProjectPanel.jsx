@@ -8,7 +8,6 @@ import PageViewChooser  from './PageViewChooser.jsx';
 
 
 const StyledSettingsPanel = styled.div `
-	display: ${props => (props.showPanel) ? 'block' : 'none'} !important;
 	background-color: #f8f8f8;
 `;
 
@@ -104,14 +103,14 @@ export default class ProjectPanel extends React.Component {
 					})()
 
 				}
-				<PageViewChooser umlEditorEnabled={this.props.project.isUmlEditorEnabled()} viewChanged={this.props.viewChanged}/>
+				<PageViewChooser project={this.props.project} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
 		);
 	}
 
 	render(){
 		return(
-			<StyledSettingsPanel showPanel={this.props.project.getType() === "PROJECT"}>
+			<StyledSettingsPanel>
 				<StyledPanelHeader>
 					<StyledPanelTitle>Project</StyledPanelTitle>
 
