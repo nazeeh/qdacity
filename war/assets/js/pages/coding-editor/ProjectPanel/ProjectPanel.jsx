@@ -72,6 +72,8 @@ export default class ProjectPanel extends React.Component {
 		this.setState({
 			showSearchBar: true
 		});
+		this.forceUpdate();
+		this.props.resizeElements();
 	}
 
 	hideSearchBar(){
