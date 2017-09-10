@@ -175,7 +175,7 @@ export default class SimpleCode extends React.Component {
 			if (this.props.isCodeSelectable != null && !this.props.isCodeSelectable(code)) {
 				color = '#e0e0e0';
 			} else {
-				color = '#63a0d4';
+				color = Theme.bgHover;
 			}
 		}
 

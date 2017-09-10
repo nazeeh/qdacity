@@ -5,6 +5,7 @@ export default {
 	borderDefaultHighlight: 'black',
 	bgDefault: 'white',
 	bgDefaultHighlight: 'black',
+	bgHover: '#63a0d4',
 	fgDefault: 'black',
 	fgDefaultHighlight: 'white',
 
