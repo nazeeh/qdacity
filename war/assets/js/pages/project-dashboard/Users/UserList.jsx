@@ -69,7 +69,7 @@ export default class UserList extends React.Component {
 
 
 	isActivePage(page) {
-		return ((page == this.state.currentPage) ? 'active' : ' ');
+		return (page == this.state.currentPage);
 	}
 
 	renderPaginationIfNeccessary() {
@@ -87,13 +87,13 @@ export default class UserList extends React.Component {
 		              key={pageNo}
 		              id={pageNo}
 		              onClick={this.paginationClick}
-		              className= {this.isActivePage(pageNo)}
+		              active= {this.isActivePage(pageNo)}
 		            >
 		              {pageNo}
 				  </StyledPaginationItem>
 				);
 			});
-			return <StyledPagination className="pagination" key={"pagination"}>
+			return <StyledPagination key={"pagination"}>
 					{renderPaginationItems}
             	</StyledPagination>
 		}

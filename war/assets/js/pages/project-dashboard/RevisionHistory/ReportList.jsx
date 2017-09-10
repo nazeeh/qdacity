@@ -34,7 +34,7 @@ export default class ReportList extends React.Component {
 
 
 	isActivePage(page) {
-		return ((page == this.state.currentPage) ? 'active' : ' ');
+		return (page == this.state.currentPage);
 	}
 
 
@@ -107,7 +107,7 @@ export default class ReportList extends React.Component {
 	              key={pageNo}
 	              id={pageNo}
 	              onClick={this.paginationClick}
-	              className= {this.isActivePage(pageNo)}
+	              active= {this.isActivePage(pageNo)}
 	            >
 	              {pageNo}
 			  </StyledPaginationItem>
@@ -119,7 +119,7 @@ export default class ReportList extends React.Component {
 				<StyledBoxList>
 					{renderListItems}
 	            </StyledBoxList>
-	            <StyledPagination className="pagination">
+	            <StyledPagination>
 					{renderPagination}
             	</StyledPagination>
      		</div>

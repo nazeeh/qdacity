@@ -103,7 +103,6 @@ export default class Users extends React.Component {
 					<UserList  users={this.state.users} removeUser={this.removeUser}/>
 					<ul id="user-list" className="list compactBoxList">
 					</ul>
-					<ul className="pagination"></ul>
 				</div>
 			</div>
 		);
