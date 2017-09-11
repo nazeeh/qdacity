@@ -41,7 +41,15 @@ const StyledRelationItem = styled.li `
 
 const StyledCodeName = styled.span `
 	font-size: 14px;
-    font-weight: ${props => props.highlight ? 'bold' : 'normal'};
+`;
+
+const StyledCodeHighlightName = styled.a `
+    font-size: 14px;
+    font-weight: bold;
+    
+    &:hover {
+        cursor: pointer;
+    }
 `;
 
 const StyledRelationName = styled.span `
@@ -95,6 +103,7 @@ export default class CodeRelationsView extends React.Component {
 			name: mmElementName,
 			sourceName: sourceCodeName,
 			destinationName: destinationCodeName,
+			src: sourceCode.codeID,
 			dst: relation.codeId,
 			mmElementId: relation.mmElementId,
 			relationshipCodeId: relation.relationshipCodeId
@@ -220,6 +229,10 @@ export default class CodeRelationsView extends React.Component {
 		this.props.createCode(name, null, relation.id, this.state.sourceCode, true);
 	}
 
+	selectCode(codeId) {
+		this.props.selectCode(this.props.getCodeByCodeID(codeId));
+	}
+
 	goToRelationshipCode(relation) {
 		this.props.selectCode(this.props.getCodeById(relation.relationshipCodeId));
 	}
@@ -287,7 +300,7 @@ export default class CodeRelationsView extends React.Component {
                                     <StyledCodeName>{rel.sourceName}</StyledCodeName>
                                     <br/>
                                     <StyledRelationName>{rel.name + ' '}</StyledRelationName>
-                                    <StyledCodeName highlight="true"> {rel.destinationName}</StyledCodeName>
+                                    <StyledCodeHighlightName onClick={_this.selectCode.bind(_this, rel.dst)}> {rel.destinationName}</StyledCodeHighlightName>
                                 </StyledRelationItem>
                             );
                         })
@@ -315,7 +328,7 @@ export default class CodeRelationsView extends React.Component {
                         _this.state.incomingRelationships.map((rel) => {
                             return (
                                 <StyledRelationItem key={rel.id}>
-                                    <StyledCodeName highlight="true">{rel.sourceName}</StyledCodeName>
+                                    <StyledCodeHighlightName onClick={_this.selectCode.bind(_this, rel.src)}>{rel.sourceName}</StyledCodeHighlightName>
                                     <StyledRelationName>{' ' + rel.name}</StyledRelationName>
                                     <br/>
                                     <StyledCodeName>{rel.destinationName}</StyledCodeName>
