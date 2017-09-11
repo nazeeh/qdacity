@@ -11,6 +11,7 @@ export default class ProjectSearch extends React.Component {
 		this.state = {
 			search: "",
 		};
+		this.input = {};
 		this.updateSearch = this.updateSearch.bind(this);
 		this.searchProject = this.searchProject.bind(this);
 	}
@@ -55,11 +56,15 @@ export default class ProjectSearch extends React.Component {
 		return codes;
 	}
 
+	componentDidMount(){
+		this.input.focus();
+	}
 
 	render() {
 		return (
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
+					ref={(c) => this.input = c}
 					type="text"
 					placeholder="Search for anything"
 					value={this.state.search}
