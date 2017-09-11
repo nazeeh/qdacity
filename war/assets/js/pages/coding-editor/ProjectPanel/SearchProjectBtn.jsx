@@ -7,10 +7,6 @@ const StyledPrjSearchBtn = BtnDefault.extend `
 	text-align: center;
 	width: 100%;
 	margin-bottom:5px;
-
-	&> span {
-		margin-left: 5px;
-	}
 `;
 
 export default class SearchProjectBtn extends React.Component {

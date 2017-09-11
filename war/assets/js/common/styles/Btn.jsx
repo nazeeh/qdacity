@@ -21,6 +21,9 @@ const BtnSm = Btn.extend `
 	font-size: 12px;
 	line-height: 1.5;
 	border-radius: 0px;
+	&>span{
+		margin-left: 5px;
+	}
 `;
 
 

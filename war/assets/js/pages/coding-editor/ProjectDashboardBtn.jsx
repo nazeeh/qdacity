@@ -8,10 +8,6 @@ const StyledPrjDasboardBtn = BtnDefault.extend `
 	text-align: center;
 	width: 100%;
 	margin-bottom:5px;
-
-	&> span {
-		margin-left: 5px;
-	}
 `;
 
 export default class ProjectDashboardBtn extends React.Component {
