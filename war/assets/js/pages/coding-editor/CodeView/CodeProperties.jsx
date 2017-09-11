@@ -87,10 +87,10 @@ export default class CodeProperties extends React.Component {
 						</div>
 					</StyledPropertyPanel>
 				<StyledSaveBtn>
-				<BtnDefault onClick={() => this.props.updateSelectedCode(this.props.code, true)}>
-						<i className="fa fa-floppy-o "></i>
-						<span>Save</span>
-				</BtnDefault>
+					<BtnDefault onClick={() => this.props.updateSelectedCode(this.props.code, true)}>
+							<i className="fa fa-floppy-o "></i>
+							<span>Save</span>
+					</BtnDefault>
 				</StyledSaveBtn>
 			</div>
 		);

@@ -3,6 +3,10 @@ import styled from 'styled-components';
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
+
 const StyledCodeviewComponent = styled.div `
     padding: 8px 3px 0px 3px;
 `;
@@ -19,9 +23,7 @@ const StyledTextField = styled.textarea `
 `;
 
 const StyledSaveBtn = styled.div `
-    width: 8em;
-	text-align: center;
-	margin: 0 auto;
+    text-align: center;
 `;
 
 export default class codeBookEntry extends React.Component {
@@ -79,11 +81,11 @@ export default class codeBookEntry extends React.Component {
 					<span className="codebookEntryCol">When Not To Use</span>
 					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.whenNotToUse)} onChange={this.changeWhenNot} />
 				</StyledEntry>
-				<StyledSaveBtn >
-					<a className="btn btn-default btn-default" onClick={() => this.updateCodeBookEntry()} >
-						<i className="fa fa-floppy-o "></i>
-						Save
-					</a>
+				<StyledSaveBtn>
+					<BtnDefault onClick={() => this.updateCodeBookEntry()}>
+							<i className="fa fa-floppy-o "></i>
+							<span>Save</span>
+					</BtnDefault>
 				</StyledSaveBtn>
 			</StyledCodeviewComponent>
 		);
