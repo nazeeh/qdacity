@@ -17,20 +17,19 @@ const StyledCloseFooterBtn = styled.a `
 export default class BottomPanel extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
-	renderPanel(){
-		if (this.props.panelType === BottomPanelType.SEARCHRESULTS){
+	renderPanel() {
+		if (this.props.panelType === BottomPanelType.SEARCHRESULTS) {
 			this.updateCode = (() => {});
 			return (<SearchResults searchResults={this.props.searchResults}/>);
 		}
 		if (this.props.panelType === BottomPanelType.CODEVIEW) return (<CodeView ref={(c) => {if (c) this.updateCode = c.updateCode;}} {...this.props}/>);
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<div>
 				<StyledCloseFooterBtn onClick={this.props.hideCodingView}>
                     <i className="fa fa-times-circle fa-2x fa-hover"></i>

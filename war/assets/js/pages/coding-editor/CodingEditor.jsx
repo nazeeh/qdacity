@@ -104,7 +104,9 @@ export default class CodingEditor extends React.Component {
 			selectedCode: {},
 			selectedEditor: PageView.CODING,
 			bottomPanelType: BottomPanelType.SEARCHRESULTS,
-			searchResults: {documentResults: []},
+			searchResults: {
+				documentResults: []
+			},
 			mxGraphLoaded: false
 
 		};
@@ -176,7 +178,7 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
-	setSearchResults(results){
+	setSearchResults(results) {
 		this.setState({
 			searchResults: results,
 			bottomPanelType: BottomPanelType.SEARCHRESULTS,
@@ -240,7 +242,7 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
-	showSearchResults(){
+	showSearchResults() {
 		this.setState({
 			bottomPanelType: BottomPanelType.SEARCHRESULTS,
 			showCodingView: true

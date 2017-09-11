@@ -94,11 +94,11 @@ export default class SimpleCodesystem extends React.Component {
 		return this.state.codesystem;
 	}
 
-	getAllCodes(){
+	getAllCodes() {
 		return this.getAllCodesRecursive(this.state.codesystem);
 	}
 
-	getAllCodesRecursive(codeSiblings){
+	getAllCodesRecursive(codeSiblings) {
 		let codes = [];
 		for (var i in codeSiblings) {
 			let code = codeSiblings[i];

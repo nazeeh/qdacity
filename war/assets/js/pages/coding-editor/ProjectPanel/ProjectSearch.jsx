@@ -21,7 +21,7 @@ export default class ProjectSearch extends React.Component {
 		});
 	}
 
-	searchProject(){
+	searchProject() {
 
 		let results = {
 			documentResults: this.searchDocuments(),
@@ -30,25 +30,25 @@ export default class ProjectSearch extends React.Component {
 		this.props.setSearchResults(results);
 	}
 
-	searchDocuments(){
+	searchDocuments() {
 		let documents = [];
 		if (!this.props.documentsView.getDocuments) return documents;
-		const docs =this.props.documentsView.getDocuments();
+		const docs = this.props.documentsView.getDocuments();
 		for (var i in docs) {
 			var doc = docs[i];
-			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1){
+			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1) {
 				documents.push(doc);
 			}
 		}
 		return documents;
 	}
 
-	searchMemos(){
+	searchMemos() {
 		let codes = [];
 		let codesystem = this.props.codesystemView.getAllCodes();
 		for (var i in codesystem) {
 			var code = codesystem[i];
-			if(code.memo && code.memo.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1){
+			if (code.memo && code.memo.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1) {
 				codes.push(code);
 			}
 		}
@@ -56,8 +56,8 @@ export default class ProjectSearch extends React.Component {
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					type="text"

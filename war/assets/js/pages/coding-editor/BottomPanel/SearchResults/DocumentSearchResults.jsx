@@ -5,11 +5,10 @@ import Table from '../../../../common/Table/Table.jsx';
 export default class DocumentSearchResults extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
-	render(){
+	render() {
 		let tableContent = [];
 		let results = this.props.documentResults;
 		for (var i = 0; i < results.length; i++) {
@@ -17,7 +16,7 @@ export default class DocumentSearchResults extends React.Component {
 			tableContent.push([result.title, ""]);
 		}
 
-		return(
+		return (
 			<div>
 			<Table columns={"1fr 1fr"} tableHeader={["Document","Excerpt"]} tableContent={tableContent}>
 

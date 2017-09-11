@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ProjectDashboardBtn from '../ProjectDashboardBtn.jsx';
 import SearchProjectBtn from './SearchProjectBtn.jsx';
 import ProjectSearch from './ProjectSearch.jsx';
-import PageViewChooser  from './PageViewChooser.jsx';
+import PageViewChooser from './PageViewChooser.jsx';
 
 
 const StyledSettingsPanel = styled.div `
@@ -22,11 +22,11 @@ const StyledPanelHeader = styled.div `
 	padding-bottom: 5px;
  `;
 
- const StyledPanelTitle = styled.b `
+const StyledPanelTitle = styled.b `
  	padding-left: 17.14px;
  `;
 
- const StyledTopBtns = styled.div `
+const StyledTopBtns = styled.div `
 	display: grid;
 	grid-template-columns:  1fr 1fr;
 	grid-column-gap: 5px;
@@ -67,7 +67,7 @@ export default class ProjectPanel extends React.Component {
 		else return (<i className="fa fa-expand fa-1x"></i>);
 	}
 
-	toggleSearchBar(){
+	toggleSearchBar() {
 		this.setState({
 			showSearchBar: !this.state.showSearchBar
 		});
@@ -75,12 +75,12 @@ export default class ProjectPanel extends React.Component {
 		this.props.resizeElements();
 	}
 
-	hideSearchBar(){
+	hideSearchBar() {
 		this.setState({
 			showSearchBar: false
 		});
 	}
-	setSearchResults(results){
+	setSearchResults(results) {
 		this.setState({
 			showSearchBar: false
 		});
@@ -88,7 +88,7 @@ export default class ProjectPanel extends React.Component {
 	}
 
 
-	renderPanelContent(){
+	renderPanelContent() {
 		if (!this.state.isExpanded) return null;
 		return (
 			<StyledPanelContent>
@@ -108,8 +108,8 @@ export default class ProjectPanel extends React.Component {
 		);
 	}
 
-	render(){
-		return(
+	render() {
+		return (
 			<StyledSettingsPanel>
 				<StyledPanelHeader>
 					<StyledPanelTitle>Project</StyledPanelTitle>

@@ -9,13 +9,12 @@ import MemoSearchResults from './MemoSearchResults.jsx';
 export default class SearchResutls extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
 
-	render(){
-		return(
+	render() {
+		return (
 			<div>
 				<Tabs tabChanged={this.tabChanged}>
                     <Tab tabTitle="Documents">

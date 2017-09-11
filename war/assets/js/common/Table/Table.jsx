@@ -42,14 +42,13 @@ const StyledTableHeaderElement = styled.div `
 export default class Table extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-		};
+		this.state = {};
 	}
 
 
-	render(){
+	render() {
 		const _this = this;
-		return(
+		return (
 			<StyledTable>
 				<StyledTableHeader columns={this.props.columns}>
 					{
