@@ -15,6 +15,15 @@ const StyledSaveBtn = styled.div `
 	margin: 0 auto;
 `;
 
+const StyledPropertyPanel = styled.div `
+    padding: 8px 0px 0px 8px;
+	display: grid;
+	grid-template-columns: 70px 200px;
+  	grid-template-rows: 30px 30px 30px;
+	grid-row-gap: 5px;
+`;
+
+
 export default class CodeProperties extends React.Component {
 	constructor(props) {
 		super(props);
@@ -58,27 +67,18 @@ export default class CodeProperties extends React.Component {
 	render() {
 		return (
 			<div className="active-content-div">
-					<table>
-						<tbody>
-						<tr>
-							<td><span>Name: </span></td>
-							<td><input id="codePropName" type="text" value={this.props.code.name} onChange={this.changeName}/></td>
-						</tr>
-						<tr>
-							<td><span>Author: </span></td>
-							<td><input id="codePropAuthor" type="text" value={this.props.code.author} onChange={this.changeAuthor}/></td>
-						</tr>
-						<tr>
-							<td><span>Color: </span></td>
-							<td>
-								<div className="evo-cp-wrap">
-									<StyledColorPicker id="codePropColor" type="text" className="colorPicker evo-cp0"/>
+					<StyledPropertyPanel>
+						<span>Name: </span>
+						<input type="text" value={this.props.code.name} onChange={this.changeName}/>
 
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+						<span>Author: </span>
+						<input type="text" value={this.props.code.author} onChange={this.changeAuthor}/>
+
+						<span>Color: </span>
+						<div className="evo-cp-wrap">
+							<StyledColorPicker id="codePropColor" type="text" className="colorPicker evo-cp0"/>
+						</div>
+					</StyledPropertyPanel>
 
 				<StyledSaveBtn onClick={() => this.props.updateSelectedCode(this.props.code, true)}>
 					<a id="btnCodeSave" className="btn btn-default btn-default">
