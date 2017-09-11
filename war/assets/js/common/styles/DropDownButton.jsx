@@ -50,7 +50,7 @@ export default class DropDownButton extends React.Component {
 		super(props);
 
 		this.state = {
-			text: this.props.text,
+			text: this.props.initText,
 			expanded: false
 		}
 
