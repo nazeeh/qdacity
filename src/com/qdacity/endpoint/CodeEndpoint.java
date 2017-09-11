@@ -327,11 +327,13 @@ public class CodeEndpoint {
 
 			// Does the relation exist?
 			boolean relationExists = false;
-			for (CodeRelation rel : code.getRelations()) {
-				if (relation.getCodeId().equals(rel.getCodeId()) &&
-					relation.getMmElementId().equals(rel.getMmElementId())) {
-					relationExists = true;
-					break;
+			if (code.getRelations() != null) {
+				for (CodeRelation rel : code.getRelations()) {
+					if (relation.getCodeId().equals(rel.getCodeId()) &&
+						relation.getMmElementId().equals(rel.getMmElementId())) {
+						relationExists = true;
+						break;
+					}
 				}
 			}
 			

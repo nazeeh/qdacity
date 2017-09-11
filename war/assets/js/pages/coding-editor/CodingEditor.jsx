@@ -203,8 +203,8 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
-	createCode(name, relationId, relationSourceCodeId, select) {
-		this.codesystemViewRef.createCode(name, relationId, relationSourceCodeId, select);
+	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
+		this.codesystemViewRef.createCode(name, mmElementIDs, relationId, relationSourceCodeId, select);
 	}
 
 	insertCode(code) {
@@ -238,7 +238,7 @@ export default class CodingEditor extends React.Component {
 	}
 
 	renderUMLEditor() {
-		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />;
+		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} createCode={this.createCode} />;
 		return null;
 	}
 
