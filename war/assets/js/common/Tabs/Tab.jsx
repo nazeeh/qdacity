@@ -7,9 +7,9 @@ const StyledTab = styled.div `
 	font-weight: bold;
 	cursor: pointer;
 	color: ${props => props.isActive ?'#fff' : '#000'};
-	background-color: ${props => props.isActive ?'#337ab7' : ''};
+	background-color: ${props => props.isActive ? props.theme.bgPrimaryHighlight : ''};
 	border-bottom-style: solid;
-	border-bottom-color:  #337ab7;
+	border-bottom-color:  ${props => props.theme.bgPrimaryHighlight};
 `;
 
 export default class Tab extends React.Component {
