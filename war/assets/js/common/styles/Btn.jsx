@@ -36,7 +36,7 @@ const BtnDefault = BtnSm.extend `
 		background-color:  ${props => props.theme.borderDefaultHighlight};
 		border-color:  ${props => props.theme.borderDefaultHighlight};
 		color: ${props => props.theme.fgDefaultHighlight};
-		& > span > .fa-inverse {
+		& > div > .fa-inverse {
 			color: ${props => props.theme.fgDefault};
 		}
     }
@@ -61,7 +61,7 @@ const BtnPrimary = BtnSm.extend `
 		background-color:  ${props => props.theme.borderPrimaryHighlight};
 		border-color:  ${props => props.theme.borderPrimaryHighlight};
 		color: ${props => props.theme.fgPrimaryHighlight};
-		& > span > .fa-inverse {
+		& > div > .fa-inverse {
 			color: ${props => props.theme.fgPrimary};
 		}
     }
