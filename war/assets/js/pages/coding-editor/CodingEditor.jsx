@@ -275,7 +275,15 @@ export default class CodingEditor extends React.Component {
 							</p>
 							<div id="agreementMapSlider" className="agreementMapSlider"></div>
 						</div>
-						<ProjectPanel resizeElements={this.resizeElements} codesystemView={this.codesystemViewRef} viewChanged={this.viewChanged} setSearchResults = {this.setSearchResults} project={this.state.project} history={this.props.history} documentsView = {this.documentsViewRef} />
+						<ProjectPanel
+							resizeElements={this.resizeElements}
+							codesystemView={this.codesystemViewRef}
+							viewChanged={this.viewChanged}
+							setSearchResults = {this.setSearchResults}
+							project={this.state.project}
+							history={this.props.history}
+							documentsView = {this.documentsViewRef}
+							showCodingView = {this.showCodingView}/>
 					</div>
 				</StyledSideBarEditor>
 				<StyledSideBarDocuments>

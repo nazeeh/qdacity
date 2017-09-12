@@ -53,7 +53,10 @@ export default class ProjectSearch extends React.Component {
 			var code = codesystem[i];
 			if (code.memo && code.memo.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1) {
 				const thisCode = code;
-				code.onClick = () => {this.props.codesystemView.setSelected(thisCode)}
+				code.onClick = () => {
+					this.props.codesystemView.setSelected(thisCode);
+					this.props.showCodingView();
+				}
 				codes.push(code);
 			}
 		}

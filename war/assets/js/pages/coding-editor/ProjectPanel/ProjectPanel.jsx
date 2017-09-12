@@ -99,7 +99,7 @@ export default class ProjectPanel extends React.Component {
 				{
 					(() =>{
 						if (!this.state.showSearchBar) return null;
-						return (<ProjectSearch documentsView = {this.props.documentsView} codesystemView={this.props.codesystemView} setSearchResults={this.setSearchResults}/>);
+						return (<ProjectSearch documentsView = {this.props.documentsView} codesystemView={this.props.codesystemView} setSearchResults={this.setSearchResults} showCodingView={this.props.showCodingView}/>);
 					})()
 
 				}
