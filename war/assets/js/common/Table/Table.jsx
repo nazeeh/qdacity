@@ -59,11 +59,11 @@ export default class Table extends React.Component {
 				</StyledTableHeader>
 				<StyledTableContent columns={this.props.columns}>
 					{
-						this.props.tableContent.map(function(tableRow) {
+						this.props.tableContent.map(function(content) {
 						  return (
-							  <StyledTableRow  columns={_this.props.columns} >
+							  <StyledTableRow columns={_this.props.columns} onClick={content.onClick}>
 								  {
-									  tableRow.map((tableCell) => {
+									  content.row.map((tableCell) => {
 									  	return(<div>{tableCell}</div>);
 								  	  })
 							  	  }

@@ -38,6 +38,8 @@ export default class ProjectSearch extends React.Component {
 		for (var i in docs) {
 			var doc = docs[i];
 			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1) {
+				const id = doc.id;
+				doc.onClick = () => {this.props.documentsView.setActiveDocument(id)}
 				documents.push(doc);
 			}
 		}
