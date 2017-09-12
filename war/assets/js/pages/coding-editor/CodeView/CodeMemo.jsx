@@ -32,9 +32,10 @@ export default class ClassName extends React.Component {
 	}
 
 	render() {
+		const memo = this.props.code.memo;
 		return (
 			<StyledCodeviewComponent>
-				<StyledMemoField value={this.props.code.memo} onChange={this.changeMemo}>
+				<StyledMemoField value={memo ? memo : ""} onChange={this.changeMemo}>
 				</StyledMemoField>
 				<StyledSaveBtn>
 					<BtnDefault onClick={() => this.props.updateSelectedCode(this.props.code, true)}>
