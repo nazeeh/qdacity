@@ -32,6 +32,7 @@ const StyledTableRow = styled.div `
 	border-bottom:  1px solid;
 	border-color: ${props => props.theme.borderDefault};
 	padding: 2px 0px 2px 0px;
+	cursor: pointer;
 
 `;
 
