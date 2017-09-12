@@ -16,7 +16,7 @@ export default class SearchResutls extends React.Component {
 	render() {
 		return (
 			<div>
-				<Tabs tabChanged={this.tabChanged}>
+				<Tabs tabChanged={()=>{}}>
                     <Tab tabTitle="Documents">
                         <DocumentSearchResults documentResults = {this.props.searchResults? this.props.searchResults.documentResults : []}/>
                     </Tab>
