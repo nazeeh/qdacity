@@ -7,6 +7,9 @@ import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
 const StyledBtnIcon = styled.a `
 	color: black;
+	&:hover{
+		color:black;
+	}
 `;
 
 const StyledBtnText = styled.span `
