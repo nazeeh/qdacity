@@ -27,22 +27,26 @@ public class Authorization {
 	
 	public static Boolean isUserAuthorized(User googleUser, Long projectID) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
+		try {
+			// Check if user is Authorized
+			Query query = mgr.newQuery(Project.class);
 
-		// Check if user is Authorized
-		Query query = mgr.newQuery(Project.class);
+			query.setFilter("id == :theID");
+			Map<String, Long> params = new HashMap<String, Long>();
+			params.put("theID", projectID);
 
-		query.setFilter("id == :theID");
-		Map<String, Long> params = new HashMap<String, Long>();
-		params.put("theID", projectID);
+			@SuppressWarnings("unchecked")
+			List<Project> projects = (List<Project>) query.executeWithMap(params);
 
-		@SuppressWarnings("unchecked")
-		List<Project> projects = (List<Project>) query.executeWithMap(params);
-
-		if (projects.size() == 0) {
-			throw new UnauthorizedException("Project " + projectID + " was not found");
+			if (projects.size() == 0) {
+				throw new UnauthorizedException("Project " + projectID + " was not found");
+			}
+			Project project = projects.get(0);
+			if (project.getOwners().contains(googleUser.getUserId())) return true;
+		} finally {
+			mgr.close();
 		}
-		Project project = projects.get(0);
-		if (project.getOwners().contains(googleUser.getUserId())) return true;
+
 
 		return false;
 	}
@@ -135,7 +139,6 @@ public class Authorization {
 		Boolean isValidationCoder = project.getValidationCoders().indexOf(user.getId()) != -1;
 		if (isValidationCoder) return AuthorizationLevel.VALIDATIONCODER;
 
-		PersistenceManager mgr = getPersistenceManager();
 		Project parentProject = (Project) Cache.getOrLoad(project.getProjectID(), Project.class);
 
 		Boolean isProjectOwner = parentProject.getOwners().contains(user.getId());
