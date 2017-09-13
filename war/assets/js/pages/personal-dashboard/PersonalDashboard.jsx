@@ -1,6 +1,7 @@
 import React from 'react'
 
 import ProjectList from "./ProjectList.jsx"
+import CourseList from "./CourseList.jsx"
 import NotificationList from "./NotificationList.jsx"
 import WelcomePanel from "./WelcomePanel.jsx"
 import AdvertPanel from "./AdvertPanel.jsx"
@@ -58,6 +59,16 @@ export default class PersonalDashboard extends React.Component {
 								</div>
 								<div className="box-body">
 									<ProjectList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
+								</div>
+							</div>
+						</div>
+						<div>
+							<div className="box box-default">
+								<div className="box-header with-border">
+									<h3 className="box-title">Courses</h3>
+								</div>
+								<div className="box-body">
+									<CourseList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
 								</div>
 							</div>
 						</div>
