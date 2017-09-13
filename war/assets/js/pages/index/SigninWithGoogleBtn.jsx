@@ -5,18 +5,32 @@ import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
 
+const StyledBtnIcon = styled.a `
+	color: black;
+`;
+
 const StyledBtnText = styled.span `
+	padding-left: 5px;
     font-size: 18px;
+	margin: auto;
 `;
 
 const StyledBtnLabel = styled.span `
+	display: flex;
+	flex-direction:row;
 	color: rgba(0, 0, 0, 1.0);
 `;
 
-const StyledSigninBtn = styled.a `
+const StyledSigninBtn = styled.button `
+
+	padding: 6px 12px;
+	background-image: none;
+	box-shadow: none;
     background-color: rgba(255, 255, 255, 0.4);
+	border: 1px solid transparent;
 	border-width: 1px;
 	border-color: #fff;
+	vertical-align: middle;
 	&:hover {
         background-color: rgba(255, 255, 255, 1.0);
 		border-color: #fff;
@@ -92,9 +106,11 @@ export default class SigninWithGoogleBtn extends React.Component {
 	render() {
 		if (this.state.loading) return <ReactLoading />;
 		return (
-			<StyledSigninBtn id="signinGoogleBtn" className="btn btn-default" href="#" onClick={() => this.signIn()}>
+			<StyledSigninBtn id="signinGoogleBtn" href="#" onClick={() => this.signIn()}>
 				<StyledBtnLabel>
-					<i className="fa fa-google fa-2x pull-left"></i>
+					<StyledBtnIcon>
+						<i className="fa fa-google fa-2x"></i>
+					</StyledBtnIcon>
 					<StyledBtnText>Sign in with Google</StyledBtnText>
 				</StyledBtnLabel>
 			</StyledSigninBtn>
