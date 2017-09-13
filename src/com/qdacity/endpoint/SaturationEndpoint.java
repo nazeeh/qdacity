@@ -14,6 +14,7 @@ import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
 import com.qdacity.project.saturation.SaturationParameters;
 import com.qdacity.project.saturation.SaturationResult;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +85,7 @@ public class SaturationEndpoint {
 	for (SaturationResult sr : lazySatResults) {
 	    sr.getCreationTime(); //Lazy fetch
 	}
+	Collections.sort(lazySatResults);
 	return lazySatResults;
     }
 
