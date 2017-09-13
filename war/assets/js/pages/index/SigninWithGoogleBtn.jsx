@@ -57,7 +57,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 			that.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var acc = that.props.account;
-			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account');
+			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
 				if (value == 'optionA') that.props.account.changeAccount(that.redirect);
 				else that.registerAccount();
@@ -95,8 +95,6 @@ export default class SigninWithGoogleBtn extends React.Component {
 		this.setState({
 			loading: true
 		});
-		$('#signinGoogleBtn').hide();
-		$('.signin').css("display", "inline-block");
 
 		if (this.props.account.isSignedIn()) {
 			this.redirect();
@@ -105,11 +103,10 @@ export default class SigninWithGoogleBtn extends React.Component {
 		}
 	}
 
-
 	render() {
 		if (this.state.loading) return <ReactLoading />;
 		return (
-			<StyledSigninBtn id="signinGoogleBtn" href="#" onClick={() => this.signIn()}>
+			<StyledSigninBtn href="#" onClick={() => this.signIn()}>
 				<StyledBtnLabel>
 					<StyledBtnIcon>
 						<i className="fa fa-google fa-2x"></i>
