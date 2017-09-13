@@ -24,6 +24,14 @@ import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
 import com.qdacity.project.saturation.SaturationParameters;
 import com.qdacity.project.saturation.SaturationResult;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Named;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
 @Api(
 	name = "qdacity",
@@ -92,7 +100,7 @@ public class SaturationEndpoint {
 		} finally {
 			mgr.close();
 		}
-
+		Collections.sort(lazySatResults);
 		return lazySatResults;
     }
 
