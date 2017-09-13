@@ -13,7 +13,10 @@ export default class MemoSearchResults extends React.Component {
 		let results = this.props.memoResults;
 		for (var i = 0; i < results.length; i++) {
 			let result = results[i];
-			tableContent.push({row: [result.name, result.memo], onClick: result.onClick});
+			tableContent.push({
+				row: [result.name, result.memo],
+				onClick: result.onClick
+			});
 		}
 
 		return (

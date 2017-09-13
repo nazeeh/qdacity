@@ -13,7 +13,10 @@ export default class DocumentSearchResults extends React.Component {
 		let results = this.props.documentResults;
 		for (var i = 0; i < results.length; i++) {
 			let result = results[i];
-			tableContent.push({row: [result.title, ""], onClick: result.onClick});
+			tableContent.push({
+				row: [result.title, ""],
+				onClick: result.onClick
+			});
 		}
 
 		return (
