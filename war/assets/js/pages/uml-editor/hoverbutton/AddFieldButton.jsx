@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import ImageHoverButton from './ImageHoverButton.jsx';
 
-export default class AddMethodButton extends ImageHoverButton {
+export default class AddFieldButton extends ImageHoverButton {
 
 	constructor(props) {
 		super(props);
@@ -14,7 +14,7 @@ export default class AddMethodButton extends ImageHoverButton {
 	}
 
 	getImageClassName() {
-		return 'fa-plus';
+		return 'umlOverlayButton umlOverlayButtonAddClassField';
 	}
 
 	getBounds() {
