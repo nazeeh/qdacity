@@ -62,6 +62,8 @@ test_backend_production:
     - master
   script:
     - mvn test
+  dependencies:
+    - build_backend_production
 
 deploy_production:
   tags:
