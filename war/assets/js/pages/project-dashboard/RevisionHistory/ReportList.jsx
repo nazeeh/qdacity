@@ -69,10 +69,10 @@ export default class ReportList extends React.Component {
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
 			return (
-					<StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+				<StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash"></i>
 					</StyledListItemBtn>
-				);
+			);
 		else return '';
 	}
 

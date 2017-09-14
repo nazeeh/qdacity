@@ -55,11 +55,11 @@ export default class SaturationCategoryDetail extends VexModal {
 
 		table.clear();
 
-        for (var i in this.saturationCategory) {
-            table.row.add([this.saturationCategory[i][0], this.toPercent(this.saturationCategory[i][3]), this.toPercent(this.saturationCategory[i][1]), this.toPercent(this.saturationCategory[i][2])]);
-        }
-        table.draw();
-    }
+		for (var i in this.saturationCategory) {
+			table.row.add([this.saturationCategory[i][0], this.toPercent(this.saturationCategory[i][3]), this.toPercent(this.saturationCategory[i][1]), this.toPercent(this.saturationCategory[i][2])]);
+		}
+		table.draw();
+	}
 
 	toPercent(value) {
 		return (value * 100).toFixed(2) + "%";
