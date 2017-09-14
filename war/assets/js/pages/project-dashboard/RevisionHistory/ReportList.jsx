@@ -63,9 +63,11 @@ export default class ReportList extends React.Component {
 
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			return (
+					<StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash"></i>
-					</StyledListItemBtn>;
+					</StyledListItemBtn>
+				);
 		else return '';
 	}
 
@@ -86,14 +88,16 @@ export default class ReportList extends React.Component {
 			var datetime = report.datetime;
 			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 			else datetime = "";
-			return <StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
+			return (
+				<StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
 					<span className="reportName"> {report.name} </span>
 					<span>
 						<span >{'[' + datetime + '] '}</span>
 						<span>{this.renderReportDeleteBtn(report, index)}</span>
 					</span>
 
-				</StyledListItemDefault>;
+				</StyledListItemDefault>
+			);
 		})
 
 		//Render Pagination
