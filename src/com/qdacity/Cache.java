@@ -50,8 +50,8 @@ public class Cache {
 	}
 	
 	public static Object getOrLoad(String id, Class type) {
-		Object obj;
-
+		Object obj = null;
+		Object bla = null;
 		String keyString = KeyFactory.createKeyString(type.toString(), id);
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
 
@@ -60,11 +60,27 @@ public class Cache {
 		} else {
 			PersistenceManager mgr = getPersistenceManager();
 			try {
+				
 				obj = mgr.getObjectById(type, id);
 				syncCache.put(keyString, obj);
 			} finally {
 				mgr.close();
 			}
+		}
+		return obj;
+	}
+	
+	public static Object getOrLoad(String id, Class type, PersistenceManager mgr) {
+		Object obj = null;
+		Object bla = null;
+		String keyString = KeyFactory.createKeyString(type.toString(), id);
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+
+		if (syncCache.contains(keyString)) {
+			obj = syncCache.get(keyString);
+		} else {
+			obj = mgr.getObjectById(type, id);
+			syncCache.put(keyString, obj);
 		}
 		return obj;
 	}
