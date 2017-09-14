@@ -28,7 +28,7 @@ export default class IntercoderAgreement extends VexModal {
 			this.formElements += '</tr>';
 			this.formElements += '<tr>';
 			for (var cell in avgRow) {
-				this.formElements += '<td>' + avgRow[cell] + '</td>';
+				this.formElements += '<td style="padding-right: 5px;">' + parseFloat(avgRow[cell]).toFixed(4) + '</td>';
 			}
 			this.formElements += '</tr>';
 			this.formElements += '</table></div>';
