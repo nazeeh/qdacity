@@ -64,6 +64,19 @@ backend_prod_unittest:
     - mvn test
   dependencies:
     - backend_prod_build
+	
+frontend_prod_unittest:
+  tags:
+    - qdacity
+  stage: test
+  environment: Production
+  only:
+    - master
+  script:
+    - karma start --single-run
+  dependencies:
+    - frontend_prod_build
+  allow_failure: true
 
 deploy_prod:
   tags:
