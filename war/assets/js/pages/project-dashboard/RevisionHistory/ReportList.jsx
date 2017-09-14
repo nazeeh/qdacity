@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import Theme from '../../../common/styles/Theme.js';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
@@ -11,6 +12,10 @@ import {
 	StyledBoxList,
 	StyledListItemDefault
 } from '../../../common/styles/List';
+
+const StyledReportDate = styled.span `
+	width:85px;
+`;
 
 export default class ReportList extends React.Component {
 	constructor(props) {
@@ -90,10 +95,10 @@ export default class ReportList extends React.Component {
 			else datetime = "";
 			return (
 				<StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
-					<span className="reportName"> {report.name} </span>
+					<span> {report.name} </span>
 					<span>
-						<span >{'[' + datetime + '] '}</span>
-						<span>{this.renderReportDeleteBtn(report, index)}</span>
+						<StyledReportDate >{'[' + datetime + '] '}</StyledReportDate>
+						{this.renderReportDeleteBtn(report, index)}
 					</span>
 
 				</StyledListItemDefault>
