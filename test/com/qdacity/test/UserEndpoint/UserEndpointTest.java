@@ -22,7 +22,7 @@ import com.qdacity.user.User;
 public class UserEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-
+	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -43,14 +43,12 @@ public class UserEndpointTest {
 	}
 	
 	@Test
-	public void testUserDelete() {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-		
+	public void testUserDelete() {		
 		UserEndpointTestHelper.addUser("firstName","lastName", "123456", "asd@asd.de");
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			ue.removeUser("123456", loggedInUser);
+			ue.removeUser("123456", testUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
@@ -61,18 +59,16 @@ public class UserEndpointTest {
 	
 	@Test
 	public void testFindUser() {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 		List<User> test = new ArrayList<User>();
 		UserEndpointTestHelper.addUser("firstName","lastName", "123456", "asd@asd.de");
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			test = ue.findUsers(null, null, "asd@asd.de", loggedInUser);
+			test = ue.findUsers(null, null, "asd@asd.de", testUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
 		}
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, test.size());
 	}
 }
