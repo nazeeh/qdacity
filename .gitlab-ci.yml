@@ -50,7 +50,7 @@ backend_prod_build:
       - war/WEB-INF/classes
     expire_in: 3 mos
   script:
-    - mvn clean compile
+    - mvn clean process-classes
     - cp -R ./src/META-INF ./war/WEB-INF/classes
 
 backend_prod_unittest:
