@@ -52,7 +52,7 @@ build_backend_production:
   script:
     - mvn clean compile
     - cp -R ./src/META-INF ./war/WEB-INF/classes
-	
+
 test_backend_production:
   tags:
     - qdacity
