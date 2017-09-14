@@ -54,7 +54,18 @@ export default class DropDownButton extends React.Component {
 			expanded: false
 		}
 
-		this.buttonClicked = this.buttonClicked.bind(this);
+		this.eventListenerDomNodeRef = null;
+
+		this.toggleDropDown = this.toggleDropDown.bind(this);
+		this.hideDropDown = this.hideDropDown.bind(this);
+	}
+
+	componentDidMount() {
+		this.eventListenerDomNodeRef.addEventListener('hideDropDown', this.hideDropDown);
+	}
+
+	componentDidUnmount() {
+		this.eventListenerDomNodeRef.removeEventListener('hideDropDown', this.hideDropDown);
 	}
 
 	setText(text) {
@@ -63,9 +74,21 @@ export default class DropDownButton extends React.Component {
 		});
 	}
 
-	buttonClicked() {
+	toggleDropDown() {
 		this.setState({
 			expanded: !this.state.expanded
+		});
+	}
+
+	hideDropDown() {
+		this.setState({
+			expanded: false
+		});
+	}
+
+	showDropDown() {
+		this.setState({
+			expanded: true
 		});
 	}
 
@@ -82,8 +105,9 @@ export default class DropDownButton extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledButtonContainer>
-                <BtnDefault onClick={this.buttonClicked}>
+			<StyledButtonContainer className="customDropDownParent">
+			    <p ref={(r) => {if (r != null) _this.eventListenerDomNodeRef = r}} className="customDropDownEventNode"></p>
+                <BtnDefault onClick={this.toggleDropDown}>
                     {this.state.text}
                     <StyledCaret className='fa fa-caret-down' aria-hidden='true'></StyledCaret>
                 </BtnDefault>
