@@ -8,6 +8,7 @@ after_script:
 
 stages:
   - build
+  - test
   - deploy
  
 frontend_prod_build:
@@ -55,7 +56,7 @@ backend_prod_build:
 backend_prod_unittest:
   tags:
     - qdacity
-  stage: build
+  stage: test
   environment: Production
   only:
     - master
