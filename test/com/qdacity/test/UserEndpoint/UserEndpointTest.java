@@ -37,14 +37,29 @@ public class UserEndpointTest {
 
 	@Test
 	public void testUserInsert() {
-		UserEndpointTestHelper.addUser("firstName","lastName", "123456", "asd@asd.de");
+		UserEndpointTestHelper.addUser("123456", "asd@asd.de","firstName","lastName");
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 	}
 	
 	@Test
+	public void testGetUser() {
+		User user = new User();
+		UserEndpointTestHelper.addUser("123456", "asd@asd.de","firstName","lastName");
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			user = ue.getUser("123456", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		assertEquals("firstName", user.getGivenName());
+	}
+	
+	@Test
 	public void testUserDelete() {		
-		UserEndpointTestHelper.addUser("firstName","lastName", "123456", "asd@asd.de");
+		UserEndpointTestHelper.addUser("123456", "asd@asd.de","firstName","lastName");
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
@@ -60,7 +75,7 @@ public class UserEndpointTest {
 	@Test
 	public void testFindUser() {
 		List<User> test = new ArrayList<User>();
-		UserEndpointTestHelper.addUser("firstName","lastName", "123456", "asd@asd.de");
+		UserEndpointTestHelper.addUser( "123456", "asd@asd.de","firstName","lastName");
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
