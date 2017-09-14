@@ -75,6 +75,10 @@ const StyledListItemPrimary = StyledListItem.extend `
 const StyledListItemDefault = StyledListItem.extend `
 	background-color: ${props => props.theme.bgDefault};
 	border-color:  ${props => props.theme.borderDefault};
+	&> span {
+		display: flex;
+		flex-direction: row;
+	}
 	&:hover {
 		border-color:  ${props => props.theme.borderDefaultHighlight};
 		font-weight: bold;

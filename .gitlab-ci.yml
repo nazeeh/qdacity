@@ -8,9 +8,10 @@ after_script:
 
 stages:
   - build
+  - test
   - deploy
  
-build_frontend_production:
+frontend_prod_build:
   tags:
     - qdacity
   stage: build
@@ -37,7 +38,7 @@ build_frontend_production:
     - gulp minify
     - gulp set-react-production
     
-build_backend_production:
+backend_prod_build:
   tags:
     - qdacity
   stage: build
@@ -49,11 +50,35 @@ build_backend_production:
       - war/WEB-INF/classes
     expire_in: 3 mos
   script:
-    - mvn clean install
+    - mvn clean compile
     - cp -R ./src/META-INF ./war/WEB-INF/classes
-    
 
-deploy_production:
+backend_prod_unittest:
+  tags:
+    - qdacity
+  stage: test
+  environment: Production
+  only:
+    - master
+  script:
+    - mvn test
+  dependencies:
+    - backend_prod_build
+
+frontend_prod_unittest:
+  tags:
+    - qdacity
+  stage: test
+  environment: Production
+  only:
+    - master
+  script:
+    - karma start --single-run
+  dependencies:
+    - frontend_prod_build
+  allow_failure: true
+
+deploy_prod:
   tags:
     - qdacity
   stage: deploy
