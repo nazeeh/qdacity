@@ -84,7 +84,7 @@ export default class HoverButtons extends React.Component {
 
 		return (
 			<StyledButtonsContainer>
-                <CodingViewButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale} showCodingView={this.props.showCodingView}></CodingViewButton>
+                <CodingViewButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale} toggleCodingView={this.props.toggleCodingView}></CodingViewButton>
                 <AddFieldButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddFieldButton>
 
                 <AddMethodButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddMethodButton>

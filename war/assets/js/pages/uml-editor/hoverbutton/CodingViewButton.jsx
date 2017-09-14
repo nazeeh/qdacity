@@ -10,7 +10,7 @@ export default class CodingViewButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		this.props.showCodingView();
+		this.props.toggleCodingView();
 	}
 
 	getImageClassName() {

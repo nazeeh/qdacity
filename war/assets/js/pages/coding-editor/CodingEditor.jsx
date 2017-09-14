@@ -256,7 +256,7 @@ export default class CodingEditor extends React.Component {
 	}
 
 	renderUMLEditor() {
-		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} createCode={this.createCode} />;
+		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} createCode={this.createCode} toggleCodingView={this.toggleCodingView} />;
 		return null;
 	}
 
@@ -357,7 +357,7 @@ export default class CodingEditor extends React.Component {
 
 					</StyledTextEditorMenu>
 						<TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
-					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" showCodingView={this.showCodingView} >
+					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
 						{this.renderUMLEditor()}
 					</StyledUMLEditor>
 				</div>
