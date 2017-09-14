@@ -64,7 +64,7 @@ backend_prod_unittest:
     - mvn test
   dependencies:
     - backend_prod_build
-	
+
 frontend_prod_unittest:
   tags:
     - qdacity
