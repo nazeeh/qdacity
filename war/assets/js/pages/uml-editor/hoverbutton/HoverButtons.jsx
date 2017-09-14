@@ -4,7 +4,7 @@ import styled, {
 	css
 } from 'styled-components';
 
-import ChangeMetaModelButton from './ChangeMetaModelButton.jsx';
+import CodingViewButton from './CodingViewButton.jsx';
 import AddFieldButton from './AddFieldButton.jsx';
 import AddMethodButton from './AddMethodButton.jsx';
 import AddEdgeButton from './AddEdgeButton.jsx';
@@ -84,7 +84,7 @@ export default class HoverButtons extends React.Component {
 
 		return (
 			<StyledButtonsContainer>
-                <ChangeMetaModelButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></ChangeMetaModelButton>
+                <CodingViewButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale} showCodingView={this.props.showCodingView}></CodingViewButton>
                 <AddFieldButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddFieldButton>
 
                 <AddMethodButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddMethodButton>

@@ -888,7 +888,7 @@ export default class UmlGraphView extends React.Component {
 		return (
 			<StyledGraphView>
                 <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%' }}></div>
-                <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.props.umlEditor}></HoverButtons>
+                <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.props.umlEditor} showCodingView={this.props.showCodingView}></HoverButtons>
             </StyledGraphView>
 		);
 	}

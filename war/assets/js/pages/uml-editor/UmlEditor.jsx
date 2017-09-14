@@ -15,7 +15,6 @@ import MetaModelRunner from './mapping/MetaModelRunner.js';
 import Toolbar from './toolbar/Toolbar.jsx';
 import UmlGraphView from './UmlGraphView.jsx';
 
-import UmlCodeMetaModelModal from '../../common/modals/UmlCodeMetaModelModal';
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
@@ -699,28 +698,6 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
-	overlayClickedMetaModel(cell) {
-		const _this = this;
-
-		let umlClass = _this.umlClassManager.getByNode(cell);
-		let code = umlClass.getCode();
-
-		let codeMetaModelModal = new UmlCodeMetaModelModal(code);
-
-		codeMetaModelModal.showModal(_this.mmEntities, _this.mmRelations).then(function (data) {
-			// TODO duplicate code in UnmappedCodeElement.jsx
-			console.log('Closed modal');
-
-			if (code.mmElementIDs != data.ids) {
-				console.log('New mmElementIds for code ' + code.name + ' (' + code.codeID + '): ' + data.ids + '. Old Ids: ' + data.oldIds);
-
-				code.mmElementIDs = data.ids;
-
-				_this.props.updateCode(code, true);
-			}
-		});
-	}
-
 	overlayClickedClassField(cell) {
 		const _this = this;
 
@@ -875,7 +852,7 @@ export default class UmlEditor extends React.Component {
 		return (
 			<StyledUmlEditor>
                 <Toolbar ref={(toolbar) => {if (toolbar != null) _this.toolbar = toolbar}} className="row no-gutters" umlEditor={_this} createCode={_this.props.createCode} />
-                <UmlGraphView ref={(umlGraphView) => {if (umlGraphView != null) _this.umlGraphView = umlGraphView}} umlEditor={_this} onZoom={_this.onZoom} />
+                <UmlGraphView ref={(umlGraphView) => {if (umlGraphView != null) _this.umlGraphView = umlGraphView}} umlEditor={_this} onZoom={_this.onZoom} showCodingView={this.props.showCodingView}/>
             </StyledUmlEditor>
 		);
 	}

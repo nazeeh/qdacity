@@ -357,7 +357,7 @@ export default class CodingEditor extends React.Component {
 
 					</StyledTextEditorMenu>
 						<TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
-					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
+					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" showCodingView={this.showCodingView} >
 						{this.renderUMLEditor()}
 					</StyledUMLEditor>
 				</div>

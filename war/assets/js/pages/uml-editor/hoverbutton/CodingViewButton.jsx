@@ -3,14 +3,14 @@ import styled from 'styled-components';
 
 import ImageHoverButton from './ImageHoverButton.jsx';
 
-export default class ChangeMetaModelButton extends ImageHoverButton {
+export default class CodingViewButton extends ImageHoverButton {
 
 	constructor(props) {
 		super(props);
 	}
 
 	onClick() {
-		this.props.umlEditor.overlayClickedMetaModel(this.props.cell);
+		this.props.showCodingView();
 	}
 
 	getImageClassName() {
