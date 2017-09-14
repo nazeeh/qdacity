@@ -8,6 +8,7 @@ after_script:
 
 stages:
   - build
+  - test
   - deploy
  
 build_frontend_production:
@@ -49,9 +50,18 @@ build_backend_production:
       - war/WEB-INF/classes
     expire_in: 3 mos
   script:
-    - mvn clean install
+    - mvn clean compile
     - cp -R ./src/META-INF ./war/WEB-INF/classes
-    
+	
+test_backend_production:
+  tags:
+    - qdacity
+  stage: test
+  environment: Production
+  only:
+    - master
+  script:
+    - mvn test
 
 deploy_production:
   tags:
