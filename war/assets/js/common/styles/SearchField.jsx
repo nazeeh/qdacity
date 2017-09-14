@@ -5,7 +5,7 @@ const StyledSearchField = styled.div `
 	width: 100%;
 	display:flex;
 	flex-direction:row;
-	margin-bottom: 5px;
+	padding-bottom: 5px;
 
 	& > input[type=text] {
 		flex:1;

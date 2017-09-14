@@ -265,7 +265,7 @@ export default class CodeRelationsView extends React.Component {
 		return (
 			<StyledAddRelationBtn onClick={onClick}>
                 <i className="fa fa-plus fa-lg "></i>
-                &nbsp;Add Relationship
+                <span>Add Relationship</span>
             </StyledAddRelationBtn>
 		);
 	}
@@ -279,7 +279,7 @@ export default class CodeRelationsView extends React.Component {
 			<StyledRelationsView className="col-sm-7">
                 <div>
                     <StyledHeadline>Outgoing relations</StyledHeadline>
-    
+
                     {_this.renderAddRelationButton(() => {_this.createRelationship()})}
                 </div>
 
@@ -293,10 +293,10 @@ export default class CodeRelationsView extends React.Component {
                                         <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
                                         <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
                                     </a>
-                                
+
                                     {_this.renderCreateRelationshipCodeButton(rel)}
                                     {_this.renderGoToRelationshipCodeButton(rel)}
-    
+
                                     <StyledCodeName>{rel.sourceName}</StyledCodeName>
                                     <br/>
                                     <StyledRelationName>{rel.name + ' '}</StyledRelationName>
@@ -319,10 +319,10 @@ export default class CodeRelationsView extends React.Component {
 			<StyledRelationsView className="col-sm-5">
 		        <div>
     		        <StyledHeadline>Incoming relations</StyledHeadline>
-    
+
                     {_this.renderAddRelationButton(() => {_this.createIncomingRelationship()})}
 		        </div>
-		        
+
                 <div className="list compactBoxList">
                     {
                         _this.state.incomingRelationships.map((rel) => {

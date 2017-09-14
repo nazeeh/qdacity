@@ -14,13 +14,13 @@ const StyledDocumentsHeader = styled.div `
  `;
 
 const StyledInfoBox = styled.div `
-	background-color: #FAFAFA;
+	background-color: ${props =>  props.theme.defaultPaneBg };
 	border-left-style: solid;
 	border-left-width: thick;
-	border-left-color: #337ab7;
+	border-left-color: ${props =>  props.theme.borderPrimaryHighlight };
 	border-right-style: solid;
 	border-right-width: thick;
-	border-right-color: #337ab7;
+	border-right-color: ${props =>  props.theme.borderPrimaryHighlight };
 	text-align: center;
 `;
 

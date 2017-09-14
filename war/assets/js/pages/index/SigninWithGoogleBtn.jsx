@@ -5,18 +5,35 @@ import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
 
+const StyledBtnIcon = styled.a `
+	color: black;
+	&:hover{
+		color:black;
+	}
+`;
+
 const StyledBtnText = styled.span `
+	padding-left: 5px;
     font-size: 18px;
+	margin: auto;
 `;
 
 const StyledBtnLabel = styled.span `
+	display: flex;
+	flex-direction:row;
 	color: rgba(0, 0, 0, 1.0);
 `;
 
-const StyledSigninBtn = styled.a `
+const StyledSigninBtn = styled.button `
+
+	padding: 6px 12px;
+	background-image: none;
+	box-shadow: none;
     background-color: rgba(255, 255, 255, 0.4);
+	border: 1px solid transparent;
 	border-width: 1px;
 	border-color: #fff;
+	vertical-align: middle;
 	&:hover {
         background-color: rgba(255, 255, 255, 1.0);
 		border-color: #fff;
@@ -40,7 +57,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 			that.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var acc = that.props.account;
-			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity. What would you like me to do?', 'Use Different Account', 'Register Account');
+			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
 				if (value == 'optionA') that.props.account.changeAccount(that.redirect);
 				else that.registerAccount();
@@ -78,8 +95,6 @@ export default class SigninWithGoogleBtn extends React.Component {
 		this.setState({
 			loading: true
 		});
-		$('#signinGoogleBtn').hide();
-		$('.signin').css("display", "inline-block");
 
 		if (this.props.account.isSignedIn()) {
 			this.redirect();
@@ -88,13 +103,14 @@ export default class SigninWithGoogleBtn extends React.Component {
 		}
 	}
 
-
 	render() {
 		if (this.state.loading) return <ReactLoading />;
 		return (
-			<StyledSigninBtn id="signinGoogleBtn" className="btn btn-default" href="#" onClick={() => this.signIn()}>
+			<StyledSigninBtn href="#" onClick={() => this.signIn()}>
 				<StyledBtnLabel>
-					<i className="fa fa-google fa-2x pull-left"></i>
+					<StyledBtnIcon>
+						<i className="fa fa-google fa-2x"></i>
+					</StyledBtnIcon>
 					<StyledBtnText>Sign in with Google</StyledBtnText>
 				</StyledBtnLabel>
 			</StyledSigninBtn>

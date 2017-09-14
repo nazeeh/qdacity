@@ -4,12 +4,12 @@ import styled from 'styled-components';
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
 
 const StyledIntroBanner = styled.div `
-	background: url(../assets/img/intro-bg.jpg) no-repeat center center;
+	background: url(../assets/img/index-top-man-writing.cache.jpg)  no-repeat center center;
 	background-size: cover;
 `;
 
 const StyledFooterBanner = styled.div `
-	background: url(../assets/img/banner-bg.jpg) no-repeat center center;
+	background: url(../assets/img/banner-bottom.cache.jpg) no-repeat center center;
 	background-size: cover;
 `;
 
