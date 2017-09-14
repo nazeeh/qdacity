@@ -30,19 +30,11 @@ public class UserEndpointTest {
 		helper.tearDown();
 	}
 	
-	public void addUser(String id, String email){
-		User user = new User();
-		user.setEmail(email);
-		user.setId(id);
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-
-		UserEndpoint ue = new UserEndpoint();
-		ue.insertUser(user, loggedInUser);
-	}
+	
 
 	@Test
 	public void testUserInsert() {
-		addUser("123456", "asd@asd.de");
+		UserEndpointTestHelper.addUser("123456", "asd@asd.de");
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 	}
@@ -51,7 +43,7 @@ public class UserEndpointTest {
 	public void testUserDelete() {
 		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 		
-		addUser("123456", "asd@asd.de");
+		UserEndpointTestHelper.addUser("123456", "asd@asd.de");
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
