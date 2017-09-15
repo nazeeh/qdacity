@@ -77,8 +77,40 @@ const BtnPrimary = BtnSm.extend `
 	}
 `;
 
+const BtnLg = styled.button `
+	padding: 6px 12px;
+	background-image: none;
+	box-shadow: none;
+    background-color: rgba(255, 255, 255, 0.4);
+	border: 1px solid transparent;
+	border-width: 1px;
+	border-color: #fff;
+	vertical-align: middle;
+	&:hover {
+        background-color: rgba(255, 255, 255, 1.0);
+		border-color: #fff;
+    }
+	&>span {
+		display: flex;
+		flex-direction:row;
+		color: rgba(0, 0, 0, 1.0);
+		&> span{
+			padding-left: 5px;
+		    font-size: 18px;
+			margin: auto;
+		}
+		&> a {
+			color: black;
+			&:hover{
+				color:black;
+			}
+		}
+	}
+`;
+
 export {
 	BtnDefault,
 	BtnPrimary,
-	BtnSm
+	BtnSm,
+	BtnLg
 };
