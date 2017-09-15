@@ -46,9 +46,9 @@ export default class Index extends React.Component {
 			                        <h1>QDAcity</h1>
 			                        <h3>QDA on steroids</h3>
 			                        <hr className="intro-divider"/>
-										<div>
+
 											<SigninWithGoogleBtn account={this.props.account} history={this.props.history} />
-										</div>
+
 			                    </div>
 			                </div>
 			            </div>
@@ -126,32 +126,26 @@ export default class Index extends React.Component {
 			                    <ul className="list-inline banner-social-buttons">
 			                        <li>
 										<BtnLg>
-											<span>
-												<a href="https://twitter.com/osrgroup">
-													<i className="fa fa-twitter fa-2x"></i>
-												</a>
-												 <span>Twitter</span>
-											</span>
+											<a href="https://twitter.com/osrgroup">
+												<i className="fa fa-twitter fa-2x"></i>
+											</a>
+											 <span>Twitter</span>
 										</BtnLg>
 			                        </li>
 			                        <li>
 										<BtnLg>
-											<span>
-												<a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308">
-													<i className="fa fa-facebook-square fa-2x"></i>
-												</a>
-												 <span>Facebook</span>
-											</span>
+											<a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308">
+												<i className="fa fa-facebook-square fa-2x"></i>
+											</a>
+											 <span>Facebook</span>
 										</BtnLg>
 			                        </li>
 			                        <li>
 										<BtnLg>
-											<span>
-												<a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support">
-													<i className="fa fa-envelope-o fa-2x"></i>
-												</a>
-												 <span>Email</span>
-											</span>
+											<a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support">
+												<i className="fa fa-envelope-o fa-2x"></i>
+											</a>
+											<span>Email</span>
 										</BtnLg>
 			                        </li>
 			                    </ul>

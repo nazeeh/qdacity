@@ -90,10 +90,10 @@ const BtnLg = styled.button `
         background-color: rgba(255, 255, 255, 1.0);
 		border-color: #fff;
     }
-	&>span {
-		display: flex;
-		flex-direction:row;
-		color: rgba(0, 0, 0, 1.0);
+	margin: auto;
+	display: flex;
+	flex-direction:row;
+	color: rgba(0, 0, 0, 1.0);
 		&> span{
 			padding-left: 5px;
 		    font-size: 18px;
@@ -105,7 +105,7 @@ const BtnLg = styled.button `
 				color:black;
 			}
 		}
-	}
+
 `;
 
 export {

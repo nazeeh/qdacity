@@ -73,12 +73,11 @@ export default class SigninWithGoogleBtn extends React.Component {
 		if (this.state.loading) return <ReactLoading />;
 		return (
 			<BtnLg href="#" onClick={() => this.signIn()}>
-				<span>
+
 					<a>
 						<i className="fa fa-google fa-2x"></i>
 					</a>
 					<span>Sign in with Google</span>
-				</span>
 			</BtnLg>
 		);
 	}
