@@ -18,7 +18,7 @@ export default class AddEdgeAssociationButton extends ImageHoverButton {
 	}
 
 	getImageClassName() {
-		return 'fa-plus';
+		return 'umlOverlayButton umlOverlayButtonAddEdgeAssociation';
 	}
 
 	getBounds() {

@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import Theme from '../../../common/styles/Theme.js';
 
 import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
@@ -11,6 +12,10 @@ import {
 	StyledBoxList,
 	StyledListItemDefault
 } from '../../../common/styles/List';
+
+const StyledReportDate = styled.span `
+	width:85px;
+`;
 
 export default class ReportList extends React.Component {
 	constructor(props) {
@@ -63,9 +68,11 @@ export default class ReportList extends React.Component {
 
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
-			return <StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			return (
+				<StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash"></i>
-					</StyledListItemBtn>;
+					</StyledListItemBtn>
+			);
 		else return '';
 	}
 
@@ -86,14 +93,16 @@ export default class ReportList extends React.Component {
 			var datetime = report.datetime;
 			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 			else datetime = "";
-			return <StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
-					<span className="reportName"> {report.name} </span>
+			return (
+				<StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
+					<span> {report.name} </span>
 					<span>
-						<span >{'[' + datetime + '] '}</span>
-						<span>{this.renderReportDeleteBtn(report, index)}</span>
+						<StyledReportDate >{'[' + datetime + '] '}</StyledReportDate>
+						{this.renderReportDeleteBtn(report, index)}
 					</span>
 
-				</StyledListItemDefault>;
+				</StyledListItemDefault>
+			);
 		})
 
 		//Render Pagination

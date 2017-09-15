@@ -13,11 +13,11 @@ export default class ButtonZoomSelect extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			zoomValue: this.getZoomValue(100)
-		}
+		this.zoomValue = this.getZoomValue(100)
 
 		this.umlEditor = this.props.umlEditor;
+
+		this.dropDownButtonRef = null;
 	}
 
 	buttonClicked(zoom) {
@@ -25,9 +25,9 @@ export default class ButtonZoomSelect extends React.Component {
 	}
 
 	onZoom(percentage) {
-		this.setState({
-			zoomValue: this.getZoomValue(percentage)
-		});
+		this.zoomValue = this.getZoomValue(percentage)
+
+		this.dropDownButtonRef.setText(this.zoomValue);
 	}
 
 	getZoomValue(percentage) {
@@ -70,7 +70,7 @@ export default class ButtonZoomSelect extends React.Component {
 
 		return (
 			<StyledZoomBtn>
-		        <DropDownButton text="100 %" items={items}></DropDownButton>
+		        <DropDownButton ref={(r) => {if (r) _this.dropDownButtonRef = r}} initText={this.zoomValue} items={items}></DropDownButton>
 	        </StyledZoomBtn>
 		);
 	}
