@@ -12,7 +12,7 @@ const StyledIntroBanner = styled.div `
 const StyledFooterBanner = styled.div `
 	background-color: ${props => props.theme.darkPaneBg };
 	background-size: cover;
-	color: #f8f8f8;
+	color: white;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
   	grid-template-rows: 60px;
