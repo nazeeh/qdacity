@@ -11,8 +11,14 @@ const StyledIntroBanner = styled.div `
 const StyledFooterBanner = styled.div `
 	background-color: ${props => props.theme.darkPaneBg };
 	background-size: cover;
+	color: #f8f8f8;
+	padding: 30px 0;
 `;
 
+const StyledFooterText = styled.span`
+	text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+	font-size: 3em;
+`;
 
 
 export default class Index extends React.Component {
@@ -107,13 +113,13 @@ export default class Index extends React.Component {
 			        </div>
 			    </div>
 				<a  name="contact"></a>
-			    <StyledFooterBanner className="banner">
+			    <StyledFooterBanner>
 
 			        <div className="container">
 
 			            <div className="row">
 			                <div className="col-lg-6">
-			                    <h2>Contact us directly</h2>
+			                    <StyledFooterText>Contact us directly</StyledFooterText>
 			                </div>
 			                <div className="col-lg-6">
 			                    <ul className="list-inline banner-social-buttons">
