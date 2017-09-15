@@ -101,10 +101,7 @@ public class SaturationEndpoint {
 		} finally {
 			mgr.close();
 		}
-		/*Collections.sort(lazySatResults);
-		for (SaturationResult sr : lazySatResults) {
-		    sr.getSaturationParameters(); //lazy fetch 2 after sorting
-		} */
+		Collections.sort(lazySatResults);
 		return lazySatResults;
     }
 
