@@ -1,6 +1,10 @@
+const darkGrey = '#323232';
+
 export default {
 	defaultPaneBg: '#f8f8f8',
-	darkPaneBg: '#323232',
+	darkPaneBg: darkGrey,
+
+	defaultText: darkGrey,
 
 	borderDefault: '#ccc',
 	borderDefaultHighlight: 'black',

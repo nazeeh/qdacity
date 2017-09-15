@@ -12,7 +12,7 @@ const StyledSigninTab = styled.li `
 `;
 
 const StyledNavbarItem = styled.a `
-	color: #323232 !important;
+	color: ${props => props.theme.defaultText} !important;
 `;
 
 export default class NavBar extends React.Component {
