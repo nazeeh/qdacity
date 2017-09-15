@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
+import {BtnLg} from '../../common/styles/Btn.jsx';
 
 const StyledIntroBanner = styled.div `
 	background: url(../assets/img/index-top-man-writing.cache.jpg)  no-repeat center center;
@@ -124,13 +125,34 @@ export default class Index extends React.Component {
 			                <div className="col-lg-6">
 			                    <ul className="list-inline banner-social-buttons">
 			                        <li>
-			                            <a href="https://twitter.com/osrgroup" className="btn btn-default btn-lg"><i className="fa fa-twitter fa-fw"></i> <span className="network-name">Twitter</span></a>
+										<BtnLg>
+											<span>
+												<a href="https://twitter.com/osrgroup">
+													<i className="fa fa-twitter fa-2x"></i>
+												</a>
+												 <span className="network-name">Twitter</span>
+											</span>
+										</BtnLg>
 			                        </li>
 			                        <li>
-			                            <a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308" className="btn btn-default btn-lg"><i className="fa fa-facebook-square fa-fw"></i> <span className="network-name">Facebook</span></a>
+										<BtnLg>
+											<span>
+												<a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308">
+													<i className="fa fa-facebook-square fa-2x"></i>
+												</a>
+												 <span className="network-name">Facebook</span>
+											</span>
+										</BtnLg>
 			                        </li>
 			                        <li>
-			                            <a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support" className="btn btn-default btn-lg"><i className="fa fa-envelope-o fa-fw"></i> <span className="network-name">Email</span></a>
+										<BtnLg>
+											<span>
+												<a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support">
+													<i className="fa fa-envelope-o fa-2x"></i>
+												</a>
+												 <span className="network-name">Email</span>
+											</span>
+										</BtnLg>
 			                        </li>
 			                    </ul>
 			                </div>
