@@ -96,13 +96,6 @@ html {
   padding-left: 0;
 }
 
-@media(max-width:1199px) {
-    ul.banner-social-buttons {
-        float: left;
-        margin-top: 15px;
-    }
-}
-
 .signin{
 	display: none;
 }
