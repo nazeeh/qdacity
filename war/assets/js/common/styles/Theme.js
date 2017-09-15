@@ -1,5 +1,6 @@
 export default {
 	defaultPaneBg: '#f8f8f8',
+	darkPaneBg: '#323232',
 
 	borderDefault: '#ccc',
 	borderDefaultHighlight: 'black',
@@ -18,7 +19,7 @@ export default {
 
 	lightGreen: '#c0dd1a',
 	lightGreenAccent: 'acc617',
-	darkGreen: '#3fad35',
+	darkGreen: '#3fad35',s
 	darkGreenAccent: '#3c763d',
 	rubyRed: '#e82240',
 	rubyRedAccent: '#b80b0b',

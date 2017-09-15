@@ -9,7 +9,7 @@ const StyledIntroBanner = styled.div `
 `;
 
 const StyledFooterBanner = styled.div `
-	background: url(../assets/img/banner-bottom.cache.jpg) no-repeat center center;
+	background-color: ${props => props.theme.darkPaneBg };
 	background-size: cover;
 `;
 
