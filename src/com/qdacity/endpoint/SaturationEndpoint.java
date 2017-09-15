@@ -96,7 +96,6 @@ public class SaturationEndpoint {
 			lazySatResults = (List<SaturationResult>) query.executeWithMap(paramValues);
 			for (SaturationResult sr : lazySatResults) {
 				sr.getCreationTime(); // Lazy fetch
-				
 			}
 		} finally {
 			mgr.close();
