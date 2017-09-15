@@ -130,7 +130,7 @@ export default class Index extends React.Component {
 												<a href="https://twitter.com/osrgroup">
 													<i className="fa fa-twitter fa-2x"></i>
 												</a>
-												 <span className="network-name">Twitter</span>
+												 <span>Twitter</span>
 											</span>
 										</BtnLg>
 			                        </li>
@@ -140,7 +140,7 @@ export default class Index extends React.Component {
 												<a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308">
 													<i className="fa fa-facebook-square fa-2x"></i>
 												</a>
-												 <span className="network-name">Facebook</span>
+												 <span>Facebook</span>
 											</span>
 										</BtnLg>
 			                        </li>
@@ -150,7 +150,7 @@ export default class Index extends React.Component {
 												<a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support">
 													<i className="fa fa-envelope-o fa-2x"></i>
 												</a>
-												 <span className="network-name">Email</span>
+												 <span>Email</span>
 											</span>
 										</BtnLg>
 			                        </li>
