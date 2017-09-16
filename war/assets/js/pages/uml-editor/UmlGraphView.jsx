@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import CellValue from './CellValue.js';
+
 import {
 	EdgeType
 } from './EdgeType.js';
@@ -25,6 +27,7 @@ export default class UmlGraphView extends React.Component {
 		this.umlClassDefaultWidth = 160;
 		this.umlClassDefaultHeight = 59;
 		this.umlClassHeaderHeight = 25;
+		this.umlClassSeparatorHeight = 1;
 		this.umlClassFieldHeight = 19;
 		this.umlClassFieldOffsetLeft = 3;
 		this.umlClassFieldOffsetRight = 3;
@@ -92,6 +95,10 @@ export default class UmlGraphView extends React.Component {
 		this.graph.setSwimlaneSelectionEnabled(false);
 		this.graph.setCellsResizable(false);
 
+        // Enables HTML markup in all labels
+        this.graph.setHtmlLabels(true);
+        
+        
 		// Styling
 		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
 		mxConstants.VERTEX_SELECTION_DASHED = false;
@@ -114,6 +121,14 @@ export default class UmlGraphView extends React.Component {
 
 		mxCellHighlight.prototype.spacing = 0;
 
+		
+        mxGraphHandler.prototype.htmlPreview = true;
+
+        mxGraphView.prototype.optimizeVmlReflows = false;
+        
+        mxClient.NO_FO = true;             
+        
+        
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
 
@@ -132,6 +147,9 @@ export default class UmlGraphView extends React.Component {
 		// Initialize panning
 		this.initializePanning();
 
+		// Initialize node rendering
+		this.initializeNodeRendering();
+		
 		// Initialize events
 		this.initializeEvents();
 	}
@@ -300,6 +318,115 @@ export default class UmlGraphView extends React.Component {
 		this.graph.setPanning(true);
 
 		new mxPanningHandler();
+	}
+	
+	initializeNodeRendering() {
+	    const _this = this;
+
+	    // Html content of the node
+        this.graph.getLabel = function (cell) {
+            if (_this.graph.getModel().isVertex(cell)) {
+                if (_this.graph.isCellCollapsed(cell)) {
+                    // TODO
+                    return '<table style="overflow:hidden;" width="100%" height="100%" border="1" cellpadding="4" class="title" style="height:100%;">'
+                        + '<tr><th>Customers</th></tr>'
+                        + '</table>';
+                } else {
+                    const cellValue = cell.value;
+
+                    // Header
+                    let header = '<div '
+                        + 'style="width:100%; height:' + _this.umlClassHeaderHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px;"'
+                        + '>' + cellValue.getName() + '</div>';
+
+                    // Separator
+                    let separator = '<div style="width:100%; height:' + _this.umlClassSeparatorHeight + 'px; background-color:black;"></div>';
+
+                    // Fields
+                    let fields = '<div style="width:100%; padding-top:' + _this.umlClassFieldsOffsetTop + 'px; padding-bottom:' + _this.umlClassFieldsOffsetBottom + 'px;">';
+
+                    if (cellValue.getFields() != null && cellValue.getFields().length > 0) {
+                        for (let i = 0; i < cellValue.getFields().length; i++) {
+                            fields += '<div style="width:100%; height:' + _this.umlClassFieldHeight + 'px; line-height:' + _this.umlClassFieldHeight + 'px; padding-left:' + _this.umlClassFieldOffsetLeft + 'px; padding-right:' + _this.umlClassFieldOffsetRight + 'px;">';
+                        }
+                    } else {
+                        fields += '<div style="width:100%; height:' + _this.umlClassFieldsEmptyHeight + 'px;"></div>';
+                    }
+
+                    fields += '</div>';
+
+                    // Methods
+                    let methods = '<div style="width:100%; padding-top:' + _this.umlClassMethodsOffsetTop + 'px; padding-bottom:' + _this.umlClassMethodsOffsetBottom + 'px;">';
+
+                    if (cellValue.getMethods() != null && cellValue.getMethods().length > 0) {
+                        for (let i = 0; i < cellValue.getMethods().length; i++) {
+                            methods += '<div style="width:100%; height:' + _this.umlClassMethodHeight + 'px; line-height:' + _this.umlClassMethodHeight + 'px; padding-left:' + _this.umlClassMethodOffsetLeft + 'px; padding-right:' + _this.umlClassMethodOffsetRight + 'px;">';
+                        }
+                    } else {
+                        methods += '<div style="width:100%; height:' + _this.umlClassMethodsEmptyHeight + 'px;"></div>';
+                    }
+
+                    methods += '</div>';
+
+                    // Result
+                    return '<div style="width:100%; height:100%; cursor:move !important;">'
+                        + header + separator + fields + separator + methods
+                        + '</div>';
+                }
+            } else {
+                return '';
+            }
+        };
+
+
+        // Properly set the div position for the cell
+        const oldRedrawLabel = this.graph.cellRenderer.redrawLabel;
+
+        this.graph.cellRenderer.redrawLabel = function (state) {
+            // super
+            oldRedrawLabel.apply(this, arguments);
+
+            let graph = state.view.graph;
+            let model = graph.model;
+
+            if (model.isVertex(state.cell) && state.text != null) {
+
+                state.text.node.style.overflow = 'hidden';
+                state.text.node.style.top = (state.y + 1) + 'px';
+
+                let div = state.text.node.getElementsByTagName('div')[0];
+
+                if (div != null) {
+                    let scale = graph.view.scale;
+
+                    div.style.display = 'block';
+                    div.style.width = Math.max(1, Math.round(state.width / scale)) + 'px';
+                    div.style.height = Math.max(1, Math.round(state.height / scale)) + 'px';
+
+                    // TODO is the following necessary!?
+                    
+                    // Installs the handler for updating connected edges
+                    if (div.scrollHandler == null) {
+                        div.scrollHandler = true;
+
+                        var updateEdges = mxUtils.bind(this, function () {
+                            var edgeCount = model.getEdgeCount(state.cell);
+
+                            // Only updates edges to avoid update in DOM order
+                            // for text label which would reset the scrollbar
+                            for (var i = 0; i < edgeCount; i++) {
+                                var edge = model.getEdgeAt(state.cell, i);
+                                graph.view.invalidate(edge, true, false);
+                                graph.view.validate(edge);
+                            }
+                        });
+
+                        mxEvent.addListener(div, 'scroll', updateEdges);
+                        mxEvent.addListener(div, 'mouseup', updateEdges);
+                    }
+                }
+            }
+        };
 	}
 
 	initializeEvents() {
@@ -589,10 +716,15 @@ export default class UmlGraphView extends React.Component {
 			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
 			let cell = new mxCell(name, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
 			cell.vertex = true;
-			cell.insert(separator1);
-			cell.insert(fields);
-			cell.insert(separator2);
-			cell.insert(methods);
+
+			const cellValue = new CellValue();
+			cellValue.setName(name);
+
+			cell.value = cellValue;
+			//cell.insert(separator1);
+			//cell.insert(fields);
+			//cell.insert(separator2);
+			//cell.insert(methods);
 
 			this.graph.addCell(cell);
 
@@ -646,6 +778,15 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	addClassField(node, fieldName, fieldReturnType) {
+		const cellValue = node.value;
+
+		const field = '+ ' + fieldName + ': ' + fieldReturnType;
+
+		cellValue.addField(field);
+
+		this.recalculateNodeSize(node);
+
+
 		// TODO use proper style
 		const style = 'fontStyle=0;selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
 
@@ -731,6 +872,7 @@ export default class UmlGraphView extends React.Component {
 
 	recalculateNodeSize(node) {
 		const oldGeo = node.getGeometry();
+		const cellValue = node.value;
 
 		let width = oldGeo.width;
 		let currentHeight = 0;
@@ -739,54 +881,30 @@ export default class UmlGraphView extends React.Component {
 		currentHeight += this.umlClassHeaderHeight;
 
 		// Separator 1
-		const separator1 = this.getSeparator1(node);
-		separator1.setGeometry(new mxGeometry(0, currentHeight, width, 0.05));
-
-		currentHeight += 1;
+		currentHeight += this.umlClassSeparatorHeight;
 
 		// Fields
-		const fields = this.getFieldsContainer(node);
+		currentHeight += this.umlClassFieldsOffsetTop;
+		currentHeight += this.umlClassFieldsOffsetBottom;
 
-		let fieldsHeight = this.umlClassFieldsOffsetTop + this.umlClassFieldsOffsetBottom + fields.getChildCount() * this.umlClassFieldHeight;
-		if (fields.getChildCount() == 0) {
-			fieldsHeight += this.umlClassFieldsEmptyHeight;
+		if (cellValue.getFields() != null && cellValue.getFields().length > 0) {
+			currentHeight += this.umlClassFieldHeight * cellValue.getFields().length;
+		} else {
+			currentHeight += this.umlClassFieldsEmptyHeight;
 		}
-
-		fields.setGeometry(new mxGeometry(0, currentHeight, width, fieldsHeight));
-
-		if (fields.children != null) {
-			for (let i = 0; i < fields.children.length; i++) {
-				let child = fields.children[i];
-				child.setGeometry(new mxGeometry(this.umlClassFieldOffsetLeft, this.umlClassFieldsOffsetTop + i * this.umlClassFieldHeight, width - this.umlClassFieldOffsetLeft - this.umlClassFieldOffsetRight, this.umlClassFieldHeight));
-			}
-		}
-
-		currentHeight += fieldsHeight;
 
 		// Separator 2
-		const separator2 = this.getSeparator2(node);
-		separator2.setGeometry(new mxGeometry(0, currentHeight, width, 0.05));
-
-		currentHeight += 1;
+		currentHeight += this.umlClassSeparatorHeight;
 
 		// Methods
-		const methods = this.getMethodsContainer(node);
+		currentHeight += this.umlClassMethodsOffsetTop;
+		currentHeight += this.umlClassMethodsOffsetBottom;
 
-		let methodsHeight = this.umlClassMethodsOffsetTop + this.umlClassMethodsOffsetBottom + methods.getChildCount() * this.umlClassMethodHeight;
-		if (methods.getChildCount() == 0) {
-			methodsHeight += this.umlClassMethodsEmptyHeight;
+		if (cellValue.getMethods() != null && cellValue.getMethods().length > 0) {
+			currentHeight += this.umlClassMethodHeight * cellValue.getMethods().length;
+		} else {
+			currentHeight += this.umlClassMethodsEmptyHeight;
 		}
-
-		methods.setGeometry(new mxGeometry(0, currentHeight, width, methodsHeight));
-
-		if (methods.children != null) {
-			for (let i = 0; i < methods.children.length; i++) {
-				let child = methods.children[i];
-				child.setGeometry(new mxGeometry(this.umlClassMethodOffsetLeft, this.umlClassMethodsOffsetTop + i * this.umlClassMethodHeight, width - this.umlClassMethodOffsetLeft - this.umlClassMethodOffsetRight, this.umlClassMethodHeight));
-			}
-		}
-
-		currentHeight += methodsHeight;
 
 		// Node
 		node.setGeometry(new mxGeometry(oldGeo.x, oldGeo.y, width, currentHeight));
