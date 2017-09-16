@@ -1,5 +1,6 @@
 export default {
 	defaultPaneBg: '#f8f8f8',
+	darkPaneBg: '#323232',
 
 	borderDefault: '#ccc',
 	borderDefaultHighlight: 'black',
