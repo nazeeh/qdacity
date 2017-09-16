@@ -693,50 +693,27 @@ export default class UmlGraphView extends React.Component {
 
 		this.graph.getModel().beginUpdate();
 
-		let node;
+		let cell;
 		try {
 			// TODO use proper style
-
-			// separator
-			let separator1 = new mxCell('', new mxGeometry(0, 0, 0, 0), 'strokeColor=black;movable=0;foldable=0;');
-			separator1.vertex = true;
-
-			// fields
-			let fields = new mxCell('', new mxGeometry(0, 0, 0, 0), 'strokeColor=none;selectable=0;foldable=0;movable=0;html=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
-			fields.vertex = true;
-
-			// separator
-			let separator2 = new mxCell('', new mxGeometry(0, 0, 0, 0), 'strokeColor=black;movable=0;foldable=0;');
-			separator2.vertex = true;
-
-			// methods
-			let methods = new mxCell('', new mxGeometry(0, 0, 0, 0), 'selectable=0;foldable=0;movable=0;html=1;strokeColor=none;strokeWidth=0;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;');
-			methods.vertex = true;
-
+		    // TODO what is actually necessary for the style?
 			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
-			let cell = new mxCell(name, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
+			cell = new mxCell(name, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
 			cell.vertex = true;
 
 			const cellValue = new CellValue();
 			cellValue.setName(name);
 
 			cell.value = cellValue;
-			//cell.insert(separator1);
-			//cell.insert(fields);
-			//cell.insert(separator2);
-			//cell.insert(methods);
-
 			this.graph.addCell(cell);
 
 			this.recalculateNodeSize(cell);
-
-			node = cell;
 
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
 
-		return node;
+		return cell;
 	}
 
 	removeNode(node) {
@@ -788,27 +765,27 @@ export default class UmlGraphView extends React.Component {
 
 
 		// TODO use proper style
-		const style = 'fontStyle=0;selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
-
-		const text = '+ ' + fieldName + ': ' + fieldReturnType;
-
-		let field = new mxCell(text, new mxGeometry(0, 0, this.umlClassDefaultWidth, 15), style);
-		field.vertex = true;
-
-		let fields = this.getFieldsContainer(node);
-
-		this.graph.getModel().beginUpdate();
-
-		try {
-			fields.insert(field);
-
-			this.recalculateNodeSize(node);
-
-		} finally {
-			this.graph.getModel().endUpdate();
-		}
-
-		return field;
+//		const style = 'fontStyle=0;selectable=0;foldable=0;movable=0;text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;';
+//
+//		const text = '+ ' + fieldName + ': ' + fieldReturnType;
+//
+//		let field = new mxCell(text, new mxGeometry(0, 0, this.umlClassDefaultWidth, 15), style);
+//		field.vertex = true;
+//
+//		let fields = this.getFieldsContainer(node);
+//
+//		this.graph.getModel().beginUpdate();
+//
+//		try {
+//			fields.insert(field);
+//
+//			this.recalculateNodeSize(node);
+//
+//		} finally {
+//			this.graph.getModel().endUpdate();
+//		}
+//
+//		return field;
 	}
 
 	removeClassField(node, field) {
