@@ -577,18 +577,20 @@ export default class UmlEditor extends React.Component {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
 		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-		const relationNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), destinationUmlClass.getCode().name, 'TODO-returnType');
+		const fieldText = this.metaModelMapper.getClassFieldText(destinationUmlClass.getCode().name, 'TODO-returnType');
+		this.umlGraphView.addClassField(sourceUmlClass.getNode(), fieldText);
 
-		this.addRelation(umlClassRelation, relationNode, 'class field');
+		this.addRelation(umlClassRelation, null, 'class field');
 	}
 
 	addClassMethod(umlClassRelation) {
 		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
 		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
 
-		const relationNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), destinationUmlClass.getCode().name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
+		const methodText = this.metaModelMapper.getClassMethodText(destinationUmlClass.getCode().name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
+		this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), methodText);
 
-		this.addRelation(umlClassRelation, relationNode, 'class method');
+		this.addRelation(umlClassRelation, null, 'class method');
 	}
 
 	addRelation(umlClassRelation, relationNode, relationType) {

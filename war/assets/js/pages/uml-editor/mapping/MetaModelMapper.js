@@ -136,6 +136,18 @@ export default class MetaModelMapper {
 		}
 	}
 
+	getClassFieldText(fieldName, fieldReturnType) {
+		return '+ ' + fieldName + ': ' + fieldReturnType;
+	}
+
+	getClassMethodText(methodName, methodReturnType, methodArguments) {
+		if (methodArguments == null) {
+			methodArguments = [];
+		}
+
+		return '+ ' + methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
+	}
+
 	convertParams(params) {
 		let umlClass = params.hasOwnProperty('umlClass') ? params.umlClass : null;
 		let umlClassRelation = params.hasOwnProperty('umlClassRelation') ? params.umlClassRelation : null;
