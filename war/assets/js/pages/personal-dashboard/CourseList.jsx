@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import CourseEndPoint from '../../common/endpoints/CourseEndpoint';
+
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
@@ -63,15 +65,18 @@ export default class CourseList extends React.Component {
 
 	init() {
 		var _this = this;
-		var projectList = [];
-		var validationPrjPromise = ProjectEndpoint.listValidationProject();
-		ProjectEndpoint.listProject().then(function (resp) {
+		var courseList = [];
+		//var validationPrjPromise = ProjectEndpoint.listValidationProject();
+		CourseEndPoint.listCourse().then(function (resp) {
 			resp.items = resp.items || [];
 			resp.items.forEach(function (prj) {
-				prj.type = "PROJECT";
+				prj.type = "COURSE";
+				console.log(prj);
 			});
-			var projects = projectList.concat(resp.items)
-
+			var courses = courseList.concat(resp.items)
+			courses = _this.sortCourses(courses);
+			_this.props.setCourses(courses);
+			/*
 			validationPrjPromise.then(function (resp2) {
 				resp2.items = resp2.items || [];
 				resp2.items.forEach(function (prj) {
@@ -81,7 +86,17 @@ export default class CourseList extends React.Component {
 				projects = _this.sortProjects(projects);
 				_this.props.setProjects(projects);
 			});
+			*/
 		});
+	}
+
+	sortCourses (courses) {
+		courses.sort(function (a, b) {
+			if (a.name < b.name) return -1;
+			if (a.name > b.name) return 1;
+			return 0;
+		});
+		return courses;
 	}
 
 	sortProjects(projects) {
@@ -219,9 +234,9 @@ export default class CourseList extends React.Component {
 		</StyledProjectListMenu>
 
 		//Rebder List Items
-		var filteredList = this.props.projects.filter(
-			(project) => {
-				return project.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+		var filteredList = this.props.courses.filter(
+			(course) => {
+				return course.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
 			}
 		);
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
@@ -229,13 +244,13 @@ export default class CourseList extends React.Component {
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
 
 		function prjClick(prj) {
-			_this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
+			_this.props.history.push('/ProjectDashboard?course=' + prj.id + '&type=' + prj.type);
 		}
-		const renderListItemContent = (project, index) => {
+		const renderListItemContent = (course, index) => {
 			return ([
-				<span>{project.name}</span>,
+				<span>{course.name}</span>,
 				<div>
-				{this.renderDeleteBtn(project, index)}
+				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
@@ -245,21 +260,16 @@ export default class CourseList extends React.Component {
 			</div>
 			])
 		}
-		const renderListItems = itemsToDisplay.map((project, index) => {
-			if (this.isValidationProject(project)) {
-				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)} clickable={true}>
-						{renderListItemContent(project, index)}
-					</StyledListItemDefault>;
-			} else {
-				return <StyledListItemPrimary key={project.id} onClick={() => prjClick(project)} clickable={true}>
-						{renderListItemContent(project, index)}
+		const renderListItems = itemsToDisplay.map((course, index) => {
+				return <StyledListItemPrimary key={course.id} onClick={() => prjClick(course)} clickable={true}>
+						{renderListItemContent(course, index)}
 					</StyledListItemPrimary>;
-			}
+
 		})
 
 		//Render Pagination
 		const pageNumbers = [];
-		for (let i = 1; i <= Math.ceil(this.props.projects.length / this.state.itemsPerPage); i++) {
+		for (let i = 1; i <= Math.ceil(this.props.courses.length / this.state.itemsPerPage); i++) {
 			pageNumbers.push(i);
 		}
 		const renderPagination = pageNumbers.map(pageNo => {

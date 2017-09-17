@@ -10,12 +10,15 @@ export default class PersonalDashboard extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			projects: []
+			projects: [],
+			courses: []
 		};
 
 		this.setProjects = this.setProjects.bind(this);
 		this.addProject = this.addProject.bind(this);
 		this.removeProject = this.removeProject.bind(this);
+
+		this.setCourses = this.setCourses.bind(this);
 
 		$("body").css({
 			overflow: "auto"
@@ -25,6 +28,12 @@ export default class PersonalDashboard extends React.Component {
 	setProjects(projects) {
 		this.setState({
 			projects: projects
+		});
+	}
+
+	setCourses(courses) {
+		this.setState({
+			courses: courses
 		});
 	}
 
@@ -68,7 +77,7 @@ export default class PersonalDashboard extends React.Component {
 									<h3 className="box-title">Courses</h3>
 								</div>
 								<div className="box-body">
-									<CourseList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
+									<CourseList courses={this.state.courses} setCourses={this.setCourses} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
 								</div>
 							</div>
 						</div>
