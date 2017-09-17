@@ -439,28 +439,6 @@ export default class UmlGraphView extends React.Component {
 					div.style.display = 'block';
 					div.style.width = Math.max(1, Math.round(state.width / scale)) + 'px';
 					div.style.height = Math.max(1, Math.round(state.height / scale)) + 'px';
-
-					// TODO is the following necessary!?
-
-					// Installs the handler for updating connected edges
-					if (div.scrollHandler == null) {
-						div.scrollHandler = true;
-
-						var updateEdges = mxUtils.bind(this, function () {
-							var edgeCount = model.getEdgeCount(state.cell);
-
-							// Only updates edges to avoid update in DOM order
-							// for text label which would reset the scrollbar
-							for (var i = 0; i < edgeCount; i++) {
-								var edge = model.getEdgeAt(state.cell, i);
-								graph.view.invalidate(edge, true, false);
-								graph.view.validate(edge);
-							}
-						});
-
-						mxEvent.addListener(div, 'scroll', updateEdges);
-						mxEvent.addListener(div, 'mouseup', updateEdges);
-					}
 				}
 			}
 		};
@@ -889,6 +867,16 @@ export default class UmlGraphView extends React.Component {
 		node.setGeometry(new mxGeometry(oldGeo.x, oldGeo.y, width, currentHeight));
 
 		this.graph.refresh(node);
+
+		// Update Edges
+		let edgeCount = this.graph.getModel().getEdgeCount(node);
+
+		for (let i = 0; i < edgeCount; i++) {
+			let edge = this.graph.getModel().getEdgeAt(node, i);
+
+			this.graph.view.invalidate(edge, true, false);
+			this.graph.view.validate(edge);
+		}
 	}
 
 	zoomIn() {
