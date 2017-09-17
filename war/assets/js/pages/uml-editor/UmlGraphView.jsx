@@ -431,7 +431,39 @@ export default class UmlGraphView extends React.Component {
 			let model = graph.model;
 
 			if (model.isVertex(state.cell) && state.text != null) {
+				// Register onClick listener for add field/method link
+				const divBase = state.text.node.children[0];
+				const divContainer = divBase.children[0];
+				const divFields = divContainer.children[2];
+				const divMethods = divContainer.children[4];
 
+				// Fields onClick listener
+				if (divFields.children != null && divFields.children.length > 0) {
+					let lastChild = divFields.children[divFields.children.length - 1];
+
+					if (lastChild.children != null && lastChild.children.length == 1) {
+						let link = lastChild.children[0];
+
+						if (link.nodeName == 'A') {
+							link.onclick = () => _this.props.umlEditor.openClassFieldModal(state.cell);
+						}
+					}
+				}
+
+				// Methods onClick listener
+				if (divMethods.children != null && divMethods.children.length > 0) {
+					let lastChild = divMethods.children[divMethods.children.length - 1];
+
+					if (lastChild.children != null && lastChild.children.length == 1) {
+						let link = lastChild.children[0];
+
+						if (link.nodeName == 'A') {
+							link.onclick = () => _this.props.umlEditor.openClassMethodModal(state.cell);
+						}
+					}
+				}
+
+				// Set size
 				state.text.node.style.overflow = 'hidden';
 				state.text.node.style.top = (state.y + 1) + 'px';
 
@@ -826,6 +858,7 @@ export default class UmlGraphView extends React.Component {
 		const divFields = divContainer.children[2];
 		const divMethods = divContainer.children[4];
 
+		// Calculate width
 		const canvas = document.createElement("canvas");
 		const canvasContext = canvas.getContext("2d");
 
