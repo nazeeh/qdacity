@@ -19,6 +19,7 @@ export default class PersonalDashboard extends React.Component {
 		this.removeProject = this.removeProject.bind(this);
 
 		this.setCourses = this.setCourses.bind(this);
+		this.removeCourse = this.removeCourse.bind(this);
 
 		$("body").css({
 			overflow: "auto"
@@ -51,6 +52,14 @@ export default class PersonalDashboard extends React.Component {
 		});
 	}
 
+	removeCourse(index) {
+		this.state.courses.splice(index, 1);
+		this.setState({
+			courses: this.state.courses
+		});
+	}
+
+
 	render() {
 		if (!this.props.account.getProfile) return null;
 		return (
@@ -77,7 +86,7 @@ export default class PersonalDashboard extends React.Component {
 									<h3 className="box-title">Courses</h3>
 								</div>
 								<div className="box-body">
-									<CourseList courses={this.state.courses} setCourses={this.setCourses} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
+									<CourseList courses={this.state.courses} setCourses={this.setCourses} addProject={this.addProject} removeCourse={this.removeCourse} history={this.props.history} />
 								</div>
 							</div>
 						</div>

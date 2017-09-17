@@ -1,12 +1,11 @@
 package com.qdacity.course;
 
 import java.util.Arrays;
-
 import java.util.List;
+
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
-
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -16,9 +15,11 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
+
 
 
 @Api(name = "qdacity",
@@ -66,6 +67,46 @@ public class CourseEndpoint {
 		return CollectionResponse.<Course> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
 
+	
+	/**
+	 * This method removes the entity with primary key id.
+	 * It uses HTTP DELETE method.
+	 *
+	 * @param id the primary key of the entity to be deleted.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "course.removeCourse",
+		
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public void removeCourse(@Named("id") Long id, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			Course course = (Course) mgr.getObjectById(Course.class, id);
+
+			// Check if user is authorized
+			Authorization.checkAuthorizationCourse(course, user);
+
+			List<String> userIDs = course.getOwners();
+
+			/*
+			for (String projectUserIDs : userIDs) {
+				com.qdacity.user.User projectUser = mgr.getObjectById(com.qdacity.user.User.class, projectUserIDs);
+
+				projectUser.removeProjectAuthorization(id);
+				mgr.makePersistent(projectUser);
+
+			}
+			 */
+			// Finally remove the actual project
+			mgr.deletePersistent(course);
+		} finally {
+			mgr.close();
+		}
+	}
+	
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();

@@ -129,14 +129,14 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-	deleteProject(e, project, index) {
+	deleteCourse(e, course, index) {
 		var _this = this;
 		e.stopPropagation();
-		var confirm = new Confirm('Do you want to delete the course ' + project.name + '?');
+		var confirm = new Confirm('Do you want to delete the course ' + course.name + '?');
 		confirm.showModal().then(function () {
-			ProjectEndpoint.removeProject(project.id).then(function (resp) {
+			CourseEndPoint.removeCourse(course.id).then(function (resp) {
 				// remove project from parent state
-				_this.props.removeProject(index);
+				_this.props.removeCourse(index);
 			});
 		});
 
@@ -187,15 +187,10 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-	renderDeleteBtn(project, index) {
-
-		if (typeof project.revisionID == "undefined") {
-			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+	renderDeleteBtn(course, index) {
+			return <StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash "></i>
 					</StyledListItemBtn>
-		} else {
-			return "";
-		}
 	}
 
 	editorClick(e, prj, index) {
@@ -254,7 +249,7 @@ export default class CourseList extends React.Component {
 				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
-				
+
 			</div>
 			])
 		}
