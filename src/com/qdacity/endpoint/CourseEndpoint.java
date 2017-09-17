@@ -2,7 +2,8 @@ package com.qdacity.endpoint;
 
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -21,7 +22,7 @@ import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
-import com.qdacity.project.Project;
+
 
 
 
@@ -138,7 +139,7 @@ public class CourseEndpoint {
 			mgr.makePersistent(course);
 			// Authorize User
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-			dbUser.addProjectAuthorization(course.getId());
+			dbUser.addCourseAuthorization(course.getId());
 			Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
 		} finally {
 			mgr.close();
@@ -146,6 +147,39 @@ public class CourseEndpoint {
 		return course;
 	}
 
+	
+
+	@ApiMethod(name = "course.removeUser",
+			path = "courses",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public void removeUser(@Named("courseID") Long courseID, @Named("courseType") String courseType, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			String userIdToRemove = "";
+
+			if (userID != null) userIdToRemove = userID;
+			else userIdToRemove = user.getUserId();
+
+			Course course = (Course) Cache.getOrLoad(courseID, Course.class);
+			if (course != null) { // if false -> bug.
+					course.removeUser(userIdToRemove);
+					Cache.cache(courseID, Course.class, course);
+					mgr.makePersistent(course);
+			}
+
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
+			dbUser.removeCourseAuthorization(courseID);
+			mgr.makePersistent(dbUser);
+			
+
+		} finally {
+			mgr.close();
+		}
+	}
+	
 	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();

@@ -50,7 +50,11 @@ public class User implements Serializable {
 
 	@Persistent
 	List<Long> projects;
+	
 
+	@Persistent
+	List<Long> courses;
+	
 	public String getId() {
 		return id;
 	}
@@ -90,7 +94,16 @@ public class User implements Serializable {
 	public void removeProjectAuthorization(Long project) {
 		projects.remove(project);
 	}
+	
+	public void addCourseAuthorization(Long course) {
+		courses.add(course);
+	}
 
+	public void removeCourseAuthorization(Long course) {
+		courses.remove(course);
+	}
+	
+	
 	public String getEmail() {
 		return email;
 	}

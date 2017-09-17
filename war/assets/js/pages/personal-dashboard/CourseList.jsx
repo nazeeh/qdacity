@@ -115,16 +115,14 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-	leaveProject(e, project, index) {
+	leaveCourse(e, course, index) {
 		var _this = this;
 		e.stopPropagation();
 		var decider = new BinaryDecider('Please confirm leaving this course', 'Cancel', 'Leave');
 		decider.showModal().then(function (value) {
 			if (value == 'optionB') {
-				var type = project.type;
-				if (typeof type == 'undefined') type = "PROJECT";
-				ProjectEndpoint.removeUser(project.id, type).then(function (resp) {
-					_this.props.removeProject(index);
+				CourseEndPoint.removeUser(course.id).then(function (resp) {
+					_this.props.removeCourse(index);
 				});
 			}
 		});
@@ -135,7 +133,9 @@ export default class CourseList extends React.Component {
 		e.stopPropagation();
 		var confirm = new Confirm('Do you want to delete the course ' + course.name + '?');
 		confirm.showModal().then(function () {
-			CourseEndPoint.removeCourse(course.id).then(function (resp) {
+			var type = course.type;
+			if (typeof type == 'undefined') type = "COURSE";
+			CourseEndPoint.removeCourse(course.id, type).then(function (resp) {
 				// remove project from parent state
 				_this.props.removeCourse(index);
 			});
@@ -238,7 +238,7 @@ export default class CourseList extends React.Component {
 				<span>{course.name}</span>,
 				<div>
 				{this.renderDeleteBtn(course, index)}
-				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
 
