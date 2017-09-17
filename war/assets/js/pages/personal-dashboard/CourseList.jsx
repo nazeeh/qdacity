@@ -254,9 +254,7 @@ export default class CourseList extends React.Component {
 				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
-				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-					<i className="fa fa-tags"></i>
-				</StyledListItemBtn>
+				
 			</div>
 			])
 		}
