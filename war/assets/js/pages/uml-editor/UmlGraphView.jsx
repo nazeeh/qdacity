@@ -29,21 +29,13 @@ export default class UmlGraphView extends React.Component {
 		this.umlClassHeaderOffsetRight = 10;
 		this.umlClassSeparatorHeight = 1;
 
-		this.umlClassFieldHeight = 20;
-		this.umlClassFieldOffsetLeft = 6;
-		this.umlClassFieldOffsetRight = 6;
-		this.umlClassFieldsEmptyHeight = this.umlClassFieldHeight;
-		this.umlClassFieldsOffsetTop = 4;
-		this.umlClassFieldsOffsetBottom = 4;
-		this.umlClassAddClassFieldHeight = this.umlClassFieldHeight;
-
-		this.umlClassMethodHeight = this.umlClassFieldHeight;
-		this.umlClassMethodOffsetLeft = this.umlClassFieldOffsetLeft;
-		this.umlClassMethodOffsetRight = this.umlClassFieldOffsetRight;
-		this.umlClassMethodsEmptyHeight = this.umlClassFieldsEmptyHeight;
-		this.umlClassMethodsOffsetTop = this.umlClassFieldsOffsetTop;
-		this.umlClassMethodsOffsetBottom = this.umlClassFieldsOffsetBottom;
-		this.umlClassAddClassMethodHeight = this.umlClassMethodHeight;
+		this.umlClassElementHeight = 20;
+		this.umlClassElementOffsetLeft = 6;
+		this.umlClassElementOffsetRight = 6;
+		this.umlClassElementsEmptyHeight = this.umlClassElementHeight;
+		this.umlClassElementsOffsetTop = 4;
+		this.umlClassElementsOffsetBottom = 4;
+		this.umlClassAddClassElementHeight = this.umlClassElementHeight;
 
 		this.umlClassMinimumWidth = 160;
 		this.umlClassMaximumWidth = 300;
@@ -337,7 +329,7 @@ export default class UmlGraphView extends React.Component {
 		this.graph.getLabel = function (cell) {
 			if (_this.graph.getModel().isVertex(cell)) {
 				if (_this.graph.isCellCollapsed(cell)) {
-					// TODO
+					// TODO if cells can be collapsed
 					return '';
 				} else {
 					const cellValue = cell.value;
@@ -350,64 +342,42 @@ export default class UmlGraphView extends React.Component {
 					// Separator
 					let separator = '<div class="umlClassSeparator" style="height:' + _this.umlClassSeparatorHeight + 'px;"></div>';
 
-					// Fields
-					let fields = '<div class="umlClassFields" style="padding-top:' + _this.umlClassFieldsOffsetTop + 'px; padding-bottom:' + _this.umlClassFieldsOffsetBottom + 'px;">';
+					// Fields / Methods
+					const createElements = (typeName, elements) => {
+						let content = '<div class="umlClassElements" style="padding-top:' + _this.umlClassElementsOffsetTop + 'px; padding-bottom:' + _this.umlClassElementsOffsetBottom + 'px;">';
 
-					let addFieldButton = '<div style="width:calc(100% - ' + (_this.umlClassFieldOffsetLeft + _this.umlClassFieldOffsetRight) + 'px); height:' + _this.umlClassAddClassFieldHeight + 'px; line-height:' + _this.umlClassAddClassFieldHeight + 'px; margin-left:' + _this.umlClassFieldOffsetLeft + 'px;">';
-					addFieldButton += '<a class="umlClassAddFieldLink">+ Add Field</a>';
-					addFieldButton += '</div>';
+						let addElementLink = '<div style="width:calc(100% - ' + (_this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight) + 'px); height:' + _this.umlClassAddClassElementHeight + 'px; line-height:' + _this.umlClassAddClassElementHeight + 'px; margin-left:' + _this.umlClassElementOffsetLeft + 'px;">';
+						addElementLink += '<a class="umlClassAddElementLink">+ Add ' + typeName + '</a>';
+						addElementLink += '</div>';
 
-					if (cellValue.getFields() != null && cellValue.getFields().length > 0) {
-						for (let i = 0; i < cellValue.getFields().length; i++) {
-							fields += '<div class="umlClassField" style="width:calc(100% - ' + (_this.umlClassFieldOffsetLeft + _this.umlClassFieldOffsetRight) + 'px); height:' + _this.umlClassFieldHeight + 'px; line-height:' + _this.umlClassFieldHeight + 'px; margin-left:' + _this.umlClassFieldOffsetLeft + 'px;">';
-							fields += cellValue.getFields()[i];
-							fields += '</div>';
-						}
+						if (elements != null && elements.length > 0) {
+							for (let i = 0; i < elements.length; i++) {
+								content += '<div class="umlClassElement" style="width:calc(100% - ' + (_this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight) + 'px); height:' + _this.umlClassElementHeight + 'px; line-height:' + _this.umlClassElementHeight + 'px; margin-left:' + _this.umlClassElementOffsetLeft + 'px;">';
+								content += elements[i];
+								content += '</div>';
+							}
 
-						// Is selected
-						if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-							fields += addFieldButton;
-						}
+							// Is selected
+							if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
+								content += addElementLink;
+							}
 
-					} else {
-						// Is selected
-						if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-							fields += addFieldButton;
 						} else {
-							fields += '<div class="umlClassFieldsEmpty" style="height:' + _this.umlClassFieldsEmptyHeight + 'px;"></div>';
-						}
-					}
-
-					fields += '</div>';
-
-					// Methods
-					let methods = '<div class="umlClassMethods" style="padding-top:' + _this.umlClassMethodsOffsetTop + 'px; padding-bottom:' + _this.umlClassMethodsOffsetBottom + 'px;">';
-
-					let addMethodButton = '<div style="width:calc(100% - ' + (_this.umlClassMethodOffsetLeft + _this.umlClassMethodOffsetRight) + 'px); height:' + _this.umlClassAddClassMethodHeight + 'px; line-height:' + _this.umlClassAddClassMethodHeight + 'px; margin-left:' + _this.umlClassMethodOffsetLeft + 'px;">';
-					addMethodButton += '<a class="umlClassAddMethodLink">+ Add Method</a>';
-					addMethodButton += '</div>';
-
-					if (cellValue.getMethods() != null && cellValue.getMethods().length > 0) {
-						for (let i = 0; i < cellValue.getMethods().length; i++) {
-							methods += '<div class="umlClassMethod" style="width:calc(100% - ' + (_this.umlClassMethodOffsetLeft + _this.umlClassMethodOffsetRight) + 'px); height:' + _this.umlClassMethodHeight + 'px; line-height:' + _this.umlClassMethodHeight + 'px; margin-left:' + _this.umlClassMethodOffsetLeft + 'px;">';
-							methods += cellValue.getMethods()[i];
-							methods += '</div>';
+							// Is selected
+							if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
+								content += addElementLink;
+							} else {
+								content += '<div class="umlClassElementsEmpty" style="height:' + _this.umlClassElementsEmptyHeight + 'px;"></div>';
+							}
 						}
 
-						// Is selected
-						if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-							methods += addMethodButton;
-						}
-					} else {
-						// Is selected
-						if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-							methods += addMethodButton;
-						} else {
-							methods += '<div class="umlClassMethodsEmpty" style="height:' + _this.umlClassMethodsEmptyHeight + 'px;"></div>';
-						}
-					}
+						content += '</div>';
 
-					methods += '</div>';
+						return content;
+					};
+
+					let fields = createElements('Field', cellValue.getFields());
+					let methods = createElements('Method', cellValue.getMethods());
 
 					// Result
 					return '<div class="umlClass">'
@@ -437,31 +407,23 @@ export default class UmlGraphView extends React.Component {
 				const divFields = divContainer.children[2];
 				const divMethods = divContainer.children[4];
 
-				// Fields onClick listener
-				if (divFields.children != null && divFields.children.length > 0) {
-					let lastChild = divFields.children[divFields.children.length - 1];
+				// Add Field/Method onClick listener
+				const addOnClickListener = (divContainer, listener) => {
+					if (divContainer.children != null && divContainer.children.length > 0) {
+						let lastChild = divContainer.children[divContainer.children.length - 1];
 
-					if (lastChild.children != null && lastChild.children.length == 1) {
-						let link = lastChild.children[0];
+						if (lastChild.children != null && lastChild.children.length == 1) {
+							let link = lastChild.children[0];
 
-						if (link.nodeName == 'A') {
-							link.onclick = () => _this.props.umlEditor.openClassFieldModal(state.cell);
+							if (link.nodeName == 'A') {
+								link.onclick = listener;
+							}
 						}
 					}
-				}
+				};
 
-				// Methods onClick listener
-				if (divMethods.children != null && divMethods.children.length > 0) {
-					let lastChild = divMethods.children[divMethods.children.length - 1];
-
-					if (lastChild.children != null && lastChild.children.length == 1) {
-						let link = lastChild.children[0];
-
-						if (link.nodeName == 'A') {
-							link.onclick = () => _this.props.umlEditor.openClassMethodModal(state.cell);
-						}
-					}
-				}
+				addOnClickListener(divFields, () => _this.props.umlEditor.openClassFieldModal(state.cell));
+				addOnClickListener(divMethods, () => _this.props.umlEditor.openClassMethodModal(state.cell));
 
 				// Set size
 				state.text.node.style.overflow = 'hidden';
@@ -844,6 +806,8 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	recalculateNodeSize(node) {
+		const _this = this;
+
 		const cellValue = node.value;
 		const cellState = this.graph.getView().getState(node);
 
@@ -871,29 +835,21 @@ export default class UmlGraphView extends React.Component {
 		let headerWidth = canvasContext.measureText(cellValue.getName()).width;
 		maxWidths.push(headerWidth);
 
-		// Fields width
-		if (cellValue.getFields() != null && cellValue.getFields().length > 0) {
-			// Get the style from the first field (all fields have the same style)
-			let fieldStyle = window.getComputedStyle(divFields.children[0]);
-			canvasContext.font = fieldStyle.font;
+		// Fields/Methods width
+		const calculateElementsWidth = (elements, divContainer) => {
+			if (elements != null && elements.length > 0) {
+				// Get the style from the first element (all elements have the same style)
+				let elementStyle = window.getComputedStyle(divContainer.children[0]);
+				canvasContext.font = elementStyle.font;
 
-			for (let i = 0; i < cellValue.getFields().length; i++) {
-				let fieldWidth = canvasContext.measureText(cellValue.getFields()[i]).width;
-				maxWidths.push(fieldWidth);
+				for (let i = 0; i < elements.length; i++) {
+					let elementWidth = canvasContext.measureText(elements[i]).width;
+					maxWidths.push(elementWidth);
+				}
 			}
-		}
-
-		// Methods width
-		if (cellValue.getMethods() != null && cellValue.getMethods().length > 0) {
-			// Get the style from the first method (all methods have the same style)
-			let methodStyle = window.getComputedStyle(divMethods.children[0]);
-			canvasContext.font = methodStyle.font;
-
-			for (let i = 0; i < cellValue.getMethods().length; i++) {
-				let methodWidth = canvasContext.measureText(cellValue.getMethods()[i]).width;
-				maxWidths.push(methodWidth);
-			}
-		}
+		};
+		calculateElementsWidth(cellValue.getFields(), divFields);
+		calculateElementsWidth(cellValue.getMethods(), divMethods);
 
 		// Use header left/right offset as general offset
 		const offset = this.umlClassHeaderOffsetLeft + this.umlClassHeaderOffsetRight;
@@ -921,48 +877,36 @@ export default class UmlGraphView extends React.Component {
 		// Separator 1
 		height += this.umlClassSeparatorHeight;
 
-		// Fields
-		height += this.umlClassFieldsOffsetTop;
-		height += this.umlClassFieldsOffsetBottom;
-
-		if (cellValue.getFields() != null && cellValue.getFields().length > 0) {
-			height += this.umlClassFieldHeight * cellValue.getFields().length;
-
-			// Is selected
-			if (this.graph.isCellSelected(node) && this.graph.getSelectionCount() == 1) {
-				height += this.umlClassAddClassFieldHeight;
-			}
-		} else {
-			// Is selected
-			if (this.graph.isCellSelected(node) && this.graph.getSelectionCount() == 1) {
-				height += this.umlClassAddClassFieldHeight;
-			} else {
-				height += this.umlClassFieldsEmptyHeight;
-			}
-		}
-
 		// Separator 2
 		height += this.umlClassSeparatorHeight;
 
-		// Methods
-		height += this.umlClassMethodsOffsetTop;
-		height += this.umlClassMethodsOffsetBottom;
+		// Fields / Methods
+		const calculateElementsHeight = (elements) => {
+			let elementsHeight = 0;
+			elementsHeight += _this.umlClassElementsOffsetTop;
+			elementsHeight += _this.umlClassElementsOffsetBottom;
 
-		if (cellValue.getMethods() != null && cellValue.getMethods().length > 0) {
-			height += this.umlClassMethodHeight * cellValue.getMethods().length;
+			if (elements != null && elements.length > 0) {
+				elementsHeight += _this.umlClassElementHeight * elements.length;
 
-			// Is selected
-			if (this.graph.isCellSelected(node) && this.graph.getSelectionCount() == 1) {
-				height += this.umlClassAddClassMethodHeight;
-			}
-		} else {
-			// Is selected
-			if (this.graph.isCellSelected(node) && this.graph.getSelectionCount() == 1) {
-				height += this.umlClassAddClassMethodHeight;
+				// Is selected
+				if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
+					elementsHeight += _this.umlClassAddClassElementHeight;
+				}
 			} else {
-				height += this.umlClassMethodsEmptyHeight;
+				// Is selected
+				if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
+					elementsHeight += _this.umlClassAddClassElementHeight;
+				} else {
+					elementsHeight += _this.umlClassElementsEmptyHeight;
+				}
 			}
+
+			return elementsHeight;
 		}
+
+		height += calculateElementsHeight(cellValue.getFields());
+		height += calculateElementsHeight(cellValue.getMethods());
 
 		// Node
 		const oldGeo = node.getGeometry();
