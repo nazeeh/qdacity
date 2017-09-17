@@ -701,7 +701,7 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
-	overlayClickedClassField(cell) {
+	openClassFieldModal(cell) {
 		const _this = this;
 
 		const sourceUmlClass = _this.umlClassManager.getByNode(cell);
@@ -720,7 +720,7 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
-	overlayClickedClassMethod(cell) {
+	openClassMethodModal(cell) {
 		const _this = this;
 
 		const sourceUmlClass = _this.umlClassManager.getByNode(cell);

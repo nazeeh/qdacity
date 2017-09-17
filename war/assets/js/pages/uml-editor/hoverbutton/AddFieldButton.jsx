@@ -10,7 +10,7 @@ export default class AddFieldButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		this.props.umlEditor.overlayClickedClassField(this.props.cell);
+		this.props.umlEditor.openClassFieldModal(this.props.cell);
 	}
 
 	getImageClassName() {
