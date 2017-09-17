@@ -77,17 +77,6 @@ export default class CourseList extends React.Component {
 			var courses = courseList.concat(resp.items)
 			courses = _this.sortCourses(courses);
 			_this.props.setCourses(courses);
-			/*
-			validationPrjPromise.then(function (resp2) {
-				resp2.items = resp2.items || [];
-				resp2.items.forEach(function (prj) {
-					prj.type = "VALIDATION";
-				});
-				projects = projects.concat(resp2.items)
-				projects = _this.sortProjects(projects);
-				_this.props.setProjects(projects);
-			});
-			*/
 		});
 	}
 
@@ -100,14 +89,7 @@ export default class CourseList extends React.Component {
 		return courses;
 	}
 
-	sortProjects(projects) {
-		projects.sort(function (a, b) {
-			if (a.name < b.name) return -1;
-			if (a.name > b.name) return 1;
-			return 0;
-		});
-		return projects;
-	}
+
 
 	paginationClick(event) {
 		this.setState({
@@ -121,7 +103,9 @@ export default class CourseList extends React.Component {
 		var decider = new BinaryDecider('Please confirm leaving this course', 'Cancel', 'Leave');
 		decider.showModal().then(function (value) {
 			if (value == 'optionB') {
-				CourseEndPoint.removeUser(course.id).then(function (resp) {
+				var type = course.type;
+				if (typeof type == 'undefined') type = "COURSE";
+				CourseEndPoint.removeUser(course.id, type).then(function (resp) {
 					_this.props.removeCourse(index);
 				});
 			}

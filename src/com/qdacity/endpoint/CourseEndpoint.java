@@ -150,7 +150,7 @@ public class CourseEndpoint {
 	
 
 	@ApiMethod(name = "course.removeUser",
-			path = "courses",
+			path = "course.removeUser",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
