@@ -2,8 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
-import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CourseEndPoint from '../../common/endpoints/CourseEndpoint';
+import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+
 
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 
@@ -59,8 +60,8 @@ export default class CourseList extends React.Component {
 		this.paginationClick = this.paginationClick.bind(this);
 		this.updateSearch = this.updateSearch.bind(this);
 		this.showNewProjectModal = this.showNewProjectModal.bind(this);
-		this.createNewProject = this.createNewProject.bind(this);
-		this.editorClick = this.editorClick.bind(this);
+		this.createNewCourse = this.createNewCourse.bind(this);
+
 	}
 
 	init() {
@@ -164,26 +165,21 @@ export default class CourseList extends React.Component {
 		modal.addTextInput('name', "Course Name", 'Name', '');
 		modal.addTextField('desc', "Course Description", 'Description');
 		modal.showModal().then(function (data) {
-			_this.createNewProject(data.name, data.desc);
+			_this.createNewCourse(data.name, data.desc);
 		});
 	}
 
-	createNewProject(name, description) {
+	createNewCourse(name, description) {
 		var _this = this;
-		CodesystemEndpoint.insertCodeSystem(0, "PROJECT").then(function (codeSystem) {
-			var project = {};
-			project.codesystemID = codeSystem.id;
-			project.maxCodingID = 0;
-			project.name = name;
-			project.description = description;
-			ProjectEndpoint.insertProject(project).then(function (insertedProject) {
-				codeSystem.project = insertedProject.id;
+		var course = {};
 
-				CodesystemEndpoint.updateCodeSystem(codeSystem).then(function (updatedCodeSystem) {
-					insertedProject.type = "PROJECT";
-					_this.props.addProject(insertedProject);
-				});
-			});
+		course.name = name;
+		course.description = description;
+		CourseEndPoint.insertCourse(course).then(function (insertedCourse) {
+
+				insertedProject.type = "COURSE";
+				_this.props.addCourse(insertedCourse);
+
 		});
 	}
 
@@ -193,10 +189,6 @@ export default class CourseList extends React.Component {
 					</StyledListItemBtn>
 	}
 
-	editorClick(e, prj, index) {
-		e.stopPropagation();
-		this.props.history.push('/CodingEditor?project=' + prj.id + '&type=' + prj.type);
-	}
 
 	render() {
 		var _this = this;

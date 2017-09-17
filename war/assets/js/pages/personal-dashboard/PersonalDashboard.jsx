@@ -19,6 +19,7 @@ export default class PersonalDashboard extends React.Component {
 		this.removeProject = this.removeProject.bind(this);
 
 		this.setCourses = this.setCourses.bind(this);
+		this.addCourse = this.addCourse.bind(this);
 		this.removeCourse = this.removeCourse.bind(this);
 
 		$("body").css({
@@ -42,6 +43,13 @@ export default class PersonalDashboard extends React.Component {
 		this.state.projects.push(project);
 		this.setState({
 			projects: this.state.projects
+		});
+	}
+
+	addCourse(course) {
+		this.state.courses.push(course);
+		this.setState({
+			courses: this.state.courses
 		});
 	}
 
@@ -86,7 +94,7 @@ export default class PersonalDashboard extends React.Component {
 									<h3 className="box-title">Courses</h3>
 								</div>
 								<div className="box-body">
-									<CourseList courses={this.state.courses} setCourses={this.setCourses} addProject={this.addProject} removeCourse={this.removeCourse} history={this.props.history} />
+									<CourseList courses={this.state.courses} setCourses={this.setCourses} addCourse={this.addCourse} removeCourse={this.removeCourse} history={this.props.history} />
 								</div>
 							</div>
 						</div>

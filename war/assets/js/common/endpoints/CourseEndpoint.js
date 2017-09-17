@@ -14,5 +14,10 @@ export default class CourseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+	
+	static insertCourse(course) {
+		var apiMethod = gapi.client.qdacity.course.insertCourse(course);
+		return Promisizer.makePromise(apiMethod);
+	}
 
 }

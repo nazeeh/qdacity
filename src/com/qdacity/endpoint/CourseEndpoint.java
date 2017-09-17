@@ -1,4 +1,4 @@
-package com.qdacity.course;
+package com.qdacity.endpoint;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -16,9 +17,11 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
+import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
+import com.qdacity.project.Project;
 
 
 
@@ -107,7 +110,57 @@ public class CourseEndpoint {
 		}
 	}
 	
+	/**
+	 * This inserts a new entity into App Engine datastore. If the entity already
+	 * exists in the datastore, an exception is thrown.
+	 * It uses HTTP POST method.
+	 *
+	 * @param project the entity to be inserted.
+	 * @return The inserted entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "course.insertCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Course insertCourse(Course course, User user) throws UnauthorizedException {
+		// Check if user is authorized
+		// Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
 
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (course.getId() != null) {
+				if (containsCourse(course)) {
+					throw new EntityExistsException("Object already exists");
+				}
+			}
+			course.addOwner(user.getUserId());
+			mgr.makePersistent(course);
+			// Authorize User
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			dbUser.addProjectAuthorization(course.getId());
+			Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+		} finally {
+			mgr.close();
+		}
+		return course;
+	}
+
+	
+	private boolean containsCourse(Course course) {
+		PersistenceManager mgr = getPersistenceManager();
+		boolean contains = true;
+		try {
+			mgr.getObjectById(Project.class, course.getId());
+		} catch (javax.jdo.JDOObjectNotFoundException ex) {
+			contains = false;
+		} finally {
+			mgr.close();
+		}
+		return contains;
+	}
+
+	
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
