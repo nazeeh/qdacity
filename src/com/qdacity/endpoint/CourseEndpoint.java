@@ -151,7 +151,7 @@ public class CourseEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
 		try {
-			mgr.getObjectById(Project.class, course.getId());
+			mgr.getObjectById(Course.class, course.getId());
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			contains = false;
 		} finally {
