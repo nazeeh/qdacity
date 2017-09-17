@@ -560,6 +560,7 @@ export default class UmlEditor extends React.Component {
 		}
 
 		this.umlGraphView.moveNode(node, x, y);
+		this.umlGraphView.recalculateNodeSize(node);
 
 		console.log('Added new node to the graph: ' + umlClass.getCode().name + ' (' + umlClass.getCode().codeID + ')');
 	}
