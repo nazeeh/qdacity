@@ -177,7 +177,7 @@ export default class CourseList extends React.Component {
 		course.description = description;
 		CourseEndPoint.insertCourse(course).then(function (insertedCourse) {
 
-				insertedProject.type = "COURSE";
+				insertedCourse.type = "COURSE";
 				_this.props.addCourse(insertedCourse);
 
 		});
