@@ -24,22 +24,22 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlClassDefaultWidth = 160;
-		this.umlClassDefaultHeight = 59;
-		this.umlClassHeaderHeight = 25;
+		this.umlClassHeaderHeight = 26;
 		this.umlClassSeparatorHeight = 1;
-		this.umlClassFieldHeight = 19;
-		this.umlClassFieldOffsetLeft = 3;
-		this.umlClassFieldOffsetRight = 3;
+		this.umlClassFieldHeight = 20;
+		this.umlClassFieldOffsetLeft = 6;
+		this.umlClassFieldOffsetRight = 6;
 		this.umlClassFieldsEmptyHeight = 10;
-		this.umlClassFieldsOffsetTop = 3;
-		this.umlClassFieldsOffsetBottom = 3;
-		this.umlClassMethodHeight = 19;
-		this.umlClassMethodOffsetLeft = 3;
-		this.umlClassMethodOffsetRight = 3;
+		this.umlClassFieldsOffsetTop = 4;
+		this.umlClassFieldsOffsetBottom = 4;
+		this.umlClassMethodHeight = 20;
+		this.umlClassMethodOffsetLeft = 6;
+		this.umlClassMethodOffsetRight = 6;
 		this.umlClassMethodsEmptyHeight = 10;
-		this.umlClassMethodsOffsetTop = 3;
-		this.umlClassMethodsOffsetBottom = 3;
+		this.umlClassMethodsOffsetTop = 4;
+		this.umlClassMethodsOffsetBottom = 4;
+		this.umlClassDefaultWidth = 160;
+		this.umlClassDefaultHeight = 59; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
 
 		this.zoomOffset = 10;
 		this.minZoomPercentage = 10;
@@ -334,9 +334,11 @@ export default class UmlGraphView extends React.Component {
 				} else {
 					const cellValue = cell.value;
 
+					// TODO USE CSS CLASSES
+
 					// Header
 					let header = '<div '
-						+ 'style="width:100%; height:' + _this.umlClassHeaderHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px;"'
+						+ 'style="font-weight:bold; font-size:13px; width:100%; height:' + _this.umlClassHeaderHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px;"'
 						+ '>' + cellValue.getName() + '</div>';
 
 					// Separator
@@ -347,7 +349,9 @@ export default class UmlGraphView extends React.Component {
 
 					if (cellValue.getFields() != null && cellValue.getFields().length > 0) {
 						for (let i = 0; i < cellValue.getFields().length; i++) {
-							fields += '<div style="width:100%; height:' + _this.umlClassFieldHeight + 'px; line-height:' + _this.umlClassFieldHeight + 'px; padding-left:' + _this.umlClassFieldOffsetLeft + 'px; padding-right:' + _this.umlClassFieldOffsetRight + 'px;">';
+							fields += '<div style="overflow:hidden; font-weight:normal; font-size:11.5px; width:calc(100% - ' + (_this.umlClassFieldOffsetLeft + _this.umlClassFieldOffsetRight) + 'px); height:' + _this.umlClassFieldHeight + 'px; line-height:' + _this.umlClassFieldHeight + 'px; margin-left:' + _this.umlClassFieldOffsetLeft + 'px;">';
+							fields += cellValue.getFields()[i];
+							fields += '</div>';
 						}
 					} else {
 						fields += '<div style="width:100%; height:' + _this.umlClassFieldsEmptyHeight + 'px;"></div>';
@@ -360,7 +364,9 @@ export default class UmlGraphView extends React.Component {
 
 					if (cellValue.getMethods() != null && cellValue.getMethods().length > 0) {
 						for (let i = 0; i < cellValue.getMethods().length; i++) {
-							methods += '<div style="width:100%; height:' + _this.umlClassMethodHeight + 'px; line-height:' + _this.umlClassMethodHeight + 'px; padding-left:' + _this.umlClassMethodOffsetLeft + 'px; padding-right:' + _this.umlClassMethodOffsetRight + 'px;">';
+							methods += '<div style="overflow:hidden; font-weight:normal; font-size:11.5px; width:calc(100% - ' + (_this.umlClassMethodOffsetLeft + _this.umlClassMethodOffsetRight) + 'px); height:' + _this.umlClassMethodHeight + 'px; line-height:' + _this.umlClassMethodHeight + 'px; margin-left:' + _this.umlClassMethodOffsetLeft + 'px;">';
+							methods += cellValue.getMethods()[i];
+							methods += '</div>';
 						}
 					} else {
 						methods += '<div style="width:100%; height:' + _this.umlClassMethodsEmptyHeight + 'px;"></div>';
@@ -750,8 +756,11 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	renameNode(node, name) {
-		node.setValue(name);
-		this.graph.refresh(node);
+		const cellValue = node.value;
+
+		cellValue.setName(name);
+
+		this.recalculateNodeSize(node);
 	}
 
 	addClassField(node, fieldText) {
@@ -762,19 +771,12 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(node);
 	}
 
-	removeClassField(node, field) {
-		this.graph.getModel().beginUpdate();
+	removeClassField(node, fieldText) {
+		const cellValue = node.value;
 
-		try {
-			field.removeFromParent();
+		cellValue.removeField(fieldText);
 
-			this.graph.refresh(field);
-
-			this.recalculateNodeSize(node);
-
-		} finally {
-			this.graph.getModel().endUpdate();
-		}
+		this.recalculateNodeSize(node);
 	}
 
 	addClassMethod(node, methodText) {
@@ -785,19 +787,12 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(node);
 	}
 
-	removeClassMethod(node, method) {
-		this.graph.getModel().beginUpdate();
+	removeClassMethod(node, methodText) {
+		const cellValue = node.value;
 
-		try {
-			method.removeFromParent();
+		cellValue.removeMethod(methodText);
 
-			this.graph.refresh(method);
-
-			this.recalculateNodeSize(node);
-
-		} finally {
-			this.graph.getModel().endUpdate();
-		}
+		this.recalculateNodeSize(node);
 	}
 
 	recalculateNodeSize(node) {
