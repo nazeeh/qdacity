@@ -28,3 +28,49 @@
 .umlOverlayButtonAddClassMethod {
 	background-image: url("../img/umlOverlayAddClassMethod.png");
 }
+
+
+.umlClass {
+	width: 100%; 
+	height: 100%; 
+	cursor: move !important;
+}
+
+.umlClassHeader {
+	width: 100%;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.umlClassSeparator {
+	width: 100%;
+	background-color: black;
+}
+
+.umlClassFields {
+	width: 100%;	
+}
+
+.umlClassField {
+	font-size: 11.5px; 
+	font-weight: normal; 
+	overflow: hidden; 
+}
+
+.umlClassFieldsEmpty {
+	width: 100%;	
+}
+
+.umlClassMethods {
+	width: 100%;		
+}
+
+.umlClassMethod {
+	font-size: 11.5px; 
+	font-weight: normal; 
+	overflow: hidden; 
+}
+
+.umlClassMethodsEmpty {
+	width: 100%;	
+}

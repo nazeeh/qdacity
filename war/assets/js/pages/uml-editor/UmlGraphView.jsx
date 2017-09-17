@@ -334,48 +334,46 @@ export default class UmlGraphView extends React.Component {
 				} else {
 					const cellValue = cell.value;
 
-					// TODO USE CSS CLASSES
-
 					// Header
-					let header = '<div '
-						+ 'style="font-weight:bold; font-size:13px; width:100%; height:' + _this.umlClassHeaderHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px;"'
+					let header = '<div class="umlClassHeader" '
+						+ 'style="height:' + _this.umlClassHeaderHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px;"'
 						+ '>' + cellValue.getName() + '</div>';
 
 					// Separator
-					let separator = '<div style="width:100%; height:' + _this.umlClassSeparatorHeight + 'px; background-color:black;"></div>';
+					let separator = '<div class="umlClassSeparator" style="height:' + _this.umlClassSeparatorHeight + 'px;"></div>';
 
 					// Fields
-					let fields = '<div style="width:100%; padding-top:' + _this.umlClassFieldsOffsetTop + 'px; padding-bottom:' + _this.umlClassFieldsOffsetBottom + 'px;">';
+					let fields = '<div class="umlClassFields" style="padding-top:' + _this.umlClassFieldsOffsetTop + 'px; padding-bottom:' + _this.umlClassFieldsOffsetBottom + 'px;">';
 
 					if (cellValue.getFields() != null && cellValue.getFields().length > 0) {
 						for (let i = 0; i < cellValue.getFields().length; i++) {
-							fields += '<div style="overflow:hidden; font-weight:normal; font-size:11.5px; width:calc(100% - ' + (_this.umlClassFieldOffsetLeft + _this.umlClassFieldOffsetRight) + 'px); height:' + _this.umlClassFieldHeight + 'px; line-height:' + _this.umlClassFieldHeight + 'px; margin-left:' + _this.umlClassFieldOffsetLeft + 'px;">';
+							fields += '<div class="umlClassField" style="width:calc(100% - ' + (_this.umlClassFieldOffsetLeft + _this.umlClassFieldOffsetRight) + 'px); height:' + _this.umlClassFieldHeight + 'px; line-height:' + _this.umlClassFieldHeight + 'px; margin-left:' + _this.umlClassFieldOffsetLeft + 'px;">';
 							fields += cellValue.getFields()[i];
 							fields += '</div>';
 						}
 					} else {
-						fields += '<div style="width:100%; height:' + _this.umlClassFieldsEmptyHeight + 'px;"></div>';
+						fields += '<div class="umlClassFieldsEmpty" style="height:' + _this.umlClassFieldsEmptyHeight + 'px;"></div>';
 					}
 
 					fields += '</div>';
 
 					// Methods
-					let methods = '<div style="width:100%; padding-top:' + _this.umlClassMethodsOffsetTop + 'px; padding-bottom:' + _this.umlClassMethodsOffsetBottom + 'px;">';
+					let methods = '<div class="umlClassMethods" style="padding-top:' + _this.umlClassMethodsOffsetTop + 'px; padding-bottom:' + _this.umlClassMethodsOffsetBottom + 'px;">';
 
 					if (cellValue.getMethods() != null && cellValue.getMethods().length > 0) {
 						for (let i = 0; i < cellValue.getMethods().length; i++) {
-							methods += '<div style="overflow:hidden; font-weight:normal; font-size:11.5px; width:calc(100% - ' + (_this.umlClassMethodOffsetLeft + _this.umlClassMethodOffsetRight) + 'px); height:' + _this.umlClassMethodHeight + 'px; line-height:' + _this.umlClassMethodHeight + 'px; margin-left:' + _this.umlClassMethodOffsetLeft + 'px;">';
+							methods += '<div class="umlClassMethod" style="width:calc(100% - ' + (_this.umlClassMethodOffsetLeft + _this.umlClassMethodOffsetRight) + 'px); height:' + _this.umlClassMethodHeight + 'px; line-height:' + _this.umlClassMethodHeight + 'px; margin-left:' + _this.umlClassMethodOffsetLeft + 'px;">';
 							methods += cellValue.getMethods()[i];
 							methods += '</div>';
 						}
 					} else {
-						methods += '<div style="width:100%; height:' + _this.umlClassMethodsEmptyHeight + 'px;"></div>';
+						methods += '<div class="umlClassMethodsEmpty" style="height:' + _this.umlClassMethodsEmptyHeight + 'px;"></div>';
 					}
 
 					methods += '</div>';
 
 					// Result
-					return '<div style="width:100%; height:100%; cursor:move !important;">'
+					return '<div class="umlClass">'
 						+ header + separator + fields + separator + methods
 						+ '</div>';
 				}
