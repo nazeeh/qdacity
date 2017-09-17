@@ -57,6 +57,12 @@
 	overflow: hidden; 
 }
 
+.umlClassAddFieldLink {
+	float: left; 
+	font-size: 11.5px; 
+	cursor: pointer;
+}
+
 .umlClassFieldsEmpty {
 	width: 100%;	
 }
@@ -73,4 +79,10 @@
 
 .umlClassMethodsEmpty {
 	width: 100%;	
+}
+
+.umlClassAddMethodLink {
+	float: left; 
+	font-size: 11.5px; 
+	cursor: pointer;
 }
