@@ -480,15 +480,6 @@ export default class UmlGraphView extends React.Component {
 			_this.updateHoverButtons();
 		});
 
-		// Is cell selectable
-		this.graph.isCellSelectable = (cell) => {
-			if (this.isCellFieldsContainer(cell) || this.isCellMethodsContainer(cell) || this.isCellSeparator(cell)) {
-				return false;
-			} else {
-				return mxGraph.prototype.isCellSelectable(cell);
-			}
-		};
-
 		// Selection changed
 		this.lastSelectedCells = [];
 
@@ -661,6 +652,10 @@ export default class UmlGraphView extends React.Component {
 
 	isCellSelected(cell) {
 		return this.graph.isCellSelected(cell);
+	}
+
+	isCellUmlClass(cell) {
+		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent();
 	}
 
 	addEdge(nodeFrom, nodeTo, edgeType) {
@@ -869,57 +864,6 @@ export default class UmlGraphView extends React.Component {
 		}
 
 		this.updateHoverButtons();
-	}
-
-	isCellUmlClass(cell) {
-		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent() && cell.children != null && cell.children.length == this.getUmlClassChildrenCount();
-	}
-
-	isCellSeparator(cell) {
-		const parent = cell.parent;
-		return cell.vertex == true && this.isCellUmlClass(parent) && (this.getSeparator1(parent) == cell || this.getSeparator2(parent) == cell);
-	}
-
-	isCellFieldsContainer(cell) {
-		const parent = cell.parent;
-		return cell.vertex == true && this.isCellUmlClass(parent) && this.getFieldsContainer(parent) == cell;
-	}
-
-	isCellMethodsContainer(cell) {
-		const parent = cell.parent;
-		return cell.vertex == true && this.isCellUmlClass(parent) && this.getMethodsContainer(parent) == cell;
-	}
-
-	getUmlClassChildrenCount() {
-		return 4;
-	}
-
-	getFieldsContainer(cell) {
-		if (!this.isCellUmlClass(cell)) {
-			return null;
-		}
-		return cell.children[1];
-	}
-
-	getMethodsContainer(cell) {
-		if (!this.isCellUmlClass(cell)) {
-			return null;
-		}
-		return cell.children[3];
-	}
-
-	getSeparator1(cell) {
-		if (!this.isCellUmlClass(cell)) {
-			return null;
-		}
-		return cell.children[0];
-	}
-
-	getSeparator2(cell) {
-		if (!this.isCellUmlClass(cell)) {
-			return null;
-		}
-		return cell.children[2];
 	}
 
 	render() {
