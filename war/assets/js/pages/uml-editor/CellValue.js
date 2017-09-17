@@ -16,19 +16,27 @@ export default class CellValue {
 		this.name = name;
 	}
 
+	getFields() {
+		return this.fields;
+	}
+
 	addField(field) {
 		this.fields.push(field);
 	}
 
-	getFields() {
-		return this.fields;
+	removeField(field) {
+		this.fields.remove(field);
+	}
+
+	getMethods() {
+		return this.methods;
 	}
 
 	addMethod(method) {
 		this.methods.push(method);
 	}
 
-	getMethods() {
-		return this.methods;
+	removeMethod(method) {
+		this.methods.remove(method);
 	}
 }
