@@ -66,15 +66,38 @@ export default class SaturationCategorySettings extends React.Component {
 			let cellId1 = "cell-category-" + this.state.categoryIdx + "-1";
 			let cellId2 = "cell-category-" + this.state.categoryIdx + "-2";
 			let cellId2input = "input-category-" + this.state.categoryIdx + "-1";
+			let cellId2inputOld = "input-category-" + this.state.categoryIdx + "-1-old";
 			let cellId3 = "cell-category-" + this.state.categoryIdx + "-3";
 			let cellId3input = "input-category-" + this.state.categoryIdx + "-2";
+			let cellId3inputOld = "input-category-" + this.state.categoryIdx + "-2-old";
 
 			let label = this.state.category + " (Average):";
 			cell.push(<td id={cellId1} key={cellId1} width="50%" >{label}</td>);
-			cell.push(<td id={cellId2} key={cellId2} width="25%"><input id={cellId2input}  type="number"  min="0" max="100"  defaultValue={this.toPercent(avgWeights)} /></td>);
-			cell.push(<td id={cellId3} key={cellId3} width="25%"><input id={cellId3input} type="number"  min="0" max="100"  defaultValue={this.toPercent(avgMax)} /></td>);
-			rows.push(<tr id={rowId} kex={rowId} >{cell}</tr>);
+			cell.push(<td id={cellId2} key={cellId2} width="25%">
+                        <input id={cellId2input}  type="number"  min="0" max="100"  defaultValue={this.toPercent(avgWeights)} />
+                        <input id={cellId2inputOld}  type="hidden"  value={this.toPercent(avgWeights)} />
+                                </td>);
+			cell.push(<td id={cellId3} key={cellId3} width="25%">
+                        <input id={cellId3input} type="number"  min="0" max="100"  defaultValue={this.toPercent(avgMax)} />
+                        <input id={cellId3inputOld} type="hidden" value={this.toPercent(avgMax)} />
+                                </td>);
+			rows.push(<tr id={rowId} key={rowId} >{cell}</tr>);
 		}
+                //add all old values as hidden fields
+                for (var i in catIndices) {
+                        var id = catIndices[i];
+                        let rowID = `row${id}-old`
+                        let rowkey = `key${id}-old`
+
+                        let cell = [];
+                        for (var idx = 1; idx < 3; idx++) {
+                                let cellID = `cell${id}-${idx}`
+                                let inputIdOld = cellID + '-input-old';
+                                cell.push(<td width="25%" key={cellID} id={cellID}><input id={inputIdOld} type="hidden" value={this.toPercent(satNameWeights[catIndices[i]][idx])} /></td>);
+                        }
+                        rows.push(<tr id={rowID} key={rowkey} >{cell}</tr>);
+                }
+                
 
 		let fullCollapsibleText = this.props.category + " " + collapsibleText;
 		return (<div>
