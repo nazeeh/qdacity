@@ -136,17 +136,17 @@ export default class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
-		scroll(0,0);
+		scroll(0, 0);
 		window.onresize = this.resizeElements;
 
 
 	}
 
-	componentDidMount(){
+	componentDidMount() {
 		document.getElementsByTagName("html")[0].style["overflow-y"] = "hidden";
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		document.getElementsByTagName("html")[0].style["overflow-y"] = "";
 	}
 

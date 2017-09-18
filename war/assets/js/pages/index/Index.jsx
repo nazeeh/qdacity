@@ -2,7 +2,9 @@ import React from 'react'
 import styled from 'styled-components';
 
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
-import {BtnLg} from '../../common/styles/Btn.jsx';
+import {
+	BtnLg
+} from '../../common/styles/Btn.jsx';
 
 const StyledIntroBanner = styled.div `
 	background: url(../assets/img/index-top-man-writing.cache.jpg)  no-repeat center center;
@@ -18,7 +20,7 @@ const StyledFooterBanner = styled.div `
   	grid-template-rows: 60px;
 `;
 
-const StyledFooterText = styled.span`
+const StyledFooterText = styled.span `
 	justify-self: center;
 	text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
 	font-size: 3em;

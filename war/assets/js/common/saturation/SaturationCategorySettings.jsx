@@ -83,21 +83,21 @@ export default class SaturationCategorySettings extends React.Component {
                                 </td>);
 			rows.push(<tr id={rowId} key={rowId} >{cell}</tr>);
 		}
-                //add all old values as hidden fields
-                for (var i in catIndices) {
-                        var id = catIndices[i];
-                        let rowID = `row${id}-old`
-                        let rowkey = `key${id}-old`
+		//add all old values as hidden fields
+		for (var i in catIndices) {
+			var id = catIndices[i];
+			let rowID = `row${id}-old`
+			let rowkey = `key${id}-old`
 
-                        let cell = [];
-                        for (var idx = 1; idx < 3; idx++) {
-                                let cellID = `cell${id}-${idx}`
-                                let inputIdOld = cellID + '-input-old';
-                                cell.push(<td width="25%" key={cellID} id={cellID}><input id={inputIdOld} type="hidden" value={this.toPercent(satNameWeights[catIndices[i]][idx])} /></td>);
-                        }
-                        rows.push(<tr id={rowID} key={rowkey} >{cell}</tr>);
-                }
-                
+			let cell = [];
+			for (var idx = 1; idx < 3; idx++) {
+				let cellID = `cell${id}-${idx}`
+				let inputIdOld = cellID + '-input-old';
+				cell.push(<td width="25%" key={cellID} id={cellID}><input id={inputIdOld} type="hidden" value={this.toPercent(satNameWeights[catIndices[i]][idx])} /></td>);
+			}
+			rows.push(<tr id={rowID} key={rowkey} >{cell}</tr>);
+		}
+
 
 		let fullCollapsibleText = this.props.category + " " + collapsibleText;
 		return (<div>

@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
-import {BtnLg} from '../../common/styles/Btn.jsx';
+import {
+	BtnLg
+} from '../../common/styles/Btn.jsx';
 
 export default class SigninWithGoogleBtn extends React.Component {
 	constructor(props) {

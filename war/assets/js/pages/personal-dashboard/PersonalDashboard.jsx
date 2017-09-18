@@ -15,7 +15,7 @@ export default class PersonalDashboard extends React.Component {
 		this.setProjects = this.setProjects.bind(this);
 		this.addProject = this.addProject.bind(this);
 		this.removeProject = this.removeProject.bind(this);
-		scroll(0,0);
+		scroll(0, 0);
 	}
 
 	setProjects(projects) {

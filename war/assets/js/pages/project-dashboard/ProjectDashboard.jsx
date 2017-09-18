@@ -43,7 +43,7 @@ export default class ProjectDashboard extends React.Component {
 			});
 		});
 		this.addReports = this.addReports.bind(this);
-		scroll(0,0);
+		scroll(0, 0);
 	}
 
 	init() {
