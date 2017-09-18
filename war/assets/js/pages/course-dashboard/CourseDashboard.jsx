@@ -19,7 +19,7 @@ export default class CourseDashboard extends React.Component {
 		var course = new Course(urlParams.course);
 
 		this.state = {
-			course: course,
+			course: course
 		};
 		$("body").css({
 			overflow: "auto"
@@ -27,13 +27,8 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	init() {
-		if (!this.userPromise) {
-			this.userPromise = this.props.account.getCurrentUser();
 			this.setCourseProperties();
-		}
 	}
-
-
 
 	setCourseProperties() {
 		var _this = this;
@@ -41,19 +36,22 @@ export default class CourseDashboard extends React.Component {
 		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
 			course.setName(resp.name);
 			course.setDescription(resp.description);
-			console.log(course.name);
+			_this.setState({
+				course: course
+			});
 		});
 	}
 
-
-
 	render() {
+
 		if (!this.props.account.getProfile) return null;
 		this.init();
 
 		return (
 			<StyledDashboard className="container main-content">
-
+				<h2 className="page-header">
+					this is the course: {this.state.course.getName()}
+				</h2>
 		  	</StyledDashboard>
 		);
 	}

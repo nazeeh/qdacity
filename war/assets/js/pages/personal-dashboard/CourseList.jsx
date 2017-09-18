@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import CourseEndPoint from '../../common/endpoints/CourseEndpoint';
-import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 
 
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
@@ -59,7 +58,7 @@ export default class CourseList extends React.Component {
 
 		this.paginationClick = this.paginationClick.bind(this);
 		this.updateSearch = this.updateSearch.bind(this);
-		this.showNewProjectModal = this.showNewProjectModal.bind(this);
+		this.showNewCourseModal = this.showNewCourseModal.bind(this);
 		this.createNewCourse = this.createNewCourse.bind(this);
 
 	}
@@ -67,7 +66,6 @@ export default class CourseList extends React.Component {
 	init() {
 		var _this = this;
 		var courseList = [];
-		//var validationPrjPromise = ProjectEndpoint.listValidationProject();
 		CourseEndPoint.listCourse().then(function (resp) {
 			resp.items = resp.items || [];
 			resp.items.forEach(function (prj) {
@@ -120,7 +118,7 @@ export default class CourseList extends React.Component {
 			var type = course.type;
 			if (typeof type == 'undefined') type = "COURSE";
 			CourseEndPoint.removeCourse(course.id, type).then(function (resp) {
-				// remove project from parent state
+				// remove course from parent state
 				_this.props.removeCourse(index);
 			});
 		});
@@ -138,12 +136,9 @@ export default class CourseList extends React.Component {
 		return ((page == this.state.currentPage) ? 'active' : ' ');
 	}
 
-	isValidationProject(project) {
-		if (project.type == "VALIDATION") return true;
-		return false;
-	}
 
-	showNewProjectModal() {
+
+	showNewCourseModal() {
 		var _this = this;
 		var modal = new CustomForm('Create a new course', '');
 		modal.addTextInput('name', "Course Name", 'Name', '');
@@ -192,7 +187,7 @@ export default class CourseList extends React.Component {
 					<BtnDefault
 						id="newPrjBtn"
 						href="#"
-						onClick={this.showNewProjectModal}
+						onClick={this.showNewCourseModal}
 
 					>
 					<i className="fa fa-plus fa-fw"></i>

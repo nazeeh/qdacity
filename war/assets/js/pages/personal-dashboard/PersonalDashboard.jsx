@@ -33,11 +33,6 @@ export default class PersonalDashboard extends React.Component {
 		});
 	}
 
-	setCourses(courses) {
-		this.setState({
-			courses: courses
-		});
-	}
 
 	addProject(project) {
 		this.state.projects.push(project);
@@ -46,17 +41,23 @@ export default class PersonalDashboard extends React.Component {
 		});
 	}
 
-	addCourse(course) {
-		this.state.courses.push(course);
-		this.setState({
-			courses: this.state.courses
-		});
-	}
-
 	removeProject(index) {
 		this.state.projects.splice(index, 1);
 		this.setState({
 			projects: this.state.projects
+		});
+	}
+
+	setCourses(courses) {
+		this.setState({
+			courses: courses
+		});
+	}
+	
+	addCourse(course) {
+		this.state.courses.push(course);
+		this.setState({
+			courses: this.state.courses
 		});
 	}
 
