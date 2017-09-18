@@ -24,15 +24,9 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.course.AbstractCourse;
 import com.qdacity.course.Course;
 import com.qdacity.course.tasks.LastCourseUsed;
-import com.qdacity.project.AbstractProject;
-import com.qdacity.project.Project;
-import com.qdacity.project.ProjectRevision;
-import com.qdacity.project.ProjectType;
-import com.qdacity.project.ValidationProject;
-import com.qdacity.project.tasks.LastProjectUsed;
+
 
 
 
@@ -107,15 +101,15 @@ public class CourseEndpoint {
 			List<String> userIDs = course.getOwners();
 
 			/*
-			for (String projectUserIDs : userIDs) {
-				com.qdacity.user.User projectUser = mgr.getObjectById(com.qdacity.user.User.class, projectUserIDs);
+			for (String courseUserIDs : userIDs) {
+				com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, courseUserIDs);
 
-				projectUser.removeProjectAuthorization(id);
-				mgr.makePersistent(projectUser);
+				courseUser.removecourseAuthorization(id);
+				mgr.makePersistent(courseUser);
 
 			}
 			 */
-			// Finally remove the actual project
+			// Finally remove the actual course
 			mgr.deletePersistent(course);
 		} finally {
 			mgr.close();
@@ -127,7 +121,7 @@ public class CourseEndpoint {
 	 * exists in the datastore, an exception is thrown.
 	 * It uses HTTP POST method.
 	 *
-	 * @param project the entity to be inserted.
+	 * @param course the entity to be inserted.
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
@@ -137,7 +131,7 @@ public class CourseEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course insertCourse(Course course, User user) throws UnauthorizedException {
 		// Check if user is authorized
-		// Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
+		// Authorization.checkAuthorization(course, user); // FIXME does not make sense for inserting new courses - only check if user is in DB already
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -212,7 +206,7 @@ public class CourseEndpoint {
 			Authorization.isUserNotNull(user);
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
-			if (dbUser.getLastCourseId() != id) { // Check if lastProject property of user has to be updated
+			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
 				LastCourseUsed task = new LastCourseUsed(dbUser, id);
 				Queue queue = QueueFactory.getDefaultQueue();
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
@@ -220,7 +214,7 @@ public class CourseEndpoint {
 
 			String keyString;
 			MemcacheService syncCache;
-			course = (Course) Cache.getOrLoad(id, Project.class);
+			course = (Course) Cache.getOrLoad(id, Course.class);
 
 		} finally {
 			mgr.close();
