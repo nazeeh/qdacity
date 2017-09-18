@@ -1,19 +1,15 @@
 import React from 'react'
 import styled from 'styled-components';
+import {
+	BtnDefault
+} from '../../common/styles/Btn.jsx';
 
-const StyledPrjDasboardBtn = styled.a `
+const StyledPrjDasboardBtn = BtnDefault.extend `
 	text-align: center;
-
-	padding: 3px 3px !important;
+	width: 100%;
+	margin-bottom:5px;
 `;
 
-const StyledDocumentList = styled.div `
-	margin:2px 0px 2px 0px;
-`;
-
-const StyledDocumentItem = styled.a `
-
-`;
 export default class ProjectDashboardBtn extends React.Component {
 	constructor(props) {
 		super(props);
@@ -26,9 +22,9 @@ export default class ProjectDashboardBtn extends React.Component {
 
 	render() {
 		return (
-			<StyledPrjDasboardBtn className="list-group-item clickable" onClick={() => {this.projectDashboardBtnClick(this.props.project);}}>
-				<i className="fa fa-home fa-fw "></i>
-				Project Dashboard
+			<StyledPrjDasboardBtn  onClick={() => {this.projectDashboardBtnClick(this.props.project);}}>
+				<i className="fa fa-home fa-lg"></i>
+				<span>Project Dashboard</span>
 			</StyledPrjDasboardBtn>
 		);
 	}

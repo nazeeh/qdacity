@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import UmlEditor from '../uml-editor/UmlEditor.jsx';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
-import CodeView from './CodeView/CodeView.jsx';
-import PageViewChooser from './View/PageViewChooser.jsx';
+import BottomPanel from './BottomPanel/BottomPanel.jsx';
+import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
 import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 import TextEditor from './TextEditor.jsx';
 
@@ -14,6 +14,9 @@ import Project from '../project-dashboard/Project';
 import {
 	PageView
 } from './View/PageView.js';
+import {
+	BottomPanelType
+} from './BottomPanel/BottomPanelType.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 
@@ -36,16 +39,7 @@ const StyledTextEditorMenu = styled.div `
 	background-color: #e7e7e7;
 `
 
-const StyledPanelHeader = styled.div `
-	text-align: center;
-	position:relative;
-	background-color: #e7e7e7;
- `;
 
-const StyledSettingsPanel = styled.div `
-	display: ${props => (props.showPanel) ? 'block' : 'none'} !important;
-	background-color: #f8f8f8;
-`;
 
 const StyledEditableToggle = styled.a `
 	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
@@ -109,6 +103,10 @@ export default class CodingEditor extends React.Component {
 			showCodingView: false,
 			selectedCode: {},
 			selectedEditor: PageView.CODING,
+			bottomPanelType: BottomPanelType.SEARCHRESULTS,
+			searchResults: {
+				documentResults: []
+			},
 			mxGraphLoaded: false
 
 		};
@@ -137,9 +135,19 @@ export default class CodingEditor extends React.Component {
 		this.removeCode = this.removeCode.bind(this);
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
-
+		this.setSearchResults = this.setSearchResults.bind(this);
+		scroll(0,0);
 		window.onresize = this.resizeElements;
 
+
+	}
+
+	componentDidMount(){
+		document.getElementsByTagName("html")[0].style["overflow-y"] = "hidden";
+	}
+
+	componentWillUnmount(){
+		document.getElementsByTagName("html")[0].style["overflow-y"] = "";
 	}
 
 	init() {
@@ -179,6 +187,14 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
+	setSearchResults(results) {
+		this.setState({
+			searchResults: results,
+			bottomPanelType: BottomPanelType.SEARCHRESULTS,
+			showCodingView: true
+		});
+	}
+
 	getCodeById(id) {
 		return this.codesystemViewRef.getCodeById(id);
 	}
@@ -188,8 +204,11 @@ export default class CodingEditor extends React.Component {
 	}
 
 	toggleCodingView() {
+		let showCodingView = !this.state.showCodingView
+		if (this.state.bottomPanelType === BottomPanelType.SEARCHRESULTS) showCodingView = true;
 		this.setState({
-			showCodingView: !this.state.showCodingView
+			showCodingView: showCodingView,
+			bottomPanelType: BottomPanelType.CODEVIEW,
 		});
 	}
 
@@ -203,8 +222,8 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
-	createCode(name, relationId, relationSourceCodeId, select) {
-		this.codesystemViewRef.createCode(name, relationId, relationSourceCodeId, select);
+	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
+		this.codesystemViewRef.createCode(name, mmElementIDs, relationId, relationSourceCodeId, select);
 	}
 
 	insertCode(code) {
@@ -227,6 +246,14 @@ export default class CodingEditor extends React.Component {
 
 	showCodingView() {
 		this.setState({
+			bottomPanelType: BottomPanelType.CODEVIEW,
+			showCodingView: true
+		});
+	}
+
+	showSearchResults() {
+		this.setState({
+			bottomPanelType: BottomPanelType.SEARCHRESULTS,
 			showCodingView: true
 		});
 	}
@@ -238,7 +265,7 @@ export default class CodingEditor extends React.Component {
 	}
 
 	renderUMLEditor() {
-		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} />;
+		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} createCode={this.createCode} />;
 		return null;
 	}
 
@@ -249,31 +276,23 @@ export default class CodingEditor extends React.Component {
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
 			<StyledSideBar>
 				<StyledSideBarEditor>
-					<div id="project-ui" >
-						<div >
-
-							<div >
-								<ProjectDashboardBtn project={this.state.project} history={this.props.history}/>
-								<div id="agreementMapSettings" className="hidden">
-									<p>
-									  <span>Showing False Negatives >= </span>
-									  <span id="maxFalseNeg" className="falseNegValue"></span>
-									</p>
-									<div id="agreementMapSlider" className="agreementMapSlider"></div>
-								</div>
-
-								<div className="row no-gutters" >
-								<StyledSettingsPanel showPanel={this.state.project.getType() === "PROJECT"}>
-									<StyledPanelHeader>
-										<b>Editor</b>
-									</StyledPanelHeader>
-									<div>
-										<PageViewChooser umlEditorEnabled={this.state.project.isUmlEditorEnabled()} viewChanged={this.viewChanged}/>
-									</div>
-								</StyledSettingsPanel>
-							</div>
+					<div>
+						<div id="agreementMapSettings" className="hidden">
+							<p>
+							  <span>Showing False Negatives >= </span>
+							  <span id="maxFalseNeg" className="falseNegValue"></span>
+							</p>
+							<div id="agreementMapSlider" className="agreementMapSlider"></div>
 						</div>
-					</div>
+						<ProjectPanel
+							resizeElements={this.resizeElements}
+							codesystemView={this.codesystemViewRef}
+							viewChanged={this.viewChanged}
+							setSearchResults = {this.setSearchResults}
+							project={this.state.project}
+							history={this.props.history}
+							documentsView = {this.documentsViewRef}
+							showCodingView = {this.showCodingView}/>
 					</div>
 				</StyledSideBarEditor>
 				<StyledSideBarDocuments>
@@ -354,8 +373,10 @@ export default class CodingEditor extends React.Component {
 
 			</StyledEditor>
 			<StyledFooter  showCodingView={this.state.showCodingView}>
-				<CodeView
+				<BottomPanel
 					ref={(c) => {if (c) this.codeViewRef = c;}}
+					panelType = {this.state.bottomPanelType}
+					searchResults = {this.state.searchResults}
 					code={this.state.selectedCode}
 					editorCtrl={this.state.editorCtrl}
 					documentsView={this.documentsViewRef}

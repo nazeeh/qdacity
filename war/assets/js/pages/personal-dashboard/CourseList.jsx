@@ -215,7 +215,7 @@ export default class CourseList extends React.Component {
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
 
 		function prjClick(prj) {
-			_this.props.history.push('/ProjectDashboard?course=' + prj.id + '&type=' + prj.type);
+			_this.props.history.push('/CourseDashboard?course=' + prj.id);
 		}
 		const renderListItemContent = (course, index) => {
 			return ([

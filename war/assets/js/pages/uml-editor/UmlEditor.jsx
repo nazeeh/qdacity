@@ -257,9 +257,7 @@ export default class UmlEditor extends React.Component {
 						let node = umlClass.getNode();
 
 						if (!exists) {
-							// If the code is not mapped => assume position (0,0)
-							let x = 0;
-							let y = 0;
+							let [x, y] = _this.umlGraphView.getFreeNodePosition(node);
 
 							if (node != null) {
 								x = node.getGeometry().x;
@@ -304,9 +302,7 @@ export default class UmlEditor extends React.Component {
 					let code = umlClass.getCode();
 					let node = umlClass.getNode();
 
-					// If the code is not mapped => assume position (0,0)
-					let x = 0;
-					let y = 0;
+					let [x, y] = _this.umlGraphView.getFreeNodePosition(node);
 
 					if (node != null) {
 						x = node.getGeometry().x;
@@ -372,6 +368,8 @@ export default class UmlEditor extends React.Component {
 	insertUnregisteredUmlCodePositions(unregisteredUmlCodePositions) {
 		const _this = this;
 
+		_this.refreshUmlCodePositions(unregisteredUmlCodePositions);
+
 		console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
 
 		UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then((resp) => {
@@ -412,6 +410,8 @@ export default class UmlEditor extends React.Component {
 				'x': 0,
 				'y': 0
 			}]);
+		} else {
+			umlClass.setCode(code);
 		}
 
 		// Update name
@@ -548,10 +548,19 @@ export default class UmlEditor extends React.Component {
 		const node = this.umlGraphView.addNode(umlClass.getCode().name);
 		umlClass.setNode(node);
 
+		let x = 0;
+		let y = 0;
+
 		const umlCodePosition = umlClass.getUmlCodePosition();
-		if (umlCodePosition != null) {
-			this.umlGraphView.moveNode(node, umlCodePosition.x, umlCodePosition.y);
+
+		if (umlCodePosition != null && !(umlCodePosition.x == 0 && umlCodePosition.y == 0)) {
+			x = umlCodePosition.x;
+			y = umlCodePosition.y;
+		} else {
+			[x, y] = this.umlGraphView.getFreeNodePosition(node);
 		}
+
+		this.umlGraphView.moveNode(node, x, y);
 
 		console.log('Added new node to the graph: ' + umlClass.getCode().name + ' (' + umlClass.getCode().codeID + ')');
 	}
@@ -687,7 +696,6 @@ export default class UmlEditor extends React.Component {
 			sourceCode.relations = resp.relations;
 
 			_this.props.updateCode(sourceCode);
-			_this.props.refreshCodeView(sourceCode);
 		});
 	}
 
@@ -709,7 +717,6 @@ export default class UmlEditor extends React.Component {
 				code.mmElementIDs = data.ids;
 
 				_this.props.updateCode(code, true);
-				_this.props.refreshCodeView(code);
 			}
 		});
 	}
@@ -867,7 +874,7 @@ export default class UmlEditor extends React.Component {
 
 		return (
 			<StyledUmlEditor>
-                <Toolbar ref={(toolbar) => {if (toolbar != null) _this.toolbar = toolbar}} className="row no-gutters" umlEditor={_this} />
+                <Toolbar ref={(toolbar) => {if (toolbar != null) _this.toolbar = toolbar}} className="row no-gutters" umlEditor={_this} createCode={_this.props.createCode} />
                 <UmlGraphView ref={(umlGraphView) => {if (umlGraphView != null) _this.umlGraphView = umlGraphView}} umlEditor={_this} onZoom={_this.onZoom} />
             </StyledUmlEditor>
 		);

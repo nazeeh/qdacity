@@ -16,12 +16,23 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.course.AbstractCourse;
 import com.qdacity.course.Course;
+import com.qdacity.course.tasks.LastCourseUsed;
+import com.qdacity.project.AbstractProject;
+import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
+import com.qdacity.project.tasks.LastProjectUsed;
 
 
 
@@ -178,6 +189,43 @@ public class CourseEndpoint {
 		} finally {
 			mgr.close();
 		}
+	}
+	
+	/**
+	 * This method gets the entity having primary key id. It uses HTTP GET method.
+	 *
+	 * @param id the primary key of the java bean.
+	 * @return The entity with primary key id.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "course.getCourse",
+		path = "course",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public Course getCourse(@Named("id") Long id, @Named("type") String type, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		Course course = null;
+		try {
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
+
+			Authorization.isUserNotNull(user);
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+			if (dbUser.getLastCourseId() != id) { // Check if lastProject property of user has to be updated
+				LastCourseUsed task = new LastCourseUsed(dbUser, id);
+				Queue queue = QueueFactory.getDefaultQueue();
+				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+			}
+
+			String keyString;
+			MemcacheService syncCache;
+			course = (Course) Cache.getOrLoad(id, Project.class);
+
+		} finally {
+			mgr.close();
+		}
+		return course;
 	}
 	
 	

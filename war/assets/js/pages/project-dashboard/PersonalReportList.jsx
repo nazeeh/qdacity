@@ -3,6 +3,14 @@ import React from 'react';
 import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreementByDoc from '../../common/modals/IntercoderAgreementByDoc';
 
+import {
+	StyledPagination,
+	StyledPaginationItem,
+	StyledListItemBtn,
+	StyledBoxList,
+	StyledListItemDefault
+} from '../../common/styles/List';
+
 export default class PersonalReportList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -51,13 +59,13 @@ export default class PersonalReportList extends React.Component {
 			var datetime = report.datetime;
 			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
 			else datetime = "";
-			return <li
-					className="studentReportLink listItem report"
+			return <StyledListItemDefault
 					key={report.id}
+					clickable={true}
 					onClick={() => this.showDocumentResults(report)}
 					>
 					{report.name}
-				</li>;
+				</StyledListItemDefault>;
 		})
 
 		return (
@@ -67,9 +75,9 @@ export default class PersonalReportList extends React.Component {
 					</div>
 					<div className="box-body">
 						<div>
-							<ul className="list compactBoxList" >
+							<StyledBoxList>
 								{renderListItems}
-							</ul>
+							</StyledBoxList>
 						</div>
 					</div>
 			</div>

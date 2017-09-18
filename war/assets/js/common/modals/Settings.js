@@ -60,8 +60,24 @@ export default class Settings extends VexModal {
 								if (typeof changeWeightInputValue === 'undefined') {
 									//if true, then we applied an average, so lets look up the average
 									var categoryIdx = saturationWeights.getArtificialCategoryIndex(saturationWeights.getCategoryForIndex(i));
-									changeWeightInputValue = $("#input-category-" + categoryIdx + "-1").prop('value');
-									saturationMaxInputValue = $("#input-category-" + categoryIdx + "-2").prop('value');
+									var newAverageWeight = $("#input-category-" + categoryIdx + "-1").prop('value');
+									var oldAverageWeight = $("#input-category-" + categoryIdx + "-1-old").prop('value');
+									var newAverageMaxInput = $("#input-category-" + categoryIdx + "-2").prop('value');
+									var oldAverageMaxInput = $("#input-category-" + categoryIdx + "-2-old").prop('value');
+                                                                        var oldChangeWeightInputValue = $('#cell' + i + '-1-input-old').prop('value');
+                                                                        var oldSaturationMaxInputValue = $('#cell' + i + '-2-input-old').prop('value');
+                                                                        
+                                                                        var factorWeight = 1;
+                                                                        if(oldAverageWeight > 0) {
+                                                                            factorWeight = 1 + (newAverageWeight - oldAverageWeight) / oldAverageWeight;
+                                                                        }
+                                                                        var factorMax = 1;
+                                                                        if(oldAverageMaxInput > 0) {
+                                                                            factorMax = 1 + (newAverageMaxInput - oldAverageMaxInput) / oldAverageMaxInput;
+                                                                        }
+                                                                        
+                                                                        changeWeightInputValue = oldChangeWeightInputValue * factorWeight;
+                                                                        saturationMaxInputValue = oldSaturationMaxInputValue * factorMax;
 								}
 
 								saturationParameters[changeWeightNames[i]] = changeWeightInputValue / 100;

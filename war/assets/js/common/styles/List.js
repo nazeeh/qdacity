@@ -7,6 +7,9 @@ import {
 const StyledPagination = styled.ul `
 	list-style: none;
 	display: flex;
+	padding-left: 0;
+	margin: 20px 0;
+	border-radius: 4px;
 `;
 
 const StyledPaginationItem = styled.a `
@@ -15,6 +18,13 @@ const StyledPaginationItem = styled.a `
 	padding: 8px 16px;
 	text-decoration: none;
 	cursor: pointer;
+	background-color: ${props => (props.active ? props.theme.bgPrimaryHighlight : '')};
+	color: ${props => (props.active ? props.theme.fgPrimaryHighlight  : '')};
+	&:hover{
+		background-color: ${props => (props.active ? props.theme.bgPrimaryHighlight : props.theme.defaultPaneBg)};
+		color: ${props => (props.active ? props.theme.fgPrimaryHighlight  : props.theme.fgDefault)};
+		text-decoration: none;
+	}
 `;
 
 const StyledBoxList = styled.ul `
@@ -65,6 +75,10 @@ const StyledListItemPrimary = StyledListItem.extend `
 const StyledListItemDefault = StyledListItem.extend `
 	background-color: ${props => props.theme.bgDefault};
 	border-color:  ${props => props.theme.borderDefault};
+	&> span {
+		display: flex;
+		flex-direction: row;
+	}
 	&:hover {
 		border-color:  ${props => props.theme.borderDefaultHighlight};
 		font-weight: bold;

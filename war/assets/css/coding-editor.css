@@ -1,4 +1,4 @@
-body, html {
+body {
 	overflow-y: hidden;
 }
 
@@ -91,4 +91,34 @@ a[aria-expanded=true] .fa-expand {
 }
 a[aria-expanded=false] .fa-compress {
    display: none;
+}
+
+.umlOverlayButton {
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.umlOverlayButtonAddEdge {
+	background-image: url("../img/umlOverlayAddEdge.png");
+}
+
+.umlOverlayButtonAddEdgeGeneralization {
+	background-image: url("../img/umlOverlayAddEdgeGeneralization.png");
+}
+
+.umlOverlayButtonAddEdgeAssociation {
+	background-image: url("../img/umlOverlayAddEdgeAssociation.png");
+}
+
+.umlOverlayButtonAddEdgeAggregation {
+	background-image: url("../img/umlOverlayAddEdgeAggregation.png");
+}
+
+.umlOverlayButtonAddClassField {
+	background-image: url("../img/umlOverlayAddClassField.png");
+}
+
+.umlOverlayButtonAddClassMethod {
+	background-image: url("../img/umlOverlayAddClassMethod.png");
 }

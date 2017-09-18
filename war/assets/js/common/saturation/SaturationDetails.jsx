@@ -60,7 +60,6 @@ export default class SaturationDetails extends React.Component {
 			for (var i in satCategories) {
 				var categoryAvg = satAvg.averageForCategory(i);
 				table.row.add([i, this.toPercent(categoryAvg[0]), this.toPercent(categoryAvg[1]), this.toPercent(categoryAvg[2])]);
-				//table.row.add([saturationNameAndWeightsAndSaturation[i][0], this.toPercent(saturationNameAndWeightsAndSaturation[i][3]), this.toPercent(saturationNameAndWeightsAndSaturation[i][1]), this.toPercent(saturationNameAndWeightsAndSaturation[i][2]), saturationWeights.getCategoryForIndex(i)]);
 			}
 
 			var _this = this;

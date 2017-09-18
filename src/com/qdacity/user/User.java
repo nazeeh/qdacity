@@ -55,6 +55,9 @@ public class User implements Serializable {
 	@Persistent
 	List<Long> courses;
 	
+	@Persistent
+	Long lastCourseId; // Used to pre-load to cache when user signs in
+	
 	public String getId() {
 		return id;
 	}
@@ -136,6 +139,14 @@ public class User implements Serializable {
 		this.lastProjectId = lastProjectId;
 	}
 
+	public Long getLastCourseId() {
+		return lastCourseId;
+	}
+	
+	public void setLastCourseId(Long lastCourseId) {
+		this.lastCourseId = lastCourseId;
+	}
+	
 	public ProjectType getLastProjectType() {
 		return lastProjectType;
 	}

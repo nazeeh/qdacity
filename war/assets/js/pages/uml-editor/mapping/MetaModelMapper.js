@@ -111,6 +111,10 @@ export default class MetaModelMapper {
 		return 'influences';
 	}
 
+	getDefaultUmlClassMetaModelName() {
+		return 'Concept';
+	}
+
 	getEdgeTypeFromMappingAction(action) {
 		switch (action) {
 		case MappingAction.CREATE_GENERALIZATION:

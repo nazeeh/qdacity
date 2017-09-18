@@ -233,9 +233,9 @@ public class UserEndpoint {
 
 		} finally {
 			mgr.close();
-			}
-		return user;
 		}
+		return user;
+	}
 
 	@ApiMethod(
 		name = "user.getCurrentUser",

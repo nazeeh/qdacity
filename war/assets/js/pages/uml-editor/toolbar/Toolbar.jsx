@@ -1,8 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
 
+import ButtonAddClass from './ButtonAddClass.jsx';
 import ButtonZoomIn from './ButtonZoomIn.jsx';
 import ButtonZoomOut from './ButtonZoomOut.jsx';
 import ButtonZoomSelect from './ButtonZoomSelect.jsx';
+import ButtonApplyLayout from './ButtonApplyLayout.jsx';
+
+const StyledToolbar = styled.div `
+    padding: 8px 20px 8px 20px;
+    border-bottom: 1px solid #c0c0c0;
+`;
 
 export default class Toolbar extends React.Component {
 
@@ -10,31 +18,27 @@ export default class Toolbar extends React.Component {
 		super(props);
 
 		this.umlEditor = this.props.umlEditor;
-		this.zoomSelect = null;
-	}
 
-	getStyle() {
-		return {
-			padding: '8px 20px 8px 20px',
-			borderBottom: '1px solid #c0c0c0'
-		};
+		this.zoomSelectRef = null;
 	}
 
 	onZoom(percentage) {
-		this.zoomSelect.onZoom(percentage);
+		this.zoomSelectRef.onZoom(percentage);
 	}
 
 	render() {
 		const _this = this;
 
-		const style = this.getStyle();
-
 		return (
-			<div style={style}>
+			<StyledToolbar>
+                <ButtonAddClass umlEditor={_this.umlEditor} createCode={_this.props.createCode}/>
+		        
     	        <ButtonZoomIn umlEditor={_this.umlEditor} />
                 <ButtonZoomOut umlEditor={_this.umlEditor} />
-                <ButtonZoomSelect ref={(zoomSelect) => {this.zoomSelect = zoomSelect}} umlEditor={_this.umlEditor} />
-            </div>
+                <ButtonZoomSelect ref={(zoomSelectRef) => {if (zoomSelectRef) this.zoomSelectRef = zoomSelectRef}} umlEditor={_this.umlEditor} />
+            
+                <ButtonApplyLayout umlEditor={_this.umlEditor} />
+            </StyledToolbar>
 		);
 	}
 

@@ -327,11 +327,13 @@ public class CodeEndpoint {
 
 			// Does the relation exist?
 			boolean relationExists = false;
-			for (CodeRelation rel : code.getRelations()) {
-				if (relation.getCodeId().equals(rel.getCodeId()) &&
-					relation.getMmElementId().equals(rel.getMmElementId())) {
-					relationExists = true;
-					break;
+			if (code.getRelations() != null) {
+				for (CodeRelation rel : code.getRelations()) {
+					if (relation.getCodeId().equals(rel.getCodeId()) &&
+						relation.getMmElementId().equals(rel.getMmElementId())) {
+						relationExists = true;
+						break;
+					}
 				}
 			}
 			
@@ -535,23 +537,26 @@ public class CodeEndpoint {
 
 		if (subcodeIDs != null && subcodeIDs.size() > 0) {
 			PersistenceManager mgr = getPersistenceManager();
+			try {
+				for (Long subcodeID : subcodeIDs) {
+					Query query = mgr.newQuery(Code.class);
 
-			for (Long subcodeID : subcodeIDs) {
-				Query query = mgr.newQuery(Code.class);
+					query.setFilter("codeID == :code && codesystemID == :codesystem");
+					Map<String, Long> params = new HashMap<String, Long>();
+					params.put("code", subcodeID);
+					params.put("codesystem", code.getCodesystemID());
 
-				query.setFilter("codeID == :code && codesystemID == :codesystem");
-				Map<String, Long> params = new HashMap<String, Long>();
-				params.put("code", subcodeID);
-				params.put("codesystem", code.getCodesystemID());
+					@SuppressWarnings("unchecked")
+					Code subcode = ((List<Code>) query.executeWithMap(params)).get(0);
 
-				@SuppressWarnings("unchecked")
-				Code subcode = ((List<Code>) query.executeWithMap(params)).get(0);
-				
-				removeSubCodes(subcode, user);
-				
-				logRemoveCode(mgr, subcode, user);
-				
-				mgr.deletePersistent(subcode); 
+					removeSubCodes(subcode, user);
+
+					logRemoveCode(mgr, subcode, user);
+
+					mgr.deletePersistent(subcode);
+				}
+			} finally {
+				mgr.close();
 			}
 		}
 	}

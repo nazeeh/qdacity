@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const StyledZoomBtn = styled.button `
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
+
+const StyledZoomBtn = BtnDefault.extend `
 	margin-left: 10px;
 `;
 
@@ -11,6 +15,8 @@ export default class ButtonZoomOut extends React.Component {
 		super(props);
 
 		this.umlEditor = this.props.umlEditor;
+
+		this.buttonClicked = this.buttonClicked.bind(this);
 	}
 
 	buttonClicked() {
@@ -21,7 +27,7 @@ export default class ButtonZoomOut extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledZoomBtn onClick={_this.buttonClicked.bind(_this)} type="button" className="btn btn-default">
+			<StyledZoomBtn onClick={_this.buttonClicked}>
 		        <i className="fa fa-search-minus"></i>
 	        </StyledZoomBtn>
 		);

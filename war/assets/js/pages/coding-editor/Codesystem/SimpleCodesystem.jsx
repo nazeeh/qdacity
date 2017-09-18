@@ -94,6 +94,22 @@ export default class SimpleCodesystem extends React.Component {
 		return this.state.codesystem;
 	}
 
+	getAllCodes() {
+		return this.getAllCodesRecursive(this.state.codesystem);
+	}
+
+	getAllCodesRecursive(codeSiblings) {
+		let codes = [];
+		for (var i in codeSiblings) {
+			let code = codeSiblings[i];
+			codes.push(code);
+			let childCodes = this.getAllCodesRecursive(code.children);
+			codes = codes.concat(childCodes);
+		}
+
+		return codes;
+	}
+
 	getCodeById(id) {
 		const _this = this;
 
@@ -146,10 +162,10 @@ export default class SimpleCodesystem extends React.Component {
 	renderRoot(code, level, key) {
 		return (
 			<SimpleCode
-                    level={level} 
-                    node={code} 
-                    selected={this.state.selected} 
-                    setSelected={this.setSelected} 
+                    level={level}
+                    node={code}
+                    selected={this.state.selected}
+                    setSelected={this.setSelected}
                     key={key}
 		            isCodeSelectable = {this.props.isCodeSelectable}
                     getFontWeight={this.props.getFontWeight}

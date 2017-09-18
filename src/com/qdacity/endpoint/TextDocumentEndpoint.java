@@ -36,6 +36,7 @@ import com.qdacity.PMF;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
@@ -44,7 +45,6 @@ import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;
-import com.qdacity.logs.ChangeLogger;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(
@@ -378,16 +378,21 @@ public class TextDocumentEndpoint {
 	public static List<TextDocument> collectTextDocumentsfromMemcache(List<Long> textDocumentIds) {
 	    PersistenceManager mgr = getPersistenceManager();
 	    List<TextDocument> textDocuments = new ArrayList<>();
-	    for (Long docID : textDocumentIds) { //Get Textdocuments from Memcache
-		String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), docID);
-		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
-		syncCache.get(keyString);
-		TextDocument origialDoc = (TextDocument) syncCache.get(keyString);
-		if (origialDoc == null) {
-		    origialDoc = mgr.getObjectById(TextDocument.class, docID);
+		try {
+			for (Long docID : textDocumentIds) { // Get Textdocuments from Memcache
+				String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), docID);
+				MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+				syncCache.get(keyString);
+				TextDocument origialDoc = (TextDocument) syncCache.get(keyString);
+				if (origialDoc == null) {
+					origialDoc = mgr.getObjectById(TextDocument.class, docID);
+				}
+				textDocuments.add(origialDoc);
+			}
+		} finally {
+			mgr.close();
 		}
-		textDocuments.add(origialDoc);
-	    }
+
 	    return textDocuments;
 	}
 	

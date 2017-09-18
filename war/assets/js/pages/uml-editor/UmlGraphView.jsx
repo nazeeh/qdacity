@@ -22,6 +22,8 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.umlClassDefaultWidth = 160;
+		this.umlClassDefaultHeight = 59;
 		this.umlClassHeaderHeight = 25;
 		this.umlClassFieldHeight = 19;
 		this.umlClassFieldOffsetLeft = 3;
@@ -224,8 +226,8 @@ export default class UmlGraphView extends React.Component {
 		// Enables layouting
 		this.layout = new mxFastOrganicLayout(this.graph);
 		this.layout.disableEdgeStyle = false;
-		this.layout.forceConstant = 180;
-		this.layout.forceConstantSquared = 180 * 180;
+		this.layout.forceConstant = 200;
+		this.layout.forceConstantSquared = 200 * 200;
 	}
 
 	initializeConnections() {
@@ -405,6 +407,68 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
+	getFreeNodePosition(cell) {
+		const _this = this;
+
+		// Bounds
+		let width = this.umlClassDefaultWidth;
+		let height = this.umlClassDefaultHeight;
+
+		if (cell != null) {
+			width = cell.getGeometry().width;
+			height = cell.getGeometry().height;
+		}
+
+		// Does the area contain another node?
+		const isAreaFree = function (x, y, width, height) {
+			const umlClasses = _this.props.umlEditor.getUmlClassManager().getAll();
+
+			for (let i = 0; i < umlClasses.length; i++) {
+				const umlClass = umlClasses[i];
+
+				// Return false if areas intersect
+				const node = umlClass.getNode();
+
+				if (node != null) {
+					const x2 = node.getGeometry().x;
+					const y2 = node.getGeometry().y;
+					const width2 = node.getGeometry().width;
+					const height2 = node.getGeometry().height;
+
+					// Intersects?
+					if (!(x > (x2 + width2)
+							|| (x + width) < x2
+							|| y > (y2 + height2)
+							|| (y + height) < y2)) {
+						return false;
+					}
+
+				}
+			}
+
+			return true;
+		};
+
+		// Find position
+		let x = 0;
+		let y = 0;
+		let offsetX = this.umlClassDefaultWidth + 30;
+		let offsetY = this.umlClassDefaultHeight + 30;
+
+		while (true) {
+			for (let i = 0; i < 10; i++) {
+				if (isAreaFree(x, y, width, height)) {
+					return [x, y];
+				}
+
+				x = x + offsetX;
+			}
+
+			x = 0;
+			y = y + offsetY;
+		}
+	}
+
 	updateHoverButtons(cell, dx, dy) {
 		if (cell == null && this.lastSelectedCells != null && this.lastSelectedCells.length == 1) {
 			cell = this.lastSelectedCells[0];
@@ -523,7 +587,7 @@ export default class UmlGraphView extends React.Component {
 			methods.vertex = true;
 
 			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
-			let cell = new mxCell(name, new mxGeometry(0, 0, 160, 0), style);
+			let cell = new mxCell(name, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
 			cell.vertex = true;
 			cell.insert(separator1);
 			cell.insert(fields);
@@ -587,7 +651,7 @@ export default class UmlGraphView extends React.Component {
 
 		const text = '+ ' + fieldName + ': ' + fieldReturnType;
 
-		let field = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
+		let field = new mxCell(text, new mxGeometry(0, 0, this.umlClassDefaultWidth, 15), style);
 		field.vertex = true;
 
 		let fields = this.getFieldsContainer(node);
@@ -631,7 +695,7 @@ export default class UmlGraphView extends React.Component {
 
 		const text = '+ ' + methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
 
-		let method = new mxCell(text, new mxGeometry(0, 0, 160, 15), style);
+		let method = new mxCell(text, new mxGeometry(0, 0, this.umlClassDefaultWidth, 15), style);
 		method.vertex = true;
 
 		let methods = this.getMethodsContainer(node);

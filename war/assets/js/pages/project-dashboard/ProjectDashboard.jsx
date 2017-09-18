@@ -37,15 +37,13 @@ export default class ProjectDashboard extends React.Component {
 			googleChartsLoaded: false
 		};
 
-		$("body").css({
-			overflow: "auto"
-		});
 		this.props.chartScriptPromise.then(() => {
 			this.setState({
 				googleChartsLoaded: true
 			});
 		});
 		this.addReports = this.addReports.bind(this);
+		scroll(0,0);
 	}
 
 	init() {

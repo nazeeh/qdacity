@@ -1,18 +1,26 @@
+
+const primaryBlue = '#5b94d9';
+const darkGrey = '#323232';
+
 export default {
 	defaultPaneBg: '#f8f8f8',
+	darkPaneBg: darkGrey,
+
+	defaultText: darkGrey,
 
 	borderDefault: '#ccc',
 	borderDefaultHighlight: 'black',
 	bgDefault: 'white',
 	bgDefaultHighlight: 'black',
+	bgHover: '#63a0d4',
 	fgDefault: 'black',
 	fgDefaultHighlight: 'white',
 
-	borderPrimary: '#5b94d9',
-	borderPrimaryHighlight: '#5b94d9',
+	borderPrimary: primaryBlue,
+	borderPrimaryHighlight: primaryBlue,
 	bgPrimary: 'white',
-	bgPrimaryHighlight: '#5b94d9',
-	fgPrimary: '#5b94d9',
+	bgPrimaryHighlight: primaryBlue,
+	fgPrimary: primaryBlue,
 	fgPrimaryHighlight: 'white',
 
 	lightGreen: '#c0dd1a',

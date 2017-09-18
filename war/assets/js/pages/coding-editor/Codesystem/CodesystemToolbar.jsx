@@ -25,7 +25,7 @@ const StyledBtnGroup = styled.div `
 `;
 
 
-const StyledBtnStack = styled.span `
+const StyledBtnStack = styled.div `
 		font-size: 8px !important;
 `;
 
@@ -71,7 +71,7 @@ export default class CodesystemToolbar extends React.Component {
 				}
 
 				// Check the relations of the code. If a relationship belongs to a relationship-code
-				// => update the relationship-code and set the relation to null 
+				// => update the relationship-code and set the relation to null
 				let updateRelation = (relation) => {
 					if (relation.relationshipCodeId != null) {
 						let relationshipCode = _this.props.getCodeById(relation.relationshipCodeId);
