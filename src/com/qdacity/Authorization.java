@@ -14,6 +14,7 @@ import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
 import com.qdacity.project.Project;
+import com.qdacity.course.Course;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
@@ -51,6 +52,28 @@ public class Authorization {
 		return false;
 	}
 
+	public static Boolean isUserAuthorizedCourse(User googleUser, Long courseID) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+
+		// Check if user is Authorized
+		Query query = mgr.newQuery(Course.class);
+
+		query.setFilter("id == :theID");
+		Map<String, Long> params = new HashMap<String, Long>();
+		params.put("theID", courseID);
+
+		@SuppressWarnings("unchecked")
+		List<Course> courses = (List<Course>) query.executeWithMap(params);
+
+		if (courses.size() == 0) {
+			throw new UnauthorizedException("Course " + courseID + " was not found");
+		}
+		Course course = courses.get(0);
+		if (course.getOwners().contains(googleUser.getUserId())) return true;
+
+		return false;
+	}
+	
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
@@ -99,6 +122,12 @@ public class Authorization {
 		Boolean authorized = Authorization.isUserAuthorized(user, project.getId());
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 
+	}
+	
+	public static void checkAuthorizationCourse(Course course, User user) throws UnauthorizedException {
+		isUserNotNull(user);
+		Boolean authorized = Authorization.isUserAuthorizedCourse(user, course.getId());
+		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 	}
 
 	public static void checkAuthorization(Long projectID, User user) throws UnauthorizedException {
