@@ -98,15 +98,17 @@ public class CourseEndpoint {
 			// Check if user is authorized
 			Authorization.checkAuthorizationCourse(course, user);
 
-			/*
+			List<String> userIDs = course.getOwners();
+
+			
 			for (String courseUserIDs : userIDs) {
 				com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, courseUserIDs);
 
-				courseUser.removecourseAuthorization(id);
+				courseUser.removeCourseAuthorization(id);
 				mgr.makePersistent(courseUser);
 
 			}
-			 */
+			 
 			// Finally remove the actual course
 			mgr.deletePersistent(course);
 		} finally {
