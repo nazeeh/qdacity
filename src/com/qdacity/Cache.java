@@ -51,7 +51,6 @@ public class Cache {
 	
 	public static Object getOrLoad(String id, Class type) {
 		Object obj = null;
-		Object bla = null;
 		String keyString = KeyFactory.createKeyString(type.toString(), id);
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
 
@@ -72,7 +71,6 @@ public class Cache {
 	
 	public static Object getOrLoad(String id, Class type, PersistenceManager mgr) {
 		Object obj = null;
-		Object bla = null;
 		String keyString = KeyFactory.createKeyString(type.toString(), id);
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
 
