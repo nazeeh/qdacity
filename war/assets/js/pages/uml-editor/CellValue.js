@@ -1,60 +1,93 @@
 export default class CellValue {
 
 	constructor() {
-		this.name = "";
+		this.header = new Text("", 1);
 
 		this.fields = [];
 
 		this.methods = [];
 	}
 
-	getName() {
-		return this.name;
+	getHeader() {
+		return this.header;
 	}
 
-	setName(name) {
-		this.name = name;
+	setHeader(header) {
+		this.header = header;
 	}
 
 	getFields() {
 		return this.fields;
 	}
 
-	addField(relationId, text) {
-		this.fields.push({
-			id: relationId,
-			text: text
-		});
+	addField(text, numberOfLines, relationId) {
+		this.fields.push(new ClassElement(text, numberOfLines, relationId));
 	}
 
 	removeField(relationId) {
-		let index = this.fields.findIndex((field) => {
-			return field.id == relationId;
-		});
-
-		if (index > -1) {
-			this.fields.splice(index, 1);
-		}
+		this.removeElementByRelationId(this.fields, relationId);
 	}
 
 	getMethods() {
 		return this.methods;
 	}
 
-	addMethod(relationId, text) {
-		this.methods.push({
-			id: relationId,
-			text: text
-		});
+	addMethod(text, numberOfLines, relationId) {
+		this.methods.push(new ClassElement(text, numberOfLines, relationId));
 	}
 
 	removeMethod(relationId) {
-		let index = this.methods.findIndex((method) => {
-			return method.id == relationId;
+		this.removeElementByRelationId(this.methods, relationId);
+	}
+
+	removeElementByRelationId(arr, relationId) {
+		let index = arr.findIndex((element) => {
+			return element.getRelationId() == relationId;
 		});
 
 		if (index > -1) {
-			this.methods.splice(index, 1);
+			arr.splice(index, 1);
 		}
+	}
+}
+
+class Text {
+
+	constructor(text, numberOfLines) {
+		this.text = text;
+		this.numberOfLines = numberOfLines;
+	}
+
+	getText() {
+		return this.text;
+	}
+
+	setText(text) {
+		this.text = text;
+	}
+
+	getNumberOfLines() {
+		return this.numberOfLines;
+	}
+
+	setNumberOfLines(numberOfLines) {
+		this.numberOfLines = numberOfLines;
+	}
+}
+
+class ClassElement extends Text {
+
+	constructor(text, numberOfLines, relationId) {
+		super(text, numberOfLines);
+
+		this.relationId = relationId;
+	}
+
+	getRelationId() {
+		return this.relationId;
+	}
+
+	setRelationId(relationId) {
+		this.relationId = relationId;
 	}
 }

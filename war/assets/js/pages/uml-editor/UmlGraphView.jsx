@@ -337,9 +337,10 @@ export default class UmlGraphView extends React.Component {
 					const cellValue = cell.value;
 
 					// Header
+					let headerHeight = _this.umlClassHeaderHeight * cellValue.getHeader().getNumberOfLines();
 					let header = '<div class="umlClassHeader" '
-						+ 'style="height:' + _this.umlClassHeaderHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px; margin-left:' + _this.umlClassHeaderOffsetLeft + 'px; width:calc(100% - ' + (_this.umlClassHeaderOffsetLeft + _this.umlClassHeaderOffsetRight) + 'px);"'
-						+ '>' + cellValue.getName() + '</div>';
+						+ 'style="height:' + headerHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px; margin-left:' + _this.umlClassHeaderOffsetLeft + 'px; width:calc(100% - ' + (_this.umlClassHeaderOffsetLeft + _this.umlClassHeaderOffsetRight) + 'px);"'
+						+ '>' + cellValue.getHeader().getText() + '</div>';
 
 					// Separator
 					let separator = '<div class="umlClassSeparator" style="height:' + _this.umlClassSeparatorHeight + 'px;"></div>';
@@ -354,7 +355,8 @@ export default class UmlGraphView extends React.Component {
 
 						if (elements != null && elements.length > 0) {
 							for (let i = 0; i < elements.length; i++) {
-								content += '<div class="umlClassElement" style="width:calc(100% - ' + (_this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight) + 'px); height:' + _this.umlClassElementHeight + 'px; line-height:' + _this.umlClassElementHeight + 'px; margin-left:' + _this.umlClassElementOffsetLeft + 'px;">';
+								let elementHeight = _this.umlClassElementHeight * elements[i].getNumberOfLines();
+								content += '<div class="umlClassElement" style="width:calc(100% - ' + (_this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight) + 'px); height:' + elementHeight + 'px; line-height:' + _this.umlClassElementHeight + 'px; margin-left:' + _this.umlClassElementOffsetLeft + 'px;">';
 
 								let textWidth = '';
 
@@ -365,7 +367,7 @@ export default class UmlGraphView extends React.Component {
 								}
 
 								content += '<div class="umlClassElementText" style="width:' + textWidth + ';">';
-								content += elements[i].text;
+								content += elements[i].getText();
 								content += '</div>';
 
 								// Is selected => show delete button
@@ -450,7 +452,7 @@ export default class UmlGraphView extends React.Component {
 								&& child.children[0].nodeName == 'DIV'
 								&& child.children[1].nodeName == 'DIV') {
 								let deleteButton = child.children[1];
-								let relationId = elements[i].id;
+								let relationId = elements[i].getRelationId();
 
 								deleteButton.onclick = () => removeListener(relationId);
 							}
@@ -754,7 +756,7 @@ export default class UmlGraphView extends React.Component {
 			cell.vertex = true;
 
 			const cellValue = new CellValue();
-			cellValue.setName(name);
+			cellValue.getHeader().setText(name);
 
 			cell.value = cellValue;
 			this.graph.addCell(cell);
@@ -804,7 +806,7 @@ export default class UmlGraphView extends React.Component {
 	renameNode(node, name) {
 		const cellValue = node.value;
 
-		cellValue.setName(name);
+		cellValue.getHeader().setText(name);
 
 		this.recalculateNodeSize(node);
 	}
@@ -812,7 +814,7 @@ export default class UmlGraphView extends React.Component {
 	addClassField(node, relationId, fieldText) {
 		const cellValue = node.value;
 
-		cellValue.addField(relationId, fieldText);
+		cellValue.addField(fieldText, 0, relationId);
 
 		this.recalculateNodeSize(node);
 	}
@@ -828,7 +830,7 @@ export default class UmlGraphView extends React.Component {
 	addClassMethod(node, relationId, methodText) {
 		const cellValue = node.value;
 
-		cellValue.addMethod(relationId, methodText);
+		cellValue.addMethod(methodText, 0, relationId);
 
 		this.recalculateNodeSize(node);
 	}
@@ -957,13 +959,13 @@ export default class UmlGraphView extends React.Component {
 		const maxWidths = [];
 
 		// Header
-		let [headerWidth, headerNumberOfLines] = calculateWidthAndHeight(cellValue.getName(), divHeader, headerMaxWidth);
+		let [headerWidth, headerNumberOfLines] = calculateWidthAndHeight(cellValue.getHeader().getText(), divHeader, headerMaxWidth);
 
 		height += this.umlClassHeaderHeight * headerNumberOfLines;
 
 		maxWidths.push(headerWidth);
 
-		divHeader.setAttribute('test', headerNumberOfLines);
+		cellValue.getHeader().setNumberOfLines(headerNumberOfLines);
 
 		// Separator 1
 		height += this.umlClassSeparatorHeight;
@@ -980,7 +982,7 @@ export default class UmlGraphView extends React.Component {
 			if (elements != null && elements.length > 0) {
 				// Calculate height + width
 				for (let i = 0; i < elements.length; i++) {
-					let [width, numberOfLines] = calculateWidthAndHeight(elements[i].text, divContainer.children[0], elementMaxWidth);
+					let [width, numberOfLines] = calculateWidthAndHeight(elements[i].getText(), divContainer.children[0], elementMaxWidth);
 
 					// Add height
 					elementsHeight += _this.umlClassElementHeight * numberOfLines;
@@ -989,7 +991,7 @@ export default class UmlGraphView extends React.Component {
 					maxWidths.push(width);
 
 					// Save number of lines in the div element
-					divHeader.setAttribute('test' + i, headerNumberOfLines);
+					elements[i].setNumberOfLines(numberOfLines);
 				}
 
 				// Is selected
