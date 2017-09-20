@@ -37,7 +37,8 @@ public class UserEndpointTest {
 
 	@Test
 	public void testUserInsert() {
-		UserEndpointTestHelper.addUser("123456", "asd@asd.de","firstName","lastName");
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 	}
@@ -45,11 +46,12 @@ public class UserEndpointTest {
 	@Test
 	public void testGetUser() {
 		User user = new User();
-		UserEndpointTestHelper.addUser("123456", "asd@asd.de","firstName","lastName");
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
 
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			user = ue.getUser("123456", testUser);
+			user = ue.getUser("1", loggedInUserA);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
@@ -59,11 +61,12 @@ public class UserEndpointTest {
 	
 	@Test
 	public void testUserDelete() {		
-		UserEndpointTestHelper.addUser("123456", "asd@asd.de","firstName","lastName");
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			ue.removeUser("123456", testUser);
+			ue.removeUser("1", loggedInUserA);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
@@ -75,7 +78,8 @@ public class UserEndpointTest {
 	@Test
 	public void testFindUser() {
 		List<User> test = new ArrayList<User>();
-		UserEndpointTestHelper.addUser( "123456", "asd@asd.de","firstName","lastName");
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
 		try {

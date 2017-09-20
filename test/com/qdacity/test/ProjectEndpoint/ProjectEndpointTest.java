@@ -32,8 +32,8 @@ public class ProjectEndpointTest {
 
 	@Test
 	public void testProjectInsert() {
-		UserEndpointTestHelper.addUser("123456", "asd@asd.de", "firstName", "lastName");
 		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 		try {
 			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
 		} catch (UnauthorizedException e) {
@@ -47,8 +47,9 @@ public class ProjectEndpointTest {
 
 	@Test
 	public void testProjectRemove() {
-		UserEndpointTestHelper.addUser("123456", "asd@asd.de", "firstName", "lastName");
 		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+
 		try {
 			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
 		} catch (UnauthorizedException e) {
@@ -66,5 +67,34 @@ public class ProjectEndpointTest {
 		}
 
 		assertEquals(0, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+	}
+
+	@Test
+	public void testProjectRemoveAuthorization() {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
+		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
+		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUserA);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+
+		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+
+		try {
+			ProjectEndpointTestHelper.removeProject(1L, loggedInUserB);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+		}
+
+		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 	}
 }
