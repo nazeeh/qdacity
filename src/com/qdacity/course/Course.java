@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -11,6 +13,8 @@ import com.qdacity.course.Course;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
+@Inheritance(
+		strategy = InheritanceStrategy.SUBCLASS_TABLE)
 
 public class Course extends AbstractCourse {
 

@@ -25,6 +25,7 @@ import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
 
 
@@ -153,6 +154,39 @@ public class CourseEndpoint {
 	}
 
 	
+	/**
+	 * This inserts a new instance of a course into App Engine datastore. If the entity already
+	 * exists in the datastore, an exception is thrown.
+	 * It uses HTTP POST method.
+	 *
+	 * @param termCourse, the entity to be inserted.
+	 * @return The inserted entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "course.insertTermCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public TermCourse insertTermCourse(@Named("templateCourseID") Long templateCourseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
+		
+		termCourse.setCourseTemplateID(templateCourseID);
+		termCourse.setTerm(term);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (termCourse.getId() != null) {
+				if (containsTermCourse(termCourse)) {
+					throw new EntityExistsException("Object already exists");
+				}
+			}
+			
+			mgr.makePersistent(termCourse);
+			
+		} finally {
+			mgr.close();
+		}
+		return termCourse;
+	}
 
 	@ApiMethod(name = "course.removeUser",
 			path = "course.removeUser",
@@ -236,6 +270,18 @@ public class CourseEndpoint {
 		return contains;
 	}
 
+	private boolean containsTermCourse(TermCourse termCourse) {
+		PersistenceManager mgr = getPersistenceManager();
+		boolean contains = true;
+		try {
+			mgr.getObjectById(TermCourse.class, termCourse.getId());
+		} catch (javax.jdo.JDOObjectNotFoundException ex) {
+			contains = false;
+		} finally {
+			mgr.close();
+		}
+		return contains;
+	}
 	
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
