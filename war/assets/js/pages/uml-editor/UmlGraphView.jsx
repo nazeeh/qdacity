@@ -852,74 +852,118 @@ export default class UmlGraphView extends React.Component {
 			return;
 		}
 
-		const divBase = cellState.text.node.children[0];
-		const divContainer = divBase.children[0];
-		const divHeader = divContainer.children[0];
-		const divFields = divContainer.children[2];
-		const divMethods = divContainer.children[4];
 
-		// Calculate width
+
+
+
+
+
+
+		//		const divBase = cellState.text.node.children[0];
+		//		const divContainer = divBase.children[0];
+		//		const divHeader = divContainer.children[0];
+		//		const divFields = divContainer.children[2];
+		//		const divMethods = divContainer.children[4];
+		//
+		//		// Calculate width
+		//		const canvas = document.createElement("canvas");
+		//		const canvasContext = canvas.getContext("2d");
+		//
+		//		const maxWidths = [];
+		//
+		//		// Header width
+		//		const headerStyle = window.getComputedStyle(divHeader);
+		//
+		//		canvasContext.font = headerStyle.font;
+		//		let headerWidth = canvasContext.measureText(cellValue.getName()).width;
+		//
+		//		// Add offset
+		//		headerWidth += this.umlClassHeaderOffsetLeft + this.umlClassHeaderOffsetRight + 1;
+		//
+		//		maxWidths.push(headerWidth);
+		//
+		//		// Fields/Methods width
+		//		const calculateElementsWidth = (elements, divContainer) => {
+		//			if (elements != null && elements.length > 0) {
+		//				// Get the style from the first element (all elements have the same style)
+		//				let elementStyle = window.getComputedStyle(divContainer.children[0]);
+		//				canvasContext.font = elementStyle.font;
+		//
+		//				for (let i = 0; i < elements.length; i++) {
+		//					let elementWidth = canvasContext.measureText(elements[i].text).width;
+		//
+		//					// Add offset
+		//					let offset = _this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight + 1;
+		//
+		//					if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
+		//						offset += _this.umlClassRemoveClassElementWidth + _this.umlClassRemoveClassElementOffset;
+		//					}
+		//
+		//					elementWidth += offset;
+		//
+		//					maxWidths.push(elementWidth);
+		//				}
+		//			}
+		//		};
+		//		calculateElementsWidth(cellValue.getFields(), divFields);
+		//		calculateElementsWidth(cellValue.getMethods(), divMethods);
+		//
+
+
+
+
+
+
+
+
+		const divBase = cellState.text.node.children[0];
+		const divCont = divBase.children[0];
+		const divHeader = divCont.children[0];
+		const divFields = divCont.children[2];
+		const divMethods = divCont.children[4];
+
 		const canvas = document.createElement("canvas");
 		const canvasContext = canvas.getContext("2d");
 
+		const calculateWidthAndHeight = (text, fontElement, availableWidth) => {
+			// Required width
+			let elementStyle = window.getComputedStyle(fontElement);
+			canvasContext.font = elementStyle.font;
+			let width = canvasContext.measureText(text).width;
+
+			// Available width
+			let maxWidth = availableWidth;
+
+			let numberOfLines = parseInt(width / maxWidth) + 1;
+			return [width, numberOfLines];
+		}
+
+
+		// Header max width
+		let headerMaxWidth = this.umlClassMaximumWidth;
+		headerMaxWidth = headerMaxWidth - (this.umlClassHeaderOffsetLeft + this.umlClassHeaderOffsetRight + 1);
+
+		// Field/Method max width
+		let elementMaxWidth = this.umlClassMaximumWidth;
+		elementMaxWidth = elementMaxWidth - (this.umlClassElementOffsetLeft + this.umlClassElementOffsetRight + 1);
+
+		if (this.graph.isCellSelected(node) && this.graph.getSelectionCount() == 1) {
+			elementMaxWidth = elementMaxWidth - (this.umlClassRemoveClassElementWidth + this.umlClassRemoveClassElementOffset);
+		}
+
+
+		// Calculate height + width
+		let height = 0;
 		const maxWidths = [];
 
-		// Header width
-		const headerStyle = window.getComputedStyle(divHeader);
+		// Header
+		let [headerWidth, headerNumberOfLines] = calculateWidthAndHeight(cellValue.getName(), divHeader, headerMaxWidth);
 
-		canvasContext.font = headerStyle.font;
-		let headerWidth = canvasContext.measureText(cellValue.getName()).width;
-
-		// Add offset
-		headerWidth += this.umlClassHeaderOffsetLeft + this.umlClassHeaderOffsetRight + 1;
+		height += this.umlClassHeaderHeight * headerNumberOfLines;
 
 		maxWidths.push(headerWidth);
 
-		// Fields/Methods width
-		const calculateElementsWidth = (elements, divContainer) => {
-			if (elements != null && elements.length > 0) {
-				// Get the style from the first element (all elements have the same style)
-				let elementStyle = window.getComputedStyle(divContainer.children[0]);
-				canvasContext.font = elementStyle.font;
-
-				for (let i = 0; i < elements.length; i++) {
-					let elementWidth = canvasContext.measureText(elements[i].text).width;
-
-					// Add offset
-					let offset = _this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight + 1;
-
-					if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
-						offset += _this.umlClassRemoveClassElementWidth + _this.umlClassRemoveClassElementOffset;
-					}
-
-					elementWidth += offset;
-
-					maxWidths.push(elementWidth);
-				}
-			}
-		};
-		calculateElementsWidth(cellValue.getFields(), divFields);
-		calculateElementsWidth(cellValue.getMethods(), divMethods);
-
-		// Find the maximum width
-		let width = Math.max(...maxWidths);
-
-		// Width greater than absolute maximum?
-		if (width > this.umlClassMaximumWidth) {
-			width = this.umlClassMaximumWidth;
-		}
-
-		// Width smaller than minimum?
-		if (width < this.umlClassMinimumWidth) {
-			width = this.umlClassMinimumWidth;
-		}
-
-
-		// Calculate height
-		let height = 0;
-
-		// Header
-		height += this.umlClassHeaderHeight;
+		divHeader.setAttribute('test', headerNumberOfLines);
 
 		// Separator 1
 		height += this.umlClassSeparatorHeight;
@@ -928,13 +972,25 @@ export default class UmlGraphView extends React.Component {
 		height += this.umlClassSeparatorHeight;
 
 		// Fields / Methods
-		const calculateElementsHeight = (elements) => {
+		const calculateElementsHeight = (elements, divContainer) => {
 			let elementsHeight = 0;
 			elementsHeight += _this.umlClassElementsOffsetTop;
 			elementsHeight += _this.umlClassElementsOffsetBottom;
 
 			if (elements != null && elements.length > 0) {
-				elementsHeight += _this.umlClassElementHeight * elements.length;
+				// Calculate height + width
+				for (let i = 0; i < elements.length; i++) {
+					let [width, numberOfLines] = calculateWidthAndHeight(elements[i].text, divContainer.children[0], elementMaxWidth);
+
+					// Add height
+					elementsHeight += _this.umlClassElementHeight * numberOfLines;
+
+					// Add to max widths
+					maxWidths.push(width);
+
+					// Save number of lines in the div element
+					divHeader.setAttribute('test' + i, headerNumberOfLines);
+				}
 
 				// Is selected
 				if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
@@ -952,8 +1008,23 @@ export default class UmlGraphView extends React.Component {
 			return elementsHeight;
 		}
 
-		height += calculateElementsHeight(cellValue.getFields());
-		height += calculateElementsHeight(cellValue.getMethods());
+		height += calculateElementsHeight(cellValue.getFields(), divFields);
+		height += calculateElementsHeight(cellValue.getMethods(), divMethods);
+
+
+		// Find the maximum width
+		let width = Math.max(...maxWidths);
+
+		// Width greater than absolute maximum?
+		if (width > this.umlClassMaximumWidth) {
+			width = this.umlClassMaximumWidth;
+		}
+
+		// Width smaller than minimum?
+		if (width < this.umlClassMinimumWidth) {
+			width = this.umlClassMinimumWidth;
+		}
+
 
 		// Node
 		const oldGeo = node.getGeometry();
