@@ -368,12 +368,13 @@ public class UserEndpoint {
 	public void removeUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = (User) Cache.getOrLoad(id, User.class);
+			User user = (User) Cache.getOrLoad(id, User.class, mgr);
+			User myUser = user;
+			System.out.println("This is the id " + user.getId());
 
 			// Check if user is authorized
 			Authorization.checkAuthorization(user, loggedInUser);
-
-			mgr.deletePersistent(user);
+			mgr.deletePersistent(myUser);
 		} finally {
 			mgr.close();
 		}
