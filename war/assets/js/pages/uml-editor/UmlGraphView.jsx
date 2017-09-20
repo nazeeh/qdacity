@@ -36,6 +36,8 @@ export default class UmlGraphView extends React.Component {
 		this.umlClassElementsOffsetTop = 4;
 		this.umlClassElementsOffsetBottom = 4;
 		this.umlClassAddClassElementHeight = this.umlClassElementHeight;
+		this.umlClassRemoveClassElementWidth = 20;
+		this.umlClassRemoveClassElementOffset = 5;
 
 		this.umlClassMinimumWidth = 160;
 		this.umlClassMaximumWidth = 300;
@@ -353,7 +355,26 @@ export default class UmlGraphView extends React.Component {
 						if (elements != null && elements.length > 0) {
 							for (let i = 0; i < elements.length; i++) {
 								content += '<div class="umlClassElement" style="width:calc(100% - ' + (_this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight) + 'px); height:' + _this.umlClassElementHeight + 'px; line-height:' + _this.umlClassElementHeight + 'px; margin-left:' + _this.umlClassElementOffsetLeft + 'px;">';
-								content += elements[i];
+
+								let textWidth = '';
+
+								if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
+									textWidth = 'calc(100% - ' + (_this.umlClassRemoveClassElementWidth + _this.umlClassRemoveClassElementOffset) + 'px)';
+								} else {
+									textWidth = '100%';
+								}
+
+								content += '<div class="umlClassElementText" style="width:' + textWidth + ';">';
+								content += elements[i].text;
+								content += '</div>';
+
+								// Is selected => show delete button
+								if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
+									content += '<div class="umlClassRemoveElementButton" style="width:' + _this.umlClassRemoveClassElementWidth + 'px; height:' + _this.umlClassAddClassElementHeight + 'px;">';
+									content += '<i class="fa fa-trash fa-1x"></i>';
+									content += '</div>';
+								}
+
 								content += '</div>';
 							}
 
@@ -401,29 +422,44 @@ export default class UmlGraphView extends React.Component {
 			let model = graph.model;
 
 			if (model.isVertex(state.cell) && state.text != null) {
+				const cellValue = state.cell.value;
+
 				// Register onClick listener for add field/method link
 				const divBase = state.text.node.children[0];
 				const divContainer = divBase.children[0];
 				const divFields = divContainer.children[2];
 				const divMethods = divContainer.children[4];
 
-				// Add Field/Method onClick listener
-				const addOnClickListener = (divContainer, listener) => {
+				// Add Field/Method + Delete Element onClick listener
+				const addOnClickListener = (divContainer, elements, addListener, removeListener) => {
 					if (divContainer.children != null && divContainer.children.length > 0) {
+						// Add
 						let lastChild = divContainer.children[divContainer.children.length - 1];
 
-						if (lastChild.children != null && lastChild.children.length == 1) {
+						if (lastChild.children != null && lastChild.children.length == 1 && lastChild.children[0].nodeName == 'A') {
 							let link = lastChild.children[0];
+							link.onclick = addListener;
+						}
 
-							if (link.nodeName == 'A') {
-								link.onclick = listener;
+						// Remove
+						for (let i = 0; i < divContainer.children.length; i++) {
+							let child = divContainer.children[i];
+
+							// Is not add field?
+							if (child.children != null && child.children.length == 2
+								&& child.children[0].nodeName == 'DIV'
+								&& child.children[1].nodeName == 'DIV') {
+								let deleteButton = child.children[1];
+								let relationId = elements[i].id;
+
+								deleteButton.onclick = () => removeListener(relationId);
 							}
 						}
 					}
 				};
 
-				addOnClickListener(divFields, () => _this.props.umlEditor.openClassFieldModal(state.cell));
-				addOnClickListener(divMethods, () => _this.props.umlEditor.openClassMethodModal(state.cell));
+				addOnClickListener(divFields, cellValue.getFields(), () => _this.props.umlEditor.openClassFieldModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassField(state.cell, relationId));
+				addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
 
 				// Set size
 				state.text.node.style.overflow = 'hidden';
@@ -773,34 +809,34 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(node);
 	}
 
-	addClassField(node, fieldText) {
+	addClassField(node, relationId, fieldText) {
 		const cellValue = node.value;
 
-		cellValue.addField(fieldText);
+		cellValue.addField(relationId, fieldText);
 
 		this.recalculateNodeSize(node);
 	}
 
-	removeClassField(node, fieldText) {
+	removeClassField(node, relationId) {
 		const cellValue = node.value;
 
-		cellValue.removeField(fieldText);
+		cellValue.removeField(relationId);
 
 		this.recalculateNodeSize(node);
 	}
 
-	addClassMethod(node, methodText) {
+	addClassMethod(node, relationId, methodText) {
 		const cellValue = node.value;
 
-		cellValue.addMethod(methodText);
+		cellValue.addMethod(relationId, methodText);
 
 		this.recalculateNodeSize(node);
 	}
 
-	removeClassMethod(node, methodText) {
+	removeClassMethod(node, relationId) {
 		const cellValue = node.value;
 
-		cellValue.removeMethod(methodText);
+		cellValue.removeMethod(relationId);
 
 		this.recalculateNodeSize(node);
 	}
@@ -843,7 +879,7 @@ export default class UmlGraphView extends React.Component {
 				canvasContext.font = elementStyle.font;
 
 				for (let i = 0; i < elements.length; i++) {
-					let elementWidth = canvasContext.measureText(elements[i]).width;
+					let elementWidth = canvasContext.measureText(elements[i].text).width;
 					maxWidths.push(elementWidth);
 				}
 			}

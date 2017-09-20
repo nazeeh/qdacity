@@ -35,7 +35,7 @@ export default class UmlCodePropertyModal extends VexModal {
 
 			const metaModelEntity = _this.umlEditor.getMetaModelEntityByName(_this.relationMetaModelEntityName);
 
-			const umlCodeRelation = new UmlClassRelation(sourceUmlClass, destinationUmlClass, metaModelEntity);
+			const umlCodeRelation = new UmlClassRelation(0, sourceUmlClass, destinationUmlClass, metaModelEntity);
 
 			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) != _this.mappingAction;
 		}

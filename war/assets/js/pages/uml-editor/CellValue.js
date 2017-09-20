@@ -20,23 +20,41 @@ export default class CellValue {
 		return this.fields;
 	}
 
-	addField(field) {
-		this.fields.push(field);
+	addField(relationId, text) {
+		this.fields.push({
+			id: relationId,
+			text: text
+		});
 	}
 
-	removeField(field) {
-		this.fields.remove(field);
+	removeField(relationId) {
+		let index = this.fields.findIndex((field) => {
+			return field.id == relationId;
+		});
+
+		if (index > -1) {
+			this.fields.splice(index, 1);
+		}
 	}
 
 	getMethods() {
 		return this.methods;
 	}
 
-	addMethod(method) {
-		this.methods.push(method);
+	addMethod(relationId, text) {
+		this.methods.push({
+			id: relationId,
+			text: text
+		});
 	}
 
-	removeMethod(method) {
-		this.methods.remove(method);
+	removeMethod(relationId) {
+		let index = this.methods.findIndex((method) => {
+			return method.id == relationId;
+		});
+
+		if (index > -1) {
+			this.methods.splice(index, 1);
+		}
 	}
 }
