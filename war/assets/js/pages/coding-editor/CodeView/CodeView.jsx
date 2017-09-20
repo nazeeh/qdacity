@@ -35,7 +35,8 @@ export default class CodeView extends React.Component {
 			getCodeByCodeID,
 			getCodeSystem,
 			createCode,
-			selectCode
+			selectCode,
+			deleteRelationship
 		} = this.props;
 		return (
 			<div>
@@ -47,7 +48,7 @@ export default class CodeView extends React.Component {
                         <CodeProperties code={this.props.code} editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode}/>
                     </Tab>
                     <Tab tabTitle="Meta Model">
-                        <MetaModel code={this.props.code} updateSelectedCode={updateSelectedCode} getCodeById={getCodeById} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} createCode={createCode} selectCode={selectCode} />
+                        <MetaModel code={this.props.code} updateSelectedCode={updateSelectedCode} getCodeById={getCodeById} getCodeByCodeID={getCodeByCodeID} getCodeSystem={getCodeSystem} createCode={createCode} selectCode={selectCode} deleteRelationship={deleteRelationship}/>
                     </Tab>
                     <Tab tabTitle="Code Memo">
                         <CodeMemo code={this.props.code} updateSelectedCode={updateSelectedCode} />
