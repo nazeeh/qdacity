@@ -869,6 +869,10 @@ export default class UmlGraphView extends React.Component {
 
 		canvasContext.font = headerStyle.font;
 		let headerWidth = canvasContext.measureText(cellValue.getName()).width;
+
+		// Add offset
+		headerWidth += this.umlClassHeaderOffsetLeft + this.umlClassHeaderOffsetRight + 1;
+
 		maxWidths.push(headerWidth);
 
 		// Fields/Methods width
@@ -880,6 +884,16 @@ export default class UmlGraphView extends React.Component {
 
 				for (let i = 0; i < elements.length; i++) {
 					let elementWidth = canvasContext.measureText(elements[i].text).width;
+
+					// Add offset
+					let offset = _this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight + 1;
+
+					if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
+						offset += _this.umlClassRemoveClassElementWidth + _this.umlClassRemoveClassElementOffset;
+					}
+
+					elementWidth += offset;
+
 					maxWidths.push(elementWidth);
 				}
 			}
@@ -887,11 +901,8 @@ export default class UmlGraphView extends React.Component {
 		calculateElementsWidth(cellValue.getFields(), divFields);
 		calculateElementsWidth(cellValue.getMethods(), divMethods);
 
-		// Use header left/right offset as general offset
-		const offset = this.umlClassHeaderOffsetLeft + this.umlClassHeaderOffsetRight;
-
 		// Find the maximum width
-		let width = offset + Math.max(...maxWidths);
+		let width = Math.max(...maxWidths);
 
 		// Width greater than absolute maximum?
 		if (width > this.umlClassMaximumWidth) {
