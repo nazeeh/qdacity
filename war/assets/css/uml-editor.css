@@ -33,10 +33,17 @@
 .umlClass {
 	width: 100%; 
 	height: 100%; 
+	max-width: 350px;
+	min-width: 160px;
+	
 	cursor: move !important;
 }
 
 .umlClassHeader {
+	margin-left: 10px;
+	margin-right: 10px;
+	line-height: 20px;
+	
 	font-size: 13px;
 	font-weight: bold;
 	overflow: hidden;
@@ -45,35 +52,64 @@
 }
 
 .umlClassSeparator {
-	width: 100%;
+	height: 1px;
+	width: 200%;
 	background-color: black;
 }
 
 .umlClassElements {
+	padding-top: 4px;
+	padding-bottom: 4px;
 	width: 100%;	
 }
 
 .umlClassElement {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-left: 6px;
+	margin-right: 6px;
+}
+
+.umlClassElementVisibility {
+	line-height: 18px;
+	width: 15px;
+	font-size: 11.5px; 
+	font-weight: normal; 
+	text-align: left;
 }
 
 .umlClassElementText {
+	line-height: 18px;
 	font-size: 11.5px; 
 	font-weight: normal; 
 	text-align: left;
 	overflow: hidden; 
 	text-overflow: ellipsis;
-	float: left;
 	white-space: normal;
 }
 
+.umlClassAddElementLinkContainer {
+	height: 18px;
+	line-height: 18px;
+	margin-left: 6px;
+	margin-right: 6px;
+	text-align: left;
+}
+
 .umlClassAddElementLink {
-	float: left; 
+	height: 18px;
+	line-height: 18px;
 	font-size: 11.5px; 
 	cursor: pointer;
 }
 
 .umlClassRemoveElementButton {
-	float: right; 
+	width: 20px;
+	height: 18px;
+	margin-left: 6px;
+	
+	align-self: center;
 	cursor: pointer;
 	opacity: 0.5;
 }
@@ -86,4 +122,5 @@
 
 .umlClassElementsEmpty {
 	width: 100%;	
+	height: 18px;
 }

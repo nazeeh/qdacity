@@ -1,7 +1,7 @@
 export default class CellValue {
 
 	constructor() {
-		this.header = new Text("", 1);
+		this.header = ""
 
 		this.fields = [];
 
@@ -20,8 +20,8 @@ export default class CellValue {
 		return this.fields;
 	}
 
-	addField(text, numberOfLines, relationId) {
-		this.fields.push(new ClassElement(text, numberOfLines, relationId));
+	addField(text, relationId) {
+		this.fields.push(new ClassElement(text, relationId));
 	}
 
 	removeField(relationId) {
@@ -32,8 +32,8 @@ export default class CellValue {
 		return this.methods;
 	}
 
-	addMethod(text, numberOfLines, relationId) {
-		this.methods.push(new ClassElement(text, numberOfLines, relationId));
+	addMethod(text, relationId) {
+		this.methods.push(new ClassElement(text, relationId));
 	}
 
 	removeMethod(relationId) {
@@ -51,11 +51,11 @@ export default class CellValue {
 	}
 }
 
-class Text {
+class ClassElement {
 
-	constructor(text, numberOfLines) {
+	constructor(text, relationId) {
 		this.text = text;
-		this.numberOfLines = numberOfLines;
+		this.relationId = relationId;
 	}
 
 	getText() {
@@ -64,23 +64,6 @@ class Text {
 
 	setText(text) {
 		this.text = text;
-	}
-
-	getNumberOfLines() {
-		return this.numberOfLines;
-	}
-
-	setNumberOfLines(numberOfLines) {
-		this.numberOfLines = numberOfLines;
-	}
-}
-
-class ClassElement extends Text {
-
-	constructor(text, numberOfLines, relationId) {
-		super(text, numberOfLines);
-
-		this.relationId = relationId;
 	}
 
 	getRelationId() {
