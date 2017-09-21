@@ -1,5 +1,11 @@
 var webpackConfig = require('./webpack.config.js');
 
+const ChromiumRevision = require('puppeteer/package.json').puppeteer.chromium_revision
+const Downloader = require('puppeteer/utils/ChromiumDownloader')
+const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), ChromiumRevision)
+
+process.env.CHROME_BIN = revisionInfo.executablePath
+
 // Karma configuration
 // Generated on Mon Sep 04 2017 15:00:17 GMT+0200 (W. Europe Daylight Time)
 
@@ -63,7 +69,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
 
 
     // Continuous Integration mode
