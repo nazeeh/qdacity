@@ -1,5 +1,6 @@
 import CodingBrackets from '../assets/js/pages/coding-editor/coding-brackets.js';
 
+window.$ = window.jQuery;
 
 describe("CodingBrackets", function() {
 
