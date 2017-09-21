@@ -321,7 +321,21 @@ export default class UmlGraphView extends React.Component {
 
 				// Header
 				let header = '<div class="umlClassHeader">';
+
+				// Expand/Collapse
+				header += '<div class="umlClassHeaderExpandButton">';
+				if (_this.graph.isCellCollapsed(cell)) {
+					header += '<i class="fa fa-plus-square-o"></i>';
+				} else {
+					header += '<i class="fa fa-minus-square-o"></i>';
+				}
+				header += '</div>';
+
+				// Text
+				header += '<div class="umlClassHeaderText">';
 				header += cellValue.getHeader();
+				header += '</div>';
+
 				header += '</div>';
 
 				if (_this.graph.isCellCollapsed(cell)) {
@@ -406,11 +420,18 @@ export default class UmlGraphView extends React.Component {
 			if (model.isVertex(cell) && state.text != null) {
 				const cellValue = cell.value;
 
+				const divBase = state.text.node.children[0];
+				const divContainer = divBase.children[0];
+
 				// Event listener
+				const divHeader = divContainer.children[0];
+
+				let expandCollapseButton = divHeader.children[0];
+				expandCollapseButton.onclick = () => _this.toggleCollapseCell(cell);
+
+				// Advanced listeners
 				if (!_this.graph.isCellCollapsed(cell)) {
 					// Register onClick listener for add field/method link
-					const divBase = state.text.node.children[0];
-					const divContainer = divBase.children[0];
 					const divFields = divContainer.children[2];
 					const divMethods = divContainer.children[4];
 
@@ -446,7 +467,7 @@ export default class UmlGraphView extends React.Component {
 					addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
 				}
 
-				// Set size
+				// Set size of the main div
 				state.text.node.style.overflow = 'hidden';
 				state.text.node.style.top = (state.y + 1) + 'px';
 
@@ -687,12 +708,21 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
+	toggleCollapseCell(cell) {
+		cell.setCollapsed(!cell.isCollapsed());
+		this.recalculateNodeSize(cell);
+	}
+
+	expandCell(cell) {
+		cell.setCollapsed(false);
+		this.recalculateNodeSize(cell);
+	}
+
 	expandAll() {
 		const _this = this;
 
 		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			cell.setCollapsed(false);
-			_this.recalculateNodeSize(cell);
+			_this.expandCell(cell);
 		});
 	}
 
@@ -700,9 +730,13 @@ export default class UmlGraphView extends React.Component {
 		const _this = this;
 
 		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			cell.setCollapsed(true);
-			_this.recalculateNodeSize(cell);
+			_this.collapseCell(cell);
 		});
+	}
+
+	collapseCell(cell) {
+		cell.setCollapsed(true);
+		this.recalculateNodeSize(cell);
 	}
 
 	startConnecting(edgeType) {

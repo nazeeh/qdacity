@@ -40,15 +40,30 @@
 }
 
 .umlClassHeader {
-	margin-left: 10px;
-	margin-right: 10px;
+	display: flex;
+	flex-direction: row;
+	
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.umlClassHeaderText {
+	flex-grow: 1;
+	margin-left: 3px;
+	margin-right: 16px;
 	line-height: 20px;
 	
 	font-size: 13px;
 	font-weight: bold;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	white-space: normal;
+	white-space: normal;	
+}
+
+.umlClassHeaderExpandButton {
+	align-self: center;
+	width: 13px;
+	cursor: pointer;
 }
 
 .umlClassSeparator {
