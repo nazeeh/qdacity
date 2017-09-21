@@ -78,6 +78,7 @@ frontend_prod_unittest:
     paths:
     - war/node_modules/
   script:
+    - cd war
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
