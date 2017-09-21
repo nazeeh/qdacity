@@ -411,42 +411,45 @@ export default class UmlGraphView extends React.Component {
 			if (model.isVertex(cell) && state.text != null) {
 				const cellValue = cell.value;
 
-				// Register onClick listener for add field/method link
-				const divBase = state.text.node.children[0];
-				const divContainer = divBase.children[0];
-				const divFields = divContainer.children[2];
-				const divMethods = divContainer.children[4];
+				// Event listener
+				if (!_this.graph.isCellCollapsed(cell)) {
+					// Register onClick listener for add field/method link
+					const divBase = state.text.node.children[0];
+					const divContainer = divBase.children[0];
+					const divFields = divContainer.children[2];
+					const divMethods = divContainer.children[4];
 
-				// Add Field/Method + Delete Element onClick listener
-				const addOnClickListener = (divContainer, elements, addListener, removeListener) => {
-					if (divContainer.children != null && divContainer.children.length > 0) {
-						// Add
-						let lastChild = divContainer.children[divContainer.children.length - 1];
+					// Add Field/Method + Delete Element onClick listener
+					const addOnClickListener = (divContainer, elements, addListener, removeListener) => {
+						if (divContainer.children != null && divContainer.children.length > 0) {
+							// Add
+							let lastChild = divContainer.children[divContainer.children.length - 1];
 
-						if (lastChild.children != null && lastChild.children.length == 1 && lastChild.children[0].nodeName == 'A') {
-							let link = lastChild.children[0];
-							link.onclick = addListener;
-						}
+							if (lastChild.children != null && lastChild.children.length == 1 && lastChild.children[0].nodeName == 'A') {
+								let link = lastChild.children[0];
+								link.onclick = addListener;
+							}
 
-						// Remove
-						for (let i = 0; i < divContainer.children.length; i++) {
-							let child = divContainer.children[i];
+							// Remove
+							for (let i = 0; i < divContainer.children.length; i++) {
+								let child = divContainer.children[i];
 
-							// Is not add field?
-							if (child.children != null && child.children.length == 2
-								&& child.children[0].nodeName == 'DIV'
-								&& child.children[1].nodeName == 'DIV') {
-								let deleteButton = child.children[1];
-								let relationId = elements[i].getRelationId();
+								// Is not add field?
+								if (child.children != null && child.children.length == 2
+									&& child.children[0].nodeName == 'DIV'
+									&& child.children[1].nodeName == 'DIV') {
+									let deleteButton = child.children[1];
+									let relationId = elements[i].getRelationId();
 
-								deleteButton.onclick = () => removeListener(relationId);
+									deleteButton.onclick = () => removeListener(relationId);
+								}
 							}
 						}
-					}
-				};
+					};
 
-				addOnClickListener(divFields, cellValue.getFields(), () => _this.props.umlEditor.openClassFieldModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassField(state.cell, relationId));
-				addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
+					addOnClickListener(divFields, cellValue.getFields(), () => _this.props.umlEditor.openClassFieldModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassField(state.cell, relationId));
+					addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
+				}
 
 				// Set size
 				state.text.node.style.overflow = 'hidden';
