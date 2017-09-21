@@ -126,35 +126,29 @@ export default class UmlGraphView extends React.Component {
 		mxCellHighlight.prototype.spacing = 0;
 
 
+		// Enables the rendering of cells with html labels. The label/header size is increased to fit the entire cell.
+		// Then, instead of rendering simple text, this option allows to render html content for the cell.
 		mxGraphHandler.prototype.htmlPreview = true;
 
-		mxGraphView.prototype.optimizeVmlReflows = false;
-
+		// Disables foreign-objects. This options is required for using custom html inside cells.
 		mxClient.NO_FO = true;
 
 
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
 
-		// GraphHandler
 		new mxGraphHandler(this.graph);
 
-		// Initialize styles
 		this.initializeStyles();
 
-		// Initialize layouting
 		this.initializeLayouting();
 
-		// Initialize connections
 		this.initializeConnections();
 
-		// Initialize panning
 		this.initializePanning();
 
-		// Initialize node rendering
 		this.initializeNodeRendering();
 
-		// Initialize events
 		this.initializeEvents();
 	}
 
