@@ -319,9 +319,6 @@ export default class UmlGraphView extends React.Component {
 				} else {
 					const cellValue = cell.value;
 
-
-					// TODO try to use styled components
-
 					// Container
 					let container = '<div class="umlClass">';
 					let containerEnd = '</div>';
