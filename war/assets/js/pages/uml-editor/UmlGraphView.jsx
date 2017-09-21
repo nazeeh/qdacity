@@ -322,7 +322,7 @@ export default class UmlGraphView extends React.Component {
                 // Header
                 let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
 
-				if (_this.graph.isCellCollapsed(cell)) 
+				if (_this.graph.isCellCollapsed(cell)) {
 					// Result
 					return container + header + containerEnd;
 				} else {
