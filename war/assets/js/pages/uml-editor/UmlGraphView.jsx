@@ -315,12 +315,12 @@ export default class UmlGraphView extends React.Component {
 			if (_this.graph.getModel().isVertex(cell)) {
 				const cellValue = cell.value;
 
-                // Container
-                let container = '<div class="umlClass">';
-                let containerEnd = '</div>';
+				// Container
+				let container = '<div class="umlClass">';
+				let containerEnd = '</div>';
 
-                // Header
-                let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
+				// Header
+				let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
 
 				if (_this.graph.isCellCollapsed(cell)) {
 					// Result
@@ -897,6 +897,9 @@ export default class UmlGraphView extends React.Component {
 			this.graph.view.invalidate(edge, true, false);
 			this.graph.view.validate(edge);
 		}
+
+		// Update hover buttons
+		this.updateHoverButtons(node);
 	}
 
 	zoomIn() {
