@@ -72,8 +72,14 @@ frontend_prod_unittest:
   environment: Production
   only:
     - master
+  cache:
+    key: "node_modules"
+    untracked: true
+    paths:
+    - war/node_modules/
   script:
-    - karma start --single-run
+    - cd war
+    - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
   allow_failure: true
