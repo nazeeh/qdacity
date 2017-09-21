@@ -6,6 +6,8 @@ import ButtonZoomIn from './ButtonZoomIn.jsx';
 import ButtonZoomOut from './ButtonZoomOut.jsx';
 import ButtonZoomSelect from './ButtonZoomSelect.jsx';
 import ButtonApplyLayout from './ButtonApplyLayout.jsx';
+import ButtonExpandAll from './ButtonExpandAll.jsx';
+import ButtonCollapseAll from './ButtonCollapseAll.jsx';
 
 const StyledToolbar = styled.div `
     padding: 8px 20px 8px 20px;
@@ -38,6 +40,9 @@ export default class Toolbar extends React.Component {
                 <ButtonZoomSelect ref={(zoomSelectRef) => {if (zoomSelectRef) this.zoomSelectRef = zoomSelectRef}} umlEditor={_this.umlEditor} />
             
                 <ButtonApplyLayout umlEditor={_this.umlEditor} />
+
+                <ButtonExpandAll umlEditor={_this.umlEditor} />
+                <ButtonCollapseAll umlEditor={_this.umlEditor} />
             </StyledToolbar>
 		);
 	}
