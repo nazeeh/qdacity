@@ -344,8 +344,8 @@ export default class UmlGraphView extends React.Component {
 							for (let i = 0; i < elements.length; i++) {
 								content += '<div class="umlClassElement">';
 
-								content += '<div class="umlClassElementVisibility">';
-								content += '+';
+								content += '<div class="umlClassElementAccessibility">';
+								content += elements[i].getAccessibility();
 								content += '</div>';
 
 								content += '<div class="umlClassElementText">';
@@ -792,10 +792,10 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(node);
 	}
 
-	addClassField(node, relationId, fieldText) {
+	addClassField(node, relationId, accessibility, text) {
 		const cellValue = node.value;
 
-		cellValue.addField(fieldText, relationId);
+		cellValue.addField(relationId, accessibility, text);
 
 		this.recalculateNodeSize(node);
 	}
@@ -808,10 +808,10 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(node);
 	}
 
-	addClassMethod(node, relationId, methodText) {
+	addClassMethod(node, relationId, accessibility, text) {
 		const cellValue = node.value;
 
-		cellValue.addMethod(methodText, relationId);
+		cellValue.addMethod(relationId, accessibility, text);
 
 		this.recalculateNodeSize(node);
 	}

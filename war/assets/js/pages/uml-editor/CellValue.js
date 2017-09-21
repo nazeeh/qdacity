@@ -20,8 +20,8 @@ export default class CellValue {
 		return this.fields;
 	}
 
-	addField(text, relationId) {
-		this.fields.push(new ClassElement(text, relationId));
+	addField(relationId, accessibility, text) {
+		this.fields.push(new ClassElement(relationId, accessibility, text));
 	}
 
 	removeField(relationId) {
@@ -32,8 +32,8 @@ export default class CellValue {
 		return this.methods;
 	}
 
-	addMethod(text, relationId) {
-		this.methods.push(new ClassElement(text, relationId));
+	addMethod(relationId, accessibility, text) {
+		this.methods.push(new ClassElement(relationId, accessibility, text));
 	}
 
 	removeMethod(relationId) {
@@ -53,8 +53,9 @@ export default class CellValue {
 
 class ClassElement {
 
-	constructor(text, relationId) {
+	constructor(relationId, accessibility, text) {
 		this.text = text;
+		this.accessibility = accessibility;
 		this.relationId = relationId;
 	}
 
@@ -64,6 +65,14 @@ class ClassElement {
 
 	setText(text) {
 		this.text = text;
+	}
+
+	getAccessibility() {
+		return this.accessibility;
+	}
+
+	setAccessibility(accessibility) {
+		this.accessibility = accessibility;
 	}
 
 	getRelationId() {
