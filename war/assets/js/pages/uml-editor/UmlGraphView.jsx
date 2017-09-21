@@ -663,6 +663,24 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
+	expandAll() {
+		const _this = this;
+
+		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
+			cell.setCollapsed(false);
+			_this.recalculateNodeSize(cell);
+		});
+	}
+
+	collapseAll() {
+		const _this = this;
+
+		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
+			cell.setCollapsed(true);
+			_this.recalculateNodeSize(cell);
+		});
+	}
+
 	startConnecting(edgeType) {
 		let edge = this.graph.createEdge(null, null, null, null, null, edgeType);
 		let edgeState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
