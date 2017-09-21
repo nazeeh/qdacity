@@ -320,7 +320,9 @@ export default class UmlGraphView extends React.Component {
 				let containerEnd = '</div>';
 
 				// Header
-				let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
+				let header = '<div class="umlClassHeader">';
+				header += cellValue.getHeader();
+				header += '</div>';
 
 				if (_this.graph.isCellCollapsed(cell)) {
 					// Result
@@ -545,32 +547,32 @@ export default class UmlGraphView extends React.Component {
 		});
 	}
 
-    initializeClassSizeCalculator() {
-        const container = document.createElement('div');
-        container.id = 'classSizeCalculatorContainer';
-        container.style.visibility = "hidden";
-        container.style.position = "absolute";
-        document.body.appendChild(container);
+	initializeClassSizeCalculator() {
+		const container = document.createElement('div');
+		container.id = 'classSizeCalculatorContainer';
+		container.style.visibility = "hidden";
+		container.style.position = "absolute";
+		document.body.appendChild(container);
 
-        return container;
-    }
+		return container;
+	}
 
-    calculateClassSize(innerHTML) {
-        let container = document.getElementById('classSizeCalculatorContainer');
+	calculateClassSize(innerHTML) {
+		let container = document.getElementById('classSizeCalculatorContainer');
 
-        if (container == null) {
-            container = this.initializeClassSizeCalculator();
-        }
+		if (container == null) {
+			container = this.initializeClassSizeCalculator();
+		}
 
-        container.style.visibility = "visible";
+		container.style.visibility = "visible";
 
-        container.innerHTML = innerHTML;
+		container.innerHTML = innerHTML;
 
-        container.style.visibility = "hidden";
+		container.style.visibility = "hidden";
 
-        return [container.clientWidth + 2, container.clientHeight + 1];
-    }
-    
+		return [container.clientWidth + 2, container.clientHeight + 1];
+	}
+
 	addCellsMovedEventListener(listener) {
 		this.graph.addListener(mxEvent.CELLS_MOVED, listener);
 	}
