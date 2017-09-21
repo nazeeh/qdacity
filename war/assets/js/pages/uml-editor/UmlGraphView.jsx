@@ -405,7 +405,8 @@ export default class UmlGraphView extends React.Component {
 		};
 
 
-		// Properly set the div position for the cell
+		// Properly set the div position for the cell. This div will be used to display the cell cotent.
+		// Add event listeners to cell components
 		const oldRedrawLabel = this.graph.cellRenderer.redrawLabel;
 
 		this.graph.cellRenderer.redrawLabel = function (state) {
