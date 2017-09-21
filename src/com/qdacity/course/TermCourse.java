@@ -3,22 +3,24 @@ package com.qdacity.course;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
 
 import com.qdacity.course.TermCourse;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
 
-public class TermCourse extends Course {
+public class TermCourse {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8884351707231058556L;
-
+	@PrimaryKey
+	@Persistent(
+		valueStrategy = IdGeneratorStrategy.IDENTITY)
+	Long id;
+	
 	@Persistent
 	Long templateCourseID;
 	
@@ -28,6 +30,14 @@ public class TermCourse extends Course {
 
 	@Persistent
 	String term;
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public TermCourse() {
 		super();

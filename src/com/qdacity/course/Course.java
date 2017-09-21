@@ -13,8 +13,7 @@ import com.qdacity.course.Course;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
-@Inheritance(
-		strategy = InheritanceStrategy.SUBCLASS_TABLE)
+
 
 public class Course extends AbstractCourse {
 
