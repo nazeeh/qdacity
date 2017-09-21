@@ -78,6 +78,8 @@ frontend_prod_unittest:
     paths:
     - war/node_modules/
   script:
+    - Xvfb :10 -ac &
+    - export DISPLAY=:10
     - cd war
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
