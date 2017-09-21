@@ -313,18 +313,18 @@ export default class UmlGraphView extends React.Component {
 		// Html content of the node
 		this.graph.getLabel = function (cell) {
 			if (_this.graph.getModel().isVertex(cell)) {
-                const cellValue = cell.value;
+				const cellValue = cell.value;
 
 				if (_this.graph.isCellCollapsed(cell)) {
-                    // Container
-                    let container = '<div class="umlClass">';
-                    let containerEnd = '</div>';
+					// Container
+					let container = '<div class="umlClass">';
+					let containerEnd = '</div>';
 
-                    // Header
-                    let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
+					// Header
+					let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
 
-                    // Result
-                    return container + header + containerEnd;
+					// Result
+					return container + header + containerEnd;
 				} else {
 					// Container
 					let container = '<div class="umlClass">';
