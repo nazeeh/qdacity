@@ -29,9 +29,6 @@ import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
 
 
-
-
-
 @Api(name = "qdacity",
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
@@ -76,7 +73,7 @@ public class CourseEndpoint {
 
 		return CollectionResponse.<Course> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
-
+	
 	
 	/**
 	 * This method removes the entity with primary key id.
@@ -87,7 +84,7 @@ public class CourseEndpoint {
 	 */
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "course.removeCourse",
-		
+		 
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
@@ -154,40 +151,6 @@ public class CourseEndpoint {
 	}
 
 	
-	/**
-	 * This inserts a new instance of a course into App Engine datastore. If the entity already
-	 * exists in the datastore, an exception is thrown.
-	 * It uses HTTP POST method.
-	 *
-	 * @param termCourse, the entity to be inserted.
-	 * @return The inserted entity.
-	 * @throws UnauthorizedException
-	 */
-	@ApiMethod(name = "course.insertTermCourse",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public TermCourse insertTermCourse(@Named("templateCourseID") Long templateCourseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
-		
-		termCourse.setCourseTemplateID(templateCourseID);
-		termCourse.setTerm(term);
-		
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			if (termCourse.getId() != null) {
-				if (containsTermCourse(termCourse)) {
-					throw new EntityExistsException("Object already exists");
-				}
-			}
-			
-			mgr.makePersistent(termCourse);
-			
-		} finally {
-			mgr.close();
-		}
-		return termCourse;
-	}
-
 	@ApiMethod(name = "course.removeUser",
 			path = "course.removeUser",
 		scopes = { Constants.EMAIL_SCOPE },
@@ -256,6 +219,77 @@ public class CourseEndpoint {
 		return course;
 	}
 	
+	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all entities
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(name = "course.listTermCourse",
+		path = "listTermCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<TermCourse> listTermCourse(@Named("templateCourseID") Long templateCourseID, User user) throws UnauthorizedException {
+
+		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
+
+		PersistenceManager mgr = null;
+		List<TermCourse> execute = null;
+
+		try {
+			mgr = getPersistenceManager();
+
+			Query q = mgr.newQuery(TermCourse.class, ":p.contains(templateCourseID)");
+
+			execute = (List<TermCourse>) q.execute(Arrays.asList(templateCourseID));
+
+			// Tight loop for fetching all entities from datastore and accomodate
+			// for lazy fetch.
+			for (TermCourse obj : execute);
+		} finally {
+			mgr.close();
+		}
+
+		return execute;
+	}
+	
+	/**
+	 * This inserts a new instance of a course into App Engine datastore. If the entity already
+	 * exists in the datastore, an exception is thrown.
+	 * It uses HTTP POST method.
+	 *
+	 * @param termCourse, the entity to be inserted.
+	 * @return The inserted entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "course.insertTermCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public TermCourse insertTermCourse(@Named("templateCourseID") Long templateCourseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
+		
+		termCourse.setCourseTemplateID(templateCourseID);
+		termCourse.setTerm(term);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (termCourse.getId() != null) {
+				if (containsTermCourse(termCourse)) {
+					throw new EntityExistsException("Object already exists");
+				}
+			}
+			
+			mgr.makePersistent(termCourse);
+			
+		} finally {
+			mgr.close();
+		}
+		return termCourse;
+	}
 	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();

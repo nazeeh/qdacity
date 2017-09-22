@@ -1,5 +1,6 @@
 package com.qdacity.course;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,12 @@ import com.qdacity.course.TermCourse;
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
 
-public class TermCourse {
+public class TermCourse implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4591418143332509129L;
 
 	@PrimaryKey
 	@Persistent(
@@ -39,10 +45,12 @@ public class TermCourse {
 		this.id = id;
 	}
 
-	public TermCourse() {
-		super();
-		// TODO Auto-generated constructor stub
+	public TermCourse(TermCourse termCrs) {
+		this.term = termCrs.term;
+		this.participants = termCrs.participants;
 	}
+	
+	
 
 	public List<String> getParticipants() {
 		return participants;
@@ -61,6 +69,10 @@ public class TermCourse {
 		this.term = term;
 	}
 	
+	public String getTerm ()
+	{
+		return term;
+	}
 	public void setCourseTemplateID(Long id) {
 		this.templateCourseID = id;
 	}

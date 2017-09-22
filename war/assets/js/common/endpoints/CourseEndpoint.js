@@ -44,4 +44,12 @@ export default class CourseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+	
+	static listTermCourse(templateCrsID) {
+		var apiMethod = gapi.client.qdacity.course.listTermCourse({
+			'templateCourseID': templateCrsID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+	
 }
