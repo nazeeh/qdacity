@@ -30,6 +30,8 @@
 		<link rel="stylesheet" type="text/css" href="dist/js/styles.css">
 
 		<script type="text/javascript">
+			mxBasePath = 'components/mxGraph/javascript/src';
+			
 			var mxLoadResources = false;
 			var mxLoadStylesheets = false;
 		</script>
