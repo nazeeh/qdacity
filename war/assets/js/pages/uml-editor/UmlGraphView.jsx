@@ -24,23 +24,6 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlClassHeaderHeight = 26;
-		this.umlClassHeaderOffsetLeft = 10;
-		this.umlClassHeaderOffsetRight = 10;
-		this.umlClassSeparatorHeight = 1;
-
-		this.umlClassElementHeight = 20;
-		this.umlClassElementOffsetLeft = 6;
-		this.umlClassElementOffsetRight = 6;
-		this.umlClassElementsEmptyHeight = this.umlClassElementHeight;
-		this.umlClassElementsOffsetTop = 4;
-		this.umlClassElementsOffsetBottom = 4;
-		this.umlClassAddClassElementHeight = this.umlClassElementHeight;
-		this.umlClassRemoveClassElementWidth = 20;
-		this.umlClassRemoveClassElementOffset = 5;
-
-		this.umlClassMinimumWidth = 160;
-		this.umlClassMaximumWidth = 300;
 		this.umlClassDefaultWidth = 160;
 		this.umlClassDefaultHeight = 59; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
 
@@ -330,41 +313,39 @@ export default class UmlGraphView extends React.Component {
 				} else {
 					const cellValue = cell.value;
 
+					// Container
+					let container = '<div class="umlClass">';
+					let containerEnd = '</div>';
+
 					// Header
-					let header = '<div class="umlClassHeader" '
-						+ 'style="height:' + _this.umlClassHeaderHeight + 'px; line-height:' + _this.umlClassHeaderHeight + 'px; margin-left:' + _this.umlClassHeaderOffsetLeft + 'px; width:calc(100% - ' + (_this.umlClassHeaderOffsetLeft + _this.umlClassHeaderOffsetRight) + 'px);"'
-						+ '>' + cellValue.getName() + '</div>';
+					let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
 
 					// Separator
-					let separator = '<div class="umlClassSeparator" style="height:' + _this.umlClassSeparatorHeight + 'px;"></div>';
+					let separator = '<div class="umlClassSeparator"></div>';
 
 					// Fields / Methods
 					const createElements = (typeName, elements) => {
-						let content = '<div class="umlClassElements" style="padding-top:' + _this.umlClassElementsOffsetTop + 'px; padding-bottom:' + _this.umlClassElementsOffsetBottom + 'px;">';
+						let content = '<div class="umlClassElements">';
 
-						let addElementLink = '<div style="width:calc(100% - ' + (_this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight) + 'px); height:' + _this.umlClassAddClassElementHeight + 'px; line-height:' + _this.umlClassAddClassElementHeight + 'px; margin-left:' + _this.umlClassElementOffsetLeft + 'px;">';
+						let addElementLink = '<div class="umlClassAddElementLinkContainer">';
 						addElementLink += '<a class="umlClassAddElementLink">+ Add ' + typeName + '</a>';
 						addElementLink += '</div>';
 
 						if (elements != null && elements.length > 0) {
 							for (let i = 0; i < elements.length; i++) {
-								content += '<div class="umlClassElement" style="width:calc(100% - ' + (_this.umlClassElementOffsetLeft + _this.umlClassElementOffsetRight) + 'px); height:' + _this.umlClassElementHeight + 'px; line-height:' + _this.umlClassElementHeight + 'px; margin-left:' + _this.umlClassElementOffsetLeft + 'px;">';
+								content += '<div class="umlClassElement">';
 
-								let textWidth = '';
+								content += '<div class="umlClassElementAccessibility">';
+								content += elements[i].getAccessibility();
+								content += '</div>';
 
-								if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-									textWidth = 'calc(100% - ' + (_this.umlClassRemoveClassElementWidth + _this.umlClassRemoveClassElementOffset) + 'px)';
-								} else {
-									textWidth = '100%';
-								}
-
-								content += '<div class="umlClassElementText" style="width:' + textWidth + ';">';
-								content += elements[i].text;
+								content += '<div class="umlClassElementText">';
+								content += elements[i].getText();
 								content += '</div>';
 
 								// Is selected => show delete button
 								if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-									content += '<div class="umlClassRemoveElementButton" style="width:' + _this.umlClassRemoveClassElementWidth + 'px; height:' + _this.umlClassAddClassElementHeight + 'px;">';
+									content += '<div class="umlClassRemoveElementButton">';
 									content += '<i class="fa fa-trash fa-1x"></i>';
 									content += '</div>';
 								}
@@ -382,7 +363,7 @@ export default class UmlGraphView extends React.Component {
 							if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
 								content += addElementLink;
 							} else {
-								content += '<div class="umlClassElementsEmpty" style="height:' + _this.umlClassElementsEmptyHeight + 'px;"></div>';
+								content += '<div class="umlClassElementsEmpty"></div>';
 							}
 						}
 
@@ -395,9 +376,7 @@ export default class UmlGraphView extends React.Component {
 					let methods = createElements('Method', cellValue.getMethods());
 
 					// Result
-					return '<div class="umlClass">'
-						+ header + separator + fields + separator + methods
-						+ '</div>';
+					return container + header + separator + fields + separator + methods + containerEnd;
 				}
 			} else {
 				return '';
@@ -415,9 +394,10 @@ export default class UmlGraphView extends React.Component {
 
 			let graph = state.view.graph;
 			let model = graph.model;
+			let cell = state.cell;
 
-			if (model.isVertex(state.cell) && state.text != null) {
-				const cellValue = state.cell.value;
+			if (model.isVertex(cell) && state.text != null) {
+				const cellValue = cell.value;
 
 				// Register onClick listener for add field/method link
 				const divBase = state.text.node.children[0];
@@ -445,7 +425,7 @@ export default class UmlGraphView extends React.Component {
 								&& child.children[0].nodeName == 'DIV'
 								&& child.children[1].nodeName == 'DIV') {
 								let deleteButton = child.children[1];
-								let relationId = elements[i].id;
+								let relationId = elements[i].getRelationId();
 
 								deleteButton.onclick = () => removeListener(relationId);
 							}
@@ -749,16 +729,16 @@ export default class UmlGraphView extends React.Component {
 			cell.vertex = true;
 
 			const cellValue = new CellValue();
-			cellValue.setName(name);
+			cellValue.setHeader(name);
 
 			cell.value = cellValue;
 			this.graph.addCell(cell);
 
-			this.recalculateNodeSize(cell);
-
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
+
+		this.recalculateNodeSize(cell);
 
 		return cell;
 	}
@@ -799,15 +779,15 @@ export default class UmlGraphView extends React.Component {
 	renameNode(node, name) {
 		const cellValue = node.value;
 
-		cellValue.setName(name);
+		cellValue.setHeader(name);
 
 		this.recalculateNodeSize(node);
 	}
 
-	addClassField(node, relationId, fieldText) {
+	addClassField(node, relationId, accessibility, text) {
 		const cellValue = node.value;
 
-		cellValue.addField(relationId, fieldText);
+		cellValue.addField(relationId, accessibility, text);
 
 		this.recalculateNodeSize(node);
 	}
@@ -820,10 +800,10 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(node);
 	}
 
-	addClassMethod(node, relationId, methodText) {
+	addClassMethod(node, relationId, accessibility, text) {
 		const cellValue = node.value;
 
-		cellValue.addMethod(relationId, methodText);
+		cellValue.addMethod(relationId, accessibility, text);
 
 		this.recalculateNodeSize(node);
 	}
@@ -834,6 +814,32 @@ export default class UmlGraphView extends React.Component {
 		cellValue.removeMethod(relationId);
 
 		this.recalculateNodeSize(node);
+	}
+
+	initializeClassSizeCalculator() {
+		const container = document.createElement('div');
+		container.id = 'classSizeCalculatorContainer';
+		container.style.visibility = "hidden";
+		container.style.position = "absolute";
+		document.body.appendChild(container);
+
+		return container;
+	}
+
+	calculateClassSize(innerHTML) {
+		let container = document.getElementById('classSizeCalculatorContainer');
+
+		if (container == null) {
+			container = this.initializeClassSizeCalculator();
+		}
+
+		container.style.visibility = "visible";
+
+		container.innerHTML = innerHTML;
+
+		container.style.visibility = "hidden";
+
+		return [container.clientWidth + 2, container.clientHeight + 1];
 	}
 
 	recalculateNodeSize(node) {
@@ -847,97 +853,8 @@ export default class UmlGraphView extends React.Component {
 			return;
 		}
 
-		const divBase = cellState.text.node.children[0];
-		const divContainer = divBase.children[0];
-		const divHeader = divContainer.children[0];
-		const divFields = divContainer.children[2];
-		const divMethods = divContainer.children[4];
-
-		// Calculate width
-		const canvas = document.createElement("canvas");
-		const canvasContext = canvas.getContext("2d");
-
-		const maxWidths = [];
-
-		// Header width
-		const headerStyle = window.getComputedStyle(divHeader);
-
-		canvasContext.font = headerStyle.font;
-		let headerWidth = canvasContext.measureText(cellValue.getName()).width;
-		maxWidths.push(headerWidth);
-
-		// Fields/Methods width
-		const calculateElementsWidth = (elements, divContainer) => {
-			if (elements != null && elements.length > 0) {
-				// Get the style from the first element (all elements have the same style)
-				let elementStyle = window.getComputedStyle(divContainer.children[0]);
-				canvasContext.font = elementStyle.font;
-
-				for (let i = 0; i < elements.length; i++) {
-					let elementWidth = canvasContext.measureText(elements[i].text).width;
-					maxWidths.push(elementWidth);
-				}
-			}
-		};
-		calculateElementsWidth(cellValue.getFields(), divFields);
-		calculateElementsWidth(cellValue.getMethods(), divMethods);
-
-		// Use header left/right offset as general offset
-		const offset = this.umlClassHeaderOffsetLeft + this.umlClassHeaderOffsetRight;
-
-		// Find the maximum width
-		let width = offset + Math.max(...maxWidths);
-
-		// Width greater than absolute maximum?
-		if (width > this.umlClassMaximumWidth) {
-			width = this.umlClassMaximumWidth;
-		}
-
-		// Width smaller than minimum?
-		if (width < this.umlClassMinimumWidth) {
-			width = this.umlClassMinimumWidth;
-		}
-
-
-		// Calculate height
-		let height = 0;
-
-		// Header
-		height += this.umlClassHeaderHeight;
-
-		// Separator 1
-		height += this.umlClassSeparatorHeight;
-
-		// Separator 2
-		height += this.umlClassSeparatorHeight;
-
-		// Fields / Methods
-		const calculateElementsHeight = (elements) => {
-			let elementsHeight = 0;
-			elementsHeight += _this.umlClassElementsOffsetTop;
-			elementsHeight += _this.umlClassElementsOffsetBottom;
-
-			if (elements != null && elements.length > 0) {
-				elementsHeight += _this.umlClassElementHeight * elements.length;
-
-				// Is selected
-				if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
-					elementsHeight += _this.umlClassAddClassElementHeight;
-				}
-			} else {
-				// Is selected
-				if (_this.graph.isCellSelected(node) && _this.graph.getSelectionCount() == 1) {
-					elementsHeight += _this.umlClassAddClassElementHeight;
-				} else {
-					elementsHeight += _this.umlClassElementsEmptyHeight;
-				}
-			}
-
-			return elementsHeight;
-		}
-
-		height += calculateElementsHeight(cellValue.getFields());
-		height += calculateElementsHeight(cellValue.getMethods());
+		// Get width / height
+		let [width, height] = this.calculateClassSize(this.graph.getLabel(node));
 
 		// Node
 		const oldGeo = node.getGeometry();
