@@ -4,8 +4,6 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import javax.jdo.JDOObjectNotFoundException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,9 +58,6 @@ public class ProjectEndpointTest {
 			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
-			fail("User could not be authorized");
-		} catch (JDOObjectNotFoundException e) {
-			// Should be executed
 		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();

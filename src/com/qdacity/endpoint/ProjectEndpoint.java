@@ -231,15 +231,20 @@ public class ProjectEndpoint {
 				}
 			}
 
-			// Get User from DB
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			try {
+				// Get User from DB
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
-			project.addOwner(user.getUserId());
-			project.setRevision(0);
-			mgr.makePersistent(project);
+				project.addOwner(user.getUserId());
+				project.setRevision(0);
+				mgr.makePersistent(project);
 
-			dbUser.addProjectAuthorization(project.getId());
-			Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+				dbUser.addProjectAuthorization(project.getId());
+				Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+			} catch (JDOObjectNotFoundException e) {
+				throw new UnauthorizedException("User is not registered");
+			}
+
 		} finally {
 			mgr.close();
 		}
