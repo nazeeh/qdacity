@@ -1,12 +1,15 @@
 package com.qdacity.test.ProjectEndpoint;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -48,17 +51,24 @@ public class ProjectEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 	}
 
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+
 	/**
 	 * Tests if a non-registered user can not create a project
+	 * 
+	 * *
+	 * 
+	 * @throws UnauthorizedException
 	 */
 	@Test
-	public void testProjectInsertAuthorization() {
+	public void testProjectInsertAuthorization() throws UnauthorizedException {
 		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-		try {
-			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
-		} catch (UnauthorizedException e) {
-			e.printStackTrace();
-		}
+		
+		expectedException.expect(UnauthorizedException.class);
+		expectedException.expectMessage(is("User is not registered"));
+		ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
@@ -93,9 +103,11 @@ public class ProjectEndpointTest {
 
 	/**
 	 * Tests if Projects from other users can be not be deleted
+	 * 
+	 * @throws UnauthorizedException
 	 */
 	@Test
-	public void testProjectRemoveAuthorization() {
+	public void testProjectRemoveAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
@@ -114,12 +126,10 @@ public class ProjectEndpointTest {
 
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 
-		try {
-			ProjectEndpointTestHelper.removeProject(1L, loggedInUserB); // User B should not be able to delete project from user A
-		} catch (UnauthorizedException e) {
-			// Should be thrown
-			e.printStackTrace();
-		}
+		expectedException.expect(UnauthorizedException.class);
+		expectedException.expectMessage(is("User is Not Authorized"));
+
+		ProjectEndpointTestHelper.removeProject(1L, loggedInUserB); // User B should not be able to delete project from user A
 
 		// The project added by User A should still exist
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
