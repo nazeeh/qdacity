@@ -9,10 +9,6 @@ const StyledButton = BtnDefault.extend `
 	margin-left: 25px;
 `;
 
-const ButtonText = styled.span `
-    margin-left: 6px;
-`;
-
 export default class ButtonExpandAll extends React.Component {
 
 	constructor(props) {
@@ -33,7 +29,7 @@ export default class ButtonExpandAll extends React.Component {
 		return (
 			<StyledButton onClick={_this.buttonClicked}>
 		        <i className="fa fa-plus-square-o"></i>
-		        <ButtonText>Expand all</ButtonText>
+		        <span>Expand all</span>
 	        </StyledButton>
 		);
 	}

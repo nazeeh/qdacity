@@ -9,10 +9,6 @@ const StyledApplyLayoutBtn = BtnDefault.extend `
 	margin-left: 25px;
 `;
 
-const ButtonText = styled.span `
-    margin-left: 6px;
-`;
-
 export default class ButtonApplyLayout extends React.Component {
 
 	constructor(props) {
@@ -33,7 +29,7 @@ export default class ButtonApplyLayout extends React.Component {
 		return (
 			<StyledApplyLayoutBtn onClick={_this.buttonClicked}>
 		        <i className="fa fa-th"></i>
-		        <ButtonText>Apply Layout</ButtonText>
+		        <span>Apply Layout</span>
 	        </StyledApplyLayoutBtn>
 		);
 	}

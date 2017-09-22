@@ -9,10 +9,6 @@ const StyledButton = BtnDefault.extend `
 	margin-left: 10px;
 `;
 
-const ButtonText = styled.span `
-    margin-left: 6px;
-`;
-
 export default class ButtonCollapseAll extends React.Component {
 
 	constructor(props) {
@@ -33,7 +29,7 @@ export default class ButtonCollapseAll extends React.Component {
 		return (
 			<StyledButton onClick={_this.buttonClicked}>
 		        <i className="fa fa-minus-square-o"></i>
-		        <ButtonText>Collapse all</ButtonText>
+		        <span>Collapse all</span>
 	        </StyledButton>
 		);
 	}
