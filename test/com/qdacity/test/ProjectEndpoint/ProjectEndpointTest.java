@@ -30,6 +30,9 @@ public class ProjectEndpointTest {
 		helper.tearDown();
 	}
 
+	/**
+	 * Tests if a registered user can create a project
+	 */
 	@Test
 	public void testProjectInsert() {
 		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
@@ -45,6 +48,9 @@ public class ProjectEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 	}
 
+	/**
+	 * Tests if a user can delete his own project
+	 */
 	@Test
 	public void testProjectRemove() {
 		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
@@ -69,6 +75,9 @@ public class ProjectEndpointTest {
 		assertEquals(0, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 	}
 
+	/**
+	 * Tests if Projects from other users can be not be deleted
+	 */
 	@Test
 	public void testProjectRemoveAuthorization() {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
@@ -90,11 +99,13 @@ public class ProjectEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 
 		try {
-			ProjectEndpointTestHelper.removeProject(1L, loggedInUserB);
+			ProjectEndpointTestHelper.removeProject(1L, loggedInUserB); // User B should not be able to delete project from user A
 		} catch (UnauthorizedException e) {
+			// Should be thrown
 			e.printStackTrace();
 		}
 
+		// The project added by User A should still exist
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 	}
 }
