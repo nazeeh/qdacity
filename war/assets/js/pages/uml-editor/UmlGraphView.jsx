@@ -317,96 +317,6 @@ export default class UmlGraphView extends React.Component {
 			if (_this.graph.getModel().isVertex(cell)) {
 				// Return something not empty to render the react component
 				return '<div></div>';
-
-				/*
-				const cellValue = cell.value;
-
-                // Container
-                let container = '<div class="umlClass">';
-                let containerEnd = '</div>';
-
-                // Header
-                let header = '<div class="umlClassHeader">';
-
-                // Expand/Collapse
-                header += '<div class="umlClassHeaderExpandButton">';
-                if (_this.graph.isCellCollapsed(cell)) {
-                    header += '<i class="fa fa-plus-square-o"></i>';
-                } else {
-                    header += '<i class="fa fa-minus-square-o"></i>';
-                }
-                header += '</div>';
-
-                // Text
-                header += '<div class="umlClassHeaderText">';
-                header += cellValue.getHeader();
-                header += '</div>';
-
-                header += '</div>';
-
-                if (_this.graph.isCellCollapsed(cell)) {
-                    // Result
-                    return container + header + containerEnd;
-                } else {
-                    // Separator
-                    let separator = '<div class="umlClassSeparator"></div>';
-
-                    // Fields / Methods
-                    const createElements = (typeName, elements) => {
-                        let content = '<div class="umlClassElements">';
-
-                        let addElementLink = '<div class="umlClassAddElementLinkContainer">';
-                        addElementLink += '<a class="umlClassAddElementLink">+ Add ' + typeName + '</a>';
-                        addElementLink += '</div>';
-
-                        if (elements != null && elements.length > 0) {
-                            for (let i = 0; i < elements.length; i++) {
-                                content += '<div class="umlClassElement">';
-
-                                content += '<div class="umlClassElementAccessibility">';
-                                content += elements[i].getAccessibility();
-                                content += '</div>';
-
-                                content += '<div class="umlClassElementText">';
-                                content += elements[i].getText();
-                                content += '</div>';
-
-                                // Is selected => show delete button
-                                if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-                                    content += '<div class="umlClassRemoveElementButton">';
-                                    content += '<i class="fa fa-trash fa-1x"></i>';
-                                    content += '</div>';
-                                }
-
-                                content += '</div>';
-                            }
-
-                            // Is selected
-                            if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-                                content += addElementLink;
-                            }
-
-                        } else {
-                            // Is selected
-                            if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-                                content += addElementLink;
-                            } else {
-                                content += '<div class="umlClassElementsEmpty"></div>';
-                            }
-                        }
-
-                        content += '</div>';
-
-                        return content;
-                    };
-
-                    let fields = createElements('Field', cellValue.getFields());
-                    let methods = createElements('Method', cellValue.getMethods());
-
-                    // Result
-                    return container + header + separator + fields + separator + methods + containerEnd;
-				}
-				*/
 			} else {
 				return '';
 			}
@@ -425,58 +335,9 @@ export default class UmlGraphView extends React.Component {
 			if (_this.graph.getModel().isVertex(cell) && state.text != null) {
 				const divBase = state.text.node.children[0];
 
+				// Render the react component 
+				// unmount happens in recalculateNodeSize()
 				_this.codesystemView = ReactDOM.render(_this.getCellContent(cell), divBase);
-
-				/*
-				const cellValue = cell.value;
-
-				const divBase = state.text.node.children[0];
-				const divContainer = divBase.children[0];
-
-				// Event listener
-				const divHeader = divContainer.children[0];
-
-				let expandCollapseButton = divHeader.children[0];
-				expandCollapseButton.onclick = () => _this.toggleCollapseCell(cell);
-
-				// Advanced listeners
-				if (!_this.graph.isCellCollapsed(cell)) {
-					// Register onClick listener for add field/method link
-					const divFields = divContainer.children[2];
-					const divMethods = divContainer.children[4];
-
-					// Add Field/Method + Delete Element onClick listener
-					const addOnClickListener = (divContainer, elements, addListener, removeListener) => {
-						if (divContainer.children != null && divContainer.children.length > 0) {
-							// Add
-							let lastChild = divContainer.children[divContainer.children.length - 1];
-
-							if (lastChild.children != null && lastChild.children.length == 1 && lastChild.children[0].nodeName == 'A') {
-								let link = lastChild.children[0];
-								link.onclick = addListener;
-							}
-
-							// Remove
-							for (let i = 0; i < divContainer.children.length; i++) {
-								let child = divContainer.children[i];
-
-								// Is not add field?
-								if (child.children != null && child.children.length == 2
-									&& child.children[0].nodeName == 'DIV'
-									&& child.children[1].nodeName == 'DIV') {
-									let deleteButton = child.children[1];
-									let relationId = elements[i].getRelationId();
-
-									deleteButton.onclick = () => removeListener(relationId);
-								}
-							}
-						}
-					};
-
-					addOnClickListener(divFields, cellValue.getFields(), () => _this.props.umlEditor.openClassFieldModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassField(state.cell, relationId));
-					addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
-				}
-				*/
 
 				// Set size of the main div
 				state.text.node.style.overflow = 'hidden';
