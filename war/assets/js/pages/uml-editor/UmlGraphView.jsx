@@ -607,8 +607,12 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	getCellContent(cell) {
+		const cellValue = cell.value;
+		const collapsed = this.graph.isCellCollapsed(cell);
+		const selected = this.graph.isCellSelected(cell) && this.graph.getSelectionCount() == 1;
+
 		return (
-			<Cell />
+			<Cell umlEditor={this.props.umlEditor} cell={cell} cellValue={cellValue} collapsed={collapsed} selected={selected} />
 		);
 	}
 
