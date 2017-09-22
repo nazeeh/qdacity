@@ -1,12 +1,22 @@
 export default class UmlClassRelation {
 
-	constructor(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, relationNode) {
+	constructor(relationId, sourceUmlClass, destinationUmlClass, relationMetaModelEntity, relationNode) {
+		this.relationId = relationId;
+
 		this.sourceUmlClass = sourceUmlClass;
 		this.destinationUmlClass = destinationUmlClass;
 
 		this.relationMetaModelEntity = relationMetaModelEntity;
 
 		this.relationNode = relationNode;
+	}
+
+	getRelationId() {
+		return this.relationId;
+	}
+
+	setRelationId(relationId) {
+		this.relationId = relationId;
 	}
 
 	getSourceUmlClass() {

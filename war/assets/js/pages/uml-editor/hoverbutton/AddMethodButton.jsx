@@ -10,7 +10,7 @@ export default class AddMethodButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		this.props.umlEditor.overlayClickedClassMethod(this.props.cell);
+		this.props.umlEditor.openClassMethodModal(this.props.cell);
 	}
 
 	getImageClassName() {

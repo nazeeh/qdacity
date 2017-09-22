@@ -19,6 +19,7 @@ import {
 } from './BottomPanel/BottomPanelType.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 
 
 const StyledCodingEditor = styled.div `
@@ -133,6 +134,7 @@ export default class CodingEditor extends React.Component {
 		this.selectCode = this.selectCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
+		this.deleteRelationship = this.deleteRelationship.bind(this);
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
@@ -212,6 +214,34 @@ export default class CodingEditor extends React.Component {
 		});
 	}
 
+	deleteRelationship(codeId, relationId, callback) {
+		const _this = this;
+
+		let code = this.getCodeById(codeId);
+		let relation = code.relations.find((rel) => rel.key.id == relationId);
+
+		CodesEndpoint.removeRelationship(codeId, relationId).then(function (resp) {
+			// If the relationship belongs to a relationship-code, update the relationship-code and set the relation to null
+			if (relation.relationshipCodeId != null) {
+				let relationshipCode = _this.getCodeById(relation.relationshipCodeId);
+				relationshipCode.relationshipCode = null;
+				relationshipCode.mmElementIDs = [];
+
+				CodesEndpoint.updateCode(relationshipCode).then((resp2) => {
+					// Do nothing
+				});
+			}
+
+			code.relations = resp.relations;
+
+			_this.updateSelectedCode(code);
+
+			if (callback != null) {
+				callback(code, relation);
+			}
+		});
+	}
+
 	selectCode(code) {
 		this.codesystemViewRef.setSelected(code);
 	}
@@ -265,7 +295,7 @@ export default class CodingEditor extends React.Component {
 	}
 
 	renderUMLEditor() {
-		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} createCode={this.createCode} />;
+		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} createCode={this.createCode} toggleCodingView={this.toggleCodingView} deleteRelationship={this.deleteRelationship} />;
 		return null;
 	}
 
@@ -366,7 +396,7 @@ export default class CodingEditor extends React.Component {
 
 					</StyledTextEditorMenu>
 						<TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
-					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor" >
+					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
 						{this.renderUMLEditor()}
 					</StyledUMLEditor>
 				</div>
@@ -386,7 +416,8 @@ export default class CodingEditor extends React.Component {
 					getCodeSystem={this.getCodeSystem}
 					createCode={this.createCode}
 					selectCode={this.selectCode}
-					hideCodingView={this.hideCodingView}/>
+					hideCodingView={this.hideCodingView}
+					deleteRelationship={this.deleteRelationship}/>
 			</StyledFooter>
 		</StyledCodingEditor>
 		);

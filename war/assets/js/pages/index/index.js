@@ -18,6 +18,7 @@ import "../../../../components/Alertify/css/alertify.default.css";
 
 // Coding Editor
 import "../../../css/coding-editor.css";
+import "../../../css/uml-editor.css";
 import "../../../css/footer.css";
 import "../../../css/CodesystemView.css";
 import "../../../../components/tooltipster/css/tooltipster.css";

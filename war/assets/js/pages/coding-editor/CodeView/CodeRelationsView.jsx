@@ -186,25 +186,11 @@ export default class CodeRelationsView extends React.Component {
 	}
 
 	deleteRelationship(relation) {
-		var _this = this;
-		CodesEndpoint.removeRelationship(_this.state.sourceCode, relation.id).then(function (resp) {
-			// If the relationship belongs to a relationship-code, update the relationship-code and set the relation to null
-			if (relation.relationshipCodeId != null) {
-				let relationshipCode = _this.props.getCodeById(relation.relationshipCodeId);
-				relationshipCode.relationshipCode = null;
-				relationshipCode.mmElementIDs = [];
+		const _this = this;
 
-				CodesEndpoint.updateCode(relationshipCode).then((resp2) => {
-					// Do nothing
-				});
-			}
-
+		this.props.deleteRelationship(this.state.sourceCode, relation.id, () => {
 			_this.removeRelationship(relation.id);
-			var code = _this.props.code;
-			code.relations = resp.relations;
-			_this.props.updateSelectedCode(code);
 			_this.forceUpdate();
-
 		});
 	}
 
