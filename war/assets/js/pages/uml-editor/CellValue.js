@@ -1,60 +1,85 @@
 export default class CellValue {
 
 	constructor() {
-		this.name = "";
+		this.header = ""
 
 		this.fields = [];
 
 		this.methods = [];
 	}
 
-	getName() {
-		return this.name;
+	getHeader() {
+		return this.header;
 	}
 
-	setName(name) {
-		this.name = name;
+	setHeader(header) {
+		this.header = header;
 	}
 
 	getFields() {
 		return this.fields;
 	}
 
-	addField(relationId, text) {
-		this.fields.push({
-			id: relationId,
-			text: text
-		});
+	addField(relationId, accessibility, text) {
+		this.fields.push(new ClassElement(relationId, accessibility, text));
 	}
 
 	removeField(relationId) {
-		let index = this.fields.findIndex((field) => {
-			return field.id == relationId;
-		});
-
-		if (index > -1) {
-			this.fields.splice(index, 1);
-		}
+		this.removeElementByRelationId(this.fields, relationId);
 	}
 
 	getMethods() {
 		return this.methods;
 	}
 
-	addMethod(relationId, text) {
-		this.methods.push({
-			id: relationId,
-			text: text
-		});
+	addMethod(relationId, accessibility, text) {
+		this.methods.push(new ClassElement(relationId, accessibility, text));
 	}
 
 	removeMethod(relationId) {
-		let index = this.methods.findIndex((method) => {
-			return method.id == relationId;
+		this.removeElementByRelationId(this.methods, relationId);
+	}
+
+	removeElementByRelationId(arr, relationId) {
+		let index = arr.findIndex((element) => {
+			return element.getRelationId() == relationId;
 		});
 
 		if (index > -1) {
-			this.methods.splice(index, 1);
+			arr.splice(index, 1);
 		}
+	}
+}
+
+class ClassElement {
+
+	constructor(relationId, accessibility, text) {
+		this.text = text;
+		this.accessibility = accessibility;
+		this.relationId = relationId;
+	}
+
+	getText() {
+		return this.text;
+	}
+
+	setText(text) {
+		this.text = text;
+	}
+
+	getAccessibility() {
+		return this.accessibility;
+	}
+
+	setAccessibility(accessibility) {
+		this.accessibility = accessibility;
+	}
+
+	getRelationId() {
+		return this.relationId;
+	}
+
+	setRelationId(relationId) {
+		this.relationId = relationId;
 	}
 }

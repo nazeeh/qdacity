@@ -137,7 +137,7 @@ export default class MetaModelMapper {
 	}
 
 	getClassFieldText(fieldName, fieldReturnType) {
-		return '+ ' + fieldName + ': ' + fieldReturnType;
+		return fieldName + ': ' + fieldReturnType;
 	}
 
 	getClassMethodText(methodName, methodReturnType, methodArguments) {
@@ -145,7 +145,7 @@ export default class MetaModelMapper {
 			methodArguments = [];
 		}
 
-		return '+ ' + methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
+		return methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
 	}
 
 	convertParams(params) {

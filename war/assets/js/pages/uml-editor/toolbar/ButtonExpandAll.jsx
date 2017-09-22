@@ -5,11 +5,11 @@ import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
 
-const StyledApplyLayoutBtn = BtnDefault.extend `
+const StyledButton = BtnDefault.extend `
 	margin-left: 25px;
 `;
 
-export default class ButtonApplyLayout extends React.Component {
+export default class ButtonExpandAll extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -20,17 +20,17 @@ export default class ButtonApplyLayout extends React.Component {
 	}
 
 	buttonClicked() {
-		this.umlEditor.getUmlGraphView().applyLayout();
+		this.umlEditor.getUmlGraphView().expandAll();
 	}
 
 	render() {
 		const _this = this;
 
 		return (
-			<StyledApplyLayoutBtn onClick={_this.buttonClicked}>
-		        <i className="fa fa-th"></i>
-		        <span>Apply Layout</span>
-	        </StyledApplyLayoutBtn>
+			<StyledButton onClick={_this.buttonClicked}>
+		        <i className="fa fa-plus-square-o"></i>
+		        <span>Expand all</span>
+	        </StyledButton>
 		);
 	}
 
