@@ -4,6 +4,8 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import javax.jdo.JDOObjectNotFoundException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +48,25 @@ public class ProjectEndpointTest {
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+	}
+
+	/**
+	 * Tests if a non-registered user can not create a project
+	 */
+	@Test
+	public void testProjectInsertAuthorization() {
+		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		} catch (JDOObjectNotFoundException e) {
+			// Should be executed
+		}
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 	}
 
 	/**
