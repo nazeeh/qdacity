@@ -307,19 +307,35 @@ export default class UmlGraphView extends React.Component {
 		// Html content of the node
 		this.graph.getLabel = function (cell) {
 			if (_this.graph.getModel().isVertex(cell)) {
+				const cellValue = cell.value;
+
+				// Container
+				let container = '<div class="umlClass">';
+				let containerEnd = '</div>';
+
+				// Header
+				let header = '<div class="umlClassHeader">';
+
+				// Expand/Collapse
+				header += '<div class="umlClassHeaderExpandButton">';
 				if (_this.graph.isCellCollapsed(cell)) {
-					// TODO if cells can be collapsed
-					return '';
+					header += '<i class="fa fa-plus-square-o"></i>';
 				} else {
-					const cellValue = cell.value;
+					header += '<i class="fa fa-minus-square-o"></i>';
+				}
+				header += '</div>';
 
-					// Container
-					let container = '<div class="umlClass">';
-					let containerEnd = '</div>';
+				// Text
+				header += '<div class="umlClassHeaderText">';
+				header += cellValue.getHeader();
+				header += '</div>';
 
-					// Header
-					let header = '<div class="umlClassHeader">' + cellValue.getHeader() + '</div>';
+				header += '</div>';
 
+				if (_this.graph.isCellCollapsed(cell)) {
+					// Result
+					return container + header + containerEnd;
+				} else {
 					// Separator
 					let separator = '<div class="umlClassSeparator"></div>';
 
@@ -399,44 +415,54 @@ export default class UmlGraphView extends React.Component {
 			if (model.isVertex(cell) && state.text != null) {
 				const cellValue = cell.value;
 
-				// Register onClick listener for add field/method link
 				const divBase = state.text.node.children[0];
 				const divContainer = divBase.children[0];
-				const divFields = divContainer.children[2];
-				const divMethods = divContainer.children[4];
 
-				// Add Field/Method + Delete Element onClick listener
-				const addOnClickListener = (divContainer, elements, addListener, removeListener) => {
-					if (divContainer.children != null && divContainer.children.length > 0) {
-						// Add
-						let lastChild = divContainer.children[divContainer.children.length - 1];
+				// Event listener
+				const divHeader = divContainer.children[0];
 
-						if (lastChild.children != null && lastChild.children.length == 1 && lastChild.children[0].nodeName == 'A') {
-							let link = lastChild.children[0];
-							link.onclick = addListener;
-						}
+				let expandCollapseButton = divHeader.children[0];
+				expandCollapseButton.onclick = () => _this.toggleCollapseCell(cell);
 
-						// Remove
-						for (let i = 0; i < divContainer.children.length; i++) {
-							let child = divContainer.children[i];
+				// Advanced listeners
+				if (!_this.graph.isCellCollapsed(cell)) {
+					// Register onClick listener for add field/method link
+					const divFields = divContainer.children[2];
+					const divMethods = divContainer.children[4];
 
-							// Is not add field?
-							if (child.children != null && child.children.length == 2
-								&& child.children[0].nodeName == 'DIV'
-								&& child.children[1].nodeName == 'DIV') {
-								let deleteButton = child.children[1];
-								let relationId = elements[i].getRelationId();
+					// Add Field/Method + Delete Element onClick listener
+					const addOnClickListener = (divContainer, elements, addListener, removeListener) => {
+						if (divContainer.children != null && divContainer.children.length > 0) {
+							// Add
+							let lastChild = divContainer.children[divContainer.children.length - 1];
 
-								deleteButton.onclick = () => removeListener(relationId);
+							if (lastChild.children != null && lastChild.children.length == 1 && lastChild.children[0].nodeName == 'A') {
+								let link = lastChild.children[0];
+								link.onclick = addListener;
+							}
+
+							// Remove
+							for (let i = 0; i < divContainer.children.length; i++) {
+								let child = divContainer.children[i];
+
+								// Is not add field?
+								if (child.children != null && child.children.length == 2
+									&& child.children[0].nodeName == 'DIV'
+									&& child.children[1].nodeName == 'DIV') {
+									let deleteButton = child.children[1];
+									let relationId = elements[i].getRelationId();
+
+									deleteButton.onclick = () => removeListener(relationId);
+								}
 							}
 						}
-					}
-				};
+					};
 
-				addOnClickListener(divFields, cellValue.getFields(), () => _this.props.umlEditor.openClassFieldModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassField(state.cell, relationId));
-				addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
+					addOnClickListener(divFields, cellValue.getFields(), () => _this.props.umlEditor.openClassFieldModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassField(state.cell, relationId));
+					addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
+				}
 
-				// Set size
+				// Set size of the main div
 				state.text.node.style.overflow = 'hidden';
 				state.text.node.style.top = (state.y + 1) + 'px';
 
@@ -535,6 +561,32 @@ export default class UmlGraphView extends React.Component {
 
 			_this.lastSelectedCells = cells.slice(); // use a copy
 		});
+	}
+
+	initializeClassSizeCalculator() {
+		const container = document.createElement('div');
+		container.id = 'classSizeCalculatorContainer';
+		container.style.visibility = "hidden";
+		container.style.position = "absolute";
+		document.body.appendChild(container);
+
+		return container;
+	}
+
+	calculateClassSize(innerHTML) {
+		let container = document.getElementById('classSizeCalculatorContainer');
+
+		if (container == null) {
+			container = this.initializeClassSizeCalculator();
+		}
+
+		container.style.visibility = "visible";
+
+		container.innerHTML = innerHTML;
+
+		container.style.visibility = "hidden";
+
+		return [container.clientWidth + 2, container.clientHeight + 1];
 	}
 
 	addCellsMovedEventListener(listener) {
@@ -649,6 +701,37 @@ export default class UmlGraphView extends React.Component {
 
 			this.hoverButtons.update(x, y, width, height, this.graph.view.scale);
 		}
+	}
+
+	toggleCollapseCell(cell) {
+		cell.setCollapsed(!cell.isCollapsed());
+		this.recalculateNodeSize(cell);
+	}
+
+	expandCell(cell) {
+		cell.setCollapsed(false);
+		this.recalculateNodeSize(cell);
+	}
+
+	expandAll() {
+		const _this = this;
+
+		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
+			_this.expandCell(cell);
+		});
+	}
+
+	collapseAll() {
+		const _this = this;
+
+		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
+			_this.collapseCell(cell);
+		});
+	}
+
+	collapseCell(cell) {
+		cell.setCollapsed(true);
+		this.recalculateNodeSize(cell);
 	}
 
 	startConnecting(edgeType) {
@@ -816,32 +899,6 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(node);
 	}
 
-	initializeClassSizeCalculator() {
-		const container = document.createElement('div');
-		container.id = 'classSizeCalculatorContainer';
-		container.style.visibility = "hidden";
-		container.style.position = "absolute";
-		document.body.appendChild(container);
-
-		return container;
-	}
-
-	calculateClassSize(innerHTML) {
-		let container = document.getElementById('classSizeCalculatorContainer');
-
-		if (container == null) {
-			container = this.initializeClassSizeCalculator();
-		}
-
-		container.style.visibility = "visible";
-
-		container.innerHTML = innerHTML;
-
-		container.style.visibility = "hidden";
-
-		return [container.clientWidth + 2, container.clientHeight + 1];
-	}
-
 	recalculateNodeSize(node) {
 		const _this = this;
 
@@ -871,6 +928,9 @@ export default class UmlGraphView extends React.Component {
 			this.graph.view.invalidate(edge, true, false);
 			this.graph.view.validate(edge);
 		}
+
+		// Update hover buttons
+		this.updateHoverButtons(node);
 	}
 
 	zoomIn() {
