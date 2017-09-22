@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
 import CellValue from './CellValue.js';
@@ -9,6 +10,7 @@ import {
 import UmlClass from './model/UmlClass.js';
 import UmlClassRelation from './model/UmlClassRelation.js';
 
+import Cell from './Cell.jsx';
 import HoverButtons from './hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
@@ -313,93 +315,98 @@ export default class UmlGraphView extends React.Component {
 		// Html content of the node
 		this.graph.getLabel = function (cell) {
 			if (_this.graph.getModel().isVertex(cell)) {
+				// Return something not empty to render the react component
+				return '<div></div>';
+
+				/*
 				const cellValue = cell.value;
 
-				// Container
-				let container = '<div class="umlClass">';
-				let containerEnd = '</div>';
+                // Container
+                let container = '<div class="umlClass">';
+                let containerEnd = '</div>';
 
-				// Header
-				let header = '<div class="umlClassHeader">';
+                // Header
+                let header = '<div class="umlClassHeader">';
 
-				// Expand/Collapse
-				header += '<div class="umlClassHeaderExpandButton">';
-				if (_this.graph.isCellCollapsed(cell)) {
-					header += '<i class="fa fa-plus-square-o"></i>';
-				} else {
-					header += '<i class="fa fa-minus-square-o"></i>';
+                // Expand/Collapse
+                header += '<div class="umlClassHeaderExpandButton">';
+                if (_this.graph.isCellCollapsed(cell)) {
+                    header += '<i class="fa fa-plus-square-o"></i>';
+                } else {
+                    header += '<i class="fa fa-minus-square-o"></i>';
+                }
+                header += '</div>';
+
+                // Text
+                header += '<div class="umlClassHeaderText">';
+                header += cellValue.getHeader();
+                header += '</div>';
+
+                header += '</div>';
+
+                if (_this.graph.isCellCollapsed(cell)) {
+                    // Result
+                    return container + header + containerEnd;
+                } else {
+                    // Separator
+                    let separator = '<div class="umlClassSeparator"></div>';
+
+                    // Fields / Methods
+                    const createElements = (typeName, elements) => {
+                        let content = '<div class="umlClassElements">';
+
+                        let addElementLink = '<div class="umlClassAddElementLinkContainer">';
+                        addElementLink += '<a class="umlClassAddElementLink">+ Add ' + typeName + '</a>';
+                        addElementLink += '</div>';
+
+                        if (elements != null && elements.length > 0) {
+                            for (let i = 0; i < elements.length; i++) {
+                                content += '<div class="umlClassElement">';
+
+                                content += '<div class="umlClassElementAccessibility">';
+                                content += elements[i].getAccessibility();
+                                content += '</div>';
+
+                                content += '<div class="umlClassElementText">';
+                                content += elements[i].getText();
+                                content += '</div>';
+
+                                // Is selected => show delete button
+                                if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
+                                    content += '<div class="umlClassRemoveElementButton">';
+                                    content += '<i class="fa fa-trash fa-1x"></i>';
+                                    content += '</div>';
+                                }
+
+                                content += '</div>';
+                            }
+
+                            // Is selected
+                            if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
+                                content += addElementLink;
+                            }
+
+                        } else {
+                            // Is selected
+                            if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
+                                content += addElementLink;
+                            } else {
+                                content += '<div class="umlClassElementsEmpty"></div>';
+                            }
+                        }
+
+                        content += '</div>';
+
+                        return content;
+                    };
+
+                    let fields = createElements('Field', cellValue.getFields());
+                    let methods = createElements('Method', cellValue.getMethods());
+
+                    // Result
+                    return container + header + separator + fields + separator + methods + containerEnd;
 				}
-				header += '</div>';
-
-				// Text
-				header += '<div class="umlClassHeaderText">';
-				header += cellValue.getHeader();
-				header += '</div>';
-
-				header += '</div>';
-
-				if (_this.graph.isCellCollapsed(cell)) {
-					// Result
-					return container + header + containerEnd;
-				} else {
-					// Separator
-					let separator = '<div class="umlClassSeparator"></div>';
-
-					// Fields / Methods
-					const createElements = (typeName, elements) => {
-						let content = '<div class="umlClassElements">';
-
-						let addElementLink = '<div class="umlClassAddElementLinkContainer">';
-						addElementLink += '<a class="umlClassAddElementLink">+ Add ' + typeName + '</a>';
-						addElementLink += '</div>';
-
-						if (elements != null && elements.length > 0) {
-							for (let i = 0; i < elements.length; i++) {
-								content += '<div class="umlClassElement">';
-
-								content += '<div class="umlClassElementAccessibility">';
-								content += elements[i].getAccessibility();
-								content += '</div>';
-
-								content += '<div class="umlClassElementText">';
-								content += elements[i].getText();
-								content += '</div>';
-
-								// Is selected => show delete button
-								if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-									content += '<div class="umlClassRemoveElementButton">';
-									content += '<i class="fa fa-trash fa-1x"></i>';
-									content += '</div>';
-								}
-
-								content += '</div>';
-							}
-
-							// Is selected
-							if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-								content += addElementLink;
-							}
-
-						} else {
-							// Is selected
-							if (_this.graph.isCellSelected(cell) && _this.graph.getSelectionCount() == 1) {
-								content += addElementLink;
-							} else {
-								content += '<div class="umlClassElementsEmpty"></div>';
-							}
-						}
-
-						content += '</div>';
-
-						return content;
-					};
-
-					let fields = createElements('Field', cellValue.getFields());
-					let methods = createElements('Method', cellValue.getMethods());
-
-					// Result
-					return container + header + separator + fields + separator + methods + containerEnd;
-				}
+				*/
 			} else {
 				return '';
 			}
@@ -413,11 +420,14 @@ export default class UmlGraphView extends React.Component {
 			// super
 			oldRedrawLabel.apply(this, arguments);
 
-			let graph = state.view.graph;
-			let model = graph.model;
-			let cell = state.cell;
+			const cell = state.cell;
 
-			if (model.isVertex(cell) && state.text != null) {
+			if (_this.graph.getModel().isVertex(cell) && state.text != null) {
+				const divBase = state.text.node.children[0];
+
+				_this.codesystemView = ReactDOM.render(_this.getCellContent(cell), divBase);
+
+				/*
 				const cellValue = cell.value;
 
 				const divBase = state.text.node.children[0];
@@ -466,6 +476,7 @@ export default class UmlGraphView extends React.Component {
 					addOnClickListener(divFields, cellValue.getFields(), () => _this.props.umlEditor.openClassFieldModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassField(state.cell, relationId));
 					addOnClickListener(divMethods, cellValue.getMethods(), () => _this.props.umlEditor.openClassMethodModal(state.cell), (relationId) => _this.props.umlEditor.deleteClassMethod(state.cell, relationId));
 				}
+				*/
 
 				// Set size of the main div
 				state.text.node.style.overflow = 'hidden';
@@ -474,7 +485,7 @@ export default class UmlGraphView extends React.Component {
 				let div = state.text.node.getElementsByTagName('div')[0];
 
 				if (div != null) {
-					let scale = graph.view.scale;
+					let scale = _this.graph.getView().scale;
 
 					div.style.display = 'block';
 					div.style.width = Math.max(1, Math.round(state.width / scale)) + 'px';
@@ -578,20 +589,27 @@ export default class UmlGraphView extends React.Component {
 		return container;
 	}
 
-	calculateClassSize(innerHTML) {
+	calculateClassSize(content) {
 		let container = document.getElementById('classSizeCalculatorContainer');
 
 		if (container == null) {
 			container = this.initializeClassSizeCalculator();
 		}
 
-		container.style.visibility = "visible";
+		ReactDOM.render(content, container);
 
-		container.innerHTML = innerHTML;
+		let width = container.clientWidth + 2;
+		let height = container.clientHeight + 1;
 
-		container.style.visibility = "hidden";
+		ReactDOM.unmountComponentAtNode(container);
 
-		return [container.clientWidth + 2, container.clientHeight + 1];
+		return [width, height];
+	}
+
+	getCellContent(cell) {
+		return (
+			<Cell />
+		);
 	}
 
 	addCellsMovedEventListener(listener) {
@@ -915,8 +933,12 @@ export default class UmlGraphView extends React.Component {
 			return;
 		}
 
+		// Unmount cell
+		const divBase = cellState.text.node.children[0];
+		ReactDOM.unmountComponentAtNode(divBase);
+
 		// Get width / height
-		let [width, height] = this.calculateClassSize(this.graph.getLabel(node));
+		let [width, height] = this.calculateClassSize(this.getCellContent(node));
 
 		// Node
 		const oldGeo = node.getGeometry();
