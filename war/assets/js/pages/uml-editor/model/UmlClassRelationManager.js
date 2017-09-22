@@ -1,4 +1,4 @@
-export default class UmlClassRelation {
+export default class UmlClassRelationManager {
 
 	constructor() {
 		this.umlClassRelations = [];
@@ -12,9 +12,10 @@ export default class UmlClassRelation {
 		return this.umlClassRelations;
 	}
 
-	get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity) {
+	get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, relationId) {
 		return this.umlClassRelations.find((umlClassRelation) => {
 			return umlClassRelation.getRelationMetaModelEntity().name == relationMetaModelEntity.name
+				&& umlClassRelation.getRelationId() == relationId
 				&& umlClassRelation.getSourceUmlClass().getCode().codeID == sourceUmlClass.getCode().codeID
 				&& umlClassRelation.getDestinationUmlClass().getCode().codeID == destinationUmlClass.getCode().codeID;
 		});

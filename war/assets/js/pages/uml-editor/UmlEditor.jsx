@@ -476,7 +476,7 @@ export default class UmlEditor extends React.Component {
 
 			let relationMetaModelEntity = this.getMetaModelEntityById(removedRelation.mmElementId);
 
-			let umlClassRelation = _this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+			let umlClassRelation = _this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, removedRelation.key.id);
 
 			_this.metaModelRunner.evaluateAndUndoAction({
 				umlClassRelation: umlClassRelation
@@ -492,9 +492,9 @@ export default class UmlEditor extends React.Component {
 			let relationMetaModelEntity = this.getMetaModelEntityById(addedRelation.mmElementId);
 
 			// Relation exists
-			if (_this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity) != null) {
-				return;
-			}
+			//			if (_this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, addedRelation.key.id) != null) {
+			//				return;
+			//			}
 
 			const umlClassRelation = new UmlClassRelation(addedRelation.id, sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
 			_this.umlClassRelationManager.add(umlClassRelation);
@@ -568,7 +568,7 @@ export default class UmlEditor extends React.Component {
 					oldDestinationUmlClass = oldUmlClass;
 				}
 
-				this.checkSingleRelation(relation.mmElementId, umlClass, destinationUmlClass, oldUmlClass, oldDestinationUmlClass);
+				this.checkSingleRelation(relation.mmElementId, relation.key.id, umlClass, destinationUmlClass, oldUmlClass, oldDestinationUmlClass);
 			}
 		}
 
@@ -591,7 +591,7 @@ export default class UmlEditor extends React.Component {
 								oldSourceUmlClass = oldUmlClass;
 							}
 
-							this.checkSingleRelation(relation.mmElementId, sourceUmlClass, umlClass, oldSourceUmlClass, oldUmlClass);
+							this.checkSingleRelation(relation.mmElementId, relation.key.id, sourceUmlClass, umlClass, oldSourceUmlClass, oldUmlClass);
 						}
 					});
 				}
@@ -601,13 +601,13 @@ export default class UmlEditor extends React.Component {
 		console.log('Done with the incoming relations.')
 	}
 
-	checkSingleRelation(relationMetaModelElementId, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
+	checkSingleRelation(relationMetaModelElementId, relationId, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
 		let relationMetaModelEntity = this.getMetaModelEntityById(relationMetaModelElementId);
 
 		console.log('We are at relation ' + sourceUmlClass.getCode().name + ' -> ' + destinationUmlClass.getCode().name + ' now. (' + relationMetaModelEntity.name + ')');
 
 		let oldRelation = new UmlClassRelation(0, oldActionSource, oldActionDestination, relationMetaModelEntity);
-		let currentRelation = this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
+		let currentRelation = this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, relationId);
 
 		let oldAction = this.metaModelMapper.evaluateCodeRelation(oldRelation);
 		let newAction = this.metaModelMapper.evaluateCodeRelation(currentRelation);
@@ -746,6 +746,13 @@ export default class UmlEditor extends React.Component {
 		umlClassRelation.setRelationNode(null);
 	}
 
+
+
+
+
+
+
+
 	createNewEdgeAggregation(sourceNode, destinationNode, edgeNode) {
 		this.createNewEdge(sourceNode, destinationNode, EdgeType.AGGREGATION, edgeNode);
 	}
@@ -771,30 +778,16 @@ export default class UmlEditor extends React.Component {
 		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName, edgeNode);
 	}
 
-	createNewField(sourceUmlClass, destinationUmlClass, fieldNode) {
-		if (fieldNode == null) {
-
-			// TODO you can add the graph field only AFTER IT WAS inserted into the Database
-			//	        const methodText = this.metaModelMapper.getClassMethodText(destinationUmlClass.getCode().name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
-			//	        this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), umlClassRelation.getRelationId(), methodText);
-
-
-			fieldNode = this.umlGraphView.addClassField(sourceUmlClass.getNode(), destinationUmlClass.getCode().name, 'TODO-returnType');
-		}
-
+	createNewField(sourceUmlClass, destinationUmlClass) {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
 
-		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName, fieldNode);
+		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName);
 	}
 
-	createNewMethod(sourceUmlClass, destinationUmlClass, methodNode) {
-		if (methodNode == null) {
-			methodNode = this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), destinationUmlClass.getCode().name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
-		}
-
+	createNewMethod(sourceUmlClass, destinationUmlClass) {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
 
-		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName, methodNode);
+		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName);
 	}
 
 	createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName, relationNode) {
@@ -817,7 +810,7 @@ export default class UmlEditor extends React.Component {
 
 				if (rel.codeId == destinationUmlClass.getCode().codeID
 					&& rel.mmElementId == relationMetaModelEntity.id) {
-					umlClassRelation.setRelationId(0);
+					umlClassRelation.setRelationId(rel.key.id);
 					break;
 				}
 			}
