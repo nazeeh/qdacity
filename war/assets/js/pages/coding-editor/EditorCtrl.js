@@ -6,9 +6,9 @@ import 'script-loader!../../../../components/imagesloaded/imagesloaded.pkgd.min.
 
 export default class EditorCtrl {
 
-	constructor(getCodeByCodeID) {
+	constructor(getCodeByCodeID, agreementMap) {
 		this.getCodeByCodeID = getCodeByCodeID;
-		this.agreementMap = false;
+		this.agreementMap = agreementMap;
 		this.isReadOnly = true;
 		this.setupFontSelector();
 		this.setupFontSizeSelector();
