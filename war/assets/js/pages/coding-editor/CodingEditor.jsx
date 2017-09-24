@@ -102,6 +102,7 @@ export default class CodingEditor extends React.Component {
 			project: project,
 			editorCtrl: {},
 			showCodingView: false,
+			showAgreementMap: urlParams.report ? true : false,
 			selectedCode: {},
 			selectedEditor: PageView.CODING,
 			bottomPanelType: BottomPanelType.SEARCHRESULTS,
@@ -171,8 +172,9 @@ export default class CodingEditor extends React.Component {
 
 	initEditorCtrl() {
 		this.setState({
-			editorCtrl: new EditorCtrl(this.getCodeByCodeID)
+			editorCtrl: new EditorCtrl(this.getCodeByCodeID,this.state.showAgreementMap)
 		});
+
 	}
 
 	viewChanged(view) {

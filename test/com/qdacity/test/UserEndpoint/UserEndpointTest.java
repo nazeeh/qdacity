@@ -1,5 +1,6 @@
 package com.qdacity.test.UserEndpoint;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -8,7 +9,9 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -33,7 +36,8 @@ public class UserEndpointTest {
 		helper.tearDown();
 	}
 	
-	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
 	public void testUserInsert() {
@@ -75,6 +79,51 @@ public class UserEndpointTest {
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 	}
 	
+	@Test
+	public void testUserDeleteAuthorization() {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserB);
+		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser("1", loggedInUserB); // User B should not be able to delete User B
+		} catch (UnauthorizedException e) {
+			// should be executed
+			e.printStackTrace();
+		}
+
+		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+	}
+
+	@Test
+	public void testUserDeleteAuthorizationUnregistered() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+
+		UserEndpoint ue = new UserEndpoint();
+		expectedException.expect(UnauthorizedException.class);
+		expectedException.expectMessage(is("User 2 is Not Authorized"));
+
+		ue.removeUser("1", loggedInUserB); // User B should not be able to delete User B
+
+
+		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+	}
+
 	@Test
 	public void testFindUser() {
 		List<User> test = new ArrayList<User>();
