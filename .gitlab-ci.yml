@@ -91,7 +91,8 @@ frontend_prod_unittest:
   dependencies:
     - frontend_prod_build
   allow_failure: true
-  
+
+# Does not work yet, with gitlab pages not installed
 pages:
   tags:
     - qdacity
