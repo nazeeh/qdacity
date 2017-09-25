@@ -11,36 +11,22 @@ export default class MetaModelMapper {
 		this.umlEditor = umlEditor;
 	}
 
-	evaluateAction(params) {
-		const [umlClass, umlClassRelation] = this.convertParams(params);
-
-		if (umlClass != null
-			&& umlClassRelation == null) {
-			return this.evaluateCode(umlClass);
-		} else if (umlClass == null
-			&& umlClassRelation != null) {
-			return this.evaluateCodeRelation(umlClassRelation);
-		} else {
-			throw new Error('Invalid parameters');
-		}
-	}
-
-	evaluateCode(umlClass) {
-		if (this.isCodeValidNode(umlClass.getCode())) {
+	evaluateCode(code) {
+		if (this.isCodeValidNode(code)) {
 			return MappingAction.CREATE_NODE;
 		}
 
 		return MappingAction.DO_NOTHING;
 	}
 
-	evaluateCodeRelation(umlClassRelation) {
-		let codeSource = umlClassRelation.getSourceUmlClass().getCode();
-		let codeDestination = umlClassRelation.getDestinationUmlClass().getCode();
+	evaluateCodeRelation(sourceCode, destinationCode, relation) {
+		const mmElementId = relation.mmElementId;
+		const mmElementName = this.umlEditor.getMetaModelEntityById(mmElementId).name;
 
-		switch (umlClassRelation.getRelationMetaModelEntity().name) {
+		switch (mmElementName) {
 		case 'is a':
 			{
-				if (!this.isCodeValidNode(codeSource) || !this.isCodeValidNode(codeDestination)) {
+				if (!this.isCodeValidNode(sourceCode) || !this.isCodeValidNode(destinationCode)) {
 					return MappingAction.DO_NOTHING;
 				}
 
@@ -48,7 +34,7 @@ export default class MetaModelMapper {
 			}
 		case 'is part of':
 			{
-				if (!this.isCodeValidNode(codeSource) || !this.isCodeValidNode(codeDestination)) {
+				if (!this.isCodeValidNode(sourceCode) || !this.isCodeValidNode(destinationCode)) {
 					return MappingAction.DO_NOTHING;
 				}
 
@@ -56,16 +42,16 @@ export default class MetaModelMapper {
 			}
 		case 'is related to':
 			{
-				if (this.codeHasMetaModelEntity(codeDestination, 'Object')
-					|| this.codeHasMetaModelEntity(codeDestination, 'Actor')
-					|| this.codeHasMetaModelEntity(codeDestination, 'Place')) {
+				if (this.codeHasMetaModelEntity(destinationCode, 'Object')
+					|| this.codeHasMetaModelEntity(destinationCode, 'Actor')
+					|| this.codeHasMetaModelEntity(destinationCode, 'Place')) {
 
-					if (this.isCodeValidNode(codeSource) && this.codeHasMetaModelEntity(codeDestination, 'Property')) {
+					if (this.isCodeValidNode(sourceCode) && this.codeHasMetaModelEntity(destinationCode, 'Property')) {
 						return MappingAction.ADD_CLASS_FIELD;
 					}
 				}
 
-				if (!this.isCodeValidNode(codeSource) || !this.isCodeValidNode(codeDestination)) {
+				if (!this.isCodeValidNode(sourceCode) || !this.isCodeValidNode(destinationCode)) {
 					return MappingAction.DO_NOTHING;
 				}
 
@@ -73,13 +59,17 @@ export default class MetaModelMapper {
 			}
 		case 'influences':
 			{
-				if (this.isCodeValidNode(codeSource) && this.codeHasMetaModelEntity(codeDestination, 'Property')) {
+				if (this.isCodeValidNode(sourceCode) && this.codeHasMetaModelEntity(destinationCode, 'Property')) {
 					return MappingAction.ADD_CLASS_METHOD;
 				}
 			}
 		}
 
 		return MappingAction.DO_NOTHING;
+	}
+
+	isCodeValidNode(code) {
+		return this.codeHasMetaModelEntity(code, 'Category') || this.codeHasMetaModelEntity(code, 'Concept');
 	}
 
 	getEdgeRelationEntityName(edgeType) {
@@ -146,17 +136,6 @@ export default class MetaModelMapper {
 		}
 
 		return methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
-	}
-
-	convertParams(params) {
-		let umlClass = params.hasOwnProperty('umlClass') ? params.umlClass : null;
-		let umlClassRelation = params.hasOwnProperty('umlClassRelation') ? params.umlClassRelation : null;
-
-		return [umlClass, umlClassRelation];
-	}
-
-	isCodeValidNode(code) {
-		return this.codeHasMetaModelEntity(code, 'Category') || this.codeHasMetaModelEntity(code, 'Concept');
 	}
 
 	codeHasMetaModelEntity(code, entityName) {

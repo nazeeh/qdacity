@@ -1,11 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import UmlClass from './model/UmlClass.js';
-import UmlClassManager from './model/UmlClassManager.js';
-import UmlClassRelation from './model/UmlClassRelation.js';
-import UmlClassRelationManager from './model/UmlClassRelationManager.js';
-
 import {
 	MappingAction
 } from './mapping/MappingAction.js';
@@ -40,11 +35,10 @@ export default class UmlEditor extends React.Component {
 		this.metaModelMapper = null;
 		this.metaModelRunner = null;
 
-		this.umlClassManager = null;
-		this.umlClassRelationManager = null;
-
 		this.mmEntities = null;
 		this.mmRelation = null;
+
+		this.previousCodeData = {};
 
 		this.codesystemLoaded = false;
 		this.metamodelLoaded = false;
@@ -58,14 +52,6 @@ export default class UmlEditor extends React.Component {
 
 	getUmlGraphView() {
 		return this.umlGraphView;
-	}
-
-	getUmlClassManager() {
-		return this.umlClassManager;
-	}
-
-	getUmlClassRelationManager() {
-		return this.umlClassRelationManager;
 	}
 
 	getMetaModelMapper() {
@@ -128,14 +114,9 @@ export default class UmlEditor extends React.Component {
 		this.metaModelMapper = new MetaModelMapper(this);
 		this.metaModelRunner = new MetaModelRunner(this, this.metaModelMapper);
 
-		this.umlClassManager = new UmlClassManager();
-		this.umlClassRelationManager = new UmlClassRelationManager();
-
 		this.initializeEventListeners();
 
-		this.initializeUmlClasses();
-
-		this.initializeGraph();
+		this.initializeNodes();
 
 		this.initializePositions();
 	}
@@ -151,16 +132,15 @@ export default class UmlEditor extends React.Component {
 					const cell = cells[0];
 
 					if (_this.umlGraphView.isCellUmlClass(cell)) {
-						const umlClass = _this.umlClassManager.getByNode(cell);
-
-						this.props.codesystemView.setSelected(umlClass.getCode());
+						const code = _this.getCodeByNode(cell);
+						this.props.codesystemView.setSelected(code);
 					}
 				}
 			}
 		});
 	}
 
-	initializeUmlClasses() {
+	initializeNodes() {
 		// Convert codes into a simple array
 		let codes = [];
 
@@ -174,58 +154,25 @@ export default class UmlEditor extends React.Component {
 
 		this.props.codesystemView.getCodesystem().forEach(convertCodeIntoSimpleArray);
 
-
 		let relations = [];
 
 		for (let i = 0; i < codes.length; i++) {
 			const code = codes[i];
 
-			// Register new entry
-			const umlClass = new UmlClass(code);
-			this.umlClassManager.add(umlClass);
+			// Code mapping
+			this.metaModelRunner.evaluateAndRunCode(code);
 
-			// Register code relations
+			// Relations mapping
 			if (code.relations != null) {
 				for (let j = 0; j < code.relations.length; j++) {
 					const relation = code.relations[j];
 
-					relations.push({
-						'id': relation.key.id,
-						'sourceId': code.codeID,
-						'destinationId': relation.codeId,
-						'metaModelEntityId': relation.mmElementId
-					});
+					const destination = this.getCodeByCodeId(relation.codeId);
+
+					this.metaModelRunner.evaluateAndRunCodeRelation(code, destination, relation);
 				}
 			}
 		}
-
-		// Process code relations
-		for (let i = 0; i < relations.length; i++) {
-			const relation = relations[i];
-
-			let sourceUmlClass = this.umlClassManager.getByCodeId(relation.sourceId);
-			let destinationUmlClass = this.umlClassManager.getByCodeId(relation.destinationId);
-
-			let relationMetaModelEntity = this.getMetaModelEntityById(relation.metaModelEntityId);
-
-			// Register new entry
-			const umlClassRelation = new UmlClassRelation(relation.id, sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
-			this.umlClassRelationManager.add(umlClassRelation);
-		}
-	}
-
-	initializeGraph() {
-		this.umlClassManager.getAll().forEach((umlClass) => {
-			this.metaModelRunner.evaluateAndRunAction({
-				umlClass: umlClass
-			});
-		});
-
-		this.umlClassRelationManager.getAll().forEach((umlClassRelation) => {
-			this.metaModelRunner.evaluateAndRunAction({
-				umlClassRelation: umlClassRelation
-			});
-		});
 	}
 
 	initializePositions() {
@@ -341,16 +288,15 @@ export default class UmlEditor extends React.Component {
 			let umlCodePositions = [];
 
 			cells.forEach((cell) => {
-				if (cell.vertex == true) {
-					let umlClass = _this.umlClassManager.getByNode(cell);
-					let code = umlClass.getCode();
-					let node = umlClass.getNode();
+				if (_this.umlGraphView.isCellUmlClass(cell)) {
+					let code = _this.getCodeByNode(cell);
 
-					let umlCodePosition = umlClass.getUmlCodePosition();
-					umlCodePosition.x = node.getGeometry().x;
-					umlCodePosition.y = node.getGeometry().y;
-
-					umlCodePositions.push(umlCodePosition);
+					// TODO umlCodePosition
+					//					let umlCodePosition = umlClass.getUmlCodePosition();
+					//					umlCodePosition.x = node.getGeometry().x;
+					//					umlCodePosition.y = node.getGeometry().y;
+					//
+					//					umlCodePositions.push(umlCodePosition);
 				}
 			});
 
@@ -386,58 +332,460 @@ export default class UmlEditor extends React.Component {
 
 		const _this = this;
 		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			let umlClass = _this.umlClassManager.getByCodeId(newUmlCodePosition.codeId);
-			umlClass.setUmlCodePosition(newUmlCodePosition);
+			// TODO
+			//			let umlClass = _this.umlClassManager.getByCodeId(newUmlCodePosition.codeId);
+			//			umlClass.setUmlCodePosition(newUmlCodePosition);
 		});
 	}
 
+
+	codesystemSelectionChanged(code) {
+		const node = this.getNodeByCodeId(code.id);
+
+		// Prevent loops
+		if (!this.umlGraphView.isCellSelected(node)) {
+			// Reset edge if connecting
+			if (this.umlGraphView.isConnectingEdge()) {
+				this.umlGraphView.resetConnectingEdge();
+			}
+
+			// Clear selection
+			this.umlGraphView.clearSelection();
+
+			// Select node
+			if (node != null) {
+				this.umlGraphView.selectCell(node);
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * Callback for the umlGraphView zoom function. 
+	 */
+	onZoom(percentage) {
+		this.umlEditor.toolbar.onZoom(percentage);
+	}
+
+	/**
+	 * Opens a modal, where the user can select a can select a code for a new class field.
+	 */
+	openClassFieldModal(cell) {
+		const _this = this;
+
+		const code = this.getCodeByNode(cell);
+
+		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
+		const mappingAction = MappingAction.ADD_CLASS_FIELD;
+
+		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
+
+		addFieldModal.showModal().then(function (data) {
+			_this.createNewField(code, data.selectedCode);
+		});
+	}
+
+	/**
+	 * Opens a modal, where the user can select a can select a code for a new class method.
+	 */
+	openClassMethodModal(cell) {
+		const _this = this;
+
+		const code = this.getCodeByNode(cell);
+
+		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
+		const mappingAction = MappingAction.ADD_CLASS_METHOD;
+
+		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
+
+		addMethodModal.showModal().then(function (data) {
+			_this.createNewMethod(code, data.selectedCode);
+		});
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// THIS WAS IN UPDATECODE AT THE END
+	//    Select code if necessary
+	//    if (this.props.codesystemView.getSelected().codeID == code.codeID) {
+	//        if (umlClass.getNode() != null) {
+	//            this.umlGraphView.selectCell(umlClass.getNode());
+	//        }
+	//    }
+
+
+
+	// TODO: if we call createNewRelation after a new edge was connected, the edge will be added a 2nd time. how do we prevent this?
+
+
+
+
+
+	getPreviousCodeData(codeId) {
+		const key = codeId;
+
+		if (this.previousCodeData.hasOwnProperty(key)) {
+			return this.previousCodeData[key];
+		} else {
+			this.previousCodeData[key] = {
+				mmElementIDs: [],
+				relations: []
+			};
+		}
+	}
+
+	setPreviousCodeData(codeId, mmElementIDs, relations) {
+		const key = codeId;
+
+		if (this.previousCodeData.hasOwnProperty(key)) {
+			// Set mmElementIDs
+			if (mmElmentIDs) {
+				this.previousCodeData[key].mmElementIDs = mmElmentIDs;
+			}
+
+			// Set relations
+			if (relations) {
+				this.previousCodeData[key].relations = relations;
+			}
+		} else {
+			throw new Error('Previous code data for id ' + codeId + ' does not exist.');
+		}
+	}
+
+	removePreviousCodeData(codeId) {
+		const key = codeId;
+
+		if (this.previousCodeData.hasOwnProperty(key)) {
+			delete this.previousCodeData[key];
+		}
+	}
+
+
+
+
+
+
+
+
+
+	/**
+	 * Returns the code with the given id. 
+	 */
+	getCodeById(id) {
+		return this.props.getCodeById(id);
+	}
+
+	/**
+	 * Returns the code with the given codeId. 
+	 */
+	getCodeByCodeId(codeId) {
+		return this.props.getCodeByCodeId(id);
+	}
+
+	/**
+	 * Returns the code connected to the given node.
+	 */
+	getCodeByNode(node) {
+		const cellValue = node.value;
+		return this.getCodeById(cellValue.getCodeId());
+	}
+
+	/**
+	 * Returns the node connected to the given code (id).
+	 */
+	getNodeByCodeId(id) {
+		return this.umlGraphView.getNodeByCodeId(id);
+	}
+
+	/**
+	 * Does the code have a corresponding node? Checks if the code is mapped in the uml editor (as a class object).
+	 */
+	isCodeMapped(code) {
+		return this.getNodeByCodeId(code.id) != null;
+	}
+
+	/**
+	 * Creates a new edge with type aggregation.
+	 */
+	createEdgeAggregation(sourceCode, destinationCode) {
+		this.createEdge(sourceCode, destinationCode, EdgeType.AGGREGATION, edgeNode);
+	}
+
+	/**
+	 * Creates a new edge with type generalization.
+	 */
+	createEdgeGeneralization(sourceCode, destinationCode) {
+		this.createEdge(sourceCode, destinationCode, EdgeType.GENERALIZATION, edgeNode);
+	}
+
+	/**
+	 * Creates a new edge with type association.
+	 */
+	createEdgeDirectedAssociation(sourceCode, destinationCode) {
+		this.createEdge(sourceCode, destinationCode, EdgeType.DIRECTED_ASSOCIATION, edgeNode);
+	}
+
+	/**
+	 * Adds a new edge to the database. 
+	 */
+	createEdge(sourceCode, destinationCode, edgeType) {
+		const relationMetaModelEntityName = this.metaModelMapper.getEdgeRelationEntityName(edgeType);
+
+		this.createRelation(sourceCode, destinationCode, relationMetaModelEntityName);
+	}
+
+	/**
+	 * Adds a new field to the database. 
+	 */
+	createField(sourceCode, destinationCode) {
+		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
+
+		this.createRelation(sourceCode, destinationCode, relationMetaModelEntityName);
+	}
+
+	/**
+	 * Adds a new method to the database. 
+	 */
+	createMethod(sourceCode, destinationCode) {
+		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
+
+		this.createRelation(sourceCode, destinationCode, relationMetaModelEntityName);
+	}
+
+	/**
+	 * Create a new relation in the database. 
+	 */
+	createRelation(sourceCode, destinationCode, relationMetaModelEntityName) {
+		const _this = this;
+
+		const relationMetaModelEntity = this.getMetaModelEntityByName(relationMetaModelEntityName);
+
+		// Update database
+		CodesEndpoint.addRelationship(sourceCode.id, destinationCode.codeID, relationMetaModelEntity.id).then((resp) => {
+			sourceCode.relations = resp.relations;
+
+			_this.props.updateCode(sourceCode);
+		});
+	}
+
+	/**
+	 * Delete a class field relation from the database. This method does not directly update the uml-editor.
+	 */
+	deleteClassField(cell, relationId) {
+		const code = this.getCodeByNode(cell);
+		this.deleteRelation(code, relationId);
+	}
+
+	/**
+	 * Delete a class method relation from the database. This method does not directly update the uml-editor.
+	 */
+	deleteClassMethod(cell, relationId) {
+		const code = this.getCodeByNode(cell);
+		this.deleteRelation(code, relationId);
+	}
+
+	/**
+	 * Deletes a relation from the database. This method does not directly update the uml-editor.
+	 */
+	deleteRelation(code, relationId) {
+		this.props.deleteRelationship(code.id, relationId);
+	}
+
+	/**
+	 * Adds a node to the graph. Does not update the database.
+	 */
+	addNode(code) {
+		const node = this.umlGraphView.addNode(code.id, code.name);
+
+		let x = 0;
+		let y = 0;
+
+		// TODO does umlcodeposition exist?
+		//const umlCodePosition = umlClass.getUmlCodePosition();
+
+		//        if (umlCodePosition != null && !(umlCodePosition.x == 0 && umlCodePosition.y == 0)) {
+		//            x = umlCodePosition.x;
+		//            y = umlCodePosition.y;
+		//        } else {
+		[x, y] = this.umlGraphView.getFreeNodePosition(node);
+		//        }
+
+		this.umlGraphView.moveNode(node, x, y);
+		this.umlGraphView.recalculateNodeSize(node);
+	}
+
+	/**
+	 * Renames a node in the graph. Does not update the database.
+	 */
+	renameNode(code) {
+		const node = this.getNodeByCodeId(code.id);
+		this.umlGraphView.renameNode(node, code.name);
+	}
+
+	/**
+	 * Removes a node from the graph. Does not update the database.
+	 */
+	removeNode(code) {
+		const node = this.getNodeByCodeId(code.id);
+		this.umlGraphView.removeNode(node);
+	}
+
+	/**
+	 * Adds a class field to a node in the graph. Does not update the database.
+	 */
+	addClassField(sourceCode, destinationCode, relation) {
+		const sourceNode = this.getNodeByCodeId(sourceCode.id);
+
+		const fieldText = this.metaModelMapper.getClassFieldText(destinationCode.name, 'TODO-returnType');
+		this.umlGraphView.addClassField(sourceNode, relation.key.id, '+', fieldText);
+	}
+
+	/**
+	 * Removes a class field from a node in the graph. Does not update the database.
+	 */
+	removeClassField(code, relation) {
+		const node = this.getNodeByCodeId(code.id);
+
+		this.umlGraphView.removeClassField(node, relation.key.id);
+	}
+
+	/**
+	 * Adds a class method to a node to the graph. Does not update the database.
+	 */
+	addClassMethod(sourceCode, destinationCode, relation) {
+		const sourceNode = this.getNodeByCodeId(sourceCode.id);
+
+		const methodText = this.metaModelMapper.getClassMethodText(destinationCode.name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
+		this.umlGraphView.addClassMethod(sourceNode, relation.key.id, '+', methodText);
+	}
+
+	/**
+	 * Removes a class method from a node in the graph. Does not update the database.
+	 */
+	removeClassMethod(code, relation) {
+		const node = this.getNodeByCodeId(code.id);
+
+		this.umlGraphView.removeClassMethod(node, relation.key.id);
+	}
+
+	/**
+	 * Adds an edge between two nodes in the graph. Does not update the database.
+	 */
+	addEdge(sourceCode, destinationCode, relation, edgeType) {
+		const sourceNode = this.getNodeByCodeId(sourceCode.id);
+		const destinationNode = this.getNodeByCodeId(destinationCode.id);
+
+		const edge = this.umlGraphView.addEdge(sourceNode, destinationNode, relation.key.id, edgeType);
+	}
+
+	/**
+	 * Removes an edge from a node in the graph. Does not update the database.
+	 */
+	removeEdge(code, relation) {
+		const node = this.getNodeByCodeId(code.id);
+
+		this.umlGraphView.removeEdge(node, relation.key.id);
+	}
+
+	/**
+	 * This function is called, when a code was removed from the "outside". If somewhere else in the coding-editor
+	 * a code was removed, this function will update the uml-editor.
+	 */
+	codeRemoved(code) {
+		if (this.isCodeMapped(code)) {
+			this.removeCode(code);
+		}
+
+		this.removePreviousCodeData(code.id);
+	}
+
+	/**
+	 * Updates the uml-editor after updating a code (or inserting a new code) somewhere else in the coding-editor.
+	 * This function compares the code to its latest state (previousCodeData) and determines the changes.
+	 */
 	codeUpdated(code) {
 		const _this = this;
 
-		console.log('Begin updating a code...');
+		// Previous code data
+		const previousCodeData = this.getPreviousCodeData(code.id);
 
-		let umlClass = this.umlClassManager.getByCode(code);
-
-		// Is the code new?
-		if (umlClass == null) {
-			umlClass = new UmlClass(code);
-			umlClass.setPreviousCode([], []);
-			this.umlClassManager.add(umlClass);
-
-			this.insertUnregisteredUmlCodePositions([{
-				'codeId': code.codeID,
-				'codesystemId': this.props.codesystemId,
-				'x': 0,
-				'y': 0
-			}]);
-		} else {
-			umlClass.setCode(code);
-		}
 
 		// Update name
-		if (umlClass.getNode() != null) {
-			this.umlGraphView.renameNode(umlClass.getNode(), code.name);
+		if (this.isCodeMapped(code)) {
+			this.renameNode(code);
 		}
+
 
 		// Did the MetaModel change?
-		let previousMetaModelElementIds = umlClass.getPreviousCode().mmElementIDs;
-		let currentMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs : [];
+		const previousMetaModelElementIds = previousCodeData.mmElementIDs;
+		const currentMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs : [];
 
+		// Sort both arrays to properly find changes or ensure equality
+		previousMetaModelElementIds.sort();
+		currentMetaModelElementIds.sort();
+
+		// Are both arrays equal?
 		let mmElementIdsEqual = (previousMetaModelElementIds.length == currentMetaModelElementIds.length) && previousMetaModelElementIds.every((element, index) => {
-			return currentMetaModelElementIds.indexOf(element) >= 0;
+			return element == currentMetaModelElementIds[index];
 		});
 
+		// Update if the metaModelIDs changed
 		if (!mmElementIdsEqual) {
-			console.log('The MetaModel changed...');
-
-			this.exchangeCodeMetaModelEntities(umlClass, previousMetaModelElementIds);
+			this.codeMetaModelEntitiesChanged(code, previousMetaModelElementIds);
 		}
 
-		umlClass.getPreviousCode().mmElementIDs = currentMetaModelElementIds.slice(); // copy
 
 		// Did the relations change?
-		let previousRelations = umlClass.getPreviousCode().relations;
-		let currentRelations = code.relations != null ? code.relations : [];
+		const previousRelations = previousCodeData.relations;
+		const currentRelations = code.relations != null ? code.relations : [];
 
 		let removedRelations = [];
 		let addedRelations = [];
@@ -445,8 +793,7 @@ export default class UmlEditor extends React.Component {
 		previousRelations.forEach((previousRelation) => {
 			let exists = false;
 			currentRelations.forEach((currentRelation) => {
-				if (previousRelation.codeId == currentRelation.codeId
-					&& previousRelation.mmElementId == currentRelation.mmElementId) {
+				if (previousRelation.key.id == currentRelation.key.id) {
 					exists = true;
 				}
 			});
@@ -459,8 +806,7 @@ export default class UmlEditor extends React.Component {
 		currentRelations.forEach((currentRelation) => {
 			let exists = false;
 			previousRelations.forEach((previousRelation) => {
-				if (previousRelation.codeId == currentRelation.codeId
-					&& previousRelation.mmElementId == currentRelation.mmElementId) {
+				if (previousRelation.key.id == currentRelation.key.id) {
 					exists = true;
 				}
 			});
@@ -470,405 +816,109 @@ export default class UmlEditor extends React.Component {
 			}
 		});
 
-		removedRelations.forEach((removedRelation) => {
-			let sourceUmlClass = umlClass;
-			let destinationUmlClass = _this.umlClassManager.getByCodeId(removedRelation.codeId);
+		removedRelations.forEach((relation) => {
+			let sourceCode = code;
+			let destinationCode = this.getCodeByCodeId(relation.codeId);
 
-			let relationMetaModelEntity = this.getMetaModelEntityById(removedRelation.mmElementId);
-
-			let umlClassRelation = _this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, removedRelation.key.id);
-
-			_this.metaModelRunner.evaluateAndUndoAction({
-				umlClassRelation: umlClassRelation
-			});
-
-			_this.umlClassRelationManager.remove(umlClassRelation);
+			_this.metaModelRunner.evaluateAndUndoCodeRelation(sourceCode, destinationCode, relation);
 		});
 
-		addedRelations.forEach((addedRelation) => {
-			let sourceUmlClass = umlClass;
-			let destinationUmlClass = _this.umlClassManager.getByCodeId(addedRelation.codeId);
+		addedRelations.forEach((relation) => {
+			let sourceCode = code;
+			let destinationCode = this.getCodeByCodeId(relation.codeId);
 
-			let relationMetaModelEntity = this.getMetaModelEntityById(addedRelation.mmElementId);
-
-			// Relation exists
-			//			if (_this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, addedRelation.key.id) != null) {
-			//				return;
-			//			}
-
-			const umlClassRelation = new UmlClassRelation(addedRelation.id, sourceUmlClass, destinationUmlClass, relationMetaModelEntity);
-			_this.umlClassRelationManager.add(umlClassRelation);
-
-			_this.metaModelRunner.evaluateAndRunAction({
-				umlClassRelation: umlClassRelation
-			});
+			_this.metaModelRunner.evaluateAndRunCodeRelation(sourceCode, destinationCode, relation);
 		});
 
-		umlClass.getPreviousCode().relations = currentRelations.map(relation => Object.assign({}, relation)); // copy
 
-		console.log('Finished updating a code.');
-
-		// Select code if necessary
-		if (this.props.codesystemView.getSelected().codeID == code.codeID) {
-			if (umlClass.getNode() != null) {
-				this.umlGraphView.selectCell(umlClass.getNode());
-			}
-		}
+		// Set previous code data
+		const newPreviousMetaModelElementIds = currentMetaModelElementIds.slice() /*copy*/ ;
+		const newPreviousRelations = currentRelations.map(relation => Object.assign({}, relation)) /*copy*/ ;
+		this.setPreviousCodeData(code.id, newPreviousMetaModelElementIds, newPreviousRelations);
 	}
 
-	codeRemoved(code) {
-		let umlClass = this.umlClassManager.getByCode(code);
+	/**
+	 * Is called if the MetaModel of a code changed during update.
+	 */
+	codeMetaModelEntitiesChanged(code, previousMetaModelElementIds) {
+		// Prepare previousCode
+		const previousCode = Object.assign({}, code);
+		previousCode.mmElementIDs = previousMetaModelElementIds;
 
-		this.removeNode(umlClass);
+		// Evaluate mapping action
+		const previousNodeAction = this.metaModelMapper.evaluateCode(previousCode);
+		const currentNodeAction = this.metaModelMapper.evaluateCode(code);
 
-		this.umlClassManager.remove(umlClass);
-	}
-
-	exchangeCodeMetaModelEntities(umlClass, oldMetaModelEntityIds) {
-		const oldUmlClass = new UmlClass(Object.assign({}, umlClass.getCode()), umlClass.getNode());
-		oldUmlClass.getCode().mmElementIDs = oldMetaModelEntityIds;
-
-		console.log('Is it possible to apply new mappings?');
-
-		console.log('Check the node...');
-
-		let oldNodeAction = this.metaModelMapper.evaluateCode(oldUmlClass);
-		let newNodeAction = this.metaModelMapper.evaluateCode(umlClass);
-		console.log('Previous node action: ' + oldNodeAction);
-		console.log('Current node action: ' + newNodeAction);
-
+		// Mapping action changed?
 		if (oldNodeAction != newNodeAction) {
-			console.log('Something changed...');
-
-			console.log('Undo old action...');
-
-			this.metaModelRunner.undoAction(oldNodeAction, {
-				'umlClass': umlClass
-			});
-			this.metaModelRunner.runAction(newNodeAction, {
-				'umlClass': umlClass
-			});
-
-			console.log('Apply new action...');
+			this.metaModelRunner.undoCode(oldNodeAction, code);
+			this.metaModelRunner.runCode(newNodeAction, code);
 		}
 
-		console.log('Done with the node.');
+		// Re-evaluate outgoing relations
+		if (code.relations != null) {
+			for (let i = 0; i < code.relations.length; i++) {
+				let relation = code.relations[i];
 
-		console.log('Check the outgoing relations...');
+				let sourceCode = code;
+				let destinationCode = this.getCodeByCodeId(relation.codeId);
 
-		if (umlClass.getCode().relations != null) {
-			for (let i = 0; i < umlClass.getCode().relations.length; i++) {
-				let relation = umlClass.getCode().relations[i];
-
-				let destinationUmlClass = this.umlClassManager.getByCodeId(relation.codeId);
-				let oldDestinationUmlClass = destinationUmlClass;
+				let previousSourceCode = previousCode;
+				let previousDestinationCode = destinationCode;
 
 				// Source == Destination
-				if (oldDestinationUmlClass.getCode().codeID == oldUmlClass.getCode().codeID) {
-					oldDestinationUmlClass = oldUmlClass;
+				if (destinationCode.codeID == sourceCode.codeID) {
+					previousDestinationCode = previousSourceCode;
 				}
 
-				this.checkSingleRelation(relation.mmElementId, relation.key.id, umlClass, destinationUmlClass, oldUmlClass, oldDestinationUmlClass);
+				this.checkSingleRelation(relation, sourceCode, destinationCode, previousSourceCode, previousDestinationCode);
 			}
 		}
 
-		console.log('Done with the outgoing relations.');
+		// Incoming relations
+		this.getCodes().forEach((c) => {
+			// Ignore this code
+			if (c.codeID != code.codeID) {
+				if (c.relations != null) {
+					// Check relations
+					c.relations.forEach((relation) => {
+						if (relation.codeId == code.codeID) {
+							let sourceCode = c;
+							let destinationCode = code;
 
-		console.log('Check the incoming relations...');
-
-		this.umlClassManager.getAll().forEach((uml) => {
-			let umlCode = uml.getCode();
-			// Ignore the current code
-			if (umlCode.codeID != umlClass.getCode().codeID) {
-				if (umlCode.relations != null) {
-					umlCode.relations.forEach((relation) => {
-						if (relation.codeId == umlClass.getCode().codeID) {
-							let sourceUmlClass = uml;
-							let oldSourceUmlClass = sourceUmlClass;
+							let previousSourceCode = sourceCode;
+							let previousDestinationCode = previousCode;
 
 							// Source == Destination
-							if (oldSourceUmlClass.getCode().codeID == oldUmlClass.getCode().codeID) {
-								oldSourceUmlClass = oldUmlClass;
+							if (sourceCode.codeID == destinationCode.codeID) {
+								previousSourceCode = previousDestinationCode;
 							}
 
-							this.checkSingleRelation(relation.mmElementId, relation.key.id, sourceUmlClass, umlClass, oldSourceUmlClass, oldUmlClass);
+							this.checkSingleRelation(relation, sourceCode, destinationCode, previousSourceCode, previousDestinationCode);
 						}
 					});
 				}
 			}
 		});
-
-		console.log('Done with the incoming relations.')
 	}
 
-	checkSingleRelation(relationMetaModelElementId, relationId, sourceUmlClass, destinationUmlClass, oldActionSource, oldActionDestination) {
-		let relationMetaModelEntity = this.getMetaModelEntityById(relationMetaModelElementId);
+	/**
+	 * Checks if a new mapping can be applied for the relation.
+	 */
+	checkSingleRelation(relation, sourceCode, destinationCode, previousSourceCode, previousDestinationCode) {
+		const relationMetaModelId = relation.mmElementId;
+		const relationMetaModelEntity = this.umlEditor.getMetaModelEntityById(relationMetaModelElementId);
 
-		console.log('We are at relation ' + sourceUmlClass.getCode().name + ' -> ' + destinationUmlClass.getCode().name + ' now. (' + relationMetaModelEntity.name + ')');
+		// Evaluate actions
+		let oldAction = this.metaModelMapper.evaluateCodeRelation(previousSourceCode, previousDestinationCode, relation);
+		let newAction = this.metaModelMapper.evaluateCodeRelation(sourceCode, destinationCode, relation);
 
-		let oldRelation = new UmlClassRelation(0, oldActionSource, oldActionDestination, relationMetaModelEntity);
-		let currentRelation = this.umlClassRelationManager.get(sourceUmlClass, destinationUmlClass, relationMetaModelEntity, relationId);
-
-		let oldAction = this.metaModelMapper.evaluateCodeRelation(oldRelation);
-		let newAction = this.metaModelMapper.evaluateCodeRelation(currentRelation);
-
-		console.log('Previous node action: ' + oldAction);
-		console.log('Current node action: ' + newAction);
-
+		// Execute action
 		if (oldAction != newAction) {
-			console.log('Something changed.');
+			this.metaModelRunner.undoCodeRelation(oldAction, sourceCode, destinationCode, relation);
 
-			this.metaModelRunner.undoAction(oldAction, {
-				umlClassRelation: currentRelation
-			});
-
-			console.log('Undid old action.');
-
-			this.metaModelRunner.runAction(newAction, {
-				umlClassRelation: currentRelation
-			});
-
-			console.log('Applied new action.');
+			this.metaModelRunner.undoCodeRelation(newAction, sourceCode, destinationCode, relation);
 		}
-	}
-
-	codesystemSelectionChanged(code) {
-		const umlClass = this.umlClassManager.getByCode(code);
-
-		// Prevent loops
-		if (!this.umlGraphView.isCellSelected(umlClass.getNode())) {
-			// Reset edge if connecting
-			if (this.umlGraphView.isConnectingEdge()) {
-				this.umlGraphView.resetConnectingEdge();
-			}
-
-			// Clear selection
-			this.umlGraphView.clearSelection(this.umlClassManager.getAll());
-
-			// Select node
-			if (umlClass.getNode() != null) {
-				this.umlGraphView.selectCell(umlClass.getNode());
-			}
-		}
-	}
-
-	addNode(umlClass) {
-		const node = this.umlGraphView.addNode(umlClass.getCode().name);
-		umlClass.setNode(node);
-
-		let x = 0;
-		let y = 0;
-
-		const umlCodePosition = umlClass.getUmlCodePosition();
-
-		if (umlCodePosition != null && !(umlCodePosition.x == 0 && umlCodePosition.y == 0)) {
-			x = umlCodePosition.x;
-			y = umlCodePosition.y;
-		} else {
-			[x, y] = this.umlGraphView.getFreeNodePosition(node);
-		}
-
-		this.umlGraphView.moveNode(node, x, y);
-		this.umlGraphView.recalculateNodeSize(node);
-
-		console.log('Added new node to the graph: ' + umlClass.getCode().name + ' (' + umlClass.getCode().codeID + ')');
-	}
-
-	addEdge(umlClassRelation, edgeType) {
-		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
-
-		const relationNode = this.umlGraphView.addEdge(sourceUmlClass.getNode(), destinationUmlClass.getNode(), edgeType);
-
-		this.addRelation(umlClassRelation, relationNode, 'edge ' + edgeType);
-	}
-
-	addClassField(umlClassRelation) {
-		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
-
-		const fieldText = this.metaModelMapper.getClassFieldText(destinationUmlClass.getCode().name, 'TODO-returnType');
-		this.umlGraphView.addClassField(sourceUmlClass.getNode(), umlClassRelation.getRelationId(), '+', fieldText);
-
-		this.addRelation(umlClassRelation, null, 'class field');
-	}
-
-	addClassMethod(umlClassRelation) {
-		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
-
-		const methodText = this.metaModelMapper.getClassMethodText(destinationUmlClass.getCode().name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
-		this.umlGraphView.addClassMethod(sourceUmlClass.getNode(), umlClassRelation.getRelationId(), '+', methodText);
-
-		this.addRelation(umlClassRelation, null, 'class method');
-	}
-
-	addRelation(umlClassRelation, relationNode, relationType) {
-		const sourceUmlClass = umlClassRelation.getSourceUmlClass();
-		const destinationUmlClass = umlClassRelation.getDestinationUmlClass();
-
-		umlClassRelation.setRelationNode(relationNode);
-
-		console.log('Connection (' + relationType + ') between ' + sourceUmlClass.getCode().name + ' (' + sourceUmlClass.getCode().codeID + ') and ' + destinationUmlClass.getCode().name + ' (' + destinationUmlClass.getCode().codeID + ').');
-	}
-
-	removeNode(umlClass) {
-		this.umlGraphView.removeNode(umlClass.getNode());
-
-		umlClass.setNode(null);
-	}
-
-	removeEdge(umlClassRelation) {
-		this.umlGraphView.removeEdge(umlClassRelation.getRelationNode());
-
-		umlClassRelation.setRelationNode(null);
-	}
-
-	removeClassField(umlClassRelation) {
-		const node = umlClassRelation.getSourceUmlClass().getNode() != null ? umlClassRelation.getSourceUmlClass().getNode() : umlClassRelation.getDestinationUmlClass().getNode();
-
-		// Node was not removed
-		if (node != null) {
-			this.umlGraphView.removeClassField(node, umlClassRelation.getRelationId());
-		}
-
-		umlClassRelation.setRelationNode(null);
-	}
-
-	removeClassMethod(umlClassRelation) {
-		const node = umlClassRelation.getSourceUmlClass().getNode() != null ? umlClassRelation.getSourceUmlClass().getNode() : umlClassRelation.getDestinationUmlClass().getNode();
-
-		// Node was not removed
-		if (node != null) {
-			this.umlGraphView.removeClassMethod(node, umlClassRelation.getRelationId());
-		}
-
-		umlClassRelation.setRelationNode(null);
-	}
-
-
-
-
-
-
-
-
-	createNewEdgeAggregation(sourceNode, destinationNode, edgeNode) {
-		this.createNewEdge(sourceNode, destinationNode, EdgeType.AGGREGATION, edgeNode);
-	}
-
-	createNewEdgeGeneralization(sourceNode, destinationNode, edgeNode) {
-		this.createNewEdge(sourceNode, destinationNode, EdgeType.GENERALIZATION, edgeNode);
-	}
-
-	createNewEdgeDirectedAssociation(sourceNode, destinationNode, edgeNode) {
-		this.createNewEdge(sourceNode, destinationNode, EdgeType.DIRECTED_ASSOCIATION, edgeNode);
-	}
-
-	createNewEdge(sourceNode, destinationNode, edgeType, edgeNode) {
-		const sourceUmlClass = this.umlClassManager.getByNode(sourceNode);
-		const destinationUmlClass = this.umlClassManager.getByNode(destinationNode);
-
-		if (edgeNode == null) {
-			edgeNode = this.umlGraphView.addEdge(sourceNode, destinationNode, edgeType);
-		}
-
-		const relationMetaModelEntityName = this.metaModelMapper.getEdgeRelationEntityName(edgeType);
-
-		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName, edgeNode);
-	}
-
-	createNewField(sourceUmlClass, destinationUmlClass) {
-		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
-
-		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName);
-	}
-
-	createNewMethod(sourceUmlClass, destinationUmlClass) {
-		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
-
-		this.createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName);
-	}
-
-	createNewRelation(sourceUmlClass, destinationUmlClass, relationMetaModelEntityName, relationNode) {
-		const _this = this;
-
-		const relationMetaModelEntity = this.getMetaModelEntityByName(relationMetaModelEntityName);
-
-		const sourceCode = sourceUmlClass.getCode();
-
-		// Create UmlClassRelation
-		const umlClassRelation = new UmlClassRelation(0, sourceUmlClass, destinationUmlClass, relationMetaModelEntity, relationNode);
-		this.umlClassRelationManager.add(umlClassRelation);
-
-		// Update database
-		CodesEndpoint.addRelationship(sourceCode.id, destinationUmlClass.getCode().codeID, relationMetaModelEntity.id).then((resp) => {
-			sourceCode.relations = resp.relations;
-
-			for (let i = 0; i < resp.relations.length; i++) {
-				let rel = resp.relations[i];
-
-				if (rel.codeId == destinationUmlClass.getCode().codeID
-					&& rel.mmElementId == relationMetaModelEntity.id) {
-					umlClassRelation.setRelationId(rel.key.id);
-					break;
-				}
-			}
-
-			_this.props.updateCode(sourceCode);
-		});
-	}
-
-	deleteClassField(cell, relationId) {
-		const _this = this;
-
-		let umlClass = this.umlClassManager.getByNode(cell);
-
-		this.props.deleteRelationship(umlClass.getCode().id, relationId);
-	}
-
-	deleteClassMethod(cell, relationId) {
-		return this.deleteClassField(cell, relationId);
-	}
-
-	openClassFieldModal(cell) {
-		const _this = this;
-
-		const sourceUmlClass = _this.umlClassManager.getByNode(cell);
-
-		const relationMetaModelEntityName = this.getMetaModelMapper().getClassFieldRelationEntityName();
-		const mappingAction = MappingAction.ADD_CLASS_FIELD;
-
-		let addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', sourceUmlClass.getCode(), _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
-
-		addFieldModal.showModal().then(function (data) {
-			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
-
-			const destinationCode = destinationUmlClass.getCode();
-
-			_this.createNewField(sourceUmlClass, destinationUmlClass);
-		});
-	}
-
-	openClassMethodModal(cell) {
-		const _this = this;
-
-		const sourceUmlClass = _this.umlClassManager.getByNode(cell);
-
-		const relationMetaModelEntityName = this.getMetaModelMapper().getClassMethodRelationEntityName();
-		const mappingAction = MappingAction.ADD_CLASS_METHOD;
-
-		let addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', sourceUmlClass.getCode(), _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
-
-		addMethodModal.showModal().then(function (data) {
-			const destinationUmlClass = _this.umlClassManager.getByCode(data.selectedCode);
-
-			_this.createNewMethod(sourceUmlClass, destinationUmlClass);
-		});
-	}
-
-	onZoom(percentage) {
-		this.umlEditor.toolbar.onZoom(percentage);
 	}
 
 	render() {

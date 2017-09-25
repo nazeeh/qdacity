@@ -15,15 +15,19 @@ export default class MetaModelRunner {
 		this.metaModelMapper = metaModelMapper;
 	}
 
-	evaluateAndRunAction(params) {
-		const action = this.metaModelMapper.evaluateAction(params);
-		this.runAction(action, params);
+	evaluateAndRunCode(code) {
+		const action = this.metaModelMapper.evaluateCode(code);
+		this.runCode(action, code);
 		return action;
 	}
 
-	runAction(action, params) {
-		const [umlClass, umlClassRelation] = this.metaModelMapper.convertParams(params);
+	evaluateAndRunCodeRelation(sourceCode, destinationCode, relation) {
+		const action = this.metaModelMapper.evaluateCodeRelation(sourceCode, destinationCode, relation);
+		this.runCodeAction(action, sourceCode, destinationCode, relation);
+		return action;
+	}
 
+	runCode(action, code) {
 		switch (action) {
 		case MappingAction.DO_NOTHING:
 			{
@@ -31,50 +35,67 @@ export default class MetaModelRunner {
 			}
 		case MappingAction.CREATE_NODE:
 			{
-				this.umlEditor.addNode(umlClass);
-				break;
-			}
-		case MappingAction.CREATE_GENERALIZATION:
-			{
-				this.umlEditor.addEdge(umlClassRelation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
-				break;
-			}
-		case MappingAction.CREATE_AGGREGATION:
-			{
-				this.umlEditor.addEdge(umlClassRelation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
-				break;
-			}
-		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
-			{
-				this.umlEditor.addEdge(umlClassRelation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
-				break;
-			}
-		case MappingAction.ADD_CLASS_FIELD:
-			{
-				this.umlEditor.addClassField(umlClassRelation);
-				break;
-			}
-		case MappingAction.ADD_CLASS_METHOD:
-			{
-				this.umlEditor.addClassMethod(umlClassRelation);
+				this.umlEditor.addNode(code);
 				break;
 			}
 		default:
 			{
-				throw new Error('Action not implemented');
+				throw new Error('Action ' + action + ' not supported');
 			}
 		}
 	}
 
-	evaluateAndUndoAction(params) {
-		const action = this.metaModelMapper.evaluateAction(params);
-		this.undoAction(action, params);
+	runCodeRelation(action, sourceCode, destinationCode, relation) {
+		switch (action) {
+		case MappingAction.DO_NOTHING:
+			{
+				break;
+			}
+		case MappingAction.CREATE_GENERALIZATION:
+			{
+				this.umlEditor.addEdge(sourceCode, destinationCode, relation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
+				break;
+			}
+		case MappingAction.CREATE_AGGREGATION:
+			{
+				this.umlEditor.addEdge(sourceCode, destinationCode, relation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
+				break;
+			}
+		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
+			{
+				this.umlEditor.addEdge(sourceCode, destinationCode, relation, this.metaModelMapper.getEdgeTypeFromMappingAction(action));
+				break;
+			}
+		case MappingAction.ADD_CLASS_FIELD:
+			{
+				this.umlEditor.addClassField(sourceCode, destinationCode, relation);
+				break;
+			}
+		case MappingAction.ADD_CLASS_METHOD:
+			{
+				this.umlEditor.addClassMethod(sourceCode, destinationCode, relation);
+				break;
+			}
+		default:
+			{
+				throw new Error('Action ' + action + ' not supported');
+			}
+		}
+	}
+
+	evaluateAndUndoCode(code) {
+		const action = this.metaModelMapper.evaluateCode(params);
+		this.undoCode(action, params);
 		return action;
 	}
 
-	undoAction(action, params) {
-		const [umlClass, umlClassRelation] = this.metaModelMapper.convertParams(params);
+	evaluateAndUndoCodeRelation(sourceCode, destinationCode, relation) {
+		const action = this.metaModelMapper.evaluateCodeRelation(sourceCode, destinationCode, relation);
+		this.undoCodeRelation(action, sourceCode, destinationCode, relation);
+		return action;
+	}
 
+	undoCode(action, code) {
 		switch (action) {
 		case MappingAction.DO_NOTHING:
 			{
@@ -82,29 +103,42 @@ export default class MetaModelRunner {
 			}
 		case MappingAction.CREATE_NODE:
 			{
-				this.umlEditor.removeNode(umlClass);
+				this.umlEditor.removeNode(code);
+				break;
+			}
+		default:
+			{
+				throw new Error('Action ' + action + ' not supported');
+			}
+		}
+	}
+
+	undoCodeRelation(action, sourceCode, destinationCode, relation) {
+		switch (action) {
+		case MappingAction.DO_NOTHING:
+			{
 				break;
 			}
 		case MappingAction.CREATE_GENERALIZATION:
 		case MappingAction.CREATE_AGGREGATION:
 		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
 			{
-				this.umlEditor.removeEdge(umlClassRelation);
+				this.umlEditor.removeEdge(sourceCode, relation);
 				break;
 			}
 		case MappingAction.ADD_CLASS_FIELD:
 			{
-				this.umlEditor.removeClassField(umlClassRelation);
+				this.umlEditor.removeClassField(sourceCode, relation);
 				break;
 			}
 		case MappingAction.ADD_CLASS_METHOD:
 			{
-				this.umlEditor.removeClassMethod(umlClassRelation);
+				this.umlEditor.removeClassMethod(sourceCode, relation);
 				break;
 			}
 		default:
 			{
-				throw new Error('Action not implemented');
+				throw new Error('Action ' + action + ' not supported');
 			}
 		}
 	}
