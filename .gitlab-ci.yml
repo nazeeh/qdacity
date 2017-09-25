@@ -92,6 +92,8 @@ frontend_prod_unittest:
   allow_failure: true
   
 pages:
+  tags:
+    - qdacity
   stage: report
   dependencies:
     - backend_prod_unittest
