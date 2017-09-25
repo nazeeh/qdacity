@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import CourseEndPoint from '../../common/endpoints/CourseEndpoint';
-
+import DropDownButton from '../../common/styles/DropDownButton.jsx';
 
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 
@@ -54,6 +54,7 @@ export default class CourseList extends React.Component {
 			search: ''
 		};
 
+
 		this.init();
 
 		this.paginationClick = this.paginationClick.bind(this);
@@ -66,16 +67,29 @@ export default class CourseList extends React.Component {
 	init() {
 		var _this = this;
 		var courseList = [];
+		var courseIDList = [];
+		var courseTermsArray =[]
 		CourseEndPoint.listCourse().then(function (resp) {
 			resp.items = resp.items || [];
 			resp.items.forEach(function (prj) {
 				prj.type = "COURSE";
-				console.log(prj);
+				CourseEndPoint.listTermCourse(prj.id).then(function (resp2) {
+					var termList = [];
+					resp2.items = resp2.items || [];
+					resp2.items.forEach(function (crs) {
+						termList.push (crs.term);
+					});
+					courseTermsArray.push(termList);
+					courseIDList.push(prj.id);
+				});
 			});
 			var courses = courseList.concat(resp.items)
 			courses = _this.sortCourses(courses);
 			_this.props.setCourses(courses);
 		});
+		console.log(courseIDList);
+		console.log(courseTermsArray);
+
 	}
 
 	sortCourses (courses) {
@@ -172,6 +186,10 @@ export default class CourseList extends React.Component {
 	render() {
 		var _this = this;
 
+		const items = [];
+		items.push({
+			text: '10 %',
+		});
 		//Render Components
 
 		//Render search and newPrjBtn
@@ -251,6 +269,7 @@ export default class CourseList extends React.Component {
 
 		return (
 			<div>
+				//<DropDownButton items={items}></DropDownButton>
 				{projectListMenu}
 				<StyledProjectList className="">
 					{renderListItems}
