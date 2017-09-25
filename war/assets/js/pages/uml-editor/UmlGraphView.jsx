@@ -2,15 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
+import Cell from './Cell.jsx';
 import CellValue from './CellValue.js';
+import EdgeValue from './CellValue.js';
 
 import {
 	EdgeType
 } from './EdgeType.js';
-import UmlClass from './model/UmlClass.js';
-import UmlClassRelation from './model/UmlClassRelation.js';
 
-import Cell from './Cell.jsx';
 import HoverButtons from './hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
@@ -472,6 +471,16 @@ export default class UmlGraphView extends React.Component {
 		);
 	}
 
+	getNodeByCodeId(id) {
+		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		for (let i = 0; i < allNodes.length; i++) {
+			if (allNodes[i].value.getCodeId() == id) {
+				return allNodes[i];
+			}
+		}
+	}
+
 	addCellsMovedEventListener(listener) {
 		this.graph.addListener(mxEvent.CELLS_MOVED, listener);
 	}
@@ -506,30 +515,21 @@ export default class UmlGraphView extends React.Component {
 
 		// Does the area contain another node?
 		const isAreaFree = function (x, y, width, height) {
-			const umlClasses = _this.props.umlEditor.getUmlClassManager().getAll();
-
-			for (let i = 0; i < umlClasses.length; i++) {
-				const umlClass = umlClasses[i];
-
+			_this.graph.model.getChildren(_this.graph.getDefaultParent()).forEach((node) => {
 				// Return false if areas intersect
-				const node = umlClass.getNode();
+				const x2 = node.getGeometry().x;
+				const y2 = node.getGeometry().y;
+				const width2 = node.getGeometry().width;
+				const height2 = node.getGeometry().height;
 
-				if (node != null) {
-					const x2 = node.getGeometry().x;
-					const y2 = node.getGeometry().y;
-					const width2 = node.getGeometry().width;
-					const height2 = node.getGeometry().height;
-
-					// Intersects?
-					if (!(x > (x2 + width2)
-							|| (x + width) < x2
-							|| y > (y2 + height2)
-							|| (y + height) < y2)) {
-						return false;
-					}
-
+				// Intersects?
+				if (!(x > (x2 + width2)
+						|| (x + width) < x2
+						|| y > (y2 + height2)
+						|| (y + height) < y2)) {
+					return false;
 				}
-			}
+			});
 
 			return true;
 		};
@@ -652,14 +652,16 @@ export default class UmlGraphView extends React.Component {
 		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent();
 	}
 
-	addEdge(nodeFrom, nodeTo, edgeType) {
+	addEdge(nodeFrom, nodeTo, relationId, edgeType) {
 		let parent = this.graph.getDefaultParent();
+
+		const edgeValue = new EdgeValue(relationId);
 
 		this.graph.getModel().beginUpdate();
 
 		let edge;
 		try {
-			edge = this.graph.insertEdge(parent, null, '', nodeFrom, nodeTo, edgeType);
+			edge = this.graph.insertEdge(parent, null, edgeValue, nodeFrom, nodeTo, edgeType);
 
 		} finally {
 			this.graph.getModel().endUpdate();
@@ -668,7 +670,18 @@ export default class UmlGraphView extends React.Component {
 		return edge;
 	}
 
-	removeEdge(edge) {
+	removeEdge(node, relationId) {
+		// Find edge
+		let edge = null;
+
+		for (let i = 0; i < node.edges.length; i++) {
+			if (node.edges[i].value.getRelationId() == relationId) {
+				edge = node.edges[i];
+				break;
+			}
+		}
+
+		// Delete edge
 		this.graph.getModel().beginUpdate();
 
 		try {
@@ -681,7 +694,7 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
-	addNode(name) {
+	addNode(codeId, name) {
 		let parent = this.graph.getDefaultParent();
 
 		this.graph.getModel().beginUpdate();
@@ -695,6 +708,7 @@ export default class UmlGraphView extends React.Component {
 			cell.vertex = true;
 
 			const cellValue = new CellValue();
+			cellValue.setCodeId(codeId);
 			cellValue.setHeader(name);
 
 			cell.value = cellValue;
