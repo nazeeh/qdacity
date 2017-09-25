@@ -55,6 +55,9 @@ export default class CourseList extends React.Component {
 		};
 
 
+		props.courseList = [];
+
+
 		this.init();
 
 		this.paginationClick = this.paginationClick.bind(this);
@@ -68,8 +71,10 @@ export default class CourseList extends React.Component {
 		var _this = this;
 		var courseList = [];
 		var courseIDList = [];
-		var courseTermsArray =[]
+		var courseTermsArray =[];
+
 		CourseEndPoint.listCourse().then(function (resp) {
+
 			resp.items = resp.items || [];
 			resp.items.forEach(function (prj) {
 				prj.type = "COURSE";
@@ -87,8 +92,12 @@ export default class CourseList extends React.Component {
 			courses = _this.sortCourses(courses);
 			_this.props.setCourses(courses);
 		});
-		console.log(courseIDList);
-		console.log(courseTermsArray);
+
+		_this.props.courseIDList = courseIDList;
+		_this.props.courseTermsArray = courseTermsArray;
+
+		console.log(_this.props.courseIDList);
+		console.log(_this.props.courseTermsArray);
 
 	}
 
@@ -183,10 +192,16 @@ export default class CourseList extends React.Component {
 	}
 
 
+
 	render() {
 		var _this = this;
 
 		const items = [];
+		/*
+		courseTermsArray[0].forEach(function (term) {
+			console.log(term);
+		});
+		*/
 		items.push({
 			text: '10 %',
 		});
@@ -269,7 +284,7 @@ export default class CourseList extends React.Component {
 
 		return (
 			<div>
-				//<DropDownButton items={items}></DropDownButton>
+				<DropDownButton items={items}></DropDownButton>
 				{projectListMenu}
 				<StyledProjectList className="">
 					{renderListItems}
