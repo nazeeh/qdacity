@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.PersistenceManager;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,8 +21,10 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.qdacity.PMF;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.User;
+import com.qdacity.user.UserType;
 
 public class UserEndpointTest {
 
@@ -138,5 +142,36 @@ public class UserEndpointTest {
 			fail("User could not be authorized");
 		}
 		assertEquals(1, test.size());
+	}
+
+	@Test
+	public void testUpdateUserType() {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+
+		PersistenceManager mgr = getPersistenceManager();
+		mgr.setIgnoreCache(true);
+		try {
+			User user = mgr.getObjectById(User.class, "1");
+			assertEquals(UserType.USER, user.getType());
+
+			UserEndpoint ue = new UserEndpoint();
+			try {
+				user = ue.updateUserType("1", "ADMIN", loggedInUserA);
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				fail("User could not be authorized");
+			}
+			User user2 = mgr.getObjectById(User.class, "1");
+			assertEquals(UserType.ADMIN, user.getType());
+		} finally {
+			mgr.close();
+		}
+	}
+
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 }
