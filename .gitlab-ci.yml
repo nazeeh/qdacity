@@ -9,6 +9,7 @@ after_script:
 stages:
   - build
   - test
+  - report
   - deploy
  
 frontend_prod_build:
@@ -60,8 +61,13 @@ backend_prod_unittest:
   environment: Production
   only:
     - master
+  artifacts:
+    paths:
+      - target/site/jacoco-ut
+    expire_in: 6 mos
   script:
     - mvn test
+    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' target/site/jacoco-ut/jacoco.csv
   dependencies:
     - backend_prod_build
 
@@ -85,6 +91,22 @@ frontend_prod_unittest:
   dependencies:
     - frontend_prod_build
   allow_failure: true
+
+# Does not work yet, with gitlab pages not installed
+pages:
+  tags:
+    - qdacity
+  stage: report
+  dependencies:
+    - backend_prod_unittest
+  script:
+    - mv target/site/jacoco-ut/ public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - master
 
 deploy_prod:
   tags:
