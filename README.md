@@ -1,4 +1,5 @@
-[![build status](https://mojo-forge.cs.fau.de/kaufmann/qdacity/badges/master/build.svg)](https://mojo-forge.cs.fau.de/kaufmann/qdacity/commits/master)
+[![build status](https://mojo-forge.cs.fau.de/kaufmann/qdacity/badges/master/build.svg)](https://mojo-forge.cs.fau.de/kaufmann/qdacity/commits/master) [![backend coverage](https://mojo-forge.cs.fau.de/kaufmann/qdacity/badges/master/coverage.svg)](https://mojo-forge.cs.fau.de/kaufmann/qdacity/commits/master)
+
 
 QDAcity - README
 
