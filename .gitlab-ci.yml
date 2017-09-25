@@ -60,6 +60,10 @@ backend_prod_unittest:
   environment: Production
   only:
     - master
+  artifacts:
+    paths:
+      - /target/site/jacoco-ut
+    expire_in: 6 mos
   script:
     - mvn test
   dependencies:
