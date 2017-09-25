@@ -62,7 +62,7 @@ backend_prod_unittest:
     - master
   artifacts:
     paths:
-      - /target/site/jacoco-ut
+      - target/site/jacoco-ut
     expire_in: 6 mos
   script:
     - mvn test
