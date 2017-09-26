@@ -682,6 +682,19 @@ export default class UmlGraphView extends React.Component {
 
 		const edgeValue = new EdgeValue(relationId);
 
+		// Does the edge already exist? Happens when manually connecting a new edge (with the connection handler)
+		const outgoingEdges = this.graph.getModel().getOutgoingEdges(nodeFrom);
+
+		for (let i = 0; i < outgoingEdges.length; i++) {
+			let outgoingEdge = outgoingEdges[i];
+
+			if (outgoingEdge.value.getRelationId() == -1 && outgoingEdge.style == edgeType) {
+				outgoingEdge.value = edgeValue;
+				return;
+			}
+		}
+
+		// Insert edge
 		this.graph.getModel().beginUpdate();
 
 		let edge;
