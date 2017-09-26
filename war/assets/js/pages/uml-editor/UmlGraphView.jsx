@@ -25,8 +25,11 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlClassDefaultWidth = 160;
-		this.umlClassDefaultHeight = 59; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
+		this.autoLayoutOffsetTop = 60;
+		this.autoLayoutOffsetLeft = 60;
+
+		this.umlClassDefaultWidth = 162;
+		this.umlClassDefaultHeight = 75; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
 
 
 		this.zoomOffset = 10;
@@ -521,29 +524,38 @@ export default class UmlGraphView extends React.Component {
 		}
 
 		// Does the area contain another node?
-		const isAreaFree = function (x, y, width, height) {
-			_this.graph.model.getChildren(_this.graph.getDefaultParent()).forEach((node) => {
-				// Return false if areas intersect
-				const x2 = node.getGeometry().x;
-				const y2 = node.getGeometry().y;
-				const width2 = node.getGeometry().width;
-				const height2 = node.getGeometry().height;
+		const allNodes = _this.graph.getModel().getChildren(_this.graph.getDefaultParent());
 
-				// Intersects?
-				if (!(x > (x2 + width2)
-						|| (x + width) < x2
-						|| y > (y2 + height2)
-						|| (y + height) < y2)) {
-					return false;
+		const isAreaFree = function (x, y, width, height) {
+			if (allNodes != null) {
+				for (let i = 0; i < allNodes.length; i++) {
+					let node = allNodes[i];
+
+					// Node will intersect with itself
+					if (node.mxObjectId != cell.mxObjectId) {
+						// Return false if areas intersect
+						const x2 = node.getGeometry().x;
+						const y2 = node.getGeometry().y;
+						const width2 = node.getGeometry().width;
+						const height2 = node.getGeometry().height;
+
+						// Intersects?
+						if (!(x > (x2 + width2)
+								|| (x + width) < x2
+								|| y > (y2 + height2)
+								|| (y + height) < y2)) {
+							return false;
+						}
+					}
 				}
-			});
+			}
 
 			return true;
 		};
 
 		// Find position
-		let x = 0;
-		let y = 0;
+		let x = this.autoLayoutOffsetLeft;
+		let y = this.autoLayoutOffsetTop;
 		let offsetX = this.umlClassDefaultWidth + 30;
 		let offsetY = this.umlClassDefaultHeight + 30;
 
@@ -559,6 +571,8 @@ export default class UmlGraphView extends React.Component {
 			x = 0;
 			y = y + offsetY;
 		}
+
+		return [x, y];
 	}
 
 	updateHoverButtons(cell, dx, dy) {
