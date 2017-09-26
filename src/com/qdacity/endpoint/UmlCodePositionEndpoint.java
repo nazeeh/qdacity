@@ -160,7 +160,7 @@ public class UmlCodePositionEndpoint {
 				throw new EntityNotFoundException("Object does not exist. id: " + umlCodePosition.getId() + ", codesystemId: " + umlCodePosition.getCodesystemId() + ", codeId: " + umlCodePosition.getCodeId());				
 			}
 		}
-		
+
 		// Persist
 		Collection<UmlCodePosition> result;
 		
@@ -171,7 +171,7 @@ public class UmlCodePositionEndpoint {
 		} finally {
 			mgr.close();
 		}
-		
+
 		return new ArrayList<>(result);
 	}
 	
@@ -199,7 +199,7 @@ public class UmlCodePositionEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
 		try {
-			mgr.getObjectById(MetaModelEntity.class, umlCodePosition.getId());
+			mgr.getObjectById(UmlCodePosition.class, umlCodePosition.getId());
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			contains = false;
 		} finally {
