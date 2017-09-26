@@ -623,10 +623,16 @@ export default class UmlEditor extends React.Component {
 		this.umlGraphView.removeEdge(node, relation.key.id);
 	}
 
+	/**
+	 * Called from outside after a code was removed.
+	 */
     codeRemoved(code) {
         this.consistencyManager.codeRemoved(code);
     }
 
+    /**
+     * Called from outside after a code was updated.
+     */
     codeUpdated(code) {
         this.consistencyManager.codeUpdated(code);
     }
