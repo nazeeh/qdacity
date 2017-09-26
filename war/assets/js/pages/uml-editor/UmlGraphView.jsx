@@ -254,7 +254,9 @@ export default class UmlGraphView extends React.Component {
 
 		// Connection Handler
 		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
-			const edge = new mxCell('', new mxGeometry());
+			const edgeValue = new EdgeValue(-1);
+
+			const edge = new mxCell(edgeValue, new mxGeometry());
 			edge.setEdge(true);
 			edge.setStyle(style);
 			edge.geometry.relative = true;
@@ -290,7 +292,10 @@ export default class UmlGraphView extends React.Component {
 			const sourceNode = evt.properties.cell.source;
 			const destinationNode = evt.properties.cell.target;
 
-			_this.props.umlEditor.createNewEdge(sourceNode, destinationNode, edgeType, evt.cell);
+			const sourceCode = _this.props.umlEditor.getCodeById(sourceNode.value.getCodeId());
+			const destinationCode = _this.props.umlEditor.getCodeById(destinationNode.value.getCodeId());
+
+			_this.props.umlEditor.createEdge(sourceCode, destinationCode, edgeType);
 
 			_this.selectCell(sourceNode);
 		});
@@ -474,9 +479,11 @@ export default class UmlGraphView extends React.Component {
 	getNodeByCodeId(id) {
 		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
 
-		for (let i = 0; i < allNodes.length; i++) {
-			if (allNodes[i].value.getCodeId() == id) {
-				return allNodes[i];
+		if (allNodes != null) {
+			for (let i = 0; i < allNodes.length; i++) {
+				if (allNodes[i].value.getCodeId() == id) {
+					return allNodes[i];
+				}
 			}
 		}
 	}
@@ -674,8 +681,10 @@ export default class UmlGraphView extends React.Component {
 		// Find edge
 		let edge = null;
 
-		for (let i = 0; i < node.edges.length; i++) {
-			if (node.edges[i].value.getRelationId() == relationId) {
+		const edges = this.graph.getModel().getOutgoingEdges(node);
+
+		for (let i = 0; i < edges.length; i++) {
+			if (edges[i].value.getRelationId() == relationId) {
 				edge = node.edges[i];
 				break;
 			}

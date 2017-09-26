@@ -7,8 +7,6 @@ import {
 import MetaModelMapper from './mapping/MetaModelMapper.js';
 import MetaModelRunner from './mapping/MetaModelRunner.js';
 
-import UmlCodePosition from './UmlCodePosition.js';
-
 import Toolbar from './toolbar/Toolbar.jsx';
 import UmlGraphView from './UmlGraphView.jsx';
 
@@ -114,14 +112,20 @@ export default class UmlEditor extends React.Component {
 	}
 
 	initialize() {
+		const _this = this;
+
 		this.metaModelMapper = new MetaModelMapper(this);
 		this.metaModelRunner = new MetaModelRunner(this, this.metaModelMapper);
 
 		this.initializeSelection();
 
-		this.initializeNodes();
+		UmlCodePositionEndpoint.listCodePositions(this.props.codesystemId).then(function (resp) {
+			let umlCodePositions = resp.items || [];
 
-		this.initializePositions();
+			_this.initializePositions(umlCodePositions);
+
+			_this.initializeNodes();
+		});
 	}
 
 	initializeSelection() {
@@ -141,6 +145,18 @@ export default class UmlEditor extends React.Component {
 				}
 			}
 		});
+	}
+
+	initializePositions(umlCodePositions) {
+		let _this = this;
+
+		// Add cells moved event listener
+		_this.initCellsMovedEventListener();
+
+		if (umlCodePositions.length > 0) {
+			// Set CodePositions
+			_this.refreshUmlCodePositions(umlCodePositions);
+		}
 	}
 
 	initializeNodes() {
@@ -167,32 +183,6 @@ export default class UmlEditor extends React.Component {
 		}
 	}
 
-	initializePositions() {
-		let _this = this;
-
-		// Add cells moved event listener
-		_this.initCellsMovedEventListener();
-
-		UmlCodePositionEndpoint.listCodePositions(this.props.codesystemId).then(function (resp) {
-			let umlCodePositions = resp.items || [];
-
-			if (umlCodePositions.length > 0) {
-
-				// Set CodePositions
-				_this.refreshUmlCodePositions(umlCodePositions);
-
-				this.codePositions.keys().forEach((codeId) => {
-					const codePosition = _this.getCodePosition(codeId);
-					const code = _this.getCodeByCodeId(codeId);
-
-					if (_this.isCodeMapped(code)) {
-						_this.umlGraphView.moveNode(_this.getNodeByCodeId(code.id), codePosition.x, codePosition.y);
-					}
-				});
-			}
-		});
-	}
-
 	initCellsMovedEventListener() {
 		let _this = this;
 
@@ -208,8 +198,8 @@ export default class UmlEditor extends React.Component {
 					let code = _this.getCodeByNode(cell);
 
 					let codePosition = _this.getCodePosition(code.id);
-					codePosition.setX(node.getGeometry().x);
-					codePosition.setX(node.getGeometry().y);
+					codePosition.x = cell.getGeometry().x;
+					codePosition.y = cell.getGeometry().y;
 
 					umlCodePositions.push(codePosition);
 				}
@@ -230,7 +220,7 @@ export default class UmlEditor extends React.Component {
 		const _this = this;
 
 		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			_this.setCodePosition(newUmlCodePosition.getCodeId(), newUmlCodePosition);
+			_this.setCodePosition(newUmlCodePosition.codeId, newUmlCodePosition);
 		});
 	}
 
@@ -308,7 +298,7 @@ export default class UmlEditor extends React.Component {
 		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
 
 		addFieldModal.showModal().then(function (data) {
-			_this.createNewField(code, data.selectedCode);
+			_this.createField(code, data.selectedCode);
 		});
 	}
 
@@ -326,7 +316,7 @@ export default class UmlEditor extends React.Component {
 		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
 
 		addMethodModal.showModal().then(function (data) {
-			_this.createNewMethod(code, data.selectedCode);
+			_this.createMethod(code, data.selectedCode);
 		});
 	}
 
@@ -380,7 +370,7 @@ export default class UmlEditor extends React.Component {
 		const key = codeId;
 
 		if (this.codePositions.hasOwnProperty(key)) {
-			return this.previousCodeData[key];
+			return this.codePositions[key];
 		}
 
 		return null;
@@ -403,14 +393,14 @@ export default class UmlEditor extends React.Component {
 	getPreviousCodeData(codeId) {
 		const key = codeId;
 
-		if (this.previousCodeData.hasOwnProperty(key)) {
-			return this.previousCodeData[key];
-		} else {
+		if (!this.previousCodeData.hasOwnProperty(key)) {
 			this.previousCodeData[key] = {
 				mmElementIDs: [],
 				relations: []
 			};
 		}
+
+		return this.previousCodeData[key];
 	}
 
 	setPreviousCodeData(codeId, mmElementIDs, relations) {
@@ -418,8 +408,8 @@ export default class UmlEditor extends React.Component {
 
 		if (this.previousCodeData.hasOwnProperty(key)) {
 			// Set mmElementIDs
-			if (mmElmentIDs) {
-				this.previousCodeData[key].mmElementIDs = mmElmentIDs;
+			if (mmElementIDs) {
+				this.previousCodeData[key].mmElementIDs = mmElementIDs;
 			}
 
 			// Set relations
@@ -592,18 +582,39 @@ export default class UmlEditor extends React.Component {
 	 * Adds a node to the graph. Does not update the database.
 	 */
 	addNode(code) {
+		const _this = this;
+
 		const node = this.umlGraphView.addNode(code.id, code.name);
 
 		let x = 0;
 		let y = 0;
 
-		const codePosition = this.getCodePosition(code.id);
+		// Register code position
+		let codePosition = this.getCodePosition(code.id);
 
-		if (codePosition != null && !(codePosition.getX() == 0 && codePosition.getY() == 0)) {
+		if (codePosition == null) {
+			[x, y] = this.umlGraphView.getFreeNodePosition(node);
+
+			codePosition = {
+				codeId: code.codeID,
+				codesystemId: code.codesystemID,
+				x: x,
+				y: y
+			};
+			this.setCodePosition(code.id, codePosition);
+
+			let newCodePositions = [];
+			newCodePositions.push(codePosition);
+
+			// insert into database
+			UmlCodePositionEndpoint.insertCodePositions(newCodePositions).then((resp) => {
+				let updatedCodePositions = resp.items || [];
+				_this.refreshUmlCodePositions(updatedCodePositions);
+			});
+
+		} else {
 			x = codePosition.getX();
 			y = codePosition.getY();
-		} else {
-			[x, y] = this.umlGraphView.getFreeNodePosition(node);
 		}
 
 		this.umlGraphView.moveNode(node, x, y);
@@ -798,9 +809,9 @@ export default class UmlEditor extends React.Component {
 		const currentNodeAction = this.metaModelMapper.evaluateCode(code);
 
 		// Mapping action changed?
-		if (oldNodeAction != newNodeAction) {
-			this.metaModelRunner.undoCode(oldNodeAction, code);
-			this.metaModelRunner.runCode(newNodeAction, code);
+		if (previousNodeAction != currentNodeAction) {
+			this.metaModelRunner.undoCode(previousNodeAction, code);
+			this.metaModelRunner.runCode(currentNodeAction, code);
 		}
 
 		// Re-evaluate outgoing relations
@@ -855,7 +866,7 @@ export default class UmlEditor extends React.Component {
 	 */
 	checkSingleRelation(relation, sourceCode, destinationCode, previousSourceCode, previousDestinationCode) {
 		const relationMetaModelId = relation.mmElementId;
-		const relationMetaModelEntity = this.umlEditor.getMetaModelEntityById(relationMetaModelElementId);
+		const relationMetaModelEntity = this.getMetaModelEntityById(relationMetaModelId);
 
 		// Evaluate actions
 		let oldAction = this.metaModelMapper.evaluateCodeRelation(previousSourceCode, previousDestinationCode, relation);
