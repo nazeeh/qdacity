@@ -486,8 +486,10 @@ export default class UmlGraphView extends React.Component {
 
 		if (allNodes != null) {
 			for (let i = 0; i < allNodes.length; i++) {
-				if (allNodes[i].value.getCodeId() == id) {
-					return allNodes[i];
+				if (allNodes[i].vertex) {
+					if (allNodes[i].value.getCodeId() == id) {
+						return allNodes[i];
+					}
 				}
 			}
 		}
@@ -534,7 +536,7 @@ export default class UmlGraphView extends React.Component {
 					let node = allNodes[i];
 
 					// Node will intersect with itself
-					if (node.mxObjectId != cell.mxObjectId) {
+					if (node.mxObjectId != cell.mxObjectId && node.vertex) {
 						// Return false if areas intersect
 						const x2 = node.getGeometry().x;
 						const y2 = node.getGeometry().y;
@@ -623,7 +625,7 @@ export default class UmlGraphView extends React.Component {
 		const _this = this;
 
 		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			_this.expandCell(cell);
+			if (cell.vertex) _this.expandCell(cell);
 		});
 	}
 
@@ -631,7 +633,7 @@ export default class UmlGraphView extends React.Component {
 		const _this = this;
 
 		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			_this.collapseCell(cell);
+			if (cell.vertex) _this.collapseCell(cell);
 		});
 	}
 
