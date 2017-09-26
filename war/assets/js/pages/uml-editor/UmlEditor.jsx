@@ -164,6 +164,7 @@ export default class UmlEditor extends React.Component {
 
 		let relations = [];
 
+		// Map codes first and relations after
 		for (let i = 0; i < codes.length; i++) {
 			const code = codes[i];
 
@@ -174,6 +175,10 @@ export default class UmlEditor extends React.Component {
 			const previousMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs.slice() /*copy*/ : [];
 			const previousRelations = code.relations != null ? code.relations.map(relation => Object.assign({}, relation)) /*copy*/ : [];
 			this.setPreviousCodeData(code.id, previousMetaModelElementIds, previousRelations);
+		}
+
+		for (let i = 0; i < codes.length; i++) {
+			const code = codes[i];
 
 			// Relations mapping
 			if (code.relations != null) {
