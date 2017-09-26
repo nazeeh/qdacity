@@ -16,4 +16,11 @@ export default class CodePositionEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static removeCodePosition(id) {
+		var apiMethod = gapi.client.qdacity.umlCodePosition.removeCodePosition({
+			'id': id
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
 }

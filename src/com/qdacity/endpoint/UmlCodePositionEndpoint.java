@@ -16,10 +16,13 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.project.codesystem.Code;
+import com.qdacity.project.codesystem.CodeRelation;
 import com.qdacity.umleditor.UmlCodePosition;
 import com.qdacity.umleditor.UmlCodePositionList;
 
@@ -116,6 +119,33 @@ public class UmlCodePositionEndpoint {
 		}
 		
 		return new ArrayList<>(result);
+	}
+
+	/**
+	 * This method removes the entity with the given id.
+	 *
+	 * @param id the primary key of the entity to be deleted.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "umlCodePosition.removeCodePosition",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public void removeCodePosition(@Named("id") Long id, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		
+		try {
+			UmlCodePosition umlCodePosition = mgr.getObjectById(UmlCodePosition.class, id);
+			
+			// Check if user is authorized
+			Authorization.checkAuthorization(umlCodePosition, user);
+			
+			mgr.deletePersistent(umlCodePosition);
+
+		} finally {
+			mgr.close();
+		}
 	}
 
 	/**

@@ -217,7 +217,7 @@ export default class UmlEditor extends React.Component {
 
 			UmlCodePositionEndpoint.insertOrUpdateCodePositions(umlCodePositions).then((resp) => {
 				let updatedCodePositions = resp.items || [];
-				
+
 				_this.refreshUmlCodePositions(updatedCodePositions);
 			});
 		});
@@ -625,10 +625,19 @@ export default class UmlEditor extends React.Component {
 	 */
 	codeRemoved(code) {
 		if (this.isCodeMapped(code)) {
-			this.removeCode(code);
+			this.removeNode(code);
 		}
 
 		this.removePreviousCodeData(code.id);
+
+		// Remove code position
+		const codePosition = this.getCodePosition(code.codeID);
+
+		this.removeCodePosition(code.codeID);
+
+		UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then((resp) => {
+			// Do nothing
+		});
 	}
 
 	/**
