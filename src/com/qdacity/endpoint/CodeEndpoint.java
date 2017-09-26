@@ -131,9 +131,9 @@ public class CodeEndpoint {
 			}
 			
 			// Log change
-			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
-			ChangeLogger.logChange(change);
+			 CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			 Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
+			 ChangeLogger.logChange(change);
 
 		} finally {
 			mgr.close();

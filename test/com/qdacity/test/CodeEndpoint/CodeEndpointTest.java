@@ -2,6 +2,7 @@ package com.qdacity.test.CodeEndpoint;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,19 +43,20 @@ public class CodeEndpointTest {
 	 */
 	@Test
 	public void testCodeInsert() {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CodeSystemTestHelper.addCodeSystem(1L, testUser);
+		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
 		try {
 			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
 		} catch (UnauthorizedException e) {
-			// TODO Auto-generated catch block
+			fail("User could not be authorized for code creation");
 			e.printStackTrace();
 		}
 
 		CodeEndpointTestHelper.addCode(1L, 1L, 1L, "authorName", testUser);
 
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
 	}
 }
