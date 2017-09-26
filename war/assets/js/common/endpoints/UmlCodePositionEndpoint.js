@@ -10,15 +10,8 @@ export default class CodePositionEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static insertCodePositions(umlCodePositions) {
-		var apiMethod = gapi.client.qdacity.umlCodePosition.insertCodePositions({
-			'umlCodePositions': umlCodePositions
-		});
-		return Promisizer.makePromise(apiMethod);
-	}
-
-	static updateCodePositions(umlCodePositions) {
-		var apiMethod = gapi.client.qdacity.umlCodePosition.updateCodePositions({
+	static insertOrUpdateCodePositions(umlCodePositions) {
+		var apiMethod = gapi.client.qdacity.umlCodePosition.insertOrUpdateCodePositions({
 			'umlCodePositions': umlCodePositions
 		});
 		return Promisizer.makePromise(apiMethod);

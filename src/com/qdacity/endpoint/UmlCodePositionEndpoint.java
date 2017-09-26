@@ -6,12 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
 import com.google.api.server.spi.config.Api;
@@ -22,8 +20,6 @@ import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.metamodel.MetaModelEntity;
-import com.qdacity.project.codesystem.Code;
 import com.qdacity.umleditor.UmlCodePosition;
 import com.qdacity.umleditor.UmlCodePositionList;
 
@@ -75,16 +71,16 @@ public class UmlCodePositionEndpoint {
 	}
 	
 	/**
-	 * Inserts multiple UmlCodePosition entities into the database.
+	 * Inserts or updates multiple UmlCodePosition entities into the database.
 	 * 
 	 * @param umlCodePositionList  the code position entities
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(
-		name = "umlCodePosition.insertCodePositions",
+		name = "umlCodePosition.insertOrUpdateCodePositions",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public List<UmlCodePosition> insertCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
+	public List<UmlCodePosition> insertOrUpdateCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
 
@@ -122,59 +118,6 @@ public class UmlCodePositionEndpoint {
 		return new ArrayList<>(result);
 	}
 
-	/**
-	 * Updates multiple UmlCodePosition entries.
-	 * 
-	 * @param umlCodePositionList  the list of entities to be updated.
-	 * @throws UnauthorizedException
-	 */
-	@ApiMethod(
-		name = "umlCodePosition.updateCodePositions",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
-	public List<UmlCodePosition> updateCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
-
-		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
-
-		// List is empty
-		if (umlCodePositions.size() <= 0) {
-			return new ArrayList<>();
-		}
-		
-		UmlCodePosition firstUmlCodePosition = umlCodePositions.get(0);
-		
-		// Check if user is authorized
-		Authorization.checkAuthorization(firstUmlCodePosition, user);
-		
-		for (UmlCodePosition umlCodePosition : umlCodePositions) {
-			// Check authorization
-			if (!umlCodePosition.getCodesystemId().equals(firstUmlCodePosition.getCodesystemId())) {
-				throw new IllegalArgumentException("The CodeSystemIds for the codes are not equal. " + firstUmlCodePosition.getCodesystemId() + " / " + umlCodePosition.getCodesystemId());
-			}
-			
-			// Validate
-			validateUmlCodePosition(umlCodePosition);
-			
-			// Object exists
-			if (containsUmlCodePosition(umlCodePosition)) {
-				throw new EntityNotFoundException("Object does not exist. id: " + umlCodePosition.getId() + ", codesystemId: " + umlCodePosition.getCodesystemId() + ", codeId: " + umlCodePosition.getCodeId());				
-			}
-		}
-
-		// Persist
-		Collection<UmlCodePosition> result;
-		
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			result = mgr.makePersistentAll(umlCodePositions);
-			
-		} finally {
-			mgr.close();
-		}
-
-		return new ArrayList<>(result);
-	}
-	
 	/**
 	 * Checks whether an UmlCodePosition object is valid.
 	 * 
@@ -187,25 +130,6 @@ public class UmlCodePositionEndpoint {
 		if (umlCodePosition.getCodesystemId() == null || umlCodePosition.getCodesystemId() <= 0) {
 			throw new IllegalArgumentException("UmlCodePosition codesystemId may not be null or empty");
 		}
-	}
-
-	/**
-	 * Checks whether the entity exists in the database.
-	 * 
-	 * @param umlCodePosition
-	 * @return Returns true if they entity exists already
-	 */
-	private boolean containsUmlCodePosition(UmlCodePosition umlCodePosition) {
-		PersistenceManager mgr = getPersistenceManager();
-		boolean contains = true;
-		try {
-			mgr.getObjectById(UmlCodePosition.class, umlCodePosition.getId());
-		} catch (javax.jdo.JDOObjectNotFoundException ex) {
-			contains = false;
-		} finally {
-			mgr.close();
-		}
-		return contains;
 	}
 
 	private static PersistenceManager getPersistenceManager() {

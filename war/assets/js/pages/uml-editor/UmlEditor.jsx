@@ -197,7 +197,7 @@ export default class UmlEditor extends React.Component {
 				if (_this.umlGraphView.isCellUmlClass(cell)) {
 					let code = _this.getCodeByNode(cell);
 
-					let codePosition = _this.getCodePosition(code.id);
+					let codePosition = _this.getCodePosition(code.codeID);
 					codePosition.x = cell.getGeometry().x;
 					codePosition.y = cell.getGeometry().y;
 
@@ -207,7 +207,7 @@ export default class UmlEditor extends React.Component {
 
 			console.log('Updating ' + umlCodePositions.length + ' UmlCodePosition entries in the database...');
 
-			UmlCodePositionEndpoint.updateCodePositions(umlCodePositions).then((resp) => {
+			UmlCodePositionEndpoint.insertOrUpdateCodePositions(umlCodePositions).then((resp) => {
 				let updatedCodePositions = resp.items || [];
 				console.log('Updated ' + updatedCodePositions.length + ' UmlCodePosition entries in the database.');
 
@@ -590,7 +590,7 @@ export default class UmlEditor extends React.Component {
 		let y = 0;
 
 		// Register code position
-		let codePosition = this.getCodePosition(code.id);
+		let codePosition = this.getCodePosition(code.codeID);
 
 		if (codePosition == null) {
 			[x, y] = this.umlGraphView.getFreeNodePosition(node);
@@ -601,20 +601,20 @@ export default class UmlEditor extends React.Component {
 				x: x,
 				y: y
 			};
-			this.setCodePosition(code.id, codePosition);
+			this.setCodePosition(code.codeID, codePosition);
 
 			let newCodePositions = [];
 			newCodePositions.push(codePosition);
 
 			// insert into database
-			UmlCodePositionEndpoint.insertCodePositions(newCodePositions).then((resp) => {
+			UmlCodePositionEndpoint.insertOrUpdateCodePositions(newCodePositions).then((resp) => {
 				let updatedCodePositions = resp.items || [];
 				_this.refreshUmlCodePositions(updatedCodePositions);
 			});
 
 		} else {
-			x = codePosition.getX();
-			y = codePosition.getY();
+			x = codePosition.x;
+			y = codePosition.y;
 		}
 
 		this.umlGraphView.moveNode(node, x, y);
