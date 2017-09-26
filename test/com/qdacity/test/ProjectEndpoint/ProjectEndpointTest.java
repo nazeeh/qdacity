@@ -17,6 +17,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.qdacity.endpoint.CodeSystemEndpoint;
+import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class ProjectEndpointTest {
@@ -99,6 +101,39 @@ public class ProjectEndpointTest {
 		}
 
 		assertEquals(0, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+	}
+
+	/**
+	 * Tests if a a deleted project also deletes the associated code system
+	 */
+	@Test
+	public void testProjectRemoveWithCodesystem() {
+		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+
+		try {
+			CodeSystem cs = new CodeSystem();
+			cs.setId(1L);
+			CodeSystemEndpoint cse = new CodeSystemEndpoint();
+			cse.insertCodeSystem(cs, loggedInUser);
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+		assertEquals(1, ds.prepare(new Query("CodeSystem")).countEntities(withLimit(10)));
+
+		try {
+			ProjectEndpointTestHelper.removeProject(1L, loggedInUser);
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for project removal");
+			e.printStackTrace();
+		}
+
+		assertEquals(0, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+		assertEquals(0, ds.prepare(new Query("CodeSystem")).countEntities(withLimit(10)));
 	}
 
 	/**
