@@ -28,7 +28,7 @@ export default class UmlGraphView extends React.Component {
 		this.autoLayoutOffsetTop = 50;
 		this.autoLayoutOffsetLeft = 60;
 		this.autoLayoutOffsetNextX = 50;
-        this.autoLayoutOffsetNextY = 30;
+		this.autoLayoutOffsetNextY = 30;
 
 		this.umlClassDefaultWidth = 162;
 		this.umlClassDefaultHeight = 75; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
