@@ -234,18 +234,6 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
 	codesystemSelectionChanged(code) {
 		const node = this.getNodeByCodeId(code.id);
 
@@ -265,27 +253,6 @@ export default class UmlEditor extends React.Component {
 			}
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * Callback for the umlGraphView zoom function. 
@@ -329,52 +296,6 @@ export default class UmlEditor extends React.Component {
 			_this.createMethod(code, data.selectedCode);
 		});
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// THIS WAS IN UPDATECODE AT THE END
-	//    Select code if necessary
-	//    if (this.props.codesystemView.getSelected().codeID == code.codeID) {
-	//        if (umlClass.getNode() != null) {
-	//            this.umlGraphView.selectCell(umlClass.getNode());
-	//        }
-	//    }
-
-
-
-	// TODO: if we call createNewRelation after a new edge was connected, the edge will be added a 2nd time. how do we prevent this?
-
-
-
-
 
 	getCodePosition(codeId) {
 		const key = codeId;
@@ -441,12 +362,6 @@ export default class UmlEditor extends React.Component {
 			delete this.previousCodeData[key];
 		}
 	}
-
-
-
-
-
-
 
 	/**
 	 * Returns an array containing all codes.
