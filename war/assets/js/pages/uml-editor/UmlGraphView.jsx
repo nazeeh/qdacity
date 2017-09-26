@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import Cell from './Cell.jsx';
 import CellValue from './CellValue.js';
-import EdgeValue from './CellValue.js';
+import EdgeValue from './EdgeValue.js';
 
 import {
 	EdgeType
@@ -685,7 +685,6 @@ export default class UmlGraphView extends React.Component {
 		let edge;
 		try {
 			edge = this.graph.insertEdge(parent, null, edgeValue, nodeFrom, nodeTo, edgeType);
-
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
@@ -726,17 +725,16 @@ export default class UmlGraphView extends React.Component {
 
 		let cell;
 		try {
-			// TODO use proper style
-			// TODO what is actually necessary for the style?
-			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
-			cell = new mxCell(name, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
-			cell.vertex = true;
-
 			const cellValue = new CellValue();
 			cellValue.setCodeId(codeId);
 			cellValue.setHeader(name);
 
-			cell.value = cellValue;
+			// TODO use proper style
+			// TODO what is actually necessary for the style?
+			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
+			cell = new mxCell(cellValue, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
+			cell.vertex = true;
+
 			this.graph.addCell(cell);
 
 		} finally {
