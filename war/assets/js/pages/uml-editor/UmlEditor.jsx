@@ -215,12 +215,9 @@ export default class UmlEditor extends React.Component {
 				}
 			});
 
-			console.log('Updating ' + umlCodePositions.length + ' UmlCodePosition entries in the database...');
-
 			UmlCodePositionEndpoint.insertOrUpdateCodePositions(umlCodePositions).then((resp) => {
 				let updatedCodePositions = resp.items || [];
-				console.log('Updated ' + updatedCodePositions.length + ' UmlCodePosition entries in the database.');
-
+				
 				_this.refreshUmlCodePositions(updatedCodePositions);
 			});
 		});
