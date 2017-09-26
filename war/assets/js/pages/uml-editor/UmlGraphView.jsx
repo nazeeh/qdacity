@@ -25,8 +25,10 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.autoLayoutOffsetTop = 60;
+		this.autoLayoutOffsetTop = 50;
 		this.autoLayoutOffsetLeft = 60;
+		this.autoLayoutOffsetNextX = 50;
+        this.autoLayoutOffsetNextY = 30;
 
 		this.umlClassDefaultWidth = 162;
 		this.umlClassDefaultHeight = 75; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
@@ -556,8 +558,8 @@ export default class UmlGraphView extends React.Component {
 		// Find position
 		let x = this.autoLayoutOffsetLeft;
 		let y = this.autoLayoutOffsetTop;
-		let offsetX = this.umlClassDefaultWidth + 30;
-		let offsetY = this.umlClassDefaultHeight + 30;
+		let offsetX = this.umlClassDefaultWidth + this.autoLayoutOffsetNextX;
+		let offsetY = this.umlClassDefaultHeight + this.autoLayoutOffsetNextY;
 
 		while (true) {
 			for (let i = 0; i < 10; i++) {
