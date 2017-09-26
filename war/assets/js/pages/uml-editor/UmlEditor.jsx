@@ -170,6 +170,11 @@ export default class UmlEditor extends React.Component {
 			// Code mapping
 			this.metaModelRunner.evaluateAndRunCode(code);
 
+			// Initialize previous code data
+			const previousMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs.slice() /*copy*/ : [];
+			const previousRelations = code.relations != null ? code.relations.map(relation => Object.assign({}, relation)) /*copy*/ : [];
+			this.setPreviousCodeData(code.id, previousMetaModelElementIds, previousRelations);
+
 			// Relations mapping
 			if (code.relations != null) {
 				for (let j = 0; j < code.relations.length; j++) {
@@ -417,7 +422,10 @@ export default class UmlEditor extends React.Component {
 				this.previousCodeData[key].relations = relations;
 			}
 		} else {
-			throw new Error('Previous code data for id ' + codeId + ' does not exist.');
+			this.previousCodeData[key] = {
+				mmElementIDs: mmElementIDs != null ? mmElementIDs : [],
+				relations: relations != null ? relations : []
+			};
 		}
 	}
 
