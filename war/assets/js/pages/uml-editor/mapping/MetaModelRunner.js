@@ -23,7 +23,7 @@ export default class MetaModelRunner {
 
 	evaluateAndRunCodeRelation(sourceCode, destinationCode, relation) {
 		const action = this.metaModelMapper.evaluateCodeRelation(sourceCode, destinationCode, relation);
-		this.runCodeAction(action, sourceCode, destinationCode, relation);
+		this.runCodeRelation(action, sourceCode, destinationCode, relation);
 		return action;
 	}
 

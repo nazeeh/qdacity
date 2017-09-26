@@ -7,6 +7,8 @@ import {
 import MetaModelMapper from './mapping/MetaModelMapper.js';
 import MetaModelRunner from './mapping/MetaModelRunner.js';
 
+import UmlCodePosition from './UmlCodePosition.js';
+
 import Toolbar from './toolbar/Toolbar.jsx';
 import UmlGraphView from './UmlGraphView.jsx';
 
@@ -39,6 +41,7 @@ export default class UmlEditor extends React.Component {
 		this.mmRelation = null;
 
 		this.previousCodeData = {};
+		this.codePositions = {};
 
 		this.codesystemLoaded = false;
 		this.metamodelLoaded = false;
@@ -114,14 +117,14 @@ export default class UmlEditor extends React.Component {
 		this.metaModelMapper = new MetaModelMapper(this);
 		this.metaModelRunner = new MetaModelRunner(this, this.metaModelMapper);
 
-		this.initializeEventListeners();
+		this.initializeSelection();
 
 		this.initializeNodes();
 
 		this.initializePositions();
 	}
 
-	initializeEventListeners() {
+	initializeSelection() {
 		const _this = this;
 
 		this.umlGraphView.addSelectionChangedEventListener((sender, evt) => {
@@ -141,18 +144,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	initializeNodes() {
-		// Convert codes into a simple array
-		let codes = [];
-
-		let convertCodeIntoSimpleArray = (code) => {
-			codes.push(code);
-
-			if (code.children) {
-				code.children.forEach(convertCodeIntoSimpleArray);
-			}
-		}
-
-		this.props.codesystemView.getCodesystem().forEach(convertCodeIntoSimpleArray);
+		let codes = this.getCodes();
 
 		let relations = [];
 
@@ -178,100 +170,24 @@ export default class UmlEditor extends React.Component {
 	initializePositions() {
 		let _this = this;
 
-		console.log('Loading UmlCodePosition entries from the database...');
+		// Add cells moved event listener
+		_this.initCellsMovedEventListener();
 
 		UmlCodePositionEndpoint.listCodePositions(this.props.codesystemId).then(function (resp) {
 			let umlCodePositions = resp.items || [];
 
-			console.log('Loaded ' + umlCodePositions.length + ' UmlCodePosition entries from the database. Found ' + _this.umlClassManager.size() + ' codes.');
-
 			if (umlCodePositions.length > 0) {
-				// Add cells moved event listener
-				_this.initCellsMovedEventListener();
 
 				// Set CodePositions
 				_this.refreshUmlCodePositions(umlCodePositions);
 
-				// Unregistered codes exist
-				if (umlCodePositions.length != _this.umlClassManager.size()) {
-					// Find new codes
-					let unregisteredUmlCodePositions = [];
+				this.codePositions.keys().forEach((codeId) => {
+					const codePosition = _this.getCodePosition(codeId);
+					const code = _this.getCodeByCodeId(codeId);
 
-					_this.umlClassManager.getAll().forEach((umlClass) => {
-						let exists = umlCodePositions.find((umlCodePosition) => umlCodePosition.codeId == umlClass.getCode().codeID) != null;
-
-						let code = umlClass.getCode();
-						let node = umlClass.getNode();
-
-						if (!exists) {
-							let [x, y] = _this.umlGraphView.getFreeNodePosition(node);
-
-							if (node != null) {
-								x = node.getGeometry().x;
-								y = node.getGeometry().y;
-							}
-
-							let umlCodePosition = {
-								'codeId': code.codeID,
-								'codesystemId': _this.props.codesystemId,
-								'x': x,
-								'y': y
-							};
-
-							unregisteredUmlCodePositions.push(umlCodePosition);
-							umlCodePositions.push(umlCodePosition);
-						}
-					});
-
-					_this.insertUnregisteredUmlCodePositions(unregisteredUmlCodePositions);
-				}
-
-				umlCodePositions.forEach((umlCodePosition) => {
-					let umlClass = _this.umlClassManager.getByCodeId(umlCodePosition.codeId);
-
-					if (umlClass.getNode() != null) {
-						_this.umlGraphView.moveNode(umlClass.getNode(), umlCodePosition.x, umlCodePosition.y);
+					if (_this.isCodeMapped(code)) {
+						_this.umlGraphView.moveNode(_this.getNodeByCodeId(code.id), codePosition.x, codePosition.y);
 					}
-				});
-			} else {
-				console.log('Applying layout');
-
-				// Apply layout
-				_this.umlGraphView.applyLayout();
-
-				// Add cells moved event listener
-				// This happens after apply layout - otherwise apply layout triggers the event
-				_this.initCellsMovedEventListener();
-
-				umlCodePositions = [];
-
-				_this.umlClassManager.getAll().forEach((umlClass) => {
-					let code = umlClass.getCode();
-					let node = umlClass.getNode();
-
-					let [x, y] = _this.umlGraphView.getFreeNodePosition(node);
-
-					if (node != null) {
-						x = node.getGeometry().x;
-						y = node.getGeometry().y;
-					}
-
-					umlCodePositions.push({
-						'codeId': code.codeID,
-						'codesystemId': _this.props.codesystemId,
-						'x': x,
-						'y': y
-					});
-				});
-
-				console.log('Inserting ' + umlCodePositions.length + ' new UmlCodePosition entries into the database...');
-
-				UmlCodePositionEndpoint.insertCodePositions(umlCodePositions).then((resp) => {
-					let insertedCodePositions = resp.items || [];
-
-					console.log('Inserted ' + insertedCodePositions.length + ' new UmlCodePosition entries into the database.');
-
-					_this.refreshUmlCodePositions(insertedCodePositions);
 				});
 			}
 		});
@@ -291,12 +207,11 @@ export default class UmlEditor extends React.Component {
 				if (_this.umlGraphView.isCellUmlClass(cell)) {
 					let code = _this.getCodeByNode(cell);
 
-					// TODO umlCodePosition
-					//					let umlCodePosition = umlClass.getUmlCodePosition();
-					//					umlCodePosition.x = node.getGeometry().x;
-					//					umlCodePosition.y = node.getGeometry().y;
-					//
-					//					umlCodePositions.push(umlCodePosition);
+					let codePosition = _this.getCodePosition(code.id);
+					codePosition.setX(node.getGeometry().x);
+					codePosition.setX(node.getGeometry().y);
+
+					umlCodePositions.push(codePosition);
 				}
 			});
 
@@ -311,32 +226,24 @@ export default class UmlEditor extends React.Component {
 		});
 	}
 
-	insertUnregisteredUmlCodePositions(unregisteredUmlCodePositions) {
-		const _this = this;
-
-		_this.refreshUmlCodePositions(unregisteredUmlCodePositions);
-
-		console.log('Inserting ' + unregisteredUmlCodePositions.length + ' unregistered UmlCodePosition entries into the database...');
-
-		UmlCodePositionEndpoint.insertCodePositions(unregisteredUmlCodePositions).then((resp) => {
-			let insertedCodePositions = resp.items || [];
-
-			console.log('Inserted ' + insertedCodePositions.length + ' unregistered UmlCodePosition entries into the database.');
-
-			_this.refreshUmlCodePositions(insertedCodePositions);
-		});
-	}
-
 	refreshUmlCodePositions(newUmlCodePositions) {
-		console.log('Refreshing UmlCodePositions.');
-
 		const _this = this;
+
 		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			// TODO
-			//			let umlClass = _this.umlClassManager.getByCodeId(newUmlCodePosition.codeId);
-			//			umlClass.setUmlCodePosition(newUmlCodePosition);
+			_this.setCodePosition(newUmlCodePosition.getCodeId(), newUmlCodePosition);
 		});
 	}
+
+
+
+
+
+
+
+
+
+
+
 
 
 	codesystemSelectionChanged(code) {
@@ -469,6 +376,30 @@ export default class UmlEditor extends React.Component {
 
 
 
+	getCodePosition(codeId) {
+		const key = codeId;
+
+		if (this.codePositions.hasOwnProperty(key)) {
+			return this.previousCodeData[key];
+		}
+
+		return null;
+	}
+
+	setCodePosition(codeId, umlCodePosition) {
+		const key = codeId;
+
+		this.codePositions[key] = umlCodePosition;
+	}
+
+	removeCodePosition(codeId) {
+		const key = codeId;
+
+		if (this.codePositions.hasOwnProperty(key)) {
+			delete this.codePositions[key];
+		}
+	}
+
 	getPreviousCodeData(codeId) {
 		const key = codeId;
 
@@ -514,7 +445,25 @@ export default class UmlEditor extends React.Component {
 
 
 
+	/**
+	 * Returns an array containing all codes.
+	 */
+	getCodes() {
+		// Convert codes into a simple array
+		let codes = [];
 
+		let convertCodeIntoSimpleArray = (code) => {
+			codes.push(code);
+
+			if (code.children) {
+				code.children.forEach(convertCodeIntoSimpleArray);
+			}
+		}
+
+		this.props.codesystemView.getCodesystem().forEach(convertCodeIntoSimpleArray);
+
+		return codes;
+	}
 
 	/**
 	 * Returns the code with the given id. 
@@ -527,7 +476,7 @@ export default class UmlEditor extends React.Component {
 	 * Returns the code with the given codeId. 
 	 */
 	getCodeByCodeId(codeId) {
-		return this.props.getCodeByCodeId(id);
+		return this.props.getCodeByCodeId(codeId);
 	}
 
 	/**
@@ -648,15 +597,14 @@ export default class UmlEditor extends React.Component {
 		let x = 0;
 		let y = 0;
 
-		// TODO does umlcodeposition exist?
-		//const umlCodePosition = umlClass.getUmlCodePosition();
+		const codePosition = this.getCodePosition(code.id);
 
-		//        if (umlCodePosition != null && !(umlCodePosition.x == 0 && umlCodePosition.y == 0)) {
-		//            x = umlCodePosition.x;
-		//            y = umlCodePosition.y;
-		//        } else {
-		[x, y] = this.umlGraphView.getFreeNodePosition(node);
-		//        }
+		if (codePosition != null && !(codePosition.getX() == 0 && codePosition.getY() == 0)) {
+			x = codePosition.getX();
+			y = codePosition.getY();
+		} else {
+			[x, y] = this.umlGraphView.getFreeNodePosition(node);
+		}
 
 		this.umlGraphView.moveNode(node, x, y);
 		this.umlGraphView.recalculateNodeSize(node);

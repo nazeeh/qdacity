@@ -291,7 +291,7 @@ export default class CodingEditor extends React.Component {
                 codesystemId={this.state.project.getCodesystemID()} 
                 codesystemView={this.codesystemViewRef} 
                 getCodeById={this.getCodeById}
-                getCodeByCodeID={this.getCodeByCodeID}
+                getCodeByCodeId={this.getCodeByCodeID}
                 updateCode={this.updateSelectedCode} 
                 refreshCodeView={this.codeViewRef.updateCode} 
                 createCode={this.createCode} 
