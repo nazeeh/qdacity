@@ -35,7 +35,7 @@ export default class UmlCodePropertyModal extends VexModal {
 				codeId: destinationCode.codeID
 			};
 
-			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(sourceCode, destinationCode, relation) != _this.mappingAction;
+			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(this.sourceCode, destinationCode, relation) != _this.mappingAction;
 		}
 
 		const isCodeSelectable = (code) => {
