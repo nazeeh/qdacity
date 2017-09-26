@@ -889,7 +889,7 @@ export default class UmlEditor extends React.Component {
 		if (oldAction != newAction) {
 			this.metaModelRunner.undoCodeRelation(oldAction, sourceCode, destinationCode, relation);
 
-			this.metaModelRunner.undoCodeRelation(newAction, sourceCode, destinationCode, relation);
+			this.metaModelRunner.runCodeRelation(newAction, sourceCode, destinationCode, relation);
 		}
 	}
 
