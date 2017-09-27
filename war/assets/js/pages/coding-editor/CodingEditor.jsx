@@ -172,7 +172,7 @@ export default class CodingEditor extends React.Component {
 
 	initEditorCtrl() {
 		this.setState({
-			editorCtrl: new EditorCtrl(this.getCodeByCodeID,this.state.showAgreementMap)
+			editorCtrl: new EditorCtrl(this.getCodeByCodeID, this.state.showAgreementMap)
 		});
 
 	}

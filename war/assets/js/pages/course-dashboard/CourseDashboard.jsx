@@ -27,7 +27,7 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	init() {
-			this.setCourseProperties();
+		this.setCourseProperties();
 	}
 
 	setCourseProperties() {
