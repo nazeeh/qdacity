@@ -24,8 +24,6 @@ public class CodeEndpointTest {
 
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 
-	// private final LocalServiceTestHelper queueHelper = new LocalServiceTestHelper(new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true));
-
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -58,5 +56,20 @@ public class CodeEndpointTest {
 		CodeEndpointTestHelper.addCode(1L, 1L, 1L, "authorName", testUser);
 
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
+	}
+
+	/**
+	 * Tests if a registered user can create a new code for a code system
+	 */
+	@Test
+	public void testCodeRemove() {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		testCodeInsert();
+		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+
+		CodeEndpointTestHelper.removeCode(1L, testUser);
+
+		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+
 	}
 }

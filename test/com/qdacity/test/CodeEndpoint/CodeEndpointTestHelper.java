@@ -20,4 +20,14 @@ public class CodeEndpointTestHelper {
 			fail("User could not be authorized for code creation");
 		}
 	}
+
+	static public void removeCode(Long id, com.google.appengine.api.users.User loggedInUser) {
+		try {
+			CodeEndpoint ce = new CodeEndpoint();
+			ce.removeCode(id, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for code creation");
+		}
+	}
 }
