@@ -92,7 +92,7 @@ export default class CodePositionManager {
 		let codePositions = [];
 		codePositions.push(codePosition);
 
-		this.codePositionManager.insertOrUpdateCodePositions(codePositions);
+		this.insertOrUpdateCodePositions(codePositions);
 	}
 
 	/**
