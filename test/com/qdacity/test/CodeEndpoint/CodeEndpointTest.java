@@ -55,7 +55,7 @@ public class CodeEndpointTest {
 			e.printStackTrace();
 		}
 
-		CodeEndpointTestHelper.addCode(1L, 1L, 1L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(2L, 2L, 1L, 1L, "authorName", "fff", testUser);
 
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
 	}
@@ -87,15 +87,40 @@ public class CodeEndpointTest {
 		PersistenceManager mgr = getPersistenceManager();
 		mgr.setIgnoreCache(true);
 		try {
-			Code code = mgr.getObjectById(Code.class, 1L);
+			Code code = mgr.getObjectById(Code.class, 2L);
 			code.setColor("f0f");
 			CodeEndpointTestHelper.updateCode(code, testUser);
-			code = mgr.getObjectById(Code.class, 1L);
+			code = mgr.getObjectById(Code.class, 2L);
 			assertEquals("f0f", code.getColor());
 		} finally {
 			mgr.close();
 		}
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+
+	}
+
+	/**
+	 * Tests if a registered user can relocate the properties of a code in a project he is authorized for
+	 */
+	@Test
+	public void testCodeRelocate() {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		testCodeInsert();
+		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 1L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(44L, 4L, 1L, 1L, "authorName", "fff", testUser);
+		assertEquals(4, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+
+		PersistenceManager mgr = getPersistenceManager();
+		mgr.setIgnoreCache(true);
+		try {
+			CodeEndpointTestHelper.relocateCode(33L, 2L, testUser);
+			CodeEndpointTestHelper.relocateCode(44L, 2L, testUser);
+
+			Code code = mgr.getObjectById(Code.class, 2L);
+			assertEquals(2, code.getSubCodesIDs().size());
+		} finally {
+			mgr.close();
+		}
 
 	}
 
