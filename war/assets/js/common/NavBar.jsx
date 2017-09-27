@@ -12,7 +12,7 @@ const StyledSigninTab = styled.li `
 `;
 
 const StyledNavbarItem = styled.a `
-	color: #323232 !important;
+	color: ${props => props.theme.defaultText} !important;
 `;
 
 export default class NavBar extends React.Component {
@@ -52,7 +52,7 @@ export default class NavBar extends React.Component {
 								<li><StyledNavbarItem href="/#about">About</StyledNavbarItem></li>
 								<li><StyledNavbarItem href="/#contact">Contact</StyledNavbarItem></li>
 								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
-									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showAccountDropdown}>
+									<StyledNavbarItem  className="dropdownToggle clickable" onClick={this.showAccountDropdown}>
 										Account <b className="caret"></b>
 									</StyledNavbarItem>
 			 						<div id="accountView" className="dropdown-menu dropdownContent">

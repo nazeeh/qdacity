@@ -13,8 +13,9 @@ import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.d
 
 export default class IntercoderAgreement extends VexModal {
 
-	constructor(report) {
+	constructor(report, history) {
 		super();
+		this.history = history;
 		this.formElements = '';
 		if (report.averageAgreementCsvString && report.averageAgreementHeaderCsvString) {
 			var headRow = report.averageAgreementHeaderCsvString.split(",");
@@ -28,7 +29,11 @@ export default class IntercoderAgreement extends VexModal {
 			this.formElements += '</tr>';
 			this.formElements += '<tr>';
 			for (var cell in avgRow) {
-				this.formElements += '<td>' + avgRow[cell] + '</td>';
+				if (isNaN(cell)) {
+					this.formElements += '<td style="padding-right: 5px;">' + avgRow[cell] + '</td>';
+				} else {
+					this.formElements += '<td style="padding-right: 5px;">' + parseFloat(avgRow[cell]).toFixed(4) + '</td>';
+				}
 			}
 			this.formElements += '</tr>';
 			this.formElements += '</table></div>';
@@ -67,11 +72,12 @@ export default class IntercoderAgreement extends VexModal {
 
 						}
 					}));
-					buttonArray.push($.extend({}, vex.dialog.buttons.NO, {
+					buttonArray.push($.extend({}, vex.dialog.buttons.YES, {
 						className: 'vex-dialog-button-primary',
 						text: "Agreement Maps",
 						click: function ($vexContent, event) {
-							window.location.href = 'coding-editor.html?project=' + _this.report.revisionID + '&type=REVISION&report=' + _this.report.id + '&parentproject=' + _this.report.projectID;
+							_this.history.push('/CodingEditor?project=' + _this.report.revisionID + '&type=REVISION&report=' + _this.report.id + '&parentproject=' + _this.report.projectID);
+							vex.close(_this);
 						}
 					}));
 				}

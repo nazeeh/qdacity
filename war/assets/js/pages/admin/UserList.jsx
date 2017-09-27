@@ -12,9 +12,6 @@ export default class UserList extends React.Component {
 		this.selectUser = this.selectUser.bind(this);
 		this.updateUser = this.updateUser.bind(this);
 
-		$("body").css({
-			overflow: "auto"
-		});
 	}
 
 

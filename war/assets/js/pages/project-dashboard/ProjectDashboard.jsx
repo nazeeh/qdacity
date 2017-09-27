@@ -37,15 +37,13 @@ export default class ProjectDashboard extends React.Component {
 			googleChartsLoaded: false
 		};
 
-		$("body").css({
-			overflow: "auto"
-		});
 		this.props.chartScriptPromise.then(() => {
 			this.setState({
 				googleChartsLoaded: true
 			});
 		});
 		this.addReports = this.addReports.bind(this);
+		scroll(0, 0);
 	}
 
 	init() {
@@ -83,6 +81,7 @@ export default class ProjectDashboard extends React.Component {
 			project.setUmlEditorEnabled(resp.umlEditorEnabled);
 			project.setParentID(resp.projectID); // Only present for ValidationProject
 			project.setRevisionID(resp.revisionID); // Only present for ValidationProject
+			console.log (project.name);
 			_this.setState({
 				project: project
 			});

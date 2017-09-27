@@ -2,6 +2,9 @@ import React from 'react'
 import styled from 'styled-components';
 
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
+import {
+	BtnLg
+} from '../../common/styles/Btn.jsx';
 
 const StyledIntroBanner = styled.div `
 	background: url(../assets/img/index-top-man-writing.cache.jpg)  no-repeat center center;
@@ -9,20 +12,36 @@ const StyledIntroBanner = styled.div `
 `;
 
 const StyledFooterBanner = styled.div `
-	background: url(../assets/img/banner-bottom.cache.jpg) no-repeat center center;
+	background-color: ${props => props.theme.darkPaneBg };
 	background-size: cover;
+	color: white;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+  	grid-template-rows: 60px;
 `;
 
+const StyledFooterText = styled.span `
+	justify-self: center;
+	text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+	font-size: 3em;
+`;
 
+const StyledSocialMediaButtons = styled.div `
+	justify-self: start;
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 0;
+	&> button{
+		margin-left: 3px;
+		margin-right: 3px
+	}
+`;
 
 export default class Index extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
 
-		$("body").css({
-			overflow: "auto"
-		});
 	}
 
 
@@ -39,9 +58,9 @@ export default class Index extends React.Component {
 			                        <h1>QDAcity</h1>
 			                        <h3>QDA on steroids</h3>
 			                        <hr className="intro-divider"/>
-										<div>
+
 											<SigninWithGoogleBtn account={this.props.account} history={this.props.history} />
-										</div>
+
 			                    </div>
 			                </div>
 			            </div>
@@ -106,31 +125,28 @@ export default class Index extends React.Component {
 
 			        </div>
 			    </div>
-				<a  name="contact"></a>
-			    <StyledFooterBanner className="banner">
-
-			        <div className="container">
-
-			            <div className="row">
-			                <div className="col-lg-6">
-			                    <h2>Contact us directly</h2>
-			                </div>
-			                <div className="col-lg-6">
-			                    <ul className="list-inline banner-social-buttons">
-			                        <li>
-			                            <a href="https://twitter.com/osrgroup" className="btn btn-default btn-lg"><i className="fa fa-twitter fa-fw"></i> <span className="network-name">Twitter</span></a>
-			                        </li>
-			                        <li>
-			                            <a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308" className="btn btn-default btn-lg"><i className="fa fa-facebook-square fa-fw"></i> <span className="network-name">Facebook</span></a>
-			                        </li>
-			                        <li>
-			                            <a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support" className="btn btn-default btn-lg"><i className="fa fa-envelope-o fa-fw"></i> <span className="network-name">Email</span></a>
-			                        </li>
-			                    </ul>
-			                </div>
-			            </div>
-
-			        </div>
+			    <StyledFooterBanner>
+                    <StyledFooterText>Contact us directly</StyledFooterText>
+                    <StyledSocialMediaButtons>
+						<BtnLg>
+							<a href="https://twitter.com/osrgroup">
+								<i className="fa fa-twitter fa-2x"></i>
+							</a>
+							 <span>Twitter</span>
+						</BtnLg>
+						<BtnLg>
+							<a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308">
+								<i className="fa fa-facebook-square fa-2x"></i>
+							</a>
+							 <span>Facebook</span>
+						</BtnLg>
+						<BtnLg>
+							<a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support">
+								<i className="fa fa-envelope-o fa-2x"></i>
+							</a>
+							<span>Email</span>
+						</BtnLg>
+                    </StyledSocialMediaButtons>
 			    </StyledFooterBanner>
 			</div>
 		);

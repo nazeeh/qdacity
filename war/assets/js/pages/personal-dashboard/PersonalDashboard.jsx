@@ -1,6 +1,7 @@
 import React from 'react'
 
 import ProjectList from "./ProjectList.jsx"
+import CourseList from "./CourseList.jsx"
 import NotificationList from "./NotificationList.jsx"
 import WelcomePanel from "./WelcomePanel.jsx"
 import AdvertPanel from "./AdvertPanel.jsx"
@@ -9,23 +10,24 @@ export default class PersonalDashboard extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			projects: []
+			projects: [],
+			courses: []
 		};
 
 		this.setProjects = this.setProjects.bind(this);
 		this.addProject = this.addProject.bind(this);
 		this.removeProject = this.removeProject.bind(this);
-
-		$("body").css({
-			overflow: "auto"
-		});
-	}
+		this.setCourses = this.setCourses.bind(this);
+		this.addCourse = this.addCourse.bind(this);
+		this.removeCourse = this.removeCourse.bind(this);		
+		scroll(0,0);	}
 
 	setProjects(projects) {
 		this.setState({
 			projects: projects
 		});
 	}
+
 
 	addProject(project) {
 		this.state.projects.push(project);
@@ -40,6 +42,27 @@ export default class PersonalDashboard extends React.Component {
 			projects: this.state.projects
 		});
 	}
+
+	setCourses(courses) {
+		this.setState({
+			courses: courses
+		});
+	}
+	
+	addCourse(course) {
+		this.state.courses.push(course);
+		this.setState({
+			courses: this.state.courses
+		});
+	}
+
+	removeCourse(index) {
+		this.state.courses.splice(index, 1);
+		this.setState({
+			courses: this.state.courses
+		});
+	}
+
 
 	render() {
 		if (!this.props.account.getProfile) return null;
@@ -58,6 +81,16 @@ export default class PersonalDashboard extends React.Component {
 								</div>
 								<div className="box-body">
 									<ProjectList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
+								</div>
+							</div>
+						</div>
+						<div>
+							<div className="box box-default">
+								<div className="box-header with-border">
+									<h3 className="box-title">Courses</h3>
+								</div>
+								<div className="box-body">
+									<CourseList courses={this.state.courses} setCourses={this.setCourses} addCourse={this.addCourse} removeCourse={this.removeCourse} history={this.props.history} />
 								</div>
 							</div>
 						</div>

@@ -40,8 +40,6 @@ import com.qdacity.PMF;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
-import com.qdacity.taskboard.Task;
-import com.qdacity.taskboard.TaskBoard;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
 
@@ -246,52 +244,6 @@ public class UserEndpoint {
 		return getUser(loggedInUser.getUserId());
 	}
 
-	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "user.getTaskboard",
-		path = "usertaskboard",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public TaskBoard getTaskboard(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		User user = null;
-		List<TaskBoard> boards = new ArrayList<TaskBoard>();;
-		TaskBoard board = null;
-		try {
-			user = (User) Cache.getOrLoad(loggedInUser.getUserId(), User.class);
-			Query query = mgr.newQuery(TaskBoard.class);
-			query.setFilter("id == " + user.getTaskBoardId());
-
-			boards = (List<TaskBoard>) query.execute();
-			board = boards.get(0);
-
-			List<Task> taskList = board.getTodo();
-			if (board.getTodo() != null) {
-				for (Task task : taskList) {
-					task.getText();
-				}
-			}
-			taskList = board.getInProgress();
-			if (taskList != null) {
-				for (Task task : taskList) {
-					task.getText();
-				}
-			}
-
-			taskList = board.getDone();
-			if (taskList != null) {
-				for (Task task : taskList) {
-					task.getText();
-				}
-			}
-
-		} finally {
-			mgr.close();
-		}
-		return board;
-	}
-
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
 	 * exists in the datastore, an exception is thrown.
@@ -368,12 +320,13 @@ public class UserEndpoint {
 	public void removeUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = (User) Cache.getOrLoad(id, User.class);
+			User user = (User) Cache.getOrLoad(id, User.class, mgr);
+			User myUser = user;
+			System.out.println("This is the id " + user.getId());
 
 			// Check if user is authorized
 			Authorization.checkAuthorization(user, loggedInUser);
-
-			mgr.deletePersistent(user);
+			mgr.deletePersistent(myUser);
 		} finally {
 			mgr.close();
 		}

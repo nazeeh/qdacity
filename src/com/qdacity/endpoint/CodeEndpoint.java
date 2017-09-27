@@ -86,7 +86,7 @@ public class CodeEndpoint {
 			@Named("relationId") @Nullable Long relationId, 
 			@Named("relationSourceCodeId") @Nullable Long relationSourceCodeId,
 			Code code,
-			User user) throws UnauthorizedException {
+ User user) throws UnauthorizedException {
 
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
@@ -131,9 +131,9 @@ public class CodeEndpoint {
 			}
 			
 			// Log change
-			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
-			ChangeLogger.logChange(change);
+			 CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
+			 Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
+			 ChangeLogger.logChange(change);
 
 		} finally {
 			mgr.close();

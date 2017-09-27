@@ -4,41 +4,9 @@ import styled from 'styled-components';
 import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
-
-const StyledBtnIcon = styled.a `
-	color: black;
-	&:hover{
-		color:black;
-	}
-`;
-
-const StyledBtnText = styled.span `
-	padding-left: 5px;
-    font-size: 18px;
-	margin: auto;
-`;
-
-const StyledBtnLabel = styled.span `
-	display: flex;
-	flex-direction:row;
-	color: rgba(0, 0, 0, 1.0);
-`;
-
-const StyledSigninBtn = styled.button `
-
-	padding: 6px 12px;
-	background-image: none;
-	box-shadow: none;
-    background-color: rgba(255, 255, 255, 0.4);
-	border: 1px solid transparent;
-	border-width: 1px;
-	border-color: #fff;
-	vertical-align: middle;
-	&:hover {
-        background-color: rgba(255, 255, 255, 1.0);
-		border-color: #fff;
-    }
-`;
+import {
+	BtnLg
+} from '../../common/styles/Btn.jsx';
 
 export default class SigninWithGoogleBtn extends React.Component {
 	constructor(props) {
@@ -106,14 +74,13 @@ export default class SigninWithGoogleBtn extends React.Component {
 	render() {
 		if (this.state.loading) return <ReactLoading />;
 		return (
-			<StyledSigninBtn href="#" onClick={() => this.signIn()}>
-				<StyledBtnLabel>
-					<StyledBtnIcon>
+			<BtnLg href="#" onClick={() => this.signIn()}>
+
+					<a>
 						<i className="fa fa-google fa-2x"></i>
-					</StyledBtnIcon>
-					<StyledBtnText>Sign in with Google</StyledBtnText>
-				</StyledBtnLabel>
-			</StyledSigninBtn>
+					</a>
+					<span>Sign in with Google</span>
+			</BtnLg>
 		);
 	}
 }

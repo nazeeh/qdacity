@@ -8,7 +8,7 @@ import PageViewChooser from './PageViewChooser.jsx';
 
 
 const StyledSettingsPanel = styled.div `
-	background-color: #f8f8f8;
+	background-color: ${props => props.theme.defaultPaneBg};
 `;
 
 const StyledPanelContent = styled.div `

@@ -210,7 +210,7 @@ export default class RevisionHistory extends React.Component {
 						<b> Reports </b>
 					</h3>
 					<div className="timeline-body timelineContent">
-						<ReportList reports={reports} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner}/>
+						<ReportList reports={reports} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner} history={this.props.history}/>
 					</div>
 				</div>
 		];
