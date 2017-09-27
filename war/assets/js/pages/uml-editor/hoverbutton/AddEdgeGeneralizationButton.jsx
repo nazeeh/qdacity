@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import {
 	EdgeType
-} from '../EdgeType.js';
+} from '../util/EdgeType.js';
 
 import ImageHoverButton from './ImageHoverButton.jsx';
 
