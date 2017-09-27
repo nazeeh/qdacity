@@ -92,8 +92,8 @@ export default class ConsistencyManager {
 	 * a code was removed, this function will update the uml-editor.
 	 */
 	codeRemoved(code) {
-		if (this.isCodeMapped(code)) {
-			this.removeNode(code);
+		if (this.umlEditor.isCodeMapped(code)) {
+			this.umlEditor.removeNode(code);
 		}
 
 		this.removePreviousCodeData(code.id);
@@ -111,8 +111,8 @@ export default class ConsistencyManager {
 
 
 		// Update name
-		if (this.isCodeMapped(code)) {
-			this.renameNode(code);
+		if (this.umlEditor.isCodeMapped(code)) {
+			this.umlEditor.renameNode(code);
 		}
 
 
@@ -170,14 +170,14 @@ export default class ConsistencyManager {
 
 		removedRelations.forEach((relation) => {
 			let sourceCode = code;
-			let destinationCode = this.getCodeByCodeId(relation.codeId);
+			let destinationCode = this.umlEditor.getCodeByCodeId(relation.codeId);
 
 			_this.umlEditor.getMetaModelRunner().evaluateAndUndoCodeRelation(sourceCode, destinationCode, relation);
 		});
 
 		addedRelations.forEach((relation) => {
 			let sourceCode = code;
-			let destinationCode = this.getCodeByCodeId(relation.codeId);
+			let destinationCode = this.umlEditor.getCodeByCodeId(relation.codeId);
 
 			_this.umlEditor.getMetaModelRunner().evaluateAndRunCodeRelation(sourceCode, destinationCode, relation);
 		});
@@ -213,7 +213,7 @@ export default class ConsistencyManager {
 				let relation = code.relations[i];
 
 				let sourceCode = code;
-				let destinationCode = this.getCodeByCodeId(relation.codeId);
+				let destinationCode = this.umlEditor.getCodeByCodeId(relation.codeId);
 
 				let previousSourceCode = previousCode;
 				let previousDestinationCode = destinationCode;
@@ -228,7 +228,7 @@ export default class ConsistencyManager {
 		}
 
 		// Incoming relations
-		this.getCodes().forEach((c) => {
+		this.umlEditor.getCodes().forEach((c) => {
 			// Ignore this code
 			if (c.codeID != code.codeID) {
 				if (c.relations != null) {
@@ -259,7 +259,7 @@ export default class ConsistencyManager {
 	 */
 	checkSingleRelation(relation, sourceCode, destinationCode, previousSourceCode, previousDestinationCode) {
 		const relationMetaModelId = relation.mmElementId;
-		const relationMetaModelEntity = this.getMetaModelEntityById(relationMetaModelId);
+		const relationMetaModelEntity = this.umlEditor.getMetaModelEntityById(relationMetaModelId);
 
 		// Evaluate actions
 		let oldAction = this.umlEditor.getMetaModelMapper().evaluateCodeRelation(previousSourceCode, previousDestinationCode, relation);

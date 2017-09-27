@@ -721,15 +721,17 @@ export default class UmlGraphView extends React.Component {
 		}
 
 		// Delete edge
-		this.graph.getModel().beginUpdate();
+		if (edge != null) {
+			this.graph.getModel().beginUpdate();
 
-		try {
-			edge.removeFromParent();
+			try {
+				edge.removeFromParent();
 
-			this.graph.refresh(edge);
+				this.graph.refresh(edge);
 
-		} finally {
-			this.graph.getModel().endUpdate();
+			} finally {
+				this.graph.getModel().endUpdate();
+			}
 		}
 	}
 
