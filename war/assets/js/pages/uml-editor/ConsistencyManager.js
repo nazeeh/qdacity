@@ -1,6 +1,91 @@
+/**
+ * This class updates the uml editor after changes to the codesystem from other components. 
+ */
 export default class ConsistencyManager {
 
-	constructor() {}
+	constructor(umlEditor) {
+		this.umlEditor = umlEditor;
+
+		/**
+		 * Stores the data of a code before the latest update. The Data is stored as key-value pairs with the code.id
+		 * as key.
+		 * Example: A code has the mmElementIDs [1,2,3]. The user updates the code and removes mmElementID 1 => [2,3].
+		 * The previousCodeData has still the value [1,2,3]. Then the user updates the code again and adds the 
+		 * mmElementID 4 => [2,3,4]. The previousCodeData has the value [2,3] (value after the latest update).
+		 */
+		this.previousCodeData = {};
+	}
+
+	/**
+	 * Returns the previous code data for the given code id (code.id, not code.codeID).
+	 */
+	getPreviousCodeData(codeId) {
+		const key = codeId;
+
+		if (!this.previousCodeData.hasOwnProperty(key)) {
+			this.previousCodeData[key] = {
+				mmElementIDs: [],
+				relations: []
+			};
+		}
+
+		return this.previousCodeData[key];
+	}
+
+	/**
+	 * Stores the data (mmElementIDs, relations) for the code id.
+	 */
+	setPreviousCodeData(codeId, mmElementIDs, relations) {
+		const key = codeId;
+
+		if (this.previousCodeData.hasOwnProperty(key)) {
+			// Set mmElementIDs
+			if (mmElementIDs) {
+				this.previousCodeData[key].mmElementIDs = mmElementIDs;
+			}
+
+			// Set relations
+			if (relations) {
+				this.previousCodeData[key].relations = relations;
+			}
+		} else {
+			this.previousCodeData[key] = {
+				mmElementIDs: mmElementIDs != null ? mmElementIDs : [],
+				relations: relations != null ? relations : []
+			};
+		}
+	}
+
+	/**
+	 * Initializes the codes after the uml editor finished loading.
+	 */
+	initializeCode(code) {
+		// Code mapping
+		this.umlEditor.getMetaModelRunner().evaluateAndRunCode(code);
+
+		// Initialize previous code data
+		const previousMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs.slice() /*copy*/ : [];
+		const previousRelations = code.relations != null ? code.relations.map(relation => Object.assign({}, relation)) /*copy*/ : [];
+		this.setPreviousCodeData(code.id, previousMetaModelElementIds, previousRelations);
+	}
+
+	/**
+	 * Initializes the code relations after the uml editor finished loading.
+	 */
+	initializeCodeRelation(sourceCode, destinationCode, relation) {
+		this.umlEditor.getMetaModelRunner().evaluateAndRunCodeRelation(sourceCode, destinationCode, relation);
+	}
+
+	/**
+	 * Deletes a previousCodeData entry.
+	 */
+	removePreviousCodeData(codeId) {
+		const key = codeId;
+
+		if (this.previousCodeData.hasOwnProperty(key)) {
+			delete this.previousCodeData[key];
+		}
+	}
 
 	/**
 	 * This function is called, when a code was removed from the "outside". If somewhere else in the coding-editor
@@ -87,14 +172,14 @@ export default class ConsistencyManager {
 			let sourceCode = code;
 			let destinationCode = this.getCodeByCodeId(relation.codeId);
 
-			_this.metaModelRunner.evaluateAndUndoCodeRelation(sourceCode, destinationCode, relation);
+			_this.umlEditor.getMetaModelRunner().evaluateAndUndoCodeRelation(sourceCode, destinationCode, relation);
 		});
 
 		addedRelations.forEach((relation) => {
 			let sourceCode = code;
 			let destinationCode = this.getCodeByCodeId(relation.codeId);
 
-			_this.metaModelRunner.evaluateAndRunCodeRelation(sourceCode, destinationCode, relation);
+			_this.umlEditor.getMetaModelRunner().evaluateAndRunCodeRelation(sourceCode, destinationCode, relation);
 		});
 
 
@@ -113,13 +198,13 @@ export default class ConsistencyManager {
 		previousCode.mmElementIDs = previousMetaModelElementIds;
 
 		// Evaluate mapping action
-		const previousNodeAction = this.metaModelMapper.evaluateCode(previousCode);
-		const currentNodeAction = this.metaModelMapper.evaluateCode(code);
+		const previousNodeAction = this.umlEditor.getMetaModelMapper().evaluateCode(previousCode);
+		const currentNodeAction = this.umlEditor.getMetaModelMapper().evaluateCode(code);
 
 		// Mapping action changed?
 		if (previousNodeAction != currentNodeAction) {
-			this.metaModelRunner.undoCode(previousNodeAction, code);
-			this.metaModelRunner.runCode(currentNodeAction, code);
+			this.umlEditor.getMetaModelRunner().undoCode(previousNodeAction, code);
+			this.umlEditor.getMetaModelRunner().runCode(currentNodeAction, code);
 		}
 
 		// Re-evaluate outgoing relations
@@ -177,14 +262,14 @@ export default class ConsistencyManager {
 		const relationMetaModelEntity = this.getMetaModelEntityById(relationMetaModelId);
 
 		// Evaluate actions
-		let oldAction = this.metaModelMapper.evaluateCodeRelation(previousSourceCode, previousDestinationCode, relation);
-		let newAction = this.metaModelMapper.evaluateCodeRelation(sourceCode, destinationCode, relation);
+		let oldAction = this.umlEditor.getMetaModelMapper().evaluateCodeRelation(previousSourceCode, previousDestinationCode, relation);
+		let newAction = this.umlEditor.getMetaModelMapper().evaluateCodeRelation(sourceCode, destinationCode, relation);
 
 		// Execute action
 		if (oldAction != newAction) {
-			this.metaModelRunner.undoCodeRelation(oldAction, sourceCode, destinationCode, relation);
+			this.umlEditor.getMetaModelRunner().undoCodeRelation(oldAction, sourceCode, destinationCode, relation);
 
-			this.metaModelRunner.runCodeRelation(newAction, sourceCode, destinationCode, relation);
+			this.umlEditor.getMetaModelRunner().runCodeRelation(newAction, sourceCode, destinationCode, relation);
 		}
 	}
 }

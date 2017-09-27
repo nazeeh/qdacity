@@ -43,8 +43,6 @@ export default class UmlEditor extends React.Component {
 		this.mmEntities = null;
 		this.mmRelation = null;
 
-		this.previousCodeData = {};
-
 		this.codesystemLoaded = false;
 		this.metamodelLoaded = false;
 
@@ -60,7 +58,11 @@ export default class UmlEditor extends React.Component {
 	}
 
 	getMetaModelMapper() {
-		return this.metaModelMapper
+		return this.metaModelMapper;
+	}
+
+	getMetaModelRunner() {
+		return this.metaModelRunner;
 	}
 
 	getMetaModelEntities() {
@@ -118,7 +120,7 @@ export default class UmlEditor extends React.Component {
 	initialize() {
 		const _this = this;
 
-		this.consistencyManager = new ConsistencyManager();
+		this.consistencyManager = new ConsistencyManager(this);
 		this.codePositionManager = new CodePositionManager();
 
 		this.metaModelMapper = new MetaModelMapper(this);
@@ -161,13 +163,7 @@ export default class UmlEditor extends React.Component {
 		for (let i = 0; i < codes.length; i++) {
 			const code = codes[i];
 
-			// Code mapping
-			this.metaModelRunner.evaluateAndRunCode(code);
-
-			// Initialize previous code data
-			const previousMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs.slice() /*copy*/ : [];
-			const previousRelations = code.relations != null ? code.relations.map(relation => Object.assign({}, relation)) /*copy*/ : [];
-			this.setPreviousCodeData(code.id, previousMetaModelElementIds, previousRelations);
+			this.consistencyManager.initializeCode(code);
 		}
 
 		for (let i = 0; i < codes.length; i++) {
@@ -180,7 +176,7 @@ export default class UmlEditor extends React.Component {
 
 					const destination = this.getCodeByCodeId(relation.codeId);
 
-					this.metaModelRunner.evaluateAndRunCodeRelation(code, destination, relation);
+					this.consistencyManager.initializeCodeRelation(code, destination, relation);
 				}
 			}
 		}
@@ -273,48 +269,6 @@ export default class UmlEditor extends React.Component {
 		addMethodModal.showModal().then(function (data) {
 			_this.createMethod(code, data.selectedCode);
 		});
-	}
-
-	getPreviousCodeData(codeId) {
-		const key = codeId;
-
-		if (!this.previousCodeData.hasOwnProperty(key)) {
-			this.previousCodeData[key] = {
-				mmElementIDs: [],
-				relations: []
-			};
-		}
-
-		return this.previousCodeData[key];
-	}
-
-	setPreviousCodeData(codeId, mmElementIDs, relations) {
-		const key = codeId;
-
-		if (this.previousCodeData.hasOwnProperty(key)) {
-			// Set mmElementIDs
-			if (mmElementIDs) {
-				this.previousCodeData[key].mmElementIDs = mmElementIDs;
-			}
-
-			// Set relations
-			if (relations) {
-				this.previousCodeData[key].relations = relations;
-			}
-		} else {
-			this.previousCodeData[key] = {
-				mmElementIDs: mmElementIDs != null ? mmElementIDs : [],
-				relations: relations != null ? relations : []
-			};
-		}
-	}
-
-	removePreviousCodeData(codeId) {
-		const key = codeId;
-
-		if (this.previousCodeData.hasOwnProperty(key)) {
-			delete this.previousCodeData[key];
-		}
 	}
 
 	/**
