@@ -4,6 +4,8 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import javax.jdo.PersistenceManager;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +17,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.PMF;
+import com.qdacity.project.codesystem.Code;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
@@ -27,12 +31,10 @@ public class CodeEndpointTest {
 	@Before
 	public void setUp() {
 		helper.setUp();
-		// queueHelper.setUp();
 	}
 
 	@After
 	public void tearDown() {
-		// queueHelper.tearDown();
 		helper.tearDown();
 	}
 
@@ -53,13 +55,13 @@ public class CodeEndpointTest {
 			e.printStackTrace();
 		}
 
-		CodeEndpointTestHelper.addCode(1L, 1L, 1L, "authorName", testUser);
+		CodeEndpointTestHelper.addCode(1L, 1L, 1L, "authorName", "fff", testUser);
 
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
 	}
 
 	/**
-	 * Tests if a registered user can create a new code for a code system
+	 * Tests if a registered user can remove a code for a code system
 	 */
 	@Test
 	public void testCodeRemove() {
@@ -71,5 +73,33 @@ public class CodeEndpointTest {
 
 		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
 
+	}
+
+	/**
+	 * Tests if a registered user can update the properties of a code in a project he is authorized for
+	 */
+	@Test
+	public void testCodeUpdate() {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		testCodeInsert();
+		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+
+		PersistenceManager mgr = getPersistenceManager();
+		mgr.setIgnoreCache(true);
+		try {
+			Code code = mgr.getObjectById(Code.class, 1L);
+			code.setColor("f0f");
+			CodeEndpointTestHelper.updateCode(code, testUser);
+			code = mgr.getObjectById(Code.class, 1L);
+			assertEquals("f0f", code.getColor());
+		} finally {
+			mgr.close();
+		}
+		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+
+	}
+
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 }
