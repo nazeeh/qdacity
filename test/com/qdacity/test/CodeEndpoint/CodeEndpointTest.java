@@ -20,6 +20,7 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.project.codesystem.Code;
+import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
@@ -142,6 +143,34 @@ public class CodeEndpointTest {
 			mgr.close();
 		}
 
+	}
+
+	/**
+	 * Tests if a registered user can add a code book entry of a code in a project he is authorized for
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testCodeBookEntry() throws UnauthorizedException {
+		CodeEndpoint ce = new CodeEndpoint();
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		testCodeInsert();
+		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 1L, "authorName", "fff", testUser);
+		CodeBookEntry entry = new CodeBookEntry();
+		entry.setDefinition("my new definition");
+		entry.setExample("my new example");
+		entry.setShortDefinition("my short definition");
+		entry.setWhenNotToUse("dont use this code");
+		entry.setWhenToUse("use this code");
+		ce.setCodeBookEntry(33L, entry, testUser);
+		
+		Code code = ce.getCode(33L, testUser);
+		CodeBookEntry cbe = code.getCodeBookEntry();
+		assertEquals("my new definition", cbe.getDefinition());
+		assertEquals("my new example", cbe.getExample());
+		assertEquals("my short definition", cbe.getShortDefinition());
+		assertEquals("dont use this code", cbe.getWhenNotToUse());
+		assertEquals("use this code", cbe.getWhenToUse());
 	}
 
 	private static PersistenceManager getPersistenceManager() {
