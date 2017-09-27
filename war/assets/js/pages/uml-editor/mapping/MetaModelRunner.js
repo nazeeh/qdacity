@@ -1,6 +1,6 @@
 import {
 	EdgeType
-} from '../EdgeType.js';
+} from '../util/EdgeType.js';
 import {
 	MappingAction
 } from './MappingAction.js';

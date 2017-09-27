@@ -8,11 +8,11 @@ import EdgeValue from './EdgeValue.js';
 
 import {
 	EdgeType
-} from './EdgeType.js';
+} from '../util/EdgeType.js';
 
-import HoverButtons from './hoverbutton/HoverButtons.jsx';
+import HoverButtons from '../hoverbutton/HoverButtons.jsx';
 
-import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
+import UmlCodePositionEndpoint from '../../../common/endpoints/UmlCodePositionEndpoint';
 
 const StyledGraphView = styled.div `
     overflow: hidden;
