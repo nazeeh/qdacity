@@ -27,7 +27,7 @@ export default class CourseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-	
+
 	static getCourse(crsID) {
 		var apiMethod = gapi.client.qdacity.course.getCourse({
 			'id': crsID,

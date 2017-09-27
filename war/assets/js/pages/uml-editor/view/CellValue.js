@@ -1,11 +1,21 @@
 export default class CellValue {
 
 	constructor() {
+		this.codeId = null;
+
 		this.header = ""
 
 		this.fields = [];
 
 		this.methods = [];
+	}
+
+	getCodeId() {
+		return this.codeId;
+	}
+
+	setCodeId(codeId) {
+		this.codeId = codeId;
 	}
 
 	getHeader() {

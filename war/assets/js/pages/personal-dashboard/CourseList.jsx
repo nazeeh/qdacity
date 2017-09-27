@@ -78,7 +78,7 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-	sortCourses (courses) {
+	sortCourses(courses) {
 		courses.sort(function (a, b) {
 			if (a.name < b.name) return -1;
 			if (a.name > b.name) return 1;
@@ -156,14 +156,14 @@ export default class CourseList extends React.Component {
 		course.description = description;
 		CourseEndPoint.insertCourse(course).then(function (insertedCourse) {
 
-				insertedCourse.type = "COURSE";
-				_this.props.addCourse(insertedCourse);
+			insertedCourse.type = "COURSE";
+			_this.props.addCourse(insertedCourse);
 
 		});
 	}
 
 	renderDeleteBtn(course, index) {
-			return <StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+		return <StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash "></i>
 					</StyledListItemBtn>
 	}
@@ -225,7 +225,7 @@ export default class CourseList extends React.Component {
 			])
 		}
 		const renderListItems = itemsToDisplay.map((course, index) => {
-				return <StyledListItemPrimary key={course.id} onClick={() => prjClick(course)} clickable={true}>
+			return <StyledListItemPrimary key={course.id} onClick={() => prjClick(course)} clickable={true}>
 						{renderListItemContent(course, index)}
 					</StyledListItemPrimary>;
 

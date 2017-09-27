@@ -172,7 +172,7 @@ export default class CodingEditor extends React.Component {
 
 	initEditorCtrl() {
 		this.setState({
-			editorCtrl: new EditorCtrl(this.getCodeByCodeID,this.state.showAgreementMap)
+			editorCtrl: new EditorCtrl(this.getCodeByCodeID, this.state.showAgreementMap)
 		});
 
 	}
@@ -297,7 +297,18 @@ export default class CodingEditor extends React.Component {
 	}
 
 	renderUMLEditor() {
-		if (this.state.mxGraphLoaded) return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} codesystemId={this.state.project.getCodesystemID()} codesystemView={this.codesystemViewRef} updateCode={this.updateSelectedCode} refreshCodeView={this.codeViewRef.updateCode} createCode={this.createCode} toggleCodingView={this.toggleCodingView} deleteRelationship={this.deleteRelationship} />;
+		if (this.state.mxGraphLoaded) {
+			return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} 
+                codesystemId={this.state.project.getCodesystemID()} 
+                codesystemView={this.codesystemViewRef} 
+                getCodeById={this.getCodeById}
+                getCodeByCodeId={this.getCodeByCodeID}
+                updateCode={this.updateSelectedCode} 
+                refreshCodeView={this.codeViewRef.updateCode} 
+                createCode={this.createCode} 
+                toggleCodingView={this.toggleCodingView} 
+                deleteRelationship={this.deleteRelationship} />;
+		}
 		return null;
 	}
 

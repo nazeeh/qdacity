@@ -81,7 +81,7 @@ export default class ProjectDashboard extends React.Component {
 			project.setUmlEditorEnabled(resp.umlEditorEnabled);
 			project.setParentID(resp.projectID); // Only present for ValidationProject
 			project.setRevisionID(resp.revisionID); // Only present for ValidationProject
-			console.log (project.name);
+			console.log(project.name);
 			_this.setState({
 				project: project
 			});
