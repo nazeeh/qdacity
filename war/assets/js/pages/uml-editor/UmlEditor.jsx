@@ -9,6 +9,8 @@ import {
 import MetaModelMapper from './mapping/MetaModelMapper.js';
 import MetaModelRunner from './mapping/MetaModelRunner.js';
 
+import CodePositionManager from './CodePositionManager.js';
+
 import Toolbar from './toolbar/Toolbar.jsx';
 import UmlGraphView from './UmlGraphView.jsx';
 
@@ -17,7 +19,6 @@ import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
-import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
 
 const StyledUmlEditor = styled.div `
     height: inherit;
@@ -34,6 +35,8 @@ export default class UmlEditor extends React.Component {
 		this.umlGraphView = null;
 		this.toolbar = null;
 
+		this.codePositionManager = null;
+
 		this.metaModelMapper = null;
 		this.metaModelRunner = null;
 
@@ -41,7 +44,6 @@ export default class UmlEditor extends React.Component {
 		this.mmRelation = null;
 
 		this.previousCodeData = {};
-		this.codePositions = {};
 
 		this.codesystemLoaded = false;
 		this.metamodelLoaded = false;
@@ -117,17 +119,16 @@ export default class UmlEditor extends React.Component {
 		const _this = this;
 
 		this.consistencyManager = new ConsistencyManager();
-		
+		this.codePositionManager = new CodePositionManager();
+
 		this.metaModelMapper = new MetaModelMapper(this);
 		this.metaModelRunner = new MetaModelRunner(this, this.metaModelMapper);
 
 		this.initializeSelection();
 
-		UmlCodePositionEndpoint.listCodePositions(this.props.codesystemId).then(function (resp) {
-			let umlCodePositions = resp.items || [];
+		this.initCellsMovedEventListener();
 
-			_this.initializePositions(umlCodePositions);
-
+		this.codePositionManager.listCodePositions(this.props.codesystemId, (umlCodePositions) => {
 			_this.initializeNodes();
 		});
 	}
@@ -149,18 +150,6 @@ export default class UmlEditor extends React.Component {
 				}
 			}
 		});
-	}
-
-	initializePositions(umlCodePositions) {
-		let _this = this;
-
-		// Add cells moved event listener
-		_this.initCellsMovedEventListener();
-
-		if (umlCodePositions.length > 0) {
-			// Set CodePositions
-			_this.refreshUmlCodePositions(umlCodePositions);
-		}
 	}
 
 	initializeNodes() {
@@ -211,7 +200,7 @@ export default class UmlEditor extends React.Component {
 				if (_this.umlGraphView.isCellUmlClass(cell)) {
 					let code = _this.getCodeByNode(cell);
 
-					let codePosition = _this.getCodePosition(code.codeID);
+					let codePosition = _this.codePositionManager.getCodePosition(code.codeID);
 					codePosition.x = cell.getGeometry().x;
 					codePosition.y = cell.getGeometry().y;
 
@@ -219,19 +208,7 @@ export default class UmlEditor extends React.Component {
 				}
 			});
 
-			UmlCodePositionEndpoint.insertOrUpdateCodePositions(umlCodePositions).then((resp) => {
-				let updatedCodePositions = resp.items || [];
-
-				_this.refreshUmlCodePositions(updatedCodePositions);
-			});
-		});
-	}
-
-	refreshUmlCodePositions(newUmlCodePositions) {
-		const _this = this;
-
-		newUmlCodePositions.forEach((newUmlCodePosition) => {
-			_this.setCodePosition(newUmlCodePosition.codeId, newUmlCodePosition);
+			_this.codePositionManager.insertOrUpdateCodePositions(umlCodePositions);
 		});
 	}
 
@@ -296,30 +273,6 @@ export default class UmlEditor extends React.Component {
 		addMethodModal.showModal().then(function (data) {
 			_this.createMethod(code, data.selectedCode);
 		});
-	}
-
-	getCodePosition(codeId) {
-		const key = codeId;
-
-		if (this.codePositions.hasOwnProperty(key)) {
-			return this.codePositions[key];
-		}
-
-		return null;
-	}
-
-	setCodePosition(codeId, umlCodePosition) {
-		const key = codeId;
-
-		this.codePositions[key] = umlCodePosition;
-	}
-
-	removeCodePosition(codeId) {
-		const key = codeId;
-
-		if (this.codePositions.hasOwnProperty(key)) {
-			delete this.codePositions[key];
-		}
 	}
 
 	getPreviousCodeData(codeId) {
@@ -519,27 +472,14 @@ export default class UmlEditor extends React.Component {
 		let y = 0;
 
 		// Register code position
-		let codePosition = this.getCodePosition(code.codeID);
+		let codePosition = this.codePositionManager.getCodePosition(code.codeID);
 
 		if (codePosition == null) {
 			[x, y] = this.umlGraphView.getFreeNodePosition(node);
 
-			codePosition = {
-				codeId: code.codeID,
-				codesystemId: code.codesystemID,
-				x: x,
-				y: y
-			};
-			this.setCodePosition(code.codeID, codePosition);
-
-			let newCodePositions = [];
-			newCodePositions.push(codePosition);
-
 			// insert into database
-			UmlCodePositionEndpoint.insertOrUpdateCodePositions(newCodePositions).then((resp) => {
-				let updatedCodePositions = resp.items || [];
-				_this.refreshUmlCodePositions(updatedCodePositions);
-			});
+			codePosition = this.codePositionManager.createCodePositionObject(null, code.codeID, code.codesystemID, x, y);
+			this.codePositionManager.insertOrUpdateCodePosition(codePosition);
 
 		} else {
 			x = codePosition.x;
@@ -626,16 +566,17 @@ export default class UmlEditor extends React.Component {
 	/**
 	 * Called from outside after a code was removed.
 	 */
-    codeRemoved(code) {
-        this.consistencyManager.codeRemoved(code);
-    }
+	codeRemoved(code) {
+		this.consistencyManager.codeRemoved(code);
+		this.codePositionsManager.removeCodePosition(code.codeID);
+	}
 
-    /**
-     * Called from outside after a code was updated.
-     */
-    codeUpdated(code) {
-        this.consistencyManager.codeUpdated(code);
-    }
+	/**
+	 * Called from outside after a code was updated.
+	 */
+	codeUpdated(code) {
+		this.consistencyManager.codeUpdated(code);
+	}
 
 	render() {
 		const _this = this;

@@ -1,7 +1,6 @@
 export default class ConsistencyManager {
 
-	constructor() {
-	}
+	constructor() {}
 
 	/**
 	 * This function is called, when a code was removed from the "outside". If somewhere else in the coding-editor
@@ -13,15 +12,6 @@ export default class ConsistencyManager {
 		}
 
 		this.removePreviousCodeData(code.id);
-
-		// Remove code position
-		const codePosition = this.getCodePosition(code.codeID);
-
-		this.removeCodePosition(code.codeID);
-
-		UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then((resp) => {
-			// Do nothing
-		});
 	}
 
 	/**
