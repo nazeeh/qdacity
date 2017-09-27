@@ -1,4 +1,4 @@
-package com.qdacity.project.metrics.algorithms;
+package com.qdacity.test.project.metrics.algorithms;
 import com.qdacity.project.metrics.algorithms.datastructures.CoincidenceMatrix;
 
 public class TestableCoincidenceMatrix extends CoincidenceMatrix {
