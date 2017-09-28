@@ -55,9 +55,6 @@ export default class CourseList extends React.Component {
 		};
 
 
-		props.courseList = [];
-
-
 		this.init();
 
 		this.paginationClick = this.paginationClick.bind(this);
@@ -70,35 +67,30 @@ export default class CourseList extends React.Component {
 	init() {
 		var _this = this;
 		var courseList = [];
-		var courseIDList = [];
 		var courseTermsArray =[];
 
 		CourseEndPoint.listCourse().then(function (resp) {
 
 			resp.items = resp.items || [];
-			resp.items.forEach(function (prj) {
+			resp.items.forEach(function (prj, index) {
 				prj.type = "COURSE";
 				CourseEndPoint.listTermCourse(prj.id).then(function (resp2) {
 					var termList = [];
 					resp2.items = resp2.items || [];
 					resp2.items.forEach(function (crs) {
-						termList.push (crs.term);
+						termList.push ({
+						text: crs.term,
+					});
 					});
 					courseTermsArray.push(termList);
-					courseIDList.push(prj.id);
 				});
 			});
+			var courseIDListTest = [['SS','WS','ss'],['WS','ws'],['SSS','WWW','WW'],['WWW','SSS','SS']];
 			var courses = courseList.concat(resp.items)
 			courses = _this.sortCourses(courses);
 			_this.props.setCourses(courses);
+			_this.props.setTerms(courseIDListTest);
 		});
-
-		_this.props.courseIDList = courseIDList;
-		_this.props.courseTermsArray = courseTermsArray;
-
-		console.log(_this.props.courseIDList);
-		console.log(_this.props.courseTermsArray);
-
 	}
 
 	sortCourses(courses) {
@@ -196,23 +188,23 @@ export default class CourseList extends React.Component {
 	render() {
 		var _this = this;
 
-		var courseIDListTest = [['SS','WS','ss'],['WS','ws'],['SSS','WWW','WW'],['WWW','SSS','SS']];
 		const itemsItems = [];
 
-		/*
-		courseTermsArray[0].forEach(function (term) {
-			console.log(term);
-		});
-		*/
-		courseIDListTest.forEach(function (course, index) {
-		const items = [];
-		courseIDListTest[index].forEach (function (term) {
-			items.push({
-				text: term,
-			});
-		});
-		itemsItems.push(items)
-		});
+				/*
+				courseTermsArray[0].forEach(function (term) {
+					console.log(term);
+				});
+				*/
+				this.props.terms.forEach(function (course, index) {
+				const items = [];
+				_this.props.terms[index].forEach (function (term) {
+					items.push({
+						text: term,
+					});
+				});
+				itemsItems.push(items)
+				});
+
 
 		//Render Components
 
@@ -244,6 +236,7 @@ export default class CourseList extends React.Component {
 
 		</StyledProjectListMenu>
 
+		//console.log(this.props.terms);
 		//Rebder List Items
 		var filteredList = this.props.courses.filter(
 			(course) => {
@@ -254,10 +247,13 @@ export default class CourseList extends React.Component {
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
 
+
+
 		function prjClick(prj) {
-			_this.props.history.push('/CourseDashboard?course=' + prj.id);
+			//_this.props.history.push('/CourseDashboard?course=' + prj.id);
 		}
 		const renderListItemContent = (course, index) => {
+
 			return ([
 				<span>{course.name}</span>,
 				<div>
