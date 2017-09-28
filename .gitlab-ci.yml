@@ -67,7 +67,7 @@ backend_prod_unittest:
     expire_in: 6 mos
   script:
     - mvn test
-    - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' target/site/jacoco-ut/jacoco.csv
+    - awk -F"," '{ instructions += $8 + $9; covered += $9 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' target/site/jacoco-ut/jacoco.csv
   dependencies:
     - backend_prod_build
 
