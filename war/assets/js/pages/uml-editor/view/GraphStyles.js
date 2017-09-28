@@ -15,8 +15,9 @@ export default class GraphStyles {
 		style = graph.getStylesheet().getDefaultVertexStyle();
 		style[mxConstants.STYLE_FILLCOLOR] = '#FFFFFF';
 		style[mxConstants.STYLE_STROKECOLOR] = '#000000';
-		style[mxConstants.STYLE_FONTCOLOR] = '#000000';
-		style[mxConstants.STYLE_FONTSTYLE] = '1';
+		style[mxConstants.STYLE_STROKEWIDTH] = 1;
+		style[mxConstants.STYLE_ALIGN] = 'center';
+		style[mxConstants.STYLE_VERTICAL_ALIGN] = 'top';
 
 		style = graph.getStylesheet().getDefaultEdgeStyle();
 		style[mxConstants.STYLE_STARTSIZE] = '13';

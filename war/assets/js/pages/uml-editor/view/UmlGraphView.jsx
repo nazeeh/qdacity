@@ -666,10 +666,7 @@ export default class UmlGraphView extends React.Component {
 			cellValue.setCodeId(codeId);
 			cellValue.setHeader(name);
 
-			// TODO use proper style
-			// TODO what is actually necessary for the style?
-			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
-			cell = new mxCell(cellValue, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
+			cell = new mxCell(cellValue, new mxGeometry(0, 0, this.umlClassDefaultWidth, this.umlClassDefaultHeight));
 			cell.vertex = true;
 
 			this.graph.addCell(cell);
