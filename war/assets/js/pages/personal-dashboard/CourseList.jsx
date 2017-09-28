@@ -179,6 +179,7 @@ export default class CourseList extends React.Component {
 		var _this = this;
 		var modal = new CustomForm('Create a new course', '');
 		modal.addTextInput('name', "Course Name", 'Name', '');
+		modal.addTextInput('term', "Course Term", 'Term','');
 		modal.addTextField('desc', "Course Description", 'Description');
 		modal.showModal().then(function (data) {
 			_this.createNewCourse(data.name, data.desc);
