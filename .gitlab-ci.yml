@@ -90,7 +90,6 @@ frontend_prod_unittest:
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
-  allow_failure: true
 
 # Does not work yet, with gitlab pages not installed
 pages:

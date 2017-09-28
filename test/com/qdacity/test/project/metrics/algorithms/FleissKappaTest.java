@@ -1,7 +1,9 @@
-package com.qdacity.project.metrics.algorithms;
+package com.qdacity.test.project.metrics.algorithms;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.qdacity.project.metrics.algorithms.FleissKappa;
 
 
 public class FleissKappaTest {

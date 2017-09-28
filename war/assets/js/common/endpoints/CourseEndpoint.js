@@ -27,29 +27,29 @@ export default class CourseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-	
+
 	static getCourse(crsID) {
 		var apiMethod = gapi.client.qdacity.course.getCourse({
 			'id': crsID,
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-	
-	static insertTermCourse(templateCrsID, term) 
+
+	static insertTermCourse(templateCrsID, term)
 	{
-		
+
 		var apiMethod = gapi.client.qdacity.course.insertTermCourse({
 			'templateCourseID': templateCrsID,
 			'courseTerm': term
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-	
+
 	static listTermCourse(templateCrsID) {
 		var apiMethod = gapi.client.qdacity.course.listTermCourse({
 			'templateCourseID': templateCrsID
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-	
+
 }

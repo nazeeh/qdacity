@@ -19,8 +19,9 @@ export default class PersonalDashboard extends React.Component {
 		this.removeProject = this.removeProject.bind(this);
 		this.setCourses = this.setCourses.bind(this);
 		this.addCourse = this.addCourse.bind(this);
-		this.removeCourse = this.removeCourse.bind(this);		
-		scroll(0,0);	}
+		this.removeCourse = this.removeCourse.bind(this);
+		scroll(0, 0);
+	}
 
 	setProjects(projects) {
 		this.setState({
@@ -48,7 +49,7 @@ export default class PersonalDashboard extends React.Component {
 			courses: courses
 		});
 	}
-	
+
 	addCourse(course) {
 		this.state.courses.push(course);
 		this.setState({

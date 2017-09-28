@@ -2,18 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
+import Cell from './Cell.jsx';
 import CellValue from './CellValue.js';
+import EdgeValue from './EdgeValue.js';
 
 import {
 	EdgeType
-} from './EdgeType.js';
-import UmlClass from './model/UmlClass.js';
-import UmlClassRelation from './model/UmlClassRelation.js';
+} from '../util/EdgeType.js';
 
-import Cell from './Cell.jsx';
-import HoverButtons from './hoverbutton/HoverButtons.jsx';
+import HoverButtons from '../hoverbutton/HoverButtons.jsx';
 
-import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
+import UmlCodePositionEndpoint from '../../../common/endpoints/UmlCodePositionEndpoint';
 
 const StyledGraphView = styled.div `
     overflow: hidden;
@@ -26,8 +25,13 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.umlClassDefaultWidth = 160;
-		this.umlClassDefaultHeight = 59; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
+		this.autoLayoutOffsetTop = 50;
+		this.autoLayoutOffsetLeft = 60;
+		this.autoLayoutOffsetNextX = 50;
+		this.autoLayoutOffsetNextY = 30;
+
+		this.umlClassDefaultWidth = 162;
+		this.umlClassDefaultHeight = 75; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
 
 
 		this.zoomOffset = 10;
@@ -255,7 +259,9 @@ export default class UmlGraphView extends React.Component {
 
 		// Connection Handler
 		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
-			const edge = new mxCell('', new mxGeometry());
+			const edgeValue = new EdgeValue(-1);
+
+			const edge = new mxCell(edgeValue, new mxGeometry());
 			edge.setEdge(true);
 			edge.setStyle(style);
 			edge.geometry.relative = true;
@@ -291,7 +297,10 @@ export default class UmlGraphView extends React.Component {
 			const sourceNode = evt.properties.cell.source;
 			const destinationNode = evt.properties.cell.target;
 
-			_this.props.umlEditor.createNewEdge(sourceNode, destinationNode, edgeType, evt.cell);
+			const sourceCode = _this.props.umlEditor.getCodeById(sourceNode.value.getCodeId());
+			const destinationCode = _this.props.umlEditor.getCodeById(destinationNode.value.getCodeId());
+
+			_this.props.umlEditor.createEdge(sourceCode, destinationCode, edgeType);
 
 			_this.selectCell(sourceNode);
 		});
@@ -472,6 +481,20 @@ export default class UmlGraphView extends React.Component {
 		);
 	}
 
+	getNodeByCodeId(id) {
+		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		if (allNodes != null) {
+			for (let i = 0; i < allNodes.length; i++) {
+				if (allNodes[i].vertex) {
+					if (allNodes[i].value.getCodeId() == id) {
+						return allNodes[i];
+					}
+				}
+			}
+		}
+	}
+
 	addCellsMovedEventListener(listener) {
 		this.graph.addListener(mxEvent.CELLS_MOVED, listener);
 	}
@@ -505,29 +528,29 @@ export default class UmlGraphView extends React.Component {
 		}
 
 		// Does the area contain another node?
+		const allNodes = _this.graph.getModel().getChildren(_this.graph.getDefaultParent());
+
 		const isAreaFree = function (x, y, width, height) {
-			const umlClasses = _this.props.umlEditor.getUmlClassManager().getAll();
+			if (allNodes != null) {
+				for (let i = 0; i < allNodes.length; i++) {
+					let node = allNodes[i];
 
-			for (let i = 0; i < umlClasses.length; i++) {
-				const umlClass = umlClasses[i];
+					// Node will intersect with itself
+					if (node.mxObjectId != cell.mxObjectId && node.vertex) {
+						// Return false if areas intersect
+						const x2 = node.getGeometry().x;
+						const y2 = node.getGeometry().y;
+						const width2 = node.getGeometry().width;
+						const height2 = node.getGeometry().height;
 
-				// Return false if areas intersect
-				const node = umlClass.getNode();
-
-				if (node != null) {
-					const x2 = node.getGeometry().x;
-					const y2 = node.getGeometry().y;
-					const width2 = node.getGeometry().width;
-					const height2 = node.getGeometry().height;
-
-					// Intersects?
-					if (!(x > (x2 + width2)
-							|| (x + width) < x2
-							|| y > (y2 + height2)
-							|| (y + height) < y2)) {
-						return false;
+						// Intersects?
+						if (!(x > (x2 + width2)
+								|| (x + width) < x2
+								|| y > (y2 + height2)
+								|| (y + height) < y2)) {
+							return false;
+						}
 					}
-
 				}
 			}
 
@@ -535,10 +558,10 @@ export default class UmlGraphView extends React.Component {
 		};
 
 		// Find position
-		let x = 0;
-		let y = 0;
-		let offsetX = this.umlClassDefaultWidth + 30;
-		let offsetY = this.umlClassDefaultHeight + 30;
+		let x = this.autoLayoutOffsetLeft;
+		let y = this.autoLayoutOffsetTop;
+		let offsetX = this.umlClassDefaultWidth + this.autoLayoutOffsetNextX;
+		let offsetY = this.umlClassDefaultHeight + this.autoLayoutOffsetNextY;
 
 		while (true) {
 			for (let i = 0; i < 10; i++) {
@@ -552,6 +575,8 @@ export default class UmlGraphView extends React.Component {
 			x = 0;
 			y = y + offsetY;
 		}
+
+		return [x, y];
 	}
 
 	updateHoverButtons(cell, dx, dy) {
@@ -600,7 +625,7 @@ export default class UmlGraphView extends React.Component {
 		const _this = this;
 
 		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			_this.expandCell(cell);
+			if (cell.vertex) _this.expandCell(cell);
 		});
 	}
 
@@ -608,7 +633,7 @@ export default class UmlGraphView extends React.Component {
 		const _this = this;
 
 		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			_this.collapseCell(cell);
+			if (cell.vertex) _this.collapseCell(cell);
 		});
 	}
 
@@ -652,15 +677,29 @@ export default class UmlGraphView extends React.Component {
 		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent();
 	}
 
-	addEdge(nodeFrom, nodeTo, edgeType) {
+	addEdge(nodeFrom, nodeTo, relationId, edgeType) {
 		let parent = this.graph.getDefaultParent();
 
+		const edgeValue = new EdgeValue(relationId);
+
+		// Does the edge already exist? Happens when manually connecting a new edge (with the connection handler)
+		const outgoingEdges = this.graph.getModel().getOutgoingEdges(nodeFrom);
+
+		for (let i = 0; i < outgoingEdges.length; i++) {
+			let outgoingEdge = outgoingEdges[i];
+
+			if (outgoingEdge.value.getRelationId() == -1 && outgoingEdge.style == edgeType) {
+				outgoingEdge.value = edgeValue;
+				return;
+			}
+		}
+
+		// Insert edge
 		this.graph.getModel().beginUpdate();
 
 		let edge;
 		try {
-			edge = this.graph.insertEdge(parent, null, '', nodeFrom, nodeTo, edgeType);
-
+			edge = this.graph.insertEdge(parent, null, edgeValue, nodeFrom, nodeTo, edgeType);
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
@@ -668,36 +707,51 @@ export default class UmlGraphView extends React.Component {
 		return edge;
 	}
 
-	removeEdge(edge) {
-		this.graph.getModel().beginUpdate();
+	removeEdge(node, relationId) {
+		// Find edge
+		let edge = null;
 
-		try {
-			edge.removeFromParent();
+		const edges = this.graph.getModel().getOutgoingEdges(node);
 
-			this.graph.refresh(edge);
+		for (let i = 0; i < edges.length; i++) {
+			if (edges[i].value.getRelationId() == relationId) {
+				edge = node.edges[i];
+				break;
+			}
+		}
 
-		} finally {
-			this.graph.getModel().endUpdate();
+		// Delete edge
+		if (edge != null) {
+			this.graph.getModel().beginUpdate();
+
+			try {
+				edge.removeFromParent();
+
+				this.graph.refresh(edge);
+
+			} finally {
+				this.graph.getModel().endUpdate();
+			}
 		}
 	}
 
-	addNode(name) {
+	addNode(codeId, name) {
 		let parent = this.graph.getDefaultParent();
 
 		this.graph.getModel().beginUpdate();
 
 		let cell;
 		try {
+			const cellValue = new CellValue();
+			cellValue.setCodeId(codeId);
+			cellValue.setHeader(name);
+
 			// TODO use proper style
 			// TODO what is actually necessary for the style?
 			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
-			cell = new mxCell(name, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
+			cell = new mxCell(cellValue, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
 			cell.vertex = true;
 
-			const cellValue = new CellValue();
-			cellValue.setHeader(name);
-
-			cell.value = cellValue;
 			this.graph.addCell(cell);
 
 		} finally {

@@ -2,20 +2,16 @@ package com.qdacity.test.CodeSystemEndpoint;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.qdacity.endpoint.CodeSystemEndpoint;
-import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CodeSystemEndpointTest {
@@ -40,15 +36,7 @@ public class CodeSystemEndpointTest {
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
-		try {
-			CodeSystem cs = new CodeSystem();
-
-			CodeSystemEndpoint cse = new CodeSystemEndpoint();
-			cse.insertCodeSystem(cs, testUser);
-		} catch (UnauthorizedException e) {
-			e.printStackTrace();
-			fail("User could not be authorized");
-		}
+		CodeSystemTestHelper.addCodeSystem(1L, testUser);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("CodeSystem")).countEntities(withLimit(10)));

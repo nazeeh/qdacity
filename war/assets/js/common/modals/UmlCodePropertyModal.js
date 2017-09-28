@@ -4,8 +4,6 @@ import VexModal from './VexModal';
 
 import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
 
-import UmlClassRelation from '../../pages/uml-editor/model/UmlClassRelation.js';
-
 export default class UmlCodePropertyModal extends VexModal {
 
 	constructor(umlEditor, headline, sourceCode, codesystem, relationMetaModelEntityName, mappingAction) {
@@ -25,19 +23,19 @@ export default class UmlCodePropertyModal extends VexModal {
 	showModal(metaModelEntities, metaModelRelations) {
 		const _this = this;
 
-		const codeIsNotValid = (code) => {
-			if (code == null) {
+		const codeIsNotValid = (destinationCode) => {
+			if (destinationCode == null) {
 				return true;
 			}
 
-			const sourceUmlClass = _this.umlEditor.getUmlClassManager().getByCode(_this.sourceCode);
-			const destinationUmlClass = _this.umlEditor.getUmlClassManager().getByCode(code);
-
 			const metaModelEntity = _this.umlEditor.getMetaModelEntityByName(_this.relationMetaModelEntityName);
 
-			const umlCodeRelation = new UmlClassRelation(0, sourceUmlClass, destinationUmlClass, metaModelEntity);
+			const relation = {
+				mmElementId: metaModelEntity.id,
+				codeId: destinationCode.codeID
+			};
 
-			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(umlCodeRelation) != _this.mappingAction;
+			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(this.sourceCode, destinationCode, relation) != _this.mappingAction;
 		}
 
 		const isCodeSelectable = (code) => {
