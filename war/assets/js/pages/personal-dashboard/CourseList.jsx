@@ -83,14 +83,23 @@ export default class CourseList extends React.Component {
 					});
 					});
 					courseTermsArray.push(termList);
+
+					if (index == resp.items.length - 1) {
+						console.log(courseTermsArray);
+						_this.props.setTerms(courseTermsArray);
+					}
 				});
 			});
-			var courseIDListTest = [['SS','WS','ss'],['WS','ws'],['SSS','WWW','WW'],['WWW','SSS','SS']];
 			var courses = courseList.concat(resp.items)
 			courses = _this.sortCourses(courses);
 			_this.props.setCourses(courses);
-			_this.props.setTerms(courseIDListTest);
+
+
+
+
 		});
+
+
 	}
 
 	sortCourses(courses) {
@@ -188,23 +197,6 @@ export default class CourseList extends React.Component {
 	render() {
 		var _this = this;
 
-		const itemsItems = [];
-
-				/*
-				courseTermsArray[0].forEach(function (term) {
-					console.log(term);
-				});
-				*/
-				this.props.terms.forEach(function (course, index) {
-				const items = [];
-				_this.props.terms[index].forEach (function (term) {
-					items.push({
-						text: term,
-					});
-				});
-				itemsItems.push(items)
-				});
-
 
 		//Render Components
 
@@ -257,7 +249,7 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton items={itemsItems[index]}></DropDownButton>
+					<DropDownButton items={this.props.terms[index]}></DropDownButton>
 				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
