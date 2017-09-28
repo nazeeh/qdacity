@@ -196,19 +196,31 @@ export default class CourseList extends React.Component {
 	render() {
 		var _this = this;
 
-		const items = [];
+		var courseIDListTest = [['SS','WS','ss'],['WS','ws'],['SSS','WWW','WW'],['WWW','SSS','SS']];
+		const itemsItems = [];
+
 		/*
 		courseTermsArray[0].forEach(function (term) {
 			console.log(term);
 		});
 		*/
-		items.push({
-			text: '10 %',
+		courseIDListTest.forEach(function (course, index) {
+		const items = [];
+		courseIDListTest[index].forEach (function (term) {
+			items.push({
+				text: term,
+			});
 		});
+		itemsItems.push(items)
+		});
+
 		//Render Components
 
 		//Render search and newPrjBtn
+
 		const projectListMenu = <StyledProjectListMenu>
+
+
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					type="text"
@@ -249,6 +261,7 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
+					<DropDownButton items={itemsItems[index]}></DropDownButton>
 				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
@@ -284,7 +297,7 @@ export default class CourseList extends React.Component {
 
 		return (
 			<div>
-				<DropDownButton items={items}></DropDownButton>
+
 				{projectListMenu}
 				<StyledProjectList className="">
 					{renderListItems}
