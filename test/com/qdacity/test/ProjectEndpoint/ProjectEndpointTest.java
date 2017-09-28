@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
@@ -45,7 +46,7 @@ public class ProjectEndpointTest {
 			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
-			fail("User could not be authorized");
+			fail("User could not be authorized for project creation");
 		}
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
@@ -164,5 +165,32 @@ public class ProjectEndpointTest {
 
 		// The project added by User A should still exist
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+	}
+
+	/**
+	 * Tests if Projects from other users can be not be deleted
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testProjectRevision() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		ProjectEndpoint ue = new ProjectEndpoint();
+		
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
+		CodeSystemTestHelper.addCodeSystem(1L, testUser);
+		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+		
+
+		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+		ue.createSnapshot(1L, "A test revision", testUser);
+		assertEquals(1, ds.prepare(new Query("ProjectRevision")).countEntities(withLimit(10)));
+
 	}
 }
