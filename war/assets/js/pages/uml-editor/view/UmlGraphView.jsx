@@ -261,7 +261,7 @@ export default class UmlGraphView extends React.Component {
 
 				// Render the react component 
 				// unmount happens in recalculateNodeSize()
-				_this.codesystemView = ReactDOM.render(_this.getCellContent(cell), divBase);
+				ReactDOM.render(_this.getCellContent(cell), divBase);
 
 				// Set size of the main div
 				state.text.node.style.overflow = 'hidden';
