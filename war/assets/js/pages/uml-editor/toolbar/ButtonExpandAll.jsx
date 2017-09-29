@@ -20,7 +20,7 @@ export default class ButtonExpandAll extends React.Component {
 	}
 
 	buttonClicked() {
-		this.umlEditor.getUmlGraphView().expandAll();
+		this.umlEditor.getGraphView().expandAll();
 	}
 
 	render() {

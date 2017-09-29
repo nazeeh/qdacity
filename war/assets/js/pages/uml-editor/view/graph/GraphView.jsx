@@ -2,17 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import Cell from './Cell.jsx';
-import CellValue from './CellValue.js';
-import EdgeValue from './EdgeValue.js';
+import Cell from '../cell/Cell.jsx';
+import CellValue from '../value/CellValue.js';
+import EdgeValue from '../value/EdgeValue.js';
+
+import GraphStyles from './GraphStyles.js';
+import GraphLayouting from './GraphLayouting.js';
+import GraphConnectionHandler from './GraphConnectionHandler.js';
 
 import {
 	EdgeType
-} from '../util/EdgeType.js';
+} from '../../util/EdgeType.js';
 
-import HoverButtons from '../hoverbutton/HoverButtons.jsx';
+import HoverButtons from '../../hoverbutton/HoverButtons.jsx';
 
-import UmlCodePositionEndpoint from '../../../common/endpoints/UmlCodePositionEndpoint';
+import UmlCodePositionEndpoint from '../../../../common/endpoints/UmlCodePositionEndpoint';
 
 const StyledGraphView = styled.div `
     overflow: hidden;
@@ -20,42 +24,25 @@ const StyledGraphView = styled.div `
     height: calc(100% - 51px);
 `;
 
-export default class UmlGraphView extends React.Component {
+export default class GraphView extends React.Component {
 
 	constructor(props) {
 		super(props);
-
-		this.autoLayoutOffsetTop = 50;
-		this.autoLayoutOffsetLeft = 60;
-		this.autoLayoutOffsetNextX = 50;
-		this.autoLayoutOffsetNextY = 30;
-
-		this.umlClassDefaultWidth = 162;
-		this.umlClassDefaultHeight = 75; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
-
 
 		this.zoomOffset = 10;
 		this.minZoomPercentage = 10;
 		this.maxZoomPercentage = 150;
 
-		this.umlGraphContainer = null;
+		this.graphLayouting = null;
+		this.graphConnectionHandler = null;
 		this.hoverButtons = null;
 
+		this.umlGraphContainer = null;
 		this.graph = null;
-		this.layout = null;
-
-		this.cellMarker = null;
-		this.connectionHandler = null;
-
-		this.connectionEdgeStartCell = null;
 
 		this.panning = false;
 
 		this.lastSelectedCells = null;
-	}
-
-	isConnectingEdge() {
-		return this.connectionEdgeStartCell != null;
 	}
 
 	componentDidMount() {
@@ -142,168 +129,15 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	initializeStyles() {
-		this.initializeDefaultStyles();
-		this.initializeCustomStyles();
-	}
-
-	initializeDefaultStyles() {
-		let style;
-
-		style = this.graph.getStylesheet().getDefaultVertexStyle();
-		style[mxConstants.STYLE_FILLCOLOR] = '#FFFFFF';
-		style[mxConstants.STYLE_STROKECOLOR] = '#000000';
-		style[mxConstants.STYLE_FONTCOLOR] = '#000000';
-		style[mxConstants.STYLE_FONTSTYLE] = '1';
-
-		style = this.graph.getStylesheet().getDefaultEdgeStyle();
-		style[mxConstants.STYLE_STARTSIZE] = '13';
-		style[mxConstants.STYLE_ENDSIZE] = '13';
-		style[mxConstants.STYLE_STROKECOLOR] = '#000000';
-		style[mxConstants.STYLE_FONTCOLOR] = '#000000';
-		style[mxConstants.STYLE_FONTSTYLE] = '0';
-		style[mxConstants.STYLE_EDGE] = mxEdgeStyle.SegmentConnector;
-		style[mxConstants.STYLE_ROUNDED] = true;
-	}
-
-	initializeCustomStyles() {
-		const stylesheet = this.graph.getStylesheet();
-		let style;
-
-		// Generalization
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = 'none';
-		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
-		style[mxConstants.STYLE_ENDFILL] = 0;
-		style[mxConstants.STYLE_STROKEWIDTH] = 1;
-		stylesheet.putCellStyle(EdgeType.GENERALIZATION, style);
-
-		// Dependency
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = 'none';
-		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
-		style[mxConstants.STYLE_DASHED] = 1;
-		style[mxConstants.STYLE_STROKEWIDTH] = 1;
-		stylesheet.putCellStyle(EdgeType.DEPENDENCY, style);
-
-		// Aggregation
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_DIAMOND_THIN;
-		style[mxConstants.STYLE_ENDARROW] = 'none';
-		style[mxConstants.STYLE_STARTFILL] = 0;
-		style[mxConstants.STYLE_STARTSIZE] = 20;
-		style[mxConstants.STYLE_STROKEWIDTH] = 1;
-		stylesheet.putCellStyle(EdgeType.AGGREGATION, style);
-
-		// Containment
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_DIAMOND_THIN;
-		style[mxConstants.STYLE_ENDARROW] = 'none';
-		style[mxConstants.STYLE_STARTFILL] = 1;
-		style[mxConstants.STYLE_STARTSIZE] = 20;
-		style[mxConstants.STYLE_STROKEWIDTH] = 1;
-		stylesheet.putCellStyle(EdgeType.CONTAINMENT, style);
-
-		// Association
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = 'none';
-		style[mxConstants.STYLE_ENDARROW] = 'none';
-		style[mxConstants.STYLE_STROKEWIDTH] = 1;
-		stylesheet.putCellStyle(EdgeType.ASSOCIATION, style);
-
-		// Directed Association
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = 'none';
-		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
-		style[mxConstants.STYLE_STROKEWIDTH] = 1;
-		stylesheet.putCellStyle(EdgeType.DIRECTED_ASSOCIATION, style);
-
-		// Realization
-		style = {};
-		style[mxConstants.STYLE_STARTARROW] = 'none';
-		style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
-		style[mxConstants.STYLE_ENDFILL] = 0;
-		style[mxConstants.STYLE_DASHED] = 1;
-		style[mxConstants.STYLE_STROKEWIDTH] = 1;
-		stylesheet.putCellStyle(EdgeType.REALIZATION, style);
+		GraphStyles.initializeStyles(this.graph);
 	}
 
 	initializeLayouting() {
-		// Enables layouting
-		this.layout = new mxFastOrganicLayout(this.graph);
-		this.layout.disableEdgeStyle = false;
-		this.layout.forceConstant = 200;
-		this.layout.forceConstantSquared = this.layout.forceConstant * this.layout.forceConstant;
+		this.graphLayouting = new GraphLayouting(this.graph);
 	}
 
 	initializeConnections() {
-		const _this = this;
-
-		this.connectionEdgeStartCell = null;
-
-		// Cell Marker
-		this.cellMarker = new mxCellMarker(this.graph);
-
-		// Mouse listener
-		const connectionMouseListener = {
-			mouseDown: function (sender, me) {},
-			mouseMove: function (sender, me) {},
-			mouseUp: function (sender, me) {
-				if (_this.isConnectingEdge()) {
-					me.consumed = false;
-					_this.cellMarker.process(me);
-				}
-			}
-		};
-
-		_this.graph.addMouseListener(connectionMouseListener);
-
-		// Connection Handler
-		this.connectionHandler = new mxConnectionHandler(this.graph, function (source, target, style) {
-			const edgeValue = new EdgeValue(-1);
-
-			const edge = new mxCell(edgeValue, new mxGeometry());
-			edge.setEdge(true);
-			edge.setStyle(style);
-			edge.geometry.relative = true;
-			return edge;
-		});
-		this.connectionHandler.livePreview = true;
-		this.connectionHandler.select = false;
-
-		this.connectionHandler.isValidTarget = function (cell) {
-			return _this.isCellUmlClass(cell);
-		};
-
-		this.connectionHandler.getEdgeWidth = function (valid) {
-			return 1;
-		};
-
-		this.connectionHandler.addListener(mxEvent.START, function (sender, evt) {
-			_this.connectionEdgeStartCell = evt.properties.state.cell;
-		});
-
-		this.connectionHandler.addListener(mxEvent.RESET, function (sender, evt) {
-			_this.selectCell(_this.connectionEdgeStartCell);
-
-			_this.connectionEdgeStartCell = null;
-		});
-
-		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
-			_this.cellMarker.process(new mxMouseEvent());
-
-			_this.connectionEdgeStartCell = null;
-
-			const edgeType = evt.properties.cell.style;
-			const sourceNode = evt.properties.cell.source;
-			const destinationNode = evt.properties.cell.target;
-
-			const sourceCode = _this.props.umlEditor.getCodeById(sourceNode.value.getCodeId());
-			const destinationCode = _this.props.umlEditor.getCodeById(destinationNode.value.getCodeId());
-
-			_this.props.umlEditor.createEdge(sourceCode, destinationCode, edgeType);
-
-			_this.selectCell(sourceNode);
-		});
+		this.graphConnectionHandler = new GraphConnectionHandler(this.props.umlEditor, this, this.graph);
 	}
 
 	initializePanning() {
@@ -341,7 +175,7 @@ export default class UmlGraphView extends React.Component {
 
 				// Render the react component 
 				// unmount happens in recalculateNodeSize()
-				_this.codesystemView = ReactDOM.render(_this.getCellContent(cell), divBase);
+				ReactDOM.render(_this.getCellContent(cell), divBase);
 
 				// Set size of the main div
 				state.text.node.style.overflow = 'hidden';
@@ -504,79 +338,11 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	applyLayout() {
-		let parent = this.graph.getDefaultParent();
-
-		this.graph.getModel().beginUpdate();
-
-		try {
-			this.layout.execute(parent);
-		} finally {
-			this.graph.getModel().endUpdate();
-		}
+		this.graphLayouting.applyLayout();
 	}
 
 	getFreeNodePosition(cell) {
-		const _this = this;
-
-		// Bounds
-		let width = this.umlClassDefaultWidth;
-		let height = this.umlClassDefaultHeight;
-
-		if (cell != null) {
-			width = cell.getGeometry().width;
-			height = cell.getGeometry().height;
-		}
-
-		// Does the area contain another node?
-		const allNodes = _this.graph.getModel().getChildren(_this.graph.getDefaultParent());
-
-		const isAreaFree = function (x, y, width, height) {
-			if (allNodes != null) {
-				for (let i = 0; i < allNodes.length; i++) {
-					let node = allNodes[i];
-
-					// Node will intersect with itself
-					if (node.mxObjectId != cell.mxObjectId && node.vertex) {
-						// Return false if areas intersect
-						const x2 = node.getGeometry().x;
-						const y2 = node.getGeometry().y;
-						const width2 = node.getGeometry().width;
-						const height2 = node.getGeometry().height;
-
-						// Intersects?
-						if (!(x > (x2 + width2)
-								|| (x + width) < x2
-								|| y > (y2 + height2)
-								|| (y + height) < y2)) {
-							return false;
-						}
-					}
-				}
-			}
-
-			return true;
-		};
-
-		// Find position
-		let x = this.autoLayoutOffsetLeft;
-		let y = this.autoLayoutOffsetTop;
-		let offsetX = this.umlClassDefaultWidth + this.autoLayoutOffsetNextX;
-		let offsetY = this.umlClassDefaultHeight + this.autoLayoutOffsetNextY;
-
-		while (true) {
-			for (let i = 0; i < 10; i++) {
-				if (isAreaFree(x, y, width, height)) {
-					return [x, y];
-				}
-
-				x = x + offsetX;
-			}
-
-			x = 0;
-			y = y + offsetY;
-		}
-
-		return [x, y];
+		return this.graphLayouting.getFreeNodePosition(cell);
 	}
 
 	updateHoverButtons(cell, dx, dy) {
@@ -611,6 +377,10 @@ export default class UmlGraphView extends React.Component {
 		}
 	}
 
+	hideHoverButtons() {
+		this.hoverButtons.hide();
+	}
+
 	toggleCollapseCell(cell) {
 		cell.setCollapsed(!cell.isCollapsed());
 		this.recalculateNodeSize(cell);
@@ -642,19 +412,16 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(cell);
 	}
 
+	isConnectingEdge() {
+		return this.graphConnectionHandler.isConnectingEdge();
+	}
+
 	startConnecting(edgeType) {
-		let edge = this.graph.createEdge(null, null, null, null, null, edgeType);
-		let edgeState = new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
-
-		let cellState = this.graph.getView().getState(this.graph.getSelectionCell(), true);
-
-		this.connectionHandler.start(cellState, 0, 0, edgeState);
-
-		this.hoverButtons.hide();
+		this.graphConnectionHandler.startConnecting(edgeType);
 	}
 
 	resetConnectingEdge() {
-		this.connectionHandler.reset();
+		this.graphConnectionHandler.resetConnectingEdge();
 	}
 
 	clearSelection() {
@@ -746,10 +513,7 @@ export default class UmlGraphView extends React.Component {
 			cellValue.setCodeId(codeId);
 			cellValue.setHeader(name);
 
-			// TODO use proper style
-			// TODO what is actually necessary for the style?
-			let style = 'fontSize=13;swimlane;html=1;fontStyle=1;strokeWidth=1;align=center;verticalAlign=top;childLayout=stackLayout;';
-			cell = new mxCell(cellValue, new mxGeometry(0, 0, this.umlClassDefaultWidth, 0), style);
+			cell = new mxCell(cellValue, new mxGeometry(0, 0, this.umlClassDefaultWidth, this.umlClassDefaultHeight));
 			cell.vertex = true;
 
 			this.graph.addCell(cell);

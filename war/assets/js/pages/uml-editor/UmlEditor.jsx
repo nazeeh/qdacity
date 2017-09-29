@@ -12,7 +12,7 @@ import MetaModelRunner from './mapping/MetaModelRunner.js';
 import CodePositionManager from './CodePositionManager.js';
 
 import Toolbar from './toolbar/Toolbar.jsx';
-import UmlGraphView from './view/UmlGraphView.jsx';
+import GraphView from './view/graph/GraphView.jsx';
 
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 
@@ -32,7 +32,7 @@ export default class UmlEditor extends React.Component {
 
 		this.initialized = false;
 
-		this.umlGraphView = null;
+		this.graphView = null;
 		this.toolbar = null;
 
 		this.codePositionManager = null;
@@ -53,8 +53,8 @@ export default class UmlEditor extends React.Component {
 		return this.toolbar;
 	}
 
-	getUmlGraphView() {
-		return this.umlGraphView;
+	getGraphView() {
+		return this.graphView;
 	}
 
 	getMetaModelMapper() {
@@ -138,14 +138,14 @@ export default class UmlEditor extends React.Component {
 	initializeSelection() {
 		const _this = this;
 
-		this.umlGraphView.addSelectionChangedEventListener((sender, evt) => {
+		this.graphView.addSelectionChangedEventListener((sender, evt) => {
 			const cells = sender.cells;
 
-			if (!_this.umlGraphView.isConnectingEdge()) {
+			if (!_this.graphView.isConnectingEdge()) {
 				if (cells != null && cells.length >= 1) {
 					const cell = cells[0];
 
-					if (_this.umlGraphView.isCellUmlClass(cell)) {
+					if (_this.graphView.isCellUmlClass(cell)) {
 						const code = _this.getCodeByNode(cell);
 						this.props.codesystemView.setSelected(code);
 					}
@@ -185,7 +185,7 @@ export default class UmlEditor extends React.Component {
 	initCellsMovedEventListener() {
 		let _this = this;
 
-		this.umlGraphView.addCellsMovedEventListener(function (sender, event) {
+		this.graphView.addCellsMovedEventListener(function (sender, event) {
 			let cells = event.properties.cells;
 			let dx = event.properties.dx;
 			let dy = event.properties.dy;
@@ -193,7 +193,7 @@ export default class UmlEditor extends React.Component {
 			let umlCodePositions = [];
 
 			cells.forEach((cell) => {
-				if (_this.umlGraphView.isCellUmlClass(cell)) {
+				if (_this.graphView.isCellUmlClass(cell)) {
 					let code = _this.getCodeByNode(cell);
 
 					let codePosition = _this.codePositionManager.getCodePosition(code.codeID);
@@ -212,24 +212,24 @@ export default class UmlEditor extends React.Component {
 		const node = this.getNodeByCodeId(code.id);
 
 		// Prevent loops
-		if (!this.umlGraphView.isCellSelected(node)) {
+		if (!this.graphView.isCellSelected(node)) {
 			// Reset edge if connecting
-			if (this.umlGraphView.isConnectingEdge()) {
-				this.umlGraphView.resetConnectingEdge();
+			if (this.graphView.isConnectingEdge()) {
+				this.graphView.resetConnectingEdge();
 			}
 
 			// Clear selection
-			this.umlGraphView.clearSelection();
+			this.graphView.clearSelection();
 
 			// Select node
 			if (node != null) {
-				this.umlGraphView.selectCell(node);
+				this.graphView.selectCell(node);
 			}
 		}
 	}
 
 	/**
-	 * Callback for the umlGraphView zoom function. 
+	 * Callback for the graphView zoom function. 
 	 */
 	onZoom(percentage) {
 		this.umlEditor.toolbar.onZoom(percentage);
@@ -317,7 +317,7 @@ export default class UmlEditor extends React.Component {
 	 * Returns the node connected to the given code (id).
 	 */
 	getNodeByCodeId(id) {
-		return this.umlGraphView.getNodeByCodeId(id);
+		return this.graphView.getNodeByCodeId(id);
 	}
 
 	/**
@@ -420,7 +420,7 @@ export default class UmlEditor extends React.Component {
 	addNode(code) {
 		const _this = this;
 
-		const node = this.umlGraphView.addNode(code.id, code.name);
+		const node = this.graphView.addNode(code.id, code.name);
 
 		let x = 0;
 		let y = 0;
@@ -429,7 +429,7 @@ export default class UmlEditor extends React.Component {
 		let codePosition = this.codePositionManager.getCodePosition(code.codeID);
 
 		if (codePosition == null) {
-			[x, y] = this.umlGraphView.getFreeNodePosition(node);
+			[x, y] = this.graphView.getFreeNodePosition(node);
 
 			// insert into database
 			codePosition = this.codePositionManager.createCodePositionObject(null, code.codeID, code.codesystemID, x, y);
@@ -440,8 +440,8 @@ export default class UmlEditor extends React.Component {
 			y = codePosition.y;
 		}
 
-		this.umlGraphView.moveNode(node, x, y);
-		this.umlGraphView.recalculateNodeSize(node);
+		this.graphView.moveNode(node, x, y);
+		this.graphView.recalculateNodeSize(node);
 	}
 
 	/**
@@ -449,7 +449,7 @@ export default class UmlEditor extends React.Component {
 	 */
 	renameNode(code) {
 		const node = this.getNodeByCodeId(code.id);
-		this.umlGraphView.renameNode(node, code.name);
+		this.graphView.renameNode(node, code.name);
 	}
 
 	/**
@@ -457,7 +457,7 @@ export default class UmlEditor extends React.Component {
 	 */
 	removeNode(code) {
 		const node = this.getNodeByCodeId(code.id);
-		this.umlGraphView.removeNode(node);
+		this.graphView.removeNode(node);
 	}
 
 	/**
@@ -467,7 +467,7 @@ export default class UmlEditor extends React.Component {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 
 		const fieldText = this.metaModelMapper.getClassFieldText(destinationCode.name, 'TODO-returnType');
-		this.umlGraphView.addClassField(sourceNode, relation.key.id, '+', fieldText);
+		this.graphView.addClassField(sourceNode, relation.key.id, '+', fieldText);
 	}
 
 	/**
@@ -476,7 +476,7 @@ export default class UmlEditor extends React.Component {
 	removeClassField(code, relation) {
 		const node = this.getNodeByCodeId(code.id);
 
-		this.umlGraphView.removeClassField(node, relation.key.id);
+		this.graphView.removeClassField(node, relation.key.id);
 	}
 
 	/**
@@ -486,7 +486,7 @@ export default class UmlEditor extends React.Component {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 
 		const methodText = this.metaModelMapper.getClassMethodText(destinationCode.name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
-		this.umlGraphView.addClassMethod(sourceNode, relation.key.id, '+', methodText);
+		this.graphView.addClassMethod(sourceNode, relation.key.id, '+', methodText);
 	}
 
 	/**
@@ -495,7 +495,7 @@ export default class UmlEditor extends React.Component {
 	removeClassMethod(code, relation) {
 		const node = this.getNodeByCodeId(code.id);
 
-		this.umlGraphView.removeClassMethod(node, relation.key.id);
+		this.graphView.removeClassMethod(node, relation.key.id);
 	}
 
 	/**
@@ -505,7 +505,7 @@ export default class UmlEditor extends React.Component {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 		const destinationNode = this.getNodeByCodeId(destinationCode.id);
 
-		const edge = this.umlGraphView.addEdge(sourceNode, destinationNode, relation.key.id, edgeType);
+		const edge = this.graphView.addEdge(sourceNode, destinationNode, relation.key.id, edgeType);
 	}
 
 	/**
@@ -514,7 +514,7 @@ export default class UmlEditor extends React.Component {
 	removeEdge(code, relation) {
 		const node = this.getNodeByCodeId(code.id);
 
-		this.umlGraphView.removeEdge(node, relation.key.id);
+		this.graphView.removeEdge(node, relation.key.id);
 	}
 
 	/**
@@ -538,7 +538,7 @@ export default class UmlEditor extends React.Component {
 		return (
 			<StyledUmlEditor>
                 <Toolbar ref={(toolbar) => {if (toolbar != null) _this.toolbar = toolbar}} className="row no-gutters" umlEditor={_this} createCode={_this.props.createCode} />
-                <UmlGraphView ref={(umlGraphView) => {if (umlGraphView != null) _this.umlGraphView = umlGraphView}} umlEditor={_this} onZoom={_this.onZoom} toggleCodingView={this.props.toggleCodingView}/>
+                <GraphView ref={(graphView) => {if (graphView != null) _this.graphView = graphView}} umlEditor={_this} onZoom={_this.onZoom} toggleCodingView={this.props.toggleCodingView}/>
             </StyledUmlEditor>
 		);
 	}

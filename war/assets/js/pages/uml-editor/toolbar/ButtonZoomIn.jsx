@@ -19,7 +19,7 @@ export default class ButtonZoomIn extends React.Component {
 	}
 
 	buttonClicked() {
-		this.umlEditor.getUmlGraphView().zoomIn();
+		this.umlEditor.getGraphView().zoomIn();
 	}
 
 	render() {
