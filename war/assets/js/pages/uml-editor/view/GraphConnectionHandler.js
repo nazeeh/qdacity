@@ -2,9 +2,9 @@ import EdgeValue from './EdgeValue.js';
 
 export default class GraphConnectionHandler {
 
-	constructor(umlEditor, umlGraphView, graph) {
+	constructor(umlEditor, graphView, graph) {
 		this.umlEditor = umlEditor;
-		this.umlGraphView = umlGraphView;
+		this.graphView = graphView;
 		this.graph = graph;
 
 		this.cellMarker = null;
@@ -51,7 +51,7 @@ export default class GraphConnectionHandler {
 		this.connectionHandler.select = false;
 
 		this.connectionHandler.isValidTarget = function (cell) {
-			return _this.umlGraphView.isCellUmlClass(cell);
+			return _this.graphView.isCellUmlClass(cell);
 		};
 
 		this.connectionHandler.getEdgeWidth = function (valid) {
@@ -63,7 +63,7 @@ export default class GraphConnectionHandler {
 		});
 
 		this.connectionHandler.addListener(mxEvent.RESET, function (sender, evt) {
-			_this.umlGraphView.selectCell(_this.connectionEdgeStartCell);
+			_this.graphView.selectCell(_this.connectionEdgeStartCell);
 
 			_this.connectionEdgeStartCell = null;
 		});
@@ -82,7 +82,7 @@ export default class GraphConnectionHandler {
 
 			_this.umlEditor.createEdge(sourceCode, destinationCode, edgeType);
 
-			_this.umlGraphView.selectCell(sourceNode);
+			_this.graphView.selectCell(sourceNode);
 		});
 	}
 
@@ -98,7 +98,7 @@ export default class GraphConnectionHandler {
 
 		this.connectionHandler.start(cellState, 0, 0, edgeState);
 
-		this.umlGraphView.hideHoverButtons();
+		this.graphView.hideHoverButtons();
 	}
 
 	resetConnectingEdge() {

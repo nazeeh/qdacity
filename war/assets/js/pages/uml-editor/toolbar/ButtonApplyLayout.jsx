@@ -20,7 +20,7 @@ export default class ButtonApplyLayout extends React.Component {
 	}
 
 	buttonClicked() {
-		this.umlEditor.getUmlGraphView().applyLayout();
+		this.umlEditor.getGraphView().applyLayout();
 	}
 
 	render() {

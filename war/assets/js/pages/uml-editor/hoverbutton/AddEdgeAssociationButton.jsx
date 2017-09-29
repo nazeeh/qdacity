@@ -14,7 +14,7 @@ export default class AddEdgeAssociationButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		this.props.umlEditor.getUmlGraphView().startConnecting(EdgeType.DIRECTED_ASSOCIATION);
+		this.props.umlEditor.getGraphView().startConnecting(EdgeType.DIRECTED_ASSOCIATION);
 	}
 
 	getImageClassName() {

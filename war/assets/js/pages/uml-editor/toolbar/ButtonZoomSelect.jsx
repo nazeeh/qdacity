@@ -21,7 +21,7 @@ export default class ButtonZoomSelect extends React.Component {
 	}
 
 	buttonClicked(zoom) {
-		this.umlEditor.getUmlGraphView().zoomTo(zoom);
+		this.umlEditor.getGraphView().zoomTo(zoom);
 	}
 
 	onZoom(percentage) {

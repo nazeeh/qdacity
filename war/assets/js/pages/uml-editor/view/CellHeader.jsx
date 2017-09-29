@@ -38,7 +38,7 @@ export default class CellHeader extends React.Component {
 	}
 
 	expandCollapseClicked() {
-		this.props.umlEditor.getUmlGraphView().toggleCollapseCell(this.props.cell);
+		this.props.umlEditor.getGraphView().toggleCollapseCell(this.props.cell);
 	}
 
 	render() {

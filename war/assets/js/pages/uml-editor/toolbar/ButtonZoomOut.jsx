@@ -20,7 +20,7 @@ export default class ButtonZoomOut extends React.Component {
 	}
 
 	buttonClicked() {
-		this.umlEditor.getUmlGraphView().zoomOut();
+		this.umlEditor.getGraphView().zoomOut();
 	}
 
 	render() {

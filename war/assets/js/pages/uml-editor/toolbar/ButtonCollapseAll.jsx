@@ -20,7 +20,7 @@ export default class ButtonCollapseAll extends React.Component {
 	}
 
 	buttonClicked() {
-		this.umlEditor.getUmlGraphView().collapseAll();
+		this.umlEditor.getGraphView().collapseAll();
 	}
 
 	render() {

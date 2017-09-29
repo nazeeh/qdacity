@@ -24,7 +24,7 @@ const StyledGraphView = styled.div `
     height: calc(100% - 51px);
 `;
 
-export default class UmlGraphView extends React.Component {
+export default class GraphView extends React.Component {
 
 	constructor(props) {
 		super(props);
