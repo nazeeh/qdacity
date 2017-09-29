@@ -21,6 +21,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.UserNotificationEndpoint;
+import com.qdacity.project.Project;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 import com.qdacity.user.UserNotification;
@@ -178,8 +179,7 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectInvitation() throws UnauthorizedException {
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		ProjectEndpoint ue = new ProjectEndpoint();
+		ProjectEndpoint pe = new ProjectEndpoint();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
 
@@ -199,11 +199,19 @@ public class ProjectEndpointTest {
 		List<UserNotification> notifications = une.listUserNotification(null, null, invitedUser);
 		assertEquals(0, notifications.size());
 
-		ue.inviteUser(1L, "surname@mydomain.com", testUser);
+		pe.inviteUser(1L, "surname@mydomain.com", testUser);
 
 
 		notifications = une.listUserNotification(null, null, invitedUser);
 		assertEquals(1, notifications.size());
+
+		pe.addOwner(1L, invitedUser.getUserId(), invitedUser);
+		notifications.get(0).setSettled(true);
+		une.updateUserNotification(notifications.get(0));
+
+		Project project = (Project) pe.getProject(1L, "PROJECT", invitedUser);
+
+		assertEquals(2, project.getOwners().size());
 
 	}
 
