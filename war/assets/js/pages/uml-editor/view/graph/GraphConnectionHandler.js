@@ -7,8 +7,6 @@ export default class GraphConnectionHandler {
 		this.graphView = graphView;
 		this.graph = graph;
 
-		this.cellMarker = null;
-
 		this.connectionHandler = null;
 		this.connectionEdgeStartCell = null;
 
@@ -20,9 +18,6 @@ export default class GraphConnectionHandler {
 
 		this.connectionEdgeStartCell = null;
 
-		// Cell Marker
-		this.cellMarker = new mxCellMarker(this.graph);
-
 		// Mouse listener
 		const connectionMouseListener = {
 			mouseDown: function (sender, me) {},
@@ -30,7 +25,7 @@ export default class GraphConnectionHandler {
 			mouseUp: function (sender, me) {
 				if (_this.isConnectingEdge()) {
 					me.consumed = false;
-					_this.cellMarker.process(me);
+					_this.connectionHandler.marker.process(me);
 				}
 			}
 		};
@@ -49,6 +44,7 @@ export default class GraphConnectionHandler {
 		});
 		this.connectionHandler.livePreview = true;
 		this.connectionHandler.select = false;
+		this.connectionHandler.marker.setEnabled(false);
 
 		this.connectionHandler.isValidTarget = function (cell) {
 			return _this.graphView.isCellUmlClass(cell);
@@ -59,17 +55,23 @@ export default class GraphConnectionHandler {
 		};
 
 		this.connectionHandler.addListener(mxEvent.START, function (sender, evt) {
+			_this.connectionHandler.marker.setEnabled(true);
+
 			_this.connectionEdgeStartCell = evt.properties.state.cell;
 		});
 
 		this.connectionHandler.addListener(mxEvent.RESET, function (sender, evt) {
 			_this.graphView.selectCell(_this.connectionEdgeStartCell);
 
+			_this.connectionHandler.marker.setEnabled(false);
+
 			_this.connectionEdgeStartCell = null;
 		});
 
 		this.connectionHandler.addListener(mxEvent.CONNECT, function (sender, evt) {
-			_this.cellMarker.process(new mxMouseEvent());
+			_this.connectionHandler.marker.process(new mxMouseEvent());
+
+			_this.connectionHandler.marker.setEnabled(false);
 
 			_this.connectionEdgeStartCell = null;
 
