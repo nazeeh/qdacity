@@ -224,6 +224,7 @@ export default class UmlEditor extends React.Component {
 			// Select node
 			if (node != null) {
 				this.graphView.selectCell(node);
+				this.graphView.panToCell(node, false);
 			}
 		}
 	}

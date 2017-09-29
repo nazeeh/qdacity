@@ -357,6 +357,11 @@ export default class GraphView extends React.Component {
 		this.hoverButtons.hide();
 	}
 
+	panToCell(cell, center) {
+		this.graph.scrollCellToVisible(cell, center);
+		this.updateHoverButtons(cell);
+	}
+
 	toggleCollapseCell(cell) {
 		cell.setCollapsed(!cell.isCollapsed());
 		this.recalculateNodeSize(cell);
