@@ -44,6 +44,13 @@ const StyledListItem = styled.li `
     }
 `;
 
+const StyledText = styled.span `
+    width: ${props => props.width ? props.width : 'auto'};
+    margin: 0px !important;
+    padding: 0px !important;
+    display: inline-block;
+`;
+
 export default class DropDownButton extends React.Component {
 
 	constructor(props) {
@@ -108,7 +115,7 @@ export default class DropDownButton extends React.Component {
 			<StyledButtonContainer className="customDropDownParent">
 			    <p ref={(r) => {if (r != null) _this.eventListenerDomNodeRef = r}} className="customDropDownEventNode"></p>
                 <BtnDefault onClick={this.toggleDropDown}>
-                    {this.state.text}
+                    <StyledText width={this.props.fixedWidth}>{this.state.text}</StyledText>
                     <StyledCaret className='fa fa-caret-down' aria-hidden='true'></StyledCaret>
                 </BtnDefault>
                 {this.state.expanded ? (
