@@ -93,7 +93,8 @@ export default class DropDownButton extends React.Component {
 		});
 	}
 
-	itemClicked(item) {
+	itemClicked(e, item) {
+		e.stopPropagation();
 		this.setState({
 			text: item.text,
 			expanded: false
@@ -115,7 +116,7 @@ export default class DropDownButton extends React.Component {
                 {this.state.expanded ? (
                     <StyledListContainer>
                         {this.props.items.map((item) =>
-                            <StyledListItem onClick={_this.itemClicked.bind(this, item)}>{item.text}</StyledListItem>
+                            <StyledListItem onClick={(e) => _this.itemClicked(e, item)}>{item.text}</StyledListItem>
                         )}
                     </StyledListContainer>
                 ) : ( '' )}
