@@ -77,11 +77,10 @@ export default class CourseList extends React.Component {
 				crs.type = "COURSE";
 				CourseEndPoint.listTermCourse(crs.id).then(function (resp2) {
 					var termList = [];
-
 					resp2.items = resp2.items || [];
 					resp2.items.forEach(function (crs) {
 						termList.push ({
-						text: crs.term
+						text: crs.term,
 					});
 					});
 					termsObject.push({
@@ -91,15 +90,11 @@ export default class CourseList extends React.Component {
 					termsObject = _this.sortCourses(termsObject);
 					counter -= 1;
 					if (counter == 0) {
-						var termsCounter = termsObject.length;
 						termsObject.forEach (function (term, index) {
 							courseTermsArray.push(termsObject[index].terms);
-							termsCounter -= 1;
-							if (termsCounter == 0) {
-								console.log(courseTermsArray);
-								_this.props.setTerms(courseTermsArray);
-							}
 						});
+						console.log(courseTermsArray);
+						_this.props.setTerms(courseTermsArray);
 					}
 				});
 			});
