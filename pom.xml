@@ -281,6 +281,7 @@
 		<configuration>
 			<!-- Sets the VM argument line used when unit tests are run. -->
 			<argLine>${surefireArgLine} -Dbytecode.version=1.7</argLine>
+			<trimStackTrace>false</trimStackTrace>
 		</configuration>
       </plugin>
 
@@ -363,6 +364,8 @@
 					<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
 					<!-- Sets the output directory for the code coverage report. -->
 					<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+					
+					
 				</configuration>
 			</execution>
 			<execution>
@@ -389,6 +392,11 @@
 				</configuration>
 			</execution>
 		</executions>
+		<configuration>
+                <excludes>
+                    <exclude>com.qdacity.test.*</exclude>
+                </excludes>
+            </configuration>
 	</plugin>
     </plugins>
   </build>
