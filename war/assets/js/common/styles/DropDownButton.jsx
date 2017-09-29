@@ -38,7 +38,7 @@ const StyledListItem = styled.li `
     cursor: pointer;
     margin: 4px 0px;
     padding: 3px 10px;
-    
+
     &:hover {
         background-color: ${props => props.theme.bgHover};
     }
@@ -74,7 +74,8 @@ export default class DropDownButton extends React.Component {
 		});
 	}
 
-	toggleDropDown() {
+	toggleDropDown(e) {
+		e.stopPropagation()
 		this.setState({
 			expanded: !this.state.expanded
 		});
@@ -107,7 +108,7 @@ export default class DropDownButton extends React.Component {
 		return (
 			<StyledButtonContainer className="customDropDownParent">
 			    <p ref={(r) => {if (r != null) _this.eventListenerDomNodeRef = r}} className="customDropDownEventNode"></p>
-                <BtnDefault onClick={this.toggleDropDown}>
+                <BtnDefault onClick={(e) => this.toggleDropDown(e)}>
                     {this.state.text}
                     <StyledCaret className='fa fa-caret-down' aria-hidden='true'></StyledCaret>
                 </BtnDefault>

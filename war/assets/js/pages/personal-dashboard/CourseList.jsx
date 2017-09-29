@@ -157,10 +157,7 @@ export default class CourseList extends React.Component {
 
 	}
 
-	dropDownClick(e) {
-		e.stopPropagation();
-		console.log("dropdown clicked");
-	}
+
 
 	updateSearch(e) {
 		this.setState({
@@ -263,7 +260,7 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton onClick={(e) => this.dropDownClick(e)} items={this.props.terms[index]}></DropDownButton>
+					<DropDownButton items={this.props.terms[index]}></DropDownButton>
 				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
