@@ -12,7 +12,7 @@ import MetaModelRunner from './mapping/MetaModelRunner.js';
 import CodePositionManager from './CodePositionManager.js';
 
 import Toolbar from './toolbar/Toolbar.jsx';
-import GraphView from './view/GraphView.jsx';
+import GraphView from './view/graph/GraphView.jsx';
 
 import UmlCodePropertyModal from '../../common/modals/UmlCodePropertyModal';
 

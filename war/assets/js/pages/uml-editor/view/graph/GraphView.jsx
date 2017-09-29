@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import Cell from './Cell.jsx';
-import CellValue from './CellValue.js';
-import EdgeValue from './EdgeValue.js';
+import Cell from '../Cell.jsx';
+import CellValue from '../CellValue.js';
+import EdgeValue from '../EdgeValue.js';
 
 import GraphStyles from './GraphStyles.js';
 import GraphLayouting from './GraphLayouting.js';
@@ -12,11 +12,11 @@ import GraphConnectionHandler from './GraphConnectionHandler.js';
 
 import {
 	EdgeType
-} from '../util/EdgeType.js';
+} from '../../util/EdgeType.js';
 
-import HoverButtons from '../hoverbutton/HoverButtons.jsx';
+import HoverButtons from '../../hoverbutton/HoverButtons.jsx';
 
-import UmlCodePositionEndpoint from '../../../common/endpoints/UmlCodePositionEndpoint';
+import UmlCodePositionEndpoint from '../../../../common/endpoints/UmlCodePositionEndpoint';
 
 const StyledGraphView = styled.div `
     overflow: hidden;
