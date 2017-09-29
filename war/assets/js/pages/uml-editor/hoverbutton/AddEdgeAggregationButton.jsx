@@ -14,7 +14,7 @@ export default class AddEdgeAggregationButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		this.props.umlEditor.getUmlGraphView().startConnecting(EdgeType.AGGREGATION);
+		this.props.umlEditor.getGraphView().startConnecting(EdgeType.AGGREGATION);
 	}
 
 	getImageClassName() {

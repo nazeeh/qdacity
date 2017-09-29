@@ -14,6 +14,8 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
+import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
@@ -58,6 +60,11 @@ public class CodeEndpointTest {
 		}
 
 		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1L, "authorName", "fff", testUser);
+
+		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+		QueueStateInfo qsi = ltq.getQueueStateInfo().get("ChangeLogQueue");
+		assertEquals(1, qsi.getTaskInfo().size());
+
 
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
 	}

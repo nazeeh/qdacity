@@ -14,7 +14,7 @@ export default class AddEdgeGeneralizationButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		this.props.umlEditor.getUmlGraphView().startConnecting(EdgeType.GENERALIZATION);
+		this.props.umlEditor.getGraphView().startConnecting(EdgeType.GENERALIZATION);
 	}
 
 	getImageClassName() {
