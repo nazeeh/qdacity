@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
 import Cell from '../Cell.jsx';
-import CellValue from '../CellValue.js';
-import EdgeValue from '../EdgeValue.js';
+import CellValue from '../value/CellValue.js';
+import EdgeValue from '../value/EdgeValue.js';
 
 import GraphStyles from './GraphStyles.js';
 import GraphLayouting from './GraphLayouting.js';

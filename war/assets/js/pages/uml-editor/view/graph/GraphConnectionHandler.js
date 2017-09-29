@@ -1,4 +1,4 @@
-import EdgeValue from '../EdgeValue.js';
+import EdgeValue from '../value/EdgeValue.js';
 
 export default class GraphConnectionHandler {
 
