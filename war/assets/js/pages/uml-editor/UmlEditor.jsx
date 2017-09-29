@@ -530,6 +530,14 @@ export default class UmlEditor extends React.Component {
 	 */
 	codeUpdated(code) {
 		this.consistencyManager.codeUpdated(code);
+
+		if (this.props.codesystemView.getSelected().id == code.id) {
+			let node = this.getNodeByCodeId(code.id);
+
+			if (node != null) {
+				this.graphView.selectCell(node);
+			}
+		}
 	}
 
 	render() {
