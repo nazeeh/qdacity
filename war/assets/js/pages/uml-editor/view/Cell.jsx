@@ -22,6 +22,14 @@ const StyledSeparator = styled.div `
 
 export default class Cell extends React.Component {
 
+	static getDefaultWidth() {
+		return 162;
+	}
+
+	static getDefaultHeight() {
+		return 75;
+	}
+
 	constructor(props) {
 		super(props);
 	}

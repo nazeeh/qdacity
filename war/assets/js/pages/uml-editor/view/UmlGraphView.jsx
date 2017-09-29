@@ -7,6 +7,7 @@ import CellValue from './CellValue.js';
 import EdgeValue from './EdgeValue.js';
 
 import GraphStyles from './GraphStyles.js';
+import GraphLayouting from './GraphLayouting.js';
 import GraphConnectionHandler from './GraphConnectionHandler.js';
 
 import {
@@ -28,26 +29,16 @@ export default class UmlGraphView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.autoLayoutOffsetTop = 50;
-		this.autoLayoutOffsetLeft = 60;
-		this.autoLayoutOffsetNextX = 50;
-		this.autoLayoutOffsetNextY = 30;
-
-		this.umlClassDefaultWidth = 162;
-		this.umlClassDefaultHeight = 75; // TODO fix => neu berechnen oder dynamisch belegen (header + fields + methods + 2x sep)
-
-
 		this.zoomOffset = 10;
 		this.minZoomPercentage = 10;
 		this.maxZoomPercentage = 150;
 
-		this.umlGraphContainer = null;
-
+		this.graphLayouting = null;
 		this.graphConnectionHandler = null;
 		this.hoverButtons = null;
 
+		this.umlGraphContainer = null;
 		this.graph = null;
-		this.layout = null;
 
 		this.panning = false;
 
@@ -142,11 +133,7 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	initializeLayouting() {
-		// Enables layouting
-		this.layout = new mxFastOrganicLayout(this.graph);
-		this.layout.disableEdgeStyle = false;
-		this.layout.forceConstant = 200;
-		this.layout.forceConstantSquared = this.layout.forceConstant * this.layout.forceConstant;
+		this.graphLayouting = new GraphLayouting(this.graph);
 	}
 
 	initializeConnections() {
@@ -351,79 +338,11 @@ export default class UmlGraphView extends React.Component {
 	}
 
 	applyLayout() {
-		let parent = this.graph.getDefaultParent();
-
-		this.graph.getModel().beginUpdate();
-
-		try {
-			this.layout.execute(parent);
-		} finally {
-			this.graph.getModel().endUpdate();
-		}
+		this.graphLayouting.applyLayout();
 	}
 
 	getFreeNodePosition(cell) {
-		const _this = this;
-
-		// Bounds
-		let width = this.umlClassDefaultWidth;
-		let height = this.umlClassDefaultHeight;
-
-		if (cell != null) {
-			width = cell.getGeometry().width;
-			height = cell.getGeometry().height;
-		}
-
-		// Does the area contain another node?
-		const allNodes = _this.graph.getModel().getChildren(_this.graph.getDefaultParent());
-
-		const isAreaFree = function (x, y, width, height) {
-			if (allNodes != null) {
-				for (let i = 0; i < allNodes.length; i++) {
-					let node = allNodes[i];
-
-					// Node will intersect with itself
-					if (node.mxObjectId != cell.mxObjectId && node.vertex) {
-						// Return false if areas intersect
-						const x2 = node.getGeometry().x;
-						const y2 = node.getGeometry().y;
-						const width2 = node.getGeometry().width;
-						const height2 = node.getGeometry().height;
-
-						// Intersects?
-						if (!(x > (x2 + width2)
-								|| (x + width) < x2
-								|| y > (y2 + height2)
-								|| (y + height) < y2)) {
-							return false;
-						}
-					}
-				}
-			}
-
-			return true;
-		};
-
-		// Find position
-		let x = this.autoLayoutOffsetLeft;
-		let y = this.autoLayoutOffsetTop;
-		let offsetX = this.umlClassDefaultWidth + this.autoLayoutOffsetNextX;
-		let offsetY = this.umlClassDefaultHeight + this.autoLayoutOffsetNextY;
-
-		while (true) {
-			for (let i = 0; i < 10; i++) {
-				if (isAreaFree(x, y, width, height)) {
-					return [x, y];
-				}
-
-				x = x + offsetX;
-			}
-
-			x = 0;
-			y = y + offsetY;
-		}
-
-		return [x, y];
+		return this.graphLayouting.getFreeNodePosition(cell);
 	}
 
 	updateHoverButtons(cell, dx, dy) {
@@ -493,7 +412,6 @@ export default class UmlGraphView extends React.Component {
 		this.recalculateNodeSize(cell);
 	}
 
-	// TODO
 	isConnectingEdge() {
 		return this.graphConnectionHandler.isConnectingEdge();
 	}
@@ -505,7 +423,6 @@ export default class UmlGraphView extends React.Component {
 	resetConnectingEdge() {
 		this.graphConnectionHandler.resetConnectingEdge();
 	}
-	// TODO
 
 	clearSelection() {
 		this.graph.clearSelection();
