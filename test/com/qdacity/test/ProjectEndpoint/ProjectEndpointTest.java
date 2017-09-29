@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,8 +20,10 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.endpoint.ProjectEndpoint;
+import com.qdacity.endpoint.UserNotificationEndpoint;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.UserNotification;
 
 public class ProjectEndpointTest {
 
@@ -165,6 +169,42 @@ public class ProjectEndpointTest {
 
 		// The project added by User A should still exist
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+	}
+
+	/**
+	 * Tests if the owner of a project can invite another user
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testProjectInvitation() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		ProjectEndpoint ue = new ProjectEndpoint();
+
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
+
+		CodeSystemTestHelper.addCodeSystem(1L, testUser);
+
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+
+		com.google.appengine.api.users.User invitedUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "77777");
+		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
+
+		UserNotificationEndpoint une = new UserNotificationEndpoint();
+		List<UserNotification> notifications = une.listUserNotification(null, null, invitedUser);
+		assertEquals(0, notifications.size());
+
+		ue.inviteUser(1L, "surname@mydomain.com", testUser);
+
+
+		notifications = une.listUserNotification(null, null, invitedUser);
+		assertEquals(1, notifications.size());
+
 	}
 
 	/**
