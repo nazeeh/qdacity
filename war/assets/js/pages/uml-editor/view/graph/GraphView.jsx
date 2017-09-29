@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import Cell from '../Cell.jsx';
+import Cell from '../cell/Cell.jsx';
 import CellValue from '../value/CellValue.js';
 import EdgeValue from '../value/EdgeValue.js';
 

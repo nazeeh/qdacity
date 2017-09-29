@@ -1,4 +1,4 @@
-import Cell from '../Cell.jsx';
+import Cell from '../cell/Cell.jsx';
 
 export default class GraphLayouting {
 
