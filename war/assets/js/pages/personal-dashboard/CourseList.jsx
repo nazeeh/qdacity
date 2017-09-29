@@ -157,6 +157,11 @@ export default class CourseList extends React.Component {
 
 	}
 
+	dropDownClick(e) {
+		e.stopPropagation();
+		console.log("dropdown clicked");
+	}
+
 	updateSearch(e) {
 		this.setState({
 			search: e.target.value
@@ -251,14 +256,14 @@ export default class CourseList extends React.Component {
 
 
 		function prjClick(prj) {
-			//_this.props.history.push('/CourseDashboard?course=' + prj.id);
+			_this.props.history.push('/CourseDashboard?course=' + prj.id);
 		}
 		const renderListItemContent = (course, index) => {
 
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton items={this.props.terms[index]}></DropDownButton>
+					<DropDownButton onClick={(e) => this.dropDownClick(e)} items={this.props.terms[index]}></DropDownButton>
 				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
