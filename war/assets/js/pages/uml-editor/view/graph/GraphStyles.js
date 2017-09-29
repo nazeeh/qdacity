@@ -29,6 +29,7 @@ export default class GraphStyles {
 		mxConstants.VALID_COLOR = '#00A2E8';
 		mxConstants.INVALID_COLOR = '#FF0000';
 
+		mxConstants.HANDLE_SIZE = 0;
 
 		style = graph.getStylesheet().getDefaultVertexStyle();
 		style[mxConstants.STYLE_FILLCOLOR] = '#FFFFFF';
