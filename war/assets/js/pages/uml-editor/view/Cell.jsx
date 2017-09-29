@@ -27,6 +27,7 @@ const StyledHeaderText = styled.div `
     margin-right: 16px;
     line-height: 20px;
     
+    color: black;
     font-size: 13px;
     font-weight: bold;
     overflow: hidden;

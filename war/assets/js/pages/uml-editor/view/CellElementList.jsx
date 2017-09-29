@@ -33,6 +33,7 @@ const StyledElementAccessibility = styled.div `
 const StyledElementText = styled.div `
     flex-grow: 1;
     line-height: 18px;
+    color: black;
     font-size: 11.5px; 
     font-weight: normal; 
     text-align: left;
