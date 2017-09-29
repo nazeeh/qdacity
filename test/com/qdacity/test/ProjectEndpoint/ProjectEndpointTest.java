@@ -216,6 +216,43 @@ public class ProjectEndpointTest {
 	}
 
 	/**
+	 * Tests if the owner of a project remove a user
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testProjectRemoveUser() throws UnauthorizedException {
+		ProjectEndpoint pe = new ProjectEndpoint();
+
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
+
+		CodeSystemTestHelper.addCodeSystem(1L, testUser);
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+
+		com.google.appengine.api.users.User invitedUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "77777");
+		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
+
+		UserNotificationEndpoint une = new UserNotificationEndpoint();
+
+		pe.inviteUser(1L, "surname@mydomain.com", testUser);
+		pe.addOwner(1L, invitedUser.getUserId(), invitedUser);
+
+		Project project = (Project) pe.getProject(1L, "PROJECT", invitedUser);
+		assertEquals(2, project.getOwners().size());
+
+		pe.removeUser(1L, "PROJECT", invitedUser.getUserId(), testUser);
+
+		project = (Project) pe.getProject(1L, "PROJECT", invitedUser);
+		assertEquals(1, project.getOwners().size());
+
+	}
+
+	/**
 	 * Tests if Projects from other users can be not be deleted
 	 * 
 	 * @throws UnauthorizedException
