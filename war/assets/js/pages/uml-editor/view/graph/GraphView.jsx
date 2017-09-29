@@ -357,9 +357,70 @@ export default class GraphView extends React.Component {
 		this.hoverButtons.hide();
 	}
 
+	panToPoint(x, y) {
+		this.graph.view.setTranslate(-x, -y);
+
+		if (this.graph.getSelectionCell() != null) {
+			this.updateHoverButtons(this.graph.getSelectionCell());
+		}
+	}
+
 	panToCell(cell, center) {
 		this.graph.scrollCellToVisible(cell, center);
 		this.updateHoverButtons(cell);
+	}
+
+	panAndZoomToFitAllCells() {
+		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		// Calculate max/min for the bounds
+		let left = 0;
+		let top = 0;
+		let right = 0;
+		let bottom = 0;
+
+		if (allNodes != null) {
+			for (let i = 0; i < allNodes.length; i++) {
+				const node = allNodes[i];
+
+				const geo = node.getGeometry();
+
+				left = Math.min(left, geo.x);
+				top = Math.min(top, geo.y);
+				right = Math.max(right, geo.x + geo.width);
+				bottom = Math.max(bottom, geo.y + geo.height);
+			}
+		}
+
+		// Coordinates of min rectangle that contains all cells
+		let x = left;
+		let y = top;
+		let width = right - left;
+		let height = bottom - top;
+
+		// Window size (size of the graph view)
+		const windowWidth = this.umlGraphContainer.clientWidth;
+		const windowHeight = this.umlGraphContainer.clientHeight;
+
+		// Determine zoom factor
+		let zoom = 1;
+
+		while (zoom * 100 >= this.minZoomPercentage) {
+
+			if (width * zoom <= windowWidth && height * zoom <= windowHeight) {
+				break;
+			}
+
+			zoom -= 0.1;
+		}
+
+		// Calculate pan value
+		let panX = (x + (width / 2)) - (windowWidth / 2) * (1 / zoom);
+		let panY = (y + (height / 2)) - (windowHeight / 2) * (1 / zoom);
+
+		this.zoomTo(zoom * 100);
+
+		this.panToPoint(panX, panY);
 	}
 
 	toggleCollapseCell(cell) {
@@ -661,7 +722,7 @@ export default class GraphView extends React.Component {
 		// mxGraph requires an element that is not a styled-component
 		return (
 			<StyledGraphView>
-                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%' }}></div>
+                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%', overflow: 'hidden' }}></div>
                 <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.props.umlEditor} toggleCodingView={this.props.toggleCodingView}></HoverButtons>
             </StyledGraphView>
 		);
