@@ -82,19 +82,16 @@ export default class GraphView extends React.Component {
 		// Styling
 		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
 		mxConstants.VERTEX_SELECTION_DASHED = false;
-		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 1;
+		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 0;
 		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
 		mxConstants.EDGE_SELECTION_DASHED = false;
 		mxConstants.EDGE_SELECTION_STROKEWIDTH = 1;
 		mxConstants.OUTLINE_COLOR = '#00A2E8';
-		mxConstants.OUTLINE_STROKEWIDTH = 1;
 		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
-		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8';
-		mxConstants.OUTLINE_HIGHLIGHT_STROKEWIDTH = 1;
+		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8'
 		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
 		mxConstants.HIGHLIGHT_COLOR = '##00A2E8';
-		mxConstants.HIGHLIGHT_STROKEWIDTH = 1;
-		mxConstants.HIGHLIGHT_SIZE = 1;
+		mxConstants.HIGHLIGHT_STROKEWIDTH = 3;
 
 		mxConstants.VALID_COLOR = '#00A2E8';
 		mxConstants.INVALID_COLOR = '#FF0000';
