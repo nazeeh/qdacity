@@ -16,6 +16,8 @@ export default class GraphConnectionHandler {
 	init() {
 		const _this = this;
 
+		mxCellHighlight.prototype.spacing = 0;
+
 		this.connectionEdgeStartCell = null;
 
 		// Mouse listener

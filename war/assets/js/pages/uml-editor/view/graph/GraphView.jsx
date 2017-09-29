@@ -78,27 +78,6 @@ export default class GraphView extends React.Component {
 		// Enables HTML markup in all labels
 		this.graph.setHtmlLabels(true);
 
-
-		// Styling
-		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
-		mxConstants.VERTEX_SELECTION_DASHED = false;
-		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 0;
-		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
-		mxConstants.EDGE_SELECTION_DASHED = false;
-		mxConstants.EDGE_SELECTION_STROKEWIDTH = 1;
-		mxConstants.OUTLINE_COLOR = '#00A2E8';
-		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
-		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8'
-		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
-		mxConstants.HIGHLIGHT_COLOR = '##00A2E8';
-		mxConstants.HIGHLIGHT_STROKEWIDTH = 3;
-
-		mxConstants.VALID_COLOR = '#00A2E8';
-		mxConstants.INVALID_COLOR = '#FF0000';
-
-		mxCellHighlight.prototype.spacing = 0;
-
-
 		// Enables the rendering of cells with html labels. The label/header size is increased to fit the entire cell.
 		// Then, instead of rendering simple text, this option allows to render html content for the cell.
 		mxGraphHandler.prototype.htmlPreview = true;

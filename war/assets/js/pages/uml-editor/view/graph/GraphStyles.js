@@ -12,6 +12,24 @@ export default class GraphStyles {
 	static initializeDefaultStyles(graph) {
 		let style;
 
+		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
+		mxConstants.VERTEX_SELECTION_DASHED = false;
+		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 0;
+		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
+		mxConstants.EDGE_SELECTION_DASHED = false;
+		mxConstants.EDGE_SELECTION_STROKEWIDTH = 1;
+
+		mxConstants.OUTLINE_COLOR = '#00A2E8';
+		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
+		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8'
+		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
+		mxConstants.HIGHLIGHT_COLOR = '##00A2E8';
+		mxConstants.HIGHLIGHT_STROKEWIDTH = 3;
+
+		mxConstants.VALID_COLOR = '#00A2E8';
+		mxConstants.INVALID_COLOR = '#FF0000';
+
+
 		style = graph.getStylesheet().getDefaultVertexStyle();
 		style[mxConstants.STYLE_FILLCOLOR] = '#FFFFFF';
 		style[mxConstants.STYLE_STROKECOLOR] = '#000000';
