@@ -4,7 +4,7 @@ import Theme from '../../common/styles/Theme.js';
 
 import CourseEndPoint from '../../common/endpoints/CourseEndpoint';
 import DropDownButton from '../../common/styles/DropDownButton.jsx';
-
+import StyledButtonContainer from '../../common/styles/DropDownButton.jsx';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
@@ -17,7 +17,7 @@ import {
 	StyledPaginationItem,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault
+	StyledListItemDefault,
 } from '../../common/styles/List';
 
 import StyledSearchField from '../../common/styles/SearchField.jsx';
@@ -42,6 +42,7 @@ const StyledProjectListMenu = styled.div `
 const StyledProjectList = StyledBoxList.extend `
 	padding-top: 5px;
 `;
+
 
 
 export default class CourseList extends React.Component {
@@ -260,7 +261,7 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton items={this.props.terms[index]}></DropDownButton>
+					<DropDownButton isListItemButton={true} items={this.props.terms[index]}></DropDownButton>
 				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
