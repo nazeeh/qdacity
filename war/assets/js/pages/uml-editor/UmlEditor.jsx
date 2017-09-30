@@ -148,6 +148,13 @@ export default class UmlEditor extends React.Component {
 					if (_this.graphView.isCellUmlClass(cell)) {
 						const code = _this.getCodeByNode(cell);
 						this.props.codesystemView.setSelected(code);
+					} else if (_this.graphView.isCellEdge(cell)) {
+						const relationshipCode = _this.getRelationshipCodeByRelationId(cell.value.getRelationId())
+
+						// Relation can exist without a relationship code
+						if (relationshipCode != null) {
+							this.props.codesystemView.setSelected(relationshipCode);
+						}
 					}
 				}
 			}
@@ -209,15 +216,31 @@ export default class UmlEditor extends React.Component {
 	}
 
 	codesystemSelectionChanged(code) {
-		const node = this.getNodeByCodeId(code.id);
+		// Selected code has a node
+		let node = this.getNodeByCodeId(code.id);
 
-		// Prevent loops
-		if (!this.graphView.isCellSelected(node)) {
-			// Reset edge if connecting
+		// Selected is a relationship code
+		let edge = null;
+
+		if (code.relationshipCode != null) {
+			let relationId = code.relationshipCode.key.id;
+			edge = this.graphView.getEdgeByRelationId(relationId);
+		}
+
+		// Clear selection
+		if (node == null && edge == null) {
+			this.graphView.clearSelection();
+		}
+
+		// Reset edge if connecting
+		if (!this.graphView.isCellSelected(node) || !this.graphView.isCellSelected(edge)) {
 			if (this.graphView.isConnectingEdge()) {
 				this.graphView.resetConnectingEdge();
 			}
+		}
 
+		// Prevent loops
+		if (node != null && !this.graphView.isCellSelected(node)) {
 			// Clear selection
 			this.graphView.clearSelection();
 
@@ -225,6 +248,15 @@ export default class UmlEditor extends React.Component {
 			if (node != null) {
 				this.graphView.selectCell(node);
 				this.graphView.panToCell(node, false);
+			}
+		} else if (edge != null && !this.graphView.isCellSelected(edge)) {
+			// Clear selection
+			this.graphView.clearSelection();
+
+			// Select edge for relationship codes
+			if (edge != null) {
+				this.graphView.selectCell(edge);
+				this.graphView.panToCell(edge, false);
 			}
 		}
 	}
@@ -319,6 +351,23 @@ export default class UmlEditor extends React.Component {
 	 */
 	getNodeByCodeId(id) {
 		return this.graphView.getNodeByCodeId(id);
+	}
+
+	/**
+	 * Returns the relationship code with the given relation id.
+	 */
+	getRelationshipCodeByRelationId(relationId) {
+		let allCodes = this.getCodes();
+
+		for (let i = 0; i < allCodes.length; i++) {
+			if (allCodes[i].relationshipCode != null) {
+				if (allCodes[i].relationshipCode.key.id == relationId) {
+					return allCodes[i];
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**

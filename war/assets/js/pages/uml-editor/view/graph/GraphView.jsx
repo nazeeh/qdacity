@@ -305,6 +305,20 @@ export default class GraphView extends React.Component {
 		}
 	}
 
+	getEdgeByRelationId(id) {
+		const allCells = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		if (allCells != null) {
+			for (let i = 0; i < allCells.length; i++) {
+				if (!allCells[i].vertex) {
+					if (allCells[i].value.getRelationId() == id) {
+						return allCells[i];
+					}
+				}
+			}
+		}
+	}
+
 	addCellsMovedEventListener(listener) {
 		this.graph.addListener(mxEvent.CELLS_MOVED, listener);
 	}
@@ -484,6 +498,10 @@ export default class GraphView extends React.Component {
 
 	isCellUmlClass(cell) {
 		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent();
+	}
+
+	isCellEdge(cell) {
+		return cell != null && cell.vertex == false;
 	}
 
 	addEdge(nodeFrom, nodeTo, relationId, edgeType) {
