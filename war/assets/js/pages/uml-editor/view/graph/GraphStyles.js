@@ -14,7 +14,7 @@ export default class GraphStyles {
 
 		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
 		mxConstants.VERTEX_SELECTION_DASHED = false;
-		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 0;
+		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 1;
 		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
 		mxConstants.EDGE_SELECTION_DASHED = false;
 		mxConstants.EDGE_SELECTION_STROKEWIDTH = 1;
