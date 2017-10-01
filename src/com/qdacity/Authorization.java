@@ -54,23 +54,26 @@ public class Authorization {
 
 	public static Boolean isUserAuthorizedCourse(User googleUser, Long courseID) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
+		try {
+			// Check if user is Authorized
+			Query query = mgr.newQuery(Course.class);
 
-		// Check if user is Authorized
-		Query query = mgr.newQuery(Course.class);
+			query.setFilter("id == :theID");
+			Map<String, Long> params = new HashMap<String, Long>();
+			params.put("theID", courseID);
 
-		query.setFilter("id == :theID");
-		Map<String, Long> params = new HashMap<String, Long>();
-		params.put("theID", courseID);
+			@SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) query.executeWithMap(params);
 
-		@SuppressWarnings("unchecked")
-		List<Course> courses = (List<Course>) query.executeWithMap(params);
-
-		if (courses.size() == 0) {
-			throw new UnauthorizedException("Course " + courseID + " was not found");
+			if (courses.size() == 0) {
+				throw new UnauthorizedException("Course " + courseID + " was not found");
+			}
+			Course course = courses.get(0);
+			if (course.getOwners().contains(googleUser.getUserId())) return true;
+		} finally {
+			mgr.close();
 		}
-		Course course = courses.get(0);
-		if (course.getOwners().contains(googleUser.getUserId())) return true;
-
+		
 		return false;
 	}
 	
