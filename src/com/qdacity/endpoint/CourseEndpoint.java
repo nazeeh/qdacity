@@ -129,7 +129,7 @@ public class CourseEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course insertCourse(Course course, User user) throws UnauthorizedException {
 		// Check if user is authorized
-		Authorization.checkAuthorizationCourse(course, user); // FIXME does not make sense for inserting new courses - only check if user is in DB already
+		//Authorization.checkAuthorizationCourse(course, user); // FIXME does not make sense for inserting new courses - only check if user is in DB already
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {

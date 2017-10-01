@@ -87,6 +87,14 @@ public class User implements Serializable {
 		this.projects = projects;
 	}
 
+	public void setCourses(List<Long> courses) {
+		this.courses = courses;
+	}
+	
+	public List<Long> getCourses() {
+		return courses;
+	}
+	
 	public void addProjectAuthorization(Long project) {
 		projects.add(project);
 	}
