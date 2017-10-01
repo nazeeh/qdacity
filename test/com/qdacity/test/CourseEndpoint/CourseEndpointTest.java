@@ -15,6 +15,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.qdacity.endpoint.CourseEndpoint;
+import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CourseEndpointTest {
@@ -48,5 +50,29 @@ public class CourseEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 	}
 	
+	/**
+	 * Tests if a user can delete his own course
+	 */
+	@Test
+	public void testCourseRemove() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+
+		try {
+			CourseEndpointTestHelper.removeCourse(1L, testUser);
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course removal");
+			e.printStackTrace();
+		}
+
+		assertEquals(0, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+	}
 }

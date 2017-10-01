@@ -14,5 +14,10 @@ public class CourseEndpointTestHelper {
 		CourseEndpoint ue = new CourseEndpoint();
 		ue.insertCourse(course, loggedInUser);
 	}
+	
+	static public void removeCourse(Long id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		CourseEndpoint ue = new CourseEndpoint();
+		ue.removeCourse(id, loggedInUser);
+	}
 
 }
