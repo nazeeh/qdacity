@@ -20,6 +20,7 @@ import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -35,10 +36,9 @@ public class CourseEndpointTest {
 	 */
 	@Test
 	public void testCourseInsert() {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		try {
-			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUser);
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for course creation");
@@ -47,5 +47,6 @@ public class CourseEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 	}
+	
 
 }
