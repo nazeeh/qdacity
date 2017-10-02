@@ -38,7 +38,7 @@ const StyledElementText = styled.div `
     font-weight: normal; 
     text-align: left;
     overflow: hidden; 
-    text-overflow: ellipsis;
+    word-wrap: break-word;
     white-space: normal;
 `;
 

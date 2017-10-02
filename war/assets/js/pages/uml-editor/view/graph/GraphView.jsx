@@ -78,30 +78,6 @@ export default class GraphView extends React.Component {
 		// Enables HTML markup in all labels
 		this.graph.setHtmlLabels(true);
 
-
-		// Styling
-		mxConstants.VERTEX_SELECTION_COLOR = '#00A2E8';
-		mxConstants.VERTEX_SELECTION_DASHED = false;
-		mxConstants.VERTEX_SELECTION_STROKEWIDTH = 1;
-		mxConstants.EDGE_SELECTION_COLOR = '#00A2E8';
-		mxConstants.EDGE_SELECTION_DASHED = false;
-		mxConstants.EDGE_SELECTION_STROKEWIDTH = 1;
-		mxConstants.OUTLINE_COLOR = '#00A2E8';
-		mxConstants.OUTLINE_STROKEWIDTH = 1;
-		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
-		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8';
-		mxConstants.OUTLINE_HIGHLIGHT_STROKEWIDTH = 1;
-		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
-		mxConstants.HIGHLIGHT_COLOR = '##00A2E8';
-		mxConstants.HIGHLIGHT_STROKEWIDTH = 1;
-		mxConstants.HIGHLIGHT_SIZE = 1;
-
-		mxConstants.VALID_COLOR = '#00A2E8';
-		mxConstants.INVALID_COLOR = '#FF0000';
-
-		mxCellHighlight.prototype.spacing = 0;
-
-
 		// Enables the rendering of cells with html labels. The label/header size is increased to fit the entire cell.
 		// Then, instead of rendering simple text, this option allows to render html content for the cell.
 		mxGraphHandler.prototype.htmlPreview = true;
@@ -329,6 +305,20 @@ export default class GraphView extends React.Component {
 		}
 	}
 
+	getEdgeByRelationId(id) {
+		const allCells = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		if (allCells != null) {
+			for (let i = 0; i < allCells.length; i++) {
+				if (!allCells[i].vertex) {
+					if (allCells[i].value.getRelationId() == id) {
+						return allCells[i];
+					}
+				}
+			}
+		}
+	}
+
 	addCellsMovedEventListener(listener) {
 		this.graph.addListener(mxEvent.CELLS_MOVED, listener);
 	}
@@ -379,6 +369,72 @@ export default class GraphView extends React.Component {
 
 	hideHoverButtons() {
 		this.hoverButtons.hide();
+	}
+
+	panToPoint(x, y) {
+		this.graph.view.setTranslate(-x, -y);
+
+		if (this.graph.getSelectionCell() != null) {
+			this.updateHoverButtons(this.graph.getSelectionCell());
+		}
+	}
+
+	panToCell(cell, center) {
+		this.graph.scrollCellToVisible(cell, center);
+		this.updateHoverButtons(cell);
+	}
+
+	panAndZoomToFitAllCells() {
+		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		// Calculate max/min for the bounds
+		let left = 0;
+		let top = 0;
+		let right = 0;
+		let bottom = 0;
+
+		if (allNodes != null) {
+			for (let i = 0; i < allNodes.length; i++) {
+				const node = allNodes[i];
+
+				const geo = node.getGeometry();
+
+				left = Math.min(left, geo.x);
+				top = Math.min(top, geo.y);
+				right = Math.max(right, geo.x + geo.width);
+				bottom = Math.max(bottom, geo.y + geo.height);
+			}
+		}
+
+		// Coordinates of min rectangle that contains all cells
+		let x = left;
+		let y = top;
+		let width = right - left;
+		let height = bottom - top;
+
+		// Window size (size of the graph view)
+		const windowWidth = this.umlGraphContainer.clientWidth;
+		const windowHeight = this.umlGraphContainer.clientHeight;
+
+		// Determine zoom factor
+		let zoom = 1;
+
+		while (zoom * 100 >= this.minZoomPercentage) {
+
+			if (width * zoom <= windowWidth && height * zoom <= windowHeight) {
+				break;
+			}
+
+			zoom -= 0.1;
+		}
+
+		// Calculate pan value
+		let panX = (x + (width / 2)) - (windowWidth / 2) * (1 / zoom);
+		let panY = (y + (height / 2)) - (windowHeight / 2) * (1 / zoom);
+
+		this.zoomTo(zoom * 100);
+
+		this.panToPoint(panX, panY);
 	}
 
 	toggleCollapseCell(cell) {
@@ -442,6 +498,10 @@ export default class GraphView extends React.Component {
 
 	isCellUmlClass(cell) {
 		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent();
+	}
+
+	isCellEdge(cell) {
+		return cell != null && cell.vertex == false;
 	}
 
 	addEdge(nodeFrom, nodeTo, relationId, edgeType) {
@@ -680,7 +740,7 @@ export default class GraphView extends React.Component {
 		// mxGraph requires an element that is not a styled-component
 		return (
 			<StyledGraphView>
-                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%' }}></div>
+                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%', overflow: 'hidden' }}></div>
                 <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.props.umlEditor} toggleCodingView={this.props.toggleCodingView}></HoverButtons>
             </StyledGraphView>
 		);

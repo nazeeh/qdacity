@@ -6,26 +6,17 @@
 }
 
 .umlOverlayButtonAddEdge {
-	background-image: url("../img/umlOverlayAddEdge.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdge.png");
 }
 
 .umlOverlayButtonAddEdgeGeneralization {
-	background-image: url("../img/umlOverlayAddEdgeGeneralization.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeGeneralization.png");
 }
 
 .umlOverlayButtonAddEdgeAssociation {
-	background-image: url("../img/umlOverlayAddEdgeAssociation.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeAssociation.png");
 }
 
 .umlOverlayButtonAddEdgeAggregation {
-	background-image: url("../img/umlOverlayAddEdgeAggregation.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeAggregation.png");
 }
-
-.umlOverlayButtonAddClassField {
-	background-image: url("../img/umlOverlayAddClassField.png");
-}
-
-.umlOverlayButtonAddClassMethod {
-	background-image: url("../img/umlOverlayAddClassMethod.png");
-}
-
