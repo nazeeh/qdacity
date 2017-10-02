@@ -156,7 +156,7 @@ public class CourseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public void removeUser(@Named("courseID") Long courseID, @Named("courseType") String courseType, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+	public void removeUser(@Named("courseID") Long courseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
