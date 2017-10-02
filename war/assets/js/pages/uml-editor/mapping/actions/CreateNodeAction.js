@@ -1,10 +1,10 @@
-import Action from './Action.js';
+import BaseAction from './BaseAction.js';
 
 import {
 	Target
 } from '../Target.js';
 
-export default class CreateNodeAction extends Action {
+export default class CreateNodeAction extends BaseAction {
 
 	getIdentifier() {
 		return 'CREATE_NODE';

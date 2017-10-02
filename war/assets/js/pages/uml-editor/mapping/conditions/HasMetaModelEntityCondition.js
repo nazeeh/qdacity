@@ -1,4 +1,4 @@
-import Condition from './Condition.js';
+import BaseCondition from './BaseCondition.js';
 
 import {
 	Target
@@ -8,7 +8,7 @@ import {
 	EvaluationTarget
 } from './EvaluationTarget.js';
 
-export default class HasMetaModelEntityCondition extends Condition {
+export default class HasMetaModelEntityCondition extends BaseCondition {
 
 	constructor(metaModelEntityName, evaluationTarget) {
 		this.metaModelEntityName = metaModelEntityName;

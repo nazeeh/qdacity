@@ -1,6 +1,6 @@
-import Condition from './Condition.js';
+import BaseCondition from './BaseCondition.js';
 
-export default class MultipleCondition extends Condition {
+export default class MultipleCondition extends BaseCondition {
 
 	constructor(conditions) {
 		this.conditions = conditions;

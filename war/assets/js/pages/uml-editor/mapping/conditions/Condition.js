@@ -23,20 +23,4 @@ export default class Condition {
 	static hasMetaModelEntity(metaModelEntityName, evaluationTarget) {
 		return new HasMetaModelEntityCondition(name, target);
 	}
-
-	constructor() {
-		this.rule = null;
-	}
-
-	getRule() {
-		return this.rule;
-	}
-
-	setRule(rule) {
-		this.rule = rule;
-	}
-
-	evaluate(target) {
-		return false;
-	}
 }
