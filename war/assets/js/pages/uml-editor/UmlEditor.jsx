@@ -5,7 +5,7 @@ import ConsistencyManager from './ConsistencyManager.js';
 
 import MetaModelMapper from './mapping/MetaModelMapper.js';
 import CreateClassFieldAction from './mapping/actions/CreateClassFieldAction.js';
-import CreateClassFieldAction from './mapping/actions/CreateClassMethodAction.js';
+import CreateClassMethodAction from './mapping/actions/CreateClassMethodAction.js';
 
 import CodePositionManager from './CodePositionManager.js';
 
@@ -173,9 +173,7 @@ export default class UmlEditor extends React.Component {
 				for (let j = 0; j < code.relations.length; j++) {
 					const relation = code.relations[j];
 
-					const destination = this.getCodeByCodeId(relation.codeId);
-
-					this.consistencyManager.initializeCodeRelation(code, destination, relation);
+					this.consistencyManager.initializeCodeRelation(relation);
 				}
 			}
 		}

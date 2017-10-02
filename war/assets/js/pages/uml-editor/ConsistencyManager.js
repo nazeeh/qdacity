@@ -61,7 +61,7 @@ export default class ConsistencyManager {
 	 */
 	initializeCode(code) {
 		// Code mapping
-		this.umlEditor.getMetaModelRunner().evaluateAndRunCode(code);
+		this.umlEditor.getMetaModelMapper().execute(code);
 
 		// Initialize previous code data
 		const previousMetaModelElementIds = code.mmElementIDs != null ? code.mmElementIDs.slice() /*copy*/ : [];
@@ -72,8 +72,8 @@ export default class ConsistencyManager {
 	/**
 	 * Initializes the code relations after the uml editor finished loading.
 	 */
-	initializeCodeRelation(sourceCode, destinationCode, relation) {
-		this.umlEditor.getMetaModelRunner().evaluateAndRunCodeRelation(sourceCode, destinationCode, relation);
+	initializeCodeRelation(relation) {
+		this.umlEditor.getMetaModelMapper().execute(relation);
 	}
 
 	/**
@@ -169,17 +169,11 @@ export default class ConsistencyManager {
 		});
 
 		removedRelations.forEach((relation) => {
-			let sourceCode = code;
-			let destinationCode = this.umlEditor.getCodeByCodeId(relation.codeId);
-
-			_this.umlEditor.getMetaModelRunner().evaluateAndUndoCodeRelation(sourceCode, destinationCode, relation);
+			_this.umlEditor.getMetaModelMapper().undo(relation);
 		});
 
 		addedRelations.forEach((relation) => {
-			let sourceCode = code;
-			let destinationCode = this.umlEditor.getCodeByCodeId(relation.codeId);
-
-			_this.umlEditor.getMetaModelRunner().evaluateAndRunCodeRelation(sourceCode, destinationCode, relation);
+			_this.umlEditor.getMetaModelMapper().execute(relation);
 		});
 
 
@@ -198,13 +192,13 @@ export default class ConsistencyManager {
 		previousCode.mmElementIDs = previousMetaModelElementIds;
 
 		// Evaluate mapping action
-		const previousNodeAction = this.umlEditor.getMetaModelMapper().evaluateCode(previousCode);
-		const currentNodeAction = this.umlEditor.getMetaModelMapper().evaluateCode(code);
+		const previousNodeActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(previousCode);
+		const currentNodeActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(code);
 
 		// Mapping action changed?
-		if (previousNodeAction != currentNodeAction) {
-			this.umlEditor.getMetaModelRunner().undoCode(previousNodeAction, code);
-			this.umlEditor.getMetaModelRunner().runCode(currentNodeAction, code);
+		if (previousNodeActions.length == currentNodeActions.length && previousNodeActions.every((element, i) => element == currentNodeActions[i])) {
+			this.umlEditor.getMetaModelMapper().undo(previousCode);
+			this.umlEditor.getMetaModelMapper().execute(code);
 		}
 
 		// Re-evaluate outgoing relations
@@ -258,18 +252,18 @@ export default class ConsistencyManager {
 	 * Checks if a new mapping can be applied for the relation.
 	 */
 	checkSingleRelation(relation, sourceCode, destinationCode, previousSourceCode, previousDestinationCode) {
-		const relationMetaModelId = relation.mmElementId;
-		const relationMetaModelEntity = this.umlEditor.getMetaModelEntityById(relationMetaModelId);
+		let oldRelation = Object.assign({}, relation);
+		oldRelation.key.parent.id = previousSourceCode.id;
+		oldRelation.codeId = previousDestinationCode.codeID;
 
 		// Evaluate actions
-		let oldAction = this.umlEditor.getMetaModelMapper().evaluateCodeRelation(previousSourceCode, previousDestinationCode, relation);
-		let newAction = this.umlEditor.getMetaModelMapper().evaluateCodeRelation(sourceCode, destinationCode, relation);
+		let oldActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(oldRelation);
+		let newActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(relation);
 
 		// Execute action
-		if (oldAction != newAction) {
-			this.umlEditor.getMetaModelRunner().undoCodeRelation(oldAction, sourceCode, destinationCode, relation);
-
-			this.umlEditor.getMetaModelRunner().runCodeRelation(newAction, sourceCode, destinationCode, relation);
+		if (oldActions.length == newActions.length && oldActions.every((element, i) => element == newActions[i])) {
+			this.umlEditor.getMetaModelMapper().undo(oldRelation);
+			this.umlEditor.getMetaModelMapper().execute(relation);
 		}
 	}
 }

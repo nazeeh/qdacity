@@ -303,7 +303,7 @@ export default class GraphView extends React.Component {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -319,7 +319,7 @@ export default class GraphView extends React.Component {
 				}
 			}
 		}
-		
+
 		return null;
 	}
 
