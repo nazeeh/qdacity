@@ -22,10 +22,10 @@ export default class MultipleCondition extends BaseCondition {
 		let result = true;
 
 		if (this.conditions != null && this.conditions.length > 0) {
-			result = this.conditions[0].execute(target);
+			result = this.conditions[0].evaluate(target);
 
 			for (let i = 1; i < this.conditions.length; i++) {
-				result = this.compare(result, this.conditions[i].execute(target));
+				result = this.compare(result, this.conditions[i].evaluate(target));
 			}
 		}
 
