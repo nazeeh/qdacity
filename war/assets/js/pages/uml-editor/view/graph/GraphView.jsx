@@ -303,6 +303,8 @@ export default class GraphView extends React.Component {
 				}
 			}
 		}
+		
+		return null;
 	}
 
 	getEdgeByRelationId(id) {
@@ -317,6 +319,8 @@ export default class GraphView extends React.Component {
 				}
 			}
 		}
+		
+		return null;
 	}
 
 	addCellsMovedEventListener(listener) {
