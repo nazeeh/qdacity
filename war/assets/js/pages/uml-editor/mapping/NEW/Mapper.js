@@ -30,28 +30,20 @@ export default class Mapper {
 		}
 	}
 	
-	/*
-	tests() {
-		
-		// Map Code
-		MappingRule.create()
+	
+	
+	exampleForCodeMapping() {
+		Rule.create()
 			.expect(Target.CODE)
-			.require(Condition.hasMetaModelEntity('Concept'))
-			.then(Action.create(Create.Node));
-
-		MappingRule.create()
-			.expect(Target.Code)
-			.require(Condition.hasMetaModelEntity('Category'))
-			.then(Action.create(Create.Node));
-
-		MappingRule.create()
-			.expect(Target.Code)
 			.require(Condition.or(
 				Condition.hasMetaModelEntity('Concept'),
 				Condition.hasMetaModelEntity('Category')
 			))
-			.then(Action.create(Create.Node));
-		
+			.then(Action.createNodeAction());
+	}
+	
+	/*
+	tests() {
 		
 		// Map Relation
 		MappingRule.create()
