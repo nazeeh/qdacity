@@ -8,6 +8,9 @@ import Rule from './mapping/Rule.js';
 import {
 	Target
 } from './mapping/Target.js';
+import {
+	EvaluationTarget
+} from './mapping/conditions/EvaluationTarget.js';
 import Condition from './mapping/Condition.js';
 import Action from './mapping/Action.js';
 
@@ -137,6 +140,7 @@ export default class UmlEditor extends React.Component {
 	initializeMapping() {
 		this.metaModelMapper = new MetaModelMapper(this);
 
+		// Code mapping
 		this.metaModelMapper.registerRule(
 			Rule.create()
 			.expect(Target.CODE)
@@ -145,6 +149,23 @@ export default class UmlEditor extends React.Component {
 				Condition.hasMetaModelEntity('Concept')
 			))
 			.then(Action.createNode()));
+
+		// Relation generalization
+		this.metaModelMapper.registerRule(
+			Rule.create()
+			.expect(Target.RELATION)
+			.require(Condition.and(
+				Condition.hasMetaModelEntity('is a'),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
+				),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.DESTINATION),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.DESTINATION)
+				)
+			))
+			.then(Action.createGeneralization()));
 	}
 
 	initializeSelection() {
