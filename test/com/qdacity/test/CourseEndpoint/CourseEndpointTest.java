@@ -15,11 +15,12 @@ import org.junit.rules.ExpectedException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.qdacity.endpoint.CourseEndpoint;
-import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
+import com.qdacity.course.Course;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CourseEndpointTest {
@@ -77,6 +78,39 @@ public class CourseEndpointTest {
 		}
 
 		assertEquals(0, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+	}
+	
+	/**
+	 * Tests if a user can get a course in which he's an owner
+	 */
+	@Test
+	public void testGetCourse() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		Course retrievedCourse = new Course();
+		Long retrievedId = 0L;
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+		
+		try {
+			retrievedCourse = CourseEndpointTestHelper.getCourse(1L, testUser);
+			retrievedId = retrievedCourse.getId();
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course retrieval");
+			e.printStackTrace();
+		}
+		
+
+		Query q = new Query("Course");
+		Entity queryResult = ds.prepare(q).asSingleEntity();
+		
+		assertEquals(queryResult.getKey(), retrievedId);
 	}
 	
 	@Rule

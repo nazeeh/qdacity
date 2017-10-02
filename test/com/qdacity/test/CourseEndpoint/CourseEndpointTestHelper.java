@@ -19,5 +19,10 @@ public class CourseEndpointTestHelper {
 		CourseEndpoint ue = new CourseEndpoint();
 		ue.removeCourse(id, loggedInUser);
 	}
+	
+	static public Course getCourse(Long id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		CourseEndpoint ce = new CourseEndpoint();
+		return ce.getCourse(id, loggedInUser);
+	}
 
 }
