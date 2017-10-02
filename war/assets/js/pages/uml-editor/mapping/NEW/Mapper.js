@@ -5,6 +5,10 @@ export default class Mapper {
 		this.rules = [];
 	}
 	
+	getUmlEditor() {
+		// TODO
+	}
+	
 	getCodeById(id) {
 		// TODO		
 	}

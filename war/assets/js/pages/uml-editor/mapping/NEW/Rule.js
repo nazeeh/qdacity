@@ -46,6 +46,7 @@ export default class Rule {
 	
 	then(action) {
 		this.action = action;
+		this.action.setRule(this);
 		return this;
 	}
 	
