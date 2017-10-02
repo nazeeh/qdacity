@@ -11,6 +11,7 @@ import {
 export default class HasMetaModelEntityCondition extends BaseCondition {
 
 	constructor(metaModelEntityName, evaluationTarget) {
+		super();
 		this.metaModelEntityName = metaModelEntityName;
 		this.evaluationTarget = evaluationTarget;
 	}
