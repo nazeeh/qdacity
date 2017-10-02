@@ -3,10 +3,9 @@ import styled from 'styled-components';
 
 import ConsistencyManager from './ConsistencyManager.js';
 
-import {
-	MappingAction
-} from './mapping/MappingAction.js';
 import MetaModelMapper from './mapping/MetaModelMapper.js';
+import CreateClassFieldAction from './mapping/actions/CreateClassFieldAction.js';
+import CreateClassFieldAction from './mapping/actions/CreateClassMethodAction.js';
 
 import CodePositionManager from './CodePositionManager.js';
 
@@ -270,7 +269,7 @@ export default class UmlEditor extends React.Component {
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
-		const mappingIdentifier = new CreateClassField().getIdentifier();
+		const mappingIdentifier = (new CreateClassFieldAction()).getIdentifier();
 
 		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
@@ -288,7 +287,7 @@ export default class UmlEditor extends React.Component {
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
-		const mappingIdentifier = new CreateClassMethod().getIdentifier();
+		const mappingIdentifier = (new CreateClassMethodAction()).getIdentifier();
 
 		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
