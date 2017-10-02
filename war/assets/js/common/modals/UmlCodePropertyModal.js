@@ -42,7 +42,7 @@ export default class UmlCodePropertyModal extends VexModal {
 
 			let identifiers = _this.umlEditor.getMetaModelMapper().evaluateIdentifiers(relation);
 
-			return identifiers.indexOf(mappingIdentifier) != -1;
+			return identifiers.indexOf(_this.mappingIdentifier) == -1;
 		}
 
 		const isCodeSelectable = (code) => {

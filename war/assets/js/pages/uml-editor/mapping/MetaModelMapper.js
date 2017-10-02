@@ -1,4 +1,8 @@
 import {
+	EdgeType
+} from '../util/EdgeType.js';
+
+import {
 	Target
 } from './Target.js';
 
@@ -140,7 +144,7 @@ export default class MetaModelMapper {
 					let action = rule.getAction();
 
 					let identifier = action.getIdentifier();
-					identifiers.push(identifiers);
+					identifiers.push(identifier);
 				}
 			}
 		}

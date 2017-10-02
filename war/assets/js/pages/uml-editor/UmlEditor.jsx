@@ -167,72 +167,72 @@ export default class UmlEditor extends React.Component {
 			))
 			.then(Action.createGeneralization()));
 
-        // Relation aggregation
-        this.metaModelMapper.registerRule(
-            Rule.create()
-            .expect(Target.RELATION)
-            .require(Condition.and(
-                Condition.hasMetaModelEntity('is part of'),
-                Condition.or(
-                    Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
-                    Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
-                ),
-                Condition.or(
-                    Condition.hasMetaModelEntity('Category', EvaluationTarget.DESTINATION),
-                    Condition.hasMetaModelEntity('Concept', EvaluationTarget.DESTINATION)
-                )
-            ))
-            .then(Action.createAggregation()));
+		// Relation aggregation
+		this.metaModelMapper.registerRule(
+			Rule.create()
+			.expect(Target.RELATION)
+			.require(Condition.and(
+				Condition.hasMetaModelEntity('is part of'),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
+				),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.DESTINATION),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.DESTINATION)
+				)
+			))
+			.then(Action.createAggregation()));
 
-        // Relation directed association
-        this.metaModelMapper.registerRule(
-            Rule.create()
-            .expect(Target.RELATION)
-            .require(Condition.and(
-                Condition.hasMetaModelEntity('is related to'),
-                Condition.or(
-                    Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
-                    Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
-                ),
-                Condition.or(
-                    Condition.hasMetaModelEntity('Category', EvaluationTarget.DESTINATION),
-                    Condition.hasMetaModelEntity('Concept', EvaluationTarget.DESTINATION)
-                )
-            ))
-            .then(Action.createDirectedAssociation()));
+		// Relation directed association
+		this.metaModelMapper.registerRule(
+			Rule.create()
+			.expect(Target.RELATION)
+			.require(Condition.and(
+				Condition.hasMetaModelEntity('is related to'),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
+				),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.DESTINATION),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.DESTINATION)
+				)
+			))
+			.then(Action.createDirectedAssociation()));
 
-        // Relation class field
-        this.metaModelMapper.registerRule(
-            Rule.create()
-            .expect(Target.RELATION)
-            .require(Condition.and(
-                Condition.hasMetaModelEntity('is related to'),
-                Condition.or(
-                    Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
-                    Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
-                ),
-                Condition.hasMetaModelEntity('Property', EvaluationTarget.DESTINATION),
-                Condition.or(
-                    Condition.hasMetaModelEntity('Object', EvaluationTarget.DESTINATION),
-                    Condition.hasMetaModelEntity('Actor', EvaluationTarget.DESTINATION),
-                    Condition.hasMetaModelEntity('Place', EvaluationTarget.DESTINATION)
-                ),
-            ))
-            .then(Action.createClassField()));
-        
-        // Relation class method
-        this.metaModelMapper.registerRule(
-            Rule.create()
-            .expect(Target.RELATION)
-            .require(Condition.and(
-                Condition.hasMetaModelEntity('influences'),
-                Condition.or(
-                    Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
-                    Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
-                ),
-                Condition.hasMetaModelEntity('Property', EvaluationTarget.DESTINATION)
-            ))
-            .then(Action.createClassMethod()));
+		// Relation class field
+		this.metaModelMapper.registerRule(
+			Rule.create()
+			.expect(Target.RELATION)
+			.require(Condition.and(
+				Condition.hasMetaModelEntity('is related to'),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
+				),
+				Condition.hasMetaModelEntity('Property', EvaluationTarget.DESTINATION),
+				Condition.or(
+					Condition.hasMetaModelEntity('Object', EvaluationTarget.DESTINATION),
+					Condition.hasMetaModelEntity('Actor', EvaluationTarget.DESTINATION),
+					Condition.hasMetaModelEntity('Place', EvaluationTarget.DESTINATION)
+				),
+			))
+			.then(Action.createClassField()));
+
+		// Relation class method
+		this.metaModelMapper.registerRule(
+			Rule.create()
+			.expect(Target.RELATION)
+			.require(Condition.and(
+				Condition.hasMetaModelEntity('influences'),
+				Condition.or(
+					Condition.hasMetaModelEntity('Category', EvaluationTarget.SOURCE),
+					Condition.hasMetaModelEntity('Concept', EvaluationTarget.SOURCE)
+				),
+				Condition.hasMetaModelEntity('Property', EvaluationTarget.DESTINATION)
+			))
+			.then(Action.createClassMethod()));
 	}
 
 	initializeSelection() {
