@@ -22,7 +22,7 @@ export default class BaseAction {
 
 	execute(target) {
 		this.assertTargetType();
-		this.doExecute();
+		this.doExecute(target);
 	}
 
 	doExecute(target) {
@@ -31,7 +31,7 @@ export default class BaseAction {
 
 	undo(target) {
 		this.assertTargetType();
-		this.doUndo();
+		this.doUndo(target);
 	}
 
 	doUndo(target) {
