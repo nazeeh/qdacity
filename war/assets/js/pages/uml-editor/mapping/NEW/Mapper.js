@@ -2,7 +2,7 @@
 export default class Mapper {
 	
 	constructor() {
-		
+		this.rules = [];
 	}
 	
 	getCodeById(id) {
@@ -20,11 +20,14 @@ export default class Mapper {
 	registerRule(rule) {
 		rule.setMapper(this);
 		
-		//... TODO
+		this.rules.push(rule);
 	}
 	
 	execute(target) {
-		// TODO		
+		for (let i = 0; i < this.rules.length; i++) {
+			const rule = this.rules[i];
+			rule.execute(target);
+		}
 	}
 	
 	/*

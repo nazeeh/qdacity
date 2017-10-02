@@ -48,4 +48,20 @@ export default class Rule {
 		this.action = action;
 		return this;
 	}
+	
+	evaluate(target) {
+		if (this.condition != null) {
+			return this.condition.evaluate(target);
+		}
+		
+		return true;
+	}
+	
+	execute(target) {
+		if (this.evaluate(target)) {
+			if (this.action != null) {
+				return this.action.execute(target);
+			}
+		}
+	}
 }

@@ -20,10 +20,6 @@ export default class Condition {
 		return new OrCondition(arguments);		
 	}
 	
-	static isValidNode(evaluationTarget) {
-		// TODO
-	}
-	
 	static hasMetaModelEntity(metaModelEntityName, evaluationTarget) {
 		return new HasMetaModelEntityCondition(name, target);
 	}
