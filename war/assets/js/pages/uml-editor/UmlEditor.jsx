@@ -7,7 +7,6 @@ import {
 	MappingAction
 } from './mapping/MappingAction.js';
 import MetaModelMapper from './mapping/MetaModelMapper.js';
-import MetaModelRunner from './mapping/MetaModelRunner.js';
 
 import CodePositionManager from './CodePositionManager.js';
 
@@ -38,7 +37,6 @@ export default class UmlEditor extends React.Component {
 		this.codePositionManager = null;
 
 		this.metaModelMapper = null;
-		this.metaModelRunner = null;
 
 		this.mmEntities = null;
 		this.mmRelation = null;
@@ -59,10 +57,6 @@ export default class UmlEditor extends React.Component {
 
 	getMetaModelMapper() {
 		return this.metaModelMapper;
-	}
-
-	getMetaModelRunner() {
-		return this.metaModelRunner;
 	}
 
 	getMetaModelEntities() {
@@ -124,7 +118,6 @@ export default class UmlEditor extends React.Component {
 		this.codePositionManager = new CodePositionManager();
 
 		this.metaModelMapper = new MetaModelMapper(this);
-		this.metaModelRunner = new MetaModelRunner(this, this.metaModelMapper);
 
 		this.initializeSelection();
 
