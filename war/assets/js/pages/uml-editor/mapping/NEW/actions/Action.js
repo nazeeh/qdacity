@@ -11,23 +11,23 @@ export default class Action {
 		return new CreateNodeAction();
 	}
 	
-	static createGeneralizationAction() {
+	static createGeneralization() {
 		return new CreateEdgeGeneralizationAction();		
 	}
 	
-	static createAggregationAction() {
+	static createAggregation() {
 		return new CreateEdgeAggregationAction();	
 	}
 	
-	static createDirectedAssociationAction() {
+	static createDirectedAssociation() {
 		return new CreateEdgeDirectedAssociationAction();	
 	}
 	
-	static createClassFieldAction() {
+	static createClassField() {
 		return new CreateClassFieldAction();	
 	}
 	
-	static createClassMethodAction() {
+	static createClassMethod() {
 		return new CreateClassMethodAction();	
 	}
 
