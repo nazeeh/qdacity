@@ -296,9 +296,9 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	shouldHighlightNode(code) {
-        let codeMapped = this.props.umlEditor.getGraphView().getNodeByCodeId(code.id) != null;
+		let codeMapped = this.props.umlEditor.getGraphView().getNodeByCodeId(code.id) != null;
 		let relationshipCodeMapped = code.relationshipCode != null && this.props.umlEditor.getGraphView().getEdgeByRelationId(code.relationshipCode.key.id) != null;
-		
+
 		return this.props.pageView == PageView.UML && (codeMapped || relationshipCodeMapped);
 	}
 

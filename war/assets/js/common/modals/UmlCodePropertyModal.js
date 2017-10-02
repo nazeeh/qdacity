@@ -31,13 +31,17 @@ export default class UmlCodePropertyModal extends VexModal {
 			const metaModelEntity = _this.umlEditor.getMetaModelEntityByName(_this.relationMetaModelEntityName);
 
 			const relation = {
-				key: { parent: { id: this.sourceCode.id } },
+				key: {
+					parent: {
+						id: this.sourceCode.id
+					}
+				},
 				codeId: destinationCode.codeID,
 				mmElementId: metaModelEntity.id
 			};
 
 			let identifiers = _this.umlEditor.getMetaModelMapper().evaluateIdentifiers(relation);
-			
+
 			return identifiers.indexOf(mappingIdentifier) != -1;
 		}
 
