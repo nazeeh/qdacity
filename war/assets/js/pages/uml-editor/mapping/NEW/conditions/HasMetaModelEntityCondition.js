@@ -71,6 +71,6 @@ export default class HasMetaModelEntityCondition extends Condition {
 	}
 	
 	getMetaModelEntityById(metaModelElementId) {
-		return this.getRule().getMapper().getMetaModelEntities().find((element) => element.id == metaModelElementId);;
+		return this.getRule().getMapper().getMetaModelEntityById(metaModelElementId);
 	}
 }

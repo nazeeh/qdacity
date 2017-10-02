@@ -1,24 +1,26 @@
 
 export default class Mapper {
 	
-	constructor() {
+	constructor(umlEditor) {
+		this.umlEditor = umlEditor;
+		
 		this.rules = [];
 	}
 	
 	getUmlEditor() {
-		// TODO
+		return this.umlEditor;
 	}
 	
 	getCodeById(id) {
-		// TODO		
+		return this.umlEditor.getCodeById(id);
 	}
 	
 	getCodeByCodeId(codeId) {
-		// TODO		
+		return this.umlEditor.getCodeByCodeId(codeId);
 	}
 	
-	getMetaModelEntities() {
-		// TODO
+	getMetaModelEntityById(metaModelElementId) {
+		return this.umlEditor.getMetaModelEntityById(metaModelElementId);
 	}
 	
 	registerRule(rule) {
