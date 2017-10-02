@@ -11,7 +11,7 @@ export default class MultipleCondition extends BaseCondition {
 		super.setRule(rule);
 
 		// Set rule for children
-		if (conditions != null && conditions.length > 0) {
+		if (this.conditions != null && this.conditions.length > 0) {
 			for (let i = 0; i < this.conditions.length; i++) {
 				this.conditions[i].setRule(rule);
 			}
@@ -21,11 +21,11 @@ export default class MultipleCondition extends BaseCondition {
 	evaluate(target) {
 		let result = true;
 
-		if (conditions != null && conditions.length > 0) {
-			result = conditions[0].execute(target);
+		if (this.conditions != null && this.conditions.length > 0) {
+			result = this.conditions[0].execute(target);
 
 			for (let i = 1; i < this.conditions.length; i++) {
-				result = this.compare(result, conditions[i].execute(target));
+				result = this.compare(result, this.conditions[i].execute(target));
 			}
 		}
 
