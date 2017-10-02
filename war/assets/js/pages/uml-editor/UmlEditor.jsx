@@ -137,13 +137,14 @@ export default class UmlEditor extends React.Component {
 	initializeMapping() {
 		this.metaModelMapper = new MetaModelMapper(this);
 
-		Rule.create()
+		this.metaModelMapper.registerRule(
+			Rule.create()
 			.expect(Target.CODE)
 			.require(Condition.or(
 				Condition.hasMetaModelEntity('Category'),
 				Condition.hasMetaModelEntity('Concept')
 			))
-			.then(Action.createNode());
+			.then(Action.createNode()));
 	}
 
 	initializeSelection() {
