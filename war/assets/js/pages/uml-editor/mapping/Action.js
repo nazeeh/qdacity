@@ -1,9 +1,9 @@
-import CreateNodeAction from './CreateNodeAction.js';
-import CreateEdgeGeneralizationAction from './CreateEdgeGeneralizationAction.js';
-import CreateEdgeAggregationAction from './CreateEdgeAggregationAction.js';
-import CreateEdgeDirectedAssociationAction from './CreateEdgeDirectedAssociationAction.js';
-import CreateClassFieldAction from './CreateClassFieldAction.js';
-import CreateClassMethodAction from './CreateClassMethodAction.js';
+import CreateNodeAction from '../CreateNodeAction.js';
+import CreateEdgeGeneralizationAction from '../CreateEdgeGeneralizationAction.js';
+import CreateEdgeAggregationAction from '../CreateEdgeAggregationAction.js';
+import CreateEdgeDirectedAssociationAction from '../CreateEdgeDirectedAssociationAction.js';
+import CreateClassFieldAction from '../CreateClassFieldAction.js';
+import CreateClassMethodAction from '../CreateClassMethodAction.js';
 
 export default class Action {
 
