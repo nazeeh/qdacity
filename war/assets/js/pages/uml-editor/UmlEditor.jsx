@@ -277,9 +277,9 @@ export default class UmlEditor extends React.Component {
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
-		const mappingAction = MappingAction.ADD_CLASS_FIELD;
+		const mappingIdentifier = new CreateClassField().getIdentifier();
 
-		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
+		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addFieldModal.showModal().then(function (data) {
 			_this.createField(code, data.selectedCode);
@@ -295,9 +295,9 @@ export default class UmlEditor extends React.Component {
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
-		const mappingAction = MappingAction.ADD_CLASS_METHOD;
+		const mappingIdentifier = new CreateClassMethod().getIdentifier();
 
-		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
+		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addMethodModal.showModal().then(function (data) {
 			_this.createMethod(code, data.selectedCode);
