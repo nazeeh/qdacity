@@ -4,6 +4,13 @@ import styled from 'styled-components';
 import ConsistencyManager from './ConsistencyManager.js';
 
 import MetaModelMapper from './mapping/MetaModelMapper.js';
+import Rule from './mapping/Rule.js';
+import {
+	Target
+} from './mapping/Target.js';
+import Condition from './mapping/Condition.js';
+import Action from './mapping/Action.js';
+
 import CreateClassFieldAction from './mapping/actions/CreateClassFieldAction.js';
 import CreateClassMethodAction from './mapping/actions/CreateClassMethodAction.js';
 
@@ -116,7 +123,7 @@ export default class UmlEditor extends React.Component {
 		this.consistencyManager = new ConsistencyManager(this);
 		this.codePositionManager = new CodePositionManager();
 
-		this.metaModelMapper = new MetaModelMapper(this);
+		this.initializeMapping();
 
 		this.initializeSelection();
 
@@ -125,6 +132,18 @@ export default class UmlEditor extends React.Component {
 		this.codePositionManager.listCodePositions(this.props.codesystemId, (umlCodePositions) => {
 			_this.initializeNodes();
 		});
+	}
+
+	initializeMapping() {
+		this.metaModelMapper = new MetaModelMapper(this);
+
+		Rule.create()
+			.expect(Target.CODE)
+			.require(Condition.or(
+				Condition.hasMetaModelEntity('Category'),
+				Condition.hasMetaModelEntity('Concept')
+			))
+			.then(Action.createNode());
 	}
 
 	initializeSelection() {
