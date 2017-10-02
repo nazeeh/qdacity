@@ -21,6 +21,6 @@ export default class Condition {
 	}
 
 	static hasMetaModelEntity(metaModelEntityName, evaluationTarget) {
-		return new HasMetaModelEntityCondition(name, target);
+		return new HasMetaModelEntityCondition(metaModelEntityName, evaluationTarget);
 	}
 }
