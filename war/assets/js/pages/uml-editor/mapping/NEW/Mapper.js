@@ -1,43 +1,42 @@
-
 export default class Mapper {
-	
+
 	constructor(umlEditor) {
 		this.umlEditor = umlEditor;
-		
+
 		this.rules = [];
 	}
-	
+
 	getUmlEditor() {
 		return this.umlEditor;
 	}
-	
+
 	getCodeById(id) {
 		return this.umlEditor.getCodeById(id);
 	}
-	
+
 	getCodeByCodeId(codeId) {
 		return this.umlEditor.getCodeByCodeId(codeId);
 	}
-	
+
 	getMetaModelEntityById(metaModelElementId) {
 		return this.umlEditor.getMetaModelEntityById(metaModelElementId);
 	}
-	
+
 	registerRule(rule) {
 		rule.setMapper(this);
-		
+
 		this.rules.push(rule);
 	}
-	
+
 	execute(target) {
 		for (let i = 0; i < this.rules.length; i++) {
 			const rule = this.rules[i];
 			rule.execute(target);
 		}
 	}
-	
-	
-	
+
+
+
 	exampleForCodeMapping() {
 		Rule.create()
 			.expect(Target.CODE)
@@ -47,7 +46,7 @@ export default class Mapper {
 			))
 			.then(Action.createNodeAction());
 	}
-	
+
 	/*
 	tests() {
 		

@@ -7,42 +7,42 @@ import CreateClassMethodAction from './CreateClassMethodAction.js';
 
 export default class Action {
 
-	static createNode() {		
+	static createNode() {
 		return new CreateNodeAction();
 	}
-	
+
 	static createGeneralization() {
-		return new CreateEdgeGeneralizationAction();		
+		return new CreateEdgeGeneralizationAction();
 	}
-	
+
 	static createAggregation() {
-		return new CreateEdgeAggregationAction();	
+		return new CreateEdgeAggregationAction();
 	}
-	
+
 	static createDirectedAssociation() {
-		return new CreateEdgeDirectedAssociationAction();	
+		return new CreateEdgeDirectedAssociationAction();
 	}
-	
+
 	static createClassField() {
-		return new CreateClassFieldAction();	
+		return new CreateClassFieldAction();
 	}
-	
+
 	static createClassMethod() {
-		return new CreateClassMethodAction();	
+		return new CreateClassMethodAction();
 	}
 
 	constructor() {
 		this.rule = null;
 	}
-	
+
 	getRule() {
 		return this.rule;
 	}
-	
+
 	setRule(rule) {
 		this.rule = rule;
 	}
-	
+
 	execute(target) {
 		// Do nothing
 	}

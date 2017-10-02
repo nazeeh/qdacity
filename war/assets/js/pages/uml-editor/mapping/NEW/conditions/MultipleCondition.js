@@ -1,11 +1,11 @@
 import Condition from './Condition.js';
 
 export default class MultipleCondition extends Condition {
-	
+
 	constructor(conditions) {
-		this.conditions = conditions;		
+		this.conditions = conditions;
 	}
-	
+
 	setRule(rule) {
 		super.setRule(rule);
 
@@ -16,21 +16,21 @@ export default class MultipleCondition extends Condition {
 			}
 		}
 	}
-	
+
 	evaluate(target) {
 		let result = true;
-		
+
 		if (conditions != null && conditions.length > 0) {
 			result = conditions[0].execute(target);
-			
+
 			for (let i = 1; i < this.conditions.length; i++) {
 				result = this.compare(result, conditions[i].execute(target));
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Override this method.
 	 */

@@ -5,7 +5,7 @@ import {
 } from '../../../util/EdgeType.js';
 
 export default class CreateEdgeGeneralizationAction extends CreateEdgeAction {
-	
+
 	getEdgeType() {
 		return EdgeType.GENERALIZATION;
 	}
