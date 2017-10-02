@@ -9,4 +9,8 @@ export default class CreateEdgeAction extends CreateRelationAction {
 	getEdgeType() {
 		return null;
 	}
+	
+	removeRelation(sourceCode, desintationCode, relation) {
+		this.getRule().getMapper().getUmlEditor().removeEdge(sourceCode, relation);
+	}
 }

@@ -34,6 +34,13 @@ export default class Mapper {
 			rule.execute(target);
 		}
 	}
+	
+	undo(target) {
+		for (let i = 0; i < this.rules.length; i++) {
+			const rule = this.rules[i];
+			rule.undo(target);
+		}		
+	}
 
 
 

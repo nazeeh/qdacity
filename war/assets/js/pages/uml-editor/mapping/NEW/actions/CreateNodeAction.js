@@ -6,13 +6,15 @@ import {
 
 export default class CreateNodeAction extends Action {
 
-	execute(target) {
-		if (this.getRule().getTargetType() == Target.CODE) {
-			const code = target;
+	getRequiredTargetType() {
+		return Target.CODE;
+	}
+	
+	doExecute(code) {
+		this.getRule().getMapper().getUmlEditor().addNode(code);
+	}
 
-			this.getRule().getMapper().getUmlEditor().addNode(code);
-		} else {
-			throw new Error('Cant create node for target type ' + this.getRule().getTargetType());
-		}
+	doUndo(code) {
+		this.getRule().getMapper().getUmlEditor().removeNode(code);
 	}
 }

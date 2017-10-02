@@ -64,4 +64,12 @@ export default class Rule {
 			}
 		}
 	}
+
+	undo(target) {
+		if (this.evaluate(target)) {
+			if (this.action != null) {
+				return this.action.undo(target);
+			}
+		}
+	}
 }

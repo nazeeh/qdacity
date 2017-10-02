@@ -6,22 +6,33 @@ import {
 
 export default class CreateRelationAction extends Action {
 
-	execute(target) {
-		if (this.getRule().getTargetType() == Target.RELATION) {
-			const mapper = this.getRule().getMapper();
+	getRequiredTargetType() {
+		return Target.RELATION;
+	}
+	
+	doExecute(relation) {
+		const mapper = this.getRule().getMapper();
 
-			const relation = target;
+		const sourceCode = mapper.getCodeById(relation.key.parent.id);
+		const destinationCode = mapper.getCodeByCodeId(relation.codeId);
 
-			const sourceCode = mapper.getCodeById(relation.key.parent.id);
-			const destinationCode = mapper.getCodeByCodeId(relation.codeId);
-
-			this.addRelation(sourceCode, desintationCode, relation);
-		} else {
-			throw new Error('Cant create relation for target type ' + this.getRule().getTargetType());
-		}
+		this.addRelation(sourceCode, desintationCode, relation);
 	}
 
 	addRelation(sourceCode, desintationCode, relation) {
-		// Do nothing
+		// Override
+	}
+	
+	doUndo(relation) {
+		const mapper = this.getRule().getMapper();
+
+		const sourceCode = mapper.getCodeById(relation.key.parent.id);
+		const destinationCode = mapper.getCodeByCodeId(relation.codeId);
+
+		this.removeRelation(sourceCode, desintationCode, relation);
+	}
+	
+	removeRelation(sourceCode, desintationCode, relation) {
+		// Override
 	}
 }
