@@ -2,7 +2,7 @@ import CreateRelationAction from './CreateRelationAction.js';
 
 export default class CreateClassMethod extends CreateRelationAction {
 
-	getIdentifier(target) {
+	getIdentifier() {
 		return 'CREATE_CLASS_METHOD';
 	}
 

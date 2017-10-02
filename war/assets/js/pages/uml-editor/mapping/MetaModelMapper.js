@@ -95,7 +95,7 @@ export default class MetaModelMapper {
 				if (rule.evaluate(target)) {
 					let action = rule.getAction();
 
-					let identifier = action.getIdentifier(target);
+					let identifier = action.getIdentifier();
 					identifiers.push(identifiers);
 				}
 			}

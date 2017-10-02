@@ -6,7 +6,7 @@ import {
 
 export default class CreateNodeAction extends Action {
 
-	getIdentifier(target) {
+	getIdentifier() {
 		return 'CREATE_NODE';
 	}
 

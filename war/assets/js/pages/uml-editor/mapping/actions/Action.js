@@ -43,7 +43,7 @@ export default class Action {
 		this.rule = rule;
 	}
 
-	getIdentifier(target) {
+	getIdentifier() {
 		// Override
 	}
 
