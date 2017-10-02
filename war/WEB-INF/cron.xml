@@ -2,7 +2,7 @@
 <cronentries>
   <cron>
     <url>/_ah/warmup</url>
-    <description>Repopulate the cache every 50000 minutes</description>
+    <description>Repopulate the cache every 5 minutes</description>
     <schedule>every 5 minutes</schedule>
   </cron>
 </cronentries>

@@ -4,6 +4,8 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.jdo.PersistenceManager;
 
 import org.junit.After;
@@ -14,6 +16,8 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
+import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
@@ -26,7 +30,9 @@ import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CodeEndpointTest {
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true));
+	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
+
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 
@@ -42,6 +48,8 @@ public class CodeEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a new code for a code system
+	 * 
+	 * @throws InterruptedException
 	 */
 	@Test
 	public void testCodeInsert() {
@@ -56,10 +64,22 @@ public class CodeEndpointTest {
 			fail("User could not be authorized for code creation");
 			e.printStackTrace();
 		}
-
+		assertEquals(0, ds.prepare(new Query("Change")).countEntities(withLimit(10))); // no change has been logged thus far
 		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1L, "authorName", "fff", testUser);
 
+		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+		QueueStateInfo qsi = ltq.getQueueStateInfo().get("ChangeLogQueue");
+		assertEquals(1, qsi.getTaskInfo().size());
+
+		try {
+			latch.await(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task for logging the change of inserting a code could not finish");
+		}
+		assertEquals(1, ds.prepare(new Query("Change")).countEntities(withLimit(10))); // change is logged
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
+
 	}
 
 	/**

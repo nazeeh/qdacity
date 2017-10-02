@@ -37,9 +37,6 @@ public class User implements Serializable {
 	String email;
 
 	@Persistent
-	Long taskBoardID;
-
-	@Persistent
 	Long lastProjectId; // Used to pre-load to cache when user signs in
 
 	@Persistent
@@ -113,14 +110,6 @@ public class User implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public Long getTaskBoardId() {
-		return taskBoardID;
-	}
-
-	public void setTaskBoardId(Long taskBoardId) {
-		this.taskBoardID = taskBoardId;
 	}
 
 	public UserType getType() {
