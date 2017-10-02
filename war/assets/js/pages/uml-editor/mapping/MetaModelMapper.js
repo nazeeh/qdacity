@@ -9,6 +9,27 @@ export default class MetaModelMapper {
 
 		this.rules = {};
 	}
+	
+	getEdgeRelationEntityName(edgeType) {
+		switch (edgeType) {
+		case EdgeType.GENERALIZATION:
+			{
+				return 'is a';
+			}
+		case EdgeType.AGGREGATION:
+			{
+				return 'is part of';
+			}
+		case EdgeType.DIRECTED_ASSOCIATION:
+			{
+				return 'is related to';
+			}
+		default:
+			{
+				throw new Error('EdgeType not implemented.');
+			}
+		}
+	}
 
 	getClassFieldRelationEntityName() {
 		return 'is related to';
@@ -20,6 +41,18 @@ export default class MetaModelMapper {
 
 	getDefaultUmlClassMetaModelName() {
 		return 'Concept';
+	}
+
+	getClassFieldText(fieldName, fieldReturnType) {
+		return fieldName + ': ' + fieldReturnType;
+	}
+
+	getClassMethodText(methodName, methodReturnType, methodArguments) {
+		if (methodArguments == null) {
+			methodArguments = [];
+		}
+
+		return methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
 	}
 
 	getUmlEditor() {
