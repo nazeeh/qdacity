@@ -1,6 +1,6 @@
-import AndCondition from '../AndCondition.js';
-import OrCondition from '../OrCondition.js';
-import HasMetaModelEntityCondition from '../HasMetaModelEntityCondition.js';
+import AndCondition from './conditions/AndCondition.js';
+import OrCondition from './conditions/OrCondition.js';
+import HasMetaModelEntityCondition from './conditions/HasMetaModelEntityCondition.js';
 
 export default class Condition {
 
