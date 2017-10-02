@@ -10,6 +10,18 @@ export default class MetaModelMapper {
 		this.rules = {};
 	}
 
+	getClassFieldRelationEntityName() {
+		return 'is related to';
+	}
+
+	getClassMethodRelationEntityName() {
+		return 'influences';
+	}
+
+	getDefaultUmlClassMetaModelName() {
+		return 'Concept';
+	}
+
 	getUmlEditor() {
 		return this.umlEditor;
 	}
