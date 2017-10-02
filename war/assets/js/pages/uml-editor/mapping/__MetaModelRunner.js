@@ -8,7 +8,7 @@ import {
 import MetaModelMapper from './MetaModelMapper.js';
 import UmlEditor from '../UmlEditor.jsx';
 
-export default class MetaModelRunner {
+export default class __MetaModelRunner {
 
 	constructor(umlEditor, metaModelMapper) {
 		this.umlEditor = umlEditor;
