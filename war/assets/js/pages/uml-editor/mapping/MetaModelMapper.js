@@ -1,3 +1,7 @@
+import {
+	Target
+} from './Target.js';
+
 export default class MetaModelMapper {
 
 	constructor(umlEditor) {
@@ -22,6 +26,17 @@ export default class MetaModelMapper {
 		return this.umlEditor.getMetaModelEntityById(metaModelElementId);
 	}
 
+	getTargetType(target) {
+		if (target.hasOwnProperty('codeID') || target.hasOwnProperty('mmElementIDs')) {
+			return Target.CODE;	
+		}
+		else if (target.hasOwnProperty('codeId') || target.hasOwnProperty('mmElementId')) {
+			return Target.RELATION;
+		}
+		
+		return null;
+	}
+	
 	registerRule(rule) {
 		rule.setMapper(this);
 
@@ -33,6 +48,10 @@ export default class MetaModelMapper {
 	}
 
 	execute(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
+		
 		const rules = this.rules[targetType];
 
 		if (rules != null) {
@@ -45,6 +64,10 @@ export default class MetaModelMapper {
 	}
 
 	undo(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
+		
 		const rules = this.rules[targetType];
 
 		if (rules != null) {
@@ -57,6 +80,10 @@ export default class MetaModelMapper {
 	}
 
 	evaluateIdentifiers(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
+		
 		const rules = this.rules[targetType];
 
 		const identifiers = [];
