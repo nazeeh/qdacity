@@ -11,6 +11,9 @@ const StyledContainer = styled.div `
     max-width: 350px;
     min-width: 160px;
     
+    color: black;
+    background-color: white;
+    
     cursor: move !important;
 `;
 
