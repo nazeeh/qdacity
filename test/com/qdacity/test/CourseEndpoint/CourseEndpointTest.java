@@ -110,7 +110,7 @@ public class CourseEndpointTest {
 		Query q = new Query("Course");
 		Entity queryResult = ds.prepare(q).asSingleEntity();
 		
-		assertEquals(queryResult.getKey(), retrievedId);
+		assertEquals(Long.valueOf(queryResult.getKey().getId()), retrievedId);
 	}
 	
 	@Rule
