@@ -9,6 +9,7 @@ export default class CreateNodeAction extends Action {
 	execute(target) {
 		if (this.getRule().getTargetType() == Target.CODE) {
 			const code = target;
+			
 			this.getRule().getMapper().getUmlEditor().addNode(code);
 		}
 		else {
