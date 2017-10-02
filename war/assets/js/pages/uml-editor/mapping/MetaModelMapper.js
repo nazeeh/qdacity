@@ -56,7 +56,7 @@ export default class MetaModelMapper {
 		}
 	}
 
-	getIdentifiers(target, targetType) {
+	evaluateIdentifiers(target, targetType) {
 		const rules = this.rules[targetType];
 
 		const identifiers = [];
