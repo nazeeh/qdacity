@@ -3,7 +3,7 @@ export default class Mapper {
 	constructor(umlEditor) {
 		this.umlEditor = umlEditor;
 
-		this.rules = [];
+		this.rules = {};
 	}
 
 	getUmlEditor() {
@@ -25,21 +25,33 @@ export default class Mapper {
 	registerRule(rule) {
 		rule.setMapper(this);
 
-		this.rules.push(rule);
+		if (!this.rules.hasOwnProperty(rule.getTargetType())) {
+			this.rules[rule.getTargetType()] = [];
+		}
+		
+		this.rules[rule.getTargetType()].push(rule);
 	}
 
-	execute(target) {
-		for (let i = 0; i < this.rules.length; i++) {
-			const rule = this.rules[i];
-			rule.execute(target);
+	execute(target, targetType) {
+		const rules = this.rules[targetType];
+		
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
+				rule.execute(target);
+			}
 		}
 	}
 	
-	undo(target) {
-		for (let i = 0; i < this.rules.length; i++) {
-			const rule = this.rules[i];
-			rule.undo(target);
-		}		
+	undo(target, targetType) {
+		const rules = this.rules[targetType];
+		
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
+				rule.undo(target);
+			}
+		}
 	}
 
 
