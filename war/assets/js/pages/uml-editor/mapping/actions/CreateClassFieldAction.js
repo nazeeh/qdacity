@@ -6,11 +6,11 @@ export default class CreateClassField extends CreateRelationAction {
 		return 'CREATE_CLASS_FIELD';
 	}
 
-	addRelation(sourceCode, desintationCode, relation) {
+	addRelation(sourceCode, destinationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().addClassField(sourceCode, destinationCode, relation);
 	}
 
-	removeRelation(sourceCode, desintationCode, relation) {
+	removeRelation(sourceCode, destinationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().removeClassField(sourceCode, relation);
 	}
 }

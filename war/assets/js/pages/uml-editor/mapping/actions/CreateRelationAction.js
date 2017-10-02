@@ -16,10 +16,10 @@ export default class CreateRelationAction extends BaseAction {
 		const sourceCode = mapper.getCodeById(relation.key.parent.id);
 		const destinationCode = mapper.getCodeByCodeId(relation.codeId);
 
-		this.addRelation(sourceCode, desintationCode, relation);
+		this.addRelation(sourceCode, destinationCode, relation);
 	}
 
-	addRelation(sourceCode, desintationCode, relation) {
+	addRelation(sourceCode, destinationCode, relation) {
 		// Override
 	}
 
@@ -29,10 +29,10 @@ export default class CreateRelationAction extends BaseAction {
 		const sourceCode = mapper.getCodeById(relation.key.parent.id);
 		const destinationCode = mapper.getCodeByCodeId(relation.codeId);
 
-		this.removeRelation(sourceCode, desintationCode, relation);
+		this.removeRelation(sourceCode, destinationCode, relation);
 	}
 
-	removeRelation(sourceCode, desintationCode, relation) {
+	removeRelation(sourceCode, destinationCode, relation) {
 		// Override
 	}
 }

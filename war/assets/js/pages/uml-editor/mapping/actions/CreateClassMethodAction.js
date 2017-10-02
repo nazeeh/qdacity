@@ -6,11 +6,11 @@ export default class CreateClassMethod extends CreateRelationAction {
 		return 'CREATE_CLASS_METHOD';
 	}
 
-	addRelation(sourceCode, desintationCode, relation) {
+	addRelation(sourceCode, destinationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().addClassMethod(sourceCode, destinationCode, relation);
 	}
 
-	removeRelation(sourceCode, desintationCode, relation) {
+	removeRelation(sourceCode, destinationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().removeClassMethod(sourceCode, relation);
 	}
 }
