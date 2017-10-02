@@ -2,6 +2,10 @@ import CreateRelationAction from './CreateRelationAction.js';
 
 export default class CreateClassField extends CreateRelationAction {
 
+	getIdentifier(target) {
+		return 'CREATE_CLASS_FIELD';
+	}
+	
 	addRelation(sourceCode, desintationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().addClassField(sourceCode, destinationCode, relation);
 	}

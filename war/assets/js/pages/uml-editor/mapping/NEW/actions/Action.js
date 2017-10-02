@@ -43,10 +43,14 @@ export default class Action {
 		this.rule = rule;
 	}
 
-	getRequiredTargetType() {
+	getIdentifier(target) {
 		// Override
 	}
 
+	getRequiredTargetType() {
+		// Override
+	}
+	
 	execute(target) {
 		this.assertTargetType();
 		this.doExecute();

@@ -38,6 +38,7 @@ export default class Mapper {
 		if (rules != null) {
 			for (let i = 0; i < rules.length; i++) {
 				const rule = rules[i];
+				
 				rule.execute(target);
 			}
 		}
@@ -49,11 +50,36 @@ export default class Mapper {
 		if (rules != null) {
 			for (let i = 0; i < rules.length; i++) {
 				const rule = rules[i];
+				
 				rule.undo(target);
 			}
 		}
 	}
 
+	getIdentifiers(target, targetType) {
+		const rules = this.rules[targetType];
+
+		const identifiers = [];
+		
+		if (rules != null) {			
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
+				
+				if (rule.evaluate(target)) {
+					let action = rule.getAction();
+					
+					let identifier = action.getIdentifier(target);
+					identifiers.push(identifiers);
+				}
+			}
+		}
+		
+		return identifiers;
+	}
+	
+	
+	
+	
 
 
 	exampleForCodeMapping() {
