@@ -50,29 +50,29 @@ export default class Action {
 	getRequiredTargetType() {
 		// Override
 	}
-	
+
 	execute(target) {
 		this.assertTargetType();
 		this.doExecute();
 	}
-	
+
 	doExecute(target) {
 		// Override
 	}
-	
+
 	undo(target) {
 		this.assertTargetType();
 		this.doUndo();
 	}
-	
+
 	doUndo(target) {
 		// Override		
 	}
-	
+
 	assertTargetType() {
 		const requiredTargetType = this.getRequiredTargetType();
 		const targetType = this.getRule().getTargetType();
-		
+
 		if (targetType != requiredTargetType) {
 			throw new Error('Invalid target type ' + targetType + '. Expected ' + requiredTargetType + '.');
 		}

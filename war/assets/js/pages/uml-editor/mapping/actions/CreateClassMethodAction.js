@@ -5,7 +5,7 @@ export default class CreateClassMethod extends CreateRelationAction {
 	getIdentifier(target) {
 		return 'CREATE_CLASS_METHOD';
 	}
-	
+
 	addRelation(sourceCode, desintationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().addClassMethod(sourceCode, destinationCode, relation);
 	}

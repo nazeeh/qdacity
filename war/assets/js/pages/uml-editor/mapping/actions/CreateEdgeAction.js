@@ -5,7 +5,7 @@ export default class CreateEdgeAction extends CreateRelationAction {
 	getIdentifier(target) {
 		return 'CREATE_' + this.getEdgeType();
 	}
-	
+
 	addRelation(sourceCode, desintationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().addEdge(sourceCode, destinationCode, relation, this.getEdgeType());
 	}
@@ -13,7 +13,7 @@ export default class CreateEdgeAction extends CreateRelationAction {
 	getEdgeType() {
 		return null;
 	}
-	
+
 	removeRelation(sourceCode, desintationCode, relation) {
 		this.getRule().getMapper().getUmlEditor().removeEdge(sourceCode, relation);
 	}

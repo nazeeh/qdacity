@@ -9,11 +9,11 @@ export default class CreateNodeAction extends Action {
 	getIdentifier(target) {
 		return 'CREATE_NODE';
 	}
-	
+
 	getRequiredTargetType() {
 		return Target.CODE;
 	}
-	
+
 	doExecute(code) {
 		this.getRule().getMapper().getUmlEditor().addNode(code);
 	}

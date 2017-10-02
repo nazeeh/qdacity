@@ -9,7 +9,7 @@ export default class CreateRelationAction extends Action {
 	getRequiredTargetType() {
 		return Target.RELATION;
 	}
-	
+
 	doExecute(relation) {
 		const mapper = this.getRule().getMapper();
 
@@ -22,7 +22,7 @@ export default class CreateRelationAction extends Action {
 	addRelation(sourceCode, desintationCode, relation) {
 		// Override
 	}
-	
+
 	doUndo(relation) {
 		const mapper = this.getRule().getMapper();
 
@@ -31,7 +31,7 @@ export default class CreateRelationAction extends Action {
 
 		this.removeRelation(sourceCode, desintationCode, relation);
 	}
-	
+
 	removeRelation(sourceCode, desintationCode, relation) {
 		// Override
 	}
