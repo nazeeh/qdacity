@@ -233,7 +233,7 @@ public class CourseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public List<TermCourse> listTermCourse(@Named("CourseID") Long CourseID, User user) throws UnauthorizedException {
+	public List<TermCourse> listTermCourse(@Named("courseID") Long courseID, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
 
@@ -243,9 +243,9 @@ public class CourseEndpoint {
 		try {
 			mgr = getPersistenceManager();
 
-			Query q = mgr.newQuery(TermCourse.class, ":p.contains(CourseID)");
+			Query q = mgr.newQuery(TermCourse.class, ":p.contains(courseID)");
 
-			execute = (List<TermCourse>) q.execute(Arrays.asList(CourseID));
+			execute = (List<TermCourse>) q.execute(Arrays.asList(courseID));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
@@ -270,9 +270,9 @@ public class CourseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public TermCourse insertTermCourse(@Named("CourseID") Long CourseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
+	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
 		
-		termCourse.setCourseTemplateID(CourseID);
+		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
 		
 		PersistenceManager mgr = getPersistenceManager();
