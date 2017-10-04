@@ -95,6 +95,7 @@ public class UserEndpoint {
 			dbUser.setGivenName((String) result.getProperty("givenName"));
 			dbUser.setSurName((String) result.getProperty("surName"));
 			dbUser.setProjects((List<Long>) result.getProperty("projects"));
+			dbUser.setCourses((List<Long>) result.getProperty("courses"));
 			dbUser.setId((String) result.getProperty("id"));
 			dbUser.setType(UserType.valueOf((String) result.getProperty("type")));
 
@@ -143,6 +144,7 @@ public class UserEndpoint {
 			dbUser.setGivenName((String) result.getProperty("givenName"));
 			dbUser.setSurName((String) result.getProperty("surName"));
 			dbUser.setProjects((List<Long>) result.getProperty("projects"));
+			dbUser.setCourses((List<Long>) result.getProperty("courses"));
 			dbUser.setType(UserType.valueOf((String) result.getProperty("type")));
 			dbUser.setEmail((String) result.getProperty("email"));
 
@@ -260,6 +262,7 @@ public class UserEndpoint {
 	public User insertUser(User user, com.google.appengine.api.users.User loggedInUser) {
 		user.setId(loggedInUser.getUserId());
 		user.setProjects(new ArrayList<Long>());
+		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		PersistenceManager mgr = getPersistenceManager();
 		try {

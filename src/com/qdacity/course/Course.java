@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -11,6 +13,7 @@ import com.qdacity.course.Course;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
+
 
 public class Course extends AbstractCourse {
 
@@ -22,8 +25,6 @@ public class Course extends AbstractCourse {
 	@Persistent
 	List<String> owners;
 
-	@Persistent
-	List<String> coders;
 
 	@Persistent
 	List<String> invitedUsers;
@@ -65,25 +66,9 @@ public class Course extends AbstractCourse {
 	}
 
 
-
-	public List<String> getCoders() {
-		return coders;
-	}
-
-	public void setCoders(List<String> coders) {
-		this.coders = coders;
-	}
-
-	public void addCoder(String userID) {
-		if (coders == null) coders = new ArrayList<String>();
-		if (!coders.contains(userID)) coders.add(userID);
-	}
-
 	public void removeUser(String userID) {
 		if (owners == null) owners = new ArrayList<String>();
-		if (coders == null) coders = new ArrayList<String>();
 		owners.remove(userID);
-		coders.remove(userID);
 	}
 	
 }

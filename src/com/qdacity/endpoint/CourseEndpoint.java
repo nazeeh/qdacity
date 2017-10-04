@@ -25,10 +25,8 @@ import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
-
-
-
 
 
 @Api(name = "qdacity",
@@ -75,7 +73,7 @@ public class CourseEndpoint {
 
 		return CollectionResponse.<Course> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
-
+	
 	
 	/**
 	 * This method removes the entity with primary key id.
@@ -86,7 +84,7 @@ public class CourseEndpoint {
 	 */
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "course.removeCourse",
-		
+		 
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
@@ -131,7 +129,7 @@ public class CourseEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course insertCourse(Course course, User user) throws UnauthorizedException {
 		// Check if user is authorized
-		// Authorization.checkAuthorization(course, user); // FIXME does not make sense for inserting new courses - only check if user is in DB already
+		//Authorization.checkAuthorizationCourse(course, user); // FIXME does not make sense for inserting new courses - only check if user is in DB already
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -153,20 +151,19 @@ public class CourseEndpoint {
 	}
 
 	
-
 	@ApiMethod(name = "course.removeUser",
 			path = "course.removeUser",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public void removeUser(@Named("courseID") Long courseID, @Named("courseType") String courseType, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+	public void removeUser(@Named("courseID") Long courseID, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			String userIdToRemove = "";
 
-			if (userID != null) userIdToRemove = userID;
-			else userIdToRemove = user.getUserId();
+			
+			userIdToRemove = user.getUserId();
 
 			Course course = (Course) Cache.getOrLoad(courseID, Course.class);
 			if (course != null) { // if false -> bug.
@@ -222,6 +219,77 @@ public class CourseEndpoint {
 		return course;
 	}
 	
+	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all entities
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(name = "course.listTermCourse",
+		path = "listTermCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<TermCourse> listTermCourse(@Named("courseID") Long courseID, User user) throws UnauthorizedException {
+
+		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
+
+		PersistenceManager mgr = null;
+		List<TermCourse> execute = null;
+
+		try {
+			mgr = getPersistenceManager();
+
+			Query q = mgr.newQuery(TermCourse.class, ":p.contains(courseID)");
+
+			execute = (List<TermCourse>) q.execute(Arrays.asList(courseID));
+
+			// Tight loop for fetching all entities from datastore and accomodate
+			// for lazy fetch.
+			for (TermCourse obj : execute);
+		} finally {
+			mgr.close();
+		}
+
+		return execute;
+	}
+	
+	/**
+	 * This inserts a new instance of a course into App Engine datastore. If the entity already
+	 * exists in the datastore, an exception is thrown.
+	 * It uses HTTP POST method.
+	 *
+	 * @param termCourse, the entity to be inserted.
+	 * @return The inserted entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "course.insertTermCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
+		
+		termCourse.setCourseID(courseID);
+		termCourse.setTerm(term);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (termCourse.getId() != null) {
+				if (containsTermCourse(termCourse)) {
+					throw new EntityExistsException("Object already exists");
+				}
+			}
+			
+			mgr.makePersistent(termCourse);
+			
+		} finally {
+			mgr.close();
+		}
+		return termCourse;
+	}
 	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();
@@ -236,6 +304,18 @@ public class CourseEndpoint {
 		return contains;
 	}
 
+	private boolean containsTermCourse(TermCourse termCourse) {
+		PersistenceManager mgr = getPersistenceManager();
+		boolean contains = true;
+		try {
+			mgr.getObjectById(TermCourse.class, termCourse.getId());
+		} catch (javax.jdo.JDOObjectNotFoundException ex) {
+			contains = false;
+		} finally {
+			mgr.close();
+		}
+		return contains;
+	}
 	
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();

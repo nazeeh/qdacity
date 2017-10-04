@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import CourseEndPoint from '../../common/endpoints/CourseEndpoint';
-
-
+import DropDownButton from '../../common/styles/DropDownButton.jsx';
+import StyledButtonContainer from '../../common/styles/DropDownButton.jsx';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
@@ -17,7 +17,7 @@ import {
 	StyledPaginationItem,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault
+	StyledListItemDefault,
 } from '../../common/styles/List';
 
 import StyledSearchField from '../../common/styles/SearchField.jsx';
@@ -44,6 +44,7 @@ const StyledProjectList = StyledBoxList.extend `
 `;
 
 
+
 export default class CourseList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -53,6 +54,7 @@ export default class CourseList extends React.Component {
 			itemsPerPage: 8,
 			search: ''
 		};
+
 
 		this.init();
 
@@ -66,16 +68,47 @@ export default class CourseList extends React.Component {
 	init() {
 		var _this = this;
 		var courseList = [];
+		var courseTermsArray =[];
+		var termsObject = [];
 		CourseEndPoint.listCourse().then(function (resp) {
+
 			resp.items = resp.items || [];
-			resp.items.forEach(function (prj) {
-				prj.type = "COURSE";
-				console.log(prj);
+			var counter = resp.items.length;
+			resp.items.forEach(function (crs, index) {
+				crs.type = "COURSE";
+				CourseEndPoint.listTermCourse(crs.id).then(function (resp2) {
+					var termList = [];
+					resp2.items = resp2.items || [];
+					resp2.items.forEach(function (crs) {
+						termList.push ({
+						text: crs.term,
+					});
+					});
+					termsObject.push({
+						name: crs.name,
+						terms: termList
+					});
+					termsObject = _this.sortCourses(termsObject);
+					counter -= 1;
+					if (counter == 0) {
+						termsObject.forEach (function (term, index) {
+							courseTermsArray.push(termsObject[index].terms);
+						});
+						console.log(courseTermsArray);
+						_this.props.setTerms(courseTermsArray);
+					}
+				});
 			});
 			var courses = courseList.concat(resp.items)
 			courses = _this.sortCourses(courses);
 			_this.props.setCourses(courses);
+
+
+
+
 		});
+
+
 	}
 
 	sortCourses(courses) {
@@ -125,6 +158,8 @@ export default class CourseList extends React.Component {
 
 	}
 
+
+
 	updateSearch(e) {
 		this.setState({
 			search: e.target.value
@@ -142,6 +177,7 @@ export default class CourseList extends React.Component {
 		var _this = this;
 		var modal = new CustomForm('Create a new course', '');
 		modal.addTextInput('name', "Course Name", 'Name', '');
+		modal.addTextInput('term', "Course Term", 'Term','');
 		modal.addTextField('desc', "Course Description", 'Description');
 		modal.showModal().then(function (data) {
 			_this.createNewCourse(data.name, data.desc);
@@ -169,13 +205,18 @@ export default class CourseList extends React.Component {
 	}
 
 
+
 	render() {
 		var _this = this;
+
 
 		//Render Components
 
 		//Render search and newPrjBtn
+
 		const projectListMenu = <StyledProjectListMenu>
+
+
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					type="text"
@@ -199,6 +240,7 @@ export default class CourseList extends React.Component {
 
 		</StyledProjectListMenu>
 
+		//console.log(this.props.terms);
 		//Rebder List Items
 		var filteredList = this.props.courses.filter(
 			(course) => {
@@ -209,13 +251,17 @@ export default class CourseList extends React.Component {
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
 
+
+
 		function prjClick(prj) {
 			_this.props.history.push('/CourseDashboard?course=' + prj.id);
 		}
 		const renderListItemContent = (course, index) => {
+
 			return ([
 				<span>{course.name}</span>,
 				<div>
+					<DropDownButton isListItemButton={true} items={this.props.terms[index]}></DropDownButton>
 				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
@@ -251,6 +297,7 @@ export default class CourseList extends React.Component {
 
 		return (
 			<div>
+
 				{projectListMenu}
 				<StyledProjectList className="">
 					{renderListItems}

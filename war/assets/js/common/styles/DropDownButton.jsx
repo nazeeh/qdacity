@@ -5,6 +5,9 @@ import {
 	BtnDefault
 } from './Btn.jsx';
 
+const StyledDropDownBtn = BtnDefault.extend `
+		padding: ${props => props.isListItemButton ? 4 : 5}px 10px;
+`;
 const StyledButtonContainer = styled.div `
     display: inline-block;
     position: relative;
@@ -38,7 +41,7 @@ const StyledListItem = styled.li `
     cursor: pointer;
     margin: 4px 0px;
     padding: 3px 10px;
-    
+
     &:hover {
         background-color: ${props => props.theme.bgHover};
     }
@@ -85,7 +88,8 @@ export default class DropDownButton extends React.Component {
 		});
 	}
 
-	toggleDropDown() {
+	toggleDropDown(e) {
+		e.stopPropagation()
 		this.setState({
 			expanded: !this.state.expanded
 		});
@@ -103,7 +107,8 @@ export default class DropDownButton extends React.Component {
 		});
 	}
 
-	itemClicked(item) {
+	itemClicked(e, item) {
+		e.stopPropagation();
 		this.setState({
 			text: item.text,
 			expanded: false
@@ -120,14 +125,14 @@ export default class DropDownButton extends React.Component {
 		        <StyledEventNode>
 			        <p ref={(r) => {if (r != null) _this.eventListenerDomNodeRef = r}} className="customDropDownEventNode"></p>
                 </StyledEventNode>
-                <BtnDefault onClick={this.toggleDropDown}>
+                <StyledDropDownBtn onClick={this.toggleDropDown} isListItemButton={this.props.isListItemButton}>
                     <StyledText width={this.props.fixedWidth}>{this.state.text}</StyledText>
                     <StyledCaret className='fa fa-caret-down' aria-hidden='true'></StyledCaret>
-                </BtnDefault>
+                </StyledDropDownBtn>
                 {this.state.expanded ? (
                     <StyledListContainer>
                         {this.props.items.map((item) =>
-                            <StyledListItem onClick={_this.itemClicked.bind(this, item)}>{item.text}</StyledListItem>
+                            <StyledListItem onClick={(e) => _this.itemClicked(e, item)}>{item.text}</StyledListItem>
                         )}
                     </StyledListContainer>
                 ) : ( '' )}
