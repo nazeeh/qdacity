@@ -70,42 +70,30 @@ export default class CourseList extends React.Component {
 		var courseList = [];
 		var courseTermsArray =[];
 		var termsObject = [];
-		CourseEndPoint.listCourse().then(function (resp) {
 
+		CourseEndPoint.listCourse().then(function (resp) {
 			resp.items = resp.items || [];
+			var courses = courseList.concat(resp.items)
+			courses = _this.sortCourses(courses);
 			var counter = resp.items.length;
-			resp.items.forEach(function (crs, index) {
+			courses.forEach(function (crs, index) {
 				crs.type = "COURSE";
 				CourseEndPoint.listTermCourse(crs.id).then(function (resp2) {
+					counter-=1;
 					var termList = [];
 					resp2.items = resp2.items || [];
-					resp2.items.forEach(function (crs) {
+
+					resp2.items.forEach(function (crs, index) {
 						termList.push ({
 						text: crs.term,
 					});
 					});
-					termsObject.push({
-						name: crs.name,
-						terms: termList
-					});
-					termsObject = _this.sortCourses(termsObject);
-					counter -= 1;
+					courses[index].terms = termList;
 					if (counter == 0) {
-						termsObject.forEach (function (term, index) {
-							courseTermsArray.push(termsObject[index].terms);
-						});
-						console.log(courseTermsArray);
-						_this.props.setTerms(courseTermsArray);
+						_this.props.setCourses(courses);
 					}
 				});
 			});
-			var courses = courseList.concat(resp.items)
-			courses = _this.sortCourses(courses);
-			_this.props.setCourses(courses);
-
-
-
-
 		});
 
 
@@ -261,7 +249,7 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton isListItemButton={true} items={this.props.terms[index]}></DropDownButton>
+					<DropDownButton isListItemButton={true} items={course.terms}></DropDownButton>
 				{this.renderDeleteBtn(course, index)}
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
