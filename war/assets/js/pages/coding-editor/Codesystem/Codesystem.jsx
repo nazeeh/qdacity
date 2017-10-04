@@ -296,7 +296,14 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	shouldHighlightNode(code) {
-		return this.props.pageView == PageView.UML && this.props.umlEditor.getMetaModelMapper().isCodeValidNode(code);
+		// Not initialized yet
+		if (this.props.umlEditor.getMetaModelMapper() == null) {
+			return false;
+		}
+
+		let codeMapped = this.props.umlEditor.getMetaModelMapper().isCodeValidNode(code);
+		let relationshipCodeMapped = code.relationshipCode != null && this.props.umlEditor.getGraphView().getEdgeByRelationId(code.relationshipCode.key.id) != null;
+		return this.props.pageView == PageView.UML && (codeMapped || relationshipCodeMapped);
 	}
 
 	renderRoot(code, level, key) {

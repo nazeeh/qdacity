@@ -252,6 +252,7 @@ export default class CodingEditor extends React.Component {
 		this.setState({
 			selectedCode: newCode
 		});
+		this.umlEditorRef.codesystemSelectionChanged(newCode);
 	}
 
 	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {

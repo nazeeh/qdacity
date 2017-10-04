@@ -5,8 +5,6 @@ import styled, {
 } from 'styled-components';
 
 import CodingViewButton from './CodingViewButton.jsx';
-import AddFieldButton from './AddFieldButton.jsx';
-import AddMethodButton from './AddMethodButton.jsx';
 import AddEdgeButton from './AddEdgeButton.jsx';
 import AddEdgeGeneralizationButton from './AddEdgeGeneralizationButton.jsx';
 import AddEdgeAggregationButton from './AddEdgeAggregationButton.jsx';
@@ -85,10 +83,7 @@ export default class HoverButtons extends React.Component {
 		return (
 			<StyledButtonsContainer>
                 <CodingViewButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale} toggleCodingView={this.props.toggleCodingView}></CodingViewButton>
-                <AddFieldButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddFieldButton>
-
-                <AddMethodButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddMethodButton>
-
+                
                 <AddEdgeButton hoverButtons={this} umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeButton>
                 <AddEdgeGeneralizationButton ref={(addEdgeGeneralizationButton) => {_this.addEdgeGeneralizationButton = addEdgeGeneralizationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeGeneralizationButton>
                 <AddEdgeAggregationButton ref={(addEdgeAggregationButton) => {_this.addEdgeAggregationButton = addEdgeAggregationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeAggregationButton>

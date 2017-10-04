@@ -19,8 +19,8 @@ const StyledHeaderText = styled.div `
     font-size: 13px;
     font-weight: bold;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;    
+    word-wrap: break-word;
+    white-space: normal;  
 `;
 
 const StyledHeaderExpandButton = styled.div `

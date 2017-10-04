@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import DropDownButton from '../../../common/styles/DropDownButton.jsx';
 
-const StyledZoomBtn = styled.i `
+const StyledZoomBtn = styled.div `
     margin-left: 10px;
     display: inline-block;
 `;
@@ -70,7 +70,7 @@ export default class ButtonZoomSelect extends React.Component {
 
 		return (
 			<StyledZoomBtn>
-		        <DropDownButton ref={(r) => {if (r) _this.dropDownButtonRef = r}} initText={this.zoomValue} items={items}></DropDownButton>
+		        <DropDownButton ref={(r) => {if (r) _this.dropDownButtonRef = r}} initText={this.zoomValue} items={items} fixedWidth={'35px'}></DropDownButton>
 	        </StyledZoomBtn>
 		);
 	}
