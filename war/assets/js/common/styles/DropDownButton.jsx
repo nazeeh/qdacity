@@ -5,7 +5,7 @@ import {
 	BtnDefault
 } from './Btn.jsx';
 
-const DWButton = BtnDefault.extend `
+const StyledDropDownBtn = BtnDefault.extend `
 		padding: ${props => props.isListItemButton ? 4 : 5}px 10px;
 `;
 const StyledButtonContainer = styled.div `
@@ -125,10 +125,10 @@ export default class DropDownButton extends React.Component {
 		        <StyledEventNode>
 			        <p ref={(r) => {if (r != null) _this.eventListenerDomNodeRef = r}} className="customDropDownEventNode"></p>
                 </StyledEventNode>
-                <DWButton onClick={this.toggleDropDown} isListItemButton={this.props.isListItemButton}>
+                <StyledDropDownBtn onClick={this.toggleDropDown} isListItemButton={this.props.isListItemButton}>
                     <StyledText width={this.props.fixedWidth}>{this.state.text}</StyledText>
                     <StyledCaret className='fa fa-caret-down' aria-hidden='true'></StyledCaret>
-                </DWButton>
+                </StyledDropDownBtn>
                 {this.state.expanded ? (
                     <StyledListContainer>
                         {this.props.items.map((item) =>
