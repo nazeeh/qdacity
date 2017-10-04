@@ -21,7 +21,7 @@ export default class PersonalDashboard extends React.Component {
 		this.setCourses = this.setCourses.bind(this);
 		this.addCourse = this.addCourse.bind(this);
 		this.removeCourse = this.removeCourse.bind(this);
-		this.setTerms = this.setTerms.bind(this);
+
 
 		scroll(0, 0);
 	}
@@ -67,11 +67,7 @@ export default class PersonalDashboard extends React.Component {
 		});
 	}
 
-	setTerms(termsArray) {
-		this.setState({
-			termsArray: termsArray
-		});
-	}
+
 	render() {
 		if (!this.props.account.getProfile) return null;
 		return (
@@ -98,7 +94,7 @@ export default class PersonalDashboard extends React.Component {
 									<h3 className="box-title">Courses</h3>
 								</div>
 								<div className="box-body">
-									<CourseList courses={this.state.courses} setCourses={this.setCourses} addCourse={this.addCourse} removeCourse={this.removeCourse} history={this.props.history} terms={this.state.termsArray} setTerms={this.setTerms}/>
+									<CourseList courses={this.state.courses} setCourses={this.setCourses} addCourse={this.addCourse} removeCourse={this.removeCourse} history={this.props.history}/>
 								</div>
 							</div>
 						</div>
