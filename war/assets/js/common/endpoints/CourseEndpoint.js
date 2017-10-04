@@ -39,7 +39,7 @@ export default class CourseEndpoint {
 	{
 
 		var apiMethod = gapi.client.qdacity.course.insertTermCourse({
-			'templateCourseID': templateCrsID,
+			'CourseID': templateCrsID,
 			'courseTerm': term
 		});
 		return Promisizer.makePromise(apiMethod);
@@ -47,7 +47,7 @@ export default class CourseEndpoint {
 
 	static listTermCourse(templateCrsID) {
 		var apiMethod = gapi.client.qdacity.course.listTermCourse({
-			'templateCourseID': templateCrsID
+			'CourseID': templateCrsID
 		});
 		return Promisizer.makePromise(apiMethod);
 	}

@@ -26,13 +26,13 @@ public class CourseEndpointTestHelper {
 		return ce.getCourse(id, loggedInUser);
 	}
 	
-	static public void addTermCourse(Long id, Long templateCourseId, String term, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	static public void addTermCourse(Long id, Long CourseID, String term, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		TermCourse termCourse = new TermCourse();
 		termCourse.setId(id);
-		termCourse.setCourseTemplateID(templateCourseId);
+		termCourse.setCourseTemplateID(CourseID);
 		
 		CourseEndpoint ce = new CourseEndpoint();
-		ce.insertTermCourse(templateCourseId, term, termCourse, loggedInUser);
+		ce.insertTermCourse(CourseID, term, termCourse, loggedInUser);
 	}
 
 }

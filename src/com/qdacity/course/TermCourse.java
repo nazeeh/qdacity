@@ -28,7 +28,7 @@ public class TermCourse implements Serializable {
 	Long id;
 	
 	@Persistent
-	Long templateCourseID;
+	Long CourseID;
 	
 	@Persistent
 	List<String> participants;
@@ -77,7 +77,7 @@ public class TermCourse implements Serializable {
 		return term;
 	}
 	public void setCourseTemplateID(Long id) {
-		this.templateCourseID = id;
+		this.CourseID = id;
 	}
 	
 }
