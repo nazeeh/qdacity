@@ -151,6 +151,21 @@ public class CourseEndpointTest {
 	}
 	
 	
-	
+	/**
+	 * Tests if a registered user can create a course
+	 */
+	@Test
+	public void testTermCourseInsert() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		try {
+			CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+	}
 	
 }

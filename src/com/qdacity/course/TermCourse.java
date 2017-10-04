@@ -50,7 +50,10 @@ public class TermCourse implements Serializable {
 		this.participants = termCrs.participants;
 	}
 	
-	
+	public TermCourse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	public List<String> getParticipants() {
 		return participants;
