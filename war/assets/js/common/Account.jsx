@@ -37,6 +37,7 @@ export default class Account extends React.Component {
 				_this.props.callback(_this);
 			}
 		});
+		_this.props.callback(_this);
 	}
 
 
