@@ -3,11 +3,13 @@ import styled from 'styled-components';
 
 import ConsistencyManager from './ConsistencyManager.js';
 
-import {
-	MappingAction
-} from './mapping/MappingAction.js';
 import MetaModelMapper from './mapping/MetaModelMapper.js';
-import MetaModelRunner from './mapping/MetaModelRunner.js';
+import {
+	DefaultRuleSet
+} from './DefaultRuleSet.js';
+
+import CreateClassFieldAction from './mapping/actions/CreateClassFieldAction.js';
+import CreateClassMethodAction from './mapping/actions/CreateClassMethodAction.js';
 
 import CodePositionManager from './CodePositionManager.js';
 
@@ -38,7 +40,6 @@ export default class UmlEditor extends React.Component {
 		this.codePositionManager = null;
 
 		this.metaModelMapper = null;
-		this.metaModelRunner = null;
 
 		this.mmEntities = null;
 		this.mmRelation = null;
@@ -59,10 +60,6 @@ export default class UmlEditor extends React.Component {
 
 	getMetaModelMapper() {
 		return this.metaModelMapper;
-	}
-
-	getMetaModelRunner() {
-		return this.metaModelRunner;
 	}
 
 	getMetaModelEntities() {
@@ -123,8 +120,7 @@ export default class UmlEditor extends React.Component {
 		this.consistencyManager = new ConsistencyManager(this);
 		this.codePositionManager = new CodePositionManager();
 
-		this.metaModelMapper = new MetaModelMapper(this);
-		this.metaModelRunner = new MetaModelRunner(this, this.metaModelMapper);
+		this.initializeMapping();
 
 		this.initializeSelection();
 
@@ -133,6 +129,11 @@ export default class UmlEditor extends React.Component {
 		this.codePositionManager.listCodePositions(this.props.codesystemId, (umlCodePositions) => {
 			_this.initializeNodes();
 		});
+	}
+
+	initializeMapping() {
+		this.metaModelMapper = new MetaModelMapper(this);
+		this.metaModelMapper.registerRules(DefaultRuleSet);
 	}
 
 	initializeSelection() {
@@ -181,9 +182,7 @@ export default class UmlEditor extends React.Component {
 				for (let j = 0; j < code.relations.length; j++) {
 					const relation = code.relations[j];
 
-					const destination = this.getCodeByCodeId(relation.codeId);
-
-					this.consistencyManager.initializeCodeRelation(code, destination, relation);
+					this.consistencyManager.initializeCodeRelation(relation);
 				}
 			}
 		}
@@ -277,9 +276,9 @@ export default class UmlEditor extends React.Component {
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
-		const mappingAction = MappingAction.ADD_CLASS_FIELD;
+		const mappingIdentifier = (new CreateClassFieldAction()).getIdentifier();
 
-		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
+		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addFieldModal.showModal().then(function (data) {
 			_this.createField(code, data.selectedCode);
@@ -295,9 +294,9 @@ export default class UmlEditor extends React.Component {
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
-		const mappingAction = MappingAction.ADD_CLASS_METHOD;
+		const mappingIdentifier = (new CreateClassMethodAction()).getIdentifier();
 
-		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingAction);
+		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addMethodModal.showModal().then(function (data) {
 			_this.createMethod(code, data.selectedCode);

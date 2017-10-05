@@ -1,75 +1,17 @@
 import {
 	EdgeType
 } from '../util/EdgeType.js';
+
 import {
-	MappingAction
-} from './MappingAction.js';
+	Target
+} from './Target.js';
 
 export default class MetaModelMapper {
 
 	constructor(umlEditor) {
 		this.umlEditor = umlEditor;
-	}
 
-	evaluateCode(code) {
-		if (this.isCodeValidNode(code)) {
-			return MappingAction.CREATE_NODE;
-		}
-
-		return MappingAction.DO_NOTHING;
-	}
-
-	evaluateCodeRelation(sourceCode, destinationCode, relation) {
-		const mmElementId = relation.mmElementId;
-		const mmElementName = this.umlEditor.getMetaModelEntityById(mmElementId).name;
-
-		switch (mmElementName) {
-		case 'is a':
-			{
-				if (!this.isCodeValidNode(sourceCode) || !this.isCodeValidNode(destinationCode)) {
-					return MappingAction.DO_NOTHING;
-				}
-
-				return MappingAction.CREATE_GENERALIZATION;
-			}
-		case 'is part of':
-			{
-				if (!this.isCodeValidNode(sourceCode) || !this.isCodeValidNode(destinationCode)) {
-					return MappingAction.DO_NOTHING;
-				}
-
-				return MappingAction.CREATE_AGGREGATION;
-			}
-		case 'is related to':
-			{
-				if (this.codeHasMetaModelEntity(destinationCode, 'Object')
-					|| this.codeHasMetaModelEntity(destinationCode, 'Actor')
-					|| this.codeHasMetaModelEntity(destinationCode, 'Place')) {
-
-					if (this.isCodeValidNode(sourceCode) && this.codeHasMetaModelEntity(destinationCode, 'Property')) {
-						return MappingAction.ADD_CLASS_FIELD;
-					}
-				}
-
-				if (!this.isCodeValidNode(sourceCode) || !this.isCodeValidNode(destinationCode)) {
-					return MappingAction.DO_NOTHING;
-				}
-
-				return MappingAction.CREATE_DIRECTED_ASSOCIATION;
-			}
-		case 'influences':
-			{
-				if (this.isCodeValidNode(sourceCode) && this.codeHasMetaModelEntity(destinationCode, 'Property')) {
-					return MappingAction.ADD_CLASS_METHOD;
-				}
-			}
-		}
-
-		return MappingAction.DO_NOTHING;
-	}
-
-	isCodeValidNode(code) {
-		return this.codeHasMetaModelEntity(code, 'Category') || this.codeHasMetaModelEntity(code, 'Concept');
+		this.rules = {};
 	}
 
 	getEdgeRelationEntityName(edgeType) {
@@ -105,27 +47,6 @@ export default class MetaModelMapper {
 		return 'Concept';
 	}
 
-	getEdgeTypeFromMappingAction(action) {
-		switch (action) {
-		case MappingAction.CREATE_GENERALIZATION:
-			{
-				return EdgeType.GENERALIZATION;
-			}
-		case MappingAction.CREATE_AGGREGATION:
-			{
-				return EdgeType.AGGREGATION;
-			}
-		case MappingAction.CREATE_DIRECTED_ASSOCIATION:
-			{
-				return EdgeType.DIRECTED_ASSOCIATION;
-			}
-		default:
-			{
-				throw new Error('Unsupported action ' + action);
-			}
-		}
-	}
-
 	getClassFieldText(fieldName, fieldReturnType) {
 		return fieldName + ': ' + fieldReturnType;
 	}
@@ -138,20 +59,104 @@ export default class MetaModelMapper {
 		return methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
 	}
 
-	codeHasMetaModelEntity(code, entityName) {
-		if (!code) {
-			throw new Error('Code must not be null or undefined');
+	getUmlEditor() {
+		return this.umlEditor;
+	}
+
+	getCodeById(id) {
+		return this.umlEditor.getCodeById(id);
+	}
+
+	getCodeByCodeId(codeId) {
+		return this.umlEditor.getCodeByCodeId(codeId);
+	}
+
+	getMetaModelEntityById(metaModelElementId) {
+		return this.umlEditor.getMetaModelEntityById(metaModelElementId);
+	}
+
+	getTargetType(target) {
+		if (target.hasOwnProperty('codeID') || target.hasOwnProperty('mmElementIDs')) {
+			return Target.CODE;
+		} else if (target.hasOwnProperty('codeId') || target.hasOwnProperty('mmElementId')) {
+			return Target.RELATION;
 		}
 
-		for (let mmElementIdKey in code.mmElementIDs) {
-			let mmElementId = code.mmElementIDs[mmElementIdKey];
-			var entity = this.umlEditor.getMetaModelEntities().find((e) => e.id == mmElementId);
+		return null;
+	}
 
-			if (entity != null && entity.name == entityName) {
-				return true;
+	registerRule(rule) {
+		rule.setMapper(this);
+
+		if (!this.rules.hasOwnProperty(rule.getTargetType())) {
+			this.rules[rule.getTargetType()] = [];
+		}
+
+		this.rules[rule.getTargetType()].push(rule);
+	}
+
+	registerRules(rules) {
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				this.registerRule(rules[i]);
+			}
+		}
+	}
+
+	execute(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
+
+		const rules = this.rules[targetType];
+
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
+
+				rule.execute(target);
+			}
+		}
+	}
+
+	undo(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
+
+		const rules = this.rules[targetType];
+
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
+
+				rule.undo(target);
+			}
+		}
+	}
+
+	evaluateActionsForTarget(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
+
+		const rules = this.rules[targetType];
+
+		const identifiers = [];
+
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
+
+				if (rule.evaluate(target)) {
+					let action = rule.getAction();
+
+					let identifier = action.getIdentifier();
+					identifiers.push(identifier);
+				}
 			}
 		}
 
-		return false;
+		return identifiers;
 	}
 }
