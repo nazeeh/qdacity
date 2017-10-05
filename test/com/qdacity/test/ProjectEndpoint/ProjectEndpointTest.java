@@ -22,6 +22,8 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.UserNotificationEndpoint;
 import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 import com.qdacity.user.UserNotification;
@@ -258,7 +260,7 @@ public class ProjectEndpointTest {
 	 * @throws UnauthorizedException
 	 */
 	@Test
-	public void testProjectRevision() throws UnauthorizedException {
+	public void testProjectRevisionInsert() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		ProjectEndpoint ue = new ProjectEndpoint();
 		
@@ -276,6 +278,75 @@ public class ProjectEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 		ue.createSnapshot(1L, "A test revision", testUser);
 		assertEquals(1, ds.prepare(new Query("ProjectRevision")).countEntities(withLimit(10)));
+
+	}
+	
+	/**
+	 * Tests if Projects from other users can be not be deleted
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testProjectRevision() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		ProjectEndpoint ue = new ProjectEndpoint();
+		
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
+		CodeSystemTestHelper.addCodeSystem(1L, testUser);
+		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+		
+
+		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+		ue.createSnapshot(1L, "A test revision", testUser);
+		List<ProjectRevision> revisions = ue.listRevisions(1L, testUser);
+		assertEquals(1, revisions.size());
+		ue.removeProjectRevision(revisions.get(0).getId(), testUser);
+		revisions = ue.listRevisions(1L, testUser);
+		assertEquals(0, revisions.size());
+
+	}
+
+	/**
+	 * Tests if Projects from other users can be not be deleted
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testValidationProjectCreation() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		ProjectEndpoint ue = new ProjectEndpoint();
+
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
+		CodeSystemTestHelper.addCodeSystem(1L, testUser);
+		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+
+		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+		ue.createSnapshot(1L, "A test revision", testUser);
+
+		com.google.appengine.api.users.User student = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
+		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
+
+		List<ProjectRevision> revisions = ue.listRevisions(1L, testUser);
+		Long revID = revisions.get(0).getId();
+		ue.requestValidationAccess(revID, student);
+
+		ue.createValidationProject(revID, student.getUserId(), testUser);
+		
+		List<ValidationProject> valPrj = ue.listValidationProject(student);
+
+		assertEquals(1, valPrj.size());
 
 	}
 }
