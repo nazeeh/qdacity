@@ -21,6 +21,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.course.Course;
+import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CourseEndpointTest {
@@ -52,6 +53,22 @@ public class CourseEndpointTest {
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+	}
+	
+	/**
+	 * Tests if a non-registered user can not create a course
+	 * *
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testCourseInsertAuthorization() throws UnauthorizedException {
+		
+		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expectMessage(is("User is not registered"));
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 	}
 	
 	/**

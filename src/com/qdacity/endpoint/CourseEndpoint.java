@@ -137,13 +137,20 @@ public class CourseEndpoint {
 					throw new EntityExistsException("Object already exists");
 				}
 			}
-			course.addOwner(user.getUserId());
-			mgr.makePersistent(course);
-			// Authorize User
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-			Authorization.isUserRegistered(dbUser);
-			dbUser.addCourseAuthorization(course.getId());
-			Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+			
+			try {
+				course.addOwner(user.getUserId());
+				mgr.makePersistent(course);
+				// Authorize User
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				Authorization.isUserRegistered(dbUser);
+				dbUser.addCourseAuthorization(course.getId());
+				Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+			}
+			catch (javax.jdo.JDOObjectNotFoundException ex) {
+				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+			}
+			
 		} finally {
 			mgr.close();
 		}
