@@ -145,6 +145,37 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for retrieving his project");
 		}
 
+		try {
+			pe.setDescription(1L, "PROJECT", "A changed description", loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for setting the project description");
+		}
+
+		try {
+			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
+			assertEquals("A changed description", prj.getDescription());
+		} catch (UnauthorizedException e1) {
+			e1.printStackTrace();
+			fail("User could not be authorized for retrieving his project");
+		}
+
+		assertEquals(false, prj.isUmlEditorEnabled());
+		try {
+			pe.setUmlEditorEnabled(1L, "PROJECT", true, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for setting the UML editor flag");
+		}
+
+		try {
+			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
+			assertEquals(true, prj.isUmlEditorEnabled());
+		} catch (UnauthorizedException e1) {
+			e1.printStackTrace();
+			fail("User could not be authorized for retrieving his project");
+		}
+
 	}
 
 	/**
