@@ -34,6 +34,18 @@ public class CodeEndpointTestHelper {
 		}
 	}
 
+	static public Code getCode(Long id, com.google.appengine.api.users.User loggedInUser) {
+		try {
+			CodeEndpoint ce = new CodeEndpoint();
+
+			return ce.getCode(id, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for code creation");
+		}
+		return null;
+	}
+
 	static public void updateCode(Code code, com.google.appengine.api.users.User loggedInUser) {
 		try {
 			CodeEndpoint ce = new CodeEndpoint();

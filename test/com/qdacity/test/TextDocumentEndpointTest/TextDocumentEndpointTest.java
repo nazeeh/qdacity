@@ -15,7 +15,10 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
+import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
@@ -82,6 +85,22 @@ public class TextDocumentEndpointTest {
 		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
 		doc = (TextDocument) documents.toArray()[0];
 		assertEquals("A changed text", doc.getText().getValue());
+
+		TextDocumentCodeContainer textDocumentCode = new TextDocumentCodeContainer();
+		doc.setText(new Text("Yet another text"));
+		textDocumentCode.textDocument = doc;
+		CodeEndpointTestHelper.addCode(123L, 1L, 1L, 15648758L, "Author Name", "#fff", testUser);
+		Code code = CodeEndpointTestHelper.getCode(123L, testUser);
+		textDocumentCode.code = code;
+		try {
+			tde.applyCode(textDocumentCode, testUser);
+			documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+			doc = (TextDocument) documents.toArray()[0];
+			assertEquals("Yet another text", doc.getText().getValue());
+		} catch (UnauthorizedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 }
