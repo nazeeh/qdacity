@@ -32,7 +32,7 @@ public class TextDocumentEndpointTestHelper {
 	static public Collection<TextDocument> getTextDocuments(long projectID, String projectType, com.google.appengine.api.users.User loggedInUser) {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		try {
-			CollectionResponse<TextDocument> docs = tde.getTextDocument(1L, projectType, loggedInUser);
+			CollectionResponse<TextDocument> docs = tde.getTextDocument(projectID, projectType, loggedInUser);
 			return docs.getItems();
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
