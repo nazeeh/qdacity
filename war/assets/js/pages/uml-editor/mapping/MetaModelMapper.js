@@ -95,6 +95,14 @@ export default class MetaModelMapper {
 		this.rules[rule.getTargetType()].push(rule);
 	}
 
+	registerRules(rules) {
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				this.registerRule(rules[i]);
+			}
+		}
+	}
+
 	execute(target, targetType) {
 		if (targetType == null) {
 			targetType = this.getTargetType(target);
