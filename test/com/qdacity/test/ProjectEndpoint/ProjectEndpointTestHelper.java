@@ -3,8 +3,10 @@ package com.qdacity.test.ProjectEndpoint;
 import static org.junit.Assert.fail;
 
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.project.Project;
+import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 
 public class ProjectEndpointTestHelper {
 	static public void addProject(Long id, String name, String description, Long codesystemID, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
@@ -34,6 +36,18 @@ public class ProjectEndpointTestHelper {
 			fail("User could not be authorized for retrieving his project");
 		}
 		return null;
+	}
+
+	static public void setupProjectWithCodesystem(Long id, String name, String description, User loggedInUser) {
+		CodeSystemTestHelper.addCodeSystem(15648758L, loggedInUser);
+		try {
+			addProject(id, name, description, 15648758L, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("Authorization failed for adding a project");
+		}
+
+
 	}
 
 }
