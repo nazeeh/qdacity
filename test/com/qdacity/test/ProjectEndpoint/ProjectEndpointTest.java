@@ -412,5 +412,11 @@ public class ProjectEndpointTest {
 
 		assertEquals(1, valPrj.size());
 
+		ue.removeValidationProject(valPrj.get(0).getId(), testUser);
+
+		valPrj = ue.listValidationProject(student);
+
+		assertEquals(0, valPrj.size());
+
 	}
 }
