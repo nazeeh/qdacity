@@ -108,12 +108,7 @@ public class ProjectEndpointTest {
 
 		ProjectEndpoint pe = new ProjectEndpoint();
 		Project prj = null;
-		try {
-			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
-		} catch (UnauthorizedException e1) {
-			e1.printStackTrace();
-			fail("User could not be authorized for retrieving his project");
-		}
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
 		prj.setCodesystemID(2L);
 		try {
 			pe.updateProject(prj, loggedInUser);
@@ -122,13 +117,8 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for updating his project");
 		}
 
-		try {
-			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
-			assertEquals(2L, prj.getCodesystemID(), 0);
-		} catch (UnauthorizedException e1) {
-			e1.printStackTrace();
-			fail("User could not be authorized for retrieving his project");
-		}
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals(2L, prj.getCodesystemID(), 0);
 
 		try {
 			pe.getAndIncrCodingId(1L, "PROJECT", loggedInUser);
@@ -137,13 +127,8 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for retrieving his project");
 		}
 
-		try {
-			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
-			assertEquals(1L, prj.getMaxCodingID(), 0);
-		} catch (UnauthorizedException e1) {
-			e1.printStackTrace();
-			fail("User could not be authorized for retrieving his project");
-		}
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals(1L, prj.getMaxCodingID(), 0);
 
 		try {
 			pe.setDescription(1L, "PROJECT", "A changed description", loggedInUser);
@@ -152,13 +137,8 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for setting the project description");
 		}
 
-		try {
-			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
-			assertEquals("A changed description", prj.getDescription());
-		} catch (UnauthorizedException e1) {
-			e1.printStackTrace();
-			fail("User could not be authorized for retrieving his project");
-		}
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals("A changed description", prj.getDescription());
 
 		assertEquals(false, prj.isUmlEditorEnabled());
 		try {
@@ -168,13 +148,8 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for setting the UML editor flag");
 		}
 
-		try {
-			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
-			assertEquals(true, prj.isUmlEditorEnabled());
-		} catch (UnauthorizedException e1) {
-			e1.printStackTrace();
-			fail("User could not be authorized for retrieving his project");
-		}
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals(true, prj.isUmlEditorEnabled());
 
 	}
 
