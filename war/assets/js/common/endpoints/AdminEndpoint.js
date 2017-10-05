@@ -1,6 +1,6 @@
 import Promisizer from './Promisizer'
 
-export default class ChangeLogEndpoint {
+export default class AdminEndpoint {
 	constructor() {}
 
 	static getAdminStats() {
