@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -56,8 +57,14 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for project creation");
 		}
 
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
+		ProjectEndpoint pe = new ProjectEndpoint();
+		try {
+			CollectionResponse<Project> projects = pe.listProject(null, null, loggedInUser);
+			assertEquals(1, projects.getItems().size());
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("Failed to authorize the user for listing his projects");
+		}
 	}
 
 	@Rule
