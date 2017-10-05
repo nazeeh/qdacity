@@ -272,4 +272,28 @@ public class CourseEndpointTest {
 		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
 	}
 	
+	/**
+	 * Tests if a registered user can create a term more than once
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testTermCourseInsertMultiple() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		expectedException.expect(EntityExistsException.class);
+		expectedException.expectMessage(is("Term already exists"));
+		
+		try {
+			CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+	}
+	
 }
