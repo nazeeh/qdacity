@@ -1,5 +1,8 @@
 package com.qdacity.test.CourseEndpoint;
 
+import java.util.List;
+
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.course.Course;
@@ -24,6 +27,11 @@ public class CourseEndpointTestHelper {
 	static public Course getCourse(Long id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		CourseEndpoint ce = new CourseEndpoint();
 		return ce.getCourse(id, loggedInUser);
+	}
+	
+	static public CollectionResponse<Course> listCourse(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		CourseEndpoint ce = new CourseEndpoint();
+		return ce.listCourse(null, null, loggedInUser);
 	}
 	
 	static public void addTermCourse(Long id, Long courseID, String term, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {

@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,16 +13,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.course.Course;
-import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CourseEndpointTest {
@@ -128,6 +129,32 @@ public class CourseEndpointTest {
 		Entity queryResult = ds.prepare(q).asSingleEntity();
 		
 		assertEquals(Long.valueOf(queryResult.getKey().getId()), retrievedId);
+	}
+	
+	/**
+	 * Tests if a registered can list courses
+	 */
+	@Test
+	public void testListCourse() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		CollectionResponse<Course> retrievedCourses = null;
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+			CourseEndpointTestHelper.addCourse(2L, "New Course 2", "A description 2", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+				
+		try {
+			retrievedCourses = (CollectionResponse<Course>) CourseEndpointTestHelper.listCourse(testUser);
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course retrieval");
+			e.printStackTrace();
+		}
+		
+		assertEquals(2, retrievedCourses.getItems().size());
+
 	}
 	
 	@Rule
