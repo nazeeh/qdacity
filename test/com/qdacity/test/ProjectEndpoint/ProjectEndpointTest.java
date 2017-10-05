@@ -91,6 +91,69 @@ public class ProjectEndpointTest {
 	}
 
 	/**
+	 * Tests if a registered user can create a project
+	 */
+	@Test
+	public void testProjectUpdate() {
+		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+		CodeSystemTestHelper.addCodeSystem(1L, loggedInUser);
+
+		ProjectEndpoint pe = new ProjectEndpoint();
+		Project prj = null;
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		prj.setCodesystemID(2L);
+		try {
+			pe.updateProject(prj, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for updating his project");
+		}
+
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals(2L, prj.getCodesystemID(), 0);
+
+		try {
+			pe.getAndIncrCodingId(1L, "PROJECT", loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for retrieving his project");
+		}
+
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals(1L, prj.getMaxCodingID(), 0);
+
+		try {
+			pe.setDescription(1L, "PROJECT", "A changed description", loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for setting the project description");
+		}
+
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals("A changed description", prj.getDescription());
+
+		assertEquals(false, prj.isUmlEditorEnabled());
+		try {
+			pe.setUmlEditorEnabled(1L, "PROJECT", true, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for setting the UML editor flag");
+		}
+
+		prj = ProjectEndpointTestHelper.getProject(1L, loggedInUser);
+		assertEquals(true, prj.isUmlEditorEnabled());
+
+	}
+
+	/**
 	 * Tests if a user can delete his own project
 	 */
 	@Test
@@ -354,6 +417,12 @@ public class ProjectEndpointTest {
 		List<ValidationProject> valPrj = ue.listValidationProject(student);
 
 		assertEquals(1, valPrj.size());
+
+		ue.removeValidationProject(valPrj.get(0).getId(), testUser);
+
+		valPrj = ue.listValidationProject(student);
+
+		assertEquals(0, valPrj.size());
 
 	}
 }

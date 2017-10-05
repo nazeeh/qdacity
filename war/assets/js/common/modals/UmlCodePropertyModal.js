@@ -6,7 +6,7 @@ import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesys
 
 export default class UmlCodePropertyModal extends VexModal {
 
-	constructor(umlEditor, headline, sourceCode, codesystem, relationMetaModelEntityName, mappingAction) {
+	constructor(umlEditor, headline, sourceCode, codesystem, relationMetaModelEntityName, mappingIdentifier) {
 		super();
 
 		this.umlEditor = umlEditor;
@@ -15,7 +15,7 @@ export default class UmlCodePropertyModal extends VexModal {
 		this.codesystem = codesystem;
 
 		this.relationMetaModelEntityName = relationMetaModelEntityName;
-		this.mappingAction = mappingAction;
+		this.mappingIdentifier = mappingIdentifier;
 
 		this.codesystemView = null;
 	}
@@ -31,11 +31,18 @@ export default class UmlCodePropertyModal extends VexModal {
 			const metaModelEntity = _this.umlEditor.getMetaModelEntityByName(_this.relationMetaModelEntityName);
 
 			const relation = {
-				mmElementId: metaModelEntity.id,
-				codeId: destinationCode.codeID
+				key: {
+					parent: {
+						id: this.sourceCode.id
+					}
+				},
+				codeId: destinationCode.codeID,
+				mmElementId: metaModelEntity.id
 			};
 
-			return _this.umlEditor.getMetaModelMapper().evaluateCodeRelation(this.sourceCode, destinationCode, relation) != _this.mappingAction;
+			let identifiers = _this.umlEditor.getMetaModelMapper().evaluateActionsForTarget(relation);
+
+			return identifiers.indexOf(_this.mappingIdentifier) == -1;
 		}
 
 		const isCodeSelectable = (code) => {
