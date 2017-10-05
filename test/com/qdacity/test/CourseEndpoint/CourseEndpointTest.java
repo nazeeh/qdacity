@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import javax.persistence.EntityExistsException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +31,10 @@ public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -41,10 +47,15 @@ public class CourseEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCourseInsert() {
+	public void testCourseInsertMultiple() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		expectedException.expect(EntityExistsException.class);
+		expectedException.expectMessage(is("Course already exists"));
+		
 		try {
 			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		} catch (UnauthorizedException e) {
@@ -52,6 +63,8 @@ public class CourseEndpointTest {
 			fail("User could not be authorized for course creation");
 		}
 
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 	}
@@ -70,6 +83,23 @@ public class CourseEndpointTest {
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+	}
+	
+	/**
+	 * Tests if a registered user can create the same course more than once
+	 */
+	@Test
+	public void testCourseInsert() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 	}
 	
 	/**
@@ -157,8 +187,7 @@ public class CourseEndpointTest {
 
 	}
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+	
 	
 	/**
 	 * Tests if Courses from other users can be not be deleted

@@ -134,7 +134,7 @@ public class CourseEndpoint {
 		try {
 			if (course.getId() != null) {
 				if (containsCourse(course)) {
-					throw new EntityExistsException("Object already exists");
+					throw new EntityExistsException("Course already exists");
 				}
 			}
 			
