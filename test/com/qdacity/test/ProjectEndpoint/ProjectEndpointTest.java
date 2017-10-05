@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.After;
@@ -20,18 +21,21 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.UserNotificationEndpoint;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
+import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 import com.qdacity.user.UserNotification;
 
 public class ProjectEndpointTest {
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true));
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	@Before
 	public void setUp() {
@@ -332,7 +336,7 @@ public class ProjectEndpointTest {
 	@Test
 	public void testProjectRevisionInsert() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		ProjectEndpoint ue = new ProjectEndpoint();
+		ProjectEndpoint pe = new ProjectEndpoint();
 		
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
 		CodeSystemTestHelper.addCodeSystem(1L, testUser);
@@ -344,10 +348,15 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for project creation");
 		}
 		
+		// ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
 
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
-		ue.createSnapshot(1L, "A test revision", testUser);
+		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
 		assertEquals(1, ds.prepare(new Query("ProjectRevision")).countEntities(withLimit(10)));
+		Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(revision.getId(), "REVISION", testUser);
+		assertEquals(1, docs.size());
 
 	}
 	
