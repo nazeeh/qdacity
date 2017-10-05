@@ -20,11 +20,11 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CourseEndpointTest {
@@ -187,7 +187,38 @@ public class CourseEndpointTest {
 
 	}
 	
-	
+	/**
+	 * Tests if a registered can list terms for a course
+	 */
+	@Test
+	public void testListTermCourse() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		List<TermCourse> retrievedTerms = null;
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+		
+		try {
+			CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+			CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description 2", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term creation");
+		}
+				
+		try {
+			retrievedTerms = CourseEndpointTestHelper.listTermCourse(1L, testUser);
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course Term retrieval");
+			e.printStackTrace();
+		}
+		
+		assertEquals(2, retrievedTerms.size());
+
+	}
 	
 	/**
 	 * Tests if Courses from other users can be not be deleted

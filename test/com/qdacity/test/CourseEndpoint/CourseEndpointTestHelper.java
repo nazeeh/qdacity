@@ -29,9 +29,9 @@ public class CourseEndpointTestHelper {
 		return ce.getCourse(id, loggedInUser);
 	}
 	
-	static public CollectionResponse<Course> listCourse(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	static public List<TermCourse> listTermCourse(Long courseID, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		CourseEndpoint ce = new CourseEndpoint();
-		return ce.listCourse(null, null, loggedInUser);
+		return ce.listTermCourse(courseID, loggedInUser);
 	}
 	
 	static public void addTermCourse(Long id, Long courseID, String term, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
@@ -41,6 +41,10 @@ public class CourseEndpointTestHelper {
 		
 		CourseEndpoint ce = new CourseEndpoint();
 		ce.insertTermCourse(courseID, term, termCourse, loggedInUser);
+	}
+	static public CollectionResponse<Course> listCourse(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		CourseEndpoint ce = new CourseEndpoint();
+		return ce.listCourse(null, null, loggedInUser);
 	}
 
 }
