@@ -237,6 +237,7 @@ public class ProjectEndpoint {
 
 				project.addOwner(user.getUserId());
 				project.setRevision(0);
+				project.setMaxCodingID(0L);
 				mgr.makePersistent(project);
 
 				dbUser.addProjectAuthorization(project.getId());

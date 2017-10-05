@@ -91,6 +91,63 @@ public class ProjectEndpointTest {
 	}
 
 	/**
+	 * Tests if a registered user can create a project
+	 */
+	@Test
+	public void testProjectUpdate() {
+		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+		CodeSystemTestHelper.addCodeSystem(1L, loggedInUser);
+
+		ProjectEndpoint pe = new ProjectEndpoint();
+		Project prj = null;
+		try {
+			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
+		} catch (UnauthorizedException e1) {
+			e1.printStackTrace();
+			fail("User could not be authorized for retrieving his project");
+		}
+		prj.setCodesystemID(2L);
+		try {
+			pe.updateProject(prj, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for updating his project");
+		}
+
+		try {
+			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
+			assertEquals(2L, prj.getCodesystemID(), 0);
+		} catch (UnauthorizedException e1) {
+			e1.printStackTrace();
+			fail("User could not be authorized for retrieving his project");
+		}
+
+		try {
+			pe.getAndIncrCodingId(1L, "PROJECT", loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for retrieving his project");
+		}
+
+		try {
+			prj = (Project) pe.getProject(1L, "PROJECT", loggedInUser);
+			assertEquals(1L, prj.getMaxCodingID(), 0);
+		} catch (UnauthorizedException e1) {
+			e1.printStackTrace();
+			fail("User could not be authorized for retrieving his project");
+		}
+
+	}
+
+	/**
 	 * Tests if a user can delete his own project
 	 */
 	@Test
