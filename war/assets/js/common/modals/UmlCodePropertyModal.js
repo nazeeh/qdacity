@@ -40,7 +40,7 @@ export default class UmlCodePropertyModal extends VexModal {
 				mmElementId: metaModelEntity.id
 			};
 
-			let identifiers = _this.umlEditor.getMetaModelMapper().evaluateIdentifiers(relation);
+			let identifiers = _this.umlEditor.getMetaModelMapper().evaluateActionsForTarget(relation);
 
 			return identifiers.indexOf(_this.mappingIdentifier) == -1;
 		}

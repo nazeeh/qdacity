@@ -127,7 +127,7 @@ export default class MetaModelMapper {
 		}
 	}
 
-	evaluateIdentifiers(target, targetType) {
+	evaluateActionsForTarget(target, targetType) {
 		if (targetType == null) {
 			targetType = this.getTargetType(target);
 		}

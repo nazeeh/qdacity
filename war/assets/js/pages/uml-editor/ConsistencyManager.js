@@ -192,8 +192,8 @@ export default class ConsistencyManager {
 		previousCode.mmElementIDs = previousMetaModelElementIds;
 
 		// Evaluate mapping action
-		const previousNodeActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(previousCode);
-		const currentNodeActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(code);
+		const previousNodeActions = this.umlEditor.getMetaModelMapper().evaluateActionsForTarget(previousCode);
+		const currentNodeActions = this.umlEditor.getMetaModelMapper().evaluateActionsForTarget(code);
 
 		// Mapping action changed?
 		if (!(previousNodeActions.length == currentNodeActions.length && previousNodeActions.every((element, i) => element == currentNodeActions[i]))) {
@@ -257,8 +257,8 @@ export default class ConsistencyManager {
 		oldRelation.codeId = previousDestinationCode.codeID;
 
 		// Evaluate actions
-		let oldActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(oldRelation);
-		let newActions = this.umlEditor.getMetaModelMapper().evaluateIdentifiers(relation);
+		let oldActions = this.umlEditor.getMetaModelMapper().evaluateActionsForTarget(oldRelation);
+		let newActions = this.umlEditor.getMetaModelMapper().evaluateActionsForTarget(relation);
 
 		// Execute action
 		if (!(oldActions.length == newActions.length && oldActions.every((element, i) => element == newActions[i]))) {
