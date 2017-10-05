@@ -128,8 +128,7 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course insertCourse(Course course, User user) throws UnauthorizedException {
-		// Check if user is authorized
-		//Authorization.checkAuthorizationCourse(course, user); // FIXME does not make sense for inserting new courses - only check if user is in DB already
+		
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -142,6 +141,7 @@ public class CourseEndpoint {
 			mgr.makePersistent(course);
 			// Authorize User
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			Authorization.isUserRegistered(dbUser);
 			dbUser.addCourseAuthorization(course.getId());
 			Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
 		} finally {
