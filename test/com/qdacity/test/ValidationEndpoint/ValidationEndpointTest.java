@@ -30,7 +30,7 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class ValidationEndpointTest {
-	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(5);
+	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
@@ -41,6 +41,7 @@ public class ValidationEndpointTest {
 
 	@After
 	public void tearDown() {
+		latch.reset();
 		helper.tearDown();
 	}
 	
@@ -49,7 +50,7 @@ public class ValidationEndpointTest {
 
 	@Test
 	public void testEvaluateRevision() throws UnauthorizedException {
-
+		latch.reset(5);
 		com.google.appengine.api.users.User student = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
