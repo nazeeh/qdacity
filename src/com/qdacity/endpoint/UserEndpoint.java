@@ -264,6 +264,7 @@ public class UserEndpoint {
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
+		user.setLastLogin(new Date());
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (user.getId() != null && containsUser(user)) {
