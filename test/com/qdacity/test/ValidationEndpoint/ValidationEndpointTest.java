@@ -60,10 +60,6 @@ public class ValidationEndpointTest {
 		ValidationEndpoint ve = new ValidationEndpoint();
 		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", "1", EvaluationMethod.F_MEASURE.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
 
-		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
-		QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
-		assertEquals(1, qsi.getTaskInfo().size());
-
 		try {
 			latch.await(20, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
@@ -71,8 +67,8 @@ public class ValidationEndpointTest {
 			fail("Deferred task did not finish in time");
 		}
 
-		ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
-		qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+		QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
 		assertEquals(0, qsi.getTaskInfo().size());
 
 		List<ValidationReport> reports = ve.listReports(1L, testUser);
