@@ -33,6 +33,7 @@ const StyledCodingEditor = styled.div `
 		"footer footer";
 `;
 
+
 const StyledTextEditorMenu = styled.div `
 	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
 	text-align: center;
@@ -61,10 +62,13 @@ const StyledSideBarDocuments = styled.div `
 
 const StyledSideBarCodesystem = styled.div `
 	grid-area: sidebarCodesystem;
+	min-width: 0;
+	word-break:break-all;
 `;
 
 const StyledEditor = styled.div `
 	grid-area: editor;
+	min-width: 0;
 `;
 
 const StyledFooter = styled.div `
@@ -299,15 +303,15 @@ export default class CodingEditor extends React.Component {
 
 	renderUMLEditor() {
 		if (this.state.mxGraphLoaded) {
-			return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}} 
-                codesystemId={this.state.project.getCodesystemID()} 
-                codesystemView={this.codesystemViewRef} 
+			return <UmlEditor ref={(c) => {if (c) this.umlEditorRef = c;}}
+                codesystemId={this.state.project.getCodesystemID()}
+                codesystemView={this.codesystemViewRef}
                 getCodeById={this.getCodeById}
                 getCodeByCodeId={this.getCodeByCodeID}
-                updateCode={this.updateSelectedCode} 
-                refreshCodeView={this.codeViewRef.updateCode} 
-                createCode={this.createCode} 
-                toggleCodingView={this.toggleCodingView} 
+                updateCode={this.updateSelectedCode}
+                refreshCodeView={this.codeViewRef.updateCode}
+                createCode={this.createCode}
+                toggleCodingView={this.toggleCodingView}
                 deleteRelationship={this.deleteRelationship} />;
 		}
 		return null;
