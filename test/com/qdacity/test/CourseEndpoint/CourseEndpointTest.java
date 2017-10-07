@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
 
 import org.junit.After;
@@ -23,6 +24,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
@@ -294,6 +296,53 @@ public class CourseEndpointTest {
 		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+	}
+	
+	/**
+	 * Tests if a registered user can be removed from a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testRemoveUser() throws UnauthorizedException {
+UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+		
+		try {
+			CourseEndpointTestHelper.removeUser(1L, testUser);
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course removal");
+			e.printStackTrace();
+		}
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
+	}
+	
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 	
 }

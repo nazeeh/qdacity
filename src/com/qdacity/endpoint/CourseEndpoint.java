@@ -173,10 +173,14 @@ public class CourseEndpoint {
 			userIdToRemove = user.getUserId();
 
 			Course course = (Course) Cache.getOrLoad(courseID, Course.class);
-			if (course != null) { // if false -> bug.
+			if (course != null) { 
 					course.removeUser(userIdToRemove);
 					Cache.cache(courseID, Course.class, course);
 					mgr.makePersistent(course);
+			}
+			else
+			{
+				throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
 			}
 
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);

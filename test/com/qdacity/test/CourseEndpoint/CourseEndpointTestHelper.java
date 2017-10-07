@@ -47,4 +47,8 @@ public class CourseEndpointTestHelper {
 		return ce.listCourse(null, null, loggedInUser);
 	}
 
+	static public void removeUser(Long courseID, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.removeUser(courseID, loggedInUser);
+	}
 }
