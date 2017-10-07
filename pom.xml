@@ -365,7 +365,11 @@
 					<!-- Sets the output directory for the code coverage report. -->
 					<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
 					
-					
+					<excludes>
+						<exclude>**/test/**</exclude>
+						<exclude>**/v4tov5migration/**</exclude>
+						<exclude>**/v6tov7Migration/**</exclude>
+                </excludes>
 				</configuration>
 			</execution>
 			<execution>
@@ -395,6 +399,8 @@
 		<configuration>
                 <excludes>
                     <exclude>com.qdacity.test.*</exclude>
+					<exclude>com.qdacity.maintenance.tasks.*</exclude>
+					<exclude>com.qdacity.maintenance.tasks.v6tov7Migration**</exclude>
                 </excludes>
             </configuration>
 	</plugin>
