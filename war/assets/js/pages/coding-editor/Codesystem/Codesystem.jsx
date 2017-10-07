@@ -296,7 +296,7 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	shouldHighlightNode(code) {
-	    // Not initialized yet
+		// Not initialized yet
 		if (this.props.umlEditor.getMetaModelMapper() == null) {
 			return false;
 		}

@@ -224,6 +224,18 @@ export default class UmlEditor extends React.Component {
 		if (code.relationshipCode != null) {
 			let relationId = code.relationshipCode.key.id;
 			edge = this.graphView.getEdgeByRelationId(relationId);
+
+			// Select code if the edge does not exist
+			if (edge == null) {
+				let sourceCode = this.getCodeById(code.relationshipCode.key.parent.id);
+				let destinationCode = this.getCodeById(code.relationshipCode.codeId);
+
+				if (sourceCode != null) {
+					node = sourceCode;
+				} else if (destinationCode != null) {
+					node = destinationCode;
+				}
+			}
 		}
 
 		// Clear selection
