@@ -228,9 +228,9 @@ export default class UmlEditor extends React.Component {
 				let destinationCode = this.getCodeById(code.relationshipCode.codeId);
 
 				if (sourceCode != null) {
-					node = sourceCode;
+					node = this.getNodeByCodeId(sourceCode.id);
 				} else if (destinationCode != null) {
-					node = destinationCode;
+					node = this.getNodeByCodeId(destinationCode.id);
 				}
 			} else {
 				node = edge;
@@ -238,8 +238,8 @@ export default class UmlEditor extends React.Component {
 		}
 
 		// Prevent loops
-		if (node != null && !this.graphView.isCellSelected(node)) {
-
+		if (!this.graphView.isCellSelected(node)) {
+			// Reset edge if connecting
 			if (this.graphView.isConnectingEdge()) {
 				this.graphView.resetConnectingEdge();
 			}
