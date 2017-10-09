@@ -1,6 +1,9 @@
 package com.qdacity.test.ProjectStatsEndpoint;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
 
 import javax.jdo.PersistenceManager;
 
@@ -17,6 +20,7 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.ProjectStatsEndpoint;
 import com.qdacity.project.metrics.ProjectStats;
+import com.qdacity.project.saturation.SaturationResult;
 import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
@@ -57,7 +61,29 @@ public class ProjectStatsEndpointTest {
 		
 		assertEquals(3L, projectStats.getCodeCount());
 		assertEquals(1L, projectStats.getCodingCount());
+		assertEquals(1L, projectStats.getDocumentCount());
+
+		SaturationResult satResult = projectStats.getSaturation();
+		// assertEquals(1L, satResult.getProjectId(), 0);
+		assertTrue(satResult.getCreationTime().before(new Date()));
+		assertEquals(0L, satResult.getDeleteCodeRelationShipSaturation(), 0);
+		assertEquals(0L, satResult.getDeleteCodeSaturation(), 0);
+		assertEquals(0L, satResult.getDocumentSaturation(), 0);
+		assertEquals(0L, satResult.getInsertCodeRelationShipSaturation(), 0);
+		assertEquals(0L, satResult.getInsertCodeSaturation(), 0);
+		assertEquals(0L, satResult.getRelocateCodeSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeAuthorSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeBookEntryDefinitionSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeBookEntryExampleSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeBookEntryShortDefinitionSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeBookEntryWhenNotToUseSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeBookEntryWhenToUseSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeColorSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeIdSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeMemoSaturation(), 0);
+		assertEquals(0L, satResult.getUpdateCodeNameSaturation(), 0);
 	}
+		
 
 
 	private static PersistenceManager getPersistenceManager() {
