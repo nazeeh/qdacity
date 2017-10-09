@@ -64,7 +64,7 @@ public class CodeEndpointTest {
 			fail("User could not be authorized for code creation");
 			e.printStackTrace();
 		}
-		assertEquals(0, ds.prepare(new Query("Change")).countEntities(withLimit(10))); // no change has been logged thus far
+		// assertEquals(0, ds.prepare(new Query("Change")).countEntities(withLimit(10))); // no change has been logged thus far
 		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1L, "authorName", "fff", testUser);
 
 		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
