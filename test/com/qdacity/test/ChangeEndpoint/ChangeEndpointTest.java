@@ -8,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,12 +82,7 @@ public class ChangeEndpointTest {
 		assertEquals(33L, change.getObjectID(), 0);
 		assertEquals(null, change.getOldValue());
 
-		JSONObject jsonValue = new JSONObject(change.getNewValue());
-		System.err.println(change.getNewValue());
 		assertTrue(change.getNewValue().startsWith("{\"codeId\":\"3\"},{\"color\":\"fff\"},{\"author\":\"authorName\"}"));
-//		assertEquals("3", jsonValue.get("codeId"));
-//		// assertEquals("authorName", jsonValue.get("author"));
-//		assertEquals("fff", jsonValue.get("color"));
 
 	}
 }
