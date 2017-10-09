@@ -42,6 +42,8 @@ public class CodeEndpointTestHelper {
 
 		Query query = mgr.newQuery(Code.class);
 
+		try {
+
 		// Actual Delete
 		query.setFilter("codeID == :code && codesystemID == :codesystem");
 		Map<String, Long> params = new HashMap<String, Long>();
@@ -54,6 +56,9 @@ public class CodeEndpointTestHelper {
 		Code code = codes.get(0);
 		code.addSubCodeID(subCodeId);
 		mgr.makePersistent(code);
+		} finally {
+			mgr.close();
+		}
 	}
 
 	static public void removeCode(Long id, com.google.appengine.api.users.User loggedInUser) {
