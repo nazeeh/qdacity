@@ -50,12 +50,13 @@ public class ProjectStatsEndpointTest {
 		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 15648758L, "authorName", "fff", testUser);
 		CodeEndpointTestHelper.addCode(44L, 4L, 1L, 15648758L, "authorName", "fff", testUser);
 
-		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text. </br> <coding id=\"337\" code_id=\"28\" author=\"Author Name\" codename=\"a code\" title=\"a code\" data-toggle=\"tooltip\" data-placement=\"bottom\">some text</coding>", "First Title", testUser);
 
 		ProjectStats projectStats = pse.getProjectStats(1L, "PROJECT", testUser);
 		
 		
 		assertEquals(3L, projectStats.getCodeCount());
+		assertEquals(1L, projectStats.getCodingCount());
 	}
 
 
