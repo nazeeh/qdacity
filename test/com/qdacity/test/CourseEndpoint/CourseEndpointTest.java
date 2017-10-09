@@ -28,6 +28,8 @@ import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.User;
+import com.qdacity.user.UserType;
 
 public class CourseEndpointTest {
 
@@ -254,6 +256,46 @@ public class CourseEndpointTest {
 
 		// The course added by User A should still exist
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+	}
+	
+	/**
+	 * Tests if Courses from other users can be deleted by an Admin
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testCourseRemoveAuthWithAdmin() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
+		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
+		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			User user = mgr.getObjectById(User.class, loggedInUserB.getUserId());
+			user.setType(UserType.ADMIN);
+			mgr.makePersistent(user);
+		} finally {
+			mgr.close();
+		}
+		
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUserA);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+
+		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+
+		CourseEndpointTestHelper.removeCourse(1L, loggedInUserB); // User B should not be able to delete course from user A
+
+		// The course added by User A should still exist
+		assertEquals(0, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 	}
 	
 	
