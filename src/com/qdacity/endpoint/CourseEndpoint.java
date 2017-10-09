@@ -3,7 +3,6 @@ package com.qdacity.endpoint;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -16,7 +15,6 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
@@ -82,7 +80,6 @@ public class CourseEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "course.removeCourse",
 		 
 		scopes = { Constants.EMAIL_SCOPE },
@@ -206,12 +203,22 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course getCourse(@Named("id") Long id, User user) throws UnauthorizedException {
+		
 		PersistenceManager mgr = getPersistenceManager();
 		Course course = null;
 		try {
+			course = (Course) mgr.getObjectById(Course.class, id);
+		}
+		catch (Exception e) {
+			throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
+		};
+		
+		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
-
-			Authorization.isUserNotNull(user);
+			
+			// Check if user is authorized
+			Authorization.checkAuthorizationCourse(course, user);
+			
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
 			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
@@ -220,8 +227,6 @@ public class CourseEndpoint {
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
 
-			String keyString;
-			MemcacheService syncCache;
 			course = (Course) Cache.getOrLoad(id, Course.class);
 
 		} finally {
