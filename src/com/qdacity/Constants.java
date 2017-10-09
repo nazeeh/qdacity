@@ -1,7 +1,7 @@
 package com.qdacity;
 
 public class Constants {
-	public static final String WEB_CLIENT_ID = "309419937441-6d41vclqvedjptnel95i2hs4hu75u4v7.apps.googleusercontent.com";
+	public static final String WEB_CLIENT_ID = "401624009491-sosmr8p6fqa31gsadi9kd6kbq4c27nvl.apps.googleusercontent.com";
  	public static final String EMAIL_SCOPE = "https://www.googleapis.com/auth/userinfo.email";
-	public static final String VERSION = "v10";
+	public static final String VERSION = "v1";
 }
