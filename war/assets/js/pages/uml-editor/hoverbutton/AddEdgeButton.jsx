@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import ImageHoverButton from './ImageHoverButton.jsx';
+import HoverButton from './HoverButton.jsx';
 
-export default class AddEdgeButton extends ImageHoverButton {
+export default class AddEdgeButton extends HoverButton {
 
 	constructor(props) {
 		super(props);
@@ -15,7 +15,7 @@ export default class AddEdgeButton extends ImageHoverButton {
 		this.props.hoverButtons.getAddEdgeAssociationButton().show();
 	}
 
-	getImageClassName() {
+	getButtonClassName() {
 		return 'umlOverlayButton umlOverlayButtonAddEdge';
 	}
 
