@@ -166,6 +166,52 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a user can get a course if he's an Admin
+	 */
+	@Test
+	public void testGetCourseWithAdmin() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		Course retrievedCourse = new Course();
+		Long retrievedId = 0L;
+		try {
+			CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+		
+		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
+		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			User user = mgr.getObjectById(User.class, loggedInUserB.getUserId());
+			user.setType(UserType.ADMIN);
+			mgr.makePersistent(user);
+		} finally {
+			mgr.close();
+		}
+		
+		try {
+			retrievedCourse = CourseEndpointTestHelper.getCourse(1L, loggedInUserB);
+			retrievedId = retrievedCourse.getId();
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course retrieval");
+			e.printStackTrace();
+		}
+		
+
+		Query q = new Query("Course");
+		Entity queryResult = ds.prepare(q).asSingleEntity();
+		
+		assertEquals(Long.valueOf(queryResult.getKey().getId()), retrievedId);
+	}
+	
+	/**
 	 * Tests if a registered can list courses
 	 */
 	@Test
