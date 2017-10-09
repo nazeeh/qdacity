@@ -17,7 +17,9 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.ProjectStatsEndpoint;
 import com.qdacity.project.metrics.ProjectStats;
+import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
+import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class ProjectStatsEndpointTest {
@@ -45,10 +47,15 @@ public class ProjectStatsEndpointTest {
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "I'm testing this to evaluate a revision", testUser);
 		ProjectStatsEndpoint pse = new ProjectStatsEndpoint();
 		
+		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(44L, 4L, 1L, 15648758L, "authorName", "fff", testUser);
+
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+
 		ProjectStats projectStats = pse.getProjectStats(1L, "PROJECT", testUser);
 		
 		
-		assertEquals(1L, projectStats.getCodeCount());
+		assertEquals(3L, projectStats.getCodeCount());
 	}
 
 
