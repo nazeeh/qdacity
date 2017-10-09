@@ -292,6 +292,16 @@ public class CourseEndpoint {
 		termCourse.setTerm(term);
 		
 		PersistenceManager mgr = getPersistenceManager();
+		
+		try {
+			// Authorize User
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			Authorization.isUserRegistered(dbUser);
+		}
+		catch (javax.jdo.JDOObjectNotFoundException ex) {
+			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+		}
+		
 		try {
 			if (termCourse.getId() != null) {
 				if (containsTermCourse(termCourse)) {
