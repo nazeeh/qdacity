@@ -69,7 +69,8 @@ public class Authorization {
 				throw new UnauthorizedException("Course " + courseID + " was not found");
 			}
 			Course course = courses.get(0);
-			if (course.getOwners().contains(googleUser.getUserId())) return true;
+			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser);
+			if (course.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
 		} finally {
 			mgr.close();
 		}
