@@ -42,7 +42,7 @@ public class ChangeEndpointTest {
 	 */
 	@Test
 	public void testGetAllChanges() {
-		latch.reset(3);
+		latch.reset(4);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
