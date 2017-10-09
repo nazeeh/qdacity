@@ -90,10 +90,10 @@ public class CodeEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		testCodeInsert();
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
-
 		CodeEndpointTestHelper.removeCode(1L, testUser);
 
-		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+
+		assertEquals(0, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
 
 	}
 

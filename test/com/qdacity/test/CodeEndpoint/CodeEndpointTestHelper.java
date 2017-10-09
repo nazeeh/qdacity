@@ -2,13 +2,23 @@ package com.qdacity.test.CodeEndpoint;
 
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.project.codesystem.Code;
 
 public class CodeEndpointTestHelper {
 	static public void addCode(Long id, Long codeID, Long parentID, Long codesystemID, String authorName, String color, com.google.appengine.api.users.User loggedInUser) {
 		try {
+
+			updateParentsSubCodeIds(parentID, codesystemID, codeID);
 			Code code = new Code();
 			code.setId(id);
 			code.setAuthor(authorName);
@@ -18,10 +28,32 @@ public class CodeEndpointTestHelper {
 			code.setColor(color);
 			CodeEndpoint ce = new CodeEndpoint();
 			ce.insertCode(null, null, code, loggedInUser);
+
+
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for code creation");
 		}
+	}
+
+
+	static private void updateParentsSubCodeIds(Long parentID, Long codeSystemId, Long subCodeId) {
+		PersistenceManager mgr = getPersistenceManager();
+
+		Query query = mgr.newQuery(Code.class);
+
+		// Actual Delete
+		query.setFilter("codeID == :code && codesystemID == :codesystem");
+		Map<String, Long> params = new HashMap<String, Long>();
+		params.put("code", parentID);
+		params.put("codesystem", codeSystemId);
+
+		@SuppressWarnings("unchecked")
+		List<Code> codes = (List<Code>) query.executeWithMap(params);
+
+		Code code = codes.get(0);
+		code.addSubCodeID(subCodeId);
+		mgr.makePersistent(code);
 	}
 
 	static public void removeCode(Long id, com.google.appengine.api.users.User loggedInUser) {
@@ -64,5 +96,9 @@ public class CodeEndpointTestHelper {
 			e.printStackTrace();
 			fail("User could not be authorized for code creation");
 		}
+	}
+
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 }
