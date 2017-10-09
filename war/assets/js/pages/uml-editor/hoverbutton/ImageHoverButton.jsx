@@ -5,9 +5,11 @@ import HoverButton from './HoverButton.jsx';
 
 const Image = styled.i `
     position: absolute;
-    width: ${props => (props.width - 2) + "px"} !important;
-    height: ${props => (props.height - 2) + "px"} !important;
-    line-height: ${props => (props.height - 2) + "px"} !important;
+    left: -1px;
+    top: -1px;
+    width: inherit !important;
+    height: inherit !important;
+    line-height: inherit !important;
     
     font-size: ${props => props.height * 0.4 + "px"} !important;
     text-align: center;
