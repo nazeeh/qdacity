@@ -77,7 +77,6 @@ public class CodeEndpointTest {
 			e.printStackTrace();
 			fail("Deferred task for logging the change of inserting a code could not finish");
 		}
-		assertEquals(1, ds.prepare(new Query("Change")).countEntities(withLimit(10))); // change is logged
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
 
 	}
