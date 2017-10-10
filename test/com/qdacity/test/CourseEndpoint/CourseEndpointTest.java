@@ -429,6 +429,28 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
 	}
 	
+	/**
+	 * Tests if a registered user can be removed from a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testRemoveUserInvalidCourse() throws UnauthorizedException {
+UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expectMessage(is("Course does not exist"));
+		
+		try {
+			CourseEndpointTestHelper.removeUser(1L, testUser);
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course removal");
+			e.printStackTrace();
+		}
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+	}
+	
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
