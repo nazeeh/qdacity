@@ -8,6 +8,7 @@ import java.util.Collection;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.data.TextDocument;
 
@@ -23,6 +24,17 @@ public class TextDocumentEndpointTestHelper {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		try {
 			tde.insertTextDocument(doc, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for text document creation");
+		}
+	}
+
+	static public void removeTextDocument(Long docId, User loggedInUser) {
+
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		try {
+			tde.removeTextDocument(docId, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for text document creation");

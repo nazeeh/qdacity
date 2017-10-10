@@ -58,6 +58,33 @@ public class TextDocumentEndpointTest {
 	}
 	
 	/**
+	 * Tests if a registered user can remove a text document for a project
+	 */
+	@Test
+	public void testTextDocumentRemove() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+
+		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		assertEquals(1, documents.size());
+		TextDocument doc = (TextDocument) documents.toArray()[0];
+
+		TextDocumentEndpointTestHelper.removeTextDocument(doc.getId(), testUser);
+
+		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		assertEquals(0, documents.size());
+
+	}
+
+	/**
 	 * Tests if a registered user can insert a text document for a project
 	 */
 	@Test
