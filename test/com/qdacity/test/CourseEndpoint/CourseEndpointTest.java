@@ -385,6 +385,27 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a non registered user can create a course
+	 */
+	@Test
+	public void testTermCourseInsertNonReg() {
+		
+		
+		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expectMessage(is("User is not registered"));
+		
+		try {
+			CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for course creation");
+		}
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+	}
+	
+	/**
 	 * Tests if a registered user can create a term more than once
 	 * @throws UnauthorizedException 
 	 */
