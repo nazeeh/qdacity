@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -160,6 +161,60 @@ public class TextDocumentEndpointTest {
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		tde.insertTextDocument(doc, testUser);
+	}
+
+	/**
+	 * Tests if a EntityNotFoundException thrown correctly on update
+	 * 
+	 * *
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testDocumentUpdateNonExisting() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocument doc = new TextDocument();
+		doc.setId(55555L);
+		doc.setProjectID(5L);
+		doc.setText(new Text("test"));
+		doc.setTitle("Some title");
+		
+		expectedException.expect(EntityNotFoundException.class);
+		expectedException.expectMessage(is("Object does not exist"));
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		tde.updateTextDocument(doc, testUser);
+	}
+
+	/**
+	 * Tests if a EntityNotFoundException thrown correctly on applyCode
+	 * 
+	 * *
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testDocumentApplyCodeNonExisting() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocument doc = new TextDocument();
+		doc.setId(55555L);
+		doc.setProjectID(5L);
+		doc.setText(new Text("test"));
+		doc.setTitle("Some title");
+
+		TextDocumentCodeContainer documentCode = new TextDocumentCodeContainer();
+		documentCode.textDocument = doc;
+		documentCode.code = new Code();
+
+		expectedException.expect(EntityNotFoundException.class);
+		expectedException.expectMessage(is("Object does not exist"));
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		tde.applyCode(documentCode, testUser);
 	}
 
 	private static PersistenceManager getPersistenceManager() {
