@@ -40,7 +40,7 @@ public class AdminEndpointTest {
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
-	public void testUserInsert() throws UnauthorizedException {
+	public void testGetAdminStats() throws UnauthorizedException {
 		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		UserEndpointTestHelper.addUser("2@asd.de", "User 2", "lastName", testUser);
