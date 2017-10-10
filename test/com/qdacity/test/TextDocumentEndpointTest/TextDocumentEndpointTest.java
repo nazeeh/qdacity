@@ -1,19 +1,26 @@
 package com.qdacity.test.TextDocumentEndpointTest;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.Collection;
 
+import javax.jdo.PersistenceManager;
+import javax.persistence.EntityExistsException;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.PMF;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.project.codesystem.Code;
@@ -129,5 +136,33 @@ public class TextDocumentEndpointTest {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+
+	/**
+	 * Tests if a EntityExistsException thrown correctly on insert
+	 * 
+	 * *
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testDocumentInsertDuplicate() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocument doc = TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+
+		expectedException.expect(EntityExistsException.class);
+		expectedException.expectMessage(is("Object already exists"));
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		tde.insertTextDocument(doc, testUser);
+	}
+
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 }
