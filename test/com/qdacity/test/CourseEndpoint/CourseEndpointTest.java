@@ -166,6 +166,28 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a user can get a course which doesn't exist
+	 */
+	@Test
+	public void testGetCourseInvalid() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expectMessage(is("Course does not exist"));
+		
+		try {
+			CourseEndpointTestHelper.getCourse(1L, testUser);
+		} catch (UnauthorizedException e) {
+			fail("User could not be authorized for Course retrieval");
+			e.printStackTrace();
+		}
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
+		
+	}
+	
+	/**
 	 * Tests if a user can get a course if he's an Admin
 	 */
 	@Test
