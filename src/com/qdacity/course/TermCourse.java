@@ -37,6 +37,9 @@ public class TermCourse implements Serializable {
 	@Persistent
 	String term;
 	
+	@Persistent
+	List<String> owners;
+	
 	public Long getId() {
 		return id;
 	}
@@ -78,6 +81,19 @@ public class TermCourse implements Serializable {
 	}
 	public void setCourseID(Long id) {
 		this.courseID = id;
+	}
+
+	public List<String> getOwners() {
+		return owners;
+	}
+
+	public void setOwners(List<String> users) {
+		this.owners = users;
+	}
+
+	public void addOwner(String userID) {
+		if (owners == null) owners = new ArrayList<String>();
+		if (!owners.contains(userID)) owners.add(userID);
 	}
 	
 }

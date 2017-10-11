@@ -1,7 +1,9 @@
 package com.qdacity.endpoint;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.annotation.Nullable;
@@ -309,12 +311,58 @@ public class CourseEndpoint {
 				}
 			}
 			
+			termCourse.addOwner(user.getUserId());
 			mgr.makePersistent(termCourse);
 			
 		} finally {
 			mgr.close();
 		}
 		return termCourse;
+	}
+	
+	/**
+	 * This method gets the entity having primary key id. It uses HTTP GET method.
+	 *
+	 * @param id the primary key of the java bean.
+	 * @return The entity with primary key id.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "course.getTermCourse",
+		path = "termCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<TermCourse> getTermCourses(@Named("courseID") Long courseID, User user) throws UnauthorizedException {
+		
+		PersistenceManager mgr = getPersistenceManager();
+		List<TermCourse> termCourses;
+		
+		Course course = null;
+		try {
+			course = (Course) mgr.getObjectById(Course.class, courseID);
+		}
+		catch (Exception e) {
+			throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
+		};
+		
+		// Check if user is Authorized (authorization for the course means authorization for all terms under this course)
+		Authorization.checkAuthorizationCourse(course, user);
+		
+		try {
+			
+			Query query = mgr.newQuery(TermCourse.class, "courseID == id ");
+	        query.declareParameters("Long id");
+	        termCourses = (List<TermCourse>) query.execute(courseID);
+			if (termCourses.size() == 0) {
+				throw new UnauthorizedException("Term Courses related to course with id: " + courseID + " were not found");
+			}
+
+		} finally {
+			mgr.close();
+		}
+		
+		return termCourses;
 	}
 	
 	private boolean containsCourse(Course course) {

@@ -15,6 +15,7 @@ import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
 import com.qdacity.project.Project;
 import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
@@ -78,6 +79,32 @@ public class Authorization {
 		return false;
 	}
 	
+	public static Boolean isUserAuthorizedTermCourse(User googleUser, Long termCourseID) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			// Check if user is Authorized
+			Query query = mgr.newQuery(TermCourse.class);
+
+			query.setFilter("id == :theID");
+			Map<String, Long> params = new HashMap<String, Long>();
+			params.put("theID", termCourseID);
+
+			@SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) query.executeWithMap(params);
+
+			if (termCourses.size() == 0) {
+				throw new UnauthorizedException("Term Course " + termCourseID + " was not found");
+			}
+			TermCourse termCourse = termCourses.get(0);
+			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getUserId());
+			if (termCourse.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+		} finally {
+			mgr.close();
+		}
+		
+		return false;
+	}
+	
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
@@ -131,6 +158,12 @@ public class Authorization {
 	public static void checkAuthorizationCourse(Course course, User user) throws UnauthorizedException {
 		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorizedCourse(user, course.getId());
+		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
+	}
+	
+	public static void checkAuthorizationTermCourse(TermCourse termCourse, User user) throws UnauthorizedException {
+		isUserNotNull(user);
+		Boolean authorized = Authorization.isUserAuthorizedTermCourse(user, termCourse.getId());
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 	}
 
