@@ -1,6 +1,7 @@
 package com.qdacity.test.ChangeEndpoint;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
@@ -108,7 +109,7 @@ public class ChangeEndpointTest {
 			assertEquals(2, stats.get(0).getCodesCreated());
 			assertEquals(2, stats.get(0).getCodesDeleted());
 			assertEquals(0, stats.get(0).getCodesModified());
-
+			assertTrue(!stats.get(0).getLabel().isEmpty());
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User was not authorized to list changestats for project 1");

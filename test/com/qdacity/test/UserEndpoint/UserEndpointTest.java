@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -21,6 +22,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.qdacity.Cache;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.User;
@@ -65,6 +67,22 @@ public class UserEndpointTest {
 			fail("User could not be authorized");
 		}
 		assertEquals("firstName", user.getGivenName());
+
+		PersistenceManager mgr = getPersistenceManager();
+		Date time = new Date();
+		time.setTime(0);
+		user.setLastLogin(null);
+		mgr.makePersistent(user);
+		Cache.cache(user.getId(), User.class, user);
+		mgr.close();
+		try {
+			user = ue.getUser("1", loggedInUserA);
+
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+
 	}
 	
 	@Test
