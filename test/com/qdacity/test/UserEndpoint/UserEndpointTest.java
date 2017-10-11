@@ -2,6 +2,7 @@ package com.qdacity.test.UserEndpoint;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -71,13 +72,12 @@ public class UserEndpointTest {
 		PersistenceManager mgr = getPersistenceManager();
 		Date time = new Date();
 		time.setTime(0);
-		user.setLastLogin(null);
 		mgr.makePersistent(user);
 		Cache.cache(user.getId(), User.class, user);
 		mgr.close();
 		try {
 			user = ue.getUser("1", loggedInUserA);
-
+			assertTrue(((new Date()).getTime() - user.getLastLogin().getTime()) < 1000);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
