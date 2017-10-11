@@ -328,7 +328,7 @@ public class CourseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "course.getTermCourse",
+	@ApiMethod(name = "course.getTermsCourse",
 		path = "termCourse",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
