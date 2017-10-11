@@ -1,9 +1,7 @@
 package com.qdacity.test.ChangeEndpoint;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,12 +12,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.endpoint.ChangeEndpoint;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
+import com.qdacity.logs.ChangeStats;
 import com.qdacity.logs.ChangeType;
 import com.qdacity.project.ProjectType;
 import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
@@ -79,6 +79,41 @@ public class ChangeEndpointTest {
 		assertEquals(33L, change.getObjectID(), 0);
 		assertEquals(null, change.getOldValue());
 		// assertTrue(change.getNewValue().startsWith("{\"codeId\":\"3\"},{\"color\":\"fff\"},{\"author\":\"authorName\"}")); //FIXME check for contains instead. Order may vary.
+
+	}
+
+	/**
+	 * Tests if changes are logged when adding and removing codes
+	 */
+	@Test
+	public void testListChangeStats() {
+		latch.reset(4);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.removeCode(22L, testUser);
+
+		try {
+			latch.await(10, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task did not finish in time");
+		}
+
+		ChangeEndpoint ce = new ChangeEndpoint();
+		try {
+			List<ChangeStats> stats = ce.listChangeStats(null, "project", 1L, "PROJECT", testUser);
+			assertEquals(4, stats.get(0).getCodesCreated()); // FIXME: incorrect - currently codes created reflects all changes to the project
+			assertEquals(0, stats.get(0).getCodesDeleted());// FIXME: should be 1 - Not yet implemented
+			assertEquals(0, stats.get(0).getCodesModified()); // FIXME: 0 is correct, but not yet implemented
+
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User was not authorized to list changestats for project 1");
+		}
+
 
 	}
 }
