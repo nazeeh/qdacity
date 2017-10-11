@@ -35,7 +35,9 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
+import com.qdacity.logs.ChangeType;
 
 @Api(
 	name = "qdacity",
@@ -151,10 +153,12 @@ public class ChangeEndpoint {
 		Calendar cal = Calendar.getInstance();
 
 		Map<String, Integer> codesCreated = getCodeCreatedCount(dbResult, cal);
+		Map<String, Integer> codesDeleted = getCodeDeletedCount(dbResult, cal);
 
 		for (String key : codesCreated.keySet()) {
 			ChangeStats stat = new ChangeStats();
 			stat.setCodesCreated(codesCreated.get(key));
+			stat.setCodesDeleted(codesDeleted.get(key));
 			stat.setLabel(key);
 			stats.add(stat);
 		}
@@ -166,6 +170,32 @@ public class ChangeEndpoint {
 		Map<String, Integer> freq = new HashMap<String, Integer>();
 
 		for (Entity result : changes) {
+			if (!result.getProperty("changeType").equals(ChangeType.CREATED.toString())) continue;
+			if (!result.getProperty("objectType").equals(ChangeObject.CODE.toString())) continue;
+
+			Date date = (Date) result.getProperty("datetime");
+			cal.setTime(date);
+			int changeWeekNo = cal.get(Calendar.WEEK_OF_YEAR);
+			int changeYearNo = cal.get(Calendar.YEAR);
+			String weekString = changeYearNo + " W" + changeWeekNo;
+			Integer count = freq.get(weekString);
+			if (count == null) {
+				freq.put(weekString, 1);
+			} else {
+				freq.put(weekString, count + 1);
+			}
+		}
+
+		return freq;
+	}
+
+	private Map<String, Integer> getCodeDeletedCount(Iterable<Entity> changes, Calendar cal) {
+		Map<String, Integer> freq = new HashMap<String, Integer>();
+
+		for (Entity result : changes) {
+			if (!result.getProperty("changeType").equals(ChangeType.DELETED.toString())) continue;
+			if (!result.getProperty("objectType").equals(ChangeObject.CODE.toString())) continue;
+
 			Date date = (Date) result.getProperty("datetime");
 			cal.setTime(date);
 			int changeWeekNo = cal.get(Calendar.WEEK_OF_YEAR);
