@@ -35,7 +35,9 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
+import com.qdacity.logs.ChangeType;
 
 @Api(
 	name = "qdacity",
@@ -147,11 +149,32 @@ public class ChangeEndpoint {
 
 		PreparedQuery pq = datastore.prepare(q);
 
+		Iterable<Entity> dbResult = pq.asIterable();
 		Calendar cal = Calendar.getInstance();
 
+		Map<String, Integer> codesCreated = getChangeCount(dbResult, cal, ChangeType.CREATED, ChangeObject.CODE);
+		Map<String, Integer> codesDeleted = getChangeCount(dbResult, cal, ChangeType.DELETED, ChangeObject.CODE);
+		Map<String, Integer> codesModified = getChangeCount(dbResult, cal, ChangeType.MODIFIED, ChangeObject.CODE);
+
+		for (String key : codesCreated.keySet()) {
+			ChangeStats stat = new ChangeStats();
+			if (codesCreated.get(key) != null) stat.setCodesCreated(codesCreated.get(key));
+			if (codesModified.get(key) != null) stat.setCodesModified(codesModified.get(key));
+			if (codesDeleted.get(key) != null) stat.setCodesDeleted(codesDeleted.get(key));
+			stat.setLabel(key);
+			stats.add(stat);
+		}
+
+		return stats;
+	}
+
+	private Map<String, Integer> getChangeCount(Iterable<Entity> changes, Calendar cal, ChangeType changeType, ChangeObject changeObject) {
 		Map<String, Integer> freq = new HashMap<String, Integer>();
 
-		for (Entity result : pq.asIterable()) {
+		for (Entity result : changes) {
+			if (!result.getProperty("changeType").equals(changeType.toString())) continue;
+			if (!result.getProperty("objectType").equals(changeObject.toString())) continue;
+
 			Date date = (Date) result.getProperty("datetime");
 			cal.setTime(date);
 			int changeWeekNo = cal.get(Calendar.WEEK_OF_YEAR);
@@ -165,14 +188,7 @@ public class ChangeEndpoint {
 			}
 		}
 
-		for (String key : freq.keySet()) {
-			ChangeStats stat = new ChangeStats();
-			stat.setCodesCreated(freq.get(key));
-			stat.setLabel(key);
-			stats.add(stat);
-		}
-
-		return stats;
+		return freq;
 	}
 
 	/**

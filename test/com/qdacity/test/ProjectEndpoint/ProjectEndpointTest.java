@@ -7,6 +7,9 @@ import static org.junit.Assert.fail;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.jdo.PersistenceManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,23 +22,30 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.PMF;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.UserNotificationEndpoint;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.User;
 import com.qdacity.user.UserNotification;
 
 public class ProjectEndpointTest {
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true));
+	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
+
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	@Before
 	public void setUp() {
@@ -44,6 +54,7 @@ public class ProjectEndpointTest {
 
 	@After
 	public void tearDown() {
+		latch.reset(1);
 		helper.tearDown();
 	}
 
@@ -52,6 +63,7 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectInsert() {
+		latch.reset(3);
 		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 		try {
@@ -69,6 +81,33 @@ public class ProjectEndpointTest {
 			e.printStackTrace();
 			fail("Failed to authorize the user for listing his projects");
 		}
+		
+		PersistenceManager mgr = getPersistenceManager();
+		User user = UserEndpointTestHelper.getUser(loggedInUser);
+		user.setLastProjectId(null);
+		user.setLastProjectType(null);
+		mgr.makePersistent(user);
+		
+
+		try {
+			pe.getProject(1L, "PROJECT", loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User was not authorized to retrieve project");
+		}
+
+		try {
+			latch.await(10, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task did not finish in time");
+		}
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+		syncCache.clearAll(); // FIXME LastProjectUsed.java should update the cache with new user object
+
+		user = UserEndpointTestHelper.getUser(loggedInUser);
+		assertEquals(1L, user.getLastProjectId(), 0);
+		assertEquals(ProjectType.PROJECT, user.getLastProjectType());
 	}
 
 	@Rule
@@ -433,5 +472,9 @@ public class ProjectEndpointTest {
 
 		assertEquals(0, valPrj.size());
 
+	}
+
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 }
