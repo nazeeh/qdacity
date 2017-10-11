@@ -154,11 +154,13 @@ public class ChangeEndpoint {
 
 		Map<String, Integer> codesCreated = getChangeCount(dbResult, cal, ChangeType.CREATED, ChangeObject.CODE);
 		Map<String, Integer> codesDeleted = getChangeCount(dbResult, cal, ChangeType.DELETED, ChangeObject.CODE);
+		Map<String, Integer> codesModified = getChangeCount(dbResult, cal, ChangeType.MODIFIED, ChangeObject.CODE);
 
 		for (String key : codesCreated.keySet()) {
 			ChangeStats stat = new ChangeStats();
-			stat.setCodesCreated(codesCreated.get(key));
-			stat.setCodesDeleted(codesDeleted.get(key));
+			if (codesCreated.get(key) != null) stat.setCodesCreated(codesCreated.get(key));
+			if (codesModified.get(key) != null) stat.setCodesModified(codesModified.get(key));
+			if (codesDeleted.get(key) != null) stat.setCodesDeleted(codesDeleted.get(key));
 			stat.setLabel(key);
 			stats.add(stat);
 		}

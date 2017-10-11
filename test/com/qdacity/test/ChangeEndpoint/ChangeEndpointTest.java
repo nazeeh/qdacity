@@ -106,8 +106,8 @@ public class ChangeEndpointTest {
 		try {
 			List<ChangeStats> stats = ce.listChangeStats(null, "project", 1L, "PROJECT", testUser);
 			assertEquals(2, stats.get(0).getCodesCreated());
-			assertEquals(2, stats.get(0).getCodesDeleted());// FIXME: should be 1 - Not yet implemented
-			assertEquals(0, stats.get(0).getCodesModified()); // FIXME: 0 is correct, but not yet implemented
+			assertEquals(2, stats.get(0).getCodesDeleted());
+			assertEquals(0, stats.get(0).getCodesModified());
 
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
