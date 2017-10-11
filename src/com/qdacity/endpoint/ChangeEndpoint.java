@@ -152,8 +152,8 @@ public class ChangeEndpoint {
 		Iterable<Entity> dbResult = pq.asIterable();
 		Calendar cal = Calendar.getInstance();
 
-		Map<String, Integer> codesCreated = getCodeCreatedCount(dbResult, cal);
-		Map<String, Integer> codesDeleted = getCodeDeletedCount(dbResult, cal);
+		Map<String, Integer> codesCreated = getChangeCount(dbResult, cal, ChangeType.CREATED, ChangeObject.CODE);
+		Map<String, Integer> codesDeleted = getChangeCount(dbResult, cal, ChangeType.DELETED, ChangeObject.CODE);
 
 		for (String key : codesCreated.keySet()) {
 			ChangeStats stat = new ChangeStats();
@@ -166,35 +166,12 @@ public class ChangeEndpoint {
 		return stats;
 	}
 
-	private Map<String, Integer> getCodeCreatedCount(Iterable<Entity> changes, Calendar cal) {
+	private Map<String, Integer> getChangeCount(Iterable<Entity> changes, Calendar cal, ChangeType changeType, ChangeObject changeObject) {
 		Map<String, Integer> freq = new HashMap<String, Integer>();
 
 		for (Entity result : changes) {
-			if (!result.getProperty("changeType").equals(ChangeType.CREATED.toString())) continue;
-			if (!result.getProperty("objectType").equals(ChangeObject.CODE.toString())) continue;
-
-			Date date = (Date) result.getProperty("datetime");
-			cal.setTime(date);
-			int changeWeekNo = cal.get(Calendar.WEEK_OF_YEAR);
-			int changeYearNo = cal.get(Calendar.YEAR);
-			String weekString = changeYearNo + " W" + changeWeekNo;
-			Integer count = freq.get(weekString);
-			if (count == null) {
-				freq.put(weekString, 1);
-			} else {
-				freq.put(weekString, count + 1);
-			}
-		}
-
-		return freq;
-	}
-
-	private Map<String, Integer> getCodeDeletedCount(Iterable<Entity> changes, Calendar cal) {
-		Map<String, Integer> freq = new HashMap<String, Integer>();
-
-		for (Entity result : changes) {
-			if (!result.getProperty("changeType").equals(ChangeType.DELETED.toString())) continue;
-			if (!result.getProperty("objectType").equals(ChangeObject.CODE.toString())) continue;
+			if (!result.getProperty("changeType").equals(changeType.toString())) continue;
+			if (!result.getProperty("objectType").equals(changeObject.toString())) continue;
 
 			Date date = (Date) result.getProperty("datetime");
 			cal.setTime(date);
