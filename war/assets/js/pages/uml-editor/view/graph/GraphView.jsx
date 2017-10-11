@@ -85,6 +85,9 @@ export default class GraphView extends React.Component {
 		// Disables foreign-objects. This options is required for using custom html inside cells.
 		mxClient.NO_FO = true;
 
+		// Disabled anti aliasing
+		mxCellRenderer.prototype.antiAlias = false;
+
 
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
@@ -241,10 +244,8 @@ export default class GraphView extends React.Component {
 			if (cells != null && cells.length == 1) {
 				let cell = cells[0];
 
-				if (_this.isCellUmlClass(cell)) {
-					_this.hoverButtons.show(cell);
-					_this.updateHoverButtons(cell);
-				}
+				_this.hoverButtons.show(cell);
+				_this.updateHoverButtons(cell);
 
 				// Update
 				_this.recalculateNodeSize(cell);
