@@ -147,11 +147,25 @@ public class ChangeEndpoint {
 
 		PreparedQuery pq = datastore.prepare(q);
 
+		Iterable<Entity> dbResult = pq.asIterable();
 		Calendar cal = Calendar.getInstance();
 
+		Map<String, Integer> codesCreated = getCodeCreatedCount(dbResult, cal);
+
+		for (String key : codesCreated.keySet()) {
+			ChangeStats stat = new ChangeStats();
+			stat.setCodesCreated(codesCreated.get(key));
+			stat.setLabel(key);
+			stats.add(stat);
+		}
+
+		return stats;
+	}
+
+	private Map<String, Integer> getCodeCreatedCount(Iterable<Entity> changes, Calendar cal) {
 		Map<String, Integer> freq = new HashMap<String, Integer>();
 
-		for (Entity result : pq.asIterable()) {
+		for (Entity result : changes) {
 			Date date = (Date) result.getProperty("datetime");
 			cal.setTime(date);
 			int changeWeekNo = cal.get(Calendar.WEEK_OF_YEAR);
@@ -165,14 +179,7 @@ public class ChangeEndpoint {
 			}
 		}
 
-		for (String key : freq.keySet()) {
-			ChangeStats stat = new ChangeStats();
-			stat.setCodesCreated(freq.get(key));
-			stat.setLabel(key);
-			stats.add(stat);
-		}
-
-		return stats;
+		return freq;
 	}
 
 	/**
