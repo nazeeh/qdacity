@@ -168,21 +168,26 @@ export default class CourseList extends React.Component {
 		modal.addTextInput('term', "Course Term", 'Term','');
 		modal.addTextField('desc', "Course Description", 'Description');
 		modal.showModal().then(function (data) {
-			_this.createNewCourse(data.name, data.desc);
+			_this.createNewCourse(data.name, data.desc, data.term);
 		});
 	}
 
-	createNewCourse(name, description) {
+	createNewCourse(name, description, term) {
 		var _this = this;
 		var course = {};
 
 		course.name = name;
 		course.description = description;
 		CourseEndPoint.insertCourse(course).then(function (insertedCourse) {
-
-			insertedCourse.type = "COURSE";
-			_this.props.addCourse(insertedCourse);
-
+			CourseEndPoint.insertTermCourse(insertedCourse.id, term).then (function(insertedTermCourse) {
+				var termList = [];
+				termList.push ({
+				text: insertedTermCourse.term,
+			});
+			insertedCourse.terms = termList;
+			});
+			console.log(insertedCourse);
+		_this.props.addCourse(insertedCourse);
 		});
 	}
 
