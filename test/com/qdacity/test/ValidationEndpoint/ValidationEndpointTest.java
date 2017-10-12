@@ -49,7 +49,7 @@ public class ValidationEndpointTest {
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
-	public void testEvaluateRevision() throws UnauthorizedException {
+	public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
 		latch.reset(5);
 		com.google.appengine.api.users.User student = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
@@ -59,6 +59,33 @@ public class ValidationEndpointTest {
 		
 		ValidationEndpoint ve = new ValidationEndpoint();
 		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", "1", EvaluationMethod.F_MEASURE.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
+
+		try {
+			latch.await(20, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task did not finish in time");
+		}
+
+		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+		QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+		assertEquals(0, qsi.getTaskInfo().size());
+
+		List<ValidationReport> reports = ve.listReports(1L, testUser);
+		assertEquals(1, reports.size());
+	}
+
+	@Test
+	public void testEvaluateRevisionAlpha() throws UnauthorizedException {
+		latch.reset(5);
+		com.google.appengine.api.users.User student = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
+		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
+		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
+
+		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, student);
+
+		ValidationEndpoint ve = new ValidationEndpoint();
+		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", "1", EvaluationMethod.KRIPPENDORFFS_ALPHA.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
 
 		try {
 			latch.await(20, TimeUnit.SECONDS);
