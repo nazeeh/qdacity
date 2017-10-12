@@ -22,7 +22,7 @@ public class ValidationEndpointTestHelper {
 	public static String originalText = "<p><coding id=\"1\" code_id=\"1\">First paragraph</coding></p><p><coding id=\"2\" code_id=\"1\">Second paragraph</coding></p><p>Third paragraph</p><p>Fourth paragraph</p><p>Fifth paragraph</p><p>Sixth paragraph</p><p>Seventh paragraph</p><p>Eighth paragraph</p>";
 	public static String recodedText = "<p><coding id=\"1\" code_id=\"1\">First paragraph</coding></p><p>Second paragraph</p><p>Third paragraph</p><p>Fourth paragraph</p><p>Fifth paragraph</p><p>Sixth paragraph</p><p>Seventh paragraph</p><p>Eighth paragraph</p>";
 
-	static public ValidationProject setUpValidationProject(User testUser, User validationCode) {
+	static public ValidationProject setUpValidationProject(User testUser, User validationCoderA, User validationCoderB) {
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "I'm testing this to evaluate a revision", testUser);
 		TextDocumentEndpointTestHelper.addTextDocument(1L, ValidationEndpointTestHelper.originalText, "Test Document", testUser);
 
@@ -38,16 +38,22 @@ public class ValidationEndpointTestHelper {
 		try {
 			revisions = pe.listRevisions(1L, testUser);
 			Long revID = revisions.get(0).getId();
-			pe.requestValidationAccess(revID, validationCode);
 
-			ValidationProject valprj = pe.createValidationProject(revID, validationCode.getUserId(), testUser);
+			pe.requestValidationAccess(revID, validationCoderA);
+			ValidationProject valprjA = pe.createValidationProject(revID, validationCoderA.getUserId(), testUser);
+
+			pe.requestValidationAccess(revID, validationCoderB);
+			ValidationProject valprjB = pe.createValidationProject(revID, validationCoderB.getUserId(), testUser);
 
 			TextDocumentEndpoint tde = new TextDocumentEndpoint();
 			TextDocumentCodeContainer textDocumentCode = new TextDocumentCodeContainer();
-			CollectionResponse<TextDocument> docs = tde.getTextDocument(valprj.getId(), "VALIDATION",testUser );
+			CollectionResponse<TextDocument> docs = tde.getTextDocument(valprjA.getId(), "VALIDATION", testUser);
 			assertEquals(1, docs.getItems().size());
 
-			return valprj;
+			docs = tde.getTextDocument(valprjB.getId(), "VALIDATION", testUser);
+			assertEquals(1, docs.getItems().size());
+
+			return valprjA;
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("Failed authorization for creating a validationproject");
