@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 
 import CourseEndpoint from 'endpoints/CourseEndpoint';
+import TermCourseList from './TermCourseList.jsx';
 import Course from './Course';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
@@ -17,7 +18,7 @@ export default class CourseDashboard extends React.Component {
 		var urlParams = URI(window.location.search).query(true);
 
 		var course = new Course(urlParams.course);
-
+		this.setCourse = this.setCourse.bind(this);
 		this.state = {
 			course: course
 		};
@@ -25,7 +26,12 @@ export default class CourseDashboard extends React.Component {
 			overflow: "auto"
 		});
 	}
-
+	setCourse(course) {
+		this.setState({
+			course: course
+		});
+		console.log(this.state.course);
+	}
 	init() {
 		this.setCourseProperties();
 	}
@@ -33,24 +39,6 @@ export default class CourseDashboard extends React.Component {
 	setCourseProperties() {
 		var _this = this;
 		var course = this.state.course;
-		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
-			course.setName(resp.name);
-			course.setDescription(resp.description);
-			CourseEndpoint.getTermsCourse(course.getId()).then(function (resp2) {
-				var termList = [];
-				resp2.items = resp2.items || [];
-				resp2.items.forEach(function (crs) {
-					termList.push ({
-					text: crs.term,
-				});
-				});
-				course.setTerms(termList);
-				_this.setState({
-						course: course
-					});
-				console.log(course);
-			});
-		});
 	}
 
 	render() {
@@ -60,9 +48,18 @@ export default class CourseDashboard extends React.Component {
 
 		return (
 			<StyledDashboard className="container main-content">
-				<h2 className="page-header">
-					this is the course: {this.state.course.getName()}
-				</h2>
+				<div>
+					<div className="box box-default">
+						<div className="box-header with-border">
+							<h3 className="box-title">Terms</h3>
+						</div>
+						<div className="box-body">
+							<TermCourseList course={this.state.course} setCourse={this.setCourse}/>
+						</div>
+					</div>
+				</div>
+
+
 		  	</StyledDashboard>
 		);
 	}

@@ -191,12 +191,6 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-	renderDeleteBtn(course, index) {
-		return <StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-						<i className="fa fa-trash "></i>
-					</StyledListItemBtn>
-	}
-
 
 
 	render() {
@@ -255,7 +249,9 @@ export default class CourseList extends React.Component {
 				<span>{course.name}</span>,
 				<div>
 					<DropDownButton isListItemButton={true} items={course.terms}></DropDownButton>
-				{this.renderDeleteBtn(course, index)}
+				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+					<i className="fa fa-trash "></i>
+				</StyledListItemBtn>
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
