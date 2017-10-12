@@ -369,6 +369,7 @@
 						<exclude>**/test/**</exclude>
 						<exclude>**/v4tov5migration/**</exclude>
 						<exclude>**/v6tov7Migration/**</exclude>
+						<exclude>**/DataMigrationEndpoint*</exclude>
                 </excludes>
 				</configuration>
 			</execution>
