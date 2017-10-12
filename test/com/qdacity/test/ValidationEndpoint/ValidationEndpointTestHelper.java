@@ -1,14 +1,19 @@
 package com.qdacity.test.ValidationEndpoint;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.endpoint.ProjectEndpoint;
+import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 
@@ -36,6 +41,12 @@ public class ValidationEndpointTestHelper {
 			pe.requestValidationAccess(revID, validationCode);
 
 			ValidationProject valprj = pe.createValidationProject(revID, validationCode.getUserId(), testUser);
+
+			TextDocumentEndpoint tde = new TextDocumentEndpoint();
+			TextDocumentCodeContainer textDocumentCode = new TextDocumentCodeContainer();
+			CollectionResponse<TextDocument> docs = tde.getTextDocument(valprj.getId(), "VALIDATION",testUser );
+			assertEquals(1, docs.getItems().size());
+
 			return valprj;
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
