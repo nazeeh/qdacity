@@ -3,6 +3,7 @@ export default class Course {
 		this.id = crsId;
 		this.name = "";
 		this.description = "";
+		this.terms = [];
 	}
 
 	getId() {
@@ -17,6 +18,9 @@ export default class Course {
 		this.name = name;
 	}
 
+	setTerms(terms) {
+		this.terms = terms;
+	}
 	getDescription() {
 		return this.description;
 	}

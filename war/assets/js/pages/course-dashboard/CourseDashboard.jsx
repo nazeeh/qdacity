@@ -36,8 +36,19 @@ export default class CourseDashboard extends React.Component {
 		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
 			course.setName(resp.name);
 			course.setDescription(resp.description);
-			_this.setState({
-				course: course
+			CourseEndpoint.getTermsCourse(course.getId()).then(function (resp2) {
+				var termList = [];
+				resp2.items = resp2.items || [];
+				resp2.items.forEach(function (crs) {
+					termList.push ({
+					text: crs.term,
+				});
+				});
+				course.setTerms(termList);
+				_this.setState({
+						course: course
+					});
+				console.log(course);
 			});
 		});
 	}
