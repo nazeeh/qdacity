@@ -53,6 +53,9 @@ public class User implements Serializable {
 	List<Long> courses;
 	
 	@Persistent
+	List<Long> termCourses;
+	
+	@Persistent
 	Long lastCourseId; // Used to pre-load to cache when user signs in
 	
 	public String getId() {
@@ -105,6 +108,10 @@ public class User implements Serializable {
 	
 	public void addCourseAuthorization(Long course) {
 		courses.add(course);
+	}
+	
+	public void addTermCourseAuthorization(Long termCourseID) {
+		termCourses.add(termCourseID);
 	}
 
 	public void removeCourseAuthorization(Long course) {

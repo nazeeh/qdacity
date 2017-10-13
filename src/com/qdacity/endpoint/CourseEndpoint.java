@@ -27,6 +27,7 @@ import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
+import com.qdacity.project.Project;
 
 
 @Api(name = "qdacity",
@@ -364,6 +365,32 @@ public class CourseEndpoint {
 		
 		return termCourses;
 	}
+	
+	@ApiMethod(name = "course.addParticipant",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public TermCourse addParticipant(@Named("id") Long termCourseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+			TermCourse termCourse = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				termCourse = (TermCourse) Cache.getOrLoad(termCourseID, TermCourse.class);
+				if (userID != null) termCourse.addParticipant(userID);
+				else termCourse.addParticipant(user.getUserId());
+
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				dbUser.addTermCourseAuthorization(termCourseID);
+
+				mgr.makePersistent(termCourse);
+				Cache.cache(termCourseID, TermCourse.class, termCourse);
+				mgr.makePersistent(dbUser);
+				Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
+
+			} finally {
+				mgr.close();
+			}
+			return termCourse;
+		}
 	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();

@@ -96,4 +96,9 @@ public class TermCourse implements Serializable {
 		if (!owners.contains(userID)) owners.add(userID);
 	}
 	
+	public void addParticipant(String userID) {
+		if (participants == null) participants = new ArrayList<String>();
+		if (!participants.contains(userID)) participants.add(userID);
+	}
+	
 }
