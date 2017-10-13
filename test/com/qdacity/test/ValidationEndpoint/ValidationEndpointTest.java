@@ -93,7 +93,6 @@ public class ValidationEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
 
 		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
-		Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
 		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
 		ValidationEndpoint ve = new ValidationEndpoint();
 		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", docsToEvaluate, EvaluationMethod.KRIPPENDORFFS_ALPHA.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
