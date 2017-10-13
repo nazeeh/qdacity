@@ -78,6 +78,9 @@ export default class TermCourseList extends React.Component {
 			return ([
 				<span>{term.text}</span>,
 					<div>
+						<StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+							<i className="fa fa-trash "></i>
+						</StyledListItemBtn>
 					<StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash "></i>
 					</StyledListItemBtn>
