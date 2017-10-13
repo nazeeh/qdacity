@@ -54,7 +54,7 @@ export default class CourseDashboard extends React.Component {
 							<h3 className="box-title">Terms</h3>
 						</div>
 						<div className="box-body">
-							<TermCourseList course={this.state.course} setCourse={this.setCourse}/>
+							<TermCourseList account={this.props.account} course={this.state.course} setCourse={this.setCourse}/>
 						</div>
 					</div>
 				</div>

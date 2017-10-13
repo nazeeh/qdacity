@@ -59,10 +59,12 @@ export default class TermCourseList extends React.Component {
 				var termList = [];
 				resp2.items = resp2.items || [];
 				resp2.items.forEach(function (crs) {
+					var participants = [];
+					if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
 					termList.push ({
 					text: crs.term,
 					id: crs.id,
-					participants: crs.participants
+					participants: participants
 				});
 				});
 				course.setTerms(termList);
@@ -72,6 +74,17 @@ export default class TermCourseList extends React.Component {
 		});
 	}
 
+	isParticipant(term, index) {
+		this.props.account.getCurrentUser().then(function (resp) {
+			console.log(term.participants);
+			if (term.participants.includes(resp.id)) {
+				console.log(resp.id);
+			}
+			else {
+				console.log('does not include');
+			}
+		});
+	}
 	joinTermCourse(e, term, index) {
 		var _this = this;
 		e.stopPropagation();
@@ -85,7 +98,7 @@ export default class TermCourseList extends React.Component {
 
 	}
 
-	
+
 	render() {
 		var _this = this;
 
@@ -102,7 +115,7 @@ export default class TermCourseList extends React.Component {
 				</div>
 			])
 		}
-		var course = this.props.course;
+		var account = this.props.account;
 		const itemsToDisplay = this.props.course.terms;
 		const renderListItems = itemsToDisplay.map((term, index) => {
 			return <StyledListItemPrimary>
