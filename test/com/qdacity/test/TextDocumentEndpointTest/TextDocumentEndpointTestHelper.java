@@ -31,6 +31,16 @@ public class TextDocumentEndpointTestHelper {
 		return null;
 	}
 
+	static public void updateTextDocument(TextDocument doc, com.google.appengine.api.users.User loggedInUser) {
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		try {
+			tde.updateTextDocument(doc, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for text document update");
+		}
+	}
+
 	static public void removeTextDocument(Long docId, User loggedInUser) {
 
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
