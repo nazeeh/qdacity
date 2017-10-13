@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import CourseEndpoint from 'endpoints/CourseEndpoint';
+import CourseEndPoint from '../../common/endpoints/CourseEndpoint';
 
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
@@ -60,15 +61,28 @@ export default class TermCourseList extends React.Component {
 				resp2.items.forEach(function (crs) {
 					termList.push ({
 					text: crs.term,
+					id: crs.id
 				});
 				});
 				course.setTerms(termList);
+				console.log(course);
 				_this.props.setCourse(course);
 			});
 		});
 	}
 
+	joinTermCourse(e, term, index) {
+		var _this = this;
+		e.stopPropagation();
 
+		var confirm = new Confirm('Do you want to join the term ' + term.text + ' of this course?');
+		confirm.showModal().then(function () {
+			CourseEndPoint.addParticipant(term.id).then(function (resp) {
+				console.log(resp);
+			});
+		});
+
+	}
 
 
 	render() {
@@ -78,7 +92,7 @@ export default class TermCourseList extends React.Component {
 			return ([
 				<span>{term.text}</span>,
 					<div>
-						<StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 							<i className="fa fa-trash "></i>
 						</StyledListItemBtn>
 					<StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
@@ -87,7 +101,7 @@ export default class TermCourseList extends React.Component {
 				</div>
 			])
 		}
-
+		var course = this.props.course;
 		const itemsToDisplay = this.props.course.terms;
 		const renderListItems = itemsToDisplay.map((term, index) => {
 			return <StyledListItemPrimary>
