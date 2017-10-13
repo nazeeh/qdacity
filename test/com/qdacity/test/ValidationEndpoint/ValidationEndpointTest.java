@@ -112,6 +112,37 @@ public class ValidationEndpointTest {
 		assertEquals(1, reports.size());
 	}
 
+	@Test
+	public void testEvaluateRevisionKappa() throws UnauthorizedException {
+		latch.reset(9);
+		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
+		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
+
+		com.google.appengine.api.users.User studentB = new com.google.appengine.api.users.User("student@asd.de", "bla", "88888");
+		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentB);
+
+		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
+
+		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
+		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
+		ValidationEndpoint ve = new ValidationEndpoint();
+		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", docsToEvaluate, EvaluationMethod.FLEISS_KAPPA.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
+
+		try {
+			latch.await(20, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task did not finish in time");
+		}
+
+		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+		QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+		assertEquals(0, qsi.getTaskInfo().size());
+
+		List<ValidationReport> reports = ve.listReports(1L, testUser);
+		assertEquals(1, reports.size());
+	}
+
 	private String getDocumentsAsCSV(long projectID, String projectType) {
 		Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(projectID, projectType, testUser);
 		String documentsToEvaluate = "";
