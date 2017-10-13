@@ -61,7 +61,8 @@ export default class TermCourseList extends React.Component {
 				resp2.items.forEach(function (crs) {
 					termList.push ({
 					text: crs.term,
-					id: crs.id
+					id: crs.id,
+					participants: crs.participants
 				});
 				});
 				course.setTerms(termList);
@@ -84,7 +85,7 @@ export default class TermCourseList extends React.Component {
 
 	}
 
-
+	
 	render() {
 		var _this = this;
 
