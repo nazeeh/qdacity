@@ -88,7 +88,7 @@ export default class TermCourseList extends React.Component {
 		var confirm = new Confirm('Do you want to join the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
 			CourseEndPoint.addParticipant(term.id).then(function (resp) {
-				console.log(resp);
+				_this.props.addParticipant(term);
 			});
 		});
 
@@ -101,7 +101,7 @@ export default class TermCourseList extends React.Component {
 		var confirm = new Confirm('Do you want to leave the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
 			CourseEndPoint.removeParticipant(term.id).then(function (resp) {
-				console.log(resp);
+				_this.props.removeParticipant(term);
 			});
 		});
 

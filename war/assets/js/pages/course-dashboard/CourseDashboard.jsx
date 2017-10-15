@@ -15,10 +15,15 @@ const StyledDashboard = styled.div `
 export default class CourseDashboard extends React.Component {
 	constructor(props) {
 		super(props);
+
+
 		var urlParams = URI(window.location.search).query(true);
 
 		var course = new Course(urlParams.course);
 		this.setCourse = this.setCourse.bind(this);
+		this.addParticipant = this.addParticipant.bind(this);
+		this.removeParticipant = this.removeParticipant.bind(this);
+
 		this.state = {
 			course: course
 		};
@@ -30,8 +35,43 @@ export default class CourseDashboard extends React.Component {
 		this.setState({
 			course: course
 		});
-		console.log(this.state.course);
 	}
+
+	addParticipant(term) {
+		//Find the id of the term to be added, then add the user to participants & set isParticipant to true for that term
+		var _this = this;
+		var id = term.id;
+		var course = this.state.course;
+		course.terms.forEach(function (term, index) {
+			if (term.id == id) {
+				var termIndex = index;
+				_this.props.account.getCurrentUser().then(function (resp) {
+					course.terms[termIndex].participants.push(resp.id);
+					course.terms[termIndex].isParticipant = true;
+					_this.setState({
+						course: course
+					});
+				});
+			}
+		});
+	}
+
+	removeParticipant(term) {
+		//Find the id of the term to be removed, then remove the user from participants & set isParticipant to false for that term
+		var _this = this;
+		var id = term.id;
+		var course = this.state.course;
+		course.terms.forEach(function (term, index) {
+			if (term.id == id) {
+				course.terms[index].participants.splice(index, 1);
+				course.terms[index].isParticipant = false;
+				_this.setState({
+					course: course
+				});
+			}
+		});
+	}
+
 	init() {
 		this.setCourseProperties();
 	}
@@ -54,11 +94,10 @@ export default class CourseDashboard extends React.Component {
 							<h3 className="box-title">Terms</h3>
 						</div>
 						<div className="box-body">
-							<TermCourseList account={this.props.account} course={this.state.course} setCourse={this.setCourse}/>
+							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse}/>
 						</div>
 					</div>
 				</div>
-
 
 		  	</StyledDashboard>
 		);
