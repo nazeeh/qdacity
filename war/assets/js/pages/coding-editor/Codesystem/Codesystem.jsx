@@ -70,8 +70,10 @@ class Codesystem extends SimpleCodesystem {
 
 		this.umlEditor = null;
 
+		this.toolbarRef = null;
+
 		this.relocateCode = this.relocateCode.bind(this);
-		this.removeCode = this.removeCode.bind(this);
+		this.codeRemoved = this.codeRemoved.bind(this);
 		this.createCode = this.createCode.bind(this);
 		this.updateCodingCount = this.updateCodingCount.bind(this);
 		this.initCodingCount = this.initCodingCount.bind(this);
@@ -160,7 +162,7 @@ class Codesystem extends SimpleCodesystem {
 
 
 
-	removeCode() {
+	codeRemoved() {
 		var code = this.state.selected;
 
 		this.removeAllCodings(code.codeID);
@@ -171,7 +173,11 @@ class Codesystem extends SimpleCodesystem {
 			selected: parent
 		})
 
-		this.props.removeCode(code);
+		this.props.codeRemoved(code);
+	}
+
+	deleteCode(code) {
+		this.toolbarRef.removeCode(code);
 	}
 
 	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
@@ -357,11 +363,12 @@ class Codesystem extends SimpleCodesystem {
 				</StyledEditorCtrlHeader>
 				<StyledToolBar>
 					<CodesystemToolbar
+					    ref={(r) => {if (r) this.toolbarRef = r;}}
 						projectID={this.props.projectID}
 						projectType={this.props.projectType}
 						selected={this.state.selected}
 						account={this.props.account}
-						removeCode={this.removeCode}
+						codeRemoved={this.codeRemoved}
 						createCode={this.createCode}
 						updateCodingCount={this.updateCodingCount}
 						toggleCodingView={this.props.toggleCodingView}

@@ -34,23 +34,21 @@ export default class CodesystemToolbar extends React.Component {
 		super(props);
 		this.state = {};
 
-		this.removeCode = this.removeCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
 		this.showCodingsOverview = this.showCodingsOverview.bind(this);
 	}
 
-	removeCode() {
+	removeCode(code) {
 		const _this = this;
 
-		var code = this.props.selected;
 		if (code.codeID == 1) return; //root should not be removed
 
 		var confirm = new Confirm('Do you want to delete the code ' + code.name + '?');
 		confirm.showModal().then(function () {
 			CodesEndpoint.removeCode(code).then(function (resp) {
-				_this.props.removeCode(code.codeID);
+				_this.props.codeRemoved(code.codeID);
 
 				// Code is a relationship-code
 				if (code.relationshipCode != null) {
@@ -175,7 +173,7 @@ export default class CodesystemToolbar extends React.Component {
 			<BtnDefault key="applyCodeBtn" className="btn btn-default" onClick={this.insertCode}>
 				<i className="fa fa-plus fa-1x"></i>
 			</BtnDefault>,
-			<BtnDefault key="removeCodeBtn" className="btn btn-default" onClick={this.removeCode}>
+			<BtnDefault key="removeCodeBtn" className="btn btn-default" onClick={this.removeCode.bind(this, this.props.selected)}>
 				<i className="fa fa-trash fa-1x"></i>
 			</BtnDefault>
 		]);
