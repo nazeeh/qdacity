@@ -23,21 +23,18 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
-		let x = this.props.x + this.props.width / 2 - width / 2;
-		let y = this.props.y + this.props.height / 2 - height / 2;
 
-		var g = this.props.umlEditor.getGraphView().graph.getModel().getGeometry(this.props.cell);
-		var pts = g.points;
+		// TODO 
+		// Weil x und y hier nicht benutzt wird, wird es nicht beim update verschoben
 
-
-		let state = this.props.umlEditor.getGraphView().graph.getView().getCellStates(this.props.cell);
+		let state = this.props.umlEditor.getGraphView().graph.view.getState(this.props.cell);
 
 		let handler = this.props.umlEditor.getGraphView().graph.selectionCellsHandler.handlers.get(this.props.cell);
 
 		let abspoints = handler.abspoints;
 
-		x = handler.labelShape.bounds.x - width / 2;
-		y = handler.labelShape.bounds.y - height / 2;
+		let x = handler.labelShape.bounds.x - width / 2;
+		let y = handler.labelShape.bounds.y - height / 2;
 
 		const offset = 5 * this.props.scale;
 
@@ -48,6 +45,9 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 		} else if (abspoints[0].y == abspoints[1].y) {
 			y = abspoints[0].y + offset;
 		}
+
+		x = x + this.props.x - state.x;
+		y = y + this.props.y - state.y;
 
 		return [x, y, width, height];
 	}
