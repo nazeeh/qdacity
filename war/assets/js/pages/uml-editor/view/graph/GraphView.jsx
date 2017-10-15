@@ -557,7 +557,7 @@ export default class GraphView extends React.Component {
 			this.graph.getModel().beginUpdate();
 
 			try {
-				edge.removeFromParent();
+				this.graph.getModel().remove(edge);
 
 				this.graph.refresh(edge);
 

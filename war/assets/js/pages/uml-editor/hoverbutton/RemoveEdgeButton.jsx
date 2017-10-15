@@ -10,11 +10,11 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 	}
 
 	onClick() {
-		// TODO
+		this.props.umlEditor.deleteEdge(this.props.cell.source, this.props.cell.value.relationId);
 	}
 
 	getImageClassName() {
-		return 'fa-list-alt';
+		return 'fa-trash';
 	}
 
 	getBounds() {
@@ -39,14 +39,14 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 		x = handler.labelShape.bounds.x - width / 2;
 		y = handler.labelShape.bounds.y - height / 2;
 
-		const offset = 30;
+		const offset = 5 * this.props.scale;
 
 		if (abspoints.length == 3) {
 			// Do nothing
 		} else if (abspoints[0].x == abspoints[1].x) {
-			x = abspoints[0].x; // + offset * this.props.scale;
+			x = abspoints[0].x + offset;
 		} else if (abspoints[0].y == abspoints[1].y) {
-			y = abspoints[0].y; // - offset * this.props.scale;
+			y = abspoints[0].y + offset;
 		}
 
 		return [x, y, width, height];

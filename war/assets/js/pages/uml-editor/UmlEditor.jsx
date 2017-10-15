@@ -438,6 +438,14 @@ export default class UmlEditor extends React.Component {
 	/**
 	 * Delete a class field relation from the database. This method does not directly update the uml-editor.
 	 */
+	deleteEdge(cell, relationId) {
+		const code = this.getCodeByNode(cell);
+		this.deleteRelation(code, relationId);
+	}
+
+	/**
+	 * Delete a class field relation from the database. This method does not directly update the uml-editor.
+	 */
 	deleteClassField(cell, relationId) {
 		const code = this.getCodeByNode(cell);
 		this.deleteRelation(code, relationId);
