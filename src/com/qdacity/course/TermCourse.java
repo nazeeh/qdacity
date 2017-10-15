@@ -40,6 +40,9 @@ public class TermCourse implements Serializable {
 	@Persistent
 	List<String> owners;
 	
+	@Persistent
+	boolean isOpen;
+	
 	public Long getId() {
 		return id;
 	}
@@ -48,6 +51,14 @@ public class TermCourse implements Serializable {
 		this.id = id;
 	}
 
+	public void setStatus(boolean isOpen) {
+		this.isOpen = isOpen;
+	}
+	
+	public boolean getStatus() {
+		return isOpen;
+	}
+	
 	public TermCourse(TermCourse termCrs) {
 		this.term = termCrs.term;
 		this.participants = termCrs.participants;
