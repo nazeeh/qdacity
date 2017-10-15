@@ -297,7 +297,9 @@ export default class CodingEditor extends React.Component {
 
 
 	updateSelectedCode(code, persist) {
-		this.codesystemViewRef.updateSelected(code, persist);
+		if (code.id == this.codesystemViewRef.getSelected().id) {
+			this.codesystemViewRef.updateSelected(code, persist);
+		}
 		this.umlEditorRef.codeUpdated(code);
 	}
 
