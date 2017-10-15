@@ -574,7 +574,7 @@ export default class UmlEditor extends React.Component {
 	 */
 	codeRemoved(code) {
 		this.consistencyManager.codeRemoved(code);
-		this.codePositionsManager.removeCodePosition(code.codeID);
+		this.codePositionManager.deleteCodePosition(code.codeID);
 	}
 
 	/**
