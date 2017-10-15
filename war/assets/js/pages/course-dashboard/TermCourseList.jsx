@@ -94,13 +94,25 @@ export default class TermCourseList extends React.Component {
 
 	}
 
+	leaveTermCourse(e, term, index) {
+		var _this = this;
+		e.stopPropagation();
+
+		var confirm = new Confirm('Do you want to leave the term ' + term.text + ' of this course?');
+		confirm.showModal().then(function () {
+			CourseEndPoint.removeParticipant(term.id).then(function (resp) {
+				console.log(resp);
+			});
+		});
+
+	}
 
 	renderJoinButton (term, index) {
 		//Show join/leave button depending on whether the user is a participant in the course
-		if (term.isParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+		if (!term.isParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 				<i className="fa fa-tags"></i>
 			</StyledListItemBtn>}
-			else {return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			else {return <StyledListItemBtn onClick={(e) => this.leaveTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>}
 	}
