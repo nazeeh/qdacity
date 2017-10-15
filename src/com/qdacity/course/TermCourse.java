@@ -71,6 +71,11 @@ public class TermCourse implements Serializable {
 		if (!participants.contains(userID)) participants.add(userID);
 	}
 	
+	public void removeParticipant(String userID) {
+		if (participants == null) participants = new ArrayList<String>();
+		if (participants.contains(userID)) participants.remove(userID);
+	}
+	
 	public void setTerm(String term) {
 		this.term = term;
 	}

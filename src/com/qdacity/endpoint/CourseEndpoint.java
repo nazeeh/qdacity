@@ -392,6 +392,32 @@ public class CourseEndpoint {
 			return termCourse;
 		}
 	
+	@ApiMethod(name = "course.removeParticipant",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public TermCourse removeParticipant(@Named("id") Long termCourseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+			TermCourse termCourse = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				termCourse = (TermCourse) Cache.getOrLoad(termCourseID, TermCourse.class);
+				if (userID != null) termCourse.removeParticipant(userID);
+				else termCourse.removeParticipant(user.getUserId());
+
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				dbUser.removeCourseAuthorization(termCourseID);
+
+				mgr.makePersistent(termCourse);
+				Cache.cache(termCourseID, TermCourse.class, termCourse);
+				mgr.makePersistent(dbUser);
+				Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
+
+			} finally {
+				mgr.close();
+			}
+			return termCourse;
+		}
+	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
