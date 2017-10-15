@@ -52,6 +52,7 @@ export default class TermCourseList extends React.Component {
 	init() {
 		var _this = this;
 		var course = this.props.course;
+		//Get the course, its terms, participants and save all info in the course object
 		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
 			course.setName(resp.name);
 			course.setDescription(resp.description);
@@ -60,31 +61,26 @@ export default class TermCourseList extends React.Component {
 				resp2.items = resp2.items || [];
 				resp2.items.forEach(function (crs) {
 					var participants = [];
-					if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
-					termList.push ({
-					text: crs.term,
-					id: crs.id,
-					participants: participants
+					var isParticipant = [];
+					//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
+					_this.props.account.getCurrentUser().then(function (resp) {
+						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
+						isParticipant = participants.includes(resp.id);
+						termList.push ({
+						text: crs.term,
+						id: crs.id,
+						participants: participants,
+						isParticipant: isParticipant
+					});
+					course.setTerms(termList);
+					_this.props.setCourse(course);
+					});
 				});
-				});
-				course.setTerms(termList);
-				console.log(course);
-				_this.props.setCourse(course);
+
 			});
 		});
 	}
 
-	isParticipant(term, index) {
-		this.props.account.getCurrentUser().then(function (resp) {
-			console.log(term.participants);
-			if (term.participants.includes(resp.id)) {
-				console.log(resp.id);
-			}
-			else {
-				console.log('does not include');
-			}
-		});
-	}
 	joinTermCourse(e, term, index) {
 		var _this = this;
 		e.stopPropagation();
@@ -99,16 +95,27 @@ export default class TermCourseList extends React.Component {
 	}
 
 
+	renderJoinButton (term, index) {
+		//Show join/leave button depending on whether the user is a participant in the course
+		if (term.isParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+				<i className="fa fa-tags"></i>
+			</StyledListItemBtn>}
+			else {return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+					<i className="fa fa-sign-out"></i>
+				</StyledListItemBtn>}
+	}
+
 	render() {
 		var _this = this;
+
+
+
 
 		const renderListItemContent = (term, index) => {
 			return ([
 				<span>{term.text}</span>,
 					<div>
-						<StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-							<i className="fa fa-trash "></i>
-						</StyledListItemBtn>
+						{this.renderJoinButton(term, index)}
 					<StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash "></i>
 					</StyledListItemBtn>
