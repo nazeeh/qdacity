@@ -46,6 +46,9 @@ const StyledProjectList = StyledBoxList.extend `
 export default class TermCourseList extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.showNewTermCourseModal = this.showNewTermCourseModal.bind(this);
+
 		this.init();
 	}
 
@@ -82,6 +85,35 @@ export default class TermCourseList extends React.Component {
 
 			});
 		});
+	}
+
+	showNewTermCourseModal() {
+		var _this = this;
+		var course = this.props.course;
+		var modal = new CustomForm('Create a new term course', '');
+		modal.addTextInput('name', "Term Name", 'Name', '');
+		modal.showModal().then(function (data) {
+			_this.insertTermCourse(course, data.name);
+		});
+	}
+
+	insertTermCourse(course, term) {
+		var _this = this;
+		var courseTerms = course.terms;
+		var courseID = course.id;
+			CourseEndPoint.insertTermCourse(courseID, term).then (function(insertedTermCourse) {
+				var termList = courseTerms;
+				termList.push ({
+				text: term,
+				id: courseID,
+				participants: [],
+				isParticipant: false,
+				isOpen: "true"
+			});
+			course.setTerms(termList);
+			console.log(course);
+			_this.props.setCourse(course);
+			});
 	}
 
 	joinTermCourse(e, term, index) {
@@ -141,7 +173,7 @@ export default class TermCourseList extends React.Component {
 					<BtnDefault
 						id="newPrjBtn"
 						href="#"
-
+						onClick={this.showNewTermCourseModal}
 					>
 					<i className="fa fa-plus fa-fw"></i>
 					New Term Course
