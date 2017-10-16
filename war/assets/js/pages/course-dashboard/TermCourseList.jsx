@@ -129,7 +129,28 @@ export default class TermCourseList extends React.Component {
 		var _this = this;
 
 
+		const projectListMenu = <StyledProjectListMenu>
 
+
+			<StyledSearchField className="searchfield" id="searchform">
+				<input
+					type="text"
+					placeholder="Search"
+				/>
+				<StyledNewPrjBtn id="newProject">
+					<BtnDefault
+						id="newPrjBtn"
+						href="#"
+
+					>
+					<i className="fa fa-plus fa-fw"></i>
+					New Term Course
+					</BtnDefault>
+				</StyledNewPrjBtn>
+
+			</StyledSearchField>
+
+		</StyledProjectListMenu>
 
 		const renderListItemContent = (term, index) => {
 			return ([
@@ -153,6 +174,7 @@ export default class TermCourseList extends React.Component {
 
 		return (
 			<div>
+				{projectListMenu}
 				<StyledProjectList className="">
 					{renderListItems}
 	            </StyledProjectList>
