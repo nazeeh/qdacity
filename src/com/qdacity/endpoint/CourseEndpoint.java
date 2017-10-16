@@ -392,6 +392,35 @@ public class CourseEndpoint {
 			return termCourse;
 		}
 	
+	@ApiMethod(name = "course.setTermCourseStatus",
+			path = "termCourse",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public TermCourse setTermCourseStatus(@Named("id") Long termCourseID, @Named("isOpen") boolean status, User user) throws UnauthorizedException {
+			TermCourse termCourse = null;
+			PersistenceManager mgr = getPersistenceManager();
+			
+			try {
+				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
+			}
+			catch (Exception e) {
+				throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
+			};
+			
+			// Check if user is Authorized (authorization for the course means authorization for all terms under this course)
+			Authorization.checkAuthorizationTermCourse(termCourse, user);
+			
+			try {
+				termCourse.setStatus(status);
+				mgr.makePersistent(termCourse);
+
+			} finally {
+				mgr.close();
+			}
+			return termCourse;
+		}
+	
 	@ApiMethod(name = "course.removeParticipant",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },

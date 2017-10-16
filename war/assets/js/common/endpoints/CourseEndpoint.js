@@ -58,6 +58,15 @@ export default class CourseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static setTermCourseStatus(termCourseID, status) {
+		var apiMethod = gapi.client.qdacity.course.setTermCourseStatus({
+			'termCourseID': termCourseID,
+			'isOpen': status
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static addParticipant(termCourseID, userID) {
 		var apiMethod = gapi.client.qdacity.course.addParticipant({
 			'id': termCourseID,
