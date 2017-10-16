@@ -62,18 +62,17 @@ export default class TermCourseList extends React.Component {
 				resp2.items.forEach(function (crs) {
 					var participants = [];
 					var isParticipant = [];
-					var isOpen = false;
 					//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
 					_this.props.account.getCurrentUser().then(function (resp) {
 						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
-						if (!(typeof crs.isOpen == 'undefined')) isOpen = crs.isOpen;
+						status = crs.status;
 						isParticipant = participants.includes(resp.id);
 						termList.push ({
 						text: crs.term,
 						id: crs.id,
 						participants: participants,
 						isParticipant: isParticipant,
-						isOpen: isOpen
+						isOpen: status
 					});
 					course.setTerms(termList);
 					console.log(course);
@@ -144,7 +143,6 @@ export default class TermCourseList extends React.Component {
 			return <StyledListItemPrimary>
 						{renderListItemContent(term, index)}
 					</StyledListItemPrimary>;
-
 		})
 
 		return (
