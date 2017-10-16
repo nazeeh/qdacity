@@ -293,6 +293,7 @@ public class CourseEndpoint {
 		
 		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
+		termCourse.setStatus(true);
 		
 		PersistenceManager mgr = getPersistenceManager();
 		
