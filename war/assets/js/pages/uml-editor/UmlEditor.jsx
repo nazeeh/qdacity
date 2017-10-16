@@ -518,7 +518,7 @@ export default class UmlEditor extends React.Component {
 	addClassField(sourceCode, destinationCode, relation) {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 
-		const fieldText = this.metaModelMapper.getClassFieldText(destinationCode.name, 'TODO-returnType');
+		const fieldText = this.metaModelMapper.getClassFieldText(relation);
 		this.graphView.addClassField(sourceNode, relation.key.id, '+', fieldText);
 	}
 
@@ -537,7 +537,7 @@ export default class UmlEditor extends React.Component {
 	addClassMethod(sourceCode, destinationCode, relation) {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 
-		const methodText = this.metaModelMapper.getClassMethodText(destinationCode.name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
+		const methodText = this.metaModelMapper.getClassMethodText(relation);
 		this.graphView.addClassMethod(sourceNode, relation.key.id, '+', methodText);
 	}
 
