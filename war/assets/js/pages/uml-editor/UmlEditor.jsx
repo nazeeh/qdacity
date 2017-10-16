@@ -520,6 +520,13 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
+	 * Is called when an unmapped code is renamed.
+	 */
+	unmappedCodeWasRenamed(code) {
+		this.graphView.refreshAllNodes();
+	}
+
+	/**
 	 * Removes a node from the graph. Does not update the database.
 	 */
 	removeNode(code) {

@@ -509,6 +509,19 @@ export default class GraphView extends React.Component {
 		return cell != null && cell.vertex == false;
 	}
 
+	refreshAllNodes() {
+		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		// Refresh all nodes
+		if (allNodes != null) {
+			for (let i = 0; i < allNodes.length; i++) {
+				if (this.isCellUmlClass(allNodes[i])) {
+					this.recalculateNodeSize(allNodes[i]);
+				}
+			}
+		}
+	}
+
 	addEdge(nodeFrom, nodeTo, relationId, edgeType) {
 		let parent = this.graph.getDefaultParent();
 
