@@ -112,7 +112,7 @@ export default class TermCourseList extends React.Component {
 
 	renderJoinButton (term, index) {
 		//Show join/leave button depending on whether the user is a participant in the course
-		if (!term.isParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+		if (!term.isParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
 				<i className="fa fa-tags"></i>
 			</StyledListItemBtn>}
 			else {return <StyledListItemBtn onClick={(e) => this.leaveTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
@@ -120,6 +120,11 @@ export default class TermCourseList extends React.Component {
 				</StyledListItemBtn>}
 	}
 
+	renderDeleteButton(term, index) {
+		return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			<i className="fa fa-trash "></i>
+		</StyledListItemBtn>
+	}
 	render() {
 		var _this = this;
 
@@ -131,9 +136,7 @@ export default class TermCourseList extends React.Component {
 				<span>{term.text}</span>,
 					<div>
 						{this.renderJoinButton(term, index)}
-					<StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-						<i className="fa fa-trash "></i>
-					</StyledListItemBtn>
+						{this.renderDeleteButton(term, index)}
 				</div>
 			])
 		}
