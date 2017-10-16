@@ -5,9 +5,9 @@ import {
 	EdgeType
 } from '../util/EdgeType.js';
 
-import ImageHoverButton from './ImageHoverButton.jsx';
+import HoverButton from './HoverButton.jsx';
 
-export default class AddEdgeGeneralizationButton extends ImageHoverButton {
+export default class AddEdgeGeneralizationButton extends HoverButton {
 
 	constructor(props) {
 		super(props);
@@ -17,7 +17,7 @@ export default class AddEdgeGeneralizationButton extends ImageHoverButton {
 		this.props.umlEditor.getGraphView().startConnecting(EdgeType.GENERALIZATION);
 	}
 
-	getImageClassName() {
+	getButtonClassName() {
 		return 'umlOverlayButton umlOverlayButtonAddEdgeGeneralization';
 	}
 

@@ -12,6 +12,11 @@ const StyledRelationsView = styled.div `
     flex-direction: column;
 `;
 
+const StyledRelationsList = styled.div `
+    overflow: auto;
+    height: 210px !important;
+`;
+
 const StyledHeadline = styled.div `
     font-size: 17px;
     margin-top: 3px;
@@ -270,7 +275,7 @@ export default class CodeRelationsView extends React.Component {
                 </div>
 
 
-                <div className="list compactBoxList">
+                <StyledRelationsList className="list compactBoxList">
                     {
                         this.state.relationships.map(function(rel) {
                             return (
@@ -291,7 +296,7 @@ export default class CodeRelationsView extends React.Component {
                             );
                         })
                     }
-                </div>
+                </StyledRelationsList>
             </StyledRelationsView>
 		);
 	}
@@ -309,7 +314,7 @@ export default class CodeRelationsView extends React.Component {
                     {_this.renderAddRelationButton(() => {_this.createIncomingRelationship()})}
 		        </div>
 
-                <div className="list compactBoxList">
+                <StyledRelationsList className="list compactBoxList">
                     {
                         _this.state.incomingRelationships.map((rel) => {
                             return (
@@ -322,7 +327,7 @@ export default class CodeRelationsView extends React.Component {
                             );
                         })
                     }
-                </div>
+                </StyledRelationsList>
             </StyledRelationsView>
 		);
 	}

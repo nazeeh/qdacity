@@ -68,7 +68,7 @@ export default class CourseList extends React.Component {
 	init() {
 		var _this = this;
 		var courseList = [];
-		var courseTermsArray =[];
+		var courseTermsArray = [];
 		var termsObject = [];
 
 		CourseEndPoint.listCourse().then(function (resp) {
@@ -79,14 +79,14 @@ export default class CourseList extends React.Component {
 			courses.forEach(function (crs, index) {
 				crs.type = "COURSE";
 				CourseEndPoint.listTermCourse(crs.id).then(function (resp2) {
-					counter-=1;
+					counter -= 1;
 					var termList = [];
 					resp2.items = resp2.items || [];
 
 					resp2.items.forEach(function (crs, index) {
-						termList.push ({
-						text: crs.term,
-					});
+						termList.push({
+							text: crs.term,
+						});
 					});
 					courses[index].terms = termList;
 					if (counter == 0) {
@@ -165,7 +165,7 @@ export default class CourseList extends React.Component {
 		var _this = this;
 		var modal = new CustomForm('Create a new course', '');
 		modal.addTextInput('name', "Course Name", 'Name', '');
-		modal.addTextInput('term', "Course Term", 'Term','');
+		modal.addTextInput('term', "Course Term", 'Term', '');
 		modal.addTextField('desc', "Course Description", 'Description');
 		modal.showModal().then(function (data) {
 			_this.createNewCourse(data.name, data.desc);

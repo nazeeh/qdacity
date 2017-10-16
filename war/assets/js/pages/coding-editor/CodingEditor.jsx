@@ -23,29 +23,29 @@ import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 
 
 const StyledCodingEditor = styled.div `
-	padding-top: 51px;
-	display: grid;
-	grid-template-columns: 3fr 14fr;
-	grid-template-areas:
-		"sidebarEdior editor"
-		"sidebarDocuments editor"
-		"sidebarCodesystem editor"
-		"footer footer";
+    padding-top: 51px;
+    display: grid;
+    grid-template-columns: 3fr 14fr;
+    grid-template-areas:
+        "sidebarEdior editor"
+        "sidebarDocuments editor"
+        "sidebarCodesystem editor"
+        "footer footer";
 `;
 
 
 const StyledTextEditorMenu = styled.div `
-	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
-	text-align: center;
-	padding-top: 10px;
-	background-color: #e7e7e7;
+    display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
+    text-align: center;
+    padding-top: 10px;
+    background-color: #e7e7e7;
 `
 
 
 
 const StyledEditableToggle = styled.a `
-	display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
-	color: #000;
+    display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
+    color: #000;
 `;
 
 
@@ -53,38 +53,38 @@ const StyledSideBar = styled.div `
 `;
 
 const StyledSideBarEditor = styled.div `
-	grid-area: sidebarEdior;
+    grid-area: sidebarEdior;
 `;
 
 const StyledSideBarDocuments = styled.div `
-	grid-area: sidebarDocuments;
+    grid-area: sidebarDocuments;
 `;
 
 const StyledSideBarCodesystem = styled.div `
-	grid-area: sidebarCodesystem;
-	min-width: 0;
-	word-break:break-all;
+    grid-area: sidebarCodesystem;
+    min-width: 0;
+    word-break:break-all;
 `;
 
 const StyledEditor = styled.div `
-	grid-area: editor;
-	min-width: 0;
+    grid-area: editor;
+    min-width: 0;
 `;
 
 const StyledFooter = styled.div `
-	grid-area: footer;
-	display: ${props => props.showCodingView ? 'block' : 'none'} !important;
-	z-index: 1;
+    grid-area: footer;
+    display: ${props => props.showCodingView ? 'block' : 'none'} !important;
+    z-index: 1;
 `;
 
 
 const StyledUMLEditor = styled.div `
-	height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
-	display: ${props => (props.selectedEditor === PageView.UML) ? 'block' : 'none'} !important;
+    height: ${props => props.showCodingView ? 'calc(100vh - 350px)' : 'calc(100vh - 51px)'} !important;
+    display: ${props => (props.selectedEditor === PageView.UML) ? 'block' : 'none'} !important;
 `;
 
 const StyledDocumentsView = styled.div `
-	display: ${props => (props.selectedEditor != PageView.UML) ? 'block' : 'none'} !important;
+    display: ${props => (props.selectedEditor != PageView.UML) ? 'block' : 'none'} !important;
 `;
 
 
@@ -136,9 +136,10 @@ export default class CodingEditor extends React.Component {
 		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
 		this.showCodingView = this.showCodingView.bind(this);
 		this.createCode = this.createCode.bind(this);
+		this.deleteCode = this.deleteCode.bind(this);
 		this.selectCode = this.selectCode.bind(this);
 		this.insertCode = this.insertCode.bind(this);
-		this.removeCode = this.removeCode.bind(this);
+		this.codeRemoved = this.codeRemoved.bind(this);
 		this.deleteRelationship = this.deleteRelationship.bind(this);
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
@@ -263,11 +264,15 @@ export default class CodingEditor extends React.Component {
 		this.codesystemViewRef.createCode(name, mmElementIDs, relationId, relationSourceCodeId, select);
 	}
 
+	deleteCode(code) {
+		this.codesystemViewRef.deleteCode(code);
+	}
+
 	insertCode(code) {
 		this.umlEditorRef.codeUpdated(code);
 	}
 
-	removeCode(code) {
+	codeRemoved(code) {
 		this.umlEditorRef.codeRemoved(code);
 	}
 
@@ -297,7 +302,9 @@ export default class CodingEditor extends React.Component {
 
 
 	updateSelectedCode(code, persist) {
-		this.codesystemViewRef.updateSelected(code, persist);
+		if (code.id == this.codesystemViewRef.getSelected().id) {
+			this.codesystemViewRef.updateSelected(code, persist);
+		}
 		this.umlEditorRef.codeUpdated(code);
 	}
 
@@ -311,6 +318,7 @@ export default class CodingEditor extends React.Component {
                 updateCode={this.updateSelectedCode}
                 refreshCodeView={this.codeViewRef.updateCode}
                 createCode={this.createCode}
+                deleteCode={this.deleteCode}
                 toggleCodingView={this.toggleCodingView}
                 deleteRelationship={this.deleteRelationship} />;
 		}
@@ -322,122 +330,122 @@ export default class CodingEditor extends React.Component {
 		if (this.state.project.getCodesystemID() == -1) this.init();
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
-			<StyledSideBar>
-				<StyledSideBarEditor>
-					<div>
-						<div id="agreementMapSettings" className="hidden">
-							<p>
-							  <span>Showing False Negatives >= </span>
-							  <span id="maxFalseNeg" className="falseNegValue"></span>
-							</p>
-							<div id="agreementMapSlider" className="agreementMapSlider"></div>
-						</div>
-						<ProjectPanel
-							resizeElements={this.resizeElements}
-							codesystemView={this.codesystemViewRef}
-							viewChanged={this.viewChanged}
-							setSearchResults = {this.setSearchResults}
-							project={this.state.project}
-							history={this.props.history}
-							documentsView = {this.documentsViewRef}
-							showCodingView = {this.showCodingView}/>
-					</div>
-				</StyledSideBarEditor>
-				<StyledSideBarDocuments>
-					<div id="documents-ui" >
-						<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
-							<DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
-						</StyledDocumentsView>
-					</div>
-				</StyledSideBarDocuments>
-				<StyledSideBarCodesystem>
-						<Codesystem
-							ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
-							codingViewIsVisible ={this.state.showCodingView}
-							pageView = {this.state.selectedEditor}
-							umlEditor = {this.umlEditorRef}
-							projectID={this.state.project.getId()}
-							projectType={this.state.project.getType()}
-							account={this.props.account}
-							codesystemId={this.state.project.getCodesystemID()}
-							toggleCodingView={this.toggleCodingView}
-							editorCtrl={this.state.editorCtrl}
-							umlEditorEnabled={this.state.project.isUmlEditorEnabled()}
-							showFooter={this.showCodingView}
-							selectionChanged={this.selectionChanged}
-							insertCode={this.insertCode}
-							removeCode={this.removeCode}
-							documentsView = {this.documentsViewRef}
-						 />
-				</StyledSideBarCodesystem>
-			</StyledSideBar>
-			<StyledEditor>
+            <StyledSideBar>
+                <StyledSideBarEditor>
+                    <div>
+                        <div id="agreementMapSettings" className="hidden">
+                            <p>
+                              <span>Showing False Negatives >= </span>
+                              <span id="maxFalseNeg" className="falseNegValue"></span>
+                            </p>
+                            <div id="agreementMapSlider" className="agreementMapSlider"></div>
+                        </div>
+                        <ProjectPanel
+                            resizeElements={this.resizeElements}
+                            codesystemView={this.codesystemViewRef}
+                            viewChanged={this.viewChanged}
+                            setSearchResults = {this.setSearchResults}
+                            project={this.state.project}
+                            history={this.props.history}
+                            documentsView = {this.documentsViewRef}
+                            showCodingView = {this.showCodingView}/>
+                    </div>
+                </StyledSideBarEditor>
+                <StyledSideBarDocuments>
+                    <div id="documents-ui" >
+                        <StyledDocumentsView selectedEditor={this.state.selectedEditor}>
+                            <DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
+                        </StyledDocumentsView>
+                    </div>
+                </StyledSideBarDocuments>
+                <StyledSideBarCodesystem>
+                        <Codesystem
+                            ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
+                            codingViewIsVisible ={this.state.showCodingView}
+                            pageView = {this.state.selectedEditor}
+                            umlEditor = {this.umlEditorRef}
+                            projectID={this.state.project.getId()}
+                            projectType={this.state.project.getType()}
+                            account={this.props.account}
+                            codesystemId={this.state.project.getCodesystemID()}
+                            toggleCodingView={this.toggleCodingView}
+                            editorCtrl={this.state.editorCtrl}
+                            umlEditorEnabled={this.state.project.isUmlEditorEnabled()}
+                            showFooter={this.showCodingView}
+                            selectionChanged={this.selectionChanged}
+                            insertCode={this.insertCode}
+                            codeRemoved={this.codeRemoved}
+                            documentsView = {this.documentsViewRef}
+                         />
+                </StyledSideBarCodesystem>
+            </StyledSideBar>
+            <StyledEditor>
 
-				<div id="textdocument-ui">
-					<StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
+                <div id="textdocument-ui">
+                    <StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
 
 
-						<a id="btnTxtSave" className="btn btn-default btn-default" >
-							<i className="fa fa-floppy-o "></i>
-							Save
-						</a>
+                        <a id="btnTxtSave" className="btn btn-default btn-default" >
+                            <i className="fa fa-floppy-o "></i>
+                            Save
+                        </a>
 
-						<div className="btn-group ui-widget">
-							<a id="btnTxtBold" className="btn btn-default" >
-								<i className="fa fa-bold fa-1x"></i>
-							</a>
-							<a id="btnTxtItalic" className="btn btn-default">
-								<i className="fa fa-italic fa-1x"></i>
-							</a>
-							<a id="btnTxtUnderline" className="btn btn-default">
-								<i className="fa fa-underline fa-1x"></i>
-							</a>
-							<label>&nbsp;&nbsp;Font: </label> <select id="combobox">
-								<option value="">Select one...</option>
-								<option value="Arial">Arial</option>
-								<option value="Arial Black">Arial Black</option>
-								<option value="Comic Sans MS">Comic Sans MS</option>
-								<option value="Courier New">Courier New</option>
-								<option value="Georgia">Georgia</option>
-								<option value="Impact">Impact</option>
-								<option value="Lucida Console">Lucida Console</option>
-								<option value="Palatino Linotype">Palatino Linotype</option>
-								<option value="Tahoma">Tahoma</option>
-								<option value="Times New Roman">Times New Roman</option>
-								<option value="Trebuchet MS">Trebuchet MS</option>
-								<option value="Verdana">Verdana</option>
-							</select>
+                        <div className="btn-group ui-widget">
+                            <a id="btnTxtBold" className="btn btn-default" >
+                                <i className="fa fa-bold fa-1x"></i>
+                            </a>
+                            <a id="btnTxtItalic" className="btn btn-default">
+                                <i className="fa fa-italic fa-1x"></i>
+                            </a>
+                            <a id="btnTxtUnderline" className="btn btn-default">
+                                <i className="fa fa-underline fa-1x"></i>
+                            </a>
+                            <label>&nbsp;&nbsp;Font: </label> <select id="combobox">
+                                <option value="">Select one...</option>
+                                <option value="Arial">Arial</option>
+                                <option value="Arial Black">Arial Black</option>
+                                <option value="Comic Sans MS">Comic Sans MS</option>
+                                <option value="Courier New">Courier New</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Impact">Impact</option>
+                                <option value="Lucida Console">Lucida Console</option>
+                                <option value="Palatino Linotype">Palatino Linotype</option>
+                                <option value="Tahoma">Tahoma</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Trebuchet MS">Trebuchet MS</option>
+                                <option value="Verdana">Verdana</option>
+                            </select>
 
-						</div>
-						<label >Font Size: </label>
-						<input id="txtSizeSpinner"  />
+                        </div>
+                        <label >Font Size: </label>
+                        <input id="txtSizeSpinner"  />
 
-					</StyledTextEditorMenu>
-						<TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
-					<StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
-						{this.renderUMLEditor()}
-					</StyledUMLEditor>
-				</div>
+                    </StyledTextEditorMenu>
+                        <TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
+                    <StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
+                        {this.renderUMLEditor()}
+                    </StyledUMLEditor>
+                </div>
 
-			</StyledEditor>
-			<StyledFooter  showCodingView={this.state.showCodingView}>
-				<BottomPanel
-					ref={(c) => {if (c) this.codeViewRef = c;}}
-					panelType = {this.state.bottomPanelType}
-					searchResults = {this.state.searchResults}
-					code={this.state.selectedCode}
-					editorCtrl={this.state.editorCtrl}
-					documentsView={this.documentsViewRef}
-					updateSelectedCode={this.updateSelectedCode}
-					getCodeById={this.getCodeById}
-					getCodeByCodeID={this.getCodeByCodeID}
-					getCodeSystem={this.getCodeSystem}
-					createCode={this.createCode}
-					selectCode={this.selectCode}
-					hideCodingView={this.hideCodingView}
-					deleteRelationship={this.deleteRelationship}/>
-			</StyledFooter>
-		</StyledCodingEditor>
+            </StyledEditor>
+            <StyledFooter  showCodingView={this.state.showCodingView}>
+                <BottomPanel
+                    ref={(c) => {if (c) this.codeViewRef = c;}}
+                    panelType = {this.state.bottomPanelType}
+                    searchResults = {this.state.searchResults}
+                    code={this.state.selectedCode}
+                    editorCtrl={this.state.editorCtrl}
+                    documentsView={this.documentsViewRef}
+                    updateSelectedCode={this.updateSelectedCode}
+                    getCodeById={this.getCodeById}
+                    getCodeByCodeID={this.getCodeByCodeID}
+                    getCodeSystem={this.getCodeSystem}
+                    createCode={this.createCode}
+                    selectCode={this.selectCode}
+                    hideCodingView={this.hideCodingView}
+                    deleteRelationship={this.deleteRelationship}/>
+            </StyledFooter>
+        </StyledCodingEditor>
 		);
 	}
 }

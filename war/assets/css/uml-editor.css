@@ -3,20 +3,41 @@
 	background-position: center;
 	background-size: contain;
 	background-repeat: no-repeat;
+	
 }
 
 .umlOverlayButtonAddEdge {
-	background-image: url("../img/uml-editor/umlOverlayAddEdge.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdge.png") !important;
+}
+.umlOverlayButtonAddEdge:hover,
+.umlOverlayButtonAddEdge:focus,
+.umlOverlayButtonAddEdge:active {
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeHover.png") !important;
 }
 
 .umlOverlayButtonAddEdgeGeneralization {
-	background-image: url("../img/uml-editor/umlOverlayAddEdgeGeneralization.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeGeneralization.png") !important;
+}
+.umlOverlayButtonAddEdgeGeneralization:hover,
+.umlOverlayButtonAddEdgeGeneralization:focus,
+.umlOverlayButtonAddEdgeGeneralization:active {
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeGeneralizationHover.png") !important;
 }
 
 .umlOverlayButtonAddEdgeAssociation {
-	background-image: url("../img/uml-editor/umlOverlayAddEdgeAssociation.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeAssociation.png") !important;
+}
+.umlOverlayButtonAddEdgeAssociation:hover,
+.umlOverlayButtonAddEdgeAssociation:focus,
+.umlOverlayButtonAddEdgeAssociation:active {
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeAssociationHover.png") !important;
 }
 
 .umlOverlayButtonAddEdgeAggregation {
-	background-image: url("../img/uml-editor/umlOverlayAddEdgeAggregation.png");
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeAggregation.png") !important;
+}
+.umlOverlayButtonAddEdgeAggregation:hover,
+.umlOverlayButtonAddEdgeAggregation:focus,
+.umlOverlayButtonAddEdgeAggregation:active {
+	background-image: url("../img/uml-editor/umlOverlayAddEdgeAggregationHover.png") !important;
 }

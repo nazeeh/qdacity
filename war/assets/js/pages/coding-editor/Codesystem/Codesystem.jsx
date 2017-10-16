@@ -70,8 +70,10 @@ class Codesystem extends SimpleCodesystem {
 
 		this.umlEditor = null;
 
+		this.toolbarRef = null;
+
 		this.relocateCode = this.relocateCode.bind(this);
-		this.removeCode = this.removeCode.bind(this);
+		this.codeRemoved = this.codeRemoved.bind(this);
 		this.createCode = this.createCode.bind(this);
 		this.updateCodingCount = this.updateCodingCount.bind(this);
 		this.initCodingCount = this.initCodingCount.bind(this);
@@ -160,7 +162,7 @@ class Codesystem extends SimpleCodesystem {
 
 
 
-	removeCode() {
+	codeRemoved() {
 		var code = this.state.selected;
 
 		this.removeAllCodings(code.codeID);
@@ -171,7 +173,11 @@ class Codesystem extends SimpleCodesystem {
 			selected: parent
 		})
 
-		this.props.removeCode(code);
+		this.props.codeRemoved(code);
+	}
+
+	deleteCode(code) {
+		this.toolbarRef.removeCode(code);
 	}
 
 	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
@@ -296,10 +302,22 @@ class Codesystem extends SimpleCodesystem {
 	}
 
 	shouldHighlightNode(code) {
-		let codeMapped = this.props.umlEditor.getGraphView().getNodeByCodeId(code.id) != null;
-		let relationshipCodeMapped = code.relationshipCode != null && this.props.umlEditor.getGraphView().getEdgeByRelationId(code.relationshipCode.key.id) != null;
+		// Not initialized yet
+		if (this.props.umlEditor.getMetaModelMapper() == null) {
+			return false;
+		}
 
-		return this.props.pageView == PageView.UML && (codeMapped || relationshipCodeMapped);
+		// Evaluate actions
+		let actions = null;
+
+		if (code.relationshipCode != null) {
+			actions = this.props.umlEditor.getMetaModelMapper().evaluateActionsForTarget(code.relationshipCode);
+		} else {
+			actions = this.props.umlEditor.getMetaModelMapper().evaluateActionsForTarget(code);
+		}
+
+		// Highlight if the mapper returns mapping-actions
+		return this.props.pageView == PageView.UML && actions != null && actions.length > 0;
 	}
 
 	renderRoot(code, level, key) {
@@ -345,11 +363,12 @@ class Codesystem extends SimpleCodesystem {
 				</StyledEditorCtrlHeader>
 				<StyledToolBar>
 					<CodesystemToolbar
+					    ref={(r) => {if (r) this.toolbarRef = r;}}
 						projectID={this.props.projectID}
 						projectType={this.props.projectType}
 						selected={this.state.selected}
 						account={this.props.account}
-						removeCode={this.removeCode}
+						codeRemoved={this.codeRemoved}
 						createCode={this.createCode}
 						updateCodingCount={this.updateCodingCount}
 						toggleCodingView={this.props.toggleCodingView}

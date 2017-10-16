@@ -104,20 +104,23 @@ export default class CodePositionManager {
 		_this.refreshUmlCodePositions(codePositions);
 
 		UmlCodePositionEndpoint.insertOrUpdateCodePositions(codePositions).then((resp) => {
-			// Do nothing
+			// ids updated
+			_this.refreshUmlCodePositions(resp.items);
 		});
 	}
 
 	/**
-	 * Removes a code position from the database.
+	 * Deletes a code position from the database.
 	 */
-	removeCodePosition(codeId) {
+	deleteCodePosition(codeId) {
 		const codePosition = this.getCodePosition(codeId);
 
-		this.removeCodePosition(codeId);
+		if (codePosition != null) {
+			this.removeCodePosition(codeId);
 
-		UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then((resp) => {
-			// Do nothing
-		});
+			UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then((resp) => {
+				// Do nothing
+			});
+		}
 	}
 }
