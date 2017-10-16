@@ -294,7 +294,6 @@ public class CourseEndpoint {
 		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
 		termCourse.setStatus(true);
-		
 		PersistenceManager mgr = getPersistenceManager();
 		
 		try {
@@ -375,7 +374,7 @@ public class CourseEndpoint {
 			TermCourse termCourse = null;
 			PersistenceManager mgr = getPersistenceManager();
 			try {
-				termCourse = (TermCourse) Cache.getOrLoad(termCourseID, TermCourse.class);
+				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				if (userID != null) termCourse.addParticipant(userID);
 				else termCourse.addParticipant(user.getUserId());
 
@@ -383,7 +382,6 @@ public class CourseEndpoint {
 				dbUser.addTermCourseAuthorization(termCourseID);
 
 				mgr.makePersistent(termCourse);
-				Cache.cache(termCourseID, TermCourse.class, termCourse);
 				mgr.makePersistent(dbUser);
 				Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
 
@@ -430,7 +428,7 @@ public class CourseEndpoint {
 			TermCourse termCourse = null;
 			PersistenceManager mgr = getPersistenceManager();
 			try {
-				termCourse = (TermCourse) Cache.getOrLoad(termCourseID, TermCourse.class);
+				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				if (userID != null) termCourse.removeParticipant(userID);
 				else termCourse.removeParticipant(user.getUserId());
 
@@ -438,7 +436,6 @@ public class CourseEndpoint {
 				dbUser.removeCourseAuthorization(termCourseID);
 
 				mgr.makePersistent(termCourse);
-				Cache.cache(termCourseID, TermCourse.class, termCourse);
 				mgr.makePersistent(dbUser);
 				Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
 
