@@ -365,6 +365,21 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
+	 * Returns the relation (with the given id) of a specific code. If the relation does not exist, this method returns null.
+	 * @param {any} relationId
+	 */
+	getRelationOfCode(code, relationId) {
+		if (code.relations != null) {
+			for (let i = 0; i < code.relations.length; i++) {
+				if (code.relations[i].key.id == relationId) {
+					return code.relations[i];
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Does the code have a corresponding node? Checks if the code is mapped in the uml editor (as a class object).
 	 */
 	isCodeMapped(code) {

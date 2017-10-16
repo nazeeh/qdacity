@@ -680,6 +680,24 @@ export default class GraphView extends React.Component {
 		const divBase = cellState.text.node.children[0];
 		ReactDOM.unmountComponentAtNode(divBase);
 
+		// Refresh Fields + Methods
+		for (let i = 0; i < cellValue.getFields().length; i++) {
+			const element = cellValue.getFields()[i];
+			const relation = this.props.umlEditor.getRelationOfCode(this.props.umlEditor.getCodeById(cellValue.getCodeId()), element.getRelationId());
+
+			if (relation != null) {
+				element.setText(this.props.umlEditor.getMetaModelMapper().getClassFieldText(relation));
+			}
+		}
+		for (let i = 0; i < cellValue.getMethods().length; i++) {
+			const element = cellValue.getMethods()[i];
+			const relation = this.props.umlEditor.getRelationOfCode(this.props.umlEditor.getCodeById(cellValue.getCodeId()), element.getRelationId());
+
+			if (relation != null) {
+				element.setText(this.props.umlEditor.getMetaModelMapper().getClassMethodText(relation));
+			}
+		}
+
 		// Get width / height
 		let [width, height] = this.calculateClassSize(this.getCellContent(node));
 
