@@ -125,7 +125,7 @@
 <dependency>
     <groupId>org.apache.tika</groupId>
     <artifactId>tika-parsers</artifactId>
-    <version>1.15</version>
+    <version>1.11</version>
 </dependency>
 
 
@@ -369,6 +369,7 @@
 						<exclude>**/test/**</exclude>
 						<exclude>**/v4tov5migration/**</exclude>
 						<exclude>**/v6tov7Migration/**</exclude>
+						<exclude>**/DataMigrationEndpoint*</exclude>
                 </excludes>
 				</configuration>
 			</execution>

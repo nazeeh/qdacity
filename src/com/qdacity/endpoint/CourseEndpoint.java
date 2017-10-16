@@ -3,7 +3,6 @@ package com.qdacity.endpoint;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -16,7 +15,6 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
@@ -82,7 +80,6 @@ public class CourseEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "course.removeCourse",
 		 
 		scopes = { Constants.EMAIL_SCOPE },
@@ -128,22 +125,29 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course insertCourse(Course course, User user) throws UnauthorizedException {
-		// Check if user is authorized
-		//Authorization.checkAuthorizationCourse(course, user); // FIXME does not make sense for inserting new courses - only check if user is in DB already
+		
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (course.getId() != null) {
 				if (containsCourse(course)) {
-					throw new EntityExistsException("Object already exists");
+					throw new EntityExistsException("Course already exists");
 				}
 			}
-			course.addOwner(user.getUserId());
-			mgr.makePersistent(course);
-			// Authorize User
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-			dbUser.addCourseAuthorization(course.getId());
-			Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+			
+			try {
+				course.addOwner(user.getUserId());
+				mgr.makePersistent(course);
+				// Authorize User
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				Authorization.isUserRegistered(dbUser);
+				dbUser.addCourseAuthorization(course.getId());
+				Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+			}
+			catch (javax.jdo.JDOObjectNotFoundException ex) {
+				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+			}
+			
 		} finally {
 			mgr.close();
 		}
@@ -166,10 +170,14 @@ public class CourseEndpoint {
 			userIdToRemove = user.getUserId();
 
 			Course course = (Course) Cache.getOrLoad(courseID, Course.class);
-			if (course != null) { // if false -> bug.
+			if (course != null) { 
 					course.removeUser(userIdToRemove);
 					Cache.cache(courseID, Course.class, course);
 					mgr.makePersistent(course);
+			}
+			else
+			{
+				throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
 			}
 
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
@@ -195,12 +203,22 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course getCourse(@Named("id") Long id, User user) throws UnauthorizedException {
+		
 		PersistenceManager mgr = getPersistenceManager();
 		Course course = null;
 		try {
+			course = (Course) mgr.getObjectById(Course.class, id);
+		}
+		catch (Exception e) {
+			throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
+		};
+		
+		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
-
-			Authorization.isUserNotNull(user);
+			
+			// Check if user is authorized
+			Authorization.checkAuthorizationCourse(course, user);
+			
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
 			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
@@ -209,8 +227,6 @@ public class CourseEndpoint {
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
 
-			String keyString;
-			MemcacheService syncCache;
 			course = (Course) Cache.getOrLoad(id, Course.class);
 
 		} finally {
@@ -276,10 +292,20 @@ public class CourseEndpoint {
 		termCourse.setTerm(term);
 		
 		PersistenceManager mgr = getPersistenceManager();
+		
+		try {
+			// Authorize User
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			Authorization.isUserRegistered(dbUser);
+		}
+		catch (javax.jdo.JDOObjectNotFoundException ex) {
+			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+		}
+		
 		try {
 			if (termCourse.getId() != null) {
 				if (containsTermCourse(termCourse)) {
-					throw new EntityExistsException("Object already exists");
+					throw new EntityExistsException("Term already exists");
 				}
 			}
 			

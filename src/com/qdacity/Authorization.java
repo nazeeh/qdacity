@@ -69,7 +69,8 @@ public class Authorization {
 				throw new UnauthorizedException("Course " + courseID + " was not found");
 			}
 			Course course = courses.get(0);
-			if (course.getOwners().contains(googleUser.getUserId())) return true;
+			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getUserId());
+			if (course.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
 		} finally {
 			mgr.close();
 		}
@@ -140,6 +141,28 @@ public class Authorization {
 
 	}
 
+	public static boolean isUserRegistered (com.qdacity.user.User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		
+		Query q = mgr.newQuery(com.qdacity.user.User.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+		  @SuppressWarnings("unchecked")
+		List<com.qdacity.user.User> users = (List<com.qdacity.user.User>) q.execute(user.getId());
+		  if (!users.isEmpty()) {
+		    	com.qdacity.user.User thisUser = users.get(0);
+				if (thisUser.getId() == user.getId()) return true;
+		  } else {
+			  throw new UnauthorizedException("User " +  user.getId() + " was not found");
+		  }
+		} finally {
+		  q.closeAll();
+		}
+		
+		return false;
+	}
 	public static void checkAuthorization(com.qdacity.user.User userRequested, User userLoggedIn) throws UnauthorizedException {
 		isUserNotNull(userLoggedIn);
 		Boolean authorized = (userLoggedIn.getUserId().equals(userRequested.getId()));

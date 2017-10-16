@@ -25,6 +25,19 @@ public class Cache {
 		return obj;
 	}
 
+	public static Object get(Long id, Class type) {
+		Object obj = null;
+
+		String keyString = KeyFactory.createKeyString(type.toString(), id);
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+
+		if (syncCache.contains(keyString)) {
+			obj = syncCache.get(keyString);
+		}
+
+		return obj;
+	}
+
 	public static Object getOrLoad(Long id, Class type) {
 		Object obj = null;
 

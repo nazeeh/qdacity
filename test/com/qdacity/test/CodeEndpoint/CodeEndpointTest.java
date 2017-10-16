@@ -16,8 +16,6 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
-import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
@@ -64,12 +62,7 @@ public class CodeEndpointTest {
 			fail("User could not be authorized for code creation");
 			e.printStackTrace();
 		}
-		assertEquals(0, ds.prepare(new Query("Change")).countEntities(withLimit(10))); // no change has been logged thus far
 		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1L, "authorName", "fff", testUser);
-
-		LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
-		QueueStateInfo qsi = ltq.getQueueStateInfo().get("ChangeLogQueue");
-		assertEquals(1, qsi.getTaskInfo().size());
 
 		try {
 			latch.await(5, TimeUnit.SECONDS);
@@ -77,7 +70,6 @@ public class CodeEndpointTest {
 			e.printStackTrace();
 			fail("Deferred task for logging the change of inserting a code could not finish");
 		}
-		assertEquals(1, ds.prepare(new Query("Change")).countEntities(withLimit(10))); // change is logged
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10))); // it is two because of the codesystem
 
 	}
@@ -90,8 +82,8 @@ public class CodeEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		testCodeInsert();
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
+		CodeEndpointTestHelper.removeCode(22L, testUser);
 
-		CodeEndpointTestHelper.removeCode(1L, testUser);
 
 		assertEquals(1, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
 

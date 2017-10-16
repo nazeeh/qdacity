@@ -1,19 +1,27 @@
 package com.qdacity.test.TextDocumentEndpointTest;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.Collection;
 
+import javax.jdo.PersistenceManager;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.PMF;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.project.codesystem.Code;
@@ -57,6 +65,33 @@ public class TextDocumentEndpointTest {
 		assertEquals(2, documents.size());
 	}
 	
+	/**
+	 * Tests if a registered user can remove a text document for a project
+	 */
+	@Test
+	public void testTextDocumentRemove() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		try {
+			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+
+		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		assertEquals(1, documents.size());
+		TextDocument doc = (TextDocument) documents.toArray()[0];
+
+		TextDocumentEndpointTestHelper.removeTextDocument(doc.getId(), testUser);
+
+		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		assertEquals(0, documents.size());
+
+	}
+
 	/**
 	 * Tests if a registered user can insert a text document for a project
 	 */
@@ -102,5 +137,87 @@ public class TextDocumentEndpointTest {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+
+	/**
+	 * Tests if a EntityExistsException thrown correctly on insert
+	 * 
+	 * *
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testDocumentInsertDuplicate() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocument doc = TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+
+		expectedException.expect(EntityExistsException.class);
+		expectedException.expectMessage(is("Object already exists"));
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		tde.insertTextDocument(doc, testUser);
+	}
+
+	/**
+	 * Tests if a EntityNotFoundException thrown correctly on update
+	 * 
+	 * *
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testDocumentUpdateNonExisting() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocument doc = new TextDocument();
+		doc.setId(55555L);
+		doc.setProjectID(5L);
+		doc.setText(new Text("test"));
+		doc.setTitle("Some title");
+		
+		expectedException.expect(EntityNotFoundException.class);
+		expectedException.expectMessage(is("Object does not exist"));
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		tde.updateTextDocument(doc, testUser);
+	}
+
+	/**
+	 * Tests if a EntityNotFoundException thrown correctly on applyCode
+	 * 
+	 * *
+	 * 
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void testDocumentApplyCodeNonExisting() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocument doc = new TextDocument();
+		doc.setId(55555L);
+		doc.setProjectID(5L);
+		doc.setText(new Text("test"));
+		doc.setTitle("Some title");
+
+		TextDocumentCodeContainer documentCode = new TextDocumentCodeContainer();
+		documentCode.textDocument = doc;
+		documentCode.code = new Code();
+
+		expectedException.expect(EntityNotFoundException.class);
+		expectedException.expectMessage(is("Object does not exist"));
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		tde.applyCode(documentCode, testUser);
+	}
+
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 }
