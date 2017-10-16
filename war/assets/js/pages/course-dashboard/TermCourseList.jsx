@@ -140,9 +140,12 @@ export default class TermCourseList extends React.Component {
 		var account = this.props.account;
 		const itemsToDisplay = this.props.course.terms;
 		const renderListItems = itemsToDisplay.map((term, index) => {
-			return <StyledListItemPrimary>
+			if (term.isOpen == "true") {return <StyledListItemPrimary>
 						{renderListItemContent(term, index)}
-					</StyledListItemPrimary>;
+					</StyledListItemPrimary>;}
+					else {
+						return "";
+					}
 		})
 
 		return (
