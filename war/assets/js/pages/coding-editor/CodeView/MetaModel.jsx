@@ -93,10 +93,6 @@ export default class MetaModel extends React.Component {
 						return;
 					}
 				}
-			} else {
-				// Changed from relationship code to normal code
-				this.convertRelationshipCodeToNormalCode();
-				return;
 			}
 		}
 
@@ -394,7 +390,7 @@ export default class MetaModel extends React.Component {
 				<div>
                     <div className="col-sm-3">
                         Source-Code:
-                        <SimpleCodesystem ref={(c) => {if (c) this.sourceCodeCodesystemRef = c;}} height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} isCodeSelectable={isCodeSelectable} />                        
+                        <SimpleCodesystem ref={(c) => {if (c) this.sourceCodeCodesystemRef = c;}} height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} isCodeSelectable={isCodeSelectable} />
                     </div>
                     <div className="col-sm-3">
                         Destination-Code:
@@ -412,7 +408,7 @@ export default class MetaModel extends React.Component {
 
 		return (
 			<StyledCodeviewComponent>
-				<div>   
+				<div>
     		        <div className="col-sm-6">
 		                <MetaModelView code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
     	            </div>

@@ -218,28 +218,32 @@ export default class UmlEditor extends React.Component {
 		// Selected code has a node
 		let node = this.getNodeByCodeId(code.id);
 
-		// Selected is a relationship code
-		let edge = null;
-
 		if (code.relationshipCode != null) {
 			let relationId = code.relationshipCode.key.id;
-			edge = this.graphView.getEdgeByRelationId(relationId);
-		}
+			let edge = this.graphView.getEdgeByRelationId(relationId);
 
-		// Clear selection
-		if (node == null && edge == null) {
-			this.graphView.clearSelection();
-		}
+			// Select code if the edge does not exist
+			if (edge == null) {
+				let sourceCode = this.getCodeById(code.relationshipCode.key.parent.id);
+				let destinationCode = this.getCodeById(code.relationshipCode.codeId);
 
-		// Reset edge if connecting
-		if (!this.graphView.isCellSelected(node) || !this.graphView.isCellSelected(edge)) {
-			if (this.graphView.isConnectingEdge()) {
-				this.graphView.resetConnectingEdge();
+				if (sourceCode != null) {
+					node = this.getNodeByCodeId(sourceCode.id);
+				} else if (destinationCode != null) {
+					node = this.getNodeByCodeId(destinationCode.id);
+				}
+			} else {
+				node = edge;
 			}
 		}
 
 		// Prevent loops
-		if (node != null && !this.graphView.isCellSelected(node)) {
+		if (!this.graphView.isCellSelected(node)) {
+			// Reset edge if connecting
+			if (this.graphView.isConnectingEdge()) {
+				this.graphView.resetConnectingEdge();
+			}
+
 			// Clear selection
 			this.graphView.clearSelection();
 
@@ -247,15 +251,6 @@ export default class UmlEditor extends React.Component {
 			if (node != null) {
 				this.graphView.selectCell(node);
 				this.graphView.panToCell(node, false);
-			}
-		} else if (edge != null && !this.graphView.isCellSelected(edge)) {
-			// Clear selection
-			this.graphView.clearSelection();
-
-			// Select edge for relationship codes
-			if (edge != null) {
-				this.graphView.selectCell(edge);
-				this.graphView.panToCell(edge, false);
 			}
 		}
 	}
@@ -443,6 +438,14 @@ export default class UmlEditor extends React.Component {
 	/**
 	 * Delete a class field relation from the database. This method does not directly update the uml-editor.
 	 */
+	deleteEdge(cell, relationId) {
+		const code = this.getCodeByNode(cell);
+		this.deleteRelation(code, relationId);
+	}
+
+	/**
+	 * Delete a class field relation from the database. This method does not directly update the uml-editor.
+	 */
 	deleteClassField(cell, relationId) {
 		const code = this.getCodeByNode(cell);
 		this.deleteRelation(code, relationId);
@@ -571,7 +574,7 @@ export default class UmlEditor extends React.Component {
 	 */
 	codeRemoved(code) {
 		this.consistencyManager.codeRemoved(code);
-		this.codePositionsManager.removeCodePosition(code.codeID);
+		this.codePositionManager.deleteCodePosition(code.codeID);
 	}
 
 	/**

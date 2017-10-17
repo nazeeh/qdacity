@@ -2,6 +2,11 @@ import React from 'react';
 
 import styled from 'styled-components';
 
+import {
+	BtnDefault,
+	BtnPrimary
+} from '../../../common/styles/Btn.jsx';
+
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../../common/endpoints/MetaModelRelationEndpoint';
 import MetaModelElement from './MetaModelElement';
@@ -135,6 +140,18 @@ export default class MetaModelView extends React.Component {
 		}
 	}
 
+	renderButton(mmElement, name, selected) {
+		if (selected) {
+			return (
+				<BtnPrimary onClick={this.props.updateActiveElement.bind(null, mmElement)} active={true} >{name}</BtnPrimary>
+			);
+		} else {
+			return (
+				<BtnDefault onClick={this.props.updateActiveElement.bind(null, mmElement)} >{name}</BtnDefault>
+			);
+		}
+	}
+
 	renderGroup(elements, group) {
 		let _this = this;
 
@@ -146,19 +163,11 @@ export default class MetaModelView extends React.Component {
 			if (mmElement.generalizations.length == 0 && (typeof _this.props.filter == "undefined" || _this.props.filter == mmElement.type)) {
 				drawFirstLevel = true;
 
-				let attributes = {
-					value: mmElement.id,
-					onClick: _this.props.updateActiveElement.bind(null, mmElement)
-				}
-
-				let classes = "btn btn-default";
-
 				if (mmElement.isSelected()) {
 					firstLevelSelected = mmElement.id;
-					classes = "btn btn-primary";
 				}
 
-				return <a key={mmElement.id} {...attributes} className={classes} href="#">{mmElement.name}</a>
+				return _this.renderButton(mmElement, mmElement.name, mmElement.isSelected());
 			} else {
 				return null
 			}
@@ -167,35 +176,20 @@ export default class MetaModelView extends React.Component {
 		let secondLevelSelected = -1;
 		let secondLevel = elements.map(function (mmElement) {
 			if (mmElement.hasGeneralization(firstLevelSelected)) {
-				let attributes = {
-					value: mmElement.id,
-					onClick: _this.props.updateActiveElement.bind(null, mmElement)
-				}
-
-				let classes = "btn btn-default";
-
 				if (mmElement.isSelected()) {
-					classes = "btn btn-primary";
 					secondLevelSelected = mmElement.id;
 				}
 
-				return <a key={mmElement.id} {...attributes} className={classes} href="#">{mmElement.name}</a>;
-			} else return null;
+				return _this.renderButton(mmElement, mmElement.name, mmElement.isSelected());
+			} else {
+				return null;
+			}
 		})
 
 		let thirdLevel = elements.map(function (mmElement) {
-			let attributes = {
-				value: mmElement.id,
-				onClick: _this.props.updateActiveElement.bind(null, mmElement)
+			if (mmElement.hasGeneralization(secondLevelSelected)) {
+				return _this.renderButton(mmElement, mmElement.name, mmElement.isSelected());
 			}
-
-			let classes = "btn btn-default";
-
-			if (mmElement.isSelected()) {
-				classes = "btn btn-primary";
-			}
-
-			if (mmElement.hasGeneralization(secondLevelSelected)) return <a key={mmElement.id} {...attributes} className={classes} href="#">{mmElement.name}</a>;
 			return null;
 		})
 
