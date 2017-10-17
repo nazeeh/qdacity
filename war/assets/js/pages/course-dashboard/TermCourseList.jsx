@@ -80,12 +80,11 @@ export default class TermCourseList extends React.Component {
 					course.setTerms(termList);
 					console.log(course);
 					_this.props.setCourse(course);
-					});
 				});
-
 			});
 		});
-	}
+	});
+}
 
 	showNewTermCourseModal() {
 		var _this = this;
