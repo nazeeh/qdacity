@@ -79,6 +79,12 @@ public class ValidationEndpointTest {
 
 		List<ValidationReport> reports = ve.listReports(1L, testUser);
 		assertEquals(1, reports.size());
+		ValidationReport report = reports.get(0);
+		assertEquals(1L, report.getProjectID(), 0);
+		assertEquals(valPrj.getRevisionID(), report.getRevisionID(), 0);
+		assertEquals(EvaluationUnit.PARAGRAPH.toString(), report.getEvaluationUnit());
+		assertEquals(EvaluationMethod.F_MEASURE.toString(), report.getEvaluationMethod());
+		assertEquals("ReportTest", report.getName());
 	}
 
 	@Test
