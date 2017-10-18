@@ -165,7 +165,8 @@ export default class TermCourseList extends React.Component {
 	}
 
 	renderCreateTermButton() {
-		return ([
+		var course = this.props.course;
+		if (course.isUserOwner) {return ([
 			<StyledNewPrjBtn id="newProject">
 				<BtnDefault
 					id="newPrjBtn"
@@ -176,7 +177,7 @@ export default class TermCourseList extends React.Component {
 				New Term Course
 				</BtnDefault>
 			</StyledNewPrjBtn>
-		])
+		])}
 	}
 	render() {
 		var _this = this;
