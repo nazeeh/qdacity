@@ -157,9 +157,9 @@ export default class TermCourseList extends React.Component {
 	}
 
 	renderDeleteButton(term, index) {
-		return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+		if (term.isUserOwner){return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 			<i className="fa fa-trash "></i>
-		</StyledListItemBtn>
+		</StyledListItemBtn>}
 	}
 	render() {
 		var _this = this;
