@@ -148,6 +148,8 @@ export default class TermCourseList extends React.Component {
 	}
 
 	renderJoinButton (term, index) {
+		var course = this.props.course;
+		if (course.isUserOwner) return "";
 		//Show join/leave button depending on whether the user is a participant in the course
 		if (!term.isUserParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
 				<i className="fa fa-tags"></i>
