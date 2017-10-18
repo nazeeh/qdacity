@@ -7,7 +7,6 @@ gwt-unitCache
 /war/node_modules
 /war/WEB-INF/*.api
 dist
-/src/com/qdacity/Credentials.java
 build.xml
 build/
 nbproject/

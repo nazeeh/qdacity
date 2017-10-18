@@ -57,12 +57,12 @@ public class ValidationEndpointTest {
 	@Test
 	public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
 		latch.reset(9);
-		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
-		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
-		com.google.appengine.api.users.User studentB = new com.google.appengine.api.users.User("student@asd.de", "bla", "88888");
-		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentB);
+		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@group.riehle.org", "bla", "77777");
+		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
+		com.google.appengine.api.users.User studentB = new com.google.appengine.api.users.User("student@group.riehle.org", "bla", "88888");
+		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
 
-		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
+		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
 
 		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
 		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
@@ -94,6 +94,15 @@ public class ValidationEndpointTest {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		List<AgreementMap> agreementMaps = tde.getAgreementMaps(report.getId(), "REVISION", testUser);
 		assertEquals(1, agreementMaps.size());
+		latch.reset(1);
+		ve.sendNotificationEmail(report.getId(), testUser);
+
+		try {
+			latch.await(20, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task did not finish in time");
+		}
 
 	}
 

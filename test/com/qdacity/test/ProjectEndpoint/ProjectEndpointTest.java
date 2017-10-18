@@ -307,7 +307,7 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for project creation");
 		}
 
-		com.google.appengine.api.users.User invitedUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "77777");
+		com.google.appengine.api.users.User invitedUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "7789456");
 		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
 
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
