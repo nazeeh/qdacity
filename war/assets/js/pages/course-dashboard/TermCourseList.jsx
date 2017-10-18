@@ -64,17 +64,22 @@ export default class TermCourseList extends React.Component {
 				resp2.items = resp2.items || [];
 				resp2.items.forEach(function (crs) {
 					var participants = [];
-					var isParticipant = [];
+					var isUserParticipant = [];
+					var owners = [];
+					var isUserOwner = [];
 					//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
 					_this.props.account.getCurrentUser().then(function (resp) {
 						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
+						if (!(typeof crs.owners == 'undefined')) owners = crs.owners;
 						status = crs.status;
-						isParticipant = participants.includes(resp.id);
+						isUserParticipant = participants.includes(resp.id);
+						isUserOwner = owners.includes(resp.id);
 						termList.push ({
 						text: crs.term,
 						id: crs.id,
 						participants: participants,
-						isParticipant: isParticipant,
+						isUserParticipant: isUserParticipant,
+						isUserOwner: isUserOwner,
 						isOpen: status
 					});
 					course.setTerms(termList);
@@ -106,7 +111,7 @@ export default class TermCourseList extends React.Component {
 				text: term,
 				id: courseID,
 				participants: [],
-				isParticipant: false,
+				isUserParticipant: false,
 				isOpen: "true"
 			});
 			course.setTerms(termList);
@@ -143,7 +148,7 @@ export default class TermCourseList extends React.Component {
 
 	renderJoinButton (term, index) {
 		//Show join/leave button depending on whether the user is a participant in the course
-		if (!term.isParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+		if (!term.isUserParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
 				<i className="fa fa-tags"></i>
 			</StyledListItemBtn>}
 			else {return <StyledListItemBtn onClick={(e) => this.leaveTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
