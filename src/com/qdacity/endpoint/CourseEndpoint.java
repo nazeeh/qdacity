@@ -219,11 +219,10 @@ public class CourseEndpoint {
 		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
 			
-			// Check if user is authorized
-			Authorization.checkAuthorizationCourse(course, user);
-			
+			// Check if user is registered		
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-
+			Authorization.isUserRegistered(dbUser);	
+			
 			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
 				LastCourseUsed task = new LastCourseUsed(dbUser, id);
 				Queue queue = QueueFactory.getDefaultQueue();
@@ -347,8 +346,9 @@ public class CourseEndpoint {
 			throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
 		};
 		
-		// Check if user is Authorized (authorization for the course means authorization for all terms under this course)
-		Authorization.checkAuthorizationCourse(course, user);
+		// Check if user is registered		
+		com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+		Authorization.isUserRegistered(dbUser);	
 		
 		try {
 			
