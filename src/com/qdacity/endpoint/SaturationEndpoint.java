@@ -1,6 +1,7 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,14 +25,6 @@ import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
 import com.qdacity.project.saturation.SaturationParameters;
 import com.qdacity.project.saturation.SaturationResult;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.inject.Named;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 
 @Api(
 	name = "qdacity",
@@ -154,19 +147,6 @@ public class SaturationEndpoint {
 	    }
 	}
 	return toReturn;
-    }
-
-    @ApiMethod(
-	    name = "saturation.saveSaturationParameters",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
-    public void saveSaturationParameters(SaturationParameters saturationParameters, User user) {
-	if (saturationParameters.getCreationTime() == null) {
-	    saturationParameters.setCreationTime(new Date());
-	}
-	getPersistenceManager().makePersistent(saturationParameters);
-
     }
 
     private static PersistenceManager getPersistenceManager() {
