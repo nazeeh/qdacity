@@ -55,8 +55,11 @@ export default class TermCourseList extends React.Component {
 	init() {
 		var _this = this;
 		var course = this.props.course;
+		var owners = [];
+		var isUserOwner = [];
 		//Get the course, its terms, participants and save all info in the course object
 		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
+			if (!(typeof resp.owners == 'undefined')) owners = resp.owners;
 			course.setName(resp.name);
 			course.setDescription(resp.description);
 			CourseEndpoint.getTermsCourse(course.getId()).then(function (resp2) {
@@ -65,15 +68,12 @@ export default class TermCourseList extends React.Component {
 				resp2.items.forEach(function (crs) {
 					var participants = [];
 					var isUserParticipant = [];
-					var owners = [];
-					var isUserOwner = [];
 					//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
 					_this.props.account.getCurrentUser().then(function (resp) {
 						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
-						if (!(typeof crs.owners == 'undefined')) owners = crs.owners;
+						isUserOwner = owners.includes(resp.id);
 						status = crs.status;
 						isUserParticipant = participants.includes(resp.id);
-						isUserOwner = owners.includes(resp.id);
 						termList.push ({
 						text: crs.term,
 						id: crs.id,
@@ -82,6 +82,7 @@ export default class TermCourseList extends React.Component {
 						isUserOwner: isUserOwner,
 						isOpen: status
 					});
+					course.isUserOwner = isUserOwner;
 					course.setTerms(termList);
 					console.log(course);
 					_this.props.setCourse(course);
@@ -157,9 +158,25 @@ export default class TermCourseList extends React.Component {
 	}
 
 	renderDeleteButton(term, index) {
-		if (term.isUserOwner){return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+		var course = this.props.course;
+		if (course.isUserOwner){return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 			<i className="fa fa-trash "></i>
 		</StyledListItemBtn>}
+	}
+
+	renderCreateTermButton() {
+		return ([
+			<StyledNewPrjBtn id="newProject">
+				<BtnDefault
+					id="newPrjBtn"
+					href="#"
+					onClick={this.showNewTermCourseModal}
+				>
+				<i className="fa fa-plus fa-fw"></i>
+				New Term Course
+				</BtnDefault>
+			</StyledNewPrjBtn>
+		])
 	}
 	render() {
 		var _this = this;
@@ -173,16 +190,7 @@ export default class TermCourseList extends React.Component {
 					type="text"
 					placeholder="Search"
 				/>
-				<StyledNewPrjBtn id="newProject">
-					<BtnDefault
-						id="newPrjBtn"
-						href="#"
-						onClick={this.showNewTermCourseModal}
-					>
-					<i className="fa fa-plus fa-fw"></i>
-					New Term Course
-					</BtnDefault>
-				</StyledNewPrjBtn>
+			{this.renderCreateTermButton()}
 
 			</StyledSearchField>
 
