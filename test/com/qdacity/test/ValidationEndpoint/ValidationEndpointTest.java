@@ -62,7 +62,7 @@ public class ValidationEndpointTest {
 		com.google.appengine.api.users.User studentB = new com.google.appengine.api.users.User("student@group.riehle.org", "bla", "88888");
 		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
 
-		UserEndpointTestHelper.addUser("kaufmann@group.riehle.org", "Owner", "Guy", testUser);
+		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
 
 		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
 		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
