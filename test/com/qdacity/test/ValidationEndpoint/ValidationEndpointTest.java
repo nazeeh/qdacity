@@ -23,9 +23,12 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ValidationReport;
@@ -85,6 +88,13 @@ public class ValidationEndpointTest {
 		assertEquals(EvaluationUnit.PARAGRAPH.toString(), report.getEvaluationUnit());
 		assertEquals(EvaluationMethod.F_MEASURE.toString(), report.getEvaluationMethod());
 		assertEquals("ReportTest", report.getName());
+		
+		List<DocumentResult> docResults = report.getDocumentResults();
+		assertEquals(1, docResults.size());
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		List<AgreementMap> agreementMaps = tde.getAgreementMaps(report.getId(), "REVISION", testUser);
+		assertEquals(1, agreementMaps.size());
+
 	}
 
 	@Test
@@ -122,6 +132,8 @@ public class ValidationEndpointTest {
 		assertEquals(EvaluationUnit.PARAGRAPH.toString(), report.getEvaluationUnit());
 		assertEquals(EvaluationMethod.KRIPPENDORFFS_ALPHA.toString(), report.getEvaluationMethod());
 		assertEquals("ReportTest", report.getName());
+
+
 	}
 
 	@Test

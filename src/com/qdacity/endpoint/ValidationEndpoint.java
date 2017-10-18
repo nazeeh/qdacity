@@ -1,7 +1,6 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
@@ -161,21 +159,6 @@ public class ValidationEndpoint {
 		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 
 		return null;
-	}
-
-	private void generateAgreementMaps(List<DocumentResult> documentResults, Collection<TextDocument> originalDocs) {
-		Logger.getLogger("logger").log(Level.INFO, "originalDocs: " + originalDocs + " documentResults: " + documentResults);
-		for (TextDocument textDocument : originalDocs) {
-			for (DocumentResult documentResult : documentResults) {
-				if (documentResult.getDocumentID().equals(textDocument.getId())) {
-					Logger.getLogger("logger").log(Level.INFO, "Generating map for: " + textDocument.getId());
-					documentResult.generateAgreementMap(textDocument);
-					break;
-				}
-
-			}
-		}
-
 	}
 
 	@ApiMethod(
