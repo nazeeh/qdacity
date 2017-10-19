@@ -77,7 +77,6 @@ export default class CourseList extends React.Component {
 			courses = _this.sortCourses(courses);
 			var counter = resp.items.length;
 			courses.forEach(function (crs, index) {
-				crs.type = "COURSE";
 				CourseEndPoint.listTermCourse(crs.id).then(function (resp2) {
 					counter -= 1;
 					var termList = [];
@@ -86,10 +85,12 @@ export default class CourseList extends React.Component {
 					resp2.items.forEach(function (crs, index) {
 						termList.push({
 							text: crs.term,
+							creationDate: crs.creationDate
 						});
 					});
 					courses[index].terms = termList;
 					if (counter == 0) {
+						console.log(courses);
 						_this.props.setCourses(courses);
 					}
 				});

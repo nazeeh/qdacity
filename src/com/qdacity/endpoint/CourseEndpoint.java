@@ -1,6 +1,8 @@
 package com.qdacity.endpoint;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -273,6 +275,11 @@ public class CourseEndpoint {
 			mgr.close();
 		}
 
+		Collections.sort(execute, new Comparator<TermCourse>() {
+		    public int compare(TermCourse t1, TermCourse t2) {
+		        return t1.getCreationDate().compareTo(t2.getCreationDate());
+		    }
+		});
 		return execute;
 	}
 	
