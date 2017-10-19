@@ -21,6 +21,7 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
@@ -44,18 +45,23 @@ import com.qdacity.user.UserNotification;
 public class ProjectEndpointTest {
 
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
-
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	@Before
 	public void setUp() {
 		helper.setUp();
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Iterable<Entity> users = ds.prepare(new Query("User")).asIterable();
+		for (Entity entity : users) {
+			ds.delete(entity.getKey());
+		}
+		
 	}
 
 	@After
 	public void tearDown() {
-		latch.reset(1);
 		helper.tearDown();
+		latch.reset(1);
 	}
 
 	/**
