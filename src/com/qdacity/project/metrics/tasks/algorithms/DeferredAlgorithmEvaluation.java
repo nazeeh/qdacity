@@ -1,8 +1,9 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
@@ -11,9 +12,6 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ValidationResult;
-import java.util.ArrayList;
-import java.util.List;
-import javax.jdo.PersistenceManager;
 
 /**
  * Template class for DeferredTasks running an EvaluationAlgorithm which
