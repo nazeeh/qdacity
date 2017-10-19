@@ -444,7 +444,7 @@ public class ProjectEndpointTest {
 	@Test
 	public void testValidationProjectCreation() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		ProjectEndpoint ue = new ProjectEndpoint();
+		ProjectEndpoint pe = new ProjectEndpoint();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
 		CodeSystemTestHelper.addCodeSystem(1L, testUser);
@@ -457,26 +457,33 @@ public class ProjectEndpointTest {
 		}
 
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
-		ue.createSnapshot(1L, "A test revision", testUser);
+		pe.createSnapshot(1L, "A test revision", testUser);
 
 		com.google.appengine.api.users.User student = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
 
-		List<ProjectRevision> revisions = ue.listRevisions(1L, testUser);
+		List<ProjectRevision> revisions = pe.listRevisions(1L, testUser);
 		Long revID = revisions.get(0).getId();
-		ue.requestValidationAccess(revID, student);
+		pe.requestValidationAccess(revID, student);
 
-		ue.createValidationProject(revID, student.getUserId(), testUser);
+		pe.createValidationProject(revID, student.getUserId(), testUser);
 		
-		List<ValidationProject> valPrj = ue.listValidationProject(student);
+		List<ValidationProject> valPrj = pe.listValidationProject(student);
 
 		assertEquals(1, valPrj.size());
 
-		ue.removeValidationProject(valPrj.get(0).getId(), testUser);
+		ValidationProject project = (ValidationProject) pe.getProject(valPrj.get(0).getId(), "VALIDATION", student);
 
-		valPrj = ue.listValidationProject(student);
+		assertEquals(revID, project.getRevisionID(), 0);
+
+		pe.removeValidationProject(valPrj.get(0).getId(), testUser);
+
+		valPrj = pe.listValidationProject(student);
 
 		assertEquals(0, valPrj.size());
+		
+
+
 
 	}
 
