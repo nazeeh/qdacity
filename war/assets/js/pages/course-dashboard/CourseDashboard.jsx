@@ -38,7 +38,7 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	addParticipant(term) {
-		//Find the id of the term to be added, then add the user to participants & set isParticipant to true for that term
+		//Find the id of the term to be added, then add the user to participants & set isUserParticipant to true for that term
 		var _this = this;
 		var id = term.id;
 		var course = this.state.course;
@@ -47,7 +47,7 @@ export default class CourseDashboard extends React.Component {
 				var termIndex = index;
 				_this.props.account.getCurrentUser().then(function (resp) {
 					course.terms[termIndex].participants.push(resp.id);
-					course.terms[termIndex].isParticipant = true;
+					course.terms[termIndex].isUserParticipant = true;
 					_this.setState({
 						course: course
 					});
@@ -57,14 +57,14 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	removeParticipant(term) {
-		//Find the id of the term to be removed, then remove the user from participants & set isParticipant to false for that term
+		//Find the id of the term to be removed, then remove the user from participants & set isUserParticipant to false for that term
 		var _this = this;
 		var id = term.id;
 		var course = this.state.course;
 		course.terms.forEach(function (term, index) {
 			if (term.id == id) {
 				course.terms[index].participants.splice(index, 1);
-				course.terms[index].isParticipant = false;
+				course.terms[index].isUserParticipant = false;
 				_this.setState({
 					course: course
 				});
