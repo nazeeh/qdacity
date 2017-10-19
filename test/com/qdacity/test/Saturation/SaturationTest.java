@@ -117,6 +117,107 @@ public class SaturationTest {
 		}
 	}
 
+	/**
+	 * Tests if the parameters can be changed and persisted
+	 */
+	@Test
+	public void testSetParameters() {
+		setUpProject();
+		try {
+			SaturationParameters params = se.getSaturationParameters(1L);
+
+			params.setInsertDocumentChangeWeight(2);
+			// Code Changes
+			params.setInsertCodeChangeWeight(3);
+			params.setUpdateCodeAuthorChangeWeight(4);
+			params.setUpdateCodeColorChangeWeight(5);
+			params.setUpdateCodeMemoChangeWeight(6);
+
+			params.setUpdateCodeNameChangeWeight(7);
+			params.setRelocateCodeChangeWeight(8);
+			params.setInsertCodeRelationShipChangeWeight(9);
+			params.setDeleteCodeRelationShipChangeWeight(10);
+			params.setDeleteCodeChangeWeight(11);
+			params.setAppliedCodesChangeWeight(12);
+			// CodeBookEntry Changes
+			params.setUpdateCodeBookEntryDefinitionChangeWeight(13);
+			params.setUpdateCodeBookEntryExampleChangeWeight(14);
+			params.setUpdateCodeBookEntryShortDefinitionChangeWeight(15);
+			params.setUpdateCodeBookEntryWhenNotToUseChangeWeight(16);
+			params.setUpdateCodeBookEntryWhenToUseChangeWeight(17);
+
+			// ===== SATURATION MAXIMA =============
+			params.setInsertDocumentSaturationMaximum(18);
+			// Code Changes
+			params.setInsertCodeSaturationMaximum(19);
+			params.setUpdateCodeAuthorSaturationMaximum(20);
+			params.setUpdateCodeColorSaturationMaximum(21);
+			params.setUpdateCodeMemoSaturationMaximum(22);
+			params.setUpdateCodeNameSaturationMaximum(23);
+			params.setRelocateCodeSaturationMaximum(24);
+			params.setInsertCodeRelationShipSaturationMaximum(25);
+			params.setDeleteCodeRelationShipSaturationMaximum(26);
+			params.setDeleteCodeSaturationMaximum(27);
+			params.setAppliedCodesSaturationMaximum(28);
+			// CodeBookEntry Changes
+			params.setUpdateCodeBookEntryDefinitionSaturationMaximum(29);
+			params.setUpdateCodeBookEntryExampleSaturationMaximum(30);
+			params.setUpdateCodeBookEntryShortDefinitionSaturationMaximum(31);
+			params.setUpdateCodeBookEntryWhenNotToUseSaturationMaximum(32);
+			params.setUpdateCodeBookEntryWhenToUseSaturationMaximum(33);
+
+			se.setSaturationParameters(params, testUser);
+			SaturationParameters paramsReloaded = se.getSaturationParameters(1L);
+
+			// ===== SATURATION WEIGHTS =============
+			// Document Changes
+			assertEquals(2.0, paramsReloaded.getInsertDocumentChangeWeight(), 1);
+
+			// Code Changes
+			assertEquals(3, paramsReloaded.getInsertCodeChangeWeight(), 0);
+			assertEquals(4, paramsReloaded.getUpdateCodeAuthorChangeWeight(), 0);
+			assertEquals(5, paramsReloaded.getUpdateCodeColorChangeWeight(), 0);
+			assertEquals(6, paramsReloaded.getUpdateCodeMemoChangeWeight(), 0);
+			assertEquals(7, paramsReloaded.getUpdateCodeNameChangeWeight(), 0);
+			assertEquals(8, paramsReloaded.getRelocateCodeChangeWeight(), 0);
+			assertEquals(9, paramsReloaded.getInsertCodeRelationShipChangeWeight(), 0);
+
+			assertEquals(10, paramsReloaded.getDeleteCodeRelationShipChangeWeight(), 0);
+			assertEquals(11, paramsReloaded.getDeleteCodeChangeWeight(), 0);
+			assertEquals(12, paramsReloaded.getAppliedCodesChangeWeight(), 0);
+			// CodeBookEntry Changes
+			assertEquals(13, paramsReloaded.getUpdateCodeBookEntryDefinitionChangeWeight(), 0);
+			assertEquals(14, paramsReloaded.getUpdateCodeBookEntryExampleChangeWeight(), 0);
+			assertEquals(15, paramsReloaded.getUpdateCodeBookEntryShortDefinitionChangeWeight(), 0);
+			assertEquals(16, paramsReloaded.getUpdateCodeBookEntryWhenNotToUseChangeWeight(), 0);
+			assertEquals(17, paramsReloaded.getUpdateCodeBookEntryWhenToUseChangeWeight(), 0);
+
+			// ===== SATURATION MAXIMA =============
+			assertEquals(18, paramsReloaded.getInsertDocumentSaturationMaximum(), 0);
+			// Code Changes
+			assertEquals(19, paramsReloaded.getInsertCodeSaturationMaximum(), 0);
+			assertEquals(20, paramsReloaded.getUpdateCodeAuthorSaturationMaximum(), 0);
+			assertEquals(21, paramsReloaded.getUpdateCodeColorSaturationMaximum(), 0);
+			assertEquals(22, paramsReloaded.getUpdateCodeMemoSaturationMaximum(), 0);
+			assertEquals(23, paramsReloaded.getUpdateCodeNameSaturationMaximum(), 0);
+			assertEquals(24, paramsReloaded.getRelocateCodeSaturationMaximum(), 0);
+			assertEquals(25, paramsReloaded.getInsertCodeRelationShipSaturationMaximum(), 0);
+			assertEquals(26, paramsReloaded.getDeleteCodeRelationShipSaturationMaximum(), 0);
+			assertEquals(27, paramsReloaded.getDeleteCodeSaturationMaximum(), 0);
+			assertEquals(28, paramsReloaded.getAppliedCodesSaturationMaximum(), 0);
+			// CodeBookEntry Changes
+			assertEquals(29, paramsReloaded.getUpdateCodeBookEntryDefinitionSaturationMaximum(), 0);
+			assertEquals(30, paramsReloaded.getUpdateCodeBookEntryExampleSaturationMaximum(), 0);
+			assertEquals(31, paramsReloaded.getUpdateCodeBookEntryShortDefinitionSaturationMaximum(), 0);
+			assertEquals(32, paramsReloaded.getUpdateCodeBookEntryWhenNotToUseSaturationMaximum(), 0);
+			assertEquals(33, paramsReloaded.getUpdateCodeBookEntryWhenToUseSaturationMaximum(), 0);
+
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("default saturation parameters could not be retrieved");
+		}
+	}
+
 	@Test
 	public void testSaturationTrigger() {
 		setUpProject();
