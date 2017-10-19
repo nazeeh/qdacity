@@ -118,6 +118,10 @@ public class User implements Serializable {
 		courses.remove(course);
 	}
 	
+	public void removeTermCourseAuthorization(Long termCourse) {
+		termCourses.remove(termCourse);
+	}
+	
 	
 	public String getEmail() {
 		return email;

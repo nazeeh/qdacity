@@ -377,6 +377,43 @@ public class CourseEndpoint {
 		return termCourses;
 	}
 	
+	/**
+	 * This method removes the entity with primary key id.
+	 * It uses HTTP DELETE method.
+	 *
+	 * @param id the primary key of the entity to be deleted.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "course.removeTermCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public void removeTermCourse(@Named("id") Long id, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, id);
+
+			// Check if user is authorized
+			Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+			List<String> userIDs = termCourse.getOwners();
+
+			
+			for (String courseUserIDs : userIDs) {
+				com.qdacity.user.User termCourseUser = mgr.getObjectById(com.qdacity.user.User.class, courseUserIDs);
+
+				termCourseUser.removeTermCourseAuthorization(id);
+				mgr.makePersistent(termCourseUser);
+
+			}
+			 
+			// Finally remove the actual course
+			mgr.deletePersistent(termCourse);
+		} finally {
+			mgr.close();
+		}
+	}
+	
 	@ApiMethod(name = "course.addParticipant",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
