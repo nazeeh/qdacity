@@ -21,6 +21,7 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
@@ -44,18 +45,23 @@ import com.qdacity.user.UserNotification;
 public class ProjectEndpointTest {
 
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
-
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	@Before
 	public void setUp() {
 		helper.setUp();
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Iterable<Entity> users = ds.prepare(new Query("User")).asIterable();
+		for (Entity entity : users) {
+			ds.delete(entity.getKey());
+		}
+		
 	}
 
 	@After
 	public void tearDown() {
-		latch.reset(1);
 		helper.tearDown();
+		latch.reset(1);
 	}
 
 	/**
@@ -438,7 +444,7 @@ public class ProjectEndpointTest {
 	@Test
 	public void testValidationProjectCreation() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		ProjectEndpoint ue = new ProjectEndpoint();
+		ProjectEndpoint pe = new ProjectEndpoint();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", testUser);
 		CodeSystemTestHelper.addCodeSystem(1L, testUser);
@@ -451,26 +457,33 @@ public class ProjectEndpointTest {
 		}
 
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
-		ue.createSnapshot(1L, "A test revision", testUser);
+		pe.createSnapshot(1L, "A test revision", testUser);
 
 		com.google.appengine.api.users.User student = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
 
-		List<ProjectRevision> revisions = ue.listRevisions(1L, testUser);
+		List<ProjectRevision> revisions = pe.listRevisions(1L, testUser);
 		Long revID = revisions.get(0).getId();
-		ue.requestValidationAccess(revID, student);
+		pe.requestValidationAccess(revID, student);
 
-		ue.createValidationProject(revID, student.getUserId(), testUser);
+		pe.createValidationProject(revID, student.getUserId(), testUser);
 		
-		List<ValidationProject> valPrj = ue.listValidationProject(student);
+		List<ValidationProject> valPrj = pe.listValidationProject(student);
 
 		assertEquals(1, valPrj.size());
 
-		ue.removeValidationProject(valPrj.get(0).getId(), testUser);
+		ValidationProject project = (ValidationProject) pe.getProject(valPrj.get(0).getId(), "VALIDATION", student);
 
-		valPrj = ue.listValidationProject(student);
+		assertEquals(revID, project.getRevisionID(), 0);
+
+		pe.removeValidationProject(valPrj.get(0).getId(), testUser);
+
+		valPrj = pe.listValidationProject(student);
 
 		assertEquals(0, valPrj.size());
+		
+
+
 
 	}
 
