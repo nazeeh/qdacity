@@ -2,6 +2,7 @@ package com.qdacity.course;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -43,6 +44,9 @@ public class TermCourse implements Serializable {
 	@Persistent
 	boolean isOpen;
 	
+	@Persistent
+	Date creationDate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -51,6 +55,14 @@ public class TermCourse implements Serializable {
 		this.id = id;
 	}
 
+	public void setCreationDate(Date date) {
+		this.creationDate = date;
+	}
+	
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	
 	public void setStatus(boolean isOpen) {
 		this.isOpen = isOpen;
 	}

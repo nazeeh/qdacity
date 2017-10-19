@@ -1,6 +1,7 @@
 package com.qdacity.endpoint;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -289,10 +290,13 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
-		
+				
 		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
 		termCourse.setStatus(true);
+		termCourse.setCreationDate(new Date());
+		
+		
 		PersistenceManager mgr = getPersistenceManager();
 		
 		try {
