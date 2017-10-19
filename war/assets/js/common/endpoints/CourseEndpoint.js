@@ -45,6 +45,13 @@ export default class CourseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static removeTermCourse(Id) {
+		var apiMethod = gapi.client.qdacity.course.removeTermCourse({
+			'id': Id
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static listTermCourse(templateCrsID) {
 		var apiMethod = gapi.client.qdacity.course.listTermCourse({
 			'courseID': templateCrsID

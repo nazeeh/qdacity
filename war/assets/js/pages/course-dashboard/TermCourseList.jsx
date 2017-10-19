@@ -121,6 +121,26 @@ export default class TermCourseList extends React.Component {
 			});
 	}
 
+	removeTermCourse(e, term, index) {
+		var _this = this;
+		e.stopPropagation();
+		var course = this.props.course;
+		var courseTerms = course.terms;
+		var confirm = new Confirm('Do you want to delete the term ' + term.text + ' of this course?');
+		confirm.showModal().then(function () {
+			CourseEndPoint.removeTermCourse(term.id).then(function (resp) {
+				courseTerms.forEach(function (courseTerm) {
+					if (courseTerm.id == term.id) {
+						courseTerms.splice(courseTerms.indexOf(term.id), 1);
+						course.setTerms(courseTerms);
+						console.log(course);
+						_this.props.setCourse(course);
+					}
+				})
+			});
+		});
+	}
+
 	joinTermCourse(e, term, index) {
 		var _this = this;
 		e.stopPropagation();
@@ -161,7 +181,7 @@ export default class TermCourseList extends React.Component {
 
 	renderDeleteButton(term, index) {
 		var course = this.props.course;
-		if (course.isUserOwner){return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+		if (course.isUserOwner){return <StyledListItemBtn onClick={(e) => this.removeTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 			<i className="fa fa-trash "></i>
 		</StyledListItemBtn>}
 	}
