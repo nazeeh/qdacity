@@ -84,13 +84,11 @@ export default class CourseList extends React.Component {
 
 					resp2.items.forEach(function (crs, index) {
 						termList.push({
-							text: crs.term,
-							creationDate: crs.creationDate
+							text: crs.term
 						});
 					});
 					courses[index].terms = termList;
 					if (counter == 0) {
-						console.log(courses);
 						_this.props.setCourses(courses);
 					}
 				});
@@ -249,7 +247,7 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton isListItemButton={true} items={course.terms}></DropDownButton>
+					<DropDownButton isListItemButton={true} items={course.terms} initText={course.terms[course.terms.length - 1].text}></DropDownButton>
 				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-trash "></i>
 				</StyledListItemBtn>
