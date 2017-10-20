@@ -190,7 +190,13 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-
+	defineInitText(course, index) {
+		var text = "";
+		if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
+			text = course.terms[course.terms.length - 1].text;
+		}
+		return text;
+	}
 
 	render() {
 		var _this = this;
@@ -239,6 +245,8 @@ export default class CourseList extends React.Component {
 
 
 
+
+
 		function prjClick(prj) {
 			_this.props.history.push('/CourseDashboard?course=' + prj.id);
 		}
@@ -247,7 +255,7 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton isListItemButton={true} items={course.terms} initText={course.terms[course.terms.length - 1].text}></DropDownButton>
+					<DropDownButton isListItemButton={true} items={course.terms} initText={this.defineInitText(course, index)}></DropDownButton>
 				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-trash "></i>
 				</StyledListItemBtn>
