@@ -209,6 +209,20 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a user can delete his own course
+	 */
+	@Test
+	public void testTermCourseRemove() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		CourseEndpointTestHelper.removeTermCourse(1L, testUser);
+		assertEquals(0, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+	}
+	
+	/**
 	 * Tests if a registered can list terms for a course
 	 */
 	@Test
@@ -252,7 +266,6 @@ public class CourseEndpointTest {
 	/**
 	 * Tests if a user can become a participant of a term course
 	 */
-	/*
 	@Test
 	public void testAddParticipant() {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -280,11 +293,10 @@ public class CourseEndpointTest {
 			  q.closeAll();
 			}
 		
-		
 		assertEquals(true, thisCourse.getParticipants().contains(testUser.getUserId()));
 		
 	}
-	*/
+	
 	/**
 	 * Tests if Courses from other users can be not be deleted
 	 * 

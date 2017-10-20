@@ -60,6 +60,16 @@ public class CourseEndpointTestHelper {
 		return termCourse;
 	}
 	
+	static public void removeTermCourse(Long id, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ue = new CourseEndpoint();
+		try {
+			ue.removeTermCourse(id, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User is Not Authorized");
+		}
+	}
+	
 	static public List<TermCourse> listTermCourse(Long courseID, com.google.appengine.api.users.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		List<TermCourse> terms = null;
