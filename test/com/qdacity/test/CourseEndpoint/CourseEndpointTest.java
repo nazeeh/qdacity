@@ -333,6 +333,40 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a user can become a participant of a term course
+	 */
+	@Test
+	public void testAddSetStatus() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisCourse = new TermCourse();
+		
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpointTestHelper.setTermCourseStatus(1L, true, testUser);	
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		
+		
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisCourse = termCourses.get(0);
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getStatus());
+		
+	}
+	
+	/**
 	 * Tests if Courses from other users can be not be deleted
 	 * 
 	 * @throws UnauthorizedException

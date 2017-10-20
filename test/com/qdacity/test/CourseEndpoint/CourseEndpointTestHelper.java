@@ -110,6 +110,19 @@ public class CourseEndpointTestHelper {
 		}
 	}
 	
+	static public void setTermCourseStatus(Long id,boolean isOpen, com.google.appengine.api.users.User loggedInUser) {
+		TermCourse termCourse = new TermCourse();
+		termCourse.setStatus(isOpen);
+
+		CourseEndpoint ue = new CourseEndpoint();
+		try {
+			ue.setTermCourseStatus(id, isOpen, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term course creation");
+		}
+	}
+	
 	static public void addParticipantTermCourse(Long termCourseID, String userID, com.google.appengine.api.users.User loggedInUser) {
 		CourseEndpoint ue = new CourseEndpoint();
 		
