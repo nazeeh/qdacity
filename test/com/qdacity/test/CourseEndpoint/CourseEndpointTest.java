@@ -209,6 +209,25 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a user can get a term course which doesn't exist
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testGetTermCourseInvalid() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expectMessage(is("Term Course does not exist"));
+
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.getTermCourse(1L, testUser);
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		
+	}
+	
+	/**
 	 * Tests if a user can delete his own course
 	 */
 	@Test
