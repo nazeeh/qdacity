@@ -230,7 +230,7 @@ public class CourseEndpointTest {
 	 * Tests if a user can get a term course in which he's an owner 
 	 */
 	@Test
-	public void testGetTermCourses() {
+	public void testGetTermCourse() {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		TermCourse retrievedCourse = new TermCourse();
 		Long retrievedId = 0L;
@@ -246,6 +246,41 @@ public class CourseEndpointTest {
 		Entity queryResult = ds.prepare(q).asSingleEntity();
 		
 		assertEquals(Long.valueOf(queryResult.getKey().getId()), retrievedId);
+	}
+	
+	/**
+	 * Tests if a user can become a participant of a term course
+	 */
+	@Test
+	public void testAddParticipant() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisCourse = new TermCourse();
+		
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisCourse = termCourses.get(0);
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		
+		assertEquals(true, thisCourse.getParticipants().contains(testUser.getUserId()));
+		
 	}
 	
 	/**

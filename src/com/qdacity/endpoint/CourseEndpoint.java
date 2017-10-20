@@ -248,7 +248,7 @@ public class CourseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(name = "course.getTermCourse",
-		path = "course",
+		path = "TermCourse",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })

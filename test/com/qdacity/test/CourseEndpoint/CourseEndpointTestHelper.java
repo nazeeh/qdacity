@@ -100,6 +100,17 @@ public class CourseEndpointTestHelper {
 		}
 	}
 	
+	static public void addParticipantTermCourse(Long termCourseID, String userID, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ue = new CourseEndpoint();
+		
+		try {
+			ue.addParticipant(termCourseID, userID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term course creation");
+		}
+	}
+	
 	static public CollectionResponse<Course> listCourse(com.google.appengine.api.users.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		CollectionResponse<Course> courses = null;
