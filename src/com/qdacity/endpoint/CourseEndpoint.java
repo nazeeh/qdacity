@@ -369,51 +369,6 @@ public class CourseEndpoint {
 		return termCourse;
 	}
 	
-	/**
-	 * This method gets the entity having primary key id. It uses HTTP GET method.
-	 *
-	 * @param id the primary key of the java bean.
-	 * @return The entity with primary key id.
-	 * @throws UnauthorizedException
-	 */
-	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "course.getTermsCourse",
-		path = "termCourse",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public List<TermCourse> getTermCourses(@Named("courseID") Long courseID, User user) throws UnauthorizedException {
-		
-		PersistenceManager mgr = getPersistenceManager();
-		List<TermCourse> termCourses;
-		
-		Course course = null;
-		try {
-			course = (Course) mgr.getObjectById(Course.class, courseID);
-		}
-		catch (Exception e) {
-			throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
-		};
-		
-		// Check if user is registered		
-		com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-		Authorization.isUserRegistered(dbUser);	
-		
-		try {
-			
-			Query query = mgr.newQuery(TermCourse.class, "courseID == id ");
-	        query.declareParameters("Long id");
-	        termCourses = (List<TermCourse>) query.execute(courseID);
-			if (termCourses.size() == 0) {
-				throw new UnauthorizedException("Term Courses related to course with id: " + courseID + " were not found");
-			}
-
-		} finally {
-			mgr.close();
-		}
-		
-		return termCourses;
-	}
 	
 	/**
 	 * This method removes the entity with primary key id.
