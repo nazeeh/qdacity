@@ -227,6 +227,28 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a user can get a term course in which he's an owner 
+	 */
+	@Test
+	public void testGetTermCourses() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		TermCourse retrievedCourse = new TermCourse();
+		Long retrievedId = 0L;
+		
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		retrievedCourse = CourseEndpointTestHelper.getTermCourse(1L, testUser);
+		retrievedId = retrievedCourse.getId();
+
+		Query q = new Query("TermCourse");
+		Entity queryResult = ds.prepare(q).asSingleEntity();
+		
+		assertEquals(Long.valueOf(queryResult.getKey().getId()), retrievedId);
+	}
+	
+	/**
 	 * Tests if Courses from other users can be not be deleted
 	 * 
 	 * @throws UnauthorizedException

@@ -241,6 +241,44 @@ public class CourseEndpoint {
 	}
 	
 	/**
+	 * This method gets the entity having primary key id. It uses HTTP GET method.
+	 *
+	 * @param id the primary key of the java bean.
+	 * @return The entity with primary key id.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "course.getTermCourse",
+		path = "course",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public TermCourse getTermCourse(@Named("id") Long id, User user) throws UnauthorizedException {
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse termCourse = null;
+		try {
+			termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, id);
+		}
+		catch (Exception e) {
+			throw new javax.jdo.JDOObjectNotFoundException("Term Course does not exist");
+		};
+		
+		try {
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
+			
+			// Check if user is registered		
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			Authorization.isUserRegistered(dbUser);	
+			
+			termCourse = (TermCourse) Cache.getOrLoad(id, TermCourse.class);
+
+		} finally {
+			mgr.close();
+		}
+		return termCourse;
+	}
+	
+	/**
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.
 	 *
