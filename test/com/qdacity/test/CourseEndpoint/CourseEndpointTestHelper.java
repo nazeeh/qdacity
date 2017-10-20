@@ -117,7 +117,18 @@ public class CourseEndpointTestHelper {
 			ue.addParticipant(termCourseID, userID, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
-			fail("User could not be authorized for term course creation");
+			fail("User could not be authorized for term course participation");
+		}
+	}
+	
+	static public void removeParticipantTermCourse(Long termCourseID, String userID, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ue = new CourseEndpoint();
+		
+		try {
+			ue.removeParticipant(termCourseID, userID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term course participation");
 		}
 	}
 	
