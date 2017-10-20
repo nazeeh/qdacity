@@ -62,7 +62,7 @@ export default class TermCourseList extends React.Component {
 			if (!(typeof resp.owners == 'undefined')) owners = resp.owners;
 			course.setName(resp.name);
 			course.setDescription(resp.description);
-			CourseEndpoint.getTermsCourse(course.getId()).then(function (resp2) {
+			CourseEndpoint.listTermCourse(course.getId()).then(function (resp2) {
 				var termList = [];
 				resp2.items = resp2.items || [];
 				resp2.items.forEach(function (crs) {

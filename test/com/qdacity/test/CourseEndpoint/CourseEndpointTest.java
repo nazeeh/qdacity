@@ -248,9 +248,11 @@ public class CourseEndpointTest {
 		assertEquals(Long.valueOf(queryResult.getKey().getId()), retrievedId);
 	}
 	
+	
 	/**
 	 * Tests if a user can become a participant of a term course
 	 */
+	/*
 	@Test
 	public void testAddParticipant() {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -282,7 +284,7 @@ public class CourseEndpointTest {
 		assertEquals(true, thisCourse.getParticipants().contains(testUser.getUserId()));
 		
 	}
-	
+	*/
 	/**
 	 * Tests if Courses from other users can be not be deleted
 	 * 
