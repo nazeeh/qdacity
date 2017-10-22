@@ -182,6 +182,10 @@ export default class CodingEditor extends React.Component {
 
 	}
 
+	changeView(view) {
+
+	}
+
 	viewChanged(view) {
 		if (this.state.editorCtrl.setReadOnly) {
 			if (view === PageView.TEXT) {
@@ -348,7 +352,8 @@ export default class CodingEditor extends React.Component {
                             project={this.state.project}
                             history={this.props.history}
                             documentsView = {this.documentsViewRef}
-                            showCodingView = {this.showCodingView}/>
+                            showCodingView = {this.showCodingView}
+                            selectedEditor={this.state.selectedEditor}/>
                     </div>
                 </StyledSideBarEditor>
                 <StyledSideBarDocuments>
@@ -443,7 +448,8 @@ export default class CodingEditor extends React.Component {
                     createCode={this.createCode}
                     selectCode={this.selectCode}
                     hideCodingView={this.hideCodingView}
-                    deleteRelationship={this.deleteRelationship}/>
+                    deleteRelationship={this.deleteRelationship}
+                    codingEditor={this}/>
             </StyledFooter>
         </StyledCodingEditor>
 		);
