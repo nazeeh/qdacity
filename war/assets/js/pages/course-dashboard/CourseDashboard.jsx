@@ -7,6 +7,7 @@ import TermCourseList from './TermCourseList.jsx';
 import Course from './Course';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
+import Teachers from "./Teachers/Teachers.jsx";
 
 const StyledDashboard = styled.div `
 	margin-top: 35px;
@@ -99,7 +100,9 @@ export default class CourseDashboard extends React.Component {
 						</div>
 					</div>
 				</div>
-
+				<div className="col-lg-5">
+					<Teachers course={this.state.course}/>
+				</div>
 		  	</StyledDashboard>
 		);
 	}
