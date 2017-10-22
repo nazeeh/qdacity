@@ -104,6 +104,59 @@ public class UserEndpoint {
 
 		return users;
 	}
+	
+	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all entities
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(
+		name = "user.listUserByCourse",
+		path = "userlistbycourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<User> listUserByCourse(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("courseID") Long courseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
+
+		// Authorization.checkAuthorization(projectID, user); //FIXME consider public projects
+
+		// Set filter
+		List<Long> idsToFilter = new ArrayList<Long>();
+		idsToFilter.add(courseID);
+		Filter filter = new FilterPredicate("course", FilterOperator.IN, idsToFilter);
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("User").setFilter(filter);
+
+		PreparedQuery pq = datastore.prepare(q);
+
+		Calendar cal = Calendar.getInstance();
+
+		Map<String, Integer> freq = new HashMap<String, Integer>();
+
+		// List<User> users = (List<User>)(List<?>)Lists.newArrayList( pq.asIterable() );
+
+		List<User> users = new ArrayList<User>();
+
+		for (Entity result : pq.asIterable()) {
+			User dbUser = new User();
+			dbUser.setGivenName((String) result.getProperty("givenName"));
+			dbUser.setSurName((String) result.getProperty("surName"));
+			dbUser.setProjects((List<Long>) result.getProperty("projects"));
+			dbUser.setCourses((List<Long>) result.getProperty("courses"));
+			dbUser.setId((String) result.getProperty("id"));
+			dbUser.setType(UserType.valueOf((String) result.getProperty("type")));
+
+			users.add(dbUser);
+		}
+
+		return users;
+	}
 
 	@SuppressWarnings({ "unchecked", "unused" })
 	@ApiMethod(
