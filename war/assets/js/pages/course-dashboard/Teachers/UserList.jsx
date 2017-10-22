@@ -26,10 +26,10 @@ export default class UserList extends React.Component {
 	}
 
 	init() {
-			this.addParticipants();
+			this.addOwners();
 	}
 
-	addParticipants() {
+	addOwners() {
 		var _this = this;
 		UserEndpoint.listUserByCourse(this.props.course.getId()).then(function (resp) {
 			resp.items = resp.items || [];

@@ -127,7 +127,7 @@ public class UserEndpoint {
 		// Set filter
 		List<Long> idsToFilter = new ArrayList<Long>();
 		idsToFilter.add(courseID);
-		Filter filter = new FilterPredicate("course", FilterOperator.IN, idsToFilter);
+		Filter filter = new FilterPredicate("courses", FilterOperator.IN, idsToFilter);
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
