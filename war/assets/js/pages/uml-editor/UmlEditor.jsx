@@ -396,10 +396,6 @@ export default class UmlEditor extends React.Component {
 
 		const code = this.getCodeByCodeId(codeId);
 
-		// TODO scroll to new node
-
-		// TODO only update the proper tree ... dont delete actor mmElement for example
-
 		const newMMElementIds = [];
 
 		const newMMElement = this.getMetaModelEntityByName(this.metaModelMapper.getDefaultUmlClassMetaModelName());
@@ -649,6 +645,7 @@ export default class UmlEditor extends React.Component {
 
 			if (node != null) {
 				this.graphView.selectCell(node);
+				this.graphView.panToCell(node, false);
 			}
 		}
 	}
