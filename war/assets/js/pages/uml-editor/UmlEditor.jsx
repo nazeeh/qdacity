@@ -393,11 +393,30 @@ export default class UmlEditor extends React.Component {
 	 */
 	makeCodeVisibleInEditor(codeId) {
 		const _this = this;
-		
+
 		const code = this.getCodeByCodeId(codeId);
 
-		code.mmElementIDs = [];
-		code.mmElementIDs.push(this.getMetaModelEntityByName(this.metaModelMapper.getDefaultUmlClassMetaModelName()).id);
+		// TODO scroll to new node
+
+		// TODO only update the proper tree ... dont delete actor mmElement for example
+
+		const newMMElementIds = [];
+
+		const newMMElement = this.getMetaModelEntityByName(this.metaModelMapper.getDefaultUmlClassMetaModelName());
+		newMMElementIds.push(newMMElement.id);
+
+		// Save old mmElementIds
+		if (code.mmElementIDs != null) {
+			for (let i = 0; i < code.mmElementIDs.length; i++) {
+				const mmElement = this.getMetaModelEntityById(code.mmElementIDs[i]);
+
+				if (mmElement.group != newMMElement.group) {
+					newMMElementIds.push(mmElement.id);
+				}
+			}
+		}
+
+		code.mmElementIDs = newMMElementIds;
 
 		CodesEndpoint.updateCode(code).then((resp) => {
 			code.mmElementIDs = resp.mmElementIDs;
