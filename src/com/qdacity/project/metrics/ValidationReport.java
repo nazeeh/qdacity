@@ -179,14 +179,6 @@ public class ValidationReport {
 		if (!merged) documentResults.add(new DocumentResult(result));
 	}
 
-	private void aggregateDocumentResults(ValidationResult result) {
-		if (this.documentResults == null) this.documentResults = new ArrayList<DocumentResult>();
-		for (DocumentResult newResult : result.getDocumentResults()) {
-			Boolean merged = mergeDocumentResults(newResult);
-			if (!merged) documentResults.add(new DocumentResult(newResult));
-		}
-	}
-
 	private Boolean mergeDocumentResults(DocumentResult newResult) {
 		for (DocumentResult aggregated : documentResults) {
 			if (aggregated.getDocumentID().equals(newResult.getDocumentID())) {

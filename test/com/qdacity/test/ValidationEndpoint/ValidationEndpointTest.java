@@ -23,9 +23,12 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.EvaluationMethod;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ValidationReport;
@@ -54,12 +57,12 @@ public class ValidationEndpointTest {
 	@Test
 	public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
 		latch.reset(9);
-		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
-		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
-		com.google.appengine.api.users.User studentB = new com.google.appengine.api.users.User("student@asd.de", "bla", "88888");
-		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentB);
+		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@group.riehle.org", "bla", "77777");
+		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
+		com.google.appengine.api.users.User studentB = new com.google.appengine.api.users.User("student@group.riehle.org", "bla", "88888");
+		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
 
-		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
+		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
 
 		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
 		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
@@ -79,6 +82,28 @@ public class ValidationEndpointTest {
 
 		List<ValidationReport> reports = ve.listReports(1L, testUser);
 		assertEquals(1, reports.size());
+		ValidationReport report = reports.get(0);
+		assertEquals(1L, report.getProjectID(), 0);
+		assertEquals(valPrj.getRevisionID(), report.getRevisionID(), 0);
+		assertEquals(EvaluationUnit.PARAGRAPH.toString(), report.getEvaluationUnit());
+		assertEquals(EvaluationMethod.F_MEASURE.toString(), report.getEvaluationMethod());
+		assertEquals("ReportTest", report.getName());
+		
+		List<DocumentResult> docResults = report.getDocumentResults();
+		assertEquals(1, docResults.size());
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+		List<AgreementMap> agreementMaps = tde.getAgreementMaps(report.getId(), "REVISION", testUser);
+		assertEquals(1, agreementMaps.size());
+		latch.reset(1);
+		ve.sendNotificationEmail(report.getId(), testUser);
+
+		try {
+			latch.await(20, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task did not finish in time");
+		}
+
 	}
 
 	@Test
@@ -110,6 +135,14 @@ public class ValidationEndpointTest {
 
 		List<ValidationReport> reports = ve.listReports(1L, testUser);
 		assertEquals(1, reports.size());
+		ValidationReport report = reports.get(0);
+		assertEquals(1L, report.getProjectID(), 0);
+		assertEquals(valPrj.getRevisionID(), report.getRevisionID(), 0);
+		assertEquals(EvaluationUnit.PARAGRAPH.toString(), report.getEvaluationUnit());
+		assertEquals(EvaluationMethod.KRIPPENDORFFS_ALPHA.toString(), report.getEvaluationMethod());
+		assertEquals("ReportTest", report.getName());
+
+
 	}
 
 	@Test
@@ -141,6 +174,12 @@ public class ValidationEndpointTest {
 
 		List<ValidationReport> reports = ve.listReports(1L, testUser);
 		assertEquals(1, reports.size());
+		ValidationReport report = reports.get(0);
+		assertEquals(1L, report.getProjectID(), 0);
+		assertEquals(valPrj.getRevisionID(), report.getRevisionID(), 0);
+		assertEquals(EvaluationUnit.PARAGRAPH.toString(), report.getEvaluationUnit());
+		assertEquals(EvaluationMethod.FLEISS_KAPPA.toString(), report.getEvaluationMethod());
+		assertEquals("ReportTest", report.getName());
 	}
 
 	private String getDocumentsAsCSV(long projectID, String projectType) {

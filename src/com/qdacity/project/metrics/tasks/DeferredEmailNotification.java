@@ -38,6 +38,7 @@ public class DeferredEmailNotification implements DeferredTask {
 	public DeferredEmailNotification(Long reportID, User user) {
 		super();
 		this.reportID = reportID;
+		this.user = user;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,7 +70,7 @@ public class DeferredEmailNotification implements DeferredTask {
 					mail.addTo(coder.getEmail(), name);
 					greetingName += coder.getGivenName() + ", ";
 				}
-				mail.addTo("kaufmann@group.riehle.org", "Andreas Kaufmann");
+				mail.addTo(user.getEmail(), user.getNickname());
 				String msgBody = "Hi " + greetingName + "<br>";
 				msgBody += "<p>";
 				msgBody += "We have analyzed your codings, and you've achieved the following scores:<br>";

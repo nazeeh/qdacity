@@ -24,10 +24,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.project.Project;
-import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
-import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
@@ -277,59 +274,6 @@ public class CodeSystemEndpoint {
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
-	}
-
-	public static Long getProjectIdFromCodesystem(Long id) {
-
-		PersistenceManager mgr = null;
-		Long projectID = (long) -1;
-		try {
-			mgr = getPersistenceManager();
-
-			Query query = mgr.newQuery(Project.class);
-
-			query.setFilter("codesystemID == :theID");
-			Map<String, Long> params = new HashMap<String, Long>();
-			params.put("theID", id);
-
-			@SuppressWarnings("unchecked")
-			List<Project> projects = (List<Project>) query.executeWithMap(params);
-
-			if (projects.size() > 0) {
-				Project project = projects.get(0);
-				projectID = project.getId();
-			} else { // Try to find a matching revision
-				query = mgr.newQuery(ProjectRevision.class);
-
-				query.setFilter("codesystemID == :theID");
-
-				@SuppressWarnings("unchecked")
-				List<ProjectRevision> projectRevs = (List<ProjectRevision>) query.executeWithMap(params);
-				if (projectRevs.size() > 0) {
-					ProjectRevision project = projectRevs.get(0);
-					projectID = project.getProjectID();
-				} else { // Try to find a matching validationproject
-					query = mgr.newQuery(ValidationProject.class);
-					query.setFilter("codesystemID == :theID");
-
-					@SuppressWarnings("unchecked")
-					List<ProjectRevision> validationProjects = (List<ProjectRevision>) query.executeWithMap(params);
-
-					if (validationProjects.size() > 0) {
-						ProjectRevision project = validationProjects.get(0);
-						projectID = project.getProjectID();
-					} else {
-						throw new EntityNotFoundException("No project found for codesystem " + id);
-					}
-
-				}
-
-			}
-		} finally {
-			mgr.close();
-		}
-
-		return projectID;
 	}
 
 	public static CodeSystem cloneCodeSystem(Long codeSystemId, Long projectId, ProjectType prjType, User user) throws UnauthorizedException {
