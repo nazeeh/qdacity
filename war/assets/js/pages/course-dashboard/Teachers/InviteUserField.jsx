@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+import CourseEndPoint from '../../../common/endpoints/CourseEndpoint';
 
 import {
 	BtnDefault
@@ -27,7 +27,7 @@ export default class InviteUserField extends React.Component {
 
 	inviteUser() {
 		var _this = this;
-		ProjectEndpoint.inviteUser(this.props.project.getId(), this.state.userEmail).then(function (resp) {
+		CourseEndPoint.inviteUserCourse(this.props.course.getId(), this.state.userEmail).then(function (resp) {
 			alertify.success(_this.state.userEmail + " has been invited");
 		}).catch(function (resp) {
 			alertify.error(_this.state.userEmail + " was not found");
@@ -35,8 +35,6 @@ export default class InviteUserField extends React.Component {
 	}
 
 	render() {
-		if (this.props.isProjectOwner === false) return null;
-
 		var _this = this;
 
 		return (<StyledSearchField>

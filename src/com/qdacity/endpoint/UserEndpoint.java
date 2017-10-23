@@ -389,6 +389,7 @@ public class UserEndpoint {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private User getUser(String userId) throws UnauthorizedException {
 		User user = null;
 		try {
@@ -406,6 +407,7 @@ public class UserEndpoint {
 				user.setGivenName((String) userEntity.getProperty("givenName"));
 				user.setId(userEntity.getKey().getName());
 				user.setProjects((List<Long>) userEntity.getProperty("projects"));
+				user.setCourses((List<Long>) userEntity.getProperty("courses"));
 				user.setSurName((String) userEntity.getProperty("surName"));
 				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
 				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));

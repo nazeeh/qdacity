@@ -7,10 +7,13 @@ export default class Teachers extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			
 		};
 	}
 
 	render() {
+		if (this.props.isCourseOwner === false) return null;
+
 		return (
 			<div id="user-section">
 			<div className="box box-default">
@@ -22,7 +25,7 @@ export default class Teachers extends React.Component {
 						<InviteUserField course={this.props.course}/>
 					</div>
 					<div>
-						<UserList course={this.props.course} />
+						<UserList course={this.props.course}/>
 					</div>
 				</div>
 			</div>

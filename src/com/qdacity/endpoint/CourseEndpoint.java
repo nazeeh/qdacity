@@ -31,6 +31,8 @@ import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
 import com.qdacity.project.Project;
+import com.qdacity.user.UserNotification;
+import com.qdacity.user.UserNotificationType;
 
 
 @Api(name = "qdacity",
@@ -484,6 +486,49 @@ public class CourseEndpoint {
 				mgr.close();
 			}
 			return termCourse;
+		}
+	
+	@ApiMethod(name = "course.inviteUser",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public Course inviteUserCourse(@Named("courseID") Long courseID, @Named("userEmail") String userEmail, User user) throws UnauthorizedException {
+			Course course = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+
+				// Get the invited user
+				Query q = mgr.newQuery(com.qdacity.user.User.class, "email == '" + userEmail + "'");
+				@SuppressWarnings("unchecked")
+				List<com.qdacity.user.User> dbUsers = (List<com.qdacity.user.User>) q.execute();
+				String userID = dbUsers.get(0).getId();
+
+				// Get the inviting user
+				com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+				// Insert user into course as invited user
+				course = (Course) Cache.getOrLoad(courseID, Course.class);
+				course.addInvitedUser(user.getUserId());
+				Cache.cache(courseID, Course.class, course);
+				mgr.makePersistent(course);
+
+				// Create notification
+				UserNotification notification = new UserNotification();
+				notification.setDatetime(new Date());
+				notification.setMessage("Course: " + course.getName());
+				notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
+				notification.setOriginUser(user.getUserId());
+				notification.setCourse(courseID);
+				notification.setSettled(false);
+				notification.setType(UserNotificationType.INVITATION);
+				notification.setUser(userID.toString());
+
+				mgr.makePersistent(notification);
+
+			} finally {
+				mgr.close();
+			}
+			return course;
 		}
 	
 	private boolean containsCourse(Course course) {

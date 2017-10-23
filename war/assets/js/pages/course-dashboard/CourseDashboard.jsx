@@ -26,7 +26,8 @@ export default class CourseDashboard extends React.Component {
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
-			course: course
+			course: course,
+			isCourseOwner: false
 		};
 		$("body").css({
 			overflow: "auto"
@@ -74,7 +75,21 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	init() {
-		this.setCourseProperties();
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.setUserRights();
+			this.setCourseProperties();
+		}
+	}
+
+	setUserRights() {
+		var _this = this;
+		this.userPromise.then(function (user) {
+			var isCourseOwner = _this.props.account.isCourseOwner(user, _this.state.course.getId());
+			_this.setState({
+				isCourseOwner: isCourseOwner
+			});
+		});
 	}
 
 	setCourseProperties() {
@@ -101,7 +116,7 @@ export default class CourseDashboard extends React.Component {
 					</div>
 				</div>
 				<div className="col-lg-5">
-					<Teachers course={this.state.course}/>
+					<Teachers course={this.state.course} isCourseOwner={this.state.isCourseOwner}/>
 				</div>
 		  	</StyledDashboard>
 		);

@@ -184,7 +184,6 @@ export default class CourseList extends React.Component {
 				text: insertedTermCourse.term,
 			});
 			insertedCourse.terms = termList;
-			console.log(insertedCourse);
 		_this.props.addCourse(insertedCourse);
 			});
 		});
@@ -232,7 +231,6 @@ export default class CourseList extends React.Component {
 
 		</StyledProjectListMenu>
 
-		//console.log(this.props.terms);
 		//Rebder List Items
 		var filteredList = this.props.courses.filter(
 			(course) => {
