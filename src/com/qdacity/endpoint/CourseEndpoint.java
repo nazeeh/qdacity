@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import javax.annotation.Nullable;
@@ -30,7 +28,6 @@ import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
-import com.qdacity.project.Project;
 
 
 @Api(name = "qdacity",
