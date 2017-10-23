@@ -72,20 +72,12 @@ export default class CourseDashboard extends React.Component {
 		});
 	}
 
-	init() {
-		this.setCourseProperties();
-	}
 
-	setCourseProperties() {
-		var _this = this;
-		var course = this.state.course;
-	}
 
 	render() {
 
 		if (!this.props.account.getProfile) return null;
 		if (!this.props.account.isSignedIn()) return null;
-		this.init();
 
 		return (
 			<StyledDashboard className="container main-content">
