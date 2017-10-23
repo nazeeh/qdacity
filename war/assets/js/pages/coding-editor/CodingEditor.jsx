@@ -1,6 +1,11 @@
 import React from 'react'
 import styled from 'styled-components';
 
+import {
+	DragDropContext
+} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
 import UmlEditor from '../uml-editor/UmlEditor.jsx';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
@@ -88,7 +93,7 @@ const StyledDocumentsView = styled.div `
 `;
 
 
-export default class CodingEditor extends React.Component {
+class CodingEditor extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -365,7 +370,7 @@ export default class CodingEditor extends React.Component {
                 </StyledSideBarDocuments>
                 <StyledSideBarCodesystem>
                         <Codesystem
-                            ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
+                            ref={(c) => {if (c) this.codesystemViewRef = c;}}
                             codingViewIsVisible ={this.state.showCodingView}
                             pageView = {this.state.selectedEditor}
                             umlEditor = {this.umlEditorRef}
@@ -455,3 +460,5 @@ export default class CodingEditor extends React.Component {
 		);
 	}
 }
+
+export default DragDropContext(HTML5Backend)(CodingEditor);
