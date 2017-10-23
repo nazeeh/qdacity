@@ -84,7 +84,6 @@ export default class TermCourseList extends React.Component {
 					});
 					course.isUserOwner = isUserOwner;
 					course.setTerms(termList);
-					console.log(course);
 					_this.props.setCourse(course);
 				});
 			});
@@ -116,7 +115,6 @@ export default class TermCourseList extends React.Component {
 				isOpen: "true"
 			});
 			course.setTerms(termList);
-			console.log(course);
 			_this.props.setCourse(course);
 			});
 	}
@@ -133,7 +131,6 @@ export default class TermCourseList extends React.Component {
 					if (courseTerm.id == term.id) {
 						courseTerms.splice(courseTerms.indexOf(term.id), 1);
 						course.setTerms(courseTerms);
-						console.log(course);
 						_this.props.setCourse(course);
 					}
 				})
