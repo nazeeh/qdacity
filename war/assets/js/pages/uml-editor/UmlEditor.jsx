@@ -23,6 +23,8 @@ import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpo
 import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 
 const StyledUmlEditor = styled.div `
+    display: flex;
+    flex-direction: column;
     height: inherit;
     border-left: 1px solid #B0B0B0;
 `;
@@ -387,6 +389,24 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
+	 * Updates the meta-model of the code in the database. This method will insert a new meta-model, which ensures, that the code is mapped in the uml-editor.
+	 */
+	makeCodeVisibleInEditor(codeId) {
+		const _this = this;
+		
+		const code = this.getCodeByCodeId(codeId);
+
+		code.mmElementIDs = [];
+		code.mmElementIDs.push(this.getMetaModelEntityByName(this.metaModelMapper.getDefaultUmlClassMetaModelName()).id);
+
+		CodesEndpoint.updateCode(code).then((resp) => {
+			code.mmElementIDs = resp.mmElementIDs;
+
+			_this.props.updateCode(code);
+		});
+	}
+
+	/**
 	 * Creates a new edge with type aggregation.
 	 */
 	createEdgeAggregation(sourceCode, destinationCode) {
@@ -620,7 +640,7 @@ export default class UmlEditor extends React.Component {
 		return (
 			<StyledUmlEditor>
                 <Toolbar ref={(toolbar) => {if (toolbar != null) _this.toolbar = toolbar}} className="row no-gutters" umlEditor={_this} createCode={_this.props.createCode} />
-                <GraphView ref={(graphView) => {if (graphView != null) _this.graphView = graphView}} umlEditor={_this} onZoom={_this.onZoom} toggleCodingView={this.props.toggleCodingView}/>
+                <GraphView ref={(graphView) => {if (graphView != null) _this.graphView = graphView.decoratedComponentInstance}} umlEditor={_this} onZoom={_this.onZoom} toggleCodingView={this.props.toggleCodingView}/>
             </StyledUmlEditor>
 		);
 	}
