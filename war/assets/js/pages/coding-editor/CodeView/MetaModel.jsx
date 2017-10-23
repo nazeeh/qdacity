@@ -94,11 +94,6 @@ export default class MetaModel extends React.Component {
 					}
 				}
 			}
-			/*else {
-				// Changed from relationship code to normal code
-				this.convertRelationshipCodeToNormalCode();
-				return;
-			}*/
 		}
 
 		if (!this.isRelationshipCode()) {
