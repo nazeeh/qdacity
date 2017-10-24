@@ -66,30 +66,30 @@ export default class TermCourseList extends React.Component {
 			if (!(typeof resp.owners == 'undefined')) owners = resp.owners;
 			course.setName(resp.name);
 			course.setDescription(resp.description);
-			courseTermListPromise.then(function (resp2) {
-				var termList = [];
-				resp2.items = resp2.items || [];
-				resp2.items.forEach(function (crs) {
-					var participants = [];
-					var isUserParticipant = [];
-					//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
-					getAccountPromise.then(function (resp) {
-						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
-						isUserOwner = owners.includes(resp.id);
-						status = crs.open;
-						isUserParticipant = participants.includes(resp.id);
-						termList.push({
-							text: crs.term,
-							id: crs.id,
-							participants: participants,
-							isUserParticipant: isUserParticipant,
-							isUserOwner: isUserOwner,
-							isOpen: status
-						});
-						course.isUserOwner = isUserOwner;
-						course.setTerms(termList);
-						_this.props.setCourse(course);
+			getAccountPromise.then(function (resp2) {
+				isUserOwner = owners.includes(resp2.id);
+				courseTermListPromise.then(function (resp3) {
+					var termList = [];
+					resp3.items = resp3.items || [];
+					resp3.items.forEach(function (crs) {
+						var participants = [];
+						var isUserParticipant = [];
+						//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
+							if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
+							status = crs.open;
+							isUserParticipant = participants.includes(resp2.id);
+							termList.push({
+								text: crs.term,
+								id: crs.id,
+								participants: participants,
+								isUserParticipant: isUserParticipant,
+								isUserOwner: isUserOwner,
+								isOpen: status
+							});
 					});
+					course.isUserOwner = isUserOwner;
+					course.setTerms(termList);
+					_this.props.setCourse(course);
 				});
 			});
 		});
