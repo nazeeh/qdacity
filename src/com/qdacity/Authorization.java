@@ -153,6 +153,22 @@ public class Authorization {
 		}
 	}
 	
+	public static void checkAuthTermCourseUserRemoval(TermCourse termCourse, String userID ,User user) throws UnauthorizedException {
+		isUserNotNull(user);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {			
+				com.qdacity.user.User remover = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				if (remover.getId() != userID)
+					{
+						if (!(termCourse.getOwners().contains(remover.getId()) || remover.getType() == UserType.ADMIN)) throw new UnauthorizedException("User is not authorized for removing participants");
+					}
+				else if (!termCourse.getParticipants().contains(remover.getId())) throw new UnauthorizedException("User is not a participant in this term course");
+		} finally {
+			mgr.close();
+		}
+	}
+	
 	public static void checkAuthorization(Long projectID, User user) throws UnauthorizedException {
 		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorized(user, projectID) || isUserAdmin(user);

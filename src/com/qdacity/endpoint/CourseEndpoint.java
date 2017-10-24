@@ -469,6 +469,7 @@ public class CourseEndpoint {
 			PersistenceManager mgr = getPersistenceManager();
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
+				Authorization.checkAuthTermCourseUserRemoval(termCourse, userID, user);
 				if (userID != null) termCourse.removeParticipant(userID);
 				else termCourse.removeParticipant(user.getUserId());
 

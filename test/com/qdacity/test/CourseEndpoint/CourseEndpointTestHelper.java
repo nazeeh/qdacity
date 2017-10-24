@@ -141,7 +141,7 @@ public class CourseEndpointTestHelper {
 			ue.removeParticipant(termCourseID, userID, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
-			fail("User could not be authorized for term course participation");
+			fail("User could not be authorized for participant removal");
 		}
 	}
 	
