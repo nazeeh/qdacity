@@ -113,7 +113,7 @@ export default class TermCourseList extends React.Component {
 			var termList = courseTerms;
 			termList.push({
 				text: term,
-				id: courseID,
+				id: insertedTermCourse.id,
 				participants: [],
 				isUserParticipant: false,
 				isOpen: "true"
