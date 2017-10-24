@@ -381,7 +381,7 @@ public class CourseEndpointTest {
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisCourse.getStatus());
+		assertEquals(true, thisCourse.isOpen());
 		
 	}
 	

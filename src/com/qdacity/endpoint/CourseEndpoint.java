@@ -335,7 +335,7 @@ public class CourseEndpoint {
 				
 		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
-		termCourse.setStatus(true);
+		termCourse.setOpen(true);
 		termCourse.setCreationDate(new Date());
 		
 		
@@ -449,7 +449,7 @@ public class CourseEndpoint {
 			Authorization.checkAuthorizationTermCourse(termCourse, user);
 			
 			try {
-				termCourse.setStatus(status);
+				termCourse.setOpen(status);
 				mgr.makePersistent(termCourse);
 
 			} finally {

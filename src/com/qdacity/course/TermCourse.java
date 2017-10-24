@@ -63,11 +63,11 @@ public class TermCourse implements Serializable {
 		return creationDate;
 	}
 	
-	public void setStatus(boolean isOpen) {
+	public void setOpen(boolean isOpen) {
 		this.isOpen = isOpen;
 	}
 	
-	public boolean getStatus() {
+	public boolean isOpen() {
 		return isOpen;
 	}
 	

@@ -112,7 +112,7 @@ public class CourseEndpointTestHelper {
 	
 	static public void setTermCourseStatus(Long termCourseId,boolean isOpen, com.google.appengine.api.users.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
-		termCourse.setStatus(isOpen);
+		termCourse.setOpen(isOpen);
 
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
