@@ -72,7 +72,7 @@ export default class TermCourseList extends React.Component {
 					_this.props.account.getCurrentUser().then(function (resp) {
 						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
 						isUserOwner = owners.includes(resp.id);
-						status = crs.status;
+						status = crs.open;
 						isUserParticipant = participants.includes(resp.id);
 						termList.push({
 							text: crs.term,
