@@ -138,6 +138,21 @@ public class Authorization {
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 	}
 
+	public static void checkAuthTermCourseParticipation(TermCourse termCourse, String userID ,User user) throws UnauthorizedException {
+		isUserNotNull(user);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {			
+			if (!termCourse.isOpen()) {
+				com.qdacity.user.User adder = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				if (!(termCourse.getOwners().contains(adder.getId()) || adder.getType() == UserType.ADMIN)) throw new UnauthorizedException("User is not authorized for adding participants");
+			}
+			
+		} finally {
+			mgr.close();
+		}
+	}
+	
 	public static void checkAuthorization(Long projectID, User user) throws UnauthorizedException {
 		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorized(user, projectID) || isUserAdmin(user);

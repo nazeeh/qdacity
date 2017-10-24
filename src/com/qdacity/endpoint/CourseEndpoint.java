@@ -413,6 +413,8 @@ public class CourseEndpoint {
 			PersistenceManager mgr = getPersistenceManager();
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
+				//Check authorization
+				Authorization.checkAuthTermCourseParticipation(termCourse, userID, user);
 				if (userID != null) termCourse.addParticipant(userID);
 				else termCourse.addParticipant(user.getUserId());
 

@@ -289,6 +289,7 @@ public class CourseEndpointTest {
 	public void testAddParticipant() {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
+		
 		PersistenceManager mgr = getPersistenceManager();
 		TermCourse thisCourse = new TermCourse();
 		
