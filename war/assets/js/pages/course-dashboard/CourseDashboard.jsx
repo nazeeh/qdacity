@@ -42,17 +42,12 @@ export default class CourseDashboard extends React.Component {
 		var _this = this;
 		var id = term.id;
 		var course = this.state.course;
-		course.terms.forEach(function (term, index) {
-			if (term.id == id) {
-				var termIndex = index;
-				_this.props.account.getCurrentUser().then(function (resp) {
-					course.terms[termIndex].participants.push(resp.id);
-					course.terms[termIndex].isUserParticipant = true;
-					_this.setState({
-						course: course
-					});
-				});
-			}
+		_this.props.account.getCurrentUser().then(function (resp) {
+			term.participants.push(resp.id);
+			term.isUserParticipant = true;
+			_this.setState({
+				course: course
+			});
 		});
 	}
 
@@ -61,14 +56,10 @@ export default class CourseDashboard extends React.Component {
 		var _this = this;
 		var id = term.id;
 		var course = this.state.course;
-		course.terms.forEach(function (term, index) {
-			if (term.id == id) {
-				course.terms[index].participants.splice(index, 1);
-				course.terms[index].isUserParticipant = false;
-				_this.setState({
-					course: course
-				});
-			}
+		term.participants.splice(term.participants.indexOf(term.id), 1);
+		term.isUserParticipant = false;
+		_this.setState({
+			course: course
 		});
 	}
 

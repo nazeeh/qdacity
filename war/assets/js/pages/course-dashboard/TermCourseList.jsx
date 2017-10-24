@@ -159,7 +159,6 @@ export default class TermCourseList extends React.Component {
 		var confirm = new Confirm('Do you want to leave the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
 			_this.props.account.getCurrentUser().then(function (resp) {
-				console.log(resp.id);
 				CourseEndPoint.removeParticipant(term.id, resp.id).then(function (resp2) {
 					_this.props.removeParticipant(term);
 				});
