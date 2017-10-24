@@ -415,8 +415,7 @@ public class CourseEndpoint {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				//Check authorization
 				Authorization.checkAuthTermCourseParticipation(termCourse, userID, user);
-				if (userID != null) termCourse.addParticipant(userID);
-				else termCourse.addParticipant(user.getUserId());
+				termCourse.addParticipant(userID);
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 				dbUser.addTermCourseAuthorization(termCourseID);
@@ -470,8 +469,8 @@ public class CourseEndpoint {
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				Authorization.checkAuthTermCourseUserRemoval(termCourse, userID, user);
-				if (userID != null) termCourse.removeParticipant(userID);
-				else termCourse.removeParticipant(user.getUserId());
+				termCourse.removeParticipant(userID);
+				
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 				dbUser.removeCourseAuthorization(termCourseID);

@@ -147,7 +147,7 @@ public class Authorization {
 			if (!termCourse.isOpen()) {
 				if (!(termCourse.getOwners().contains(adder.getId()) || adder.getType() == UserType.ADMIN)) throw new UnauthorizedException("User is not authorized for adding participants");
 			}
-			else if (!(adder.getId() == userID || termCourse.getOwners().contains(adder.getId()))) {
+			else if (!(adder.getId().equals(userID) || termCourse.getOwners().contains(adder.getId()))) {
 				throw new UnauthorizedException("User is not authorized for adding other participants");
 			}
 		} finally {
@@ -160,8 +160,8 @@ public class Authorization {
 		
 		PersistenceManager mgr = getPersistenceManager();
 		try {			
-				com.qdacity.user.User remover = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-				if (remover.getId() != userID)
+				com.qdacity.user.User remover = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());			
+				if (!remover.getId().equals(userID))
 					{
 						if (!(termCourse.getOwners().contains(remover.getId()) || remover.getType() == UserType.ADMIN)) throw new UnauthorizedException("User is not authorized for removing participants");
 					}

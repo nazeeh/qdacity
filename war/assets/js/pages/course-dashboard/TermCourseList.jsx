@@ -144,11 +144,12 @@ export default class TermCourseList extends React.Component {
 
 		var confirm = new Confirm('Do you want to join the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
-			CourseEndPoint.addParticipant(term.id).then(function (resp) {
-				_this.props.addParticipant(term);
+			_this.props.account.getCurrentUser().then(function (resp) {
+				CourseEndPoint.addParticipant(term.id, resp.id).then(function (resp2) {
+					_this.props.addParticipant(term);
+				});
 			});
 		});
-
 	}
 
 	leaveTermCourse(e, term, index) {
@@ -157,11 +158,13 @@ export default class TermCourseList extends React.Component {
 
 		var confirm = new Confirm('Do you want to leave the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
-			CourseEndPoint.removeParticipant(term.id).then(function (resp) {
-				_this.props.removeParticipant(term);
+			_this.props.account.getCurrentUser().then(function (resp) {
+				console.log(resp.id);
+				CourseEndPoint.removeParticipant(term.id, resp.id).then(function (resp2) {
+					_this.props.removeParticipant(term);
+				});
 			});
 		});
-
 	}
 
 	renderJoinButton(term, index) {
