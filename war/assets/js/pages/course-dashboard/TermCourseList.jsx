@@ -131,13 +131,10 @@ export default class TermCourseList extends React.Component {
 		var confirm = new Confirm('Do you want to delete the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
 			CourseEndPoint.removeTermCourse(term.id).then(function (resp) {
-				courseTerms.forEach(function (courseTerm) {
-					if (courseTerm.id == term.id) {
-						courseTerms.splice(courseTerms.indexOf(term.id), 1);
-						course.setTerms(courseTerms);
-						_this.props.setCourse(course);
-					}
-				})
+				var termToRemove = courseTerms.find(thisTerm => thisTerm.id === term.id);
+				courseTerms.splice(courseTerms.indexOf(termToRemove.id), 1);
+				course.setTerms(courseTerms);
+				_this.props.setCourse(course);
 			});
 		});
 	}
