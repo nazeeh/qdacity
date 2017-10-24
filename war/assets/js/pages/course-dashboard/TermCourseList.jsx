@@ -57,19 +57,23 @@ export default class TermCourseList extends React.Component {
 		var course = this.props.course;
 		var owners = [];
 		var isUserOwner = [];
+		var coursePromise = CourseEndpoint.getCourse(course.getId());
+		var courseTermListPromise = CourseEndpoint.listTermCourse(course.getId());
+		var getAccountPromise = this.props.account.getCurrentUser();
+
 		//Get the course, its terms, participants and save all info in the course object
-		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
+		coursePromise.then(function (resp) {
 			if (!(typeof resp.owners == 'undefined')) owners = resp.owners;
 			course.setName(resp.name);
 			course.setDescription(resp.description);
-			CourseEndpoint.listTermCourse(course.getId()).then(function (resp2) {
+			courseTermListPromise.then(function (resp2) {
 				var termList = [];
 				resp2.items = resp2.items || [];
 				resp2.items.forEach(function (crs) {
 					var participants = [];
 					var isUserParticipant = [];
 					//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
-					_this.props.account.getCurrentUser().then(function (resp) {
+					getAccountPromise.then(function (resp) {
 						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
 						isUserOwner = owners.includes(resp.id);
 						status = crs.open;
