@@ -77,7 +77,6 @@ export default class CourseList extends React.Component {
 			courses = _this.sortCourses(courses);
 			var counter = resp.items.length;
 			courses.forEach(function (crs, index) {
-				crs.type = "COURSE";
 				CourseEndPoint.listTermCourse(crs.id).then(function (resp2) {
 					counter -= 1;
 					var termList = [];
@@ -85,7 +84,7 @@ export default class CourseList extends React.Component {
 
 					resp2.items.forEach(function (crs, index) {
 						termList.push({
-							text: crs.term,
+							text: crs.term
 						});
 					});
 					courses[index].terms = termList;
@@ -168,31 +167,35 @@ export default class CourseList extends React.Component {
 		modal.addTextInput('term', "Course Term", 'Term', '');
 		modal.addTextField('desc', "Course Description", 'Description');
 		modal.showModal().then(function (data) {
-			_this.createNewCourse(data.name, data.desc);
+			_this.createNewCourse(data.name, data.desc, data.term);
 		});
 	}
 
-	createNewCourse(name, description) {
+	createNewCourse(name, description, term) {
 		var _this = this;
 		var course = {};
 
 		course.name = name;
 		course.description = description;
 		CourseEndPoint.insertCourse(course).then(function (insertedCourse) {
-
-			insertedCourse.type = "COURSE";
-			_this.props.addCourse(insertedCourse);
-
+			CourseEndPoint.insertTermCourse(insertedCourse.id, term).then(function (insertedTermCourse) {
+				var termList = [];
+				termList.push({
+					text: insertedTermCourse.term,
+				});
+				insertedCourse.terms = termList;
+				_this.props.addCourse(insertedCourse);
+			});
 		});
 	}
 
-	renderDeleteBtn(course, index) {
-		return <StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-						<i className="fa fa-trash "></i>
-					</StyledListItemBtn>
+	defineInitText(course, index) {
+		var text = "";
+		if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
+			text = course.terms[course.terms.length - 1].text;
+		}
+		return text;
 	}
-
-
 
 	render() {
 		var _this = this;
@@ -228,7 +231,6 @@ export default class CourseList extends React.Component {
 
 		</StyledProjectListMenu>
 
-		//console.log(this.props.terms);
 		//Rebder List Items
 		var filteredList = this.props.courses.filter(
 			(course) => {
@@ -241,6 +243,8 @@ export default class CourseList extends React.Component {
 
 
 
+
+
 		function prjClick(prj) {
 			_this.props.history.push('/CourseDashboard?course=' + prj.id);
 		}
@@ -249,8 +253,10 @@ export default class CourseList extends React.Component {
 			return ([
 				<span>{course.name}</span>,
 				<div>
-					<DropDownButton isListItemButton={true} items={course.terms}></DropDownButton>
-				{this.renderDeleteBtn(course, index)}
+					<DropDownButton isListItemButton={true} items={course.terms} initText={this.defineInitText(course, index)}></DropDownButton>
+				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+					<i className="fa fa-trash "></i>
+				</StyledListItemBtn>
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>

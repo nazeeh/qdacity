@@ -11,8 +11,7 @@ export default class PersonalDashboard extends React.Component {
 		super(props);
 		this.state = {
 			projects: [],
-			courses: [],
-			termsArray: []
+			courses: []
 		};
 
 		this.setProjects = this.setProjects.bind(this);

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 
 import CourseEndpoint from 'endpoints/CourseEndpoint';
+import TermCourseList from './TermCourseList.jsx';
 import Course from './Course';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
@@ -14,9 +15,14 @@ const StyledDashboard = styled.div `
 export default class CourseDashboard extends React.Component {
 	constructor(props) {
 		super(props);
+
+
 		var urlParams = URI(window.location.search).query(true);
 
 		var course = new Course(urlParams.course);
+		this.setCourse = this.setCourse.bind(this);
+		this.addParticipant = this.addParticipant.bind(this);
+		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
 			course: course
@@ -25,33 +31,58 @@ export default class CourseDashboard extends React.Component {
 			overflow: "auto"
 		});
 	}
-
-	init() {
-		this.setCourseProperties();
+	setCourse(course) {
+		this.setState({
+			course: course
+		});
 	}
 
-	setCourseProperties() {
+	addParticipant(term) {
+		//Find the id of the term to be added, then add the user to participants & set isUserParticipant to true for that term
 		var _this = this;
+		var id = term.id;
 		var course = this.state.course;
-		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
-			course.setName(resp.name);
-			course.setDescription(resp.description);
+		_this.props.account.getCurrentUser().then(function (resp) {
+			term.participants.push(resp.id);
+			term.isUserParticipant = true;
 			_this.setState({
 				course: course
 			});
 		});
 	}
 
+	removeParticipant(term) {
+		//Find the id of the term to be removed, then remove the user from participants & set isUserParticipant to false for that term
+		var _this = this;
+		var id = term.id;
+		var course = this.state.course;
+		term.participants.splice(term.participants.indexOf(term.id), 1);
+		term.isUserParticipant = false;
+		_this.setState({
+			course: course
+		});
+	}
+
+
+
 	render() {
 
 		if (!this.props.account.getProfile) return null;
-		this.init();
+		if (!this.props.account.isSignedIn()) return null;
 
 		return (
 			<StyledDashboard className="container main-content">
-				<h2 className="page-header">
-					this is the course: {this.state.course.getName()}
-				</h2>
+				<div>
+					<div className="box box-default">
+						<div className="box-header with-border">
+							<h3 className="box-title">Terms</h3>
+						</div>
+						<div className="box-body">
+							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse}/>
+						</div>
+					</div>
+				</div>
+
 		  	</StyledDashboard>
 		);
 	}
