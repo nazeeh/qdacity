@@ -57,40 +57,43 @@ export default class TermCourseList extends React.Component {
 		var course = this.props.course;
 		var owners = [];
 		var isUserOwner = [];
+		var coursePromise = CourseEndpoint.getCourse(course.getId());
+		var courseTermListPromise = CourseEndpoint.listTermCourse(course.getId());
+		var getAccountPromise = this.props.account.getCurrentUser();
+
 		//Get the course, its terms, participants and save all info in the course object
-		CourseEndpoint.getCourse(course.getId()).then(function (resp) {
+		coursePromise.then(function (resp) {
 			if (!(typeof resp.owners == 'undefined')) owners = resp.owners;
 			course.setName(resp.name);
 			course.setDescription(resp.description);
-			CourseEndpoint.listTermCourse(course.getId()).then(function (resp2) {
-				var termList = [];
-				resp2.items = resp2.items || [];
-				resp2.items.forEach(function (crs) {
-					var participants = [];
-					var isUserParticipant = [];
-					//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
-					_this.props.account.getCurrentUser().then(function (resp) {
-						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
-						isUserOwner = owners.includes(resp.id);
-						status = crs.status;
-						isUserParticipant = participants.includes(resp.id);
-						termList.push ({
-						text: crs.term,
-						id: crs.id,
-						participants: participants,
-						isUserParticipant: isUserParticipant,
-						isUserOwner: isUserOwner,
-						isOpen: status
+			getAccountPromise.then(function (resp2) {
+				isUserOwner = owners.includes(resp2.id);
+				courseTermListPromise.then(function (resp3) {
+					var termList = [];
+					resp3.items = resp3.items || [];
+					resp3.items.forEach(function (crs) {
+						var participants = [];
+						var isUserParticipant = [];
+						//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
+							if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
+							status = crs.open;
+							isUserParticipant = participants.includes(resp2.id);
+							termList.push({
+								text: crs.term,
+								id: crs.id,
+								participants: participants,
+								isUserParticipant: isUserParticipant,
+								isUserOwner: isUserOwner,
+								isOpen: status
+							});
 					});
 					course.isUserOwner = isUserOwner;
 					course.setTerms(termList);
-					console.log(course);
 					_this.props.setCourse(course);
 				});
 			});
 		});
-	});
-}
+	}
 
 	showNewTermCourseModal() {
 		var _this = this;
@@ -106,19 +109,18 @@ export default class TermCourseList extends React.Component {
 		var _this = this;
 		var courseTerms = course.terms;
 		var courseID = course.id;
-			CourseEndPoint.insertTermCourse(courseID, term).then (function(insertedTermCourse) {
-				var termList = courseTerms;
-				termList.push ({
+		CourseEndPoint.insertTermCourse(courseID, term).then(function (insertedTermCourse) {
+			var termList = courseTerms;
+			termList.push({
 				text: term,
-				id: courseID,
+				id: insertedTermCourse.id,
 				participants: [],
 				isUserParticipant: false,
 				isOpen: "true"
 			});
 			course.setTerms(termList);
-			console.log(course);
 			_this.props.setCourse(course);
-			});
+		});
 	}
 
 	removeTermCourse(e, term, index) {
@@ -129,14 +131,10 @@ export default class TermCourseList extends React.Component {
 		var confirm = new Confirm('Do you want to delete the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
 			CourseEndPoint.removeTermCourse(term.id).then(function (resp) {
-				courseTerms.forEach(function (courseTerm) {
-					if (courseTerm.id == term.id) {
-						courseTerms.splice(courseTerms.indexOf(term.id), 1);
-						course.setTerms(courseTerms);
-						console.log(course);
-						_this.props.setCourse(course);
-					}
-				})
+				var termToRemove = courseTerms.find(thisTerm => thisTerm.id === term.id);
+				courseTerms.splice(courseTerms.indexOf(termToRemove.id), 1);
+				course.setTerms(courseTerms);
+				_this.props.setCourse(course);
 			});
 		});
 	}
@@ -147,11 +145,12 @@ export default class TermCourseList extends React.Component {
 
 		var confirm = new Confirm('Do you want to join the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
-			CourseEndPoint.addParticipant(term.id).then(function (resp) {
-				_this.props.addParticipant(term);
+			_this.props.account.getCurrentUser().then(function (resp) {
+				CourseEndPoint.addParticipant(term.id, resp.id).then(function (resp2) {
+					_this.props.addParticipant(term);
+				});
 			});
 		});
-
 	}
 
 	leaveTermCourse(e, term, index) {
@@ -160,36 +159,43 @@ export default class TermCourseList extends React.Component {
 
 		var confirm = new Confirm('Do you want to leave the term ' + term.text + ' of this course?');
 		confirm.showModal().then(function () {
-			CourseEndPoint.removeParticipant(term.id).then(function (resp) {
-				_this.props.removeParticipant(term);
+			_this.props.account.getCurrentUser().then(function (resp) {
+				CourseEndPoint.removeParticipant(term.id, resp.id).then(function (resp2) {
+					_this.props.removeParticipant(term);
+				});
 			});
 		});
-
 	}
 
-	renderJoinButton (term, index) {
+	renderJoinButton(term, index) {
 		var course = this.props.course;
 		if (course.isUserOwner) return "";
 		//Show join/leave button depending on whether the user is a participant in the course
-		if (!term.isUserParticipant) {return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+		if (!term.isUserParticipant) {
+			return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
 				<i className="fa fa-tags"></i>
-			</StyledListItemBtn>}
-			else {return <StyledListItemBtn onClick={(e) => this.leaveTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			</StyledListItemBtn>
+		} else {
+			return <StyledListItemBtn onClick={(e) => this.leaveTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
-				</StyledListItemBtn>}
+				</StyledListItemBtn>
+		}
 	}
 
 	renderDeleteButton(term, index) {
 		var course = this.props.course;
-		if (course.isUserOwner){return <StyledListItemBtn onClick={(e) => this.removeTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+		if (course.isUserOwner) {
+			return <StyledListItemBtn onClick={(e) => this.removeTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 			<i className="fa fa-trash "></i>
-		</StyledListItemBtn>}
+		</StyledListItemBtn>
+		}
 	}
 
 	renderCreateTermButton() {
 		var course = this.props.course;
-		if (course.isUserOwner) {return ([
-			<StyledNewPrjBtn id="newProject">
+		if (course.isUserOwner) {
+			return ([
+				<StyledNewPrjBtn id="newProject">
 				<BtnDefault
 					id="newPrjBtn"
 					href="#"
@@ -199,7 +205,8 @@ export default class TermCourseList extends React.Component {
 				New Term Course
 				</BtnDefault>
 			</StyledNewPrjBtn>
-		])}
+			])
+		}
 	}
 	render() {
 		var _this = this;
@@ -222,7 +229,7 @@ export default class TermCourseList extends React.Component {
 		const renderListItemContent = (term, index) => {
 			return ([
 				<span>{term.text}</span>,
-					<div>
+				<div>
 						{this.renderJoinButton(term, index)}
 						{this.renderDeleteButton(term, index)}
 				</div>
@@ -231,12 +238,13 @@ export default class TermCourseList extends React.Component {
 		var account = this.props.account;
 		const itemsToDisplay = this.props.course.terms;
 		const renderListItems = itemsToDisplay.map((term, index) => {
-			if (term.isOpen == "true") {return <StyledListItemPrimary>
+			if (term.isOpen == "true") {
+				return <StyledListItemPrimary>
 						{renderListItemContent(term, index)}
-					</StyledListItemPrimary>;}
-					else {
-						return "";
-					}
+					</StyledListItemPrimary>;
+			} else {
+				return "";
+			}
 		})
 
 		return (

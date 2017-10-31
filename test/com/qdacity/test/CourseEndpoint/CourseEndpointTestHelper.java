@@ -97,26 +97,26 @@ public class CourseEndpointTestHelper {
 		}
 	}
 	
-	static public void addTermCourse(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public void addTermCourse(Long termCourseId, com.google.appengine.api.users.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
-		termCourse.setId(id);
+		termCourse.setId(termCourseId);
 
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
-			ue.insertTermCourse(id, "WS", termCourse, loggedInUser);
+			ue.insertTermCourse(termCourseId, "WS", termCourse, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term course creation");
 		}
 	}
 	
-	static public void setTermCourseStatus(Long id,boolean isOpen, com.google.appengine.api.users.User loggedInUser) {
+	static public void setTermCourseStatus(Long termCourseId,boolean isOpen, com.google.appengine.api.users.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
-		termCourse.setStatus(isOpen);
+		termCourse.setOpen(isOpen);
 
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
-			ue.setTermCourseStatus(id, isOpen, loggedInUser);
+			ue.setTermCourseStatus(termCourseId, isOpen, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term course creation");
@@ -141,7 +141,7 @@ public class CourseEndpointTestHelper {
 			ue.removeParticipant(termCourseID, userID, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
-			fail("User could not be authorized for term course participation");
+			fail("User could not be authorized for participant removal");
 		}
 	}
 	

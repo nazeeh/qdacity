@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import javax.annotation.Nullable;
@@ -79,8 +77,8 @@ public class CourseEndpoint {
 
 		return CollectionResponse.<Course> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
-	
-	
+
+
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
@@ -89,7 +87,7 @@ public class CourseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(name = "course.removeCourse",
-		 
+
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
@@ -103,7 +101,7 @@ public class CourseEndpoint {
 
 			List<String> userIDs = course.getOwners();
 
-			
+
 			for (String courseUserIDs : userIDs) {
 				com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, courseUserIDs);
 
@@ -111,14 +109,14 @@ public class CourseEndpoint {
 				mgr.makePersistent(courseUser);
 
 			}
-			 
+
 			// Finally remove the actual course
 			mgr.deletePersistent(course);
 		} finally {
 			mgr.close();
 		}
 	}
-	
+
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
 	 * exists in the datastore, an exception is thrown.
@@ -133,7 +131,7 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course insertCourse(Course course, User user) throws UnauthorizedException {
-		
+
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -142,7 +140,7 @@ public class CourseEndpoint {
 					throw new EntityExistsException("Course already exists");
 				}
 			}
-			
+
 			try {
 				course.addOwner(user.getUserId());
 				mgr.makePersistent(course);
@@ -155,14 +153,14 @@ public class CourseEndpoint {
 			catch (javax.jdo.JDOObjectNotFoundException ex) {
 				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
 			}
-			
+
 		} finally {
 			mgr.close();
 		}
 		return course;
 	}
 
-	
+
 	@ApiMethod(name = "course.removeUser",
 			path = "course.removeUser",
 		scopes = { Constants.EMAIL_SCOPE },
@@ -174,11 +172,11 @@ public class CourseEndpoint {
 		try {
 			String userIdToRemove = "";
 
-			
+
 			userIdToRemove = user.getUserId();
 
 			Course course = (Course) Cache.getOrLoad(courseID, Course.class);
-			if (course != null) { 
+			if (course != null) {
 					course.removeUser(userIdToRemove);
 					Cache.cache(courseID, Course.class, course);
 					mgr.makePersistent(course);
@@ -191,13 +189,13 @@ public class CourseEndpoint {
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userIdToRemove);
 			dbUser.removeCourseAuthorization(courseID);
 			mgr.makePersistent(dbUser);
-			
+
 
 		} finally {
 			mgr.close();
 		}
 	}
-	
+
 	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.
 	 *
@@ -211,7 +209,7 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Course getCourse(@Named("id") Long id, User user) throws UnauthorizedException {
-		
+
 		PersistenceManager mgr = getPersistenceManager();
 		Course course = null;
 		try {
@@ -220,14 +218,14 @@ public class CourseEndpoint {
 		catch (Exception e) {
 			throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
 		};
-		
+
 		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
-			
-			// Check if user is registered		
+
+			// Check if user is registered
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-			Authorization.isUserRegistered(dbUser);	
-			
+			Authorization.isUserRegistered(dbUser);
+
 			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
 				LastCourseUsed task = new LastCourseUsed(dbUser, id);
 				Queue queue = QueueFactory.getDefaultQueue();
@@ -241,7 +239,7 @@ public class CourseEndpoint {
 		}
 		return course;
 	}
-	
+
 	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.
 	 *
@@ -255,7 +253,7 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public TermCourse getTermCourse(@Named("id") Long id, User user) throws UnauthorizedException {
-		
+
 		PersistenceManager mgr = getPersistenceManager();
 		TermCourse termCourse = null;
 		try {
@@ -264,14 +262,14 @@ public class CourseEndpoint {
 		catch (Exception e) {
 			throw new javax.jdo.JDOObjectNotFoundException("Term Course does not exist");
 		};
-		
+
 		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
-			
-			// Check if user is registered		
+
+			// Check if user is registered
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-			Authorization.isUserRegistered(dbUser);	
-			
+			Authorization.isUserRegistered(dbUser);
+
 			termCourse = (TermCourse) Cache.getOrLoad(id, TermCourse.class);
 
 		} finally {
@@ -279,7 +277,7 @@ public class CourseEndpoint {
 		}
 		return termCourse;
 	}
-	
+
 	/**
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.
@@ -322,7 +320,7 @@ public class CourseEndpoint {
 		});
 		return execute;
 	}
-	
+
 	/**
 	 * This inserts a new instance of a course into App Engine datastore. If the entity already
 	 * exists in the datastore, an exception is thrown.
@@ -337,15 +335,15 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
-				
+
 		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
-		termCourse.setStatus(true);
+		termCourse.setOpen(true);
 		termCourse.setCreationDate(new Date());
-		
-		
+
+
 		PersistenceManager mgr = getPersistenceManager();
-		
+
 		try {
 			// Authorize User
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
@@ -354,24 +352,24 @@ public class CourseEndpoint {
 		catch (javax.jdo.JDOObjectNotFoundException ex) {
 			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
 		}
-		
+
 		try {
 			if (termCourse.getId() != null) {
 				if (containsTermCourse(termCourse)) {
 					throw new EntityExistsException("Term already exists");
 				}
 			}
-			
+
 			termCourse.addOwner(user.getUserId());
 			mgr.makePersistent(termCourse);
-			
+
 		} finally {
 			mgr.close();
 		}
 		return termCourse;
 	}
-	
-	
+
+
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
@@ -393,7 +391,7 @@ public class CourseEndpoint {
 
 			List<String> userIDs = termCourse.getOwners();
 
-			
+
 			for (String courseUserIDs : userIDs) {
 				com.qdacity.user.User termCourseUser = mgr.getObjectById(com.qdacity.user.User.class, courseUserIDs);
 
@@ -401,14 +399,14 @@ public class CourseEndpoint {
 				mgr.makePersistent(termCourseUser);
 
 			}
-			 
+
 			// Finally remove the actual course
 			mgr.deletePersistent(termCourse);
 		} finally {
 			mgr.close();
 		}
 	}
-	
+
 	@ApiMethod(name = "course.addParticipant",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
@@ -418,8 +416,9 @@ public class CourseEndpoint {
 			PersistenceManager mgr = getPersistenceManager();
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
-				if (userID != null) termCourse.addParticipant(userID);
-				else termCourse.addParticipant(user.getUserId());
+				//Check authorization
+				Authorization.checkAuthTermCourseParticipation(termCourse, userID, user);
+				termCourse.addParticipant(userID);
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 				dbUser.addTermCourseAuthorization(termCourseID);
@@ -433,7 +432,7 @@ public class CourseEndpoint {
 			}
 			return termCourse;
 		}
-	
+
 	@ApiMethod(name = "course.setTermCourseStatus",
 			path = "termCourse",
 			scopes = { Constants.EMAIL_SCOPE },
@@ -442,19 +441,19 @@ public class CourseEndpoint {
 		public TermCourse setTermCourseStatus(@Named("id") Long termCourseID, @Named("isOpen") boolean status, User user) throws UnauthorizedException {
 			TermCourse termCourse = null;
 			PersistenceManager mgr = getPersistenceManager();
-			
+
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 			}
 			catch (Exception e) {
 				throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
 			};
-			
+
 			// Check if user is Authorized (authorization for the course means authorization for all terms under this course)
 			Authorization.checkAuthorizationTermCourse(termCourse, user);
-			
+
 			try {
-				termCourse.setStatus(status);
+				termCourse.setOpen(status);
 				mgr.makePersistent(termCourse);
 
 			} finally {
@@ -462,7 +461,7 @@ public class CourseEndpoint {
 			}
 			return termCourse;
 		}
-	
+
 	@ApiMethod(name = "course.removeParticipant",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
@@ -472,8 +471,9 @@ public class CourseEndpoint {
 			PersistenceManager mgr = getPersistenceManager();
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
-				if (userID != null) termCourse.removeParticipant(userID);
-				else termCourse.removeParticipant(user.getUserId());
+				Authorization.checkAuthTermCourseUserRemoval(termCourse, userID, user);
+				termCourse.removeParticipant(userID);
+
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 				dbUser.removeCourseAuthorization(termCourseID);
@@ -487,7 +487,7 @@ public class CourseEndpoint {
 			}
 			return termCourse;
 		}
-	
+
 	@ApiMethod(name = "course.inviteUser",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
@@ -530,7 +530,7 @@ public class CourseEndpoint {
 			}
 			return course;
 		}
-	
+
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
@@ -556,7 +556,7 @@ public class CourseEndpoint {
 		}
 		return contains;
 	}
-	
+
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
