@@ -25,22 +25,22 @@ module.exports = function(config) {
     files: [
 	  'components/jQuery/jquery-3.2.1.slim.min.js',
 	  'components/node_module/jasmine-jquery/lib/jasmine-jquery.js',
-      'tests/*.js',
-	  'tests/*.jsx'
+      'tests/**/*.js',
+	  'tests/**/*.jsx'
     ],
 
 
     // list of files to exclude
     exclude: [
-		'tests/*Skip.*'
+		'tests/**/*Skip.*'
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-		'tests/*.js': ['webpack'],
-		'tests/*.jsx': ['webpack']
+		'tests/**/*.js': ['webpack'],
+		'tests/**/*.jsx': ['webpack']
     },
 
 
