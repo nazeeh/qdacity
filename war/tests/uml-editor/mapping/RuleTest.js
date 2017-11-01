@@ -5,24 +5,60 @@ import {
 import BaseCondition from '../../../assets/js/pages/uml-editor/mapping/conditions/BaseCondition.js';
 import BaseAction from '../../../assets/js/pages/uml-editor/mapping/actions/BaseAction.js';
 
+class TestCondition extends BaseCondition {
+	
+	evaluate(target) {
+		return true;
+	}
+}
+
+class TestAction extends BaseCondition {
+	
+	execute(target) {
+		return "EXECUTE";
+	}
+	
+	undo(target) {
+		return "UNDO";		
+	}
+}
 
 describe("Rule", function() {
 
-    it("should create a rule object with the given parameters", function() {
-    	let target = Target.CODE;
+	let rule;
+	let target;
+	let condition;
+	let action;
+	
+	beforeEach(() => {
+		target = Target.CODE;
     	
-    	let condition = new BaseCondition();
+    	condition = new TestCondition();
     	
-    	let action = new BaseAction();
+    	action = new TestAction();
     	
-    	let rule = Rule.create()
+    	rule = Rule.create()
     		.expect(target)
     		.require(condition)
     		.then(action);
+	});
 
+    it("should create a rule object with the given parameters", () => {
     	expect(rule.constructor.name).toBe("Rule");
     	expect(rule.getTargetType()).toBe(target);
     	expect(rule.getCondition()).toBe(condition);
     	expect(rule.getAction()).toBe(action);
+    });
+    
+    it("should evaluate the condition", () => {
+    	expect(rule.evaluate()).toBe(true);
+    });
+
+    it("should evaluate the condition and execute the action", () => {
+    	expect(rule.execute()).toBe("EXECUTE");
+    });
+
+    it("should evaluate the condition and undo the action", () => {
+    	expect(rule.undo()).toBe("UNDO");
     });
 });
