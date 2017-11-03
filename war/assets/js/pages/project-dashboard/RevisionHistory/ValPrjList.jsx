@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../../common/styles/Theme.js';
 
@@ -51,12 +52,15 @@ export default class ValPrjList extends React.Component {
 	}
 
 	deleteValPrj(e, valPrjId, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		ProjectEndpoint.removeValidationProject(valPrjId)
 			.then(
 				function (val) {
-					alertify.success("Revision has been deleted");
+					alertify.success(
+						formatMessage({ id: 'valprjlist.revision_deleted', defaultMessage: "Revision has been deleted" })
+					);
 					_this.state.validationProjects.splice(index, 1);
 					_this.setState({
 						validationProjects: _this.state.validationProjects
@@ -66,7 +70,10 @@ export default class ValPrjList extends React.Component {
 	}
 
 	handleBadResponse(reason) {
-		alertify.error("There was an error");
+		const {formatMessage} = IntlProvider.intl;
+		alertify.error(
+			formatMessage({ id: 'valprjlist.error', defaultMessage: "There was an error" })
+		);
 		console.log(reason.message);
 	}
 
@@ -83,16 +90,18 @@ export default class ValPrjList extends React.Component {
 	}
 
 	render() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 
 		//Render Components
+		const searchFieldPlaceholder = formatMessage({ id: 'valprjlist.search', defaultMessage: 'Search' });
 
 		//Render search and newPrjBtn
 		const renderSearch = <div>
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					type="text"
-					placeholder="Search"
+					placeholder={searchFieldPlaceholder}
 					value={this.state.search}
 					onChange={this.updateSearch}
 				/>

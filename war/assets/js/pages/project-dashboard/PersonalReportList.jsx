@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreementByDoc from '../../common/modals/IntercoderAgreementByDoc';
@@ -71,7 +72,9 @@ export default class PersonalReportList extends React.Component {
 		return (
 			<div className=" box box-default">
 					<div className="box-header with-border">
-						<h3 className="box-title">Reports</h3>
+						<h3 className="box-title">
+							<FormattedMessage id='personalreportlist.reports' defaultMessage='Reports' />
+						</h3>
 					</div>
 					<div className="box-body">
 						<div>

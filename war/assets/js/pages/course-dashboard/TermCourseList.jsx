@@ -1,4 +1,6 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
@@ -40,7 +42,6 @@ const StyledProjectListMenu = styled.div `
 const StyledProjectList = StyledBoxList.extend `
 	padding-top: 5px;
 `;
-
 
 
 export default class TermCourseList extends React.Component {
@@ -96,10 +97,19 @@ export default class TermCourseList extends React.Component {
 	}
 
 	showNewTermCourseModal() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		var course = this.props.course;
-		var modal = new CustomForm('Create a new term course', '');
-		modal.addTextInput('name', "Term Name", 'Name', '');
+		var modal = new CustomForm(
+			formatMessage({ id: 'termcourselist', defaultMessage: 'Create a new term course' }),
+			''
+		);
+		modal.addTextInput(
+			'name',
+			formatMessage({ id: 'term.course.term_name', defaultMessage: "Term Name" }),
+			formatMessage({ id: 'term.course.term_name.sample', defaultMessage: 'Name' }),
+			''
+		);
 		modal.showModal().then(function (data) {
 			_this.insertTermCourse(course, data.name);
 		});
@@ -127,11 +137,16 @@ export default class TermCourseList extends React.Component {
 	}
 
 	removeTermCourse(e, term, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var course = this.props.course;
 		var courseTerms = course.terms;
-		var confirm = new Confirm('Do you want to delete the term ' + term.text + ' of this course?');
+		var confirm = new Confirm(
+			formatMessage({ id: 'term.course.delete_term', defaultMessage: 'Do you want to delete the term {name} of this course?' },
+				{ name: term.text }
+			)
+		);
 		confirm.showModal().then(function () {
 			CourseEndPoint.removeTermCourse(term.id).then(function (resp) {
 				var termToRemove = courseTerms.find(thisTerm => thisTerm.id === term.id);
@@ -143,10 +158,15 @@ export default class TermCourseList extends React.Component {
 	}
 
 	joinTermCourse(e, term, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 
-		var confirm = new Confirm('Do you want to join the term ' + term.text + ' of this course?');
+		var confirm = new Confirm(
+			formatMessage({ id: 'term.course.join_term', defaultMessage: 'Do you want to join the term {name} of this course?' },
+				{ name: term.text }
+			)
+		);
 		confirm.showModal().then(function () {
 			_this.props.account.getCurrentUser().then(function (resp) {
 				CourseEndPoint.addParticipant(term.id, resp.id).then(function (resp2) {
@@ -157,10 +177,15 @@ export default class TermCourseList extends React.Component {
 	}
 
 	leaveTermCourse(e, term, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 
-		var confirm = new Confirm('Do you want to leave the term ' + term.text + ' of this course?');
+		var confirm = new Confirm(
+			formatMessage({ id: 'term.course.leave_term', defaultMessage: 'Do you want to leave the term {name} of this course?' },
+				{ name: term.text }
+			)
+		);
 		confirm.showModal().then(function () {
 			_this.props.account.getCurrentUser().then(function (resp) {
 				CourseEndPoint.removeParticipant(term.id, resp.id).then(function (resp2) {
@@ -219,23 +244,24 @@ export default class TermCourseList extends React.Component {
 					onClick={this.showNewTermCourseModal}
 				>
 				<i className="fa fa-plus fa-fw"></i>
-				New Term Course
+				<FormattedMessage id='term.course.new_term' defaultMessage='New Term Course' />
 				</BtnDefault>
 			</StyledNewPrjBtn>
 			])
 		}
 	}
 	render() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 
-
+		const searchFieldPlaceholder = formatMessage({ id: 'term.course.search', defaultMessage: 'Search' });
 		const projectListMenu = <StyledProjectListMenu>
 
 
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					type="text"
-					placeholder="Search"
+					placeholder={searchFieldPlaceholder}
 				/>
 			{this.renderCreateTermButton()}
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -30,7 +31,7 @@ export default class SettingsBtn extends React.Component {
 					className="btn btn-default btn-sm pull-right"
 					onClick={this.redirectToCodingEditor}
 				>
-					<i className="fa fa-tags fa-lg"></i><b>Coding Editor</b>
+					<i className="fa fa-tags fa-lg"></i><b><FormattedMessage id='settingsbtn.codeing_editor' defaultMessage='Coding Editor' /></b>
 				</StyledSettingsBtn>
 			);
 		} else {

@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../../common/styles/Theme.js';
 
@@ -45,6 +46,7 @@ export default class ReportList extends React.Component {
 
 
 	deleteReport(e, reportId, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var validationEndpoint = new ValidationEndpoint();
@@ -52,7 +54,9 @@ export default class ReportList extends React.Component {
 		validationEndpoint.deleteReport(reportId)
 			.then(
 				function (val) {
-					alertify.success("Report has been deleted");
+					alertify.success(
+						formatMessage({ id: 'reportlist.report_deleted', defaultMessage: "Report has been deleted" })
+					);
 					_this.state.reports.splice(index, 1);
 					_this.setState({
 						reports: _this.state.reports

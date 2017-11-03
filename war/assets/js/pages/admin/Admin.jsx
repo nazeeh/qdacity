@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 
 import Users from './Users.jsx';
 import AdminStats from './AdminStats.jsx';
@@ -55,7 +56,7 @@ export default class Admin extends React.Component {
 						{
 							this.state.selectedUserId && <div className="box box-default">
 								<div className="box-header with-border">
-									<h3 className="box-title">Projects</h3>
+									<h3 className="box-title"><FormattedMessage id='admin.projects' defaultMessage='Projects' /></h3>
 								</div>
 								<div className="box-body">
 									<AdminProjectList projects={this.state.projects} setProjects={this.setProjects}

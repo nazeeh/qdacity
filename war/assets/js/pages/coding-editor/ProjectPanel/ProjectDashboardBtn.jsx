@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 import {
 	BtnDefault
@@ -24,7 +25,7 @@ export default class ProjectDashboardBtn extends React.Component {
 		return (
 			<StyledPrjDasboardBtn  onClick={() => {this.projectDashboardBtnClick(this.props.project);}}>
 				<i className="fa fa-home fa-lg"></i>
-				<span>Project Dashboard</span>
+				<span><FormattedMessage id='projectdashboardbtn.project_dashboard' defaultMessage='Project Dashboard' /></span>
 			</StyledPrjDasboardBtn>
 		);
 	}

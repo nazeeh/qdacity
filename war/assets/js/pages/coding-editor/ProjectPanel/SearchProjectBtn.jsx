@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 import {
 	BtnDefault
@@ -19,7 +20,7 @@ export default class SearchProjectBtn extends React.Component {
 		return (
 			<StyledPrjSearchBtn  onClick={this.props.toggleSearchBar}>
 				<i className="fa fa-search fa-lg"></i>
-				<span>Search Project</span>
+				<span><FormattedMessage id='searchprojectbtn.search_project' defaultMessage='Search Project' /></span>
 			</StyledPrjSearchBtn>
 		);
 	}
