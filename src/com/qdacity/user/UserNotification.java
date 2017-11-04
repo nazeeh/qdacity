@@ -91,6 +91,10 @@ public class UserNotification {
 		this.project = project;
 	}
 
+	public Long getCourse() {
+		return course;
+	}
+	
 	public void setCourse(Long course) {
 		this.course = course;
 	}

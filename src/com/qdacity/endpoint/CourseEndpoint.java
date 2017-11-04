@@ -506,10 +506,8 @@ public class CourseEndpoint {
 				// Get the inviting user
 				com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
-				// Insert user into course as invited user
-				course = (Course) Cache.getOrLoad(courseID, Course.class);
+				course = (Course) mgr.getObjectById(Course.class, courseID);
 				course.addInvitedUser(user.getUserId());
-				Cache.cache(courseID, Course.class, course);
 				mgr.makePersistent(course);
 
 				// Create notification
@@ -531,6 +529,32 @@ public class CourseEndpoint {
 			return course;
 		}
 
+	@ApiMethod(name = "course.addCourseOwner",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public Course addCourseOwner(@Named("courseID") Long courseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+			Course course = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				course = (Course) Cache.getOrLoad(courseID, Course.class);
+				if (userID != null) course.addOwner(userID);
+				else course.addOwner(user.getUserId());
+
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				dbUser.addCourseAuthorization(courseID);
+
+				mgr.makePersistent(course);
+				Cache.cache(courseID, Course.class, course);
+				mgr.makePersistent(dbUser);
+				Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
+
+			} finally {
+				mgr.close();
+			}
+			return course;
+		}
+	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;

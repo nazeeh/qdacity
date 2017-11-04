@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import CourseEndpoint from '../../common/endpoints/CourseEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import {
@@ -60,6 +61,7 @@ export default class NotificationList extends React.Component {
 		var _this = this;
 		_this.state.notifications = [];
 		UserEndpoint.listUserNotification().then(function (resp) {
+			console.log(resp);
 			var items = resp.items || [];
 			items = _this.sortNotifications(items);
 			_this.setState({
@@ -94,10 +96,9 @@ export default class NotificationList extends React.Component {
 	}
 
 	acceptInvitationCourse(notification) {
-		console.log("hi");
 		var _this = this;
-		ProjectEndpoint.addOwner(notification.project).then(function (resp) {
-			_this.props.addProject(resp);
+		CourseEndpoint.addCourseOwner(notification.course).then(function (resp) {
+			_this.props.addCourse(resp);
 		});
 		this.settleNotification(notification);
 	}

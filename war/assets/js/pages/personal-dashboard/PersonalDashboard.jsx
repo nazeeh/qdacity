@@ -102,7 +102,7 @@ export default class PersonalDashboard extends React.Component {
 								<h3 className="box-title">Notifications</h3>
 							</div>
 							<div className="box-body">
-								<NotificationList addProject={this.addProject}  />
+								<NotificationList addProject={this.addProject} addCourse={this.addCourse} />
 							</div>
 						</div>
 					</div>

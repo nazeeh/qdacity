@@ -191,8 +191,10 @@ export default class CourseList extends React.Component {
 
 	defineInitText(course, index) {
 		var text = "";
-		if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
-			text = course.terms[course.terms.length - 1].text;
+		if (!(typeof course.terms == 'undefined')) {
+			if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
+				text = course.terms[course.terms.length - 1].text;
+			}
 		}
 		return text;
 	}
