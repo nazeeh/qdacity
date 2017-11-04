@@ -520,7 +520,7 @@ public class CourseEndpoint {
 				notification.setOriginUser(user.getUserId());
 				notification.setCourse(courseID);
 				notification.setSettled(false);
-				notification.setType(UserNotificationType.INVITATION);
+				notification.setType(UserNotificationType.INVITATION_COURSE);
 				notification.setUser(userID.toString());
 
 				mgr.makePersistent(notification);
