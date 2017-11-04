@@ -27,7 +27,7 @@ export default class InviteUserField extends React.Component {
 
 	inviteUser() {
 		var _this = this;
-		CourseEndPoint.inviteUserCourse(this.props.course.getId(), this.state.userEmail).then(function (resp) {
+		CourseEndPoint.inviteUser(this.props.course.getId(), this.state.userEmail).then(function (resp) {
 			alertify.success(_this.state.userEmail + " has been invited");
 		}).catch(function (resp) {
 			alertify.error(_this.state.userEmail + " was not found");
