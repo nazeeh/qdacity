@@ -25,7 +25,7 @@ import com.qdacity.user.UserType;
 public class AdminEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -41,13 +41,13 @@ public class AdminEndpointTest {
 
 	@Test
 	public void testGetAdminStats() throws UnauthorizedException {
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		UserEndpointTestHelper.addUser("2@asd.de", "User 2", "lastName", testUser);
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, testUser.getUserId());
+			User user = mgr.getObjectById(User.class, testUser.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {

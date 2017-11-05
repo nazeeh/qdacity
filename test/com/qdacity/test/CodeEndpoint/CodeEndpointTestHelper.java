@@ -15,7 +15,7 @@ import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.project.codesystem.Code;
 
 public class CodeEndpointTestHelper {
-	static public void addCode(Long id, Long codeID, Long parentID, Long codesystemID, String authorName, String color, com.google.appengine.api.users.User loggedInUser) {
+	static public void addCode(Long id, Long codeID, Long parentID, Long codesystemID, String authorName, String color, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 
 			updateParentsSubCodeIds(parentID, codesystemID, codeID);
@@ -61,7 +61,7 @@ public class CodeEndpointTestHelper {
 		}
 	}
 
-	static public void removeCode(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public void removeCode(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			CodeEndpoint ce = new CodeEndpoint();
 			ce.removeCode(id, loggedInUser);
@@ -71,7 +71,7 @@ public class CodeEndpointTestHelper {
 		}
 	}
 
-	static public Code getCode(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public Code getCode(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			CodeEndpoint ce = new CodeEndpoint();
 
@@ -83,7 +83,7 @@ public class CodeEndpointTestHelper {
 		return null;
 	}
 
-	static public void updateCode(Code code, com.google.appengine.api.users.User loggedInUser) {
+	static public void updateCode(Code code, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			CodeEndpoint ce = new CodeEndpoint();
 			ce.updateCode(code, loggedInUser);
@@ -93,7 +93,7 @@ public class CodeEndpointTestHelper {
 		}
 	}
 
-	static public void relocateCode(Long codeID, Long newParentID, com.google.appengine.api.users.User loggedInUser) {
+	static public void relocateCode(Long codeID, Long newParentID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			CodeEndpoint ce = new CodeEndpoint();
 			ce.relocateCode(codeID, newParentID, loggedInUser);

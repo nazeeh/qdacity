@@ -8,7 +8,7 @@ import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.CodeSystem;
 
 public class CodeSystemTestHelper {
-	static public void addCodeSystem(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public void addCodeSystem(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			CodeSystem cs = new CodeSystem();
 			cs.setProject(1L);

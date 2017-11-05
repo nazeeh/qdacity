@@ -46,7 +46,7 @@ public class ProjectEndpointTest {
 
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -70,7 +70,7 @@ public class ProjectEndpointTest {
 	@Test
 	public void testProjectInsert() {
 		latch.reset(3);
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 		try {
 			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
@@ -129,7 +129,7 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectInsertAuthorization() throws UnauthorizedException {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 		
 		expectedException.expect(UnauthorizedException.class);
 		expectedException.expectMessage(is("User is not registered"));
@@ -144,7 +144,7 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectUpdate() {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 
 		try {
@@ -207,7 +207,7 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectRemove() {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 
 		try {
@@ -234,7 +234,7 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectRemoveWithCodesystem() {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 
 		CodeSystemTestHelper.addCodeSystem(1L, loggedInUser);
@@ -268,10 +268,10 @@ public class ProjectEndpointTest {
 	public void testProjectRemoveAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -313,7 +313,7 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for project creation");
 		}
 
-		com.google.appengine.api.users.User invitedUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "7789456");
+		com.google.api.server.spi.auth.common.User invitedUser = new com.google.api.server.spi.auth.common.User("7789456", "asd@asd.de");
 		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
 
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
@@ -326,7 +326,7 @@ public class ProjectEndpointTest {
 		notifications = une.listUserNotification(null, null, invitedUser);
 		assertEquals(1, notifications.size());
 
-		pe.addOwner(1L, invitedUser.getUserId(), invitedUser);
+		pe.addOwner(1L, invitedUser.getId(), invitedUser);
 		notifications.get(0).setSettled(true);
 		une.updateUserNotification(notifications.get(0));
 
@@ -355,18 +355,18 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for project creation");
 		}
 
-		com.google.appengine.api.users.User invitedUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "77777");
+		com.google.api.server.spi.auth.common.User invitedUser = new com.google.api.server.spi.auth.common.User("77777", "asd@asd.de");
 		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
 
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
 
 		pe.inviteUser(1L, "surname@mydomain.com", testUser);
-		pe.addOwner(1L, invitedUser.getUserId(), invitedUser);
+		pe.addOwner(1L, invitedUser.getId(), invitedUser);
 
 		Project project = (Project) pe.getProject(1L, "PROJECT", invitedUser);
 		assertEquals(2, project.getOwners().size());
 
-		pe.removeUser(1L, "PROJECT", invitedUser.getUserId(), testUser);
+		pe.removeUser(1L, "PROJECT", invitedUser.getId(), testUser);
 
 		project = (Project) pe.getProject(1L, "PROJECT", invitedUser);
 		assertEquals(1, project.getOwners().size());
@@ -459,14 +459,14 @@ public class ProjectEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 		pe.createSnapshot(1L, "A test revision", testUser);
 
-		com.google.appengine.api.users.User student = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
+		com.google.api.server.spi.auth.common.User student = new com.google.api.server.spi.auth.common.User("77777", "student@asd.de");
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
 
 		List<ProjectRevision> revisions = pe.listRevisions(1L, testUser);
 		Long revID = revisions.get(0).getId();
 		pe.requestValidationAccess(revID, student);
 
-		pe.createValidationProject(revID, student.getUserId(), testUser);
+		pe.createValidationProject(revID, student.getId(), testUser);
 		
 		List<ValidationProject> valPrj = pe.listValidationProject(student);
 

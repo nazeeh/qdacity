@@ -16,7 +16,7 @@ import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class CodeSystemEndpointTest {
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 
 	@Before
 	public void setUp() {

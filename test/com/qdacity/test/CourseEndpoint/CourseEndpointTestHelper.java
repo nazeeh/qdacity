@@ -11,7 +11,7 @@ import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 
 public class CourseEndpointTestHelper {
-	static public void addCourse(Long id, String name, String description, com.google.appengine.api.users.User loggedInUser) {
+	static public void addCourse(Long id, String name, String description, com.google.api.server.spi.auth.common.User loggedInUser) {
 		Course course = new Course();
 		course.setId(id);
 		course.setName(name);
@@ -26,7 +26,7 @@ public class CourseEndpointTestHelper {
 		}
 	}
 	
-	static public void removeCourse(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public void removeCourse(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
 			ue.removeCourse(id, loggedInUser);
@@ -36,7 +36,7 @@ public class CourseEndpointTestHelper {
 		}
 	}
 	
-	static public Course getCourse(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public Course getCourse(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		Course course = new Course();
 		try {
@@ -48,7 +48,7 @@ public class CourseEndpointTestHelper {
 		return course;
 	}
 	
-	static public List<TermCourse> listTermCourse(Long courseID, com.google.appengine.api.users.User loggedInUser) {
+	static public List<TermCourse> listTermCourse(Long courseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		List<TermCourse> terms = null;
 		try {
@@ -61,7 +61,7 @@ public class CourseEndpointTestHelper {
 		return terms;
 	}
 	
-	static public void addTermCourse(Long id, Long courseID, String term, com.google.appengine.api.users.User loggedInUser) {
+	static public void addTermCourse(Long id, Long courseID, String term, com.google.api.server.spi.auth.common.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
 		termCourse.setId(id);
 		termCourse.setCourseID(courseID);
@@ -74,7 +74,7 @@ public class CourseEndpointTestHelper {
 			fail("User could not be authorized for term creation");
 		}
 	}
-	static public CollectionResponse<Course> listCourse(com.google.appengine.api.users.User loggedInUser) {
+	static public CollectionResponse<Course> listCourse(com.google.api.server.spi.auth.common.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		CollectionResponse<Course> courses = null;
 		try {
@@ -86,7 +86,7 @@ public class CourseEndpointTestHelper {
 		return courses;
 	}
 
-	static public void removeUser(Long courseID, com.google.appengine.api.users.User loggedInUser) {
+	static public void removeUser(Long courseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		try {
 			ce.removeUser(courseID, loggedInUser);

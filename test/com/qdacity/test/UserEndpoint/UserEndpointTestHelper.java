@@ -7,7 +7,7 @@ import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.User;
 
 public class UserEndpointTestHelper {
-	static public void addUser(String email, String givenName, String surName, com.google.appengine.api.users.User loggedInUser) {
+	static public void addUser(String email, String givenName, String surName, com.google.api.server.spi.auth.common.User loggedInUser) {
 		User user = new User();
 		user.setEmail(email);
 		user.setGivenName(givenName);
@@ -17,7 +17,7 @@ public class UserEndpointTestHelper {
 		ue.insertUser(user, loggedInUser);
 	}
 
-	static public User getUser(com.google.appengine.api.users.User loggedInUser) {
+	static public User getUser(com.google.api.server.spi.auth.common.User loggedInUser) {
 		UserEndpoint ue = new UserEndpoint();
 		User user = null;
 		try {

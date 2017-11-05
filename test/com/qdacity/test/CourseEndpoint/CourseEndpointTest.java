@@ -34,7 +34,7 @@ import com.qdacity.user.UserType;
 public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -170,13 +170,13 @@ public class CourseEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 		
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, loggedInUserB.getUserId());
+			User user = mgr.getObjectById(User.class, loggedInUserB.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {
@@ -235,10 +235,10 @@ public class CourseEndpointTest {
 	public void testCourseRemoveAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -266,16 +266,16 @@ public class CourseEndpointTest {
 	public void testCourseRemoveAuthWithAdmin() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, loggedInUserB.getUserId());
+			User user = mgr.getObjectById(User.class, loggedInUserB.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {
@@ -365,13 +365,13 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!courses.isEmpty()) {
 			    	thisCourse = courses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
+		assertEquals(false, thisCourse.getOwners().contains(testUser.getId()));
 	}
 	
 	/**

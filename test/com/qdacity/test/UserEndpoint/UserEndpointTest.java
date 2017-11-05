@@ -38,7 +38,7 @@ public class UserEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -55,7 +55,7 @@ public class UserEndpointTest {
 
 	@Test
 	public void testUserInsert() {
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
@@ -64,7 +64,7 @@ public class UserEndpointTest {
 	@Test
 	public void testGetUser() {
 		User user = new User();
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		UserEndpoint ue = new UserEndpoint();
@@ -109,7 +109,7 @@ public class UserEndpointTest {
 	
 	@Test
 	public void testUserDelete() {		
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
@@ -128,11 +128,11 @@ public class UserEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -153,11 +153,11 @@ public class UserEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
 
 		UserEndpoint ue = new UserEndpoint();
 		expectedException.expect(UnauthorizedException.class);
@@ -172,7 +172,7 @@ public class UserEndpointTest {
 	@Test
 	public void testFindUser() {
 		List<User> test = new ArrayList<User>();
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
@@ -189,7 +189,7 @@ public class UserEndpointTest {
 	public void testUpdateUserType() {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		PersistenceManager mgr = getPersistenceManager();

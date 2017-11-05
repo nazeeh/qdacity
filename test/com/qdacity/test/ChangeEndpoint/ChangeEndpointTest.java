@@ -32,7 +32,7 @@ public class ChangeEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User( "123456", "asd@asd.de");
 
 	@Before
 	public void setUp() {
@@ -76,7 +76,7 @@ public class ChangeEndpointTest {
 		assertEquals(ChangeType.CREATED, change.getChangeType());
 		assertEquals(ChangeObject.CODE, change.getObjectType());
 		assertEquals(ProjectType.PROJECT, change.getProjectType());
-		assertEquals(testUser.getUserId(), change.getUserID());
+		assertEquals(testUser.getId(), change.getUserID());
 		assertEquals(33L, change.getObjectID(), 0);
 		assertEquals(null, change.getOldValue());
 		// assertTrue(change.getNewValue().startsWith("{\"codeId\":\"3\"},{\"color\":\"fff\"},{\"author\":\"authorName\"}")); //FIXME check for contains instead. Order may vary.

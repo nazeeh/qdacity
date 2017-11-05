@@ -3,7 +3,7 @@ package com.qdacity.test.MetaModelEndpoint;
 import static org.junit.Assert.fail;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.MaintenanceEndpoint;
 
 
