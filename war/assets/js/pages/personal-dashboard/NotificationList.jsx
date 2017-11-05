@@ -61,7 +61,6 @@ export default class NotificationList extends React.Component {
 		var _this = this;
 		_this.state.notifications = [];
 		UserEndpoint.listUserNotification().then(function (resp) {
-			console.log(resp);
 			var items = resp.items || [];
 			items = _this.sortNotifications(items);
 			_this.setState({
@@ -98,9 +97,20 @@ export default class NotificationList extends React.Component {
 	acceptInvitationCourse(notification) {
 		var _this = this;
 		CourseEndpoint.addCourseOwner(notification.course).then(function (resp) {
-			_this.props.addCourse(resp);
+			var course = resp;
+			CourseEndpoint.listTermCourse(notification.course).then (function (resp2) {
+				var termList = [];
+				resp2.items = resp2.items || [];
+				resp2.items.forEach(function (crs) {
+					termList.push({
+						text: crs.term
+					});
+				});
+				course.terms = termList;
+				_this.props.addCourse(course);
+				_this.settleNotification(notification);
+			});
 		});
-		this.settleNotification(notification);
 	}
 
 	createValidationProject(notification) {
