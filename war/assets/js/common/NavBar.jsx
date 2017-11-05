@@ -85,6 +85,7 @@ export default class NavBar extends React.Component {
 											</li>
 										</ul>
 								</StyledSigninTab>
+								<li><StyledNavbarItem href="/Admin">Administration</StyledNavbarItem></li>
 							</ul>
 						</div>
 					</div>
