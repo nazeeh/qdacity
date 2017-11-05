@@ -7,7 +7,7 @@ export default class Teachers extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			
+
 		};
 	}
 
@@ -16,7 +16,7 @@ export default class Teachers extends React.Component {
 
 		return (
 			<div id="user-section">
-			<div className="box box-default">
+
 				<div className="box-header with-border">
 					<h3 className="box-title">Teachers</h3>
 				</div>
@@ -28,9 +28,6 @@ export default class Teachers extends React.Component {
 						<UserList course={this.props.course}/>
 					</div>
 				</div>
-			</div>
 		</div>);
 	}
-
-
 }

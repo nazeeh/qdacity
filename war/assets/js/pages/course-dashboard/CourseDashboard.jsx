@@ -102,7 +102,7 @@ export default class CourseDashboard extends React.Component {
 						</div>
 					</div>
 				</div>
-				<div className="col-lg-5">
+				<div className="box-body">
 					<Teachers course={this.state.course} isCourseOwner={this.state.isCourseOwner}/>
 				</div>
 		  	</StyledDashboard>
