@@ -1,6 +1,6 @@
 package com.qdacity.logs;
 
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
@@ -103,7 +103,7 @@ public class ChangeBuilder {
 
     public Change makeApplyCodeChange(TextDocument textdocument, Code code, User user, ProjectType projectType) {
 	
-	Change change = new Change(now(), textdocument.getProjectID(), projectType, ChangeType.APPLY, user.getUserId(), ChangeObject.DOCUMENT, textdocument.getId());
+	Change change = new Change(now(), textdocument.getProjectID(), projectType, ChangeType.APPLY, user.getId(), ChangeObject.DOCUMENT, textdocument.getId());
 	change.setNewValue(code.getCodeID().toString());
 	
 	return change;

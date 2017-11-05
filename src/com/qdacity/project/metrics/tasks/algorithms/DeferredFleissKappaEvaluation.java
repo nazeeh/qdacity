@@ -1,6 +1,6 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.TabularValidationReportRow;

@@ -16,7 +16,10 @@ import javax.persistence.EntityNotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import com.google.api.server.spi.auth.EspAuthenticator;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiIssuer;
+import com.google.api.server.spi.config.ApiIssuerAudience;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
@@ -28,7 +31,7 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
@@ -53,7 +56,17 @@ import com.qdacity.util.DataStoreUtil;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {EspAuthenticator.class},
+    issuers = {
+            @ApiIssuer(
+                name = "firebase",
+                issuer = "https://securetoken.google.com/" + Constants.GOOGLE_PROJECT_ID,
+                jwksUri = "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com")
+    },
+    issuerAudiences = {
+            @ApiIssuerAudience(name = "firebase", audiences = Constants.FIREBASE_PROJECT_ID)
+	})
 public class TextDocumentEndpoint {
 
 	/**
@@ -188,7 +201,7 @@ public class TextDocumentEndpoint {
 			mgr.makePersistent(textdocument);
 			
 			//Log Change
-			Change change = new ChangeBuilder().makeInsertTextDocumentChange(textdocument, textdocument.getProjectID(), user.getUserId());
+			Change change = new ChangeBuilder().makeInsertTextDocumentChange(textdocument, textdocument.getProjectID(), user.getId());
 			ChangeLogger.logChange(change);
 			
 		} finally {

@@ -11,7 +11,10 @@ import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.api.server.spi.auth.EspAuthenticator;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiIssuer;
+import com.google.api.server.spi.config.ApiIssuerAudience;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -34,7 +37,17 @@ import com.qdacity.user.UserNotificationType;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {EspAuthenticator.class},
+    issuers = {
+            @ApiIssuer(
+                name = "firebase",
+                issuer = "https://securetoken.google.com/" + Constants.GOOGLE_PROJECT_ID,
+                jwksUri = "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com")
+    },
+    issuerAudiences = {
+            @ApiIssuerAudience(name = "firebase", audiences = Constants.FIREBASE_PROJECT_ID)
+	})
 public class UserNotificationEndpoint {
 
 	/**
@@ -49,9 +62,9 @@ public class UserNotificationEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public List<UserNotification> listUserNotification(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, com.google.appengine.api.users.User user) {
+	public List<UserNotification> listUserNotification(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, com.google.api.server.spi.auth.common.User user) {
 
-		Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user.getUserId());
+		Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user.getId());
 
 		Date thirtyDaysAgo = new Date(new Date().getTime() - 2592000000L);
 		Filter dateFilter = new FilterPredicate("datetime", FilterOperator.GREATER_THAN, thirtyDaysAgo);

@@ -9,7 +9,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
@@ -43,7 +43,7 @@ public class Authorization {
 				throw new UnauthorizedException("Project " + projectID + " was not found");
 			}
 			Project project = projects.get(0);
-			if (project.getOwners().contains(googleUser.getUserId())) return true;
+			if (project.getOwners().contains(googleUser.getId())) return true;
 		} finally {
 			mgr.close();
 		}
@@ -69,8 +69,8 @@ public class Authorization {
 				throw new UnauthorizedException("Course " + courseID + " was not found");
 			}
 			Course course = courses.get(0);
-			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getUserId());
-			if (course.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getId());
+			if (course.getOwners().contains(googleUser.getId()) || courseUser.getType() == UserType.ADMIN) return true;
 		} finally {
 			mgr.close();
 		}
@@ -165,8 +165,8 @@ public class Authorization {
 	}
 	public static void checkAuthorization(com.qdacity.user.User userRequested, User userLoggedIn) throws UnauthorizedException {
 		isUserNotNull(userLoggedIn);
-		Boolean authorized = (userLoggedIn.getUserId().equals(userRequested.getId()));
-		if (!authorized) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
+		Boolean authorized = (userLoggedIn.getId().equals(userRequested.getId()));
+		if (!authorized) throw new UnauthorizedException("User " + userLoggedIn.getId() + " is Not Authorized");
 
 	}
 	

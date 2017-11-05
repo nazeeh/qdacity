@@ -19,7 +19,10 @@ import javax.persistence.EntityExistsException;
 
 import org.json.JSONException;
 
+import com.google.api.server.spi.auth.EspAuthenticator;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiIssuer;
+import com.google.api.server.spi.config.ApiIssuerAudience;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
@@ -27,7 +30,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -51,7 +54,17 @@ import com.qdacity.user.UserNotificationType;
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {EspAuthenticator.class},
+    issuers = {
+            @ApiIssuer(
+                name = "firebase",
+                issuer = "https://securetoken.google.com/" + Constants.GOOGLE_PROJECT_ID,
+                jwksUri = "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com")
+    },
+    issuerAudiences = {
+            @ApiIssuerAudience(name = "firebase", audiences = Constants.FIREBASE_PROJECT_ID)
+	})
 public class ProjectEndpoint {
 
 	/**
@@ -80,7 +93,7 @@ public class ProjectEndpoint {
 
 			Query q = mgr.newQuery(Project.class, ":p.contains(owners)");
 
-			execute = (List<Project>) q.execute(Arrays.asList(user.getUserId()));
+			execute = (List<Project>) q.execute(Arrays.asList(user.getId()));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
@@ -108,7 +121,7 @@ public class ProjectEndpoint {
 
 			Query q = mgr.newQuery(ValidationProject.class, ":p.contains(validationCoders)");
 
-			execute = (List<ValidationProject>) q.execute(Arrays.asList(user.getUserId()));
+			execute = (List<ValidationProject>) q.execute(Arrays.asList(user.getId()));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
@@ -138,7 +151,7 @@ public class ProjectEndpoint {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Project " + id);
 
 			Authorization.isUserNotNull(user);
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 
 			if (dbUser.getLastProjectId() != id) { // Check if lastProject property of user has to be updated
 				// Update User async TODO: check if actually faster than saving directly
@@ -233,9 +246,9 @@ public class ProjectEndpoint {
 
 			try {
 				// Get User from DB
-				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 
-				project.addOwner(user.getUserId());
+				project.addOwner(user.getId());
 				project.setRevision(0);
 				project.setMaxCodingID(0L);
 				mgr.makePersistent(project);
@@ -293,15 +306,15 @@ public class ProjectEndpoint {
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addOwner(userID);
-			else project.addOwner(user.getUserId());
+			else project.addOwner(user.getId());
 
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 			dbUser.addProjectAuthorization(projectID);
 
 			mgr.makePersistent(project);
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(dbUser);
-			Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
+			Cache.cache(user.getId(), com.qdacity.user.User.class, dbUser);
 
 		} finally {
 			mgr.close();
@@ -319,7 +332,7 @@ public class ProjectEndpoint {
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addCoder(userID);
-			else project.addCoder(user.getUserId());
+			else project.addCoder(user.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
@@ -338,7 +351,7 @@ public class ProjectEndpoint {
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addValidationCoder(userID);
-			else project.addValidationCoder(user.getUserId());
+			else project.addValidationCoder(user.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
@@ -358,7 +371,7 @@ public class ProjectEndpoint {
 			String userIdToRemove = "";
 
 			if (userID != null) userIdToRemove = userID;
-			else userIdToRemove = user.getUserId();
+			else userIdToRemove = user.getId();
 
 			if (projectType.equals("PROJECT")) {
 				Project project = (Project) Cache.getOrLoad(projectID, Project.class);
@@ -401,11 +414,11 @@ public class ProjectEndpoint {
 			String userID = dbUsers.get(0).getId();
 
 			// Get the inviting user
-			com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 
 			// Insert user into project as invited user
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
-			project.addInvitedUser(user.getUserId());
+			project.addInvitedUser(user.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 
@@ -414,7 +427,7 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage("Project: " + project.getName());
 			notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
-			notification.setOriginUser(user.getUserId());
+			notification.setOriginUser(user.getId());
 			notification.setProject(projectID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.INVITATION);
@@ -529,7 +542,7 @@ public class ProjectEndpoint {
 			projectRevision = mgr.getObjectById(ProjectRevision.class, revisionID);
 			project = (Project) Cache.getOrLoad(projectRevision.getProjectID(), Project.class);
 			// Get the inviting user
-			com.qdacity.user.User requestingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User requestingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 
 			// Create notification
 			List<String> owners = project.getOwners();
@@ -539,7 +552,7 @@ public class ProjectEndpoint {
 				notification.setDatetime(new Date());
 				notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
 				notification.setSubject("Validation request by <b>" + requestingUser.getGivenName() + " " + requestingUser.getSurName() + "</b>");
-				notification.setOriginUser(user.getUserId());
+				notification.setOriginUser(user.getId());
 				notification.setProject(revisionID);
 				notification.setSettled(false);
 				notification.setType(UserNotificationType.VALIDATION_REQUEST);
@@ -552,11 +565,11 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
 			notification.setSubject("You have requiested access");
-			notification.setOriginUser(user.getUserId());
+			notification.setOriginUser(user.getId());
 			notification.setProject(revisionID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.POSTED_VALIDATION_REQUEST);
-			notification.setUser(user.getUserId());
+			notification.setUser(user.getId());
 
 			mgr.makePersistent(notification);
 
@@ -595,7 +608,7 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage(project.getName() + " (Revision " + project.getRevision() + " )");
 			notification.setSubject("Your request was granted");
-			notification.setOriginUser(user.getUserId());
+			notification.setOriginUser(user.getId());
 			notification.setProject(revisionID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.VALIDATION_REQUEST_GRANTED);

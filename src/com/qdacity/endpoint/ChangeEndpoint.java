@@ -15,7 +15,10 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.api.server.spi.auth.EspAuthenticator;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiIssuer;
+import com.google.api.server.spi.config.ApiIssuerAudience;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
@@ -30,7 +33,7 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
@@ -45,7 +48,17 @@ import com.qdacity.logs.ChangeType;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {EspAuthenticator.class},
+    issuers = {
+            @ApiIssuer(
+                name = "firebase",
+                issuer = "https://securetoken.google.com/" + Constants.GOOGLE_PROJECT_ID,
+                jwksUri = "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com")
+    },
+    issuerAudiences = {
+            @ApiIssuerAudience(name = "firebase", audiences = Constants.FIREBASE_PROJECT_ID)
+	})
 public class ChangeEndpoint {
 
 	/**
@@ -84,7 +97,7 @@ public class ChangeEndpoint {
 			// Set filter
 			query.setFilter("userID == :theID");
 			Map<String, String> paramValues = new HashMap<String, String>();
-			paramValues.put("theID", user.getUserId());
+			paramValues.put("theID", user.getId());
 
 			execute = (List<Change>) query.executeWithMap(paramValues);
 			cursor = JDOCursorHelper.getCursor(execute);
@@ -140,7 +153,7 @@ public class ChangeEndpoint {
 			Filter projectIdFilter = new FilterPredicate("projectID", FilterOperator.EQUAL, projectID);
 			filter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(projectIdFilter, projectTypeFilter));
 		} else if (filterType.equals("user")) {
-			filter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getUserId());
+			filter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getId());
 		}
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

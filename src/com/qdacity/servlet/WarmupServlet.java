@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.ProjectStatsEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
@@ -37,7 +37,7 @@ public class WarmupServlet extends HttpServlet {
 
 		java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Warming Up");
 
-		user = new User("testdummy.smash@gmail.com", "", "112909287246196217207");
+		user = new User("112909287246196217207", "testdummy.smash@gmail.com");
 
 		warmupUserEndpoint(user);
 		

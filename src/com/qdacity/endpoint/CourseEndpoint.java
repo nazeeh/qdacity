@@ -10,14 +10,17 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
+import com.google.api.server.spi.auth.EspAuthenticator;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiIssuer;
+import com.google.api.server.spi.config.ApiIssuerAudience;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -31,7 +34,17 @@ import com.qdacity.course.tasks.LastCourseUsed;
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {EspAuthenticator.class},
+    issuers = {
+            @ApiIssuer(
+                name = "firebase",
+                issuer = "https://securetoken.google.com/" + Constants.GOOGLE_PROJECT_ID,
+                jwksUri = "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com")
+    },
+    issuerAudiences = {
+            @ApiIssuerAudience(name = "firebase", audiences = Constants.FIREBASE_PROJECT_ID)
+	})
 public class CourseEndpoint {
 
 	/**
@@ -60,7 +73,7 @@ public class CourseEndpoint {
 
 			Query q = mgr.newQuery(Course.class, ":p.contains(owners)");
 
-			execute = (List<Course>) q.execute(Arrays.asList(user.getUserId()));
+			execute = (List<Course>) q.execute(Arrays.asList(user.getId()));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
@@ -136,10 +149,10 @@ public class CourseEndpoint {
 			}
 			
 			try {
-				course.addOwner(user.getUserId());
+				course.addOwner(user.getId());
 				mgr.makePersistent(course);
 				// Authorize User
-				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 				Authorization.isUserRegistered(dbUser);
 				dbUser.addCourseAuthorization(course.getId());
 				Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
@@ -167,7 +180,7 @@ public class CourseEndpoint {
 			String userIdToRemove = "";
 
 			
-			userIdToRemove = user.getUserId();
+			userIdToRemove = user.getId();
 
 			Course course = (Course) Cache.getOrLoad(courseID, Course.class);
 			if (course != null) { 
@@ -219,7 +232,7 @@ public class CourseEndpoint {
 			// Check if user is authorized
 			Authorization.checkAuthorizationCourse(course, user);
 			
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 
 			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
 				LastCourseUsed task = new LastCourseUsed(dbUser, id);
@@ -295,7 +308,7 @@ public class CourseEndpoint {
 		
 		try {
 			// Authorize User
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 			Authorization.isUserRegistered(dbUser);
 		}
 		catch (javax.jdo.JDOObjectNotFoundException ex) {
