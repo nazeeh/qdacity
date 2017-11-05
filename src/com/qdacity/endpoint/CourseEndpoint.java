@@ -507,7 +507,7 @@ public class CourseEndpoint {
 				com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
 				course = (Course) mgr.getObjectById(Course.class, courseID);
-				course.addInvitedUser(user.getUserId());
+				course.addInvitedUser(userID);
 				mgr.makePersistent(course);
 
 				// Create notification
