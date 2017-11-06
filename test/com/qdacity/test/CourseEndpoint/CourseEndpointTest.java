@@ -555,4 +555,36 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		return PMF.get().getPersistenceManager();
 	}
 	
+	/**
+	 * Tests if a registered user can be added as an owner by another owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testAddCourseOwner() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addCourseOwner(1L, "2", testUser);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getOwners().contains(testUser.getUserId()));
+	}
 }
