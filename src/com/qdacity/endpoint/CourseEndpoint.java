@@ -28,7 +28,6 @@ import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
-import com.qdacity.project.Project;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
 
