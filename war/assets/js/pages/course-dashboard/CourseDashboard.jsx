@@ -68,21 +68,21 @@ export default class CourseDashboard extends React.Component {
 
 
 	init() {
-			if (!this.userPromise) {
-				this.userPromise = this.props.account.getCurrentUser();
-				this.setUserRights();
-			}
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.setUserRights();
 		}
+	}
 
-		setUserRights() {
-			var _this = this;
-			this.userPromise.then(function (user) {
-				var isCourseOwner = _this.props.account.isCourseOwner(user, _this.state.course.getId());
-				_this.setState({
-					isCourseOwner: isCourseOwner
-				});
+	setUserRights() {
+		var _this = this;
+		this.userPromise.then(function (user) {
+			var isCourseOwner = _this.props.account.isCourseOwner(user, _this.state.course.getId());
+			_this.setState({
+				isCourseOwner: isCourseOwner
 			});
-		}
+		});
+	}
 
 
 	render() {

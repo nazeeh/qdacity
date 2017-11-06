@@ -98,7 +98,7 @@ export default class NotificationList extends React.Component {
 		var _this = this;
 		CourseEndpoint.addCourseOwner(notification.course).then(function (resp) {
 			var course = resp;
-			CourseEndpoint.listTermCourse(notification.course).then (function (resp2) {
+			CourseEndpoint.listTermCourse(notification.course).then(function (resp2) {
 				var termList = [];
 				resp2.items = resp2.items || [];
 				resp2.items.forEach(function (crs) {
@@ -182,13 +182,13 @@ export default class NotificationList extends React.Component {
 						<i  className="fa fa-key fa-2x "></i>
 					</StyledGreenIcon>
 			break;
-			case "INVITATION_COURSE":
-				if (notification.settled) {
-					return <StyledGreenIcon className=" fa-lg">
+		case "INVITATION_COURSE":
+			if (notification.settled) {
+				return <StyledGreenIcon className=" fa-lg">
 								<i  className="fa fa-check fa-2x "></i>
 							</StyledGreenIcon>
-				} else {
-					return <StyledActionBtns>
+			} else {
+				return <StyledActionBtns>
 							<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 								<i className="fa fa-times"></i>
 							</StyledListItemBtn>
@@ -196,8 +196,8 @@ export default class NotificationList extends React.Component {
 								<i className="fa fa-check"></i>
 							</StyledListItemBtn>
 						</StyledActionBtns>
-				}
-				break;
+			}
+			break;
 		default:
 			return "";
 			break;
