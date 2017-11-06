@@ -30,6 +30,7 @@ import com.qdacity.PMF;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
+import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
@@ -212,6 +213,34 @@ public class UserEndpointTest {
 		}
 	}
 
+	@Test
+	public void testListUserByCourse() {
+		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserB);
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUserA);
+		CourseEndpointTestHelper.addCourseOwner(1L, "1", loggedInUserA);
+		CourseEndpointTestHelper.addCourseOwner(1L, "2", loggedInUserB);
+		List<User> users = null;
+		PersistenceManager mgr = getPersistenceManager();
+		
+		try {
+			
+			UserEndpoint ue = new UserEndpoint();
+			try {
+				users = ue.listUserByCourse(null, null, 1L, loggedInUserA);
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				fail("User could not be authorized");
+			}
+		} finally {
+			mgr.close();
+		}
+		
+		assertEquals(2, users.size());
+		
+	}
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
