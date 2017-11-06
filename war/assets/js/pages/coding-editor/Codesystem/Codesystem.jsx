@@ -11,10 +11,6 @@ import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import {
 	DragAndDropCode
 } from './Code.jsx';
-import {
-	DragDropContext
-} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 
 import {
 	PageView
@@ -55,7 +51,7 @@ const StyledCodeSystem = styled.div `
  ** (3) wrapping the component in a drag and drop context
  **
  */
-class Codesystem extends SimpleCodesystem {
+export default class Codesystem extends SimpleCodesystem {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -386,5 +382,3 @@ class Codesystem extends SimpleCodesystem {
 		);
 	}
 }
-
-export default DragDropContext(HTML5Backend)(Codesystem);

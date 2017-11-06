@@ -113,6 +113,8 @@ export default class ConsistencyManager {
 		// Update name
 		if (this.umlEditor.isCodeMapped(code)) {
 			this.umlEditor.renameNode(code);
+		} else {
+			this.umlEditor.unmappedCodeWasRenamed(code);
 		}
 
 

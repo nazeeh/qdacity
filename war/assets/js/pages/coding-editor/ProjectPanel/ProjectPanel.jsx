@@ -103,7 +103,7 @@ export default class ProjectPanel extends React.Component {
 					})()
 
 				}
-				<PageViewChooser project={this.props.project} viewChanged={this.props.viewChanged}/>
+				<PageViewChooser project={this.props.project} view={this.props.selectedEditor} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
 		);
 	}
