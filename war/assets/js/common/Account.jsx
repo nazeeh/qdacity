@@ -84,9 +84,7 @@ export default class Account extends React.Component {
 	isCourseOwner(user, courseID) {
 		var isOwner = false;
 		if (typeof user.courses != 'undefined') {
-			user.courses.forEach(function (userCourseID) {
-				if (userCourseID === courseID) isOwner = true;
-			});
+			isOwner = ((user.courses.indexOf(courseID) == -1) ? false : true );
 		}
 		return isOwner;
 	}
