@@ -1,6 +1,11 @@
 import React from 'react'
 import styled from 'styled-components';
 
+import {
+	DragDropContext
+} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
 import UmlEditor from '../uml-editor/UmlEditor.jsx';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
@@ -88,7 +93,7 @@ const StyledDocumentsView = styled.div `
 `;
 
 
-export default class CodingEditor extends React.Component {
+class CodingEditor extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -179,6 +184,10 @@ export default class CodingEditor extends React.Component {
 		this.setState({
 			editorCtrl: new EditorCtrl(this.getCodeByCodeID, this.state.showAgreementMap)
 		});
+
+	}
+
+	changeView(view) {
 
 	}
 
@@ -348,7 +357,8 @@ export default class CodingEditor extends React.Component {
                             project={this.state.project}
                             history={this.props.history}
                             documentsView = {this.documentsViewRef}
-                            showCodingView = {this.showCodingView}/>
+                            showCodingView = {this.showCodingView}
+                            selectedEditor={this.state.selectedEditor}/>
                     </div>
                 </StyledSideBarEditor>
                 <StyledSideBarDocuments>
@@ -360,7 +370,7 @@ export default class CodingEditor extends React.Component {
                 </StyledSideBarDocuments>
                 <StyledSideBarCodesystem>
                         <Codesystem
-                            ref={(c) => {if (c) this.codesystemViewRef = c.child;}}
+                            ref={(c) => {if (c) this.codesystemViewRef = c;}}
                             codingViewIsVisible ={this.state.showCodingView}
                             pageView = {this.state.selectedEditor}
                             umlEditor = {this.umlEditorRef}
@@ -443,9 +453,12 @@ export default class CodingEditor extends React.Component {
                     createCode={this.createCode}
                     selectCode={this.selectCode}
                     hideCodingView={this.hideCodingView}
-                    deleteRelationship={this.deleteRelationship}/>
+                    deleteRelationship={this.deleteRelationship}
+                    codingEditor={this}/>
             </StyledFooter>
         </StyledCodingEditor>
 		);
 	}
 }
+
+export default DragDropContext(HTML5Backend)(CodingEditor);

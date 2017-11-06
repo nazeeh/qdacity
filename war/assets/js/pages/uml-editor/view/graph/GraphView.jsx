@@ -14,17 +14,15 @@ import {
 	EdgeType
 } from '../../util/EdgeType.js';
 
+import {
+	DropTarget
+} from 'react-dnd';
+
 import HoverButtons from '../../hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../../../common/endpoints/UmlCodePositionEndpoint';
 
-const StyledGraphView = styled.div `
-    overflow: hidden;
-    cursor: default;
-    height: calc(100% - 51px);
-`;
-
-export default class GraphView extends React.Component {
+class GraphView extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -509,6 +507,19 @@ export default class GraphView extends React.Component {
 		return cell != null && cell.vertex == false;
 	}
 
+	refreshAllNodes() {
+		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+
+		// Refresh all nodes
+		if (allNodes != null) {
+			for (let i = 0; i < allNodes.length; i++) {
+				if (this.isCellUmlClass(allNodes[i])) {
+					this.recalculateNodeSize(allNodes[i]);
+				}
+			}
+		}
+	}
+
 	addEdge(nodeFrom, nodeTo, relationId, edgeType) {
 		let parent = this.graph.getDefaultParent();
 
@@ -680,6 +691,24 @@ export default class GraphView extends React.Component {
 		const divBase = cellState.text.node.children[0];
 		ReactDOM.unmountComponentAtNode(divBase);
 
+		// Refresh Fields + Methods
+		for (let i = 0; i < cellValue.getFields().length; i++) {
+			const element = cellValue.getFields()[i];
+			const relation = this.props.umlEditor.getRelationOfCode(this.props.umlEditor.getCodeById(cellValue.getCodeId()), element.getRelationId());
+
+			if (relation != null) {
+				element.setText(this.props.umlEditor.getMetaModelMapper().getClassFieldText(relation));
+			}
+		}
+		for (let i = 0; i < cellValue.getMethods().length; i++) {
+			const element = cellValue.getMethods()[i];
+			const relation = this.props.umlEditor.getRelationOfCode(this.props.umlEditor.getCodeById(cellValue.getCodeId()), element.getRelationId());
+
+			if (relation != null) {
+				element.setText(this.props.umlEditor.getMetaModelMapper().getClassMethodText(relation));
+			}
+		}
+
 		// Get width / height
 		let [width, height] = this.calculateClassSize(this.getCellContent(node));
 
@@ -742,12 +771,42 @@ export default class GraphView extends React.Component {
 	render() {
 		const _this = this;
 
+		const {
+			connectDropTarget
+		} = this.props;
+
 		// mxGraph requires an element that is not a styled-component
-		return (
-			<StyledGraphView>
-                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ height: '100%', overflow: 'hidden' }}></div>
+		return connectDropTarget(
+			<div style={{ overflow: 'hidden', cursor: 'default', display: 'flex', flex: '1' }}>
+                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ flex: '1', overflow: 'hidden' }}></div>
                 <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.props.umlEditor} toggleCodingView={this.props.toggleCodingView}></HoverButtons>
-            </StyledGraphView>
+            </div>
 		);
 	}
 }
+
+const graphViewTarget = {
+	drop(props, monitor, component) {
+		const hasDroppedOnChild = monitor.didDrop();
+		if (!hasDroppedOnChild) {
+			const umlEditor = props.umlEditor;
+			const codeId = monitor.getItem().codeId;
+
+			umlEditor.makeCodeVisibleInEditor(codeId);
+
+			return {
+				dragIntoUmlEditor: true
+			};
+		}
+	}
+};
+
+function collectTarget(connect, monitor) {
+	return {
+		connectDropTarget: connect.dropTarget(),
+		isOver: monitor.isOver(),
+		canDrop: monitor.canDrop()
+	};
+}
+
+export default DropTarget("code", graphViewTarget, collectTarget)(GraphView)

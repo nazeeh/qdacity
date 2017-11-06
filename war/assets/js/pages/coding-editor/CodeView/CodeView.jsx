@@ -41,8 +41,8 @@ export default class CodeView extends React.Component {
 		return (
 			<div>
                 <Tabs tabChanged={this.tabChanged}>
-                    <Tab tabTitle="Codings">
-                        <CodingsView documents={this.state.documents} code={this.props.code} editorCtrl={editorCtrl} documentsView={documentsView}/>
+    		        <Tab tabTitle="Codings">
+                        <CodingsView documents={this.state.documents} code={this.props.code} editorCtrl={editorCtrl} documentsView={documentsView} codingEditor={this.props.codingEditor}/>
                     </Tab>
                     <Tab tabTitle="Code Properties">
                         <CodeProperties code={this.props.code} editorCtrl={editorCtrl} documentsView={documentsView} updateSelectedCode={updateSelectedCode}/>
