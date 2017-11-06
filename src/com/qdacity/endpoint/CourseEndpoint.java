@@ -536,8 +536,11 @@ public class CourseEndpoint {
 		public Course addCourseOwner(@Named("courseID") Long courseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 			Course course = null;
 			PersistenceManager mgr = getPersistenceManager();
+			
 			try {
 				course = (Course) Cache.getOrLoad(courseID, Course.class);
+				Authorization.checkAuthorizationCourse(course, user);
+				
 				if (userID != null) course.addOwner(userID);
 				else course.addOwner(user.getUserId());
 
