@@ -37,6 +37,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.course.Course;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
@@ -122,7 +123,11 @@ public class UserEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<User> listUserByCourse(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("courseID") Long courseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
 
-		// Authorization.checkAuthorization(projectID, user); //FIXME consider public projects
+		Course course = null;
+		PersistenceManager mgr = getPersistenceManager();
+		
+		course = (Course) mgr.getObjectById(Course.class, courseID);
+		Authorization.checkAuthorizationCourse(course, user);
 
 		// Set filter
 		List<Long> idsToFilter = new ArrayList<Long>();
