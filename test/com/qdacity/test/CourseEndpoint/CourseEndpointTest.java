@@ -567,7 +567,7 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		Course thisCourse = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
-		CourseEndpointTestHelper.addCourseOwner(1L, "2", testUser);
+		CourseEndpointTestHelper.addCourseOwner(1L, testUser.getUserId(), testUser);
 		
 		javax.jdo.Query q = mgr.newQuery(Course.class);
 		q.setFilter("id == theID");

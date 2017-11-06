@@ -221,7 +221,7 @@ public class UserEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserB);
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUserA);
 		CourseEndpointTestHelper.addCourseOwner(1L, "1", loggedInUserA);
-		CourseEndpointTestHelper.addCourseOwner(1L, "2", loggedInUserB);
+		CourseEndpointTestHelper.addCourseOwner(1L, "2", loggedInUserA);
 		List<User> users = null;
 		PersistenceManager mgr = getPersistenceManager();
 		

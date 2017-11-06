@@ -534,24 +534,21 @@ public class CourseEndpoint {
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 			audiences = { Constants.WEB_CLIENT_ID })
 		public Course addCourseOwner(@Named("courseID") Long courseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
 			Course course = null;
 			PersistenceManager mgr = getPersistenceManager();
 			
 			try {
-				course = (Course) Cache.getOrLoad(courseID, Course.class);
+				course = (Course) mgr.getObjectById(Course.class, courseID);
 				Authorization.checkAuthorizationCourse(course, user);
 				
-				if (userID != null) course.addOwner(userID);
-				else course.addOwner(user.getUserId());
+				course.addOwner(userID);
 
-				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userID);
 				dbUser.addCourseAuthorization(courseID);
-
 				mgr.makePersistent(course);
-				Cache.cache(courseID, Course.class, course);
 				mgr.makePersistent(dbUser);
-				Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
-
+				
 			} finally {
 				mgr.close();
 			}
