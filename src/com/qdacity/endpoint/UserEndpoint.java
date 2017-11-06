@@ -126,17 +126,18 @@ public class UserEndpoint {
 	public List<User> listUserByCourse(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("courseID") Long courseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
 
 		Course course = null;
-		List<User> users = null;
+		List<User> myusers = null;
 		PersistenceManager mgr = getPersistenceManager();
 		
 		course = (Course) mgr.getObjectById(Course.class, courseID);
 		Authorization.checkAuthorizationCourse(course, user);
 		
 		Query q = mgr.newQuery(User.class);
-		users = (List<User>) q.execute(Arrays.asList());
+		myusers = (List<User>) q.execute(Arrays.asList());
 		
+		List<User> users = new ArrayList<User>();
 
-		for (User currentUser : users) {
+		for (User currentUser : myusers) {
 			User dbUser = new User();
 			dbUser.setGivenName((String) currentUser.getGivenName());
 			dbUser.setSurName((String) currentUser.getSurName());
@@ -145,8 +146,13 @@ public class UserEndpoint {
 			dbUser.setId((String) currentUser.getId());
 			dbUser.setType(UserType.valueOf((String) currentUser.getType().toString()));
 
+			if (currentUser.getCourses().contains(courseID)) {
+				users.add(dbUser);
+			}
 		}
 
+		System.out.println(users);
+		System.out.println(myusers);
 		return users;
 	}
 
