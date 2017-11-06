@@ -40,6 +40,7 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
@@ -71,38 +72,30 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<User> listUser(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, com.google.appengine.api.users.User user) throws UnauthorizedException {
-
-		// Authorization.checkAuthorization(projectID, user); //FIXME consider public projects
-
-		// Set filter
-		List<Long> idsToFilter = new ArrayList<Long>();
-		idsToFilter.add(projectID);
-		Filter filter = new FilterPredicate("projects", FilterOperator.IN, idsToFilter);
-
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("User").setFilter(filter);
-
-		PreparedQuery pq = datastore.prepare(q);
-
-		Calendar cal = Calendar.getInstance();
-
-		Map<String, Integer> freq = new HashMap<String, Integer>();
-
-		// List<User> users = (List<User>)(List<?>)Lists.newArrayList( pq.asIterable() );
-
+		Project project = null;
+		List<User> myusers = null;
+		PersistenceManager mgr = getPersistenceManager();
+		
+		project = (Project) mgr.getObjectById(Project.class, projectID);
+		Authorization.checkAuthorization(project, user);
+		
+		Query q = mgr.newQuery(User.class);
+		myusers = (List<User>) q.execute(Arrays.asList());
+		
 		List<User> users = new ArrayList<User>();
 
-		for (Entity result : pq.asIterable()) {
+		for (User currentUser : myusers) {
 			User dbUser = new User();
-			dbUser.setGivenName((String) result.getProperty("givenName"));
-			dbUser.setSurName((String) result.getProperty("surName"));
-			dbUser.setProjects((List<Long>) result.getProperty("projects"));
-			dbUser.setCourses((List<Long>) result.getProperty("courses"));
-			dbUser.setId((String) result.getProperty("id"));
-			dbUser.setType(UserType.valueOf((String) result.getProperty("type")));
+			dbUser.setGivenName((String) currentUser.getGivenName());
+			dbUser.setSurName((String) currentUser.getSurName());
+			dbUser.setProjects((List<Long>) currentUser.getProjects());
+			dbUser.setCourses((List<Long>) currentUser.getCourses());
+			dbUser.setId((String) currentUser.getId());
+			dbUser.setType(UserType.valueOf((String) currentUser.getType().toString()));
 
-			users.add(dbUser);
+			if (currentUser.getProjects().contains(projectID)) {
+				users.add(dbUser);
+			}
 		}
 
 		return users;
@@ -151,8 +144,6 @@ public class UserEndpoint {
 			}
 		}
 
-		System.out.println(users);
-		System.out.println(myusers);
 		return users;
 	}
 
