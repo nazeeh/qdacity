@@ -35,6 +35,7 @@ public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.appengine.api.users.User testUser2 = new com.google.appengine.api.users.User("asd@asd.de", "bla", "12345678");
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -587,4 +588,43 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		assertEquals(true, thisCourse.getOwners().contains(testUser.getUserId()));
 	}
+	
+	/**
+	 * Tests if a registered user can be added as an owner by non owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testAddCourseOwnerNoAuth() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		expectedException.expect(UnauthorizedException.class);
+		expectedException.expectMessage(is("User is Not Authorized"));
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.addCourseOwner(1L, "2", testUser2);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
+	}
+	
 }
