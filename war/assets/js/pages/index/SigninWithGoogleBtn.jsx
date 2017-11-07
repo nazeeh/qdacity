@@ -38,9 +38,9 @@ export default class SigninWithGoogleBtn extends React.Component {
 		var googleProfile = _this.props.account.getProfile();
 		vex.dialog.open({
 			message: 'Please confirm:',
-			input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + googleProfile.getGivenName() + '" required />'
-				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + googleProfile.getFamilyName() + '" required />\n'
-				+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + googleProfile.getEmail() + '" required />\n\n',
+			input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + googleProfile.displayName + '" required />'
+				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + googleProfile.displayName + '" required />\n'
+				+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + googleProfile.email + '" required />\n\n',
 			buttons: [
 				$.extend({}, vex.dialog.buttons.YES, {
 					text: 'Register'
@@ -67,7 +67,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 		if (this.props.account.isSignedIn()) {
 			this.redirect();
 		} else {
-			this.props.account.changeAccount(this.redirect);
+			this.props.account.signInWithCallback(this.redirect);
 		}
 	}
 

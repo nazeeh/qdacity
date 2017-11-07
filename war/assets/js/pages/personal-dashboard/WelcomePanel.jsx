@@ -14,7 +14,7 @@ export default class WelcomePanel extends React.Component {
 	render() {
 		return (
 			<Jumbotron id="welcome" >
-				<h1>Welcome {this.props.account.getProfile().getGivenName()}</h1>
+				<h1>Welcome {this.props.account.getProfile().displayName}</h1>
 				<div>
 					<p>QDAcity is currently in beta. We appreciate feedback to
 						<a href="mailto:support@qdacity.com?Subject=QDAcity%20support">

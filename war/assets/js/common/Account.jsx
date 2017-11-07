@@ -1,4 +1,6 @@
+/* eslint-disable indent,semi,space-before-function-paren,no-multiple-empty-lines */
 import React from 'react';
+import firebaseWrapper from './firebase';
 
 import {
 	BtnDefault,
@@ -6,21 +8,19 @@ import {
 } from './styles/Btn.jsx';
 export default class Account extends React.Component {
 
-
 	constructor(props) {
 		super(props);
 		this.state = {
-			name: "",
-			email: "",
-			picSrc: ""
+			name: '',
+			email: '',
+			picSrc: ''
 		};
-		this.auth2 = gapi.auth2.init({
-			client_id: this.props.client_id,
-			scope: this.props.scope
-		});
-		this.signin();
+		this.auth_google = firebaseWrapper.googleAuthProvider;
+		this.firebase = firebaseWrapper.firebase;
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
+
+    this.props.callback(this);
 	}
 
 	redirectToPersonalDashbaord() {
@@ -29,42 +29,64 @@ export default class Account extends React.Component {
 
 	signin() {
 		var _this = this;
-		this.auth2.currentUser.listen(function (googleUser) {
-			if (googleUser.isSignedIn()) {
-				_this.setUser(_this.getProfile());
-				_this.props.callback(_this);
-			} else {
-				_this.props.callback(_this);
-			}
+		var promise = new Promise(
+      function (resolve, reject) {
+        _this.firebase.auth().signInWithPopup(_this.auth_google).then(function(result) {
+          if (result.credential) {
+            var token = result.credential.accessToken;
+            gapi.client.setToken({access_token: token});
+            console.log('Token retrieved: ' + token);
+            resolve(result.user)
+          } else {
+            console.log('Retrieved no token!');
+            reject();
+          }
+        }).catch(function(error) {
+          console.log('The login failed!!');
+          reject();
+        });
+      }
+    );
+
+    return promise;
+  }
+
+  signInWithCallback(callback) {
+		this.signin().then(function(result) {
+			callback();
 		});
-		_this.props.callback(_this);
 	}
 
 
 	changeAccount(callback) {
-		this.auth2.signIn({
-			'prompt': 'select_account'
-		}).then(callback);
+		this.signout();
+		this.signInWithCallback(callback);
 	}
 
 	getProfile() {
-		return this.auth2.currentUser.get().getBasicProfile();
+		// TODO: check calling libs if follow attributes match existing called
+		// user.displayName
+		// user.email
+		// user.photoURL
+		// user.emailVerified
+		// user.uid
+		return this.firebase.auth().currentUser;
 	}
 
 	isSignedIn() {
-		return this.auth2.isSignedIn.get();
+		return !!this.firebase.auth().currentUser;
 	}
 
 	getCurrentUser() {
+		var _this = this;
 		var promise = new Promise(
 			function (resolve, reject) {
-				gapi.client.qdacity.user.getCurrentUser().execute(function (resp) {
-					if (!resp.code) {
-						resolve(resp);
-					} else {
-						reject(resp);
-					}
-				});
+        var user = _this.firebase.auth().currentUser;
+				if (user) {
+					resolve(user);
+				} else {
+					reject(user);
+				}
 			}
 		);
 
@@ -73,7 +95,7 @@ export default class Account extends React.Component {
 
 	isProjectOwner(user, prjId) {
 		var isOwner = false;
-		if (typeof user.projects != 'undefined') {
+		if (typeof user.projects !== 'undefined') {
 			user.projects.forEach(function (userPrjId) {
 				if (userPrjId === prjId) isOwner = true;
 			});
@@ -83,7 +105,7 @@ export default class Account extends React.Component {
 
 	isValidationCoder(user, valPrj) {
 		var isValidationCoder = false;
-		if (typeof valPrj.validationCoders != 'undefined') {
+		if (typeof valPrj.validationCoders !== 'undefined') {
 			valPrj.validationCoders.forEach(function (valCoderId) {
 				if (user.id === valCoderId) isValidationCoder = true;
 			});
@@ -121,7 +143,15 @@ export default class Account extends React.Component {
 	}
 
 	signout() {
-		window.open("https://accounts.google.com/logout");
+    this.firebase.auth().signOut().then(function() {
+			this.setState({
+				name: '',
+				email: '',
+				picSrc: ''
+			});
+    }).catch(function(error) {
+      console.log('Error at signing out!');
+    });
 	}
 
 	render() {
