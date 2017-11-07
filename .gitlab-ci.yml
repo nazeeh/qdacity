@@ -84,6 +84,10 @@ frontend_prod_unittest:
     paths:
     - war/node_modules/
     policy: pull
+  artifacts:
+    paths:
+      - war/coverage
+    expire_in: 6 mos
   script:
     - export DISPLAY=:10
     - cd war
