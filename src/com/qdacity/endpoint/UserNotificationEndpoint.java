@@ -57,11 +57,7 @@ public class UserNotificationEndpoint {
 	 * @return A CollectionResponse class containing the list of all entities
 	 *         persisted and a cursor to the next page.
 	 */
-	@ApiMethod(
-		name = "user.listUserNotification",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.listUserNotification")
 	public List<UserNotification> listUserNotification(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, com.google.api.server.spi.auth.common.User user) {
 
 		Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user.getId());
@@ -104,11 +100,7 @@ public class UserNotificationEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(
-		name = "user.getUserNotification",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.getUserNotification")
 	public UserNotification getUserNotification(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		UserNotification usernotification = null;
@@ -128,11 +120,7 @@ public class UserNotificationEndpoint {
 	 * @param usernotification the entity to be inserted.
 	 * @return The inserted entity.
 	 */
-	@ApiMethod(
-		name = "user.insertUserNotification",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.insertUserNotification")
 	public UserNotification insertUserNotification(UserNotification usernotification) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -154,11 +142,7 @@ public class UserNotificationEndpoint {
 	 * @param usernotification the entity to be updated.
 	 * @return The updated entity.
 	 */
-	@ApiMethod(
-		name = "user.updateUserNotification",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.updateUserNotification")
 	public UserNotification updateUserNotification(UserNotification usernotification) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -178,11 +162,7 @@ public class UserNotificationEndpoint {
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 */
-	@ApiMethod(
-		name = "user.removeUserNotification",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.removeUserNotification")
 	public void removeUserNotification(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

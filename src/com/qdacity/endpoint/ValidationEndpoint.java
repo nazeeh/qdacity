@@ -53,11 +53,7 @@ import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
 public class ValidationEndpoint {
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "validation.listReports",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "validation.listReports")
 	public List<ValidationReport> listReports(@Named("projectID") Long prjID, User user) throws UnauthorizedException {
 		List<ValidationReport> reports = new ArrayList<>();
 		PersistenceManager mgr = getPersistenceManager();
@@ -89,11 +85,7 @@ public class ValidationEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "validation.listValidationResults",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "validation.listValidationResults")
 	public List<ValidationResult> listValidationResults(@Named("reportID") Long reportID, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		List<ValidationResult> results = new ArrayList<ValidationResult>();
@@ -112,11 +104,7 @@ public class ValidationEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "validation.listDocumentResults",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "validation.listDocumentResults")
 	public List<DocumentResult> listDocumentResults(@Named("validationRresultID") Long validationRresultID, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		List<DocumentResult> results = new ArrayList<DocumentResult>();
@@ -137,11 +125,7 @@ public class ValidationEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "validation.getValidationResult",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "validation.getValidationResult")
 	public ValidationResult getValidationResultID(@Named("reportID") Long reportID, @Named("validationProjectID") Long validationProjectID, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		ValidationResult result;
@@ -159,11 +143,7 @@ public class ValidationEndpoint {
 		return result;
 	}
 
-	@ApiMethod(
-		name = "validation.evaluateRevision",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "validation.evaluateRevision")
 	public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
 
 		DeferredEvaluation task = new DeferredEvaluation(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
@@ -174,11 +154,7 @@ public class ValidationEndpoint {
 		return null;
 	}
 
-	@ApiMethod(
-		name = "validation.sendNotificationEmail",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "validation.sendNotificationEmail")
 	public void sendNotificationEmail(@Named("reportID") Long reportID, User user) throws UnauthorizedException {
 
 		DeferredEmailNotification task = new DeferredEmailNotification(reportID, user);
@@ -188,11 +164,7 @@ public class ValidationEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "validation.deleteReport",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "validation.deleteReport")
 	public List<ValidationReport> deleteReport(@Named("reportID") Long repID, User user) throws UnauthorizedException {
 		List<ValidationReport> reports = new ArrayList<>(); // FIXME Why?
 		PersistenceManager mgr = getPersistenceManager();

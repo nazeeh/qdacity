@@ -75,12 +75,7 @@ public class UserEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "user.listUser",
-		path = "userlist",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.listUser",	path = "userlist")
 	public List<User> listUser(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, com.google.api.server.spi.auth.common.User user) throws UnauthorizedException {
 
 		// Authorization.checkAuthorization(projectID, user); //FIXME consider public projects
@@ -120,12 +115,7 @@ public class UserEndpoint {
 	}
 
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "user.findUsers",
-		path = "userlist",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.findUsers", path = "userlist")
 	public List<User> findUsers(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("searchTerm") String searchTerm, com.google.api.server.spi.auth.common.User user) throws UnauthorizedException {
 
 		// Authorization.checkAuthorization(projectID, user); //FIXME only ADMIN
@@ -169,12 +159,7 @@ public class UserEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "user.listValidationCoders",
-		path = "validationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.listValidationCoders", path = "validationProject")
 	public List<User> listValidationCoders(@Named("validationProject") Long projectID, com.google.api.server.spi.auth.common.User user) {
 		List<User> users = new ArrayList<User>();
 		PersistenceManager mgr = getPersistenceManager();
@@ -200,11 +185,7 @@ public class UserEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "getUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "getUser")
 	public User getUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 
 		User user = getUser(id);
@@ -217,11 +198,7 @@ public class UserEndpoint {
 
 
 
-	@ApiMethod(
-		name = "updateUserType",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "updateUserType")
 	public User updateUserType(@Named("id") String id, @Named("type") String type, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		User user = null;
@@ -251,11 +228,7 @@ public class UserEndpoint {
 		return user;
 	}
 
-	@ApiMethod(
-		name = "user.getCurrentUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "user.getCurrentUser")
 	public User getCurrentUser(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		return getUser(loggedInUser.getId());
 	}
@@ -268,11 +241,7 @@ public class UserEndpoint {
 	 * @param user the entity to be inserted.
 	 * @return The inserted entity.
 	 */
-	@ApiMethod(
-		name = "insertUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "insertUser")
 	public User insertUser(User user, com.google.api.server.spi.auth.common.User loggedInUser) {
 		user.setId(loggedInUser.getId());
 		user.setProjects(new ArrayList<Long>());
@@ -301,11 +270,7 @@ public class UserEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	// FIXME Possibly remove, or make secure.
-	@ApiMethod(
-		name = "updateUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "updateUser")
 	public User updateUser(User user, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(user, loggedInUser);
@@ -330,11 +295,7 @@ public class UserEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "removeUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "removeUser")
 	public void removeUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

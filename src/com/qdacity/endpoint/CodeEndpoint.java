@@ -61,11 +61,7 @@ public class CodeEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.getCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.getCode")
 	public Code getCode(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		Code code = null;
@@ -90,11 +86,7 @@ public class CodeEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.insertCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.insertCode")
 	public Code insertCode(
 			@Named("relationId") @Nullable Long relationId, 
 			@Named("relationSourceCodeId") @Nullable Long relationSourceCodeId,
@@ -163,11 +155,7 @@ public class CodeEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.updateCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.updateCode")
 	public Code updateCode(Code code, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
@@ -215,11 +203,7 @@ public class CodeEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.updateRelationshipCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.updateRelationshipCode")
 	public Code updateRelationshipCode(
 			@Named("relationshipCodeId") Long relationshipCodeId, 
 			@Named("relationSourceId") Long relationSourceId, 
@@ -260,11 +244,7 @@ public class CodeEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.updateRelationshipCodeMetaModel",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.updateRelationshipCodeMetaModel")
 	public Code updateRelationshipCodeMetaModel(
 			@Named("relationshipCodeId") Long relationshipCodeId, 
 			@Named("newMetaModelId") Long newMetaModelId,
@@ -297,11 +277,7 @@ public class CodeEndpoint {
 		return code;
 	}
 	
-	@ApiMethod(
-		name = "codes.setCodeBookEntry",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.setCodeBookEntry")
 	public Code setCodeBookEntry(@Named("codeId") Long codeID, CodeBookEntry entry, User user) throws UnauthorizedException {
 		// Fixme Authorization
 		Code code = null;
@@ -325,11 +301,7 @@ public class CodeEndpoint {
 		return code;
 	}
 
-	@ApiMethod(
-		name = "codes.addRelationship",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.addRelationship")
 	public Code addRelationship(@Named("sourceCode") Long codeID, @Named("createIfItExists") Boolean createIfItExists, CodeRelation relation, User user) throws UnauthorizedException {
 		// Fixme Authorization
 		Code code = null;
@@ -370,11 +342,7 @@ public class CodeEndpoint {
 		return code;
 	}
 
-	@ApiMethod(
-		name = "codes.removeRelationship",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.removeRelationship")
 	public Code removeRelationship(@Named("codeId") Long codeID, @Named("relationshipId") Long relationId, User user) throws UnauthorizedException {
 		// Fixme Authorization
 		Code code = null;
@@ -405,11 +373,7 @@ public class CodeEndpoint {
 		return code;
 	}
 	
-	@ApiMethod(
-			name = "codes.removeAllRelationships",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.removeAllRelationships")
 	public Code removeAllRelationships(@Named("id") Long id, User user) throws UnauthorizedException {
 		Code code = getCode(id, user);
 		Code result = code;
@@ -428,11 +392,7 @@ public class CodeEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.removeCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.removeCode")
 	public void removeCode(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -487,11 +447,7 @@ public class CodeEndpoint {
 	    ChangeLogger.logChange(change);
 	}
 
-	@ApiMethod(
-		name = "codes.relocateCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.relocateCode")
 	public Code relocateCode(@Named("codeId") Long codeID, @Named("newParentID") Long newParentID, User user) throws UnauthorizedException {
 		// Fixme Authorization
 		Code code = null;

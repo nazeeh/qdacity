@@ -51,11 +51,7 @@ public class DataMigrationEndpoint {
      * Operations! Use with caution!!
      * @throws EntityNotFoundException
      */
-    @ApiMethod(
-	    name = "migration.migrateV4toV5",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "migration.migrateV4toV5")
     public void migrateV4toV5(User user) throws EntityNotFoundException {
 	Queue taskQueue = QueueFactory.getQueue("DataMigrationQueue");
 	List<Future<TaskHandle>> futures = new ArrayList<>();
@@ -76,11 +72,7 @@ public class DataMigrationEndpoint {
      * Assumes that there are only fmeasure ValidationReports!
      * @param user for access control
      */
-    @ApiMethod(
-	    name = "migration.migrateV6toV7",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "migration.migrateV6toV7")
     public void migrateV6toV7(User user) {
 	Queue taskQueue = QueueFactory.getQueue("DataMigrationQueue");
 	List<Future<TaskHandle>> futures = new ArrayList<>();

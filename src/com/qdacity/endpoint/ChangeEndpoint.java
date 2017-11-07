@@ -67,12 +67,7 @@ public class ChangeEndpoint {
 	 * @return A CollectionResponse class containing the list of all entities persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "changelog.listChange",
-		path = "log",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "changelog.listChange", path = "log")
 	public CollectionResponse<Change> listChange(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) {
 
 		PersistenceManager mgr = null;
@@ -126,12 +121,7 @@ public class ChangeEndpoint {
 	return changes;
     }
 
-	@ApiMethod(
-		name = "changelog.listChangeStats",
-		path = "stats",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "changelog.listChangeStats", path = "stats")
 	public List<ChangeStats> listChangeStats(@Nullable @Named("period") String period, @Named("filterType") String filterType, @Nullable @Named("projectID") Long projectID, @Nullable @Named("projectType") String projectType, User user) throws UnauthorizedException {
 
 		if (filterType.equals("project")) {
@@ -210,8 +200,7 @@ public class ChangeEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(
-		name = "changelog.getChange")
+	@ApiMethod(name = "changelog.getChange")
 	public Change getChange(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		Change change = null;
@@ -229,8 +218,7 @@ public class ChangeEndpoint {
 	 * @param change the entity to be inserted.
 	 * @return The inserted entity.
 	 */
-	@ApiMethod(
-		name = "changelog.insertChange")
+	@ApiMethod(name = "changelog.insertChange")
 	public Change insertChange(Change change) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -250,8 +238,7 @@ public class ChangeEndpoint {
 	 * @param change the entity to be updated.
 	 * @return The updated entity.
 	 */
-	@ApiMethod(
-		name = "changelog.updateChange")
+	@ApiMethod(name = "changelog.updateChange")
 	public Change updateChange(Change change) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -270,8 +257,7 @@ public class ChangeEndpoint {
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 */
-	@ApiMethod(
-		name = "changelog.removeChange")
+	@ApiMethod(name = "changelog.removeChange")
 	public void removeChange(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

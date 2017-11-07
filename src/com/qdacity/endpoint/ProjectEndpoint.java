@@ -67,6 +67,7 @@ import com.qdacity.user.UserNotificationType;
 	})
 public class ProjectEndpoint {
 
+	
 	/**
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.
@@ -76,13 +77,9 @@ public class ProjectEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "project.listProject",
-		path = "projects",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.listProject", path = "projects")
 	public CollectionResponse<Project> listProject(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
-
+		
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
 		PersistenceManager mgr = null;
@@ -106,10 +103,7 @@ public class ProjectEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "project.listValidationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.listValidationProject")
 	public List<ValidationProject> listValidationProject(User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO user unknown
@@ -139,11 +133,7 @@ public class ProjectEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.getProject",
-		path = "project",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.getProject",	path = "project")
 	public AbstractProject getProject(@Named("id") Long id, @Named("type") String type, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		AbstractProject project = null;
@@ -191,11 +181,7 @@ public class ProjectEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.incrCodingId",
-		path = "codings",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.incrCodingId", path = "codings")
 	public AbstractProject getAndIncrCodingId(@Named("id") Long projectID, @Named("type") String type, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		AbstractProject project = null;
@@ -228,10 +214,7 @@ public class ProjectEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.insertProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.insertProject")
 	public Project insertProject(Project project, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
@@ -274,10 +257,7 @@ public class ProjectEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.updateProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.updateProject")
 	public AbstractProject updateProject(AbstractProject project, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(project, user);
@@ -296,10 +276,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.addOwner",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.addOwner")
 	public Project addOwner(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -322,10 +299,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.addCoder",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.addCoder")
 	public Project addCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -341,10 +315,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.addValidationCoder",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.addValidationCoder")
 	public Project addValidationCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -360,10 +331,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.removeUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeUser")
 	public void removeUser(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -398,10 +366,7 @@ public class ProjectEndpoint {
 		}
 	}
 
-	@ApiMethod(name = "project.inviteUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.inviteUser")
 	public Project inviteUser(@Named("projectID") Long projectID, @Named("userEmail") String userEmail, User user) throws UnauthorizedException {
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -441,10 +406,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.setDescription",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.setDescription")
 	public AbstractProject setDescription(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("description") String description, User user) throws UnauthorizedException {
 		AbstractProject project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -468,10 +430,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.setUmlEditorEnabled",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.setUmlEditorEnabled")
 	public AbstractProject setUmlEditorEnabled(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("umlEditorEnabled") boolean umlEditorEnabled, User user) throws UnauthorizedException {
 		AbstractProject project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -495,10 +454,7 @@ public class ProjectEndpoint {
 		return project;
 	}	
 	
-	@ApiMethod(name = "project.createSnapshot",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.createSnapshot")
 	public ProjectRevision createSnapshot(@Named("projectID") Long projectID, @Named("comment") String comment, User user) throws UnauthorizedException {
 		ProjectRevision cloneProject = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -529,10 +485,7 @@ public class ProjectEndpoint {
 		return cloneProject;
 	}
 
-	@ApiMethod(name = "project.requestValidationAccess",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.requestValidationAccess")
 	public ValidationProject requestValidationAccess(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
 		ProjectRevision projectRevision = null;
 		Project project = null;
@@ -579,10 +532,7 @@ public class ProjectEndpoint {
 		return cloneProject;
 	}
 
-	@ApiMethod(name = "project.createValidationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.createValidationProject")
 	public ValidationProject createValidationProject(@Named("projectID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException, JSONException {
 		ProjectRevision project = null;
 		ValidationProject cloneProject = null;
@@ -643,10 +593,7 @@ public class ProjectEndpoint {
 
 	}
 
-	@ApiMethod(name = "project.listRevisions",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.listRevisions")
 	public List<ProjectRevision> listRevisions(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
 		List<ProjectRevision> revisions = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -684,10 +631,7 @@ public class ProjectEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "project.removeProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeProject")
 	public void removeProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -763,10 +707,7 @@ public class ProjectEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.removeProjectRevision",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeProjectRevision")
 	public void removeProjectRevision(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -817,10 +758,7 @@ public class ProjectEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.removeValidationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeValidationProject")
 	public void removeValidationProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

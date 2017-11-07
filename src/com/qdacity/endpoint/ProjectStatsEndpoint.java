@@ -65,11 +65,7 @@ public class ProjectStatsEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "project.getProjectStats",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.getProjectStats")
 	public ProjectStats getProjectStats(@Named("id") Long projectId, @Named("projectType") String prjType, User user) throws UnauthorizedException {
 		// FIXME authorization for mutliple types of projects
 		// Authorization.checkAuthorization(projectId, user);

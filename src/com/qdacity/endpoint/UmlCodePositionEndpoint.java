@@ -52,10 +52,7 @@ public class UmlCodePositionEndpoint {
 	 * @param codesystemId  specifies which CodePositionEntities will be returned
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "umlCodePosition.listCodePositions",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
+	@ApiMethod(name = "umlCodePosition.listCodePositions")
 	public List<UmlCodePosition> listCodePositions(@Named("codesystemId") Long codesystemId, User user) throws UnauthorizedException {
 
 		// Check if user is authorized
@@ -87,10 +84,7 @@ public class UmlCodePositionEndpoint {
 	 * @param umlCodePositionList  the code position entities
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "umlCodePosition.insertOrUpdateCodePositions",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID })
+	@ApiMethod(name = "umlCodePosition.insertOrUpdateCodePositions")
 	public List<UmlCodePosition> insertOrUpdateCodePositions(UmlCodePositionList umlCodePositionList, User user) throws UnauthorizedException {
 
 		final List<UmlCodePosition> umlCodePositions = umlCodePositionList.getUmlCodePositions();
@@ -135,11 +129,7 @@ public class UmlCodePositionEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "umlCodePosition.removeCodePosition",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "umlCodePosition.removeCodePosition")
 	public void removeCodePosition(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		

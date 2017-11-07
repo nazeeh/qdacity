@@ -45,10 +45,7 @@ import com.qdacity.metamodel.MetaModelRelation;
 public class MetaModelRelationEndpoint {
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "metaModelRelation.listRelations",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "metaModelRelation.listRelations")
 	public List<MetaModelRelation> listRelations( @Named("metaModelId") Long metaModelId, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized");
@@ -84,10 +81,7 @@ public class MetaModelRelationEndpoint {
 	 * @return the inserted entity
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "metaModelRelation.insertMetaModelRelation",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "metaModelRelation.insertMetaModelRelation")
 	public MetaModelRelation insertMetaModelRelation(MetaModelRelation metaModelRelation, User user) throws UnauthorizedException {
 
 		Authorization.checkAuthorization(metaModelRelation, user);

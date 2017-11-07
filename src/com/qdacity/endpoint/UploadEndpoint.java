@@ -69,8 +69,7 @@ public class UploadEndpoint {
 	 *         persisted and a cursor to the next page.
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "listUpload")
+	@ApiMethod(name = "listUpload")
 	public CollectionResponse<Upload> listUpload(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit) {
 
 		PersistenceManager mgr = null;
@@ -111,8 +110,7 @@ public class UploadEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(
-		name = "getUpload")
+	@ApiMethod(name = "getUpload")
 	public Upload getUpload(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		Upload upload = null;
@@ -133,12 +131,7 @@ public class UploadEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "upload.insertUpload",
-		path = "upload",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "upload.insertUpload", path = "upload")
 	public TextDocument insertUpload(Upload upload, User user) throws UnauthorizedException {
 		// FIXME authorization check
 		PersistenceManager mgr = getPersistenceManager();
@@ -213,8 +206,7 @@ public class UploadEndpoint {
 	 * @param upload the entity to be updated.
 	 * @return The updated entity.
 	 */
-	@ApiMethod(
-		name = "updateUpload")
+	@ApiMethod(name = "updateUpload")
 	public Upload updateUpload(Upload upload) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -234,8 +226,7 @@ public class UploadEndpoint {
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 */
-	@ApiMethod(
-		name = "removeUpload")
+	@ApiMethod(name = "removeUpload")
 	public void removeUpload(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

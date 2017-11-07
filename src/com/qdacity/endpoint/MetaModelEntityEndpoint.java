@@ -43,10 +43,7 @@ import com.qdacity.metamodel.MetaModelEntity;
 	})
 public class MetaModelEntityEndpoint {
 	
-	@ApiMethod(name = "metaModelEntity.listEntities",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "metaModelEntity.listEntities")
 	public List<MetaModelEntity> listEntities( @Named("metaModelId") Long metaModelId, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized");
@@ -82,10 +79,7 @@ public class MetaModelEntityEndpoint {
 	 * @return the inserted entity
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "metaModelEntity.insertMetaModelEntity",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "metaModelEntity.insertMetaModelEntity")
 	public MetaModelEntity insertMetaModelEntity(MetaModelEntity metaModelEntity, User user) throws UnauthorizedException {
 
 		Authorization.checkAuthorization(metaModelEntity, user);

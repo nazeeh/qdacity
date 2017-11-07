@@ -77,11 +77,7 @@ public class TextDocumentEndpoint {
 	 *         persisted and a cursor to the next page.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "documents.listTextDocument",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "documents.listTextDocument")
 	public CollectionResponse<TextDocument> listTextDocument(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 
 		throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all text documents
@@ -96,11 +92,7 @@ public class TextDocumentEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "documents.getTextDocument",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "documents.getTextDocument")
 	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, @Nullable @Named("projectType") String prjType, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = null;
@@ -139,11 +131,7 @@ public class TextDocumentEndpoint {
 		return CollectionResponse.<TextDocument> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
 
-	@ApiMethod(
-		name = "documents.getAgreementMaps",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "documents.getAgreementMaps")
 	public List<AgreementMap> getAgreementMaps(@Named("id") Long id, @Named("projectType") String projectType, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = null;
@@ -184,11 +172,7 @@ public class TextDocumentEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "documents.insertTextDocument",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "documents.insertTextDocument")
 	public TextDocument insertTextDocument(TextDocument textdocument, User user) throws UnauthorizedException {
 		// Check authorization
 		Authorization.checkAuthorization(textdocument, user);
@@ -219,11 +203,7 @@ public class TextDocumentEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "documents.updateTextDocument",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "documents.updateTextDocument")
 	public TextDocument updateTextDocument(TextDocument textdocument, User user) throws UnauthorizedException {
 		// Check authorization
 		// Authorization.checkAuthorization(textdocument, user); // FIXME authorization for textdocument w.r.t. project type
@@ -250,11 +230,7 @@ public class TextDocumentEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "documents.applyCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "documents.applyCode")
 	public TextDocument applyCode(TextDocumentCodeContainer textDocumentCode, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -279,11 +255,7 @@ public class TextDocumentEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "documents.removeTextDocument",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "documents.removeTextDocument")
 	public void removeTextDocument(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

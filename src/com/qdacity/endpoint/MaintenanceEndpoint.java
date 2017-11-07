@@ -45,11 +45,7 @@ public class MaintenanceEndpoint {
 	private MetaModelEntityEndpoint metaModelEntityEndpoint = new MetaModelEntityEndpoint();
 	private MetaModelRelationEndpoint metaModelRelationEndpoint = new MetaModelRelationEndpoint();
 	
-	@ApiMethod(
-		name = "maintenance.cleanupValidationResults",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "maintenance.cleanupValidationResults")
 	public void cleanupValidationResults(com.google.appengine.api.users.User user) throws UnauthorizedException {
 
 		cleanUpValidationResults();
@@ -77,11 +73,7 @@ public class MaintenanceEndpoint {
 	 * @param user
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "maintenance.initializeDatabase",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "maintenance.initializeDatabase")
 	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, User user) throws UnauthorizedException {
 		
 		Authorization.checkDatabaseInitalizationAuthorization(user);

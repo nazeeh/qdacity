@@ -56,11 +56,7 @@ public class CourseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "course.listCourse",
-		path = "courses",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "course.listCourse", path = "courses")
 	public CollectionResponse<Course> listCourse(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
@@ -93,11 +89,7 @@ public class CourseEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "course.removeCourse",
-		 
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "course.removeCourse")
 	public void removeCourse(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -133,10 +125,7 @@ public class CourseEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "course.insertCourse",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "course.insertCourse")
 	public Course insertCourse(Course course, User user) throws UnauthorizedException {
 		
 
@@ -168,11 +157,7 @@ public class CourseEndpoint {
 	}
 
 	
-	@ApiMethod(name = "course.removeUser",
-			path = "course.removeUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "course.removeUser", path = "course.removeUser")
 	public void removeUser(@Named("courseID") Long courseID, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -210,11 +195,7 @@ public class CourseEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "course.getCourse",
-		path = "course",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "course.getCourse", path = "course")
 	public Course getCourse(@Named("id") Long id, User user) throws UnauthorizedException {
 		
 		PersistenceManager mgr = getPersistenceManager();
@@ -257,11 +238,7 @@ public class CourseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "course.listTermCourse",
-		path = "listTermCourse",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "course.listTermCourse", path = "listTermCourse")
 	public List<TermCourse> listTermCourse(@Named("courseID") Long courseID, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
@@ -295,10 +272,7 @@ public class CourseEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "course.insertTermCourse",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "course.insertTermCourse")
 	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
 		
 		termCourse.setCourseID(courseID);
