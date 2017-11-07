@@ -55,9 +55,13 @@ public class Authorization {
 
 	public static Boolean isUserAuthorizedCourse(User googleUser, Course course) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
+		boolean userIsInvited = false;
+		if (course.getInvitedUsers() != null) {
+			if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(googleUser.getUserId());
+		}
 		try {
 			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getUserId());
-			if (course.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+			if (course.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN || userIsInvited) return true;
 		} finally {
 			mgr.close();
 		}

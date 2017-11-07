@@ -543,7 +543,7 @@ public class CourseEndpoint {
 				
 				course.addOwner(userID);
 
-				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, userID);
+				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 				dbUser.addCourseAuthorization(courseID);
 				mgr.makePersistent(course);
 				mgr.makePersistent(dbUser);

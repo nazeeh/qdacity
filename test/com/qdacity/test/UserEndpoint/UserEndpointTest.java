@@ -216,12 +216,9 @@ public class UserEndpointTest {
 	@Test
 	public void testListUserByCourse() {
 		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserB);
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUserA);
-		CourseEndpointTestHelper.addCourseOwner(1L, "1", loggedInUserA);
-		CourseEndpointTestHelper.addCourseOwner(1L, "2", loggedInUserA);
+		
 		List<User> users = null;
 		PersistenceManager mgr = getPersistenceManager();
 		
@@ -238,7 +235,7 @@ public class UserEndpointTest {
 			mgr.close();
 		}
 		
-		assertEquals(2, users.size());
+		assertEquals(1, users.size());
 		
 	}
 	private static PersistenceManager getPersistenceManager() {
