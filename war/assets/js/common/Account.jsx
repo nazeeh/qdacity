@@ -35,7 +35,6 @@ export default class Account extends React.Component {
           if (result.credential) {
             var token = result.credential.accessToken;
             gapi.client.setToken({access_token: token});
-            console.log('Token retrieved: ' + token);
             resolve(result.user)
           } else {
             console.log('Retrieved no token!');
