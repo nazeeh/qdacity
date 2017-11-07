@@ -661,4 +661,41 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		assertEquals(true, thisCourse.getInvitedUsers().contains(testUser2.getUserId()));
 	}
+	
+	/**
+	 * Tests if a registered user can accept an invitation to be an owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testAddCourseOwnerInvited() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		
+		ce.inviteUserCourse(1L, testUser2.getEmail(), testUser);
+		ce.addCourseOwner(1L, testUser2.getUserId(), testUser2);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser2.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getOwners().contains(testUser2.getUserId()));
+	}
 }
