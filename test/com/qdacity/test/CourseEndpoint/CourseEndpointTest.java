@@ -35,7 +35,7 @@ public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-	private final com.google.appengine.api.users.User testUser2 = new com.google.appengine.api.users.User("asd@asd.de", "bla", "12345678");
+	private final com.google.appengine.api.users.User testUser2 = new com.google.appengine.api.users.User("asdf@asdf.de", "bla", "12345678");
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -627,4 +627,38 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
 	}
 	
+	/**
+	 * Tests if a registered user can be invited to be an owner by another owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testInviteUserCourse() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.inviteUserCourse(1L, testUser2.getEmail(), testUser);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getInvitedUsers().contains(testUser2.getUserId()));
+	}
 }
