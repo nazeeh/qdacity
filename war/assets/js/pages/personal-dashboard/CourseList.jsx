@@ -259,6 +259,9 @@ export default class CourseList extends React.Component {
 				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-trash "></i>
 				</StyledListItemBtn>
+				<StyledListItemBtn onClick={() => prjClick(course)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+					<i className="fa fa-cog "></i>
+				</StyledListItemBtn>
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
