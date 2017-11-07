@@ -125,25 +125,9 @@ public class UserEndpoint {
 		course = (Course) mgr.getObjectById(Course.class, courseID);
 		Authorization.checkAuthorizationCourse(course, user);
 		
-		Query q = mgr.newQuery(User.class);
-		myusers = (List<User>) q.execute(Arrays.asList());
+		Query q = mgr.newQuery(User.class, ":p.contains(courses)");
+		List<User> users = (List<User>) q.execute(Arrays.asList(courseID));
 		
-		List<User> users = new ArrayList<User>();
-
-		for (User currentUser : myusers) {
-			User dbUser = new User();
-			dbUser.setGivenName((String) currentUser.getGivenName());
-			dbUser.setSurName((String) currentUser.getSurName());
-			dbUser.setProjects((List<Long>) currentUser.getProjects());
-			dbUser.setCourses((List<Long>) currentUser.getCourses());
-			dbUser.setId((String) currentUser.getId());
-			dbUser.setType(UserType.valueOf((String) currentUser.getType().toString()));
-
-			if (currentUser.getCourses().contains(courseID)) {
-				users.add(dbUser);
-			}
-		}
-
 		return users;
 	}
 
