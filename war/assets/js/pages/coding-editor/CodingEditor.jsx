@@ -11,7 +11,6 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
-import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 import TextEditor from './TextEditor.jsx';
 
 import EditorCtrl from './EditorCtrl';
