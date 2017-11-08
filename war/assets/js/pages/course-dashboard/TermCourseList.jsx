@@ -75,17 +75,17 @@ export default class TermCourseList extends React.Component {
 						var participants = [];
 						var isUserParticipant = [];
 						//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
-							if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
-							status = crs.open;
-							isUserParticipant = participants.includes(resp2.id);
-							termList.push({
-								text: crs.term,
-								id: crs.id,
-								participants: participants,
-								isUserParticipant: isUserParticipant,
-								isUserOwner: isUserOwner,
-								isOpen: status
-							});
+						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
+						status = crs.open;
+						isUserParticipant = participants.includes(resp2.id);
+						termList.push({
+							text: crs.term,
+							id: crs.id,
+							participants: participants,
+							isUserParticipant: isUserParticipant,
+							isUserOwner: isUserOwner,
+							isOpen: status
+						});
 					});
 					course.isUserOwner = isUserOwner;
 					course.setTerms(termList);

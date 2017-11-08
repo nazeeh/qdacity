@@ -166,4 +166,14 @@ public class CourseEndpointTestHelper {
 			fail("User could not be authorized for Course removal");
 		}
 	}
+	
+	static public void addCourseOwner(Long courseID, String userID,com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ce = new CourseEndpoint();
+		try {
+			ce.addCourseOwner(courseID, userID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for Course ownership");
+		}
+	}
 }
