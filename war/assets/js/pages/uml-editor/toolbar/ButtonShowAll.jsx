@@ -27,7 +27,7 @@ export default class ButtonShowAll extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledZoomBtn onClick={_this.buttonClicked}>
+			<StyledZoomBtn title="Zooms the graph until all classes fit into the screen." onClick={_this.buttonClicked}>
                 <i className="fa fa-arrows-alt"></i>
                 <span>Show all</span>
 	        </StyledZoomBtn>
