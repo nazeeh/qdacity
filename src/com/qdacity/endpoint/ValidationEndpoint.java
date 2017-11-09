@@ -21,6 +21,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;

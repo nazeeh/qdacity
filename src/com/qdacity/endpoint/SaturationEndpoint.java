@@ -21,6 +21,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
 import com.qdacity.project.saturation.SaturationParameters;

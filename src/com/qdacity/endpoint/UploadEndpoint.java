@@ -36,6 +36,7 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.upload.Upload;
 

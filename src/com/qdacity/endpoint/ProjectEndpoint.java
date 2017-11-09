@@ -34,6 +34,7 @@ import com.qdacity.Constants;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;

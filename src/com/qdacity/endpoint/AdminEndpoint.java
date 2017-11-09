@@ -12,6 +12,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Constants;
 import com.qdacity.admin.AdminStats;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(

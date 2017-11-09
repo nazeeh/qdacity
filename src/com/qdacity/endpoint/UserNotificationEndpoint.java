@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
 

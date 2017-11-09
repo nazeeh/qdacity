@@ -14,6 +14,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.maintenance.tasks.OrphanDeletion;
 import com.qdacity.maintenance.tasks.ValidationCleanup;
 import com.qdacity.metamodel.MetaModelEntity;

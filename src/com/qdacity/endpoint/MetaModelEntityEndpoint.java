@@ -17,6 +17,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.metamodel.MetaModelEntity;
 
 /**

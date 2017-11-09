@@ -13,6 +13,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.qdacity.Constants;
+import com.qdacity.authentication.FirebaseAuthenticator;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationDocumentResults;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationReports;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationResults;
