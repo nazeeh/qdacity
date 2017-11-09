@@ -61,6 +61,10 @@ export default class HoverButton extends React.Component {
 		return '';
 	}
 
+	getToolTip() {
+		return '';
+	}
+
 	render() {
 		if (!this.state.show) {
 			return null;
@@ -75,7 +79,7 @@ export default class HoverButton extends React.Component {
 		}
 
 		return (
-			<StyledButton className={this.getButtonClassName()} x={x} y={y} width={width} height={height} scale={scale} onClick={this.onClick}>
+			<StyledButton title={this.getToolTip()} className={this.getButtonClassName()} x={x} y={y} width={width} height={height} scale={scale} onClick={this.onClick}>
 		        {this.renderContent(x, y, width, height)}
 		    </StyledButton>
 		);

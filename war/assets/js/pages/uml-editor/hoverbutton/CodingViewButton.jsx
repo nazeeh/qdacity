@@ -17,6 +17,10 @@ export default class CodingViewButton extends ImageHoverButton {
 		return 'fa-list-alt';
 	}
 
+	getToolTip() {
+		return 'Opens the coding-view.';
+	}
+
 	getBounds() {
 		const sizeX = 34;
 		const sizeY = 32;

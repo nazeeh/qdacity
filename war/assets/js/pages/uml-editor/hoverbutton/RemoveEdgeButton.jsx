@@ -17,6 +17,10 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 		return 'fa-trash';
 	}
 
+	getToolTip() {
+		return 'Removes the edge (relation) from the model.';
+	}
+
 	getBounds() {
 		const sizeX = 34;
 		const sizeY = 32;

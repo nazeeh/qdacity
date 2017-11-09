@@ -21,6 +21,10 @@ export default class AddEdgeGeneralizationButton extends HoverButton {
 		return 'umlOverlayButton umlOverlayButtonAddEdgeGeneralization';
 	}
 
+	getToolTip() {
+		return 'Add a new generalization.';
+	}
+
 	getBounds() {
 		const sizeX = 34;
 		const sizeY = 32;
