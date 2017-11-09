@@ -15,7 +15,6 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
-import com.google.api.server.spi.auth.EspAuthenticator;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;

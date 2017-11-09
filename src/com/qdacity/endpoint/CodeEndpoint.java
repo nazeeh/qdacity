@@ -13,14 +13,13 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
-import com.google.api.server.spi.auth.EspAuthenticator;
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;

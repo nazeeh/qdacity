@@ -2,7 +2,6 @@ package com.qdacity.endpoint;
 
 import java.util.Date;
 
-import com.google.api.server.spi.auth.EspAuthenticator;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;

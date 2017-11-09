@@ -16,7 +16,7 @@ import javax.persistence.EntityNotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import com.google.api.server.spi.auth.EspAuthenticator;
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -29,7 +29,6 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;

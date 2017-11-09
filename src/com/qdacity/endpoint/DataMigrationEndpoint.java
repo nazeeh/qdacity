@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import com.google.api.server.spi.auth.EspAuthenticator;
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -12,7 +12,6 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Constants;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationDocumentResults;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationReports;

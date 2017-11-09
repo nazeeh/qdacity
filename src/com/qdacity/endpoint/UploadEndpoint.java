@@ -25,7 +25,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.rtf.RTFParser;
 import org.xml.sax.SAXException;
 
-import com.google.api.server.spi.auth.EspAuthenticator;
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -33,7 +33,6 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Text;
-import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
