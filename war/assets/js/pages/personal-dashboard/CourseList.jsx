@@ -69,8 +69,9 @@ export default class CourseList extends React.Component {
 		var _this = this;
 		var courseList = [];
 		var courseTermsArray = [];
-		var termsObject = [];
+		var termCoursesByParticipant = [];
 		var listCoursePromise = CourseEndPoint.listCourse();
+		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
 		listCoursePromise.then(function (resp) {
 			resp.items = resp.items || [];
 			var courses = courseList.concat(resp.items)
@@ -95,6 +96,15 @@ export default class CourseList extends React.Component {
 			});
 		});
 
+		listTermCourseByParticipantPromise.then(function (termsResponse) {
+			termsResponse.items = termsResponse.items || [];
+			var termCourses = termCoursesByParticipant.concat(termsResponse.items);
+			termCourses.forEach(function (termCourse) {
+				CourseEndPoint.getCourse(termCourse.courseID).then(function (coursesResponse) {
+					console.log(coursesResponse);
+				});
+			})
+		});
 
 	}
 
