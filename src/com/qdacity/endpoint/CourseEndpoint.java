@@ -321,6 +321,49 @@ public class CourseEndpoint {
 	}
 
 	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all entities
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(name = "course.listTermCourseByParticipant",
+		path = "listTermCourseByParticipant",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<TermCourse> listTermCourseByParticipant(User user) throws UnauthorizedException {
+
+		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
+
+		PersistenceManager mgr = null;
+		List<TermCourse> execute = null;
+
+		try {
+			mgr = getPersistenceManager();
+
+			Query q = mgr.newQuery(TermCourse.class, ":p.contains(participants)");
+
+			execute = (List<TermCourse>) q.execute(Arrays.asList(user.getUserId()));
+
+			// Tight loop for fetching all entities from datastore and accomodate
+			// for lazy fetch.
+			for (TermCourse obj : execute);
+		} finally {
+			mgr.close();
+		}
+
+		Collections.sort(execute, new Comparator<TermCourse>() {
+		    public int compare(TermCourse t1, TermCourse t2) {
+		        return t1.getCreationDate().compareTo(t2.getCreationDate());
+		    }
+		});
+		return execute;
+	}
+	
+	/**
 	 * This inserts a new instance of a course into App Engine datastore. If the entity already
 	 * exists in the datastore, an exception is thrown.
 	 * It uses HTTP POST method.
