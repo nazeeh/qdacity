@@ -70,8 +70,8 @@ export default class CourseList extends React.Component {
 		var courseList = [];
 		var courseTermsArray = [];
 		var termsObject = [];
-
-		CourseEndPoint.listCourse().then(function (resp) {
+		var listCoursePromise = CourseEndPoint.listCourse();
+		listCoursePromise.then(function (resp) {
 			resp.items = resp.items || [];
 			var courses = courseList.concat(resp.items)
 			courses = _this.sortCourses(courses);
