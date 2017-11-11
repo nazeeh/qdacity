@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 import {
 	BtnDefault
-} from '../../common/styles/Btn.jsx';
+} from '../../../common/styles/Btn.jsx';
 
 const StyledPrjDasboardBtn = BtnDefault.extend `
 	text-align: center;
