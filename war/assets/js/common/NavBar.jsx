@@ -18,10 +18,9 @@ const StyledNavbarItem = styled.a `
 export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {user: {}};
 
 		this.account = {};
-		this.user = {};
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 		this.initializeAccount = this.initializeAccount.bind(this);
@@ -44,7 +43,9 @@ export default class NavBar extends React.Component {
         //FIXME callback when user is initialized
         setTimeout(() => {
             this.account.getCurrentUser().then((value) => {
-                this.user = value;
+                this.setState({
+                   user: value
+                });
             }, () => {
                 console.log("Could not get current user")
             });
@@ -97,7 +98,7 @@ export default class NavBar extends React.Component {
 											</li>
 										</ul>
 								</StyledSigninTab>
-								<li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>
+                                {this.state.user.type==="ADMIN" && <li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>}
 							</ul>
 						</div>
 					</div>
