@@ -40,16 +40,17 @@ export default class NavBar extends React.Component {
 
     initializeAccount(c) {
         this.account = c;
-        //FIXME callback when user is initialized
-        setTimeout(() => {
-            this.account.getCurrentUser().then((value) => {
-                this.setState({
-                   user: value
+        this.account.auth2.currentUser.listen((googleUser) => {
+            if (googleUser.isSignedIn()) {
+                this.account.getCurrentUser().then((value) => {
+                    this.setState({
+                        user: value
+                    });
+                }, () => {
+                    console.log("Could not get current user")
                 });
-            }, () => {
-                console.log("Could not get current user")
-            });
-        }, 1000);
+            }
+        });
 	}
 
 	render() {
