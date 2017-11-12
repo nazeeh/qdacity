@@ -68,13 +68,16 @@ export default class CourseList extends React.Component {
 	init() {
 		var _this = this;
 		var courseList = [];
-		var courseTermsArray = [];
-		var termCoursesByParticipant = [];
+
 		var listCoursePromise = CourseEndPoint.listCourse();
-		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
+
 		listCoursePromise.then(function (resp) {
 			resp.items = resp.items || [];
-			var courses = courseList.concat(resp.items)
+			var courses = courseList.concat(resp.items);
+			if (courses.length == 0) {
+				console.log("listCoursePromise returns an empty array");
+				_this.fetchTermsByParticipant();
+			}
 			courses = _this.sortCourses(courses);
 			var counter = resp.items.length;
 			courses.forEach(function (crs, index) {
@@ -82,7 +85,6 @@ export default class CourseList extends React.Component {
 					counter -= 1;
 					var termList = [];
 					resp2.items = resp2.items || [];
-
 					resp2.items.forEach(function (crs, index) {
 						termList.push({
 							text: crs.term
@@ -91,23 +93,32 @@ export default class CourseList extends React.Component {
 					courses[index].terms = termList;
 					if (counter == 0) {
 						_this.props.setCourses(courses);
+						_this.fetchTermsByParticipant();
 					}
 				});
 			});
 		});
-
+	}
+	fetchTermsByParticipant() {
+		var _this = this;
+		var termCoursesByParticipant = [];
+		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
 		listTermCourseByParticipantPromise.then(function (termsResponse) {
 			termsResponse.items = termsResponse.items || [];
 			var termCourses = termCoursesByParticipant.concat(termsResponse.items);
 			termCourses.forEach(function (termCourse) {
 				CourseEndPoint.getCourse(termCourse.courseID).then(function (coursesResponse) {
-					console.log(coursesResponse);
+					var termList = coursesResponse.terms || [];
+					var course = coursesResponse;
+					termList.push({
+						text: termCourse.term
+					});
+					course.terms = termList;
+					_this.props.addCourse(course);
 				});
 			})
 		});
-
 	}
-
 	sortCourses(courses) {
 		courses.sort(function (a, b) {
 			if (a.name < b.name) return -1;
