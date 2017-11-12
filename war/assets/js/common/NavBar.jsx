@@ -41,11 +41,14 @@ export default class NavBar extends React.Component {
 
     initializeAccount(c) {
         this.account = c;
-        this.account.getCurrentUser().then(function (value) {
-            this.user = value;
-        }, function (value) {
-            console.log("Could not get current user")
-        });
+        //FIXME callback when user is initialized
+        setTimeout(() => {
+            this.account.getCurrentUser().then((value) => {
+                this.user = value;
+            }, () => {
+                console.log("Could not get current user")
+            });
+        }, 1000);
 	}
 
 	render() {
