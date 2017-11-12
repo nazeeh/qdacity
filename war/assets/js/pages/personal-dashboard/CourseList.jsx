@@ -74,8 +74,8 @@ export default class CourseList extends React.Component {
 		listCoursePromise.then(function (resp) {
 			resp.items = resp.items || [];
 			var courses = courseList.concat(resp.items);
+			//In case the user is not an owner of any course, the list of terms in which he's a participant should still be fetched
 			if (courses.length == 0) {
-				console.log("listCoursePromise returns an empty array");
 				_this.fetchTermsByParticipant();
 			}
 			courses = _this.sortCourses(courses);
@@ -99,26 +99,61 @@ export default class CourseList extends React.Component {
 			});
 		});
 	}
+
 	fetchTermsByParticipant() {
 		var _this = this;
 		var termCoursesByParticipant = [];
+		var arrangedCoursesArray = [];
 		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
 		listTermCourseByParticipantPromise.then(function (termsResponse) {
 			termsResponse.items = termsResponse.items || [];
 			var termCourses = termCoursesByParticipant.concat(termsResponse.items);
+
+			//Restructure the array in order to remove duplicates of a courseID and group termCourses by course
 			termCourses.forEach(function (termCourse) {
-				CourseEndPoint.getCourse(termCourse.courseID).then(function (coursesResponse) {
-					var termList = coursesResponse.terms || [];
-					var course = coursesResponse;
-					termList.push({
-						text: termCourse.term
+				if (arrangedCoursesArray.length == 0) {
+					var termList = [];
+					termList.push(termCourse.term);
+					arrangedCoursesArray.push({
+						courseID: termCourse.courseID,
+						terms: termList
 					});
+					return;
+				}
+
+				//if the course does not exist, add it & add the first termCourse, otherwise add the term to the existing course
+				var obj = arrangedCoursesArray.find(o => o.courseID === termCourse.courseID);
+				if (typeof obj === "undefined") {
+					var termList = [];
+					termList.push(termCourse.term);
+					arrangedCoursesArray.push({
+						courseID: termCourse.courseID,
+						terms: termList
+					});
+				} else {
+					arrangedCoursesArray[arrangedCoursesArray.indexOf(obj)].terms.push(termCourse.term);
+				}
+			})
+
+			//Iterate over the courses array and add the courses(terms) in which the user is a participant to the CourseList
+			arrangedCoursesArray.forEach(function (courseFromArray) {
+				CourseEndPoint.getCourse(courseFromArray.courseID).then(function (courseResponse) {
+					var termList = [];
+					var course = courseResponse;
+					courseFromArray.terms.forEach(function (term) {
+						termList.push({
+							text: term
+						});
+					})
 					course.terms = termList;
 					_this.props.addCourse(course);
+					console.log(course);
 				});
-			})
+			});
 		});
 	}
+
+	
 	sortCourses(courses) {
 		courses.sort(function (a, b) {
 			if (a.name < b.name) return -1;
