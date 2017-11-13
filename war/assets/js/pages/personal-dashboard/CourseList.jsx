@@ -102,7 +102,8 @@ export default class CourseList extends React.Component {
 
 	fetchTermsByParticipant() {
 		var _this = this;
-		var arrangedCoursesArray = [];
+		//the array below contains the response of listTermCourseByParticipant without duplicate courseIDs
+		var coursesWithTermsArray = [];
 		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
 		listTermCourseByParticipantPromise.then(function (termsResponse) {
 			termsResponse.items = termsResponse.items || [];
@@ -110,10 +111,10 @@ export default class CourseList extends React.Component {
 
 			//Restructure the array in order to remove duplicates of a courseID and group termCourses by course
 			termCourses.forEach(function (termCourse) {
-				if (arrangedCoursesArray.length == 0) {
+				if (coursesWithTermsArray.length == 0) {
 					var termList = [];
 					termList.push(termCourse.term);
-					arrangedCoursesArray.push({
+					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
 						terms: termList
 					});
@@ -121,21 +122,21 @@ export default class CourseList extends React.Component {
 				}
 
 				//if the course does not exist, add it & add the first termCourse, otherwise add the term to the existing course
-				var isCourseInArray = arrangedCoursesArray.find(o => o.courseID === termCourse.courseID);
+				var isCourseInArray = coursesWithTermsArray.find(o => o.courseID === termCourse.courseID);
 				if (typeof isCourseInArray === "undefined") {
 					var termList = [];
 					termList.push(termCourse.term);
-					arrangedCoursesArray.push({
+					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
 						terms: termList
 					});
 				} else {
-					arrangedCoursesArray[arrangedCoursesArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
+					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
 				}
 			})
 
 			//Iterate over the courses array and add the courses(terms) in which the user is a participant to the CourseList
-			arrangedCoursesArray.forEach(function (courseFromArray) {
+			coursesWithTermsArray.forEach(function (courseFromArray) {
 				CourseEndPoint.getCourse(courseFromArray.courseID).then(function (courseResponse) {
 					var termList = [];
 					var course = courseResponse;
