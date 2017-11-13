@@ -121,8 +121,8 @@ export default class CourseList extends React.Component {
 				}
 
 				//if the course does not exist, add it & add the first termCourse, otherwise add the term to the existing course
-				var obj = arrangedCoursesArray.find(o => o.courseID === termCourse.courseID);
-				if (typeof obj === "undefined") {
+				var isCourseInArray = arrangedCoursesArray.find(o => o.courseID === termCourse.courseID);
+				if (typeof isCourseInArray === "undefined") {
 					var termList = [];
 					termList.push(termCourse.term);
 					arrangedCoursesArray.push({
@@ -130,7 +130,7 @@ export default class CourseList extends React.Component {
 						terms: termList
 					});
 				} else {
-					arrangedCoursesArray[arrangedCoursesArray.indexOf(obj)].terms.push(termCourse.term);
+					arrangedCoursesArray[arrangedCoursesArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
 				}
 			})
 
