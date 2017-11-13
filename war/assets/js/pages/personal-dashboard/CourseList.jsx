@@ -70,13 +70,13 @@ export default class CourseList extends React.Component {
 		var courseList = [];
 
 		var listCoursePromise = CourseEndPoint.listCourse();
-
+		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
 		listCoursePromise.then(function (resp) {
 			resp.items = resp.items || [];
 			var courses = courseList.concat(resp.items);
 			//In case the user is not an owner of any course, the list of terms in which he's a participant should still be fetched
 			if (courses.length == 0) {
-				_this.fetchTermsByParticipant();
+				_this.fetchTermsByParticipant(listTermCourseByParticipantPromise);
 			}
 			courses = _this.sortCourses(courses);
 			var counter = resp.items.length;
@@ -93,19 +93,19 @@ export default class CourseList extends React.Component {
 					courses[index].terms = termList;
 					if (counter == 0) {
 						_this.props.setCourses(courses);
-						_this.fetchTermsByParticipant();
+						_this.fetchTermsByParticipant(listTermCourseByParticipantPromise);
 					}
 				});
 			});
 		});
 	}
 
-	fetchTermsByParticipant() {
+	fetchTermsByParticipant(promise) {
 		var _this = this;
 		//the array below contains the response of listTermCourseByParticipant without duplicate courseIDs
 		var coursesWithTermsArray = [];
-		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
-		listTermCourseByParticipantPromise.then(function (termsResponse) {
+
+		promise.then(function (termsResponse) {
 			termsResponse.items = termsResponse.items || [];
 			var termCourses = termsResponse.items;
 
