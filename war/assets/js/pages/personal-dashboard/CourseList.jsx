@@ -102,12 +102,11 @@ export default class CourseList extends React.Component {
 
 	fetchTermsByParticipant() {
 		var _this = this;
-		var termCoursesByParticipant = [];
 		var arrangedCoursesArray = [];
 		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
 		listTermCourseByParticipantPromise.then(function (termsResponse) {
 			termsResponse.items = termsResponse.items || [];
-			var termCourses = termCoursesByParticipant.concat(termsResponse.items);
+			var termCourses = termsResponse.items;
 
 			//Restructure the array in order to remove duplicates of a courseID and group termCourses by course
 			termCourses.forEach(function (termCourse) {
@@ -147,13 +146,12 @@ export default class CourseList extends React.Component {
 					})
 					course.terms = termList;
 					_this.props.addCourse(course);
-					console.log(course);
 				});
 			});
 		});
 	}
 
-	
+
 	sortCourses(courses) {
 		courses.sort(function (a, b) {
 			if (a.name < b.name) return -1;
