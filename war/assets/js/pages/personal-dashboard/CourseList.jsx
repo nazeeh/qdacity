@@ -100,12 +100,12 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-	fetchTermsByParticipant(promise) {
+	fetchTermsByParticipant(listTermCourseByParticipantPromise) {
 		var _this = this;
 		//the array below contains the response of listTermCourseByParticipant without duplicate courseIDs
 		var coursesWithTermsArray = [];
 
-		promise.then(function (termsResponse) {
+		listTermCourseByParticipantPromise.then(function (termsResponse) {
 			termsResponse.items = termsResponse.items || [];
 			var termCourses = termsResponse.items;
 
