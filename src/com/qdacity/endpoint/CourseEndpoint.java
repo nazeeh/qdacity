@@ -613,11 +613,12 @@ public class CourseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public CollectionResponse<com.qdacity.user.User> listTermCourseParticipants(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("termCourseID") Long termCourseID, com.google.appengine.api.users.User user) {
+	public CollectionResponse<com.qdacity.user.User> listTermCourseParticipants(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("termCourseID") Long termCourseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
 		List<com.qdacity.user.User> users = new ArrayList<com.qdacity.user.User>();
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
+			Authorization.checkAuthorizationTermCourse(termCourse, user);
 			List<String> participants = termCourse.getParticipants();
 			if (!participants.isEmpty()) {
 				Query userQuery = mgr.newQuery(com.qdacity.user.User.class, ":p.contains(id)");

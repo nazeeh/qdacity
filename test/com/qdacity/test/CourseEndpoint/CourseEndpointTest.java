@@ -698,4 +698,21 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		assertEquals(true, thisCourse.getOwners().contains(testUser2.getUserId()));
 	}
+	
+	/**
+	 * Tests if a registered user can list participants of a termCourse
+	 */
+	@Test
+	public void testListTermCourseParticipants() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		CollectionResponse<User> users = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(2L, testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		
+		users = (CollectionResponse<User>) CourseEndpointTestHelper.listTermCourseParticipants(2L, testUser);
+		
+		assertEquals(1, users.getItems().size());
+	}
 }
