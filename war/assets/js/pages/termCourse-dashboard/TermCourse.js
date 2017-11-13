@@ -20,5 +20,5 @@ export default class TermCourse {
 	getParticipants () {
 		return this.participants;
 	}
-	
+
 }
