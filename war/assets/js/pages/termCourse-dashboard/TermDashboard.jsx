@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import CourseEndpoint from 'endpoints/CourseEndpoint';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
+import TermCourse from './TermCourse';
 
 const StyledDashboard = styled.div `
 	margin-top: 35px;
@@ -13,6 +14,11 @@ const StyledDashboard = styled.div `
 export default class TermDashboard extends React.Component {
 	constructor(props) {
 		super(props);
+
+		var urlParams = URI(window.location.search).query(true);
+
+		var termCourse = new TermCourse(urlParams.termCourse);
+
 	}
 
 
