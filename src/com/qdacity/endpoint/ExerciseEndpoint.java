@@ -9,7 +9,7 @@ import com.qdacity.Constants;
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.exercise"))
+		packagePath = "server.project"))
 public class ExerciseEndpoint {
 
 	
