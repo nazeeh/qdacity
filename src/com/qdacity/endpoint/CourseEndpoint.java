@@ -329,7 +329,7 @@ public class CourseEndpoint {
 	 *         persisted and a cursor to the next page.
 	 * @throws UnauthorizedException
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings({ "unchecked" })
 	@ApiMethod(name = "course.listTermCourseByParticipant",
 		path = "listTermCourseByParticipant",
 		scopes = { Constants.EMAIL_SCOPE },
@@ -349,9 +349,6 @@ public class CourseEndpoint {
 
 			execute = (List<TermCourse>) q.execute(Arrays.asList(user.getUserId()));
 
-			// Tight loop for fetching all entities from datastore and accomodate
-			// for lazy fetch.
-			for (TermCourse obj : execute);
 		} finally {
 			mgr.close();
 		}

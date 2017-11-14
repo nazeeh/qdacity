@@ -84,6 +84,19 @@ public class CourseEndpointTestHelper {
 		return terms;
 	}
 	
+	static public List<TermCourse> listTermCourseByParticipant(Long courseID, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ce = new CourseEndpoint();
+		List<TermCourse> terms = null;
+		try {
+			terms = ce.listTermCourseByParticipant(loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for Course Term retrieval");
+		}
+		
+		return terms;
+	}
+	
 	static public void addTermCourse(Long id, Long courseID, String term, com.google.appengine.api.users.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
 		termCourse.setId(id);

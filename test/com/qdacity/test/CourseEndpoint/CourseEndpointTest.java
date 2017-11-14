@@ -261,6 +261,26 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a registered can list terms for a course
+	 */
+	@Test
+	public void testListTermCourseByParticipant() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		List<TermCourse> retrievedTerms = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description", testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		
+		retrievedTerms = CourseEndpointTestHelper.listTermCourseByParticipant(1L, testUser);
+		
+		assertEquals(2, retrievedTerms.size());
+
+	}
+	
+	/**
 	 * Tests if a user can get a term course in which he's an owner 
 	 */
 	@Test
