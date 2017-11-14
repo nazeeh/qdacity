@@ -10,12 +10,12 @@ import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
 import com.qdacity.project.Project;
-import com.qdacity.course.Course;
-import com.qdacity.course.TermCourse;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
@@ -204,11 +204,14 @@ public class Authorization {
 		
 		return false;
 	}
+
 	public static void checkAuthorization(com.qdacity.user.User userRequested, User userLoggedIn) throws UnauthorizedException {
 		isUserNotNull(userLoggedIn);
-		Boolean authorized = (userLoggedIn.getUserId().equals(userRequested.getId()));
-		if (!authorized) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is Not Authorized");
+		Boolean isAdmin = isUserAdmin(userLoggedIn);
 
+		Boolean userUpdatesSelf = (userLoggedIn.getUserId().equals(userRequested.getId()));
+		if (!userUpdatesSelf && !isAdmin) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is not authorized to update a user other than himself");
+		if (userRequested.getType() == UserType.ADMIN && !isAdmin) throw new UnauthorizedException("Non admin user tried to set ADMIN status");
 	}
 	
 	public static void checkAuthorization(MetaModelEntity metaModelEntity, User userLoggedIn) throws UnauthorizedException {
@@ -243,7 +246,7 @@ public class Authorization {
 		throw new UnauthorizedException("User is Not Authorized.");
 	}
 	
-	private static Boolean isUserAdmin(User googleUser) throws UnauthorizedException{
+	public static Boolean isUserAdmin(User googleUser) throws UnauthorizedException {
 		com.qdacity.user.User user = userEndpoint.getCurrentUser(googleUser);
 		if (user.getType() == UserType.ADMIN) return true;
 		return false;

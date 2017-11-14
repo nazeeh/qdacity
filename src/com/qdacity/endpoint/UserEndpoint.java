@@ -39,7 +39,6 @@ import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
-import com.qdacity.course.TermCourse;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
@@ -320,7 +319,7 @@ public class UserEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User updateUser(User user, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		// Check if user is authorized
-		// Authorization.checkAuthorization(user, loggedInUser);
+		Authorization.checkAuthorization(user, loggedInUser);
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
