@@ -63,6 +63,13 @@ export default class CourseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static listTermCourseParticipants(termCourseID) {
+		var apiMethod = gapi.client.qdacity.course.listTermCourseParticipants({
+			'termCourseID': termCourseID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static inviteUser(courseID, userEmail) {
 		var apiMethod = gapi.client.qdacity.course.inviteUser({
 			'courseID': courseID,
