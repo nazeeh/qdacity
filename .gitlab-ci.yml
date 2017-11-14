@@ -1,7 +1,20 @@
+image: java:7
+
+.job_template: &job_definition
+  tags:
+    - qdacity
+  environment: Production
+
+.cache_node: &node_cache
+  key: "node_modules"
+  untracked: true
+  paths:
+    - war/node_modules/
+
 before_script:
 
 after_script:
-  - rm /tmp/$CI_PIPELINE_ID.json
+    - rm -f /tmp/$CI_PIPELINE_ID.json
 
 stages:
   - build
@@ -10,17 +23,11 @@ stages:
   - deploy
 
 frontend_prod_build:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: build
-  environment: Production
   only:
-    - master
-  cache:
-    key: "node_modules"
-    untracked: true
-    paths:
-    - war/node_modules/
+    - branches
+  cache: *node_cache
   artifacts:
     paths:
       - target/qdacity-war/dist/
@@ -31,18 +38,16 @@ frontend_prod_build:
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - rm -f ./dist/js/*
     - npm prune
-    - npm install 
+    - npm install
     - gulp bundle
     - gulp minify
     - gulp set-react-production
 
 backend_prod_build:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: build
-  environment: Production
   only:
-    - master
+    - branches
   artifacts:
     paths:
       - target/qdacity-war
@@ -71,12 +76,10 @@ rtcsvc_prod_build:
     - npm install
 
 backend_prod_unittest:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: test
-  environment: Production
   only:
-    - master
+    - branches
   artifacts:
     paths:
       - target/site/jacoco-ut
@@ -88,17 +91,12 @@ backend_prod_unittest:
     - backend_prod_build
 
 frontend_prod_unittest:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: test
-  environment: Production
   only:
-    - master
+    - branches
   cache:
-    key: "node_modules"
-    untracked: true
-    paths:
-    - war/node_modules/
+    <<: *node_cache
     policy: pull
   artifacts:
     paths:
@@ -137,8 +135,7 @@ rtcsvc_prod_unittest:
 
 # Does not work yet, with gitlab pages not installed
 pages:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: report
   dependencies:
     - backend_prod_unittest
@@ -149,15 +146,11 @@ pages:
       - public
     expire_in: 30 days
   only:
-    - master
+    - branches
 
-deploy_prod:
-  tags:
-    - qdacity
+.deploy_prod: &deployment_template
+  <<: *job_definition
   stage: deploy
-  environment: Production
-  only:
-    - master
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - WAR=$(pwd)/target/qdacity-war
@@ -174,3 +167,15 @@ deploy_rtcsvc:
     - cd realtime-service
     - bash ./deployment/deploy_from_gitlab_ci.sh
 
+deploy_prod:
+  <<: *deployment_template
+  only:
+    - master
+
+deploy_prod_manual:
+  <<: *deployment_template
+  only:
+    - branches
+  except:
+    - master
+  when: manual
