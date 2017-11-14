@@ -107,6 +107,10 @@ public class TermCourse implements Serializable {
 	{
 		return term;
 	}
+	
+	public Long getCourseID() {
+		return courseID;
+	}
 	public void setCourseID(Long id) {
 		this.courseID = id;
 	}
