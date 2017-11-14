@@ -325,8 +325,7 @@ public class CourseEndpoint {
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.
 	 *
-	 * @return A CollectionResponse class containing the list of all entities
-	 *         persisted and a cursor to the next page.
+	 * @return A List containing the list of all terms in which the user is a participant
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -337,7 +336,7 @@ public class CourseEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<TermCourse> listTermCourseByParticipant(User user) throws UnauthorizedException {
 
-		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
+		if (user == null) throw new UnauthorizedException("User is not logged in"); // TODO currently no user is authorized to list all courses
 
 		PersistenceManager mgr = null;
 		List<TermCourse> execute = null;

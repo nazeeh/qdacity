@@ -70,13 +70,13 @@ export default class CourseList extends React.Component {
 		var courseList = [];
 
 		var listCoursePromise = CourseEndPoint.listCourse();
-
+		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
 		listCoursePromise.then(function (resp) {
 			resp.items = resp.items || [];
 			var courses = courseList.concat(resp.items);
 			//In case the user is not an owner of any course, the list of terms in which he's a participant should still be fetched
 			if (courses.length == 0) {
-				_this.fetchTermsByParticipant();
+				_this.fetchTermsByParticipant(listTermCourseByParticipantPromise);
 			}
 			courses = _this.sortCourses(courses);
 			var counter = resp.items.length;
@@ -93,28 +93,28 @@ export default class CourseList extends React.Component {
 					courses[index].terms = termList;
 					if (counter == 0) {
 						_this.props.setCourses(courses);
-						_this.fetchTermsByParticipant();
+						_this.fetchTermsByParticipant(listTermCourseByParticipantPromise);
 					}
 				});
 			});
 		});
 	}
 
-	fetchTermsByParticipant() {
+	fetchTermsByParticipant(listTermCourseByParticipantPromise) {
 		var _this = this;
-		var termCoursesByParticipant = [];
-		var arrangedCoursesArray = [];
-		var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
+		//the array below contains the response of listTermCourseByParticipant without duplicate courseIDs
+		var coursesWithTermsArray = [];
+
 		listTermCourseByParticipantPromise.then(function (termsResponse) {
 			termsResponse.items = termsResponse.items || [];
-			var termCourses = termCoursesByParticipant.concat(termsResponse.items);
+			var termCourses = termsResponse.items;
 
 			//Restructure the array in order to remove duplicates of a courseID and group termCourses by course
 			termCourses.forEach(function (termCourse) {
-				if (arrangedCoursesArray.length == 0) {
+				if (coursesWithTermsArray.length == 0) {
 					var termList = [];
 					termList.push(termCourse.term);
-					arrangedCoursesArray.push({
+					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
 						terms: termList
 					});
@@ -122,21 +122,21 @@ export default class CourseList extends React.Component {
 				}
 
 				//if the course does not exist, add it & add the first termCourse, otherwise add the term to the existing course
-				var obj = arrangedCoursesArray.find(o => o.courseID === termCourse.courseID);
-				if (typeof obj === "undefined") {
+				var isCourseInArray = coursesWithTermsArray.find(o => o.courseID === termCourse.courseID);
+				if (typeof isCourseInArray === "undefined") {
 					var termList = [];
 					termList.push(termCourse.term);
-					arrangedCoursesArray.push({
+					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
 						terms: termList
 					});
 				} else {
-					arrangedCoursesArray[arrangedCoursesArray.indexOf(obj)].terms.push(termCourse.term);
+					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
 				}
 			})
 
 			//Iterate over the courses array and add the courses(terms) in which the user is a participant to the CourseList
-			arrangedCoursesArray.forEach(function (courseFromArray) {
+			coursesWithTermsArray.forEach(function (courseFromArray) {
 				CourseEndPoint.getCourse(courseFromArray.courseID).then(function (courseResponse) {
 					var termList = [];
 					var course = courseResponse;
@@ -147,7 +147,6 @@ export default class CourseList extends React.Component {
 					})
 					course.terms = termList;
 					_this.props.addCourse(course);
-					console.log(course);
 				});
 			});
 		});
@@ -303,8 +302,8 @@ export default class CourseList extends React.Component {
 
 
 
-		function prjClick(prj) {
-			_this.props.history.push('/CourseDashboard?course=' + prj.id);
+		function courseClick(course) {
+			_this.props.history.push('/CourseDashboard?course=' + course.id);
 		}
 		const renderListItemContent = (course, index) => {
 
@@ -315,7 +314,7 @@ export default class CourseList extends React.Component {
 				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-trash "></i>
 				</StyledListItemBtn>
-				<StyledListItemBtn onClick={() => prjClick(course)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+				<StyledListItemBtn onClick={() => courseClick(course)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
 					<i className="fa fa-cog "></i>
 				</StyledListItemBtn>
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
@@ -326,7 +325,7 @@ export default class CourseList extends React.Component {
 			])
 		}
 		const renderListItems = itemsToDisplay.map((course, index) => {
-			return <StyledListItemPrimary key={course.id} onClick={() => prjClick(course)} clickable={true}>
+			return <StyledListItemPrimary key={course.id} onClick={() => courseClick(course)} clickable={true}>
 						{renderListItemContent(course, index)}
 					</StyledListItemPrimary>;
 
