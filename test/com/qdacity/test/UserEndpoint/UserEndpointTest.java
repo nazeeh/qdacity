@@ -162,7 +162,7 @@ public class UserEndpointTest {
 
 		UserEndpoint ue = new UserEndpoint();
 		expectedException.expect(UnauthorizedException.class);
-		expectedException.expectMessage(is("User 2 is Not Authorized"));
+		expectedException.expectMessage(is("User is not registered"));
 
 		ue.removeUser("1", loggedInUserB); // User B should not be able to delete User B
 
