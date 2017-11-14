@@ -1,6 +1,14 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import Project from '../Project';
+
+
+const StyledParentLink = styled.a `
+    cursor: pointer;
+`;
+
+
 
 export default class ParentProject extends React.Component {
 	constructor(props) {
@@ -9,9 +17,9 @@ export default class ParentProject extends React.Component {
 	}
 
 	redirectToParentProject() {
-		this.props.history.push('/ProjectDashboard?project=' + this.props.project.getParentID() + '&type=PROJECT');
+		var prjId = this.props.project.getParentID();
+		this.props.history.push('/ProjectDashboard?project='+prjId+'&type=PROJECT');
 		location.reload();
-
 	}
 
 	render() {
@@ -22,7 +30,7 @@ export default class ParentProject extends React.Component {
 					<h3 className="box-title">Parent Project</h3>
 				</div>
 				<div className="box-body">
-					This is an validation project belonging to <a onClick={this.redirectToParentProject}>this parent project</a>
+					This is an validation project belonging to <StyledParentLink onClick={this.redirectToParentProject}>this parent project</StyledParentLink>
 				</div>
 			</div>
 		);

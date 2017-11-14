@@ -155,11 +155,11 @@ class CodingEditor extends React.Component {
 	}
 
 	componentDidMount() {
-		document.getElementsByTagName("html")[0].style["overflow-y"] = "hidden";
+		document.getElementsByTagName("body")[0].style["overflow-y"] = "hidden";
 	}
 
 	componentWillUnmount() {
-		document.getElementsByTagName("html")[0].style["overflow-y"] = "";
+		document.getElementsByTagName("body")[0].style["overflow-y"] = "";
 	}
 
 	init() {
