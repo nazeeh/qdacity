@@ -240,7 +240,7 @@ public class UserEndpoint {
 
 			user = (User) Cache.getOrLoad(id, User.class);
 			// FIXME Check if user is authorized
-			// Authorization.checkAuthorization(user, loggedInUser);
+			Authorization.checkAuthorization(user, loggedInUser);
 
 			switch (type) {
 				case "ADMIN":
