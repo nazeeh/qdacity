@@ -130,37 +130,14 @@ export default class Account extends React.Component {
 	}
 
   /**
-	 * Gets the current user that is logged into firebase.
+	 * Gets the current user from qdacity server.
 	 *
    * @returns {Promise}
    */
 	getCurrentUser() {
-		var _this = this;
-		var promise = new Promise(
-			function (resolve, reject) {
-        var user = _this.firebase.auth().currentUser;
-				if (user) {
-					resolve(user);
-				} else {
-					reject(user);
-				}
-			}
-		);
-
-		return promise;
-	}
-
-  /**
-	 * Checks if the current user is already registered in qdacity.
-	 * The user needs to be logged in with firebase beforehand.
-   * @returns {Promise}
-   */
-	isCurrentUserRegistered(){
-		var _this = this;
     var promise = new Promise(
       function (resolve, reject) {
-
-        gapi.client.qdacity.getUser(_this.getCurrentUser().uid).execute(function (resp) {
+        gapi.client.qdacity.user.getCurrentUser().execute(function (resp) {
           if (!resp.code) {
             resolve(resp);
           } else {
@@ -171,7 +148,7 @@ export default class Account extends React.Component {
     );
 
     return promise;
-	}
+  }
 
 	isProjectOwner(user, prjId) {
 		var isOwner = false;
