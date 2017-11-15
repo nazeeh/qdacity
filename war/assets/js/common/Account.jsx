@@ -64,7 +64,7 @@ export default class Account extends React.Component {
 	 * Does the sign-in process by a popup. Provides gapi with the received id token.
    * @returns {Promise}
    */
-	signin() {
+	signIn() {
 		var _this = this;
 		var promise = new Promise(
       		function (resolve, reject) {
@@ -82,7 +82,7 @@ export default class Account extends React.Component {
 				});
 		 	}
 		);
-    	return promise;
+		return promise;
   }
 
   /**
@@ -91,7 +91,7 @@ export default class Account extends React.Component {
    * @param callback
    */
 	signInWithCallback(callback) {
-		this.signin().then(function(result) {
+		this.signIn().then(function(result) {
 			callback();
 		});
 	}
@@ -101,11 +101,23 @@ export default class Account extends React.Component {
 	 * After completion, the callback method is invoked.
 	 *
    * @param callback
+	 * @returns {Promise}
    */
-	changeAccount(callback) {
+	changeAccountWithCallback(callback) {
 		this.signout();
-		this.signInWithCallback(callback);
+		return this.signInWithCallback(callback);
 	}
+
+  /**
+   * Loggs out the current user and starts the sign in process for a new user.
+   *
+   * @param callback
+   * @returns {Promise}
+   */
+  changeAccount() {
+    this.signout();
+    return this.signIn();
+  }
 
   /**
 	 * Gets the current user's profile data with following members:

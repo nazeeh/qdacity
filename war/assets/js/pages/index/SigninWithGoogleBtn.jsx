@@ -26,7 +26,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 		}, function (value) {
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
-				if (value == 'optionA') that.props.account.changeAccount(that.redirect);
+				if (value == 'optionA') that.props.account.changeAccountWithCallback(that.redirect);
 				else that.registerAccount();
 			});
 		});
