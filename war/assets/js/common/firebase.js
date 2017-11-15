@@ -9,9 +9,14 @@ var config = { /* COPY THE ACTUAL CONFIG FROM FIREBASE CONSOLE */
   messagingSenderId: "385639345148"
 };
 
+var googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+googleAuthProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 var firebaseWrapper = {
   firebase: firebase.initializeApp(config),
-  googleAuthProvider: new firebase.auth.GoogleAuthProvider()
+  googleAuthProvider: googleAuthProvider
 };
 
 export default firebaseWrapper;
