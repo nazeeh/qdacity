@@ -21,7 +21,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	redirect() {
 		var that = this;
-		this.props.account.getCurrentUser().then(function (value) {
+		this.props.account.isCurrentUserRegistered().then(function (value) {
 			that.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var acc = that.props.account;
@@ -36,10 +36,15 @@ export default class SigninWithGoogleBtn extends React.Component {
 	registerAccount() {
 		var _this = this;
 		var googleProfile = _this.props.account.getProfile();
+
+		var displayNameParts = googleProfile.displayName.split(' ');
+		var displayLastName = displayNameParts.pop();
+		var displayFirstName = displayNameParts.join(' ');
+
 		vex.dialog.open({
 			message: 'Please confirm:',
-			input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + googleProfile.displayName + '" required />'
-				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + googleProfile.displayName + '" required />\n'
+			input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + displayFirstName + '" required />'
+				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + displayLastName + '" required />\n'
 				+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + googleProfile.email + '" required />\n\n',
 			buttons: [
 				$.extend({}, vex.dialog.buttons.YES, {
