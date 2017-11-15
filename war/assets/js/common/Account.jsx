@@ -1,4 +1,4 @@
-/* eslint-disable indent,semi,space-before-function-paren,no-multiple-empty-lines,no-mixed-spaces-and-tabs */
+/* eslint-disable indent,semi,space-before-function-paren,no-multiple-empty-lines,no-mixed-spaces-and-tabs,no-trailing-spaces */
 import React from 'react';
 import firebaseWrapper from './firebase';
 
@@ -24,7 +24,7 @@ export default class Account extends React.Component {
 
 		var _this = this;
 		this.firebase.auth().onAuthStateChanged(function() {
-			if (!_this.isSignedIn) {
+			if (!_this.isSignedIn()) {
 					// no authentication happend yet.
 				return;
 			}
@@ -32,6 +32,11 @@ export default class Account extends React.Component {
 		});
 	}
 
+  /**
+	 * Fetches the id token from firebase and passes it into gapi.
+	 *
+   * @returns {Promise}
+   */
 	updateToken () {
 		var _this = this
 		var promise = new Promise(
@@ -41,16 +46,24 @@ export default class Account extends React.Component {
 					resolve();
 				}).catch(function (error) {
 					console.log('Retrieved no token!');
+					console.log(error);
 					reject();
 				});
 			});
 		return promise
   }
 
+  /**
+	 * Redirects to the personal dashboard
+   */
   redirectToPersonalDashbaord() {
     this.props.history.push('/PersonalDashboard');
 	}
 
+  /**
+	 * Does the sign-in process by a popup. Provides gapi with the received id token.
+   * @returns {Promise}
+   */
 	signin() {
 		var _this = this;
 		var promise = new Promise(
@@ -63,7 +76,7 @@ export default class Account extends React.Component {
 							})
 				}).catch(function(error) {
 					  console.log('The login failed!!');
-					  console.err(error);
+					  console.log(error);
 					  reject();
 				});
 		 	}
@@ -71,32 +84,56 @@ export default class Account extends React.Component {
     	return promise;
   }
 
+  /**
+	 * Signes in a user and invokes callback() after that.
+	 *
+   * @param callback
+   */
 	signInWithCallback(callback) {
 		this.signin().then(function(result) {
 			callback();
 		});
 	}
 
-
+  /**
+	 * Loggs out the current user and starts the sign in process for a new user.
+	 * After completion, the callback method is invoked.
+	 *
+   * @param callback
+   */
 	changeAccount(callback) {
 		this.signout();
 		this.signInWithCallback(callback);
 	}
 
+  /**
+	 * Gets the current user's profile data with following members:
+	 * displayName
+	 * email
+	 * photoURL
+	 * emailVerified
+	 * uid
+   * @returns {firebase.User | any}
+   */
 	getProfile() {
 		// TODO: check calling libs if follow attributes match existing called
-		// user.displayName
-		// user.email
-		// user.photoURL
-		// user.emailVerified
-		// user.uid
 		return this.firebase.auth().currentUser;
 	}
 
+  /**
+	 * Checks if there is a user signed into firebase.
+	 *
+   * @returns {boolean}
+   */
 	isSignedIn() {
 		return !!this.firebase.auth().currentUser;
 	}
 
+  /**
+	 * Gets the current user that is logged into firebase.
+	 *
+   * @returns {Promise}
+   */
 	getCurrentUser() {
 		var _this = this;
 		var promise = new Promise(
@@ -111,6 +148,29 @@ export default class Account extends React.Component {
 		);
 
 		return promise;
+	}
+
+  /**
+	 * Checks if the current user is already registered in qdacity.
+	 * The user needs to be logged in with firebase beforehand.
+   * @returns {Promise}
+   */
+	isCurrentUserRegistered(){
+		var _this = this;
+    var promise = new Promise(
+      function (resolve, reject) {
+
+        gapi.client.qdacity.getUser(_this.getCurrentUser().uid).execute(function (resp) {
+          if (!resp.code) {
+            resolve(resp);
+          } else {
+            reject(resp);
+          }
+        });
+      }
+    );
+
+    return promise;
 	}
 
 	isProjectOwner(user, prjId) {
@@ -133,6 +193,15 @@ export default class Account extends React.Component {
 		return isValidationCoder;
 	}
 
+  /**
+	 * Registers the current user.
+	 * The user has to be logged in with firebase beforehand.
+	 *
+   * @param givenName
+   * @param surName
+   * @param email
+   * @returns {Promise}
+   */
 	registerCurrentUser(givenName, surName, email) {
 		var promise = new Promise(
 			function (resolve, reject) {
