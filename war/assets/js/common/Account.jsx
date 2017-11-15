@@ -69,11 +69,12 @@ export default class Account extends React.Component {
 		var promise = new Promise(
       		function (resolve, reject) {
        			 _this.firebase.auth().signInWithPopup(_this.auth_google).then(function(result) {
-							_this.updateToken().then(function() {
-								resolve();
-							}, function() {
-								reject();
-							})
+								_this.setUser(_this.getProfile());
+								_this.updateToken().then(function() {
+									resolve();
+								}, function() {
+									reject();
+								})
 				}).catch(function(error) {
 					  console.log('The login failed!!');
 					  console.log(error);
@@ -202,21 +203,23 @@ export default class Account extends React.Component {
 
 	setUser(pProfile) {
 		this.setState({
-			name: pProfile.getName(),
-			email: pProfile.getEmail(),
-			picSrc: pProfile.getImageUrl()
+			name: pProfile.displayName,
+			email: pProfile.email,
+			picSrc: pProfile.photoURL
 		});
 	}
 
 	signout() {
+		var _this = this;
     this.firebase.auth().signOut().then(function() {
-			this.setState({
+			_this.setState({
 				name: '',
 				email: '',
 				picSrc: ''
 			});
     }).catch(function(error) {
       console.log('Error at signing out!');
+      console.log(error);
     });
 	}
 
