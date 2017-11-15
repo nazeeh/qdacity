@@ -1,4 +1,3 @@
-/* eslint-disable indent,semi,space-before-function-paren,no-multiple-empty-lines,no-mixed-spaces-and-tabs,no-trailing-spaces */
 import React from 'react';
 import firebaseWrapper from './firebase';
 
@@ -25,9 +24,9 @@ export default class Account extends React.Component {
 		var _this = this;
 		this.firebase.addAuthStateListener(function() {
 			if (!_this.isSignedIn()) {
-      	// no authentication happend yet.
-      	return;
-    	}
+				// no authentication happend yet.
+				return;
+			}
 			_this.updateToken();
       _this.setUser(_this.getProfile());
 		});
@@ -81,16 +80,11 @@ export default class Account extends React.Component {
   }
 
   /**
-	 * Gets the current user's profile data with following members:
-	 * displayName
-	 * email
-	 * photoURL
-	 * emailVerified
-	 * uid
+	 * Gets the current user's profile data from firebase
+	 *
    * @returns {firebase.User | any}
    */
 	getProfile() {
-		// TODO: check calling libs if follow attributes match existing called
 		return this.firebase.getProfile();
 	}
 

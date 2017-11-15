@@ -1,5 +1,7 @@
 import firebase from 'firebase';
 
+/* --------------------------------- FIREBASE INIT -------------------------------- */
+
 var config = { /* COPY THE ACTUAL CONFIG FROM FIREBASE CONSOLE */
   apiKey: "AIzaSyA82H_jvzTlEiU-2UMjMzHZ1DiB_3weRqo",
   authDomain: "georg-schwarz-fau-amse-ws1718.firebaseapp.com",
@@ -16,6 +18,8 @@ googleAuthProvider.setCustomParameters({
 
 var firebaseInstance = firebase.initializeApp(config);
 
+
+/* ------------------------------- PROXY METHODS ----------------------------------- */
 /**
  * Always calls the given fkt if the auth state changes.
  *

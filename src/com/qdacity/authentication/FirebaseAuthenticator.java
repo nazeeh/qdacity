@@ -1,13 +1,9 @@
 package com.qdacity.authentication;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.tika.io.IOUtils;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Authenticator;
@@ -47,7 +43,7 @@ public class FirebaseAuthenticator implements Authenticator {
 	         
  			FirebaseApp.initializeApp(options);
 
- 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Firebase Admin SDK initialized.");
+ 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Firebase Admin SDK was successfully initialized.");
 	     } catch (Exception e) {
  			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, e.getMessage());
  			e.printStackTrace();
