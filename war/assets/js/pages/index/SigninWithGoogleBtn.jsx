@@ -26,7 +26,11 @@ export default class SigninWithGoogleBtn extends React.Component {
 		}, function (value) {
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
-				if (value == 'optionA') that.props.account.changeAccountWithCallback(that.redirect);
+				if (value == 'optionA'){
+          that.props.account.changeAccountWithCallback.then(function() {
+          	that.redirect();
+          });
+				}
 				else that.registerAccount();
 			});
 		});
@@ -71,7 +75,10 @@ export default class SigninWithGoogleBtn extends React.Component {
 		if (this.props.account.isSignedIn()) {
 			this.redirect();
 		} else {
-			this.props.account.signInWithCallback(this.redirect);
+			var _this = this;
+			this.props.account.signIn().then(function() {
+				_this.redirect();
+      });
 		}
 	}
 

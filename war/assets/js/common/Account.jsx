@@ -6,6 +6,7 @@ import {
 	BtnDefault,
 	BtnPrimary
 } from './styles/Btn.jsx';
+
 export default class Account extends React.Component {
 
 	constructor(props) {
@@ -15,20 +16,20 @@ export default class Account extends React.Component {
 			email: '',
 			picSrc: ''
 		};
-		this.auth_google = firebaseWrapper.googleAuthProvider;
-		this.firebase = firebaseWrapper.firebase;
+		this.firebase = firebaseWrapper;
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 
 		this.props.callback(this);
 
 		var _this = this;
-		this.firebase.auth().onAuthStateChanged(function() {
+		this.firebase.addAuthStateListener(function() {
 			if (!_this.isSignedIn()) {
-					// no authentication happend yet.
-				return;
-			}
+      	// no authentication happend yet.
+      	return;
+    	}
 			_this.updateToken();
+      _this.setUser(_this.getProfile());
 		});
 	}
 
@@ -38,19 +39,7 @@ export default class Account extends React.Component {
    * @returns {Promise}
    */
 	updateToken () {
-		var _this = this
-		var promise = new Promise(
-      function (resolve, reject) {
-        _this.firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-					gapi.client.setToken({access_token: idToken});
-					resolve();
-				}).catch(function (error) {
-					console.log('Retrieved no token!');
-					console.log(error);
-					reject();
-				});
-			});
-		return promise
+		return this.firebase.synchronizeTokenWithGapi();
   }
 
   /**
@@ -66,47 +55,19 @@ export default class Account extends React.Component {
    */
 	signIn() {
 		var _this = this;
-		var promise = new Promise(
-      		function (resolve, reject) {
-       			 _this.firebase.auth().signInWithPopup(_this.auth_google).then(function(result) {
-								_this.setUser(_this.getProfile());
-								_this.updateToken().then(function() {
-									resolve();
-								}, function() {
-									reject();
-								})
-				}).catch(function(error) {
-					  console.log('The login failed!!');
-					  console.log(error);
-					  reject();
-				});
-		 	}
-		);
+    var promise = new Promise(
+      function (resolve, reject) {
+        _this.firebase.signInWithGoogle().then(function () {
+          _this.updateToken();
+          resolve();
+        }).catch(function (err) {
+          console.log('The login failed!!');
+          console.log(err);
+          reject();
+        });
+      });
 		return promise;
   }
-
-  /**
-	 * Signes in a user and invokes callback() after that.
-	 *
-   * @param callback
-   */
-	signInWithCallback(callback) {
-		this.signIn().then(function(result) {
-			callback();
-		});
-	}
-
-  /**
-	 * Loggs out the current user and starts the sign in process for a new user.
-	 * After completion, the callback method is invoked.
-	 *
-   * @param callback
-	 * @returns {Promise}
-   */
-	changeAccountWithCallback(callback) {
-		this.signout();
-		return this.signInWithCallback(callback);
-	}
 
   /**
    * Loggs out the current user and starts the sign in process for a new user.
@@ -130,7 +91,7 @@ export default class Account extends React.Component {
    */
 	getProfile() {
 		// TODO: check calling libs if follow attributes match existing called
-		return this.firebase.auth().currentUser;
+		return this.firebase.getProfile();
 	}
 
   /**
@@ -139,7 +100,7 @@ export default class Account extends React.Component {
    * @returns {boolean}
    */
 	isSignedIn() {
-		return !!this.firebase.auth().currentUser;
+		return this.firebase.isSignedIn();
 	}
 
   /**
@@ -232,7 +193,7 @@ export default class Account extends React.Component {
    */
 	signout() {
 		var _this = this;
-    this.firebase.auth().signOut().then(function() {
+    this.firebase.signOut().then(function() {
 			_this.setState({
 				name: '',
 				email: '',
