@@ -1,5 +1,6 @@
 package com.qdacity.authentication;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -10,16 +11,16 @@ import org.apache.tika.io.IOUtils;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Authenticator;
-import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseCredentials;
 import com.google.firebase.auth.FirebaseToken;
 import com.qdacity.Constants;
 
 /**
  * Custom authentication class that interacts with google cloud api and injects automatically a User object.
+ * The user object is null if the authentication failed.
  * 
  * Usage in Endpoint:
  * @Api(
@@ -34,20 +35,22 @@ public class FirebaseAuthenticator implements Authenticator {
 	/**
 	 * Setup of Firebase admin sdk.
 	 * Happens once at the first api call with using the FirebaseAuthenticator.
+	 * Be sure to have the path to your service account json in an environment variable called GOOGLE_APPLICATION_CREDENTIALS.
 	 */
     static {
         try {
-        	String jsonCredentials = "TODO: put here your service token!";	
-        	InputStream serviceAccount = IOUtils.toInputStream(jsonCredentials);
  			FirebaseOptions options = new FirebaseOptions.Builder()
- 					.setCredential(FirebaseCredentials.fromCertificate(serviceAccount))
- 					.setDatabaseUrl("https://" + Constants.FIREBASE_PROJECT_ID + ".firebaseio.com")
+ 					.setCredentials(GoogleCredentials.getApplicationDefault())
+ 					.setDatabaseUrl("https://" + Constants.FIREBASE_DATABASE_NAME + ".firebaseio.com")
+ 					.setProjectId(Constants.FIREBASE_PROJECT_ID)
  					.build();
 	         
  			FirebaseApp.initializeApp(options);
 
+ 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Firebase Admin SDK initialized.");
 	     } catch (Exception e) {
-	 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, e.getMessage());
+ 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, e.getMessage());
+ 			e.printStackTrace();
          }
     }
 
@@ -67,13 +70,14 @@ public class FirebaseAuthenticator implements Authenticator {
         	FirebaseToken decodedToken;
 			try {
 				decodedToken = FirebaseAuth.getInstance().verifyIdTokenAsync(idToken).get();
-				
 				User user = new User(decodedToken.getUid(), decodedToken.getEmail());
 	            return user;
 			} catch (InterruptedException e) {
 	 			java.util.logging.Logger.getLogger("logger").log(Level.WARNING, e.getMessage());
+	 			e.printStackTrace();
 			} catch (ExecutionException e) {
 	 			java.util.logging.Logger.getLogger("logger").log(Level.WARNING, e.getMessage());
+	 			e.printStackTrace();
 			}
         }
 
