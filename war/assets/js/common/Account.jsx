@@ -213,6 +213,12 @@ export default class Account extends React.Component {
 		return promise;
 	}
 
+  /**
+	 * Sets profile data into state.
+	 * (This data is used in order to display email adress and image of the user)
+	 *
+   * @param pProfile
+   */
 	setUser(pProfile) {
 		this.setState({
 			name: pProfile.displayName,
@@ -221,6 +227,9 @@ export default class Account extends React.Component {
 		});
 	}
 
+  /**
+	 * Signs out of the firebase session and cleans the profile data in the state.
+   */
 	signout() {
 		var _this = this;
     this.firebase.auth().signOut().then(function() {
