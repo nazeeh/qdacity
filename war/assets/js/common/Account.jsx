@@ -1,4 +1,4 @@
-/* eslint-disable indent,semi,space-before-function-paren,no-multiple-empty-lines */
+/* eslint-disable indent,semi,space-before-function-paren,no-multiple-empty-lines,no-mixed-spaces-and-tabs */
 import React from 'react';
 import firebaseWrapper from './firebase';
 
@@ -20,37 +20,58 @@ export default class Account extends React.Component {
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 
-    this.props.callback(this);
+		this.props.callback(this);
+
+		var _this = this;
+		this.firebase.auth().onAuthStateChanged(function() {
+			if (!_this.isSignedIn) {
+					// no authentication happend yet.
+				return;
+			}
+			_this.updateToken();
+		});
 	}
 
-	redirectToPersonalDashbaord() {
-		this.props.history.push('/PersonalDashboard');
+	updateToken () {
+		var _this = this
+		var promise = new Promise(
+      function (resolve, reject) {
+        _this.firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+					gapi.client.setToken({access_token: idToken});
+					resolve();
+				}).catch(function (error) {
+					console.log('Retrieved no token!');
+					reject();
+				});
+			});
+		return promise
+  }
+
+  redirectToPersonalDashbaord() {
+    this.props.history.push('/PersonalDashboard');
 	}
 
 	signin() {
 		var _this = this;
 		var promise = new Promise(
-      function (resolve, reject) {
-        _this.firebase.auth().signInWithPopup(_this.auth_google).then(function(result) {
-          if (result.credential) {
-            var token = result.credential.accessToken;
-            gapi.client.setToken({access_token: token});
-            resolve(result.user)
-          } else {
-            console.log('Retrieved no token!');
-            reject();
-          }
-        }).catch(function(error) {
-          console.log('The login failed!!');
-          reject();
-        });
-      }
-    );
-
-    return promise;
+      		function (resolve, reject) {
+       			 _this.firebase.auth().signInWithPopup(_this.auth_google).then(function(result) {
+							_this.updateToken().then(function() {
+								resolve();
+							}, function() {
+								reject();
+							})
+				}).catch(function(error) {
+					  console.log('The login failed!!');
+					  console.err(error);
+					  reject();
+				});
+		 	}
+		);
+    	return promise;
   }
 
-  signInWithCallback(callback) {
+	signInWithCallback(callback) {
 		this.signin().then(function(result) {
 			callback();
 		});
