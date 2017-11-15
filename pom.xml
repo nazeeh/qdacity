@@ -109,6 +109,11 @@
 			<version>1.10.3</version>
 		</dependency>
 		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>5.4.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
 			<version>1.11</version>
@@ -132,11 +137,6 @@
 			<groupId>com.google.api</groupId>
 			<artifactId>api-common</artifactId>
 			<version>1.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.firebase</groupId>
-			<artifactId>firebase-admin</artifactId>
-			<version>5.4.0</version>
 		</dependency>
 
 
