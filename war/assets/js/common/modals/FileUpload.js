@@ -28,7 +28,7 @@ export default class FileUpload extends VexModal {
 							showThumbs: true,
 							captions: {
 								errors: {
-									filesType: "Only text files are allowed to be uploaded.",
+									filesType: "Only RTF files are allowed to be uploaded.",
 								}
 							}
 
