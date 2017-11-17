@@ -15,7 +15,7 @@ export default class Teachers extends React.Component {
 		if (this.props.isCourseOwner === false) return null;
 
 		return (
-			<div id="user-section">
+			<div id="user-section" className="box box-default">
 
 				<div className="box-header with-border">
 					<h3 className="box-title">Teachers</h3>
