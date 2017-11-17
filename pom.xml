@@ -211,16 +211,12 @@
 			</dependencies>
 		</plugin>
       <plugin>
-        <groupId>com.google.appengine</groupId>
-        <artifactId>appengine-maven-plugin</artifactId>
-        <version>1.9.54</version>
-        <configuration>
-          <appId>qdacity-test</appId> <!-- Override appengine-web.xml <project> -->
-          <version>1</version>
-          <fullScanSeconds>1</fullScanSeconds>
-          <retainUploadDir>true</retainUploadDir>
-        </configuration>
-      </plugin>
+   <groupId>com.google.appengine</groupId>
+   <artifactId>appengine-maven-plugin</artifactId>
+   <version>1.9.59</version>
+</plugin>
+
+
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -247,14 +243,26 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.1.0</version>
 		<configuration>
+		<warSourceDirectory>war</warSourceDirectory>
+		<warSourceExcludes>assets/,components/,node_modules/</warSourceExcludes>
 		<!--<webXml>war\WEB-INF\web.xml</webXml>  -->
 		<archiveClasses>true</archiveClasses>
 		<webResources>
 			<!-- in order to interpolate version from pom into appengine-web.xml  -->
 			<resource>
-				<directory>war/WEB-INF</directory>
+				<directory>src/META-INF</directory>
 				<filtering>true</filtering>
-				<targetPath>WEB-INF</targetPath>
+				<targetPath>WEB-INF/classes</targetPath>
+			</resource>
+			<resource>
+				<directory>war/components/font-awesome</directory>
+				<filtering>true</filtering>
+				<targetPath>components/font-awesome</targetPath>
+			</resource>
+			<resource>
+				<directory>war/components/mxGraph</directory>
+				<filtering>true</filtering>
+				<targetPath>components/mxGraph</targetPath>
 			</resource>
 		</webResources>		
 	  </configuration>
