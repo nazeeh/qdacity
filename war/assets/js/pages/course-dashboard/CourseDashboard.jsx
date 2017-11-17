@@ -10,7 +10,15 @@ import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import Teachers from "./Teachers/Teachers.jsx";
 
 const StyledDashboard = styled.div `
-	margin-top: 35px;
+	margin-top: 70px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1170px;
+	display: grid;
+    grid-template-columns: 6fr 6fr;
+    grid-template-areas:
+        "terms teachers";
+	grid-column-gap: 20px;
 `;
 
 export default class CourseDashboard extends React.Component {
@@ -91,7 +99,7 @@ export default class CourseDashboard extends React.Component {
 		if (!this.props.account.isSignedIn()) return null;
 
 		return (
-			<StyledDashboard className="container main-content">
+			<StyledDashboard>
 				<div>
 					<div className="box box-default">
 						<div className="box-header with-border">
@@ -102,8 +110,8 @@ export default class CourseDashboard extends React.Component {
 						</div>
 					</div>
 				</div>
-				<div className="box-body">
-					<Teachers course={this.state.course} isCourseOwner={this.state.isCourseOwner}/>
+				<div>
+						<Teachers course={this.state.course} isCourseOwner={this.state.isCourseOwner}/>
 				</div>
 		  	</StyledDashboard>
 		);
