@@ -52,7 +52,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 				if (data === false) {
 					return console.log('Cancelled');
 				}
-				_this.props.account.registerCurrentUser(data.firstName, data.lastName, data.email).then(this.redirect);
+				_this.props.account.registerCurrentUser(data.firstName, data.lastName, data.email).then(_this.redirect);
 				return console.log('First', data.firstName, 'Last Name', data.lastName, 'Email', data.email);
 			}
 		});

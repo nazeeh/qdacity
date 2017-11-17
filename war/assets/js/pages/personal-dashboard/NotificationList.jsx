@@ -88,6 +88,7 @@ export default class NotificationList extends React.Component {
 	acceptInvitation(notification) {
 		var _this = this;
 		ProjectEndpoint.addOwner(notification.project).then(function (resp) {
+			resp.type = "PROJECT";
 			_this.props.addProject(resp);
 		});
 
