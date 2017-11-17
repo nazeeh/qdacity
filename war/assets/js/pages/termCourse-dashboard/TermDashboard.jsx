@@ -19,8 +19,15 @@ export default class TermDashboard extends React.Component {
 
 		var termCourse = new TermCourse(urlParams.termCourse);
 
-	}
+		var participants = [];
 
+		this.state = {
+			termCourse: termCourse,
+			isTermCourseOwner: false,
+			participants: participants
+		};
+
+	}
 
 	render() {
 
