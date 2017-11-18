@@ -76,9 +76,21 @@ export default class Account extends React.Component {
    */
   changeAccount() {
 		var _this = this;
-    this.signout().then(function() {
-			return _this.signIn();
-		});
+    var promise = new Promise(
+      function (resolve, reject) {
+				_this.signout().then(function() {
+					_this.signIn().then(function() {
+						resolve();
+					}, function(err) {
+						console.log('Error at changing Account!');
+						reject(err);
+					})
+				}, function(err) {
+					console.log('Error at changing Account!');
+					reject(err);
+				});
+			});
+		return promise;
   }
 
   /**
@@ -231,7 +243,7 @@ export default class Account extends React.Component {
 					<div className="navbar-footer-content">
 						<div className="row">
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}>Switch User</BtnDefault>
+								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={() => this.changeAccount().then(() => location.reload())}>Switch User</BtnDefault>
 							</div>
 							<div className="col-xs-6">
 								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.signout().then(() => this.props.history.push('/'))}>Sign Out</BtnDefault>
