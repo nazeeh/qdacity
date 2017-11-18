@@ -35,8 +35,12 @@ public class FirebaseAuthenticator implements Authenticator {
 	 */
     static {
         try {
+        	GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+
+ 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Google Credentials: " + credentials.getAccessToken());
+        	System.out.println();
  			FirebaseOptions options = new FirebaseOptions.Builder()
- 					.setCredentials(GoogleCredentials.getApplicationDefault())
+ 					.setCredentials(credentials)
  					.setDatabaseUrl("https://" + Constants.FIREBASE_DATABASE_NAME + ".firebaseio.com")
  					.setProjectId(Constants.FIREBASE_PROJECT_ID)
  					.build();
