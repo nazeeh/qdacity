@@ -31,6 +31,7 @@ export default class Users extends React.Component {
 		this.updateSearch = this.updateSearch.bind(this);
 		this.findUsers = this.findUsers.bind(this);
 		this.removeUser = this.removeUser.bind(this);
+        this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
 	}
 
 	updateSearch(e) {
@@ -66,6 +67,12 @@ export default class Users extends React.Component {
 
 	}
 
+    onSearchFieldKeyPress(event) {
+        if (event.key === "Enter") {
+            this.findUsers();
+        }
+    }
+
 	render() {
 		return (
 			<div className="box box-default">
@@ -76,11 +83,12 @@ export default class Users extends React.Component {
 					<StyledUserSearch>
 						<StyledSearchField className="searchfield" id="searchform">
 							<input
-								type="text"
-								className="search"
-								placeholder="Search"
-								value={this.state.search}
-								onChange={this.updateSearch}
+                                type="text"
+                                className="search"
+                                placeholder="Search"
+                                value={this.state.search}
+                                onChange={this.updateSearch}
+                                onKeyPress={this.onSearchFieldKeyPress}
 							/>
 							<StyledSearchButton>
 								<BtnDefault type="button" id="search" onClick={this.findUsers}>Find!</BtnDefault>
