@@ -184,19 +184,27 @@ export default class Account extends React.Component {
 
   /**
 	 * Signs out of the firebase session and cleans the profile data in the state.
+   * @returns {Promise}
    */
 	signout() {
-		var _this = this;
-    this.firebase.signOut().then(function() {
-			_this.setState({
-				name: '',
-				email: '',
-				picSrc: ''
-			});
-    }).catch(function(error) {
-      console.log('Error at signing out!');
-      console.log(error);
-    });
+    var _this = this;
+    var promise = new Promise(
+      function (resolve, reject) {
+        _this.firebase.signOut().then(function () {
+          _this.setState({
+            name: '',
+            email: '',
+            picSrc: ''
+          });
+          resolve();
+        }).catch(function (error) {
+          console.log('Error at signing out!');
+          console.log(error);
+          reject();
+        });
+      });
+
+    return promise;
 	}
 
 	render() {
