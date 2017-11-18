@@ -47,16 +47,23 @@ export default class MetaModelMapper {
 		return 'Concept';
 	}
 
-	getClassFieldText(fieldName, fieldReturnType) {
-		return fieldName + ': ' + fieldReturnType;
+	getClassFieldText(relation) {
+		const destinationCode = this.getCodeByCodeId(relation.codeId);
+		const relationMetaModelElement = this.getMetaModelEntityById(relation.mmElementId);
+		return destinationCode.name + ': ' + relationMetaModelElement.name;
 	}
 
-	getClassMethodText(methodName, methodReturnType, methodArguments) {
+	getClassMethodText(relation) {
+		const destinationCode = this.getCodeByCodeId(relation.codeId);
+		const relationMetaModelElement = this.getMetaModelEntityById(relation.mmElementId);
+
+		let methodArguments = null;
+
 		if (methodArguments == null) {
 			methodArguments = [];
 		}
 
-		return methodName + '(' + methodArguments.join(', ') + '): ' + methodReturnType;
+		return destinationCode.name + '(' + methodArguments.join(', ') + '): ' + relationMetaModelElement.name;
 	}
 
 	getUmlEditor() {

@@ -1,5 +1,9 @@
 import React from 'react';
 
+import {
+	PageView
+} from '../View/PageView.js';
+
 import 'script-loader!../../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
 export default class CodingsView extends React.Component {
@@ -45,6 +49,7 @@ export default class CodingsView extends React.Component {
 				$(this).addClass('selected');
 				var codingID = $(this).find("td").eq(0).html();
 
+				_this.props.codingEditor.viewChanged(PageView.CODING);
 				_this.props.documentsView.setDocumentWithCoding(codingID);
 				_this.props.editorCtrl.activateCodingInEditor(codingID, true);
 

@@ -48,6 +48,28 @@ public class CourseEndpointTestHelper {
 		return course;
 	}
 	
+	static public TermCourse getTermCourse(Long id, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ce = new CourseEndpoint();
+		TermCourse termCourse = new TermCourse();
+		try {
+			termCourse = ce.getTermCourse(id, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for Course retrieval");
+		}
+		return termCourse;
+	}
+	
+	static public void removeTermCourse(Long id, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ue = new CourseEndpoint();
+		try {
+			ue.removeTermCourse(id, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User is Not Authorized");
+		}
+	}
+	
 	static public List<TermCourse> listTermCourse(Long courseID, com.google.appengine.api.users.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		List<TermCourse> terms = null;
@@ -74,6 +96,55 @@ public class CourseEndpointTestHelper {
 			fail("User could not be authorized for term creation");
 		}
 	}
+	
+	static public void addTermCourse(Long termCourseId, com.google.appengine.api.users.User loggedInUser) {
+		TermCourse termCourse = new TermCourse();
+		termCourse.setId(termCourseId);
+
+		CourseEndpoint ue = new CourseEndpoint();
+		try {
+			ue.insertTermCourse(termCourseId, "WS", termCourse, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term course creation");
+		}
+	}
+	
+	static public void setTermCourseStatus(Long termCourseId,boolean isOpen, com.google.appengine.api.users.User loggedInUser) {
+		TermCourse termCourse = new TermCourse();
+		termCourse.setOpen(isOpen);
+
+		CourseEndpoint ue = new CourseEndpoint();
+		try {
+			ue.setTermCourseStatus(termCourseId, isOpen, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term course creation");
+		}
+	}
+	
+	static public void addParticipantTermCourse(Long termCourseID, String userID, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ue = new CourseEndpoint();
+		
+		try {
+			ue.addParticipant(termCourseID, userID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term course participation");
+		}
+	}
+	
+	static public void removeParticipantTermCourse(Long termCourseID, String userID, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ue = new CourseEndpoint();
+		
+		try {
+			ue.removeParticipant(termCourseID, userID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for participant removal");
+		}
+	}
+	
 	static public CollectionResponse<Course> listCourse(com.google.appengine.api.users.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		CollectionResponse<Course> courses = null;
@@ -93,6 +164,16 @@ public class CourseEndpointTestHelper {
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for Course removal");
+		}
+	}
+	
+	static public void addCourseOwner(Long courseID, String userID,com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ce = new CourseEndpoint();
+		try {
+			ce.addCourseOwner(courseID, userID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for Course ownership");
 		}
 	}
 }

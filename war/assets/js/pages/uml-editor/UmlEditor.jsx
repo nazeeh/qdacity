@@ -23,6 +23,8 @@ import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpo
 import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 
 const StyledUmlEditor = styled.div `
+    display: flex;
+    flex-direction: column;
     height: inherit;
     border-left: 1px solid #B0B0B0;
 `;
@@ -365,10 +367,58 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
+	 * Returns the relation (with the given id) of a specific code. If the relation does not exist, this method returns null.
+	 * @param {any} relationId
+	 */
+	getRelationOfCode(code, relationId) {
+		if (code.relations != null) {
+			for (let i = 0; i < code.relations.length; i++) {
+				if (code.relations[i].key.id == relationId) {
+					return code.relations[i];
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Does the code have a corresponding node? Checks if the code is mapped in the uml editor (as a class object).
 	 */
 	isCodeMapped(code) {
 		return this.getNodeByCodeId(code.id) != null;
+	}
+
+	/**
+	 * Updates the meta-model of the code in the database. This method will insert a new meta-model, which ensures, that the code is mapped in the uml-editor.
+	 */
+	makeCodeVisibleInEditor(codeId) {
+		const _this = this;
+
+		const code = this.getCodeByCodeId(codeId);
+
+		const newMMElementIds = [];
+
+		const newMMElement = this.getMetaModelEntityByName(this.metaModelMapper.getDefaultUmlClassMetaModelName());
+		newMMElementIds.push(newMMElement.id);
+
+		// Save old mmElementIds
+		if (code.mmElementIDs != null) {
+			for (let i = 0; i < code.mmElementIDs.length; i++) {
+				const mmElement = this.getMetaModelEntityById(code.mmElementIDs[i]);
+
+				if (mmElement.group != newMMElement.group) {
+					newMMElementIds.push(mmElement.id);
+				}
+			}
+		}
+
+		code.mmElementIDs = newMMElementIds;
+
+		CodesEndpoint.updateCode(code).then((resp) => {
+			code.mmElementIDs = resp.mmElementIDs;
+
+			_this.props.updateCode(code);
+		});
 	}
 
 	/**
@@ -505,6 +555,13 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
+	 * Is called when an unmapped code is renamed.
+	 */
+	unmappedCodeWasRenamed(code) {
+		this.graphView.refreshAllNodes();
+	}
+
+	/**
 	 * Removes a node from the graph. Does not update the database.
 	 */
 	removeNode(code) {
@@ -518,7 +575,7 @@ export default class UmlEditor extends React.Component {
 	addClassField(sourceCode, destinationCode, relation) {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 
-		const fieldText = this.metaModelMapper.getClassFieldText(destinationCode.name, 'TODO-returnType');
+		const fieldText = this.metaModelMapper.getClassFieldText(relation);
 		this.graphView.addClassField(sourceNode, relation.key.id, '+', fieldText);
 	}
 
@@ -537,7 +594,7 @@ export default class UmlEditor extends React.Component {
 	addClassMethod(sourceCode, destinationCode, relation) {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 
-		const methodText = this.metaModelMapper.getClassMethodText(destinationCode.name, 'TODO-returnType', ['TODO', 'ARGUMENTS']);
+		const methodText = this.metaModelMapper.getClassMethodText(relation);
 		this.graphView.addClassMethod(sourceNode, relation.key.id, '+', methodText);
 	}
 
@@ -588,6 +645,7 @@ export default class UmlEditor extends React.Component {
 
 			if (node != null) {
 				this.graphView.selectCell(node);
+				this.graphView.panToCell(node, false);
 			}
 		}
 	}
@@ -598,7 +656,7 @@ export default class UmlEditor extends React.Component {
 		return (
 			<StyledUmlEditor>
                 <Toolbar ref={(toolbar) => {if (toolbar != null) _this.toolbar = toolbar}} className="row no-gutters" umlEditor={_this} createCode={_this.props.createCode} />
-                <GraphView ref={(graphView) => {if (graphView != null) _this.graphView = graphView}} umlEditor={_this} onZoom={_this.onZoom} toggleCodingView={this.props.toggleCodingView}/>
+                <GraphView ref={(graphView) => {if (graphView != null) _this.graphView = graphView.decoratedComponentInstance}} umlEditor={_this} onZoom={_this.onZoom} toggleCodingView={this.props.toggleCodingView}/>
             </StyledUmlEditor>
 		);
 	}

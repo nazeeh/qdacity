@@ -16,5 +16,3 @@ war/nbproject/
 /nbdist/
 /war/api_config.json
 target
-.idea/
-*.iml

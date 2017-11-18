@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import ProjectDashboardBtn from '../ProjectDashboardBtn.jsx';
+import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 import SearchProjectBtn from './SearchProjectBtn.jsx';
 import ProjectSearch from './ProjectSearch.jsx';
 import PageViewChooser from './PageViewChooser.jsx';
@@ -103,7 +103,7 @@ export default class ProjectPanel extends React.Component {
 					})()
 
 				}
-				<PageViewChooser project={this.props.project} viewChanged={this.props.viewChanged}/>
+				<PageViewChooser project={this.props.project} view={this.props.selectedEditor} viewChanged={this.props.viewChanged}/>
 			</StyledPanelContent>
 		);
 	}

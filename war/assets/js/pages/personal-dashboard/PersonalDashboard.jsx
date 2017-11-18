@@ -11,8 +11,7 @@ export default class PersonalDashboard extends React.Component {
 		super(props);
 		this.state = {
 			projects: [],
-			courses: [],
-			termsArray: []
+			courses: []
 		};
 
 		this.setProjects = this.setProjects.bind(this);
@@ -69,7 +68,7 @@ export default class PersonalDashboard extends React.Component {
 
 
 	render() {
-		if (!this.props.account.getProfile) return null;
+		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
 		return (
 			<div className="container main-content">
 				<div className="row">
@@ -103,7 +102,7 @@ export default class PersonalDashboard extends React.Component {
 								<h3 className="box-title">Notifications</h3>
 							</div>
 							<div className="box-body">
-								<NotificationList addProject={this.addProject}  />
+								<NotificationList addProject={this.addProject} addCourse={this.addCourse} />
 							</div>
 						</div>
 					</div>
