@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 
 import Account from './Account.jsx';
+import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
 
 const StyledAccountTab = styled.li `
 	display: ${props => props.loggedIn ? 'block' : 'none'} !important;
@@ -68,10 +69,9 @@ export default class NavBar extends React.Component {
 												<div className="navbar-content">
 													<div className="row">
 														<div className="col-md-12">
-															<a id="navBtnSigninGoogle" className="btn  btn-primary" href="#">
-																<i className="fa fa-google fa-2x pull-left"></i>
-																<span >Sign in with Google</span>
-															</a>
+															<div id="navBtnSigninGoogle">
+																<SigninWithGoogleBtn account={this.account} history={this.props.history} />
+															</div>
 														</div>
 													</div>
 												</div>
