@@ -2,6 +2,7 @@ import React from 'react';
 
 import styles from './styles.css'
 import CustomForm from '../../common/modals/CustomForm';
+import {BtnDefault} from "../../common/styles/Btn.jsx";
 
 
 export default class UserListCtrl extends React.Component {
@@ -43,12 +44,12 @@ export default class UserListCtrl extends React.Component {
 		return (
 			<div className={styles.center}>
 	      	<div className={classes}>
-				<a id="btnUserInfo" className="btn btn-default" onClick={_this.showUserInfo.bind(null, null)}>
+				<BtnDefault id="btnUserInfo" className="btn btn-default" onClick={_this.showUserInfo.bind(null, null)}>
 					<i className="fa fa-pencil fa-1x"></i>
-				</a>
-				<a id="btnRemoveUser" className="btn btn-default" href="#" onClick={this.removeUser}>
+				</BtnDefault>
+				<BtnDefault id="btnRemoveUser" className="btn btn-default" href="#" onClick={this.removeUser}>
 					<i className="fa fa-trash fa-1x"></i>
-				</a>
+				</BtnDefault>
 			</div>
 		  </div>
 		);

@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import UserList from './UserList.jsx';
 
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import StyledSearchField from '../../common/styles/SearchField.jsx';
+import {BtnDefault} from "../../common/styles/Btn.jsx";
 
 const StyledUserSearch = styled.div `
 	display:flex;
@@ -14,25 +16,8 @@ const StyledUserSearch = styled.div `
 	}
 `;
 
-const StyledSearchField = styled.div `
-	float: none;
-	width: 100%;
-	display:flex;
-	flex-direction:row;
-	margin-bottom: 5px;
-	& > input[type=text] {
-		flex:1;
-	    padding:0.3em;
-	    border:0.2em solid #337ab7;
-	    border-radius: 5px 0px 0px 5px;
-	}
-	& > button {
-	  padding:0.6em 0.8em;
-	  background-color:#337ab7;
-	  color:white;
-	  border:none;
-	  border-radius: 0px 5px 5px 0px;
-	}
+const StyledSearchButton = styled.div `
+	padding-left: 5px;
 `;
 
 export default class Users extends React.Component {
@@ -97,7 +82,9 @@ export default class Users extends React.Component {
 								value={this.state.search}
 								onChange={this.updateSearch}
 							/>
-							<button id="userSearchFindBtn" type="button" id="search" onClick={this.findUsers}>Find!</button>
+							<StyledSearchButton>
+								<BtnDefault type="button" id="search" onClick={this.findUsers}>Find!</BtnDefault>
+							</StyledSearchButton>
 						</StyledSearchField>
 					</StyledUserSearch>
 					<UserList  users={this.state.users} removeUser={this.removeUser}/>
