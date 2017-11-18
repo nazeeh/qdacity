@@ -246,7 +246,7 @@ export default class Account extends React.Component {
 								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={() => this.changeAccount().then(() => location.reload())}>Switch User</BtnDefault>
 							</div>
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.signout().then(() => this.props.history.push('/'))}>Sign Out</BtnDefault>
+								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.signout().then(() => { this.props.history.push('/'); location.reload(); })}>Sign Out</BtnDefault>
 							</div>
 						</div>
 					</div>
