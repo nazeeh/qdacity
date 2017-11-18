@@ -75,8 +75,10 @@ export default class Account extends React.Component {
    * @returns {Promise}
    */
   changeAccount() {
-    this.signout();
-    return this.signIn();
+		var _this = this;
+    this.signout().then(function() {
+			return _this.signIn();
+		});
   }
 
   /**
@@ -232,7 +234,7 @@ export default class Account extends React.Component {
 								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}>Switch User</BtnDefault>
 							</div>
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={this.signout.bind(this)}>Sign Out</BtnDefault>
+								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.signout().then(() => this.props.history.push('/'))}>Sign Out</BtnDefault>
 							</div>
 						</div>
 					</div>
