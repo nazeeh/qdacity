@@ -104,22 +104,23 @@ public class FirebaseAuthenticator implements Authenticator {
     private static GoogleCredentials loadGoogleCredential() {
     	
     	PersistenceManager mgr = null;
-		List<Course> execute = null;
-
 		try {
 			mgr = getPersistenceManager();
 			
 			// only call this if you want to insert the secret into your local Datastore!!
-			insertSecretKey(mgr);
+			// insertSecretKey(mgr);
 			
 			StoredSecret secret = mgr.getObjectById(StoredSecret.class, GOOGLE_CREDENTIAL_ID);
+			if(secret == null) {
+				throw new IllegalStateException("Could not load the secret for GoogleCredentials from datastore.");
+			}
 			InputStream stream = new ByteArrayInputStream(secret.getValue().getValue().getBytes(StandardCharsets.UTF_8.name()));
 			return GoogleCredentials.fromStream(stream);
 		} catch(IOException e) {
- 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, "Could not load the SecretKey for GoogleCredentials out of database.");
+ 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, "Could not load the secret for GoogleCredentials from database.");
  			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, e.getMessage());
  			e.printStackTrace();
- 			return null;
+			throw new IllegalStateException("Could not load the GoogleCredentials.");
 		} finally {
 			mgr.close();
 		}
