@@ -29,7 +29,30 @@ export default class TermDashboard extends React.Component {
 
 	}
 
+	init() {
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.setUserRights();
+		}
+	}
+
+	setUserRights() {
+		var _this = this;
+		this.userPromise.then(function (user) {
+			console.log(_this.state.termCourse.getId());
+			console.log(user);
+			var isTermCourseOwner = _this.props.account.isTermCourseOwner(user, _this.state.termCourse.getId());
+			console.log(isTermCourseOwner);
+			_this.setState({
+				isTermCourseOwner: isTermCourseOwner
+			});
+		});
+	}
+
 	render() {
+
+		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
+		this.init();
 
 		return (
 			<StyledDashboard className="container main-content">
