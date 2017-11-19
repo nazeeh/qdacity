@@ -110,7 +110,7 @@ public class FirebaseAuthenticator implements Authenticator {
 			mgr = getPersistenceManager();
 			
 			// only call this if you want to insert the secret into your local Datastore!!
-			insertSecretKey(mgr);
+			// insertSecretKey(mgr);
 			
 			StoredSecret secret = mgr.getObjectById(StoredSecret.class, GOOGLE_CREDENTIAL_ID);
 			InputStream stream = new ByteArrayInputStream(secret.getValue().getValue().getBytes(StandardCharsets.UTF_8.name()));
