@@ -374,7 +374,7 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
-
+		
 		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
 		termCourse.setOpen(true);
@@ -382,10 +382,10 @@ public class CourseEndpoint {
 
 
 		PersistenceManager mgr = getPersistenceManager();
-
+		com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 		try {
 			// Authorize User
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			
 			Authorization.isUserRegistered(dbUser);
 		}
 		catch (javax.jdo.JDOObjectNotFoundException ex) {
@@ -398,9 +398,11 @@ public class CourseEndpoint {
 					throw new EntityExistsException("Term already exists");
 				}
 			}
-
 			termCourse.addOwner(user.getUserId());
 			mgr.makePersistent(termCourse);
+			
+			dbUser.addTermCourseAuthorization(termCourse.getId());
+			mgr.makePersistent(dbUser);
 
 		} finally {
 			mgr.close();
