@@ -382,29 +382,28 @@ public class CourseEndpoint {
 
 
 		PersistenceManager mgr = getPersistenceManager();
-		com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 		try {
 			// Authorize User
-			
+			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 			Authorization.isUserRegistered(dbUser);
-		}
-		catch (javax.jdo.JDOObjectNotFoundException ex) {
-			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
-		}
-
-		try {
+			
 			if (termCourse.getId() != null) {
 				if (containsTermCourse(termCourse)) {
 					throw new EntityExistsException("Term already exists");
 				}
-			}
-			termCourse.addOwner(user.getUserId());
-			mgr.makePersistent(termCourse);
+				
+				termCourse.addOwner(user.getUserId());
+				mgr.makePersistent(termCourse);
+				
+				dbUser.addTermCourseAuthorization(termCourse.getId());
+				mgr.makePersistent(dbUser);
+			} 
+		}
+		catch (javax.jdo.JDOObjectNotFoundException ex) {
+			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+		}
 			
-			dbUser.addTermCourseAuthorization(termCourse.getId());
-			mgr.makePersistent(dbUser);
-
-		} finally {
+			finally {
 			mgr.close();
 		}
 		return termCourse;

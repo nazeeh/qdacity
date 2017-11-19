@@ -118,7 +118,7 @@ public class User implements Serializable {
 	}
 	
 	public void addTermCourseAuthorization(Long termCourseID) {
-		termCourses.add(termCourseID);
+		if (termCourses != null) {termCourses.add(termCourseID);}
 	}
 
 	public void removeCourseAuthorization(Long course) {
