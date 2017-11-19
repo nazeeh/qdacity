@@ -48,7 +48,7 @@ public class FirebaseAuthenticator implements Authenticator {
 	 */
     static {
         try {
-        	System.out.println();
+ 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Starting to initialize Firebase Admin SDK...");
  			FirebaseOptions options = new FirebaseOptions.Builder()
  					.setCredentials(loadGoogleCredential())
  					.setDatabaseUrl("https://" + Constants.FIREBASE_DATABASE_NAME + ".firebaseio.com")
@@ -58,9 +58,10 @@ public class FirebaseAuthenticator implements Authenticator {
  			FirebaseApp.initializeApp(options);
 
  			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Firebase Admin SDK was successfully initialized.");
-	     } catch (Exception e) {
- 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, e.getMessage());
- 			e.printStackTrace();
+	     } catch (Throwable t) {
+ 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, t.getMessage());
+ 			t.printStackTrace();
+ 			throw t;
          }
     }
 
