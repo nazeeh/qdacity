@@ -1,6 +1,6 @@
 import React from 'react';
 
-import UserEndpoint from '../../../common/endpoints/UserEndpoint';
+import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 
 import {
 	StyledBoxList,
@@ -31,7 +31,7 @@ export default class UserList extends React.Component {
 
 	addOwners() {
 		var _this = this;
-		UserEndpoint.listUserByCourse(this.props.termCourse.getId()).then(function (resp) {
+		CourseEndpoint.listTermCourseParticipants(this.props.termCourse.getId()).then(function (resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
