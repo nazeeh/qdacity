@@ -1,7 +1,13 @@
 package com.qdacity.endpoint;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
 import com.google.api.server.spi.config.Api;
@@ -14,6 +20,7 @@ import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
 
 
@@ -29,7 +36,7 @@ public class ExerciseEndpoint {
 	 * exists in the datastore, an exception is thrown.
 	 * It uses HTTP POST method.
 	 *
-	 * @param course the entity to be inserted.
+	 * @param exercise the entity to be inserted.
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
@@ -63,6 +70,41 @@ public class ExerciseEndpoint {
 			mgr.close();
 		}
 		return exercise;
+	}
+	
+	/**
+	 * This method lists all the exercises which belong to a specific term course
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all exercises
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(name = "course.listTermCourseExercises",
+		path = "listTermCourseExercises",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<Exercise> listTermCourseExercises(@Named("termCrsID") Long termCourseID, User user) throws UnauthorizedException {
+
+		
+		PersistenceManager mgr = null;
+		List<Exercise> execute = null;
+
+		try {
+			mgr = getPersistenceManager();
+			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
+			Authorization.checkAuthTermCourseParticipation(termCourse, user.getUserId(), user);
+			Query q = mgr.newQuery(Exercise.class, ":p.contains(termCourseID)");
+
+			execute = (List<Exercise>) q.execute(Arrays.asList(termCourseID));
+
+		} finally {
+			mgr.close();
+		}
+
+		return execute;
 	}
 	
 	private boolean containsExercise(Exercise exercise) {
