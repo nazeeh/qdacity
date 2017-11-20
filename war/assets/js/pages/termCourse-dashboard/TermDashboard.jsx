@@ -42,6 +42,7 @@ export default class TermDashboard extends React.Component {
 		var termCourse = new TermCourse(urlParams.termCourse);
 
 		this.addParticipant = this.addParticipant.bind(this);
+		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
 			termCourse: termCourse,
@@ -93,6 +94,23 @@ export default class TermDashboard extends React.Component {
 		});
 	}
 
+	removeParticipant(e) {
+		//Add the user to participants & set isUserParticipant to true for that term
+		var _this = this;
+		var termCourse = this.state.termCourse;
+		this.userPromise.then(function (resp) {
+			CourseEndpoint.removeParticipant(termCourse.id, resp.id).then(function (resp2) {
+				var userIndex = termCourse.participants.indexOf((typeof (termCourse.participants.find(o => o.id === resp.id)) == 'undefined'));
+				termCourse.participants.splice(userIndex, 1);
+				termCourse.isUserParticipant = false;
+				console.log(termCourse);
+				_this.setState({
+					termCourse: termCourse
+				});
+			});
+		});
+	}
+
 	renderJoinButton() {
 		var termCourse = this.state.termCourse;
 		//Show join/leave button depending on whether the user is a participant in the course
@@ -101,7 +119,7 @@ export default class TermDashboard extends React.Component {
 				<i className="fa fa-tags"></i>
 			</StyledListItemBtn>
 		} else {
-			return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			return <StyledListItemBtn onClick={(e) => this.removeParticipant(e)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-sign-out"></i>
 				</StyledListItemBtn>
 		}
