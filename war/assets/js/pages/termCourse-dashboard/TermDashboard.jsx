@@ -32,12 +32,9 @@ export default class TermDashboard extends React.Component {
 
 		var termCourse = new TermCourse(urlParams.termCourse);
 
-		var participants = [];
-
 		this.state = {
 			termCourse: termCourse,
 			isTermCourseOwner: false,
-			participants: participants
 		};
 
 	}
@@ -45,6 +42,8 @@ export default class TermDashboard extends React.Component {
 	init() {
 		if (!this.userPromise) {
 			this.userPromise = this.props.account.getCurrentUser();
+			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(this.state.termCourse.getId());
+			this.setParticipants();
 			this.setUserRights();
 		}
 	}
@@ -59,11 +58,23 @@ export default class TermDashboard extends React.Component {
 		});
 	}
 
+	setParticipants() {
+		var _this = this;
+		this.listTermCourseParticipantsPromise.then(function (resp) {
+			var termCourse = _this.state.termCourse;
+			resp.items = resp.items || [];
+			termCourse.participants = resp.items;
+			_this.setState({
+				termCourse: termCourse
+			});
+		});
+	}
 	render() {
 
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
 		this.init();
-
+		var termCourse = this.state.termCourse;
+		console.log(termCourse);
 		return (
 			<StyledDashboard>
 				<Participants termCourse={this.state.termCourse}/>
