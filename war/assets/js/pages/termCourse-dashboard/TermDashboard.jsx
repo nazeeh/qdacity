@@ -8,6 +8,7 @@ import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import TermCourse from './TermCourse';
 import BtnDefault from '../../common/styles/Btn.jsx';
 import Participants from "./Participants/Participants.jsx";
+import Confirm from '../../common/modals/Confirm';
 
 import {
 	StyledBoxList,
@@ -79,33 +80,39 @@ export default class TermDashboard extends React.Component {
 	}
 
 	addParticipant(e) {
-		//Add the user to participants & set isUserParticipant to true for that term
 		var _this = this;
-		var termCourse = this.state.termCourse;
-		this.userPromise.then(function (resp) {
-			CourseEndpoint.addParticipant(termCourse.id, resp.id).then(function (resp2) {
-				termCourse.participants.push(resp);
-				termCourse.isUserParticipant = true;
-				console.log(termCourse);
-				_this.setState({
-					termCourse: termCourse
+		var confirm = new Confirm('Do you want to join this term course?');
+		confirm.showModal().then(function () {
+			//Add the user to participants & set isUserParticipant to true for that term
+			var termCourse = _this.state.termCourse;
+			_this.userPromise.then(function (resp) {
+				CourseEndpoint.addParticipant(termCourse.id, resp.id).then(function (resp2) {
+					termCourse.participants.push(resp);
+					termCourse.isUserParticipant = true;
+					console.log(termCourse);
+					_this.setState({
+						termCourse: termCourse
+					});
 				});
 			});
 		});
 	}
 
 	removeParticipant(e) {
-		//Add the user to participants & set isUserParticipant to true for that term
 		var _this = this;
-		var termCourse = this.state.termCourse;
-		this.userPromise.then(function (resp) {
-			CourseEndpoint.removeParticipant(termCourse.id, resp.id).then(function (resp2) {
-				var userIndex = termCourse.participants.indexOf((typeof (termCourse.participants.find(o => o.id === resp.id)) == 'undefined'));
-				termCourse.participants.splice(userIndex, 1);
-				termCourse.isUserParticipant = false;
-				console.log(termCourse);
-				_this.setState({
-					termCourse: termCourse
+		var confirm = new Confirm('Do you want to leave this term course?');
+		confirm.showModal().then(function () {
+			//Add the user to participants & set isUserParticipant to true for that term
+			var termCourse = _this.state.termCourse;
+			_this.userPromise.then(function (resp) {
+				CourseEndpoint.removeParticipant(termCourse.id, resp.id).then(function (resp2) {
+					var userIndex = termCourse.participants.indexOf((typeof (termCourse.participants.find(o => o.id === resp.id)) == 'undefined'));
+					termCourse.participants.splice(userIndex, 1);
+					termCourse.isUserParticipant = false;
+					console.log(termCourse);
+					_this.setState({
+						termCourse: termCourse
+					});
 				});
 			});
 		});
