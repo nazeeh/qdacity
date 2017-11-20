@@ -67,7 +67,7 @@ export default class TermDashboard extends React.Component {
 				var termCourse = _this.state.termCourse;
 				resp.items = resp.items || [];
 				termCourse.participants = resp.items;
-				(typeof (termCourse.participants.find(o => o.id === user.id)) == 'undefined') ? isUserParticipant = false : isUserParticipant = true;
+				(typeof (termCourse.participants.find(o => o.id === user.id)) == 'undefined') ? isUserParticipant = false: isUserParticipant = true;
 				termCourse.isUserParticipant = isUserParticipant;
 				_this.setState({
 					termCourse: termCourse,
