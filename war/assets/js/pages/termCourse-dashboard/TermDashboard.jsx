@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import Theme from '../../common/styles/Theme.js';
 
 import CourseEndpoint from 'endpoints/CourseEndpoint';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
@@ -8,6 +8,15 @@ import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import TermCourse from './TermCourse';
 import BtnDefault from '../../common/styles/Btn.jsx';
 import Participants from "./Participants/Participants.jsx";
+
+import {
+	StyledBoxList,
+	StyledPagination,
+	StyledPaginationItem,
+	StyledListItemBtn,
+	StyledListItemPrimary,
+	StyledListItemDefault,
+} from '../../common/styles/List';
 
 const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
@@ -31,6 +40,8 @@ export default class TermDashboard extends React.Component {
 		var urlParams = URI(window.location.search).query(true);
 
 		var termCourse = new TermCourse(urlParams.termCourse);
+
+		this.addParticipant = this.addParticipant.bind(this);
 
 		this.state = {
 			termCourse: termCourse,
@@ -66,6 +77,36 @@ export default class TermDashboard extends React.Component {
 		});
 	}
 
+	addParticipant(e) {
+		//Add the user to participants & set isUserParticipant to true for that term
+		var _this = this;
+		var termCourse = this.state.termCourse;
+		this.userPromise.then(function (resp) {
+			CourseEndpoint.addParticipant(termCourse.id, resp.id).then(function (resp2) {
+				termCourse.participants.push(resp);
+				termCourse.isUserParticipant = true;
+				console.log(termCourse);
+				_this.setState({
+					termCourse: termCourse
+				});
+			});
+		});
+	}
+
+	renderJoinButton() {
+		var termCourse = this.state.termCourse;
+		//Show join/leave button depending on whether the user is a participant in the course
+		if (!termCourse.isUserParticipant) {
+			return <StyledListItemBtn onClick={(e) => this.addParticipant(e)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+				<i className="fa fa-tags"></i>
+			</StyledListItemBtn>
+		} else {
+			return <StyledListItemBtn className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+					<i className="fa fa-sign-out"></i>
+				</StyledListItemBtn>
+		}
+	}
+
 	render() {
 
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
@@ -73,6 +114,9 @@ export default class TermDashboard extends React.Component {
 		var termCourse = this.state.termCourse;
 		return (
 			<StyledDashboard>
+				<div>
+						{this.renderJoinButton()}
+				</div>
 				<Participants termCourse={this.state.termCourse}/>
 		  	</StyledDashboard>
 		);
