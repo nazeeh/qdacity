@@ -13,6 +13,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/tika-app-1.11.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-tools-sdk-1.9.50.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/appengine-testing-1.9.50.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-20.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/firebase-admin-5.4.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-auth-library-oauth2-http-0.8.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/api-common-1.1.0.jar"/>
