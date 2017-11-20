@@ -43,38 +43,34 @@ export default class TermDashboard extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.account.getCurrentUser();
 			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(this.state.termCourse.getId());
-			this.setParticipants();
-			this.setUserRights();
+			this.setTermCourseInfo();
 		}
 	}
 
-	setUserRights() {
+	setTermCourseInfo() {
 		var _this = this;
+		var isUserParticipant = false;
 		this.userPromise.then(function (user) {
 			var isTermCourseOwner = _this.props.account.isTermCourseOwner(user, _this.state.termCourse.getId());
-			_this.setState({
-				isTermCourseOwner: isTermCourseOwner
+			_this.listTermCourseParticipantsPromise.then(function (resp) {
+				var termCourse = _this.state.termCourse;
+				resp.items = resp.items || [];
+				termCourse.participants = resp.items;
+				(typeof (termCourse.participants.find(o => o.id === user.id)) == 'undefined') ? isUserParticipant = false : isUserParticipant = true;
+				termCourse.isUserParticipant = isUserParticipant;
+				_this.setState({
+					termCourse: termCourse,
+					isTermCourseOwner: isTermCourseOwner,
+				});
 			});
 		});
 	}
 
-	setParticipants() {
-		var _this = this;
-		this.listTermCourseParticipantsPromise.then(function (resp) {
-			var termCourse = _this.state.termCourse;
-			resp.items = resp.items || [];
-			termCourse.participants = resp.items;
-			_this.setState({
-				termCourse: termCourse
-			});
-		});
-	}
 	render() {
 
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
 		this.init();
 		var termCourse = this.state.termCourse;
-		console.log(termCourse);
 		return (
 			<StyledDashboard>
 				<Participants termCourse={this.state.termCourse}/>
