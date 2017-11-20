@@ -42,28 +42,9 @@ public class FirebaseAuthenticator implements Authenticator {
 	private static final String GOOGLE_CREDENTIAL_ID = "GOOGLE_CREDENTIAL_SERVICE_ACCOUNT";
 
 	/**
-	 * Setup of Firebase admin sdk.
-	 * Happens once at the first api call with using the FirebaseAuthenticator.
-	 * Be sure to insert the downloaded service account json object into the database with the key "GOOGLE_CREDENTIAL_SERVICE_ACCOUNT"
+	 * Static flag that tells the initialization status.
 	 */
-    static {
-        try {
- 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Starting to initialize Firebase Admin SDK...");
- 			FirebaseOptions options = new FirebaseOptions.Builder()
- 					.setCredentials(loadGoogleCredential())
- 					.setDatabaseUrl("https://" + Constants.FIREBASE_DATABASE_NAME + ".firebaseio.com")
- 					.setProjectId(Constants.FIREBASE_PROJECT_ID)
- 					.build();
-	         
- 			FirebaseApp.initializeApp(options);
-
- 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Firebase Admin SDK was successfully initialized.");
-	     } catch (Throwable t) {
- 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, t.getMessage());
- 			t.printStackTrace();
- 			throw t;
-         }
-    }
+    static boolean isInitialized = false;
 
 
     /**
@@ -72,6 +53,11 @@ public class FirebaseAuthenticator implements Authenticator {
      */
     @Override
     public User authenticate(HttpServletRequest httpServletRequest) {
+    	if(!isInitialized) {
+    		initialize();
+ 			isInitialized = true;
+    	}
+    	
         //get token
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
 
@@ -96,17 +82,40 @@ public class FirebaseAuthenticator implements Authenticator {
     }
     
     /**
+	 * Setup of Firebase admin sdk.
+	 * Happens once at the first api call with using the FirebaseAuthenticator.
+	 * Be sure to insert the downloaded service account json object into the database with the key "GOOGLE_CREDENTIAL_SERVICE_ACCOUNT"
+	 */
+    private void initialize() {
+    	try {
+ 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Starting to initialize Firebase Admin SDK...");
+ 			FirebaseOptions options = new FirebaseOptions.Builder()
+ 					.setCredentials(loadGoogleCredential())
+ 					.setDatabaseUrl("https://" + Constants.FIREBASE_DATABASE_NAME + ".firebaseio.com")
+ 					.setProjectId(Constants.FIREBASE_PROJECT_ID)
+ 					.build();
+	         
+ 			FirebaseApp.initializeApp(options);
+ 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Firebase Admin SDK was successfully initialized.");
+	     } catch (Throwable t) {
+ 			java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, t.getMessage());
+ 			t.printStackTrace();
+ 			throw t;
+         }
+    }
+    
+    /**
      * loads the GoogleCredentials out of persistance store.
 	 * Be sure to insert the downloaded service account json object into the database with the key "GOOGLE_CREDENTIAL_SERVICE_ACCOUNT".
 	 * 
 	 * On local dev server: http://localhost:8888/_ah/admin
      * @return
      */
-    private static GoogleCredentials loadGoogleCredential() {
+    private GoogleCredentials loadGoogleCredential() {
     	
     	PersistenceManager mgr = null;
 		try {
-			mgr = getPersistenceManager();
+			mgr = PMF.get().getPersistenceManager();
 			
 			// only call this if you want to insert the secret into your local Datastore!!
 			// insertSecretKey(mgr);
@@ -132,13 +141,9 @@ public class FirebaseAuthenticator implements Authenticator {
      * Be sure to escape all " and \'s int the String!
      * @param mgr
      */
-	private static void insertSecretKey(PersistenceManager mgr) {
+	private void insertSecretKey(PersistenceManager mgr) {
 		java.util.logging.Logger.getLogger("logger").log(Level.SEVERE, "The insert method for the Google stored secret should not be called in production mode!");
 		StoredSecret key = new StoredSecret(GOOGLE_CREDENTIAL_ID, new com.google.appengine.api.datastore.Text("placeholder"));
 		mgr.makePersistent(key);
-	}
-    
-    private static PersistenceManager getPersistenceManager() {
-		return PMF.get().getPersistenceManager();
 	}
 }
