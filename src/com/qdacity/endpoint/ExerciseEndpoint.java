@@ -40,7 +40,7 @@ public class ExerciseEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "course.insertExercise",
+	@ApiMethod(name = "exercise.insertExercise",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
@@ -81,7 +81,7 @@ public class ExerciseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "course.listTermCourseExercises",
+	@ApiMethod(name = "exercise.listTermCourseExercises",
 		path = "listTermCourseExercises",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
