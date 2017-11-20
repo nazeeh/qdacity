@@ -18,7 +18,7 @@ export default class ParentProject extends React.Component {
 
 	redirectToParentProject() {
 		var prjId = this.props.project.getParentID();
-		this.props.history.push('/ProjectDashboard?project='+prjId+'&type=PROJECT');
+		this.props.history.push('/ProjectDashboard?project=' + prjId + '&type=PROJECT');
 		location.reload();
 	}
 

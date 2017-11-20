@@ -17,7 +17,7 @@ export default class TermCourse {
 		this.term = term;
 	}
 
-	getParticipants () {
+	getParticipants() {
 		return this.participants;
 	}
 

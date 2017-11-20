@@ -6,9 +6,22 @@ import CourseEndpoint from 'endpoints/CourseEndpoint';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import TermCourse from './TermCourse';
+import BtnDefault from '../../common/styles/Btn.jsx';
+import Participants from "./Participants/Participants.jsx";
 
+const StyledNewPrjBtn = styled.div `
+	padding-left: 5px;
+`;
 const StyledDashboard = styled.div `
-	margin-top: 35px;
+	margin-top: 70px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1170px;
+	display: grid;
+    grid-template-columns: 6fr 6fr;
+    grid-template-areas:
+        "terms teachers";
+	grid-column-gap: 20px;
 `;
 
 export default class TermDashboard extends React.Component {
@@ -52,14 +65,8 @@ export default class TermDashboard extends React.Component {
 		this.init();
 
 		return (
-			<StyledDashboard className="container main-content">
-				<div className="row">
-					<div className="box box-default">
-						<div className="box-header with-border">
-							<h3 className="box-title">Excersises</h3>
-						</div>
-					</div>
-				</div>
+			<StyledDashboard>
+				<Participants termCourse={this.state.termCourse}/>
 		  	</StyledDashboard>
 		);
 	}
