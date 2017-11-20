@@ -132,6 +132,14 @@ export default class TermDashboard extends React.Component {
 		}
 	}
 
+	renderParticipants() {
+		var termCourse = this.state.termCourse;
+		if (!termCourse.isUserParticipant) {
+			return '';
+		} else {
+			return <Participants termCourse={this.state.termCourse}/>
+		}
+	}
 	render() {
 
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
@@ -142,7 +150,7 @@ export default class TermDashboard extends React.Component {
 				<div>
 						{this.renderJoinButton()}
 				</div>
-				<Participants termCourse={this.state.termCourse}/>
+						{this.renderParticipants()}
 		  	</StyledDashboard>
 		);
 	}
