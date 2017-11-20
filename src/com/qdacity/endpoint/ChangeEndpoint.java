@@ -1,35 +1,12 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query.CompositeFilter;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
@@ -38,6 +15,15 @@ import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
 import com.qdacity.logs.ChangeType;
+import com.qdacity.project.ProjectType;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
 
 @Api(
 	name = "qdacity",
@@ -208,6 +194,61 @@ public class ChangeEndpoint {
 			mgr.close();
 		}
 		return change;
+	}
+
+	@ApiMethod(
+			name = "changelog.getChanges",
+			path = "changes"
+	)
+	public List<Change> getChanges(@Nullable @Named("objectType") ChangeObject objectType, @Nullable @Named("changeType") ChangeType changeType, @Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) {
+
+		List<Filter> filters = new ArrayList<>();
+
+		if(objectType != null) {
+			filters.add(new FilterPredicate("objectType", FilterOperator.EQUAL, objectType.toString()));
+		}
+		if(changeType != null) {
+			filters.add(new FilterPredicate("changeType", FilterOperator.EQUAL, changeType.toString()));
+		}
+
+		startDate = startDate == null ? new Date(0) : startDate;
+		endDate = endDate == null ? new Date() : endDate;
+
+		filters.add(new FilterPredicate("datetime", FilterOperator.GREATER_THAN_OR_EQUAL, startDate));
+		filters.add(new FilterPredicate("datetime", FilterOperator.LESS_THAN_OR_EQUAL, endDate));
+
+		Filter compositeFilter = new CompositeFilter(CompositeFilterOperator.AND, filters);
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change").setFilter(compositeFilter);
+
+		PreparedQuery pq = datastore.prepare(q);
+
+		List<Change> results = new ArrayList<>();
+
+		for (Entity entity : pq.asIterable()) {
+			Change result = new Change();
+
+			result.setId((Long) entity.getProperty("id"));
+			result.setDatetime((Date) entity.getProperty("datetime"));
+			result.setProjectID((Long) entity.getProperty("projectID"));
+			final String projectTypeProperty = (String) entity.getProperty("projectType");
+			result.setProjectType(projectTypeProperty == null ? null : ProjectType.valueOf(projectTypeProperty));
+			final String changeTypeProperty = (String) entity.getProperty("changeType");
+			result.setChangeType(changeTypeProperty == null ? null : ChangeType.valueOf(changeTypeProperty));
+			result.setUserID((String) entity.getProperty("userId"));
+			final String objectTypeProperty = (String) entity.getProperty("objectType");
+			result.setObjectType(objectTypeProperty == null ? null : ChangeObject.valueOf(objectTypeProperty));
+			result.setObjectID((Long) entity.getProperty("objectID"));
+			result.setAttributeType((String) entity.getProperty("attributeType"));
+			result.setOldValue((String) entity.getProperty("oldValue"));
+			result.setNewValue((String) entity.getProperty("newValue"));
+
+			results.add(result);
+		}
+
+		return results;
 	}
 
 	/**
