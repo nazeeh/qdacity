@@ -112,39 +112,16 @@
 			<groupId>com.google.firebase</groupId>
 			<artifactId>firebase-admin</artifactId>
 			<version>5.4.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.auth</groupId>
 			<artifactId>google-auth-library-oauth2-http</artifactId>
 			<version>0.8.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.api</groupId>
 			<artifactId>api-common</artifactId>
 			<version>1.1.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>20.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
@@ -165,12 +142,11 @@
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
 			<version>1.11</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>api-common</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 
 
