@@ -1,4 +1,4 @@
-import AuthenticationProvider from '../firebase';
+import AuthenticationProvider from '../AuthenticationProvider';
 
 export default class Promisizer {
 	constructor() {}

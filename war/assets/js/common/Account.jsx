@@ -1,5 +1,5 @@
 import React from 'react';
-import AuthenticationProvider from './firebase';
+import AuthenticationProvider from './AuthenticationProvider';
 
 import {
 	BtnDefault,
