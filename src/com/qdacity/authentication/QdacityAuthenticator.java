@@ -3,6 +3,7 @@ package com.qdacity.authentication;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +31,7 @@ public class QdacityAuthenticator implements Authenticator {
 	
 	private final JacksonFactory jacksonFactory = new JacksonFactory();
 	private final GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), jacksonFactory)
-            .setAudience(Arrays.asList(Constants.WEB_CLIENT_ID))
-            .setIssuer("https://accounts.google.com")
+            .setAudience(Collections.singletonList(Constants.WEB_CLIENT_ID))
             .build();
 	
 
