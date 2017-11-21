@@ -45,7 +45,7 @@ export default class NavBar extends React.Component {
         this.account.addAuthStateListener(function() {
             if (_this.account.isSignedIn()) {
                 _this.account.getCurrentUser().then((value) => {
-                    this.setState({
+                    _this.setState({
                         user: value
                     });
                 }, () => {
