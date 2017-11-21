@@ -2,7 +2,7 @@ import firebase from 'firebase';
 
 /* --------------------------------- FIREBASE INIT -------------------------------- */
 
-var config = { /* COPY THE ACTUAL CONFIG FROM FIREBASE CONSOLE */
+const config = { /* COPY THE ACTUAL CONFIG FROM FIREBASE CONSOLE */
   apiKey: "AIzaSyA82H_jvzTlEiU-2UMjMzHZ1DiB_3weRqo",
   authDomain: "georg-schwarz-fau-amse-ws1718.firebaseapp.com",
   databaseURL: "https://georg-schwarz-fau-amse-ws1718.firebaseio.com",
@@ -11,12 +11,12 @@ var config = { /* COPY THE ACTUAL CONFIG FROM FIREBASE CONSOLE */
   messagingSenderId: "385639345148"
 };
 
-var googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 googleAuthProvider.setCustomParameters({
   prompt: 'select_account'
 });
 
-var firebaseInstance = firebase.initializeApp(config);
+const firebaseInstance = firebase.initializeApp(config);
 
 
 /* ------------------------------- PROXY METHODS ----------------------------------- */
@@ -25,7 +25,7 @@ var firebaseInstance = firebase.initializeApp(config);
  *
  * @param fkt
  */
-var addAuthStateListener = function(fkt) {
+const addAuthStateListener = function(fkt) {
   firebaseInstance.auth().onAuthStateChanged(fkt);
 };
 
@@ -34,8 +34,8 @@ var addAuthStateListener = function(fkt) {
  *
  * @return {Promise}
  */
-var synchronizeTokenWithGapi = function() {
-  var promise = new Promise(
+const synchronizeTokenWithGapi = function() {
+  const promise = new Promise(
     function (resolve, reject) {
       if (!isSignedIn()) {
         reject();
@@ -57,7 +57,7 @@ var synchronizeTokenWithGapi = function() {
  * @param callback
  * @return {firebase.Promise.<firebase.auth.UserCredential>}
  */
-var signInWithGoogle = function() {
+const signInWithGoogle = function() {
    return firebaseInstance.auth().signInWithPopup(googleAuthProvider);
 }
 
@@ -66,7 +66,7 @@ var signInWithGoogle = function() {
  *
  * @return {firebase.User | any}
  */
-var getProfile = function() {
+const getProfile = function() {
   return firebaseInstance.auth().currentUser;
 }
 
@@ -75,7 +75,7 @@ var getProfile = function() {
  *
  * @return {boolean}
  */
-var isSignedIn = function() {
+const isSignedIn = function() {
   return !!firebaseInstance.auth().currentUser;
 }
 
@@ -84,11 +84,11 @@ var isSignedIn = function() {
  *
  * @return {firebase.Promise.<void>}
  */
-var signOut = function() {
+const signOut = function() {
   return firebaseInstance.auth().signOut();
 }
 
-var firebaseInstanceWrapper = {
+const AuthenticationProvider = {
   addAuthStateListener: addAuthStateListener,
   synchronizeTokenWithGapi: synchronizeTokenWithGapi,
   signInWithGoogle: signInWithGoogle,
@@ -97,4 +97,4 @@ var firebaseInstanceWrapper = {
   signOut: signOut
 };
 
-export default firebaseInstanceWrapper;
+export default AuthenticationProvider;

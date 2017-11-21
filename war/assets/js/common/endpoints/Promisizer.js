@@ -1,4 +1,4 @@
-import firebaseWrapper from '../firebase';
+import AuthenticationProvider from '../firebase';
 
 export default class Promisizer {
 	constructor() {}
@@ -30,6 +30,6 @@ export default class Promisizer {
    * @return {Promise}
    */
 	static ensureTokenAvailability() {
-    return firebaseWrapper.synchronizeTokenWithGapi();
+    return AuthenticationProvider.synchronizeTokenWithGapi();
 	}
 }

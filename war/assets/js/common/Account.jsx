@@ -1,5 +1,5 @@
 import React from 'react';
-import firebaseWrapper from './firebase';
+import AuthenticationProvider from './firebase';
 
 import {
 	BtnDefault,
@@ -15,14 +15,14 @@ export default class Account extends React.Component {
 			email: '',
 			picSrc: ''
 		};
-		this.firebase = firebaseWrapper;
+		this.authenticationProvider = AuthenticationProvider;
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 
 		this.props.callback(this);
 
 		var _this = this;
-		this.firebase.addAuthStateListener(function() {
+		this.authenticationProvider.addAuthStateListener(function() {
 			if (!_this.isSignedIn()) {
 				// no authentication happend yet.
 				return;
@@ -38,7 +38,7 @@ export default class Account extends React.Component {
    * @returns {Promise}
    */
 	updateToken () {
-		return this.firebase.synchronizeTokenWithGapi();
+		return this.authenticationProvider.synchronizeTokenWithGapi();
   }
 
   /**
@@ -56,7 +56,7 @@ export default class Account extends React.Component {
 		var _this = this;
     var promise = new Promise(
       function (resolve, reject) {
-        _this.firebase.signInWithGoogle().then(function () {
+        _this.authenticationProvider.signInWithGoogle().then(function () {
           _this.updateToken();
           resolve();
         }).catch(function (err) {
@@ -99,7 +99,7 @@ export default class Account extends React.Component {
    * @returns {firebase.User | any}
    */
 	getProfile() {
-		return this.firebase.getProfile();
+		return this.authenticationProvider.getProfile();
 	}
 
   /**
@@ -108,7 +108,7 @@ export default class Account extends React.Component {
    * @returns {boolean}
    */
 	isSignedIn() {
-		return this.firebase.isSignedIn();
+		return this.authenticationProvider.isSignedIn();
 	}
 
   /**
@@ -212,7 +212,7 @@ export default class Account extends React.Component {
     var _this = this;
     var promise = new Promise(
       function (resolve, reject) {
-        _this.firebase.signOut().then(function () {
+        _this.authenticationProvider.signOut().then(function () {
           _this.setState({
             name: '',
             email: '',
