@@ -38,33 +38,33 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	registerAccount() {
 		var _this = this;
-		var googleProfile = _this.props.account.getProfile();
+		_this.props.account.getProfile().then(function(userProfile) {
 
-		var displayNameParts = googleProfile.displayName.split(' ');
-		var displayLastName = displayNameParts.pop();
-		var displayFirstName = displayNameParts.join(' ');
-
-		vex.dialog.open({
-			message: 'Please confirm:',
-			input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + displayFirstName + '" required />'
-				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + displayLastName + '" required />\n'
-				+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + googleProfile.email + '" required />\n\n',
-			buttons: [
-				$.extend({}, vex.dialog.buttons.YES, {
-					text: 'Register'
-				}), $.extend({}, vex.dialog.buttons.NO, {
-					text: 'Cancel'
-				})
-			],
-			callback: function (data) {
-				if (data === false) {
-					return console.log('Cancelled');
+			var displayNameParts = userProfile.name.split(' ');
+			var displayLastName = displayNameParts.pop();
+			var displayFirstName = displayNameParts.join(' ');
+	
+			vex.dialog.open({
+				message: 'Please confirm:',
+				input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + displayFirstName + '" required />'
+					+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + displayLastName + '" required />\n'
+					+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + userProfile.email + '" required />\n\n',
+				buttons: [
+					$.extend({}, vex.dialog.buttons.YES, {
+						text: 'Register'
+					}), $.extend({}, vex.dialog.buttons.NO, {
+						text: 'Cancel'
+					})
+				],
+				callback: function (data) {
+					if (data === false) {
+						return console.log('Cancelled');
+					}
+					_this.props.account.registerCurrentUser(data.firstName, data.lastName, data.email).then(_this.redirect);
+					return console.log('First', data.firstName, 'Last Name', data.lastName, 'Email', data.email);
 				}
-				_this.props.account.registerCurrentUser(data.firstName, data.lastName, data.email).then(_this.redirect);
-				return console.log('First', data.firstName, 'Last Name', data.lastName, 'Email', data.email);
-			}
+			});
 		});
-
 	}
 
 	signIn() {

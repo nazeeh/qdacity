@@ -1,6 +1,7 @@
 import AuthenticationProvider from '../AuthenticationProvider';
 
 export default class Promisizer {
+
 	constructor() {}
 
 	static makePromise(apiMethod) {
@@ -30,6 +31,6 @@ export default class Promisizer {
    * @return {Promise}
    */
 	static ensureTokenAvailability() {
-    return AuthenticationProvider.synchronizeTokenWithGapi();
+    	return new AuthenticationProvider().synchronizeTokenWithGapi();
 	}
 }

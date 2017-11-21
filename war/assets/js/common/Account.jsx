@@ -15,7 +15,7 @@ export default class Account extends React.Component {
 			email: '',
 			picSrc: ''
 		};
-		this.authenticationProvider = AuthenticationProvider;
+		this.authenticationProvider = new AuthenticationProvider();
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 
@@ -227,6 +227,10 @@ export default class Account extends React.Component {
       });
 
     return promise;
+	}
+
+	addAuthStateListener(fkt) {
+		this.authenticationProvider.addAuthStateListener(fkt);
 	}
 
 	render() {

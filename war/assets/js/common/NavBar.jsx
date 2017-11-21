@@ -40,10 +40,11 @@ export default class NavBar extends React.Component {
 	}
 
     initializeAccount(c) {
-        this.account = c;
-        this.account.auth2.currentUser.listen((googleUser) => {
-            if (googleUser.isSignedIn()) {
-                this.account.getCurrentUser().then((value) => {
+		this.account = c;
+		const _this = this;
+        this.account.addAuthStateListener(function() {
+            if (_this.account.isSignedIn()) {
+                _this.account.getCurrentUser().then((value) => {
                     this.setState({
                         user: value
                     });
