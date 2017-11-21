@@ -1,8 +1,6 @@
 package com.qdacity.endpoint;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -17,10 +15,8 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
-import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
 
@@ -81,7 +77,7 @@ public class ExerciseEndpoint {
 	 *         persisted and a cursor to the next page.
 	 * @throws UnauthorizedException
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings({ "unchecked" })
 	@ApiMethod(name = "exercise.listTermCourseExercises",
 		path = "listTermCourseExercises",
 		scopes = { Constants.EMAIL_SCOPE },
