@@ -32,10 +32,17 @@ const StyledDashboard = styled.div `
 	display: grid;
     grid-template-columns: 6fr 6fr;
     grid-template-areas:
-        "terms teachers";
+        "terms teachers"
+				"joinButton joinButton";
 	grid-column-gap: 20px;
 `;
 
+const StyledButton = styled.div `
+    grid-area: joinButton;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 100px;
+`;
 export default class TermDashboard extends React.Component {
 	constructor(props) {
 		super(props);
@@ -125,11 +132,11 @@ export default class TermDashboard extends React.Component {
 		//Show join/leave button depending on whether the user is a participant in the course
 		if (!termCourse.isUserParticipant) {
 			return <StyledListItemBtn onClick={(e) => this.addParticipant(e)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-				<i className="fa fa-tags"></i>
+				Join this term course
 			</StyledListItemBtn>
 		} else {
 			return <StyledListItemBtn onClick={(e) => this.removeParticipant(e)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-					<i className="fa fa-sign-out"></i>
+				Leave this term course
 				</StyledListItemBtn>
 		}
 	}
@@ -161,7 +168,9 @@ export default class TermDashboard extends React.Component {
 			<StyledDashboard>
 						{this.renderExercises()}
 						{this.renderParticipants()}
-						{this.renderJoinButton()}
+						<StyledButton>
+							{this.renderJoinButton()}
+						</StyledButton>
 		  	</StyledDashboard>
 		);
 	}
