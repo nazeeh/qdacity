@@ -27,6 +27,9 @@ public class Exercise implements Serializable {
 	@Persistent
 	Long termCourseID;
 
+	@Persistent
+	String name;
+	
 	public Exercise() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -34,6 +37,14 @@ public class Exercise implements Serializable {
 	
 	public Long getId() {
 		return id;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public void setId(Long id) {
