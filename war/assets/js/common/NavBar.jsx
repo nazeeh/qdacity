@@ -19,11 +19,12 @@ const StyledNavbarItem = styled.a `
 export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {user: {}};
 
 		this.account = {};
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
+		this.initializeAccount = this.initializeAccount.bind(this);
 	}
 
 	redirectToPersonalDashbaord() {
@@ -38,6 +39,21 @@ export default class NavBar extends React.Component {
 		document.getElementById("signinView").classList.toggle("show");
 	}
 
+    initializeAccount(c) {
+        this.account = c;
+        this.account.auth2.currentUser.listen((googleUser) => {
+            if (googleUser.isSignedIn()) {
+                this.account.getCurrentUser().then((value) => {
+                    this.setState({
+                        user: value
+                    });
+                }, () => {
+                    console.log("Could not get current user")
+                });
+            }
+        });
+	}
+
 	render() {
 		return (
 			<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
@@ -50,14 +66,12 @@ export default class NavBar extends React.Component {
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
-								<li><StyledNavbarItem href="/#about">About</StyledNavbarItem></li>
-								<li><StyledNavbarItem href="/#contact">Contact</StyledNavbarItem></li>
 								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
 									<StyledNavbarItem  className="dropdownToggle clickable" onClick={this.showAccountDropdown}>
 										Account <b className="caret"></b>
 									</StyledNavbarItem>
 			 						<div id="accountView" className="dropdown-menu dropdownContent">
-										<Account ref={(c) => this.account = c} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback}  history={this.props.history}/>
+										<Account ref={this.initializeAccount} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback} history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
 								<StyledSigninTab  loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
@@ -85,6 +99,7 @@ export default class NavBar extends React.Component {
 											</li>
 										</ul>
 								</StyledSigninTab>
+                                {this.state.user.type==="ADMIN" && <li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>}
 							</ul>
 						</div>
 					</div>

@@ -42,7 +42,7 @@ export default class PersonalReportList extends React.Component {
 		var _this = this;
 		if (report.evaluationMethod == 'f-measure') {
 			ValidationEndpoint.getValidationResult(report.id, _this.props.project.getId()).then(function (resp) {
-				var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.project.getId(), _this.props.project.getId(), _this.props.project.getType());
+				var agreementByDoc = new IntercoderAgreementByDoc(resp.id, _this.props.project.getId(), _this.props.project.getId(), _this.props.history);
 				agreementByDoc.showModal();
 			});
 		}

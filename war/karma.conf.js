@@ -6,6 +6,21 @@ const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), Chrom
 
 process.env.CHROME_BIN = revisionInfo.executablePath
 
+const instrumentationRule = (
+	{
+	  test: /\.js$|\.jsx$/,
+	  use: {
+		loader: 'istanbul-instrumenter-loader',
+		options: { esModules: true }
+	  },
+	  enforce: 'post',
+	  exclude: /node_modules|\.spec\.js$/,
+
+	}
+);
+
+webpackConfig.module.rules.push(instrumentationRule);
+
 // Karma configuration
 // Generated on Mon Sep 04 2017 15:00:17 GMT+0200 (W. Europe Daylight Time)
 
@@ -47,7 +62,11 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress','coverage-istanbul'],
+	coverageIstanbulReporter: {
+    reports: [ 'html','text-summary' ],
+    fixWebpackSourcePaths: true
+  },
 
 
     // web server port

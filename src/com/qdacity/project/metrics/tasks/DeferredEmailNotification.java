@@ -39,6 +39,7 @@ public class DeferredEmailNotification implements DeferredTask {
 	public DeferredEmailNotification(Long reportID, User user) {
 		super();
 		this.reportID = reportID;
+		this.user = user;
 	}
 
 	@SuppressWarnings("unchecked")

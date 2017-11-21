@@ -159,7 +159,7 @@ export default class IntercoderAgreement extends VexModal {
 				if (_this.report.evaluationMethod === 'f-measure') {
 					var resultID = $(this).find("td").eq(0).html();
 					var validationProjectID = $(this).find("td").eq(1).html();
-					var agreementByDoc = new IntercoderAgreementByDoc(resultID, validationProjectID, _this.report.projectID);
+					var agreementByDoc = new IntercoderAgreementByDoc(resultID, validationProjectID, _this.report.projectID, _this.history);
 					agreementByDoc.showModal();
 				}
 				if (_this.report.evaluationMethod === 'krippendorffs-alpha' || _this.report.evaluationMethod === 'fleiss-kappa') {

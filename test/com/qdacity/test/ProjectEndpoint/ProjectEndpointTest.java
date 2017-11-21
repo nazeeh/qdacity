@@ -45,7 +45,7 @@ import com.qdacity.user.UserNotification;
 public class ProjectEndpointTest {
 
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 	@Before
 	public void setUp() {
@@ -69,6 +69,9 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectInsert() {
+		LocalServiceTestHelper helperLocal = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
+		helper.tearDown();
+		helperLocal.setUp();
 		latch.reset(3);
 		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);

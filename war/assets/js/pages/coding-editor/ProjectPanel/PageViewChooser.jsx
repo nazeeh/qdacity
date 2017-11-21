@@ -24,10 +24,6 @@ export default class PageViewChooser extends React.Component {
 
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			view: PageView.CODING
-		};
 	}
 
 	componentDidMount() {
@@ -47,11 +43,7 @@ export default class PageViewChooser extends React.Component {
 	}
 
 	setView(view) {
-		const changed = this.state.view != view ? true : false;
-
-		this.setState({
-			view: view
-		});
+		const changed = this.props.view != view ? true : false;
 
 		if (changed) {
 			this.props.viewChanged(view);
@@ -60,11 +52,14 @@ export default class PageViewChooser extends React.Component {
 
 	render() {
 		if (this.props.project.getType() === "VALIDATION") return null;
+
+		const view = this.props.view;
+
 		return (
 			<StyledButtonGroup className="btn-group">
-				<StyledEditorBtn showBtn={true} active={this.state.view == PageView.CODING} type="button" className="btn" onClick={this.buttonCodingEditorClicked.bind(this)}>Coding-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={true} active={this.state.view == PageView.TEXT} className="btn" onClick={this.buttonTextEditorClicked.bind(this)}>Text-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={this.props.project.isUmlEditorEnabled()} active={this.state.view == PageView.UML} type="button" className="btn" onClick={this.buttonUmlEditorClicked.bind(this)}>Uml-Editor</StyledEditorBtn>
+				<StyledEditorBtn showBtn={true} active={view == PageView.CODING} type="button" className="btn" onClick={this.buttonCodingEditorClicked.bind(this)}>Coding-Editor</StyledEditorBtn>
+		        <StyledEditorBtn showBtn={true} active={view == PageView.TEXT} className="btn" onClick={this.buttonTextEditorClicked.bind(this)}>Text-Editor</StyledEditorBtn>
+		        <StyledEditorBtn showBtn={this.props.project.isUmlEditorEnabled()} active={view == PageView.UML} type="button" className="btn" onClick={this.buttonUmlEditorClicked.bind(this)}>Uml-Editor</StyledEditorBtn>
 		    </StyledButtonGroup>
 		);
 	}

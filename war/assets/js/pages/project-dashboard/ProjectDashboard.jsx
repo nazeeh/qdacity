@@ -101,7 +101,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.props.account.getProfile) return null;
+		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
 		this.init();
 
 		return (
@@ -126,7 +126,7 @@ export default class ProjectDashboard extends React.Component {
 						<RevisionHistory project={this.state.project}  addReports={this.addReports} userPromise={this.userPromise} history={this.props.history} />
 
 						<ParentProject project={this.state.project} history={this.props.history}/>
-						{(this.state.project.getParentID() ? (<PersonalReportList project={this.state.project} account={this.props.account} />) : "" )}
+						{(this.state.project.getParentID() ? (<PersonalReportList project={this.state.project} account={this.props.account}  history={this.props.history}/>) : "" )}
 					</div>
 				</div>
 		  	</StyledDashboard>

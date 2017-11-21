@@ -142,6 +142,14 @@ export default class Account extends React.Component {
 		return isOwner;
 	}
 
+	isCourseOwner(user, courseID) {
+		var isOwner = false;
+		if (typeof user.courses != 'undefined') {
+			isOwner = ((user.courses.indexOf(courseID) == -1) ? false : true);
+		}
+		return isOwner;
+	}
+
 	isValidationCoder(user, valPrj) {
 		var isValidationCoder = false;
 		if (typeof valPrj.validationCoders !== 'undefined') {

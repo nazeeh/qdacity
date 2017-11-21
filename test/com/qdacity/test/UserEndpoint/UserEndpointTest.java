@@ -30,6 +30,7 @@ import com.qdacity.PMF;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
+import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
@@ -161,7 +162,7 @@ public class UserEndpointTest {
 
 		UserEndpoint ue = new UserEndpoint();
 		expectedException.expect(UnauthorizedException.class);
-		expectedException.expectMessage(is("User 2 is Not Authorized"));
+		expectedException.expectMessage(is("User is not registered"));
 
 		ue.removeUser("1", loggedInUserB); // User B should not be able to delete User B
 
@@ -212,6 +213,31 @@ public class UserEndpointTest {
 		}
 	}
 
+	@Test
+	public void testListUserByCourse() {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUserA);
+		
+		List<User> users = null;
+		PersistenceManager mgr = getPersistenceManager();
+		
+		try {
+			
+			UserEndpoint ue = new UserEndpoint();
+			try {
+				users = ue.listUserByCourse(null, null, 1L, loggedInUserA);
+			} catch (UnauthorizedException e) {
+				e.printStackTrace();
+				fail("User could not be authorized");
+			}
+		} finally {
+			mgr.close();
+		}
+		
+		assertEquals(1, users.size());
+		
+	}
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
