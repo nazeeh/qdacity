@@ -28,10 +28,28 @@ export default class AuthenticationProvider {
    * @return {Promise.<any>}
    */
   signInWithGoogle() {
-    return hello(this.network.google).login({
-      display: 'popup',
-      scope: GOOGLE_SCOPES
-    });
+
+    const _this = this;
+    const promise = new Promise(
+      function (resolve, reject) {
+        hello.on('auth.login', function(auth) {
+          _this.synchronizeTokenWithGapi();
+          resolve();
+        });
+
+        hello(_this.network.google).login({
+          display: 'popup',
+          response_type: 'token id_token',
+          scope: GOOGLE_SCOPES
+        }).then(function() {
+          // do nothing because the listener  gets the result.
+        }, function(err) {
+          console.log(err);
+          reject(err);
+        });
+      }
+    );
+    return promise;
   }
   
   /**
@@ -86,7 +104,7 @@ export default class AuthenticationProvider {
           return;
         }
         let session = hello.getAuthResponse(_this.network.google);
-        let idToken = session.access_token; 
+        let idToken = session.id_token;
         gapi.client.setToken({access_token: idToken});
         resolve();
       });
