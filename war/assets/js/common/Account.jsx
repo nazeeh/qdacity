@@ -33,7 +33,7 @@ export default class Account extends React.Component {
 	}
 
   /**
-	 * Fetches the id token from firebase and passes it into gapi.
+	 * Fetches the id token and passes it into gapi.
 	 *
    * @returns {Promise}
    */
@@ -94,16 +94,16 @@ export default class Account extends React.Component {
   }
 
   /**
-	 * Gets the current user's profile data from firebase
+	 * Gets the current user's profile data from the authentcation provider.
 	 *
-   * @returns {firebase.User | any}
+   * @returns {any}
    */
 	getProfile() {
 		return this.authenticationProvider.getProfile();
 	}
 
   /**
-	 * Checks if there is a user signed into firebase.
+	 * Checks if there is a user signed in.
 	 *
    * @returns {boolean}
    */
@@ -162,7 +162,7 @@ export default class Account extends React.Component {
 
   /**
 	 * Registers the current user.
-	 * The user has to be logged in with firebase beforehand.
+	 * The user has to be logged in beforehand.
 	 *
    * @param givenName
    * @param surName
@@ -205,7 +205,7 @@ export default class Account extends React.Component {
 	}
 
   /**
-	 * Signs out of the firebase session and cleans the profile data in the state.
+	 * Signs out of the session and cleans the profile data in the state.
    * @returns {Promise}
    */
 	signout() {
