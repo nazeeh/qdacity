@@ -8,6 +8,8 @@ import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import TermCourse from './TermCourse';
 import BtnDefault from '../../common/styles/Btn.jsx';
 import Participants from "./Participants/Participants.jsx";
+import Exercises from "./Exercises/Exercises.jsx";
+
 import Confirm from '../../common/modals/Confirm';
 
 import {
@@ -140,6 +142,16 @@ export default class TermDashboard extends React.Component {
 			return <Participants termCourse={this.state.termCourse}/>
 		}
 	}
+
+	renderExercises() {
+		var termCourse = this.state.termCourse;
+		if (!termCourse.isUserParticipant) {
+			return '';
+		} else {
+			return <Exercises termCourse={this.state.termCourse}/>
+		}
+	}
+
 	render() {
 
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
@@ -147,10 +159,9 @@ export default class TermDashboard extends React.Component {
 		var termCourse = this.state.termCourse;
 		return (
 			<StyledDashboard>
-				<div>
-						{this.renderJoinButton()}
-				</div>
+						{this.renderExercises()}
 						{this.renderParticipants()}
+						{this.renderJoinButton()}
 		  	</StyledDashboard>
 		);
 	}
