@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -44,10 +45,10 @@ public class ExerciseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public Exercise insertExercise(@Named("termCrsID") Long termCourseID, Exercise exercise, User user) throws UnauthorizedException {
+	public Exercise insertExercise(@Named("termCrsID") Long termCourseID, @Nullable @Named("name") String name, Exercise exercise, User user) throws UnauthorizedException {
 
 		exercise.setTermCourseID(termCourseID);
-
+		exercise.setName(name);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (exercise.getId() != null) {
