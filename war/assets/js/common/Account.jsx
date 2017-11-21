@@ -28,7 +28,9 @@ export default class Account extends React.Component {
 				return;
 			}
 			_this.updateToken();
-      _this.setUser(_this.getProfile());
+			_this.getProfile().then(function(userProfile) {
+				_this.setUser(userProfile);
+			});
 		});
 	}
 
@@ -96,7 +98,7 @@ export default class Account extends React.Component {
   /**
 	 * Gets the current user's profile data from the authentcation provider.
 	 *
-   * @returns {any}
+   * @returns {Promise<any>}
    */
 	getProfile() {
 		return this.authenticationProvider.getProfile();
@@ -200,7 +202,7 @@ export default class Account extends React.Component {
 		this.setState({
 			name: pProfile.displayName,
 			email: pProfile.email,
-			picSrc: pProfile.photoURL
+			picSrc: pProfile.thumbnail
 		});
 	}
 
