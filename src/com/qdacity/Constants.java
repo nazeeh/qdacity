@@ -3,6 +3,5 @@ package com.qdacity;
 public class Constants {
 	public static final String VERSION = "v10";
 	
-	public static final String FIREBASE_DATABASE_NAME = "georg-schwarz-fau-amse-ws1718";
-	public static final String FIREBASE_PROJECT_ID = "georg-schwarz-fau-amse-ws1718";
+	public static final String WEB_CLIENT_ID = "385639345148-k8ph3ug699i8974d8f8vjcffd1tr9llg.apps.googleusercontent.com";
 }
