@@ -1,100 +1,95 @@
-import firebase from 'firebase';
-
-/* --------------------------------- FIREBASE INIT -------------------------------- */
-
-const config = { /* COPY THE ACTUAL CONFIG FROM FIREBASE CONSOLE */
-  apiKey: "AIzaSyA82H_jvzTlEiU-2UMjMzHZ1DiB_3weRqo",
-  authDomain: "georg-schwarz-fau-amse-ws1718.firebaseapp.com",
-  databaseURL: "https://georg-schwarz-fau-amse-ws1718.firebaseio.com",
-  projectId: "georg-schwarz-fau-amse-ws1718",
-  storageBucket: "georg-schwarz-fau-amse-ws1718.appspot.com",
-  messagingSenderId: "385639345148"
-};
-
-const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-googleAuthProvider.setCustomParameters({
-  prompt: 'select_account'
-});
-
-const firebaseInstance = firebase.initializeApp(config);
+import hello from 'hellojs';
 
 
-/* ------------------------------- PROXY METHODS ----------------------------------- */
-/**
- * Always calls the given fkt if the auth state changes.
- *
- * @param fkt
- */
-const addAuthStateListener = function(fkt) {
-  firebaseInstance.auth().onAuthStateChanged(fkt);
-};
+const GOOGLE_CLIENT_ID = '385639345148-k8ph3ug699i8974d8f8vjcffd1tr9llg.apps.googleusercontent.com';
+const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email'
 
-/**
- * Gets the newest id token and provides the gapi with it.
- *
- * @return {Promise}
- */
-const synchronizeTokenWithGapi = function() {
-  const promise = new Promise(
-    function (resolve, reject) {
-      if (!isSignedIn()) {
-        reject();
-        return;
-      }
-      firebaseInstance.auth().currentUser.getIdToken(/* forceRefresh */ false).then(function (idToken) {
+/* ------------------------------- hello-js init ----------------------------------- */
+
+
+/* ------------------------------- AuthenticationProvider ----------------------------------- */
+export default class AuthenticationProvider {
+
+  constructor() {
+    hello.init({
+      google: GOOGLE_CLIENT_ID
+    })
+    
+    this.network = {
+      google: 'google'
+    }
+  }
+
+
+  /**
+   * Signs-in on google account via a popup.
+   *
+   * @param callback
+   * @return {Promise.<any>}
+   */
+  signInWithGoogle() {
+    return hello(this.network.google).login({
+      display: 'popup',
+      scope: GOOGLE_SCOPES
+    });
+  }
+  
+  /**
+   * Get the current user.
+   *
+   * @return Promise<any>
+   */
+  getProfile() {
+    return hello(this.network.google).api('me');
+  }
+
+  /**
+   * Checks if there is an logged-in user.
+   *
+   * @return {boolean}
+   */
+  isSignedIn() {
+    let session = hello.getAuthResponse(this.network.google);
+    let currentTime = (new Date()).getTime() / 1000;
+    return session && session.access_token && session.expires > currentTime;
+  }
+
+  /**
+   * Tries to sign out the current user.
+   *
+   * @return {Promise.<void>}
+   */
+  signOut() {
+    return hello(this.network.google).logout();
+  }
+
+  /**
+   * Always calls the given fkt if the auth state changes.
+   *
+   * @param fkt
+   */
+  addAuthStateListener(fkt) {
+    hello.on('auth', fkt);
+  };
+
+  /**
+   * Gets the newest id token and provides the gapi with it.
+   *
+   * @return {Promise}
+   */
+  synchronizeTokenWithGapi() {
+    const _this = this;
+    const promise = new Promise(
+      function (resolve, reject) {
+        if (!_this.isSignedIn()) {
+          reject();
+          return;
+        }
+        let session = hello.getAuthResponse(_this.network.google);
+        let idToken = session.access_token; 
         gapi.client.setToken({access_token: idToken});
         resolve();
-      }).catch(function (error) {
-        reject(error);
       });
-    });
-  return promise
+    return promise
+  }
 }
-
-/**
- * Signs-in on google account via a popup.
- *
- * @param callback
- * @return {firebase.Promise.<firebase.auth.UserCredential>}
- */
-const signInWithGoogle = function() {
-   return firebaseInstance.auth().signInWithPopup(googleAuthProvider);
-}
-
-/**
- * Get the current firebase user.
- *
- * @return {firebase.User | any}
- */
-const getProfile = function() {
-  return firebaseInstance.auth().currentUser;
-}
-
-/**
- * Checks if there is an logged-in user.
- *
- * @return {boolean}
- */
-const isSignedIn = function() {
-  return !!firebaseInstance.auth().currentUser;
-}
-
-/**
- * Tries to sign out the current firebase user.
- *
- * @return {firebase.Promise.<void>}
- */
-const signOut = function() {
-  return firebaseInstance.auth().signOut();
-}
-
-const AuthenticationProvider = {
-  addAuthStateListener: addAuthStateListener,
-  synchronizeTokenWithGapi: synchronizeTokenWithGapi,
-  signInWithGoogle: signInWithGoogle,
-  getProfile: getProfile,
-  isSignedIn: isSignedIn,
-  signOut: signOut
-};
-
-export default AuthenticationProvider;
