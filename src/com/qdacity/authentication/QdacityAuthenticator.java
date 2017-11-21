@@ -28,9 +28,8 @@ import com.qdacity.Constants;
  */
 public class QdacityAuthenticator implements Authenticator {
 	
-	private static final JacksonFactory jacksonFactory = new JacksonFactory();
-	
-	GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), jacksonFactory)
+	private final JacksonFactory jacksonFactory = new JacksonFactory();
+	private final GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), jacksonFactory)
             .setAudience(Arrays.asList(Constants.WEB_CLIENT_ID))
             .setIssuer("https://accounts.google.com")
             .build();
