@@ -1,6 +1,6 @@
 import React from 'react';
 
-import UserList from "./UserList.jsx"
+import ExerciseList from "./ExerciseList.jsx"
 
 export default class Exercises extends React.Component {
 	constructor(props) {
@@ -18,7 +18,7 @@ export default class Exercises extends React.Component {
 				</div>
 				<div className="box-body">
 					<div>
-						<UserList termCourse={this.props.termCourse}/>
+						<ExerciseList termCourse={this.props.termCourse}/>
 					</div>
 				</div>
 		</div>);

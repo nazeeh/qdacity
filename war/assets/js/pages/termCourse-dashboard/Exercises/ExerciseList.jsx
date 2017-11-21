@@ -11,11 +11,11 @@ import {
 	StyledListItemDefault
 } from '../../../common/styles/List';
 
-export default class UserList extends React.Component {
+export default class ExerciseList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			users: [],
+			exercises: [],
 			// pagination
 			currentPage: 1,
 			itemsPerPage: 5
@@ -27,15 +27,15 @@ export default class UserList extends React.Component {
 	}
 
 	init() {
-		this.addOwners();
+		this.getExercises();
 	}
 
-	addOwners() {
+	getExercises() {
 		var _this = this;
 		ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId()).then(function (resp) {
 			resp.items = resp.items || [];
 			_this.setState({
-				users: resp.items
+				exercises: resp.items
 			});
 		});
 	}
@@ -55,12 +55,12 @@ export default class UserList extends React.Component {
 	}
 
 	renderPaginationIfNeccessary() {
-		if (this.state.users.length <= this.state.itemsPerPage) {
+		if (this.state.exercises.length <= this.state.itemsPerPage) {
 			return '';
 		} else {
 			//Render Pagination
 			const pageNumbers = [];
-			for (let i = 1; i <= Math.ceil(this.state.users.length / this.state.itemsPerPage); i++) {
+			for (let i = 1; i <= Math.ceil(this.state.exercises.length / this.state.itemsPerPage); i++) {
 				pageNumbers.push(i);
 			}
 			const renderPaginationItems = pageNumbers.map(pageNo => {
@@ -88,15 +88,15 @@ export default class UserList extends React.Component {
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = this.state.users.slice(firstItem, lastItem);
+		const itemsToDisplay = this.state.exercises.slice(firstItem, lastItem);
 
 		function prjClick(prj) {
 			console.log('Link');
 		}
 
-		const renderListItems = itemsToDisplay.map((user, index) => {
+		const renderListItems = itemsToDisplay.map((exercise, index) => {
 			return <StyledListItemDefault key={index} className="clickable">
-					<span > {user.givenName + " " + user.surName} </span>
+					<span > {exercise.name} </span>
 				</StyledListItemDefault>;
 		})
 
