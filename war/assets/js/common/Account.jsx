@@ -219,7 +219,7 @@ export default class Account extends React.Component {
             picSrc: ''
           });
           resolve();
-        }).catch(function (error) {
+        }, function (error) {
           console.log('Error at signing out!');
           console.log(error);
           reject();
