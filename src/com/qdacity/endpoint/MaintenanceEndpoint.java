@@ -14,7 +14,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.maintenance.tasks.OrphanDeletion;
 import com.qdacity.maintenance.tasks.ValidationCleanup;
 import com.qdacity.metamodel.MetaModelEntity;
@@ -28,7 +28,7 @@ import com.qdacity.metamodel.MetaModelRelation;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class MaintenanceEndpoint {
 
 	private MetaModelEntityEndpoint metaModelEntityEndpoint = new MetaModelEntityEndpoint();

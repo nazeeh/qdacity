@@ -24,7 +24,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
@@ -38,7 +38,7 @@ import com.qdacity.project.codesystem.CodeSystem;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class CodeSystemEndpoint {
 
 	/**

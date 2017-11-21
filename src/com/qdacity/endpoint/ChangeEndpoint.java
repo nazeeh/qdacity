@@ -34,7 +34,7 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
@@ -47,7 +47,7 @@ import com.qdacity.logs.ChangeType;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class ChangeEndpoint {
 
 	/**

@@ -12,12 +12,10 @@ import com.google.api.server.spi.config.Authenticator;
  * Usage in Endpoint:
  * @Api(
  * 	...
- *	authenticators = {FirebaseAuthenticator.class}
+ *	authenticators = {QdacityAuthenticator.class}
  * )
- * 
- * Uses the firebase admin sdk in order to validate the tokens and load User data.
  */
-public class FirebaseAuthenticator implements Authenticator {
+public class QdacityAuthenticator implements Authenticator {
 	
 
     /**

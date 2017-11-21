@@ -21,7 +21,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
 import com.qdacity.project.saturation.SaturationParameters;
@@ -34,7 +34,7 @@ import com.qdacity.project.saturation.SaturationResult;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class SaturationEndpoint {
 
     @ApiMethod(name = "saturation.calculateNewSaturation")

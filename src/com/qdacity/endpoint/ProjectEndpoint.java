@@ -34,7 +34,7 @@ import com.qdacity.Constants;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
@@ -53,7 +53,7 @@ import com.qdacity.user.UserNotificationType;
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class ProjectEndpoint {
 
 	

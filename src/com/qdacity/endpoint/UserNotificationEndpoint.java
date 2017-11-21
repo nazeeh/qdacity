@@ -25,7 +25,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
 
@@ -36,7 +36,7 @@ import com.qdacity.user.UserNotificationType;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class UserNotificationEndpoint {
 
 	/**

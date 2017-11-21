@@ -25,7 +25,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
@@ -38,7 +38,7 @@ import com.qdacity.user.UserNotificationType;
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class CourseEndpoint {
 
 	/**

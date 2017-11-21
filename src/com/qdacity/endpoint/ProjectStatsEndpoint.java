@@ -33,7 +33,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.ProjectStats;
 
@@ -44,7 +44,7 @@ import com.qdacity.project.metrics.ProjectStats;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class ProjectStatsEndpoint {
 
 	/**

@@ -33,7 +33,7 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
@@ -55,7 +55,7 @@ import com.qdacity.util.DataStoreUtil;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class TextDocumentEndpoint {
 
 	/**

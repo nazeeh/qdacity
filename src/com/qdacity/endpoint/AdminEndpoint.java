@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Constants;
 import com.qdacity.admin.AdminStats;
-import com.qdacity.authentication.FirebaseAuthenticator;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(
@@ -22,7 +22,7 @@ import com.qdacity.util.DataStoreUtil;
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
 		packagePath = "server.project"),
-	authenticators = {FirebaseAuthenticator.class})
+	authenticators = {QdacityAuthenticator.class})
 public class AdminEndpoint {
 
 	
