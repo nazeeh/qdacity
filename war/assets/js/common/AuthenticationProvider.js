@@ -40,7 +40,8 @@ export default class AuthenticationProvider {
         hello(_this.network.google).login({
           display: 'popup',
           response_type: 'token id_token',
-          scope: GOOGLE_SCOPES
+          scope: GOOGLE_SCOPES,
+          force: true // let user choose which account he wants to login with
         }).then(function() {
           // do nothing because the listener  gets the result.
         }, function(err) {
