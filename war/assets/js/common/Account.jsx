@@ -22,6 +22,8 @@ export default class Account extends React.Component {
 		this.props.callback(this);
 
 		var _this = this;
+
+		// always keep the profile data up-to-date
 		this.authenticationProvider.addAuthStateListener(function() {
 			if (!_this.isSignedIn()) {
 				// no authentication happend yet.
@@ -32,6 +34,14 @@ export default class Account extends React.Component {
 				_this.setUser(userProfile);
 			});
 		});
+
+		// on page reloads: also reload profile data		
+		if(this.isSignedIn()) {
+			_this.updateToken();
+			_this.getProfile().then(function(userProfile) {
+				_this.setUser(userProfile);
+			});
+		}
 	}
 
   /**
