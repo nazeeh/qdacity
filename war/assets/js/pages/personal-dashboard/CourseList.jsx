@@ -139,8 +139,10 @@ export default class CourseList extends React.Component {
 					});
 				} else {
 					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
+					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].ids.push(termCourse.id);
 				}
 			})
+
 			//Iterate over the courses array and add the courses(terms) in which the user is a participant to the CourseList
 			coursesWithTermsArray.forEach(function (courseFromArray) {
 				CourseEndPoint.getCourse(courseFromArray.courseID).then(function (courseResponse) {
@@ -311,8 +313,6 @@ export default class CourseList extends React.Component {
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
-
-
 
 
 
