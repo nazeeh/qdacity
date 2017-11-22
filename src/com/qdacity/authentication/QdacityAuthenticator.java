@@ -29,10 +29,7 @@ import com.qdacity.Constants;
  */
 public class QdacityAuthenticator implements Authenticator {
 	
-	private final JacksonFactory jacksonFactory = new JacksonFactory();
-	private final GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), jacksonFactory)
-            .setAudience(Collections.singletonList(Constants.WEB_CLIENT_ID))
-            .build();
+	
 	
 
     /**
@@ -41,6 +38,12 @@ public class QdacityAuthenticator implements Authenticator {
      */
     @Override
     public User authenticate(HttpServletRequest httpServletRequest) {
+    	
+    	JacksonFactory jacksonFactory = new JacksonFactory();
+    	GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), jacksonFactory)
+                .setAudience(Collections.singletonList(Constants.WEB_CLIENT_ID))
+                .build();
+    	
         //get token
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
         java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Verifying authentication token...");

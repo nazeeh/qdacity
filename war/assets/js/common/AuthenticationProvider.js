@@ -25,7 +25,7 @@ export default class AuthenticationProvider {
    * Signs-in on google account via a popup.
    *
    * @param callback
-   * @return {Promise.<any>}
+   * @return {Promise}
    */
   signInWithGoogle() {
 
@@ -56,7 +56,7 @@ export default class AuthenticationProvider {
   /**
    * Get the current user.
    *
-   * @return Promise<any>
+   * @return {Promise}
    */
   getProfile() {
     return hello(this.network.google).api('me');
@@ -76,7 +76,7 @@ export default class AuthenticationProvider {
   /**
    * Tries to sign out the current user.
    *
-   * @return {Promise.<void>}
+   * @return {Promise}
    */
   signOut() {
     return hello(this.network.google).logout();
