@@ -88,6 +88,7 @@ export default class CourseList extends React.Component {
 					resp2.items.forEach(function (crs, index) {
 						termList.push({
 							text: crs.term,
+							onClick: _this.termCourseClicked.bind(_this, crs),
 							id: crs.id
 						});
 					});
@@ -101,6 +102,9 @@ export default class CourseList extends React.Component {
 		});
 	}
 
+	termCourseClicked(termCourse) {
+		console.log(termCourse);
+	}
 	fetchTermsByParticipant(listTermCourseByParticipantPromise) {
 		var _this = this;
 		//the array below contains the response of listTermCourseByParticipant without duplicate courseIDs
@@ -115,12 +119,16 @@ export default class CourseList extends React.Component {
 				if (coursesWithTermsArray.length == 0) {
 					var termList = [];
 					var idList = [];
+					var termCourseList = [];
 					termList.push(termCourse.term);
 					idList.push(termCourse.id);
+					termCourseList.push(termCourse);
 					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
 						terms: termList,
-						ids: idList
+						onClick: _this.termCourseClicked.bind(_this, termCourse),
+						ids: idList,
+						termCourses: termCourseList
 					});
 					return;
 				}
@@ -130,16 +138,21 @@ export default class CourseList extends React.Component {
 				if (typeof isCourseInArray === "undefined") {
 					var termList = [];
 					idList = [];
+					termCourseList = [];
 					idList.push(termCourse.id);
 					termList.push(termCourse.term);
+					termCourseList.push(termCourse);
 					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
 						terms: termList,
-						ids: idList
+						onClick: _this.termCourseClicked.bind(_this, termCourse),
+						ids: idList,
+						termCourses: termCourseList
 					});
 				} else {
 					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
 					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].ids.push(termCourse.id);
+					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].termCourses.push(termCourse);
 				}
 			})
 
@@ -151,6 +164,7 @@ export default class CourseList extends React.Component {
 					courseFromArray.terms.forEach(function (term, index) {
 						termList.push({
 							text: term,
+							onClick: _this.termCourseClicked.bind(_this, courseFromArray.termCourses[index]),
 							id: courseFromArray.ids[index]
 						});
 					})
