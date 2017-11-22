@@ -244,12 +244,12 @@ export default class Account extends React.Component {
 			<div>
 				<div className="navbar-content">
 					<div className="row">
-						<div className="col-xs-5">
+						<div className="col-xs-3">
 							<img id="currentUserPicture" src={this.state.picSrc} alt="" className="img-responsive" />
 							<p className="text-center small">
 							</p>
 						</div>
-						<div className="col-xs-7">
+						<div className="col-xs-9">
 							<span id="currentUserName">{this.state.name}</span>
 							<p id="currentUserEmail" className="text-muted small">{this.state.email}</p>
 							<div className="divider"></div>
