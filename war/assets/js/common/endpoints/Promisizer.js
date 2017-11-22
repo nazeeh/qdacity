@@ -1,5 +1,7 @@
 import AuthenticationProvider from '../AuthenticationProvider';
 
+const authenticationProvider = new AuthenticationProvider();
+
 export default class Promisizer {
 
 	constructor() {}
@@ -17,7 +19,7 @@ export default class Promisizer {
 						}
 					});
         }, function() {
-          console.log('Could not make a promise because the token was not available!');
+        	console.log('Could not make a promise because the token was not available!');
         })
 			}
 		);
@@ -25,12 +27,13 @@ export default class Promisizer {
 		return promise;
 	}
 
-  /**
-	 * Ensures that an authentication token is placed in gapi.
-	 * This call is required in order to load the token after site refreshes.
-   * @return {Promise}
-   */
+	/**
+ 	* Ensures that an authentication token is placed in gapi.
+	* This call is required in order to load the token after site refreshes.
+	* Loads data from cache, so this means not a request each time.
+	* @return {Promise}
+   	*/
 	static ensureTokenAvailability() {
-    	return new AuthenticationProvider().synchronizeTokenWithGapi();
+    	return authenticationProvider.synchronizeTokenWithGapi();
 	}
 }
