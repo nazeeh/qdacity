@@ -87,7 +87,8 @@ export default class CourseList extends React.Component {
 					resp2.items = resp2.items || [];
 					resp2.items.forEach(function (crs, index) {
 						termList.push({
-							text: crs.term
+							text: crs.term,
+							id: crs.id
 						});
 					});
 					courses[index].terms = termList;
@@ -113,10 +114,13 @@ export default class CourseList extends React.Component {
 			termCourses.forEach(function (termCourse) {
 				if (coursesWithTermsArray.length == 0) {
 					var termList = [];
+					var idList = [];
 					termList.push(termCourse.term);
+					idList.push(termCourse.id);
 					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
-						terms: termList
+						terms: termList,
+						ids: idList
 					});
 					return;
 				}
@@ -125,24 +129,27 @@ export default class CourseList extends React.Component {
 				var isCourseInArray = coursesWithTermsArray.find(o => o.courseID === termCourse.courseID);
 				if (typeof isCourseInArray === "undefined") {
 					var termList = [];
+					idList = [];
+					idList.push(termCourse.id);
 					termList.push(termCourse.term);
 					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
-						terms: termList
+						terms: termList,
+						ids: idList
 					});
 				} else {
 					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
 				}
 			})
-
 			//Iterate over the courses array and add the courses(terms) in which the user is a participant to the CourseList
 			coursesWithTermsArray.forEach(function (courseFromArray) {
 				CourseEndPoint.getCourse(courseFromArray.courseID).then(function (courseResponse) {
 					var termList = [];
 					var course = courseResponse;
-					courseFromArray.terms.forEach(function (term) {
+					courseFromArray.terms.forEach(function (term, index) {
 						termList.push({
-							text: term
+							text: term,
+							id: courseFromArray.ids[index]
 						});
 					})
 					course.terms = termList;
@@ -206,7 +213,7 @@ export default class CourseList extends React.Component {
 	}
 
 	courseClick(course, index) {
-		this.props.history.push('/CourseDashboard?course=' + course.id);
+		console.log(course);
 	}
 
 	updateSearch(e) {
