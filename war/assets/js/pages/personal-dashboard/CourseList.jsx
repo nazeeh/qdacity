@@ -205,6 +205,10 @@ export default class CourseList extends React.Component {
 		this.props.history.push('/CourseDashboard?course=' + course.id);
 	}
 
+	courseClick(course, index) {
+		this.props.history.push('/CourseDashboard?course=' + course.id);
+	}
+
 	updateSearch(e) {
 		this.setState({
 			search: e.target.value
@@ -305,9 +309,7 @@ export default class CourseList extends React.Component {
 
 
 
-		function courseClick(course) {
-			_this.props.history.push('/CourseDashboard?course=' + course.id);
-		}
+
 		const renderListItemContent = (course, index) => {
 
 			return ([
@@ -328,7 +330,7 @@ export default class CourseList extends React.Component {
 			])
 		}
 		const renderListItems = itemsToDisplay.map((course, index) => {
-			return <StyledListItemPrimary key={course.id} onClick={() => courseClick(course)} clickable={true}>
+			return <StyledListItemPrimary key={course.id} onClick={() => this.courseClick(course, index)} clickable={true}>
 						{renderListItemContent(course, index)}
 					</StyledListItemPrimary>;
 
