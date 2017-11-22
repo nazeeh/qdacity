@@ -52,7 +52,8 @@ export default class CourseList extends React.Component {
 			// pagination
 			currentPage: 1,
 			itemsPerPage: 8,
-			search: ''
+			search: '',
+			listStatus: []
 		};
 
 
@@ -102,9 +103,6 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-	termCourseClicked(termCourse) {
-		console.log(termCourse);
-	}
 	fetchTermsByParticipant(listTermCourseByParticipantPromise) {
 		var _this = this;
 		//the array below contains the response of listTermCourseByParticipant without duplicate courseIDs
@@ -229,7 +227,10 @@ export default class CourseList extends React.Component {
 	}
 
 	courseClick(course, index) {
-		console.log(course);
+		var statusArray = this.state.listStatus;
+		var courseIndex = statusArray.indexOf(statusArray.find(o => o.selectedCourseID === course.id));
+		var termCourseID = statusArray[courseIndex].selectedTermCourseID;
+		this.props.history.push('/TermDashboard?termCourse=' + termCourseID);
 	}
 
 	updateSearch(e) {
@@ -276,12 +277,24 @@ export default class CourseList extends React.Component {
 
 	defineInitText(course, index) {
 		var text = "";
+		var _this = this;
 		if (!(typeof course.terms == 'undefined')) {
 			if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
 				text = course.terms[course.terms.length - 1].text;
 			}
 		}
 		return text;
+	}
+
+	termCourseClicked(termCourse) {
+		var statusArray = this.state.listStatus;
+		var courseIndex = statusArray.find(o => o.selectedCourseID === termCourse.courseID);
+		if (typeof courseIndex == 'undefined') {
+			this.state.listStatus.push({
+				selectedCourseID: termCourse.courseID,
+				selectedTermCourseID: termCourse.id
+			})
+		}
 	}
 
 	render() {
