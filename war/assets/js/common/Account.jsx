@@ -98,7 +98,7 @@ export default class Account extends React.Component {
   /**
 	 * Gets the current user's profile data from the authentcation provider.
 	 *
-   * @returns {Promise<any>}
+   * @returns {Promise}
    */
 	getProfile() {
 		return this.authenticationProvider.getProfile();
@@ -231,6 +231,10 @@ export default class Account extends React.Component {
     return promise;
 	}
 
+	/**
+	 * whenever the auth state changes, the given fkt will be executed.
+	 * @param {*} fkt 
+	 */
 	addAuthStateListener(fkt) {
 		this.authenticationProvider.addAuthStateListener(fkt);
 	}
