@@ -1,6 +1,3 @@
-import AuthenticationProvider from '../AuthenticationProvider';
-
-const authenticationProvider = new AuthenticationProvider();
 
 export default class Promisizer {
 

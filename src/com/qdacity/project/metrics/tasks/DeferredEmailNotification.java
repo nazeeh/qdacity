@@ -73,7 +73,7 @@ public class DeferredEmailNotification implements DeferredTask {
 					greetingName += coder.getGivenName() + ", ";
 				}
 				// TODO: check if this really works!
-				com.qdacity.user.User qdacityUser = userEndpoint.getUser(user.getId(), user);
+				com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user);
 				mail.addTo(user.getEmail(), qdacityUser.getGivenName());
 				String msgBody = "Hi " + greetingName + "<br>";
 				msgBody += "<p>";
