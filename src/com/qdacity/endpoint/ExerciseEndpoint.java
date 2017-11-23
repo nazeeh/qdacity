@@ -54,9 +54,8 @@ public class ExerciseEndpoint {
 			}
 
 			try {
-				// Authorize User
-				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-				Authorization.isUserRegistered(dbUser);
+				TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
+				Authorization.checkAuthorizationTermCourse(termCourse, user);
 				mgr.makePersistent(exercise);
 			}
 			catch (javax.jdo.JDOObjectNotFoundException ex) {
