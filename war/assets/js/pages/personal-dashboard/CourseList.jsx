@@ -275,26 +275,33 @@ export default class CourseList extends React.Component {
 		});
 	}
 
+	//This function sets the default termCourse for each course in the dropdown list
+	//It also fills the statusArray which includes info about the currently selected course/termCourse in the list
 	defineInitText(course, index) {
 		var text = "";
 		var _this = this;
+		console.log(course);
 		if (!(typeof course.terms == 'undefined')) {
 			if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
 				text = course.terms[course.terms.length - 1].text;
+				var statusArray = this.state.listStatus;
+				var courseIndex = statusArray.find(o => o.selectedCourseID === course.id);
+				if (typeof courseIndex == 'undefined') {
+					this.state.listStatus.push({
+						selectedCourseID: course.id,
+						selectedTermCourseID: course.terms[course.terms.length - 1].id
+					})
+				}
 			}
 		}
 		return text;
 	}
 
+	//This function sets the selectedTermCourseID in the statusArray to the one that was just clicked
 	termCourseClicked(termCourse) {
 		var statusArray = this.state.listStatus;
 		var courseIndex = statusArray.find(o => o.selectedCourseID === termCourse.courseID);
-		if (typeof courseIndex == 'undefined') {
-			this.state.listStatus.push({
-				selectedCourseID: termCourse.courseID,
-				selectedTermCourseID: termCourse.id
-			})
-		}
+		this.state.listStatus[this.state.listStatus.indexOf(courseIndex)].selectedTermCourseID = termCourse.id;
 	}
 
 	render() {
@@ -340,7 +347,6 @@ export default class CourseList extends React.Component {
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
-
 
 
 
