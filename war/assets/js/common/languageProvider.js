@@ -8,7 +8,7 @@ const supportedLanguages = new Set([
 function loadMessages(reactComponent, language = 'en') {
 
 	fetch(`assets/translations/${language}.json`).then(resp => {
-		if(resp.ok) {
+		if (resp.ok) {
 			return resp.json();
 		}
 		throw resp.statusText;
