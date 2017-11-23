@@ -227,10 +227,19 @@ export default class CourseList extends React.Component {
 	}
 
 	courseClick(course, index) {
+		var _this = this;
 		var statusArray = this.state.listStatus;
 		var courseIndex = statusArray.indexOf(statusArray.find(o => o.selectedCourseID === course.id));
-		var termCourseID = statusArray[courseIndex].selectedTermCourseID;
-		this.props.history.push('/TermDashboard?termCourse=' + termCourseID);
+		if (typeof statusArray[courseIndex] == 'undefined') {
+			var confirm = new Confirm('This course has no terms, would you like to configure it?');
+			confirm.showModal().then(function () {
+				_this.props.history.push('/CourseDashboard?course=' + course.id);
+			});
+		}
+		else {
+			var termCourseID = statusArray[courseIndex].selectedTermCourseID;
+			this.props.history.push('/TermDashboard?termCourse=' + termCourseID);
+		}
 	}
 
 	updateSearch(e) {
@@ -280,7 +289,6 @@ export default class CourseList extends React.Component {
 	defineInitText(course, index) {
 		var text = "";
 		var _this = this;
-		console.log(course);
 		if (!(typeof course.terms == 'undefined')) {
 			if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
 				text = course.terms[course.terms.length - 1].text;
