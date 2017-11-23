@@ -15,7 +15,7 @@ public class ExerciseEndpointTestHelper {
 
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		try {
-			ee.insertExercise(termCourseID, name, exercise, loggedInUser);
+			ee.insertExercise(termCourseID, exercise, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for exercise creation");
