@@ -235,8 +235,7 @@ export default class CourseList extends React.Component {
 			confirm.showModal().then(function () {
 				_this.props.history.push('/CourseDashboard?course=' + course.id);
 			});
-		}
-		else {
+		} else {
 			var termCourseID = statusArray[courseIndex].selectedTermCourseID;
 			this.props.history.push('/TermDashboard?termCourse=' + termCourseID);
 		}
