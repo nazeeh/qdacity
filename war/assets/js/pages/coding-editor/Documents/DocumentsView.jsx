@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import openSocket from 'socket.io-client'
+
 import ReactLoading from '../../../common/ReactLoading.jsx';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
@@ -82,6 +84,14 @@ export default class DocumentsView extends React.Component {
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
+	}
+
+	componentDidMount() {
+		this.socket = openSocket('http://dev.mischke.me:62194');
+		this.socket.on('meta', (meta, hostname) => {
+			console.log(meta, '(server: ' + hostname + ')');
+		});
+		this.socket.emit('logon', 'john_doe');
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -243,8 +253,11 @@ export default class DocumentsView extends React.Component {
 		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
+		this.socket.emit('user_leave', this.getActiveDocumentId());
 		this.setState({
 			selected: selectedID
+		}, () => {
+			this.socket.emit('user_enter', this.getActiveDocumentId());
 		});
 		this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
 
