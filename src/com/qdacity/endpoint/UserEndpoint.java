@@ -3,6 +3,7 @@ package com.qdacity.endpoint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,9 @@ import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 import com.qdacity.user.UserType;
 
 @Api(
@@ -258,6 +261,7 @@ public class UserEndpoint {
 		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		user.setLastLogin(new Date());
+		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(LoginProviderType.GOOGLE, loggedInUser.getId())));
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (user.getId() != null && containsUser(user)) {
