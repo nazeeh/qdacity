@@ -9,7 +9,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Unique;
 
-import com.google.api.client.util.Key;
+import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 @Unique(members = {"provider", "userId"})
