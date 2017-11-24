@@ -256,13 +256,18 @@
 			</resource>
 			<resource>
 				<directory>war/components/font-awesome</directory>
-				<filtering>true</filtering>
+				<filtering>false</filtering>
 				<targetPath>components/font-awesome</targetPath>
 			</resource>
 			<resource>
 				<directory>war/components/mxGraph</directory>
 				<filtering>true</filtering>
 				<targetPath>components/mxGraph</targetPath>
+			</resource>
+			<resource>
+				<directory>war/assets/img</directory>
+				<filtering>true</filtering>
+				<targetPath>assets/img</targetPath>
 			</resource>
 		</webResources>		
 	  </configuration>
