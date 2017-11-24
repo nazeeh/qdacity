@@ -170,6 +170,7 @@ export default class TermCourseList extends React.Component {
 	configureTermCourse(e, term, index) {
 		var _this = this;
 		e.stopPropagation();
+		this.props.history.push('/TermCourseConfig?termCourse=' + term.id);
 	}
 	renderJoinButton(term, index) {
 		var course = this.props.course;
