@@ -43,7 +43,6 @@ public class QdacityAuthenticator implements Authenticator {
     public User authenticate(HttpServletRequest httpServletRequest) {
         //get token
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
-        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Verifying authentication token...");
         
         //verify
         if(authorizationHeader != null) {
