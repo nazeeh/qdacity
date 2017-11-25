@@ -18,7 +18,9 @@ const StyledNavbarItem = styled.a `
 export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {user: {}};
+		this.state = {
+			user: {}
+		};
 
 		this.account = {};
 
@@ -38,19 +40,19 @@ export default class NavBar extends React.Component {
 		document.getElementById("signinView").classList.toggle("show");
 	}
 
-    initializeAccount(c) {
-        this.account = c;
-        this.account.auth2.currentUser.listen((googleUser) => {
-            if (googleUser.isSignedIn()) {
-                this.account.getCurrentUser().then((value) => {
-                    this.setState({
-                        user: value
-                    });
-                }, () => {
-                    console.log("Could not get current user")
-                });
-            }
-        });
+	initializeAccount(c) {
+		this.account = c;
+		this.account.auth2.currentUser.listen((googleUser) => {
+			if (googleUser.isSignedIn()) {
+				this.account.getCurrentUser().then((value) => {
+					this.setState({
+						user: value
+					});
+				}, () => {
+					console.log("Could not get current user")
+				});
+			}
+		});
 	}
 
 	render() {

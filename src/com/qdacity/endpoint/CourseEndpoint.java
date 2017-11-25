@@ -1,5 +1,6 @@
 package com.qdacity.endpoint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -327,7 +328,7 @@ public class CourseEndpoint {
 	 * @return A List containing the list of all terms in which the user is a participant
 	 * @throws UnauthorizedException
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings({ "unchecked" })
 	@ApiMethod(name = "course.listTermCourseByParticipant",
 		path = "listTermCourseByParticipant",
 		scopes = { Constants.EMAIL_SCOPE },
@@ -347,9 +348,6 @@ public class CourseEndpoint {
 
 			execute = (List<TermCourse>) q.execute(Arrays.asList(user.getUserId()));
 
-			// Tight loop for fetching all entities from datastore and accomodate
-			// for lazy fetch.
-			for (TermCourse obj : execute);
 		} finally {
 			mgr.close();
 		}
@@ -376,7 +374,7 @@ public class CourseEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
-
+		
 		termCourse.setCourseID(courseID);
 		termCourse.setTerm(term);
 		termCourse.setOpen(true);
@@ -384,27 +382,28 @@ public class CourseEndpoint {
 
 
 		PersistenceManager mgr = getPersistenceManager();
-
 		try {
 			// Authorize User
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 			Authorization.isUserRegistered(dbUser);
-		}
-		catch (javax.jdo.JDOObjectNotFoundException ex) {
-			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
-		}
-
-		try {
+			
 			if (termCourse.getId() != null) {
 				if (containsTermCourse(termCourse)) {
 					throw new EntityExistsException("Term already exists");
 				}
-			}
-
-			termCourse.addOwner(user.getUserId());
-			mgr.makePersistent(termCourse);
-
-		} finally {
+				
+				termCourse.addOwner(user.getUserId());
+				mgr.makePersistent(termCourse);
+				
+				dbUser.addTermCourseAuthorization(termCourse.getId());
+				mgr.makePersistent(dbUser);
+			} 
+		}
+		catch (javax.jdo.JDOObjectNotFoundException ex) {
+			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+		}
+			
+			finally {
 			mgr.close();
 		}
 		return termCourse;
@@ -595,6 +594,40 @@ public class CourseEndpoint {
 			}
 			return course;
 		}
+	
+	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all participants of a term course
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings("unchecked")
+	@ApiMethod(
+		name = "course.listTermCourseParticipants",
+		path = "termCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public CollectionResponse<com.qdacity.user.User> listTermCourseParticipants(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("termCourseID") Long termCourseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
+		List<com.qdacity.user.User> users = new ArrayList<com.qdacity.user.User>();
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
+			Authorization.checkAuthorizationTermCourse(termCourse, user);
+			List<String> participants = termCourse.getParticipants();
+			if (!participants.isEmpty()) {
+				Query userQuery = mgr.newQuery(com.qdacity.user.User.class, ":p.contains(id)");
+
+				users = (List<com.qdacity.user.User>) userQuery.execute(participants);
+			}
+		} finally {
+			mgr.close();
+		}
+
+		return CollectionResponse.<com.qdacity.user.User> builder().setItems(users).setNextPageToken(cursorString).build();
+	}
 	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();
