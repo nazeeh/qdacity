@@ -24,6 +24,12 @@ export default class AdvertPanel extends React.Component {
 							<span> support@qdacity.com</span>
 						</a>
 					</p>
+					<p>
+						For other types of jobs, check
+						<a href="https://osr.cs.fau.de/people/jobs/student-jobs/" > our blog</a>.
+					</p>
+
+
 				</div>
 			</Jumbotron>
 		);

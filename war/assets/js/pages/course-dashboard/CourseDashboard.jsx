@@ -24,7 +24,7 @@ const StyledDashboard = styled.div `
 export default class CourseDashboard extends React.Component {
 	constructor(props) {
 		super(props);
-		this.init();
+
 
 		var urlParams = URI(window.location.search).query(true);
 
@@ -95,8 +95,8 @@ export default class CourseDashboard extends React.Component {
 
 	render() {
 
-		if (!this.props.account.getProfile) return null;
-		if (!this.props.account.isSignedIn()) return null;
+		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
+		this.init();
 
 		return (
 			<StyledDashboard>
