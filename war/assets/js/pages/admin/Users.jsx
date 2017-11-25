@@ -16,10 +16,6 @@ const StyledUserSearch = styled.div `
 	}
 `;
 
-const StyledSearchButton = styled.div `
-	padding-left: 5px;
-`;
-
 export default class Users extends React.Component {
 	constructor(props) {
 		super(props);
@@ -90,9 +86,9 @@ export default class Users extends React.Component {
                                 onChange={this.updateSearch}
                                 onKeyPress={this.onSearchFieldKeyPress}
 							/>
-							<StyledSearchButton>
-								<BtnDefault type="button" id="search" onClick={this.findUsers}>Find!</BtnDefault>
-							</StyledSearchButton>
+							<BtnDefault id="btnSearch" onClick={this.findUsers}>
+								<i className="fa fa-search"/>
+							</BtnDefault>
 						</StyledSearchField>
 					</StyledUserSearch>
 					<UserList  users={this.state.users} removeUser={this.removeUser}/>
