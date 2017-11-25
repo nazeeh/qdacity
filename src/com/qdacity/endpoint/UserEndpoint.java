@@ -380,6 +380,7 @@ public class UserEndpoint {
 				user.setId(userEntity.getKey().getName());
 				user.setProjects((List<Long>) userEntity.getProperty("projects"));
 				user.setCourses((List<Long>) userEntity.getProperty("courses"));
+				user.setTermCourses((List<Long>) userEntity.getProperty("termCourses"));
 				user.setSurName((String) userEntity.getProperty("surName"));
 				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
 				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
