@@ -15,7 +15,6 @@ import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
 import com.qdacity.logs.ChangeType;
-import com.qdacity.project.ProjectType;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -84,7 +83,7 @@ public class ChangeEndpoint {
 
 		return CollectionResponse.<Change> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
-	
+
     public List<Change> getAllChanges(@Named("projectID") Long projectId) {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
@@ -202,53 +201,37 @@ public class ChangeEndpoint {
 	)
 	public List<Change> getChanges(@Nullable @Named("objectType") ChangeObject objectType, @Nullable @Named("changeType") ChangeType changeType, @Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) {
 
-		List<Filter> filters = new ArrayList<>();
+		StringBuilder filters = new StringBuilder();
+		StringBuilder declaredParameters = new StringBuilder();
+		List<Object> parameters = new ArrayList<>();
 
 		if(objectType != null) {
-			filters.add(new FilterPredicate("objectType", FilterOperator.EQUAL, objectType.toString()));
-		}
-		if(changeType != null) {
-			filters.add(new FilterPredicate("changeType", FilterOperator.EQUAL, changeType.toString()));
+			filters.append("objectType == objectTypeParameter && ");
+			declaredParameters.append("String objectTypeParameter,");
+            parameters.add(objectType);
+        }
+        if(changeType != null) {
+			filters.append("changeType == changeTypeParameter && ");
+            declaredParameters.append("String changeTypeParameter,");
+            parameters.add(changeType);
 		}
 
 		startDate = startDate == null ? new Date(0) : startDate;
 		endDate = endDate == null ? new Date() : endDate;
 
-		filters.add(new FilterPredicate("datetime", FilterOperator.GREATER_THAN_OR_EQUAL, startDate));
-		filters.add(new FilterPredicate("datetime", FilterOperator.LESS_THAN_OR_EQUAL, endDate));
+		filters.append("datetime >= startDateParameter && ");
+        declaredParameters.append("java.util.Date startDateParameter,");
+        parameters.add(startDate);
 
-		Filter compositeFilter = new CompositeFilter(CompositeFilterOperator.AND, filters);
+		filters.append("datetime <= endDateParameter");
+        declaredParameters.append("java.util.Date endDateParameter");
+        parameters.add(endDate);
 
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query query = getPersistenceManager().newQuery(Change.class);
+		query.setFilter(filters.toString());
+		query.declareParameters(declaredParameters.toString());
 
-		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Change").setFilter(compositeFilter);
-
-		PreparedQuery pq = datastore.prepare(q);
-
-		List<Change> results = new ArrayList<>();
-
-		for (Entity entity : pq.asIterable()) {
-			Change result = new Change();
-
-			result.setId((Long) entity.getProperty("id"));
-			result.setDatetime((Date) entity.getProperty("datetime"));
-			result.setProjectID((Long) entity.getProperty("projectID"));
-			final String projectTypeProperty = (String) entity.getProperty("projectType");
-			result.setProjectType(projectTypeProperty == null ? null : ProjectType.valueOf(projectTypeProperty));
-			final String changeTypeProperty = (String) entity.getProperty("changeType");
-			result.setChangeType(changeTypeProperty == null ? null : ChangeType.valueOf(changeTypeProperty));
-			result.setUserID((String) entity.getProperty("userId"));
-			final String objectTypeProperty = (String) entity.getProperty("objectType");
-			result.setObjectType(objectTypeProperty == null ? null : ChangeObject.valueOf(objectTypeProperty));
-			result.setObjectID((Long) entity.getProperty("objectID"));
-			result.setAttributeType((String) entity.getProperty("attributeType"));
-			result.setOldValue((String) entity.getProperty("oldValue"));
-			result.setNewValue((String) entity.getProperty("newValue"));
-
-			results.add(result);
-		}
-
-		return results;
+		return (List<Change>) query.executeWithArray(parameters.toArray());
 	}
 
 	/**
@@ -326,5 +309,5 @@ public class ChangeEndpoint {
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
-	
+
 }
