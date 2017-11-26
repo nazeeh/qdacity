@@ -363,7 +363,14 @@ class CodingEditor extends React.Component {
                 <StyledSideBarDocuments>
                     <div id="documents-ui" >
                         <StyledDocumentsView selectedEditor={this.state.selectedEditor}>
-                            <DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
+                            <DocumentsView
+                                ref={(c) => this.documentsViewRef = c}
+                                editorCtrl={this.state.editorCtrl}
+                                projectID={this.state.project.getId()}
+                                projectType={this.state.project.getType()}
+                                account={this.props.account}
+                                report={this.report}
+                            />
                         </StyledDocumentsView>
                     </div>
                 </StyledSideBarDocuments>
