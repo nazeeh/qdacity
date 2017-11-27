@@ -10,9 +10,10 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static insertCourse(termCourseID, name) {
+	static insertExercise(termCourseID, exercise) {
 		var apiMethod = gapi.client.qdacity.exercise.insertExercise({
-			'termCrsID': termCourseID
+			'termCrsID': termCourseID,
+			'exercise': exercise
 		});
 		return Promisizer.makePromise(apiMethod);
 	}

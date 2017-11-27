@@ -3,6 +3,7 @@ import React from 'react';
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import styled from 'styled-components';
+import CustomForm from '../../../common/modals/CustomForm';
 
 import {
 	StyledBoxList,
@@ -16,7 +17,7 @@ import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
 
-const StyledNewPrjBtn = styled.div `
+const StyledNewExBtn = styled.div `
 	padding-bottom: 5px;
 `;
 
@@ -33,6 +34,7 @@ export default class ExerciseList extends React.Component {
 		this.init();
 
 		this.paginationClick = this.paginationClick.bind(this);
+		this.showNewExerciseModal = this.showNewExerciseModal.bind(this);
 	}
 
 	init() {
@@ -49,8 +51,25 @@ export default class ExerciseList extends React.Component {
 		});
 	}
 
+	showNewExerciseModal() {
+		var _this = this;
+		var modal = new CustomForm('Create a new exercise', '');
+		modal.addTextInput('name', "Exercise Name", 'Name', '');
+		modal.showModal().then(function (data) {
+			_this.createNewExercise(data.name);
+		});
+	}
 
-
+	createNewExercise(name) {
+		var _this = this;
+		var exercise = {};
+		var termCourseID = this.props.termCourse.id;
+		exercise.name = name;
+		console.log(exercise);
+		ExerciseEndpoint.insertExercise(termCourseID, exercise).then(function (resp){
+			console.log(resp);
+		})
+	}
 
 	paginationClick(event) {
 		this.setState({
@@ -95,14 +114,14 @@ export default class ExerciseList extends React.Component {
 		var _this = this;
 
 
-		const newExerciseButton = <StyledNewPrjBtn>
+		const newExerciseButton = <StyledNewExBtn>
 
-					<BtnDefault>
+					<BtnDefault onClick={this.showNewExerciseModal}>
 					<i className="fa fa-plus fa-fw"></i>
 					New Exercise
 					</BtnDefault>
 
-		</StyledNewPrjBtn>
+		</StyledNewExBtn>
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
