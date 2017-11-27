@@ -4,7 +4,9 @@ if (!process.env.PORT) {
 
 const app = require('express')();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+  'transports': ['polling'],
+});
 const redis = require('./redis')(io);
 require('./syncService')(io, redis);
 require('./fileServer')(app);

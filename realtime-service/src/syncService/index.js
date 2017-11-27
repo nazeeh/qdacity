@@ -24,10 +24,15 @@ const emitUserChange = docid => {
           'user_change',
           docid,
           Object.keys(res).reduce(
-            (acc, id) =>
-              clients.indexOf(id) > -1
-                ? acc.concat(JSON.parse(res[id]).username)
-                : acc,
+            (acc, id) => {
+              if (clients.indexOf(id) > -1) {
+                const data = JSON.parse(res[id]);
+                delete data.serverName;
+                return acc.concat(data)
+              } else {
+                return acc;
+              }
+            },
             []
           )
         );
@@ -35,18 +40,19 @@ const emitUserChange = docid => {
   });
 };
 
-const onLogon = socket => username => {
-  socket.username = username;
-  console.info(`user ${socket.id} logged on as ${socket.username}`);
+const onLogon = socket => (name, email, picSrc) => {
+  console.info(`user ${socket.id} logged on as ${name} (${email})`);
   redis.hset([
     'usernames',
     socket.id,
     JSON.stringify({
-      username: socket.username,
+      name: name,
+      email: email,
+      picSrc: picSrc,
       server: serverName,
     }),
   ]);
-  socket.emit('meta', 'Welcome ' + username + '!', serverName);
+  socket.emit('meta', 'Welcome ' + name + '!', serverName);
 };
 
 const onUserEnter = socket => (docid, data) =>
@@ -75,16 +81,12 @@ const syncDoc = () => (docid, data) => {
   io.to(docid).emit('sync', synced_docs[docid]);
 };
 
-const onSocketDisconnect = socket => () => {
-  redis.hdel(['usernames', socket.id]);
-  Object.keys(synced_docs).map(docid => {
-    io.in(docid).clients((error, clients) => {
-      if (clients.indexOf(socket.id) > -1) {
-        removeSocketFromDocument(socket, docid);
-      }
-    });
+const onSocketDisconnecting = socket => () => {
+  redis.hdel('usernames', socket.id);
+  Object.keys(socket.rooms).map(docid => {
+    removeSocketFromDocument(socket, docid);
   });
-  console.info(`user ${socket.id} (${socket.username}) disconnected`);
+  console.info(`user ${socket.id} disconnected`);
 };
 
 const init = (_io, _redis) => {
@@ -100,7 +102,7 @@ const init = (_io, _redis) => {
     socket.on('user_enter', onUserEnter(socket));
     socket.on('user_leave', onUserLeave(socket));
     socket.on('sync', syncDoc());
-    socket.on('disconnect', onSocketDisconnect(socket));
+    socket.on('disconnecting', onSocketDisconnecting(socket));
   });
 };
 
