@@ -2,7 +2,13 @@ import React from 'react';
 
 import UserListCtrl from './UserListCtrl.jsx';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import {StyledListItemDefault} from "../../common/styles/List";
 
+const StyledListItemUser = StyledListItemDefault.extend `
+	&:hover {
+		cursor: pointer;	
+	}
+`;
 export default class UserList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -68,7 +74,9 @@ export default class UserList extends React.Component {
 
         {
           this.props.users.map(function(user) {
-            return <a className= {_this.isActive(user.id)} key={user.id} href={"#"}  onClick={_this.selectUser.bind(null,user.id)}><span>{user.givenName} {user.surName}</span><span className="pull-right"><em>{user.email}</em></span></a>
+              return <StyledListItemUser className={_this.isActive(user.id)} key={user.id} href={"#"}
+                                            onClick={_this.selectUser.bind(null, user.id)}><span>{user.givenName} {user.surName}</span><span
+                  className="pull-right"><em>{user.email}</em></span></StyledListItemUser>
           })
         }
       </div>
