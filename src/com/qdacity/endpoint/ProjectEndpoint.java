@@ -58,7 +58,7 @@ public class ProjectEndpoint {
 	}
 
 	@ApiMethod(name = "project.listProjectByUserId",
-		path = "projectsByUserId ",
+		path = "projectsByUserId",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
@@ -98,7 +98,26 @@ public class ProjectEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<ValidationProject> listValidationProject(User user) throws UnauthorizedException {
+		final String userId = user.getUserId();
 
+		return getValidationProjectsByUserId(user, userId);
+	}
+
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "project.listValidationProjectByUserId",
+		path = "validationProjectsByUserId",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<ValidationProject> listValidationProjectByUserId(@Named("userId") String userId, User user) throws UnauthorizedException {
+		com.qdacity.user.User requestedUser = (com.qdacity.user.User) Cache.getOrLoad(userId, com.qdacity.user.User.class);
+
+		Authorization.checkAuthorization(requestedUser, user);
+
+		return getValidationProjectsByUserId(user, userId);
+	}
+
+	private List<ValidationProject> getValidationProjectsByUserId(User user, String userId) throws UnauthorizedException {
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO user unknown
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -108,7 +127,7 @@ public class ProjectEndpoint {
 
 			Query q = mgr.newQuery(ValidationProject.class, ":p.contains(validationCoders)");
 
-			execute = (List<ValidationProject>) q.execute(Arrays.asList(user.getUserId()));
+			execute = (List<ValidationProject>) q.execute(Arrays.asList(userId));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
