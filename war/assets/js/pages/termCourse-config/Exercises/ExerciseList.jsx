@@ -2,6 +2,7 @@ import React from 'react';
 
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
+import styled from 'styled-components';
 
 import {
 	StyledBoxList,
@@ -10,6 +11,14 @@ import {
 	StyledListItemBtn,
 	StyledListItemDefault
 } from '../../../common/styles/List';
+
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
+
+const StyledNewPrjBtn = styled.div `
+	padding-bottom: 5px;
+`;
 
 export default class ExerciseList extends React.Component {
 	constructor(props) {
@@ -85,6 +94,15 @@ export default class ExerciseList extends React.Component {
 	render() {
 		var _this = this;
 
+
+		const newExerciseButton = <StyledNewPrjBtn>
+
+					<BtnDefault>
+					<i className="fa fa-plus fa-fw"></i>
+					New Exercise
+					</BtnDefault>
+
+		</StyledNewPrjBtn>
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
@@ -104,6 +122,7 @@ export default class ExerciseList extends React.Component {
 
 		return (
 			<div>
+				{newExerciseButton}
 				<StyledBoxList key={"itemList"}>
 					{renderListItems}
 	            </StyledBoxList>
