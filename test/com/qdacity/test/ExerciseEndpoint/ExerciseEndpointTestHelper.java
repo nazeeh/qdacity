@@ -9,13 +9,15 @@ import com.qdacity.endpoint.ExerciseEndpoint;
 import com.qdacity.exercise.Exercise;
 
 public class ExerciseEndpointTestHelper {
-	static public void addExercise(Long termCourseID, String name, com.google.appengine.api.users.User loggedInUser) {
+	static public void addExercise(Long id, Long termCourseID, String name, com.google.appengine.api.users.User loggedInUser) {
 		Exercise exercise = new Exercise();
+		exercise.setId(id);
 		exercise.setName(name);
-
+		exercise.setTermCourseID(termCourseID);
+		
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		try {
-			ee.insertExercise(termCourseID, exercise, loggedInUser);
+			ee.insertExercise(exercise, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for exercise creation");

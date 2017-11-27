@@ -64,10 +64,14 @@ export default class ExerciseList extends React.Component {
 		var _this = this;
 		var exercise = {};
 		var termCourseID = this.props.termCourse.id;
+		var exercises = this.state.exercises;
 		exercise.name = name;
-		console.log(exercise);
-		ExerciseEndpoint.insertExercise(termCourseID, exercise).then(function (resp){
-			console.log(resp);
+		exercise.termCourseID = termCourseID;
+		ExerciseEndpoint.insertExercise(exercise).then(function (resp){
+			exercises.push(resp);
+			_this.setState({
+				exercises: exercises
+			})
 		})
 	}
 

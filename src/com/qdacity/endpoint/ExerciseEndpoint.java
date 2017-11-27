@@ -41,26 +41,27 @@ public class ExerciseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public Exercise insertExercise(@Named("termCrsID") Long termCourseID, Exercise exercise, User user) throws UnauthorizedException {
+	public Exercise insertExercise(Exercise exercise, User user) throws UnauthorizedException {
 
-		exercise.setTermCourseID(termCourseID);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (exercise.getId() != null) {
 				if (containsExercise(exercise)) {
 					throw new EntityExistsException("Exercise already exists");
 				}
+				
+				
 			}
-
+			
 			try {
-				TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
+				TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
 				Authorization.checkAuthorizationTermCourse(termCourse, user);
 				mgr.makePersistent(exercise);
 			}
 			catch (javax.jdo.JDOObjectNotFoundException ex) {
 				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
 			}
-
+			
 		} finally {
 			mgr.close();
 		}

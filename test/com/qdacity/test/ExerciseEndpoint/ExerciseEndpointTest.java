@@ -41,7 +41,7 @@ public class ExerciseEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, "New Course", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
@@ -56,7 +56,7 @@ public class ExerciseEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, "New Course", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
 		
 		List<Exercise> retrievedExercises = null;
 
