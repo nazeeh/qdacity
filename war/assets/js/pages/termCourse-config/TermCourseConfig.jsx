@@ -127,23 +127,10 @@ export default class TermCourseConfig extends React.Component {
 		});
 	}
 
-	renderJoinButton() {
-		var termCourse = this.state.termCourse;
-		//Show join/leave button depending on whether the user is a participant in the course
-		if (!termCourse.isUserParticipant) {
-			return <StyledListItemBtn onClick={(e) => this.addParticipant(e)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-				Join this term course
-			</StyledListItemBtn>
-		} else {
-			return <StyledListItemBtn onClick={(e) => this.removeParticipant(e)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-				Leave this term course
-				</StyledListItemBtn>
-		}
-	}
-
 	renderParticipants() {
 		var termCourse = this.state.termCourse;
-		if (!termCourse.isUserParticipant) {
+		var isUserTermCourseOwner = this.state.isTermCourseOwner;
+		if (!isUserTermCourseOwner) {
 			return '';
 		} else {
 			return <Participants termCourse={this.state.termCourse}/>
@@ -152,7 +139,8 @@ export default class TermCourseConfig extends React.Component {
 
 	renderExercises() {
 		var termCourse = this.state.termCourse;
-		if (!termCourse.isUserParticipant) {
+		var isUserTermCourseOwner = this.state.isTermCourseOwner;
+		if (!isUserTermCourseOwner) {
 			return '';
 		} else {
 			return <Exercises termCourse={this.state.termCourse}/>
@@ -168,9 +156,6 @@ export default class TermCourseConfig extends React.Component {
 			<StyledDashboard>
 						{this.renderExercises()}
 						{this.renderParticipants()}
-						<StyledButton>
-							{this.renderJoinButton()}
-						</StyledButton>
 		  	</StyledDashboard>
 		);
 	}
