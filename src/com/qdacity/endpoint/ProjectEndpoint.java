@@ -62,7 +62,7 @@ public class ProjectEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public CollectionResponse<Project> listProjectByUserId(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, String userId, User user) throws UnauthorizedException {
+	public CollectionResponse<Project> listProjectByUserId(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("userId") String userId, User user) throws UnauthorizedException {
 
 		com.qdacity.user.User requestedUser = (com.qdacity.user.User) Cache.getOrLoad(userId, com.qdacity.user.User.class);
 
