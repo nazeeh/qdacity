@@ -2,34 +2,32 @@ import React from 'react'
 
 import Users from './Users.jsx';
 import AdminStats from './AdminStats.jsx';
-import ProjectList from "../personal-dashboard/ProjectList.jsx";
+import AdminProjectList from "./AdminProjectList.jsx";
 
 export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
             projects: [],
+			selectedUserId: ''
         };
 
         this.setProjects = this.setProjects.bind(this);
-        this.addProject = this.addProject.bind(this);
         this.removeProject = this.removeProject.bind(this);
 
 		scroll(0, 0);
 	}
 
+	setSelectedUserId(userId) {
+        this.setState({
+            selectedUserId: userId
+        });
+
+	}
 
     setProjects(projects) {
         this.setState({
             projects: projects
-        });
-    }
-
-
-    addProject(project) {
-        this.state.projects.push(project);
-        this.setState({
-            projects: this.state.projects
         });
     }
 
@@ -59,14 +57,14 @@ export default class Admin extends React.Component {
 					</div>
 					<div className="col-lg-4">
 						<div id="project-selection">
-							<Users/>
+							<Users setSelectedUserId={(userId) => this.setSelectedUserId(userId)}/>
 						</div>
 						<div className="box box-default">
 							<div className="box-header with-border">
 								<h3 className="box-title">Projects</h3>
 							</div>
 							<div className="box-body">
-								<ProjectList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
+								<AdminProjectList projects={this.state.projects} setProjects={this.setProjects} removeProject={this.removeProject} history={this.props.history} userId={this.state.selectedUserId}/>
 							</div>
 						</div>
 					</div>

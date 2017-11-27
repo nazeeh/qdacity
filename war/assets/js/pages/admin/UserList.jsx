@@ -30,6 +30,7 @@ export default class UserList extends React.Component {
 	}
 
 	selectUser(selectedID) {
+        this.props.setSelectedUserId(selectedID)
 		this.setState({
 			selected: selectedID
 		});
