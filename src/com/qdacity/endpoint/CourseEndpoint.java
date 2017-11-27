@@ -457,8 +457,15 @@ public class CourseEndpoint {
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				//Check authorization
-				Authorization.checkAuthTermCourseParticipation(termCourse, userID, user);
-				termCourse.addParticipant(userID);
+				if (userID != null) {
+					Authorization.checkAuthTermCourseParticipation(termCourse, userID, user);
+					termCourse.addParticipant(userID);
+				}
+				else {
+					Authorization.checkAuthTermCourseParticipation(termCourse, user.getUserId(), user);
+					termCourse.addParticipant(user.getUserId());
+				}
+				
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 				dbUser.addTermCourseAuthorization(termCourseID);
