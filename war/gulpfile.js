@@ -104,6 +104,7 @@ gulp.task('bundle-task', function() {
 	.pipe(replace('$API_PATH$', config.api_path))
 	.pipe(replace('$API_VERSION$', config.api_version))
 	.pipe(replace('$CLIENT_ID$', config.client_id))
+	.pipe(replace('$SYNC_SERVICE$', config.sync_service))
 	.pipe(gulp.dest('dist/js/'));
 });
 
