@@ -66,6 +66,9 @@ export default class AdminProjectList extends React.Component {
     }
 
     fetchProjects(userId) {
+		if(userId === "") {
+			return;
+		}
         var _this = this;
         var projectList = [];
         var validationPrjPromise = ProjectEndpoint.listValidationProjectByUserId(userId);
