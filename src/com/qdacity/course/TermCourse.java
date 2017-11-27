@@ -141,5 +141,8 @@ public class TermCourse implements Serializable {
 		if (!invitedUsers.contains(userID)) invitedUsers.add(userID);
 	}
 
+	public List<String> getInvitedUsers() {
+		return invitedUsers;
+	}
 	
 }
