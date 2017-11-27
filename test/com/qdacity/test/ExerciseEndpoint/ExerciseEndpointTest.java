@@ -34,7 +34,7 @@ public class ExerciseEndpointTest {
 
 	
 	/**
-	 * Tests if a registered user can create a course
+	 * Tests if a registered user can create an exercise
 	 */
 	@Test
 	public void testExerciseInsert() {
@@ -49,7 +49,25 @@ public class ExerciseEndpointTest {
 	
 
 	/**
-	 * Tests if a registered can list courses
+	 * Tests if a user can delete his own exercise
+	 */
+	@Test
+	public void testExerciseRemove() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "ex 1", testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
+		ExerciseEndpointTestHelper.removeExercise(1L, testUser);
+		
+		assertEquals(0, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
+	}
+	
+	/**
+	 * Tests if a registered can list exercises
 	 */
 	@Test
 	public void testListExercise() {

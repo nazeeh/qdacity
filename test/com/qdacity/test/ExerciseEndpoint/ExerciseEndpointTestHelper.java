@@ -24,6 +24,16 @@ public class ExerciseEndpointTestHelper {
 		}
 	}
 	
+	static public void removeExercise(Long id, com.google.appengine.api.users.User loggedInUser) {
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		try {
+			ee.removeExercise(id, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User is Not Authorized");
+		}
+	}
+	
 	static public List<Exercise> listExercises(Long termCourseID, com.google.appengine.api.users.User loggedInUser) {
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		List<Exercise> exercises = null;
