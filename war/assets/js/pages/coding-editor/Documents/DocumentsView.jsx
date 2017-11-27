@@ -1,15 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import openSocket from 'socket.io-client'
-
 import ReactLoading from '../../../common/ReactLoading.jsx';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
-
-const SYNC_SERVICE = '$SYNC_SERVICE$';
 
 const StyledDocumentsHeader = styled.div `
 	text-align: center;
@@ -65,7 +61,7 @@ export default class DocumentsView extends React.Component {
 			documents: [],
 			selected: -1,
 			isExpanded: true,
-			loading: true
+			loading: true,
 		};
 
 		var setupPromise = this.setupView(this.props.projectID, this.props.projectType, this.props.report);
@@ -86,21 +82,6 @@ export default class DocumentsView extends React.Component {
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
-	}
-
-	componentDidMount() {
-		if (SYNC_SERVICE.indexOf('://') > -1) {
-			this.socket = openSocket('$SYNC_SERVICE$');
-			this.socket.on('connect', () => {
-				this.socket.emit('logon', this.props.account.state.email);
-			});
-			this.socket.on('meta', (meta, hostname) => {
-				console.log(meta, '(server: ' + hostname + ')');
-			});
-			this.socket.on('user_change', (docid, userlist) => {
-				console.log('Users changed. Currently watching this document:', userlist);
-			});
-		}
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -262,10 +243,10 @@ export default class DocumentsView extends React.Component {
 		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
-		if (SYNC_SERVICE.indexOf('://') > -1) {
-			this.socket.emit('user_leave', this.getActiveDocumentId());
-			this.socket.emit('user_enter', selectedID);
-		}
+		this.props.handleDocumentChange(
+			this.getActiveDocumentId(),
+			selectedID
+		);
 		this.setState({
 			selected: selectedID
 		});
