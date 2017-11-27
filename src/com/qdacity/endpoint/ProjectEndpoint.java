@@ -1,24 +1,5 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-
-import org.json.JSONException;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -28,24 +9,25 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.users.User;
-import com.qdacity.Authorization;
-import com.qdacity.Cache;
-import com.qdacity.Constants;
-import com.qdacity.Credentials;
-import com.qdacity.PMF;
-import com.qdacity.Sendgrid;
-import com.qdacity.project.AbstractProject;
-import com.qdacity.project.Project;
-import com.qdacity.project.ProjectRevision;
-import com.qdacity.project.ProjectType;
-import com.qdacity.project.RevisionComparator;
-import com.qdacity.project.ValidationProject;
+import com.qdacity.*;
+import com.qdacity.project.*;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.tasks.LastProjectUsed;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
+import org.json.JSONException;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Api(name = "qdacity",
 	version = Constants.VERSION,
@@ -72,6 +54,24 @@ public class ProjectEndpoint {
 
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
+		return getProjectsByUserId(cursorString, user.getUserId());
+	}
+
+	@ApiMethod(name = "project.listProjectByUserId",
+		path = "projectsByUserId ",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public CollectionResponse<Project> listProjectByUserId(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, String userId, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User requestedUser = (com.qdacity.user.User) Cache.getOrLoad(userId, com.qdacity.user.User.class);
+
+		Authorization.checkAuthorization(requestedUser, user);
+
+		return getProjectsByUserId(cursorString, user.getUserId());
+	}
+
+	private CollectionResponse<Project> getProjectsByUserId(@Nullable @Named("cursor") String cursorString, String userId) {
 		PersistenceManager mgr = null;
 		List<Project> execute = null;
 
@@ -80,7 +80,7 @@ public class ProjectEndpoint {
 
 			Query q = mgr.newQuery(Project.class, ":p.contains(owners)");
 
-			execute = (List<Project>) q.execute(Arrays.asList(user.getUserId()));
+			execute = (List<Project>) q.execute(Arrays.asList(userId));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
