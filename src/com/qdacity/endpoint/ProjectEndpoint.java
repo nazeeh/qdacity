@@ -68,7 +68,7 @@ public class ProjectEndpoint {
 
 		Authorization.checkAuthorization(requestedUser, user);
 
-		return getProjectsByUserId(cursorString, user.getUserId());
+		return getProjectsByUserId(cursorString, userId);
 	}
 
 	private CollectionResponse<Project> getProjectsByUserId(@Nullable @Named("cursor") String cursorString, String userId) {
