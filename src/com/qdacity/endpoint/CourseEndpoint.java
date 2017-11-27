@@ -569,6 +569,48 @@ public class CourseEndpoint {
 			return course;
 		}
 
+	@ApiMethod(name = "course.inviteUserTermCourse",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public TermCourse inviteUserTermCourse(@Named("termCourseID") Long termCourseID, @Named("userEmail") String userEmail, User user) throws UnauthorizedException {
+			TermCourse termCourse = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+
+				// Get the invited user
+				Query q = mgr.newQuery(com.qdacity.user.User.class, "email == '" + userEmail + "'");
+				@SuppressWarnings("unchecked")
+				List<com.qdacity.user.User> dbUsers = (List<com.qdacity.user.User>) q.execute();
+				String userID = dbUsers.get(0).getId();
+
+				// Get the inviting user
+				com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
+				termCourse.addInvitedUser(userID);
+				mgr.makePersistent(termCourse);
+
+				// Create notification
+				UserNotification notification = new UserNotification();
+				notification.setDatetime(new Date());
+				notification.setMessage("Term Course: " + termCourse.getTerm());
+				notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
+				notification.setOriginUser(user.getUserId());
+				notification.setTermCourse(termCourseID);
+				notification.setCourse(termCourse.getCourseID());
+				notification.setSettled(false);
+				notification.setType(UserNotificationType.INVITATION_TERM_COURSE);
+				notification.setUser(userID.toString());
+
+				mgr.makePersistent(notification);
+
+			} finally {
+				mgr.close();
+			}
+			return termCourse;
+		}
+	
 	@ApiMethod(name = "course.addCourseOwner",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },

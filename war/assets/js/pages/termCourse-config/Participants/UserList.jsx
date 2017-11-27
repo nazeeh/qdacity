@@ -1,6 +1,7 @@
 import React from 'react';
 
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
+import styled from 'styled-components';
 
 import {
 	StyledBoxList,
@@ -9,6 +10,14 @@ import {
 	StyledListItemBtn,
 	StyledListItemDefault
 } from '../../../common/styles/List';
+
+import {
+	BtnDefault
+} from '../../../common/styles/Btn.jsx';
+
+const StyledInviteButton = styled.div `
+	padding-bottom: 5px;
+`;
 
 export default class UserList extends React.Component {
 	constructor(props) {
@@ -83,6 +92,15 @@ export default class UserList extends React.Component {
 
 	render() {
 		var _this = this;
+
+		const newExerciseButton = <StyledInviteButton>
+
+					<BtnDefault onClick={this.showNewExerciseModal}>
+					<i className="fa fa-plus fa-fw"></i>
+					Invite a participant
+					</BtnDefault>
+
+		</StyledInviteButton>
 
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;

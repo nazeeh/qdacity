@@ -35,6 +35,9 @@ public class UserNotification {
 	Long course;
 	
 	@Persistent
+	Long termCourseID;
+	
+	@Persistent
 	String subject;
 
 	@Persistent
@@ -97,6 +100,14 @@ public class UserNotification {
 	
 	public void setCourse(Long course) {
 		this.course = course;
+	}
+	
+	public Long getTermCourse() {
+		return termCourseID;
+	}
+	
+	public void setTermCourse(Long termCourseID) {
+		this.termCourseID = termCourseID;
 	}
 	
 	public String getSubject() {
