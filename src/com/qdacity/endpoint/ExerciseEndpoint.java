@@ -3,7 +3,6 @@ package com.qdacity.endpoint;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -103,6 +102,32 @@ public class ExerciseEndpoint {
 		return execute;
 	}
 	
+	/**
+	 * This method removes the entity with primary key id.
+	 * It uses HTTP DELETE method.
+	 *
+	 * @param id the primary key of the entity to be deleted.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "exercise.removeExercise",
+
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public void removeExercise(@Named("id") Long id, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, id);
+			TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+			// Check if user is authorized
+			Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+			mgr.deletePersistent(exercise);
+		} finally {
+			mgr.close();
+		}
+	}
+	
 	private boolean containsExercise(Exercise exercise) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
@@ -120,5 +145,6 @@ public class ExerciseEndpoint {
 		return PMF.get().getPersistenceManager();
 	}
 
+	
 
 }

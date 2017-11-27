@@ -4,6 +4,8 @@ import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
+import Theme from '../../../common/styles/Theme.js';
+import Confirm from '../../../common/modals/Confirm';
 
 import {
 	StyledBoxList,
@@ -114,6 +116,23 @@ export default class ExerciseList extends React.Component {
 
 	}
 
+
+	deleteExercise(e, exercise, index) {
+		var _this = this;
+		var exercises = this.state.exercises;
+		e.stopPropagation();
+		var confirm = new Confirm('Do you want to delete the exercise ' + exercise.name + '?');
+		confirm.showModal().then(function () {
+			ExerciseEndpoint.removeExercise(exercise.id).then(function (resp) {
+				var index = exercises.indexOf(exercises.find(o => o.id === exercise.id));
+				exercises.splice(index, 1);
+				_this.setState ({
+					exercises: exercises
+				});
+			});
+		});
+
+	}
 	render() {
 		var _this = this;
 
@@ -138,6 +157,11 @@ export default class ExerciseList extends React.Component {
 		const renderListItems = itemsToDisplay.map((exercise, index) => {
 			return <StyledListItemDefault key={index} className="clickable">
 					<span > {exercise.name} </span>
+						<div>
+						<StyledListItemBtn onClick={(e) => this.deleteExercise(e, exercise, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+							<i className="fa fa-trash "></i>
+						</StyledListItemBtn>
+					</div>
 				</StyledListItemDefault>;
 		})
 
