@@ -1,7 +1,7 @@
 export default class Dropdown {
 	static isDropDownToggle(element) {
-		if(element instanceof HTMLElement) {
-			if(element.classList.contains('dropdownToggle')) {
+		if (element instanceof HTMLElement) {
+			if (element.classList.contains('dropdownToggle')) {
 				return true;
 			}
 			return this.isDropDownToggle(element.parentNode);
