@@ -1,7 +1,4 @@
-image: java:7
-
 before_script:
-
 
 after_script:
     - rm /tmp/$CI_PIPELINE_ID.json
@@ -11,7 +8,7 @@ stages:
   - test
   - report
   - deploy
- 
+
 frontend_prod_build:
   tags:
     - qdacity
@@ -72,7 +69,6 @@ rtcsvc_prod_build:
     expire_in: 1 week
   script:
     - cd realtime-service
-    - echo $RTCSVC_ENV > ./.env
     - npm install
 
 backend_prod_unittest:
@@ -135,6 +131,7 @@ rtcsvc_prod_unittest:
     expire_in: 1 mo
   script:
     - cd realtime-service
+    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
     - npm run test
   dependencies:
     - rtcsvc_prod_build
@@ -177,7 +174,9 @@ deploy_rtcsvc:
   script:
     - cd realtime-service
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
-    - echo $RTCSVC_ENV > ./.env
+    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
     - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-    - gcloud --project $PROJECT_ID_PRODUCTION app deploy app.yaml
+    - "echo \"--project: $PROJECT_ID_PRODUCTION\""
+    - "echo \"--version: $(cat .gae_version)\""
+    - gcloud --quiet --project=$PROJECT_ID_PRODUCTION app deploy --version=$(cat .gae_version) app.yaml
 
