@@ -29,14 +29,11 @@ import com.qdacity.Constants;
  */
 public class QdacityAuthenticator implements Authenticator {
 	
-	private final JacksonFactory jacksonFactory = new JacksonFactory();
-	private final GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), jacksonFactory)
-            .setAudience(Collections.singletonList(Constants.WEB_CLIENT_ID))
-            .build();
+	TokenValidator googleIdTokenValidator = new GoogleIdTokenValidator();
 	
-
     /**
      * Validates the received token and returns a User object if the token was valid.
+     * Dependent on the "AuthAuthority" header the matching TokenValidator is chosen.
      * @return the authenticated user or null if authentication failed.
      */
     @Override
@@ -48,22 +45,7 @@ public class QdacityAuthenticator implements Authenticator {
         if(authorizationHeader != null) {
         	String idTokenString = authorizationHeader.replace("Bearer ", "");
         	
-    		GoogleIdToken idToken = null;
-			try {
-				idToken = verifier.verify(idTokenString);
-			} catch (GeneralSecurityException | IOException e) {
-				java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The given authentication token could not be verified.");
-				return null;
-			}
-    		if (idToken != null) {
-    			Payload payload = idToken.getPayload();
-    			String userId = payload.getSubject();
-    			String email = payload.getEmail();
-    		  
-    			return new User(userId, email);
-    		} else {
-    			java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "Invalid ID token.");
-    		}
+    		return googleIdTokenValidator.validate(idTokenString);
         }
 
         return null;
