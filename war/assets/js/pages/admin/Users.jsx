@@ -5,7 +5,9 @@ import UserList from './UserList.jsx';
 
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import StyledSearchField from '../../common/styles/SearchField.jsx';
-import {BtnDefault} from "../../common/styles/Btn.jsx";
+import {
+	BtnDefault
+} from "../../common/styles/Btn.jsx";
 
 const StyledUserSearch = styled.div `
 	display:flex;
@@ -27,7 +29,7 @@ export default class Users extends React.Component {
 		this.updateSearch = this.updateSearch.bind(this);
 		this.findUsers = this.findUsers.bind(this);
 		this.removeUser = this.removeUser.bind(this);
-        this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
+		this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
 	}
 
 	updateSearch(e) {
@@ -63,11 +65,11 @@ export default class Users extends React.Component {
 
 	}
 
-    onSearchFieldKeyPress(event) {
-        if (event.key === "Enter") {
-            this.findUsers();
-        }
-    }
+	onSearchFieldKeyPress(event) {
+		if (event.key === "Enter") {
+			this.findUsers();
+		}
+	}
 
 	render() {
 		return (

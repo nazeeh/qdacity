@@ -8,7 +8,6 @@ export default class Exercises extends React.Component {
 	}
 
 	render() {
-		//if (this.props.isCourseOwner === false) return null;
 
 		return (
 			<div id="user-section" className="box box-default">

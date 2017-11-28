@@ -58,7 +58,7 @@ public class ExerciseEndpoint {
 				mgr.makePersistent(exercise);
 			}
 			catch (javax.jdo.JDOObjectNotFoundException ex) {
-				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+				throw new javax.jdo.JDOObjectNotFoundException("The corresponding term course was not found");
 			}
 			
 		} finally {

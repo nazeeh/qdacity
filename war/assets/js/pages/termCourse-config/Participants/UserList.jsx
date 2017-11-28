@@ -107,9 +107,6 @@ export default class UserList extends React.Component {
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = this.state.users.slice(firstItem, lastItem);
 
-		function prjClick(prj) {
-			console.log('Link');
-		}
 
 		const renderListItems = itemsToDisplay.map((user, index) => {
 			return <StyledListItemDefault key={index} className="clickable">

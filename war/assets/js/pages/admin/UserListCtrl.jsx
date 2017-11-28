@@ -2,7 +2,9 @@ import React from 'react';
 
 import styles from './styles.css'
 import CustomForm from '../../common/modals/CustomForm';
-import {BtnDefault} from "../../common/styles/Btn.jsx";
+import {
+	BtnDefault
+} from "../../common/styles/Btn.jsx";
 
 
 export default class UserListCtrl extends React.Component {
@@ -15,9 +17,9 @@ export default class UserListCtrl extends React.Component {
 	}
 
 	showUserInfo() {
-        const user = this.props.user;
-        const modal = new CustomForm('Edit User Info');
-        modal.addTextInput('firstName', "First Name", '', user.givenName);
+		const user = this.props.user;
+		const modal = new CustomForm('Edit User Info');
+		modal.addTextInput('firstName', "First Name", '', user.givenName);
 		modal.addTextInput('lastName', "Last Name", '', user.surName);
 		modal.addTextInput('email', "Email", '', user.email);
 		modal.addSelect('type', ["USER", "ADMIN"], "Type", user.type);

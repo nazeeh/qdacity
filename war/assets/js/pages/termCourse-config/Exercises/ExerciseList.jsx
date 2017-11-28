@@ -69,7 +69,7 @@ export default class ExerciseList extends React.Component {
 		var exercises = this.state.exercises;
 		exercise.name = name;
 		exercise.termCourseID = termCourseID;
-		ExerciseEndpoint.insertExercise(exercise).then(function (resp){
+		ExerciseEndpoint.insertExercise(exercise).then(function (resp) {
 			exercises.push(resp);
 			_this.setState({
 				exercises: exercises
@@ -126,7 +126,7 @@ export default class ExerciseList extends React.Component {
 			ExerciseEndpoint.removeExercise(exercise.id).then(function (resp) {
 				var index = exercises.indexOf(exercises.find(o => o.id === exercise.id));
 				exercises.splice(index, 1);
-				_this.setState ({
+				_this.setState({
 					exercises: exercises
 				});
 			});
@@ -149,10 +149,6 @@ export default class ExerciseList extends React.Component {
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = this.state.exercises.slice(firstItem, lastItem);
-
-		function prjClick(prj) {
-			console.log('Link');
-		}
 
 		const renderListItems = itemsToDisplay.map((exercise, index) => {
 			return <StyledListItemDefault key={index} className="clickable">

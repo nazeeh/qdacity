@@ -111,7 +111,7 @@ export default class TermCourseConfig extends React.Component {
 		var _this = this;
 		var confirm = new Confirm('Do you want to leave this term course?');
 		confirm.showModal().then(function () {
-			//Add the user to participants & set isUserParticipant to true for that term
+			//Remove the user from the termcourse participants
 			var termCourse = _this.state.termCourse;
 			_this.userPromise.then(function (resp) {
 				CourseEndpoint.removeParticipant(termCourse.id, resp.id).then(function (resp2) {
