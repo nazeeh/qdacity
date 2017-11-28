@@ -175,5 +175,9 @@ deploy_rtcsvc:
   only:
     - master
   script:
-    - cd 
-    - echo "I would deploy the realtime-service now, but I don't know, how :("
+    - cd realtime-service
+    - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
+    - echo $RTCSVC_ENV > ./.env
+    - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+    - gcloud --project $PROJECT_ID_PRODUCTION app deploy app.yaml
+
