@@ -373,6 +373,8 @@ class CodingEditor extends React.Component {
 			this.socket.on('user_change', (docid, userlist) => {
 				this.handleUserListChange(userlist);
 			});
+
+			window.addEventListener('unload', () => this.socket.disconnect());
 		}
 	}
 
