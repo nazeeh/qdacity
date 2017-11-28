@@ -17,7 +17,7 @@ var paths = {
 
 function handleError(err) {
   console.log(err.toString());
-  this.emit('end');
+  process.exit(1);
 }
 
 function jsBeautify(file){

@@ -1,7 +1,17 @@
 export default class Dropdown {
+	static isDropDownToggle(element) {
+		if(element instanceof HTMLElement) {
+			if(element.classList.contains('dropdownToggle')) {
+				return true;
+			}
+			return this.isDropDownToggle(element.parentNode);
+		}
+		return false;
+	}
 	static initDropDown() {
 		window.onclick = function (event) {
-			if (!event.target.matches('.dropdownToggle')) {
+
+			if (!Dropdown.isDropDownToggle(event.target)) {
 
 				var dropdowns = document.getElementsByClassName("dropdownContent");
 

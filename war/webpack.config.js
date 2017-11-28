@@ -3,6 +3,7 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
+	bail: true,
 	entry: {
 		'index' : './assets/js/pages/index/index.js'
     },
@@ -64,7 +65,7 @@ module.exports = {
   
     plugins: [
         // Avoid publishing files when compilation fails
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
 		new webpack.DefinePlugin({
     'process.env': {
       'NODE_ENV': JSON.stringify('production'),
