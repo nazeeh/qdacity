@@ -41,6 +41,9 @@ export default class Account extends React.Component {
 			_this.getProfile().then(function(userProfile) {
 				_this.setUser(userProfile);
 			});
+		} else {
+			// try silent sign in
+			_this.authenticationProvider.silentSignInWithGoogle();
 		}
 	}
 

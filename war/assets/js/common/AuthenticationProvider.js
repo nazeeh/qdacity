@@ -11,6 +11,13 @@ const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile, https:/
 export default class AuthenticationProvider {
 
   constructor() {
+    // gapi auth2 is used for silent sign-in
+    this.auth2 = gapi.auth2.init({
+			client_id: GOOGLE_CLIENT_ID,
+			scope: 'profile'
+    });
+
+
     hello.init({
       google: GOOGLE_CLIENT_ID
     })
@@ -50,6 +57,24 @@ export default class AuthenticationProvider {
         });
       }
     );
+    return promise;
+  }
+
+  /**
+   * Signs-in on an google account silently.
+   * Also synchronizes hellojs.
+   */
+  silentSignInWithGoogle() {
+    var _this = this;
+    const promise = new Promise(
+      function (resolve, reject) {
+        _this.auth2.isSignedIn.listen(function (googleUser) {
+          console.log(_this.auth2.currentUser.get().getAuthResponse().id_token);
+        });
+    });
+    console.log('debug1');
+    //this.auth2.signIn();
+    console.log('debug2');
     return promise;
   }
   
