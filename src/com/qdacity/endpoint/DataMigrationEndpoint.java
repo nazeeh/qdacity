@@ -8,15 +8,12 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
-import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.authentication.QdacityAuthenticator;
-import com.qdacity.maintenance.tasks.v10tov11Migration.V10toV11MigrationAuthenticationDatastore;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationDocumentResults;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationReports;
 import com.qdacity.maintenance.tasks.v4tov5migration.V4toV5MigrationValidationResults;
@@ -76,30 +73,4 @@ public class DataMigrationEndpoint {
 		futures.add(taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(updateTask)));
 
 	}
-
-	/**
-	 * Adds for each existing user a relation to a UserLoginProviderInformation.
-	 * This has the members GOOGLE as provider and the user id as the
-	 * externalUserId.
-	 * 
-	 * Precondition: all existing user's id matches the google authentication
-	 * user id.
-	 * 
-	 * @param user
-	 *            for access control
-	 * @throws UnauthorizedException 
-	 */
-	@ApiMethod(name = "migration.migrateV10toV11")
-	public void migrateV10toV11(User user) throws UnauthorizedException {
-		if(!Authorization.isUserAdmin(user)) {
-			throw new UnauthorizedException("The user is not authorized to perform this action!");
-		}
-		
-		Queue taskQueue = QueueFactory.getQueue("DataMigrationQueue");
-		List<Future<TaskHandle>> futures = new ArrayList<>();
-		V10toV11MigrationAuthenticationDatastore updateTask = new V10toV11MigrationAuthenticationDatastore();
-
-		futures.add(taskQueue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(updateTask)));
-	}
-
 }
