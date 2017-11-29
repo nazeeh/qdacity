@@ -28,10 +28,9 @@ export default class UnauthenticatedUserPanel extends React.Component {
 	render() {
 		return (
            <StyledPanel>
-               <h4>You are currently not logged in!</h4>
-               <p>Please sign-in or register to access this page!</p>
-
-               <SigninWithGoogleBtn account={this.props.account} history={this.props.history}/>
+                <h4>You are currently not logged in!</h4>
+                <p>Please sign-in or register to access this page!</p>
+                <p>Click <a href="/">here</a> to get to the Home.</p>
             </StyledPanel>
         );
 	}
