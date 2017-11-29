@@ -69,12 +69,12 @@ export default class AuthenticationProvider {
     const promise = new Promise(
       function (resolve, reject) {
         _this.auth2.isSignedIn.listen(function (googleUser) {
-          console.log(_this.auth2.currentUser.get().getAuthResponse().id_token);
+          const idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
+          console.log(idToken);
+          // sync gapi
+          // gapi.client.setToken({access_token: idToken});
         });
     });
-    console.log('debug1');
-    //this.auth2.signIn();
-    console.log('debug2');
     return promise;
   }
   
@@ -129,11 +129,26 @@ export default class AuthenticationProvider {
           reject();
           return;
         }
-        let session = hello.getAuthResponse(_this.network.google);
-        let idToken = session.id_token;
-        gapi.client.setToken({access_token: idToken});
+        const session = hello.getAuthResponse(_this.network.google);
+        const idToken = session.id_token;
+
+        const headerToken = _this.encodeTokenWithIdentityProvider(idToken, _this.network.google);
+        // Google just allows Authorization header costomization by using this:
+        gapi.client.setToken({access_token: 'Bearer ' + headerToken});
         resolve();
       });
     return promise
+  }
+
+  /**
+   * Encodes the token with federate identity provider information.
+   * This is a workaround because gapi.client doesn't provider header
+   * specification with the discovered API.
+   * @param {String} token 
+   * @param {Atring} provider 
+   * @returns the ecoded token as string.
+   */
+  encodeTokenWithIdentityProvider(token, provider) {
+    return token + ' ' + provider;
   }
 }

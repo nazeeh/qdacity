@@ -33,7 +33,8 @@ public class QdacityAuthenticator implements Authenticator {
 	
     /**
      * Validates the received token and returns a User object if the token was valid.
-     * Dependent on the "AuthAuthority" header the matching TokenValidator is chosen.
+     * The token should have the format "Bearer <token> <provider>".
+     * Dependent on the <provider> the matching TokenValidator is chosen.
      * @return the authenticated user or null if authentication failed.
      */
     @Override
@@ -43,9 +44,30 @@ public class QdacityAuthenticator implements Authenticator {
         
         //verify
         if(authorizationHeader != null) {
-        	String idTokenString = authorizationHeader.replace("Bearer ", "");
+        	String tokenInfo = authorizationHeader.replace("Bearer ", "");
+        	String[] tokenParts = tokenInfo.split(" ");
         	
-    		return googleIdTokenValidator.validate(idTokenString);
+        	if(tokenParts.length < 1) {
+        		// no token sent
+        		return null;
+        	}
+        	String idTokenString = tokenParts[0];
+        	
+    		// no provider information was sent. Use default case!
+        	String provider = "GoogleAccessToken";
+        	if(tokenParts.length >= 2) {
+        		provider = tokenParts[1];
+        	} 
+        	
+			switch (provider.toLowerCase()) {
+				case "google":
+		    		return googleIdTokenValidator.validate(idTokenString);
+		    		
+				case "googleaccesstoken":	
+				default:
+					// TODO implement Google Access Token validator.
+					return null;
+			}
         }
 
         return null;
