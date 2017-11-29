@@ -36,14 +36,19 @@ export default class Account extends React.Component {
 		});
 
 		// on page reloads: also reload profile data		
-		if(this.isSignedIn()) {
+		if(this.isSignedIn() && this.authenticationProvider.activeNetwork !== 'gapi') {
 			_this.updateToken();
 			_this.getProfile().then(function(userProfile) {
 				_this.setUser(userProfile);
 			});
 		} else {
 			// try silent sign in
-			_this.authenticationProvider.silentSignInWithGoogle();
+			_this.authenticationProvider.silentSignInWithGoogle().then(function() {
+				_this.updateToken();
+				_this.getProfile().then(function(userProfile) {
+					_this.setUser(userProfile);
+				});
+			});
 		}
 	}
 

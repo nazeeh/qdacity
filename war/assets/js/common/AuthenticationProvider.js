@@ -25,12 +25,18 @@ export default class AuthenticationProvider {
     this.network = {
       google: 'google'
     }
+
+    /**
+     * The active network.
+     * Equals one of the network properties or 'gapi'.
+     */
+    this.activeNetwork = '';
   }
 
 
   /**
    * Signs-in on google account via a popup.
-   *
+   * Sets the activeNetwork to 'google'.
    * @param callback
    * @return {Promise}
    */
@@ -51,59 +57,93 @@ export default class AuthenticationProvider {
           force: true // let user choose which account he wants to login with
         }).then(function() {
           // do nothing because the listener  gets the result.
+          _this.activeNetwork = _this.network.google;
         }, function(err) {
           console.log(err);
           reject(err);
         });
       }
     );
+    _this.activeNetwork = _this.network.google;
     return promise;
   }
 
   /**
    * Signs-in on an google account silently.
-   * Also synchronizes hellojs.
+   * Sets the activeNetwork to 'gapi'.
    */
   silentSignInWithGoogle() {
     var _this = this;
     const promise = new Promise(
       function (resolve, reject) {
         _this.auth2.isSignedIn.listen(function (googleUser) {
-          const idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
-          // sync gapi
-          // gapi.client.setToken({access_token: idToken});
+          _this.activeNetwork = 'gapi';
+          resolve();
         });
     });
+    this.activeNetwork = 'gapi';
     return promise;
   }
   
   /**
    * Get the current user.
-   *
+   * Respects the activeNetwork state to achieve this.
    * @return {Promise}
    */
   getProfile() {
-    return hello(this.network.google).api('me');
+    if(this.activeNetwork !== 'gapi') {
+      // check hellojs
+      return hello(this.activeNetwork).api('me');
+    }
+    else {
+      // elsewise check gapi.auth2
+      var _this = this;
+      const promise = new Promise(
+        function (resolve, reject) {
+          const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
+          const profile = {
+            displayName: gapiProfile.getName(),
+            email: gapiProfile.getEmail(),
+            thumbnail: gapiProfile.getImageUrl()
+          }
+          resolve(profile);
+        });
+      return promise;
+    }
   }
 
   /**
    * Checks if there is an logged-in user.
-   *
+   * Respects the activeNetwork state to achieve this.
    * @return {boolean}
    */
   isSignedIn() {
-    let session = hello.getAuthResponse(this.network.google);
-    let currentTime = (new Date()).getTime() / 1000;
-    return session && session.access_token && session.expires > currentTime;
+    if(this.activeNetwork !== 'gapi') {
+      // check hellojs
+      const session = hello.getAuthResponse(this.network.google);
+      const currentTime = (new Date()).getTime() / 1000;
+      return session && session.access_token && session.expires > currentTime;
+    }
+    else {
+      // elsewise check gapi.auth2
+      return this.auth2.isSignedIn.get();
+    }
   }
 
   /**
    * Tries to sign out the current user.
-   *
+   * Respects the activeNetwork state to achieve this.
    * @return {Promise}
    */
   signOut() {
-    return hello(this.network.google).logout();
+    if(this.activeNetwork !== 'gapi') {
+      // check hellojs
+      return hello(this.network.google).logout();
+    }
+    else {
+      // elsewise check gapi.auth2
+      window.open("https://accounts.google.com/logout");
+    }
   }
 
   /**
@@ -112,29 +152,41 @@ export default class AuthenticationProvider {
    * @param fkt
    */
   addAuthStateListener(fkt) {
+    // add to hellojs
     hello.on('auth', fkt);
+
+    // add to gapi.auth2
+    this.auth2.currentUser.listen(fkt);
   };
 
   /**
    * Gets the newest id token and provides the gapi with it.
-   *
+   * Respects the activeNetwork state to achieve this.
    * @return {Promise}
    */
   synchronizeTokenWithGapi() {
     const _this = this;
     const promise = new Promise(
       function (resolve, reject) {
+
         if (!_this.isSignedIn()) {
           reject();
           return;
         }
-        const session = hello.getAuthResponse(_this.network.google);
-        const idToken = session.id_token;
 
+        let idToken = '';
+        if(_this.activeNetwork !== 'gapi') {
+          // check hellojs
+          const session = hello.getAuthResponse(_this.network.google);
+          idToken = session.id_token;
+        }
+        else {
+          // elsewise check gapi.auth2
+          idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
+        }
         const headerToken = _this.encodeTokenWithIdentityProvider(idToken, _this.network.google);
         // Google just allows Authorization header costomization by using this:
         gapi.client.setToken({access_token: 'Bearer ' + headerToken});
-        resolve();
       });
     return promise
   }
