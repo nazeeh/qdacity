@@ -17,8 +17,8 @@ frontend_prod_build:
     - qdacity
   stage: build
   environment: Production
-  only:
-    - master
+  except:
+    - backup
   cache:
     key: "node_modules"
     untracked: true
@@ -44,8 +44,8 @@ backend_prod_build:
     - qdacity
   stage: build
   environment: Production
-  only:
-    - master
+  except:
+    - backup
   artifacts:
     paths:
       - war/WEB-INF/classes
@@ -59,8 +59,8 @@ backend_prod_unittest:
     - qdacity
   stage: test
   environment: Production
-  only:
-    - master
+  except:
+    - backup
   artifacts:
     paths:
       - target/site/jacoco-ut
@@ -76,8 +76,8 @@ frontend_prod_unittest:
     - qdacity
   stage: test
   environment: Production
-  only:
-    - master
+  except:
+    - backup
   cache:
     key: "node_modules"
     untracked: true
@@ -108,16 +108,16 @@ pages:
     paths:
       - public
     expire_in: 30 days
-  only:
-    - master
+  except:
+    - backup
 
 deploy_prod:
   tags:
     - qdacity
   stage: deploy
   environment: Production
-  only:
-    - master
+  except:
+    - backup
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - WAR=$(pwd)/war
