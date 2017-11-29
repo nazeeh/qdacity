@@ -9,6 +9,8 @@ import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import Teachers from "./Teachers/Teachers.jsx";
 
+import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
+
 const StyledDashboard = styled.div `
 	margin-top: 70px;
 	margin-left: auto;
@@ -113,7 +115,7 @@ export default class CourseDashboard extends React.Component {
 
 
 	render() {
-		if (!this.state.isSignedIn) return null;
+		if (!this.state.isSignedIn) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
 
 		return (
 			<StyledDashboard>

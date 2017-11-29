@@ -14,6 +14,8 @@ import RevisionHistory from "./RevisionHistory/RevisionHistory.jsx"
 import ParentProject from "./ParentProject/ParentProject.jsx"
 import PersonalReportList from "./PersonalReportList.jsx"
 
+import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
+
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 
@@ -120,7 +122,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.isSignedIn) return null;
+		if (!this.state.isSignedIn) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
 		this.init();
 
 		return (

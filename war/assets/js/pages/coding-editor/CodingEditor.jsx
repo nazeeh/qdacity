@@ -25,6 +25,8 @@ import {
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 
+import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
+
 
 const StyledCodingEditor = styled.div `
     padding-top: 51px;
@@ -351,7 +353,7 @@ class CodingEditor extends React.Component {
 	}
 
 	render() {
-		if (!this.state.isSignedIn) return null;
+		if (!this.state.isSignedIn) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
 		if (this.state.project.getCodesystemID() == -1) this.init();
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
