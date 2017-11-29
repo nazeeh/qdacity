@@ -84,9 +84,7 @@ export default class NavBar extends React.Component {
 												<div className="navbar-content">
 													<div className="row">
 														<div className="col-md-12">
-															<div id="navBtnSigninGoogle">
-																<SigninWithGoogleBtn account={this.account} history={this.props.history} />
-															</div>
+															<p>Click <a href="/">here</a> to get to Home</p>
 														</div>
 													</div>
 												</div>
