@@ -15,9 +15,11 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.PMF;
 import com.qdacity.admin.AdminStats;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.AdminEndpoint;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
 
@@ -25,7 +27,7 @@ import com.qdacity.user.UserType;
 public class AdminEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -41,7 +43,7 @@ public class AdminEndpointTest {
 
 	@Test
 	public void testGetAdminStats() throws UnauthorizedException {
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		UserEndpointTestHelper.addUser("2@asd.de", "User 2", "lastName", testUser);
 

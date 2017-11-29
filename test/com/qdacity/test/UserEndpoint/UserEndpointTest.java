@@ -27,11 +27,13 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.Cache;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
 import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
 
@@ -39,7 +41,7 @@ public class UserEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
-	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -55,17 +57,23 @@ public class UserEndpointTest {
 	public ExpectedException expectedException = ExpectedException.none();
 
 	@Test
-	public void testUserInsert() {
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+	public void testUserInsert() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 	}
 	
-	@Test
-	public void testGetUser() {
-		User user = new User();
+	@Test(expected = IllegalArgumentException.class)
+	public void testUserInsertNotAuthenticatedUser() throws UnauthorizedException {
 		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+	}
+	
+	@Test
+	public void testGetUser() throws UnauthorizedException {
+		User user = new User();
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		UserEndpoint ue = new UserEndpoint();
@@ -109,8 +117,8 @@ public class UserEndpointTest {
 	}
 	
 	@Test
-	public void testUserDelete() {		
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+	public void testUserDelete() throws UnauthorizedException {		
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
@@ -125,15 +133,15 @@ public class UserEndpointTest {
 	}
 	
 	@Test
-	public void testUserDeleteAuthorization() {
+	public void testUserDeleteAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -154,11 +162,11 @@ public class UserEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
-		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 
 		UserEndpoint ue = new UserEndpoint();
 		expectedException.expect(UnauthorizedException.class);
@@ -171,9 +179,9 @@ public class UserEndpointTest {
 	}
 
 	@Test
-	public void testFindUser() {
+	public void testFindUser() throws UnauthorizedException {
 		List<User> test = new ArrayList<User>();
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
@@ -187,10 +195,10 @@ public class UserEndpointTest {
 	}
 
 	@Test
-	public void testUpdateUserType() {
+	public void testUpdateUserType() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -214,8 +222,8 @@ public class UserEndpointTest {
 	}
 
 	@Test
-	public void testListUserByCourse() {
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+	public void testListUserByCourse() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUserA);
 		

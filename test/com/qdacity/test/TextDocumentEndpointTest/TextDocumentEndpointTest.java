@@ -22,6 +22,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.project.codesystem.Code;
@@ -29,11 +30,12 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 
 public class TextDocumentEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true));
-	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -46,9 +48,10 @@ public class TextDocumentEndpointTest {
 
 	/**
 	 * Tests if a registered user can insert a text document for a project
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTextDocumentInsert() {
+	public void testTextDocumentInsert() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		try {
@@ -67,9 +70,10 @@ public class TextDocumentEndpointTest {
 	
 	/**
 	 * Tests if a registered user can remove a text document for a project
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTextDocumentRemove() {
+	public void testTextDocumentRemove() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		try {
@@ -94,9 +98,10 @@ public class TextDocumentEndpointTest {
 
 	/**
 	 * Tests if a registered user can insert a text document for a project
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTextDocumentUpdate() {
+	public void testTextDocumentUpdate() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);

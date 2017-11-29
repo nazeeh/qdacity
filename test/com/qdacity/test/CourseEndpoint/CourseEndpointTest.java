@@ -24,18 +24,20 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
 
 public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
-	private final com.google.api.server.spi.auth.common.User testUser2 = new com.google.api.server.spi.auth.common.User("12345678", "asdf@asdf.de");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+	private final com.google.api.server.spi.auth.common.User testUser2 = new AuthenticatedUser("12345678", "asdf@asdf.de", LoginProviderType.GOOGLE);
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -52,9 +54,10 @@ public class CourseEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a course more than once
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCourseInsertMultiple() {
+	public void testCourseInsertMultiple() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		expectedException.expect(EntityExistsException.class);
@@ -91,9 +94,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered user can create a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCourseInsert() {
+	public void testCourseInsert() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 
@@ -103,9 +107,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can delete his own course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCourseRemove() {
+	public void testCourseRemove() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
@@ -117,9 +122,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can get a course in which he's an owner
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testGetCourse() {
+	public void testGetCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		Course retrievedCourse = new Course();
 		Long retrievedId = 0L;
@@ -158,9 +164,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can get a course if he's an Admin
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testGetCourseWithAdmin() {
+	public void testGetCourseWithAdmin() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		Course retrievedCourse = new Course();
 		Long retrievedId = 0L;
@@ -171,7 +178,7 @@ public class CourseEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 		
-		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -195,9 +202,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered can list courses
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListCourse() {
+	public void testListCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CollectionResponse<Course> retrievedCourses = null;
 		
@@ -230,9 +238,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can delete his own course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTermCourseRemove() {
+	public void testTermCourseRemove() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CourseEndpointTestHelper.addTermCourse(1L, testUser);
@@ -244,9 +253,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered can list terms for a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListTermCourse() {
+	public void testListTermCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		List<TermCourse> retrievedTerms = null;
 		
@@ -262,9 +272,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can get a term course in which he's an owner 
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testGetTermCourse() {
+	public void testGetTermCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		TermCourse retrievedCourse = new TermCourse();
 		Long retrievedId = 0L;
@@ -285,9 +296,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can become a participant of a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testAddParticipant() {
+	public void testAddParticipant() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		
@@ -320,9 +332,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can become a participant of a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testRemoveParticipant() {
+	public void testRemoveParticipant() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		PersistenceManager mgr = getPersistenceManager();
@@ -355,9 +368,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can become a participant of a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testAddSetStatus() {
+	public void testAddSetStatus() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		PersistenceManager mgr = getPersistenceManager();
@@ -396,10 +410,10 @@ public class CourseEndpointTest {
 	public void testCourseRemoveAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -427,10 +441,10 @@ public class CourseEndpointTest {
 	public void testCourseRemoveAuthWithAdmin() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -456,9 +470,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered user can create a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTermCourseInsert() {
+	public void testTermCourseInsert() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);

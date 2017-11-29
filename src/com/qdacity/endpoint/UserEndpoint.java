@@ -39,6 +39,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.project.Project;
@@ -250,18 +251,30 @@ public class UserEndpoint {
 	 * This inserts a new entity into App Engine datastore. If the entity already
 	 * exists in the datastore, an exception is thrown.
 	 * It uses HTTP POST method.
+	 * Be sure that the authenticator injects an instance of AuthenticatedUser, otherwise an Exception is thrown.
 	 *
 	 * @param user the entity to be inserted.
 	 * @return The inserted entity.
+	 * @throws UnauthorizedException 
+	 * @throws IllegalArgumentException if the loggedInUser is not an instance of AuthenticatedUser.
 	 */
 	@ApiMethod(name = "insertUser")
-	public User insertUser(User user, com.google.api.server.spi.auth.common.User loggedInUser) {
-		user.setId(loggedInUser.getId());
+	public User insertUser(User user, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		
+		if(loggedInUser == null) {
+			throw new UnauthorizedException("The User could not be authenticated");
+		}
+		if(!(loggedInUser instanceof AuthenticatedUser)) {
+			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
+		}
+		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+		
+		user.setId(authenticatedUser.getId());
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		user.setLastLogin(new Date());
-		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(LoginProviderType.GOOGLE, loggedInUser.getId())));
+		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId())));
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (user.getId() != null && containsUser(user)) {

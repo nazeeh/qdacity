@@ -29,6 +29,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.UserNotificationEndpoint;
 import com.qdacity.project.Project;
@@ -39,6 +40,7 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserNotification;
 
@@ -46,7 +48,7 @@ public class ProjectEndpointTest {
 
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
-	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -66,14 +68,15 @@ public class ProjectEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a project
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testProjectInsert() {
+	public void testProjectInsert() throws UnauthorizedException {
 		LocalServiceTestHelper helperLocal = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 		helper.tearDown();
 		helperLocal.setUp();
 		latch.reset(3);
-		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 		try {
 			ProjectEndpointTestHelper.addProject(1L, "New Project", "A description", 1L, loggedInUser);
@@ -132,7 +135,7 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testProjectInsertAuthorization() throws UnauthorizedException {
-		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 		
 		expectedException.expect(UnauthorizedException.class);
 		expectedException.expectMessage(is("User is not registered"));
@@ -144,10 +147,11 @@ public class ProjectEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a project
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testProjectUpdate() {
-		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	public void testProjectUpdate() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 
 		try {
@@ -207,10 +211,11 @@ public class ProjectEndpointTest {
 
 	/**
 	 * Tests if a user can delete his own project
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testProjectRemove() {
-		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	public void testProjectRemove() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 
 		try {
@@ -234,10 +239,11 @@ public class ProjectEndpointTest {
 
 	/**
 	 * Tests if a a deleted project also deletes the associated code system
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testProjectRemoveWithCodesystem() {
-		com.google.api.server.spi.auth.common.User loggedInUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	public void testProjectRemoveWithCodesystem() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 
 		CodeSystemTestHelper.addCodeSystem(1L, loggedInUser);
@@ -271,10 +277,10 @@ public class ProjectEndpointTest {
 	public void testProjectRemoveAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.api.server.spi.auth.common.User loggedInUserA = new com.google.api.server.spi.auth.common.User("1", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.api.server.spi.auth.common.User loggedInUserB = new com.google.api.server.spi.auth.common.User("2", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -316,7 +322,7 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for project creation");
 		}
 
-		com.google.api.server.spi.auth.common.User invitedUser = new com.google.api.server.spi.auth.common.User("7789456", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User invitedUser = new AuthenticatedUser("7789456", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
 
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
@@ -358,7 +364,7 @@ public class ProjectEndpointTest {
 			fail("User could not be authorized for project creation");
 		}
 
-		com.google.api.server.spi.auth.common.User invitedUser = new com.google.api.server.spi.auth.common.User("77777", "asd@asd.de");
+		com.google.api.server.spi.auth.common.User invitedUser = new AuthenticatedUser("77777", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
 
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
@@ -462,7 +468,7 @@ public class ProjectEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 		pe.createSnapshot(1L, "A test revision", testUser);
 
-		com.google.api.server.spi.auth.common.User student = new com.google.api.server.spi.auth.common.User("77777", "student@asd.de");
+		com.google.api.server.spi.auth.common.User student = new AuthenticatedUser("77777", "student@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
 
 		List<ProjectRevision> revisions = pe.listRevisions(1L, testUser);

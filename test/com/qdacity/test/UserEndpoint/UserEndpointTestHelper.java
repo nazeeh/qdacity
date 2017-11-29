@@ -7,7 +7,7 @@ import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.User;
 
 public class UserEndpointTestHelper {
-	static public void addUser(String email, String givenName, String surName, com.google.api.server.spi.auth.common.User loggedInUser) {
+	static public void addUser(String email, String givenName, String surName, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		User user = new User();
 		user.setEmail(email);
 		user.setGivenName(givenName);

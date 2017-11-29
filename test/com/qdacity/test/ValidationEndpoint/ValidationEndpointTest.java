@@ -23,6 +23,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
@@ -34,12 +35,13 @@ import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 
 public class ValidationEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
-	private final com.google.api.server.spi.auth.common.User testUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -57,9 +59,9 @@ public class ValidationEndpointTest {
 	@Test
 	public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
 		latch.reset(9);
-		com.google.api.server.spi.auth.common.User studentA = new com.google.api.server.spi.auth.common.User("77777", "student@group.riehle.org");
+		com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
-		com.google.api.server.spi.auth.common.User studentB = new com.google.api.server.spi.auth.common.User("88888", "student@group.riehle.org");
+		com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
 
 		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
@@ -109,10 +111,10 @@ public class ValidationEndpointTest {
 	@Test
 	public void testEvaluateRevisionAlpha() throws UnauthorizedException {
 		latch.reset(9);
-		com.google.api.server.spi.auth.common.User studentA = new com.google.api.server.spi.auth.common.User("77777", "student@asd.de");
+		com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
 
-		com.google.api.server.spi.auth.common.User studentB = new com.google.api.server.spi.auth.common.User("88888", "student@asd.de");
+		com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentB);
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
@@ -148,10 +150,10 @@ public class ValidationEndpointTest {
 	@Test
 	public void testEvaluateRevisionKappa() throws UnauthorizedException {
 		latch.reset(9);
-		com.google.api.server.spi.auth.common.User studentA = new com.google.api.server.spi.auth.common.User("77777", "student@asd.de");
+		com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
 
-		com.google.api.server.spi.auth.common.User studentB = new com.google.api.server.spi.auth.common.User("88888", "student@asd.de");
+		com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentB);
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
