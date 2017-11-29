@@ -9,7 +9,7 @@ import TermCourse from './TermCourse';
 import BtnDefault from '../../common/styles/Btn.jsx';
 import Participants from "./Participants/Participants.jsx";
 import Exercises from "./Exercises/Exercises.jsx";
-
+import TitleRow from "./TitleRow/TitleRow.jsx"
 import Confirm from '../../common/modals/Confirm';
 
 import {
@@ -32,17 +32,15 @@ const StyledDashboard = styled.div `
 	display: grid;
     grid-template-columns: 6fr 6fr;
     grid-template-areas:
-        "terms teachers"
-				"joinButton joinButton";
+				"titlerow titlerow"
+        "terms teachers";
 	grid-column-gap: 20px;
 `;
 
-const StyledButton = styled.div `
-    grid-area: joinButton;
-		margin-left: auto;
-		margin-right: auto;
-		margin-top: 100px;
+const StyledTitleRow = styled.div `
+    grid-area: titlerow;
 `;
+
 export default class TermCourseConfig extends React.Component {
 	constructor(props) {
 		super(props);
@@ -64,6 +62,7 @@ export default class TermCourseConfig extends React.Component {
 	init() {
 		if (!this.userPromise) {
 			this.userPromise = this.props.account.getCurrentUser();
+			this.getTermCoursePromise = CourseEndpoint.getTermCourse(this.state.termCourse.id);
 			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(this.state.termCourse.getId());
 			this.setTermCourseInfo();
 		}
@@ -80,9 +79,12 @@ export default class TermCourseConfig extends React.Component {
 				termCourse.participants = resp.items;
 				(typeof (termCourse.participants.find(o => o.id === user.id)) == 'undefined') ? isUserParticipant = false: isUserParticipant = true;
 				termCourse.isUserParticipant = isUserParticipant;
-				_this.setState({
-					termCourse: termCourse,
-					isTermCourseOwner: isTermCourseOwner,
+				_this.getTermCoursePromise.then(function (resp) {
+					termCourse.term = resp.term;
+					_this.setState({
+						termCourse: termCourse,
+						isTermCourseOwner: isTermCourseOwner,
+					});
 				});
 			});
 		});
@@ -98,7 +100,6 @@ export default class TermCourseConfig extends React.Component {
 				CourseEndpoint.addParticipant(termCourse.id, resp.id).then(function (resp2) {
 					termCourse.participants.push(resp);
 					termCourse.isUserParticipant = true;
-					console.log(termCourse);
 					_this.setState({
 						termCourse: termCourse
 					});
@@ -118,7 +119,6 @@ export default class TermCourseConfig extends React.Component {
 					var userIndex = termCourse.participants.indexOf((typeof (termCourse.participants.find(o => o.id === resp.id)) == 'undefined'));
 					termCourse.participants.splice(userIndex, 1);
 					termCourse.isUserParticipant = false;
-					console.log(termCourse);
 					_this.setState({
 						termCourse: termCourse
 					});
@@ -154,6 +154,7 @@ export default class TermCourseConfig extends React.Component {
 		var termCourse = this.state.termCourse;
 		return (
 			<StyledDashboard>
+			<StyledTitleRow><TitleRow termCourse={this.state.termCourse}/></StyledTitleRow>
 						{this.renderExercises()}
 						{this.renderParticipants()}
 		  	</StyledDashboard>
