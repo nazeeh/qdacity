@@ -150,8 +150,11 @@ class CodingEditor extends React.Component {
 		this.setSearchResults = this.setSearchResults.bind(this);
 		
 		this.props.account.addAuthStateListener(function() {
-			_this.state.isSignedIn = _this.props.account.isSignedIn();
-			_this.setState(_this.state); 
+			const loginStatus = _this.props.account.isSignedIn();
+			if(loginStatus !== _this.state.isSignedIn) {
+				_this.state.isSignedIn = loginStatus;
+				_this.setState(_this.state); 
+			}
 		});
 
 		scroll(0, 0);
