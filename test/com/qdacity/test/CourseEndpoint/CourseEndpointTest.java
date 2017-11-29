@@ -35,6 +35,7 @@ public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.appengine.api.users.User testUser2 = new com.google.appengine.api.users.User("asdf@asdf.de", "bla", "12345678");
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -209,6 +210,39 @@ public class CourseEndpointTest {
 	}
 	
 	/**
+	 * Tests if a user can get a term course which doesn't exist
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testGetTermCourseInvalid() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expectMessage(is("Term Course does not exist"));
+
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.getTermCourse(1L, testUser);
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(0, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		
+	}
+	
+	/**
+	 * Tests if a user can delete his own course
+	 */
+	@Test
+	public void testTermCourseRemove() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		CourseEndpointTestHelper.removeTermCourse(1L, testUser);
+		assertEquals(0, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+	}
+	
+	/**
 	 * Tests if a registered can list terms for a course
 	 */
 	@Test
@@ -224,6 +258,153 @@ public class CourseEndpointTest {
 		
 		assertEquals(2, retrievedTerms.size());
 
+	}
+	
+	/**
+	 * Tests if a registered can list terms for a course
+	 */
+	@Test
+	public void testListTermCourseByParticipant() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		List<TermCourse> retrievedTerms = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description", testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		
+		retrievedTerms = CourseEndpointTestHelper.listTermCourseByParticipant(1L, testUser);
+		
+		assertEquals(2, retrievedTerms.size());
+
+	}
+	
+	/**
+	 * Tests if a user can get a term course in which he's an owner 
+	 */
+	@Test
+	public void testGetTermCourse() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		TermCourse retrievedCourse = new TermCourse();
+		Long retrievedId = 0L;
+		
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		retrievedCourse = CourseEndpointTestHelper.getTermCourse(1L, testUser);
+		retrievedId = retrievedCourse.getId();
+
+		Query q = new Query("TermCourse");
+		Entity queryResult = ds.prepare(q).asSingleEntity();
+		
+		assertEquals(Long.valueOf(queryResult.getKey().getId()), retrievedId);
+	}
+	
+	
+	/**
+	 * Tests if a user can become a participant of a term course
+	 */
+	@Test
+	public void testAddParticipant() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisCourse = new TermCourse();
+		
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisCourse = termCourses.get(0);
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getParticipants().contains(testUser.getUserId()));
+		
+	}
+	
+	/**
+	 * Tests if a user can become a participant of a term course
+	 */
+	@Test
+	public void testRemoveParticipant() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisCourse = new TermCourse();
+		
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		
+		CourseEndpointTestHelper.removeParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisCourse = termCourses.get(0);
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(false, thisCourse.getParticipants().contains(testUser.getUserId()));
+		
+	}
+	
+	/**
+	 * Tests if a user can become a participant of a term course
+	 */
+	@Test
+	public void testAddSetStatus() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisCourse = new TermCourse();
+		
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpointTestHelper.setTermCourseStatus(1L, true, testUser);	
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
+		
+		
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisCourse = termCourses.get(0);
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.isOpen());
+		
 	}
 	
 	/**
@@ -395,4 +576,199 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		return PMF.get().getPersistenceManager();
 	}
 	
+	/**
+	 * Tests if a registered user can be added as an owner by another owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testAddCourseOwner() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addCourseOwner(1L, testUser.getUserId(), testUser);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getOwners().contains(testUser.getUserId()));
+	}
+	
+	/**
+	 * Tests if a registered user can be added as an owner by non owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testAddCourseOwnerNoAuth() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		expectedException.expect(UnauthorizedException.class);
+		expectedException.expectMessage(is("User is Not Authorized"));
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.addCourseOwner(1L, "2", testUser2);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
+	}
+	
+	/**
+	 * Tests if a registered user can be invited to be an owner by another owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testInviteUserCourse() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.inviteUserCourse(1L, testUser2.getEmail(), testUser);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getInvitedUsers().contains(testUser2.getUserId()));
+	}
+	
+	/**
+	 * Tests if a registered user can be invited to be an owner by another owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testInviteUserTermCourse() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisTermCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.inviteUserTermCourse(1L, testUser2.getEmail(), testUser);
+		
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisTermCourse = termCourses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getUserId()));
+	}
+	
+	/**
+	 * Tests if a registered user can accept an invitation to be an owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testAddCourseOwnerInvited() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		Course thisCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		
+		ce.inviteUserCourse(1L, testUser2.getEmail(), testUser);
+		ce.addCourseOwner(1L, testUser2.getUserId(), testUser2);
+		
+		javax.jdo.Query q = mgr.newQuery(Course.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<Course> courses = (List<Course>) q.execute(1L);
+			  if (!courses.isEmpty()) {
+			    	thisCourse = courses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser2.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisCourse.getOwners().contains(testUser2.getUserId()));
+	}
+	
+	/**
+	 * Tests if a registered user can list participants of a termCourse
+	 */
+	@Test
+	public void testListTermCourseParticipants() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		CollectionResponse<User> users = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(2L, testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		
+		users = (CollectionResponse<User>) CourseEndpointTestHelper.listTermCourseParticipants(2L, testUser);
+		
+		assertEquals(1, users.getItems().size());
+	}
 }

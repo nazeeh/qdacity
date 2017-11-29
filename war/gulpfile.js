@@ -17,7 +17,7 @@ var paths = {
 
 function handleError(err) {
   console.log(err.toString());
-  this.emit('end');
+  process.exit(1);
 }
 
 function jsBeautify(file){
@@ -87,7 +87,7 @@ function prettify(){
 
 function setConfig(){
 	if (argv.api_path) config.api_path = argv.api_path; //CLI args overwrite JSON config
-	if (argv.local) config.api_path = 'https://localhost:8888/_ah/api';
+	if (argv.local) config.api_path = 'http://localhost:8888/_ah/api';
 	if (argv.api_version) config.api_version = argv.api_version;
 	if (argv.client_id) config.client_id = argv.client_id;
 }

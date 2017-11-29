@@ -1,6 +1,7 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,8 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.course.Course;
+import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
@@ -68,40 +71,62 @@ public class UserEndpoint {
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
 	public List<User> listUser(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, com.google.appengine.api.users.User user) throws UnauthorizedException {
-
-		// Authorization.checkAuthorization(projectID, user); //FIXME consider public projects
-
-		// Set filter
-		List<Long> idsToFilter = new ArrayList<Long>();
-		idsToFilter.add(projectID);
-		Filter filter = new FilterPredicate("projects", FilterOperator.IN, idsToFilter);
-
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("User").setFilter(filter);
-
-		PreparedQuery pq = datastore.prepare(q);
-
-		Calendar cal = Calendar.getInstance();
-
-		Map<String, Integer> freq = new HashMap<String, Integer>();
-
-		// List<User> users = (List<User>)(List<?>)Lists.newArrayList( pq.asIterable() );
-
+		Project project = null;
+		List<User> myusers = null;
+		PersistenceManager mgr = getPersistenceManager();
+		
+		project = (Project) mgr.getObjectById(Project.class, projectID);
+		Authorization.checkAuthorization(project, user);
+		
+		Query q = mgr.newQuery(User.class);
+		myusers = (List<User>) q.execute(Arrays.asList());
+		
 		List<User> users = new ArrayList<User>();
 
-		for (Entity result : pq.asIterable()) {
+		for (User currentUser : myusers) {
 			User dbUser = new User();
-			dbUser.setGivenName((String) result.getProperty("givenName"));
-			dbUser.setSurName((String) result.getProperty("surName"));
-			dbUser.setProjects((List<Long>) result.getProperty("projects"));
-			dbUser.setCourses((List<Long>) result.getProperty("courses"));
-			dbUser.setId((String) result.getProperty("id"));
-			dbUser.setType(UserType.valueOf((String) result.getProperty("type")));
+			dbUser.setGivenName((String) currentUser.getGivenName());
+			dbUser.setSurName((String) currentUser.getSurName());
+			dbUser.setProjects((List<Long>) currentUser.getProjects());
+			dbUser.setCourses((List<Long>) currentUser.getCourses());
+			dbUser.setId((String) currentUser.getId());
+			dbUser.setType(UserType.valueOf((String) currentUser.getType().toString()));
 
-			users.add(dbUser);
+			if (currentUser.getProjects().contains(projectID)) {
+				users.add(dbUser);
+			}
 		}
 
+		return users;
+	}
+	
+	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all entities
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(
+		name = "user.listUserByCourse",
+		path = "userlistbycourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<User> listUserByCourse(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("courseID") Long courseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
+
+		Course course = null;
+		List<User> myusers = null;
+		PersistenceManager mgr = getPersistenceManager();
+		
+		course = (Course) mgr.getObjectById(Course.class, courseID);
+		Authorization.checkAuthorizationCourse(course, user);
+		
+		Query q = mgr.newQuery(User.class, ":p.contains(courses)");
+		List<User> users = (List<User>) q.execute(Arrays.asList(courseID));
+		
 		return users;
 	}
 
@@ -215,7 +240,7 @@ public class UserEndpoint {
 
 			user = (User) Cache.getOrLoad(id, User.class);
 			// FIXME Check if user is authorized
-			// Authorization.checkAuthorization(user, loggedInUser);
+			Authorization.checkAuthorization(user, loggedInUser);
 
 			switch (type) {
 				case "ADMIN":
@@ -294,7 +319,7 @@ public class UserEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public User updateUser(User user, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		// Check if user is authorized
-		// Authorization.checkAuthorization(user, loggedInUser);
+		Authorization.checkAuthorization(user, loggedInUser);
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -336,6 +361,7 @@ public class UserEndpoint {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private User getUser(String userId) throws UnauthorizedException {
 		User user = null;
 		try {
@@ -353,6 +379,8 @@ public class UserEndpoint {
 				user.setGivenName((String) userEntity.getProperty("givenName"));
 				user.setId(userEntity.getKey().getName());
 				user.setProjects((List<Long>) userEntity.getProperty("projects"));
+				user.setCourses((List<Long>) userEntity.getProperty("courses"));
+				user.setTermCourses((List<Long>) userEntity.getProperty("termCourses"));
 				user.setSurName((String) userEntity.getProperty("surName"));
 				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
 				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));

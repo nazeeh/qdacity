@@ -4,6 +4,10 @@ import styled from 'styled-components';
 import UserList from './UserList.jsx';
 
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
+import StyledSearchField from '../../common/styles/SearchField.jsx';
+import {
+	BtnDefault
+} from "../../common/styles/Btn.jsx";
 
 const StyledUserSearch = styled.div `
 	display:flex;
@@ -11,27 +15,6 @@ const StyledUserSearch = styled.div `
 	& > .searchfield{
 		flex:1;
 		margin-right: 5px;
-	}
-`;
-
-const StyledSearchField = styled.div `
-	float: none;
-	width: 100%;
-	display:flex;
-	flex-direction:row;
-	margin-bottom: 5px;
-	& > input[type=text] {
-		flex:1;
-	    padding:0.3em;
-	    border:0.2em solid #337ab7;
-	    border-radius: 5px 0px 0px 5px;
-	}
-	& > button {
-	  padding:0.6em 0.8em;
-	  background-color:#337ab7;
-	  color:white;
-	  border:none;
-	  border-radius: 0px 5px 5px 0px;
 	}
 `;
 
@@ -46,6 +29,7 @@ export default class Users extends React.Component {
 		this.updateSearch = this.updateSearch.bind(this);
 		this.findUsers = this.findUsers.bind(this);
 		this.removeUser = this.removeUser.bind(this);
+		this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
 	}
 
 	updateSearch(e) {
@@ -81,6 +65,12 @@ export default class Users extends React.Component {
 
 	}
 
+	onSearchFieldKeyPress(event) {
+		if (event.key === "Enter") {
+			this.findUsers();
+		}
+	}
+
 	render() {
 		return (
 			<div className="box box-default">
@@ -91,13 +81,16 @@ export default class Users extends React.Component {
 					<StyledUserSearch>
 						<StyledSearchField className="searchfield" id="searchform">
 							<input
-								type="text"
-								className="search"
-								placeholder="Search"
-								value={this.state.search}
-								onChange={this.updateSearch}
+                                type="text"
+                                className="search"
+                                placeholder="Search"
+                                value={this.state.search}
+                                onChange={this.updateSearch}
+                                onKeyPress={this.onSearchFieldKeyPress}
 							/>
-							<button id="userSearchFindBtn" type="button" id="search" onClick={this.findUsers}>Find!</button>
+							<BtnDefault id="btnSearch" onClick={this.findUsers}>
+								<i className="fa fa-search"/>
+							</BtnDefault>
 						</StyledSearchField>
 					</StyledUserSearch>
 					<UserList  users={this.state.users} removeUser={this.removeUser}/>
