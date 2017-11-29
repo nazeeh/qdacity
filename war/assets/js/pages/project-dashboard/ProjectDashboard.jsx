@@ -37,7 +37,8 @@ export default class ProjectDashboard extends React.Component {
 			isProjectOwner: false,
 			isValidationCoder: false,
 			googleChartsLoaded: false,
-			isSignedIn: false
+			isSignedIn: false,
+			isRegistered: false
 		};
 
 		this.props.chartScriptPromise.then(() => {
@@ -50,11 +51,11 @@ export default class ProjectDashboard extends React.Component {
 		const _this = this;
 		this.props.account.addAuthStateListener(function() {
 			// update on every auth state change
-			_this.updateLoginStatus();
+			_this.updateUserStatus();
 		});
 		
 		// update on initialization
-		this.updateLoginStatus();
+		this.updateUserStatus();
 
 		scroll(0, 0);
 	}
@@ -113,7 +114,7 @@ export default class ProjectDashboard extends React.Component {
 		return <AgreementStats  reports={this.state.reports} chartScriptPromise={this.props.chartScriptPromise}/>
 	}
 	
-	updateLoginStatus() {
+	updateUserStatus() {
 		const loginStatus = this.props.account.isSignedIn();
 		if(loginStatus !== this.state.isSignedIn) {
 			this.state.isSignedIn = loginStatus;
@@ -122,7 +123,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.isSignedIn) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
 		this.init();
 
 		return (

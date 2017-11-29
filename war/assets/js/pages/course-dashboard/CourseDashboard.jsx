@@ -38,7 +38,8 @@ export default class CourseDashboard extends React.Component {
 		this.state = {
 			course: course,
 			isCourseOwner: false,
-			isSignedIn: false
+			isSignedIn: false,
+			isRegistered: false
 		};
 		$("body").css({
 			overflow: "auto"
@@ -47,11 +48,11 @@ export default class CourseDashboard extends React.Component {
 		const _this = this;
 		this.props.account.addAuthStateListener(function() {
 			// update on every auth state change
-			_this.updateLoginStatus();
+			_this.updateUserStatus();
 		});
 		
 		// update on initialization
-		this.updateLoginStatus();
+		this.updateUserStatus();
 	}
 
 	setCourse(course) {
@@ -105,17 +106,21 @@ export default class CourseDashboard extends React.Component {
 		});
 	}
 	
-	updateLoginStatus() {
+	updateUserStatus() {
+		const _this = this;
 		const loginStatus = this.props.account.isSignedIn();
 		if(loginStatus !== this.state.isSignedIn) {
 			this.state.isSignedIn = loginStatus;
-			this.setState(this.state); 
+			this.props.account.getCurrentUser().then(function(user) {
+				_this.state.isRegistered = !!user;
+				_this.setState(_this.state); 
+			})
 		}
 	}
 
 
 	render() {
-		if (!this.state.isSignedIn) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
 
 		return (
 			<StyledDashboard>

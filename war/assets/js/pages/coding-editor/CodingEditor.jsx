@@ -120,7 +120,8 @@ class CodingEditor extends React.Component {
 				documentResults: []
 			},
 			mxGraphLoaded: false,
-			isSignedIn: false
+			isSignedIn: false,
+			isRegistered: false
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -153,11 +154,11 @@ class CodingEditor extends React.Component {
 		
 		this.props.account.addAuthStateListener(function() {
 			// update on every auth state change
-			_this.updateLoginStatus();
+			_this.updateUserStatus();
 		});
 		
 		// update on initialization
-		this.updateLoginStatus();
+		this.updateUserStatus();
 
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
@@ -343,17 +344,21 @@ class CodingEditor extends React.Component {
 		}
 		return null;
 	}
-	
-	updateLoginStatus() {
+
+	updateUserStatus() {
+		const _this = this;
 		const loginStatus = this.props.account.isSignedIn();
 		if(loginStatus !== this.state.isSignedIn) {
 			this.state.isSignedIn = loginStatus;
-			this.setState(this.state); 
+			this.props.account.getCurrentUser().then(function(user) {
+				_this.state.isRegistered = !!user;
+				_this.setState(_this.state); 
+			})
 		}
 	}
 
 	render() {
-		if (!this.state.isSignedIn) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
 		if (this.state.project.getCodesystemID() == -1) this.init();
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
