@@ -150,12 +150,12 @@ class CodingEditor extends React.Component {
 		this.setSearchResults = this.setSearchResults.bind(this);
 		
 		this.props.account.addAuthStateListener(function() {
-			const loginStatus = _this.props.account.isSignedIn();
-			if(loginStatus !== _this.state.isSignedIn) {
-				_this.state.isSignedIn = loginStatus;
-				_this.setState(_this.state); 
-			}
+			// update on every auth state change
+			_this.updateLoginStatus();
 		});
+		
+		// update on initialization
+		this.updateLoginStatus();
 
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
@@ -340,6 +340,14 @@ class CodingEditor extends React.Component {
                 deleteRelationship={this.deleteRelationship} />;
 		}
 		return null;
+	}
+	
+	updateLoginStatus() {
+		const loginStatus = this.props.account.isSignedIn();
+		if(loginStatus !== this.state.isSignedIn) {
+			this.state.isSignedIn = loginStatus;
+			this.setState(this.state); 
+		}
 	}
 
 	render() {

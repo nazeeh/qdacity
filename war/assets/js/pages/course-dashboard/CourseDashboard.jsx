@@ -44,12 +44,12 @@ export default class CourseDashboard extends React.Component {
 
 		const _this = this;
 		this.props.account.addAuthStateListener(function() {
-			const loginStatus = _this.props.account.isSignedIn();
-			if(loginStatus !== _this.state.isSignedIn) {
-				_this.state.isSignedIn = loginStatus;
-				_this.setState(_this.state); 
-			}
+			// update on every auth state change
+			_this.updateLoginStatus();
 		});
+		
+		// update on initialization
+		this.updateLoginStatus();
 	}
 
 	setCourse(course) {
@@ -101,6 +101,14 @@ export default class CourseDashboard extends React.Component {
 				isCourseOwner: isCourseOwner
 			});
 		});
+	}
+	
+	updateLoginStatus() {
+		const loginStatus = this.props.account.isSignedIn();
+		if(loginStatus !== this.state.isSignedIn) {
+			this.state.isSignedIn = loginStatus;
+			this.setState(this.state); 
+		}
 	}
 
 
