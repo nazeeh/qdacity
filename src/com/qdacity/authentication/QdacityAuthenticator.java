@@ -17,6 +17,7 @@ import com.google.api.server.spi.config.Authenticator;
 public class QdacityAuthenticator implements Authenticator {
 	
 	TokenValidator googleIdTokenValidator = new GoogleIdTokenValidator();
+	TokenValidator googleAccessTokenValidator = new GoogleAccessTokenValidator();
 	
     /**
      * Validates the received token and returns a User object if the token was valid.
@@ -52,8 +53,7 @@ public class QdacityAuthenticator implements Authenticator {
 		    		
 				case "googleaccesstoken":	
 				default:
-					// TODO implement Google Access Token validator.
-					return null;
+					return googleAccessTokenValidator.validate(idTokenString);
 			}
         }
 
