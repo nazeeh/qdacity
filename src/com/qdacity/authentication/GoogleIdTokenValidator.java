@@ -7,11 +7,11 @@ import java.util.logging.Level;
 
 import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Constants;
+import com.qdacity.user.LoginProviderType;
 
 /**
  * Validates Google ID tokens (OIDC).
@@ -29,7 +29,7 @@ public class GoogleIdTokenValidator implements TokenValidator {
 	 * @return the user object or null if authentication failed.
 	 */
 	@Override
-	public User validate(String token) {
+	public AuthenticatedUser validate(String token) {
 
 		GoogleIdToken idToken = null;
 		try {
@@ -43,7 +43,7 @@ public class GoogleIdTokenValidator implements TokenValidator {
 			String userId = payload.getSubject();
 			String email = payload.getEmail();
 		  
-			return new User(userId, email);
+			return new AuthenticatedUser(userId, email, LoginProviderType.GOOGLE);
 		} else {
 			java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "Invalid ID token.");
 			return null;

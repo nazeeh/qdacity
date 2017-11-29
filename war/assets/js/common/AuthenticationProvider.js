@@ -70,7 +70,6 @@ export default class AuthenticationProvider {
       function (resolve, reject) {
         _this.auth2.isSignedIn.listen(function (googleUser) {
           const idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
-          console.log(idToken);
           // sync gapi
           // gapi.client.setToken({access_token: idToken});
         });
