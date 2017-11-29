@@ -78,7 +78,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 			var _this = this;
 			this.props.account.signIn().then(function() {
 				_this.redirect();
-      });
+      		});
 		}
 	}
 

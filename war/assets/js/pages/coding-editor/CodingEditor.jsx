@@ -117,8 +117,8 @@ class CodingEditor extends React.Component {
 			searchResults: {
 				documentResults: []
 			},
-			mxGraphLoaded: false
-
+			mxGraphLoaded: false,
+			isSignedIn: false
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -148,6 +148,12 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
+		
+		this.props.account.addAuthStateListener(function() {
+			_this.state.isSignedIn = _this.props.account.isSignedIn();
+			_this.setState(_this.state); 
+		});
+
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
 
@@ -334,7 +340,7 @@ class CodingEditor extends React.Component {
 	}
 
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
+		if (!this.state.isSignedIn) return null;
 		if (this.state.project.getCodesystemID() == -1) this.init();
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >

@@ -35,12 +35,20 @@ export default class CourseDashboard extends React.Component {
 
 		this.state = {
 			course: course,
-			isCourseOwner: false
+			isCourseOwner: false,
+			isSignedIn: false
 		};
 		$("body").css({
 			overflow: "auto"
 		});
+
+		const _this = this;
+		this.props.account.addAuthStateListener(function() {
+			_this.state.isSignedIn = _this.props.account.isSignedIn();
+			_this.setState(_this.state); 
+		});
 	}
+
 	setCourse(course) {
 		this.setState({
 			course: course
@@ -94,9 +102,7 @@ export default class CourseDashboard extends React.Component {
 
 
 	render() {
-
-		if (!this.props.account.getProfile) return null;
-		if (!this.props.account.isSignedIn()) return null;
+		if (!this.state.isSignedIn) return null;
 
 		return (
 			<StyledDashboard>

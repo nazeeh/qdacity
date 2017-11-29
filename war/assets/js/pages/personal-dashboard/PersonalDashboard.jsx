@@ -11,7 +11,8 @@ export default class PersonalDashboard extends React.Component {
 		super(props);
 		this.state = {
 			projects: [],
-			courses: []
+			courses: [],
+			isSignedIn: false
 		};
 
 		this.setProjects = this.setProjects.bind(this);
@@ -21,6 +22,11 @@ export default class PersonalDashboard extends React.Component {
 		this.addCourse = this.addCourse.bind(this);
 		this.removeCourse = this.removeCourse.bind(this);
 
+		const _this = this;
+		this.props.account.addAuthStateListener(function() {
+			_this.state.isSignedIn = _this.props.account.isSignedIn();
+			_this.setState(_this.state); 
+		});
 
 		scroll(0, 0);
 	}
@@ -68,7 +74,7 @@ export default class PersonalDashboard extends React.Component {
 
 
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
+		if (!this.state.isSignedIn) return null;
 		return (
 			<div className="container main-content">
 				<div className="row">

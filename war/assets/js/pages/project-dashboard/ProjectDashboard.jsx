@@ -34,7 +34,8 @@ export default class ProjectDashboard extends React.Component {
 			reports: [],
 			isProjectOwner: false,
 			isValidationCoder: false,
-			googleChartsLoaded: false
+			googleChartsLoaded: false,
+			isSignedIn: false
 		};
 
 		this.props.chartScriptPromise.then(() => {
@@ -43,6 +44,13 @@ export default class ProjectDashboard extends React.Component {
 			});
 		});
 		this.addReports = this.addReports.bind(this);
+
+		const _this = this;
+		this.props.account.addAuthStateListener(function() {
+			_this.state.isSignedIn = _this.props.account.isSignedIn();
+			_this.setState(_this.state); 
+		});
+		
 		scroll(0, 0);
 	}
 
@@ -101,7 +109,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
+		if (!this.state.isSignedIn) return null;
 		this.init();
 
 		return (
