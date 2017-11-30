@@ -28,21 +28,22 @@ export default class SyncService {
 
 		const forcedConsole = window['con' + 'sole'];
 
-		if (SYNC_SERVICE.substr(0, 1) !== '$') {
-
-			this.socket = openSocket(SYNC_SERVICE);
-			this.socket.on('connect', () => {
-				this.socket.emit('logon', name, email, picSrc);
-			});
-			this.socket.on('meta', (meta, hostname) => {
-				forcedConsole.log('Connected to rtc-svc-server:', hostname);
-			});
-			this.socket.on('user_change', (docid, userlist) => {
-				this.handleUserListChange(userlist);
-			});
-
-			window.addEventListener('unload', () => this.disconnect.bind(this));
+		if (SYNC_SERVICE.substr(0, 1) === '$') {
+			throw new Error('SYNC_SERVICE url was not configured. Please check your build configuration');
 		}
+
+		this.socket = openSocket(SYNC_SERVICE);
+		this.socket.on('connect', () => {
+			this.socket.emit('logon', name, email, picSrc);
+		});
+		this.socket.on('meta', (meta, hostname) => {
+			forcedConsole.log('Connected to rtc-svc-server:', hostname);
+		});
+		this.socket.on('user_change', (docid, userlist) => {
+			this.handleUserListChange(userlist);
+		});
+
+		window.addEventListener('unload', () => this.disconnect.bind(this));
 	}
 
 	handleUserListChange(userlist) {
