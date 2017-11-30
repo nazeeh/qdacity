@@ -84,7 +84,7 @@ public class ChangeEndpoint {
 		return CollectionResponse.<Change> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
 
-    public List<Change> getAllChanges(@Named("projectID") Long projectId) {
+	public List<Change> getAllChanges(@Named("projectID") Long projectId) {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
 	Query query = pmr.newQuery(Change.class);
@@ -96,7 +96,7 @@ public class ChangeEndpoint {
 	List<Change> changes = (List<Change>) query.executeWithMap(paramValues);
 
 	return changes;
-    }
+	}
 
 	@ApiMethod(
 		name = "changelog.listChangeStats",
@@ -208,24 +208,24 @@ public class ChangeEndpoint {
 		if(objectType != null) {
 			filters.append("objectType == objectTypeParameter && ");
 			declaredParameters.append("String objectTypeParameter,");
-            parameters.add(objectType);
-        }
-        if(changeType != null) {
+			parameters.add(objectType);
+		}
+		if(changeType != null) {
 			filters.append("changeType == changeTypeParameter && ");
-            declaredParameters.append("String changeTypeParameter,");
-            parameters.add(changeType);
+			declaredParameters.append("String changeTypeParameter,");
+			parameters.add(changeType);
 		}
 
 		startDate = startDate == null ? new Date(0) : startDate;
 		endDate = endDate == null ? new Date() : endDate;
 
 		filters.append("datetime >= startDateParameter && ");
-        declaredParameters.append("java.util.Date startDateParameter,");
-        parameters.add(startDate);
+		declaredParameters.append("java.util.Date startDateParameter,");
+		parameters.add(startDate);
 
 		filters.append("datetime <= endDateParameter");
-        declaredParameters.append("java.util.Date endDateParameter");
-        parameters.add(endDate);
+		declaredParameters.append("java.util.Date endDateParameter");
+		parameters.add(endDate);
 
 		Query query = getPersistenceManager().newQuery(Change.class);
 		query.setFilter(filters.toString());
