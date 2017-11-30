@@ -15,8 +15,8 @@ import RemoveEdgeButton from './RemoveEdgeButton.jsx';
 
 const StyledButtonsContainer = styled.div `
     position: relative;
-    top: -100%;
-    height: 100%;
+    top: 0px;
+    left: -100%;
     pointer-events: none;
 `;
 

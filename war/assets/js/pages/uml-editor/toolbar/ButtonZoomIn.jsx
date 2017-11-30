@@ -26,7 +26,7 @@ export default class ButtonZoomIn extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledZoomBtn onClick={_this.buttonClicked}>
+			<StyledZoomBtn title="Zoom into the graph." onClick={_this.buttonClicked}>
 		        <i className="fa fa-search-plus"></i>
 	        </StyledZoomBtn>
 		);
