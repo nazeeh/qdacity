@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const StyledProjectName = styled.span `
+const StyledName = styled.span `
+	margin-left: 5px;
+`;
+
+const StyledHeading = styled.h5 `
 	margin-left: 5px;
 `;
 
@@ -11,17 +15,20 @@ export default class TitleRow extends React.Component {
 
 	}
 
-
 	render() {
+		var courseName = (this.props.course.name ? this.props.course.name : "")
 		var termCourseName = (this.props.termCourse.term ? this.props.termCourse.term : "")
-		console.log(termCourseName);
 		return (
-			<h3>
+			<StyledHeading>
 			<i className="fa fa-newspaper-o"></i>
-				<StyledProjectName>
-					{termCourseName}
-				</StyledProjectName>
-          </h3>
+			<StyledName onClick={(e) => this.courseTitleClicked(e)}>
+				This course: {courseName}
+			</StyledName>
+			-->
+				<StyledName onClick={(e) => this.termCourseTitleClicked(e)}>
+					TermCourse: {termCourseName}
+				</StyledName>
+          </StyledHeading>
 		);
 	}
 

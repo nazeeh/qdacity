@@ -53,6 +53,7 @@ export default class TermCourseConfig extends React.Component {
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
+			course: [],
 			termCourse: termCourse,
 			isTermCourseOwner: false,
 		};
@@ -81,10 +82,13 @@ export default class TermCourseConfig extends React.Component {
 				termCourse.isUserParticipant = isUserParticipant;
 				_this.getTermCoursePromise.then(function (resp) {
 					termCourse.term = resp.term;
-					_this.setState({
-						termCourse: termCourse,
-						isTermCourseOwner: isTermCourseOwner,
-					});
+					CourseEndpoint.getCourse(resp.courseID).then(function (course) {
+						_this.setState({
+							course: course,
+							termCourse: termCourse,
+							isTermCourseOwner: isTermCourseOwner,
+						});
+					})
 				});
 			});
 		});
@@ -154,7 +158,7 @@ export default class TermCourseConfig extends React.Component {
 		var termCourse = this.state.termCourse;
 		return (
 			<StyledDashboard>
-			<StyledTitleRow><TitleRow termCourse={this.state.termCourse}/></StyledTitleRow>
+			<StyledTitleRow><TitleRow course={this.state.course} termCourse={this.state.termCourse}/></StyledTitleRow>
 						{this.renderExercises()}
 						{this.renderParticipants()}
 		  	</StyledDashboard>
