@@ -117,6 +117,34 @@ public class ChangeEndpointTest {
 
 
 	}
+
+	@Test
+	public void testGetChanges() {
+		latch.reset(5);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.removeCode(22L, testUser);
+
+		try {
+			latch.await(10, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			fail("Deferred task did not finish in time");
+		}
+
+		ChangeEndpoint ce = new ChangeEndpoint();
+		List<Change> allChanges = ce.getChanges(null, null, null, null);
+		assertEquals(5, allChanges.size());
+		List<Change> createdChanges = ce.getChanges(null, ChangeType.CREATED, null, null);
+		assertEquals(3, createdChanges.size());
+		List<Change> userChanges = ce.getChanges(ChangeObject.USER, null, null, null);
+		assertEquals(1, userChanges.size());
+		List<Change> createdCodeChanges = ce.getChanges(ChangeObject.CODE, ChangeType.CREATED, null, null);
+		assertEquals(2, createdCodeChanges.size());
+	}
 }
 
 class ChangeComparator implements Comparator<Change> {
