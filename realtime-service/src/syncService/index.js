@@ -23,7 +23,7 @@ const emitUserChange = docid => {
         .emit(
           'user_change',
           docid,
-          Object.keys(res).reduce(
+          res ? Object.keys(res).reduce(
             (acc, id) => {
               if (clients.indexOf(id) > -1) {
                 const data = JSON.parse(res[id]);
@@ -34,7 +34,7 @@ const emitUserChange = docid => {
               }
             },
             []
-          )
+          ) : []
         );
     });
   });
