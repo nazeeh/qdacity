@@ -202,36 +202,30 @@ public class ChangeEndpoint {
 	public List<Change> getChanges(@Nullable @Named("objectType") ChangeObject objectType, @Nullable @Named("changeType") ChangeType changeType, @Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) {
 
 		StringBuilder filters = new StringBuilder();
-		StringBuilder declaredParameters = new StringBuilder();
-		List<Object> parameters = new ArrayList<>();
+		Map<String, Object> parameters = new HashMap<>();
 
 		if(objectType != null) {
-			filters.append("objectType == objectTypeParameter && ");
-			declaredParameters.append("String objectTypeParameter,");
-			parameters.add(objectType);
+			filters.append("objectType == :objectTypeParameter && ");
+			parameters.put("objectTypeParameter", objectType);
 		}
 		if(changeType != null) {
-			filters.append("changeType == changeTypeParameter && ");
-			declaredParameters.append("String changeTypeParameter,");
-			parameters.add(changeType);
+			filters.append("changeType == :changeTypeParameter && ");
+			parameters.put("changeTypeParameter", changeType);
 		}
 
 		startDate = startDate == null ? new Date(0) : startDate;
 		endDate = endDate == null ? new Date() : endDate;
 
-		filters.append("datetime >= startDateParameter && ");
-		declaredParameters.append("java.util.Date startDateParameter,");
-		parameters.add(startDate);
+		filters.append("datetime >= :startDateParameter && ");
+		parameters.put("startDateParameter", startDate);
 
-		filters.append("datetime <= endDateParameter");
-		declaredParameters.append("java.util.Date endDateParameter");
-		parameters.add(endDate);
+		filters.append("datetime <= :endDateParameter");
+		parameters.put("endDateParameter", endDate);
 
 		Query query = getPersistenceManager().newQuery(Change.class);
 		query.setFilter(filters.toString());
-		query.declareParameters(declaredParameters.toString());
 
-		return (List<Change>) query.executeWithArray(parameters.toArray());
+		return (List<Change>) query.executeWithMap(parameters);
 	}
 
 	/**
