@@ -243,7 +243,7 @@ export default class DocumentsView extends React.Component {
 		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
-		this.props.handleDocumentChange(
+		this.props.syncService.handleDocumentChange(
 			this.getActiveDocumentId(),
 			selectedID
 		);

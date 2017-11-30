@@ -6,8 +6,6 @@ import {
 } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
-import openSocket from 'socket.io-client'
-
 import UmlEditor from '../uml-editor/UmlEditor.jsx';
 import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
@@ -26,8 +24,7 @@ import {
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
-
-const SYNC_SERVICE = '$SYNC_SERVICE$';
+import SyncService from '../../common/SyncService';
 
 const StyledCodingEditor = styled.div `
     padding-top: 51px;
@@ -107,11 +104,9 @@ class CodingEditor extends React.Component {
 		this.report = urlParams.report;
 		this.documentsViewRef = {};
 		this.codesystemViewRef = {};
-		this.textEditorRef = null;
-		this.socket = null;
-		this.queuedUserListChange = null;
 		this.umlEditorRef = {};
 		this.codeViewRef = {};
+		this.syncService = new SyncService();
 		this.state = {
 			project: project,
 			editorCtrl: {},
@@ -154,8 +149,6 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
-		this.setTextEditorRef = this.setTextEditorRef.bind(this);
-		this.handleDocumentChange = this.handleDocumentChange.bind(this);
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
 
@@ -163,23 +156,17 @@ class CodingEditor extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.props.account.state.email !== '') {
-			this.initSocket();
-		}
+		this.syncService.logon(this.props.account.state);
 
 		document.getElementsByTagName("body")[0].style["overflow-y"] = "hidden";
 	}
 
 	componentWillReceiveProps() {
-		if (this.props.account.state.email !== '' && this.socket === null) {
-			this.initSocket();
-		}
+		this.syncService.logon(this.props.account.state);
 	}
 
 	componentWillUnmount() {
-		if (this.socket !== null) {
-			this.socket.disconnect();
-		}
+		this.syncService.disconnect();
 
 		document.getElementsByTagName("body")[0].style["overflow-y"] = "";
 	}
@@ -337,55 +324,6 @@ class CodingEditor extends React.Component {
 		}
 		this.umlEditorRef.codeUpdated(code);
 	}
-	
-	setTextEditorRef(ref) {
-		this.textEditorRef = ref;
-		if (this.queuedUserListChange != null) {
-			this.textEditorRef.updateCollaborators(this.queuedUserListChange);
-		}
-	}
-
-	handleUserListChange(userlist) {
-		if (this.textEditorRef === null) {
-			this.queuedUserListChange = userlist;
-		} else {
-			this.textEditorRef.updateCollaborators(userlist);
-		}
-	}
-
-	initSocket() {
-		const {
-			name,
-			email,
-			picSrc,
-		} = this.props.account.state;
-		const forcedConsole = window['con' + 'sole'];
-
-		if (SYNC_SERVICE.substr(0, 1) !== '$') {
-
-			this.socket = openSocket(SYNC_SERVICE);
-			this.socket.on('connect', () => {
-				this.socket.emit('logon', name, email, picSrc);
-			});
-			this.socket.on('meta', (meta, hostname) => {
-				forcedConsole.log('Connected to rtc-svc-server:', hostname);
-			});
-			this.socket.on('user_change', (docid, userlist) => {
-				this.handleUserListChange(userlist);
-			});
-
-			window.addEventListener('unload', () => this.socket.disconnect());
-		}
-	}
-
-	handleDocumentChange(oldDocumentId, newDocumentId) {
-		if (this.socket !== null) {
-			if (oldDocumentId !== -1) {
-				this.socket.emit('user_leave', oldDocumentId);
-			}
-			this.socket.emit('user_enter', newDocumentId);
-		}
-	}
 
 	renderUMLEditor() {
 		if (this.state.mxGraphLoaded) {
@@ -440,7 +378,7 @@ class CodingEditor extends React.Component {
                                 projectID={this.state.project.getId()}
                                 projectType={this.state.project.getType()}
                                 report={this.report}
-                                handleDocumentChange={this.handleDocumentChange}
+                                syncService={this.syncService}
                             />
                         </StyledDocumentsView>
                     </div>
@@ -509,10 +447,10 @@ class CodingEditor extends React.Component {
 
                     </StyledTextEditorMenu>
                         <TextEditor
-                            ref={ c => this.setTextEditorRef(c) }
                             initEditorCtrl={this.initEditorCtrl}
                             selectedEditor={this.state.selectedEditor}
-                            showCodingView={this.state.showCodingView} />
+                            showCodingView={this.state.showCodingView}
+                            syncService={this.syncService} />
                     <StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
                         {this.renderUMLEditor()}
                     </StyledUMLEditor>
