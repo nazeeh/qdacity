@@ -27,7 +27,7 @@ export default class ButtonExpandAll extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledButton onClick={_this.buttonClicked}>
+			<StyledButton title="Expands all classes." onClick={_this.buttonClicked}>
 		        <i className="fa fa-plus-square-o"></i>
 		        <span>Expand all</span>
 	        </StyledButton>

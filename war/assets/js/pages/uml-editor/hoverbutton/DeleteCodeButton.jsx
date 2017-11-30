@@ -17,6 +17,10 @@ export default class CodingViewButton extends ImageHoverButton {
 		return 'fa-trash';
 	}
 
+	getToolTip() {
+		return 'Removes the class (code) from the codesystem.';
+	}
+
 	getBounds() {
 		const sizeX = 34;
 		const sizeY = 32;

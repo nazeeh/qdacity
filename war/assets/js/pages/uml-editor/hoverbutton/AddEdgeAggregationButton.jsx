@@ -21,6 +21,10 @@ export default class AddEdgeAggregationButton extends HoverButton {
 		return 'umlOverlayButton umlOverlayButtonAddEdgeAggregation';
 	}
 
+	getToolTip() {
+		return 'Add a new aggregation.';
+	}
+
 	getBounds() {
 		const sizeX = 34;
 		const sizeY = 32;
