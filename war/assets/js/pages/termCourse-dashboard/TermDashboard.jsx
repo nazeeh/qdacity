@@ -9,7 +9,7 @@ import TermCourse from './TermCourse';
 import BtnDefault from '../../common/styles/Btn.jsx';
 import Participants from "./Participants/Participants.jsx";
 import Exercises from "./Exercises/Exercises.jsx";
-
+import TitleRow from "./TitleRow/TitleRow.jsx"
 import Confirm from '../../common/modals/Confirm';
 
 import {
@@ -32,9 +32,14 @@ const StyledDashboard = styled.div `
 	display: grid;
     grid-template-columns: 6fr 6fr;
     grid-template-areas:
+				"titlerow titlerow"
         "terms teachers"
 				"joinButton joinButton";
 	grid-column-gap: 20px;
+`;
+
+const StyledTitleRow = styled.div `
+    grid-area: titlerow;
 `;
 
 const StyledButton = styled.div `
@@ -55,6 +60,7 @@ export default class TermDashboard extends React.Component {
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
+			course: [],
 			termCourse: termCourse,
 			isTermCourseOwner: false,
 		};
@@ -65,6 +71,7 @@ export default class TermDashboard extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.account.getCurrentUser();
 			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(this.state.termCourse.getId());
+			this.getTermCoursePromise = CourseEndpoint.getTermCourse(this.state.termCourse.id);
 			this.setTermCourseInfo();
 		}
 	}
@@ -79,10 +86,15 @@ export default class TermDashboard extends React.Component {
 				resp.items = resp.items || [];
 				termCourse.participants = resp.items;
 				(typeof (termCourse.participants.find(o => o.id === user.id)) == 'undefined') ? isUserParticipant = false: isUserParticipant = true;
-				termCourse.isUserParticipant = isUserParticipant;
-				_this.setState({
-					termCourse: termCourse,
-					isTermCourseOwner: isTermCourseOwner,
+				_this.getTermCoursePromise.then(function (resp) {
+					termCourse.term = resp.term;
+					CourseEndpoint.getCourse(resp.courseID).then(function (course) {
+						_this.setState({
+							course: course,
+							termCourse: termCourse,
+							isTermCourseOwner: isTermCourseOwner,
+						});
+					})
 				});
 			});
 		});
@@ -166,6 +178,7 @@ export default class TermDashboard extends React.Component {
 		var termCourse = this.state.termCourse;
 		return (
 			<StyledDashboard>
+			<StyledTitleRow><TitleRow course={this.state.course} termCourse={this.state.termCourse}/></StyledTitleRow>
 						{this.renderExercises()}
 						{this.renderParticipants()}
 						<StyledButton>
