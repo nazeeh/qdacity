@@ -23,7 +23,8 @@
     "start": "node index.js",
     "test": "echo \"Info: no test specified\" && exit 0",
     "format": "prettier --single-quote --trailing-comma es5 --write \"src/**/*.js\"",
-    "lint": "eslint --color ."
+    "lint": "eslint --color .",
+    "watch": "nodemon index.js"
   },
   "dependencies": {
     "dotenv": "^4.0.0",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "eslint": "^4.12.0",
+    "nodemon": "^1.12.1",
     "prettier": "^1.8.2"
   }
 }
