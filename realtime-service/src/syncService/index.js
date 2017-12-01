@@ -53,6 +53,7 @@ const onLogon = socket => (name, email, picSrc) => {
     }),
   ]);
   socket.emit('meta', 'Welcome ' + name + '!', serverName);
+  Object.keys(socket.rooms).map(docid => emitUserChange(docid));
 };
 
 const onUserEnter = socket => (docid, data) =>
