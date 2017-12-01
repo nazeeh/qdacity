@@ -1,35 +1,12 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query.CompositeFilter;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
@@ -38,6 +15,14 @@ import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
 import com.qdacity.logs.ChangeType;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
 
 @Api(
 	name = "qdacity",
@@ -98,8 +83,8 @@ public class ChangeEndpoint {
 
 		return CollectionResponse.<Change> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
-	
-    public List<Change> getAllChanges(@Named("projectID") Long projectId) {
+
+	public List<Change> getAllChanges(@Named("projectID") Long projectId) {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
 	Query query = pmr.newQuery(Change.class);
@@ -111,7 +96,7 @@ public class ChangeEndpoint {
 	List<Change> changes = (List<Change>) query.executeWithMap(paramValues);
 
 	return changes;
-    }
+	}
 
 	@ApiMethod(
 		name = "changelog.listChangeStats",
@@ -210,6 +195,39 @@ public class ChangeEndpoint {
 		return change;
 	}
 
+	@ApiMethod(
+			name = "changelog.getChanges",
+			path = "changes"
+	)
+	public List<Change> getChanges(@Nullable @Named("objectType") ChangeObject objectType, @Nullable @Named("changeType") ChangeType changeType, @Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) {
+
+		StringBuilder filters = new StringBuilder();
+		Map<String, Object> parameters = new HashMap<>();
+
+		if(objectType != null) {
+			filters.append("objectType == :objectTypeParameter && ");
+			parameters.put("objectTypeParameter", objectType);
+		}
+		if(changeType != null) {
+			filters.append("changeType == :changeTypeParameter && ");
+			parameters.put("changeTypeParameter", changeType);
+		}
+
+		startDate = startDate == null ? new Date(0) : startDate;
+		endDate = endDate == null ? new Date() : endDate;
+
+		filters.append("datetime >= :startDateParameter && ");
+		parameters.put("startDateParameter", startDate);
+
+		filters.append("datetime <= :endDateParameter");
+		parameters.put("endDateParameter", endDate);
+
+		Query query = getPersistenceManager().newQuery(Change.class);
+		query.setFilter(filters.toString());
+
+		return (List<Change>) query.executeWithMap(parameters);
+	}
+
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already exists in the datastore, an exception is thrown. It uses HTTP POST method.
 	 *
@@ -285,5 +303,5 @@ public class ChangeEndpoint {
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
-	
+
 }
