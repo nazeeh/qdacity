@@ -1,29 +1,22 @@
 package com.qdacity.endpoint;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-
-import org.datanucleus.store.query.Query;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.GoogleIdTokenValidator;
 import com.qdacity.user.User;
-import com.qdacity.user.UserLoginProviderInformation;
 import com.qdacity.user.UserType;
 
 /**
