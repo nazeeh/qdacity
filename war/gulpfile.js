@@ -104,7 +104,8 @@ gulp.task('bundle-task', function() {
 	.pipe(replace('$API_PATH$', config.api_path))
 	.pipe(replace('$API_VERSION$', config.api_version))
 	.pipe(replace('$CLIENT_ID$', config.client_id))
-	.pipe(gulp.dest('dist/js/'));
+	.pipe(gulp.dest('dist/js/'))
+	.pipe(gulp.dest('../target/qdacity-war/dist/js/'));
 });
 
 gulp.task('set-react-production', function() {
@@ -151,7 +152,8 @@ gulp.task('watch',function() {
 	.pipe(replace('$API_PATH$', config.api_path))
 	.pipe(replace('$API_VERSION$', config.api_version))
 	.pipe(replace('$CLIENT_ID$', config.client_id))
-	.pipe(gulp.dest('dist/js/'));
+	.pipe(gulp.dest('dist/js/'))
+	.pipe(gulp.dest('../target/qdacity-war/dist/js/'));
 });
 
 gulp.task('test', () =>
