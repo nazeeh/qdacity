@@ -244,8 +244,8 @@ export default class DocumentsView extends React.Component {
 			this.saveCurrentDocument();
 		}
 		this.props.syncService.handleDocumentChange(
-			this.getActiveDocumentId(),
-			selectedID
+			this.state.selected === -1 ? null : this.state.selected.toString(),
+			selectedID.toString()
 		);
 		this.setState({
 			selected: selectedID

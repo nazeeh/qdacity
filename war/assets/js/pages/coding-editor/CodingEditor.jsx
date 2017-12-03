@@ -156,13 +156,17 @@ class CodingEditor extends React.Component {
 	}
 
 	componentDidMount() {
-		this.syncService.logon(this.props.account.state);
+		if (this.props.account.state.email !== '') {
+			this.syncService.logon(this.props.account.state);
+		}
 
 		document.getElementsByTagName("body")[0].style["overflow-y"] = "hidden";
 	}
 
-	componentWillReceiveProps() {
-		this.syncService.logon(this.props.account.state);
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.account.state.email !== '') {
+			this.syncService.logon(nextProps.account.state);
+		}
 	}
 
 	componentWillUnmount() {
