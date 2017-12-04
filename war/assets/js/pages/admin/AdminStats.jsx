@@ -78,7 +78,7 @@ export default class AdminStats extends React.Component {
 				</div>
 				<div>
 					User registered changes: {this.state.userCreatedChanges.length}
-					<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise}/>
+					<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise} changes={this.state.userCreatedChanges}/>
 				</div>
 			</div>
 		);

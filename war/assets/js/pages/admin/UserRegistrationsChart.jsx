@@ -9,7 +9,8 @@ export default class UserRegistrationsStats extends React.Component {
 		super(props);
 
 		this.state = {
-			googleChartsLoaded: false
+			googleChartsLoaded: false,
+			dataRows: []
 		};
 
 		this.props.chartScriptPromise.then(() => {
@@ -29,7 +30,25 @@ export default class UserRegistrationsStats extends React.Component {
 			width: 600,
 			height: 400
 		};
+
+		this.createDataRows(this.props.userCreatedChanges);
 	}
+
+	createDataRows(changes) {
+		let result = [];
+		changes.forEach((e) => {
+
+			result.append()
+		});
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if(JSON.stringify(this.props.dataRows) !== JSON.stringify(nextProps.dataRows))
+		{
+			this.createDataRows(nextProps.userCreatedChanges);
+		}
+	}
+
 
 	renderChart() {
 
@@ -37,9 +56,7 @@ export default class UserRegistrationsStats extends React.Component {
 		data.addColumn('string', 'Month');
 		data.addColumn('number', 'User registrations');
 
-		data.addRow(["11", 2]);
-		data.addRow(["12", 1]);
-		data.addRow(["1", 7]);
+		data.addRows(this.state.dataRows);
 
 		return (
 			<GoogleLineChart graphID="bla" data={data} options={this.options}/>
