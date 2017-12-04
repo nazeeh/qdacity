@@ -10,11 +10,9 @@ export default class AdminStats extends React.Component {
 		this.state = {
 			registeredUsers: "",
 			activeUsers: "",
-			projects: "",
-			userCreatedChanges: []
+			projects: ""
 		};
 		this.init();
-		//this.selectUser = this.selectUser.bind(this);
 	}
 
 	init() {
@@ -25,11 +23,6 @@ export default class AdminStats extends React.Component {
 				activeUsers: resp.activeUsers,
 				projects: resp.projects
 			});
-		});
-		ChangeLogEndpoint.getChanges("USER", "CREATED", null, null).then((result) => {
-			this.setState({
-				userCreatedChanges: result.items
-			})
 		});
 	}
 
@@ -77,8 +70,7 @@ export default class AdminStats extends React.Component {
 					</div>
 				</div>
 				<div>
-					User registered changes: {this.state.userCreatedChanges.length}
-					<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise} changes={this.state.userCreatedChanges}/>
+					<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise} />
 				</div>
 			</div>
 		);

@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
 
 import GoogleLineChart from '../../common/GoogleLineChart.jsx';
+import ChangeLogEndpoint from "../../common/endpoints/ChangeLogEndpoint";
 
 export default class UserRegistrationsStats extends React.Component {
 
@@ -10,7 +10,7 @@ export default class UserRegistrationsStats extends React.Component {
 
 		this.state = {
 			googleChartsLoaded: false,
-			dataRows: []
+			userCreatedChanges: null
 		};
 
 		this.props.chartScriptPromise.then(() => {
@@ -25,41 +25,83 @@ export default class UserRegistrationsStats extends React.Component {
 			});
 		});
 
-		this.options = {
-			title: 'User registrations by month',
-			width: 600,
-			height: 400
-		};
-
-		this.createDataRows(this.props.userCreatedChanges);
+		this.init();
 	}
 
-	createDataRows(changes) {
-		let result = [];
-		changes.forEach((e) => {
-
-			result.append()
+	init() {
+		const startDate = new Date();
+		startDate.setMonth(startDate.getMonth() - 1);
+		const endDate = new Date();
+		ChangeLogEndpoint.getChanges("USER", "CREATED", startDate, endDate).then((result) => {
+			this.setState({
+				userCreatedChanges: result.items
+			})
 		});
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if(JSON.stringify(this.props.dataRows) !== JSON.stringify(nextProps.dataRows))
-		{
-			this.createDataRows(nextProps.userCreatedChanges);
-		}
-	}
+	getDataRows(changes) {
+		const dict = {};
 
+		const minDate = new Date();
+		minDate.setMonth(minDate.getMonth() - 1);
+		const iteratingDate = new Date();
+		while(minDate <= iteratingDate) {
+			dict[new Date(iteratingDate.getFullYear(), iteratingDate.getMonth(), iteratingDate.getDate()).toISOString()] = 0;
+			iteratingDate.setDate(iteratingDate.getDate() - 1);
+		}
+
+
+		changes.forEach((e) => {
+			const date = new Date(e.datetime);
+			const day = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+				dict[day]++;
+		});
+
+		const keys = Object.keys(dict);
+		keys.sort();
+
+		const result = [];
+		keys.forEach((key) => {
+			result.push([new Date(key), dict[new Date(key).toISOString()]]);
+		});
+
+		return result;
+	}
 
 	renderChart() {
 
-		let data = new google.visualization.DataTable();
-		data.addColumn('string', 'Month');
+		const data = new google.visualization.DataTable();
+
+		data.addColumn('date', 'Day');
 		data.addColumn('number', 'User registrations');
 
-		data.addRows(this.state.dataRows);
+		data.addRows(this.getDataRows(this.state.userCreatedChanges));
+
+
+		const minDate = new Date();
+		minDate.setMonth(minDate.getMonth() - 1);
+		const options = {
+			title: 'User registrations in the last month',
+			width: 800,
+			height: 400,
+			hAxis: {
+				format: 'MMM dd, yyyy',
+				gridlines: {count: 15},
+				minValue: minDate,
+				maxValue: new Date()
+			},
+			vAxis: {
+				gridlines: {color: 'none'},
+				viewWindowMode: "pretty"
+			},
+			legend: {
+				position: "none"
+			}
+		};
+
 
 		return (
-			<GoogleLineChart graphID="bla" data={data} options={this.options}/>
+			<GoogleLineChart graphID="bla" data={data} options={options}/>
 		);
 
 	}
@@ -68,7 +110,7 @@ export default class UserRegistrationsStats extends React.Component {
 
 		return (
 			<div>
-				{this.state.googleChartsLoaded ? this.renderChart() : null}
+				{this.state.googleChartsLoaded && this.state.userCreatedChanges ? this.renderChart() : null}
 			</div>
 		);
 	}
