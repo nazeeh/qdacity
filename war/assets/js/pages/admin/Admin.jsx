@@ -22,7 +22,7 @@ export default class Admin extends React.Component {
 								<h3 className="box-title">Statistics</h3>
 							</div>
 							<div className="box-body">
-								<AdminStats />
+								<AdminStats chartScriptPromise={this.props.chartScriptPromise} />
 							</div>
 						</div>
 						<div id="changeLog"></div>

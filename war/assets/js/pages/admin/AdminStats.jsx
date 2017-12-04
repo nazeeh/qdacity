@@ -2,6 +2,7 @@ import React from 'react';
 
 import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
 import ChangeLogEndpoint from "../../common/endpoints/ChangeLogEndpoint";
+import UserRegistrationsChart from "./UserRegistrationsChart.jsx";
 
 export default class AdminStats extends React.Component {
 	constructor(props) {
@@ -77,6 +78,7 @@ export default class AdminStats extends React.Component {
 				</div>
 				<div>
 					User registered changes: {this.state.userCreatedChanges.length}
+					<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise}/>
 				</div>
 			</div>
 		);
