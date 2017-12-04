@@ -1,7 +1,4 @@
-image: java:7
-
 before_script:
-
 
 after_script:
     - rm /tmp/$CI_PIPELINE_ID.json
@@ -11,7 +8,7 @@ stages:
   - test
   - report
   - deploy
- 
+
 frontend_prod_build:
   tags:
     - qdacity
@@ -38,7 +35,7 @@ frontend_prod_build:
     - gulp bundle
     - gulp minify
     - gulp set-react-production
-    
+
 backend_prod_build:
   tags:
     - qdacity
@@ -53,6 +50,26 @@ backend_prod_build:
   script:
     - mvn clean process-classes
     - cp -R ./src/META-INF ./war/WEB-INF/classes
+
+rtcsvc_prod_build:
+  tags:
+    - qdacity
+  stage: build
+  environment: Production
+  only:
+    - master
+  cache:
+    key: "rtcsvc:node_modules"
+    untracked: true
+    paths:
+    - realtime-service/node_modules/
+  artifacts:
+    paths:
+      - realtime-service/
+    expire_in: 1 week
+  script:
+    - cd realtime-service
+    - npm install
 
 backend_prod_unittest:
   tags:
@@ -95,6 +112,30 @@ frontend_prod_unittest:
   dependencies:
     - frontend_prod_build
 
+rtcsvc_prod_unittest:
+  tags:
+    - qdacity
+  stage: test
+  environment: Production
+  only:
+    - master
+  cache:
+    key: "rtcsvc:node_modules"
+    untracked: true
+    paths:
+    - realtime-service/node_modules/
+    policy: pull
+  artifacts:
+    paths:
+      - realtime-service/coverage
+    expire_in: 1 mo
+  script:
+    - cd realtime-service
+    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
+    - npm run test
+  dependencies:
+    - rtcsvc_prod_build
+
 # Does not work yet, with gitlab pages not installed
 pages:
   tags:
@@ -122,3 +163,20 @@ deploy_prod:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - WAR=$(pwd)/war
     - appcfg.sh --enable_jar_splitting  --enable_jar_classes --noisy --service_account_json_key_file=/tmp/$CI_PIPELINE_ID.json update $WAR
+
+deploy_rtcsvc:
+  tags:
+    - qdacity
+  stage: deploy
+  environment: Production
+  only:
+    - master
+  script:
+    - cd realtime-service
+    - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
+    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
+    - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+    - "echo \"--project: $PROJECT_ID_PRODUCTION\""
+    - "echo \"--version: $(cat .gae_version)\""
+    - gcloud --quiet --project=$PROJECT_ID_PRODUCTION app deploy --version=$(cat .gae_version) app.yaml
+

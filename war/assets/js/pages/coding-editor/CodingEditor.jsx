@@ -24,7 +24,7 @@ import {
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
-
+import SyncService from '../../common/SyncService';
 
 const StyledCodingEditor = styled.div `
     padding-top: 51px;
@@ -106,6 +106,7 @@ class CodingEditor extends React.Component {
 		this.codesystemViewRef = {};
 		this.umlEditorRef = {};
 		this.codeViewRef = {};
+		this.syncService = new SyncService();
 		this.state = {
 			project: project,
 			editorCtrl: {},
@@ -155,10 +156,22 @@ class CodingEditor extends React.Component {
 	}
 
 	componentDidMount() {
+		if (this.props.account.state.email !== '') {
+			this.syncService.logon(this.props.account.state);
+		}
+
 		document.getElementsByTagName("body")[0].style["overflow-y"] = "hidden";
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.account.state.email !== '') {
+			this.syncService.logon(nextProps.account.state);
+		}
+	}
+
 	componentWillUnmount() {
+		this.syncService.disconnect();
+
 		document.getElementsByTagName("body")[0].style["overflow-y"] = "";
 	}
 
@@ -363,7 +376,14 @@ class CodingEditor extends React.Component {
                 <StyledSideBarDocuments>
                     <div id="documents-ui" >
                         <StyledDocumentsView selectedEditor={this.state.selectedEditor}>
-                            <DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
+                            <DocumentsView
+                                ref={(c) => this.documentsViewRef = c}
+                                editorCtrl={this.state.editorCtrl}
+                                projectID={this.state.project.getId()}
+                                projectType={this.state.project.getType()}
+                                report={this.report}
+                                syncService={this.syncService}
+                            />
                         </StyledDocumentsView>
                     </div>
                 </StyledSideBarDocuments>
@@ -430,7 +450,11 @@ class CodingEditor extends React.Component {
                         <input id="txtSizeSpinner"  />
 
                     </StyledTextEditorMenu>
-                        <TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
+                        <TextEditor
+                            initEditorCtrl={this.initEditorCtrl}
+                            selectedEditor={this.state.selectedEditor}
+                            showCodingView={this.state.showCodingView}
+                            syncService={this.syncService} />
                     <StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
                         {this.renderUMLEditor()}
                     </StyledUMLEditor>
