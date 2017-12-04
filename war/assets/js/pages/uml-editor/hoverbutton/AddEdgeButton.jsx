@@ -19,6 +19,10 @@ export default class AddEdgeButton extends HoverButton {
 		return 'umlOverlayButton umlOverlayButtonAddEdge';
 	}
 
+	getToolTip() {
+		return 'Adds a new edge (relation) to the model.';
+	}
+
 	getBounds() {
 		const sizeX = 34;
 		const sizeY = 32;

@@ -72,6 +72,7 @@ public class UserNotificationEndpoint {
 			userNotification.setDatetime((Date) result.getProperty("datetime"));
 			userNotification.setProject((Long) result.getProperty("project"));
 			userNotification.setCourse((Long) result.getProperty("course"));
+			userNotification.setTermCourse((Long) result.getProperty("termCourseID"));
 			userNotification.setOriginUser((String) result.getProperty("originUser"));
 			userNotification.setUser((String) result.getProperty("user"));
 			userNotification.setSubject((String) result.getProperty("subject"));

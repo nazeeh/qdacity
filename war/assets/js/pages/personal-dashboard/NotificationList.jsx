@@ -114,6 +114,16 @@ export default class NotificationList extends React.Component {
 		});
 	}
 
+	acceptInvitationTermCourse(notification) {
+		var _this = this;
+		console.log(notification);
+		CourseEndpoint.addParticipant(notification.termCourse).then(function (resp) {
+			var termCourse = resp;
+			console.log(resp);
+			_this.settleNotification(notification);
+		});
+	}
+
 	createValidationProject(notification) {
 
 		ProjectEndpoint.createValidationProject(notification.project, notification.originUser).then(function (resp) {});
@@ -197,6 +207,22 @@ export default class NotificationList extends React.Component {
 								<i className="fa fa-check"></i>
 							</StyledListItemBtn>
 						</StyledActionBtns>
+			}
+			break;
+		case "INVITATION_TERM_COURSE":
+			if (notification.settled) {
+				return <StyledGreenIcon className=" fa-lg">
+									<i  className="fa fa-check fa-2x "></i>
+								</StyledGreenIcon>
+			} else {
+				return <StyledActionBtns>
+								<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+									<i className="fa fa-times"></i>
+								</StyledListItemBtn>
+								<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitationTermCourse(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+									<i className="fa fa-check"></i>
+								</StyledListItemBtn>
+							</StyledActionBtns>
 			}
 			break;
 		default:

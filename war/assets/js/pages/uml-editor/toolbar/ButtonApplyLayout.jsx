@@ -27,7 +27,7 @@ export default class ButtonApplyLayout extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledApplyLayoutBtn onClick={_this.buttonClicked}>
+			<StyledApplyLayoutBtn title="Click to apply a new layout to the graph. The layouting algorithm tries to reduce the amount of overlapping nodes and edges." onClick={_this.buttonClicked}>
 		        <i className="fa fa-th"></i>
 		        <span>Apply Layout</span>
 	        </StyledApplyLayoutBtn>

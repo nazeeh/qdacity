@@ -27,7 +27,7 @@ export default class ButtonCollapseAll extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledButton onClick={_this.buttonClicked}>
+			<StyledButton title="Collapses all classes." onClick={_this.buttonClicked}>
 		        <i className="fa fa-minus-square-o"></i>
 		        <span>Collapse all</span>
 	        </StyledButton>

@@ -39,6 +39,10 @@ public class Exercise implements Serializable {
 		return id;
 	}
 	
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -47,9 +51,6 @@ public class Exercise implements Serializable {
 		return name;
 	}
 	
-	public void setId(Long id) {
-		this.id = id;
-	}
 	
 	public Long getTermCourseID() {
 		return termCourseID;

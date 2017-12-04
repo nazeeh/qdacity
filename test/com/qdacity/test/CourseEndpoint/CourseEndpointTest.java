@@ -23,6 +23,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
@@ -33,7 +34,7 @@ import com.qdacity.user.UserType;
 
 public class CourseEndpointTest {
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	private final com.google.appengine.api.users.User testUser2 = new com.google.appengine.api.users.User("asdf@asdf.de", "bla", "12345678");
 	
@@ -680,6 +681,42 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			}
 		
 		assertEquals(true, thisCourse.getInvitedUsers().contains(testUser2.getUserId()));
+	}
+	
+	/**
+	 * Tests if a registered user can be invited to be an owner by another owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testInviteUserTermCourse() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisTermCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.inviteUserTermCourse(1L, testUser2.getEmail(), testUser);
+		
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisTermCourse = termCourses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getUserId()));
 	}
 	
 	/**

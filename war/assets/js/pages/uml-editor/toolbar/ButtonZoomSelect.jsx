@@ -69,7 +69,7 @@ export default class ButtonZoomSelect extends React.Component {
 		});
 
 		return (
-			<StyledZoomBtn>
+			<StyledZoomBtn title="Select a zoom value.">
 		        <DropDownButton ref={(r) => {if (r) _this.dropDownButtonRef = r}} initText={this.zoomValue} items={items} fixedWidth={'35px'}></DropDownButton>
 	        </StyledZoomBtn>
 		);
