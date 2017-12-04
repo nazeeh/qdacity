@@ -25,6 +25,7 @@ import {
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import SyncService from '../../common/SyncService';
+import CollaboratorList from '../../common/SyncService/CollaboratorList';
 
 const StyledCodingEditor = styled.div `
     padding-top: 51px;
@@ -37,15 +38,16 @@ const StyledCodingEditor = styled.div `
         "footer footer";
 `;
 
+const StyledEditorToolbar = styled.div `
+    display: ${props => (props.selectedEditor !== PageView.UML) ? 'flex' : 'none'} !important;
+    text-align: center;
+    padding: 5px;
+    background-color: #e7e7e7;
+`;
 
 const StyledTextEditorMenu = styled.div `
     display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
-    text-align: center;
-    padding-top: 10px;
-    background-color: #e7e7e7;
 `
-
-
 
 const StyledEditableToggle = styled.a `
     display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
@@ -73,6 +75,10 @@ const StyledSideBarCodesystem = styled.div `
 const StyledEditor = styled.div `
     grid-area: editor;
     min-width: 0;
+`;
+
+const StyledPlaceholder = styled.div `
+    flex-grow: 1;
 `;
 
 const StyledFooter = styled.div `
@@ -411,51 +417,58 @@ class CodingEditor extends React.Component {
             <StyledEditor>
 
                 <div id="textdocument-ui">
-                    <StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
+                    <StyledEditorToolbar selectedEditor={this.state.selectedEditor}>
+                        <StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
 
-
-                        <a id="btnTxtSave" className="btn btn-default btn-default" >
-                            <i className="fa fa-floppy-o "></i>
-                            Save
-                        </a>
-
-                        <div className="btn-group ui-widget">
-                            <a id="btnTxtBold" className="btn btn-default" >
-                                <i className="fa fa-bold fa-1x"></i>
+                            <a id="btnTxtSave" className="btn btn-default btn-default" >
+                                <i className="fa fa-floppy-o "></i>
+                                Save
                             </a>
-                            <a id="btnTxtItalic" className="btn btn-default">
-                                <i className="fa fa-italic fa-1x"></i>
-                            </a>
-                            <a id="btnTxtUnderline" className="btn btn-default">
-                                <i className="fa fa-underline fa-1x"></i>
-                            </a>
-                            <label>&nbsp;&nbsp;Font: </label> <select id="combobox">
-                                <option value="">Select one...</option>
-                                <option value="Arial">Arial</option>
-                                <option value="Arial Black">Arial Black</option>
-                                <option value="Comic Sans MS">Comic Sans MS</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Impact">Impact</option>
-                                <option value="Lucida Console">Lucida Console</option>
-                                <option value="Palatino Linotype">Palatino Linotype</option>
-                                <option value="Tahoma">Tahoma</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Trebuchet MS">Trebuchet MS</option>
-                                <option value="Verdana">Verdana</option>
-                            </select>
 
-                        </div>
-                        <label >Font Size: </label>
-                        <input id="txtSizeSpinner"  />
+                            <div className="btn-group ui-widget">
+                                <a id="btnTxtBold" className="btn btn-default" >
+                                    <i className="fa fa-bold fa-1x"></i>
+                                </a>
+                                <a id="btnTxtItalic" className="btn btn-default">
+                                    <i className="fa fa-italic fa-1x"></i>
+                                </a>
+                                <a id="btnTxtUnderline" className="btn btn-default">
+                                    <i className="fa fa-underline fa-1x"></i>
+                                </a>
+                                <label>&nbsp;&nbsp;Font: </label> <select id="combobox">
+                                    <option value="">Select one...</option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Arial Black">Arial Black</option>
+                                    <option value="Comic Sans MS">Comic Sans MS</option>
+                                    <option value="Courier New">Courier New</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Impact">Impact</option>
+                                    <option value="Lucida Console">Lucida Console</option>
+                                    <option value="Palatino Linotype">Palatino Linotype</option>
+                                    <option value="Tahoma">Tahoma</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Trebuchet MS">Trebuchet MS</option>
+                                    <option value="Verdana">Verdana</option>
+                                </select>
 
-                    </StyledTextEditorMenu>
-                        <TextEditor
-                            initEditorCtrl={this.initEditorCtrl}
-                            selectedEditor={this.state.selectedEditor}
-                            showCodingView={this.state.showCodingView}
+                            </div>
+                            <label >Font Size: </label>
+                            <input id="txtSizeSpinner" />
+
+                        </StyledTextEditorMenu>
+                        <StyledPlaceholder />
+                        <CollaboratorList
                             syncService={this.syncService} />
-                    <StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
+                    </StyledEditorToolbar>
+                    <TextEditor
+                        initEditorCtrl={this.initEditorCtrl}
+                        selectedEditor={this.state.selectedEditor}
+                        showCodingView={this.state.showCodingView}
+                        syncService={this.syncService} />
+                    <StyledUMLEditor
+                        selectedEditor={this.state.selectedEditor}
+                        showCodingView={this.state.showCodingView}
+                        id="editor">
                         {this.renderUMLEditor()}
                     </StyledUMLEditor>
                 </div>

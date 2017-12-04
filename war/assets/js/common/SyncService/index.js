@@ -171,7 +171,10 @@ export default class SyncService {
 	 *                            objects sent to {@link this#logon}.
 	 */
 	_handleUserListChange(userlist) {
-		this._fireEvent('changeUserList', userlist);
+		this._fireEvent(
+			'changeUserList',
+			userlist.filter(({ email }) => email !== this._account.email)
+		);
 	}
 
 	/**
