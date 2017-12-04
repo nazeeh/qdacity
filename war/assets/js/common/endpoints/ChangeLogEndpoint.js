@@ -14,13 +14,13 @@ export default class ChangeLogEndpoint {
 	}
 
 	static getChanges(objectType, changeType, startDate, endDate) {
-        let apiMethod = gapi.client.qdacity.changelog.getChanges({
+		let apiMethod = gapi.client.qdacity.changelog.getChanges({
 			'objectType': objectType,
 			'changeType': changeType,
 			'startDate': startDate,
 			'endDate': endDate
-        });
-        return Promisizer.makePromise(apiMethod);
+		});
+		return Promisizer.makePromise(apiMethod);
 	}
 
 
