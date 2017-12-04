@@ -1,7 +1,6 @@
 import React from 'react';
 
 import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
-import ChangeLogEndpoint from "../../common/endpoints/ChangeLogEndpoint";
 import UserRegistrationsChart from "./UserRegistrationsChart.jsx";
 
 export default class AdminStats extends React.Component {
@@ -29,6 +28,9 @@ export default class AdminStats extends React.Component {
 
 	render() {
 		var _this = this;
+		const userRegistrationMaxDate = new Date();
+		const userRegistrationMinDate = new Date();
+		userRegistrationMinDate.setMonth(userRegistrationMinDate.getMonth() - 1);
 		return (
 			<div>
 				<div className="row">
@@ -70,7 +72,7 @@ export default class AdminStats extends React.Component {
 					</div>
 				</div>
 				<div>
-					<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise} />
+					<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise} minDate={userRegistrationMinDate} maxDate={userRegistrationMaxDate}/>
 				</div>
 			</div>
 		);

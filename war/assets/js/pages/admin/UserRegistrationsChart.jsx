@@ -3,7 +3,7 @@ import React from 'react';
 import GoogleLineChart from '../../common/GoogleLineChart.jsx';
 import ChangeLogEndpoint from "../../common/endpoints/ChangeLogEndpoint";
 
-export default class UserRegistrationsStats extends React.Component {
+export default class UserRegistrationsChart extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -29,10 +29,7 @@ export default class UserRegistrationsStats extends React.Component {
 	}
 
 	init() {
-		const startDate = new Date();
-		startDate.setMonth(startDate.getMonth() - 1);
-		const endDate = new Date();
-		ChangeLogEndpoint.getChanges("USER", "CREATED", startDate, endDate).then((result) => {
+		ChangeLogEndpoint.getChanges("USER", "CREATED", this.props.minDate, this.props.maxDate).then((result) => {
 			this.setState({
 				userCreatedChanges: result.items
 			})
@@ -42,26 +39,18 @@ export default class UserRegistrationsStats extends React.Component {
 	getDataRows(changes) {
 		const dict = {};
 
-		const minDate = new Date();
-		minDate.setMonth(minDate.getMonth() - 1);
-		const iteratingDate = new Date();
-		while(minDate <= iteratingDate) {
+		for(const iteratingDate = new Date(); this.props.minDate <= iteratingDate; iteratingDate.setDate(iteratingDate.getDate() - 1)) {
 			dict[new Date(iteratingDate.getFullYear(), iteratingDate.getMonth(), iteratingDate.getDate()).toISOString()] = 0;
-			iteratingDate.setDate(iteratingDate.getDate() - 1);
 		}
-
 
 		changes.forEach((e) => {
 			const date = new Date(e.datetime);
 			const day = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
-				dict[day]++;
+			dict[day]++;
 		});
 
-		const keys = Object.keys(dict);
-		keys.sort();
-
 		const result = [];
-		keys.forEach((key) => {
+		Object.keys(dict).forEach((key) => {
 			result.push([new Date(key), dict[new Date(key).toISOString()]]);
 		});
 
@@ -77,18 +66,12 @@ export default class UserRegistrationsStats extends React.Component {
 
 		data.addRows(this.getDataRows(this.state.userCreatedChanges));
 
-
-		const minDate = new Date();
-		minDate.setMonth(minDate.getMonth() - 1);
 		const options = {
-			title: 'User registrations in the last month',
 			width: 800,
 			height: 400,
 			hAxis: {
 				format: 'MMM dd, yyyy',
 				gridlines: {count: 15},
-				minValue: minDate,
-				maxValue: new Date()
 			},
 			vAxis: {
 				gridlines: {color: 'none'},
@@ -101,7 +84,7 @@ export default class UserRegistrationsStats extends React.Component {
 
 
 		return (
-			<GoogleLineChart graphID="bla" data={data} options={options}/>
+			<GoogleLineChart graphID="userRegistrationsChart" data={data} options={options}/>
 		);
 
 	}
