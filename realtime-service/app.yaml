@@ -3,5 +3,4 @@ env: flex
 service: realtime-service
 instance_class: B1
 automatic_scaling:
-  min_num_instances: 0
   max_num_instances: 1
