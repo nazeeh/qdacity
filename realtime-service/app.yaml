@@ -1,6 +1,6 @@
 runtime: nodejs
 env: flex
 service: realtime-service
-instance_class: B1
+instance_class: F1
 automatic_scaling:
   max_num_instances: 1
