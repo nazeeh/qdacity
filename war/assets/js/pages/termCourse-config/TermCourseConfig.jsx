@@ -158,7 +158,7 @@ export default class TermCourseConfig extends React.Component {
 		var termCourse = this.state.termCourse;
 		return (
 			<StyledDashboard>
-			<StyledTitleRow><TitleRow course={this.state.course} termCourse={this.state.termCourse}/></StyledTitleRow>
+			<StyledTitleRow><TitleRow course={this.state.course} termCourse={this.state.termCourse} history={this.props.history}/></StyledTitleRow>
 						{this.renderExercises()}
 						{this.renderParticipants()}
 		  	</StyledDashboard>
