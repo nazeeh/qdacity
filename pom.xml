@@ -193,7 +193,13 @@
 		<!-- for hot reload of the web application-->
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory> 
-		<outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
+		<outputDirectory>${basedir}/target/qdacity-war/WEB-INF/classes</outputDirectory>
+		<testResources>
+			<testResource>
+				<directory>${project.basedir}/src/META-INF</directory>
+				<targetPath>META-INF</targetPath>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.datanucleus</groupId>
@@ -265,7 +271,7 @@
 				<resource>
 					<directory>src/META-INF</directory>
 					<filtering>true</filtering>
-					<targetPath>WEB-INF/classes</targetPath>
+					<targetPath>WEB-INF/classes/META-INF</targetPath>
 				</resource>
 				<resource>
 					<directory>war/components/font-awesome</directory>
