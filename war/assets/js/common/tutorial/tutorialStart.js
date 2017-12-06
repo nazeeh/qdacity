@@ -60,7 +60,13 @@ export default class StartTutorial
 		}.bind(this));
 	}
 	
-	
+	highlightDomObject(obj)
+	{
+		
+		$(".overlayQdq2").addClass("overlayQdq2_x");
+		$('<div style="height:20px; width:20px; position: absolute; z-index:1905; top:0px; left:130px; " class="pointing"><img src="/assets/img/tutorial/arrowRightDirected.png" ></div>').insertBefore(obj);
+	}
+
 	show_box_and_overlay()
 	{
 		$(".overlayQdq1").stop(true);
