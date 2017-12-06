@@ -1,9 +1,12 @@
 import React from 'react'
 import styled from 'styled-components';
-
 import Account from './Account.jsx';
 
 const StyledAccountTab = styled.li `
+	display: ${props => props.loggedIn ? 'block' : 'none'} !important;
+`;
+
+const StyledHelpTab = styled.li `
 	display: ${props => props.loggedIn ? 'block' : 'none'} !important;
 `;
 
@@ -13,6 +16,14 @@ const StyledSigninTab = styled.li `
 
 const StyledNavbarItem = styled.a `
 	color: ${props => props.theme.defaultText} !important;
+`;
+
+const StyledDropdownLinks = styled.div `
+	background:#efe8e8;
+	margin: 5px;
+	&:hover {
+      background: #dcdada !important;
+    }
 `;
 
 export default class NavBar extends React.Component {
@@ -36,6 +47,12 @@ export default class NavBar extends React.Component {
 	showSigninDropdown() {
 		document.getElementById("signinView").classList.toggle("show");
 	}
+	
+	showHelpDropdown() {
+		document.getElementById("helpView").classList.toggle("show");
+	}
+	
+	
 
 	render() {
 		return (
@@ -49,6 +66,19 @@ export default class NavBar extends React.Component {
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
+								
+							<StyledHelpTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
+								<StyledNavbarItem className="dropdownToggle clickable" onClick={function(){this.showHelpDropdown();}.bind(this)}>Help</StyledNavbarItem>
+								<div id="helpView" className="dropdown-menu dropdownContent">
+							<StyledDropdownLinks className="clickable" onClick={function(){alert("Coming Soon...");}}>		
+								<div>Faq</div>
+							</StyledDropdownLinks>
+							<StyledDropdownLinks className="clickable" onClick={function(){this.props.tutorialEngine.controller.showOverviewWindow();}.bind(this)}>
+								<div>Tutorial Overview</div>	
+							</StyledDropdownLinks>
+							</div>
+							</StyledHelpTab>
+								
 								<li><StyledNavbarItem href="/#about">About</StyledNavbarItem></li>
 								<li><StyledNavbarItem href="/#contact">Contact</StyledNavbarItem></li>
 								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
