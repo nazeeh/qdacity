@@ -24,7 +24,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	redirect() {
 		var that = this;
-		this.context.authorizationProvider.getCurrentUser().then(function (value) {
+		this.context.authenticationProvider.getCurrentUser().then(function (value) {
 			that.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
@@ -63,7 +63,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 					if (data === false) {
 						return console.log('Cancelled');
 					}
-					_this.context.authorizationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(_this.redirect);
+					_this.context.authenticationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(_this.redirect);
 					return console.log('First', data.firstName, 'Last Name', data.lastName, 'Email', data.email);
 				}
 			});
@@ -102,6 +102,5 @@ export default class SigninWithGoogleBtn extends React.Component {
 }
 
 SigninWithGoogleBtn.contextTypes = {
-	authenticationProvider: PropTypes.object.require,
-	authorizationProvider: PropTypes.object.require
+	authenticationProvider: PropTypes.object.require
 };
