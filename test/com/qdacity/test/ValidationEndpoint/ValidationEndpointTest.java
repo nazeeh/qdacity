@@ -1,20 +1,5 @@
 package com.qdacity.test.ValidationEndpoint;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.jdo.PersistenceManager;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
@@ -34,6 +19,19 @@ import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import javax.jdo.PersistenceManager;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ValidationEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
@@ -56,7 +54,7 @@ public class ValidationEndpointTest {
 
 	@Test
 	public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
-		latch.reset(9);
+		latch.reset(12);
 		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@group.riehle.org", "bla", "77777");
 		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
 		com.google.appengine.api.users.User studentB = new com.google.appengine.api.users.User("student@group.riehle.org", "bla", "88888");
@@ -108,7 +106,7 @@ public class ValidationEndpointTest {
 
 	@Test
 	public void testEvaluateRevisionAlpha() throws UnauthorizedException {
-		latch.reset(9);
+		latch.reset(12);
 		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
 
@@ -147,7 +145,7 @@ public class ValidationEndpointTest {
 
 	@Test
 	public void testEvaluateRevisionKappa() throws UnauthorizedException {
-		latch.reset(9);
+		latch.reset(12);
 		com.google.appengine.api.users.User studentA = new com.google.appengine.api.users.User("student@asd.de", "bla", "77777");
 		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", studentA);
 

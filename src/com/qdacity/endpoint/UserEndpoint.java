@@ -1,37 +1,11 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query.CompositeFilter;
-import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.Query.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
@@ -39,12 +13,25 @@ import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeBuilder;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Api(
 	name = "qdacity",
@@ -74,8 +61,8 @@ public class UserEndpoint {
 		Project project = null;
 		List<User> myusers = null;
 		PersistenceManager mgr = getPersistenceManager();
-		
-		project = (Project) mgr.getObjectById(Project.class, projectID);
+
+		project = mgr.getObjectById(Project.class, projectID);
 		Authorization.checkAuthorization(project, user);
 		
 		Query q = mgr.newQuery(User.class);
@@ -85,12 +72,12 @@ public class UserEndpoint {
 
 		for (User currentUser : myusers) {
 			User dbUser = new User();
-			dbUser.setGivenName((String) currentUser.getGivenName());
-			dbUser.setSurName((String) currentUser.getSurName());
-			dbUser.setProjects((List<Long>) currentUser.getProjects());
-			dbUser.setCourses((List<Long>) currentUser.getCourses());
-			dbUser.setId((String) currentUser.getId());
-			dbUser.setType(UserType.valueOf((String) currentUser.getType().toString()));
+			dbUser.setGivenName(currentUser.getGivenName());
+			dbUser.setSurName(currentUser.getSurName());
+			dbUser.setProjects(currentUser.getProjects());
+			dbUser.setCourses(currentUser.getCourses());
+			dbUser.setId(currentUser.getId());
+			dbUser.setType(UserType.valueOf(currentUser.getType().toString()));
 
 			if (currentUser.getProjects().contains(projectID)) {
 				users.add(dbUser);
@@ -120,8 +107,8 @@ public class UserEndpoint {
 		Course course = null;
 		List<User> myusers = null;
 		PersistenceManager mgr = getPersistenceManager();
-		
-		course = (Course) mgr.getObjectById(Course.class, courseID);
+
+		course = mgr.getObjectById(Course.class, courseID);
 		Authorization.checkAuthorizationCourse(course, user);
 		
 		Query q = mgr.newQuery(User.class, ":p.contains(courses)");
@@ -299,6 +286,11 @@ public class UserEndpoint {
 		} finally {
 			mgr.close();
 		}
+
+		// Log change
+		Change change = new ChangeBuilder().makeInsertUserChange(user);
+		ChangeLogger.logChange(change);
+
 		return user;
 	}
 

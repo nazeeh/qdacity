@@ -23,6 +23,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
@@ -33,7 +34,7 @@ import com.qdacity.user.UserType;
 
 public class CourseEndpointTest {
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
 	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
 	private final com.google.appengine.api.users.User testUser2 = new com.google.appengine.api.users.User("asdf@asdf.de", "bla", "12345678");
 	
