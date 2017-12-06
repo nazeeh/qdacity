@@ -8,7 +8,9 @@ import WelcomePanel from "./WelcomePanel.jsx"
 import AdvertPanel from "./AdvertPanel.jsx"
 import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx"
 
+
 export default class PersonalDashboard extends React.Component {
+
 	constructor(props, context) {
 		super(props);
 
@@ -78,7 +80,7 @@ export default class PersonalDashboard extends React.Component {
 
 	render() {
 		if (!this.authState.isUserSignedIn || !this.authState.isUserRegistered) {
-			return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 		return (
 			<div className="container main-content">
