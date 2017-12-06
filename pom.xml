@@ -28,7 +28,7 @@
 		<dependency>
 		  <groupId>com.google.appengine</groupId>
 		  <artifactId>appengine-api-1.0-sdk</artifactId>
-		  <version>1.9.54</version>
+		  <version>1.9.59</version>
 		</dependency>
 		
 		<dependency>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-endpoints</artifactId>
-			<version>1.9.54</version>
+			<version>1.9.59</version>
 		</dependency>
 		
 		<dependency>
@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-labs</artifactId>
-			<version>1.9.54</version>
+			<version>1.9.59</version>
 		</dependency>
 		
 		<dependency>
@@ -145,21 +145,21 @@
 		<dependency>
 		  <groupId>com.google.appengine</groupId>
 		  <artifactId>appengine-testing</artifactId>
-		  <version>1.9.54</version>
+		  <version>1.9.59</version>
 		  <scope>test</scope>
 		</dependency>
 		
 		<dependency>
 		  <groupId>com.google.appengine</groupId>
 		  <artifactId>appengine-api-stubs</artifactId>
-		  <version>1.9.54</version>
+		  <version>1.9.59</version>
 		  <scope>test</scope>
 		</dependency>
 
 		<dependency>
 		  <groupId>com.google.appengine</groupId>
 		  <artifactId>appengine-tools-sdk</artifactId>
-		  <version>1.9.54</version>
+		  <version>1.9.59</version>
 		  <scope>test</scope>
 		</dependency>
 
@@ -204,7 +204,7 @@
 			<plugin>
 				<groupId>org.datanucleus</groupId>
 				<artifactId>maven-datanucleus-plugin</artifactId>
-				<version>3.2.0-m1</version>
+				<version>3.1.3</version>
 				<configuration>
 					<api>JDO</api>
 					<props>${basedir}/datanucleus.properties</props>
@@ -263,7 +263,7 @@
 			<version>3.1.0</version>
 			<configuration>
 			<warSourceDirectory>war</warSourceDirectory>
-			<warSourceExcludes>assets/,components/,node_modules/</warSourceExcludes>
+			<warSourceExcludes>assets/,components/,node_modules/,WEB-INF/lib/</warSourceExcludes>
 			<!--<webXml>war\WEB-INF\web.xml</webXml>  -->
 			<archiveClasses>true</archiveClasses>
 			<webResources>
