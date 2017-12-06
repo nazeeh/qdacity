@@ -63,7 +63,11 @@ export default class SigninWithGoogleBtn extends React.Component {
 					if (data === false) {
 						return console.log('Cancelled');
 					}
-					_this.context.authenticationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(_this.redirect);
+					_this.context.authenticationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(function() {
+						_this.context.updateUserStatus().then(function() {
+							_this.redirect();
+						});
+					});
 					return console.log('First', data.firstName, 'Last Name', data.lastName, 'Email', data.email);
 				}
 			});
@@ -102,5 +106,6 @@ export default class SigninWithGoogleBtn extends React.Component {
 }
 
 SigninWithGoogleBtn.contextTypes = {
-	authenticationProvider: PropTypes.object.require
+	authenticationProvider: PropTypes.object.require,
+	updateUserStatus: PropTypes.func.require
 };

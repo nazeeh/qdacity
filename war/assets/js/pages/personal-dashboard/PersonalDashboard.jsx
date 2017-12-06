@@ -124,5 +124,5 @@ export default class PersonalDashboard extends React.Component {
 }
 
 PersonalDashboard.contextTypes = {
-    getAuthState: PropTypes.object.require
+    getAuthState: PropTypes.func.require
 };

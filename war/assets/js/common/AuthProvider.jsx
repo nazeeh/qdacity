@@ -35,32 +35,45 @@ export default class AuthProvider extends React.Component {
 		}
     }
 
+    /**
+     * Updates the state -> the supplied authState
+     * @returns {Promise}
+     */
     updateUserStatus() {
-		const _this = this;
-        const loginStatus = this.authenticationProvider.isSignedIn();
-        if(!loginStatus && !this.state.isUserSignedIn) {
-            // no need to rerender!
-            return;
-        }
+        const _this = this;
+        const promise = new Promise(
+            function (resolve, reject) {
+                const loginStatus = _this.authenticationProvider.isSignedIn();
+                if(!loginStatus && !_this.state.isUserSignedIn) {
+                    // no need to rerender!
+                    resolve();
+                    return;
+                }
 
-        this.state.isUserSignedIn = loginStatus;
-        // don't rerender here in order to not show "you are not logged in" prompt!
-        if(!loginStatus) {
-            return;
-        }
+                _this.state.isUserSignedIn = loginStatus;
+                // don't rerender here in order to not show "you are not logged in" prompt!
+                if(!loginStatus) {
+                    resolve();
+                    return;
+                }
 
-        this.authorizationProvider.getCurrentUser().then(function(user) {
-            _this.state.isUserRegistered = !!user;
-            _this.setState(_this.state); 
-        }, function(err) {
-            _this.state.isUserRegistered = false;
-            _this.setState(_this.state); 
-        })
+                _this.authenticationProvider.getCurrentUser().then(function(user) {
+                    _this.state.isUserRegistered = !!user;
+                    _this.setState(_this.state); 
+                    resolve();
+                }, function(err) {
+                    _this.state.isUserRegistered = false;
+                    _this.setState(_this.state); 
+                    resolve();
+                })
+            });
+        return promise;
 	}
 
     getChildContext() {
         return {
             getAuthState: () => this.state,
+            updateUserStatus: () => { return this.updateUserStatus() },
             authenticationProvider: this.authenticationProvider,
             authorizationProvider: this.authorizationProvider
         };
@@ -78,7 +91,8 @@ export default class AuthProvider extends React.Component {
 
 
 AuthProvider.childContextTypes = {
-    getAuthState: PropTypes.object.require,
+    getAuthState: PropTypes.func.require,
     authenticationProvider: PropTypes.object.require,
-    authorizationProvider: PropTypes.object.require
+    authorizationProvider: PropTypes.object.require,
+    updateUserStatus: PropTypes.func.require
 }
