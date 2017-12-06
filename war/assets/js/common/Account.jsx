@@ -53,6 +53,14 @@ export default class Account extends React.Component {
     this.props.history.push('/PersonalDashboard');
 	}
 
+	onSignOut() {
+		const _this = this;
+		this.authenticationProvider.signOut().then(() => { 
+			_this.props.history.push('/'); 
+			location.reload(); 
+		});
+	}
+
 	render() {
 		console.log(this.state);
 		return (
@@ -79,7 +87,7 @@ export default class Account extends React.Component {
 								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={() => this.authenticationProvider.changeAccount().then(() => location.reload())}>Switch User</BtnDefault>
 							</div>
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.authenticationProvider.signout().then(() => { this.props.history.push('/'); location.reload(); })}>Sign Out</BtnDefault>
+								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.onSignOut()}>Sign Out</BtnDefault>
 							</div>
 						</div>
 					</div>
