@@ -101,7 +101,7 @@ export default class AuthenticationProvider {
         function (resolve, reject) {
           const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
           const profile = {
-            displayName: gapiProfile.getName(),
+            name: gapiProfile.getName(),
             email: gapiProfile.getEmail(),
             thumbnail: gapiProfile.getImageUrl()
           }
