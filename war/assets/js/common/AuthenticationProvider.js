@@ -141,7 +141,7 @@ export default class AuthenticationProvider {
     }
     else {
       // elsewise check gapi.auth2
-      window.open("https://accounts.google.com/logout");
+      return this.auth2.disconnect();
     }
   }
   
