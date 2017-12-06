@@ -59,7 +59,8 @@ export default class App extends React.Component {
 						<Route path="/CourseDashboard" render={(props)=><CourseDashboard account={this.account} tutorialEngine={this.tutorialEngine}  {...props} />}/>
 						<Route path="/Admin" render={()=><Admin account={this.account} tutorialEngine={this.tutorialEngine} />}/>
 						<Route path="/CodingEditor" render={(props)=><CodingEditor account={this.account} tutorialEngine={this.tutorialEngine}  mxGraphPromise={this.props.mxGraphPromise} {...props}/>}/>
-						<Route exact path="/" render={(props)=><Index account={this.account} tutorialEngine={this.tutorialEngine}  {...props}/>}/>											
+						<Route exact path="/" render={(props)=><Index account={this.account} tutorialEngine={this.tutorialEngine}  {...props}/>}/>						
+						<Route path="/" render={(props)=><Tutorial tutorialEngine={this.tutorialEngine} {...props}/>}/>						
 					</div>
 				</ThemeProvider>
 			</Router>
