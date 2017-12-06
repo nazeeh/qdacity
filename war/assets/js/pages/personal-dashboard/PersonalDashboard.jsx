@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 
 import ProjectList from "./ProjectList.jsx"
 import CourseList from "./CourseList.jsx"
@@ -8,13 +9,14 @@ import AdvertPanel from "./AdvertPanel.jsx"
 import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx"
 
 export default class PersonalDashboard extends React.Component {
-	constructor(props) {
+	constructor(props, context) {
 		super(props);
+
+		this.context = context;
+		this.authState = context.getAuthState();
 		this.state = {
 			projects: [],
 			courses: [],
-			isSignedIn: false,
-			isRegistered: false
 		};
 
 		this.setProjects = this.setProjects.bind(this);
@@ -24,16 +26,13 @@ export default class PersonalDashboard extends React.Component {
 		this.addCourse = this.addCourse.bind(this);
 		this.removeCourse = this.removeCourse.bind(this);
 
-		const _this = this;
-		this.props.account.addAuthStateListener(function() {
-			// update on every auth state change
-			_this.updateUserStatus();
-		});
-		
-		// update on initialization
-		this.updateUserStatus();
 
 		scroll(0, 0);
+	}
+
+	// lifecycle hook: update before rerender
+	componentWillUpdate() {
+		this.authState = this.context.getAuthState();
 	}
 
 	setProjects(projects) {
@@ -77,20 +76,10 @@ export default class PersonalDashboard extends React.Component {
 		});
 	}
 
-	updateUserStatus() {
-		const _this = this;
-		const loginStatus = this.props.account.isSignedIn();
-		if(loginStatus !== this.state.isSignedIn) {
-			this.state.isSignedIn = loginStatus;
-			this.props.account.getCurrentUser().then(function(user) {
-				_this.state.isRegistered = !!user;
-				_this.setState(_this.state); 
-			})
-		}
-	}
-
 	render() {
-		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		if (!this.authState.isUserSignedIn || !this.authState.isUserRegistered) {
+			return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		}
 		return (
 			<div className="container main-content">
 				<div className="row">
@@ -133,3 +122,7 @@ export default class PersonalDashboard extends React.Component {
 		);
 	}
 }
+
+PersonalDashboard.contextTypes = {
+    getAuthState: PropTypes.object.require
+};

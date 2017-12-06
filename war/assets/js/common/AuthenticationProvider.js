@@ -46,6 +46,7 @@ export default class AuthenticationProvider {
     const promise = new Promise(
       function (resolve, reject) {
         hello.on('auth.login', function(auth) {
+          _this.activeNetwork = _this.network.google;
           _this.synchronizeTokenWithGapi();
           resolve();
         });
@@ -64,7 +65,6 @@ export default class AuthenticationProvider {
         });
       }
     );
-    _this.activeNetwork = _this.network.google;
     return promise;
   }
 
@@ -81,7 +81,6 @@ export default class AuthenticationProvider {
           resolve();
         });
     });
-    this.activeNetwork = 'gapi';
     return promise;
   }
   
@@ -145,6 +144,31 @@ export default class AuthenticationProvider {
       window.open("https://accounts.google.com/logout");
     }
   }
+  
+    /**
+     * Loggs out the current user and starts the sign in process for a new user.
+     *
+     * @param callback
+     * @returns {Promise}
+     */
+    changeAccount() {
+      var _this = this;
+      var promise = new Promise(
+        function (resolve, reject) {
+          _this.signOut().then(function() {
+            _this.signInWithGoogle().then(function() {
+              resolve();
+            }, function(err) {
+              console.log('Error at changing Account!');
+              reject(err);
+            })
+          }, function(err) {
+            console.log('Error at changing Account!');
+            reject(err);
+          });
+        });
+      return promise;
+    }
 
   /**
    * Always calls the given fkt if the auth state changes.
