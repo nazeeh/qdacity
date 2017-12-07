@@ -269,10 +269,20 @@
 					<filtering>true</filtering>
 					<targetPath>components/mxGraph</targetPath>
 				</resource>
+				
 				<resource>
 					<directory>war/assets/img</directory>
 					<filtering>true</filtering>
 					<targetPath>assets/img</targetPath>
+				</resource>
+				<resource>
+					<directory>war/assets/css/</directory>
+					<includes>
+						<include>codingBrackets.css</include>
+						<include>editorView.css</include>
+					</includes>
+					<filtering>true</filtering>
+					<targetPath>assets/css</targetPath>
 				</resource>
 			</webResources>		
 		  </configuration>
