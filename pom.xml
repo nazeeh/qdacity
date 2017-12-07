@@ -220,6 +220,7 @@
 			   <artifactId>appengine-maven-plugin</artifactId>
 			   <version>1.9.59</version>
 				<configuration>
+					<port>8888</port>
 					<fullScanSeconds>2</fullScanSeconds>
 				</configuration>
 			</plugin>
