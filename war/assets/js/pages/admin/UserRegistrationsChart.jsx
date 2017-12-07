@@ -67,7 +67,7 @@ export default class UserRegistrationsChart extends React.Component {
 		data.addRows(this.getDataRows(this.state.userCreatedChanges));
 
 		const options = {
-			width: 930,
+			width: 700,
 			height: 400,
 			hAxis: {
 				format: 'MMM dd, yyyy',
@@ -82,7 +82,8 @@ export default class UserRegistrationsChart extends React.Component {
 			},
 			chartArea: {
 				left: 70,
-				right: 0
+				right: 0,
+				top: 10
 			}
 		};
 
@@ -94,13 +95,8 @@ export default class UserRegistrationsChart extends React.Component {
 	}
 
 	render() {
-
-		const divStyle = {
-			marginBottom: '50px'
-		};
-
 		return (
-			<div style={divStyle}>
+			<div>
 				{this.state.googleChartsLoaded && this.state.userCreatedChanges ? this.renderChart() : null}
 			</div>
 		);
