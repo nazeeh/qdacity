@@ -373,40 +373,35 @@ public class CourseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
+		public TermCourse insertTermCourse(TermCourse termCourse, User user) throws UnauthorizedException {
 		
-		termCourse.setCourseID(courseID);
-		termCourse.setTerm(term);
-		termCourse.setOpen(true);
-		termCourse.setCreationDate(new Date());
-
-
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			// Authorize User
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-			Authorization.isUserRegistered(dbUser);
-			
-			if (termCourse.getId() != null) {
-				if (containsTermCourse(termCourse)) {
-					throw new EntityExistsException("Term already exists");
+			termCourse.setOpen(true);
+			termCourse.setCreationDate(new Date());
+			termCourse.addOwner(user.getUserId());
+		
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				if (termCourse.getId() != null) {
+					if (containsTermCourse(termCourse)) {
+						throw new EntityExistsException("Term already exists");
+					}
 				}
-				
-				termCourse.addOwner(user.getUserId());
-				mgr.makePersistent(termCourse);
-				
-				dbUser.addTermCourseAuthorization(termCourse.getId());
-				mgr.makePersistent(dbUser);
-			} 
-		}
-		catch (javax.jdo.JDOObjectNotFoundException ex) {
-			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
-		}
+				try {
+					// Authorize User
+					com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+					Authorization.checkAuthorizationTermCourse(termCourse, user);
+					mgr.makePersistent(termCourse);
+					dbUser.addTermCourseAuthorization(termCourse.getId());
+					mgr.makePersistent(dbUser);
+				}
+				catch (javax.jdo.JDOObjectNotFoundException ex) {
+					throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+				}
 			
-			finally {
-			mgr.close();
-		}
-		return termCourse;
+			} finally {
+				mgr.close();
+			}
+			return termCourse;
 	}
 
 
@@ -666,10 +661,12 @@ public class CourseEndpoint {
 			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
 			Authorization.checkAuthorizationTermCourse(termCourse, user);
 			List<String> participants = termCourse.getParticipants();
-			if (!participants.isEmpty()) {
-				Query userQuery = mgr.newQuery(com.qdacity.user.User.class, ":p.contains(id)");
+			if (participants != null) {
+				if (!participants.isEmpty()) {
+					Query userQuery = mgr.newQuery(com.qdacity.user.User.class, ":p.contains(id)");
 
-				users = (List<com.qdacity.user.User>) userQuery.execute(participants);
+					users = (List<com.qdacity.user.User>) userQuery.execute(participants);
+				}
 			}
 		} finally {
 			mgr.close();

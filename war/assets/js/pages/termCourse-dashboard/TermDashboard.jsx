@@ -110,7 +110,6 @@ export default class TermDashboard extends React.Component {
 				CourseEndpoint.addParticipant(termCourse.id, resp.id).then(function (resp2) {
 					termCourse.participants.push(resp);
 					termCourse.isUserParticipant = true;
-					console.log(termCourse);
 					_this.setState({
 						termCourse: termCourse
 					});
@@ -130,7 +129,6 @@ export default class TermDashboard extends React.Component {
 					var userIndex = termCourse.participants.indexOf((typeof (termCourse.participants.find(o => o.id === resp.id)) == 'undefined'));
 					termCourse.participants.splice(userIndex, 1);
 					termCourse.isUserParticipant = false;
-					console.log(termCourse);
 					_this.setState({
 						termCourse: termCourse
 					});
