@@ -13,7 +13,7 @@ export default function loadGAPIs(allLoadedCallback) {
 			var account;
 			var apisToLoad;
 			var callback = function () {
-				if (--apisToLoad == 1) {
+				if (--apisToLoad == 0) {
 					resolve({
 						client_id: client_id,
 						scopes: scopes,
