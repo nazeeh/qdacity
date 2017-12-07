@@ -91,7 +91,6 @@ export default class ExerciseList extends React.Component {
 		const itemsToDisplay = this.state.exercises.slice(firstItem, lastItem);
 
 		function prjClick(prj) {
-			console.log('Link');
 		}
 
 		const renderListItems = itemsToDisplay.map((exercise, index) => {
