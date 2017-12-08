@@ -28,9 +28,16 @@ public class TextDocument implements Serializable {
 
 	@Persistent
 	String title;
+
 	@Persistent
 	Text text;
 
+	@Persistent
+	Long previousDocumentId;
+	
+	@Persistent
+	Long nextDocumentId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -63,4 +70,19 @@ public class TextDocument implements Serializable {
 		this.projectID = projectID;
 	}
 
+	public Long getPreviousDocumentId() {
+		return previousDocumentId;
+	}
+
+	public void setPreviousDocumentId(Long previousDocumentId) {
+		this.previousDocumentId = previousDocumentId;
+	}
+
+	public Long getNextDocumentId() {
+		return nextDocumentId;
+	}
+
+	public void setNextDocumentId(Long nextDocumentId) {
+		this.nextDocumentId = nextDocumentId;
+	}	
 }
