@@ -35,6 +35,18 @@ export default class UserList extends React.Component {
 		this.props.setSelectedUserId(selectedID)
 	}
 
+	getActiveUser() {
+		return this.getUser(this.props.selectedUserId);
+	}
+
+	getUser(userId) {
+		var _this = this;
+		var selectedUser = this.props.users.find(function (user) {
+			return user.id == userId;
+		});
+		return selectedUser;
+	}
+
 	isActive(value) {
 		return 'list-group-item ' + ((value === this.props.selectedUserId) ? 'active' : 'default');
 	}
@@ -42,12 +54,13 @@ export default class UserList extends React.Component {
 
 	render() {
 		var _this = this;
+		var activeUser = this.getActiveUser();
 		return (
 
 
 			<div className="list-group">
 				{
-					this.props.selectedUserId && <UserListCtrl user={this.props.selectedUserId} updateUser={this.updateUser} removeUser={this.props.removeUser}
+					this.props.selectedUserId && <UserListCtrl user={activeUser} updateUser={this.updateUser} removeUser={this.props.removeUser}
 								  test={1}/>
 				}
 				{
