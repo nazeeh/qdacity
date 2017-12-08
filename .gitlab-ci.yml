@@ -171,6 +171,7 @@ deploy_rtcsvc:
   environment: Production
   only:
     - master
+  allow_failure: true
   script:
     - cd realtime-service
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
