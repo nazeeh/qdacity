@@ -23,8 +23,8 @@ frontend_prod_build:
     - war/node_modules/
   artifacts:
     paths:
-      - war/dist/
-      - war/*.jsp
+      - target/qdacity-war/dist/
+      - target/qdacity-war/*.jsp
     expire_in: 3 mos
   script:
     - cd war
