@@ -67,7 +67,9 @@ export default class TextEditor extends React.Component {
 		this.props.initEditorCtrl();
 		this.props.syncService.on(
 			'changeUserList',
-			list => this.setState({ collaborators: list })
+			list => this.setState({
+				collaborators: list
+			})
 		);
 	}
 

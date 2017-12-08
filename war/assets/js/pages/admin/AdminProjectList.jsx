@@ -56,42 +56,42 @@ export default class AdminProjectList extends React.Component {
 	}
 
 	init() {
-        this.fetchProjects(this.props.userId);
+		this.fetchProjects(this.props.userId);
 	}
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.userId !== this.props.userId) {
-            this.fetchProjects(nextProps.userId);
-        }
-    }
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.userId !== this.props.userId) {
+			this.fetchProjects(nextProps.userId);
+		}
+	}
 
-    fetchProjects(userId) {
-		if(userId === "") {
+	fetchProjects(userId) {
+		if (userId === "") {
 			return;
 		}
-        var _this = this;
-        var projectList = [];
-        var validationPrjPromise = ProjectEndpoint.listValidationProjectByUserId(userId);
-        ProjectEndpoint.listProjectByUserId(userId).then(function (resp) {
-            resp.items = resp.items || [];
-            resp.items.forEach(function (prj) {
-                prj.type = "PROJECT";
-            });
-            var projects = projectList.concat(resp.items)
+		var _this = this;
+		var projectList = [];
+		var validationPrjPromise = ProjectEndpoint.listValidationProjectByUserId(userId);
+		ProjectEndpoint.listProjectByUserId(userId).then(function (resp) {
+			resp.items = resp.items || [];
+			resp.items.forEach(function (prj) {
+				prj.type = "PROJECT";
+			});
+			var projects = projectList.concat(resp.items)
 
-            validationPrjPromise.then(function (resp2) {
-                resp2.items = resp2.items || [];
-                resp2.items.forEach(function (prj) {
-                    prj.type = "VALIDATION";
-                });
-                projects = projects.concat(resp2.items)
-                projects = _this.sortProjects(projects);
-                _this.props.setProjects(projects);
-            });
-        });
-    }
+			validationPrjPromise.then(function (resp2) {
+				resp2.items = resp2.items || [];
+				resp2.items.forEach(function (prj) {
+					prj.type = "VALIDATION";
+				});
+				projects = projects.concat(resp2.items)
+				projects = _this.sortProjects(projects);
+				_this.props.setProjects(projects);
+			});
+		});
+	}
 
-    sortProjects(projects) {
+	sortProjects(projects) {
 		projects.sort(function (a, b) {
 			if (a.name < b.name) return -1;
 			if (a.name > b.name) return 1;
