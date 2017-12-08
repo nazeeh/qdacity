@@ -45,11 +45,11 @@ export default class Users extends React.Component {
 			_this.setState({
 				users: resp.items
 			});
+			_this.setSelectedUserId(null)
 		}).catch(function (resp) {
 			_this.setState({
 				users: []
 			});
-			window.alert(resp.code);
 		});
 	}
 
