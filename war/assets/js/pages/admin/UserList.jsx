@@ -12,9 +12,6 @@ const StyledListItemUser = StyledListItemDefault.extend `
 export default class UserList extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			selected: -1
-		};
 		this.selectUser = this.selectUser.bind(this);
 		this.updateUser = this.updateUser.bind(this);
 
@@ -36,41 +33,21 @@ export default class UserList extends React.Component {
 
 	selectUser(selectedID) {
 		this.props.setSelectedUserId(selectedID)
-		this.setState({
-			selected: selectedID
-		});
-	}
-
-	getActiveDocumentId(selectedID) {
-		return this.state.selected;
-	}
-
-	getActiveUser() {
-		return this.getUser(this.state.selected);
-	}
-
-	getUser(userId) {
-		var _this = this;
-		var selectedUser = this.props.users.find(function (user) {
-			return user.id == userId;
-		});
-		return selectedUser;
 	}
 
 	isActive(value) {
-		return 'list-group-item ' + ((value == this.state.selected) ? 'active' : 'default');
+		return 'list-group-item ' + ((value === this.props.selectedUserId) ? 'active' : 'default');
 	}
 
 
 	render() {
 		var _this = this;
-		var activeUser = this.getActiveUser();
 		return (
 
 
 			<div className="list-group">
 				{
-					this.props.selectedUserId && <UserListCtrl user={activeUser} updateUser={this.updateUser} removeUser={this.props.removeUser}
+					this.props.selectedUserId && <UserListCtrl user={this.props.selectedUserId} updateUser={this.updateUser} removeUser={this.props.removeUser}
 								  test={1}/>
 				}
 				{
