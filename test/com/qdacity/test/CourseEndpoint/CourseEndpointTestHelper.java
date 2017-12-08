@@ -104,7 +104,7 @@ public class CourseEndpointTestHelper {
 		
 		CourseEndpoint ce = new CourseEndpoint();
 		try {
-			ce.insertTermCourse(courseID, term, termCourse, loggedInUser);
+			ce.insertTermCourse(termCourse, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term creation");
@@ -117,7 +117,7 @@ public class CourseEndpointTestHelper {
 
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
-			ue.insertTermCourse(termCourseId, "WS", termCourse, loggedInUser);
+			ue.insertTermCourse(termCourse, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term course creation");
