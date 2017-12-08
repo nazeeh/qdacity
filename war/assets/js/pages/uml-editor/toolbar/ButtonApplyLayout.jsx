@@ -6,7 +6,7 @@ import {
 } from '../../../common/styles/Btn.jsx';
 
 const StyledApplyLayoutBtn = BtnDefault.extend `
-	margin-left: 25px;
+	margin-left: 10px;
 `;
 
 export default class ButtonApplyLayout extends React.Component {

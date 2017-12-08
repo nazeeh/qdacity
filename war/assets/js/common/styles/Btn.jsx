@@ -77,6 +77,16 @@ const BtnPrimary = BtnSm.extend `
 	}
 `;
 
+const BtnGroup = styled.div `
+	margin-left: 10px;
+	display: inline;
+
+	& > button:nth-child(n+2),
+	& > input:nth-child(n+2) {
+		border-left: none;
+	}
+`;
+
 const BtnLg = styled.button `
 	padding: 6px 12px;
 	background-image: none;
@@ -112,5 +122,6 @@ export {
 	BtnDefault,
 	BtnPrimary,
 	BtnSm,
-	BtnLg
+	BtnLg,
+	BtnGroup,
 };

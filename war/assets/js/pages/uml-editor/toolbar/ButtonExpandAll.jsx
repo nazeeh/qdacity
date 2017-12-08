@@ -6,7 +6,7 @@ import {
 } from '../../../common/styles/Btn.jsx';
 
 const StyledButton = BtnDefault.extend `
-	margin-left: 25px;
+	margin-left: 10px;
 `;
 
 export default class ButtonExpandAll extends React.Component {

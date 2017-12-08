@@ -9,10 +9,19 @@ import ButtonShowAll from './ButtonShowAll.jsx';
 import ButtonApplyLayout from './ButtonApplyLayout.jsx';
 import ButtonExpandAll from './ButtonExpandAll.jsx';
 import ButtonCollapseAll from './ButtonCollapseAll.jsx';
+import CollaboratorList from '../../../common/SyncService/CollaboratorList';
 
 const StyledToolbar = styled.div `
-    padding: 8px 20px 8px 20px;
+    display: flex;
+    padding: 5px;
     border-bottom: 1px solid #c0c0c0;
+`;
+
+const StyledPlaceholder = styled.div `
+    flex-grow: 1;
+`;
+
+const StyledButtonContainer = styled.div `
 `;
 
 export default class Toolbar extends React.Component {
@@ -34,17 +43,22 @@ export default class Toolbar extends React.Component {
 
 		return (
 			<StyledToolbar>
-                <ButtonAddClass umlEditor={_this.umlEditor} createCode={_this.props.createCode}/>
-		        
-    	        <ButtonZoomIn umlEditor={_this.umlEditor} />
-                <ButtonZoomOut umlEditor={_this.umlEditor} />
-                <ButtonZoomSelect ref={(zoomSelectRef) => {if (zoomSelectRef) this.zoomSelectRef = zoomSelectRef}} umlEditor={_this.umlEditor} />
-                <ButtonShowAll umlEditor={_this.umlEditor} />
-            
-                <ButtonApplyLayout umlEditor={_this.umlEditor} />
+				<StyledButtonContainer>
+					<ButtonAddClass umlEditor={_this.umlEditor} createCode={_this.props.createCode}/>
+					
+					<ButtonZoomIn umlEditor={_this.umlEditor} />
+					<ButtonZoomOut umlEditor={_this.umlEditor} />
+					<ButtonZoomSelect ref={(zoomSelectRef) => {if (zoomSelectRef) this.zoomSelectRef = zoomSelectRef}} umlEditor={_this.umlEditor} />
+					<ButtonShowAll umlEditor={_this.umlEditor} />
+				
+					<ButtonApplyLayout umlEditor={_this.umlEditor} />
 
-                <ButtonExpandAll umlEditor={_this.umlEditor} />
-                <ButtonCollapseAll umlEditor={_this.umlEditor} />
+					<ButtonExpandAll umlEditor={_this.umlEditor} />
+					<ButtonCollapseAll umlEditor={_this.umlEditor} />
+				</StyledButtonContainer>
+				<StyledPlaceholder />
+				<CollaboratorList
+                    syncService={this.props.syncService} />
             </StyledToolbar>
 		);
 	}

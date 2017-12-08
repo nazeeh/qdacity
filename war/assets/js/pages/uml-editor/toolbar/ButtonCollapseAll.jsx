@@ -6,7 +6,7 @@ import {
 } from '../../../common/styles/Btn.jsx';
 
 const StyledButton = BtnDefault.extend `
-	margin-left: 10px;
+	border-left: none;
 `;
 
 export default class ButtonCollapseAll extends React.Component {

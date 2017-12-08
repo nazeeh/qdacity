@@ -11,12 +11,11 @@ const StyledCollaboratorBox = styled.ul `
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-end;
-	height: 34px;
 	width: ${props => props.width}px;
+	height: 30px;
 `;
 const StyledPlaceholder = styled.li `
-	height: 34px;
-	line-height: 34px;
+	line-height: 30px;
 	font-size: 12px;
 	white-space: pre;
 `;
@@ -26,7 +25,7 @@ const StyledMoreCount = styled.li `
 	line-height: 30px;
 	height: 30px;
 	width: 30px;
-	margin: 2px 0 2px -15px;
+	margin-left: -15px;
 	border-radius: 50%;
 	background: white;
 	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
@@ -47,7 +46,7 @@ const StyledCollaborator = styled.li `
 	flex-direction: column;
 	width: 30px;
 	height: 30px;
-	margin: 2px 5px 2px -15px;
+	margin: 0 5px 0 -15px;
 	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
 	border-radius: 50%;
 

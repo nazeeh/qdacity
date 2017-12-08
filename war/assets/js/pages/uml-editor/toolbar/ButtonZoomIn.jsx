@@ -5,7 +5,7 @@ import {
 } from '../../../common/styles/Btn.jsx';
 
 const StyledZoomBtn = BtnDefault.extend `
-    margin-left: 25px;
+    margin-left: 10px;
 `;
 
 export default class ButtonZoomIn extends React.Component {
