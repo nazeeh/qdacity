@@ -50,6 +50,7 @@ export default class Users extends React.Component {
 			_this.setState({
 				users: []
 			});
+			_this.setSelectedUserId(null)
 		});
 	}
 
