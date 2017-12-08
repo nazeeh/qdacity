@@ -178,8 +178,7 @@
 	<build>
 		<!-- for hot reload of the web application-->
 		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory> 
-		<outputDirectory>${basedir}/target/qdacity-war/WEB-INF/classes</outputDirectory>
+		<testSourceDirectory>test</testSourceDirectory>
 		<testResources>
 			<testResource>
 				<directory>${project.basedir}/src/META-INF</directory>
