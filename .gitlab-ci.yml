@@ -45,7 +45,7 @@ backend_prod_build:
     - master
   artifacts:
     paths:
-      - war/WEB-INF/classes
+      - target/qdacity-war
     expire_in: 3 mos
   script:
     - mvn clean package
