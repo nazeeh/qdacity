@@ -23,8 +23,9 @@ export default class Users extends React.Component {
 		super(props);
 		this.state = {
 			users: [],
-			search: ''
-		};
+			search: '',
+            selectedUserId: ''
+        };
 
 		this.updateSearch = this.updateSearch.bind(this);
 		this.findUsers = this.findUsers.bind(this);
@@ -71,6 +72,13 @@ export default class Users extends React.Component {
 		}
 	}
 
+    setSelectedUserId(userId) {
+        this.props.setSelectedUserId(userId)
+        this.setState({
+            selectedUserId: userId
+        });
+    }
+
 	render() {
 		return (
 			<div className="box box-default">
@@ -93,7 +101,7 @@ export default class Users extends React.Component {
 							</BtnDefault>
 						</StyledSearchField>
 					</StyledUserSearch>
-					<UserList  users={this.state.users} removeUser={this.removeUser}/>
+					<UserList  users={this.state.users} removeUser={this.removeUser} setSelectedUserId={(userId) => this.setSelectedUserId(userId)}/>
 					<ul id="user-list" className="list compactBoxList">
 					</ul>
 				</div>

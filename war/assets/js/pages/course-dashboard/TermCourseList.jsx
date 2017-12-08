@@ -109,7 +109,10 @@ export default class TermCourseList extends React.Component {
 		var _this = this;
 		var courseTerms = course.terms;
 		var courseID = course.id;
-		CourseEndPoint.insertTermCourse(courseID, term).then(function (insertedTermCourse) {
+		var termCourse = {};
+		termCourse.courseID = course.id;
+		termCourse.term = term;
+		CourseEndPoint.insertTermCourse(termCourse).then(function (insertedTermCourse) {
 			var termList = courseTerms;
 			termList.push({
 				text: term,
