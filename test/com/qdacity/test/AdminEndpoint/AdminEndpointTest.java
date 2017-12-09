@@ -13,6 +13,7 @@ import org.junit.rules.ExpectedException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.admin.AdminStats;
 import com.qdacity.authentication.AuthenticatedUser;
@@ -26,7 +27,7 @@ import com.qdacity.user.UserType;
 
 public class AdminEndpointTest {
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
 	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	@Before
 	public void setUp() {

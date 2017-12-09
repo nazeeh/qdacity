@@ -146,6 +146,36 @@ public class ProjectEndpointTest {
 	}
 
 	/**
+	 * Tests that a non-admin user can not list another user's projects
+	 */
+	@Test
+	public void testListProjectByUserIdAuthorization() throws UnauthorizedException {
+		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		com.google.appengine.api.users.User otherUser = new com.google.appengine.api.users.User("asd2@asd2.de", "bla", "234567");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+		UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
+
+		expectedException.expect(UnauthorizedException.class);
+		ProjectEndpoint pe = new ProjectEndpoint();
+		pe.listProjectByUserId(null, null, "234567", loggedInUser);
+	}
+
+	/**
+	 * Tests that a non-admin user can not list another user's projects
+	 */
+	@Test
+	public void testListValidationProjectByUserIdAuthorization() throws UnauthorizedException {
+		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+		com.google.appengine.api.users.User otherUser = new com.google.appengine.api.users.User("asd2@asd2.de", "bla", "234567");
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+		UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
+
+		expectedException.expect(UnauthorizedException.class);
+		ProjectEndpoint pe = new ProjectEndpoint();
+		pe.listValidationProjectByUserId("234567", loggedInUser);
+	}
+
+	/**
 	 * Tests if a registered user can create a project
 	 * @throws UnauthorizedException 
 	 */

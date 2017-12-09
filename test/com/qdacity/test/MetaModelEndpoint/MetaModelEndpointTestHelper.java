@@ -2,9 +2,17 @@ package com.qdacity.test.MetaModelEndpoint;
 
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.MaintenanceEndpoint;
+import com.qdacity.endpoint.MetaModelEntityEndpoint;
+import com.qdacity.endpoint.UmlCodePositionEndpoint;
+import com.qdacity.metamodel.MetaModelEntity;
+import com.qdacity.umleditor.UmlCodePosition;
+import com.qdacity.umleditor.UmlCodePositionList;
 
 
 
@@ -19,6 +27,22 @@ public class MetaModelEndpointTestHelper {
 		} catch (UnauthorizedException e) {
 			fail("Failed to initialize database with default meta model");
 			e.printStackTrace();
+		}
+	}
+	
+	static public void insertMetaModelEntity(Long id, String name, int group, com.google.appengine.api.users.User loggedInUser) {
+		try {
+			final MetaModelEntity metaModelEntity = new MetaModelEntity();
+			metaModelEntity.setId(id);
+			metaModelEntity.setName(name);
+			metaModelEntity.setGroup(group);
+			
+			MetaModelEntityEndpoint endpoint = new MetaModelEntityEndpoint();
+			endpoint.insertMetaModelEntity(metaModelEntity, loggedInUser);
+
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for metaModelEntity creation");
 		}
 	}
 }

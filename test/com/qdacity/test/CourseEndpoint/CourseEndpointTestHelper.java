@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.endpoint.CourseEndpoint;
+import com.qdacity.user.User;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 
@@ -83,14 +84,27 @@ public class CourseEndpointTestHelper {
 		return terms;
 	}
 	
-	static public void addTermCourse(Long id, Long courseID, String term, com.google.api.server.spi.auth.common.User loggedInUser) {
+	static public List<TermCourse> listTermCourseByParticipant(Long courseID, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ce = new CourseEndpoint();
+		List<TermCourse> terms = null;
+		try {
+			terms = ce.listTermCourseByParticipant(loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for Course Term retrieval");
+		}
+		
+		return terms;
+	}
+	
+	static public void addTermCourse(Long id, Long courseID, String term, com.google.appengine.api.users.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
 		termCourse.setId(id);
 		termCourse.setCourseID(courseID);
 		
 		CourseEndpoint ce = new CourseEndpoint();
 		try {
-			ce.insertTermCourse(courseID, term, termCourse, loggedInUser);
+			ce.insertTermCourse(termCourse, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term creation");
@@ -103,7 +117,7 @@ public class CourseEndpointTestHelper {
 
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
-			ue.insertTermCourse(termCourseId, "WS", termCourse, loggedInUser);
+			ue.insertTermCourse(termCourse, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term course creation");
@@ -175,5 +189,17 @@ public class CourseEndpointTestHelper {
 			e.printStackTrace();
 			fail("User could not be authorized for Course ownership");
 		}
+	}
+	
+	static public CollectionResponse<User> listTermCourseParticipants(Long termCourseID, com.google.appengine.api.users.User loggedInUser) {
+		CourseEndpoint ce = new CourseEndpoint();
+		CollectionResponse<User> users = null;
+		try {
+			users = ce.listTermCourseParticipants(null, null, termCourseID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return users;
 	}
 }

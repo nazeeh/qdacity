@@ -61,7 +61,7 @@ export default class DocumentsView extends React.Component {
 			documents: [],
 			selected: -1,
 			isExpanded: true,
-			loading: true
+			loading: true,
 		};
 
 		var setupPromise = this.setupView(this.props.projectID, this.props.projectType, this.props.report);
@@ -243,6 +243,10 @@ export default class DocumentsView extends React.Component {
 		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
+		this.props.syncService.handleDocumentChange(
+			this.state.selected === -1 ? null : this.state.selected.toString(),
+			selectedID.toString()
+		);
 		this.setState({
 			selected: selectedID
 		});

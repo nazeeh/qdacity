@@ -8,6 +8,7 @@ import Course from './Course';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import Teachers from "./Teachers/Teachers.jsx";
+import TitleRow from "./TitleRow/TitleRow.jsx"
 
 import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
 
@@ -19,14 +20,19 @@ const StyledDashboard = styled.div `
 	display: grid;
     grid-template-columns: 6fr 6fr;
     grid-template-areas:
+				"titlerow titlerow"
         "terms teachers";
 	grid-column-gap: 20px;
+`;
+
+const StyledTitleRow = styled.div `
+    grid-area: titlerow;
 `;
 
 export default class CourseDashboard extends React.Component {
 	constructor(props) {
 		super(props);
-		this.init();
+
 
 		var urlParams = URI(window.location.search).query(true);
 
@@ -124,13 +130,14 @@ export default class CourseDashboard extends React.Component {
 
 		return (
 			<StyledDashboard>
+			<StyledTitleRow><TitleRow course={this.state.course}/></StyledTitleRow>
 				<div>
 					<div className="box box-default">
 						<div className="box-header with-border">
 							<h3 className="box-title">Terms</h3>
 						</div>
 						<div className="box-body">
-							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse}/>
+							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse} history={this.props.history}/>
 						</div>
 					</div>
 				</div>

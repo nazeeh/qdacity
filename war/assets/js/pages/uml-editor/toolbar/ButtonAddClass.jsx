@@ -33,7 +33,7 @@ export default class ButtonAddClass extends React.Component {
 		const _this = this;
 
 		return (
-			<BtnDefault onClick={_this.buttonClicked}>
+			<BtnDefault title="Click to create a new class (code)." onClick={_this.buttonClicked}>
 		        <i className="fa fa-plus"></i>
 	        </BtnDefault>
 		);

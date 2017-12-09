@@ -230,7 +230,7 @@ public class SaturationTest {
 	@Test
 	public void testEvaluateRevisionAlpha() throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
-		latch.reset(2);
+		latch.reset(3);
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
 

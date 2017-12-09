@@ -52,7 +52,8 @@ export default class CourseList extends React.Component {
 			// pagination
 			currentPage: 1,
 			itemsPerPage: 8,
-			search: ''
+			search: '',
+			listStatus: []
 		};
 
 
@@ -87,7 +88,9 @@ export default class CourseList extends React.Component {
 					resp2.items = resp2.items || [];
 					resp2.items.forEach(function (crs, index) {
 						termList.push({
-							text: crs.term
+							text: crs.term,
+							onClick: _this.termCourseClicked.bind(_this, crs),
+							id: crs.id
 						});
 					});
 					courses[index].terms = termList;
@@ -113,10 +116,17 @@ export default class CourseList extends React.Component {
 			termCourses.forEach(function (termCourse) {
 				if (coursesWithTermsArray.length == 0) {
 					var termList = [];
+					var idList = [];
+					var termCourseList = [];
 					termList.push(termCourse.term);
+					idList.push(termCourse.id);
+					termCourseList.push(termCourse);
 					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
-						terms: termList
+						terms: termList,
+						onClick: _this.termCourseClicked.bind(_this, termCourse),
+						ids: idList,
+						termCourses: termCourseList
 					});
 					return;
 				}
@@ -125,13 +135,22 @@ export default class CourseList extends React.Component {
 				var isCourseInArray = coursesWithTermsArray.find(o => o.courseID === termCourse.courseID);
 				if (typeof isCourseInArray === "undefined") {
 					var termList = [];
+					idList = [];
+					termCourseList = [];
+					idList.push(termCourse.id);
 					termList.push(termCourse.term);
+					termCourseList.push(termCourse);
 					coursesWithTermsArray.push({
 						courseID: termCourse.courseID,
-						terms: termList
+						terms: termList,
+						onClick: _this.termCourseClicked.bind(_this, termCourse),
+						ids: idList,
+						termCourses: termCourseList
 					});
 				} else {
 					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].terms.push(termCourse.term);
+					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].ids.push(termCourse.id);
+					coursesWithTermsArray[coursesWithTermsArray.indexOf(isCourseInArray)].termCourses.push(termCourse);
 				}
 			})
 
@@ -140,9 +159,11 @@ export default class CourseList extends React.Component {
 				CourseEndPoint.getCourse(courseFromArray.courseID).then(function (courseResponse) {
 					var termList = [];
 					var course = courseResponse;
-					courseFromArray.terms.forEach(function (term) {
+					courseFromArray.terms.forEach(function (term, index) {
 						termList.push({
-							text: term
+							text: term,
+							onClick: _this.termCourseClicked.bind(_this, courseFromArray.termCourses[index]),
+							id: courseFromArray.ids[index]
 						});
 					})
 					course.terms = termList;
@@ -200,7 +221,25 @@ export default class CourseList extends React.Component {
 
 	}
 
+	configureCourse(e, course, index) {
+		e.stopPropagation();
+		this.props.history.push('/CourseDashboard?course=' + course.id);
+	}
 
+	courseClick(course, index) {
+		var _this = this;
+		var statusArray = this.state.listStatus;
+		var courseIndex = statusArray.indexOf(statusArray.find(o => o.selectedCourseID === course.id));
+		if (typeof statusArray[courseIndex] == 'undefined') {
+			var confirm = new Confirm('This course has no terms, would you like to configure it?');
+			confirm.showModal().then(function () {
+				_this.props.history.push('/CourseDashboard?course=' + course.id);
+			});
+		} else {
+			var termCourseID = statusArray[courseIndex].selectedTermCourseID;
+			this.props.history.push('/TermDashboard?termCourse=' + termCourseID);
+		}
+	}
 
 	updateSearch(e) {
 		this.setState({
@@ -233,10 +272,14 @@ export default class CourseList extends React.Component {
 		course.name = name;
 		course.description = description;
 		CourseEndPoint.insertCourse(course).then(function (insertedCourse) {
-			CourseEndPoint.insertTermCourse(insertedCourse.id, term).then(function (insertedTermCourse) {
+			var termCourse = {};
+			termCourse.courseID = insertedCourse.id;
+			termCourse.term = term;
+			CourseEndPoint.insertTermCourse(termCourse).then(function (insertedTermCourse) {
 				var termList = [];
 				termList.push({
 					text: insertedTermCourse.term,
+					id: insertedTermCourse.id
 				});
 				insertedCourse.terms = termList;
 				_this.props.addCourse(insertedCourse);
@@ -244,14 +287,32 @@ export default class CourseList extends React.Component {
 		});
 	}
 
+	//This function sets the default termCourse for each course in the dropdown list
+	//It also fills the statusArray which includes info about the currently selected course/termCourse in the list
 	defineInitText(course, index) {
 		var text = "";
+		var _this = this;
 		if (!(typeof course.terms == 'undefined')) {
 			if (!(typeof course.terms[course.terms.length - 1] == 'undefined')) {
 				text = course.terms[course.terms.length - 1].text;
+				var statusArray = this.state.listStatus;
+				var courseIndex = statusArray.find(o => o.selectedCourseID === course.id);
+				if (typeof courseIndex == 'undefined') {
+					this.state.listStatus.push({
+						selectedCourseID: course.id,
+						selectedTermCourseID: course.terms[course.terms.length - 1].id
+					})
+				}
 			}
 		}
 		return text;
+	}
+
+	//This function sets the selectedTermCourseID in the statusArray to the one that was just clicked
+	termCourseClicked(termCourse) {
+		var statusArray = this.state.listStatus;
+		var courseIndex = statusArray.find(o => o.selectedCourseID === termCourse.courseID);
+		this.state.listStatus[this.state.listStatus.indexOf(courseIndex)].selectedTermCourseID = termCourse.id;
 	}
 
 	render() {
@@ -300,11 +361,6 @@ export default class CourseList extends React.Component {
 
 
 
-
-
-		function courseClick(course) {
-			_this.props.history.push('/CourseDashboard?course=' + course.id);
-		}
 		const renderListItemContent = (course, index) => {
 
 			return ([
@@ -314,7 +370,7 @@ export default class CourseList extends React.Component {
 				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 					<i className="fa fa-trash "></i>
 				</StyledListItemBtn>
-				<StyledListItemBtn onClick={() => courseClick(course)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+				<StyledListItemBtn onClick={(e) => this.configureCourse(e, course, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
 					<i className="fa fa-cog "></i>
 				</StyledListItemBtn>
 				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
@@ -325,7 +381,7 @@ export default class CourseList extends React.Component {
 			])
 		}
 		const renderListItems = itemsToDisplay.map((course, index) => {
-			return <StyledListItemPrimary key={course.id} onClick={() => courseClick(course)} clickable={true}>
+			return <StyledListItemPrimary key={course.id} onClick={() => this.courseClick(course, index)} clickable={true}>
 						{renderListItemContent(course, index)}
 					</StyledListItemPrimary>;
 

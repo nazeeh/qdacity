@@ -1,5 +1,6 @@
 package com.qdacity.endpoint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -302,7 +303,7 @@ public class CourseEndpoint {
 	 * @return A List containing the list of all terms in which the user is a participant
 	 * @throws UnauthorizedException
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings({ "unchecked" })
 	@ApiMethod(name = "course.listTermCourseByParticipant",
 		path = "listTermCourseByParticipant")
 	public List<TermCourse> listTermCourseByParticipant(User user) throws UnauthorizedException {
@@ -319,9 +320,6 @@ public class CourseEndpoint {
 
 			execute = (List<TermCourse>) q.execute(Arrays.asList(user.getId()));
 
-			// Tight loop for fetching all entities from datastore and accomodate
-			// for lazy fetch.
-			for (TermCourse obj : execute);
 		} finally {
 			mgr.close();
 		}
@@ -344,39 +342,35 @@ public class CourseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(name = "course.insertTermCourse")
-	public TermCourse insertTermCourse(@Named("CourseID") Long courseID, @Nullable @Named ("courseTerm") String term, TermCourse termCourse, User user) throws UnauthorizedException {
-
-		termCourse.setCourseID(courseID);
-		termCourse.setTerm(term);
-		termCourse.setOpen(true);
-		termCourse.setCreationDate(new Date());
-
-
-		PersistenceManager mgr = getPersistenceManager();
-
-		try {
-			// Authorize User
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
-			Authorization.isUserRegistered(dbUser);
-		}
-		catch (javax.jdo.JDOObjectNotFoundException ex) {
-			throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
-		}
-
-		try {
-			if (termCourse.getId() != null) {
-				if (containsTermCourse(termCourse)) {
-					throw new EntityExistsException("Term already exists");
-				}
-			}
-
+		public TermCourse insertTermCourse(TermCourse termCourse, User user) throws UnauthorizedException {
+		
+			termCourse.setOpen(true);
+			termCourse.setCreationDate(new Date());
 			termCourse.addOwner(user.getId());
-			mgr.makePersistent(termCourse);
-
-		} finally {
-			mgr.close();
-		}
-		return termCourse;
+		
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				if (termCourse.getId() != null) {
+					if (containsTermCourse(termCourse)) {
+						throw new EntityExistsException("Term already exists");
+					}
+				}
+				try {
+					// Authorize User
+					com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+					Authorization.checkAuthorizationTermCourse(termCourse, user);
+					mgr.makePersistent(termCourse);
+					dbUser.addTermCourseAuthorization(termCourse.getId());
+					mgr.makePersistent(dbUser);
+				}
+				catch (javax.jdo.JDOObjectNotFoundException ex) {
+					throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+				}
+			
+			} finally {
+				mgr.close();
+			}
+			return termCourse;
 	}
 
 
@@ -421,8 +415,15 @@ public class CourseEndpoint {
 			try {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				//Check authorization
-				Authorization.checkAuthTermCourseParticipation(termCourse, userID, user);
-				termCourse.addParticipant(userID);
+				if (userID != null) {
+					Authorization.checkAuthTermCourseParticipation(termCourse, userID, user);
+					termCourse.addParticipant(userID);
+				}
+				else {
+					Authorization.checkAuthTermCourseParticipation(termCourse, user.getUserId(), user);
+					termCourse.addParticipant(user.getUserId());
+				}
+				
 
 				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 				dbUser.addTermCourseAuthorization(termCourseID);
@@ -524,6 +525,45 @@ public class CourseEndpoint {
 			return course;
 		}
 
+	@ApiMethod(name = "course.inviteUserTermCourse")
+		public TermCourse inviteUserTermCourse(@Named("termCourseID") Long termCourseID, @Named("userEmail") String userEmail, User user) throws UnauthorizedException {
+			TermCourse termCourse = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+
+				// Get the invited user
+				Query q = mgr.newQuery(com.qdacity.user.User.class, "email == '" + userEmail + "'");
+				@SuppressWarnings("unchecked")
+				List<com.qdacity.user.User> dbUsers = (List<com.qdacity.user.User>) q.execute();
+				String userID = dbUsers.get(0).getId();
+
+				// Get the inviting user
+				com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
+				termCourse.addInvitedUser(userID);
+				mgr.makePersistent(termCourse);
+
+				// Create notification
+				UserNotification notification = new UserNotification();
+				notification.setDatetime(new Date());
+				notification.setMessage("Term Course: " + termCourse.getTerm());
+				notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
+				notification.setOriginUser(user.getUserId());
+				notification.setTermCourse(termCourseID);
+				notification.setCourse(termCourse.getCourseID());
+				notification.setSettled(false);
+				notification.setType(UserNotificationType.INVITATION_TERM_COURSE);
+				notification.setUser(userID.toString());
+
+				mgr.makePersistent(notification);
+
+			} finally {
+				mgr.close();
+			}
+			return termCourse;
+		}
+	
 	@ApiMethod(name = "course.addCourseOwner")
 		public Course addCourseOwner(@Named("courseID") Long courseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 
@@ -546,6 +586,42 @@ public class CourseEndpoint {
 			}
 			return course;
 		}
+	
+	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all participants of a term course
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings("unchecked")
+	@ApiMethod(
+		name = "course.listTermCourseParticipants",
+		path = "termCourse",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public CollectionResponse<com.qdacity.user.User> listTermCourseParticipants(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("termCourseID") Long termCourseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
+		List<com.qdacity.user.User> users = new ArrayList<com.qdacity.user.User>();
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
+			Authorization.checkAuthorizationTermCourse(termCourse, user);
+			List<String> participants = termCourse.getParticipants();
+			if (participants != null) {
+				if (!participants.isEmpty()) {
+					Query userQuery = mgr.newQuery(com.qdacity.user.User.class, ":p.contains(id)");
+
+					users = (List<com.qdacity.user.User>) userQuery.execute(participants);
+				}
+			}
+		} finally {
+			mgr.close();
+		}
+
+		return CollectionResponse.<com.qdacity.user.User> builder().setItems(users).setNextPageToken(cursorString).build();
+	}
 	
 	private boolean containsCourse(Course course) {
 		PersistenceManager mgr = getPersistenceManager();

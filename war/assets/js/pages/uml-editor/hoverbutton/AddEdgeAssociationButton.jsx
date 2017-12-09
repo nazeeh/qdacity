@@ -21,6 +21,10 @@ export default class AddEdgeAssociationButton extends HoverButton {
 		return 'umlOverlayButton umlOverlayButtonAddEdgeAssociation';
 	}
 
+	getToolTip() {
+		return 'Add a new association.';
+	}
+
 	getBounds() {
 		const sizeX = 34;
 		const sizeY = 32;

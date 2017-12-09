@@ -8,8 +8,22 @@ export default class ProjectEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static listProjectByUserId(userId) {
+		var apiMethod = gapi.client.qdacity.project.listProjectByUserId({
+			'userId': userId
+        });
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static listValidationProject() {
 		var apiMethod = gapi.client.qdacity.project.listValidationProject();
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static listValidationProjectByUserId(userId) {
+		var apiMethod = gapi.client.qdacity.project.listValidationProjectByUserId({
+            'userId': userId
+        });
 		return Promisizer.makePromise(apiMethod);
 	}
 

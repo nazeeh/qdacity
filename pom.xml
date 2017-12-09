@@ -26,58 +26,51 @@
 	<dependencies>
 		<!-- Compile/runtime dependencies -->
 		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>1.9.54</version>
+		  <groupId>com.google.appengine</groupId>
+		  <artifactId>appengine-api-1.0-sdk</artifactId>
+		  <version>1.9.59</version>
 		</dependency>
+		
+		<dependency>
+		  <groupId>javax.servlet</groupId>
+		  <artifactId>servlet-api</artifactId>
+		  <version>2.5</version>
+		  <scope>provided</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-endpoints</artifactId>
-			<version>1.9.54</version>
+			<version>1.9.59</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>com.google.appengine.orm</groupId>
 			<artifactId>datanucleus-appengine</artifactId>
 			<version>2.1.2</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.datanucleus</groupId>
 			<artifactId>datanucleus-core</artifactId>
 			<version>3.1.3</version>
 			<scope>runtime</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.datanucleus</groupId>
 			<artifactId>datanucleus-api-jdo</artifactId>
 			<version>3.1.3</version>
-
+			
 		</dependency>
 
-		<dependency>
-			<groupId>javax.jdo</groupId>
-			<artifactId>jdo2-api</artifactId>
-			<version>2.2</version>
-		</dependency>
-
-
-
+		
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-labs</artifactId>
-			<version>1.9.54</version>
+			<version>1.9.59</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
@@ -88,52 +81,62 @@
 			<artifactId>jdo-api</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
 			<version>2.1.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.directory.studio</groupId>
-			<artifactId>org.apache.commons.lang</artifactId>
-			<version>2.6</version>
-		</dependency>
+		
+
+		
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.2</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>1.10.3</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
 			<version>1.11</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
 			<version>3.0.2</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20170516</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
 			<version>1.11</version>
+			<exclusions>
+        <exclusion>
+          <artifactId>quartz</artifactId>
+          <groupId>org.quartz-scheduler</groupId>
+        </exclusion>
+      </exclusions>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.google.api</groupId>
 			<artifactId>api-common</artifactId>
 			<version>1.1.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.http-client</groupId>
 			<artifactId>google-http-client-jackson2</artifactId>
@@ -167,64 +170,64 @@
 		</dependency>
 
 
-
 		<!-- Test Dependencies -->
 		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-testing</artifactId>
-			<version>1.9.54</version>
-			<scope>test</scope>
+		  <groupId>com.google.appengine</groupId>
+		  <artifactId>appengine-testing</artifactId>
+		  <version>1.9.59</version>
+		  <scope>test</scope>
 		</dependency>
+		
 		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-api-stubs</artifactId>
-			<version>1.9.54</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-tools-sdk</artifactId>
-			<version>1.9.54</version>
-			<scope>test</scope>
+		  <groupId>com.google.appengine</groupId>
+		  <artifactId>appengine-api-stubs</artifactId>
+		  <version>1.9.59</version>
+		  <scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.truth</groupId>
-			<artifactId>truth</artifactId>
-			<version>0.33</version>
-			<scope>test</scope>
+		  <groupId>com.google.appengine</groupId>
+		  <artifactId>appengine-tools-sdk</artifactId>
+		  <version>1.9.59</version>
+		  <scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
+		  <groupId>com.google.truth</groupId>
+		  <artifactId>truth</artifactId>
+		  <version>0.33</version>
+		  <scope>test</scope>
+		</dependency>
+
+		<dependency>
+		  <groupId>junit</groupId>
+		  <artifactId>junit</artifactId>
+		  <version>4.12</version>
+		  <scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>2.0.2-beta</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz</artifactId>
-			<version>2.2.1</version>
+		  <groupId>org.mockito</groupId>
+		  <artifactId>mockito-all</artifactId>
+		  <version>2.0.2-beta</version>
+		  <scope>test</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
-		<!-- for hot reload of the web application -->
+		<!-- for hot reload of the web application-->
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
-		<outputDirectory>${basedir}/war/WEB-INF/classes</outputDirectory>
+		<testResources>
+			<testResource>
+				<directory>${project.basedir}/src/META-INF</directory>
+				<targetPath>META-INF</targetPath>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.datanucleus</groupId>
 				<artifactId>maven-datanucleus-plugin</artifactId>
-				<version>3.2.0-m1</version>
+				<version>3.1.3</version>
 				<configuration>
 					<api>JDO</api>
 					<props>${basedir}/datanucleus.properties</props>
@@ -239,239 +242,235 @@
 							<goal>enhance</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions> 
 				<dependencies>
 					<dependency>
 						<groupId>org.datanucleus</groupId>
 						<artifactId>datanucleus-core</artifactId>
 						<version>3.1.3</version>
 					</dependency>
-
+					
 				</dependencies>
 			</plugin>
 			<plugin>
-				<groupId>com.google.appengine</groupId>
-				<artifactId>appengine-maven-plugin</artifactId>
-				<version>1.9.54</version>
+			   <groupId>com.google.appengine</groupId>
+			   <artifactId>appengine-maven-plugin</artifactId>
+			   <version>1.9.59</version>
 				<configuration>
-					<appId>qdacity-test</appId> <!-- Override appengine-web.xml <project> -->
-					<version>1</version>
-					<fullScanSeconds>1</fullScanSeconds>
-					<retainUploadDir>true</retainUploadDir>
+					<port>8888</port>
+					<fullScanSeconds>2</fullScanSeconds>
 				</configuration>
 			</plugin>
+		  <plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>versions-maven-plugin</artifactId>
+			<version>2.3</version>
+			<executions>
+			  <execution>
+				<phase>compile</phase>
+				<goals>
+				  <goal>display-dependency-updates</goal>
+				  <goal>display-plugin-updates</goal>
+				</goals>
+			  </execution>
+			</executions>
+			<configuration>
+			  <excludes>
+				<exclude>javax.servlet:javax.servlet-api</exclude>
+				<exclude>com.google.guava:guava</exclude> <!-- avoid android version -->
+			  </excludes>
+			</configuration>
+		  </plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>display-dependency-updates</goal>
-							<goal>display-plugin-updates</goal>
-						</goals>
-					</execution>
-				</executions>
+		  <plugin>
+			<artifactId>maven-war-plugin</artifactId>
+			<version>3.1.0</version>
+			<configuration>
+			<warSourceDirectory>war</warSourceDirectory>
+			<warSourceExcludes>assets/,components/,node_modules/,WEB-INF/lib/</warSourceExcludes>
+			<!--<webXml>war\WEB-INF\web.xml</webXml>  -->
+			<archiveClasses>true</archiveClasses>
+			<webResources>
+				<!-- in order to interpolate version from pom into appengine-web.xml  -->
+				<resource>
+					<directory>src/META-INF</directory>
+					<filtering>true</filtering>
+					<targetPath>WEB-INF/classes/META-INF</targetPath>
+				</resource>
+				<resource>
+					<directory>war/components/font-awesome</directory>
+					<filtering>false</filtering>
+					<targetPath>components/font-awesome</targetPath>
+				</resource>
+				<resource>
+					<directory>war/components/mxGraph</directory>
+					<filtering>true</filtering>
+					<targetPath>components/mxGraph</targetPath>
+				</resource>
+				
+				<resource>
+					<directory>war/assets/img</directory>
+					<filtering>true</filtering>
+					<targetPath>assets/img</targetPath>
+				</resource>
+				<resource>
+					<directory>war/assets/css/</directory>
+					<includes>
+						<include>codingBrackets.css</include>
+						<include>editorView.css</include>
+					</includes>
+					<filtering>true</filtering>
+					<targetPath>assets/css</targetPath>
+				</resource>
+			</webResources>		
+		  </configuration>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.6.1</version>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-clean-plugin</artifactId>
+			<version>3.0.0</version>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-install-plugin</artifactId>
+			<version>2.5.2</version>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.20</version>
+			<configuration>
+				<!-- Sets the VM argument line used when unit tests are run. -->
+				<argLine>${surefireArgLine} -Dbytecode.version=1.7</argLine>
+				<trimStackTrace>false</trimStackTrace>
+			</configuration>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-site-plugin</artifactId>
+			<version>3.6</version>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-resources-plugin</artifactId>
+			<version>3.0.2</version>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-deploy-plugin</artifactId>
+			<version>3.1</version>
+		  </plugin>
+
+		  <plugin>
+			<artifactId>maven-enforcer-plugin</artifactId>
+			<version>1.4.1</version>
+			<executions>
+			  <execution>
+				<id>enforce-maven</id>
+				<goals>
+				  <goal>enforce</goal>
+				</goals>
 				<configuration>
-					<excludes>
-						<exclude>javax.servlet:javax.servlet-api</exclude>
-						<exclude>com.google.guava:guava</exclude> <!-- avoid android version -->
+				  <rules>
+					<requireMavenVersion>
+						<version>3.5</version>
+					</requireMavenVersion>
+					<requirePluginVersions>
+						<message>Best Practice is to always define plugin versions!</message>
+						<banLatest>true</banLatest>
+						<banRelease>true</banRelease>
+						<phases>clean,deploy,verify,appengine:run,appengine:deploy,appengine:update,appengine:devappaserver,site</phases>
+					</requirePluginVersions>
+				  </rules>
+				</configuration>
+			  </execution>
+			</executions>
+		  </plugin>
+		  <plugin>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.7.9</version>
+			<executions>
+				<!--
+					Prepares the property pointing to the JaCoCo runtime agent which
+					is passed as VM argument when Maven the Surefire plugin is executed.
+				-->
+				<execution>
+					<id>pre-unit-test</id>
+					<goals>
+						<goal>prepare-agent</goal>
+					</goals>
+					<configuration>
+						<!-- Sets the path to the file which contains the execution data. -->
+						<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+						<!--
+							Sets the name of the property containing the settings
+							for JaCoCo runtime agent.
+						-->
+						<propertyName>surefireArgLine</propertyName>
+					</configuration>
+				</execution>
+				<!--
+					Ensures that the code coverage report for unit tests is created after
+					unit tests have been run.
+				-->
+				<execution>
+					<id>post-unit-test</id>
+					<phase>test</phase>
+					<goals>
+						<goal>report</goal>
+					</goals>
+					<configuration>
+						<!-- Sets the path to the file which contains the execution data. -->
+						<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+						<!-- Sets the output directory for the code coverage report. -->
+						<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+						
+						<excludes>
+							<exclude>**/test/**</exclude>
+							<exclude>**/v4tov5migration/**</exclude>
+							<exclude>**/v6tov7Migration/**</exclude>
+							<exclude>**/DataMigrationEndpoint*</exclude>
 					</excludes>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<!--<webXml>war\WEB-INF\web.xml</webXml> -->
-					<archiveClasses>true</archiveClasses>
-					<webResources>
-						<!-- in order to interpolate version from pom into appengine-web.xml -->
-						<resource>
-							<directory>war/WEB-INF</directory>
-							<filtering>true</filtering>
-							<targetPath>WEB-INF</targetPath>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.0.0</version>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.5.2</version>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20</version>
-				<configuration>
-					<!-- Sets the VM argument line used when unit tests are run. -->
-					<argLine>${surefireArgLine} -Dbytecode.version=1.7</argLine>
-					<trimStackTrace>false</trimStackTrace>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.6</version>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.0.2</version>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>3.1</version>
-			</plugin>
-
-			<plugin>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.4.1</version>
-				<executions>
-					<execution>
-						<id>enforce-maven</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireMavenVersion>
-									<version>3.5</version>
-								</requireMavenVersion>
-								<requirePluginVersions>
-									<message>Best Practice is to always define plugin versions!</message>
-									<banLatest>true</banLatest>
-									<banRelease>true</banRelease>
-									<phases>clean,deploy,verify,appengine:run,appengine:deploy,appengine:update,appengine:devappaserver,site</phases>
-								</requirePluginVersions>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.9</version>
-				<executions>
-					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
-						is passed as VM argument when Maven the Surefire plugin is executed. -->
-					<execution>
-						<id>pre-unit-test</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<!-- Sets the path to the file which contains the execution data. -->
-							<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-							<!-- Sets the name of the property containing the settings for JaCoCo 
-								runtime agent. -->
-							<propertyName>surefireArgLine</propertyName>
-						</configuration>
-					</execution>
-					<!-- Ensures that the code coverage report for unit tests is created 
-						after unit tests have been run. -->
-					<execution>
-						<id>post-unit-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<!-- Sets the path to the file which contains the execution data. -->
-							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-							<!-- Sets the output directory for the code coverage report. -->
-							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-
-							<excludes>
-								<exclude>**/test/**</exclude>
-								<exclude>**/v4tov5migration/**</exclude>
-								<exclude>**/v6tov7Migration/**</exclude>
-								<exclude>**/DataMigrationEndpoint*</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>check</id>
-						<phase>test</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<!-- Sets the path to the file which contains the execution data. -->
-							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-							<rules>
-								<rule>
-									<element>BUNDLE</element>
-									<limits>
-										<limit>
-											<counter>LINE</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>0.23</minimum>
-										</limit>
-									</limits>
-								</rule>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
+					</configuration>
+				</execution>
+				<execution>
+					<id>check</id>
+					<phase>test</phase>
+					<goals>
+					  <goal>check</goal>
+					</goals>
+					<configuration>
+						<!-- Sets the path to the file which contains the execution data. -->
+						<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+					  <rules>
+						<rule>
+						  <element>BUNDLE</element>
+						  <limits>
+							<limit >
+							  <counter>LINE</counter>
+							  <value>COVEREDRATIO</value>
+							  <minimum>0.50</minimum>
+							</limit>
+						  </limits>
+						</rule>
+					  </rules>
+					</configuration>
+				</execution>
+			</executions>
+			<configuration>
 					<excludes>
 						<exclude>com.qdacity.test.*</exclude>
 						<exclude>com.qdacity.maintenance.tasks.*</exclude>
 						<exclude>com.qdacity.maintenance.tasks.v6tov7Migration**</exclude>
 					</excludes>
 				</configuration>
-			</plugin>
+		</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.datanucleus</groupId>
-										<artifactId>
-											maven-datanucleus-plugin
-										</artifactId>
-										<versionRange>
-											[3.2.0-m1,)
-										</versionRange>
-										<goals>
-											<goal>enhance</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 </project>

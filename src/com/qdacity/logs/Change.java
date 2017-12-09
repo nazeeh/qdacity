@@ -1,15 +1,10 @@
 package com.qdacity.logs;
 
-import java.util.Date;
-
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-
 import com.qdacity.project.ProjectType;
+
+import javax.jdo.annotations.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Change implements Serializable {
@@ -36,6 +31,9 @@ public class Change implements Serializable {
 	String oldValue;
 	@Persistent
 	String newValue;
+
+	public Change() {
+	}
 
 	public Change(Date datetime, Long projectID, ProjectType projectType, ChangeType changeType, String userID, ChangeObject objectType, Long objectID) {
 		super();

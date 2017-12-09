@@ -1,23 +1,4 @@
 package com.qdacity.test.UserEndpoint;
-import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.jdo.PersistenceManager;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -36,6 +17,21 @@ import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import javax.jdo.PersistenceManager;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
 
 public class UserEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
@@ -72,6 +68,7 @@ public class UserEndpointTest {
 	
 	@Test
 	public void testGetUser() throws UnauthorizedException {
+		latch.reset(2);
 		User user = new User();
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 

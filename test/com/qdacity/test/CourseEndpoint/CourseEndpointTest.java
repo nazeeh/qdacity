@@ -23,6 +23,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.course.Course;
@@ -35,7 +36,7 @@ import com.qdacity.user.UserType;
 
 public class CourseEndpointTest {
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
 	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	private final com.google.api.server.spi.auth.common.User testUser2 = new AuthenticatedUser("12345678", "asdf@asdf.de", LoginProviderType.GOOGLE);
 	
@@ -265,6 +266,26 @@ public class CourseEndpointTest {
 		CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description 2", testUser);
 		
 		retrievedTerms = CourseEndpointTestHelper.listTermCourse(1L, testUser);
+		
+		assertEquals(2, retrievedTerms.size());
+
+	}
+	
+	/**
+	 * Tests if a registered can list terms for a course
+	 */
+	@Test
+	public void testListTermCourseByParticipant() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		List<TermCourse> retrievedTerms = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description", testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		
+		retrievedTerms = CourseEndpointTestHelper.listTermCourseByParticipant(1L, testUser);
 		
 		assertEquals(2, retrievedTerms.size());
 
@@ -678,6 +699,42 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 	}
 	
 	/**
+	 * Tests if a registered user can be invited to be an owner by another owner of a course
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void testInviteUserTermCourse() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		
+		PersistenceManager mgr = getPersistenceManager();
+		TermCourse thisTermCourse = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		CourseEndpoint ce = new CourseEndpoint();
+		ce.inviteUserTermCourse(1L, testUser2.getEmail(), testUser);
+		
+		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
+		q.setFilter("id == theID");
+		q.declareParameters("String theID");
+
+		try {
+			  @SuppressWarnings("unchecked")
+			List<TermCourse> termCourses = (List<TermCourse>) q.execute(1L);
+			  if (!termCourses.isEmpty()) {
+			    	thisTermCourse = termCourses.get(0);
+			  } else {
+				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+			  }
+			} finally {
+			  q.closeAll();
+			}
+		
+		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getUserId()));
+	}
+	
+	/**
 	 * Tests if a registered user can accept an invitation to be an owner of a course
 	 * @throws UnauthorizedException 
 	 */
@@ -712,5 +769,22 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			}
 		
 		assertEquals(true, thisCourse.getOwners().contains(testUser2.getId()));
+	}
+	
+	/**
+	 * Tests if a registered user can list participants of a termCourse
+	 */
+	@Test
+	public void testListTermCourseParticipants() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		CollectionResponse<User> users = null;
+		
+		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(2L, testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		
+		users = (CollectionResponse<User>) CourseEndpointTestHelper.listTermCourseParticipants(2L, testUser);
+		
+		assertEquals(1, users.getItems().size());
 	}
 }

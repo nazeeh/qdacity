@@ -19,7 +19,9 @@ const StyledNavbarItem = styled.a `
 export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {user: {}};
+		this.state = {
+			user: {}
+		};
 
 		this.account = {};
 
