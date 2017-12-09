@@ -273,17 +273,18 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered can list terms for a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListTermCourseByParticipant() {
+	public void testListTermCourseByParticipant() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		List<TermCourse> retrievedTerms = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description", testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getId(), testUser);
 		
 		retrievedTerms = CourseEndpointTestHelper.listTermCourseByParticipant(1L, testUser);
 		
@@ -725,13 +726,13 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!termCourses.isEmpty()) {
 			    	thisTermCourse = termCourses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getUserId()));
+		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getId()));
 	}
 	
 	/**
@@ -773,15 +774,16 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 	
 	/**
 	 * Tests if a registered user can list participants of a termCourse
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListTermCourseParticipants() {
+	public void testListTermCourseParticipants() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CollectionResponse<User> users = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(2L, testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getId(), testUser);
 		
 		users = (CollectionResponse<User>) CourseEndpointTestHelper.listTermCourseParticipants(2L, testUser);
 		

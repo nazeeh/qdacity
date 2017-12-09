@@ -71,7 +71,7 @@ public class ProjectEndpoint {
 		
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
-		return getProjectsByUserId(cursorString, user.getUserId());
+		return getProjectsByUserId(cursorString, user.getId());
 	}
 
 	@ApiMethod(name = "project.listProjectByUserId",
@@ -112,7 +112,7 @@ public class ProjectEndpoint {
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "project.listValidationProject")
 	public List<ValidationProject> listValidationProject(User user) throws UnauthorizedException {
-		final String userId = user.getUserId();
+		final String userId = user.getId();
 
 		return getValidationProjectsByUserId(user, userId);
 	}

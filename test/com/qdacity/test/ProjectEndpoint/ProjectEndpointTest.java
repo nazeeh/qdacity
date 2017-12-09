@@ -150,8 +150,8 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testListProjectByUserIdAuthorization() throws UnauthorizedException {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-		com.google.appengine.api.users.User otherUser = new com.google.appengine.api.users.User("asd2@asd2.de", "bla", "234567");
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+		com.google.api.server.spi.auth.common.User otherUser = new AuthenticatedUser("234567", "asd2@asd2.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 		UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
 
@@ -165,8 +165,8 @@ public class ProjectEndpointTest {
 	 */
 	@Test
 	public void testListValidationProjectByUserIdAuthorization() throws UnauthorizedException {
-		com.google.appengine.api.users.User loggedInUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-		com.google.appengine.api.users.User otherUser = new com.google.appengine.api.users.User("asd2@asd2.de", "bla", "234567");
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+		com.google.api.server.spi.auth.common.User otherUser = new AuthenticatedUser("234567", "asd2@asd2.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 		UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
 

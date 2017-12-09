@@ -30,7 +30,7 @@ public class MetaModelEndpointTestHelper {
 		}
 	}
 	
-	static public void insertMetaModelEntity(Long id, String name, int group, com.google.appengine.api.users.User loggedInUser) {
+	static public void insertMetaModelEntity(Long id, String name, int group, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			final MetaModelEntity metaModelEntity = new MetaModelEntity();
 			metaModelEntity.setId(id);

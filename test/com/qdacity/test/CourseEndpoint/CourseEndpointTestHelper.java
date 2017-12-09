@@ -84,7 +84,7 @@ public class CourseEndpointTestHelper {
 		return terms;
 	}
 	
-	static public List<TermCourse> listTermCourseByParticipant(Long courseID, com.google.appengine.api.users.User loggedInUser) {
+	static public List<TermCourse> listTermCourseByParticipant(Long courseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		List<TermCourse> terms = null;
 		try {
@@ -97,7 +97,7 @@ public class CourseEndpointTestHelper {
 		return terms;
 	}
 	
-	static public void addTermCourse(Long id, Long courseID, String term, com.google.appengine.api.users.User loggedInUser) {
+	static public void addTermCourse(Long id, Long courseID, String term, com.google.api.server.spi.auth.common.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
 		termCourse.setId(id);
 		termCourse.setCourseID(courseID);
@@ -191,7 +191,7 @@ public class CourseEndpointTestHelper {
 		}
 	}
 	
-	static public CollectionResponse<User> listTermCourseParticipants(Long termCourseID, com.google.appengine.api.users.User loggedInUser) {
+	static public CollectionResponse<User> listTermCourseParticipants(Long termCourseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		CourseEndpoint ce = new CourseEndpoint();
 		CollectionResponse<User> users = null;
 		try {

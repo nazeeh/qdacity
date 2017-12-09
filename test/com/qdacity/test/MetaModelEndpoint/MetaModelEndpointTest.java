@@ -72,7 +72,7 @@ public class MetaModelEndpointTest {
 	}
 	
 	@Test
-	public void testInsertEntity() {
+	public void testInsertEntity() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);

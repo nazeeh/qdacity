@@ -123,7 +123,7 @@ public class ChangeEndpointTest {
 	}
 
 	@Test
-	public void testGetChanges() {
+	public void testGetChanges() throws UnauthorizedException {
 		latch.reset(5);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 

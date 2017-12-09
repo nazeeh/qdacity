@@ -357,7 +357,7 @@ public class CourseEndpoint {
 				}
 				try {
 					// Authorize User
-					com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+					com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 					Authorization.checkAuthorizationTermCourse(termCourse, user);
 					mgr.makePersistent(termCourse);
 					dbUser.addTermCourseAuthorization(termCourse.getId());
@@ -420,8 +420,8 @@ public class CourseEndpoint {
 					termCourse.addParticipant(userID);
 				}
 				else {
-					Authorization.checkAuthTermCourseParticipation(termCourse, user.getUserId(), user);
-					termCourse.addParticipant(user.getUserId());
+					Authorization.checkAuthTermCourseParticipation(termCourse, user.getId(), user);
+					termCourse.addParticipant(user.getId());
 				}
 				
 
@@ -538,7 +538,7 @@ public class CourseEndpoint {
 				String userID = dbUsers.get(0).getId();
 
 				// Get the inviting user
-				com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+				com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				termCourse.addInvitedUser(userID);
@@ -549,7 +549,7 @@ public class CourseEndpoint {
 				notification.setDatetime(new Date());
 				notification.setMessage("Term Course: " + termCourse.getTerm());
 				notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
-				notification.setOriginUser(user.getUserId());
+				notification.setOriginUser(user.getId());
 				notification.setTermCourse(termCourseID);
 				notification.setCourse(termCourse.getCourseID());
 				notification.setSettled(false);
@@ -598,11 +598,9 @@ public class CourseEndpoint {
 	@SuppressWarnings("unchecked")
 	@ApiMethod(
 		name = "course.listTermCourseParticipants",
-		path = "termCourse",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public CollectionResponse<com.qdacity.user.User> listTermCourseParticipants(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("termCourseID") Long termCourseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
+		path = "termCourse"
+	)
+	public CollectionResponse<com.qdacity.user.User> listTermCourseParticipants(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("termCourseID") Long termCourseID, User user) throws UnauthorizedException {
 		List<com.qdacity.user.User> users = new ArrayList<com.qdacity.user.User>();
 		PersistenceManager mgr = getPersistenceManager();
 		try {
