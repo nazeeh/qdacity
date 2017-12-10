@@ -4,10 +4,6 @@ import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
 
-const StyledZoomBtn = BtnDefault.extend `
-    margin-left: 10px;
-`;
-
 export default class ButtonZoomIn extends React.Component {
 
 	constructor(props) {
@@ -26,9 +22,9 @@ export default class ButtonZoomIn extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledZoomBtn title="Zoom into the graph." onClick={_this.buttonClicked}>
+			<BtnDefault title="Zoom into the graph." onClick={_this.buttonClicked}>
 		        <i className="fa fa-search-plus"></i>
-	        </StyledZoomBtn>
+	        </BtnDefault>
 		);
 	}
 

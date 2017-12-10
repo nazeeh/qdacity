@@ -6,7 +6,6 @@ import {
 } from '../../../common/styles/Btn.jsx';
 
 const StyledZoomBtn = BtnDefault.extend `
-	border-left: none;
 	border-right: none;
 `;
 

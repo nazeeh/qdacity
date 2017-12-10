@@ -9,6 +9,7 @@ import ButtonShowAll from './ButtonShowAll.jsx';
 import ButtonApplyLayout from './ButtonApplyLayout.jsx';
 import ButtonExpandAll from './ButtonExpandAll.jsx';
 import ButtonCollapseAll from './ButtonCollapseAll.jsx';
+import { BtnGroup } from '../../../common/styles/Btn.jsx';
 import CollaboratorList from '../../../common/SyncService/CollaboratorList';
 
 const StyledToolbar = styled.div `
@@ -19,9 +20,6 @@ const StyledToolbar = styled.div `
 
 const StyledPlaceholder = styled.div `
     flex-grow: 1;
-`;
-
-const StyledButtonContainer = styled.div `
 `;
 
 export default class Toolbar extends React.Component {
@@ -43,19 +41,27 @@ export default class Toolbar extends React.Component {
 
 		return (
 			<StyledToolbar>
-				<StyledButtonContainer>
-					<ButtonAddClass umlEditor={_this.umlEditor} createCode={_this.props.createCode}/>
+				<div>
+					<BtnGroup>
+						<ButtonAddClass umlEditor={_this.umlEditor} createCode={_this.props.createCode}/>
+					</BtnGroup>
 					
-					<ButtonZoomIn umlEditor={_this.umlEditor} />
-					<ButtonZoomOut umlEditor={_this.umlEditor} />
-					<ButtonZoomSelect ref={(zoomSelectRef) => {if (zoomSelectRef) this.zoomSelectRef = zoomSelectRef}} umlEditor={_this.umlEditor} />
-					<ButtonShowAll umlEditor={_this.umlEditor} />
+					<BtnGroup>
+						<ButtonZoomIn umlEditor={_this.umlEditor} />
+						<ButtonZoomOut umlEditor={_this.umlEditor} />
+						<ButtonZoomSelect ref={(zoomSelectRef) => {if (zoomSelectRef) this.zoomSelectRef = zoomSelectRef}} umlEditor={_this.umlEditor} />
+						<ButtonShowAll umlEditor={_this.umlEditor} />
+					</BtnGroup>
 				
-					<ButtonApplyLayout umlEditor={_this.umlEditor} />
+					<BtnGroup>
+						<ButtonApplyLayout umlEditor={_this.umlEditor} />
+					</BtnGroup>
 
-					<ButtonExpandAll umlEditor={_this.umlEditor} />
-					<ButtonCollapseAll umlEditor={_this.umlEditor} />
-				</StyledButtonContainer>
+					<BtnGroup>
+						<ButtonExpandAll umlEditor={_this.umlEditor} />
+						<ButtonCollapseAll umlEditor={_this.umlEditor} />
+					</BtnGroup>
+				</div>
 				<StyledPlaceholder />
 				<CollaboratorList
                     syncService={this.props.syncService} />
