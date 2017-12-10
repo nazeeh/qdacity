@@ -5,10 +5,6 @@ import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
 
-const StyledButton = BtnDefault.extend `
-	margin-left: 10px;
-`;
-
 export default class ButtonCollapseAll extends React.Component {
 
 	constructor(props) {
@@ -27,10 +23,10 @@ export default class ButtonCollapseAll extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledButton title="Collapses all classes." onClick={_this.buttonClicked}>
+			<BtnDefault title="Collapses all classes." onClick={_this.buttonClicked}>
 		        <i className="fa fa-minus-square-o"></i>
 		        <span>Collapse all</span>
-	        </StyledButton>
+	        </BtnDefault>
 		);
 	}
 
