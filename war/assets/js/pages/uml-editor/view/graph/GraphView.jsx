@@ -451,19 +451,22 @@ class GraphView extends React.Component {
 	}
 
 	expandAll() {
-		const _this = this;
-
-		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			if (cell.vertex) _this.expandCell(cell);
-		});
+		const children = this.graph.model.getChildren(this.graph.getDefaultParent());
+		if (children != null) {
+			children.forEach(cell => {
+				if (cell.vertex) this.expandCell(cell);
+			});
+		}
 	}
 
 	collapseAll() {
-		const _this = this;
+		const children = this.graph.model.getChildren(this.graph.getDefaultParent());
 
-		this.graph.model.getChildren(this.graph.getDefaultParent()).forEach((cell) => {
-			if (cell.vertex) _this.collapseCell(cell);
-		});
+		if (children != null) {
+			children.forEach((cell) => {
+				if (cell.vertex) this.collapseCell(cell);
+			});
+		}
 	}
 
 	collapseCell(cell) {
