@@ -15,7 +15,8 @@ export default class EditorCtrl {
 
 		this.iframe = document.getElementById('textEditor');
 
-
+		this.setFontFace = this.setFontFace.bind(this);
+		this.setFontSize = this.setFontSize.bind(this);
 
 		// Make sure we're in standards mode.
 		var doc = this.iframe.contentDocument;
@@ -91,6 +92,16 @@ export default class EditorCtrl {
 		$("#txtSizeSpinner").on("spin", function (event, ui) {
 			editor['setFontSize'](ui.value);
 		});
+	}
+
+	setFontFace(fontface) {
+		this.editor.setFontFace(fontface);
+	}
+
+	setFontSize(size) {
+		size = parseInt(size);
+		console.log('setFontSize has value', size);
+		this.editor.setFontSize(size);
 	}
 
 	setDocumentView(doc) {
