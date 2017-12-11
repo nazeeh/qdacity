@@ -6,6 +6,9 @@ import ReactLoading from '../../../common/ReactLoading.jsx';
 import {
 	DragDocument
 } from './Document.jsx';
+import {
+	DropDocument
+} from './DocumentDropTarget.jsx';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
@@ -42,10 +45,6 @@ const StyledToolBar = styled.div `
 const StyledDocumentList = styled.div `
 
 	margin:5px 5px 5px 5px;
-`;
-
-const StyledDocumentDrop = styled.div `
-    height: 5px;
 `;
 
 export default class DocumentsView extends React.Component {
@@ -373,49 +372,3 @@ export default class DocumentsView extends React.Component {
 		);
 	}
 }
-
-
-
-
-
-class DocumentDropTarget extends React.Component {
-
-	constructor(props) {
-		super(props);
-	}
-
-	render() {
-		const {
-			connectDropTarget
-		} = this.props;
-
-		return connectDropTarget(
-			<div>
-	            <StyledDocumentDrop />
-	        </div>);
-	}
-}
-
-
-const documentTarget = {
-	drop(props, monitor, component) {
-		const hasDroppedOnChild = monitor.didDrop();
-
-		if (!hasDroppedOnChild) {
-			return {
-				dropTargetId: 0
-			};
-		}
-	}
-};
-
-
-function collectTarget(connect, monitor) {
-	return {
-		connectDropTarget: connect.dropTarget(),
-		isOver: monitor.isOver(),
-		canDrop: monitor.canDrop()
-	};
-}
-
-const DropDocument = DropTarget("document", documentTarget, collectTarget)(DocumentDropTarget)
