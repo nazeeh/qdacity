@@ -11,8 +11,6 @@ image: java:7
   paths:
     - war/node_modules/
 
-before_script:
-
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
 
@@ -22,8 +20,7 @@ stages:
   - report
   - deploy
 
-frontend_prod_build:
-  <<: *job_definition
+.frontend_build: &frontend_build
   stage: build
   only:
     - branches
@@ -33,15 +30,20 @@ frontend_prod_build:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
     expire_in: 3 mos
+
+frontend_prod_build:
+  <<: *job_definition
+  <<: *frontend_build
   script:
-    - cd war
-    - echo $API_CONFIG_PRODUCTION > ./api_config.json
-    - rm -f ./dist/js/*
-    - npm prune
-    - npm install
-    - gulp bundle
-    - gulp minify
-    - gulp set-react-production
+    - build_frontend bundle minify set-react-production
+
+frontend_prod_build_nm:
+  <<: *job_definition
+  <<: *frontend_build
+  except:
+    - master
+  script:
+    - build_frontend bundle
 
 backend_prod_build:
   <<: *job_definition
@@ -169,6 +171,9 @@ deploy_rtcsvc:
 
 deploy_prod:
   <<: *deployment_template
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build
   only:
     - master
 
@@ -178,4 +183,35 @@ deploy_prod_manual:
     - branches
   except:
     - master
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build
   when: manual
+
+deploy_non_minified:
+  <<: *deployment_template
+  only:
+    - branches
+  except:
+    - master
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build_nm
+  when: manual
+
+.global_functions: &global_helpers |
+    function build_frontend() {
+      cd war
+      echo $API_CONFIG_PRODUCTION > ./api_config.json
+      rm -f ./dist/js/*
+      npm prune
+      npm install
+      while [ -n "$1" ]; do
+        subcommand="$1"
+        shift
+        gulp $subcommand
+      done
+    }
+
+before_script:
+  - *global_helpers
