@@ -12,6 +12,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -41,14 +42,15 @@ public class UserMigrationEndpoint {
 	 * The userId in persistence stays the same!
 	 * @param oldUser
 	 * @param idToken
-	 * @throws UnauthorizedException 
+	 * @throws UnauthorizedException if the old user does not exist
+	 * @throws ConflictException if the old user is already migrated or the new user does already exist.
 	 */
 	@ApiMethod(
 			name = "userMigration.migrateFromGoogleIdentityToCustomAuthentication",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 			audiences = { Constants.WEB_CLIENT_ID })
-	public void migrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, @Named("idToken") String idToken) throws UnauthorizedException {
+	public void migrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, @Named("idToken") String idToken) throws UnauthorizedException, ConflictException {
 		
 		if(oldUser == null) {
 			throw new UnauthorizedException("The token for the current user could not be validated.");
@@ -86,7 +88,7 @@ public class UserMigrationEndpoint {
 		user.setLastLogin(new Date());
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (user.getId() != null && containsUser(user)) {
+			if (user.getId() != null && containsUser(user.getId())) {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(user);
@@ -95,22 +97,18 @@ public class UserMigrationEndpoint {
 		}
 		return user;
 	}
-	private boolean containsUser(User user) {
+	
+	private boolean containsUser(String id) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
 		try {
-			mgr.getObjectById(User.class, user.getId());
+			mgr.getObjectById(User.class, id);
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			contains = false;
 		} finally {
 			mgr.close();
 		}
 		return contains;
-	}
-
-
-	private static PersistenceManager getPersistenceManager() {
-		return PMF.get().getPersistenceManager();
 	}
 	
 	/**
@@ -119,9 +117,10 @@ public class UserMigrationEndpoint {
 	 * The new userId from the new login process is put into the UserLoginProviderInformation of the user.
 	 * @param oldUser
 	 * @param newUser
-	 * @throws UnauthorizedException if the old user does not exist, the new user does already exist or the old user is already migrated.
+	 * @throws UnauthorizedException if the old user does not exist
+	 * @throws ConflictException if the old user is already migrated or the new user does already exist.
 	 */
-	private void migrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) throws UnauthorizedException {
+	public void migrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) throws UnauthorizedException, ConflictException {
 		// pre: oldUser must exist in db -> user-id == oldUser.userId
 		User dbUser = fetchOldUser(oldUser);
 		if(dbUser == null) {
@@ -130,12 +129,12 @@ public class UserMigrationEndpoint {
 		
 		// pre: oldUser must not migrated be yet -> User with id == oldUser.userId must not have fields in UserLoginProviderInformation.
 		if(hasLoginProviderInformation(dbUser)) {
-			throw new UnauthorizedException("The user seems to be already migrated!");
+			throw new ConflictException("The user seems to be already migrated!");
 		}
 		
 		// pre: newUser must not exist in db -> newUser.id not in UserLoginProviderInformation.
 		if(existsNewUser(newUser.getId(), newUser.getProvider())) {
-			throw new UnauthorizedException("The new user already exists!");
+			throw new ConflictException("The new user already exists!");
 		}
 		
 		// ready for migration:
@@ -161,7 +160,7 @@ public class UserMigrationEndpoint {
 		boolean contains = true;
 		try {
 			Query query = mgr.newQuery(UserLoginProviderInformation.class);
-			query.setFilter("externalUserId == userIdParam AND provider == providerParam");
+			query.setFilter("externalUserId == userIdParam && provider == providerParam");
 			query.declareParameters("String userIdParamm, String providerParam");
 			
 			List<UserLoginProviderInformation> results = (List<UserLoginProviderInformation>) query.execute(userId, providerType);
@@ -192,5 +191,10 @@ public class UserMigrationEndpoint {
 		} finally {
 			mgr.close();
 		}
+	}
+
+
+	private static PersistenceManager getPersistenceManager() {
+		return PMF.get().getPersistenceManager();
 	}
 }
