@@ -73,7 +73,7 @@ export default class NavBar extends React.Component {
 							<StyledDropdownLinks className="clickable" onClick={function(){alert("Coming Soon...");}}>		
 								<div>Faq</div>
 							</StyledDropdownLinks>
-							<StyledDropdownLinks className="clickable" onClick={function(){this.props.tutorialEngine.controller.showOverviewWindow();}.bind(this)}>
+							<StyledDropdownLinks className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
 								<div>Tutorial Overview</div>	
 							</StyledDropdownLinks>
 							</div>
