@@ -1,12 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import ReactLoading from '../../../common/ReactLoading.jsx';
-
-import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
-
-import DocumentsToolbar from './DocumentsToolbar.jsx'
-
 import {
 	DragSource
 } from 'react-dnd';
