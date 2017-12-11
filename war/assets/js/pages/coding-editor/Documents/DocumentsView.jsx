@@ -7,6 +7,11 @@ import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
+import {
+	DragSource,
+	DropTarget
+} from 'react-dnd';
+
 const StyledDocumentsHeader = styled.div `
 	text-align: center;
 	position:relative;
@@ -52,6 +57,11 @@ const StyledDocumentItem = styled.a `
 		background-color: ${props => props.theme.borderPrimary};
 		color: ${props => props.theme.fgPrimaryHighlight};
 	}
+`;
+
+const StyledDocumentDrop = styled.div `
+    background-color: red;
+    height: 5px;
 `;
 
 export default class DocumentsView extends React.Component {
@@ -306,6 +316,19 @@ export default class DocumentsView extends React.Component {
 
 	}
 
+	renderDocument(doc) {
+		return <DragDocument 
+                doc={doc} 
+        	    active={doc.id == this.state.selected} 
+        	    key={doc.id}  
+		        selected={this.state.selected}
+        	    onClick={this.setActiveDocument.bind(null,doc.id)}>{doc.title}</DragDocument>;
+	}
+
+	renderDocumentDrop() {
+		return <DropDocument />;
+	}
+
 	renderDocuments() {
 		var _this = this;
 		if (!this.state.isExpanded) {
@@ -319,11 +342,15 @@ export default class DocumentsView extends React.Component {
 					{this.renderToolbar()}
 				</StyledToolBar>
 				<StyledDocumentList>
-		        {
-		          this.state.documents.map(function(doc) {
-		            return <StyledDocumentItem active={doc.id == _this.state.selected} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
-		          })
-		        }
+    		        {
+    		          this.state.documents.map(function(doc) {
+    		            return ( <div>
+    		                        { _this.renderDocumentDrop() }
+    		                        { _this.renderDocument(doc) }
+    		                    </div> );
+    		          })
+    		        }
+                    { _this.renderDocumentDrop() }
 		  		</StyledDocumentList>
 			</div>
 		);
@@ -364,3 +391,102 @@ export default class DocumentsView extends React.Component {
 
 
 }
+
+
+
+
+
+
+
+
+
+class Document extends React.Component {
+
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		const _this = this;
+
+		const {
+			connectDragSource
+		} = this.props;
+
+		return connectDragSource(
+			<div>
+		        <StyledDocumentItem 
+                active={this.props.active} 
+                key={this.props.doc.id}  
+                >{this.props.doc.title}</StyledDocumentItem>
+            </div>);
+	}
+}
+
+class DocumentDropTarget extends React.Component {
+
+	constructor(props) {
+		super(props);
+	}
+
+	render() {
+		const {
+			connectDropTarget
+		} = this.props;
+
+		return connectDropTarget(
+			<div>
+	            <StyledDocumentDrop />
+	        </div>);
+	}
+}
+
+
+
+
+const documentSource = {
+	beginDrag(props, monitor, component) {
+		return {
+			documentId: props.doc.id
+		};
+	},
+	endDrag(props, monitor, component) {
+		const dropResult = monitor.getDropResult();
+
+		if (dropResult) {
+			alert('DROP!');
+		}
+	}
+};
+
+const documentTarget = {
+	drop(props, monitor, component) {
+		const hasDroppedOnChild = monitor.didDrop();
+
+		if (!hasDroppedOnChild) {
+			return {
+				dropTargetId: 0
+			};
+		}
+	}
+};
+
+function collectSource(connect, monitor) {
+	return {
+		connectDragSource: connect.dragSource(),
+		connectDragPreview: connect.dragPreview(),
+		isDragging: monitor.isDragging(),
+	};
+}
+
+function collectTarget(connect, monitor) {
+	return {
+		connectDropTarget: connect.dropTarget(),
+		isOver: monitor.isOver(),
+		canDrop: monitor.canDrop()
+	};
+}
+
+const DragDocument = DragSource("document", documentSource, collectSource)(Document)
+
+const DropDocument = DropTarget("document", documentTarget, collectTarget)(DocumentDropTarget)
