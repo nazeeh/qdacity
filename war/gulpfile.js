@@ -117,7 +117,7 @@ gulp.task('set-react-production', function() {
 });
 
 gulp.task('minify', function() {
-	 return gulp.src('./dist/js/*.js', {base: './'})
+	 return gulp.src('../target/qdacity-war/dist/js/*.js', {base: './'})
 	  .pipe(uglify(
 		{
 			mangle: { 

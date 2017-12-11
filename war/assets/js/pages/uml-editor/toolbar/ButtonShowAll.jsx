@@ -5,10 +5,6 @@ import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
 
-const StyledZoomBtn = BtnDefault.extend `
-	margin-left: 10px;
-`;
-
 export default class ButtonShowAll extends React.Component {
 
 	constructor(props) {
@@ -27,10 +23,10 @@ export default class ButtonShowAll extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledZoomBtn title="Zooms the graph until all classes fit into the screen." onClick={_this.buttonClicked}>
+			<BtnDefault title="Zooms the graph until all classes fit into the screen." onClick={_this.buttonClicked}>
                 <i className="fa fa-arrows-alt"></i>
                 <span>Show all</span>
-	        </StyledZoomBtn>
+	        </BtnDefault>
 		);
 	}
 
