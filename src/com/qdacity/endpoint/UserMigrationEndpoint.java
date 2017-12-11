@@ -48,14 +48,11 @@ public class UserMigrationEndpoint {
 		if(oldUser == null) {
 			throw new UnauthorizedException("The token for the current user could not be validated.");
 		}
-		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "old user id " + oldUser.getUserId());
-		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "old user email " + oldUser.getEmail());
-		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "old user federate id " + oldUser.getFederatedIdentity());
 		AuthenticatedUser newUser = new GoogleIdTokenValidator().validate(idToken);
 		if(newUser == null) {
 			throw new UnauthorizedException("The token for the new user could not be validated.");
 		}
-		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "new user id " + newUser.getId());
+		this.migrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
 
 	
@@ -102,5 +99,17 @@ public class UserMigrationEndpoint {
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
+	}
+	
+	private void migrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) {
+		// Do we also keep the "old" user id? -> no!
+		
+		// pre: oldUser must exist in db -> user-id == oldUser.userId
+		// pre: oldUser must not migrated be yet -> oldUser.userId not in UserLoginProviderInformation.
+		
+		// pre: newUser must not exist in db -> newUser.id not in UserLoginProviderInformation.
+		
+		// ready for migration:
+			// add the newUser to UserLoginProivderInformation.
 	}
 }
