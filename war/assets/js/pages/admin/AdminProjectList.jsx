@@ -66,7 +66,8 @@ export default class AdminProjectList extends React.Component {
     }
 
     fetchProjects(userId) {
-		if(userId === "") {
+		if(!userId) {
+			this.props.setProjects([]);
 			return;
 		}
         var _this = this;
