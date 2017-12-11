@@ -1,9 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import Jumbotron from '../../common/styles/Jumbotron';
 
 export default class WelcomePanel extends React.Component {
-	constructor(props) {
+	constructor(props, context) {
 		super(props);
+		this.authenticationProvider = context.authenticationProvider;
 		this.redirectToNytProject = this.redirectToNytProject.bind(this);
 	}
 
@@ -14,7 +17,7 @@ export default class WelcomePanel extends React.Component {
 	render() {
 		return (
 			<Jumbotron id="welcome" >
-				<h1>Welcome {this.props.account.getProfile().displayName}</h1>
+				<h1>Welcome {this.authenticationProvider.getProfile().displayName}</h1>
 				<div>
 					<p>QDAcity is currently in beta. We appreciate feedback to
 						<a href="mailto:support@qdacity.com?Subject=QDAcity%20support">
@@ -27,3 +30,7 @@ export default class WelcomePanel extends React.Component {
 		);
 	}
 }
+
+WelcomePanel.contextTypes = {
+	authenticationProvider: PropTypes.object.require,
+};

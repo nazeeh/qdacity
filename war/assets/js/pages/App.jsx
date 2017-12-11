@@ -10,6 +10,8 @@ import {
 } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
+import AuthProvider from '../common/AuthProvider.jsx';
+
 import NavBar from '../common/NavBar.jsx';
 import Index from './index/Index.jsx';
 import PersonalDashboard from "./personal-dashboard/PersonalDashboard.jsx"
@@ -70,17 +72,18 @@ export default class App extends React.Component {
 			<IntlProvider locale={this.state.locale} language={this.state.language} messages={this.state.messages}>
 				<Router>
 					<ThemeProvider theme={Theme}>
-						<div>
-							<Route path="/" render={(props) => <NavBar client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} callback={(acc) => { this.account = acc; this.forceUpdate() }} {...props} />} />
-							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard account={this.account}  {...props} />} />
-							<Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
-							<Route path="/CourseDashboard" render={(props) => <CourseDashboard account={this.account} {...props} />} />
-							<Route path="/TermDashboard" render={(props)=><TermDashboard account={this.account} {...props} />}/>
-							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
-							<Route path="/Admin" render={(props) => <Admin account={this.account} {...props} />} />
-							<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
-							<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
-						</div>
+						<AuthProvider>
+							<div>
+								<Route path="/" render={(props) => <NavBar {...props} />} />
+								<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard {...props} />} /><Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
+								<Route path="/CourseDashboard" render={(props) => <CourseDashboard account={this.account} {...props} />} />
+								<Route path="/TermDashboard" render={(props)=><TermDashboard account={this.account} {...props} />}/>
+								<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
+								<Route path="/Admin" render={(props) => <Admin account={this.account} {...props} />} />
+								<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
+								<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
+							</div>
+						</AuthProvider>
 					</ThemeProvider>
 				</Router>
 			</IntlProvider>
