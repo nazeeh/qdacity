@@ -43,7 +43,7 @@ public class UserMigrationEndpointTest {
 	
 	@Test(expected = UnauthorizedException.class)
 	public void migrationNoOldUser() throws UnauthorizedException, ConflictException {
-		endpoint.migrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
 
 	@Test(expected = ConflictException.class)
@@ -51,14 +51,14 @@ public class UserMigrationEndpointTest {
 		UserMigrationEndpointTestHelper.insertOldUser(oldUser.getUserId(), oldUser.getEmail());
 		UserEndpointTestHelper.addUser("test@test.de", "Hans", "Wurst", newUser);
 		
-		endpoint.migrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
 	
 	@Test
 	public void migrationWorks() throws UnauthorizedException, ConflictException {
 		User userDBbefore = UserMigrationEndpointTestHelper.insertOldUser(oldUser.getUserId(), oldUser.getEmail());
 		
-		endpoint.migrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 		
 		// there must be information in UserLoginProviderInformation
 		UserEndpoint userEndpoint = new UserEndpoint();
@@ -78,11 +78,11 @@ public class UserMigrationEndpointTest {
 	public void migrationAlreadyMigrated() throws UnauthorizedException, ConflictException {
 		UserMigrationEndpointTestHelper.insertOldUser(oldUser.getUserId(), oldUser.getEmail());
 		try {
-			endpoint.migrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+			endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 		} catch(UnauthorizedException | ConflictException ex) {
 			fail("First run of migration should work!");
 		}
 
-		endpoint.migrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
 }
