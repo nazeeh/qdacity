@@ -2,9 +2,10 @@ package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
+import java.util.List;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
 import com.google.api.server.spi.config.Api;
@@ -12,11 +13,14 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.GoogleIdTokenValidator;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 import com.qdacity.user.UserType;
 
 /**
@@ -34,6 +38,7 @@ public class UserMigrationEndpoint {
 
 	/**
 	 * Migrates a user from an old Google (Identity / Appengine) account to a "normal" Google account.
+	 * The userId in persistence stays the same!
 	 * @param oldUser
 	 * @param idToken
 	 * @throws UnauthorizedException 
@@ -55,13 +60,20 @@ public class UserMigrationEndpoint {
 		this.migrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
 
-	
+	/**
+	 * Exists just for testing issues.
+	 * Inserts old user into db.
+	 * @param user
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException
+	 */
 	@ApiMethod(
 			name = "insertOldUserForTesting",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 			audiences = { Constants.WEB_CLIENT_ID })
-	public User insertUser(User user, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	public User insertOldUser(User user, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
 		
 		if(loggedInUser == null) {
 			throw new UnauthorizedException("The User could not be authenticated");
@@ -101,15 +113,84 @@ public class UserMigrationEndpoint {
 		return PMF.get().getPersistenceManager();
 	}
 	
-	private void migrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) {
-		// Do we also keep the "old" user id? -> no!
-		
+	/**
+	 * Migrates old user to new user.
+	 * Therefore the user id stays the same.
+	 * The new userId from the new login process is put into the UserLoginProviderInformation of the user.
+	 * @param oldUser
+	 * @param newUser
+	 * @throws UnauthorizedException if the old user does not exist, the new user does already exist or the old user is already migrated.
+	 */
+	private void migrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) throws UnauthorizedException {
 		// pre: oldUser must exist in db -> user-id == oldUser.userId
-		// pre: oldUser must not migrated be yet -> oldUser.userId not in UserLoginProviderInformation.
+		User dbUser = fetchOldUser(oldUser);
+		if(dbUser == null) {
+			throw new UnauthorizedException("The old user does not exist!");
+		}
+		
+		// pre: oldUser must not migrated be yet -> User with id == oldUser.userId must not have fields in UserLoginProviderInformation.
+		if(hasLoginProviderInformation(dbUser)) {
+			throw new UnauthorizedException("The user seems to be already migrated!");
+		}
 		
 		// pre: newUser must not exist in db -> newUser.id not in UserLoginProviderInformation.
+		if(existsNewUser(newUser.getId(), newUser.getProvider())) {
+			throw new UnauthorizedException("The new user already exists!");
+		}
 		
 		// ready for migration:
 			// add the newUser to UserLoginProivderInformation.
+		dbUser.addLoginProviderInformation(new UserLoginProviderInformation(newUser.getProvider(), newUser.getId()));
+		persistUpdatedUser(dbUser);
+	}
+	
+	private User fetchOldUser(com.google.appengine.api.users.User oldUser) {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			User dbUser = mgr.getObjectById(User.class, oldUser.getUserId());
+			return dbUser;
+		} catch (javax.jdo.JDOObjectNotFoundException ex) {
+			return null;
+		} finally {
+			mgr.close();
+		}
+	}
+	
+	private boolean existsNewUser(String userId, LoginProviderType providerType) {
+		PersistenceManager mgr = getPersistenceManager();
+		boolean contains = true;
+		try {
+			Query query = mgr.newQuery(UserLoginProviderInformation.class);
+			query.setFilter("externalUserId == userIdParam AND provider == providerParam");
+			query.declareParameters("String userIdParamm, String providerParam");
+			
+			List<UserLoginProviderInformation> results = (List<UserLoginProviderInformation>) query.execute(userId, providerType);
+			if(results.isEmpty()) {
+				contains = false;
+			}
+		} catch (javax.jdo.JDOObjectNotFoundException ex) {
+			contains = false;
+		} finally {
+			mgr.close();
+		}
+		return contains;
+	}
+	
+	private boolean hasLoginProviderInformation(User user) {
+		if(user.getLoginProviderInformation().isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private void persistUpdatedUser(User user) {
+		PersistenceManager mgr = getPersistenceManager();
+		try{
+			mgr.makePersistent(user);
+			Cache.cache(user.getId(), User.class, user);
+		} finally {
+			mgr.close();
+		}
 	}
 }
