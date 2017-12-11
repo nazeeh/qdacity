@@ -6,7 +6,10 @@ import {
 } from 'react-dnd';
 
 const StyledDocumentDrop = styled.div `
-    height: 5px;
+    background-color: ${props => props.active ? props.theme.bgDefaultHighlight : 'transparent'};
+    height: 3px;
+    margin-top: 3px;
+    margin-bottom: 2px;
 `;
 
 const documentTarget = {
@@ -37,12 +40,16 @@ class DocumentDropTarget extends React.Component {
 
 	render() {
 		const {
+			canDrop,
+			isOver,
 			connectDropTarget
 		} = this.props;
 
+		const active = canDrop && isOver;
+
 		return connectDropTarget(
 			<div>
-	            <StyledDocumentDrop />
+	            <StyledDocumentDrop active={active} />
 	        </div>);
 	}
 }
