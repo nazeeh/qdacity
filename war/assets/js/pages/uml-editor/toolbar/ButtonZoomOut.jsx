@@ -6,7 +6,7 @@ import {
 } from '../../../common/styles/Btn.jsx';
 
 const StyledZoomBtn = BtnDefault.extend `
-	margin-left: 10px;
+	border-right: none;
 `;
 
 export default class ButtonZoomOut extends React.Component {
@@ -27,7 +27,7 @@ export default class ButtonZoomOut extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledZoomBtn onClick={_this.buttonClicked}>
+			<StyledZoomBtn title="Zoom away from the graph." onClick={_this.buttonClicked}>
 		        <i className="fa fa-search-minus"></i>
 	        </StyledZoomBtn>
 		);

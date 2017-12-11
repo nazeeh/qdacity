@@ -75,17 +75,17 @@ export default class TermCourseList extends React.Component {
 						var participants = [];
 						var isUserParticipant = [];
 						//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
-							if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
-							status = crs.open;
-							isUserParticipant = participants.includes(resp2.id);
-							termList.push({
-								text: crs.term,
-								id: crs.id,
-								participants: participants,
-								isUserParticipant: isUserParticipant,
-								isUserOwner: isUserOwner,
-								isOpen: status
-							});
+						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
+						status = crs.open;
+						isUserParticipant = participants.includes(resp2.id);
+						termList.push({
+							text: crs.term,
+							id: crs.id,
+							participants: participants,
+							isUserParticipant: isUserParticipant,
+							isUserOwner: isUserOwner,
+							isOpen: status
+						});
 					});
 					course.isUserOwner = isUserOwner;
 					course.setTerms(termList);
@@ -109,7 +109,10 @@ export default class TermCourseList extends React.Component {
 		var _this = this;
 		var courseTerms = course.terms;
 		var courseID = course.id;
-		CourseEndPoint.insertTermCourse(courseID, term).then(function (insertedTermCourse) {
+		var termCourse = {};
+		termCourse.courseID = course.id;
+		termCourse.term = term;
+		CourseEndPoint.insertTermCourse(termCourse).then(function (insertedTermCourse) {
 			var termList = courseTerms;
 			termList.push({
 				text: term,
@@ -167,6 +170,11 @@ export default class TermCourseList extends React.Component {
 		});
 	}
 
+	configureTermCourse(e, term, index) {
+		var _this = this;
+		e.stopPropagation();
+		this.props.history.push('/TermCourseConfig?termCourse=' + term.id);
+	}
 	renderJoinButton(term, index) {
 		var course = this.props.course;
 		if (course.isUserOwner) return "";
@@ -187,6 +195,15 @@ export default class TermCourseList extends React.Component {
 		if (course.isUserOwner) {
 			return <StyledListItemBtn onClick={(e) => this.removeTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 			<i className="fa fa-trash "></i>
+		</StyledListItemBtn>
+		}
+	}
+
+	renderConfigureButton(term, index) {
+		var course = this.props.course;
+		if (course.isUserOwner) {
+			return <StyledListItemBtn onClick={(e) => this.configureTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+			<i className="fa fa-cog "></i>
 		</StyledListItemBtn>
 		}
 	}
@@ -232,6 +249,7 @@ export default class TermCourseList extends React.Component {
 				<div>
 						{this.renderJoinButton(term, index)}
 						{this.renderDeleteButton(term, index)}
+						{this.renderConfigureButton(term, index)}
 				</div>
 			])
 		}

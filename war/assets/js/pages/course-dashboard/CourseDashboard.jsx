@@ -7,9 +7,24 @@ import TermCourseList from './TermCourseList.jsx';
 import Course from './Course';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
+import Teachers from "./Teachers/Teachers.jsx";
+import TitleRow from "./TitleRow/TitleRow.jsx"
 
 const StyledDashboard = styled.div `
-	margin-top: 35px;
+	margin-top: 70px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1170px;
+	display: grid;
+    grid-template-columns: 6fr 6fr;
+    grid-template-areas:
+				"titlerow titlerow"
+        "terms teachers";
+	grid-column-gap: 20px;
+`;
+
+const StyledTitleRow = styled.div `
+    grid-area: titlerow;
 `;
 
 export default class CourseDashboard extends React.Component {
@@ -25,7 +40,8 @@ export default class CourseDashboard extends React.Component {
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
-			course: course
+			course: course,
+			isCourseOwner: false
 		};
 		$("body").css({
 			overflow: "auto"
@@ -65,24 +81,45 @@ export default class CourseDashboard extends React.Component {
 
 
 
+	init() {
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.setUserRights();
+		}
+	}
+
+	setUserRights() {
+		var _this = this;
+		this.userPromise.then(function (user) {
+			var isCourseOwner = _this.props.account.isCourseOwner(user, _this.state.course.getId());
+			_this.setState({
+				isCourseOwner: isCourseOwner
+			});
+		});
+	}
+
+
 	render() {
 
-		if (!this.props.account.getProfile) return null;
-		if (!this.props.account.isSignedIn()) return null;
+		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
+		this.init();
 
 		return (
-			<StyledDashboard className="container main-content">
+			<StyledDashboard>
+			<StyledTitleRow><TitleRow course={this.state.course}/></StyledTitleRow>
 				<div>
 					<div className="box box-default">
 						<div className="box-header with-border">
 							<h3 className="box-title">Terms</h3>
 						</div>
 						<div className="box-body">
-							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse}/>
+							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse} history={this.props.history}/>
 						</div>
 					</div>
 				</div>
-
+				<div>
+						<Teachers course={this.state.course} isCourseOwner={this.state.isCourseOwner}/>
+				</div>
 		  	</StyledDashboard>
 		);
 	}

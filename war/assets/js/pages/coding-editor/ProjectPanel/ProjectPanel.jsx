@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import ProjectDashboardBtn from '../ProjectDashboardBtn.jsx';
+import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 import SearchProjectBtn from './SearchProjectBtn.jsx';
 import ProjectSearch from './ProjectSearch.jsx';
 import PageViewChooser from './PageViewChooser.jsx';

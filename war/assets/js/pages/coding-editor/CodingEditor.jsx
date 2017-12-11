@@ -11,7 +11,10 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
-import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
+import { BtnDefault, BtnGroup } from '../../common/styles/Btn.jsx';
+import DropDownButton from '../../common/styles/DropDownButton.jsx';
+import NumberField from '../../common/styles/NumberField.jsx';
+
 import TextEditor from './TextEditor.jsx';
 
 import EditorCtrl from './EditorCtrl';
@@ -25,7 +28,8 @@ import {
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
-
+import SyncService from '../../common/SyncService';
+import CollaboratorList from '../../common/SyncService/CollaboratorList';
 
 const StyledCodingEditor = styled.div `
     padding-top: 51px;
@@ -38,15 +42,15 @@ const StyledCodingEditor = styled.div `
         "footer footer";
 `;
 
+const StyledEditorToolbar = styled.div `
+    display: ${props => (props.selectedEditor !== PageView.UML) ? 'flex' : 'none'} !important;
+    text-align: center;
+    padding: 5px;
+`;
 
 const StyledTextEditorMenu = styled.div `
     display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
-    text-align: center;
-    padding-top: 10px;
-    background-color: #e7e7e7;
 `
-
-
 
 const StyledEditableToggle = styled.a `
     display: ${props => (props.selectedEditor === PageView.TEXT) ? 'block' : 'none'} !important;
@@ -74,6 +78,10 @@ const StyledSideBarCodesystem = styled.div `
 const StyledEditor = styled.div `
     grid-area: editor;
     min-width: 0;
+`;
+
+const StyledPlaceholder = styled.div `
+    flex-grow: 1;
 `;
 
 const StyledFooter = styled.div `
@@ -107,6 +115,7 @@ class CodingEditor extends React.Component {
 		this.codesystemViewRef = {};
 		this.umlEditorRef = {};
 		this.codeViewRef = {};
+		this.syncService = new SyncService();
 		this.state = {
 			project: project,
 			editorCtrl: {},
@@ -118,8 +127,8 @@ class CodingEditor extends React.Component {
 			searchResults: {
 				documentResults: []
 			},
-			mxGraphLoaded: false
-
+			mxGraphLoaded: false,
+			fontSize: 13,
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -128,6 +137,7 @@ class CodingEditor extends React.Component {
 			});
 		});
 
+		this._handleFontSizeChange =  this._handleFontSizeChange.bind(this);
 
 		const _this = this;
 
@@ -156,11 +166,23 @@ class CodingEditor extends React.Component {
 	}
 
 	componentDidMount() {
-		document.getElementsByTagName("html")[0].style["overflow-y"] = "hidden";
+		if (this.props.account.state.email !== '') {
+			this.syncService.logon(this.props.account.state);
+		}
+
+		document.getElementsByTagName("body")[0].style["overflow-y"] = "hidden";
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.account.state.email !== '') {
+			this.syncService.logon(nextProps.account.state);
+		}
 	}
 
 	componentWillUnmount() {
-		document.getElementsByTagName("html")[0].style["overflow-y"] = "";
+		this.syncService.disconnect();
+
+		document.getElementsByTagName("body")[0].style["overflow-y"] = "";
 	}
 
 	init() {
@@ -329,14 +351,42 @@ class CodingEditor extends React.Component {
                 createCode={this.createCode}
                 deleteCode={this.deleteCode}
                 toggleCodingView={this.toggleCodingView}
-                deleteRelationship={this.deleteRelationship} />;
+                deleteRelationship={this.deleteRelationship}
+                syncService={this.syncService} />;
 		}
 		return null;
 	}
 
+	_setFontFace(fontface) {
+		this.state.editorCtrl.setFontFace(fontface);
+	}
+
+	_handleFontSizeChange(e) {
+		const fontSize = e.target.value;
+		this.setState({ fontSize, });
+		this.state.editorCtrl.setFontSize(fontSize);
+		e.target.focus();
+	};
+
 	render() {
 		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
 		if (this.state.project.getCodesystemID() == -1) this.init();
+
+        const fonts = [
+			{ text: 'Arial', onClick: () => this._setFontFace('Arial'), },
+			{ text: 'Arial Black', onClick: () => this._setFontFace('Arial Black'), },
+			{ text: 'Comic Sans MS', onClick: () => this._setFontFace('Comic Sans MS'), },
+			{ text: 'Courier New', onClick: () => this._setFontFace('Courier New'), },
+			{ text: 'Georgia', onClick: () => this._setFontFace('Georgia'), },
+			{ text: 'Impact', onClick: () => this._setFontFace('Impact'), },
+			{ text: 'Lucida Console', onClick: () => this._setFontFace('Lucida Console'), },
+			{ text: 'Palatino Linotype', onClick: () => this._setFontFace('Palatino Linotype'), },
+			{ text: 'Tahoma', onClick: () => this._setFontFace('Tahoma'), },
+			{ text: 'Times New Roman', onClick: () => this._setFontFace('Times New Roman'), },
+			{ text: 'Trebuchet MS', onClick: () => this._setFontFace('Trebuchet MS'), },
+			{ text: 'Verdana', onClick: () => this._setFontFace('Verdana'), },
+        ];
+
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >
             <StyledSideBar>
@@ -364,7 +414,14 @@ class CodingEditor extends React.Component {
                 <StyledSideBarDocuments>
                     <div id="documents-ui" >
                         <StyledDocumentsView selectedEditor={this.state.selectedEditor}>
-                            <DocumentsView  ref={(c) => this.documentsViewRef = c}  editorCtrl={this.state.editorCtrl} projectID={this.state.project.getId()} projectType={this.state.project.getType()} report={this.report}/>
+                            <DocumentsView
+                                ref={(c) => this.documentsViewRef = c}
+                                editorCtrl={this.state.editorCtrl}
+                                projectID={this.state.project.getId()}
+                                projectType={this.state.project.getType()}
+                                report={this.report}
+                                syncService={this.syncService}
+                            />
                         </StyledDocumentsView>
                     </div>
                 </StyledSideBarDocuments>
@@ -392,47 +449,48 @@ class CodingEditor extends React.Component {
             <StyledEditor>
 
                 <div id="textdocument-ui">
-                    <StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
+                    <StyledEditorToolbar selectedEditor={this.state.selectedEditor}>
+                        <StyledTextEditorMenu selectedEditor={this.state.selectedEditor} >
 
+                            <BtnGroup>
+                                <BtnDefault id="btnTxtBold">
+                                    <i className="fa fa-bold"></i>
+                                </BtnDefault>
+                                <BtnDefault id="btnTxtItalic">
+                                    <i className="fa fa-italic"></i>
+                                </BtnDefault>
+                                <BtnDefault id="btnTxtUnderline">
+                                    <i className="fa fa-underline"></i>
+                                </BtnDefault>
+                            </BtnGroup>
 
-                        <a id="btnTxtSave" className="btn btn-default btn-default" >
-                            <i className="fa fa-floppy-o "></i>
-                            Save
-                        </a>
+                            <BtnGroup>
+                                <DropDownButton
+                                    initText={'Select a font...'}
+                                    items={fonts}
+                                    fixedWidth={'150px'} />
+                                <NumberField
+                                    key='fontSizeField'
+                                    onChange={this._handleFontSizeChange}
+                                    value={this.state.fontSize}
+                                    style={{ width: '50px' }}
+                                    />
+                            </BtnGroup>
 
-                        <div className="btn-group ui-widget">
-                            <a id="btnTxtBold" className="btn btn-default" >
-                                <i className="fa fa-bold fa-1x"></i>
-                            </a>
-                            <a id="btnTxtItalic" className="btn btn-default">
-                                <i className="fa fa-italic fa-1x"></i>
-                            </a>
-                            <a id="btnTxtUnderline" className="btn btn-default">
-                                <i className="fa fa-underline fa-1x"></i>
-                            </a>
-                            <label>&nbsp;&nbsp;Font: </label> <select id="combobox">
-                                <option value="">Select one...</option>
-                                <option value="Arial">Arial</option>
-                                <option value="Arial Black">Arial Black</option>
-                                <option value="Comic Sans MS">Comic Sans MS</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Impact">Impact</option>
-                                <option value="Lucida Console">Lucida Console</option>
-                                <option value="Palatino Linotype">Palatino Linotype</option>
-                                <option value="Tahoma">Tahoma</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Trebuchet MS">Trebuchet MS</option>
-                                <option value="Verdana">Verdana</option>
-                            </select>
-
-                        </div>
-                        <label >Font Size: </label>
-                        <input id="txtSizeSpinner"  />
-
-                    </StyledTextEditorMenu>
-                        <TextEditor initEditorCtrl={this.initEditorCtrl} selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView}/>
-                    <StyledUMLEditor selectedEditor={this.state.selectedEditor} showCodingView={this.state.showCodingView} id="editor">
+                        </StyledTextEditorMenu>
+                        <StyledPlaceholder />
+                        <CollaboratorList
+                            syncService={this.syncService} />
+                    </StyledEditorToolbar>
+                    <TextEditor
+                        initEditorCtrl={this.initEditorCtrl}
+                        selectedEditor={this.state.selectedEditor}
+                        showCodingView={this.state.showCodingView}
+                        syncService={this.syncService} />
+                    <StyledUMLEditor
+                        selectedEditor={this.state.selectedEditor}
+                        showCodingView={this.state.showCodingView}
+                        id="editor">
                         {this.renderUMLEditor()}
                     </StyledUMLEditor>
                 </div>

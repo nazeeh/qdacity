@@ -6,6 +6,10 @@ import {
 } from './View/PageView.js';
 
 
+const StyledContainer = styled.div `
+	position: relative;
+`;
+
 const StyledTextEditor = styled.iframe `
 	height: ${props => {
 		let codingViewOffset = props.showCodingView ? '350px' : '51px'
@@ -16,10 +20,6 @@ const StyledTextEditor = styled.iframe `
 `;
 
 export default class TextEditor extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {};
-	}
 
 	componentDidMount() {
 		this.props.initEditorCtrl();
@@ -27,8 +27,13 @@ export default class TextEditor extends React.Component {
 
 	render() {
 		return (
-			<StyledTextEditor id = "textEditor"  selectedEditor={this.props.selectedEditor} showCodingView={this.props.showCodingView}>
-			</StyledTextEditor>
+			<StyledContainer>
+				<StyledTextEditor
+					id="textEditor"
+					selectedEditor={this.props.selectedEditor}
+					showCodingView={this.props.showCodingView}
+				/>
+			</StyledContainer>
 		);
 	}
 }

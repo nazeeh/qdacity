@@ -47,6 +47,9 @@ public class TermCourse implements Serializable {
 	@Persistent
 	Date creationDate;
 	
+	@Persistent
+	List<String> invitedUsers;
+	
 	public Long getId() {
 		return id;
 	}
@@ -107,6 +110,10 @@ public class TermCourse implements Serializable {
 	{
 		return term;
 	}
+	
+	public Long getCourseID() {
+		return courseID;
+	}
 	public void setCourseID(Long id) {
 		this.courseID = id;
 	}
@@ -127,6 +134,15 @@ public class TermCourse implements Serializable {
 	public void addParticipant(String userID) {
 		if (participants == null) participants = new ArrayList<String>();
 		if (!participants.contains(userID)) participants.add(userID);
+	}
+
+	public void addInvitedUser(String userID) {
+		if (invitedUsers == null) invitedUsers = new ArrayList<String>();
+		if (!invitedUsers.contains(userID)) invitedUsers.add(userID);
+	}
+
+	public List<String> getInvitedUsers() {
+		return invitedUsers;
 	}
 	
 }

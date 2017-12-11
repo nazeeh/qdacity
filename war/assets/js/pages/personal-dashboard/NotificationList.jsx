@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
+import CourseEndpoint from '../../common/endpoints/CourseEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import {
@@ -87,10 +88,40 @@ export default class NotificationList extends React.Component {
 	acceptInvitation(notification) {
 		var _this = this;
 		ProjectEndpoint.addOwner(notification.project).then(function (resp) {
+			resp.type = "PROJECT";
 			_this.props.addProject(resp);
 		});
 
 		this.settleNotification(notification);
+	}
+
+	acceptInvitationCourse(notification) {
+		var _this = this;
+		CourseEndpoint.addCourseOwner(notification.course).then(function (resp) {
+			var course = resp;
+			CourseEndpoint.listTermCourse(notification.course).then(function (resp2) {
+				var termList = [];
+				resp2.items = resp2.items || [];
+				resp2.items.forEach(function (crs) {
+					termList.push({
+						text: crs.term
+					});
+				});
+				course.terms = termList;
+				_this.props.addCourse(course);
+				_this.settleNotification(notification);
+			});
+		});
+	}
+
+	acceptInvitationTermCourse(notification) {
+		var _this = this;
+		console.log(notification);
+		CourseEndpoint.addParticipant(notification.termCourse).then(function (resp) {
+			var termCourse = resp;
+			console.log(resp);
+			_this.settleNotification(notification);
+		});
 	}
 
 	createValidationProject(notification) {
@@ -161,6 +192,38 @@ export default class NotificationList extends React.Component {
 			return <StyledGreenIcon className=" fa-lg">
 						<i  className="fa fa-key fa-2x "></i>
 					</StyledGreenIcon>
+			break;
+		case "INVITATION_COURSE":
+			if (notification.settled) {
+				return <StyledGreenIcon className=" fa-lg">
+								<i  className="fa fa-check fa-2x "></i>
+							</StyledGreenIcon>
+			} else {
+				return <StyledActionBtns>
+							<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+								<i className="fa fa-times"></i>
+							</StyledListItemBtn>
+							<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitationCourse(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+								<i className="fa fa-check"></i>
+							</StyledListItemBtn>
+						</StyledActionBtns>
+			}
+			break;
+		case "INVITATION_TERM_COURSE":
+			if (notification.settled) {
+				return <StyledGreenIcon className=" fa-lg">
+									<i  className="fa fa-check fa-2x "></i>
+								</StyledGreenIcon>
+			} else {
+				return <StyledActionBtns>
+								<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+									<i className="fa fa-times"></i>
+								</StyledListItemBtn>
+								<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitationTermCourse(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+									<i className="fa fa-check"></i>
+								</StyledListItemBtn>
+							</StyledActionBtns>
+			}
 			break;
 		default:
 			return "";

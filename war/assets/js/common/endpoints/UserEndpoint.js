@@ -31,6 +31,13 @@ export default class ProjectEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static listUserByCourse(courseID) {
+		var apiMethod = gapi.client.qdacity.user.listUserByCourse({
+			'courseID': courseID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static findUsers(searchTerm) {
 		var apiMethod = gapi.client.qdacity.user.findUsers({
 			'searchTerm': searchTerm

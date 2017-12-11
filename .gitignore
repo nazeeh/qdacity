@@ -1,3 +1,5 @@
+.idea
+qdacity.iml
 endpoint-libs
 gwt-unitCache
 /war/WEB-INF/classes
@@ -16,3 +18,5 @@ war/nbproject/
 /nbdist/
 /war/api_config.json
 target
+/.idea/
+/war/package-lock.json
