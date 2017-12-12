@@ -107,6 +107,12 @@ class Document extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.onClick = this.onClick.bind(this);
+	}
+
+	onClick() {
+		this.props.setActiveDocument(this.props.doc.id);
 	}
 
 	render() {
@@ -124,6 +130,7 @@ class Document extends React.Component {
     				<StyledDocumentItem 
     			        isDragging={isDragging}
                         active={this.props.active} 
+				        onClick={this.onClick}
                         >{this.props.doc.title}</StyledDocumentItem>
                 </div>
 			)

@@ -12,31 +12,31 @@ import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
 const StyledDocumentsHeader = styled.div `
-	text-align: center;
-	position:relative;
-	background-color: #e7e7e7;
+    text-align: center;
+    position:relative;
+    background-color: #e7e7e7;
  `;
 
 const StyledInfoBox = styled.div `
-	background-color: ${props =>  props.theme.defaultPaneBg };
-	border-left-style: solid;
-	border-left-width: thick;
-	border-left-color: ${props =>  props.theme.borderPrimaryHighlight };
-	border-right-style: solid;
-	border-right-width: thick;
-	border-right-color: ${props =>  props.theme.borderPrimaryHighlight };
-	text-align: center;
+    background-color: ${props =>  props.theme.defaultPaneBg };
+    border-left-style: solid;
+    border-left-width: thick;
+    border-left-color: ${props =>  props.theme.borderPrimaryHighlight };
+    border-right-style: solid;
+    border-right-width: thick;
+    border-right-color: ${props =>  props.theme.borderPrimaryHighlight };
+    text-align: center;
 `;
 
 const StyledToolBar = styled.div `
-	text-align: center;
-	position: relative;
-	background-color: #e7e7e7;
+    text-align: center;
+    position: relative;
+    background-color: #e7e7e7;
 `;
 
 const StyledDocumentList = styled.div `
 
-	margin:5px 5px 5px 5px;
+    margin:5px 5px 5px 5px;
 `;
 
 export default class DocumentsView extends React.Component {
@@ -294,12 +294,12 @@ export default class DocumentsView extends React.Component {
 		if (this.props.projectType == "PROJECT") {
 			return (
 				<DocumentsToolbar
-					projectID={this.props.projectID}
-					document={this.getActiveDocument()}
-					addDocument={this.addDocument}
-					removeActiveDocument={this.removeActiveDocument}
-					changeDocumentData={this.changeDocumentData}
-				/>
+                    projectID={this.props.projectID}
+                    document={this.getActiveDocument()}
+                    addDocument={this.addDocument}
+                    removeActiveDocument={this.removeActiveDocument}
+                    changeDocumentData={this.changeDocumentData}
+                />
 			);
 		} else {
 			return null;
@@ -310,35 +310,35 @@ export default class DocumentsView extends React.Component {
 	renderDocument(doc, index) {
 		return <DragDocument 
                 doc={doc} 
-		        key={doc.id}
-		        index={index}
-        	    active={doc.id == this.state.selected}
-        	    onClick={this.setActiveDocument.bind(null,doc.id)}
-		        swapDocuments={this.swapDocuments}
-		        persistSwappedDocuments={this.persistSwappedDocuments}
-		        >{doc.title}</DragDocument>;
+                key={doc.id}
+                index={index}
+                active={doc.id == this.state.selected}
+                setActiveDocument={this.setActiveDocument}
+                swapDocuments={this.swapDocuments}
+                persistSwappedDocuments={this.persistSwappedDocuments}
+                >{doc.title}</DragDocument>;
 	}
 
 	renderDocuments() {
 		var _this = this;
 		if (!this.state.isExpanded) {
 			return <StyledInfoBox>
-		      <b>Current Document: {this.getActiveDocument().title}</b>
-		    </StyledInfoBox>
+              <b>Current Document: {this.getActiveDocument().title}</b>
+            </StyledInfoBox>
 		}
 		return (
 			<div>
-				<StyledToolBar>
-					{this.renderToolbar()}
-				</StyledToolBar>
-				<StyledDocumentList>
-    		        {
-    		          this.state.documents.map(function(doc, index) {
-    		            return _this.renderDocument(doc, index);
-    		          })
-    		        }
-		  		</StyledDocumentList>
-			</div>
+                <StyledToolBar>
+                    {this.renderToolbar()}
+                </StyledToolBar>
+                <StyledDocumentList>
+                    {
+                      this.state.documents.map(function(doc, index) {
+                        return _this.renderDocument(doc, index);
+                      })
+                    }
+                </StyledDocumentList>
+            </div>
 		);
 	}
 
@@ -354,24 +354,24 @@ export default class DocumentsView extends React.Component {
 		var _this = this;
 		return (
 			<div>
-				<StyledDocumentsHeader>
-					<div className="row no-gutters" >
-						<span className="col-xs-1"></span>
-						<span className="col-xs-10">
-							<b>Documents</b>
-							<br/>
-							<span id="docToolBox"  className="collapse in">
-							</span>
-						</span>
-						<span className="col-xs-1">
-							<a id="documentsToggleBtn" className="editorPanelTogel pull-right" onClick={() => this.toggleIsExpanded()}>
-								{this.renderCollapseIcon()}
-							</a>
-						</span>
-					</div>
-				</StyledDocumentsHeader>
-				{this.renderDocumentsContent()}
-     	</div>
+                <StyledDocumentsHeader>
+                    <div className="row no-gutters" >
+                        <span className="col-xs-1"></span>
+                        <span className="col-xs-10">
+                            <b>Documents</b>
+                            <br/>
+                            <span id="docToolBox"  className="collapse in">
+                            </span>
+                        </span>
+                        <span className="col-xs-1">
+                            <a id="documentsToggleBtn" className="editorPanelTogel pull-right" onClick={() => this.toggleIsExpanded()}>
+                                {this.renderCollapseIcon()}
+                            </a>
+                        </span>
+                    </div>
+                </StyledDocumentsHeader>
+                {this.renderDocumentsContent()}
+        </div>
 		);
 	}
 }
