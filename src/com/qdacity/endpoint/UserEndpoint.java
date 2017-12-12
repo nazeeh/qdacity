@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
@@ -24,8 +25,6 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -45,7 +44,6 @@ import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.Project;
-import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
 import com.qdacity.user.User;
@@ -243,10 +241,18 @@ public class UserEndpoint {
 		return user;
 	}
 
+	/**
+	 * Gets the current user by given Login Information.
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException
+	 */
 	@ApiMethod(name = "user.getCurrentUser")
 	public User getCurrentUser(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
-		return getUser(loggedInUser.getId());
+		return getUserByLoginProviderId(loggedInUser);
 	}
+
+	
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
@@ -352,29 +358,18 @@ public class UserEndpoint {
 			user = (User) Cache.get(userId, User.class);
 
 			if (user == null || user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
-
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Key key = KeyFactory.createKey("User", userId);
-				Entity userEntity = datastore.get(key);
-
-				user = new User();
-				user.setEmail((String) userEntity.getProperty("email"));
-				user.setGivenName((String) userEntity.getProperty("givenName"));
-				user.setId(userEntity.getKey().getName());
-				user.setProjects((List<Long>) userEntity.getProperty("projects"));
-				user.setCourses((List<Long>) userEntity.getProperty("courses"));
-				user.setTermCourses((List<Long>) userEntity.getProperty("termCourses"));
-				user.setSurName((String) userEntity.getProperty("surName"));
-				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
-				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
-				user.setLastLogin((Date) userEntity.getProperty("lastLogin"));
-				Object lastPrjType = userEntity.getProperty("lastProjectType");
-				if (lastPrjType != null) user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
-
-				if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
-					user.setLastLogin(new Date());
-					userEntity.setProperty("lastLogin", new Date());
-					datastore.put(userEntity);
+				
+				PersistenceManager mgr = getPersistenceManager();
+				try {
+					// TODO: redo with DataStoreService
+					user = mgr.getObjectById(User.class, userId);
+			
+					if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
+						user.setLastLogin(new Date());
+						mgr.makePersistent(user);
+					}
+				} finally {
+					mgr.close();
 				}
 				Cache.cache(user.getId(), User.class, user);
 			}
@@ -386,12 +381,54 @@ public class UserEndpoint {
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
 
-		} catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
+		} catch (JDOObjectNotFoundException e) {
 			e.printStackTrace();
 			throw new UnauthorizedException("User is not registered");
 
 		}
 		return user;
+	}
+
+	/**
+	 * Gets the qdacity.User by the given authentication information.
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException if the loggedInUser is null or there was no user found.
+	 * @throws IllegalArgumentException if the user is not an instance of AuthenticatedUser
+	 * @throws IllegalStateException if there are inconsistencies in db: more than one user linked with the given provider id
+	 */
+	@SuppressWarnings("unchecked")
+	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+		if(loggedInUser == null) {
+			throw new UnauthorizedException("The User could not be authenticated");
+		}
+		if(!(loggedInUser instanceof AuthenticatedUser)) {
+			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
+		}
+		
+		AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			Query query = mgr.newQuery(User.class);
+			query.setFilter("loginProviderInformationList.contains(loginProviderVar) && loginProviderVar.externalUserId == externalIdParam && loginProviderVar.provider == providerParam");
+			query.declareVariables("com.qdacity.user.UserLoginProviderInformation loginProviderVar");
+			query.declareParameters("String externalIdParam, String providerParam");
+			
+			List<User> queriedUserList = (List<User>) query.execute(authUser.getId(), authUser.getProvider());
+			
+			if(queriedUserList.size() > 1) {
+				throw new IllegalStateException("There are multiple Users connected with a federate Auth Provider!");
+			}
+			if(queriedUserList.size() == 0) {
+				throw new UnauthorizedException("User is not registered");
+			}
+			
+			return queriedUserList.get(0);
+		} finally {
+			mgr.close();
+		}
 	}
 
 	private boolean containsUser(User user) {

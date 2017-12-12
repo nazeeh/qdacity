@@ -1,4 +1,24 @@
 package com.qdacity.test.UserEndpoint;
+import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.jdo.PersistenceManager;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -16,28 +36,15 @@ import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 import com.qdacity.user.UserType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import javax.jdo.PersistenceManager;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 
 public class UserEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+	
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -54,10 +61,21 @@ public class UserEndpointTest {
 
 	@Test
 	public void testUserInsert() throws UnauthorizedException {
-		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		AuthenticatedUser loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User returnedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			User insertedUser = mgr.getObjectById(User.class, returnedUser.getId());
+			assertEquals(1, insertedUser.getLoginProviderInformation().size());
+			UserLoginProviderInformation loginInfo = insertedUser.getLoginProviderInformation().get(0);
+			assertEquals(loggedInUserA.getId(), loginInfo.getExternalUserId());
+			assertEquals(loggedInUserA.getProvider(), loginInfo.getProvider());
+		} finally {
+			mgr.close();
+		}
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -69,13 +87,13 @@ public class UserEndpointTest {
 	@Test
 	public void testGetUser() throws UnauthorizedException {
 		latch.reset(2);
-		User user = new User();
+		User user = null;
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			user = ue.getUser("1", loggedInUserA);
+			user = ue.getUser(insertedUser.getId(), loggedInUserA);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
@@ -94,7 +112,7 @@ public class UserEndpointTest {
 		Cache.cache(user.getId(), User.class, user);
 		mgr.close();
 		try {
-			user = ue.getUser("1", loggedInUserA);
+			user = ue.getUser(insertedUser.getId(), loggedInUserA);
 			assertTrue(((new Date()).getTime() - user.getLastLogin().getTime()) < 1000);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
@@ -116,11 +134,11 @@ public class UserEndpointTest {
 	@Test
 	public void testUserDelete() throws UnauthorizedException {		
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			ue.removeUser("1", loggedInUserA);
+			ue.removeUser(insertedUser.getId(), loggedInUserA);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
@@ -135,7 +153,7 @@ public class UserEndpointTest {
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedUserA = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
@@ -144,7 +162,7 @@ public class UserEndpointTest {
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			ue.removeUser("1", loggedInUserB); // User B should not be able to delete User B
+			ue.removeUser(insertedUserA.getId(), loggedInUserB); // User B should not be able to delete User B
 		} catch (UnauthorizedException e) {
 			// should be executed
 			e.printStackTrace();
@@ -160,7 +178,7 @@ public class UserEndpointTest {
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
@@ -169,7 +187,7 @@ public class UserEndpointTest {
 		expectedException.expect(UnauthorizedException.class);
 		expectedException.expectMessage(is("User is not registered"));
 
-		ue.removeUser("1", loggedInUserB); // User B should not be able to delete User B
+		ue.removeUser(insertedUser.getId(), loggedInUserB); // User B should not be able to delete User B
 
 
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
@@ -196,7 +214,7 @@ public class UserEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		PersistenceManager mgr = getPersistenceManager();
 		mgr.setIgnoreCache(true);
@@ -206,12 +224,12 @@ public class UserEndpointTest {
 
 			UserEndpoint ue = new UserEndpoint();
 			try {
-				user = ue.updateUserType("1", "ADMIN", loggedInUserA);
+				user = ue.updateUserType(insertedUser.getId(), "ADMIN", loggedInUserA);
 			} catch (UnauthorizedException e) {
 				e.printStackTrace();
 				fail("User could not be authorized");
 			}
-			User user2 = mgr.getObjectById(User.class, "1");
+			User user2 = mgr.getObjectById(User.class, insertedUser.getId());
 			assertEquals(UserType.ADMIN, user.getType());
 		} finally {
 			mgr.close();
@@ -243,6 +261,40 @@ public class UserEndpointTest {
 		assertEquals(1, users.size());
 		
 	}
+	
+	@Test(expected = UnauthorizedException.class)
+	public void testGetCurrentUserNullUser() throws UnauthorizedException {
+		UserEndpoint ue = new UserEndpoint();
+		ue.getCurrentUser(null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetCurrentUserNoAuthenticatedUser() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User noAuthenticatedUser = new com.google.api.server.spi.auth.common.User("123456", "asd@asd.de");
+		
+		UserEndpoint ue = new UserEndpoint();
+		ue.getCurrentUser(noAuthenticatedUser);
+	}
+	
+	@Test(expected = UnauthorizedException.class)
+	public void testGetCurrentUserNoAssociatedUsers() throws UnauthorizedException {
+		UserEndpoint ue = new UserEndpoint();
+		ue.getCurrentUser(testUser);
+	}
+	
+	@Test
+	public void testGetCurrentUserOneAssociatedUsers() throws UnauthorizedException {
+		UserEndpointTestHelper.addUser("abc@test.de", "abc", "test", testUser);
+		
+		UserEndpoint ue = new UserEndpoint();
+		User retrievedUser = ue.getCurrentUser(testUser);
+		
+		Assert.assertEquals(testUser.getId(), retrievedUser.getId());
+	}
+	
+	
+	
+	
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
