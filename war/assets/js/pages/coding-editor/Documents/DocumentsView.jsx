@@ -6,18 +6,10 @@ import ReactLoading from '../../../common/ReactLoading.jsx';
 import {
 	DragDocument
 } from './Document.jsx';
-import {
-	DropDocument
-} from './DocumentDropTarget.jsx';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
-
-import {
-	DragSource,
-	DropTarget
-} from 'react-dnd';
 
 const StyledDocumentsHeader = styled.div `
 	text-align: center;
@@ -75,6 +67,7 @@ export default class DocumentsView extends React.Component {
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
+		this.swapDocuments = this.swapDocuments.bind(this);
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -277,6 +270,10 @@ export default class DocumentsView extends React.Component {
 		}
 	}
 
+	swapDocuments(dragIndex, hoverIndex) {
+		console.log('Swap: ' + dragIndex + '  ' + hoverIndex);
+	}
+
 	renderCollapseIcon() {
 		if (this.state.isExpanded) return (<i className="fa fa-compress fa-1x"></i>);
 		else return (<i className="fa fa-expand fa-1x"></i>);
@@ -299,17 +296,16 @@ export default class DocumentsView extends React.Component {
 
 	}
 
-	renderDocument(doc) {
+	renderDocument(doc, index) {
 		return <DragDocument 
                 doc={doc} 
-        	    active={doc.id == this.state.selected} 
-        	    key={doc.id}  
+		        key={doc.id}
+		        index={index}
+        	    active={doc.id == this.state.selected}  
 		        selected={this.state.selected}
-        	    onClick={this.setActiveDocument.bind(null,doc.id)}>{doc.title}</DragDocument>;
-	}
-
-	renderDocumentDrop() {
-		return <DropDocument />;
+        	    onClick={this.setActiveDocument.bind(null,doc.id)}
+		        swapDocuments={this.swapDocuments}
+		        >{doc.title}</DragDocument>;
 	}
 
 	renderDocuments() {
@@ -326,14 +322,10 @@ export default class DocumentsView extends React.Component {
 				</StyledToolBar>
 				<StyledDocumentList>
     		        {
-    		          this.state.documents.map(function(doc) {
-    		            return ( <div>
-    		                        { _this.renderDocumentDrop() }
-    		                        { _this.renderDocument(doc) }
-    		                    </div> );
+    		          this.state.documents.map(function(doc, index) {
+    		            return _this.renderDocument(doc, index);
     		          })
     		        }
-                    { _this.renderDocumentDrop() }
 		  		</StyledDocumentList>
 			</div>
 		);
