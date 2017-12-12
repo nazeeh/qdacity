@@ -64,6 +64,21 @@ export default class TutorialEngine {
 		this.clearTutorialState();
 		this.showMessageBoxAndOverlay(false);		
 		this.updateReact();		
+		
+		
+		var apiMethod = gapi.client.qdacity.tutorial.loadTutorialData({'which':1});
+		var back=Promisizer.makePromise(apiMethod);
+		back.then(function (resp) {
+			
+			console.log(resp);
+	
+			//this.tutorialState.TutorialOverviewData=.... //kommt vom server
+			
+			this.tutorialState.showMessageBoxContent=2;
+			this.updateReact();
+			
+		}.bind(this));		
+
 	
 	}
 	
