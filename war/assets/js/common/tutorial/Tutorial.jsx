@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 
 //Base Structure
+
 const OverlayQdq1 = styled.div`
 	position: fixed;
 	display: ${props =>props.tutorial.tutorialState.showOverlayQdq1 ? 'inline' : 'none'};
@@ -91,32 +92,6 @@ const PointerQdq = styled.div`
 
 //Detail Structure
 
-const divStyle1 = {
-	background: "#e8e5e5",
-	border:"1px solid #cc",
-	width: "300px",
-	height: "800px",
-	position: "fixed",
-	right:"0", 
-	top:"50px",
-	display:"none",
-	zIndex:"1910",
-};
-
-const divStyle2 = {
-		padding:"10px",
-	};
-
-const divStyle3 = {
-	position: "absolute",
-	bottom:"0",
-	paddingLeft:"70px",
-	paddingBottom:"10px",
-};
-
-const divStyle4 = {
-	fontSize:"18px",
-};
 const TutorialOverviewTitle = styled.div`
 	font-size: 18px,
 `;
@@ -149,19 +124,13 @@ export default class Tutorial extends React.Component {
 							<div>
 								<ButtonQdq white onClick={function(){this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}>Close</ButtonQdq>
 							</div>
-						</MessageBoxQdq>
-						
-						<div style={divStyle1} className="tutorial_html_side_box_content">
-							<div className="tutorial_side_box_content" style={divStyle2}></div>
-							<div style={divStyle3}>
-								<button type="button" className="button_white button_allgemein tutorial_closer">Close Tutorial</button>
-							</div>
-						</div>
+						</MessageBoxQdq>						
 					</div>
 			);
 		}
-	return (<div></div>);
 		
+	return null;
+	
 	}
 }
 
