@@ -7,7 +7,7 @@ const StyledAccountTab = styled.li `
 `;
 
 const StyledHelpTab = styled.li `
-	display: ${props => props.loggedIn ? 'block' : 'none'} !important;
+	display: block;
 `;
 
 const StyledSigninTab = styled.li `
@@ -19,6 +19,7 @@ const StyledNavbarItem = styled.a `
 `;
 
 const StyledDropdownLinks = styled.div `
+	display: ${props => ((!props.showOnlyIfLoggedIn) || (props.showOnlyIfLoggedIn && props.loggedIn))  ? 'block' : 'none'};
 	background:#efe8e8;
 	margin: 5px;
 	&:hover {
@@ -73,6 +74,9 @@ export default class NavBar extends React.Component {
 	}
 
 	render() {
+		
+		var isLoggedIn=this.account.isSignedIn && this.account.isSignedIn();
+		
 		return (
 			<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
 					<div className="container topnav">
@@ -84,18 +88,18 @@ export default class NavBar extends React.Component {
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
-								<StyledHelpTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
+								<StyledHelpTab loggedIn={isLoggedIn} className="dropdown">
 									<StyledNavbarItem className="dropdownToggle clickable" onClick={function(){this.showHelpDropdown();}.bind(this)}>Help</StyledNavbarItem>
 									<div id="helpView" className="dropdown-menu dropdownContent">
-								<StyledDropdownLinks className="clickable" onClick={function(){alert("Coming Soon...");}}>		
-									<div>Faq</div>
-								</StyledDropdownLinks>
-								<StyledDropdownLinks className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
-									<div>Tutorial Overview</div>	
-								</StyledDropdownLinks>
-								</div>
+										<StyledDropdownLinks loggedIn={isLoggedIn} className="clickable" onClick={function(){alert("Coming Soon...");}}>		
+											<div>Faq</div>
+										</StyledDropdownLinks>
+										<StyledDropdownLinks showOnlyIfLoggedIn loggedIn={isLoggedIn} className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
+											<div>Tutorial Overview</div>	
+										</StyledDropdownLinks>
+									</div>
 								</StyledHelpTab>
-								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
+								<StyledAccountTab loggedIn={isLoggedIn}  className="dropdown">
 									<StyledNavbarItem  className="dropdownToggle clickable" onClick={this.showAccountDropdown}>
 										Account <b className="caret"></b>
 									</StyledNavbarItem>
@@ -103,7 +107,7 @@ export default class NavBar extends React.Component {
 										<Account ref={this.initializeAccount} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback} history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
-								<StyledSigninTab  loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
+								<StyledSigninTab  loggedIn={isLoggedIn} className="dropdown">
 									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showSigninDropdown}>
 											Sign In <b className="caret"></b>
 										</StyledNavbarItem>
