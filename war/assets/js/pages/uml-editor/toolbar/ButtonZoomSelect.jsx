@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import DropDownButton from '../../../common/styles/DropDownButton.jsx';
 
 const StyledZoomBtn = styled.div `
-    margin-left: 10px;
     display: inline-block;
 `;
 

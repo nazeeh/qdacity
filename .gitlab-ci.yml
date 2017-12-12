@@ -23,8 +23,8 @@ frontend_prod_build:
     - war/node_modules/
   artifacts:
     paths:
-      - war/dist/
-      - war/*.jsp
+      - target/qdacity-war/dist/
+      - target/qdacity-war/*.jsp
     expire_in: 3 mos
   script:
     - cd war
@@ -45,11 +45,10 @@ backend_prod_build:
     - master
   artifacts:
     paths:
-      - war/WEB-INF/classes
+      - target/qdacity-war
     expire_in: 3 mos
   script:
-    - mvn clean process-classes
-    - cp -R ./src/META-INF ./war/WEB-INF/classes
+    - mvn clean package
 
 rtcsvc_prod_build:
   tags:
@@ -161,7 +160,7 @@ deploy_prod:
     - master
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
-    - WAR=$(pwd)/war
+    - WAR=$(pwd)/target/qdacity-war
     - appcfg.sh --enable_jar_splitting  --enable_jar_classes --noisy --service_account_json_key_file=/tmp/$CI_PIPELINE_ID.json update $WAR
 
 deploy_rtcsvc:

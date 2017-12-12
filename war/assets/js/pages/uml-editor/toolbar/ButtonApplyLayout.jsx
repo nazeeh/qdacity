@@ -5,10 +5,6 @@ import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
 
-const StyledApplyLayoutBtn = BtnDefault.extend `
-	margin-left: 25px;
-`;
-
 export default class ButtonApplyLayout extends React.Component {
 
 	constructor(props) {
@@ -27,10 +23,10 @@ export default class ButtonApplyLayout extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledApplyLayoutBtn title="Click to apply a new layout to the graph. The layouting algorithm tries to reduce the amount of overlapping nodes and edges." onClick={_this.buttonClicked}>
+			<BtnDefault title="Click to apply a new layout to the graph. The layouting algorithm tries to reduce the amount of overlapping nodes and edges." onClick={_this.buttonClicked}>
 		        <i className="fa fa-th"></i>
 		        <span>Apply Layout</span>
-	        </StyledApplyLayoutBtn>
+	        </BtnDefault>
 		);
 	}
 
