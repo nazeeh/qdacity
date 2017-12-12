@@ -16,9 +16,9 @@ export default class TutorialEngine {
 		var tmpIsActive=this.tutorialState.isActive;
 		this.tutorialState={
 				isActive: tmpIsActive,
-				showOverlay1Tut:false,
-				showOverlay2Tut:false,
-				highlightOverlay2Tut:false,
+				showOverlay1:false,
+				showOverlay2:false,
+				highlightOverlay2:false,
 				showMessageBoxContent: 0,
 				pointer:{
 					show:false,
@@ -70,9 +70,9 @@ export default class TutorialEngine {
 	highlightDomObject(obj)
 	{		
 		this.setIsActive(true);
-		this.tutorialState.showOverlay2Tut=true;//for debugging
+		this.tutorialState.showOverlay2=true;//for debugging
 		//showOverlayQdq could be active or not, if not, then only the pointer picture is shown
-		this.tutorialState.highlightOverlay2Tut=true;
+		this.tutorialState.highlightOverlay2=true;
 		this.tutorialState.pointer.show=true;
 		this.tutorialState.pointer.direction="Right";//TODO parametrisieren
 		
@@ -89,7 +89,7 @@ export default class TutorialEngine {
 	
 	closeHighlightDomObject()
 	{		
-		this.tutorialState.highlightOverlay2Tut=false;
+		this.tutorialState.highlightOverlay2=false;
 		this.tutorialState.pointer.show=false;
 		this.updateReact();
 	}
@@ -97,14 +97,14 @@ export default class TutorialEngine {
 
 	showMessageBoxAndOverlay(update)
 	{
-		this.tutorialState.showOverlay1Tut=true;
+		this.tutorialState.showOverlay1=true;
 		this.tutorialState.showMessageBoxContent=1;
 		if(update)this.updateReact();
 	}
 
 	hideMessageBoxAndOverlay(update)
 	{
-		this.tutorialState.showOverlay1Tut=false;
+		this.tutorialState.showOverlay1=false;
 		this.tutorialState.showMessageBoxContent=0;
 		if(update)this.updateReact();
 	} 
