@@ -17,6 +17,7 @@ import com.qdacity.Constants;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.maintenance.tasks.OrphanDeletion;
 import com.qdacity.maintenance.tasks.ValidationCleanup;
+import com.qdacity.maintenance.tasks.usermigration.UserMigrationEmailNotifier;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelEntityType;
 import com.qdacity.metamodel.MetaModelRelation;
@@ -35,12 +36,30 @@ public class MaintenanceEndpoint {
 	private MetaModelRelationEndpoint metaModelRelationEndpoint = new MetaModelRelationEndpoint();
 	
 	@ApiMethod(name = "maintenance.cleanupValidationResults")
-	public void cleanupValidationResults(com.google.appengine.api.users.User user) throws UnauthorizedException {
+	public void cleanupValidationResults(User user) throws UnauthorizedException {
 
 		cleanUpValidationResults();
 
 		cleanUpOrphans();
 
+	}
+	
+	/**
+	 * Sends emails to all users with the migration notification and the link to the migration site
+	 * @param user
+	 * @param href the link to the miration site.
+	 * @throws UnauthorizedException it the user is no ADMIN
+	 */
+	@ApiMethod(name = "maintenance.sendUserMigrationEmails")
+	public void sendUserMigrationEmails(User user, @Named("migrationLink") String href) throws UnauthorizedException {
+		if(!Authorization.isUserAdmin(user)) {
+			throw new UnauthorizedException("Only Admins are authorized to trigger this endpoint!");
+		}
+		
+		UserMigrationEmailNotifier task = new UserMigrationEmailNotifier(href);
+		
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 	}
 
 	private void cleanUpValidationResults() {
