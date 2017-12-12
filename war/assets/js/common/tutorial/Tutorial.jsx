@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 //Base Structure
 
-const OverlayQdq1 = styled.div`
+const Overlay1Tut = styled.div`
 	position: fixed;
-	display: ${props =>props.tutorial.tutorialState.showOverlayQdq1 ? 'inline' : 'none'};
+	display: ${props =>props.tutorial.tutorialState.showOverlay1Tut ? 'inline' : 'none'};
 	width: 100%;
 	height: 100%;
 	top: 0;
@@ -17,20 +17,20 @@ const OverlayQdq1 = styled.div`
 `;
 
 
-const OverlayQdq2 = styled.div`
+const Overlay2Tut = styled.div`
 	position: fixed;
-	display: ${props =>props.tutorial.tutorialState.showOverlayQdq2 ? 'inline' : 'none'};
+	display: ${props =>props.tutorial.tutorialState.showOverlay2Tut ? 'inline' : 'none'};
 	width: 100%;
 	height: 100%;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: ${props =>props.tutorial.tutorialState.highlightOverlayQdq2 ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.0)'};
+	background-color: ${props =>props.tutorial.tutorialState.highlightOverlay2Tut ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.0)'};
 	z-index: 1900;
 `;
 
-const MessageBoxQdq = styled.div`
+const MessageBoxTut = styled.div`
 	position: fixed;
 	top: -20%;
 	bottom: 0;
@@ -65,7 +65,7 @@ const MBTutorialOverview = styled.div`
 	display: ${props =>props.tutorial.tutorialState.showMessageBoxContent==2 ? 'inline' : 'none'};
 `;
 
-const ButtonQdq = styled.button`
+const ButtonTut = styled.button`
 	background: ${props =>props.white ? '000' : 'fff'};
 	color: background: ${props =>props.white ? 'fff' : '000'};
 	border: 2px solid #000;	
@@ -79,7 +79,7 @@ const ButtonQdq = styled.button`
 	padding: .75em 2em;	
 `;
 
-const PointerQdq = styled.div`
+const PointerTut = styled.div`
 	height:20px; 
 	width:20px; 
 	position: absolute; 
@@ -109,10 +109,10 @@ export default class Tutorial extends React.Component {
 		if(this.props.tutorial.tutorialState.isActive) {
 			return (
 					<div>						
-						<OverlayQdq1 className="overlayQdq1" {...this.props}/>
-						<OverlayQdq2 className="overlayQdq2" {...this.props}/>
-						<PointerQdq className="pointing" {...this.props}><img src={"/assets/img/tutorial/arrow"+this.props.tutorial.tutorialState.pointer.direction+"Directed.png"}/></PointerQdq>						
-						<MessageBoxQdq className="messageBoxQdq" {...this.props}>
+						<Overlay1Tut className="Overlay1Tut" {...this.props}/>
+						<Overlay2Tut className="Overlay2Tut" {...this.props}/>
+						<PointerTut className="pointing" {...this.props}><img src={"/assets/img/tutorial/arrow"+this.props.tutorial.tutorialState.pointer.direction+"Directed.png"}/></PointerTut>						
+						<MessageBoxTut className="MessageBoxTut" {...this.props}>
 							<MBLoading {...this.props}>please wait the content is loaded... </MBLoading>
 							<MBTutorialOverview className="tutorial_content" {...this.props}>
 								<center>
@@ -122,9 +122,9 @@ export default class Tutorial extends React.Component {
 								</center>
 							</MBTutorialOverview>
 							<div>
-								<ButtonQdq white onClick={function(){this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}>Close</ButtonQdq>
+								<ButtonTut white onClick={function(){this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}>Close</ButtonTut>
 							</div>
-						</MessageBoxQdq>						
+						</MessageBoxTut>						
 					</div>
 			);
 		}

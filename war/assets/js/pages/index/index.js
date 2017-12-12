@@ -2,10 +2,8 @@ import ReactDOM from 'react-dom';
 
 import 'script-loader!../../../../components/jQuery/jquery.js';
 
-//tutorial styles and javascript data
+//tutorial styles 
 import "../../../css/tutorial.css";
-import '../../common/tutorial/tutorialStart.js';
-
 
 // Personal Dasboard Styles
 import "../../../css/project-list.css";

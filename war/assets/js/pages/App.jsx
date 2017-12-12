@@ -19,7 +19,7 @@ import TermDashboard from "./termCourse-dashboard/TermDashboard.jsx"
 import TermCourseConfig from "./termCourse-config/TermCourseConfig.jsx"
 import Admin from './admin/Admin.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
-import StartTutorial from '../common/tutorial/tutorialStart.js';
+import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
 
 // React-Intl
@@ -55,7 +55,7 @@ export default class App extends React.Component {
 		};
 		
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
-		var t=new StartTutorial(this);
+		var t=new TutorialEngine(this);
 		this.state = {
 			tutorialEngine: t,
 			tutorialState:t.tutorialState,			
