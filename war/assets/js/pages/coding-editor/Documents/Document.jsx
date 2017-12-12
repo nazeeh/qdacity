@@ -12,37 +12,40 @@ import {
 
 const StyledDocumentItem = styled.a `
 	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
-	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
-	padding: 2px 2px !important;
-	position: relative;
-	display: block;
-	padding: 10px 15px;
-	margin-bottom: -1px;
-	background-color: #fff;
-	border: 1px solid ;
-	border-color: ${props => props.theme.borderPrimary} !important;
-	&:hover {
-		text-decoration: none;
-		cursor: pointer;
-		background-color: ${props => props.theme.borderPrimary};
-		color: ${props => props.theme.fgPrimaryHighlight};
-	}
+    color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
+    padding: 2px 2px !important;
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid ;
+    border-color: ${props => props.theme.borderPrimary} !important;
+    opacity: ${props => props.isDragging ? 0 : 1};
+    &:hover {
+        text-decoration: none;
+        cursor: pointer;
+        background-color: ${props => props.theme.borderPrimary};
+        color: ${props => props.theme.fgPrimaryHighlight};
+    }
+
 `;
 
 const documentSource = {
 	beginDrag(props, monitor, component) {
 		return {
-			index: props.index,
-			documentId: props.doc.id
+			index: props.index, // Required for sorting
+			baseIndex: props.index // Required for remembering the original index
 		};
 	},
 	endDrag(props, monitor, component) {
 		const dropResult = monitor.getDropResult();
 
 		if (dropResult) {
-			alert('DROP!');
-			// props.doc.id
-			// dropResult.documentTargetId
+			const dragIndex = monitor.getItem().baseIndex;
+			const dropIndex = props.index;
+
+			props.persistSwappedDocuments(dragIndex, dropIndex);
 		}
 	}
 };
@@ -110,6 +113,7 @@ class Document extends React.Component {
 		const _this = this;
 
 		const {
+			isDragging,
 			connectDragSource,
 			connectDropTarget
 		} = this.props;
@@ -117,11 +121,13 @@ class Document extends React.Component {
 		return connectDragSource(
 			connectDropTarget(
 				<div>
-        		        <StyledDocumentItem 
+    				<StyledDocumentItem 
+    			        isDragging={isDragging}
                         active={this.props.active} 
-                        key={this.props.doc.id}  
                         >{this.props.doc.title}</StyledDocumentItem>
-                    </div>));
+                </div>
+			)
+		);
 	}
 }
 

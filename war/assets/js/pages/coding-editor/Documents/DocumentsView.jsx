@@ -68,6 +68,7 @@ export default class DocumentsView extends React.Component {
 		this.changeDocumentData = this.changeDocumentData.bind(this);
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
 		this.swapDocuments = this.swapDocuments.bind(this);
+		this.persistSwappedDocuments = this.persistSwappedDocuments.bind(this);
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -271,7 +272,17 @@ export default class DocumentsView extends React.Component {
 	}
 
 	swapDocuments(dragIndex, hoverIndex) {
-		console.log('Swap: ' + dragIndex + '  ' + hoverIndex);
+		const swap = this.state.documents[dragIndex];
+
+		this.state.documents[dragIndex] = this.state.documents[hoverIndex];
+		this.state.documents[hoverIndex] = swap;
+
+		this.forceUpdate();
+	}
+
+	persistSwappedDocuments(dragIndex, targetIndex) {
+		console.log('dragIndex ' + dragIndex);
+		console.log('targetIndex ' + targetIndex);
 	}
 
 	renderCollapseIcon() {
@@ -301,10 +312,10 @@ export default class DocumentsView extends React.Component {
                 doc={doc} 
 		        key={doc.id}
 		        index={index}
-        	    active={doc.id == this.state.selected}  
-		        selected={this.state.selected}
+        	    active={doc.id == this.state.selected}
         	    onClick={this.setActiveDocument.bind(null,doc.id)}
 		        swapDocuments={this.swapDocuments}
+		        persistSwappedDocuments={this.persistSwappedDocuments}
 		        >{doc.title}</DragDocument>;
 	}
 
