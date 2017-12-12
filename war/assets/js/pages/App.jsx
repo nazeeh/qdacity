@@ -19,6 +19,7 @@ import TermDashboard from "./termCourse-dashboard/TermDashboard.jsx"
 import TermCourseConfig from "./termCourse-config/TermCourseConfig.jsx"
 import Admin from './admin/Admin.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
+import UserMigration from './user-migration/UserMigration.jsx';
 
 // React-Intl
 import {
@@ -79,6 +80,7 @@ export default class App extends React.Component {
 							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
 							<Route path="/Admin" render={(props) => <Admin account={this.account} {...props} />} />
 							<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
+							<Route path="/UserMigration" render={(props) => <UserMigration account={this.account} {...props} />} />
 							<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
 						</div>
 					</ThemeProvider>
