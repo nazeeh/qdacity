@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
+import javax.jdo.FetchGroup;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -363,6 +364,8 @@ public class UserEndpoint {
 				try {
 					// TODO: redo with DataStoreService
 					user = mgr.getObjectById(User.class, userId);
+					// detatch copy, otherwise referenced default fetched objects filled with nulls
+					user = mgr.detachCopy(user);
 			
 					if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
 						user.setLastLogin(new Date());
@@ -425,7 +428,10 @@ public class UserEndpoint {
 				throw new UnauthorizedException("User is not registered");
 			}
 			
-			return queriedUserList.get(0);
+			User user = queriedUserList.get(0);
+			// detatch copy, otherwise referenced default fetched objects filled with nulls
+			user = mgr.detachCopy(user);
+			return user;
 		} finally {
 			mgr.close();
 		}
