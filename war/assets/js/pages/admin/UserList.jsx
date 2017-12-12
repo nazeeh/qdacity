@@ -2,9 +2,7 @@ import React from 'react';
 
 import UserListCtrl from './UserListCtrl.jsx';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
-import {
-	StyledListItemDefault
-} from "../../common/styles/List";
+import {StyledListItemDefault} from "../../common/styles/List";
 
 const StyledListItemUser = StyledListItemDefault.extend `
 	&:hover {
@@ -14,14 +12,10 @@ const StyledListItemUser = StyledListItemDefault.extend `
 export default class UserList extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			selected: -1
-		};
 		this.selectUser = this.selectUser.bind(this);
 		this.updateUser = this.updateUser.bind(this);
 
 	}
-
 
 
 	updateUser(basicInfo) {
@@ -38,18 +32,11 @@ export default class UserList extends React.Component {
 	}
 
 	selectUser(selectedID) {
-        this.props.setSelectedUserId(selectedID)
-		this.setState({
-			selected: selectedID
-		});
-	}
-
-	getActiveDocumentId(selectedID) {
-		return this.state.selected;
+		this.props.setSelectedUserId(selectedID)
 	}
 
 	getActiveUser() {
-		return this.getUser(this.state.selected);
+		return this.getUser(this.props.selectedUserId);
 	}
 
 	getUser(userId) {
@@ -61,7 +48,7 @@ export default class UserList extends React.Component {
 	}
 
 	isActive(value) {
-		return 'list-group-item ' + ((value == this.state.selected) ? 'active' : 'default');
+		return 'list-group-item ' + ((value === this.props.selectedUserId) ? 'active' : 'default');
 	}
 
 
@@ -72,17 +59,18 @@ export default class UserList extends React.Component {
 
 
 			<div className="list-group">
-			<UserListCtrl user={activeUser} updateUser={this.updateUser} removeUser={this.props.removeUser}  test={1}/>
-
-
-        {
-          this.props.users.map(function(user) {
-              return <StyledListItemUser className={_this.isActive(user.id)} key={user.id} href={"#"}
-                                            onClick={_this.selectUser.bind(null, user.id)}><span>{user.givenName} {user.surName}</span><span
-                  className="pull-right"><em>{user.email}</em></span></StyledListItemUser>
-          })
-        }
-      </div>
+				{
+					this.props.selectedUserId && <UserListCtrl user={activeUser} updateUser={this.updateUser} removeUser={this.props.removeUser}
+								  test={1}/>
+				}
+				{
+					this.props.users.map(function (user) {
+						return <StyledListItemUser className={_this.isActive(user.id)} key={user.id} href={"#"}
+												   onClick={_this.selectUser.bind(null, user.id)}><span>{user.givenName} {user.surName}</span><span
+							className="pull-right"><em>{user.email}</em></span></StyledListItemUser>
+					})
+				}
+			</div>
 		);
 	}
 
