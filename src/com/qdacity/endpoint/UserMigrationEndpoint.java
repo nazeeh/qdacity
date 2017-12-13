@@ -46,7 +46,7 @@ public class UserMigrationEndpoint {
 	 * @throws ConflictException if the old user is already migrated or the new user does already exist.
 	 */
 	@ApiMethod(
-			name = "userMigration.migrateFromGoogleIdentityToCustomAuthentication",
+			name = "migrateFromGoogleIdentityToCustomAuthentication",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 			audiences = { Constants.WEB_CLIENT_ID })
@@ -61,6 +61,7 @@ public class UserMigrationEndpoint {
 		}
 		this.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
+	
 
 	/**
 	 * Exists just for testing issues.
@@ -96,6 +97,36 @@ public class UserMigrationEndpoint {
 			mgr.close();
 		}
 		return user;
+	}
+	
+	/**
+	 * Required for checking if the logged in account is registered at QDAcity on client site.
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+			name = "getOldAppengineUser",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+	public com.google.appengine.api.users.User getOldUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		if(loggedInUser == null) {
+			throw new UnauthorizedException("The User could not be authenticated");
+		}
+		return loggedInUser;
+	}
+	
+	@ApiMethod(
+			name = "isOldUserRegistered",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+	public BooleanWrapper isOldUserRegistered(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+		if(loggedInUser == null) {
+			throw new UnauthorizedException("The User could not be authenticated");
+		}
+		return new BooleanWrapper(this.containsUser(loggedInUser.getUserId()));
 	}
 	
 	private boolean containsUser(String id) {
@@ -196,5 +227,15 @@ public class UserMigrationEndpoint {
 
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
+	}
+	
+	public class BooleanWrapper {
+		public boolean value;
+		
+		BooleanWrapper(boolean value) {
+			this.value = value;
+		}
+		
+		BooleanWrapper()	{ }
 	}
 }

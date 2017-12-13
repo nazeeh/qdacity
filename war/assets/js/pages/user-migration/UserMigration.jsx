@@ -46,6 +46,8 @@ const ProfileImg = styled.img `
 
 const StyledButton = styled.div `
     margin: 20px;
+    width: 100%;
+    max-width: 150px;
 `;
 
 const StyledPreconditionsStatus = styled.i `
@@ -67,7 +69,6 @@ export default class UserMigration extends React.Component {
 			name: '',
 			email: '',
             picSrc: '',
-            googleUserId: '',
             isSignedIn: false,
             isAlreadyMigrated: false,
             isRegistered: false
@@ -99,7 +100,6 @@ export default class UserMigration extends React.Component {
                     name: "",
                     email: "",
                     picSrc: "",
-                    googleUserId: "",
                     isSignedIn: false,
                     isAlreadyMigrated: false,
                     isRegistered: false
@@ -112,7 +112,6 @@ export default class UserMigration extends React.Component {
                     name: profile.displayName,
                     email: profile.email,
                     picSrc: profile.thumbnail,
-                    googleUserId: profile.id,
                     isSignedIn: loginStatus,
                     isAlreadyMigrated: false,
                     isRegistered: false
@@ -124,20 +123,35 @@ export default class UserMigration extends React.Component {
     
     checkMigrationPreconditions() {
         const _this = this;
-        gapi.client.qdacity.getUser({
-            id: _this.state.googleUserId
-        }).execute(function (user) {
-            _this.state.isRegistered = !! user.id;
+
+        // custom request because we need access_token here as header
+        gapi.client.setToken({
+            access_token: this.access_token
+        });
+        gapi.client.qdacityusermigration.isOldUserRegistered({}).execute((resp) => {
+            _this.state.isRegistered = resp.value;
             _this.setState(_this.state);
+            
+            // all other requests need id_token here as header
+            gapi.client.setToken({
+                access_token: this.id_token
+            });
+            
+            this.props.account.getCurrentUser().then((user) => {
+                _this.state.isAlreadyMigrated = !! user.id;
+                _this.setState(_this.state);
+            }, (error) => {
+                _this.state.isAlreadyMigrated = false;
+                _this.setState(_this.state);
+            });
+        }, (err) => {
+            console.error("Error in updating the preconditions for migration!");
+            // all other requests need id_token here as header
+            gapi.client.setToken({
+                access_token: this.id_token
+            });
         });
         
-        this.props.account.getCurrentUser().then((user) => {
-            _this.state.isAlreadyMigrated = !! user.id;
-            _this.setState(_this.state);
-        }, (error) => {
-            _this.state.isAlreadyMigrated = false;
-            _this.setState(_this.state);
-        });
     }
 
     signIn() {
@@ -161,7 +175,7 @@ export default class UserMigration extends React.Component {
             console.error("Preconditions for migration are not met!");
             return;
         }
-        if(!!this.access_token || !!this.id_token) {
+        if(!this.access_token || !this.id_token) {
             console.error("Did not receive access_token or id_token!");
             return;
         }
@@ -171,7 +185,7 @@ export default class UserMigration extends React.Component {
             access_token: this.access_token
         });
         const _this = this;
-        gapi.client.qdacityusermigration.userMigrationEndpoint.migrateFromGoogleIdentityToCustomAuthentication({
+        gapi.client.qdacityusermigration.migrateFromGoogleIdentityToCustomAuthentication({
             idToken: this.id_token
         }).execute((resp) => {
             if (resp.status === 204 || resp.status === 200) {
@@ -227,7 +241,7 @@ export default class UserMigration extends React.Component {
                     <StyledHeader3>Preconditions for Migration:</StyledHeader3>
                     <p>
                         <PreconditionsStatus fulfilled={this.state.isRegistered} />
-                        You are registered at QDAcity 
+                        You are registered at QDAcity with an old account (2017 or before)
                     </p>
                     <p>
                         <PreconditionsStatus fulfilled={!this.state.isAlreadyMigrated} />
@@ -251,7 +265,7 @@ export default class UserMigration extends React.Component {
             show ? <div>
                 <div className="col-xs-12">
                     <div className="col-md-3"/>
-                    <div className="col-md-3">
+                    <div className="col-md-2">
                         <StyledButton className="btn btn-primary col-xs-3" onClick={() => {this.migrate()}}>
                             Migrate Now!
                         </StyledButton>
