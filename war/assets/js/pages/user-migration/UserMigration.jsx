@@ -143,12 +143,16 @@ export default class UserMigration extends React.Component {
     signIn() {
         this.props.account.signIn().then(function() {
 
+        }, (error) => {
+            console.error("Sign in failed.");
         });
     }
 
     signOut() {
         this.props.account.signout().then(function() {
             
+        }, (err) => {
+            console.error("Sign out failed.");
         });
     }
 

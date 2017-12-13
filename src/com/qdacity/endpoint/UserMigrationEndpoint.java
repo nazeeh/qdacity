@@ -88,7 +88,7 @@ public class UserMigrationEndpoint {
 		user.setLastLogin(new Date());
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			if (user.getId() != null && containsUser(user.getId())) {
+			if (containsUser(user.getId())) {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(user);
