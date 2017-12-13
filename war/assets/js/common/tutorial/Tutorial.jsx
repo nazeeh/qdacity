@@ -3,9 +3,10 @@ import styled from 'styled-components';
 
 //Base Structure
 
-const Overlay1 = styled.div`
+//Overlay, which appears if for example a MessageBox appears
+const OverlayVisual = styled.div`
 	position: fixed;
-	display: ${props =>props.tutorial.tutorialState.showOverlay1 ? 'inline' : 'none'};
+	display: ${props =>props.tutorial.tutorialState.showOverlayVisual ? 'inline' : 'none'};
 	width: 100%;
 	height: 100%;
 	top: 0;
@@ -16,17 +17,18 @@ const Overlay1 = styled.div`
 	z-index: 2000;
 `;
 
-
-const Overlay2 = styled.div`
+//Overlay, which appears for blocking most of the visible dom-objects to be clicked or interacted 
+//(if i want steer a user in a certain direction)
+const OverlayBlockInteraction = styled.div`
 	position: fixed;
-	display: ${props =>props.tutorial.tutorialState.showOverlay2 ? 'inline' : 'none'};
+	display: ${props =>props.tutorial.tutorialState.showOverlayBlockInteraction ? 'inline' : 'none'};
 	width: 100%;
 	height: 100%;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: ${props =>props.tutorial.tutorialState.highlightOverlay2 ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.0)'};
+	background-color: ${props =>props.tutorial.tutorialState.highlightOverlayBlockInteraction ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.0)'};
 	z-index: 1900;
 `;
 
@@ -109,8 +111,8 @@ export default class Tutorial extends React.Component {
 		if(this.props.tutorial.tutorialState.isActive) {
 			return (
 					<div>						
-						<Overlay1 {...this.props}/>
-						<Overlay2 {...this.props}/>
+						<OverlayVisual {...this.props}/>
+						<OverlayBlockInteraction {...this.props}/>
 						<Pointer  {...this.props}><img src={"/assets/img/tutorial/arrow"+this.props.tutorial.tutorialState.pointer.direction+"Directed.png"}/></Pointer>						
 						<MessageBox {...this.props}>
 							<MBLoading {...this.props}>please wait the content is loaded... </MBLoading>
