@@ -25,7 +25,7 @@ public class UserMigrationEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	
-	private final UserMigrationEndpoint endpoint = new UserMigrationEndpoint();
+	private final UserMigrationEndpointDelegator endpoint = new UserMigrationEndpointDelegator();
 	private final AuthenticatedUser newUser = new AuthenticatedUser("1234567", "Max@Mustermann.de", LoginProviderType.GOOGLE);
 	private final com.google.appengine.api.users.User oldUser = new com.google.appengine.api.users.User("Max@Mustermann.de", "gmail.com", "12345");
 	
@@ -43,7 +43,7 @@ public class UserMigrationEndpointTest {
 	
 	@Test(expected = UnauthorizedException.class)
 	public void migrationNoOldUser() throws UnauthorizedException, ConflictException {
-		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.callDoMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
 
 	@Test(expected = ConflictException.class)
@@ -51,14 +51,14 @@ public class UserMigrationEndpointTest {
 		UserMigrationEndpointTestHelper.insertOldUser(oldUser.getUserId(), oldUser.getEmail());
 		UserEndpointTestHelper.addUser("test@test.de", "Hans", "Wurst", newUser);
 		
-		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.callDoMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
 	
 	@Test
 	public void migrationWorks() throws UnauthorizedException, ConflictException {
 		User userDBbefore = UserMigrationEndpointTestHelper.insertOldUser(oldUser.getUserId(), oldUser.getEmail());
 		
-		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.callDoMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 		
 		// there must be information in UserLoginProviderInformation
 		UserEndpoint userEndpoint = new UserEndpoint();
@@ -78,11 +78,18 @@ public class UserMigrationEndpointTest {
 	public void migrationAlreadyMigrated() throws UnauthorizedException, ConflictException {
 		UserMigrationEndpointTestHelper.insertOldUser(oldUser.getUserId(), oldUser.getEmail());
 		try {
-			endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+			endpoint.callDoMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 		} catch(UnauthorizedException | ConflictException ex) {
 			fail("First run of migration should work!");
 		}
 
-		endpoint.doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		endpoint.callDoMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
 	}
+	
+	
+	private class UserMigrationEndpointDelegator extends UserMigrationEndpoint {
+		public void callDoMigrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) throws UnauthorizedException, ConflictException {
+			doMigrateFromGoogleIdentityToCustomAuthentication(oldUser, newUser);
+		}
+	};
 }

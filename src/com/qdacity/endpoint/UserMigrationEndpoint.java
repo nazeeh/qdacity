@@ -89,7 +89,7 @@ public class UserMigrationEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (containsUser(user.getId())) {
-				throw new EntityExistsException("Object already exists");
+				throw new EntityExistsException("User with id +" + user.getId() + "+ already exists");
 			}
 			mgr.makePersistent(user);
 		} finally {
@@ -120,7 +120,7 @@ public class UserMigrationEndpoint {
 	 * @throws UnauthorizedException if the old user does not exist
 	 * @throws ConflictException if the old user is already migrated or the new user does already exist.
 	 */
-	public void doMigrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) throws UnauthorizedException, ConflictException {
+	protected void doMigrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) throws UnauthorizedException, ConflictException {
 		// pre: oldUser must exist in db -> user-id == oldUser.userId
 		User dbUser = fetchOldUser(oldUser);
 		if(dbUser == null) {
