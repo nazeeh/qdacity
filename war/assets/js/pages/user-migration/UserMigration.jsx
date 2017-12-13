@@ -44,7 +44,7 @@ const ProfileImg = styled.img `
     widht: auto;
 `;
 
-const LogoutButton = styled.div `
+const StyledButton = styled.div `
     margin: 20px;
 `;
 
@@ -54,6 +54,9 @@ const StyledPreconditionsStatus = styled.i `
 
 const ErrorMsg = styled.p `
     color: red;
+`;
+const SuccessMsg = styled.p `
+    color: green;
 `;
 
 export default class UserMigration extends React.Component {
@@ -70,9 +73,17 @@ export default class UserMigration extends React.Component {
             isRegistered: false
         };
 
+        this.access_token = null;
+        this.id_token = null;
+        this.migrationStatus = null;
+
         const _this = this;
-        this.props.account.addAuthStateListener(function() {
+        this.props.account.addAuthStateListener(function(payload) {
             // update on every auth state change
+            if(!! payload.authResponse) {
+                _this.access_token = payload.authResponse.access_token;
+                _this.id_token = payload.authResponse.id_token;
+            }
 			_this.updateUserStatus();
 		});
 		
@@ -122,8 +133,6 @@ export default class UserMigration extends React.Component {
         
         this.props.account.getCurrentUser().then((user) => {
             _this.state.isAlreadyMigrated = !! user.id;
-            console.log(user);
-            console.log(_this.state.isAlreadyMigrated);
             _this.setState(_this.state);
         }, (error) => {
             _this.state.isAlreadyMigrated = false;
@@ -140,6 +149,36 @@ export default class UserMigration extends React.Component {
     signOut() {
         this.props.account.signout().then(function() {
             
+        });
+    }
+
+    migrate() {
+        if(!this.state.isRegistered || this.state.isAlreadyMigrated) {
+            console.error("Preconditions for migration are not met!");
+            return;
+        }
+        if(!!this.access_token || !!this.id_token) {
+            console.error("Did not receive access_token or id_token!");
+            return;
+        }
+
+        // custom request because we need access_token here as header
+        gapi.client.setToken({
+            access_token: this.access_token
+        });
+        const _this = this;
+        gapi.client.qdacityusermigration.userMigrationEndpoint.migrateFromGoogleIdentityToCustomAuthentication({
+            idToken: this.id_token
+        }).execute((resp) => {
+            if (resp.status === 204 || resp.status === 200) {
+                _this.migrationStatus = true;
+            } else {
+                _this.migrationStatus = false;
+            }
+        });
+        // all other requests need id_token here as header
+        gapi.client.setToken({
+            access_token: this.id_token
         });
     }
 
@@ -170,9 +209,9 @@ export default class UserMigration extends React.Component {
                 </div>
                 <div className="col-xs-12">
                     <div className="col-xs-2"/>
-                    <LogoutButton className="btn btn-primary col-xs-3" onClick={() => {this.signOut()}}>
+                    <StyledButton className="btn btn-primary col-xs-3" onClick={() => {this.signOut()}}>
                         Sign-Out!
-                    </LogoutButton>
+                    </StyledButton>
                     <div className="col-xs-7"/>
                 </div>
             </div> : null
@@ -204,6 +243,27 @@ export default class UserMigration extends React.Component {
             </div> : null 
         );
 
+        const MigrationButton = ({show}) => (
+            show ? <div>
+                <div className="col-xs-12">
+                    <div className="col-md-3"/>
+                    <div className="col-md-3">
+                        <StyledButton className="btn btn-primary col-xs-3" onClick={() => {this.migrate()}}>
+                            Migrate Now!
+                        </StyledButton>
+                    </div>
+                </div>
+            </div> : null 
+        );
+
+        const MigrationMessage = ({show, successful}) => (
+            show && !successful ? <div>
+                <ErrorMsg><strong><StyledPreconditionsStatus className="fa fa-exclamation-triangle" aria-hidden="true" /> Migration was not successful!</strong></ErrorMsg>
+            </div> : show && successful ? <div>
+                <SuccessMsg><strong><StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> Migration was successful!</strong></SuccessMsg>
+            </div> : null
+        );
+
         return (
             <StyledContent>
                 <StyledHeader1>User Migration</StyledHeader1>
@@ -220,6 +280,8 @@ export default class UserMigration extends React.Component {
                     <GoogleSignIn show={!this.state.isSignedIn}/>
                     <ProfileInfo show={this.state.isSignedIn}/>
                     <MigrationPreconditions  show={this.state.isSignedIn}/>
+                    <MigrationButton show={this.state.isRegistered && !this.state.isAlreadyMigrated && !this.migrationStatus}/>
+                    <MigrationMessage show={this.state.isRegistered && !this.state.isAlreadyMigrated && this.migrationStatus !== null} />
 
                 </StyledMigrationFunctionality>
             </StyledContent>
