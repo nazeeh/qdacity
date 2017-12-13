@@ -16,7 +16,6 @@ frontend_prod_build:
   environment: Production
   only:
     - master
-    - user_migration
   cache:
     key: "node_modules"
     untracked: true
@@ -44,7 +43,6 @@ backend_prod_build:
   environment: Production
   only:
     - master
-    - user_migration
   artifacts:
     paths:
       - target/qdacity-war
@@ -59,7 +57,6 @@ rtcsvc_prod_build:
   environment: Production
   only:
     - master
-    - user_migration
   cache:
     key: "rtcsvc:node_modules"
     untracked: true
@@ -80,7 +77,6 @@ backend_prod_unittest:
   environment: Production
   only:
     - master
-    - user_migration
   artifacts:
     paths:
       - target/site/jacoco-ut
@@ -98,7 +94,6 @@ frontend_prod_unittest:
   environment: Production
   only:
     - master
-    - user_migration
   cache:
     key: "node_modules"
     untracked: true
@@ -123,7 +118,6 @@ rtcsvc_prod_unittest:
   environment: Production
   only:
     - master
-    - user_migration
   cache:
     key: "rtcsvc:node_modules"
     untracked: true
@@ -156,7 +150,6 @@ pages:
     expire_in: 30 days
   only:
     - master
-    - user_migration
 
 deploy_prod:
   tags:
@@ -165,7 +158,6 @@ deploy_prod:
   environment: Production
   only:
     - master
-    - user_migration
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - WAR=$(pwd)/target/qdacity-war
@@ -178,7 +170,6 @@ deploy_rtcsvc:
   environment: Production
   only:
     - master
-    - user_migration
   allow_failure: true
   script:
     - cd realtime-service
