@@ -96,6 +96,42 @@ const TutorialOverviewTitle = styled.div`
 	font-size: 18px,
 `;
 
+const TutorialOverviewSubBox = styled.div`
+	background:#ececec; 
+	padding: 10px; 
+	margin: 10px; 
+	position:relative; 
+	height: 100px;
+	opacity:0.6;
+	&:hover {
+		opacity:1 !important;
+	}
+`;
+
+const TutorialOverviewSubBoxTitle = styled.div`
+	float:left; 
+	width:190px; 
+	color:#805506; 
+	font-size:19px;
+`;
+
+const TutorialOverviewSubBoxStatistic1 = styled.div`
+	float:left; 
+	margin-right:20px;
+`;
+
+const TutorialOverviewSubBoxStatistic2 = styled.div`
+	float:left; 
+`;
+
+const TutorialOverviewSubBoxClearing = styled.div`
+	clear: both ;
+`;
+
+const TutorialOverviewSubBoxPlaceholder = styled.div`
+	height: 15px ;
+`;
+
 //Detail Structure End
 
 
@@ -106,7 +142,24 @@ export default class Tutorial extends React.Component {
 	}
 
 	render() {
+		
+		
 		if(this.props.tutorial.tutorialState.isActive) {
+		
+		var tutorialOverviewItems = this.props.tutorial.tutorialState.overviewData.map((data) =>
+		<TutorialOverviewSubBox>
+			<b>
+				<TutorialOverviewSubBoxTitle>Test-Tutorial</TutorialOverviewSubBoxTitle>
+				<TutorialOverviewSubBoxStatistic1>finished (data.finishRelative%)</TutorialOverviewSubBoxStatistic1>
+				<TutorialOverviewSubBoxStatistic2>finished at: finishedAt</TutorialOverviewSubBoxStatistic2>
+				<TutorialOverviewSubBoxClearing/>
+			</b>
+			<TutorialOverviewSubBoxPlaceholder/>
+			<ButtonGeneric white={false}>Start Tutorial</ButtonGeneric><ButtonGeneric white>Open Description</ButtonGeneric>
+		</TutorialOverviewSubBox>
+		);
+		
+		
 			return (
 					<div>						
 						<Overlay1 {...this.props}/>
@@ -118,7 +171,9 @@ export default class Tutorial extends React.Component {
 								<center>
 									<TutorialOverviewTitle><b>Tutorial Overview</b></TutorialOverviewTitle>
 									<br/>
-									<div>TODO Struktur kommt</div>
+									<div>
+										{tutorialOverviewItems}
+									</div>
 									<br/><br/>									
 								</center>
 							</MBTutorialOverview>

@@ -25,7 +25,8 @@ export default class TutorialEngine {
 					direction:"Right",
 					top:0,
 					left:0,
-				}		
+				},
+				overviewData:[]
 			}			
 	}
 	
@@ -70,9 +71,13 @@ export default class TutorialEngine {
 		var back=Promisizer.makePromise(apiMethod);
 		back.then(function (resp) {
 			
-			console.log(resp);
-	
-			//this.tutorialState.TutorialOverviewData=.... //kommt vom server
+			console.log(resp.result);
+			console.log(Array.from(resp.result));
+			//this.tutorialState.overviewData=Array.from(resp.result);
+			
+			this.tutorialState.overviewData=[1,2,3,4];
+			
+			
 			
 			this.tutorialState.showMessageBoxContent=2;
 			this.updateReact();
