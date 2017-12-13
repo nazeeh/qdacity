@@ -11,8 +11,12 @@ const StyledContent = styled.div `
     margin-right: auto;
 `;
 
-const StyledHeader = styled.h1 `
+const StyledHeader1 = styled.h1 `
     margin-bottom: 40px;
+`;
+const StyledHeader3 = styled.h3 `
+    margin-top: 25px;
+    margin-bottom: 15px;
 `;
 
 const StyledMigrationDescription = styled.div `
@@ -35,6 +39,18 @@ const StyledSignInButton = styled.div `
     margin-bottom: 100px;
 `;
 
+const ProfileImg = styled.img `
+    height: 50px;
+    widht: auto;
+`;
+
+const LogoutButton = styled.div `
+    margin: 20px;
+`;
+
+const StyledPreconditionsStatus = styled.i `
+    margin-right: 7.5px;
+`;
 
 export default class UserMigration extends React.Component {
 	constructor(props) {
@@ -109,27 +125,49 @@ export default class UserMigration extends React.Component {
             show ? <div>
                 <div className="col-xs-12">
                     <div>
-                        <h3>Google Profile:</h3>
+                        <StyledHeader3>Google Profile:</StyledHeader3>
                     </div>
-                    <div className="col-xs-1">
-                        <img src={this.state.picSrc} alt="" className="img-responsive"/>
+                    <div className="col-md-2">
+                        <ProfileImg src={this.state.picSrc} alt="" className="img-responsive"/>
                     </div>
-                    <div className="col-xs-3">
-                        <p>{this.state.name}</p>
-                        <p>{this.state.email}</p>
+                    <div className="col-md-3">
+                        <p>{this.state.name}<br/>
+                        {this.state.email}</p>
                     </div>
                 </div>
-                <div className="col-xs-1">
-                </div>
-                <div className="btn btn-primary col-xs-3" onClick={() => {this.signOut()}}>
-                    Sign-Out!
+                <div className="col-xs-12">
+                    <div className="col-xs-2"/>
+                    <LogoutButton className="btn btn-primary col-xs-3" onClick={() => {this.signOut()}}>
+                        Sign-Out!
+                    </LogoutButton>
+                    <div className="col-xs-7"/>
                 </div>
             </div> : null
         );
 
+        const MigrationPreconditions = ({show}) => (
+            show ? <div>
+                <div className="col-xs-12">
+                    <StyledHeader3>Preconditions for Migration:</StyledHeader3>
+                    <p>
+                        <PreconditionsStatus fulfilled={true} />
+                        You are registered at QDAcity 
+                    </p>
+                    <p>
+                        <PreconditionsStatus fulfilled={false} />
+                        You are not migrated yet 
+                    </p>
+                </div>
+            </div>: null
+        );
+
+        const PreconditionsStatus = ({fulfilled}) => (
+            fulfilled ? <StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> : <StyledPreconditionsStatus className="fa fa-times" aria-hidden="true" />
+        );
+
         return (
             <StyledContent>
-                <StyledHeader>User Migration</StyledHeader>
+                <StyledHeader1>User Migration</StyledHeader1>
                 <StyledMigrationDescription>
                     <p>Thank you for participating in our user migration! Please follow the steps below:</p>
                     <ol>
@@ -142,6 +180,7 @@ export default class UserMigration extends React.Component {
                     
                     <GoogleSignIn show={!this.state.isSignedIn}/>
                     <ProfileInfo show={this.state.isSignedIn}/>
+                    <MigrationPreconditions  show={this.state.isSignedIn}/>
 
                 </StyledMigrationFunctionality>
             </StyledContent>
