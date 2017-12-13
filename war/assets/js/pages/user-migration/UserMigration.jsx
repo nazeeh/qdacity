@@ -52,6 +52,10 @@ const StyledPreconditionsStatus = styled.i `
     margin-right: 7.5px;
 `;
 
+const ErrorMsg = styled.p `
+    color: red;
+`;
+
 export default class UserMigration extends React.Component {
 	constructor(props) {
         super(props);
@@ -60,7 +64,10 @@ export default class UserMigration extends React.Component {
 			name: '',
 			email: '',
             picSrc: '',
-            isSignedIn: false
+            googleUserId: '',
+            isSignedIn: false,
+            isAlreadyMigrated: false,
+            isRegistered: false
         };
 
         const _this = this;
@@ -75,14 +82,16 @@ export default class UserMigration extends React.Component {
 
     updateUserStatus() {
         const loginStatus = this.props.account.isSignedIn();
-        console.log(loginStatus);
 		if(loginStatus !== this.state.isSignedIn) {
             if(!loginStatus) {
                 this.setState({
                     name: "",
                     email: "",
                     picSrc: "",
-                    isSignedIn: false
+                    googleUserId: "",
+                    isSignedIn: false,
+                    isAlreadyMigrated: false,
+                    isRegistered: false
                 });
                 return;
             }
@@ -92,11 +101,35 @@ export default class UserMigration extends React.Component {
                     name: profile.displayName,
                     email: profile.email,
                     picSrc: profile.thumbnail,
-                    isSignedIn: loginStatus
+                    googleUserId: profile.id,
+                    isSignedIn: loginStatus,
+                    isAlreadyMigrated: false,
+                    isRegistered: false
                 });
+                _this.checkMigrationPreconditions();
             })
 		}
-	}
+    }
+    
+    checkMigrationPreconditions() {
+        const _this = this;
+        gapi.client.qdacity.getUser({
+            id: _this.state.googleUserId
+        }).execute(function (user) {
+            _this.state.isRegistered = !! user.id;
+            _this.setState(_this.state);
+        });
+        
+        this.props.account.getCurrentUser().then((user) => {
+            _this.state.isAlreadyMigrated = !! user.id;
+            console.log(user);
+            console.log(_this.state.isAlreadyMigrated);
+            _this.setState(_this.state);
+        }, (error) => {
+            _this.state.isAlreadyMigrated = false;
+            _this.setState(_this.state);
+        });
+    }
 
     signIn() {
         this.props.account.signIn().then(function() {
@@ -150,19 +183,25 @@ export default class UserMigration extends React.Component {
                 <div className="col-xs-12">
                     <StyledHeader3>Preconditions for Migration:</StyledHeader3>
                     <p>
-                        <PreconditionsStatus fulfilled={true} />
+                        <PreconditionsStatus fulfilled={this.state.isRegistered} />
                         You are registered at QDAcity 
                     </p>
                     <p>
-                        <PreconditionsStatus fulfilled={false} />
+                        <PreconditionsStatus fulfilled={!this.state.isAlreadyMigrated} />
                         You are not migrated yet 
                     </p>
                 </div>
+                <MigrationNotPossible show={!this.state.isRegistered || this.state.isAlreadyMigrated}/>
             </div>: null
         );
 
         const PreconditionsStatus = ({fulfilled}) => (
             fulfilled ? <StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> : <StyledPreconditionsStatus className="fa fa-times" aria-hidden="true" />
+        );
+        const MigrationNotPossible = ({show}) => (
+            show ? <div>
+                <ErrorMsg><strong><StyledPreconditionsStatus className="fa fa-exclamation-triangle" aria-hidden="true" /> Preconditions are not met! Please choose another account to migrate.</strong></ErrorMsg>
+            </div> : null 
         );
 
         return (
