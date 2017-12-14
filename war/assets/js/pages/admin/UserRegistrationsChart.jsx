@@ -30,6 +30,7 @@ export default class UserRegistrationsChart extends React.Component {
 
 	init() {
 		ChangeLogEndpoint.getChanges("USER", "CREATED", this.props.minDate, this.props.maxDate).then((result) => {
+			result.items = result.items || [];
 			this.setState({
 				userCreatedChanges: result.items
 			})
