@@ -45,14 +45,7 @@ export default class Admin extends React.Component {
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
-						<div className="box box-default">
-							<div className="b ox-header with-border">
-								<h3 className="box-title">Statistics</h3>
-							</div>
-							<div className="box-body">
-								<AdminStats />
-							</div>
-						</div>
+						<AdminStats chartScriptPromise={this.props.chartScriptPromise} />
 						<div id="changeLog"></div>
 					</div>
 					<div className="col-lg-4">
