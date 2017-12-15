@@ -1,7 +1,7 @@
 before_script:
 
 after_script:
-    - rm /tmp/$CI_PIPELINE_ID.json
+  - rm /tmp/$CI_PIPELINE_ID.json
 
 stages:
   - build
@@ -170,13 +170,18 @@ deploy_rtcsvc:
   environment: Production
   only:
     - master
-  allow_failure: true
   script:
     - cd realtime-service
-    - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
-    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
-    - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-    - "echo \"--project: $PROJECT_ID_PRODUCTION\""
-    - "echo \"--version: $(cat .gae_version)\""
-    - gcloud --quiet --project=$PROJECT_ID_PRODUCTION app deploy --version=$(cat .gae_version) app.yaml
+    - bash ./deploy_to_compute_engine.sh
 
+setup_rtcsvc_server:
+  tags:
+    - qdacity
+  stage: deploy
+  environment: Production
+  only:
+    - master
+  script:
+    - cd realtime-service
+    - bash ./setup_compute_instance.sh
+  when: manual

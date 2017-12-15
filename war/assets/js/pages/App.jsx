@@ -19,6 +19,8 @@ import TermDashboard from "./termCourse-dashboard/TermDashboard.jsx"
 import TermCourseConfig from "./termCourse-config/TermCourseConfig.jsx"
 import Admin from './admin/Admin.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
+import TutorialEngine from '../common/tutorial/TutorialEngine.js';
+import Tutorial from '../common/tutorial/Tutorial.jsx';
 
 // React-Intl
 import {
@@ -51,9 +53,21 @@ export default class App extends React.Component {
 				return false;
 			}
 		};
-
+		
+		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
+		var t=new TutorialEngine(this);
+		this.state = {
+			tutorialEngine: t,
+			tutorialState:t.tutorialState,			
+		};	
+		
 		// load initial language
 		this.changeLanguage(language);
+	}
+	
+	componentDidMount()
+	{
+		this.state.tutorialEngine.appRootDidMount();
 	}
 
 	changeLanguage(language = 'en') {
@@ -66,24 +80,29 @@ export default class App extends React.Component {
 	}
 
 	render() {
+		
+		var tut={tutorialEngine:this.state.tutorialEngine, tutorialState: this.state.tutorialState};
+		
 		return (
 			<IntlProvider locale={this.state.locale} language={this.state.language} messages={this.state.messages}>
 				<Router>
 					<ThemeProvider theme={Theme}>
 						<div>
-							<Route path="/" render={(props) => <NavBar client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} callback={(acc) => { this.account = acc; this.forceUpdate() }} {...props} />} />
+							<Route path="/" render={(props) => <NavBar client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} tutorial={tut} callback={(acc) => { this.account = acc; this.forceUpdate() }} {...props} />} />
 							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard account={this.account}  {...props} />} />
 							<Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
 							<Route path="/CourseDashboard" render={(props) => <CourseDashboard account={this.account} {...props} />} />
 							<Route path="/TermDashboard" render={(props)=><TermDashboard account={this.account} {...props} />}/>
 							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
-							<Route path="/Admin" render={(props) => <Admin account={this.account} {...props} />} />
+							<Route path="/Admin" render={(props) => <Admin account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
 							<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
 							<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
+							<Route path="/" render={(props)=><Tutorial tutorial={tut} {...props}/>}/>	
 						</div>
 					</ThemeProvider>
 				</Router>
 			</IntlProvider>
 		);
 	}
+						
 }
