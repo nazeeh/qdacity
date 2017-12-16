@@ -59,6 +59,10 @@ export default class UserRegistrationsChart extends React.Component {
 		return result;
 	}
 
+	setTimeFrame(startDate, endDate) {
+		//TODO
+	}
+
 	renderChart() {
 
 		const data = new google.visualization.DataTable();
@@ -99,7 +103,7 @@ export default class UserRegistrationsChart extends React.Component {
 	render() {
 		return (
 			<div>
-				<ChartTimeFrameChooser/>
+				<ChartTimeFrameChooser onChangeTimeFrame={(startDate, endDate) => this.setTimeFrame(startDate, endDate)}/>
 				{this.state.googleChartsLoaded && this.state.userCreatedChanges ? this.renderChart() : null}
 			</div>
 		);

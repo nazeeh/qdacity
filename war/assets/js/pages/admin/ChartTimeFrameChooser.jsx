@@ -36,23 +36,75 @@ export default class UserRegistrationsChart extends React.Component {
 	setTimeFrame(selection) {
 		this.setState({
 			selection: selection
-		})
+		}, () => {
+			if (selection !== SELECTION.CUSTOM) {
+				this.sendEvent()
+			}
+		});
 	}
 
 	setCustomDateMin(value) {
 		this.setState({
 			customDateMin: value
-		})
+		});
 	}
 
 	setCustomDateMax(value) {
 		this.setState({
 			customDateMax: value
-		})
+		});
 	}
 
 	sendEvent() {
+		this.props.onChangeTimeFrame(this.getDateStart(), this.getDateEnd());
+	}
 
+	getDateStart() {
+		let dateStart;
+		switch(this.state.selection) {
+			case SELECTION.WEEK:
+				dateStart = new Date();
+				dateStart.setDate(dateStart.getDate() - 7);
+
+				break;
+			case SELECTION.MONTH:
+				dateStart = new Date();
+				dateStart.setMonth(dateStart.getMonth() - 1);
+
+				break;
+			case SELECTION.QUARTER:
+				dateStart = new Date();
+				dateStart.setMonth(dateStart.getMonth() - 3);
+
+				break;
+			case SELECTION.YEAR:
+				dateStart = new Date();
+				dateStart.setFullYear(dateStart.getFullYear() - 1);
+
+				break;
+			case SELECTION.CUSTOM:
+				dateStart = this.state.customDateMin;
+
+				break;
+		}
+		dateStart.setHours(0,0,0,0);
+		return dateStart;
+	}
+
+	getDateEnd() {
+		let dateEnd;
+		switch (this.state.selection) {
+			case SELECTION.CUSTOM:
+				dateEnd = this.state.customDateMax;
+
+				break;
+			default:
+				dateEnd = new Date();
+
+				break;
+		}
+		dateEnd.setHours(23, 59, 59);
+		return dateEnd;
 	}
 
 	static toDateString(date) {
@@ -93,7 +145,7 @@ export default class UserRegistrationsChart extends React.Component {
 				{this.state.selection === SELECTION.CUSTOM && <div>
 					<StyledDateInput type={"date"} required={"required"} value={UserRegistrationsChart.toDateString(this.state.customDateMin)} onChange={(event) => this.setCustomDateMin(new Date(event.target.value))} max={UserRegistrationsChart.toDateString(this.state.customDateMax)}/>
 					<StyledDateInput type={"date"} required={"required"} value={UserRegistrationsChart.toDateString(this.state.customDateMax)} onChange={(event) => this.setCustomDateMax(new Date(event.target.value))} min={UserRegistrationsChart.toDateString(this.state.customDateMin)} max={UserRegistrationsChart.toDateString(new Date())}/>
-					<StyledApplyButton onClick={this.sendEvent()}>
+					<StyledApplyButton onClick={() => this.sendEvent()}>
 						Apply
 					</StyledApplyButton>
 				</div>}
