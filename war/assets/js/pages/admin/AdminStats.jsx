@@ -78,7 +78,7 @@ export default class AdminStats extends React.Component {
 			</div>
 				<div className="box box-default">
 					<div className="box-header with-border">
-						<h3 className="box-title">User registrations in the last month</h3>
+						<h3 className="box-title">User registrations over time</h3>
 					</div>
 					<div className="box-body">
 						<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise}/>
