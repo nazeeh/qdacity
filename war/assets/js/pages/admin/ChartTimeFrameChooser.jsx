@@ -1,4 +1,6 @@
 import React from 'react';
+import styled from 'styled-components';
+import './styles.css'
 
 import DropDownButton from '../../common/styles/DropDownButton.jsx';
 
@@ -25,7 +27,9 @@ export default class UserRegistrationsChart extends React.Component {
 	}
 
 	setTimeFrame(selection) {
-
+		this.setState ({
+			selection: selection
+		})
 	}
 
 	render() {
@@ -37,13 +41,25 @@ export default class UserRegistrationsChart extends React.Component {
 			{text: SELECTION.CUSTOM, onClick: () => this.setTimeFrame(SELECTION.CUSTOM)}
 		];
 
+		const CenteringDiv = styled.div `
+			display: flex
+		`;
+
+		const StyledDateInput = styled.input `
+			margin-left: 10px
+		`;
+
 		return (
-			<div>
+			<CenteringDiv>
 				<DropDownButton
-					initText={DEFAULT_SELECTION}
+					initText={this.state.selection}
 					items={items}
 					fixedWidth={'150px'}/>
-			</div>
+				{this.state.selection === SELECTION.CUSTOM && <div>
+					<StyledDateInput type={"date"} required={"required"}/>
+					<StyledDateInput type={"date"} required={"required"}/>
+				</div>}
+			</CenteringDiv>
 		);
 	}
 }
