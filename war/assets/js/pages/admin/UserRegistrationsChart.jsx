@@ -2,6 +2,7 @@ import React from 'react';
 
 import GoogleLineChart from '../../common/GoogleLineChart.jsx';
 import ChangeLogEndpoint from "../../common/endpoints/ChangeLogEndpoint";
+import ChartTimeFrameChooser from "./ChartTimeFrameChooser.jsx"
 
 export default class UserRegistrationsChart extends React.Component {
 
@@ -98,6 +99,7 @@ export default class UserRegistrationsChart extends React.Component {
 	render() {
 		return (
 			<div>
+				<ChartTimeFrameChooser/>
 				{this.state.googleChartsLoaded && this.state.userCreatedChanges ? this.renderChart() : null}
 			</div>
 		);
