@@ -11,7 +11,9 @@ export default class UserRegistrationsChart extends React.Component {
 
 		this.state = {
 			googleChartsLoaded: false,
-			userCreatedChanges: null
+			userCreatedChanges: null,
+			startDate: null,
+			endDate: null
 		};
 
 		this.props.chartScriptPromise.then(() => {
@@ -25,12 +27,10 @@ export default class UserRegistrationsChart extends React.Component {
 				});
 			});
 		});
-
-		this.init();
 	}
 
-	init() {
-		ChangeLogEndpoint.getChanges("USER", "CREATED", this.props.minDate, this.props.maxDate).then((result) => {
+	fetchChanges() {
+		ChangeLogEndpoint.getChanges("USER", "CREATED", this.state.startDate, this.state.endDate).then((result) => {
 			result.items = result.items || [];
 			this.setState({
 				userCreatedChanges: result.items
@@ -41,7 +41,7 @@ export default class UserRegistrationsChart extends React.Component {
 	getDataRows(changes) {
 		const dict = {};
 
-		for(const iteratingDate = new Date(); this.props.minDate <= iteratingDate; iteratingDate.setDate(iteratingDate.getDate() - 1)) {
+		for(const iteratingDate = new Date(this.state.endDate.getTime()); this.state.startDate <= iteratingDate; iteratingDate.setDate(iteratingDate.getDate() - 1)) {
 			dict[new Date(iteratingDate.getFullYear(), iteratingDate.getMonth(), iteratingDate.getDate()).toISOString()] = 0;
 		}
 
@@ -60,7 +60,11 @@ export default class UserRegistrationsChart extends React.Component {
 	}
 
 	setTimeFrame(startDate, endDate) {
-		//TODO
+		this.setState({
+			startDate: startDate,
+			endDate: endDate,
+			userCreatedChanges: null
+		}, () => this.fetchChanges());
 	}
 
 	renderChart() {
@@ -104,7 +108,7 @@ export default class UserRegistrationsChart extends React.Component {
 		return (
 			<div>
 				<ChartTimeFrameChooser onChangeTimeFrame={(startDate, endDate) => this.setTimeFrame(startDate, endDate)}/>
-				{this.state.googleChartsLoaded && this.state.userCreatedChanges ? this.renderChart() : null}
+				{this.state.googleChartsLoaded && this.state.userCreatedChanges && this.state.startDate && this.state.endDate ? this.renderChart() : null}
 			</div>
 		);
 	}
