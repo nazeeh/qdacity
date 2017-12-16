@@ -4,6 +4,7 @@ import './styles.css'
 
 import DropDownButton from '../../common/styles/DropDownButton.jsx';
 import {BtnDefault} from "../../common/styles/Btn.jsx";
+import StyledInput from '../../common/styles/Input.jsx';
 
 const SELECTION = {
 	WEEK: "Week",
@@ -64,7 +65,7 @@ export default class UserRegistrationsChart extends React.Component {
 
 	getDateStart() {
 		let dateStart;
-		switch(this.state.selection) {
+		switch (this.state.selection) {
 			case SELECTION.WEEK:
 				dateStart = new Date();
 				dateStart.setDate(dateStart.getDate() - 7);
@@ -90,7 +91,7 @@ export default class UserRegistrationsChart extends React.Component {
 
 				break;
 		}
-		dateStart.setHours(0,0,0,0);
+		dateStart.setHours(0, 0, 0, 0);
 		return dateStart;
 	}
 
@@ -128,15 +129,16 @@ export default class UserRegistrationsChart extends React.Component {
 		];
 
 		const CenteringDiv = styled.div `
-			display: flex
+			display: flex;
 		`;
 
-		const StyledDateInput = styled.input `
-			margin-left: 10px
+		const CustomStyledInput = StyledInput.extend `
+			margin-left: 10px;
 		`;
 
 		const StyledApplyButton = BtnDefault.extend `
-			margin-left: 10px
+			margin-left: 10px;
+			vertical-align: top;
 		`;
 
 		return (
@@ -146,8 +148,17 @@ export default class UserRegistrationsChart extends React.Component {
 					items={items}
 					fixedWidth={'150px'}/>
 				{this.state.selection === SELECTION.CUSTOM && <div>
-					<StyledDateInput type={"date"} required={"required"} value={UserRegistrationsChart.toDateString(this.state.customDateMin)} onChange={(event) => this.setCustomDateMin(new Date(event.target.value))} max={UserRegistrationsChart.toDateString(this.state.customDateMax)}/>
-					<StyledDateInput type={"date"} required={"required"} value={UserRegistrationsChart.toDateString(this.state.customDateMax)} onChange={(event) => this.setCustomDateMax(new Date(event.target.value))} min={UserRegistrationsChart.toDateString(this.state.customDateMin)} max={UserRegistrationsChart.toDateString(new Date())}/>
+					<CustomStyledInput type={"date"} required={"required"}
+									 value={UserRegistrationsChart.toDateString(this.state.customDateMin)}
+									 onChange={(event) => this.setCustomDateMin(new Date(event.target.value))}
+									 max={UserRegistrationsChart.toDateString(this.state.customDateMax)}/>
+
+					<CustomStyledInput type={"date"} required={"required"}
+									 value={UserRegistrationsChart.toDateString(this.state.customDateMax)}
+									 onChange={(event) => this.setCustomDateMax(new Date(event.target.value))}
+									 min={UserRegistrationsChart.toDateString(this.state.customDateMin)}
+									 max={UserRegistrationsChart.toDateString(new Date())}/>
+
 					<StyledApplyButton onClick={() => this.sendEvent()}>
 						Apply
 					</StyledApplyButton>
