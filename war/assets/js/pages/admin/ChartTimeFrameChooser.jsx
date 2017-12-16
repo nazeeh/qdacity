@@ -21,15 +21,41 @@ export default class UserRegistrationsChart extends React.Component {
 	constructor(props) {
 		super(props);
 
+		const dateMaxDefault = new Date();
+		const dateMinDefault = new Date();
+		dateMinDefault.setMonth(dateMinDefault.getMonth() - 1);
+
 		this.state = {
-			selection: DEFAULT_SELECTION
+			selection: DEFAULT_SELECTION,
+			customDateMin: dateMinDefault,
+			customDateMax: dateMaxDefault
 		};
 	}
 
 	setTimeFrame(selection) {
-		this.setState ({
+		this.setState({
 			selection: selection
 		})
+	}
+
+	setCustomDateMin(value) {
+		this.setState({
+			customDateMin: value
+		})
+	}
+
+	setCustomDateMax(value) {
+		this.setState({
+			customDateMax: value
+		})
+	}
+
+	static toDateString(date) {
+		const year = date.getFullYear().toString();
+		const month = (date.getMonth() + 1).toString();
+		const day = date.getDate().toString();
+
+		return year + '-' + (month[1] ? month : "0" + month[0]) + '-' + (day[1] ? day : "0" + day[0]);
 	}
 
 	render() {
@@ -56,8 +82,8 @@ export default class UserRegistrationsChart extends React.Component {
 					items={items}
 					fixedWidth={'150px'}/>
 				{this.state.selection === SELECTION.CUSTOM && <div>
-					<StyledDateInput type={"date"} required={"required"}/>
-					<StyledDateInput type={"date"} required={"required"}/>
+					<StyledDateInput type={"date"} required={"required"} value={UserRegistrationsChart.toDateString(this.state.customDateMin)} onChange={(event) => this.setCustomDateMin(new Date(event.target.value))} max={UserRegistrationsChart.toDateString(this.state.customDateMax)}/>
+					<StyledDateInput type={"date"} required={"required"} value={UserRegistrationsChart.toDateString(this.state.customDateMax)} onChange={(event) => this.setCustomDateMax(new Date(event.target.value))} min={UserRegistrationsChart.toDateString(this.state.customDateMin)} max={UserRegistrationsChart.toDateString(new Date())}/>
 				</div>}
 			</CenteringDiv>
 		);
