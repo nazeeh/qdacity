@@ -31,6 +31,9 @@ export default class UserRegistrationsChart extends React.Component {
 			customDateMin: dateMinDefault,
 			customDateMax: dateMaxDefault
 		};
+
+		//Send once initially to apply default settings
+		this.sendEvent()
 	}
 
 	setTimeFrame(selection) {
