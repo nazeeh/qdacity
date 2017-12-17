@@ -4,6 +4,7 @@ import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
+import NewExerciseForm from '../../../common/modals/NewExerciseForm';
 import Theme from '../../../common/styles/Theme.js';
 import Confirm from '../../../common/modals/Confirm';
 
@@ -55,7 +56,7 @@ export default class ExerciseList extends React.Component {
 
 	showNewExerciseModal() {
 		var _this = this;
-		var modal = new CustomForm('Create a new exercise', '');
+		var modal = new NewExerciseForm('Create a new exercise', '');
 		modal.addTextInput('name', "Exercise Name", 'Name', '');
 		modal.showModal().then(function (data) {
 			_this.createNewExercise(data.name);
