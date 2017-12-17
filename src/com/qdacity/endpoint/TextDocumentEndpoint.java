@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -34,6 +35,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
+import com.qdacity.endpoint.datastructures.TextDocumentList;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
@@ -226,7 +228,7 @@ public class TextDocumentEndpoint {
 		}
 		return textdocument;
 	}
-	
+
 	/**
 	 * This method is used for updating a list of existing entities. If an entity does not
 	 * exist in the datastore, an exception is thrown.
@@ -241,14 +243,14 @@ public class TextDocumentEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public List<TextDocument> updateTextDocuments(List<TextDocument> textdocuments, User user) throws UnauthorizedException {
+	public List<TextDocument> updateTextDocuments(TextDocumentList documentList, User user) throws UnauthorizedException {
 		List<TextDocument> persistedEntities = new ArrayList<>();
 		
-		for (TextDocument document : textdocuments) {
+		for (TextDocument document : documentList.getDocuments()) {
 			TextDocument updatedDoc = updateTextDocument(document, user);
 			persistedEntities.add(updatedDoc);
 		}
-		
+
 		return persistedEntities;
 	}	
 	

@@ -36,7 +36,9 @@ export default class DocumentsEndpoint {
 	}
 
 	static updateTextDocuments(documents) {
-		var apiMethod = gapi.client.qdacity.documents.updateTextDocuments(documents);
+		var apiMethod = gapi.client.qdacity.documents.updateTextDocuments({
+			'documents': documents
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
