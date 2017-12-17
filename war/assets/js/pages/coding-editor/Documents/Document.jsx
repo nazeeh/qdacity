@@ -21,14 +21,13 @@ const StyledDocumentItem = styled.a `
     background-color: #fff;
     border: 1px solid ;
     border-color: ${props => props.theme.borderPrimary} !important;
-    opacity: ${props => props.isDragging ? 0 : 1};
+    opacity: ${props => props.isDragging ? 0.3 : 1};
     &:hover {
         text-decoration: none;
         cursor: pointer;
         background-color: ${props => props.theme.borderPrimary};
         color: ${props => props.theme.fgPrimaryHighlight};
     }
-
 `;
 
 const documentSource = {
