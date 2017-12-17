@@ -8,6 +8,7 @@ export default class NewExerciseForm extends VexModal {
 		super();
 		this.formElements = "";
 		this.message = message;
+		this.projects = [];
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -72,7 +73,8 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
-	addDropDown() {
+	addDropDown(projects) {
+		this.projects = projects;
 		this.formElements += '<div id="projectDropDown">';
 		this.formElements += '</div>';
 	}
