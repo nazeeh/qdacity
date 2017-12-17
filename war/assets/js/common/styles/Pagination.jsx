@@ -15,6 +15,7 @@ const StyledBaseItem = styled.a `
     float: left;
     padding: 8px 0px;
     text-decoration: none;
+    user-select: none;
 `;
 
 const StyledItem = StyledBaseItem.extend `
