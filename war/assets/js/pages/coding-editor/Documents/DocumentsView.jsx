@@ -75,6 +75,7 @@ export default class DocumentsView extends React.Component {
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
 		this.swapDocuments = this.swapDocuments.bind(this);
 		this.persistSwappedDocuments = this.persistSwappedDocuments.bind(this);
+		this.getNewDocumentPosition = this.getNewDocumentPosition.bind(this);
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -262,6 +263,14 @@ export default class DocumentsView extends React.Component {
 		return activeDoc;
 	}
 
+	getNewDocumentPosition() {
+		if (this.state.documents == null || this.state.documents.length == 0) {
+			return 1;
+		}
+
+		return parseInt(this.state.documents[this.state.documents.length - 1].positionInOrder) + 1;
+	}
+
 	setDocumentWithCoding(codingID) {
 		var documents = this.state.documents;
 		for (var i in documents) {
@@ -333,6 +342,7 @@ export default class DocumentsView extends React.Component {
                     addDocument={this.addDocument}
                     removeActiveDocument={this.removeActiveDocument}
                     changeDocumentData={this.changeDocumentData}
+			        getNewDocumentPosition={this.getNewDocumentPosition}
                 />
 			);
 		} else {
