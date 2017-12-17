@@ -86,7 +86,9 @@ export default class DocumentsView extends React.Component {
 					DocumentsEndpoint.getAgreementMaps(agreement_map, project_type).then(function (resp) {
 						resp.items = resp.items || [];
 						for (var i = 0; i < resp.items.length; i++) {
-							_this.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
+							let doc = resp.items[i];
+							doc.id = doc.textDocumentID;
+							_this.addDocument(doc);
 						}
 						resolve();
 					}).catch(function (resp) {
@@ -95,7 +97,7 @@ export default class DocumentsView extends React.Component {
 				} else {
 					DocumentsEndpoint.getDocuments(project_id, project_type).then(function (items) {
 						for (var i = 0; i < items.length; i++) {
-							_this.addDocument(items[i].id, items[i].title, items[i].text.value);
+							_this.addDocument(items[i]);
 						}
 						resolve();
 					}).catch(function (resp) {
@@ -138,11 +140,8 @@ export default class DocumentsView extends React.Component {
 	}
 
 	// Adds a document and selects the new document as active
-	addDocument(pId, pTitle, pText) {
-		var doc = {};
-		doc.id = pId;
-		doc.title = pTitle;
-		doc.text = pText;
+	addDocument(doc) {
+		doc.text = doc.text.value;
 		this.state.documents.push(doc);
 		this.setState({
 			documents: this.state.documents

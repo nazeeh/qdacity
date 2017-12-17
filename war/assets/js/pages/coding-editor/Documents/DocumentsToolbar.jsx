@@ -69,7 +69,7 @@ export default class DocumentsToolbar extends React.Component {
 		doc.title = title;
 
 		DocumentsEndpoint.insertTextDocument(doc).then(function (resp) {
-			_this.props.addDocument(resp.id, resp.title, resp.text.value);
+			_this.props.addDocument(resp);
 		});
 
 	}
