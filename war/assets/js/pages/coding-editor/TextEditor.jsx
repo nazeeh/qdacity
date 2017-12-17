@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 
 import {
-    PageView
+	PageView
 } from './View/PageView.js';
 
 
@@ -21,19 +21,19 @@ const StyledTextEditor = styled.iframe `
 
 export default class TextEditor extends React.Component {
 
-    componentDidMount() {
-        this.props.initEditorCtrl();
-    }
+	componentDidMount() {
+		this.props.initEditorCtrl();
+	}
 
-    render() {
-        return (
-            <StyledContainer>
+	render() {
+		return (
+			<StyledContainer>
                 <StyledTextEditor
                     id="textEditor"
                     selectedEditor={this.props.selectedEditor}
                     showCodingView={this.props.showCodingView}
                 />
             </StyledContainer>
-        );
-    }
+		);
+	}
 }

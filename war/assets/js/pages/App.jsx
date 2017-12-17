@@ -53,20 +53,19 @@ export default class App extends React.Component {
 				return false;
 			}
 		};
-		
+
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
-		var t=new TutorialEngine(this);
+		var t = new TutorialEngine(this);
 		this.state = {
 			tutorialEngine: t,
-			tutorialState:t.tutorialState,			
-		};	
-		
+			tutorialState: t.tutorialState,
+		};
+
 		// load initial language
 		this.changeLanguage(language);
 	}
-	
-	componentDidMount()
-	{
+
+	componentDidMount() {
 		this.state.tutorialEngine.appRootDidMount();
 	}
 
@@ -80,9 +79,12 @@ export default class App extends React.Component {
 	}
 
 	render() {
-		
-		var tut={tutorialEngine:this.state.tutorialEngine, tutorialState: this.state.tutorialState};
-		
+
+		var tut = {
+			tutorialEngine: this.state.tutorialEngine,
+			tutorialState: this.state.tutorialState
+		};
+
 		return (
 			<IntlProvider locale={this.state.locale} language={this.state.language} messages={this.state.messages}>
 				<Router>
@@ -104,5 +106,5 @@ export default class App extends React.Component {
 			</IntlProvider>
 		);
 	}
-						
+
 }
