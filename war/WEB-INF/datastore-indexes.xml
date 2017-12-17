@@ -10,4 +10,9 @@
         <property name="projectID" direction="asc"/> 
         <property name="datetime" direction="asc"/> 
     </datastore-index>
+    <datastore-index kind="Change" ancestor="false" source="manual">
+        <property name="changeType" direction="asc"/>
+        <property name="objectType" direction="asc"/>
+        <property name="datetime" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>

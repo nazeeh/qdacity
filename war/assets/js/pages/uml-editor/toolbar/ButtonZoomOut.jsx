@@ -6,7 +6,7 @@ import {
 } from '../../../common/styles/Btn.jsx';
 
 const StyledZoomBtn = BtnDefault.extend `
-	margin-left: 10px;
+	border-right: none;
 `;
 
 export default class ButtonZoomOut extends React.Component {

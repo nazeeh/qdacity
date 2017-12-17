@@ -45,11 +45,12 @@ export default class Users extends React.Component {
 			_this.setState({
 				users: resp.items
 			});
+			_this.setSelectedUserId(null)
 		}).catch(function (resp) {
 			_this.setState({
 				users: []
 			});
-			window.alert(resp.code);
+			_this.setSelectedUserId(null)
 		});
 	}
 
@@ -101,7 +102,7 @@ export default class Users extends React.Component {
 							</BtnDefault>
 						</StyledSearchField>
 					</StyledUserSearch>
-					<UserList  users={this.state.users} removeUser={this.removeUser} setSelectedUserId={(userId) => this.setSelectedUserId(userId)}/>
+					<UserList  users={this.state.users} removeUser={this.removeUser} setSelectedUserId={(userId) => this.setSelectedUserId(userId)} selectedUserId={this.state.selectedUserId}/>
 					<ul id="user-list" className="list compactBoxList">
 					</ul>
 				</div>
