@@ -54,8 +54,12 @@ export default class DocumentsView extends React.Component {
 		const _this = this;
 		setupPromise.then(() => {
 			_this.setState({
-				loading: false
+				loading: false,
+				documents: _this.state.documents.sort((doc1, doc2) => { return doc1.positionInOrder - doc2.positionInOrder; })
 			});
+			
+			// Persists the order of documents if no order is persisted in the database.
+			_this.persistDocumentsOrderIfNecessary();
 		});
 
 		this.addDocument = this.addDocument.bind(this);
@@ -270,7 +274,7 @@ export default class DocumentsView extends React.Component {
 
 		}
 	}
-
+	
 	swapDocuments(dragIndex, hoverIndex) {
 		const swap = this.state.documents[dragIndex];
 
@@ -281,8 +285,37 @@ export default class DocumentsView extends React.Component {
 	}
 
 	persistSwappedDocuments(dragIndex, targetIndex) {
-		console.log('dragIndex ' + dragIndex);
-		console.log('targetIndex ' + targetIndex);
+		this.persistOrderOfDocuments();
+	}
+
+	/**
+	 * Checks if the order of documents is already persisted in the database and persists the current order if not.
+	 */
+    persistDocumentsOrderIfNecessary() {
+        let persistOrder = false;
+        
+        for (let i = 0; i < this.state.documents.length; i++) {
+            if (this.state.documents[i].positionInOrder == 0) {
+                persistOrder = true;
+            }
+        }
+        
+        if (persistOrder) {
+            persistOrderOfDocuments();
+        }
+    }
+
+    /**
+     * Persist the current order of documents in the database.
+     */
+	persistOrderOfDocuments() {
+	    for (let i = 0; i < this.state.documents.length; i++) {
+	        this.state.documents[i].positionInOrder = i + 1;
+	    }
+
+        DocumentsEndpoint.updateTextDocuments(this.state.documents).then(function (resp) {
+            // Do nothing
+        });
 	}
 
 	renderCollapseIcon() {
@@ -321,6 +354,7 @@ export default class DocumentsView extends React.Component {
 
 	renderDocuments() {
 		var _this = this;
+		
 		if (!this.state.isExpanded) {
 			return <StyledInfoBox>
               <b>Current Document: {this.getActiveDocument().title}</b>
