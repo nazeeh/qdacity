@@ -228,6 +228,31 @@ public class TextDocumentEndpoint {
 	}
 	
 	/**
+	 * This method is used for updating a list of existing entities. If an entity does not
+	 * exist in the datastore, an exception is thrown.
+	 * It uses HTTP PUT method.
+	 *
+	 * @param textdocument entities to be updated.
+	 * @return The updated entities.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+		name = "documents.updateTextDocuments",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public List<TextDocument> updateTextDocuments(List<TextDocument> textdocuments, User user) throws UnauthorizedException {
+		List<TextDocument> persistedEntities = new ArrayList<>();
+		
+		for (TextDocument document : textdocuments) {
+			TextDocument updatedDoc = updateTextDocument(document, user);
+			persistedEntities.add(updatedDoc);
+		}
+		
+		return persistedEntities;
+	}	
+	
+	/**
 	 * This method is used for applying a code to a TextDocument. If the entity does not
 	 * exist in the datastore, an exception is thrown.
 	 * It uses HTTP PUT method.
