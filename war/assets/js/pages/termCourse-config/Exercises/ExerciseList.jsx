@@ -29,6 +29,7 @@ export default class ExerciseList extends React.Component {
 		super(props);
 		this.state = {
 			exercises: [],
+			projects: [],
 			// pagination
 			currentPage: 1,
 			itemsPerPage: 5
@@ -41,12 +42,16 @@ export default class ExerciseList extends React.Component {
 	}
 
 	init() {
-		this.getExercises();
+			if (!this.userPromise) {
+				this.userPromise = this.props.account.getCurrentUser();
+				this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId());
+				this.fetchTermCourseData();
+			}
 	}
 
-	getExercises() {
+	fetchTermCourseData () {
 		var _this = this;
-		ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId()).then(function (resp) {
+		this.getExercisesPromise.then(function (resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				exercises: resp.items
@@ -138,6 +143,7 @@ export default class ExerciseList extends React.Component {
 	render() {
 		var _this = this;
 
+		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
 
 		const newExerciseButton = <StyledNewExBtn>
 

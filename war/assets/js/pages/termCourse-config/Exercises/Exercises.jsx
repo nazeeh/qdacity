@@ -17,7 +17,7 @@ export default class Exercises extends React.Component {
 				</div>
 				<div className="box-body">
 					<div>
-						<ExerciseList termCourse={this.props.termCourse}/>
+						<ExerciseList termCourse={this.props.termCourse} account={this.props.account}/>
 					</div>
 				</div>
 		</div>);

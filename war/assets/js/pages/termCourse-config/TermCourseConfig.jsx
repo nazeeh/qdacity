@@ -147,7 +147,7 @@ export default class TermCourseConfig extends React.Component {
 		if (!isUserTermCourseOwner) {
 			return '';
 		} else {
-			return <Exercises termCourse={this.state.termCourse}/>
+			return <Exercises termCourse={this.state.termCourse} account = {this.props.account}/>
 		}
 	}
 
