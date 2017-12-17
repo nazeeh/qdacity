@@ -34,6 +34,7 @@ const StyledSeparator = StyledBaseItem.extend `
     cursor: default;
     background-color: ${props => props.theme.bgDefault};
     color: ${props => props.theme.fgDefault};
+    font-weight: bold;
     
     &:hover {
         text-decoration: none;
