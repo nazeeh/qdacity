@@ -62,6 +62,10 @@ export default class DocumentsView extends React.Component {
 
 			// Persists the order of documents if no order is persisted in the database.
 			_this.persistDocumentsOrderIfNecessary();
+
+			if (this.state.documents[0].id) {
+				_this.setActiveDocument(this.state.documents[0].id);
+			}
 		});
 
 		this.addDocument = this.addDocument.bind(this);
