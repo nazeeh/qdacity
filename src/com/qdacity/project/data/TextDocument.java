@@ -33,10 +33,7 @@ public class TextDocument implements Serializable {
 	Text text;
 
 	@Persistent
-	Long previousDocumentId;
-	
-	@Persistent
-	Long nextDocumentId;
+	Long positionInOrder;
 	
 	public Long getId() {
 		return id;
@@ -70,19 +67,11 @@ public class TextDocument implements Serializable {
 		this.projectID = projectID;
 	}
 
-	public Long getPreviousDocumentId() {
-		return previousDocumentId;
+	public Long getPositionInOrder() {
+		return positionInOrder;
 	}
 
-	public void setPreviousDocumentId(Long previousDocumentId) {
-		this.previousDocumentId = previousDocumentId;
+	public void setPositionInOrder(Long positionInOrder) {
+		this.positionInOrder = positionInOrder;
 	}
-
-	public Long getNextDocumentId() {
-		return nextDocumentId;
-	}
-
-	public void setNextDocumentId(Long nextDocumentId) {
-		this.nextDocumentId = nextDocumentId;
-	}	
 }
