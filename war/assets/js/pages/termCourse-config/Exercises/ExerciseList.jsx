@@ -57,6 +57,7 @@ export default class ExerciseList extends React.Component {
 	showNewExerciseModal() {
 		var _this = this;
 		var modal = new NewExerciseForm('Create a new exercise', '');
+		modal.addDropDown();
 		modal.addTextInput('name', "Exercise Name", 'Name', '');
 		modal.showModal().then(function (data) {
 			_this.createNewExercise(data.name);

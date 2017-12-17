@@ -72,6 +72,10 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
+	addDropDown() {
+		this.formElements += '<div id="projectDropDown">';
+		this.formElements += '</div>';
+	}
 	showModal() {
 		var _this = this;
 		var promise = new Promise(
@@ -97,6 +101,7 @@ export default class NewExerciseForm extends VexModal {
 						} else reject(data);
 					}
 				});
+				ReactDOM.render(<DropDownButton/>, document.getElementById('projectDropDown'));
 			}
 		);
 
