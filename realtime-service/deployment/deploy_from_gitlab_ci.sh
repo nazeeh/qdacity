@@ -4,11 +4,15 @@
 echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
 gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
 
+# if COMPUTE_ENGINE_ZONE is not set in environment, fallback to us-central1-c
+if [ "$COMPUTE_ENGINE_ZONE" = "" ]; then
+  COMPUTE_ENGINE_ZONE='us-central1-c'
+fi
+
 # Get status of compute instance
-description=`gcloud \
+description=`gcloud compute instances describe realtime-service \
+  --zone=$COMPUTE_ENGINE_ZONE \
   --project=$PROJECT_ID_PRODUCTION \
-  compute instances describe realtime-service \
-    --zone=us-central1-c
   2> /dev/null`;
 status=`echo "$description" | grep status | awk '{ print $2 }'`;
 
@@ -22,22 +26,19 @@ fi
 rm -rf node_modules
 
 # Get .env from Gitlab secret variables
-echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
+echo "$RTCSVC_ENV" | sed -e 's/\r/\n/g' > .env
 
 # Upload data to server
-gcloud \
+gcloud compute scp ./ ubuntu@realtime-service:/home/ubuntu/realtime-service/ \
+  --recurse \
   --quiet \
-  --project=$PROJECT_ID_PRODUCTION \
-  compute scp \
-    --zone=us-central1-c \
-    --recurse \
-    ./ ubuntu@realtime-service:/home/ubuntu/realtime-service/
+  --zone=$COMPUTE_ENGINE_ZONE \
+  --project=$PROJECT_ID_PRODUCTION;
 
 # Run startup script on server
-gcloud \
+gcloud compute ssh ubuntu@realtime-service \
+  --command="bash /home/ubuntu/realtime-service/deployment/files/basic_setup.sh" \
   --quiet \
-  --project=$PROJECT_ID_PRODUCTION \
-  compute ssh ubuntu@realtime-service \
-    --zone=us-central1-c \
-    --command="bash /home/ubuntu/realtime-service/startup.sh"
+  --zone=$COMPUTE_ENGINE_ZONE \
+  --project=$PROJECT_ID_PRODUCTION;
 
