@@ -56,23 +56,28 @@ export default class Pagination extends React.Component {
 		};
 	}
 
+	getSelectedPageNumber() {
+		return this.state.selectedPageNumber;
+	}
+
+
+	isItemActive(pageNumber) {
+		return pageNumber == this.state.selectedPageNumber;
+	}
+
 	selectPage(pageNumber) {
 		// TODO VALIDATE
 		this.setState({
 			selectedPageNumber: pageNumber
+		}, () => {
+			if (this.props.selectedPage != null) {
+				this.props.selectedPage(pageNumber);
+			}
 		});
-
-		if (this.props.selectedPage != null) {
-			this.props.selectedPage(pageNumber);
-		}
 	}
 
 	clickItem(pageNumber) {
 		this.selectPage(pageNumber);
-	}
-
-	isItemActive(pageNumber) {
-		return pageNumber == this.state.selectedPageNumber;
 	}
 
 	renderSeparator() {
