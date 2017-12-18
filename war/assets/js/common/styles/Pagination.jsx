@@ -10,7 +10,7 @@ const StyledContainer = styled.ul `
 `;
 
 const StyledBaseItem = styled.a `
-    width: 50px;
+    width: 45px;
     text-align: center;
     float: left;
     padding: 8px 0px;
