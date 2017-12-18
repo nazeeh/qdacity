@@ -30,7 +30,7 @@ public class UserMigrationEmailNotifier implements DeferredTask {
 	
 	@Override
 	public void run() {
-		notifyAllUsersPerEmail("http://localhost:8888/user-migration");
+		notifyAllUsersPerEmail(href);
 	}
 
 	@SuppressWarnings("unchecked")

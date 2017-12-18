@@ -38,7 +38,7 @@ public class UserMigrationEmailSender implements DeferredTask {
 				+	"We have geat news for you! We will soon add some new features to QDAcity.<br>"
 				+ 	"This includes also the possibility to sign-in with other Social Providers than Google (or even with only your Email and password).<br>"
 				+	"<br>"
-				+ 	"Because of this, every user needs to <strong>migrate his/her account</strong>. No worries, it ist just clicking the link and following the instructions (~1min)."
+				+ 	"Because of this, every user needs to <strong>migrate his/her account</strong>. No worries, it is just clicking the link and following the instructions (~1min)."
 				+	"<br>"
 				+	"<a href=" + href + ">" + href + "</a>"
 				+	"<br>"
