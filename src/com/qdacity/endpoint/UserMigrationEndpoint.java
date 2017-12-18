@@ -179,7 +179,7 @@ public class UserMigrationEndpoint {
 		try {
 			Query query = mgr.newQuery(UserLoginProviderInformation.class);
 			query.setFilter("externalUserId == userIdParam && provider == providerParam");
-			query.declareParameters("String userIdParamm, String providerParam");
+			query.declareParameters("String userIdParam, String providerParam");
 			
 			List<UserLoginProviderInformation> results = (List<UserLoginProviderInformation>) query.execute(userId, providerType);
 			

@@ -269,7 +269,7 @@ export default class UserMigration extends React.Component {
                 <div className="col-xs-12">
                     <div className="col-md-3"/>
                     <div className="col-md-4">
-                        <StyledButton className="btn btn-primary col-xs-3" onClick={() => {this.migrate()}}>
+                        <StyledButton className="btn btn-primary col-xs-3" onClick={() => {this.migrate();}}>
                             Migrate Now!
                         </StyledButton>
                     </div>
