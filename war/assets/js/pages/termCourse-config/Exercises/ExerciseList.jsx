@@ -2,6 +2,7 @@ import React from 'react';
 
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
+import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
 import NewExerciseForm from '../../../common/modals/NewExerciseForm';
@@ -51,10 +52,16 @@ export default class ExerciseList extends React.Component {
 
 	fetchTermCourseData () {
 		var _this = this;
+		var projects = [];
 		this.getExercisesPromise.then(function (resp) {
 			resp.items = resp.items || [];
-			_this.setState({
-				exercises: resp.items
+			_this.userPromise.then(function (userAccount) {
+				ProjectEndpoint.listProjectByUserId(userAccount.id).then(function (projectsResp) {
+					_this.setState({
+						exercises: resp.items,
+						projects: projectsResp
+					});
+				});
 			});
 		});
 	}
@@ -62,7 +69,7 @@ export default class ExerciseList extends React.Component {
 	showNewExerciseModal() {
 		var _this = this;
 		var modal = new NewExerciseForm('Create a new exercise', '');
-		modal.addDropDown();
+		modal.addDropDown(this.state.projects);
 		modal.addTextInput('name', "Exercise Name", 'Name', '');
 		modal.showModal().then(function (data) {
 			_this.createNewExercise(data.name);
