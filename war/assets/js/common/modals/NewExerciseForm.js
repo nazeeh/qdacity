@@ -9,7 +9,6 @@ export default class NewExerciseForm extends VexModal {
 		this.message = message;
 		this.projects = [];
 		this.projectNameList = [];
-		this.booly = true;
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -33,6 +32,7 @@ export default class NewExerciseForm extends VexModal {
 	addSelect(name, projects, label, initialValue) {
 		var _this = this;
 		var projectNames = [];
+
 		projects.items.forEach(function (project) {
 			projectNames.push(project.name);
 		});
@@ -54,11 +54,35 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements += '</div>';
 		this.formElements += '</div>';
 
+
 	}
 
-	addProjectRevisions (projectID) {
-		//this.addSelect('revision projects', ["p1", "p2"], "Select a project", "p1");
+	addProjectRevisions(name, revisions, label, initialValue) {
+		var _this = this;
+		var revisionNames = [];
+		revisions.items.forEach(function (revision) {
+			revisionNames.push(revision.name);
+		});
+		var options = revisionNames;
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += label + ': ';
+		this.formElements += '<select name="' + name + '">';
+
+		var isDefault = function (el) {
+			return ((el == initialValue) ? 'selected="selected"' : '');
+		}
+
+		options.forEach(function (el) {
+			_this.formElements += '<option value="' + el + '" ' + isDefault(el) + '>' + el + '</option>';
+		});
+		this.formElements += '</select>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+
 	}
+
 
 	addCheckBox(name, label, checked, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';

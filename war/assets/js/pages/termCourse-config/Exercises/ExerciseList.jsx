@@ -70,9 +70,12 @@ export default class ExerciseList extends React.Component {
 		var _this = this;
 		var modal = new NewExerciseForm('Create a new exercise', '');
 		modal.addSelect('projects', this.state.projects, "Select a project", this.state.projects.items[0].name);
-		modal.addTextInput('name', "Exercise Name", 'Name', '');
-		modal.showModal().then(function (data) {
-			_this.createNewExercise(data.name);
+		ProjectEndpoint.listRevisions(this.state.projects.items[0].id).then(function (revisions) {
+			modal.addProjectRevisions('revisions', revisions, "Select a revision", revisions.items[0].name);
+			modal.addTextInput('name', "Exercise Name", 'Name', '');
+			modal.showModal().then(function (data) {
+				_this.createNewExercise(data.name);
+			});
 		});
 	}
 
