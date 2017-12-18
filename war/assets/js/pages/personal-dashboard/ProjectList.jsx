@@ -8,11 +8,10 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 import Confirm from '../../common/modals/Confirm';
+import Pagination from '../../common/styles/Pagination.jsx';
 
 import {
 	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
 	StyledListItemBtn,
 	StyledListItemPrimary,
 	StyledListItemDefault
@@ -46,19 +45,19 @@ export default class ProjectList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			// pagination
-			currentPage: 1,
 			itemsPerPage: 8,
 			search: ''
 		};
 
+		this.pagination = null;
+
 		this.init();
 
-		this.paginationClick = this.paginationClick.bind(this);
 		this.updateSearch = this.updateSearch.bind(this);
 		this.showNewProjectModal = this.showNewProjectModal.bind(this);
 		this.createNewProject = this.createNewProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
+		this.selectedPage = this.selectedPage.bind(this);
 	}
 
 	init() {
@@ -93,10 +92,8 @@ export default class ProjectList extends React.Component {
 		return projects;
 	}
 
-	paginationClick(event) {
-		this.setState({
-			currentPage: Number(event.target.id)
-		});
+	selectedPage() {
+		this.forceUpdate();
 	}
 
 	leaveProject(e, project, index) {
@@ -132,10 +129,6 @@ export default class ProjectList extends React.Component {
 			search: e.target.value
 		});
 
-	}
-
-	isActivePage(page) {
-		return (page == this.state.currentPage);
 	}
 
 	isValidationProject(project) {
@@ -224,10 +217,11 @@ export default class ProjectList extends React.Component {
 				return project.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
 			}
 		);
-		const lastItem = this.state.currentPage * this.state.itemsPerPage;
+		const selectedPageNumber = this.pagination ? this.pagination.getSelectedPageNumber() : 1;
+		const lastItem = selectedPageNumber * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
-
+		
 		function prjClick(prj) {
 			_this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
 		}
@@ -257,33 +251,14 @@ export default class ProjectList extends React.Component {
 			}
 		})
 
-		//Render Pagination
-		const pageNumbers = [];
-		for (let i = 1; i <= Math.ceil(this.props.projects.length / this.state.itemsPerPage); i++) {
-			pageNumbers.push(i);
-		}
-		const renderPagination = pageNumbers.map(pageNo => {
-			return (
-				<StyledPaginationItem
-	              key={pageNo}
-	              id={pageNo}
-	              onClick={this.paginationClick}
-				  active={this.isActivePage(pageNo)}
-	            >
-	              {pageNo}
-			  </StyledPaginationItem>
-			);
-		});
-
 		return (
 			<div>
 				{projectListMenu}
 				<StyledProjectList>
 					{renderListItems}
 	            </StyledProjectList>
-	            <StyledPagination>
-					{renderPagination}
-            	</StyledPagination>
+					
+			    <Pagination ref={(r) => {if (r) this.pagination = r}} numberOfItems={filteredList.length} itemsPerPage={this.state.itemsPerPage} selectedPage={this.selectedPage} />
      		</div>
 		);
 	}
