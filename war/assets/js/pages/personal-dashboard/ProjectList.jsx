@@ -11,6 +11,13 @@ import Confirm from '../../common/modals/Confirm';
 import Pagination from '../../common/styles/Pagination.jsx';
 
 import {
+	ItemList,
+	ListItemBtn,
+	ListItemPrimary,
+	ListItemDefault
+} from '../../common/styles/ItemList.jsx';
+
+import {
 	StyledBoxList,
 	StyledListItemBtn,
 	StyledListItemPrimary,
@@ -58,6 +65,7 @@ export default class ProjectList extends React.Component {
 		this.createNewProject = this.createNewProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
 		this.selectedPage = this.selectedPage.bind(this);
+		this.renderProject = this.renderProject.bind(this);
 	}
 
 	init() {
@@ -165,6 +173,15 @@ export default class ProjectList extends React.Component {
 		});
 	}
 
+	editorClick(e, prj, index) {
+		e.stopPropagation();
+		this.props.history.push('/CodingEditor?project=' + prj.id + '&type=' + prj.type);
+	}
+
+	projectClick(prj) {
+		this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
+	}
+
 	renderDeleteBtn(project, index) {
 
 		if (typeof project.revisionID == "undefined") {
@@ -176,9 +193,35 @@ export default class ProjectList extends React.Component {
 		}
 	}
 
-	editorClick(e, prj, index) {
-		e.stopPropagation();
-		this.props.history.push('/CodingEditor?project=' + prj.id + '&type=' + prj.type);
+	renderProjectContent(project, index) {
+		return ([
+			<span>{project.name}</span>,
+			<div>
+                {this.renderDeleteBtn(project, index)}
+                <StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+                    <i className="fa fa-sign-out"></i>
+                </StyledListItemBtn>
+                <StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+                    <i className="fa fa-tags"></i>
+                </StyledListItemBtn>
+            </div>
+		]);
+	}
+
+	renderProject(project, index) {
+		if (this.isValidationProject(project)) {
+			return (
+				<StyledListItemDefault key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
+                    { this.renderProjectContent(project, index) }
+                </StyledListItemDefault>
+			);
+		} else {
+			return (
+				<StyledListItemPrimary key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
+                    { this.renderProjectContent(project, index)} 
+                </StyledListItemPrimary>
+			);
+		}
 	}
 
 	render() {
@@ -211,7 +254,7 @@ export default class ProjectList extends React.Component {
 
 		</StyledProjectListMenu>
 
-		//Rebder List Items
+		//Render List Items
 		var filteredList = this.props.projects.filter(
 			(project) => {
 				return project.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
@@ -221,41 +264,14 @@ export default class ProjectList extends React.Component {
 		const lastItem = selectedPageNumber * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
-		
-		function prjClick(prj) {
-			_this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
-		}
-		const renderListItemContent = (project, index) => {
-			return ([
-				<span>{project.name}</span>,
-				<div>
-				{this.renderDeleteBtn(project, index)}
-				<StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-					<i className="fa fa-sign-out"></i>
-				</StyledListItemBtn>
-				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-					<i className="fa fa-tags"></i>
-				</StyledListItemBtn>
-			</div>
-			])
-		}
-		const renderListItems = itemsToDisplay.map((project, index) => {
-			if (this.isValidationProject(project)) {
-				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)} clickable={true}>
-						{renderListItemContent(project, index)}
-					</StyledListItemDefault>;
-			} else {
-				return <StyledListItemPrimary key={project.id} onClick={() => prjClick(project)} clickable={true}>
-						{renderListItemContent(project, index)}
-					</StyledListItemPrimary>;
-			}
-		})
 
 		return (
 			<div>
 				{projectListMenu}
+				
 				<StyledProjectList>
-					{renderListItems}
+					<ItemList items={itemsToDisplay} renderItem={this.renderProject}>
+				    </ItemList>
 	            </StyledProjectList>
 					
 			    <Pagination ref={(r) => {if (r) this.pagination = r}} numberOfItems={filteredList.length} itemsPerPage={this.state.itemsPerPage} selectedPage={this.selectedPage} />
