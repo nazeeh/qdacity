@@ -134,6 +134,10 @@ export default class UserRegistrationsChart extends React.Component {
 
 		const CustomStyledInput = StyledInput.extend `
 			margin-left: 10px;
+			::-webkit-inner-spin-button {
+				-webkit-appearance: none;
+				display: none;
+			}
 		`;
 
 		const StyledApplyButton = BtnDefault.extend `

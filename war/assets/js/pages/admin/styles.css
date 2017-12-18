@@ -5,8 +5,3 @@
  .block{
    display:block;
  }
-
-input[type=date]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    display: none;
-}
