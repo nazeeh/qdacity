@@ -9,6 +9,7 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements = "";
 		this.message = message;
 		this.projects = [];
+		this.projectNameList = [];
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -75,6 +76,13 @@ export default class NewExerciseForm extends VexModal {
 
 	addDropDown(projects) {
 		this.projects = projects;
+		var projectNameList = [];
+		projects.items.forEach(function (project) {
+			projectNameList.push({
+				text: project.name
+			});
+		});
+		this.projectNameList = projectNameList;
 		this.formElements += '<div id="projectDropDown">';
 		this.formElements += '</div>';
 	}
@@ -103,7 +111,7 @@ export default class NewExerciseForm extends VexModal {
 						} else reject(data);
 					}
 				});
-				ReactDOM.render(<DropDownButton/>, document.getElementById('projectDropDown'));
+				ReactDOM.render(<DropDownButton items = {_this.projectNameList} initText = {_this.projectNameList[0].text}/>, document.getElementById('projectDropDown'));
 			}
 		);
 
