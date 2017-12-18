@@ -28,9 +28,6 @@ export default class AdminStats extends React.Component {
 
 	render() {
 		var _this = this;
-		const userRegistrationMaxDate = new Date();
-		const userRegistrationMinDate = new Date();
-		userRegistrationMinDate.setMonth(userRegistrationMinDate.getMonth() - 1);
 		return (
 			<div>
 				<div className="box box-default">
@@ -81,10 +78,10 @@ export default class AdminStats extends React.Component {
 			</div>
 				<div className="box box-default">
 					<div className="box-header with-border">
-						<h3 className="box-title">User registrations in the last month</h3>
+						<h3 className="box-title">User registrations over time</h3>
 					</div>
 					<div className="box-body">
-						<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise} minDate={userRegistrationMinDate} maxDate={userRegistrationMaxDate}/>
+						<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise}/>
 					</div>
 				</div>
 			</div>
