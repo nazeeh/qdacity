@@ -3,6 +3,7 @@ package com.qdacity.endpoint;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -99,24 +100,6 @@ public class UserMigrationEndpoint {
 		return user;
 	}
 	
-	/**
-	 * Required for checking if the logged in account is registered at QDAcity on client site.
-	 * @param loggedInUser
-	 * @return
-	 * @throws UnauthorizedException
-	 */
-	@ApiMethod(
-			name = "getOldAppengineUser",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
-	public com.google.appengine.api.users.User getOldUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		if(loggedInUser == null) {
-			throw new UnauthorizedException("The User could not be authenticated");
-		}
-		return loggedInUser;
-	}
-	
 	@ApiMethod(
 			name = "isOldUserRegistered",
 			scopes = { Constants.EMAIL_SCOPE },
@@ -152,6 +135,10 @@ public class UserMigrationEndpoint {
 	 * @throws ConflictException if the old user is already migrated or the new user does already exist.
 	 */
 	protected void doMigrateFromGoogleIdentityToCustomAuthentication(com.google.appengine.api.users.User oldUser, AuthenticatedUser newUser) throws UnauthorizedException, ConflictException {
+		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Trying to migrate user with old id: " + oldUser.getUserId());
+		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "to user with id: " + newUser.getId() + " and provider: " + newUser.getProvider());
+		
+		
 		// pre: oldUser must exist in db -> user-id == oldUser.userId
 		User dbUser = fetchOldUser(oldUser);
 		if(dbUser == null) {
@@ -188,22 +175,23 @@ public class UserMigrationEndpoint {
 	
 	private boolean existsNewUser(String userId, LoginProviderType providerType) {
 		PersistenceManager mgr = getPersistenceManager();
-		boolean contains = true;
+		boolean exists = false;
 		try {
 			Query query = mgr.newQuery(UserLoginProviderInformation.class);
 			query.setFilter("externalUserId == userIdParam && provider == providerParam");
 			query.declareParameters("String userIdParamm, String providerParam");
 			
 			List<UserLoginProviderInformation> results = (List<UserLoginProviderInformation>) query.execute(userId, providerType);
-			if(results.isEmpty()) {
-				contains = false;
+			
+			if(!results.isEmpty()) {
+				exists = true;
 			}
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
-			contains = false;
+			exists = false;
 		} finally {
 			mgr.close();
 		}
-		return contains;
+		return exists;
 	}
 	
 	private boolean hasLoginProviderInformation(User user) {

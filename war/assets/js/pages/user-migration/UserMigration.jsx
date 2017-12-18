@@ -69,9 +69,9 @@ export default class UserMigration extends React.Component {
 			name: '',
 			email: '',
             picSrc: '',
-            isSignedIn: false,
-            isAlreadyMigrated: false,
-            isRegistered: false
+            isSignedIn: null,
+            isAlreadyMigrated: null,
+            isRegistered: null
         };
 
         this.access_token = null;
@@ -80,6 +80,8 @@ export default class UserMigration extends React.Component {
 
         const _this = this;
         this.props.account.addAuthStateListener(function(payload) {
+            console.log('auth state changed:');
+            console.log(payload);
             // update on every auth state change
             if(!! payload.authResponse) {
                 _this.access_token = payload.authResponse.access_token;
@@ -100,22 +102,19 @@ export default class UserMigration extends React.Component {
                     name: "",
                     email: "",
                     picSrc: "",
-                    isSignedIn: false,
-                    isAlreadyMigrated: false,
-                    isRegistered: false
+                    isSignedIn: null,
+                    isAlreadyMigrated: null,
+                    isRegistered: null
                 });
                 return;
             }
             const _this = this;
             this.props.account.getProfile().then((profile) => {
-                _this.setState({
-                    name: profile.displayName,
-                    email: profile.email,
-                    picSrc: profile.thumbnail,
-                    isSignedIn: loginStatus,
-                    isAlreadyMigrated: false,
-                    isRegistered: false
-                });
+                _this.state.name = profile.displayName;
+                _this.state.email = profile.email;
+                _this.state.picSrc = profile.thumbnail;
+                _this.state.isSignedIn = loginStatus;
+                _this.setState(_this.state);
                 _this.checkMigrationPreconditions();
             })
 		}
@@ -128,7 +127,11 @@ export default class UserMigration extends React.Component {
         gapi.client.setToken({
             access_token: this.access_token
         });
+        console.log('preconditions: access_token');
+        console.log(this.access_token);
         gapi.client.qdacityusermigration.isOldUserRegistered({}).execute((resp) => {
+            console.log('old user registered?');
+            console.log(resp);
             _this.state.isRegistered = resp.value;
             _this.setState(_this.state);
             
@@ -253,7 +256,7 @@ export default class UserMigration extends React.Component {
         );
 
         const PreconditionsStatus = ({fulfilled}) => (
-            fulfilled ? <StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> : <StyledPreconditionsStatus className="fa fa-times" aria-hidden="true" />
+            fulfilled === null ? <StyledPreconditionsStatus className="fa fa-question" aria-hidden="true" /> : fulfilled ? <StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> : <StyledPreconditionsStatus className="fa fa-times" aria-hidden="true" />
         );
         const MigrationNotPossible = ({show}) => (
             show ? <div>
@@ -265,7 +268,7 @@ export default class UserMigration extends React.Component {
             show ? <div>
                 <div className="col-xs-12">
                     <div className="col-md-3"/>
-                    <div className="col-md-2">
+                    <div className="col-md-4">
                         <StyledButton className="btn btn-primary col-xs-3" onClick={() => {this.migrate()}}>
                             Migrate Now!
                         </StyledButton>
