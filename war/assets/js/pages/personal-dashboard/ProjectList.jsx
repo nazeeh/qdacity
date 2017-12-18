@@ -222,8 +222,6 @@ export default class ProjectList extends React.Component {
 	render() {
 		var _this = this;
 
-		//Render Components
-
 		//Render search and newPrjBtn
 		const projectListMenu = <StyledProjectListMenu>
 			<StyledSearchField className="searchfield" id="searchform">
@@ -249,7 +247,7 @@ export default class ProjectList extends React.Component {
 
 		</StyledProjectListMenu>
 
-		//Render List Items
+		// Filter list
 		var filteredList = this.props.projects.filter(
 			(project) => {
 				return project.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
