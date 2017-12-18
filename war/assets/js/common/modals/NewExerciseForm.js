@@ -1,6 +1,5 @@
 import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
-import DropDownButton from '../../common/styles/DropDownButton.jsx';
 
 export default class NewExerciseForm extends VexModal {
 
@@ -74,18 +73,7 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
-	addDropDown(projects) {
-		this.projects = projects;
-		var projectNameList = [];
-		projects.items.forEach(function (project) {
-			projectNameList.push({
-				text: project.name
-			});
-		});
-		this.projectNameList = projectNameList;
-		this.formElements += '<div id="projectDropDown">';
-		this.formElements += '</div>';
-	}
+
 	showModal() {
 		var _this = this;
 		var promise = new Promise(
@@ -111,7 +99,6 @@ export default class NewExerciseForm extends VexModal {
 						} else reject(data);
 					}
 				});
-				ReactDOM.render(<DropDownButton items = {_this.projectNameList} initText = {_this.projectNameList[0].text}/>, document.getElementById('projectDropDown'));
 			}
 		);
 
