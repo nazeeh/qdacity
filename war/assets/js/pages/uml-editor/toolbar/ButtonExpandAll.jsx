@@ -1,13 +1,10 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
-
-const StyledButton = BtnDefault.extend `
-	margin-left: 25px;
-`;
 
 export default class ButtonExpandAll extends React.Component {
 
@@ -27,10 +24,10 @@ export default class ButtonExpandAll extends React.Component {
 		const _this = this;
 
 		return (
-			<StyledButton title="Expands all classes." onClick={_this.buttonClicked}>
+			<BtnDefault title="Expands all classes." onClick={_this.buttonClicked}>
 		        <i className="fa fa-plus-square-o"></i>
-		        <span>Expand all</span>
-	        </StyledButton>
+		        <span><FormattedMessage id='buttonexpandall.expand_all' defaultMessage='Expand all' /></span>
+	        </BtnDefault>
 		);
 	}
 

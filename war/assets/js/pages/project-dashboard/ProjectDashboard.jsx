@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import Project from './Project';
@@ -135,7 +136,9 @@ export default class ProjectDashboard extends React.Component {
 						<ProjectStats  project={this.state.project} />
 						<div className="box box-default">
 							<div className="box-header with-border">
-							<h3 className="box-title">Intercoder Agreement</h3>
+							<h3 className="box-title">
+								<FormattedMessage id='projectdashboard.intercoder_agreement' defaultMessage='Intercoder Agreement' />
+							</h3>
 							</div>
 							<div className="box-body">
 								{this.renderAgreementStats()}

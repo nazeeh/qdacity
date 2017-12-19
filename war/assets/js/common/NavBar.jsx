@@ -1,11 +1,15 @@
-import React from 'react'
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
-
 import Account from './Account.jsx';
 import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
 
 const StyledAccountTab = styled.li `
 	display: ${props => props.loggedIn ? 'block' : 'none'} !important;
+`;
+
+const StyledHelpTab = styled.li `
+	display: block;
 `;
 
 const StyledSigninTab = styled.li `
@@ -14,6 +18,15 @@ const StyledSigninTab = styled.li `
 
 const StyledNavbarItem = styled.a `
 	color: ${props => props.theme.defaultText} !important;
+`;
+
+const StyledDropdownLinks = styled.div `
+	display: ${props => ((!props.showOnlyIfLoggedIn) || (props.showOnlyIfLoggedIn && props.loggedIn))  ? 'block' : 'none'};
+	background:#efe8e8;
+	margin: 5px;
+	&:hover {
+      background: #dcdada !important;
+    }
 `;
 
 export default class NavBar extends React.Component {
@@ -40,6 +53,12 @@ export default class NavBar extends React.Component {
 	showSigninDropdown() {
 		document.getElementById("signinView").classList.toggle("show");
 	}
+	
+	showHelpDropdown() {
+		document.getElementById("helpView").classList.toggle("show");
+	}
+	
+	
 
     initializeAccount(c) {
 		this.account = c;
@@ -58,35 +77,52 @@ export default class NavBar extends React.Component {
 	}
 
 	render() {
+		
+		var isLoggedIn=this.account.isSignedIn && this.account.isSignedIn();
+		
 		return (
 			<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
 					<div className="container topnav">
 						<div className="navbar-header">
 							<button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-								<span className="sr-only">Toggle navigation</span> <span className="icon-bar"></span> <span className="icon-bar"></span> <span className="icon-bar"></span>
+								<span className="sr-only"><FormattedMessage id="navbar.toggle_navigation" defaultMessage='Toggle navigation' /></span> <span className="icon-bar"></span> <span className="icon-bar"></span> <span className="icon-bar"></span>
 							</button>
 							<StyledNavbarItem className="navbar-brand topnav clickable" onClick={this.redirectToPersonalDashbaord}>QDAcity</StyledNavbarItem>
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
-								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
+								<StyledHelpTab loggedIn={isLoggedIn} className="dropdown">
+									<StyledNavbarItem className="dropdownToggle clickable" onClick={function(){this.showHelpDropdown();}.bind(this)}>Help</StyledNavbarItem>
+									<div id="helpView" className="dropdown-menu dropdownContent">
+										<StyledDropdownLinks loggedIn={isLoggedIn} className="clickable" onClick={function(){alert("Coming Soon...");}}>		
+											<div>Faq</div>
+										</StyledDropdownLinks>
+										<StyledDropdownLinks showOnlyIfLoggedIn loggedIn={isLoggedIn} className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
+											<div>Tutorial Overview</div>	
+										</StyledDropdownLinks>
+									</div>
+								</StyledHelpTab>
+								<StyledAccountTab loggedIn={isLoggedIn}  className="dropdown">
 									<StyledNavbarItem  className="dropdownToggle clickable" onClick={this.showAccountDropdown}>
-										Account <b className="caret"></b>
+										<FormattedMessage id="navbar.account" defaultMessage='Account' /> <b className="caret"></b>
 									</StyledNavbarItem>
 			 						<div id="accountView" className="dropdown-menu dropdownContent">
 										<Account ref={this.initializeAccount} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback} history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
-								<StyledSigninTab  loggedIn={this.account.isSignedIn && this.account.isSignedIn()} className="dropdown">
+								<StyledSigninTab  loggedIn={isLoggedIn} className="dropdown">
 									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showSigninDropdown}>
-											Sign In <b className="caret"></b>
+											<FormattedMessage id="navbar.sign_in" defaultMessage='Sign in' /> <b className="caret"></b>
 										</StyledNavbarItem>
 										<ul  id="signinView" className="dropdown-menu dropdownContent">
 											<li>
 												<div className="navbar-content">
 													<div className="row">
 														<div className="col-md-12">
-															<p>Click <a href="/">here</a> to get to Home</p>
+															<a id="navBtnSigninGoogle" className="btn  btn-primary" href="#">
+																<i className="fa fa-google fa-2x pull-left"></i>
+																<span ><FormattedMessage id="navbar.google_sign_in" defaultMessage='Sign in with Google' /></span>
+															</a>
 														</div>
 													</div>
 												</div>

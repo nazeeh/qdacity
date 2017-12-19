@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 
@@ -134,7 +135,7 @@ export default class CourseDashboard extends React.Component {
 				<div>
 					<div className="box box-default">
 						<div className="box-header with-border">
-							<h3 className="box-title">Terms</h3>
+							<h3 className="box-title"><FormattedMessage id='coursedashboard.terms' defaultMessage='Terms' /></h3>
 						</div>
 						<div className="box-body">
 							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse} history={this.props.history}/>

@@ -1,4 +1,6 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
@@ -13,13 +15,19 @@ export default class ProjectStats extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			docCount: "N/A",
-			codeCount: "N/A",
-			codingCount: "N/A",
-			saturation: "N/A"
+			docCount: undefined,
+			codeCount: undefined,
+			codingCount: undefined,
+			saturation: undefined
 		};
 
 		this.init();
+		this.formatNotAvailable = this.formatNotAvailable.bind(this);
+	}
+
+	formatNotAvailable(value = undefined) {
+		const {formatMessage} = IntlProvider.intl;
+		return value || formatMessage({ id: 'projectstats.not_available', defaultMessage: 'N/A' });
 	}
 
 	init() {
@@ -45,7 +53,7 @@ export default class ProjectStats extends React.Component {
 		return (
 			<div className="box box-default">
 				<div className="box-header with-border">
-				<h3 className="box-title">Project Stats</h3>
+				<h3 className="box-title"><FormattedMessage id='projectstats.project_stats' defaultMessage='Project Stats' /></h3>
 				</div>
 				<div className="box-body">
 				<StyledBoxContent className="row" >
@@ -56,9 +64,9 @@ export default class ProjectStats extends React.Component {
 
 							</div>
 							<div className="info-box-content">
-								<span className="info-box-text">Documents</span>
+								<span className="info-box-text"><FormattedMessage id='projectstats.documents' defaultMessage='Documents' /></span>
 								<span className="info-box-number">
-									{this.state.docCount}
+									{this.formatNotAvailable(this.state.docCount)}
 								</span>
 							</div>
 						</div>
@@ -72,9 +80,9 @@ export default class ProjectStats extends React.Component {
 
 							</div>
 							<div className="info-box-content">
-								<span className="info-box-text">Codes</span>
+								<span className="info-box-text"><FormattedMessage id='projectstats.codes' defaultMessage='Codes' /></span>
 								<span className="info-box-number">
-									{this.state.codeCount}
+									{this.formatNotAvailable(this.state.codeCount)}
 								</span>
 							</div>
 						</div>
@@ -87,9 +95,9 @@ export default class ProjectStats extends React.Component {
 
 							</div>
 							<div className="info-box-content">
-								<span className="info-box-text">Codings</span>
+								<span className="info-box-text"><FormattedMessage id='projectstats.codings' defaultMessage='Codings' /></span>
 								<span className="info-box-number">
-									{this.state.codingCount}
+									{this.formatNotAvailable(this.state.codingCount)}
 								</span>
 							</div>
 						</div>
@@ -103,9 +111,9 @@ export default class ProjectStats extends React.Component {
 
 							</div>
 							<div className="info-box-content">
-								<span className="info-box-text">Saturation</span>
+								<span className="info-box-text"><FormattedMessage id='projectstats.saturation' defaultMessage='Saturation' /></span>
 								<span className="info-box-number">{new SaturationAverage(this.state.saturation).calculateAvgSaturation(true)}</span>
-                                                                <span  onClick={() => this.openSaturationDetails()} className="clickable" >Details</span>
+								<span  onClick={() => this.openSaturationDetails()} className="clickable" ><FormattedMessage id='projectstats.details' defaultMessage='Details' /></span>
 							</div>
 						</div>
 					</div>
@@ -115,6 +123,4 @@ export default class ProjectStats extends React.Component {
 			</div>
 		);
 	}
-
-
 }

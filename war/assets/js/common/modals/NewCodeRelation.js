@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
 import MetaModelView from '../../pages/coding-editor/CodeView/MetaModelView.jsx';
 import SimpleCodesystem from '../../pages/coding-editor/Codesystem/SimpleCodesystem.jsx';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class NewCodeRelation extends VexModal {
 
@@ -80,8 +81,16 @@ export default class NewCodeRelation extends VexModal {
 					}
 				});
 
-				_this.mmRelationshipsView = ReactDOM.render(<MetaModelView filter={"RELATIONSHIP"} elements={_this.mmElements} updateActiveElement={_this.setActiveElement} setElements={()=>{}}/>, document.getElementById('mmRelationships'));
-				_this.mmCodesystemView = ReactDOM.render(<SimpleCodesystem codesystem={_this.codeSystem} maxHeight="500" />, document.getElementById('easytreeNewCode'));
+				_this.mmRelationshipsView = ReactDOM.render(
+					<IntlProvider>
+						<MetaModelView filter={"RELATIONSHIP"} elements={_this.mmElements} updateActiveElement={_this.setActiveElement} setElements={()=>{}}/>
+					</IntlProvider>, document.getElementById('mmRelationships')
+				);
+				_this.mmCodesystemView = ReactDOM.render(
+					<IntlProvider>
+						<SimpleCodesystem codesystem={_this.codeSystem} maxHeight="500" />
+					</IntlProvider>, document.getElementById('easytreeNewCode')
+				);
 			}
 		);
 

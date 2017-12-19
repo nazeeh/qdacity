@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 
 import Users from './Users.jsx';
 import AdminStats from './AdminStats.jsx';
@@ -45,28 +46,25 @@ export default class Admin extends React.Component {
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
-						<div className="box box-default">
-							<div className="b ox-header with-border">
-								<h3 className="box-title">Statistics</h3>
-							</div>
-							<div className="box-body">
-								<AdminStats />
-							</div>
-						</div>
+						<AdminStats chartScriptPromise={this.props.chartScriptPromise} />
 						<div id="changeLog"></div>
 					</div>
 					<div className="col-lg-4">
 						<div id="project-selection">
 							<Users setSelectedUserId={(userId) => this.setSelectedUserId(userId)}/>
 						</div>
-						<div className="box box-default">
-							<div className="box-header with-border">
-								<h3 className="box-title">Projects</h3>
+						{
+							this.state.selectedUserId && <div className="box box-default">
+								<div className="box-header with-border">
+									<h3 className="box-title"><FormattedMessage id='admin.projects' defaultMessage='Projects' /></h3>
+								</div>
+								<div className="box-body">
+									<AdminProjectList projects={this.state.projects} setProjects={this.setProjects}
+													  removeProject={this.removeProject} history={this.props.history}
+													  userId={this.state.selectedUserId}/>
+								</div>
 							</div>
-							<div className="box-body">
-								<AdminProjectList projects={this.state.projects} setProjects={this.setProjects} removeProject={this.removeProject} history={this.props.history} userId={this.state.selectedUserId}/>
-							</div>
-						</div>
+						}
 					</div>
 				</div>
 			</div>

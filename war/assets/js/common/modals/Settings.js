@@ -4,6 +4,7 @@ import VexModal from './VexModal';
 import SaturationSettings from '../saturation/SaturationSettings.jsx';
 import SaturationWeights from '../saturation/SaturationWeights.js'
 import SaturationEndpoint from '../endpoints/SaturationEndpoint.js'
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class Settings extends VexModal {
 
@@ -97,7 +98,11 @@ export default class Settings extends VexModal {
 						} else reject(data);
 					}
 				});
-				ReactDOM.render(<SaturationSettings projectId={projectId} />, document.getElementById('saturationSettings'));
+				ReactDOM.render(
+					<IntlProvider>
+						<SaturationSettings projectId={projectId} />
+					</IntlProvider>, document.getElementById('saturationSettings')
+				);
 			}
 		);
 

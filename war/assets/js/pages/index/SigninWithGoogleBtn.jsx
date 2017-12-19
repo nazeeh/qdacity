@@ -45,15 +45,16 @@ export default class SigninWithGoogleBtn extends React.Component {
 			var displayFirstName = displayNameParts.join(' ');
 	
 			vex.dialog.open({
-				message: 'Please confirm:',
-				input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + displayFirstName + '" required />'
-					+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + displayLastName + '" required />\n'
-					+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + userProfile.email + '" required />\n\n',
+				message: formatMessage({ id: 'sign.in.with.google.btn.confirm', defaultMessage: 'Please confirm:' }),
+				// FIXME
+				input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + googleProfile.getGivenName() + '" required />'
+				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + googleProfile.getFamilyName() + '" required />\n'
+				+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + googleProfile.getEmail() + '" required />\n\n',
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
-						text: 'Register'
+						text: formatMessage({ id: 'sign.in.with.google.btn.register', defaultMessage: 'Register' })
 					}), $.extend({}, vex.dialog.buttons.NO, {
-						text: 'Cancel'
+						text: formatMessage({ id: 'sign.in.with.google.btn.cancel', defaultMessage: 'Cancel' })
 					})
 				],
 				callback: function (data) {
