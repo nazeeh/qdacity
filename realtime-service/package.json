@@ -20,12 +20,13 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Info: no test specified\" && exit 0",
     "format": "prettier --single-quote --trailing-comma es5 --write \"src/**/*.js\"",
     "lint": "eslint --color .",
-    "start:daemon": "pm2 restart index.js || pm2 start index.js",
     "pm2": "pm2",
+    "post-deployment": "yarn install --pure-lockfile && yarn run start:daemon",
+    "start": "node index.js",
+    "start:daemon": "pm2 restart index.js || pm2 start index.js",
+    "test": "echo \"Info: no test specified\" && exit 0",
     "watch": "nodemon index.js"
   },
   "dependencies": {

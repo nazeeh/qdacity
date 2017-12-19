@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 
 import VexModal from '../VexModal';
 import CodingInstances from './CodingInstances.jsx';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 export default class CodingsOverview extends VexModal {
 
@@ -40,7 +41,11 @@ export default class CodingsOverview extends VexModal {
 					}
 				});
 
-				_this.mmRelationshipsView = ReactDOM.render(<CodingInstances codeID={codeID} documentsView={documentsView}/>, document.getElementById('overviewMount'));
+				_this.mmRelationshipsView = ReactDOM.render(
+					<IntlProvider>
+						<CodingInstances codeID={codeID} documentsView={documentsView}/>
+					</IntlProvider>, document.getElementById('overviewMount')
+				);
 			}
 		);
 

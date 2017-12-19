@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -394,7 +395,7 @@ class CodingEditor extends React.Component {
                     <div>
                         <div id="agreementMapSettings" className="hidden">
                             <p>
-                              <span>Showing False Negatives >= </span>
+                              <span><FormattedMessage id='coding.editor.false_negatives' defaultMesage='Showing False Negatives' /> >= </span>
                               <span id="maxFalseNeg" className="falseNegValue"></span>
                             </p>
                             <div id="agreementMapSlider" className="agreementMapSlider"></div>
@@ -518,5 +519,4 @@ class CodingEditor extends React.Component {
 		);
 	}
 }
-
 export default DragDropContext(HTML5Backend)(CodingEditor);

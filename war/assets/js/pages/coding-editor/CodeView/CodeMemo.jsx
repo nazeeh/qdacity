@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -40,7 +41,7 @@ export default class ClassName extends React.Component {
 				<StyledSaveBtn>
 					<BtnDefault onClick={() => this.props.updateSelectedCode(this.props.code, true)}>
 							<i className="fa fa-floppy-o "></i>
-							<span>Save</span>
+							<span><FormattedMessage id='classname.save' defaultMessage='Save' /></span>
 					</BtnDefault>
 				</StyledSaveBtn>
 			</StyledCodeviewComponent>
