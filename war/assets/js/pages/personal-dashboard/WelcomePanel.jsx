@@ -1,10 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import Jumbotron from '../../common/styles/Jumbotron';
 import { FormattedMessage } from 'react-intl';
 
 export default class WelcomePanel extends React.Component {
-	constructor(props) {
+	constructor(props, context) {
 		super(props);
+		this.authenticationProvider = context.authenticationProvider;
 		this.redirectToNytProject = this.redirectToNytProject.bind(this);
 	}
 
@@ -16,7 +19,7 @@ export default class WelcomePanel extends React.Component {
 		return (
 			<Jumbotron id="welcome" >
 				<h1><FormattedMessage id='welcomepanel.welcome_user' defaultMessage='Welcome {user}' values={{
-					user: this.props.account.getProfile().displayName
+					user: this.authenticationProvider.getProfile().displayName
 				}} /></h1>
 				<div>
 					<p><FormattedMessage id='welcomepanel.qda_status' defaultMessage='QDAcity is currently in beta. We appreciate feedback to {email}.' values={{
@@ -40,3 +43,7 @@ export default class WelcomePanel extends React.Component {
 		);
 	}
 }
+
+WelcomePanel.contextTypes = {
+	authenticationProvider: PropTypes.object.require,
+};

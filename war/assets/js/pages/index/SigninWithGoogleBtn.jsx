@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import ReactLoading from '../../common/ReactLoading.jsx';
@@ -9,8 +10,10 @@ import {
 } from '../../common/styles/Btn.jsx';
 
 export default class SigninWithGoogleBtn extends React.Component {
-	constructor(props) {
+	constructor(props, context) {
 		super(props);
+
+		this.context = context;
 		this.state = {
 			loading: false
 		};
@@ -21,15 +24,15 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	redirect() {
 		var that = this;
-		this.props.account.getCurrentUser().then(function (value) {
+		this.context.authenticationProvider.getCurrentUser().then(function (value) {
 			that.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
 				if (value == 'optionA'){
-          that.props.account.changeAccountWithCallback.then(function() {
-          	that.redirect();
-          });
+					that.context.authenticationProvider.changeAccount().then(function() {
+						that.redirect();
+					});
 				}
 				else that.registerAccount();
 			});
@@ -38,7 +41,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	registerAccount() {
 		var _this = this;
-		_this.props.account.getProfile().then(function(userProfile) {
+		_this.context.authenticationProvider.getProfile().then(function(userProfile) {
 
 			var displayNameParts = userProfile.name.split(' ');
 			var displayLastName = displayNameParts.pop();
@@ -61,7 +64,11 @@ export default class SigninWithGoogleBtn extends React.Component {
 					if (data === false) {
 						return console.log('Cancelled');
 					}
-					_this.props.account.registerCurrentUser(data.firstName, data.lastName, data.email).then(_this.redirect);
+					_this.context.authenticationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(function() {
+						_this.context.updateUserStatus().then(function() {
+							_this.redirect();
+						});
+					});
 					return console.log('First', data.firstName, 'Last Name', data.lastName, 'Email', data.email);
 				}
 			});
@@ -73,12 +80,14 @@ export default class SigninWithGoogleBtn extends React.Component {
 			loading: true
 		});
 
-		if (this.props.account.isSignedIn()) {
+		if (this.context.authenticationProvider.isSignedIn()) {
 			this.redirect();
 		} else {
 			var _this = this;
-			this.props.account.signIn().then(function() {
-				_this.redirect();
+			this.context.authenticationProvider.signInWithGoogle().then(function() {
+				if(_this.context.authenticationProvider.isSignedIn()) {
+					_this.redirect();
+				}
       		});
 		}
 	}
@@ -96,3 +105,8 @@ export default class SigninWithGoogleBtn extends React.Component {
 		);
 	}
 }
+
+SigninWithGoogleBtn.contextTypes = {
+	authenticationProvider: PropTypes.object.require,
+	updateUserStatus: PropTypes.func.require
+};

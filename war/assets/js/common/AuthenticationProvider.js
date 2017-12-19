@@ -46,6 +46,7 @@ export default class AuthenticationProvider {
     const promise = new Promise(
       function (resolve, reject) {
         hello.on('auth.login', function(auth) {
+          _this.activeNetwork = _this.network.google;
           _this.synchronizeTokenWithGapi();
           resolve();
         });
@@ -64,7 +65,6 @@ export default class AuthenticationProvider {
         });
       }
     );
-    _this.activeNetwork = _this.network.google;
     return promise;
   }
 
@@ -81,7 +81,6 @@ export default class AuthenticationProvider {
           resolve();
         });
     });
-    this.activeNetwork = 'gapi';
     return promise;
   }
   
@@ -102,7 +101,7 @@ export default class AuthenticationProvider {
         function (resolve, reject) {
           const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
           const profile = {
-            displayName: gapiProfile.getName(),
+            name: gapiProfile.getName(),
             email: gapiProfile.getEmail(),
             thumbnail: gapiProfile.getImageUrl()
           }
@@ -142,9 +141,34 @@ export default class AuthenticationProvider {
     }
     else {
       // elsewise check gapi.auth2
-      window.open("https://accounts.google.com/logout");
+      return this.auth2.disconnect();
     }
   }
+  
+    /**
+     * Loggs out the current user and starts the sign in process for a new user.
+     *
+     * @param callback
+     * @returns {Promise}
+     */
+    changeAccount() {
+      var _this = this;
+      var promise = new Promise(
+        function (resolve, reject) {
+          _this.signOut().then(function() {
+            _this.signInWithGoogle().then(function() {
+              resolve();
+            }, function(err) {
+              console.log('Error at changing Account!');
+              reject(err);
+            })
+          }, function(err) {
+            console.log('Error at changing Account!');
+            reject(err);
+          });
+        });
+      return promise;
+    }
 
   /**
    * Always calls the given fkt if the auth state changes.
@@ -202,4 +226,57 @@ export default class AuthenticationProvider {
   encodeTokenWithIdentityProvider(token, provider) {
     return token + ' ' + provider;
   }
+
+  /* ---------------------- Interaction with Qdacity Server ................. */
+
+  /**
+   * Registers the current user.
+   * The user has to be logged in beforehand.
+   *
+   * @param givenName
+   * @param surName
+   * @param email
+   * @returns {Promise}
+   */
+  registerCurrentUser(givenName, surName, email) {
+    var promise = new Promise(
+        function (resolve, reject) {
+            var user = {};
+            user.email = email;
+            user.givenName = givenName;
+            user.surName = surName;
+
+            gapi.client.qdacity.insertUser(user).execute(function (resp) {
+                if (!resp.code) {
+                    resolve(resp);
+                } else {
+                    reject(resp);
+                }
+            });
+        }
+    );
+
+    return promise;
+  }
+
+  
+  /**
+	 * Gets the current user from qdacity server.
+	 *
+   * @returns {Promise}
+   */
+	getCurrentUser() {
+    var promise = new Promise(
+      function (resolve, reject) {
+        gapi.client.qdacity.user.getCurrentUser().execute(function (resp) {
+          if (!resp.code) {
+            resolve(resp);
+          } else {
+            reject(resp);
+          }
+        });
+      }
+    );
+    return promise;
+}
 }

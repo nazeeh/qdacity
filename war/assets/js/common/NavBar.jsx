@@ -1,5 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
+
 import styled from 'styled-components';
 import Account from './Account.jsx';
 import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
@@ -30,16 +32,26 @@ const StyledDropdownLinks = styled.div `
 `;
 
 export default class NavBar extends React.Component {
-	constructor(props) {
+	constructor(props, context) {
 		super(props);
 		this.state = {
 			user: {}
 		};
 
-		this.account = {};
+		this.authenticationProvider = context.authenticationProvider;
+		this.userData = {};
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
-		this.initializeAccount = this.initializeAccount.bind(this);
+	}
+	
+	// lifecycle hook: update before rerender
+	componentWillUpdate() {
+		const _this = this;
+		this.authenticationProvider.getCurrentUser().then((user) => {
+			_this.userData = user;
+		}, () => {
+			console.log("Could not get current user")
+		});
 	}
 
 	redirectToPersonalDashbaord() {
@@ -60,22 +72,6 @@ export default class NavBar extends React.Component {
 	
 	
 
-    initializeAccount(c) {
-		this.account = c;
-		const _this = this;
-        this.account.addAuthStateListener(function() {
-            if (_this.account.isSignedIn()) {
-                _this.account.getCurrentUser().then((value) => {
-                    _this.setState({
-                        user: value
-                    });
-                }, () => {
-                    console.log("Could not get current user")
-                });
-            }
-        });
-	}
-
 	render() {
 		
 		var isLoggedIn=this.account.isSignedIn && this.account.isSignedIn();
@@ -91,6 +87,7 @@ export default class NavBar extends React.Component {
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
+								<StyledAccountTab loggedIn={this.account.isSignedIn && this.account.isSignedIn()}  className="dropdown">
 								<StyledHelpTab loggedIn={isLoggedIn} className="dropdown">
 									<StyledNavbarItem className="dropdownToggle clickable" onClick={function(){this.showHelpDropdown();}.bind(this)}>Help</StyledNavbarItem>
 									<div id="helpView" className="dropdown-menu dropdownContent">
@@ -102,15 +99,15 @@ export default class NavBar extends React.Component {
 										</StyledDropdownLinks>
 									</div>
 								</StyledHelpTab>
-								<StyledAccountTab loggedIn={isLoggedIn}  className="dropdown">
+								<StyledAccountTab loggedIn={this.authenticationProvider.isSignedIn && this.authenticationProvider.isSignedIn()}  className="dropdown">
 									<StyledNavbarItem  className="dropdownToggle clickable" onClick={this.showAccountDropdown}>
 										<FormattedMessage id="navbar.account" defaultMessage='Account' /> <b className="caret"></b>
 									</StyledNavbarItem>
 			 						<div id="accountView" className="dropdown-menu dropdownContent">
-										<Account ref={this.initializeAccount} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback} history={this.props.history}/>
+										<Account history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
-								<StyledSigninTab  loggedIn={isLoggedIn} className="dropdown">
+								<StyledSigninTab  loggedIn={this.authenticationProvider.isSignedIn && this.authenticationProvider.isSignedIn()} className="dropdown">
 									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showSigninDropdown}>
 											<FormattedMessage id="navbar.sign_in" defaultMessage='Sign in' /> <b className="caret"></b>
 										</StyledNavbarItem>
@@ -136,7 +133,7 @@ export default class NavBar extends React.Component {
 											</li>
 										</ul>
 								</StyledSigninTab>
-                                {this.state.user.type==="ADMIN" && <li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>}
+                                {this.userData.type==="ADMIN" && <li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>}
 							</ul>
 						</div>
 					</div>
@@ -144,3 +141,7 @@ export default class NavBar extends React.Component {
 		);
 	}
 }
+
+NavBar.contextTypes = {
+    authenticationProvider: PropTypes.object.require
+};
