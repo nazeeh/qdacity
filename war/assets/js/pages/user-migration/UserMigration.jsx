@@ -2,6 +2,7 @@ import React from 'react';
 
 import styled from 'styled-components';
 
+import ReactLoading from '../../common/ReactLoading.jsx';
 
 const StyledContent = styled.div `
     margin-top: 180px;
@@ -71,12 +72,12 @@ export default class UserMigration extends React.Component {
             picSrc: '',
             isSignedIn: null,
             isAlreadyMigrated: null,
-            isRegistered: null
+            isRegistered: null,
+            migrationStatus: null
         };
 
         this.access_token = null;
         this.id_token = null;
-        this.migrationStatus = null;
 
         const _this = this;
         this.props.account.addAuthStateListener(function(payload) {
@@ -188,13 +189,17 @@ export default class UserMigration extends React.Component {
             access_token: this.access_token
         });
         const _this = this;
+        this.state.migrationStatus = null;
+        this.setState(this.state);
         gapi.client.qdacityusermigration.migrateFromGoogleIdentityToCustomAuthentication({
             idToken: this.id_token
         }).execute((resp) => {
             if (resp.status === 204 || resp.status === 200) {
-                _this.migrationStatus = true;
+                _this.state.migrationStatus = true;
+                _this.setState(_this.state);
             } else {
-                _this.migrationStatus = false;
+                _this.state.migrationStatus = false;
+                _this.setState(_this.state);
             }
         });
         // all other requests need id_token here as header
@@ -204,6 +209,7 @@ export default class UserMigration extends React.Component {
     }
 
     render() {
+        /* ------------------- Google Sign In Button --------------- */
         const GoogleSignIn = ({show}) => (
             show ? <div>
                 <StyledSignInButtonWrapper>
@@ -214,6 +220,7 @@ export default class UserMigration extends React.Component {
             </div>: null
         );
 
+        /* ------------------- Profile Info --------------- */
         const ProfileInfo = ({ show }) => (
             show ? <div>
                 <div className="col-xs-12">
@@ -238,25 +245,35 @@ export default class UserMigration extends React.Component {
             </div> : null
         );
 
+        /* ------------------- Migration Preconditions --------------- */
         const MigrationPreconditions = ({show}) => (
             show ? <div>
                 <div className="col-xs-12">
                     <StyledHeader3>Preconditions for Migration:</StyledHeader3>
-                    <p>
-                        <PreconditionsStatus fulfilled={this.state.isRegistered} />
-                        You are registered at QDAcity with an old account (2017 or before)
-                    </p>
-                    <p>
-                        <PreconditionsStatus fulfilled={!this.state.isAlreadyMigrated} />
-                        You are not migrated yet 
-                    </p>
+                    <PreconditionStatusLoading show={this.state.isRegistered === null || this.state.isAlreadyMigrated === null} />
+                    <MigrationPrecondisionsList show={this.state.isRegistered !== null && this.state.isAlreadyMigrated !== null} />
                 </div>
-                <MigrationNotPossible show={!this.state.isRegistered || this.state.isAlreadyMigrated}/>
+                <MigrationNotPossible show={(!this.state.isRegistered || this.state.isAlreadyMigrated) && this.state.isRegistered !== null && this.state.isAlreadyMigrated !== null}/>
             </div>: null
+        );
+        const MigrationPrecondisionsList = ({show}) => (
+            show ? <div>
+                <p>
+                    <PreconditionsStatus fulfilled={this.state.isRegistered} />
+                    You are registered at QDAcity with an old account (2017 or before)
+                </p>
+                <p>
+                    <PreconditionsStatus fulfilled={!this.state.isAlreadyMigrated} />
+                    You are not migrated yet 
+                </p>
+            </div> : null
         );
 
         const PreconditionsStatus = ({fulfilled}) => (
             fulfilled === null ? <StyledPreconditionsStatus className="fa fa-question" aria-hidden="true" /> : fulfilled ? <StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> : <StyledPreconditionsStatus className="fa fa-times" aria-hidden="true" />
+        );
+        const PreconditionStatusLoading = ({show}) => (
+            show ? <ReactLoading show={show} color={'#000000'}/> : null
         );
         const MigrationNotPossible = ({show}) => (
             show ? <div>
@@ -264,6 +281,7 @@ export default class UserMigration extends React.Component {
             </div> : null 
         );
 
+        /* ------------------- Migration --------------- */
         const MigrationButton = ({show}) => (
             show ? <div>
                 <div className="col-xs-12">
@@ -285,6 +303,7 @@ export default class UserMigration extends React.Component {
             </div> : null
         );
 
+        /* ------------------- render --------------- */
         return (
             <StyledContent>
                 <StyledHeader1>User Migration</StyledHeader1>
@@ -301,8 +320,8 @@ export default class UserMigration extends React.Component {
                     <GoogleSignIn show={!this.state.isSignedIn}/>
                     <ProfileInfo show={this.state.isSignedIn}/>
                     <MigrationPreconditions  show={this.state.isSignedIn}/>
-                    <MigrationButton show={this.state.isRegistered && !this.state.isAlreadyMigrated && !this.migrationStatus}/>
-                    <MigrationMessage show={this.state.isRegistered && !this.state.isAlreadyMigrated && this.migrationStatus !== null} />
+                    <MigrationButton show={this.state.isRegistered && !this.state.isAlreadyMigrated && !this.state.migrationStatus}/>
+                    <MigrationMessage show={this.state.isRegistered && !this.state.isAlreadyMigrated && this.state.migrationStatus !== null} successful={this.state.migrationStatus} />
 
                 </StyledMigrationFunctionality>
             </StyledContent>
