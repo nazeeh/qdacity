@@ -92,9 +92,12 @@ export default class PersonalDashboard extends React.Component {
 				_this.setState(_this.state); 
 			})
 		}
+	}
+
 	render() {
 		if (!this.authState.isUserSignedIn || !this.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		}
 		return (
 			<div className="container main-content">
 				<div className="row">
