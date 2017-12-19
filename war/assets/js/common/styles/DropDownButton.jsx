@@ -89,6 +89,7 @@ export default class DropDownButton extends React.Component {
 	}
 
 	toggleDropDown(e) {
+		e.preventDefault();
 		e.stopPropagation()
 		this.setState({
 			expanded: !this.state.expanded
