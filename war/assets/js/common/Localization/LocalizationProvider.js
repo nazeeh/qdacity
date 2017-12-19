@@ -37,12 +37,14 @@ async function loadMessages(language = 'en') {
 }
 
 export default class LocalizationProvider extends IntlProvider {
-	constructor(props, context = {}) {
+	constructor(props, context = {intl: LocalizationProvider.intl}) {
 		super(props, context);
 		globalLocalizationState.intl = this.getChildContext().intl;
-		window['QDAcityLocalization'] = this;
-		const fallbackLanguage = LocalizationProvider.userLanguage;
-		this.changeLanguage(fallbackLanguage);
+		if (window['QDAcityLocalization'] == undefined) {
+			window['QDAcityLocalization'] = this;
+			const fallbackLanguage = LocalizationProvider.userLanguage;
+			this.changeLanguage(fallbackLanguage);
+		}
 	}
 
 	static propTypes() {

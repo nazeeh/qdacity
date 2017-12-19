@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
 import SaturationView from '../saturation/SaturationView.jsx';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class SaturationModal extends VexModal {
 
@@ -39,7 +40,11 @@ export default class SaturationModal extends VexModal {
 				});
 				ReactDOM.render(<ReactLoading color={'#444'} />, document.getElementById('reactLoading'));
 
-				ReactDOM.render(<SaturationView projectId={_this.projectId} />, document.getElementById('saturation'));
+				ReactDOM.render(
+					<IntlProvider>
+						<SaturationView projectId={_this.projectId} />
+					</IntlProvider>, document.getElementById('saturation')
+				);
 			}
 		);
 		return promise;
