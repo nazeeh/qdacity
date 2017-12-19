@@ -80,7 +80,6 @@ window.onload = function () {
 }
 
 const init = function () {
-
 	loadGAPIs(() => {
 
 	}).then((apiCfg) => {

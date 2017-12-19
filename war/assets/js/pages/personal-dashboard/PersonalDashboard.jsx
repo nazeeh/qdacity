@@ -85,6 +85,9 @@ export default class PersonalDashboard extends React.Component {
 			this.props.account.getCurrentUser().then(function(user) {
 				_this.state.isRegistered = !!user;
 				_this.setState(_this.state); 
+			}, function(error) {
+				_this.state.isRegistered = false;
+				_this.setState(_this.state); 
 			})
 		}
 	}
