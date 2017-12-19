@@ -19,6 +19,8 @@ import com.qdacity.maintenance.tasks.ValidationCleanup;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelEntityType;
 import com.qdacity.metamodel.MetaModelRelation;
+import com.qdacity.tutorial.TutorialCreator;
+import com.qdacity.tutorial.TutorialManager;
 
 @Api(
 	name = "qdacity",
@@ -31,6 +33,7 @@ public class MaintenanceEndpoint {
 
 	private MetaModelEntityEndpoint metaModelEntityEndpoint = new MetaModelEntityEndpoint();
 	private MetaModelRelationEndpoint metaModelRelationEndpoint = new MetaModelRelationEndpoint();
+	private TutorialManager tutorialManager=new TutorialManager(new TutorialCreator());
 	
 	@ApiMethod(
 		name = "maintenance.cleanupValidationResults",

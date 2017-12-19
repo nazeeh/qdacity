@@ -2,29 +2,34 @@ package com.qdacity.tutorial;
 
 import java.util.ArrayList;
 
+import javax.jdo.annotations.Persistent;
+
 public class TutorialUnit {
 	
 	long id;
-	String title="";
-	String descriptionTextShort="";
-	String descriptionTextLong="";
-	int belongsToGroupId=0; //Mal ne DesignFrage hier, mappen gegen Ids oder gegen pointer (java-referenzen), zirkulaere Abhaengikeiten, also wenn ic
-							//also wenn ich bspw. irgendwo ne Klasse habe UnitContainer und die wiederum fuer jede Collection eine Gruppe
-							//dann ist ja die Gruppe darueber schon definiert, wenn ich die Gruppeninformation dann hier in der Klasse benoetige
-							//brauche ich ja nen "pointer" zurueck zum Unit-Container...... was ist hier best practice?
-							//weitere Frage: ist das gutes Design wenn man viele Methoden hat, die immer StatusObjekte (Anemic-Domain-Objekte zurueckgeben?)
 	
+	@Persistent
+	String title="";
+	
+	@Persistent
+	String descriptionTextShort="";
+	
+	@Persistent
+	String descriptionTextLong="";
+	
+	@Persistent
+	TutorialGroup inGroup=TutorialGroup.DEFAULT;	
+	
+	@Persistent
 	int maxSteps=0; //cached value, cause it could be derived of calculation in lists
 	
-	//auch hier die Frage, eher auf pointer oder auf ids (int) mappen?
-	//meiner meinung nach: vorteile von int-ids: man kann die daten besser von der persistenz trennen, nachteil: man muss einen Globalen-Service Fragen, die Referenz zu bekommen.
-	//interessanter artikel, den ich dazu gefunden habe: http://enterprisecraftsmanship.com/2014/12/27/dont-use-ids-domain-entities/
+	@Persistent
 	ArrayList<StepGroup> stepGroups=new ArrayList<StepGroup>(); //enthaelt dann die einzelnen Steps, die dann wiederum eventuell in ShortSteps unterteilt sind
 	
 	
-	public TutorialUnit(long id, int belongsTogroupId, String title) {
+	public TutorialUnit(long id, TutorialGroup inGroup, String title) {
 		this.id=id;
-		this.belongsToGroupId=belongsTogroupId;
+		this.inGroup=inGroup;
 		this.title=title;
 	}
 
@@ -55,13 +60,13 @@ public class TutorialUnit {
 	public void setDescriptionTextLong(String descriptionTextLong) {
 		this.descriptionTextLong = descriptionTextLong;
 	}
-
-	public int getBelongsToGroupId() {
-		return belongsToGroupId;
+	
+	public TutorialGroup getInGroup() {
+		return inGroup;
 	}
 
-	public void setBelongsToGroupId(int belongsToGroupId) {
-		this.belongsToGroupId = belongsToGroupId;
+	public void setInGroup(TutorialGroup inGroup) {
+		this.inGroup = inGroup;
 	}
 
 	public int getMaxSteps() {
@@ -84,9 +89,4 @@ public class TutorialUnit {
 		this.id = id;
 	}
 	
-	
-	
-	
-	
-
 }

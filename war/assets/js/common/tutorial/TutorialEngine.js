@@ -71,11 +71,11 @@ export default class TutorialEngine {
 		var back=Promisizer.makePromise(apiMethod);
 		back.then(function (resp) {
 			
+			console.log(resp);
 			console.log(resp.result);
-			console.log(Array.from(resp.result));
 			//this.tutorialState.overviewData=Array.from(resp.result);
-			
-			this.tutorialState.overviewData=[1,2,3,4];
+			this.tutorialState.overviewData=resp.result.items;
+			//this.tutorialState.overviewData=[1,2,3,4];
 			
 			
 			

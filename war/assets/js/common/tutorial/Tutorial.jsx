@@ -16,7 +16,6 @@ const Overlay1 = styled.div`
 	z-index: 2000;
 `;
 
-
 const Overlay2 = styled.div`
 	position: fixed;
 	display: ${props =>props.tutorial.tutorialState.showOverlay2 ? 'inline' : 'none'};
@@ -132,6 +131,15 @@ const TutorialOverviewSubBoxPlaceholder = styled.div`
 	height: 15px ;
 `;
 
+const TutorialOverviewContainer = styled.div`
+	max-height:240px;
+	overflow-y: scroll;
+`;
+
+
+
+
+
 //Detail Structure End
 
 
@@ -147,11 +155,11 @@ export default class Tutorial extends React.Component {
 		if(this.props.tutorial.tutorialState.isActive) {
 		
 		var tutorialOverviewItems = this.props.tutorial.tutorialState.overviewData.map((data) =>
-		<TutorialOverviewSubBox>
+		<TutorialOverviewSubBox key={data.tutorialUnitId}>
 			<b>
-				<TutorialOverviewSubBoxTitle>Test-Tutorial</TutorialOverviewSubBoxTitle>
-				<TutorialOverviewSubBoxStatistic1>finished (data.finishRelative%)</TutorialOverviewSubBoxStatistic1>
-				<TutorialOverviewSubBoxStatistic2>finished at: finishedAt</TutorialOverviewSubBoxStatistic2>
+				<TutorialOverviewSubBoxTitle>{data.title}</TutorialOverviewSubBoxTitle>
+				<TutorialOverviewSubBoxStatistic1>finished {data.finishedRelative}%</TutorialOverviewSubBoxStatistic1>
+				<TutorialOverviewSubBoxStatistic2>finished at: {data.finishedAt}</TutorialOverviewSubBoxStatistic2>
 				<TutorialOverviewSubBoxClearing/>
 			</b>
 			<TutorialOverviewSubBoxPlaceholder/>
@@ -171,10 +179,10 @@ export default class Tutorial extends React.Component {
 								<center>
 									<TutorialOverviewTitle><b>Tutorial Overview</b></TutorialOverviewTitle>
 									<br/>
-									<div>
+									<TutorialOverviewContainer>
 										{tutorialOverviewItems}
-									</div>
-									<br/><br/>									
+									</TutorialOverviewContainer>
+									<br/>									
 								</center>
 							</MBTutorialOverview>
 							<div>

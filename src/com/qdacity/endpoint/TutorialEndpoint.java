@@ -17,6 +17,8 @@ import javax.jdo.Query;
 
 import com.qdacity.tutorial.TutorialCreator;
 import com.qdacity.tutorial.TutorialLog;
+import com.qdacity.tutorial.TutorialManager;
+import com.qdacity.tutorial.TutorialOverview;
 import com.qdacity.tutorial.TutorialUnit;
 import com.qdacity.tutorial.TutorialUserState;
 import com.google.api.server.spi.config.Api;
@@ -47,83 +49,22 @@ import com.qdacity.util.DataStoreUtil;
 public class TutorialEndpoint {
 	
 	TutorialCreator tutorialCreator=new TutorialCreator();
+	TutorialManager tutorialManager=new TutorialManager(tutorialCreator);
 	
 	@ApiMethod(
 			name = "tutorial.loadTutorialData",
 			scopes = { Constants.EMAIL_SCOPE },
 			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 			audiences = { Constants.WEB_CLIENT_ID })
-	public Hashtable<Long, Hashtable<String,String>> loadTutorialData(@Named("which") int which, User user) throws UnauthorizedException {
+	public List<TutorialOverview> loadTutorialData(@Named("which") int which, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized");
-		Hashtable<Long,Hashtable<String, String>> result=new Hashtable<Long, Hashtable<String,String>>();
-	
-		PersistenceManager mgr = getPersistenceManager();
-		try 
-		{
-			Enumeration<TutorialUnit> tutorialUnits = tutorialCreator.getTutorialUnits().elements();
-			
-			while(tutorialUnits.hasMoreElements())
-			{
-				
-				TutorialUnit it= tutorialUnits.nextElement();
-				
-				Hashtable<String,String> innerResult=new Hashtable<String, String>();
-				result.put(it.getId(), innerResult);				
-				
-				innerResult.put("tutorialUnitId",Long.toString(it.getId()));
-				innerResult.put("descriptionTextShort",it.getDescriptionTextShort());
-				innerResult.put("descriptionTextShort",it.getDescriptionTextLong());
-				innerResult.put("maxSteps", Integer.toString(it.getMaxSteps()));
-
-				Query query = mgr.newQuery(TutorialUserState.class);
-				query.setFilter("relatedUserId == :userId && which == :whichx");
-				
-				Map<String, Object> paramValues = new HashMap<>();
-				paramValues.put("userId", user.getUserId());
-				paramValues.put("whichx", it.getId()); //TODO eventuell alle datensaetze von einem user aufeinmal fetchen und dann hier mappen, performance?
-				
-				List<TutorialUserState> tmp = (List<TutorialUserState>)query.executeWithMap(paramValues);
+		Hashtable<Long,Hashtable<String, String>> result=new Hashtable<Long, Hashtable<String,String>>();		
 		
-				//TODO der fehler liegt wohl nicht in tmp sondern allgemein im backend system
-				TutorialUserState tutorialUserState=null;
-				if((tmp!=null) && tmp.size()>0){tutorialUserState=tmp.get(0);}//TODO ist aktuell nur ne vereinfachte lsg
-				
-				String finishRelative="";
-				String finishedAt="";	
-				if(tutorialUserState !=null) {
-					finishRelative=Integer.toString((int)((Math.round(tutorialUserState.getLastStep()*100/it.getMaxSteps()))));
-					
-					if(tutorialUserState.isComplete()) {
-						finishedAt=Long.toString(tutorialUserState.getWhenLastStepFinish());
-						finishRelative="100";
-					}
-					else {
-						finishedAt="-1";
-					}					
-				}
-				else {
-					finishRelative="0";
-					finishedAt="-1";			
-				}
-				
-				innerResult.put("finishRelative", finishRelative);
-				innerResult.put("finishedAt",finishedAt);				
-			}
-
-		}
-		catch(Exception e) {
-			result.clear();
-			//TODO maybe pushing a error flag and optional a error-message out
-		}
-		finally {
-			mgr.close();
-		}		
+		return tutorialManager.getUserSpecificOverviewData(user.getUserId());
 	
-		return result;
 	}
 	
-
 	 private static PersistenceManager getPersistenceManager() {
 			return PMF.get().getPersistenceManager();
 	 }
