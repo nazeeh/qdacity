@@ -1,4 +1,6 @@
 import React from 'react';
+import {FormattedMessage} from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import SaturationWeights from '../saturation/SaturationWeights';
@@ -14,6 +16,7 @@ export default class SaturationDetails extends React.Component {
 		this.initTable();
 	}
 	componentDidUpdate() {
+		// TODO: check if this blocks update on language change
 		if (this.props.saturation) {
 			this.initTable();
 			this.drawDataTable();
@@ -21,10 +24,16 @@ export default class SaturationDetails extends React.Component {
 	}
 
 	initTable() {
+		const {formatMessage, formatDate} = IntlProvider.intl;
 		var dataSet = [];
 		var tableMount = $('#saturationTable');
 		var columnsArray = [];
-		var columnLabelsArray = ['Change Category', 'Saturation', 'Weight (Importance)', 'Configured Maximum'];
+		var columnLabelsArray = [
+			formatMessage({ id: 'saturationdetails.change_category', defaultMessages: 'Change Category' }),
+			formatMessage({ id: 'saturationdetails.saturation', defaultMessages: 'Saturation' }),
+			formatMessage({ id: 'saturationdetails.weight', defaultMessages: 'Weight (Importance)' }),
+			formatMessage({ id: 'saturationdetails.configured_maximum', defaultMessages: 'Configured Maximum' })
+		];
 		var width = 100 / (columnLabelsArray.length);
 		for (var col in columnLabelsArray) {
 			columnsArray = columnsArray.concat([{
@@ -81,14 +90,20 @@ export default class SaturationDetails extends React.Component {
 	}
 
 	render() {
+		const {formatMessage, formatDate} = IntlProvider.intl;
 		if (!this.props.saturation)
 			return null;
 		return (<div>
-            <p>Last calculation of saturation is from: {this.props.saturation.evaluationStartDate} to {this.props.saturation.creationTime}</p>
+			<p><FormattedMessage id='saturationdetails.last_calculation' defaultMessage='Last calculation of saturation is from {startDate} to {endDate}' values={{
+				startDate: formatDate(this.props.saturation.evaluationStartDate),
+				endDate: formatDate(this.props.saturation.creationTime)
+			}} /></p>
             <table id="saturationTable" className="display">
 
             </table>
-            <p>Parameters used from : {this.props.saturation.saturationParameters.creationTime}</p>
+            <p><FormattedMessage id='saturationdetails.parameters' defaultMessage='Parameters used from : {date}' values={{
+				date: formatDate(this.props.saturation.saturationParameters.creationTime)
+			}} /></p>
         </div>);
 	}
 

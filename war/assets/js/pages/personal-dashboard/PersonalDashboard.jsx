@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 
 import ProjectList from "./ProjectList.jsx"
 import CourseList from "./CourseList.jsx"
@@ -80,7 +81,7 @@ export default class PersonalDashboard extends React.Component {
 						<div>
 							<div className="box box-default">
 								<div className="box-header with-border">
-									<h3 className="box-title">Projects</h3>
+									<h3 className="box-title"><FormattedMessage id='personaldashboard.projects' defaultMessage='Projects' /></h3>
 								</div>
 								<div className="box-body">
 									<ProjectList projects={this.state.projects} setProjects={this.setProjects} addProject={this.addProject} removeProject={this.removeProject} history={this.props.history} />
@@ -90,7 +91,7 @@ export default class PersonalDashboard extends React.Component {
 						<div>
 							<div className="box box-default">
 								<div className="box-header with-border">
-									<h3 className="box-title">Courses</h3>
+									<h3 className="box-title"><FormattedMessage id='personaldashboard.courses' defaultMessage='Courses' /></h3>
 								</div>
 								<div className="box-body">
 									<CourseList courses={this.state.courses} setCourses={this.setCourses} addCourse={this.addCourse} removeCourse={this.removeCourse} history={this.props.history}/>
@@ -99,7 +100,7 @@ export default class PersonalDashboard extends React.Component {
 						</div>
 						<div className="box box-default">
 							<div className="box-header with-border">
-								<h3 className="box-title">Notifications</h3>
+								<h3 className="box-title"><FormattedMessage id='personaldashboard.notifications' defaultMessage='Notifications' /></h3>
 							</div>
 							<div className="box-body">
 								<NotificationList addProject={this.addProject} addCourse={this.addCourse} />

@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
 	PageView
@@ -13,6 +14,7 @@ export default class CodingsView extends React.Component {
 	}
 
 	initTable() {
+		const {formatMessage} = IntlProvider.intl;
 		var dataSet = [];
 		var tableMount = $('#codingTableMount');
 		var table = tableMount.dataTable({
@@ -28,13 +30,13 @@ export default class CodingsView extends React.Component {
 				"width": "20%"
 			}],
 			"columns": [{
-				"title": "ID",
+				"title": formatMessage({ id: 'codingsview.id', defaultMessage: "ID" }),
 				"width": "5%",
 			}, {
-				"title": "Document",
+				"title": formatMessage({ id: 'codingsview.document', defaultMessage: "Document" }),
 				"width": "20%"
 			}, {
-				"title": "Author",
+				"title": formatMessage({ id: 'codingsview.author', defaultMessage: "Author" }),
 				"width": "20%"
 			}]
 
@@ -99,6 +101,7 @@ export default class CodingsView extends React.Component {
 		this.fillCodingTable();
 	}
 	componentDidUpdate() {
+		// TODO: update on language change
 		this.fillCodingTable();
 	}
 
