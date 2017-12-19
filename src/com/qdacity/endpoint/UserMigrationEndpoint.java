@@ -142,16 +142,22 @@ public class UserMigrationEndpoint {
 		// pre: oldUser must exist in db -> user-id == oldUser.userId
 		User dbUser = fetchOldUser(oldUser);
 		if(dbUser == null) {
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Couldn't fetch the old user!");
 			throw new UnauthorizedException("The old user does not exist!");
 		}
 		
 		// pre: oldUser must not migrated be yet -> User with id == oldUser.userId must not have fields in UserLoginProviderInformation.
 		if(hasLoginProviderInformation(dbUser)) {
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "There are already connected login provider information:");
+			for(UserLoginProviderInformation info: dbUser.getLoginProviderInformation()) {
+				java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Provider information: " + info.getExternalUserId() + " with " + info.getProvider());
+			}
 			throw new ConflictException("The user seems to be already migrated!");
 		}
 		
 		// pre: newUser must not exist in db -> newUser.id not in UserLoginProviderInformation.
 		if(existsNewUser(newUser.getId(), newUser.getProvider())) {
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "There already exists a uer with the new ID!");
 			throw new ConflictException("The new user already exists!");
 		}
 		
@@ -159,12 +165,15 @@ public class UserMigrationEndpoint {
 			// add the newUser to UserLoginProivderInformation.
 		dbUser.addLoginProviderInformation(new UserLoginProviderInformation(newUser.getProvider(), newUser.getId()));
 		persistUpdatedUser(dbUser);
+		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Migration was successful!");
 	}
 	
 	private User fetchOldUser(com.google.appengine.api.users.User oldUser) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			User dbUser = mgr.getObjectById(User.class, oldUser.getUserId());
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Fetched old user with id " + dbUser.getId() + " and " + dbUser.getLoginProviderInformation().size() + " connected login providers");
+			dbUser = mgr.detachCopy(dbUser);
 			return dbUser;
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			return null;

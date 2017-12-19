@@ -81,8 +81,6 @@ export default class UserMigration extends React.Component {
 
         const _this = this;
         this.props.account.addAuthStateListener(function(payload) {
-            console.log('auth state changed:');
-            console.log(payload);
             // update on every auth state change
             if(!! payload.authResponse) {
                 _this.access_token = payload.authResponse.access_token;
@@ -105,7 +103,8 @@ export default class UserMigration extends React.Component {
                     picSrc: "",
                     isSignedIn: null,
                     isAlreadyMigrated: null,
-                    isRegistered: null
+                    isRegistered: null,
+                    migrationStatus: null
                 });
                 return;
             }
@@ -128,18 +127,12 @@ export default class UserMigration extends React.Component {
         gapi.client.setToken({
             access_token: this.access_token
         });
-        console.log('preconditions: access_token');
-        console.log(this.access_token);
         gapi.client.qdacityusermigration.isOldUserRegistered({}).execute((resp) => {
-            console.log('old user registered?');
-            console.log(resp);
             _this.state.isRegistered = resp.value;
             _this.setState(_this.state);
             
             // all other requests need id_token here as header
-            gapi.client.setToken({
-                access_token: this.id_token
-            });
+            _this.resetGapiToken();
             
             this.props.account.getCurrentUser().then((user) => {
                 _this.state.isAlreadyMigrated = !! user.id;
@@ -151,9 +144,7 @@ export default class UserMigration extends React.Component {
         }, (err) => {
             console.error("Error in updating the preconditions for migration!");
             // all other requests need id_token here as header
-            gapi.client.setToken({
-                access_token: this.id_token
-            });
+            _this.resetGapiToken();
         });
         
     }
@@ -193,18 +184,24 @@ export default class UserMigration extends React.Component {
         this.setState(this.state);
         gapi.client.qdacityusermigration.migrateFromGoogleIdentityToCustomAuthentication({
             idToken: this.id_token
-        }).execute((resp) => {
-            if (resp.status === 204 || resp.status === 200) {
-                _this.state.migrationStatus = true;
-                _this.setState(_this.state);
-            } else {
-                _this.state.migrationStatus = false;
-                _this.setState(_this.state);
-            }
+        }).then((success) => {
+            _this.state.migrationStatus = true;
+            _this.setState(_this.state);
+            
+            // all other requests need id_token here as header
+            _this.resetGapiToken();
+        }, (failure) => {
+            _this.state.migrationStatus = false;
+            _this.setState(_this.state);
+            
+            // all other requests need id_token here as header
+            _this.resetGapiToken();
         });
-        // all other requests need id_token here as header
+    }
+
+    resetGapiToken() {
         gapi.client.setToken({
-            access_token: this.id_token
+            access_token: this.id_token + ' GOOGLE'
         });
     }
 
@@ -312,7 +309,7 @@ export default class UserMigration extends React.Component {
                     <ol>
                         <li>Use the <strong>Google-Sign-In-Button</strong> below to sign-in. You should then see your profile information displayed!</li>
                         <li>Then click the <strong>Migration-Button</strong> in order to trigger the migration.</li>
-                        <li>Wait until the status displays <strong>'migrated'</strong></li>
+                        <li>Wait until the status displays that the migration was <strong>'successful'</strong></li>
                     </ol>
                 </StyledMigrationDescription>
                 <StyledMigrationFunctionality>
