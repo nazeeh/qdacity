@@ -1,4 +1,5 @@
 import SaturationWeights from '../saturation/SaturationWeights.js';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class SaturationAverage {
 	constructor(saturation) {
@@ -6,10 +7,11 @@ export default class SaturationAverage {
 	}
 
 	calculateAvgSaturation(inPercent) {
+		const {formatMessage} = IntlProvider.intl;
 		var sr = this.saturation;
-		var pr = sr.saturationParameters;
+		var pr = sr && sr.saturationParameters;
 		if (pr != undefined) {
-			//weights are set beween 0 and 1 and are > 1 in total. 
+			//weights are set beween 0 and 1 and are > 1 in total.
 			// we need to normalize them when calculating the weighted average
 			var sumParameters = pr.deleteCodeRelationShipChangeWeight
 				+ pr.deleteCodeChangeWeight
@@ -46,7 +48,7 @@ export default class SaturationAverage {
 				return weightedAvg;
 			}
 		} else {
-			return "N/A";
+			return formatMessage({ id: 'saturationaverage.not_available', defaultMessage: 'N/A' });
 		}
 	}
 

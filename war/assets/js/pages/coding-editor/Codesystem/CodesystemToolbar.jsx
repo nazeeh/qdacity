@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import Prompt from '../../../common/modals/Prompt';
 
@@ -41,11 +42,15 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	removeCode(code) {
+		const {formatMessage} = IntlProvider.intl;
 		const _this = this;
 
 		if (code.codeID == 1) return; //root should not be removed
 
-		var confirm = new Confirm('Do you want to delete the code ' + code.name + '?');
+		var confirm = new Confirm(formatMessage({
+			id: 'codesystemtoolbar.confirm_delete',
+			defaultMessage: 'Do you want to delete the code {name}?'
+		}, { name: code.name}));
 		confirm.showModal().then(function () {
 			CodesEndpoint.removeCode(code).then(function (resp) {
 				_this.props.codeRemoved(code.codeID);
@@ -102,8 +107,12 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	insertCode() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var prompt = new Prompt('Give your code a name', 'Code Name');
+		var prompt = new Prompt(
+			formatMessage({ id: 'codesystemtoolbar.prompt_name', defaultMessage: 'Give your code a name' }),
+			formatMessage({ id: 'codesystemtoolbar.prompt_name.sample', defaultMessage: 'Code Name' })
+		);
 		prompt.showModal().then(function (codeName) {
 			_this.props.createCode(codeName);
 		});
@@ -160,7 +169,8 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	showCodingsOverview() {
-		var overview = new CodingsOverview('Do you want to delete the code ?');
+		const {formatMessage} = IntlProvider.intl;
+		var overview = new CodingsOverview(formatMessage({ id: 'codesystemtoolbar.delete_code', defaultMessage: 'Do you want to delete the code?' }));
 		overview.showModal(this.props.selected.codeID, this.props.documentsView).then(function () {
 
 		});

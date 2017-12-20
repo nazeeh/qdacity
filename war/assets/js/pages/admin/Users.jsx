@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import UserList from './UserList.jsx';
@@ -84,7 +85,7 @@ export default class Users extends React.Component {
 		return (
 			<div className="box box-default">
 				<div className="box-header with-border">
-					<h3 className="box-title">Users</h3>
+					<h3 className="box-title"><FormattedMessage id='usersusers' defaultMessage='Users' /></h3>
 				</div>
 				<div className="box-body">
 					<StyledUserSearch>

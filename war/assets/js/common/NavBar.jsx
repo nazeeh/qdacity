@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 import Account from './Account.jsx';
 
@@ -82,7 +83,7 @@ export default class NavBar extends React.Component {
 					<div className="container topnav">
 						<div className="navbar-header">
 							<button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-								<span className="sr-only">Toggle navigation</span> <span className="icon-bar"></span> <span className="icon-bar"></span> <span className="icon-bar"></span>
+								<span className="sr-only"><FormattedMessage id="navbar.toggle_navigation" defaultMessage='Toggle navigation' /></span> <span className="icon-bar"></span> <span className="icon-bar"></span> <span className="icon-bar"></span>
 							</button>
 							<StyledNavbarItem className="navbar-brand topnav clickable" onClick={this.redirectToPersonalDashbaord}>QDAcity</StyledNavbarItem>
 						</div>
@@ -101,7 +102,7 @@ export default class NavBar extends React.Component {
 								</StyledHelpTab>
 								<StyledAccountTab loggedIn={isLoggedIn}  className="dropdown">
 									<StyledNavbarItem  className="dropdownToggle clickable" onClick={this.showAccountDropdown}>
-										Account <b className="caret"></b>
+										<FormattedMessage id="navbar.account" defaultMessage='Account' /> <b className="caret"></b>
 									</StyledNavbarItem>
 			 						<div id="accountView" className="dropdown-menu dropdownContent">
 										<Account ref={this.initializeAccount} client_id={this.props.client_id} scopes={this.props.scopes} callback={this.props.callback} history={this.props.history}/>
@@ -109,7 +110,7 @@ export default class NavBar extends React.Component {
 								</StyledAccountTab>
 								<StyledSigninTab  loggedIn={isLoggedIn} className="dropdown">
 									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showSigninDropdown}>
-											Sign In <b className="caret"></b>
+											<FormattedMessage id="navbar.sign_in" defaultMessage='Sign in' /> <b className="caret"></b>
 										</StyledNavbarItem>
 										<ul  id="signinView" className="dropdown-menu dropdownContent">
 											<li>
@@ -118,7 +119,7 @@ export default class NavBar extends React.Component {
 														<div className="col-md-12">
 															<a id="navBtnSigninGoogle" className="btn  btn-primary" href="#">
 																<i className="fa fa-google fa-2x pull-left"></i>
-																<span >Sign in with Google</span>
+																<span ><FormattedMessage id="navbar.google_sign_in" defaultMessage='Sign in with Google' /></span>
 															</a>
 														</div>
 													</div>

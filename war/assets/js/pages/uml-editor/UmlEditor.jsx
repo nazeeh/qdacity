@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import ConsistencyManager from './ConsistencyManager.js';
@@ -258,7 +259,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
-	 * Callback for the graphView zoom function. 
+	 * Callback for the graphView zoom function.
 	 */
 	onZoom(percentage) {
 		this.umlEditor.toolbar.onZoom(percentage);
@@ -268,6 +269,7 @@ export default class UmlEditor extends React.Component {
 	 * Opens a modal, where the user can select a can select a code for a new class field.
 	 */
 	openClassFieldModal(cell) {
+		const {formatMessage} = IntlProvider.intl;
 		const _this = this;
 
 		const code = this.getCodeByNode(cell);
@@ -275,7 +277,9 @@ export default class UmlEditor extends React.Component {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
 		const mappingIdentifier = (new CreateClassFieldAction()).getIdentifier();
 
-		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
+		const addFieldModal = new UmlCodePropertyModal(this,
+			formatMessage({ id: 'umleditor.add_field', defaultMessage: 'Add new Field' }),
+			code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addFieldModal.showModal().then(function (data) {
 			_this.createField(code, data.selectedCode);
@@ -286,6 +290,7 @@ export default class UmlEditor extends React.Component {
 	 * Opens a modal, where the user can select a can select a code for a new class method.
 	 */
 	openClassMethodModal(cell) {
+		const {formatMessage} = IntlProvider.intl;
 		const _this = this;
 
 		const code = this.getCodeByNode(cell);
@@ -293,7 +298,9 @@ export default class UmlEditor extends React.Component {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
 		const mappingIdentifier = (new CreateClassMethodAction()).getIdentifier();
 
-		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
+		const addMethodModal = new UmlCodePropertyModal(this,
+			formatMessage({ id: 'umleditor.add_method', defaultMessage: 'Add new Method' }),
+			code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addMethodModal.showModal().then(function (data) {
 			_this.createMethod(code, data.selectedCode);
@@ -321,14 +328,14 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
-	 * Returns the code with the given id. 
+	 * Returns the code with the given id.
 	 */
 	getCodeById(id) {
 		return this.props.getCodeById(id);
 	}
 
 	/**
-	 * Returns the code with the given codeId. 
+	 * Returns the code with the given codeId.
 	 */
 	getCodeByCodeId(codeId) {
 		return this.props.getCodeByCodeId(codeId);
@@ -443,7 +450,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
-	 * Adds a new edge to the database. 
+	 * Adds a new edge to the database.
 	 */
 	createEdge(sourceCode, destinationCode, edgeType) {
 		const relationMetaModelEntityName = this.metaModelMapper.getEdgeRelationEntityName(edgeType);
@@ -452,7 +459,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
-	 * Adds a new field to the database. 
+	 * Adds a new field to the database.
 	 */
 	createField(sourceCode, destinationCode) {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
@@ -461,7 +468,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
-	 * Adds a new method to the database. 
+	 * Adds a new method to the database.
 	 */
 	createMethod(sourceCode, destinationCode) {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
@@ -470,7 +477,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
-	 * Create a new relation in the database. 
+	 * Create a new relation in the database.
 	 */
 	createRelation(sourceCode, destinationCode, relationMetaModelEntityName) {
 		const _this = this;

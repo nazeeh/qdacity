@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import Prompt from '../../../common/modals/Prompt';
 
@@ -17,9 +18,13 @@ export default class ButtonAddClass extends React.Component {
 	}
 
 	buttonClicked() {
+		const {formatMessage} = IntlProvider.intl;
 		const _this = this;
 
-		let prompt = new Prompt('Give your code a name', 'Code Name');
+		let prompt = new Prompt(
+			formatMessage({ id: 'buttonaddclass.code_name_prompt', defaultMessage: 'Give your code a name' }),
+			formatMessage({ id: 'buttonaddclass.code_name_prompt.sample', defaultMessage: 'Code Name' })
+		);
 
 		prompt.showModal().then(function (codeName) {
 			let mmElementIDs = [];

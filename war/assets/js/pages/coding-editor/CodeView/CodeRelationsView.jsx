@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import NewCodeRelation from '../../../common/modals/NewCodeRelation';
@@ -256,7 +257,7 @@ export default class CodeRelationsView extends React.Component {
 		return (
 			<StyledAddRelationBtn onClick={onClick}>
                 <i className="fa fa-plus fa-lg "></i>
-                <span>Add Relationship</span>
+                <span><FormattedMessage id='coderelationsview.add_relationship' defaultMessage='Add Relationship' /></span>
             </StyledAddRelationBtn>
 		);
 	}
@@ -269,7 +270,7 @@ export default class CodeRelationsView extends React.Component {
 		return (
 			<StyledRelationsView className="col-sm-7">
                 <div>
-                    <StyledHeadline>Outgoing relations</StyledHeadline>
+                    <StyledHeadline><FormattedMessage id='coderelationsview.outgoing_relations' defaultMessage='Outgoing relations' /></StyledHeadline>
 
                     {_this.renderAddRelationButton(() => {_this.createRelationship()})}
                 </div>
@@ -309,7 +310,7 @@ export default class CodeRelationsView extends React.Component {
 		return (
 			<StyledRelationsView className="col-sm-5">
 		        <div>
-    		        <StyledHeadline>Incoming relations</StyledHeadline>
+    		        <StyledHeadline><FormattedMessage id='coderelationsview.incoming_relations' defaultMessage='Incoming relations' /></StyledHeadline>
 
                     {_this.renderAddRelationButton(() => {_this.createIncomingRelationship()})}
 		        </div>

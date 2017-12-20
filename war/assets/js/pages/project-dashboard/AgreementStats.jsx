@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import Slider from 'react-slick';
 import styled from 'styled-components';
 
@@ -20,21 +21,30 @@ export default class AgreementStats extends React.Component {
 			packages: ['corechart', 'bar']
 		});
 
-
 		this.state = {
 			reports: []
 		};
 
-		this.options = {
-			title: 'Agreement by Document',
+		//this.componentDidMount = this.componentDidMount.bind(this);
+
+		/*var _this = this;
+		google.charts.setOnLoadCallback(function () {
+				_this.forceUpdate();
+				});*/
+	}
+
+	getOptions() {
+		const {formatMessage} = IntlProvider.intl;
+		return {
+			title: formatMessage({id: 'agreementstats.agreement_by_document', defaultMessage: 'Agreement by Document'}),
 			colors: ['#00a65a', '#5f5f5f', '#797979', '#929292', '#337ab7'],
 			hAxis: {
-				title: 'Documents',
+				title: formatMessage({id: 'agreementstats.documents', defaultMessage: 'Documents'}),
 				format: 'h:mm a',
 
 			},
 			vAxis: {
-				title: 'Agreement',
+				title: formatMessage({id: 'agreementstats.agreement', defaultMessage: 'Agreement'}),
 				viewWindow: {
 					min: 0,
 					max: 1
@@ -47,12 +57,6 @@ export default class AgreementStats extends React.Component {
 				height: "70%"
 			}
 		};
-		//this.componentDidMount = this.componentDidMount.bind(this);
-
-		/*var _this = this;
-		google.charts.setOnLoadCallback(function () {
-				_this.forceUpdate();
-				});*/
 	}
 
 	addReports(reports) {
@@ -64,12 +68,13 @@ export default class AgreementStats extends React.Component {
 	}
 
 	renderReport(report, index) {
+		const {formatMessage} = IntlProvider.intl;
 
 		var data = new google.visualization.DataTable();
-		data.addColumn('string', 'Document');
-		data.addColumn('number', 'F-Measure');
-		data.addColumn('number', 'Recall');
-		data.addColumn('number', 'Precision');
+		data.addColumn('string', formatMessage({ id: 'agreementstats.document', defaultMessage: 'Document'}));
+		data.addColumn('number', formatMessage({ id: 'agreementstats.f_measure', defaultMessage: 'F-Measure'}));
+		data.addColumn('number', formatMessage({ id: 'agreementstats.recall', defaultMessage: 'Recall'}));
+		data.addColumn('number', formatMessage({ id: 'agreementstats.precision', defaultMessage: 'Precision'}));
 
 		report.documentResults.forEach(function (docResult) {
 			var cells = docResult.reportRow.split(",");
@@ -77,7 +82,7 @@ export default class AgreementStats extends React.Component {
 		});
 
 		return (
-			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index} graphID={"agreementChartId_"+ report.id + "_" + index} data={data} options={this.options}/>
+			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index} graphID={"agreementChartId_"+ report.id + "_" + index} data={data} options={this.getOptions()}/>
 		);
 
 	}

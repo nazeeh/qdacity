@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import SaturationWeights from '../saturation/SaturationWeights';
 
@@ -70,8 +71,8 @@ export default class SaturationCategorySettings extends React.Component {
 			let cellId3 = "cell-category-" + this.state.categoryIdx + "-3";
 			let cellId3input = "input-category-" + this.state.categoryIdx + "-2";
 			let cellId3inputOld = "input-category-" + this.state.categoryIdx + "-2-old";
-
-			let label = this.state.category + " (Average):";
+			const {formatMessage} = IntlProvider.intl;
+			let label = this.state.category + ' (' + formatMessage({id: 'saturationcategorysettings.average', defaultMessage: 'Average' }) + '):';
 			cell.push(<td id={cellId1} key={cellId1} width="50%" >{label}</td>);
 			cell.push(<td id={cellId2} key={cellId2} width="25%">
                         <input id={cellId2input}  type="number"  min="0" max="100"  defaultValue={this.toPercent(avgWeights)} />

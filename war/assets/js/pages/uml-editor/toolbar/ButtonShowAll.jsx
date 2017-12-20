@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -25,7 +26,7 @@ export default class ButtonShowAll extends React.Component {
 		return (
 			<BtnDefault title="Zooms the graph until all classes fit into the screen." onClick={_this.buttonClicked}>
                 <i className="fa fa-arrows-alt"></i>
-                <span>Show all</span>
+                <span><FormattedMessage id='buttonshowall.show_all' defaultMessage='Show all' /></span>
 	        </BtnDefault>
 		);
 	}

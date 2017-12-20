@@ -172,16 +172,5 @@ deploy_rtcsvc:
     - master
   script:
     - cd realtime-service
-    - bash ./deploy_to_compute_engine.sh
+    - bash ./deployment/deploy_from_gitlab_ci.sh
 
-setup_rtcsvc_server:
-  tags:
-    - qdacity
-  stage: deploy
-  environment: Production
-  only:
-    - master
-  script:
-    - cd realtime-service
-    - bash ./setup_compute_instance.sh
-  when: manual

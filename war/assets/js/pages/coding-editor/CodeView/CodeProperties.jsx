@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -75,13 +76,13 @@ export default class CodeProperties extends React.Component {
 		return (
 			<div>
 					<StyledPropertyPanel>
-						<span>Name: </span>
+						<span><FormattedMessage id='codeproperties.name' defaultMessage='Name' />: </span>
 						<input type="text" value={this.props.code.name} onChange={this.changeName}/>
 
-						<span>Author: </span>
+						<span><FormattedMessage id='codeproperties.author' defaultMessage='Author' />: </span>
 						<input type="text" value={this.props.code.author} onChange={this.changeAuthor}/>
 
-						<span>Color: </span>
+						<span><FormattedMessage id='codeproperties.color' defaultMessage='Color' />: </span>
 						<div className="evo-cp-wrap">
 							<StyledColorPicker id="codePropColor" type="text" className="colorPicker evo-cp0"/>
 						</div>
@@ -89,7 +90,7 @@ export default class CodeProperties extends React.Component {
 				<StyledSaveBtn>
 					<BtnDefault onClick={() => this.props.updateSelectedCode(this.props.code, true)}>
 							<i className="fa fa-floppy-o "></i>
-							<span>Save</span>
+							<span><FormattedMessage id='codeproperties.save' defaultMessage='Save' /></span>
 					</BtnDefault>
 				</StyledSaveBtn>
 			</div>

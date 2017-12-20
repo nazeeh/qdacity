@@ -1,4 +1,6 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
@@ -42,7 +44,6 @@ const StyledProjectListMenu = styled.div `
 const StyledProjectList = StyledBoxList.extend `
 	padding-top: 5px;
 `;
-
 
 
 export default class CourseList extends React.Component {
@@ -192,9 +193,14 @@ export default class CourseList extends React.Component {
 	}
 
 	leaveCourse(e, course, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
-		var decider = new BinaryDecider('Please confirm leaving this course', 'Cancel', 'Leave');
+		var decider = new BinaryDecider(
+			formatMessage({ id: 'courselist.leave_course', defaultMessage: 'Please confirm leaving this course' }),
+			formatMessage({ id: 'modal.cancel', defaultMessage: 'Cancel' }),
+			formatMessage({ id: 'modal.leave', defaultMessage: 'Leave' })
+		);
 		decider.showModal().then(function (value) {
 			if (value == 'optionB') {
 				var type = course.type;
@@ -207,9 +213,12 @@ export default class CourseList extends React.Component {
 	}
 
 	deleteCourse(e, course, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
-		var confirm = new Confirm('Do you want to delete the course ' + course.name + '?');
+		var confirm = new Confirm(
+			formatMessage({ id: 'courselist.delete', defaultMessage: 'Do you want to delete the course {course}?' }, { course: course.name })
+		);
 		confirm.showModal().then(function () {
 			var type = course.type;
 			if (typeof type == 'undefined') type = "COURSE";
@@ -227,11 +236,14 @@ export default class CourseList extends React.Component {
 	}
 
 	courseClick(course, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		var statusArray = this.state.listStatus;
 		var courseIndex = statusArray.indexOf(statusArray.find(o => o.selectedCourseID === course.id));
 		if (typeof statusArray[courseIndex] == 'undefined') {
-			var confirm = new Confirm('This course has no terms, would you like to configure it?');
+			var confirm = new Confirm(
+				formatMessage({ id: 'courselist.assign_term', defaultMessage: 'This course has no terms, would you like to configure it?'})
+			);
 			confirm.showModal().then(function () {
 				_this.props.history.push('/CourseDashboard?course=' + course.id);
 			});
@@ -255,11 +267,12 @@ export default class CourseList extends React.Component {
 
 
 	showNewCourseModal() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var modal = new CustomForm('Create a new course', '');
-		modal.addTextInput('name', "Course Name", 'Name', '');
-		modal.addTextInput('term', "Course Term", 'Term', '');
-		modal.addTextField('desc', "Course Description", 'Description');
+		var modal = new CustomForm(formatMessage({ id: 'courselist.create', defaultMessage: 'Create a new course' }), '');
+		modal.addTextInput('name', formatMessage({ id: 'courselist.course_name', defaultMessage: "Course Name" }), 'Name', '');
+		modal.addTextInput('term', formatMessage({ id: 'courselist.course_term', defaultMessage: "Course Term" }), 'Term', '');
+		modal.addTextField('desc', formatMessage({ id: 'courselist.course_desc', defaultMessage: "Course Description" }), 'Description');
 		modal.showModal().then(function (data) {
 			_this.createNewCourse(data.name, data.desc, data.term);
 		});
@@ -317,19 +330,18 @@ export default class CourseList extends React.Component {
 
 	render() {
 		var _this = this;
-
+		const {formatMessage} = IntlProvider.intl;
 
 		//Render Components
 
 		//Render search and newPrjBtn
 
+		const searchFieldPlaceholder = formatMessage({ id: 'courselist.search', defaultMessage: 'Search' });
 		const projectListMenu = <StyledProjectListMenu>
-
-
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					type="text"
-					placeholder="Search"
+					placeholder={searchFieldPlaceholder}
 					value={this.state.search}
 					onChange={this.updateSearch}
 				/>
@@ -341,7 +353,7 @@ export default class CourseList extends React.Component {
 
 					>
 					<i className="fa fa-plus fa-fw"></i>
-					New Course
+					<FormattedMessage id='courselist.new_course' defaultMessage='New Course' />
 					</BtnDefault>
 				</StyledNewPrjBtn>
 

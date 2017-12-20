@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import ReactLoading from '../../../common/ReactLoading.jsx';
@@ -310,7 +311,7 @@ export default class DocumentsView extends React.Component {
 		var _this = this;
 		if (!this.state.isExpanded) {
 			return <StyledInfoBox>
-		      <b>Current Document: {this.getActiveDocument().title}</b>
+		      <b><FormattedMessage id='documentsview.current_document' defaultMessage='Current Document' />: {this.getActiveDocument().title}</b>
 		    </StyledInfoBox>
 		}
 		return (
@@ -345,7 +346,7 @@ export default class DocumentsView extends React.Component {
 					<div className="row no-gutters" >
 						<span className="col-xs-1"></span>
 						<span className="col-xs-10">
-							<b>Documents</b>
+							<b><FormattedMessage id='documentsview.documents' defaultMessage='Documents' /></b>
 							<br/>
 							<span id="docToolBox"  className="collapse in">
 							</span>
