@@ -1,13 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import Jumbotron from '../../common/styles/Jumbotron';
 import { FormattedMessage } from 'react-intl';
 
 export default class WelcomePanel extends React.Component {
-	constructor(props, context) {
+	constructor(props) {
 		super(props);
-		this.authenticationProvider = context.authenticationProvider;
+		this.authenticationProvider = props.auth.authentication;
 		this.redirectToNytProject = this.redirectToNytProject.bind(this);
 	}
 
@@ -43,7 +42,3 @@ export default class WelcomePanel extends React.Component {
 		);
 	}
 }
-
-WelcomePanel.contextTypes = {
-	authenticationProvider: PropTypes.object.require,
-};

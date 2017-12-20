@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 import {
 	BtnDefault,
@@ -8,10 +8,10 @@ import {
 
 export default class Account extends React.Component {
 
-	constructor(props, context) {
+	constructor(props) {
 		super(props);
 
-		this.authenticationProvider = context.authenticationProvider;
+		this.authenticationProvider = props.auth.authentication;
 
 		this.state = {
 			name: '',
@@ -87,8 +87,7 @@ export default class Account extends React.Component {
 								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={() => this.authenticationProvider.changeAccount().then(() => location.reload())}><FormattedMessage id='account.switch_user' defaultMessage='Switch User' /></BtnDefault>
 							</div>
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.signout().then(() => { this.props.history.push('/'); location.reload(); })}><FormattedMessage id='account.sign_out' defaultMessage='Sign Out' /></BtnDefault>
-								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.onSignOut()}>Sign Out</BtnDefault>
+								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.onSignOut()}><FormattedMessage id='account.sign_out' defaultMessage='Sign Out' /></BtnDefault>
 							</div>
 						</div>
 					</div>
@@ -98,9 +97,3 @@ export default class Account extends React.Component {
 		);
 	}
 }
-
-
-
-Account.contextTypes = {
-	authenticationProvider: PropTypes.object.require
-};

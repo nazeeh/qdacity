@@ -10,7 +10,9 @@ import {
 } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
-import AuthProvider from '../common/AuthProvider.jsx';
+import AuthenticationProvider from '../common/AuthenticationProvider.js';
+import AuthorizationProvider from '../common/AuthorizationProvider.js';
+
 
 import NavBar from '../common/NavBar.jsx';
 import Index from './index/Index.jsx';
@@ -29,32 +31,98 @@ import Tutorial from '../common/tutorial/Tutorial.jsx';
 import IntlProvider from '../common/Localization/LocalizationProvider';
 
 export default class App extends React.Component {
+
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			language: 'en',
-			locale: 'en-US',
-			messages: {}
-		};
-
-		this.account = {
-			isSignedIn: () => {
-				return false;
-			}
 		};
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
 		var t=new TutorialEngine(this);
 		this.state = {
+			language: 'en',
+			locale: 'en-US',
+			messages: {},
+
 			tutorialEngine: t,
 			tutorialState:t.tutorialState,
+			
+			isUserSignedIn: false,
+			isUserRegistered: false
 		};
+		this.authenticationProvider = new AuthenticationProvider();
+		this.authorizationProvider = new AuthorizationProvider();
+
+		const _this = this;
+		this.authenticationProvider.addAuthStateListener(function() {
+			// update on every auth state change
+			_this.updateUserStatus();
+		});
+	
+		// on page reloads: also reload profile data		
+		if(this.authenticationProvider.isSignedIn() && this.authenticationProvider.activeNetwork !== 'gapi') {
+			_this.authenticationProvider.synchronizeTokenWithGapi();
+		} else {
+			// try silent sign in
+			_this.authenticationProvider.silentSignInWithGoogle().then(function() {
+				_this.authenticationProvider.synchronizeTokenWithGapi();
+				_this.updateUserStatus() // somehow the auth state listener triggers too early!
+			});
+		}
+	}
+
+	
+	/**
+	 * Updates the state -> the supplied authState
+	 * @returns {Promise}
+	 */
+	updateUserStatus() {
+		const _this = this;
+		const promise = new Promise(
+			function (resolve, reject) {
+				const loginStatus = _this.authenticationProvider.isSignedIn();
+				if(!loginStatus && !_this.state.isUserSignedIn) {
+					// no need to rerender!
+					resolve();
+					return;
+				}
+
+				_this.state.isUserSignedIn = loginStatus;
+				// don't rerender here in order to not show "you are not logged in" prompt!
+				if(!loginStatus) {
+					resolve();
+					return;
+				}
+
+				_this.authenticationProvider.getCurrentUser().then(function(user) {
+					_this.state.isUserRegistered = !!user;
+					_this.setState(_this.state); 
+					resolve();
+				}, function(err) {
+					_this.state.isUserRegistered = false;
+					_this.setState(_this.state); 
+					resolve();
+				})
+			});
+		return promise;
 	}
 
 	componentDidMount()
 	{
 		this.state.tutorialEngine.appRootDidMount();
+	}
+
+	getAuthBundle() {
+		return {
+			authState: {
+				isUserSignedIn: this.state.isUserSignedIn,
+				isUserRegistered: this.state.isUserRegistered
+			},
+			updateUserStatus: () => { return this.updateUserStatus() },
+			authentication: this.authenticationProvider,
+			authorization: this.authorizationProvider
+		}
 	}
 
 	render() {
@@ -65,24 +133,21 @@ export default class App extends React.Component {
 			<IntlProvider app={this} locale={this.state.locale} language={this.state.language} messages={this.state.messages}>
 				<Router>
 					<ThemeProvider theme={Theme}>
-						<AuthProvider>
-							<div>
-								<Route path="/" render={(props) => <NavBar client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} tutorial={tut} {...props} />} />
-								<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard {...props} />} /><Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
-								<Route path="/CourseDashboard" render={(props) => <CourseDashboard account={this.account} {...props} />} />
-								<Route path="/TermDashboard" render={(props)=><TermDashboard account={this.account} {...props} />}/>
-								<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
-								<Route path="/Admin" render={(props) => <Admin account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
-								<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
-								<Route path="/UserMigration" render={(props) => <UserMigration account={this.account} {...props} />} />
-								<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
-								<Route path="/" render={(props)=><Tutorial tutorial={tut} {...props}/>}/>
-							</div>
-						</AuthProvider>
+						<div>
+							<Route path="/" render={(props) => <NavBar auth={this.getAuthBundle()} client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} tutorial={tut} {...props} />} />
+							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard auth={this.getAuthBundle()} {...props} />} /><Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
+							<Route path="/CourseDashboard" render={(props) => <CourseDashboard account={this.account} {...props} />} />
+							<Route path="/TermDashboard" render={(props)=><TermDashboard account={this.account} {...props} />}/>
+							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
+							<Route path="/Admin" render={(props) => <Admin account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
+							<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
+							<Route path="/UserMigration" render={(props) => <UserMigration account={this.account} {...props} />} />
+							<Route exact path="/" render={(props) => <Index auth={this.getAuthBundle()}  {...props} />} />
+							<Route path="/" render={(props)=><Tutorial tutorial={tut} {...props}/>}/>
+						</div>
 					</ThemeProvider>
 				</Router>
 			</IntlProvider>
 		);
 	}
-
 }

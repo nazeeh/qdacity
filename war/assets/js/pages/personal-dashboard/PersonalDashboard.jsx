@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 import ProjectList from "./ProjectList.jsx"
@@ -12,14 +11,13 @@ import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx"
 
 export default class PersonalDashboard extends React.Component {
 
-	constructor(props, context) {
+	constructor(props) {
 		super(props);
 
-		this.context = context;
-		this.authState = context.getAuthState();
 		this.state = {
 			projects: [],
 			courses: [],
+			authState: props.auth.authState
 		};
 
 		this.setProjects = this.setProjects.bind(this);
@@ -33,9 +31,10 @@ export default class PersonalDashboard extends React.Component {
 		scroll(0, 0);
 	}
 
-	// lifecycle hook: update before rerender
-	componentWillUpdate() {
-		this.authState = this.context.getAuthState();
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.state.authState = nextProps.auth.authState;
+		this.setState(this.state);
 	}
 
 	setProjects(projects) {
@@ -95,14 +94,14 @@ export default class PersonalDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.authState.isUserSignedIn || !this.authState.isUserRegistered) {
+		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 		return (
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
-						  <WelcomePanel account={this.props.account}  history={this.props.history}/>
+						  <WelcomePanel auth={this.props.auth} account={this.props.account}  history={this.props.history}/>
 						  <AdvertPanel/>
 					</div>
 					<div className="col-lg-4">
@@ -140,7 +139,3 @@ export default class PersonalDashboard extends React.Component {
 		);
 	}
 }
-
-PersonalDashboard.contextTypes = {
-    getAuthState: PropTypes.func.require
-};

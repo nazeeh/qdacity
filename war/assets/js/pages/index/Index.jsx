@@ -61,7 +61,7 @@ export default class Index extends React.Component {
 			                        <h3><FormattedMessage id="index.subtitle" defaultMessage='QDA on steroids' /></h3>
 			                        <hr className="intro-divider"/>
 
-											<SigninWithGoogleBtn account={this.props.account} history={this.props.history} />
+											<SigninWithGoogleBtn auth={this.props.auth} history={this.props.history} />
 
 			                    </div>
 			                </div>

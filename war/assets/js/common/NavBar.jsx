@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
 import Account from './Account.jsx';
@@ -32,23 +31,26 @@ const StyledDropdownLinks = styled.div `
 `;
 
 export default class NavBar extends React.Component {
-	constructor(props, context) {
+	constructor(props) {
 		super(props);
 		this.state = {
-			user: {}
+			userData: {},
+			authState: props.auth.authState
 		};
 
-		this.authenticationProvider = context.authenticationProvider;
-		this.userData = {};
+		this.authenticationProvider = props.auth.authentication;
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 	}
 	
-	// lifecycle hook: update before rerender
-	componentWillUpdate() {
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
 		const _this = this;
+		this.state.authState = nextProps.auth.authState;
+		this.setState(this.state);
 		this.authenticationProvider.getCurrentUser().then((user) => {
-			_this.userData = user;
+			_this.state.userData = user;
+			_this.setState(_this.state);
 		}, () => {
 			console.log("Could not get current user")
 		});
@@ -73,9 +75,7 @@ export default class NavBar extends React.Component {
 	
 
 	render() {
-		
-		var isLoggedIn=this.account.isSignedIn && this.account.isSignedIn();
-		
+				
 		return (
 			<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
 					<div className="container topnav">
@@ -87,13 +87,13 @@ export default class NavBar extends React.Component {
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
-								<StyledHelpTab loggedIn={isLoggedIn} className="dropdown">
+								<StyledHelpTab loggedIn={this.state.authState.isUserSignedIn} className="dropdown">
 									<StyledNavbarItem className="dropdownToggle clickable" onClick={function(){this.showHelpDropdown();}.bind(this)}>Help</StyledNavbarItem>
 									<div id="helpView" className="dropdown-menu dropdownContent">
-										<StyledDropdownLinks loggedIn={isLoggedIn} className="clickable" onClick={function(){alert("Coming Soon...");}}>		
+										<StyledDropdownLinks loggedIn={this.state.authState.isUserSignedIn} className="clickable" onClick={function(){alert("Coming Soon...");}}>		
 											<div>Faq</div>
 										</StyledDropdownLinks>
-										<StyledDropdownLinks showOnlyIfLoggedIn loggedIn={isLoggedIn} className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
+										<StyledDropdownLinks showOnlyIfLoggedIn loggedIn={this.state.authState.isUserSignedIn} className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
 											<div>Tutorial Overview</div>	
 										</StyledDropdownLinks>
 									</div>
@@ -103,7 +103,7 @@ export default class NavBar extends React.Component {
 										<FormattedMessage id="navbar.account" defaultMessage='Account' /> <b className="caret"></b>
 									</StyledNavbarItem>
 			 						<div id="accountView" className="dropdown-menu dropdownContent">
-										<Account history={this.props.history}/>
+										<Account auth={this.props.auth} history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
 								<StyledSigninTab  loggedIn={this.authenticationProvider.isSignedIn && this.authenticationProvider.isSignedIn()} className="dropdown">
@@ -132,7 +132,7 @@ export default class NavBar extends React.Component {
 											</li>
 										</ul>
 								</StyledSigninTab>
-                                {this.userData.type==="ADMIN" && <li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>}
+                                {this.state.userData.type==="ADMIN" && <li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>}
 							</ul>
 						</div>
 					</div>
@@ -140,7 +140,3 @@ export default class NavBar extends React.Component {
 		);
 	}
 }
-
-NavBar.contextTypes = {
-    authenticationProvider: PropTypes.object.require
-};
