@@ -79,8 +79,10 @@ export default class UserMigration extends React.Component {
         this.access_token = null;
         this.id_token = null;
 
+        this.authenticationProvider = this.props.auth.authentication;
+
         const _this = this;
-        this.props.account.addAuthStateListener(function(payload) {
+        this.authenticationProvider.addAuthStateListener(function(payload) {
             // update on every auth state change
             if(!! payload.authResponse) {
                 _this.access_token = payload.authResponse.access_token;
@@ -94,7 +96,7 @@ export default class UserMigration extends React.Component {
     }
 
     updateUserStatus() {
-        const loginStatus = this.props.account.isSignedIn();
+        const loginStatus = this.authenticationProvider.isSignedIn();
 		if(loginStatus !== this.state.isSignedIn) {
             if(!loginStatus) {
                 this.setState({
@@ -109,7 +111,7 @@ export default class UserMigration extends React.Component {
                 return;
             }
             const _this = this;
-            this.props.account.getProfile().then((profile) => {
+            this.authenticationProvider.getProfile().then((profile) => {
                 _this.state.name = profile.displayName;
                 _this.state.email = profile.email;
                 _this.state.picSrc = profile.thumbnail;
@@ -134,7 +136,7 @@ export default class UserMigration extends React.Component {
             // all other requests need id_token here as header
             _this.resetGapiToken();
             
-            this.props.account.getCurrentUser().then((user) => {
+            this.authenticationProvider.getCurrentUser().then((user) => {
                 _this.state.isAlreadyMigrated = !! user.id;
                 _this.setState(_this.state);
             }, (error) => {
@@ -150,7 +152,7 @@ export default class UserMigration extends React.Component {
     }
 
     signIn() {
-        this.props.account.signIn().then(function() {
+        this.authenticationProvider.signInWithGoogle().then(function() {
 
         }, (error) => {
             console.error("Sign in failed.");
@@ -158,7 +160,7 @@ export default class UserMigration extends React.Component {
     }
 
     signOut() {
-        this.props.account.signout().then(function() {
+        this.authenticationProvider.signout().then(function() {
             
         }, (err) => {
             console.error("Sign out failed.");
