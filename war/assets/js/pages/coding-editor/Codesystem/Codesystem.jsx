@@ -59,7 +59,13 @@ export default class Codesystem extends SimpleCodesystem {
 			slected: {},
 			codesystemID: -1,
 			codesystem: [],
-			height: "100px"
+			height: "100px",
+			
+			userProfile: {
+				name: '',
+				email: '',
+				picSrc: ''
+			}
 		};
 
 		this.codesystemTop = 0;
@@ -77,6 +83,19 @@ export default class Codesystem extends SimpleCodesystem {
 		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
 		this.init = this.init.bind(this);
 		this.getCodeById = this.getCodeById.bind(this);
+
+		this.updateUserProfileStatusFromProps(props);
+	}
+	
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserProfileStatusFromProps(nextProps);
+	}
+	
+	updateUserProfileStatusFromProps(targetedProps) {
+		const _this = this;
+		_this.state.userProfile = targetedProps.userProfile
+		_this.setState(_this.state);
 	}
 
 	setUmlEditor(umlEditor) {
@@ -182,7 +201,7 @@ export default class Codesystem extends SimpleCodesystem {
 
 		// Build the Request Object
 		var code = {
-			author: this.props.account.getProfile().getName(),
+			author: this.state.userProfile.name,
 			name: name,
 			subCodesIDs: new Array(),
 			parentID: _this.state.selected.codeID,
@@ -364,7 +383,6 @@ export default class Codesystem extends SimpleCodesystem {
 						projectID={this.props.projectID}
 						projectType={this.props.projectType}
 						selected={this.state.selected}
-						account={this.props.account}
 						codeRemoved={this.codeRemoved}
 						createCode={this.createCode}
 						updateCodingCount={this.updateCodingCount}
@@ -372,7 +390,8 @@ export default class Codesystem extends SimpleCodesystem {
 						editorCtrl={this.props.editorCtrl}
 						documentsView={this.props.documentsView}
                         pageView={this.props.pageView}
-					    getCodeById={this.getCodeById}>
+					    getCodeById={this.getCodeById}
+						userProfile={this.state.userProfile}>
 					</CodesystemToolbar>
 				</StyledToolBar>
 

@@ -33,12 +33,29 @@ const StyledBtnStack = styled.div `
 export default class CodesystemToolbar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			userProfile: {
+				name: '',
+				email: '',
+				picSrc: ''
+			}
+		};
 
 		this.insertCode = this.insertCode.bind(this);
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
 		this.showCodingsOverview = this.showCodingsOverview.bind(this);
+	}
+	
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserProfileStatusFromProps(nextProps);
+	}
+	
+	updateUserProfileStatusFromProps(targetedProps) {
+		const _this = this;
+		_this.state.userProfile = targetedProps.userProfile
+		_this.setState(_this.state);
 	}
 
 	removeCode(code) {
@@ -123,7 +140,7 @@ export default class CodesystemToolbar extends React.Component {
 		var selected = this.props.selected;
 		ProjectEndpoint.incrCodingId(_this.props.projectID, _this.props.projectType).then(function (resp) {
 			var codingID = resp.maxCodingID;
-			var author = _this.props.account.getProfile().getName();
+			var author = this.state.userProfile.name;
 
 			_this.props.editorCtrl.setCoding(codingID, selected.codeID, selected.name, author);
 			//_this.props.documentsView.updateCurrentDocument(_this.props.editorCtrl.getHTML());

@@ -135,6 +135,16 @@ class CodingEditor extends React.Component {
 			isSignedIn: false,
 			isRegistered: false,
 			fontSize: 13,
+
+			authState: {
+				isUserSignedIn: false,
+				isUserRegistered: false
+			},
+			userProfile: {
+				name: '',
+				email: '',
+				picSrc: ''
+			}
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -166,32 +176,40 @@ class CodingEditor extends React.Component {
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
 		
-		this.props.account.addAuthStateListener(function() {
-			// update on every auth state change
-			_this.updateUserStatus();
-		});
-		
 		// update on initialization
-		this.updateUserStatus();
-
+		this.updateUserStatusFromProps(props);
+		
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
+	}
 
+	
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserStatusFromProps(nextProps);
+	}
+	
+	updateUserStatusFromProps(targetedProps) {
+		this.state.authState = targetedProps.auth.authState;
+		this.setState(this.state);
 
+		const _this = this;
+		targetedProps.auth.authentication.getProfile().then(function(profile) {
+			_this.state.userProfile = {
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail
+			};
+			_this.setState(_this.state);
+
+			if (_this.state.userProfile.email !== '') {
+				_this.syncService.logon(_this.state.userProfile);
+			}
+		});
 	}
 
 	componentDidMount() {
-		if (this.props.account.state.email !== '') {
-			this.syncService.logon(this.props.account.state);
-		}
-
 		document.getElementsByTagName("body")[0].style["overflow-y"] = "hidden";
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.account.state.email !== '') {
-			this.syncService.logon(nextProps.account.state);
-		}
 	}
 
 	componentWillUnmount() {
@@ -372,18 +390,6 @@ class CodingEditor extends React.Component {
 		return null;
 	}
 
-	updateUserStatus() {
-		const _this = this;
-		const loginStatus = this.props.account.isSignedIn();
-		if(loginStatus !== this.state.isSignedIn) {
-			this.state.isSignedIn = loginStatus;
-			this.props.account.getCurrentUser().then(function(user) {
-				_this.state.isRegistered = !!user;
-				_this.setState(_this.state); 
-			})
-		}
-	}
-
 	_setFontFace(fontface) {
 		this.state.editorCtrl.setFontFace(fontface);
 	}
@@ -396,7 +402,7 @@ class CodingEditor extends React.Component {
 	};
 
 	render() {
-		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		if (this.state.project.getCodesystemID() == -1) this.init();
 
         const fonts = [
@@ -460,7 +466,7 @@ class CodingEditor extends React.Component {
                             umlEditor = {this.umlEditorRef}
                             projectID={this.state.project.getId()}
                             projectType={this.state.project.getType()}
-                            account={this.props.account}
+							userProfile={this.state.userProfile}
                             codesystemId={this.state.project.getCodesystemID()}
                             toggleCodingView={this.toggleCodingView}
                             editorCtrl={this.state.editorCtrl}
