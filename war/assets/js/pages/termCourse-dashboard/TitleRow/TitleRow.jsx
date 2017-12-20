@@ -18,7 +18,7 @@ export default class TitleRow extends React.Component {
 	courseTitleClicked(e) {
 		this.props.history.push('/CourseDashboard?course=' + this.props.course.id);
 	}
-	
+
 	render() {
 		var courseName = (this.props.course.name ? this.props.course.name : "")
 		var termCourseName = (this.props.termCourse.term ? this.props.termCourse.term : "")

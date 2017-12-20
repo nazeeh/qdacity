@@ -90,8 +90,7 @@ export default class ExerciseList extends React.Component {
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = this.state.exercises.slice(firstItem, lastItem);
 
-		function prjClick(prj) {
-		}
+		function prjClick(prj) {}
 
 		const renderListItems = itemsToDisplay.map((exercise, index) => {
 			return <StyledListItemDefault key={index} className="clickable">

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 //Base Structure
 
 //Overlay, which appears if for example a MessageBox appears
-const OverlayVisual = styled.div`
+const OverlayVisual = styled.div `
 	position: fixed;
 	display: ${props =>props.tutorial.tutorialState.showOverlayVisual ? 'inline' : 'none'};
 	width: 100%;
@@ -19,7 +19,7 @@ const OverlayVisual = styled.div`
 
 //Overlay, which appears for blocking most of the visible dom-objects to be clicked or interacted 
 //(if i want steer a user in a certain direction)
-const OverlayBlockInteraction = styled.div`
+const OverlayBlockInteraction = styled.div `
 	position: fixed;
 	display: ${props =>props.tutorial.tutorialState.showOverlayBlockInteraction ? 'inline' : 'none'};
 	width: 100%;
@@ -32,7 +32,7 @@ const OverlayBlockInteraction = styled.div`
 	z-index: 1900;
 `;
 
-const MessageBox = styled.div`
+const MessageBox = styled.div `
 	position: fixed;
 	top: -20%;
 	bottom: 0;
@@ -58,16 +58,16 @@ const MessageBox = styled.div`
 	display: ${props =>props.tutorial.tutorialState.showMessageBoxContent>0 ? 'inline' : 'none'};
 `;
 
-const MBLoading = styled.div`
+const MBLoading = styled.div `
 	display: ${props =>props.tutorial.tutorialState.showMessageBoxContent==1 ? 'inline' : 'none'};
 `;
 
 
-const MBTutorialOverview = styled.div`
+const MBTutorialOverview = styled.div `
 	display: ${props =>props.tutorial.tutorialState.showMessageBoxContent==2 ? 'inline' : 'none'};
 `;
 
-const ButtonGeneric = styled.button`
+const ButtonGeneric = styled.button `
 	background: ${props =>props.white ? '000' : 'fff'};
 	color: background: ${props =>props.white ? 'fff' : '000'};
 	border: 2px solid #000;	
@@ -81,7 +81,7 @@ const ButtonGeneric = styled.button`
 	padding: .75em 2em;	
 `;
 
-const Pointer = styled.div`
+const Pointer = styled.div `
 	height:20px; 
 	width:20px; 
 	position: absolute; 
@@ -94,7 +94,7 @@ const Pointer = styled.div`
 
 //Detail Structure
 
-const TutorialOverviewTitle = styled.div`
+const TutorialOverviewTitle = styled.div `
 	font-size: 18px,
 `;
 
@@ -108,9 +108,9 @@ export default class Tutorial extends React.Component {
 	}
 
 	render() {
-		if(this.props.tutorial.tutorialState.isActive) {
+		if (this.props.tutorial.tutorialState.isActive) {
 			return (
-					<div>						
+				<div>						
 						<OverlayVisual {...this.props}/>
 						<OverlayBlockInteraction {...this.props}/>
 						<Pointer  {...this.props}><img src={"/assets/img/tutorial/arrow"+this.props.tutorial.tutorialState.pointer.direction+"Directed.png"}/></Pointer>						
@@ -131,9 +131,8 @@ export default class Tutorial extends React.Component {
 					</div>
 			);
 		}
-		
-	return null;
-	
+
+		return null;
+
 	}
 }
-

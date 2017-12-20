@@ -34,7 +34,7 @@ export default class TwoDropDowns extends React.Component {
 		var _this = this;
 		var projectNameList = this.state.projectNameList;
 		if (!(typeof projectNameList == 'undefined') && (projectNameList.length > 0)) {
-				text = projectNameList[0].text;
+			text = projectNameList[0].text;
 		}
 		return text;
 	}
@@ -43,7 +43,7 @@ export default class TwoDropDowns extends React.Component {
 	render() {
 		console.log(this.state.projectNameList)
 		return (
-				<DropDownButton items={this.state.projectNameList} initText = {this.defineInitText()}></DropDownButton>
+			<DropDownButton items={this.state.projectNameList} initText = {this.defineInitText()}></DropDownButton>
 		)
 	}
 

@@ -43,14 +43,14 @@ export default class ExerciseList extends React.Component {
 	}
 
 	init() {
-			if (!this.userPromise) {
-				this.userPromise = this.props.account.getCurrentUser();
-				this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId());
-				this.fetchTermCourseData();
-			}
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId());
+			this.fetchTermCourseData();
+		}
 	}
 
-	fetchTermCourseData () {
+	fetchTermCourseData() {
 		var _this = this;
 		var projects = [];
 		this.getExercisesPromise.then(function (resp) {
@@ -72,7 +72,7 @@ export default class ExerciseList extends React.Component {
 		modal.addDropDown(this.state.projects);
 		modal.addTextInput('name', "Exercise Name", 'Name', '');
 		modal.showModal().then(function (data) {
-				_this.createNewExercise(data.name);
+			_this.createNewExercise(data.name);
 		});
 	}
 
