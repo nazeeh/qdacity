@@ -45,22 +45,37 @@ export default class CourseDashboard extends React.Component {
 		this.state = {
 			course: course,
 			isCourseOwner: false,
-			isSignedIn: false,
-			isRegistered: false
+			authState: {
+				isUserSignedIn: false,
+				isUserRegistered: false
+			}
 		};
 		$("body").css({
 			overflow: "auto"
 		});
 
+		this.authenticationProvider = props.auth.authentication;
+
 		const _this = this;
-		this.props.account.addAuthStateListener(function() {
+		this.authenticationProvider.addAuthStateListener(function() {
 			// update on every auth state change
-			_this.updateUserStatus();
+			_this.updateUserStatusFromProps(_this.props);
 		});
 		
 		// update on initialization
-		this.updateUserStatus();
+		this.updateUserStatusFromProps(props);
 	}
+
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserStatusFromProps(nextProps);
+	}
+	
+	updateUserStatusFromProps(targetedProps) {
+		this.state.authState = targetedProps.auth.authState;
+		this.setState(this.state);
+	}
+
 
 	setCourse(course) {
 		this.setState({
@@ -73,12 +88,11 @@ export default class CourseDashboard extends React.Component {
 		var _this = this;
 		var id = term.id;
 		var course = this.state.course;
-		_this.props.account.getCurrentUser().then(function (resp) {
+		this.authenticationProvider.getCurrentUser().then(function (resp) {
 			term.participants.push(resp.id);
 			term.isUserParticipant = true;
-			_this.setState({
-				course: course
-			});
+			_this.state.course = course;
+			_this.setState(_this.state);
 		});
 	}
 
@@ -89,16 +103,15 @@ export default class CourseDashboard extends React.Component {
 		var course = this.state.course;
 		term.participants.splice(term.participants.indexOf(term.id), 1);
 		term.isUserParticipant = false;
-		_this.setState({
-			course: course
-		});
+		_this.state.course = course;
+		_this.setState(_this.state);
 	}
 
 
 
 	init() {
 		if (!this.userPromise) {
-			this.userPromise = this.props.account.getCurrentUser();
+			this.userPromise = this.authenticationProvider.getCurrentUser();
 			this.setUserRights();
 		}
 	}
@@ -106,28 +119,13 @@ export default class CourseDashboard extends React.Component {
 	setUserRights() {
 		var _this = this;
 		this.userPromise.then(function (user) {
-			var isCourseOwner = _this.props.account.isCourseOwner(user, _this.state.course.getId());
-			_this.setState({
-				isCourseOwner: isCourseOwner
-			});
+			var isCourseOwner = _this.props.auth.authorization.isCourseOwner(user, _this.state.course.getId());
+			_this.state.isCourseOwner = isCourseOwner;
 		});
 	}
-	
-	updateUserStatus() {
-		const _this = this;
-		const loginStatus = this.props.account.isSignedIn();
-		if(loginStatus !== this.state.isSignedIn) {
-			this.state.isSignedIn = loginStatus;
-			this.props.account.getCurrentUser().then(function(user) {
-				_this.state.isRegistered = !!user;
-				_this.setState(_this.state); 
-			})
-		}
-	}
-
 
 	render() {
-		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) return (<UnauthenticatedUserPanel history={this.props.history}/>);
 
 		return (
 			<StyledDashboard>
@@ -138,7 +136,7 @@ export default class CourseDashboard extends React.Component {
 							<h3 className="box-title"><FormattedMessage id='coursedashboard.terms' defaultMessage='Terms' /></h3>
 						</div>
 						<div className="box-body">
-							<TermCourseList account={this.props.account} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse} history={this.props.history}/>
+							<TermCourseList auth={this.props.auth} addParticipant={this.addParticipant} removeParticipant={this.removeParticipant} course={this.state.course} setCourse={this.setCourse} history={this.props.history}/>
 						</div>
 					</div>
 				</div>

@@ -49,6 +49,7 @@ export default class TermCourseList extends React.Component {
 		super(props);
 
 		this.showNewTermCourseModal = this.showNewTermCourseModal.bind(this);
+		this.authenticationProvider = props.auth.authentication;
 
 		this.init();
 	}
@@ -60,7 +61,7 @@ export default class TermCourseList extends React.Component {
 		var isUserOwner = [];
 		var coursePromise = CourseEndpoint.getCourse(course.getId());
 		var courseTermListPromise = CourseEndpoint.listTermCourse(course.getId());
-		var getAccountPromise = this.props.account.getCurrentUser();
+		var getAccountPromise = this.authenticationProvider.getCurrentUser();
 
 		//Get the course, its terms, participants and save all info in the course object
 		coursePromise.then(function (resp) {
@@ -168,7 +169,7 @@ export default class TermCourseList extends React.Component {
 			)
 		);
 		confirm.showModal().then(function () {
-			_this.props.account.getCurrentUser().then(function (resp) {
+			_this.props.auth.authentication.getCurrentUser().then(function (resp) {
 				CourseEndPoint.addParticipant(term.id, resp.id).then(function (resp2) {
 					_this.props.addParticipant(term);
 				});
@@ -187,7 +188,7 @@ export default class TermCourseList extends React.Component {
 			)
 		);
 		confirm.showModal().then(function () {
-			_this.props.account.getCurrentUser().then(function (resp) {
+			_this.authenticationProvider.getCurrentUser().then(function (resp) {
 				CourseEndPoint.removeParticipant(term.id, resp.id).then(function (resp2) {
 					_this.props.removeParticipant(term);
 				});
@@ -279,7 +280,6 @@ export default class TermCourseList extends React.Component {
 				</div>
 			])
 		}
-		var account = this.props.account;
 		const itemsToDisplay = this.props.course.terms;
 		const renderListItems = itemsToDisplay.map((term, index) => {
 			if (term.isOpen == "true") {
