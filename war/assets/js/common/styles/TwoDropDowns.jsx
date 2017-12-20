@@ -6,11 +6,13 @@ export default class TwoDropDowns extends React.Component {
 
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			projects: this.props.projects,
 			projectNameList: []
 		}
+	}
+
+	componentDidMount() {
 		this.init();
 	}
 
@@ -23,8 +25,8 @@ export default class TwoDropDowns extends React.Component {
 				text: project.name
 			});
 		});
-		console.log(projectNameList);
-		_this.setState({
+
+		this.setState({
 			projectNameList: projectNameList
 		});
 	}
@@ -33,17 +35,18 @@ export default class TwoDropDowns extends React.Component {
 		var text = "";
 		var _this = this;
 		var projectNameList = this.state.projectNameList;
+		console.log(projectNameList);
 		if (!(typeof projectNameList == 'undefined') && (projectNameList.length > 0)) {
-			text = projectNameList[0].text;
+				text = projectNameList[0].text;
 		}
 		return text;
 	}
 
 
 	render() {
-		console.log(this.state.projectNameList)
+	console.log(this.props.projects.items);
 		return (
-			<DropDownButton items={this.state.projectNameList} initText = {this.defineInitText()}></DropDownButton>
+				<DropDownButton items={this.state.projectNameList} initText = {this.props.projects.items[0].name}></DropDownButton>
 		)
 	}
 
