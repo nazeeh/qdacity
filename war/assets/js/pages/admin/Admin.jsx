@@ -5,25 +5,42 @@ import Users from './Users.jsx';
 import AdminStats from './AdminStats.jsx';
 import AdminProjectList from "./AdminProjectList.jsx";
 
+import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
+
 export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
             projects: [],
-			selectedUserId: ''
+			selectedUserId: '',
+			authState: {
+				isUserSignedIn: false,
+				isUserRegistered: false
+			}
         };
 
         this.setProjects = this.setProjects.bind(this);
         this.removeProject = this.removeProject.bind(this);
 
+		// update on initialization
+		this.updateUserStatusFromProps(props);
 		scroll(0, 0);
 	}
 
-	setSelectedUserId(userId) {
-        this.setState({
-            selectedUserId: userId
-        });
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserStatusFromProps(nextProps);
+	}
 
+	updateUserStatusFromProps(targetedProps) {
+		this.state.authState = targetedProps.auth.authState;
+		this.setState(this.state);
+	}
+
+	setSelectedUserId(userId) {
+		this.setState({
+			selectedUserId: userId
+		});
 	}
 
     setProjects(projects) {
@@ -41,8 +58,10 @@ export default class Admin extends React.Component {
 
 
     render() {
-        if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
-        return (
+        if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+			return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		}
+		return (
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">

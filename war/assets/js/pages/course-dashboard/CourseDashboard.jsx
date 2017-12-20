@@ -57,10 +57,6 @@ export default class CourseDashboard extends React.Component {
 		this.authenticationProvider = props.auth.authentication;
 
 		const _this = this;
-		this.authenticationProvider.addAuthStateListener(function() {
-			// update on every auth state change
-			_this.updateUserStatusFromProps(_this.props);
-		});
 		
 		// update on initialization
 		this.updateUserStatusFromProps(props);
@@ -125,7 +121,9 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+			return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		}
 
 		return (
 			<StyledDashboard>
