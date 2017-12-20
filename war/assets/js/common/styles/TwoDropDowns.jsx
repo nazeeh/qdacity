@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import DropDownButton from './DropDownButton.jsx';
+import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 
 export default class TwoDropDowns extends React.Component {
 
@@ -8,7 +9,9 @@ export default class TwoDropDowns extends React.Component {
 		super(props);
 		this.state = {
 			projects: this.props.projects,
-			projectNameList: []
+			projectNameList: [],
+			revisions: [],
+			revisionNameList:[]
 		}
 	}
 
@@ -19,6 +22,7 @@ export default class TwoDropDowns extends React.Component {
 	init() {
 		var _this = this;
 		var projectNameList = [];
+		var revisionNameList = [];
 		var projects = this.props.projects;
 		projects.items.forEach(function (project) {
 			projectNameList.push({
@@ -26,12 +30,22 @@ export default class TwoDropDowns extends React.Component {
 			});
 		});
 
-		this.setState({
-			projectNameList: projectNameList
+		ProjectEndpoint.listRevisions(this.props.projects.items[0].id).then(function (revisions) {
+			revisions.items.forEach(function (revision) {
+				revisionNameList.push({
+					text: revision.name
+					});
+				});
+					_this.setState({
+						projectNameList: projectNameList,
+						revisionNameList: revisionNameList
+						});
 		});
+
+
 	}
 
-	defineInitText() {
+	defineInitTextProjects() {
 		var text = "";
 		var _this = this;
 		var projectNameList = this.state.projectNameList;
