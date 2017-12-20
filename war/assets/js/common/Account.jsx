@@ -18,39 +18,31 @@ export default class Account extends React.Component {
 			email: '',
 			picSrc: ''
 		};
+
+		this.updateFromProps(props);
 	}
 	
-	// lifecycle hook: update before rerender
-	componentWillUpdate() {
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateFromProps(nextProps);
+	}
+
+	updateFromProps(targetedProps) {
+		this.authenticationProvider = targetedProps.auth.authentication;
 		const _this = this;
 		this.authenticationProvider.getProfile().then(function(profile) {
-				const data = {
-					name:	profile.name,
-					email: profile.email,
-					picSrc: profile.thumbnail
-				};
-				_this.updateState(data);
+			_this.state.name = profile.name;
+			_this.state.email = profile.email;
+			_this.state.picSrc = profile.thumbnail;
+			_this.setState(_this.state);
 		});
 	}
 
 	/**
-	 * Updates the state if neccessary (changes happend to state)
-	 * Otherwise endless recursion is triggered... 
-	 * componentWillUpdate renders first and triggers a rerender as soon as the profile data arrived!
+		 * Redirects to the personal dashboard
 	 */
-	updateState(nextState) {
-		if(this.state.email !== nextState.email && 
-			this.state.name !== nextState.name && 
-			this.state.picSrc !== nextState.picSrc) {
-				this.setState(nextState);
-		}
-	}
-
-  /**
-	 * Redirects to the personal dashboard
-   */
-  redirectToPersonalDashbaord() {
-    this.props.history.push('/PersonalDashboard');
+	redirectToPersonalDashbaord() {
+		this.props.history.push('/PersonalDashboard');
 	}
 
 	onSignOut() {
@@ -62,7 +54,6 @@ export default class Account extends React.Component {
 	}
 
 	render() {
-		console.log(this.state);
 		return (
 			<div>
 				<div className="navbar-content">

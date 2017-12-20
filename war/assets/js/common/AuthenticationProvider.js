@@ -30,7 +30,7 @@ export default class AuthenticationProvider {
      * The active network.
      * Equals one of the network properties or 'gapi'.
      */
-    this.activeNetwork = '';
+    this.activeNetwork = this.network.google;
   }
 
 
@@ -41,7 +41,6 @@ export default class AuthenticationProvider {
    * @return {Promise}
    */
   signInWithGoogle() {
-
     const _this = this;
     const promise = new Promise(
       function (resolve, reject) {
