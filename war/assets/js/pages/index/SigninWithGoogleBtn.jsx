@@ -1,6 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
+
+
+
 import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 
@@ -22,36 +27,37 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 
 	redirect() {
-		var that = this;
+		var _this = this;
 		this.authenticationProvider.getCurrentUser().then(function (value) {
-			that.props.history.push('/PersonalDashboard');
+			_this.props.history.push('/PersonalDashboard');
 		}, function (value) {
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
 				if (value == 'optionA'){
-					that.authenticationProvider.changeAccount().then(function() {
+					_this.authenticationProvider.changeAccount().then(function() {
 						that.redirect();
 					});
 				}
-				else that.registerAccount();
+				else _this.registerAccount();
 			});
 		});
 	}
 
 	registerAccount() {
+		const {formatMessage} = IntlProvider.intl;
+		
 		var _this = this;
 		_this.authenticationProvider.getProfile().then(function(userProfile) {
 
 			var displayNameParts = userProfile.name.split(' ');
 			var displayLastName = displayNameParts.pop();
 			var displayFirstName = displayNameParts.join(' ');
-	
 			vex.dialog.open({
 				message: formatMessage({ id: 'sign.in.with.google.btn.confirm', defaultMessage: 'Please confirm:' }),
 				// FIXME
-				input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + googleProfile.getGivenName() + '" required />'
-				+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + googleProfile.getFamilyName() + '" required />\n'
-				+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + googleProfile.getEmail() + '" required />\n\n',
+				input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + displayFirstName + '" required />'
+					+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + displayLastName + '" required />\n'
+					+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + userProfile.email + '" required />\n\n',
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
 						text: formatMessage({ id: 'sign.in.with.google.btn.register', defaultMessage: 'Register' })
@@ -64,7 +70,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 						return console.log('Cancelled');
 					}
 					_this.authenticationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(function() {
-						_this.props.updateUserStatus().then(function() {
+						_this.props.auth.updateUserStatus().then(function() {
 							_this.redirect();
 						});
 					});
