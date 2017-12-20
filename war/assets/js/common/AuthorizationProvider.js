@@ -22,6 +22,14 @@ export default class AuthorizationProvider {
         return isOwner;
     }
 
+    isTermCourseOwner(user, termCourseID) {
+		var isOwner = false;
+		if (typeof user.termCourses != 'undefined') {
+			isOwner = ((user.termCourses.indexOf(termCourseID) == -1) ? false : true);
+		}
+		return isOwner;
+	}
+
     isValidationCoder(user, valPrj) {
         var isValidationCoder = false;
         if (typeof valPrj.validationCoders !== 'undefined') {
