@@ -135,7 +135,8 @@ export default class App extends React.Component {
 					<ThemeProvider theme={Theme}>
 						<div>
 							<Route path="/" render={(props) => <NavBar auth={this.getAuthBundle()} client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} tutorial={tut} {...props} />} />
-							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard auth={this.getAuthBundle()} {...props} />} /><Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
+							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard auth={this.getAuthBundle()} {...props} />} />
+							<Route path="/ProjectDashboard" render={(props) => <ProjectDashboard auth={this.getAuthBundle()} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
 							<Route path="/CourseDashboard" render={(props) => <CourseDashboard auth={this.getAuthBundle()} {...props} />} />
 							<Route path="/TermDashboard" render={(props)=><TermDashboard auth={this.getAuthBundle()} {...props} />}/>
 							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig auth={this.getAuthBundle()} {...props} />}/>

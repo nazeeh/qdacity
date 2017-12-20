@@ -38,9 +38,13 @@ export default class ProjectDashboard extends React.Component {
 			isProjectOwner: false,
 			isValidationCoder: false,
 			googleChartsLoaded: false,
-			isSignedIn: false,
-			isRegistered: false
+			authState: {
+				isUserSignedIn: false,
+				isUserRegistered: false
+			}
 		};
+
+		this.authenticationProvider = this.props.auth.authentication;
 
 		this.props.chartScriptPromise.then(() => {
 			this.setState({
@@ -49,30 +53,34 @@ export default class ProjectDashboard extends React.Component {
 		});
 		this.addReports = this.addReports.bind(this);
 
-		const _this = this;
-		this.props.account.addAuthStateListener(function() {
-			// update on every auth state change
-			_this.updateUserStatus();
-		});
-		
 		// update on initialization
-		this.updateUserStatus();
-
+		this.updateUserStatusFromProps(props);
+		
 		scroll(0, 0);
 	}
 
 	init() {
 		if (!this.userPromise) {
-			this.userPromise = this.props.account.getCurrentUser();
+			this.userPromise = this.authenticationProvider.getCurrentUser();
 			this.setUserRights();
 			this.setProjectProperties();
 		}
+	}
+	
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserStatusFromProps(nextProps);
+	}
+	
+	updateUserStatusFromProps(targetedProps) {
+		this.state.authState = targetedProps.auth.authState;
+		this.setState(this.state);
 	}
 
 	setUserRights() {
 		var _this = this;
 		this.userPromise.then(function (user) {
-			var isProjectOwner = _this.props.account.isProjectOwner(user, _this.state.project.getId());
+			var isProjectOwner = _this.props.auth.authorization.isProjectOwner(user, _this.state.project.getId());
 			_this.setState({
 				isProjectOwner: isProjectOwner
 			});
@@ -84,7 +92,7 @@ export default class ProjectDashboard extends React.Component {
 		var project = this.state.project;
 		ProjectEndpoint.getProject(project.getId(), project.getType()).then(function (resp) {
 			_this.userPromise.then(function (user) {
-				var isValidationCoder = _this.props.account.isValidationCoder(user, resp);
+				var isValidationCoder = _this.props.auth.authorization.isValidationCoder(user, resp);
 				_this.setState({
 					isValidationCoder: isValidationCoder
 				});
@@ -116,7 +124,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 	
 	updateUserStatus() {
-		const loginStatus = this.props.account.isSignedIn();
+		const loginStatus = this.authenticationProvider.isSignedIn();
 		if(loginStatus !== this.state.isSignedIn) {
 			this.state.isSignedIn = loginStatus;
 			this.setState(this.state); 
@@ -124,12 +132,14 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel account={this.props.account} history={this.props.history}/>);
+		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+			return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		}
 		this.init();
 
 		return (
 			<StyledDashboard className="container main-content">
-				<TitleRow account={this.props.account} project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} history={this.props.history}/>
+				<TitleRow project={this.state.project} isProjectOwner={this.state.isProjectOwner} isValidationCoder={this.state.isValidationCoder} history={this.props.history}/>
 				<div className="row">
 					<div className="col-lg-7">
 						<Description project={this.state.project} isProjectOwner={this.state.isProjectOwner} />
@@ -151,7 +161,7 @@ export default class ProjectDashboard extends React.Component {
 						<RevisionHistory project={this.state.project}  addReports={this.addReports} userPromise={this.userPromise} history={this.props.history} />
 
 						<ParentProject project={this.state.project} history={this.props.history}/>
-						{(this.state.project.getParentID() ? (<PersonalReportList project={this.state.project} account={this.props.account}  history={this.props.history}/>) : "" )}
+						{(this.state.project.getParentID() ? (<PersonalReportList project={this.state.project} history={this.props.history}/>) : "" )}
 					</div>
 				</div>
 		  	</StyledDashboard>

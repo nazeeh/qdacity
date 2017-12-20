@@ -17,7 +17,10 @@ export default class PersonalDashboard extends React.Component {
 		this.state = {
 			projects: [],
 			courses: [],
-			authState: props.auth.authState
+			authState: {
+				isUserSignedIn: false,
+				isUserRegistered: false
+			}
 		};
 
 		this.setProjects = this.setProjects.bind(this);
@@ -27,13 +30,18 @@ export default class PersonalDashboard extends React.Component {
 		this.addCourse = this.addCourse.bind(this);
 		this.removeCourse = this.removeCourse.bind(this);
 
+		this.updateAuthStatusFromProps(props);
 
 		scroll(0, 0);
 	}
 
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
-		this.state.authState = nextProps.auth.authState;
+		this.updateAuthStatusFromProps(nextProps);
+	}
+
+	updateAuthStatusFromProps(targetedProps) {
+		this.state.authState = targetedProps.auth.authState;
 		this.setState(this.state);
 	}
 
@@ -78,21 +86,6 @@ export default class PersonalDashboard extends React.Component {
 		});
 	}
 
-	updateUserStatus() {
-		const _this = this;
-		const loginStatus = this.props.account.isSignedIn();
-		if(loginStatus !== this.state.isSignedIn) {
-			this.state.isSignedIn = loginStatus;
-			this.props.account.getCurrentUser().then(function(user) {
-				_this.state.isRegistered = !!user;
-				_this.setState(_this.state); 
-			}, function(error) {
-				_this.state.isRegistered = false;
-				_this.setState(_this.state); 
-			})
-		}
-	}
-
 	render() {
 		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
@@ -101,7 +94,7 @@ export default class PersonalDashboard extends React.Component {
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
-						  <WelcomePanel auth={this.props.auth} account={this.props.account}  history={this.props.history}/>
+						  <WelcomePanel auth={this.props.auth} auth={this.props.auth}  history={this.props.history}/>
 						  <AdvertPanel/>
 					</div>
 					<div className="col-lg-4">
