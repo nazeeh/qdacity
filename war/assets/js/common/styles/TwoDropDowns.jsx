@@ -10,6 +10,7 @@ export default class TwoDropDowns extends React.Component {
 		this.state = {
 			projects: this.props.projects,
 			projectNameList: [],
+			projectInitText: this.defineInitTextProjects(),
 			revisions: [],
 			revisionNameList:[]
 		}
@@ -65,18 +66,33 @@ export default class TwoDropDowns extends React.Component {
 	defineInitTextProjects() {
 		var text = "";
 		var _this = this;
-		var projectNameList = this.state.projectNameList;
-		if (!(typeof projectNameList == 'undefined') && (projectNameList.length > 0)) {
-				text = projectNameList[0].text;
+		if (!(typeof this.props.projects == 'undefined') && (this.props.projects.items.length > 0)) {
+			text = this.props.projects.items[0].name;
+			_this.setState({
+				projectInitText: text
+				});
 		}
 		return text;
 	}
 
+	defineInitTextRevisions() {
+		var text = "";
+		var _this = this;
+		var revisionNameList = this.state.revisionNameList;
+		if (!(typeof revisionNameList == 'undefined') && (revisionNameList.length > 0)) {
+				text = revisionNameList[0].text;
+		}
+		return text;
+	}
 
 	render() {
 		console.log(this.state);
+
 		return (
-				<DropDownButton items={this.state.projectNameList} initText = {this.props.projects.items[0].name}></DropDownButton>
+			<div>
+				<DropDownButton items={this.state.projectNameList} initText = {this.state.projectInitText}></DropDownButton>
+				<DropDownButton items={this.state.revisionNameList} initText = {this.defineInitTextRevisions()}></DropDownButton>
+			</div>
 		)
 	}
 
