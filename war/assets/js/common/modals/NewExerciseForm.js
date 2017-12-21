@@ -9,6 +9,11 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements = "";
 		this.message = message;
 		this.projects = [];
+		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+	}
+
+	setSelectedRevisionID (revisionID) {
+		console.log(revisionID);
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -79,13 +84,12 @@ export default class NewExerciseForm extends VexModal {
 						text: 'Cancel'
 					})],
 					callback: function (data) {
-
 						if (data != false) {
 							resolve(data);
 						} else reject(data);
 					}
 				});
-				ReactDOM.render(<TwoDropDowns projects={_this.projects}/>, document.getElementById('TwoDropDowns'));
+				ReactDOM.render(<TwoDropDowns setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>, document.getElementById('TwoDropDowns'));
 			}
 		);
 
