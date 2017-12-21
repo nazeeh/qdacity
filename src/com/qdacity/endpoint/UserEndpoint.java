@@ -378,19 +378,12 @@ public class UserEndpoint {
 				Object lastPrjType = userEntity.getProperty("lastProjectType");
 				if (lastPrjType != null) user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
 
+				EventLogger.logDailyUserLogin(userId);
+
 				if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
 					user.setLastLogin(new Date());
 					userEntity.setProperty("lastLogin", new Date());
 					datastore.put(userEntity);
-
-					PersistenceManager mgr = getPersistenceManager();
-					try {
-						Event loginEvent = new Event(new Date(), EventType.USER_LOGIN, userId);
-						mgr.makePersistent(loginEvent);
-					} finally {
-						mgr.close();
-					}
-				
 				}
 				Cache.cache(user.getId(), User.class, user);
 			}
