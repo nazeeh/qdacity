@@ -9,11 +9,12 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements = "";
 		this.message = message;
 		this.projects = [];
+		this.selectedRevisionID = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
 	}
 
 	setSelectedRevisionID (revisionID) {
-		console.log(revisionID);
+		this.selectedRevisionID = revisionID;
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -85,6 +86,7 @@ export default class NewExerciseForm extends VexModal {
 					})],
 					callback: function (data) {
 						if (data != false) {
+							data.SelectedRevisionID = _this.selectedRevisionID;
 							resolve(data);
 						} else reject(data);
 					}
