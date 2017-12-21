@@ -26,7 +26,8 @@ export default class TwoDropDowns extends React.Component {
 		var projects = this.props.projects;
 		projects.items.forEach(function (project) {
 			projectNameList.push({
-				text: project.name
+				text: project.name,
+				onClick: _this.projectClicked.bind(_this, project.id)
 			});
 		});
 
@@ -37,12 +38,28 @@ export default class TwoDropDowns extends React.Component {
 					});
 				});
 					_this.setState({
+						revisions: revisions,
 						projectNameList: projectNameList,
 						revisionNameList: revisionNameList
 						});
 		});
+	}
 
-
+	projectClicked(projectID) {
+	var _this = this;
+	var revisionNameList = [];
+	ProjectEndpoint.listRevisions(projectID).then(function (revisions) {
+	revisions.items = revisions.items || [];
+		revisions.items.forEach(function (revision) {
+			revisionNameList.push({
+				text: revision.name
+				});
+			});
+				_this.setState({
+					revisions: revisions,
+					revisionNameList: revisionNameList
+					});
+	});
 	}
 
 	defineInitTextProjects() {
@@ -57,6 +74,7 @@ export default class TwoDropDowns extends React.Component {
 
 
 	render() {
+		console.log(this.state);
 		return (
 				<DropDownButton items={this.state.projectNameList} initText = {this.props.projects.items[0].name}></DropDownButton>
 		)
