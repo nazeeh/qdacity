@@ -108,7 +108,7 @@ export default class UserRegistrationsChart extends React.Component {
 		return (
 			<div>
 				<ChartTimeFrameChooser onChangeTimeFrame={(startDate, endDate) => this.setTimeFrame(startDate, endDate)}/>
-				{this.state.googleChartsLoaded && this.state.dailyUserLoginEvents && this.state.startDate && this.state.endDate ? this.renderChart() : null}
+				{this.state.googleChartsLoaded && this.state.userCreatedChanges && this.state.startDate && this.state.endDate ? this.renderChart() : null}
 			</div>
 		);
 	}
