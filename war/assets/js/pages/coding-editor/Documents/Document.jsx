@@ -10,6 +10,10 @@ import {
 	findDOMNode
 } from 'react-dom';
 
+import {
+	getEmptyImage
+} from 'react-dnd-html5-backend'
+
 const StyledDocumentItem = styled.a `
 	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
     color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
@@ -25,8 +29,8 @@ const StyledDocumentItem = styled.a `
     &:hover {
         text-decoration: none;
         cursor: pointer;
-        background-color: ${props => props.theme.borderPrimary};
-        color: ${props => props.theme.fgPrimaryHighlight};
+        background-color: ${props => props.isDragging ? props.theme.bgPrimary : props.theme.bgPrimaryHighlight};
+        color: ${props => props.isDragging ? props.theme.fgPrimary : props.theme.fgPrimaryHighlight};
     }
 `;
 
@@ -108,6 +112,10 @@ class Document extends React.Component {
 		super(props);
 
 		this.onClick = this.onClick.bind(this);
+	}
+
+	componentDidMount() {
+		this.props.connectDragPreview(getEmptyImage());
 	}
 
 	onClick() {
