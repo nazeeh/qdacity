@@ -1,17 +1,17 @@
 import React from 'react';
 
 import GoogleLineChart from '../../common/GoogleLineChart.jsx';
-import ChangeLogEndpoint from "../../common/endpoints/ChangeLogEndpoint";
 import ChartTimeFrameChooser from "./ChartTimeFrameChooser.jsx"
+import EventsEndpoint from "../../common/endpoints/EventsEndpoint";
 
-export default class UserRegistrationsChart extends React.Component {
+export default class ActiveUsersChart extends React.Component {
 
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			googleChartsLoaded: false,
-			userCreatedChanges: null,
+			dailyUserLoginEvents: null,
 			startDate: null,
 			endDate: null
 		};
@@ -29,11 +29,11 @@ export default class UserRegistrationsChart extends React.Component {
 		});
 	}
 
-	fetchChanges() {
-		ChangeLogEndpoint.getChanges("USER", "CREATED", this.state.startDate, this.state.endDate).then((result) => {
+	fetchEvents() {
+		EventsEndpoint.getEvents("DAILY_USER_LOGIN", null, this.state.startDate, this.state.endDate).then((result) => {
 			result.items = result.items || [];
 			this.setState({
-				userCreatedChanges: result.items
+				dailyUserLoginEvents: result.items
 			})
 		});
 	}
@@ -63,8 +63,8 @@ export default class UserRegistrationsChart extends React.Component {
 		this.setState({
 			startDate: startDate,
 			endDate: endDate,
-			userCreatedChanges: null
-		}, () => this.fetchChanges());
+			dailyUserLoginEvents: null
+		}, () => this.fetchEvents());
 	}
 
 	renderChart() {
@@ -72,7 +72,7 @@ export default class UserRegistrationsChart extends React.Component {
 		const data = new google.visualization.DataTable();
 
 		data.addColumn('date', 'Day');
-		data.addColumn('number', 'User registrations');
+		data.addColumn('number', 'Active users');
 
 		data.addRows(this.getDataRows(this.state.dailyUserLoginEvents));
 
@@ -99,7 +99,7 @@ export default class UserRegistrationsChart extends React.Component {
 
 
 		return (
-			<GoogleLineChart graphID="userRegistrationsChart" data={data} options={options}/>
+			<GoogleLineChart graphID="activeUsersChart" data={data} options={options}/>
 		);
 
 	}
