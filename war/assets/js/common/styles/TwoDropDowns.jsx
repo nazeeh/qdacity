@@ -3,6 +3,18 @@ import styled from 'styled-components';
 import DropDownButton from './DropDownButton.jsx';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 
+
+const ProjectDropDownContainer = styled.div `
+	display: flex;
+	z-index: 10000 !important;
+	margin: 3px;
+`;
+
+const labelContainer = styled.div `
+	display: inline-block;
+	margin-right: 5px !important;
+`;
+
 export default class TwoDropDowns extends React.Component {
 
 	constructor(props) {
@@ -12,7 +24,8 @@ export default class TwoDropDowns extends React.Component {
 			projectNameList: [],
 			projectInitText: this.defineInitTextProjects(),
 			revisions: [],
-			revisionNameList:[]
+			revisionNameList:[],
+			revisionInitText: []
 		}
 	}
 
@@ -41,7 +54,8 @@ export default class TwoDropDowns extends React.Component {
 					_this.setState({
 						revisions: revisions,
 						projectNameList: projectNameList,
-						revisionNameList: revisionNameList
+						revisionNameList: revisionNameList,
+						revisionInitText: revisionNameList[0].text
 						});
 		});
 	}
@@ -75,23 +89,19 @@ export default class TwoDropDowns extends React.Component {
 		return text;
 	}
 
-	defineInitTextRevisions() {
-		var text = "";
-		var _this = this;
-		var revisionNameList = this.state.revisionNameList;
-		if (!(typeof revisionNameList == 'undefined') && (revisionNameList.length > 0)) {
-				text = revisionNameList[0].text;
-		}
-		return text;
-	}
-
 	render() {
-		console.log(this.state);
-
 		return (
 			<div>
-				<DropDownButton items={this.state.projectNameList} initText = {this.state.projectInitText}></DropDownButton>
-				<DropDownButton items={this.state.revisionNameList} initText = {this.defineInitTextRevisions()}></DropDownButton>
+				<ProjectDropDownContainer>
+					<labelContainer>
+						<label>Select a project: </label>
+					</labelContainer>
+					<DropDownButton isListItemButton={true} items={this.state.projectNameList} initText = {this.state.projectInitText}></DropDownButton>
+				</ProjectDropDownContainer>
+				<div>
+					<label>Select a revision: </label>
+					<DropDownButton isListItemButton={true} items={this.state.revisionNameList} initText = {this.state.revisionInitText}></DropDownButton>
+				</div>
 			</div>
 		)
 	}
