@@ -25,7 +25,7 @@ const StyledDocumentItem = styled.a `
     background-color: #fff;
     border: 1px solid ;
     border-color: ${props => props.theme.borderPrimary} !important;
-    opacity: ${props => props.isDragging ? 0.3 : 1};
+    opacity: ${props => props.isDragging ? 0.0 : 1};
     &:hover {
         text-decoration: none;
         cursor: pointer;
@@ -112,10 +112,6 @@ class Document extends React.Component {
 		super(props);
 
 		this.onClick = this.onClick.bind(this);
-	}
-
-	componentDidMount() {
-		this.props.connectDragPreview(getEmptyImage());
 	}
 
 	onClick() {
