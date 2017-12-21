@@ -74,7 +74,7 @@ export default class UserRegistrationsChart extends React.Component {
 		data.addColumn('date', 'Day');
 		data.addColumn('number', 'User registrations');
 
-		data.addRows(this.getDataRows(this.state.dailyUserLoginEvents));
+		data.addRows(this.getDataRows(this.state.userCreatedChanges));
 
 		const options = {
 			width: 700,
