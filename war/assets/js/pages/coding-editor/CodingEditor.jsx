@@ -12,7 +12,10 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
-import { BtnDefault, BtnGroup } from '../../common/styles/Btn.jsx';
+import {
+	BtnDefault,
+	BtnGroup
+} from '../../common/styles/Btn.jsx';
 import DropDownButton from '../../common/styles/DropDownButton.jsx';
 import NumberField from '../../common/styles/NumberField.jsx';
 
@@ -138,7 +141,7 @@ class CodingEditor extends React.Component {
 			});
 		});
 
-		this._handleFontSizeChange =  this._handleFontSizeChange.bind(this);
+		this._handleFontSizeChange = this._handleFontSizeChange.bind(this);
 
 		const _this = this;
 
@@ -364,7 +367,9 @@ class CodingEditor extends React.Component {
 
 	_handleFontSizeChange(e) {
 		const fontSize = e.target.value;
-		this.setState({ fontSize, });
+		this.setState({
+			fontSize,
+		});
 		this.state.editorCtrl.setFontSize(fontSize);
 		e.target.focus();
 	};
@@ -373,20 +378,55 @@ class CodingEditor extends React.Component {
 		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
 		if (this.state.project.getCodesystemID() == -1) this.init();
 
-        const fonts = [
-			{ text: 'Arial', onClick: () => this._setFontFace('Arial'), },
-			{ text: 'Arial Black', onClick: () => this._setFontFace('Arial Black'), },
-			{ text: 'Comic Sans MS', onClick: () => this._setFontFace('Comic Sans MS'), },
-			{ text: 'Courier New', onClick: () => this._setFontFace('Courier New'), },
-			{ text: 'Georgia', onClick: () => this._setFontFace('Georgia'), },
-			{ text: 'Impact', onClick: () => this._setFontFace('Impact'), },
-			{ text: 'Lucida Console', onClick: () => this._setFontFace('Lucida Console'), },
-			{ text: 'Palatino Linotype', onClick: () => this._setFontFace('Palatino Linotype'), },
-			{ text: 'Tahoma', onClick: () => this._setFontFace('Tahoma'), },
-			{ text: 'Times New Roman', onClick: () => this._setFontFace('Times New Roman'), },
-			{ text: 'Trebuchet MS', onClick: () => this._setFontFace('Trebuchet MS'), },
-			{ text: 'Verdana', onClick: () => this._setFontFace('Verdana'), },
-        ];
+		const fonts = [{
+				text: 'Arial',
+				onClick: () => this._setFontFace('Arial'),
+			},
+			{
+				text: 'Arial Black',
+				onClick: () => this._setFontFace('Arial Black'),
+			},
+			{
+				text: 'Comic Sans MS',
+				onClick: () => this._setFontFace('Comic Sans MS'),
+			},
+			{
+				text: 'Courier New',
+				onClick: () => this._setFontFace('Courier New'),
+			},
+			{
+				text: 'Georgia',
+				onClick: () => this._setFontFace('Georgia'),
+			},
+			{
+				text: 'Impact',
+				onClick: () => this._setFontFace('Impact'),
+			},
+			{
+				text: 'Lucida Console',
+				onClick: () => this._setFontFace('Lucida Console'),
+			},
+			{
+				text: 'Palatino Linotype',
+				onClick: () => this._setFontFace('Palatino Linotype'),
+			},
+			{
+				text: 'Tahoma',
+				onClick: () => this._setFontFace('Tahoma'),
+			},
+			{
+				text: 'Times New Roman',
+				onClick: () => this._setFontFace('Times New Roman'),
+			},
+			{
+				text: 'Trebuchet MS',
+				onClick: () => this._setFontFace('Trebuchet MS'),
+			},
+			{
+				text: 'Verdana',
+				onClick: () => this._setFontFace('Verdana'),
+			},
+		];
 
 		return (
 			<StyledCodingEditor height={$(window).height()} showCodingView={this.state.showCodingView} >

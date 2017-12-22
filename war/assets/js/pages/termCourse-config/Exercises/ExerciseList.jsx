@@ -43,14 +43,14 @@ export default class ExerciseList extends React.Component {
 	}
 
 	init() {
-			if (!this.userPromise) {
-				this.userPromise = this.props.account.getCurrentUser();
-				this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId());
-				this.fetchTermCourseData();
-			}
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId());
+			this.fetchTermCourseData();
+		}
 	}
 
-	fetchTermCourseData () {
+	fetchTermCourseData() {
 		var _this = this;
 		var projects = [];
 		this.getExercisesPromise.then(function (resp) {
@@ -69,13 +69,10 @@ export default class ExerciseList extends React.Component {
 	showNewExerciseModal() {
 		var _this = this;
 		var modal = new NewExerciseForm('Create a new exercise', '');
-		modal.addSelect('projects', this.state.projects, "Select a project", this.state.projects.items[0].name);
-		ProjectEndpoint.listRevisions(this.state.projects.items[0].id).then(function (revisions) {
-			modal.addProjectRevisions('revisions', revisions, "Select a revision", revisions.items[0].name);
-			modal.addTextInput('name', "Exercise Name", 'Name', '');
-			modal.showModal().then(function (data) {
-				_this.createNewExercise(data.name);
-			});
+		modal.addDropDown(this.state.projects);
+		modal.addTextInput('name', "Exercise Name", 'Name', '');
+		modal.showModal().then(function (data) {
+			_this.createNewExercise(data.name);
 		});
 	}
 

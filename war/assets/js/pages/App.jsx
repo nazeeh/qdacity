@@ -42,7 +42,7 @@ export default class App extends React.Component {
 		};
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
-		var t=new TutorialEngine(this);
+		var t = new TutorialEngine(this);
 		this.state = {
 			tutorialEngine: t,
 			tutorialState:t.tutorialState,

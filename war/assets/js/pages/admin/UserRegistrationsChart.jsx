@@ -81,10 +81,14 @@ export default class UserRegistrationsChart extends React.Component {
 			height: 400,
 			hAxis: {
 				format: 'MMM dd, yyyy',
-				gridlines: {count: 15},
+				gridlines: {
+					count: 15
+				},
 			},
 			vAxis: {
-				gridlines: {color: 'none'},
+				gridlines: {
+					color: 'none'
+				},
 				viewWindowMode: "pretty"
 			},
 			legend: {

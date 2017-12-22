@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
+import TwoDropDowns from '../../common/styles/TwoDropDowns.jsx';
 
 export default class NewExerciseForm extends VexModal {
 
@@ -8,7 +9,12 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements = "";
 		this.message = message;
 		this.projects = [];
-		this.projectNameList = [];
+		this.selectedRevisionID = '';
+		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+	}
+
+	setSelectedRevisionID (revisionID) {
+		this.selectedRevisionID = revisionID;
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -29,58 +35,10 @@ export default class NewExerciseForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
-	addSelect(name, projects, label, initialValue) {
-		var _this = this;
-		var projectNames = [];
-
-		projects.items.forEach(function (project) {
-			projectNames.push(project.name);
-		});
-		var options = projectNames;
-		this.formElements += '<div class="vex-custom-field-wrapper">';
-
-		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += label + ': ';
-		this.formElements += '<select name="' + name + '">';
-
-		var isDefault = function (el) {
-			return ((el == initialValue) ? 'selected="selected"' : '');
-		}
-
-		options.forEach(function (el) {
-			_this.formElements += '<option value="' + el + '" ' + isDefault(el) + '>' + el + '</option>';
-		});
-		this.formElements += '</select>';
+	addDropDown(projects) {
+		this.projects = projects;
+		this.formElements += '<div id="TwoDropDowns">';
 		this.formElements += '</div>';
-		this.formElements += '</div>';
-
-
-	}
-
-	addProjectRevisions(name, revisions, label, initialValue) {
-		var _this = this;
-		var revisionNames = [];
-		revisions.items.forEach(function (revision) {
-			revisionNames.push(revision.name);
-		});
-		var options = revisionNames;
-		this.formElements += '<div class="vex-custom-field-wrapper">';
-
-		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += label + ': ';
-		this.formElements += '<select name="' + name + '">';
-
-		var isDefault = function (el) {
-			return ((el == initialValue) ? 'selected="selected"' : '');
-		}
-
-		options.forEach(function (el) {
-			_this.formElements += '<option value="' + el + '" ' + isDefault(el) + '>' + el + '</option>';
-		});
-		this.formElements += '</select>';
-		this.formElements += '</div>';
-		this.formElements += '</div>';
-
 	}
 
 
@@ -127,12 +85,13 @@ export default class NewExerciseForm extends VexModal {
 						text: 'Cancel'
 					})],
 					callback: function (data) {
-
 						if (data != false) {
+							data.SelectedRevisionID = _this.selectedRevisionID;
 							resolve(data);
 						} else reject(data);
 					}
 				});
+				ReactDOM.render(<TwoDropDowns setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>, document.getElementById('TwoDropDowns'));
 			}
 		);
 
