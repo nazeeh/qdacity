@@ -1,11 +1,25 @@
 const SERVER_NAME = require('../utils/serverName');
 
+// Message and event constants
+const { MSG, EVT } = require('./constants.js');
+
+// Key to use for socket data hash in redis
+const REDIS_SOCKET_DATA = 'socketdata';
+
+// Separator to combine type, id to room id
+const ROOM_SEP = '/';
+
+// Room Types
+const DOC_ROOM = 'doc';
+const PRJ_ROOM = 'prj';
+
+
 /**
  * class SyncService
  *
- * socket.io provides "rooms", i.e. channels/groups of sockets. Here one room
- * is used per document (identified by the document id). This makes it easy
- * to broadcast any changes regarding a document to its room.
+ * socket.io provides "rooms", i.e. channels/groups of sockets. Here rooms are
+ * used per project and document (identified by the respective id). This makes
+ * it easy to broadcast any changes regarding a project/document to its room.
  */
 class SyncService {
 
@@ -17,22 +31,18 @@ class SyncService {
     this.redis = redis;
 
     io.on('connection', socket => {
-      console.info(`user ${socket.id} connected`);
+      console.info(`${socket.id} connected`);
 
-      socket.emit('welcome', SERVER_NAME);
+      // Send connection acknowledgement to user
+      socket.emit(EVT.USER.CONNECTED, SERVER_NAME);
 
+      // Listen for messages from user
       socket.on(
-        'logon',
-        data => this._handleSocketLogon(socket, data)
+        MSG.USER.UPDATE,
+        data => this._handleUserUpdate(socket, data)
       );
-      socket.on(
-        'documentEnter',
-        docid => this._addSocketToDocument(socket, docid)
-      );
-      socket.on(
-        'documentLeave',
-        docid => this._removeSocketFromDocument(socket, docid)
-      );
+
+      // Handle disconnection
       socket.on('disconnecting', () => this._handleSocketDisconnecting(socket));
     });
   }
@@ -40,12 +50,12 @@ class SyncService {
   /**
    * Handle socket logon
    */
-  _handleSocketLogon(socket, data) {
-    console.info(`user ${socket.id} logged on with ${JSON.stringify(data)}`);
+  _handleUserUpdate(socket, data) {
+    console.info(`${socket.id} user.update ${JSON.stringify(data)}`);
 
     // Add socket and its data to shared application state
     this.redis.hset([
-      'socketdata',
+      REDIS_SOCKET_DATA,
       socket.id,
       JSON.stringify({
         data,
@@ -53,52 +63,59 @@ class SyncService {
       }),
     ]);
 
-    // Notify all sockets that share a room with the new socket
-    Object.keys(socket.rooms).map(docid => this._emitUserChange(docid));
-  };
+    // Leave all document rooms that are not in updated data
+    Object.keys(socket.rooms).map(room => {
+      const { roomType, roomId } = room.split(ROOM_SEP);
+      if (roomType === DOC_ROOM && roomId !== data.document) {
+        socket.leave(room);
+      }
+    });
 
+    // Join document room
+    if (data.document) {
+      socket.join(`${DOC_ROOM}${ROOM_SEP}${data.document}`);
+    }
 
-  /**
-   * Add socket to document room, notify other sockets in room
-   */
-  _addSocketToDocument(socket, docid) {
-    socket.join(docid);
-    this._emitUserChange(docid);
-  }
-
-  /**
-   * Remove socket from document and notify all other sockets on the same doc
-   */
-  _removeSocketFromDocument(socket, docid) {
-    socket.leave(docid);
-    this._emitUserChange(docid);
+    // Join project room and notify all other users
+    if (data.project) {
+      const projectRoom = `${PRJ_ROOM}${ROOM_SEP}${data.project}`;
+      socket.join(projectRoom);
+      this._emitUserUpdate(projectRoom);
+    }
   };
 
   /**
    * Handle disconnection of sockets
    */
   _handleSocketDisconnecting(socket) {
+
     // Remove socket data from shared application state
-    this.redis.hdel('socketdata', socket.id);
+    this.redis.hdel(REDIS_SOCKET_DATA, socket.id);
 
     // Loop over socket's rooms/documents and remove socket from each
-    Object.keys(socket.rooms).map(docid => {
-      this._removeSocketFromDocument(socket, docid);
+    Object.keys(socket.rooms).map(room => {
+      socket.leave(room);
+
+      // Emit user.updated in project room only
+      if (room.split(ROOM_SEP)[0] === PRJ_ROOM) {
+        this._emitUserUpdate(room);
+      }
     });
 
-    console.info(`user ${socket.id} disconnected`);
+    console.info(`${socket.id} disconnected`);
   };
 
   /**
-   * Notify all sockets that watch a specific document, that the user list on
-   * that document changed
+   * Notify all sockets that watch a specific room, that the user list on
+   * that room changed
    */
-  _emitUserChange(docid) {
+  _emitUserUpdate(roomid) {
 
     // Get all sockets in the document room. `clients` contains the socket ids
-    this.io.in(docid).clients((error, clients) => {
+    this.io.in(roomid).clients((error, clients) => {
 
-      const redisArgs = ['socketdata'].concat(clients);
+      // Build Redis command arguments for HMGET <key> <value> <value> …
+      const redisArgs = [REDIS_SOCKET_DATA].concat(clients);
 
       // Get data for those clients to match additional data
       this.redis.hmget(redisArgs, (err, res) => {
@@ -108,21 +125,25 @@ class SyncService {
 
         // Only read data if res is truthy
         if (res) {
-          // Map res array to data field if present, or fallback to {}
+          // Map res array to data field if present, or fallback to {} and
+          // filter out users that have not yet logged on with name, email and
+          // picSrc
           data = res
             .map(clientData => JSON.parse(clientData))
-            .map(json => json.data || {});
+            .map(json => json.data || {})
+            .filter(data => data.name && data.email && data.picSrc);
         }
 
-        // Broadcast message "user_change" to document room
-        this.io.to(docid).emit(
-          'user_change',
-          data
-        );
+        // Broadcast event "user.updated" to document room if any data
+        if (data.length > 0) {
+          this.io.to(roomid).emit(
+            EVT.USER.UPDATED,
+            data
+          );
+        }
       });
     });
   };
-
 }
 
 /**
