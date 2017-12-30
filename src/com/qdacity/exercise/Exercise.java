@@ -46,12 +46,12 @@ public class Exercise implements Serializable {
 		this.id = id;
 	}
 	
-	public Long getProjectRevisionId() {
+	public Long getProjectRevisionID() {
 		return projectRevisionID;
 	}
 	
-	public void setProjectRevisionId(Long id) {
-		this.projectRevisionID = id;
+	public void setProjectRevisionID(Long projectRevisionID) {
+		this.projectRevisionID = projectRevisionID;
 	}
 	
 	public void setName(String name) {
