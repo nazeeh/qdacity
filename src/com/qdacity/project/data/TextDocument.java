@@ -31,6 +31,9 @@ public class TextDocument implements Serializable {
 	@Persistent
 	Text text;
 
+	@Persistent
+	Long exerciseID;
+	
 	public Long getId() {
 		return id;
 	}
@@ -62,5 +65,12 @@ public class TextDocument implements Serializable {
 	public void setProjectID(Long projectID) {
 		this.projectID = projectID;
 	}
+	
+	public Long getExerciseID() {
+		return exerciseID;
+	}
 
+	public void setExerciseID(Long exerciseID) {
+		this.exerciseID = exerciseID;
+	}
 }
