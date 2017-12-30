@@ -68,7 +68,8 @@ export default class TwoDropDowns extends React.Component {
 	revisions.items = revisions.items || [];
 		revisions.items.forEach(function (revision) {
 			revisionNameList.push({
-				text: revision.name
+				text: revision.name,
+				onClick: _this.revisionClicked.bind(_this, revision.id)
 				});
 			});
 				_this.setState({
