@@ -30,6 +30,9 @@ public class Exercise implements Serializable {
 	@Persistent
 	String name;
 	
+	@Persistent
+	Long projectRevisionID;
+	
 	public Exercise() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -41,6 +44,14 @@ public class Exercise implements Serializable {
 	
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public Long getProjectRevisionId() {
+		return projectRevisionID;
+	}
+	
+	public void setProjectRevisionId(Long id) {
+		this.projectRevisionID = id;
 	}
 	
 	public void setName(String name) {

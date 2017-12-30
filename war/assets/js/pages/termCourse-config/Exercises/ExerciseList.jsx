@@ -72,16 +72,17 @@ export default class ExerciseList extends React.Component {
 		modal.addDropDown(this.state.projects);
 		modal.addTextInput('name', "Exercise Name", 'Name', '');
 		modal.showModal().then(function (data) {
-			_this.createNewExercise(data.name);
+			_this.createNewExercise(data.name, data.SelectedRevisionID);
 		});
 	}
 
-	createNewExercise(name) {
+	createNewExercise(name, projectRevisionID) {
 		var _this = this;
 		var exercise = {};
 		var termCourseID = this.props.termCourse.id;
 		var exercises = this.state.exercises;
 		exercise.name = name;
+		exercise.projectRevisionID = projectRevisionID;
 		exercise.termCourseID = termCourseID;
 		ExerciseEndpoint.insertExercise(exercise).then(function (resp) {
 			exercises.push(resp);
