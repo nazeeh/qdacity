@@ -18,6 +18,8 @@ export default class Account extends React.Component {
 			email: '',
 			picSrc: ''
 		};
+		
+		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 
 		this.updateFromProps(props);
 	}
@@ -39,8 +41,8 @@ export default class Account extends React.Component {
 	}
 
 	/**
-		 * Redirects to the personal dashboard
-	 */
+	* Redirects to the personal dashboard
+	*/
 	redirectToPersonalDashbaord() {
 		this.props.history.push('/PersonalDashboard');
 	}
