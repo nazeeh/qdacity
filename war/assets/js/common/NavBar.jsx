@@ -106,32 +106,6 @@ export default class NavBar extends React.Component {
 										<Account auth={this.props.auth} history={this.props.history}/>
 									</div>
 								</StyledAccountTab>
-								<StyledSigninTab  loggedIn={this.authenticationProvider.isSignedIn && this.authenticationProvider.isSignedIn()} className="dropdown">
-									<StyledNavbarItem href="#" className="dropdownToggle" onClick={this.showSigninDropdown}>
-											<FormattedMessage id="navbar.sign_in" defaultMessage='Sign in' /> <b className="caret"></b>
-										</StyledNavbarItem>
-										<ul  id="signinView" className="dropdown-menu dropdownContent">
-											<li>
-												<div className="navbar-content">
-													<div className="row">
-														<div className="col-md-12">
-															<a id="navBtnSigninGoogle" className="btn  btn-primary" href="#">
-																<i className="fa fa-google fa-2x pull-left"></i>
-																<span ><FormattedMessage id="navbar.google_sign_in" defaultMessage='Sign in with Google' /></span>
-															</a>
-														</div>
-													</div>
-												</div>
-												<div className="navbar-footer">
-													<div className="navbar-footer-content">
-														<div className="row">
-															<div className="col-md-12"></div>
-														</div>
-													</div>
-												</div>
-											</li>
-										</ul>
-								</StyledSigninTab>
                                 {this.state.userData.type==="ADMIN" && <li><StyledNavbarItem className="topnav clickable" onClick={() => this.props.history.push('/Admin')}>Administration</StyledNavbarItem></li>}
 							</ul>
 						</div>
