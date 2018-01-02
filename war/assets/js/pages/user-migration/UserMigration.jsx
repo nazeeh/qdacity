@@ -160,7 +160,7 @@ export default class UserMigration extends React.Component {
     }
 
     signOut() {
-        this.authenticationProvider.signout().then(function() {
+        this.authenticationProvider.signOut().then(function() {
             
         }, (err) => {
             console.error("Sign out failed.");
