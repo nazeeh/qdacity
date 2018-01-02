@@ -130,15 +130,18 @@ export default class AuthenticationProvider {
 
   /**
    * Tries to sign out the current user.
-   * Respects the activeNetwork state to achieve this.
+   * Uses both methods to try to log out.
+   * The returned Promise is the one of the activeNetwork state.
    * @return {Promise}
    */
   signOut() {
     if(this.activeNetwork !== 'gapi') {
+      this.auth2.disconnect();
       // check hellojs
       return hello(this.network.google).logout();
     }
     else {
+      hello(this.network.google).logout();
       // elsewise check gapi.auth2
       return this.auth2.disconnect();
     }

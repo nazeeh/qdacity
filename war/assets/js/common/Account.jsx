@@ -49,7 +49,6 @@ export default class Account extends React.Component {
 		const _this = this;
 		this.authenticationProvider.signOut().then(() => { 
 			_this.props.history.push('/'); 
-			location.reload(); 
 		});
 	}
 
