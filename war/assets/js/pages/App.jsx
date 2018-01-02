@@ -61,7 +61,7 @@ export default class App extends React.Component {
 		});
 	
 		// on page reloads: also reload profile data		
-		if(this.authenticationProvider.isSignedIn() && this.authenticationProvider.activeNetwork !== 'gapi') {
+		if(this.authenticationProvider.isSignedIn()) {
 			_this.authenticationProvider.synchronizeTokenWithGapi();
 		} else {
 			// try silent sign in
