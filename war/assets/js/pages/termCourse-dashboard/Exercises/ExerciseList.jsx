@@ -2,6 +2,7 @@ import React from 'react';
 
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
+import Theme from '../../../common/styles/Theme.js';
 
 import {
 	StyledBoxList,
@@ -82,6 +83,10 @@ export default class ExerciseList extends React.Component {
 
 	}
 
+	editorClick (e, exercise, index) {
+
+	}
+	
 	render() {
 		var _this = this;
 
@@ -95,6 +100,11 @@ export default class ExerciseList extends React.Component {
 		const renderListItems = itemsToDisplay.map((exercise, index) => {
 			return <StyledListItemDefault key={index} className="clickable">
 					<span > {exercise.name} </span>
+						<div>
+						<StyledListItemBtn onClick={(e) => this.editorClick(e, exercise, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+							<i className="fa fa-tags"></i>
+						</StyledListItemBtn>
+					</div>
 				</StyledListItemDefault>;
 		})
 
