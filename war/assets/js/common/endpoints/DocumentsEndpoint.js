@@ -42,6 +42,26 @@ export default class DocumentsEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static reorderAgreementMapPositions(agreement_map, project_type, documents) {
+		let agreementMaps = [];
+
+		for (let i = 0; i < documents.length; i++) {
+			agreementMaps.push({
+				keyId: documents[i].key.id,
+				parentKeyId: documents[i].key.parent.id,
+				positionInOrder: documents[i].positionInOrder
+			});
+		}
+
+		var apiMethod = gapi.client.qdacity.documents.reorderAgreementMapPositions({
+			'id': agreement_map,
+			'projectType': project_type
+		}, {
+			'agreementMaps': agreementMaps
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static applyCode(doc, code) {
 		var documentCode = new function () {
 			this.textDocument = doc;

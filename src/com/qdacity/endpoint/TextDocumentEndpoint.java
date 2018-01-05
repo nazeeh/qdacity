@@ -14,6 +14,7 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.cxf.common.util.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -34,6 +35,8 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.endpoint.datastructures.AgreementMapList;
+import com.qdacity.endpoint.datastructures.AgreementMapList.SimplifiedAgreementMap;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.endpoint.datastructures.TextDocumentList;
 import com.qdacity.logs.Change;
@@ -253,6 +256,61 @@ public class TextDocumentEndpoint {
 
 		return persistedEntities;
 	}	
+
+	/**
+	 * This method is used for reodering the position of agreementMap-documents.
+	 * It uses HTTP PUT method.
+	 *
+	 * @param id the project id
+	 * @param projectType the project type
+	 * @param agreementMapList the agreementMaps
+	 * @return The updated entities.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(
+			name = "documents.reorderAgreementMapPositions",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+	public List<AgreementMap> reorderAgreementMapPositions(@Named("id") Long id, @Named("projectType") String projectType, AgreementMapList agreementMapList,  User user) throws UnauthorizedException {
+
+		// Check authorization
+		// TODO is the authorization in this.getAgreemntMaps() enough?
+		
+		PersistenceManager mgr = getPersistenceManager();
+		
+		List<SimplifiedAgreementMap> newMaps = agreementMapList.getAgreementMaps();
+
+		List<AgreementMap> persistedMaps = getAgreementMaps(id, projectType, user);
+		
+		try {
+			for (SimplifiedAgreementMap newMap : newMaps) {
+				// Find persisted map
+				AgreementMap persisted = null;
+				
+				for (AgreementMap persistedMap : persistedMaps) {	
+					
+					// Also Compare the DocumentResult IDs
+					if (persistedMap.getKey().getId() == newMap.getKeyId() &&
+						persistedMap.getKey().getParent().getId() == newMap.getParentKeyId()) {
+						persisted = persistedMap;
+						break;
+					}
+				}
+				
+				if (persisted == null) {
+					throw new EntityNotFoundException("Agreementmap does not exist");
+				}
+				
+				persisted.setPositionInOrder(newMap.getPositionInOrder());
+				persisted = mgr.makePersistent(persisted);
+			}
+		} finally {
+			mgr.close();
+		}
+
+		return persistedMaps;
+	}
 	
 	/**
 	 * This method is used for applying a code to a TextDocument. If the entity does not
@@ -321,6 +379,7 @@ public class TextDocumentEndpoint {
 		try {
 			for (TextDocument textDocument : documents) {
 				Text text = textDocument.getText();
+				Long positionInOrder = textDocument.getPositionInOrder();
 				if (stripCodings) {
 					Document doc = Jsoup.parse(text.getValue());
 					doc.select("coding").unwrap();
@@ -330,6 +389,7 @@ public class TextDocumentEndpoint {
 				cloneDocument.setProjectID(cloneId);
 				cloneDocument.setTitle(textDocument.getTitle());
 				cloneDocument.setText(text);
+				cloneDocument.setPositionInOrder(positionInOrder);
 
 				mgr.makePersistent(cloneDocument);
 			}
