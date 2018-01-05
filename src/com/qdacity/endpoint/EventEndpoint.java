@@ -26,7 +26,7 @@ public class EventEndpoint {
 			name = "events.getEvents",
 			path = "events"
 	)
-	public List<Event> getEvents(@Nullable @Named("eventType") EventType eventType, @Named("userId") String userId, @Nullable @Named("startDate") Date startDate, @Named("endDate") Date endDate) {
+	public List<Event> getEvents(@Nullable @Named("eventType") EventType eventType, @Nullable @Named("userId") String userId, @Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) {
 
 		StringBuilder filters = new StringBuilder();
 		Map<String, Object> parameters = new HashMap<>();
