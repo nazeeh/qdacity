@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
@@ -112,7 +113,7 @@ export default class ProjectPanel extends React.Component {
 		return (
 			<StyledSettingsPanel>
 				<StyledPanelHeader>
-					<StyledPanelTitle>Project</StyledPanelTitle>
+					<StyledPanelTitle><FormattedMessage id='projectpanel.project' defaultMessage='Project' /></StyledPanelTitle>
 
 					<StyledExpanderToggle className="pull-right" onClick={() => this.toggleIsExpanded()}>
 						{this.renderCollapseIcon()}

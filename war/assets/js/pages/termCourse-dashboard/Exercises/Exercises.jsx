@@ -1,4 +1,5 @@
 import React from 'react';
+import {FormattedMessage} from 'react-intl';
 
 import ExerciseList from "./ExerciseList.jsx"
 
@@ -14,7 +15,7 @@ export default class Exercises extends React.Component {
 			<div id="user-section" className="box box-default">
 
 				<div className="box-header with-border">
-					<h3 className="box-title">Exercises</h3>
+					<h3 className="box-title"><FormattedMessage id='excercises.excercises' defaultMessage='Exercises' /></h3>
 				</div>
 				<div className="box-body">
 					<div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -25,7 +26,7 @@ export default class ButtonExpandAll extends React.Component {
 		return (
 			<BtnDefault title="Expands all classes." onClick={_this.buttonClicked}>
 		        <i className="fa fa-plus-square-o"></i>
-		        <span>Expand all</span>
+		        <span><FormattedMessage id='buttonexpandall.expand_all' defaultMessage='Expand all' /></span>
 	        </BtnDefault>
 		);
 	}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
@@ -52,7 +53,7 @@ export default class SettingsBtn extends React.Component {
 				className="pull-right"
 				onClick={this.showSettingsModal}
 			>
-				<i className="fa fa-cog fa-lg"></i><span><b>Settings</b></span>
+				<i className="fa fa-cog fa-lg"></i><span><b><FormattedMessage id='settingsbtn.settings' defaultMessage='Settings' /></b></span>
 			</StyledSettingsBtn>
 		);
 	}

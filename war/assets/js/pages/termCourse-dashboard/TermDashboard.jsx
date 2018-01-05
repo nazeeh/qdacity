@@ -1,4 +1,6 @@
 import React from 'react';
+import {FormattedMessage} from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
@@ -101,8 +103,11 @@ export default class TermDashboard extends React.Component {
 	}
 
 	addParticipant(e) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var confirm = new Confirm('Do you want to join this term course?');
+		var confirm = new Confirm(
+			formatMessage({ id: 'termdashboard.join_term_confirm', defaultMessage: 'Do you want to join this term course?' })
+		);
 		confirm.showModal().then(function () {
 			//Add the user to participants & set isUserParticipant to true for that term
 			var termCourse = _this.state.termCourse;
@@ -119,8 +124,11 @@ export default class TermDashboard extends React.Component {
 	}
 
 	removeParticipant(e) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var confirm = new Confirm('Do you want to leave this term course?');
+		var confirm = new Confirm(
+			formatMessage({ id: 'termdashboard.leave_term_confirm', defaultMessage: 'Do you want to leave this term course?'})
+		);
 		confirm.showModal().then(function () {
 			//Add the user to participants & set isUserParticipant to true for that term
 			var termCourse = _this.state.termCourse;
@@ -142,11 +150,11 @@ export default class TermDashboard extends React.Component {
 		//Show join/leave button depending on whether the user is a participant in the course
 		if (!termCourse.isUserParticipant) {
 			return <StyledListItemBtn onClick={(e) => this.addParticipant(e)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-				Join this term course
+				<FormattedMessage id='termdashboard.join_term' defaultMessage='Join this term course' />
 			</StyledListItemBtn>
 		} else {
 			return <StyledListItemBtn onClick={(e) => this.removeParticipant(e)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-				Leave this term course
+				<FormattedMessage id='termdashboard.leave_term' defaultMessage='Leave this term course' />
 				</StyledListItemBtn>
 		}
 	}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import {
 	BtnDefault,
@@ -154,7 +155,7 @@ export default class Account extends React.Component {
 							<span id="currentUserName">{this.state.name}</span>
 							<p id="currentUserEmail" className="text-muted small">{this.state.email}</p>
 							<div className="divider"></div>
-							<BtnPrimary onClick={this.redirectToPersonalDashbaord}>Personal Dashboard</BtnPrimary>
+							<BtnPrimary onClick={this.redirectToPersonalDashbaord}><FormattedMessage id='account.personal_dashboard' defaultMessage='Personal Dashboard' /></BtnPrimary>
 						</div>
 					</div>
 				</div>
@@ -162,10 +163,10 @@ export default class Account extends React.Component {
 					<div className="navbar-footer-content">
 						<div className="row">
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}>Switch User</BtnDefault>
+								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={this.changeAccount.bind(this)}><FormattedMessage id='account.switch_user' defaultMessage='Switch User' /></BtnDefault>
 							</div>
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={this.signout.bind(this)}>Sign Out</BtnDefault>
+								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={this.signout.bind(this)}><FormattedMessage id='account.sign_out' defaultMessage='Sign Out' /></BtnDefault>
 							</div>
 						</div>
 					</div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import ReactDOM from 'react-dom';
 
 import styled from 'styled-components';
@@ -355,7 +356,7 @@ export default class Codesystem extends SimpleCodesystem {
 		return (
 			<StyledCodeSystemView >
 				<StyledEditorCtrlHeader >
-					<b>Code System</b>
+					<b><FormattedMessage id='codesystemcodesystem' defaultMessage='Code System' /></b>
 				</StyledEditorCtrlHeader>
 				<StyledToolBar>
 					<CodesystemToolbar

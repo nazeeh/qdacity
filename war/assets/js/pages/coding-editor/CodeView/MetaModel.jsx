@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import MetaModelView from './MetaModelView.jsx';
@@ -389,11 +390,11 @@ export default class MetaModel extends React.Component {
 			return (
 				<div>
                     <div className="col-sm-3">
-                        Source-Code:
+                        <FormattedMessage id='metamodel.source_code' defaultMessage='Source-Code' />:
                         <SimpleCodesystem ref={(c) => {if (c) this.sourceCodeCodesystemRef = c;}} height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} isCodeSelectable={isCodeSelectable} />
                     </div>
                     <div className="col-sm-3">
-                        Destination-Code:
+                        <FormattedMessage id='metamodel.dest_code' defaultMessage='Destination-Code' />:
                         <SimpleCodesystem ref={(c) => {if (c) this.destinationCodeCodesystemRef = c;}} height="200" selected={destinationCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipDestinationChanged} isCodeSelectable={isCodeSelectable} />
                     </div>
                 </div>

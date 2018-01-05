@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import CourseEndPoint from '../../../common/endpoints/CourseEndpoint';
@@ -26,21 +27,37 @@ export default class InviteUserField extends React.Component {
 	}
 
 	inviteUser() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		CourseEndPoint.inviteUser(this.props.course.getId(), this.state.userEmail).then(function (resp) {
-			alertify.success(_this.state.userEmail + " has been invited");
+			alertify.success(
+				formatMessage({
+					id: 'inviteuserfield.invited',
+					defaultMessage: "{email} has been invited"
+				}, { email: _this.state.userEmail })
+			);
 		}).catch(function (resp) {
-			alertify.error(_this.state.userEmail + " was not found");
+			alertify.error(
+				formatMessage({
+					id: 'inviteuserfield.invited',
+					defaultMessage: "{email} was not found",
+				}, { email: _this.state.userEmail })
+			);
 		});
 	}
 
 	render() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
+		const searchFieldPlaceholder = formatMessage({
+			id: 'inviteuserfield.search',
+			defaultMessage: 'User Email'
+		});
 
 		return (<StyledSearchField>
 				<input
 					type="text"
-					placeholder="User Email"
+					placeholder={searchFieldPlaceholder}
 					value={this.state.userEmail}
 					onChange={this.updateUserEmail}
 					onKeyPress={(e) => { if (e.key === 'Enter') this.inviteUser();}}>

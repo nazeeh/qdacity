@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import DocumentsView from './DocumentsView.jsx';
@@ -34,8 +35,13 @@ export default class DocumentsToolbar extends React.Component {
 	}
 
 	addDocument() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var decider = new BinaryDecider('Empty Document or Upload?', 'New Text Document', 'Upload Documents');
+		var decider = new BinaryDecider(
+			formatMessage({ id: 'documentstoolbar.empty_or_upload', defaultMessage: 'Empty Document or Upload?' }),
+			formatMessage({ id: 'documentstoolbar.new_text', defaultMessage: 'New Text Document' }),
+			formatMessage({ id: 'documentstoolbar.upload', defaultMessage: 'Upload Documents' })
+		);
 		decider.showModal().then(function (value) {
 			if (value == 'optionA') _this.addEmptyDocument();
 			else _this.addUploadDocuments();
@@ -43,17 +49,24 @@ export default class DocumentsToolbar extends React.Component {
 	}
 
 	addEmptyDocument() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var prompt = new Prompt('Give your document a name', 'Document Name');
+		var prompt = new Prompt(
+			formatMessage({ id: 'documentstoolbar.document_title_prompt', defaultMessage: 'Give your document a name' }),
+			formatMessage({ id: 'documentstoolbar.document_title_prompt.sample', defaultMessage: 'Document Name' })
+		);
 		prompt.showModal().then(function (docTitle) {
 			_this.addDocumentToProject(docTitle);
 		});
 	}
 
 	addUploadDocuments() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 
-		var dialog = new FileUpload('Select a date and color.');
+		var dialog = new FileUpload(
+			formatMessage({ id: 'documentstoolbar.date_and_color_prompt', defaultMessage: 'Select a date and color.' })
+		);
 
 		dialog.showModal().then(function (files) {
 			_this.uploadDocuments(files);
@@ -125,9 +138,14 @@ export default class DocumentsToolbar extends React.Component {
 	}
 
 	removeDocumentFromProject() {
+		const {formatMessage} = IntlProvider.intl;
 		var docId = this.props.document.id;
 		var _this = this;
-		var confirm = new Confirm('Do you want to delete the document ' + this.props.document.title + '?');
+		var confirm = new Confirm(
+			formatMessage({ id: 'documentstoolbar.delete_document', defaultMessage: 'Do you want to delete the document {title}?' },
+				{ title: this.props.document.title }
+			)
+		);
 		confirm.showModal().then(function () {
 			var requestData = {};
 			requestData.id = docId;
@@ -139,8 +157,12 @@ export default class DocumentsToolbar extends React.Component {
 	}
 
 	changeTitle() {
+		const {formatMessage} = IntlProvider.intl;
 		var doc = this.props.document;
-		const prompt = new Prompt("New name for document \"" + doc.title + "\"", doc.title);
+		const prompt = new Prompt(
+			formatMessage({ id: 'documentstoolbar.rename', defaultMessage: "New name for document \"{title}\"" },
+				{ title: doc.title }
+			), doc.title);
 		prompt.showModal().then((value) => {
 			doc.title = value;
 			this.props.changeDocumentData(doc);
