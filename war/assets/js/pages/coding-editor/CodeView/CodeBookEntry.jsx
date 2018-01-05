@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
@@ -70,21 +71,21 @@ export default class codeBookEntry extends React.Component {
 		return (
 			<StyledCodeviewComponent>
 				<StyledEntry className="col-sm-4">
-					<span className="codebookEntryCol">Definition</span>
+					<span className="codebookEntryCol"><FormattedMessage id='codebookentry.definition' defaultMessage='Definition' /></span>
 					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.definition)} onChange={this.changeDef} />
 				</StyledEntry>
 				<StyledEntry className="col-sm-4">
-					<span className="codebookEntryCol">When To Use</span>
+					<span className="codebookEntryCol"><FormattedMessage id='codebookentry.when_to_use' defaultMessage='When To Use' /></span>
 					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.whenToUse)} onChange={this.changeWhen} />
 				</StyledEntry>
 				<StyledEntry className="col-sm-4">
-					<span className="codebookEntryCol">When Not To Use</span>
+					<span className="codebookEntryCol"><FormattedMessage id='codebookentry.when_not_to_use' defaultMessage='When Not To Use' /></span>
 					<StyledTextField value={this.removeDiv(this.props.code.codeBookEntry.whenNotToUse)} onChange={this.changeWhenNot} />
 				</StyledEntry>
 				<StyledSaveBtn>
 					<BtnDefault onClick={() => this.updateCodeBookEntry()}>
 							<i className="fa fa-floppy-o "></i>
-							<span>Save</span>
+							<span><FormattedMessage id='codebookentry.save' defaultMessage='Save' /></span>
 					</BtnDefault>
 				</StyledSaveBtn>
 			</StyledCodeviewComponent>

@@ -1,4 +1,5 @@
 import React from 'react'
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import StyledSearchField from '../../../common/styles/SearchField.jsx';
 import {
@@ -70,12 +71,18 @@ export default class ProjectSearch extends React.Component {
 	}
 
 	render() {
+		const {formatMessage} = IntlProvider.intl;
+		const searchFieldPlaceholder = formatMessage({
+			id: 'projectsearch.search_field',
+			defaultMessage: 'Search for anything'
+		});
+
 		return (
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
 					ref={(c) => this.input = c}
 					type="text"
-					placeholder="Search for anything"
+					placeholder={searchFieldPlaceholder}
 					value={this.state.search}
 					onChange={this.updateSearch}
 					onKeyPress={(e) => { if (e.key === 'Enter') this.searchProject();}}

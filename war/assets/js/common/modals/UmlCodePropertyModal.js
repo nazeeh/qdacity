@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import VexModal from './VexModal';
 
@@ -100,7 +101,11 @@ export default class UmlCodePropertyModal extends VexModal {
 					}
 				});
 
-				_this.codesystemView = ReactDOM.render(<SimpleCodesystem maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} />, document.getElementById(codesystemContainerId));
+				_this.codesystemView = ReactDOM.render(
+					<IntlProvider>
+						<SimpleCodesystem maxHeight="500" notifyOnSelected={notifyOnSelected} codesystem={_this.codesystem.getCodesystem()} isCodeSelectable={isCodeSelectable} />
+					</IntlProvider>, document.getElementById(codesystemContainerId)
+				);
 				notifyOnSelected(null);
 			}
 		);

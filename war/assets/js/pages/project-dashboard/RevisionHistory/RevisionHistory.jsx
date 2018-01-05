@@ -1,4 +1,6 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import ReportList from './ReportList.jsx';
@@ -127,25 +129,33 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	createNewRevision(prjId, comment) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		ProjectEndpoint.createSnapshot(prjId, comment).then(function (resp) {
-			alertify.success("New revision has been created");
+			alertify.success(
+				formatMessage({ id: 'revisionhistory.revision_created', defaultMessage: "New revision has been created" })
+			);
 			_this.addRevision(resp);
 
 		}).catch(function (resp) {
-			alertify.error("New revision has not been created");
+			alertify.error(
+				formatMessage({ id: 'revisionhistory.revision_creation_failed', defaultMessage: "New revision has not been created" })
+			);
 		});
 	}
 
 
 	deleteRevision(revisionId, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		var projectEndpoint = new ProjectEndpoint();
 
 		projectEndpoint.deleteRevision(revisionId)
 			.then(
 				function (val) {
-					alertify.success("Revision has been deleted");
+					alertify.success(
+						formatMessage({ id: 'revisionhistory.revision_deleted', defaultMessage: "Revision has been deleted" })
+					);
 					_this.state.revisions.splice(index, 1);
 					_this.setState({
 						revisions: _this.state.revisions
@@ -157,10 +167,18 @@ export default class RevisionHistory extends React.Component {
 
 
 	createReport(revId) {
+		const {formatMessage} = IntlProvider.intl;
 		var projectEndpoint = new ProjectEndpoint();
 		DocumentsEndpoint.getDocuments(revId, "REVISION").then(function (documents) {
-			var modal = new CustomForm('Create Validation Report');
-			modal.addTextInput('title', "Report Title", '', '');
+			var modal = new CustomForm(
+				formatMessage({ id: 'revisionhistory.create_validation_report', defaultMessage: 'Create Validation Report' })
+			);
+			modal.addTextInput(
+				'title',
+				formatMessage({ id: 'revisionhistory.report_title', defaultMessage: "Report Title" }),
+				'',
+				''
+			);
 			var documentTitles = [];
 
 			modal.addCheckBoxes('docs', documents);
@@ -169,15 +187,21 @@ export default class RevisionHistory extends React.Component {
 			var methods = ["f-measure", "krippendorffs-alpha", "fleiss-kappa"];
 			var units = ["paragraph", "sentence"];
 
-			modal.addSelect("method", methods, "Evaluation Method");
-			modal.addSelect("unit", units, "Unit of Coding");
+			modal.addSelect("method", methods,
+				formatMessage({ id: 'revisionhistory.evaluation_method', defaultMessage: "Evaluation Method" })
+			);
+			modal.addSelect("unit", units,
+				formatMessage({ id: 'revisionhistory.unit_of_coding', defaultMessage: "Unit of Coding" })
+			);
 
 			modal.showModal().then(function (data) {
 				var selectedDocs = [];
 				projectEndpoint.evaluateRevision(revId, data.title, data.docs, data.method, data.unit) //TODO
 					.then(
 						function (val) {
-							alertify.success("Report Initiated. This may take a few minutes");
+							alertify.success(
+								formatMessage({ id: 'revisionhistory.report_initiated', defaultMessage: "Report Initiated. This may take a few minutes" })
+							);
 						})
 					.catch(this.handleBadResponse);
 			});
@@ -185,14 +209,17 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	handleBadResponse(reason) {
-		alertify.error("There was an error");
+		const {formatMessage} = IntlProvider.intl;
+		alertify.error(
+			formatMessage({ id: 'revisionhistory.error', defaultMessage: "There was an error" })
+		);
 		console.log(reason.message);
 	}
 
 	renderRevisionDeleteBtn(revision, index) {
 		if (this.state.isAdmin || this.state.isProjectOwner)
 			return <a  onClick={() => this.deleteRevision(revision.id, index)} className="btn btn-danger btn-xs pull-right">
-						Delete
+						<FormattedMessage id='revisionhistory.delete' defaultMessage='Delete' />
 					</a>;
 		else return '';
 	}
@@ -207,7 +234,7 @@ export default class RevisionHistory extends React.Component {
 				</i>,
 			<div key={revId} className="timeline-item">
 					<h3 className="timeline-header timelineUserName">
-						<b> Reports </b>
+						<b> <FormattedMessage id='revisionhistory.reports' defaultMessage='Reports' /> </b>
 					</h3>
 					<div className="timeline-body timelineContent">
 						<ReportList reports={reports} isAdmin={this.state.isAdmin} isProjectOwner={this.state.isProjectOwner} history={this.props.history}/>
@@ -220,7 +247,7 @@ export default class RevisionHistory extends React.Component {
 		if (this.state.isAdmin || this.state.isProjectOwner) return (
 			<SyledCreateReportBtn onClick={() => this.createReport(revId)} className=" pull-right" >
 				<StyledBtnIcon className="fa fa-plus-circle"></StyledBtnIcon>
-							Create Report
+							<FormattedMessage id='revisionhistory.create_report' defaultMessage='Create Report' />
 			</SyledCreateReportBtn>);
 		else return '';
 	}
@@ -233,7 +260,7 @@ export default class RevisionHistory extends React.Component {
 			<i key={'label_'+revId} className="fa fa-check bg-grey"></i>,
 			<div key={revId} className="timeline-item">
 				<h3 className="timeline-header timelineUserName">
-					<b> Validation Projects </b>
+					<b> <FormattedMessage id='revisionhistory.validation_projects' defaultMessage='Validation Projects' /> </b>
 					{this.renderCreateReportBtn(revId)}
 				</h3>
 				<div className="timeline-body timelineContent">
@@ -245,6 +272,7 @@ export default class RevisionHistory extends React.Component {
 
 
 	render() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 
 		if (this.props.project.type != "PROJECT") return null;
@@ -254,13 +282,13 @@ export default class RevisionHistory extends React.Component {
 			return [
 				<li key={'label_'+revision.id} className="time-label">
 					<span className="bg-red timelineTime">
-					{"Revision " + revision.revision}
+					{formatMessage({ id: 'revisionhistory.revision_number', defaultMessage: "Revision {number}" }, {number: revision.revision})}
 					</span>
 				</li>,
 				<li key={revision.id}>
 					<i className="fa fa-info bg-yellow"></i>
 					<div className="timeline-item">
-						<h3 className="timeline-header timelineUserName"><b> Revision Info </b> </h3>
+						<h3 className="timeline-header timelineUserName"><b> <FormattedMessage id='revisionhistory.revision_info' defaultMessage='Revision Info' /> </b> </h3>
 						<div className="timeline-body timelineContent">
 							{revision.comment}
 						</div>
@@ -281,7 +309,7 @@ export default class RevisionHistory extends React.Component {
 		return (
 			<div className="box box-default">
 					<div className="box-header with-border">
-						<h3 className="box-title">Revision History</h3>
+						<h3 className="box-title"><FormattedMessage id='revisionhistory.revision_history' defaultMessage='Revision History' /></h3>
 						<CreateRevisionBtn createNewRevision={this.createNewRevision} project={this.props.project} isProjectOwner={this.state.isProjectOwner}/>
 					</div>
 					<div className="box-body">

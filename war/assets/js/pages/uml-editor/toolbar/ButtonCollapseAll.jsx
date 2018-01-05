@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -25,7 +26,7 @@ export default class ButtonCollapseAll extends React.Component {
 		return (
 			<BtnDefault title="Collapses all classes." onClick={_this.buttonClicked}>
 		        <i className="fa fa-minus-square-o"></i>
-		        <span>Collapse all</span>
+		        <span><FormattedMessage id='buttoncollapseall.collapse_all' defaultMessage='Collapse all' /></span>
 	        </BtnDefault>
 		);
 	}

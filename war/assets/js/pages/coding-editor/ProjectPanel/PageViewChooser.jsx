@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -57,9 +58,32 @@ export default class PageViewChooser extends React.Component {
 
 		return (
 			<StyledButtonGroup className="btn-group">
-				<StyledEditorBtn showBtn={true} active={view == PageView.CODING} type="button" className="btn" onClick={this.buttonCodingEditorClicked.bind(this)}>Coding-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={true} active={view == PageView.TEXT} className="btn" onClick={this.buttonTextEditorClicked.bind(this)}>Text-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={this.props.project.isUmlEditorEnabled()} active={view == PageView.UML} type="button" className="btn" onClick={this.buttonUmlEditorClicked.bind(this)}>Uml-Editor</StyledEditorBtn>
+				<StyledEditorBtn
+					showBtn={true}
+					active={view == PageView.CODING}
+					type="button"
+					className="btn"
+					onClick={this.buttonCodingEditorClicked.bind(this)}
+				>
+					<FormattedMessage id='pageviewchooser.coding' defaultMessage='Coding-Editor' />
+				</StyledEditorBtn>
+		        <StyledEditorBtn
+					showBtn={true}
+					active={view == PageView.TEXT}
+					className="btn"
+					onClick={this.buttonTextEditorClicked.bind(this)}
+				>
+					<FormattedMessage id='pageviewchooser.text' defaultMessage='Text-Editor' />
+				</StyledEditorBtn>
+		        <StyledEditorBtn
+					showBtn={this.props.project.isUmlEditorEnabled()}
+					active={view == PageView.UML}
+					type="button"
+					className="btn"
+					onClick={this.buttonUmlEditorClicked.bind(this)}
+				>
+					<FormattedMessage id='pageviewchooser.uml' defaultMessage='UML-Editor' />
+				</StyledEditorBtn>
 		    </StyledButtonGroup>
 		);
 	}
