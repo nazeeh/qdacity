@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import SaturationWeights from '../saturation/SaturationWeights.js'
 import SaturationCategorySettings from '../saturation/SaturationCategorySettings.jsx'

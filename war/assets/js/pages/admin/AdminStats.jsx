@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
 import UserRegistrationsChart from "./UserRegistrationsChart.jsx";

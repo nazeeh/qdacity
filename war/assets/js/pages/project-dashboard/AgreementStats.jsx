@@ -34,17 +34,28 @@ export default class AgreementStats extends React.Component {
 	}
 
 	getOptions() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		return {
-			title: formatMessage({id: 'agreementstats.agreement_by_document', defaultMessage: 'Agreement by Document'}),
+			title: formatMessage({
+				id: 'agreementstats.agreement_by_document',
+				defaultMessage: 'Agreement by Document'
+			}),
 			colors: ['#00a65a', '#5f5f5f', '#797979', '#929292', '#337ab7'],
 			hAxis: {
-				title: formatMessage({id: 'agreementstats.documents', defaultMessage: 'Documents'}),
+				title: formatMessage({
+					id: 'agreementstats.documents',
+					defaultMessage: 'Documents'
+				}),
 				format: 'h:mm a',
 
 			},
 			vAxis: {
-				title: formatMessage({id: 'agreementstats.agreement', defaultMessage: 'Agreement'}),
+				title: formatMessage({
+					id: 'agreementstats.agreement',
+					defaultMessage: 'Agreement'
+				}),
 				viewWindow: {
 					min: 0,
 					max: 1
@@ -68,13 +79,27 @@ export default class AgreementStats extends React.Component {
 	}
 
 	renderReport(report, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 
 		var data = new google.visualization.DataTable();
-		data.addColumn('string', formatMessage({ id: 'agreementstats.document', defaultMessage: 'Document'}));
-		data.addColumn('number', formatMessage({ id: 'agreementstats.f_measure', defaultMessage: 'F-Measure'}));
-		data.addColumn('number', formatMessage({ id: 'agreementstats.recall', defaultMessage: 'Recall'}));
-		data.addColumn('number', formatMessage({ id: 'agreementstats.precision', defaultMessage: 'Precision'}));
+		data.addColumn('string', formatMessage({
+			id: 'agreementstats.document',
+			defaultMessage: 'Document'
+		}));
+		data.addColumn('number', formatMessage({
+			id: 'agreementstats.f_measure',
+			defaultMessage: 'F-Measure'
+		}));
+		data.addColumn('number', formatMessage({
+			id: 'agreementstats.recall',
+			defaultMessage: 'Recall'
+		}));
+		data.addColumn('number', formatMessage({
+			id: 'agreementstats.precision',
+			defaultMessage: 'Precision'
+		}));
 
 		report.documentResults.forEach(function (docResult) {
 			var cells = docResult.reportRow.split(",");

@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
@@ -28,24 +30,41 @@ export default class InviteUserField extends React.Component {
 	}
 
 	inviteUser() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		ProjectEndpoint.inviteUser(this.props.project.getId(), this.state.userEmail).then(function (resp) {
 			alertify.success(
-				formatMessage({ id: 'inviteuserfield.invited', defaultMessage: "{email} has been invited"}, { email: _this.state.userEmail })
+				formatMessage({
+					id: 'inviteuserfield.invited',
+					defaultMessage: "{email} has been invited"
+				}, {
+					email: _this.state.userEmail
+				})
 			);
 		}).catch(function (resp) {
 			alertify.error(
-				formatMessage({ id: 'inviteuserfield.not_found', defaultMessage: "{email} was not found"}, { email: _this.state.userEmail })
+				formatMessage({
+					id: 'inviteuserfield.not_found',
+					defaultMessage: "{email} was not found"
+				}, {
+					email: _this.state.userEmail
+				})
 			);
 		});
 	}
 
 	render() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		if (this.props.isProjectOwner === false) return null;
 
-		const searchFieldPlaceholder = formatMessage({ id: 'inviteuserfield.search', defaultMessage: 'User Email' });
+		const searchFieldPlaceholder = formatMessage({
+			id: 'inviteuserfield.search',
+			defaultMessage: 'User Email'
+		});
 		var _this = this;
 
 		return (<StyledSearchField>

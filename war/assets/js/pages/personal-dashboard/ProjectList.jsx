@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
@@ -102,13 +104,24 @@ export default class ProjectList extends React.Component {
 	}
 
 	leaveProject(e, project, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var decider = new BinaryDecider(
-			formatMessage({ id: 'projectlist.leave_project', defaultMessage: 'Please confirm leaving this project' }),
-			formatMessage({ id: 'projectlist.cancel', defaultMessage: 'Cancel' }),
-			formatMessage({ id: 'projectlist.leave', defaultMessage: 'Leave' })
+			formatMessage({
+				id: 'projectlist.leave_project',
+				defaultMessage: 'Please confirm leaving this project'
+			}),
+			formatMessage({
+				id: 'projectlist.cancel',
+				defaultMessage: 'Cancel'
+			}),
+			formatMessage({
+				id: 'projectlist.leave',
+				defaultMessage: 'Leave'
+			})
 		);
 		decider.showModal().then(function (value) {
 			if (value == 'optionB') {
@@ -122,11 +135,18 @@ export default class ProjectList extends React.Component {
 	}
 
 	deleteProject(e, project, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var confirm = new Confirm(
-			formatMessage({ id: 'projectlist.confirm_delete', defaultMessage: 'Do you want to delete the project {name}?'}, { name: project.name })
+			formatMessage({
+				id: 'projectlist.confirm_delete',
+				defaultMessage: 'Do you want to delete the project {name}?'
+			}, {
+				name: project.name
+			})
 		);
 		confirm.showModal().then(function () {
 			ProjectEndpoint.removeProject(project.id).then(function (resp) {
@@ -154,12 +174,23 @@ export default class ProjectList extends React.Component {
 	}
 
 	showNewProjectModal() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var modal = new CustomForm(
-			formatMessage({ id: 'projectlist.create_project', defaultMessage: 'Create a new project' }), '');
-		modal.addTextInput('name', formatMessage({ id: 'projectlist.project_name', defaultMessage: "Project Name" }), 'Name', '');
-		modal.addTextField('desc', formatMessage({ id: 'projectlist.project_desc', defaultMessage: "Project Description" }), 'Description');
+			formatMessage({
+				id: 'projectlist.create_project',
+				defaultMessage: 'Create a new project'
+			}), '');
+		modal.addTextInput('name', formatMessage({
+			id: 'projectlist.project_name',
+			defaultMessage: "Project Name"
+		}), 'Name', '');
+		modal.addTextField('desc', formatMessage({
+			id: 'projectlist.project_desc',
+			defaultMessage: "Project Description"
+		}), 'Description');
 		modal.showModal().then(function (data) {
 			_this.createNewProject(data.name, data.desc);
 		});
@@ -201,9 +232,14 @@ export default class ProjectList extends React.Component {
 	}
 
 	render() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
-		const searchFieldPlaceholder = formatMessage({ id: 'projectlist.search', defaultMessage: 'Search' });
+		const searchFieldPlaceholder = formatMessage({
+			id: 'projectlist.search',
+			defaultMessage: 'Search'
+		});
 
 		//Render Components
 

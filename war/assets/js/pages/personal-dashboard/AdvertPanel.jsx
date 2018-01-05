@@ -1,5 +1,8 @@
 import React from 'react';
-import { FormattedMessage, defineMessages } from 'react-intl';
+import {
+	FormattedMessage,
+	defineMessages
+} from 'react-intl';
 import Jumbotron from '../../common/styles/Jumbotron';
 
 export default class AdvertPanel extends React.Component {

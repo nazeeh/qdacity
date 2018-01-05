@@ -1,5 +1,7 @@
 import React from 'react'
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import Users from './Users.jsx';
 import AdminStats from './AdminStats.jsx';

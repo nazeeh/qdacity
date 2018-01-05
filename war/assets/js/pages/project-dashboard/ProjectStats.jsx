@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
@@ -26,8 +28,13 @@ export default class ProjectStats extends React.Component {
 	}
 
 	formatNotAvailable(value = undefined) {
-		const {formatMessage} = IntlProvider.intl;
-		return value || formatMessage({ id: 'projectstats.not_available', defaultMessage: 'N/A' });
+		const {
+			formatMessage
+		} = IntlProvider.intl;
+		return value || formatMessage({
+			id: 'projectstats.not_available',
+			defaultMessage: 'N/A'
+		});
 	}
 
 	init() {
