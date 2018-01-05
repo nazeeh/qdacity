@@ -327,9 +327,22 @@ export default class DocumentsView extends React.Component {
 			this.state.documents[i].positionInOrder = i + 1;
 		}
 
-		DocumentsEndpoint.updateTextDocuments(this.state.documents).then(function (resp) {
-			// Do nothing
-		});
+		if (this.state.documents.length > 0) {
+			// AgreementMaps and TextDocuments are updated with different Endpoints
+
+			// AgreementMaps
+			if (this.state.documents[0].textDocumentID) {
+				DocumentsEndpoint.reorderAgreementMapPositions(this.props.report, this.props.projectType, this.state.documents).then(function (resp) {
+					// Do nothing
+				});
+			}
+			// TextDocuments
+			else {
+				DocumentsEndpoint.updateTextDocuments(this.state.documents).then(function (resp) {
+					// Do nothing
+				});
+			}
+		}
 	}
 
 	renderCollapseIcon() {
