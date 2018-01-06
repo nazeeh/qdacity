@@ -1,12 +1,15 @@
 package com.qdacity.endpoint;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
+
+import org.json.JSONException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -18,6 +21,11 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
+import com.qdacity.exercise.ValidationExercise;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ValidationProject;
+import com.qdacity.user.UserNotification;
+import com.qdacity.user.UserNotificationType;
 
 
 @Api(name = "qdacity",
@@ -126,6 +134,48 @@ public class ExerciseEndpoint {
 		} finally {
 			mgr.close();
 		}
+	}
+	
+
+	@ApiMethod(name = "exercise.createValidationExercise",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public ValidationExercise createValidationExercise(@Named("revisionID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException, JSONException {
+		ProjectRevision project = null;
+		ValidationExercise cloneExercise = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			project = mgr.getObjectById(ProjectRevision.class, revisionID);
+
+			cloneExercise = createValidationExercise(project, user);
+
+			cloneExercise.addValidationCoder(userID);
+			com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, userID);
+
+			cloneExercise.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());
+			// cloneProject.setRevisionID(project.getId());// FIXME Check why this works and previous assignments dont
+
+			cloneExercise = mgr.makePersistent(cloneExercise);
+			project = mgr.makePersistent(project);
+
+			TextDocumentEndpoint.cloneTextDocuments(project, cloneExercise.getId(), true, user);
+
+
+		} finally {
+			mgr.close();
+		}
+		return cloneExercise;
+	}
+	
+	private ValidationExercise createValidationExercise(ProjectRevision projectRev, User user) throws UnauthorizedException {
+
+		ValidationExercise cloneProject = new ValidationExercise(projectRev);
+
+		cloneProject.setCodesystemID(projectRev.getCodesystemID());
+
+		return cloneProject;
+
 	}
 	
 	private boolean containsExercise(Exercise exercise) {
