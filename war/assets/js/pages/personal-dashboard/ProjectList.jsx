@@ -8,23 +8,15 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 import Confirm from '../../common/modals/Confirm';
-import Pagination from '../../common/styles/Pagination.jsx';
 
 import {
 	ItemList,
+	ListMenu,
 	ListItemBtn,
 	ListItemPrimary,
 	ListItemDefault
 } from '../../common/styles/ItemList.jsx';
 
-import {
-	StyledBoxList,
-	StyledListItemBtn,
-	StyledListItemPrimary,
-	StyledListItemDefault
-} from '../../common/styles/List';
-
-import StyledSearchField from '../../common/styles/SearchField.jsx';
 import {
 	BtnDefault
 } from '../../common/styles/Btn.jsx';
@@ -33,33 +25,17 @@ const StyledNewPrjBtn = styled.div `
 	padding-left: 5px;
 `;
 
-const StyledProjectListMenu = styled.div `
-    padding-bottom: 5px;
-	display:flex;
-	flex-direction:row;
-	& > .searchfield{
-		height: inherit !important;
-		flex:1;
-	}
-`;
-
 export default class ProjectList extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			itemsPerPage: 8,
-			search: ''
-		};
 
-		this.pagination = null;
+		this.itemList = null;
 
 		this.init();
 
-		this.updateSearch = this.updateSearch.bind(this);
 		this.showNewProjectModal = this.showNewProjectModal.bind(this);
 		this.createNewProject = this.createNewProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
-		this.selectedPage = this.selectedPage.bind(this);
 		this.renderProject = this.renderProject.bind(this);
 	}
 
@@ -95,10 +71,6 @@ export default class ProjectList extends React.Component {
 		return projects;
 	}
 
-	selectedPage() {
-		this.forceUpdate();
-	}
-
 	leaveProject(e, project, index) {
 		var _this = this;
 		e.stopPropagation();
@@ -123,13 +95,6 @@ export default class ProjectList extends React.Component {
 				// remove project from parent state
 				_this.props.removeProject(index);
 			});
-		});
-
-	}
-
-	updateSearch(e) {
-		this.setState({
-			search: e.target.value
 		});
 
 	}
@@ -180,9 +145,9 @@ export default class ProjectList extends React.Component {
 	renderDeleteBtn(project, index) {
 
 		if (typeof project.revisionID == "undefined") {
-			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			return <ListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash "></i>
-					</StyledListItemBtn>
+					</ListItemBtn>
 		} else {
 			return "";
 		}
@@ -193,12 +158,12 @@ export default class ProjectList extends React.Component {
 			<span>{project.name}</span>,
 			<div>
                 {this.renderDeleteBtn(project, index)}
-                <StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+                <ListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
                     <i className="fa fa-sign-out"></i>
-                </StyledListItemBtn>
-                <StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+                </ListItemBtn>
+                <ListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
                     <i className="fa fa-tags"></i>
-                </StyledListItemBtn>
+                </ListItemBtn>
             </div>
 		]);
 	}
@@ -206,15 +171,15 @@ export default class ProjectList extends React.Component {
 	renderProject(project, index) {
 		if (this.isValidationProject(project)) {
 			return (
-				<StyledListItemDefault key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
+				<ListItemDefault key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
                     { this.renderProjectContent(project, index) }
-                </StyledListItemDefault>
+                </ListItemDefault>
 			);
 		} else {
 			return (
-				<StyledListItemPrimary key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
+				<ListItemPrimary key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
                     { this.renderProjectContent(project, index)} 
-                </StyledListItemPrimary>
+                </ListItemPrimary>
 			);
 		}
 	}
@@ -222,50 +187,32 @@ export default class ProjectList extends React.Component {
 	render() {
 		var _this = this;
 
-		//Render search and newPrjBtn
-		const projectListMenu = <StyledProjectListMenu>
-			<StyledSearchField className="searchfield" id="searchform">
-				<input
-					type="text"
-					placeholder="Search"
-					value={this.state.search}
-					onChange={this.updateSearch}
-				/>
-				<StyledNewPrjBtn id="newProject">
-					<BtnDefault
-						id="newPrjBtn"
-						href="#"
-						onClick={this.showNewProjectModal}
-
-					>
-					<i className="fa fa-plus fa-fw"></i>
-					New Project
-					</BtnDefault>
-				</StyledNewPrjBtn>
-
-			</StyledSearchField>
-
-		</StyledProjectListMenu>
-
-		// Filter list
-		var filteredList = this.props.projects.filter(
-			(project) => {
-				return project.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-			}
-		);
-		const selectedPageNumber = this.pagination ? this.pagination.getSelectedPageNumber() : 1;
-		const lastItem = selectedPageNumber * this.state.itemsPerPage;
-		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
-
 		return (
 			<div>
-				{projectListMenu}
-				<ItemList items={itemsToDisplay} renderItem={this.renderProject} />
-			    <Pagination ref={(r) => {if (r) this.pagination = r}} numberOfItems={filteredList.length} itemsPerPage={this.state.itemsPerPage} selectedPage={this.selectedPage} />
-     		</div>
+		        <ListMenu>
+	                { this.itemList ? this.itemList.renderSearchBox() : '' }
+	        
+	                <StyledNewPrjBtn id="newProject">
+	                    <BtnDefault
+	                        id="newPrjBtn"
+	                        href="#"
+	                        onClick={this.showNewProjectModal}
+	                    >
+	                    <i className="fa fa-plus fa-fw"></i>
+	                    New Project
+	                    </BtnDefault>
+	                </StyledNewPrjBtn>
+                </ListMenu>
+    	                
+				<ItemList 
+                    ref={(r) => {if (r) this.itemList = r}}
+                	hasSearch={true}
+                    hasPagination={true}
+                	doNotrenderSearch={true}
+                	itemsPerPage={7}
+                    items={this.props.projects} 
+                    renderItem={this.renderProject} />
+		    </div>
 		);
 	}
-
-
 }
