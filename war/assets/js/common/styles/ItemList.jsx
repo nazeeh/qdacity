@@ -200,7 +200,7 @@ class ItemList extends React.Component {
 
 		// Render
 		let renderSearch = hasSearch && !this.props.doNotrenderSearch;
-		let renderPagination = hasPagination && !this.props.doNotrenderPagination;
+		let renderPagination = hasPagination && !this.props.doNotrenderPagination && (this.props.items.length > itemsPerPage);
 
 		return (
 			<div>
