@@ -136,9 +136,11 @@ class ItemList extends React.Component {
 
 	renderSearchBox() {
 		return (
-			<SearchBox 
-                ref={(r) => {if (r) this.searchBox = r}} 
-	            onSearch={this.onSearch} />
+			<ListMenu>
+    			<SearchBox 
+                    ref={(r) => {if (r) this.searchBox = r}} 
+    	            onSearch={this.onSearch} />
+    		</ListMenu>
 		);
 	}
 
