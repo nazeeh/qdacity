@@ -21,7 +21,7 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
-import com.qdacity.exercise.ValidationExercise;
+import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.user.UserNotification;
@@ -137,40 +137,40 @@ public class ExerciseEndpoint {
 	}
 	
 
-	@ApiMethod(name = "exercise.createValidationExercise",
+	@ApiMethod(name = "exercise.createExerciseProject",
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public ValidationExercise createValidationExercise(@Named("revisionID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException, JSONException {
+	public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException, JSONException {
 		ProjectRevision project = null;
-		ValidationExercise cloneExercise = null;
+		ExerciseProject cloneExerciseProject = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = mgr.getObjectById(ProjectRevision.class, revisionID);
 
-			cloneExercise = createValidationExercise(project, user);
+			cloneExerciseProject = createExerciseProject(project, user);
 
-			cloneExercise.addValidationCoder(userID);
+			cloneExerciseProject.addValidationCoder(userID);
 			com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, userID);
 
-			cloneExercise.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());
+			cloneExerciseProject.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());
 			// cloneProject.setRevisionID(project.getId());// FIXME Check why this works and previous assignments dont
 
-			cloneExercise = mgr.makePersistent(cloneExercise);
+			cloneExerciseProject = mgr.makePersistent(cloneExerciseProject);
 			project = mgr.makePersistent(project);
 
-			TextDocumentEndpoint.cloneTextDocuments(project, cloneExercise.getId(), true, user);
+			TextDocumentEndpoint.cloneTextDocuments(project, cloneExerciseProject.getId(), true, user);
 
 
 		} finally {
 			mgr.close();
 		}
-		return cloneExercise;
+		return cloneExerciseProject;
 	}
 	
-	private ValidationExercise createValidationExercise(ProjectRevision projectRev, User user) throws UnauthorizedException {
+	private ExerciseProject createExerciseProject(ProjectRevision projectRev, User user) throws UnauthorizedException {
 
-		ValidationExercise cloneProject = new ValidationExercise(projectRev);
+		ExerciseProject cloneProject = new ExerciseProject(projectRev);
 
 		cloneProject.setCodesystemID(projectRev.getCodesystemID());
 

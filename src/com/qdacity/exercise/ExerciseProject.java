@@ -15,7 +15,7 @@ import com.qdacity.project.ProjectRevision;
 	identityType = IdentityType.APPLICATION)
 @Inheritance(
 	customStrategy = "complete-table")
-public class ValidationExercise extends ProjectRevision {
+public class ExerciseProject extends ProjectRevision {
 
 	/**
 	 * 
@@ -30,12 +30,12 @@ public class ValidationExercise extends ProjectRevision {
 	@Persistent
 	String creatorName;
 
-	public ValidationExercise(Project prj, Long projectID, String comment) {
+	public ExerciseProject(Project prj, Long projectID, String comment) {
 		super(prj, projectID, comment);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ValidationExercise(ProjectRevision prjRev) {
+	public ExerciseProject(ProjectRevision prjRev) {
 		super(prjRev);
 		this.revisionID = prjRev.getId();
 		// TODO Auto-generated constructor stub
