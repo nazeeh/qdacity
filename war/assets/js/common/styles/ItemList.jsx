@@ -45,7 +45,7 @@ const StyledListItem = styled.li `
     }
 `;
 
-const ListItemPrimary = StyledListItem.extend `
+const StyledListItemPrimary = StyledListItem.extend `
     background-color: ${props => props.theme.bgPrimary};
     border-color:  ${props => props.theme.borderPrimary};
     &:hover {
@@ -66,7 +66,7 @@ const ListItemPrimary = StyledListItem.extend `
     }
 `;
 
-const ListItemDefault = StyledListItem.extend `
+const StyledListItemDefault = StyledListItem.extend `
     background-color: ${props => props.theme.bgDefault};
     border-color:  ${props => props.theme.borderDefault};
     &> span {
@@ -87,7 +87,7 @@ const ListItemDefault = StyledListItem.extend `
     }
 `;
 
-const ListItemBtn = BtnSm.extend `
+const StyledListItemBtn = BtnSm.extend `
     background-color: rgba(0, 0, 0, 0.0);
     color: ${props => props.color};
     border-color: ${props => props.color};
@@ -219,7 +219,7 @@ class ItemList extends React.Component {
 export {
 	ListMenu,
 	ItemList,
-	ListItemBtn,
-	ListItemPrimary,
-	ListItemDefault
+	StyledListItemBtn,
+	StyledListItemPrimary,
+	StyledListItemDefault
 }

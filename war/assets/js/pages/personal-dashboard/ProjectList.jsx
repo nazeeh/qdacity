@@ -12,9 +12,9 @@ import Confirm from '../../common/modals/Confirm';
 import {
 	ItemList,
 	ListMenu,
-	ListItemBtn,
-	ListItemPrimary,
-	ListItemDefault
+	StyledListItemBtn,
+	StyledListItemPrimary,
+	StyledListItemDefault,
 } from '../../common/styles/ItemList.jsx';
 
 import {
@@ -145,9 +145,9 @@ export default class ProjectList extends React.Component {
 	renderDeleteBtn(project, index) {
 
 		if (typeof project.revisionID == "undefined") {
-			return <ListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
 						<i className="fa fa-trash "></i>
-					</ListItemBtn>
+					</StyledListItemBtn>
 		} else {
 			return "";
 		}
@@ -158,12 +158,12 @@ export default class ProjectList extends React.Component {
 			<span>{project.name}</span>,
 			<div>
                 {this.renderDeleteBtn(project, index)}
-                <ListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+                <StyledListItemBtn onClick={(e) => this.leaveProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
                     <i className="fa fa-sign-out"></i>
-                </ListItemBtn>
-                <ListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+                </StyledListItemBtn>
+                <StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
                     <i className="fa fa-tags"></i>
-                </ListItemBtn>
+                </StyledListItemBtn>
             </div>
 		]);
 	}
@@ -171,15 +171,15 @@ export default class ProjectList extends React.Component {
 	renderProject(project, index) {
 		if (this.isValidationProject(project)) {
 			return (
-				<ListItemDefault key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
+				<StyledListItemDefault key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
                     { this.renderProjectContent(project, index) }
-                </ListItemDefault>
+                </StyledListItemDefault>
 			);
 		} else {
 			return (
-				<ListItemPrimary key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
+				<StyledListItemPrimary key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
                     { this.renderProjectContent(project, index)} 
-                </ListItemPrimary>
+                </StyledListItemPrimary>
 			);
 		}
 	}
