@@ -185,8 +185,6 @@ export default class ProjectList extends React.Component {
 	}
 
 	render() {
-		var _this = this;
-
 		return (
 			<div>
 		        <ListMenu>
@@ -209,7 +207,7 @@ export default class ProjectList extends React.Component {
                 	hasSearch={true}
                     hasPagination={true}
                 	doNotrenderSearch={true}
-                	itemsPerPage={7}
+                	itemsPerPage={8}
                     items={this.props.projects} 
                     renderItem={this.renderProject} />
 		    </div>
