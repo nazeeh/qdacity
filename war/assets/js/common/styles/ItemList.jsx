@@ -5,8 +5,24 @@ import {
 	BtnSm
 } from './Btn.jsx';
 
-const StyledContainer = styled.ul `
+import Pagination from './Pagination.jsx';
+import SearchBox from './SearchBox.jsx';
+
+const ListMenu = styled.div `
+    padding-bottom: 10px;
+    display:flex;
+    flex-direction:row;
+    float: none;
+    
+    & > .searchfield{
+        height: inherit !important;
+        flex:1;
+    }
+`;
+
+const StyledItemsContainer = styled.ul `
     width: 100%;
+    height: ${props => (props.moreThanOnePage && props.itemsPerPage ? (props.itemsPerPage * 45) + 'px !important' : 'auto')};
     font-family: sans-serif;
     margin: 0;
     padding: 0px 0 0;
@@ -98,30 +114,110 @@ class ItemList extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.searchBox = null;
+		this.pagination = null;
+
+		this.pageSelected = this.pageSelected.bind(this);
+		this.onSearch = this.onSearch.bind(this);
 	}
 
-	renderItems() {
+	onSearch(searchText) {
+		this.forceUpdate();
+
+		if (this.props.hasPagination) {
+			this.pagination.selectPage(1);
+		}
+	}
+
+	pageSelected(pageNumber) {
+		this.forceUpdate();
+	}
+
+	renderSearchBox() {
+		return (
+			<SearchBox 
+                ref={(r) => {if (r) this.searchBox = r}} 
+	            onSearch={this.onSearch} />
+		);
+	}
+
+	renderPagination(items, itemsPerPage) {
+		return (
+			<Pagination 
+                ref={(r) => {if (r) this.pagination = r}} 
+                numberOfItems={items.length} 
+                itemsPerPage={itemsPerPage} 
+                pageSelected={this.pageSelected} />
+		);
+	}
+
+	renderItems(items) {
 		const _this = this;
 
-		if (!this.props.items || this.props.items.length == 0) {
+		if (!items || items.length == 0) {
 			return '';
 		}
 
-		return this.props.items.map((item, index) => {
+		return items.map((item, index) => {
 			return _this.props.renderItem(item, index);
 		});
 	}
 
 	render() {
+		let items = this.props.items;
+
+		let hasSearch = this.props.hasSearch;
+		let hasPagination = this.props.hasPagination;
+
+		// Filter search
+		if (hasSearch) {
+			const searchText = this.searchBox ? this.searchBox.getSearchText() : '';
+
+			const customSearch = this.props.searchFilter;
+
+			const defaultSearch = (item) => {
+				return item.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+			}
+
+			items = items.filter(customSearch ? customSearch : defaultSearch);
+		}
+
+		// Pagination
+		let itemsToDisplay = items;
+		let itemsPerPage = 0;
+		let moreThanOnePageUnfiltered = false;
+
+		if (hasPagination) {
+			itemsPerPage = this.props.itemsPerPage ? this.props.itemsPerPage : Pagination.getDefaultNumberOfItemsPerPage();
+			moreThanOnePageUnfiltered = this.props.items.length > itemsPerPage;
+
+			const selectedPageNumber = this.pagination ? this.pagination.getSelectedPageNumber() : 1;
+			const lastItem = selectedPageNumber * itemsPerPage;
+			const firstItem = lastItem - itemsPerPage;
+			itemsToDisplay = items.slice(firstItem, lastItem);
+		}
+
+		// Render
+		let renderSearch = hasSearch && !this.props.doNotrenderSearch;
+		let renderPagination = hasPagination && !this.props.doNotrenderPagination;
+
 		return (
-			<StyledContainer>
-		        { this.renderItems() }
-	        </StyledContainer>
+			<div>
+                { renderSearch ? this.renderSearch() : '' }
+                
+                <StyledItemsContainer moreThanOnePage={moreThanOnePageUnfiltered} itemsPerPage={itemsPerPage}>
+                    { this.renderItems(itemsToDisplay) }
+                </StyledItemsContainer>
+                
+                { renderPagination ? this.renderPagination(items, itemsPerPage) : '' }
+            </div>
 		);
 	}
 }
 
 export {
+	ListMenu,
 	ItemList,
 	ListItemBtn,
 	ListItemPrimary,

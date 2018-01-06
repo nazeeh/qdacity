@@ -5,7 +5,7 @@ const StyledContainer = styled.ul `
     list-style: none;
     display: flex;
     padding-left: 0;
-    margin: 20px 0;
+    margin: 15px 0;
     border-radius: 4px;
 `;
 
@@ -43,11 +43,12 @@ const StyledSeparator = StyledBaseItem.extend `
 
 export default class Pagination extends React.Component {
 
+	static getDefaultNumberOfItemsPerPage() {
+		return 10;
+	}
+
 	constructor(props) {
 		super(props);
-
-		this.defaultNumberOfItemsPerPage = 10;
-		this.defaultSelectedPage = 1;
 
 		this.maxPageItems = 7;
 
@@ -70,8 +71,8 @@ export default class Pagination extends React.Component {
 		this.setState({
 			selectedPageNumber: pageNumber
 		}, () => {
-			if (this.props.selectedPage != null) {
-				this.props.selectedPage(pageNumber);
+			if (this.props.pageSelected != null) {
+				this.props.pageSelected(pageNumber);
 			}
 		});
 	}
@@ -153,8 +154,8 @@ export default class Pagination extends React.Component {
 	}
 
 	render() {
-		let numberOfItems = this.props.numberOfItems ? this.props.numberOfItems : this.defaultSelectedPage;
-		let itemsPerPage = this.props.itemsPerPage ? this.props.itemsPerPage : this.defaultNumberOfItemsPerPage;
+		let numberOfItems = this.props.numberOfItems ? this.props.numberOfItems : 1;
+		let itemsPerPage = this.props.itemsPerPage ? this.props.itemsPerPage : this.getDefaultNumberOfItemsPerPage();
 
 		let numberOfPages = Math.ceil(numberOfItems / itemsPerPage);
 

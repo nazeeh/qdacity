@@ -18,27 +18,37 @@ const StyledSearchField = styled.input `
 
 export default class SearchBox extends React.Component {
 
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
-        this.state = {
-            search: ''
-        };
-        
-        this.updateSearch = this.updateSearch.bind(this);
-    }
+		this.state = {
+			search: ''
+		};
 
-    updateSearch(e) {
-        this.setState({
-            search: e.target.value
-        });
-    }
+		this.updateSearch = this.updateSearch.bind(this);
+	}
 
-    render() {
-        let placeholer = 'Search'; // TODO
-        
-        return (
-            <StyledSearchField className="searchfield" type="text" placeholder={placeholer} value={this.state.search} onChange={this.updateSearch} />   
-        );
-    }
+	getSearchText() {
+		return this.state.search;
+	}
+
+	updateSearch(e) {
+		const searchText = e.target.value;
+
+		this.setState({
+			search: searchText
+		}, () => {
+			if (this.props.onSearch) {
+				this.props.onSearch(searchText);
+			}
+		});
+	}
+
+	render() {
+		let placeholer = this.props.placeholder ? this.props.placeholder : 'Search'; // TODO
+
+		return (
+			<StyledSearchField className="searchfield" type="text" placeholder={placeholer} value={this.state.search} onChange={this.updateSearch} />
+		);
+	}
 }
