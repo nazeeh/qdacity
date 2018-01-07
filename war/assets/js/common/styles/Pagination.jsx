@@ -61,13 +61,22 @@ export default class Pagination extends React.Component {
 		return this.state.selectedPageNumber;
 	}
 
+	getNumberOfPages() {
+		const numberOfItems = this.props.numberOfItems ? this.props.numberOfItems : 1;
+		const itemsPerPage = this.props.itemsPerPage ? this.props.itemsPerPage : this.getDefaultNumberOfItemsPerPage();
+
+		return Math.ceil(numberOfItems / itemsPerPage);
+	}
 
 	isItemActive(pageNumber) {
 		return pageNumber == this.state.selectedPageNumber;
 	}
 
 	selectPage(pageNumber) {
-		// TODO VALIDATE
+		if (pageNumber <= 0 || pageNumber > this.getNumberOfPages()) {
+			return;
+		}
+
 		this.setState({
 			selectedPageNumber: pageNumber
 		}, () => {
@@ -154,10 +163,7 @@ export default class Pagination extends React.Component {
 	}
 
 	render() {
-		let numberOfItems = this.props.numberOfItems ? this.props.numberOfItems : 1;
-		let itemsPerPage = this.props.itemsPerPage ? this.props.itemsPerPage : this.getDefaultNumberOfItemsPerPage();
-
-		let numberOfPages = Math.ceil(numberOfItems / itemsPerPage);
+		let numberOfPages = this.getNumberOfPages();
 
 		let shouldRenderAllPages = numberOfPages <= this.maxPageItems;
 		let shouldRenderPagesWithFirstAndLastPage = this.state.selectedPageNumber >= 5 && this.state.selectedPageNumber <= numberOfPages - 4;
