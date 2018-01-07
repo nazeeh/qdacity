@@ -232,7 +232,7 @@ class ItemList extends React.Component {
 
 		return (
 			<div>
-                { renderSearch ? this.renderSearch() : '' }
+                { renderSearch ? this.renderSearchBoxWithContainer() : '' }
                 
                 <StyledItemsContainer innerRef={(r) => {if (r) _this.containerElement = r}} moreThanOnePage={moreThanOnePageUnfiltered} containerHeight={this.listHeight}>
                     { this.renderItems(itemsToDisplay) }
