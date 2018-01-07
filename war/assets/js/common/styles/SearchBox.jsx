@@ -16,6 +16,18 @@ const StyledSearchField = styled.input `
     }
 `;
 
+const StyledSearchFieldContainer = styled.div `
+    float: none;
+    width: 100%;
+    display:flex;
+    flex-direction:row;
+    padding-bottom: 5px;
+
+    & > .searchfield{
+        flex:1;
+    }
+`;
+
 class SearchBox extends React.Component {
 
 	constructor(props) {
@@ -25,7 +37,10 @@ class SearchBox extends React.Component {
 			search: ''
 		};
 
+		this.inputElement = null;
+
 		this.updateSearch = this.updateSearch.bind(this);
+		this.onKeyPress = this.onKeyPress.bind(this);
 	}
 
 	getSearchText() {
@@ -44,16 +59,27 @@ class SearchBox extends React.Component {
 		});
 	}
 
+	onKeyPress(e) {
+		this.props.onKeyPress(e);
+	}
+
+	focus() {
+		this.inputElement.focus();
+	}
+
 	render() {
+		const _this = this;
+
 		let placeholer = this.props.placeholder ? this.props.placeholder : 'Search'; // TODO
 
 		return (
-			<StyledSearchField className="searchfield" type="text" placeholder={placeholer} value={this.state.search} onChange={this.updateSearch} />
+			<StyledSearchField innerRef={(r) => {if (r) _this.inputElement = r}} className="searchfield" type="text" placeholder={placeholer} value={this.state.search} onChange={this.updateSearch} onKeyPress={this.onKeyPress} />
 		);
 	}
 }
 
 export {
 	StyledSearchField,
+	StyledSearchFieldContainer,
 	SearchBox
 }
