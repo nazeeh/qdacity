@@ -174,7 +174,7 @@ export default class TermDashboard extends React.Component {
 		if (!termCourse.isUserParticipant) {
 			return '';
 		} else {
-			return <Exercises termCourse={this.state.termCourse}/>
+			return <Exercises termCourse={this.state.termCourse} account = {this.props.account}/>
 		}
 	}
 

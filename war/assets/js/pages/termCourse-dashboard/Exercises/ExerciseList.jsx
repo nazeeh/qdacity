@@ -84,9 +84,22 @@ export default class ExerciseList extends React.Component {
 	}
 
 	editorClick (e, exercise, index) {
-
+		ExerciseEndpoint.getExerciseProjectByRevisionID(exercise.projectRevisionID).then(function (resp) {
+			if (!(typeof (resp.revisionID) == 'undefined')) {
+					console.log('already clicked');
+					//TODO
+					//check if the current user is in validation coders then open coding editor if the user is in the list
+			}
+			else {
+				//if not, then create the ExerciseProject:
+				ExerciseEndpoint.createExerciseProject(exercise.projectRevisionID).then (function (resp2) {
+					console.log(resp2);
+					//then redirect to coding editor
+				})
+			}
+		});
 	}
-	
+
 	render() {
 		var _this = this;
 
