@@ -22,7 +22,7 @@ const ListMenu = styled.div `
 
 const StyledItemsContainer = styled.ul `
     width: 100%;
-    height: ${props => (props.moreThanOnePage && props.itemsPerPage ? (props.itemsPerPage * 45) + 'px !important' : 'auto')};
+    height: ${props => (props.moreThanOnePage && props.containerHeight ? props.containerHeight + 'px !important' : 'auto')};
     font-family: sans-serif;
     margin: 0;
     padding: 0px 0 0;
@@ -118,6 +118,11 @@ class ItemList extends React.Component {
 		this.searchBox = null;
 		this.pagination = null;
 
+		// Holds the container DOM-element which stores the list items
+        this.containerElement = null;
+        // Saves the max list height
+		this.listHeight = 0;
+
 		this.pageSelected = this.pageSelected.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 	}
@@ -137,10 +142,10 @@ class ItemList extends React.Component {
 	renderSearchBox() {
 		return (
 			<ListMenu>
-    			<SearchBox 
+                <SearchBox 
                     ref={(r) => {if (r) this.searchBox = r}} 
-    	            onSearch={this.onSearch} />
-    		</ListMenu>
+                    onSearch={this.onSearch} />
+            </ListMenu>
 		);
 	}
 
@@ -167,6 +172,8 @@ class ItemList extends React.Component {
 	}
 
 	render() {
+		const _this = this;
+
 		let items = this.props.items;
 
 		let hasSearch = this.props.hasSearch;
@@ -204,11 +211,13 @@ class ItemList extends React.Component {
 		let renderSearch = hasSearch && !this.props.doNotrenderSearch;
 		let renderPagination = hasPagination && !this.props.doNotrenderPagination && (this.props.items.length > itemsPerPage);
 
+		this.listHeight = Math.max(this.listHeight, (this.containerElement ? this.containerElement.offsetHeight : 0));
+
 		return (
 			<div>
                 { renderSearch ? this.renderSearch() : '' }
                 
-                <StyledItemsContainer moreThanOnePage={moreThanOnePageUnfiltered} itemsPerPage={itemsPerPage}>
+                <StyledItemsContainer innerRef={(r) => {if (r) _this.containerElement = r}} moreThanOnePage={moreThanOnePageUnfiltered} containerHeight={this.listHeight}>
                     { this.renderItems(itemsToDisplay) }
                 </StyledItemsContainer>
                 
