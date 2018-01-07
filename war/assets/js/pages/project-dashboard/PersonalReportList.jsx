@@ -4,12 +4,12 @@ import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreementByDoc from '../../common/modals/IntercoderAgreementByDoc';
 
 import {
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
-	StyledBoxList,
-	StyledListItemDefault
-} from '../../common/styles/List';
+	StyledListItemPrimary,
+	StyledListItemDefault,
+} from '../../common/styles/ItemList.jsx';
 
 export default class PersonalReportList extends React.Component {
 	constructor(props) {
@@ -17,6 +17,9 @@ export default class PersonalReportList extends React.Component {
 		this.state = {
 			reports: []
 		};
+
+		this.renderReport = this.renderReport.bind(this);
+
 		if (this.props.project.getType() == 'VALIDATION') this.init();
 	}
 
@@ -48,42 +51,39 @@ export default class PersonalReportList extends React.Component {
 		}
 	}
 
+	renderReport(report, index) {
+		var datetime = report.datetime;
+		if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
+		else datetime = "";
+		return <StyledListItemDefault
+                key={report.id}
+                clickable={true}
+                onClick={() => this.showDocumentResults(report)}
+                >
+                {report.name}
+            </StyledListItemDefault>;
+	}
 
 	render() {
 		if (this.props.project.getType() != 'VALIDATION') return null;
-		var _this = this;
-
-		//Render Components
-
-		const renderListItems = this.state.reports.map((report, index) => {
-			var datetime = report.datetime;
-			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
-			else datetime = "";
-			return <StyledListItemDefault
-					key={report.id}
-					clickable={true}
-					onClick={() => this.showDocumentResults(report)}
-					>
-					{report.name}
-				</StyledListItemDefault>;
-		})
 
 		return (
 			<div className=" box box-default">
-					<div className="box-header with-border">
-						<h3 className="box-title">Reports</h3>
-					</div>
-					<div className="box-body">
-						<div>
-							<StyledBoxList>
-								{renderListItems}
-							</StyledBoxList>
-						</div>
-					</div>
-			</div>
+                    <div className="box-header with-border">
+                        <h3 className="box-title">Reports</h3>
+                    </div>
+                    <div className="box-body">
+                        <div>
+                            <ItemList 
+                                hasPagination={true}
+                                itemsPerPage={8}
+                                items={this.state.reports} 
+                                renderItem={this.renderReport} />
+                        </div>
+                    </div>
+            </div>
 
 		);
 	}
-
 
 }
