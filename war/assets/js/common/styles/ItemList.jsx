@@ -10,8 +10,9 @@ import SearchBox from './SearchBox.jsx';
 
 const ListMenu = styled.div `
     padding-bottom: 10px;
-    display:flex;
-    flex-direction:row;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
     float: none;
     
     & > .searchfield{
@@ -139,16 +140,22 @@ class ItemList extends React.Component {
 		this.forceUpdate();
 	}
 
-	renderSearchBox() {
+	renderSearchBoxWithContainer() {
 		return (
 			<ListMenu>
-                <SearchBox 
-                    ref={(r) => {if (r) this.searchBox = r}} 
-                    onSearch={this.onSearch} />
+                { this.renderSearchBox() }
             </ListMenu>
 		);
 	}
-
+	
+    renderSearchBox() {
+        return (
+            <SearchBox 
+                ref={(r) => {if (r) this.searchBox = r}} 
+                onSearch={this.onSearch} />
+        );
+    }
+    
 	renderPagination(items, itemsPerPage) {
 		return (
 			<Pagination 
