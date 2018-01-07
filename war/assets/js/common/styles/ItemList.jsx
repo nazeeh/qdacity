@@ -6,7 +6,9 @@ import {
 } from './Btn.jsx';
 
 import Pagination from './Pagination.jsx';
-import SearchBox from './SearchBox.jsx';
+import {
+	SearchBox
+} from './SearchBox.jsx';
 
 const ListMenu = styled.div `
     padding-bottom: 10px;

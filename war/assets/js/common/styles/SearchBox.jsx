@@ -16,7 +16,7 @@ const StyledSearchField = styled.input `
     }
 `;
 
-export default class SearchBox extends React.Component {
+class SearchBox extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -51,4 +51,9 @@ export default class SearchBox extends React.Component {
 			<StyledSearchField className="searchfield" type="text" placeholder={placeholer} value={this.state.search} onChange={this.updateSearch} />
 		);
 	}
+}
+
+export {
+	StyledSearchField,
+	SearchBox
 }
