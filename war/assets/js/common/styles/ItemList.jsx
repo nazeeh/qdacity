@@ -147,15 +147,15 @@ class ItemList extends React.Component {
             </ListMenu>
 		);
 	}
-	
-    renderSearchBox() {
-        return (
-            <SearchBox 
+
+	renderSearchBox() {
+		return (
+			<SearchBox 
                 ref={(r) => {if (r) this.searchBox = r}} 
                 onSearch={this.onSearch} />
-        );
-    }
-    
+		);
+	}
+
 	renderPagination(items, itemsPerPage) {
 		return (
 			<Pagination 
