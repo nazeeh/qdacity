@@ -192,13 +192,18 @@ class ItemList extends React.Component {
 		if (hasSearch) {
 			const searchText = this.searchBox ? this.searchBox.getSearchText() : '';
 
-			const customSearch = this.props.searchFilter;
+			const defaultGetItemText = (item) => {
+				return item.name;
+			};
 
-			const defaultSearch = (item) => {
-				return item.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
+			const getItemText = this.props.getItemText ? this.props.getItemText : defaultGetItemText;
+
+			const searchFunction = (item) => {
+				let text = getItemText(item);
+				return text.toLowerCase().indexOf(searchText.toLowerCase()) !== -1;
 			}
 
-			items = items.filter(customSearch ? customSearch : defaultSearch);
+			items = items.filter(searchFunction);
 		}
 
 		// Pagination
