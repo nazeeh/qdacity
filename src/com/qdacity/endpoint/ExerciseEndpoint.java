@@ -169,6 +169,39 @@ public class ExerciseEndpoint {
 		return cloneExerciseProject;
 	}
 	
+	@ApiMethod(name = "exercise.updateExerciseProject",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID,  User user) throws UnauthorizedException, JSONException {
+			ProjectRevision project = null;
+			ExerciseProject cloneExerciseProject = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				project = mgr.getObjectById(ProjectRevision.class, revisionID);
+
+				cloneExerciseProject = createExerciseProject(project, user);
+
+				cloneExerciseProject.addValidationCoder(user.getUserId());
+				cloneExerciseProject.setExerciseID(exerciseID);
+				com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+				cloneExerciseProject.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());
+				// cloneProject.setRevisionID(project.getId());// FIXME Check why this works and previous assignments dont
+
+				cloneExerciseProject = mgr.makePersistent(cloneExerciseProject);
+				project = mgr.makePersistent(project);
+
+				TextDocumentEndpoint.cloneTextDocuments(project, cloneExerciseProject.getId(), true, user);
+
+
+			} finally {
+				mgr.close();
+			}
+			return cloneExerciseProject;
+		}
+	
+	
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID",
 			scopes = { Constants.EMAIL_SCOPE },
