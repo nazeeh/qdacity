@@ -86,6 +86,7 @@ export default class ExerciseList extends React.Component {
 	editorClick (e, exercise, index) {
 		ExerciseEndpoint.getExerciseProjectByRevisionID(exercise.projectRevisionID).then(function (resp) {
 			if (!(typeof (resp.revisionID) == 'undefined')) {
+				this.props.history.push('/CodingEditor?project=' + resp.revisionID + '&type=VALIDATION');
 					console.log('already clicked');
 					//TODO
 					//check if the current user is in validation coders then open coding editor if the user is in the list
@@ -93,6 +94,7 @@ export default class ExerciseList extends React.Component {
 			else {
 				//if not, then create the ExerciseProject:
 				ExerciseEndpoint.createExerciseProject(exercise.projectRevisionID, exercise.id).then (function (resp2) {
+					this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=VALIDATION');
 					console.log(resp2);
 					//then redirect to coding editor
 				})
