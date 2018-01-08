@@ -28,12 +28,17 @@ export default class ExerciseList extends React.Component {
 	}
 
 	init() {
-		this.getExercises();
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId());
+			this.getExercises();
+		}
+
 	}
 
 	getExercises() {
 		var _this = this;
-		ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId()).then(function (resp) {
+		this.getExercisesPromise.then(function (resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				exercises: resp.items
@@ -84,17 +89,24 @@ export default class ExerciseList extends React.Component {
 	}
 
 	editorClick (e, exercise, index) {
+		var _this = this;
 		ExerciseEndpoint.getExerciseProjectByRevisionID(exercise.projectRevisionID).then(function (resp) {
 			if (!(typeof (resp.revisionID) == 'undefined')) {
-				this.props.history.push('/CodingEditor?project=' + resp.revisionID + '&type=VALIDATION');
-					console.log('already clicked');
-					//TODO
-					//check if the current user is in validation coders then open coding editor if the user is in the list
+				//the ExerciseProject exists, check for validationCoders
+				_this.userPromise.then(function (user) {
+					if (resp.validationCoders.find(o => o.id === user.id) == 'undefined') {
+						//User not found in validationCoders, add the user & open the CodingEditor
+					}
+					else {
+						//User found in validationCoders, simply open the CodingEditor
+						//_this.props.history.push('/CodingEditor?project=' + resp.revisionID + '&type=VALIDATION');
+					}
+				});
 			}
 			else {
-				//if not, then create the ExerciseProject:
+				//if the ExerciseProject doesn't exist, create the ExerciseProject:
 				ExerciseEndpoint.createExerciseProject(exercise.projectRevisionID, exercise.id).then (function (resp2) {
-					this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=VALIDATION');
+					//_this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=VALIDATION');
 					console.log(resp2);
 					//then redirect to coding editor
 				})
@@ -104,6 +116,8 @@ export default class ExerciseList extends React.Component {
 
 	render() {
 		var _this = this;
+
+		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
 
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
