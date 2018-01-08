@@ -29,7 +29,9 @@ public class ExerciseProject extends ProjectRevision {
 	double paragraphFMeasure;
 	@Persistent
 	String creatorName;
-
+	@Persistent
+	Long exerciseID;
+	
 	public ExerciseProject(Project prj, Long projectID, String comment) {
 		super(prj, projectID, comment);
 		// TODO Auto-generated constructor stub
@@ -47,6 +49,14 @@ public class ExerciseProject extends ProjectRevision {
 
 	public void setRevisionID(Long revisionID) {
 		this.revisionID = revisionID;
+	}
+	
+	public Long getExerciseID() {
+		return exerciseID;
+	}
+
+	public void setExerciseID(Long exerciseID) {
+		this.exerciseID = exerciseID;
 	}
 
 	public List<String> getValidationCoders() {

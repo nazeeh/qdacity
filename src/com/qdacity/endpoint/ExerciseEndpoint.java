@@ -141,7 +141,7 @@ public class ExerciseEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
+	public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
 		ProjectRevision project = null;
 		ExerciseProject cloneExerciseProject = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -151,6 +151,7 @@ public class ExerciseEndpoint {
 			cloneExerciseProject = createExerciseProject(project, user);
 
 			cloneExerciseProject.addValidationCoder(user.getUserId());
+			cloneExerciseProject.setExerciseID(exerciseID);
 			com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
 			cloneExerciseProject.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());

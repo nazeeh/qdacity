@@ -92,7 +92,7 @@ export default class ExerciseList extends React.Component {
 			}
 			else {
 				//if not, then create the ExerciseProject:
-				ExerciseEndpoint.createExerciseProject(exercise.projectRevisionID).then (function (resp2) {
+				ExerciseEndpoint.createExerciseProject(exercise.projectRevisionID, exercise.id).then (function (resp2) {
 					console.log(resp2);
 					//then redirect to coding editor
 				})
