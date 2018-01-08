@@ -58,10 +58,8 @@ backend_prod_build:
     - mvn clean package
 
 rtcsvc_prod_build:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: build
-  environment: Production
   only:
     - master
   cache:
@@ -112,10 +110,8 @@ frontend_prod_unittest:
     - frontend_prod_build
 
 rtcsvc_prod_unittest:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: test
-  environment: Production
   only:
     - master
   cache:
@@ -159,10 +155,8 @@ pages:
     - appcfg.sh --enable_jar_splitting  --enable_jar_classes --noisy --service_account_json_key_file=/tmp/$CI_PIPELINE_ID.json update $WAR
 
 deploy_rtcsvc:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: deploy
-  environment: Production
   only:
     - master
   script:
