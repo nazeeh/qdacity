@@ -113,6 +113,66 @@ const StyledListItemBtn = BtnSm.extend `
     }
 `;
 
+/**
+ * The ItemList component renders a list of objects. Example:
+ * {@code
+ * <ItemList 
+ *     items={this.props.projects} 
+ *     renderItem={this.renderProject} />
+ * }     
+ * The props field items is the array of elements that should be rendered in the list. 
+ * The props field renderItem is a method which defines how each element will be rendered.
+ * Example:
+ * {@code
+ *  renderProject(project, index) {
+ *      return (
+ *          <StyledListItemDefault key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
+ *              { this.renderProjectContent(project, index) }
+ *          </StyledListItemDefault>
+ *      );
+ *  }
+ * }
+ *    
+ * The ItemList has a built-in pagination and search-box. To enable them, use the props hasSearch
+ * and hasPagination. If you want to render either the pagination or the search-box manually, you 
+ * can use doNotrenderSearch and doNotrenderPagination:
+ * {@code
+ *  render() {
+ *      return (
+ *          <div>
+ *              <div>
+ *                  { this.itemList ? this.itemList.renderSearchBox() : '' }
+ *          
+ *                  <button ... />
+ *              </div>
+ *                      
+ *              <ItemList 
+ *                  ref={(r) => {if (r) this.itemList = r}}
+ *                  hasSearch={true}
+ *                  hasPagination={true}
+ *                  doNotrenderSearch={true}
+ *                  itemsPerPage={8}
+ *                  items={this.props.projects} 
+ *                  renderItem={this.renderProject} />
+ *          </div>
+ *      );
+ *  }
+ *  }
+ *  
+ * If the ItemList uses the SearchBox, it needs to know where the text ist. By default, it assumes that 
+ * each object in the list (props.items) has a field "name". If it doesn't, you can use the props element
+ * getItemText to pass a function which should return the text of the item.
+ * Example:
+ * {@code
+ * <ItemList 
+ *     hasSearch={true}
+ *     hasPagination={true}
+ *     itemsPerPage={8}
+ *     items={this.props.projects} 
+ *     renderItem={this.renderProject}
+ *     getItemText={(item) => item.name} />
+ * }
+ */
 class ItemList extends React.Component {
 
 	constructor(props) {
