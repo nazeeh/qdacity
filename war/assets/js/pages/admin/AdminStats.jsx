@@ -86,7 +86,7 @@ export default class AdminStats extends React.Component {
 				</div>
 				<div className="box box-default">
 					<div className="box-header with-border">
-						<h3 className="box-title">Active users over time</h3>
+						<h3 className="box-title"><FormattedMessage id='adminstats.active_users_over_time' defaultMessage='Active users over time' /></h3>
 					</div>
 					<div className="box-body">
 						<ActiveUsersChart chartScriptPromise={this.props.chartScriptPromise}/>

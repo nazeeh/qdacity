@@ -3,6 +3,7 @@ import React from 'react';
 import GoogleLineChart from '../../common/GoogleLineChart.jsx';
 import ChartTimeFrameChooser from "./ChartTimeFrameChooser.jsx"
 import EventsEndpoint from "../../common/endpoints/EventsEndpoint";
+import IntlProvider from "../../common/Localization/LocalizationProvider";
 
 export default class ActiveUsersChart extends React.Component {
 
@@ -71,8 +72,10 @@ export default class ActiveUsersChart extends React.Component {
 
 		const data = new google.visualization.DataTable();
 
-		data.addColumn('date', 'Day');
-		data.addColumn('number', 'Active users');
+		const {formatMessage} = IntlProvider.intl;
+
+		data.addColumn('date', formatMessage({ id: 'activeuserschart.axis_day', defaultMessage: 'Day' }));
+		data.addColumn('number', formatMessage({ id: 'activeuserschart.axis_users', defaultMessage: 'Active Users' }));
 
 		data.addRows(this.getDataRows(this.state.dailyUserLoginEvents));
 
