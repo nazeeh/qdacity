@@ -11,9 +11,9 @@ import java.util.Date;
 
 public class EventLogger {
 
-    private static PersistenceManager getPersistenceManager() {
+	private static PersistenceManager getPersistenceManager() {
 	return PMF.get().getPersistenceManager();
-    }
+	}
 
 	public static void logDailyUserLogin(String userId) {
 		Calendar calendar = Calendar.getInstance();
@@ -22,7 +22,7 @@ public class EventLogger {
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-    	Date startOfDay = calendar.getTime();
+		Date startOfDay = calendar.getTime();
 
 		Query.Filter userIdFilter = new Query.FilterPredicate("userId", Query.FilterOperator.EQUAL, userId);
 		Query.Filter datetimeFilter = new Query.FilterPredicate("datetime", Query.FilterOperator.EQUAL, startOfDay);
