@@ -1,7 +1,18 @@
-before_script:
+image: java:7
+
+.job_template: &job_definition
+  tags:
+    - qdacity
+  environment: Production
+
+.cache_node: &node_cache
+  key: "node_modules"
+  untracked: true
+  paths:
+    - war/node_modules/
 
 after_script:
-  - rm /tmp/$CI_PIPELINE_ID.json
+    - rm -f /tmp/$CI_PIPELINE_ID.json
 
 stages:
   - build
@@ -9,40 +20,36 @@ stages:
   - report
   - deploy
 
-frontend_prod_build:
-  tags:
-    - qdacity
+.frontend_build: &frontend_build
   stage: build
-  environment: Production
   only:
-    - master
-  cache:
-    key: "node_modules"
-    untracked: true
-    paths:
-    - war/node_modules/
+    - branches
+  cache: *node_cache
   artifacts:
     paths:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
     expire_in: 3 mos
+
+frontend_prod_build:
+  <<: *job_definition
+  <<: *frontend_build
   script:
-    - cd war
-    - echo $API_CONFIG_PRODUCTION > ./api_config.json
-    - rm -f ./dist/js/*
-    - npm prune
-    - npm install 
-    - gulp bundle
-    - gulp minify
-    - gulp set-react-production
+    - build_frontend bundle minify set-react-production
+
+frontend_prod_build_nm:
+  <<: *job_definition
+  <<: *frontend_build
+  except:
+    - master
+  script:
+    - build_frontend bundle
 
 backend_prod_build:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: build
-  environment: Production
   only:
-    - master
+    - branches
   artifacts:
     paths:
       - target/qdacity-war
@@ -71,12 +78,10 @@ rtcsvc_prod_build:
     - npm install
 
 backend_prod_unittest:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: test
-  environment: Production
   only:
-    - master
+    - branches
   artifacts:
     paths:
       - target/site/jacoco-ut
@@ -88,17 +93,12 @@ backend_prod_unittest:
     - backend_prod_build
 
 frontend_prod_unittest:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: test
-  environment: Production
   only:
-    - master
+    - branches
   cache:
-    key: "node_modules"
-    untracked: true
-    paths:
-    - war/node_modules/
+    <<: *node_cache
     policy: pull
   artifacts:
     paths:
@@ -137,8 +137,7 @@ rtcsvc_prod_unittest:
 
 # Does not work yet, with gitlab pages not installed
 pages:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: report
   dependencies:
     - backend_prod_unittest
@@ -149,15 +148,11 @@ pages:
       - public
     expire_in: 30 days
   only:
-    - master
+    - branches
 
-deploy_prod:
-  tags:
-    - qdacity
+.deploy_prod: &deployment_template
+  <<: *job_definition
   stage: deploy
-  environment: Production
-  only:
-    - master
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
     - WAR=$(pwd)/target/qdacity-war
@@ -174,3 +169,49 @@ deploy_rtcsvc:
     - cd realtime-service
     - bash ./deployment/deploy_from_gitlab_ci.sh
 
+deploy_prod:
+  <<: *deployment_template
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build
+  only:
+    - master
+
+deploy_prod_manual:
+  <<: *deployment_template
+  only:
+    - branches
+  except:
+    - master
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build
+  when: manual
+
+deploy_non_minified:
+  <<: *deployment_template
+  only:
+    - branches
+  except:
+    - master
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build_nm
+  when: manual
+
+.global_functions: &global_helpers |
+    function build_frontend() {
+      cd war
+      echo $API_CONFIG_PRODUCTION > ./api_config.json
+      rm -f ./dist/js/*
+      npm prune
+      npm install
+      while [ -n "$1" ]; do
+        subcommand="$1"
+        shift
+        gulp $subcommand
+      done
+    }
+
+before_script:
+  - *global_helpers
