@@ -14,45 +14,32 @@ import CustomForm from '../../common/modals/CustomForm';
 import Confirm from '../../common/modals/Confirm';
 
 import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
 	StyledListItemDefault,
-} from '../../common/styles/List';
+} from '../../common/styles/ItemList.jsx';
 
-import StyledSearchField from '../../common/styles/SearchField.jsx';
 import {
 	BtnDefault
 } from '../../common/styles/Btn.jsx';
 
 const StyledNewPrjBtn = styled.div `
-	padding-left: 5px;
+    padding-left: 5px;
 `;
-
-const StyledProjectListMenu = styled.div `
-	display:flex;
-	flex-direction:row;
-	& > .searchfield{
-		height: inherit !important;
-		flex:1;
-	}
-`;
-
-
-const StyledProjectList = StyledBoxList.extend `
-	padding-top: 5px;
-`;
-
 
 export default class TermCourseList extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.itemList = null;
+
 		this.showNewTermCourseModal = this.showNewTermCourseModal.bind(this);
 
 		this.init();
+
+		this.renderTerm = this.renderTerm.bind(this);
 	}
 
 	init() {
@@ -234,12 +221,12 @@ export default class TermCourseList extends React.Component {
 		//Show join/leave button depending on whether the user is a participant in the course
 		if (!term.isUserParticipant) {
 			return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-				<i className="fa fa-tags"></i>
-			</StyledListItemBtn>
+                <i className="fa fa-tags"></i>
+            </StyledListItemBtn>
 		} else {
 			return <StyledListItemBtn onClick={(e) => this.leaveTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-					<i className="fa fa-sign-out"></i>
-				</StyledListItemBtn>
+                    <i className="fa fa-sign-out"></i>
+                </StyledListItemBtn>
 		}
 	}
 
@@ -247,8 +234,8 @@ export default class TermCourseList extends React.Component {
 		var course = this.props.course;
 		if (course.isUserOwner) {
 			return <StyledListItemBtn onClick={(e) => this.removeTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-			<i className="fa fa-trash "></i>
-		</StyledListItemBtn>
+            <i className="fa fa-trash "></i>
+        </StyledListItemBtn>
 		}
 	}
 
@@ -256,8 +243,8 @@ export default class TermCourseList extends React.Component {
 		var course = this.props.course;
 		if (course.isUserOwner) {
 			return <StyledListItemBtn onClick={(e) => this.configureTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-			<i className="fa fa-cog "></i>
-		</StyledListItemBtn>
+            <i className="fa fa-cog "></i>
+        </StyledListItemBtn>
 		}
 	}
 
@@ -265,74 +252,56 @@ export default class TermCourseList extends React.Component {
 		var course = this.props.course;
 		if (course.isUserOwner) {
 			return ([
-				<StyledNewPrjBtn id="newProject">
-				<BtnDefault
-					id="newPrjBtn"
-					href="#"
-					onClick={this.showNewTermCourseModal}
-				>
-				<i className="fa fa-plus fa-fw"></i>
-				<FormattedMessage id='term.course.new_term' defaultMessage='New Term Course' />
-				</BtnDefault>
-			</StyledNewPrjBtn>
+				<StyledNewPrjBtn id="newProject">  
+                    <BtnDefault
+                        id="newPrjBtn"
+                        href="#"
+                        onClick={this.showNewTermCourseModal}
+                    >
+                        <i className="fa fa-plus fa-fw"></i>
+                        <FormattedMessage id='term.course.new_term' defaultMessage='New Term Course' />
+                    </BtnDefault>
+                </StyledNewPrjBtn>
 			])
 		}
 	}
-	render() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
-		var _this = this;
 
-		const searchFieldPlaceholder = formatMessage({
-			id: 'term.course.search',
-			defaultMessage: 'Search'
-		});
-		const projectListMenu = <StyledProjectListMenu>
-
-
-			<StyledSearchField className="searchfield" id="searchform">
-				<input
-					type="text"
-					placeholder={searchFieldPlaceholder}
-				/>
-			{this.renderCreateTermButton()}
-
-			</StyledSearchField>
-
-		</StyledProjectListMenu>
-
-		const renderListItemContent = (term, index) => {
-			return ([
-				<span>{term.text}</span>,
-				<div>
-						{this.renderJoinButton(term, index)}
-						{this.renderDeleteButton(term, index)}
-						{this.renderConfigureButton(term, index)}
-				</div>
-			])
+	renderTerm(term, index) {
+		if (term.isOpen == "true") {
+			return (
+				<StyledListItemPrimary>
+                    <span>{term.text}</span>
+                    <div>
+                        {this.renderJoinButton(term, index)}
+                        {this.renderDeleteButton(term, index)}
+                        {this.renderConfigureButton(term, index)}
+                    </div>
+                </StyledListItemPrimary>
+			);
+		} else {
+			return "";
 		}
-		var account = this.props.account;
-		const itemsToDisplay = this.props.course.terms;
-		const renderListItems = itemsToDisplay.map((term, index) => {
-			if (term.isOpen == "true") {
-				return <StyledListItemPrimary>
-						{renderListItemContent(term, index)}
-					</StyledListItemPrimary>;
-			} else {
-				return "";
-			}
-		})
+	}
 
+	render() {
 		return (
 			<div>
-				{projectListMenu}
-				<StyledProjectList className="">
-					{renderListItems}
-	            </StyledProjectList>
-     		</div>
+                <ListMenu>
+                    { this.itemList ? this.itemList.renderSearchBox() : '' }
+                    
+                    { this.renderCreateTermButton() }
+                </ListMenu>
+                        
+                <ItemList 
+                    ref={(r) => {if (r) this.itemList = r}}
+                    hasSearch={true}
+                    hasPagination={true}
+                    doNotrenderSearch={true}
+                    itemsPerPage={8}
+                    items={this.props.course.terms} 
+                    renderItem={this.renderTerm}
+                    getItemText={(item) => item.text}/>
+            </div>
 		);
 	}
-
-
 }

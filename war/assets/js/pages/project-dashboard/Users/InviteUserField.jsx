@@ -8,9 +8,16 @@ import styled from 'styled-components';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 
 import {
+	ListMenu
+} from '../../../common/styles/ItemList.jsx';
+
+import {
+	StyledSearchField
+} from '../../../common/styles/SearchBox.jsx';
+
+import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
-import StyledSearchField from '../../../common/styles/SearchField.jsx';
 
 export default class InviteUserField extends React.Component {
 	constructor(props) {
@@ -56,28 +63,31 @@ export default class InviteUserField extends React.Component {
 	}
 
 	render() {
-		const {
+	    if (this.props.isProjectOwner === false) return null;
+
+	    const {
 			formatMessage
 		} = IntlProvider.intl;
-		if (this.props.isProjectOwner === false) return null;
-
+		
 		const searchFieldPlaceholder = formatMessage({
 			id: 'inviteuserfield.search',
 			defaultMessage: 'User Email'
 		});
-		var _this = this;
 
-		return (<StyledSearchField>
-				<input
+		return (
+			<ListMenu>
+				<StyledSearchField
 					type="text"
-					placeholder={searchFieldPlaceholder}
+		            className="searchfield"
+                    placeholder={searchFieldPlaceholder}
 					value={this.state.userEmail}
 					onChange={this.updateUserEmail}
 					onKeyPress={(e) => { if (e.key === 'Enter') this.inviteUser();}}>
-				</input>
-				<BtnDefault type="button" onClick={this.inviteUser}>
-					<i className="fa fa-paper-plane  fa-lg"></i> <FormattedMessage id='inviteuserfield.invite' defaultMessage='Invite' />
-				</BtnDefault>
-			</StyledSearchField>);
+				</StyledSearchField>
+    			<BtnDefault type="button" onClick={this.inviteUser}>
+    				<i className="fa fa-paper-plane  fa-lg"></i> <FormattedMessage id='inviteuserfield.invite' defaultMessage='Invite' />
+    			</BtnDefault>
+			</ListMenu>
+		);
 	}
 }
