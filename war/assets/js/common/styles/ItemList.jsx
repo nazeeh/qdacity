@@ -285,8 +285,9 @@ class ItemList extends React.Component {
 		let renderSearch = hasSearch && !this.props.doNotrenderSearch;
 		let renderPagination = hasPagination && !this.props.doNotrenderPagination && (this.props.items.length > itemsPerPage);
 
-		// Update the height only after page 1, the list cannot expand properly otherwise
-		if (this.pagination != null && this.pagination.getSelectedPageNumber() > 1) {
+		// Update the height with delay
+		if ((this.pagination != null && this.pagination.getSelectedPageNumber() > 1)
+			|| (this.searchBox != null && this.searchBox.getSearchText() != "" && this.searchBox.getSearchText() != null)) {
 			this.listHeight = Math.max(this.listHeight, (this.containerElement ? this.containerElement.offsetHeight : 0));
 		}
 
