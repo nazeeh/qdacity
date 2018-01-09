@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import IntlProvider from '../../common/Localization/LocalizationProvider';
+
 const StyledSearchField = styled.input `
     padding: 0.3em;
     border: 1px solid;
@@ -70,7 +72,16 @@ class SearchBox extends React.Component {
 	render() {
 		const _this = this;
 
-		let placeholer = this.props.placeholder ? this.props.placeholder : 'Search'; // TODO
+		const {
+            formatMessage
+        } = IntlProvider.intl;
+        
+        const defaultPlaceHolder = formatMessage({
+            id: 'searchbox.search',
+            defaultMessage: 'Search'
+        });
+
+		let placeholer = this.props.placeholder ? this.props.placeholder : defaultPlaceHolder;
 
 		return (
 			<StyledSearchField innerRef={(r) => {if (r) _this.inputElement = r}} className="searchfield" type="text" placeholder={placeholer} value={this.state.search} onChange={this.updateSearch} onKeyPress={this.onKeyPress} />
