@@ -192,6 +192,8 @@ export default class UserMigration extends React.Component {
             
             // all other requests need id_token here as header
             _this.resetGapiToken();
+
+            _this.props.auth.updateUserStatus();
         }, (failure) => {
             _this.state.migrationStatus = false;
             _this.setState(_this.state);
