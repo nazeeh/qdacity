@@ -279,7 +279,7 @@ public class TextDocumentEndpoint {
 		
 		PersistenceManager mgr = getPersistenceManager();
 		
-		List<SimplifiedAgreementMap> newMaps = agreementMapList.getAgreementMaps();
+		List<SimplifiedAgreementMap> newMaps = agreementMapList.getAgreementMapPositions();
 
 		List<AgreementMap> persistedMaps = getAgreementMaps(id, projectType, user);
 		

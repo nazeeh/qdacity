@@ -41,21 +41,21 @@ public class AgreementMapList {
 	}
 	
 	
-	private List<SimplifiedAgreementMap> agreementMaps;
+	private List<SimplifiedAgreementMap> agreementMapPositions;
 
 	public AgreementMapList() {
-		this.agreementMaps = new ArrayList<>();
+		this.agreementMapPositions = new ArrayList<>();
 	}
 	
-	public AgreementMapList(List<SimplifiedAgreementMap> agreementMaps) {
-		this.agreementMaps = agreementMaps;
+	public AgreementMapList(List<SimplifiedAgreementMap> agreementMapPositions) {
+		this.agreementMapPositions = agreementMapPositions;
 	}
 	
-	public List<SimplifiedAgreementMap> getAgreementMaps() {
-		return agreementMaps;
+	public List<SimplifiedAgreementMap> getAgreementMapPositions() {
+		return agreementMapPositions;
 	}
 
-	public void setAgreementMaps(List<SimplifiedAgreementMap> agreementMaps) {
-		this.agreementMaps =agreementMaps;
+	public void setAgreementMapPositions(List<SimplifiedAgreementMap> agreementMapPositions) {
+		this.agreementMapPositions = agreementMapPositions;
 	}
 }
