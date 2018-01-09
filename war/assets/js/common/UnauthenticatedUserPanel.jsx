@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { FormattedMessage } from 'react-intl';
 
 import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
 
@@ -66,9 +67,14 @@ export default class UnauthenticatedUserPanel extends React.Component {
         else {
             return (
                 <StyledPanel>
-                        <h4>You are currently not logged in!</h4>
-                        <p>Please sign-in or register to access this page!</p>
-                        <p>Click <a href="/">here</a> to get to the Home.</p>
+                        <h4><FormattedMessage id='unauthenticated_user_panel.not_logged_in_statement' defaultMessage='You are currently not logged in!' /></h4>
+                        <p><FormattedMessage id='unauthenticated_user_panel.sign_in_or_register_note' defaultMessage='Please sign-in or register to access this page.' /></p>
+                        <p><FormattedMessage id='unauthenticated_user_panel.redirect_to_home' 
+                            defaultMessage={'Click {redirect_url} to get to the Home.'}
+                            values={{
+                                redirect_url: (<a href="/">here</a>),
+                            }} />
+                        </p>
                     </StyledPanel>
                 );
             }
