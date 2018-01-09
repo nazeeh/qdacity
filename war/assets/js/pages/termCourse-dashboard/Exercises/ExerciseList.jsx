@@ -94,8 +94,11 @@ export default class ExerciseList extends React.Component {
 			if (!(typeof (resp.revisionID) == 'undefined')) {
 				//the ExerciseProject exists, check for validationCoders
 				_this.userPromise.then(function (user) {
-					if (resp.validationCoders.find(o => o.id === user.id) == 'undefined') {
+					if ((typeof (resp.validationCoders) == 'undefined') || (resp.validationCoders.find(o => o.id === user.id) == 'undefined')) {
 						//User not found in validationCoders, add the user & open the CodingEditor
+						ExerciseEndpoint.addValidationCoder(resp.id).then(function (exerciseProject){
+							//_this.props.history.push('/CodingEditor?project=' + resp.revisionID + '&type=VALIDATION');
+						})
 					}
 					else {
 						//User found in validationCoders, simply open the CodingEditor
@@ -104,11 +107,9 @@ export default class ExerciseList extends React.Component {
 				});
 			}
 			else {
-				//if the ExerciseProject doesn't exist, create the ExerciseProject:
+				//if the ExerciseProject doesn't exist, create the ExerciseProject then redirect to coding editor:
 				ExerciseEndpoint.createExerciseProject(exercise.projectRevisionID, exercise.id).then (function (resp2) {
 					//_this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=VALIDATION');
-					console.log(resp2);
-					//then redirect to coding editor
 				})
 			}
 		});
