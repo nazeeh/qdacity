@@ -62,11 +62,15 @@ class SearchBox extends React.Component {
 	}
 
 	onKeyPress(e) {
-		this.props.onKeyPress(e);
+		if (this.props.onKeyPress) {
+			this.props.onKeyPress(e);
+		}
 	}
 
 	focus() {
-		this.inputElement.focus();
+		if (this.inputElement) {
+			this.inputElement.focus();
+		}
 	}
 
 	render() {
