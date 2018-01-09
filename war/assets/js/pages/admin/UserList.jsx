@@ -4,7 +4,7 @@ import UserListCtrl from './UserListCtrl.jsx';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import {
 	StyledListItemDefault
-} from "../../common/styles/List";
+} from "../../common/styles/ItemList.jsx";
 
 const StyledListItemUser = StyledListItemDefault.extend `
     &:hover {

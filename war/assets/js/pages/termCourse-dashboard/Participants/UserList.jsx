@@ -3,12 +3,12 @@ import React from 'react';
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 
 import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
-	StyledListItemDefault
-} from '../../../common/styles/List';
+	StyledListItemPrimary,
+	StyledListItemDefault,
+} from '../../../common/styles/ItemList.jsx';
 
 export default class UserList extends React.Component {
 	constructor(props) {
@@ -22,7 +22,7 @@ export default class UserList extends React.Component {
 
 		this.init();
 
-		this.paginationClick = this.paginationClick.bind(this);
+		this.renderUser = this.renderUser.bind(this);
 	}
 
 	init() {
@@ -39,75 +39,22 @@ export default class UserList extends React.Component {
 		});
 	}
 
-
-
-
-	paginationClick(event) {
-		this.setState({
-			currentPage: Number(event.target.id)
-		});
-	}
-
-
-	isActivePage(page) {
-		return (page == this.state.currentPage);
-	}
-
-	renderPaginationIfNeccessary() {
-		if (this.state.users.length <= this.state.itemsPerPage) {
-			return '';
-		} else {
-			//Render Pagination
-			const pageNumbers = [];
-			for (let i = 1; i <= Math.ceil(this.state.users.length / this.state.itemsPerPage); i++) {
-				pageNumbers.push(i);
-			}
-			const renderPaginationItems = pageNumbers.map(pageNo => {
-				return (
-					<StyledPaginationItem
-		              key={pageNo}
-		              id={pageNo}
-		              onClick={this.paginationClick}
-		              active= {this.isActivePage(pageNo)}
-		            >
-		              {pageNo}
-				  </StyledPaginationItem>
-				);
-			});
-			return <StyledPagination key={"pagination"}>
-					{renderPaginationItems}
-            	</StyledPagination>
-		}
-
+	renderUser(user, index) {
+		return (
+			<StyledListItemDefault key={index} className="clickable">
+                <span > {user.givenName + " " + user.surName} </span>
+            </StyledListItemDefault>
+		);
 	}
 
 	render() {
-		var _this = this;
-
-		//Render Components
-		const lastItem = this.state.currentPage * this.state.itemsPerPage;
-		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = this.state.users.slice(firstItem, lastItem);
-
-		function prjClick(prj) {
-			console.log('Link');
-		}
-
-		const renderListItems = itemsToDisplay.map((user, index) => {
-			return <StyledListItemDefault key={index} className="clickable">
-					<span > {user.givenName + " " + user.surName} </span>
-				</StyledListItemDefault>;
-		})
-
-
-
 		return (
-			<div>
-				<StyledBoxList key={"itemList"}>
-					{renderListItems}
-	            </StyledBoxList>
-				{this.renderPaginationIfNeccessary()}
-     		</div>
+			<ItemList 
+                key={"itemlist"}
+                hasPagination={true}
+                itemsPerPage={8}
+                items={this.state.users} 
+                renderItem={this.renderUser} />
 		);
 	}
 

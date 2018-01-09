@@ -4,9 +4,16 @@ import styled from 'styled-components';
 import CourseEndPoint from '../../../common/endpoints/CourseEndpoint';
 
 import {
+	ListMenu
+} from '../../../common/styles/ItemList.jsx';
+
+import {
+	StyledSearchField
+} from '../../../common/styles/SearchBox.jsx';
+
+import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
-import StyledSearchField from '../../../common/styles/SearchField.jsx';
 
 export default class InviteUserField extends React.Component {
 	constructor(props) {
@@ -38,18 +45,21 @@ export default class InviteUserField extends React.Component {
 	render() {
 		var _this = this;
 
-		return (<StyledSearchField>
-				<input
-					type="text"
+		return (
+			<ListMenu>
+				<StyledSearchField
+                    type="text"
+                    className="searchfield"
 					placeholder="User Email"
 					value={this.state.userEmail}
 					onChange={this.updateUserEmail}
 					onKeyPress={(e) => { if (e.key === 'Enter') this.inviteUser();}}>
-				</input>
+				</StyledSearchField>
 				<BtnDefault type="button" onClick={this.inviteUser}>
 					<i className="fa fa-paper-plane  fa-lg"></i> Invite
 				</BtnDefault>
-			</StyledSearchField>);
+			</ListMenu>
+		);
 	}
 
 

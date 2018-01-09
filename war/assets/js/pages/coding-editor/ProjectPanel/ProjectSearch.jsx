@@ -1,7 +1,11 @@
 import React from 'react'
 import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
-import StyledSearchField from '../../../common/styles/SearchField.jsx';
+import {
+	SearchBox,
+	StyledSearchFieldContainer
+} from '../../../common/styles/SearchBox.jsx';
+
 import {
 	BtnDefault
 } from '../../../common/styles/Btn.jsx';
@@ -12,14 +16,15 @@ export default class ProjectSearch extends React.Component {
 		this.state = {
 			search: "",
 		};
-		this.input = {};
+		this.searchBox = {};
 		this.updateSearch = this.updateSearch.bind(this);
 		this.searchProject = this.searchProject.bind(this);
+		this.onKeyPress = this.onKeyPress.bind(this);
 	}
 
-	updateSearch(e) {
+	updateSearch(text) {
 		this.setState({
-			search: e.target.value
+			search: text
 		});
 	}
 
@@ -67,32 +72,36 @@ export default class ProjectSearch extends React.Component {
 	}
 
 	componentDidMount() {
-		this.input.focus();
+		this.searchBox.focus();
+	}
+
+	onKeyPress(e) {
+		if (e.key === 'Enter') {
+			this.searchProject();
+		}
 	}
 
 	render() {
 		const {
 			formatMessage
 		} = IntlProvider.intl;
+
 		const searchFieldPlaceholder = formatMessage({
 			id: 'projectsearch.search_field',
 			defaultMessage: 'Search for anything'
 		});
 
 		return (
-			<StyledSearchField className="searchfield" id="searchform">
-				<input
-					ref={(c) => this.input = c}
-					type="text"
-					placeholder={searchFieldPlaceholder}
-					value={this.state.search}
-					onChange={this.updateSearch}
-					onKeyPress={(e) => { if (e.key === 'Enter') this.searchProject();}}
-				/>
+			<StyledSearchFieldContainer className="searchfield" id="searchform">
+		        <SearchBox 
+                    ref={(c) => this.searchBox = c} 
+                    placeholder={searchFieldPlaceholder}
+                    onSearch={this.updateSearch} 
+                    onKeyPress={this.onKeyPress} />  
 				<BtnDefault type="button" onClick={() => this.searchProject()}>
 					<i className="fa fa-search  fa-lg"></i>
 				</BtnDefault>
-			</StyledSearchField>
+			</StyledSearchFieldContainer>
 		);
 	}
 }
