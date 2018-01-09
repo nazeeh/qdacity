@@ -70,9 +70,11 @@ export default class UserMigration extends React.Component {
 			name: '',
 			email: '',
             picSrc: '',
-            isSignedIn: null,
+			authState: {
+				isUserSignedIn: false,
+				isUserRegistered: false
+			},
             isAlreadyMigrated: null,
-            isRegistered: null,
             migrationStatus: null
         };
 
@@ -92,34 +94,29 @@ export default class UserMigration extends React.Component {
 		});
 		
 		// update on initialization
-		this.updateUserStatus();
-    }
+		this.updateAuthStatusFromProps(props);
+	}
+
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateAuthStatusFromProps(nextProps);
+	}
+	
+	updateAuthStatusFromProps(targetedProps) {
+		this.state.authState = targetedProps.auth.authState;
+        this.setState(this.state);
+        this.updateUserStatus();
+	}
 
     updateUserStatus() {
-        const loginStatus = this.authenticationProvider.isSignedIn();
-		if(loginStatus !== this.state.isSignedIn) {
-            if(!loginStatus) {
-                this.setState({
-                    name: "",
-                    email: "",
-                    picSrc: "",
-                    isSignedIn: null,
-                    isAlreadyMigrated: null,
-                    isRegistered: null,
-                    migrationStatus: null
-                });
-                return;
-            }
-            const _this = this;
-            this.authenticationProvider.getProfile().then((profile) => {
-                _this.state.name = profile.displayName;
-                _this.state.email = profile.email;
-                _this.state.picSrc = profile.thumbnail;
-                _this.state.isSignedIn = loginStatus;
-                _this.setState(_this.state);
-                _this.checkMigrationPreconditions();
-            })
-		}
+        const _this = this;
+        this.authenticationProvider.getProfile().then((profile) => {
+            _this.state.name = profile.displayName;
+            _this.state.email = profile.email;
+            _this.state.picSrc = profile.thumbnail;
+            _this.setState(_this.state);
+            _this.checkMigrationPreconditions();
+        })
     }
     
     checkMigrationPreconditions() {
@@ -130,7 +127,7 @@ export default class UserMigration extends React.Component {
             access_token: this.access_token
         });
         gapi.client.qdacityusermigration.isOldUserRegistered({}).execute((resp) => {
-            _this.state.isRegistered = resp.value;
+            _this.state.authState.isUserRegistered = resp.value;
             _this.setState(_this.state);
             
             // all other requests need id_token here as header
@@ -168,7 +165,7 @@ export default class UserMigration extends React.Component {
     }
 
     migrate() {
-        if(!this.state.isRegistered || this.state.isAlreadyMigrated) {
+        if(!this.state.authState.isUserRegistered || this.state.isAlreadyMigrated) {
             console.error("Preconditions for migration are not met!");
             return;
         }
@@ -251,16 +248,16 @@ export default class UserMigration extends React.Component {
             show ? <div>
                 <div className="col-xs-12">
                     <StyledHeader3>Preconditions for Migration:</StyledHeader3>
-                    <PreconditionStatusLoading show={this.state.isRegistered === null || this.state.isAlreadyMigrated === null} />
-                    <MigrationPrecondisionsList show={this.state.isRegistered !== null && this.state.isAlreadyMigrated !== null} />
+                    <PreconditionStatusLoading show={this.state.authState.isUserRegistered === null || this.state.isAlreadyMigrated === null} />
+                    <MigrationPrecondisionsList show={this.state.authState.isUserRegistered !== null && this.state.isAlreadyMigrated !== null} />
                 </div>
-                <MigrationNotPossible show={(!this.state.isRegistered || this.state.isAlreadyMigrated) && this.state.isRegistered !== null && this.state.isAlreadyMigrated !== null}/>
+                <MigrationNotPossible show={(!this.state.authState.isUserRegistered || this.state.isAlreadyMigrated) && this.state.authState.isUserRegistered !== null && this.state.isAlreadyMigrated !== null}/>
             </div>: null
         );
         const MigrationPrecondisionsList = ({show}) => (
             show ? <div>
                 <p>
-                    <PreconditionsStatus fulfilled={this.state.isRegistered} />
+                    <PreconditionsStatus fulfilled={this.state.authState.isUserRegistered} />
                     You are registered at QDAcity with an old account (2017 or before)
                 </p>
                 <p>
@@ -318,11 +315,11 @@ export default class UserMigration extends React.Component {
                 </StyledMigrationDescription>
                 <StyledMigrationFunctionality>
                     
-                    <GoogleSignIn show={!this.state.isSignedIn}/>
-                    <ProfileInfo show={this.state.isSignedIn}/>
-                    <MigrationPreconditions  show={this.state.isSignedIn}/>
-                    <MigrationButton show={this.state.isRegistered && !this.state.isAlreadyMigrated && !this.state.migrationStatus}/>
-                    <MigrationMessage show={this.state.isRegistered && !this.state.isAlreadyMigrated && this.state.migrationStatus !== null} successful={this.state.migrationStatus} />
+                    <GoogleSignIn show={!this.state.authState.isUserSignedIn}/>
+                    <ProfileInfo show={this.state.authState.isUserSignedIn}/>
+                    <MigrationPreconditions  show={this.state.authState.isUserSignedIn}/>
+                    <MigrationButton show={this.state.authState.isUserRegistered && !this.state.isAlreadyMigrated && !this.state.migrationStatus}/>
+                    <MigrationMessage show={this.state.authState.isUserRegistered && !this.state.isAlreadyMigrated && this.state.migrationStatus !== null} successful={this.state.migrationStatus} />
 
                 </StyledMigrationFunctionality>
             </StyledContent>
