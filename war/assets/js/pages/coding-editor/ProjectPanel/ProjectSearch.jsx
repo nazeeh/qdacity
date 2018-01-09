@@ -22,9 +22,9 @@ export default class ProjectSearch extends React.Component {
 		this.onKeyPress = this.onKeyPress.bind(this);
 	}
 
-	updateSearch(e) {
+	updateSearch(text) {
 		this.setState({
-			search: e.target.value
+			search: text
 		});
 	}
 
