@@ -118,7 +118,9 @@ export default class CollaboratorList extends React.Component {
 	componentDidMount() {
 		this.listenerID = this.props.syncService.on(
 			'changeUserList',
-			list => this.setState({ collaborators: list })
+			list => this.setState({
+				collaborators: list
+			})
 		);
 	}
 

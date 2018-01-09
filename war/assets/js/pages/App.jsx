@@ -42,21 +42,23 @@ export default class App extends React.Component {
 		};
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
-		var t=new TutorialEngine(this);
+		var t = new TutorialEngine(this);
 		this.state = {
 			tutorialEngine: t,
-			tutorialState:t.tutorialState,
+			tutorialState: t.tutorialState,
 		};
 	}
 
-	componentDidMount()
-	{
+	componentDidMount() {
 		this.state.tutorialEngine.appRootDidMount();
 	}
 
 	render() {
 
-		var tut={tutorialEngine:this.state.tutorialEngine, tutorialState: this.state.tutorialState};
+		var tut = {
+			tutorialEngine: this.state.tutorialEngine,
+			tutorialState: this.state.tutorialState
+		};
 
 		return (
 			<IntlProvider app={this} locale={this.state.locale} language={this.state.language} messages={this.state.messages}>

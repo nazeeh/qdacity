@@ -14,7 +14,9 @@ export default class CodingsView extends React.Component {
 	}
 
 	initTable() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var dataSet = [];
 		var tableMount = $('#codingTableMount');
 		var table = tableMount.dataTable({
@@ -30,13 +32,22 @@ export default class CodingsView extends React.Component {
 				"width": "20%"
 			}],
 			"columns": [{
-				"title": formatMessage({ id: 'codingsview.id', defaultMessage: "ID" }),
+				"title": formatMessage({
+					id: 'codingsview.id',
+					defaultMessage: "ID"
+				}),
 				"width": "5%",
 			}, {
-				"title": formatMessage({ id: 'codingsview.document', defaultMessage: "Document" }),
+				"title": formatMessage({
+					id: 'codingsview.document',
+					defaultMessage: "Document"
+				}),
 				"width": "20%"
 			}, {
-				"title": formatMessage({ id: 'codingsview.author', defaultMessage: "Author" }),
+				"title": formatMessage({
+					id: 'codingsview.author',
+					defaultMessage: "Author"
+				}),
 				"width": "20%"
 			}]
 

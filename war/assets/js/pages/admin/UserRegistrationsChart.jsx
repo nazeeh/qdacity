@@ -41,7 +41,7 @@ export default class UserRegistrationsChart extends React.Component {
 	getDataRows(changes) {
 		const dict = {};
 
-		for(const iteratingDate = new Date(this.state.endDate.getTime()); this.state.startDate <= iteratingDate; iteratingDate.setDate(iteratingDate.getDate() - 1)) {
+		for (const iteratingDate = new Date(this.state.endDate.getTime()); this.state.startDate <= iteratingDate; iteratingDate.setDate(iteratingDate.getDate() - 1)) {
 			dict[new Date(iteratingDate.getFullYear(), iteratingDate.getMonth(), iteratingDate.getDate()).toISOString()] = 0;
 		}
 
@@ -81,10 +81,14 @@ export default class UserRegistrationsChart extends React.Component {
 			height: 400,
 			hAxis: {
 				format: 'MMM dd, yyyy',
-				gridlines: {count: 15},
+				gridlines: {
+					count: 15
+				},
 			},
 			vAxis: {
-				gridlines: {color: 'none'},
+				gridlines: {
+					color: 'none'
+				},
 				viewWindowMode: "pretty"
 			},
 			legend: {

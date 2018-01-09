@@ -7,7 +7,9 @@ export default class SaturationAverage {
 	}
 
 	calculateAvgSaturation(inPercent) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var sr = this.saturation;
 		var pr = sr && sr.saturationParameters;
 		if (pr != undefined) {
@@ -48,7 +50,10 @@ export default class SaturationAverage {
 				return weightedAvg;
 			}
 		} else {
-			return formatMessage({ id: 'saturationaverage.not_available', defaultMessage: 'N/A' });
+			return formatMessage({
+				id: 'saturationaverage.not_available',
+				defaultMessage: 'N/A'
+			});
 		}
 	}
 

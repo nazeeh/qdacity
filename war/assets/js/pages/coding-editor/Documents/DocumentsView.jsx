@@ -1,58 +1,45 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 
 import ReactLoading from '../../../common/ReactLoading.jsx';
+
+import {
+	DragDocument
+} from './Document.jsx';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 
 const StyledDocumentsHeader = styled.div `
-	text-align: center;
-	position:relative;
-	background-color: #e7e7e7;
+    text-align: center;
+    position:relative;
+    background-color: #e7e7e7;
  `;
 
 const StyledInfoBox = styled.div `
-	background-color: ${props =>  props.theme.defaultPaneBg };
-	border-left-style: solid;
-	border-left-width: thick;
-	border-left-color: ${props =>  props.theme.borderPrimaryHighlight };
-	border-right-style: solid;
-	border-right-width: thick;
-	border-right-color: ${props =>  props.theme.borderPrimaryHighlight };
-	text-align: center;
+    background-color: ${props =>  props.theme.defaultPaneBg };
+    border-left-style: solid;
+    border-left-width: thick;
+    border-left-color: ${props =>  props.theme.borderPrimaryHighlight };
+    border-right-style: solid;
+    border-right-width: thick;
+    border-right-color: ${props =>  props.theme.borderPrimaryHighlight };
+    text-align: center;
 `;
 
 const StyledToolBar = styled.div `
-	text-align: center;
-	position: relative;
-	background-color: #e7e7e7;
+    text-align: center;
+    position: relative;
+    background-color: #e7e7e7;
 `;
 
 const StyledDocumentList = styled.div `
 
-	margin:5px 5px 5px 5px;
-`;
-
-const StyledDocumentItem = styled.a `
-	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
-	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
-	padding: 2px 2px !important;
-	position: relative;
-	display: block;
-	padding: 10px 15px;
-	margin-bottom: -1px;
-	background-color: #fff;
-	border: 1px solid ;
-	border-color: ${props => props.theme.borderPrimary} !important;
-	&:hover {
-		text-decoration: none;
-		cursor: pointer;
-		background-color: ${props => props.theme.borderPrimary};
-		color: ${props => props.theme.fgPrimaryHighlight};
-	}
+    margin:5px 5px 5px 5px;
 `;
 
 export default class DocumentsView extends React.Component {
@@ -70,8 +57,18 @@ export default class DocumentsView extends React.Component {
 		const _this = this;
 		setupPromise.then(() => {
 			_this.setState({
-				loading: false
+				loading: false,
+				documents: _this.state.documents.sort((doc1, doc2) => {
+					return doc1.positionInOrder - doc2.positionInOrder;
+				})
 			});
+
+			// Persists the order of documents if no order is persisted in the database.
+			_this.persistDocumentsOrderIfNecessary();
+
+			if (this.state.documents.length > 0) {
+				_this.setActiveDocument(this.state.documents[0].id);
+			}
 		});
 
 		this.addDocument = this.addDocument.bind(this);
@@ -83,6 +80,9 @@ export default class DocumentsView extends React.Component {
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
+		this.swapDocuments = this.swapDocuments.bind(this);
+		this.persistSwappedDocuments = this.persistSwappedDocuments.bind(this);
+		this.getNewDocumentPosition = this.getNewDocumentPosition.bind(this);
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -94,7 +94,9 @@ export default class DocumentsView extends React.Component {
 					DocumentsEndpoint.getAgreementMaps(agreement_map, project_type).then(function (resp) {
 						resp.items = resp.items || [];
 						for (var i = 0; i < resp.items.length; i++) {
-							_this.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
+							let doc = resp.items[i];
+							doc.id = doc.textDocumentID;
+							_this.addDocument(doc);
 						}
 						resolve();
 					}).catch(function (resp) {
@@ -103,7 +105,7 @@ export default class DocumentsView extends React.Component {
 				} else {
 					DocumentsEndpoint.getDocuments(project_id, project_type).then(function (items) {
 						for (var i = 0; i < items.length; i++) {
-							_this.addDocument(items[i].id, items[i].title, items[i].text.value);
+							_this.addDocument(items[i]);
 						}
 						resolve();
 					}).catch(function (resp) {
@@ -146,11 +148,8 @@ export default class DocumentsView extends React.Component {
 	}
 
 	// Adds a document and selects the new document as active
-	addDocument(pId, pTitle, pText) {
-		var doc = {};
-		doc.id = pId;
-		doc.title = pTitle;
-		doc.text = pText;
+	addDocument(doc) {
+		doc.text = doc.text.value;
 		this.state.documents.push(doc);
 		this.setState({
 			documents: this.state.documents
@@ -271,6 +270,14 @@ export default class DocumentsView extends React.Component {
 		return activeDoc;
 	}
 
+	getNewDocumentPosition() {
+		if (this.state.documents == null || this.state.documents.length == 0) {
+			return 1;
+		}
+
+		return parseInt(this.state.documents[this.state.documents.length - 1].positionInOrder) + 1;
+	}
+
 	setDocumentWithCoding(codingID) {
 		var documents = this.state.documents;
 		for (var i in documents) {
@@ -285,6 +292,62 @@ export default class DocumentsView extends React.Component {
 		}
 	}
 
+	swapDocuments(dragIndex, hoverIndex) {
+		const swap = this.state.documents[dragIndex];
+
+		this.state.documents[dragIndex] = this.state.documents[hoverIndex];
+		this.state.documents[hoverIndex] = swap;
+
+		this.forceUpdate();
+	}
+
+	persistSwappedDocuments(dragIndex, targetIndex) {
+		this.persistOrderOfDocuments();
+	}
+
+	/**
+	 * Checks if the order of documents is already persisted in the database and persists the current order if not.
+	 */
+	persistDocumentsOrderIfNecessary() {
+		let persistOrder = false;
+
+		for (let i = 0; i < this.state.documents.length; i++) {
+			if (this.state.documents[i].positionInOrder == 0 || this.state.documents[i].positionInOrder == null) {
+				persistOrder = true;
+			}
+		}
+
+		if (persistOrder) {
+			this.persistOrderOfDocuments();
+		}
+	}
+
+	/**
+	 * Persist the current order of documents in the database.
+	 */
+	persistOrderOfDocuments() {
+		for (let i = 0; i < this.state.documents.length; i++) {
+			this.state.documents[i].positionInOrder = i + 1;
+		}
+
+		if (this.state.documents.length > 0) {
+			// AgreementMaps and TextDocuments are updated with different Endpoints
+
+			// AgreementMaps
+			if (this.state.documents[0].textDocumentID) {
+				DocumentsEndpoint.reorderAgreementMapPositions(this.props.report, this.props.projectType, this.state.documents).then(function (resp) {
+					// Do nothing
+				});
+			}
+			// TextDocuments
+			else {
+				DocumentsEndpoint.updateTextDocuments(this.state.documents).then(function (resp) {
+					// Do nothing
+				});
+			}
+		}
+	}
+
 	renderCollapseIcon() {
 		if (this.state.isExpanded) return (<i className="fa fa-compress fa-1x"></i>);
 		else return (<i className="fa fa-expand fa-1x"></i>);
@@ -294,12 +357,13 @@ export default class DocumentsView extends React.Component {
 		if (this.props.projectType == "PROJECT") {
 			return (
 				<DocumentsToolbar
-					projectID={this.props.projectID}
-					document={this.getActiveDocument()}
-					addDocument={this.addDocument}
-					removeActiveDocument={this.removeActiveDocument}
-					changeDocumentData={this.changeDocumentData}
-				/>
+                    projectID={this.props.projectID}
+                    document={this.getActiveDocument()}
+                    addDocument={this.addDocument}
+                    removeActiveDocument={this.removeActiveDocument}
+                    changeDocumentData={this.changeDocumentData}
+			        getNewDocumentPosition={this.getNewDocumentPosition}
+                />
 			);
 		} else {
 			return null;
@@ -307,26 +371,39 @@ export default class DocumentsView extends React.Component {
 
 	}
 
+	renderDocument(doc, index) {
+		return <DragDocument 
+                doc={doc} 
+                key={doc.id}
+                index={index}
+                active={doc.id == this.state.selected}
+                setActiveDocument={this.setActiveDocument}
+                swapDocuments={this.swapDocuments}
+                persistSwappedDocuments={this.persistSwappedDocuments}
+                >{doc.title}</DragDocument>;
+	}
+
 	renderDocuments() {
 		var _this = this;
+
 		if (!this.state.isExpanded) {
 			return <StyledInfoBox>
-		      <b><FormattedMessage id='documentsview.current_document' defaultMessage='Current Document' />: {this.getActiveDocument().title}</b>
-		    </StyledInfoBox>
+        		       <b><FormattedMessage id='documentsview.current_document' defaultMessage='Current Document' />: {this.getActiveDocument().title}</b>
+        		   </StyledInfoBox>
 		}
 		return (
 			<div>
-				<StyledToolBar>
-					{this.renderToolbar()}
-				</StyledToolBar>
-				<StyledDocumentList>
-		        {
-		          this.state.documents.map(function(doc) {
-		            return <StyledDocumentItem active={doc.id == _this.state.selected} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
-		          })
-		        }
-		  		</StyledDocumentList>
-			</div>
+                <StyledToolBar>
+                    {this.renderToolbar()}
+                </StyledToolBar>
+                <StyledDocumentList>
+                    {
+                      this.state.documents.map(function(doc, index) {
+                        return _this.renderDocument(doc, index);
+                      })
+                    }
+                </StyledDocumentList>
+            </div>
 		);
 	}
 
@@ -342,26 +419,24 @@ export default class DocumentsView extends React.Component {
 		var _this = this;
 		return (
 			<div>
-				<StyledDocumentsHeader>
-					<div className="row no-gutters" >
-						<span className="col-xs-1"></span>
-						<span className="col-xs-10">
-							<b><FormattedMessage id='documentsview.documents' defaultMessage='Documents' /></b>
-							<br/>
-							<span id="docToolBox"  className="collapse in">
-							</span>
-						</span>
-						<span className="col-xs-1">
-							<a id="documentsToggleBtn" className="editorPanelTogel pull-right" onClick={() => this.toggleIsExpanded()}>
-								{this.renderCollapseIcon()}
-							</a>
-						</span>
-					</div>
-				</StyledDocumentsHeader>
-				{this.renderDocumentsContent()}
-     	</div>
+                <StyledDocumentsHeader>
+                    <div className="row no-gutters" >
+                        <span className="col-xs-1"></span>
+                        <span className="col-xs-10">
+                            <b><FormattedMessage id='documentsview.documents' defaultMessage='Documents' /></b>
+                            <br/>
+                            <span id="docToolBox"  className="collapse in">
+                            </span>
+                        </span>
+                        <span className="col-xs-1">
+                            <a id="documentsToggleBtn" className="editorPanelTogel pull-right" onClick={() => this.toggleIsExpanded()}>
+                                {this.renderCollapseIcon()}
+                            </a>
+                        </span>
+                    </div>
+                </StyledDocumentsHeader>
+                {this.renderDocumentsContent()}
+            </div>
 		);
 	}
-
-
 }

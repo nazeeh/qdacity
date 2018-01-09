@@ -24,17 +24,17 @@ import {
 } from '../../common/styles/Btn.jsx';
 
 const StyledProjectListMenu = styled.div `
-	display:flex;
-	flex-direction:row;
-	& > .searchfield{	
-		height: inherit !important;
-		flex:1;
-	}
+    display:flex;
+    flex-direction:row;
+    & > .searchfield{   
+        height: inherit !important;
+        flex:1;
+    }
 `;
 
 
 const StyledProjectList = StyledBoxList.extend `
-	padding-top: 5px;
+    padding-top: 5px;
 `;
 
 
@@ -56,43 +56,43 @@ export default class AdminProjectList extends React.Component {
 	}
 
 	init() {
-        this.fetchProjects(this.props.userId);
+		this.fetchProjects(this.props.userId);
 	}
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.userId !== this.props.userId) {
-            this.fetchProjects(nextProps.userId);
-        }
-    }
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.userId !== this.props.userId) {
+			this.fetchProjects(nextProps.userId);
+		}
+	}
 
-    fetchProjects(userId) {
-		if(!userId) {
+	fetchProjects(userId) {
+		if (!userId) {
 			this.props.setProjects([]);
 			return;
 		}
-        var _this = this;
-        var projectList = [];
-        var validationPrjPromise = ProjectEndpoint.listValidationProjectByUserId(userId);
-        ProjectEndpoint.listProjectByUserId(userId).then(function (resp) {
-            resp.items = resp.items || [];
-            resp.items.forEach(function (prj) {
-                prj.type = "PROJECT";
-            });
-            var projects = projectList.concat(resp.items)
+		var _this = this;
+		var projectList = [];
+		var validationPrjPromise = ProjectEndpoint.listValidationProjectByUserId(userId);
+		ProjectEndpoint.listProjectByUserId(userId).then(function (resp) {
+			resp.items = resp.items || [];
+			resp.items.forEach(function (prj) {
+				prj.type = "PROJECT";
+			});
+			var projects = projectList.concat(resp.items)
 
-            validationPrjPromise.then(function (resp2) {
-                resp2.items = resp2.items || [];
-                resp2.items.forEach(function (prj) {
-                    prj.type = "VALIDATION";
-                });
-                projects = projects.concat(resp2.items)
-                projects = _this.sortProjects(projects);
-                _this.props.setProjects(projects);
-            });
-        });
-    }
+			validationPrjPromise.then(function (resp2) {
+				resp2.items = resp2.items || [];
+				resp2.items.forEach(function (prj) {
+					prj.type = "VALIDATION";
+				});
+				projects = projects.concat(resp2.items)
+				projects = _this.sortProjects(projects);
+				_this.props.setProjects(projects);
+			});
+		});
+	}
 
-    sortProjects(projects) {
+	sortProjects(projects) {
 		projects.sort(function (a, b) {
 			if (a.name < b.name) return -1;
 			if (a.name > b.name) return 1;
@@ -139,8 +139,8 @@ export default class AdminProjectList extends React.Component {
 
 		if (typeof project.revisionID == "undefined") {
 			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-						<i className="fa fa-trash "></i>
-					</StyledListItemBtn>
+                        <i className="fa fa-trash "></i>
+                    </StyledListItemBtn>
 		} else {
 			return "";
 		}
@@ -158,16 +158,16 @@ export default class AdminProjectList extends React.Component {
 
 		//Render search and newPrjBtn
 		const projectListMenu = <StyledProjectListMenu>
-			<StyledSearchField className="searchfield" id="searchform">
-				<input
-					type="text"
-					placeholder="Search"
-					value={this.state.search}
-					onChange={this.updateSearch}
-				/>
-			</StyledSearchField>
+            <StyledSearchField className="searchfield" id="searchform">
+                <input
+                    type="text"
+                    placeholder="Search"
+                    value={this.state.search}
+                    onChange={this.updateSearch}
+                />
+            </StyledSearchField>
 
-		</StyledProjectListMenu>
+        </StyledProjectListMenu>
 
 		//Rebder List Items
 		var filteredList = this.props.projects.filter(
@@ -186,22 +186,22 @@ export default class AdminProjectList extends React.Component {
 			return ([
 				<span>{project.name}</span>,
 				<div>
-				{this.renderDeleteBtn(project, index)}
-				<StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-					<i className="fa fa-tags"></i>
-				</StyledListItemBtn>
-			</div>
+                {this.renderDeleteBtn(project, index)}
+                <StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+                    <i className="fa fa-tags"></i>
+                </StyledListItemBtn>
+            </div>
 			])
 		}
 		const renderListItems = itemsToDisplay.map((project, index) => {
 			if (this.isValidationProject(project)) {
 				return <StyledListItemDefault key={project.id} onClick={() => prjClick(project)} clickable={true}>
-						{renderListItemContent(project, index)}
-					</StyledListItemDefault>;
+                        {renderListItemContent(project, index)}
+                    </StyledListItemDefault>;
 			} else {
 				return <StyledListItemPrimary key={project.id} onClick={() => prjClick(project)} clickable={true}>
-						{renderListItemContent(project, index)}
-					</StyledListItemPrimary>;
+                        {renderListItemContent(project, index)}
+                    </StyledListItemPrimary>;
 			}
 		})
 
@@ -213,26 +213,26 @@ export default class AdminProjectList extends React.Component {
 		const renderPagination = pageNumbers.map(pageNo => {
 			return (
 				<StyledPaginationItem
-	              key={pageNo}
-	              id={pageNo}
-	              onClick={this.paginationClick}
-				  active={this.isActivePage(pageNo)}
-	            >
-	              {pageNo}
-			  </StyledPaginationItem>
+                  key={pageNo}
+                  id={pageNo}
+                  onClick={this.paginationClick}
+                  active={this.isActivePage(pageNo)}
+                >
+                  {pageNo}
+              </StyledPaginationItem>
 			);
 		});
 
 		return (
 			<div>
-				{projectListMenu}
-				<StyledProjectList>
-					{renderListItems}
-	            </StyledProjectList>
-	            <StyledPagination>
-					{renderPagination}
-            	</StyledPagination>
-     		</div>
+                {projectListMenu}
+                <StyledProjectList>
+                    {renderListItems}
+                </StyledProjectList>
+                <StyledPagination>
+                    {renderPagination}
+                </StyledPagination>
+            </div>
 		);
 	}
 

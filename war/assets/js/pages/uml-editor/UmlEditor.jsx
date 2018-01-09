@@ -269,7 +269,9 @@ export default class UmlEditor extends React.Component {
 	 * Opens a modal, where the user can select a can select a code for a new class field.
 	 */
 	openClassFieldModal(cell) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		const _this = this;
 
 		const code = this.getCodeByNode(cell);
@@ -278,7 +280,10 @@ export default class UmlEditor extends React.Component {
 		const mappingIdentifier = (new CreateClassFieldAction()).getIdentifier();
 
 		const addFieldModal = new UmlCodePropertyModal(this,
-			formatMessage({ id: 'umleditor.add_field', defaultMessage: 'Add new Field' }),
+			formatMessage({
+				id: 'umleditor.add_field',
+				defaultMessage: 'Add new Field'
+			}),
 			code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addFieldModal.showModal().then(function (data) {
@@ -290,7 +295,9 @@ export default class UmlEditor extends React.Component {
 	 * Opens a modal, where the user can select a can select a code for a new class method.
 	 */
 	openClassMethodModal(cell) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		const _this = this;
 
 		const code = this.getCodeByNode(cell);
@@ -299,7 +306,10 @@ export default class UmlEditor extends React.Component {
 		const mappingIdentifier = (new CreateClassMethodAction()).getIdentifier();
 
 		const addMethodModal = new UmlCodePropertyModal(this,
-			formatMessage({ id: 'umleditor.add_method', defaultMessage: 'Add new Method' }),
+			formatMessage({
+				id: 'umleditor.add_method',
+				defaultMessage: 'Add new Method'
+			}),
 			code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
 
 		addMethodModal.showModal().then(function (data) {

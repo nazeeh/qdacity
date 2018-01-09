@@ -1,5 +1,7 @@
 import React from 'react'
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import Users from './Users.jsx';
 import AdminStats from './AdminStats.jsx';
@@ -9,40 +11,40 @@ export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-            projects: [],
+			projects: [],
 			selectedUserId: ''
-        };
+		};
 
-        this.setProjects = this.setProjects.bind(this);
-        this.removeProject = this.removeProject.bind(this);
+		this.setProjects = this.setProjects.bind(this);
+		this.removeProject = this.removeProject.bind(this);
 
 		scroll(0, 0);
 	}
 
 	setSelectedUserId(userId) {
-        this.setState({
-            selectedUserId: userId
-        });
+		this.setState({
+			selectedUserId: userId
+		});
 
 	}
 
-    setProjects(projects) {
-        this.setState({
-            projects: projects
-        });
-    }
+	setProjects(projects) {
+		this.setState({
+			projects: projects
+		});
+	}
 
-    removeProject(index) {
-        this.state.projects.splice(index, 1);
-        this.setState({
-            projects: this.state.projects
-        });
-    }
+	removeProject(index) {
+		this.state.projects.splice(index, 1);
+		this.setState({
+			projects: this.state.projects
+		});
+	}
 
 
-    render() {
-        if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
-        return (
+	render() {
+		if (!this.props.account.getProfile || !this.props.account.isSignedIn()) return null;
+		return (
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">

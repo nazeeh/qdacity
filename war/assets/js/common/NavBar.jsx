@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 import Account from './Account.jsx';
 
@@ -52,12 +54,12 @@ export default class NavBar extends React.Component {
 	showSigninDropdown() {
 		document.getElementById("signinView").classList.toggle("show");
 	}
-	
+
 	showHelpDropdown() {
 		document.getElementById("helpView").classList.toggle("show");
 	}
-	
-	
+
+
 
 	initializeAccount(c) {
 		this.account = c;
@@ -75,9 +77,9 @@ export default class NavBar extends React.Component {
 	}
 
 	render() {
-		
-		var isLoggedIn=this.account.isSignedIn && this.account.isSignedIn();
-		
+
+		var isLoggedIn = this.account.isSignedIn && this.account.isSignedIn();
+
 		return (
 			<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
 					<div className="container topnav">
