@@ -193,7 +193,7 @@ class ItemList extends React.Component {
 	onSearch(searchText) {
 		this.forceUpdate();
 
-		if (this.props.hasPagination) {
+		if (this.props.hasPagination && this.pagination) {
 			this.pagination.selectPage(1);
 		}
 	}
