@@ -73,13 +73,13 @@ class SearchBox extends React.Component {
 		const _this = this;
 
 		const {
-            formatMessage
-        } = IntlProvider.intl;
-        
-        const defaultPlaceHolder = formatMessage({
-            id: 'searchbox.search',
-            defaultMessage: 'Search'
-        });
+			formatMessage
+		} = IntlProvider.intl;
+
+		const defaultPlaceHolder = formatMessage({
+			id: 'searchbox.search',
+			defaultMessage: 'Search'
+		});
 
 		let placeholer = this.props.placeholder ? this.props.placeholder : defaultPlaceHolder;
 

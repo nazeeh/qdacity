@@ -63,7 +63,7 @@ export default class InviteUserField extends React.Component {
 		const {
 			formatMessage
 		} = IntlProvider.intl;
-		
+
 		const searchFieldPlaceholder = formatMessage({
 			id: 'inviteuserfield.search',
 			defaultMessage: 'User Email'

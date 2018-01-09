@@ -63,12 +63,12 @@ export default class InviteUserField extends React.Component {
 	}
 
 	render() {
-	    if (this.props.isProjectOwner === false) return null;
+		if (this.props.isProjectOwner === false) return null;
 
-	    const {
+		const {
 			formatMessage
 		} = IntlProvider.intl;
-		
+
 		const searchFieldPlaceholder = formatMessage({
 			id: 'inviteuserfield.search',
 			defaultMessage: 'User Email'

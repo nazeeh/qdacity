@@ -85,7 +85,7 @@ export default class ProjectSearch extends React.Component {
 		const {
 			formatMessage
 		} = IntlProvider.intl;
-		
+
 		const searchFieldPlaceholder = formatMessage({
 			id: 'projectsearch.search_field',
 			defaultMessage: 'Search for anything'

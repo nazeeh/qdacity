@@ -210,8 +210,8 @@ export default class ProjectList extends React.Component {
             </div>
 		]);
 	}
-    
-    renderProject(project, index) {
+
+	renderProject(project, index) {
 		if (this.isValidationProject(project)) {
 			return (
 				<StyledListItemDefault key={project.id} onClick={this.projectClick.bind(this, project)} clickable={true}>
