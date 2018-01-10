@@ -173,16 +173,16 @@ export default class AuthenticationProvider {
     }
 
   /**
-   * Always calls the given fkt if the auth state changes.
+   * Always calls the given callback if the auth state changes.
    *
-   * @param fkt
+   * @param callback
    */
-  addAuthStateListener(fkt) {
+  addAuthStateListener(callback) {
     // add to hellojs
-    hello.on('auth', fkt);
+    hello.on('auth', callback);
 
     // add to gapi.auth2
-    this.auth2.currentUser.listen(fkt);
+    this.auth2.currentUser.listen(callback);
   };
 
   /**
