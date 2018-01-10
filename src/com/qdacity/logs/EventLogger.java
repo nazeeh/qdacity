@@ -1,13 +1,13 @@
 package com.qdacity.logs;
 
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.*;
 import com.qdacity.PMF;
-import com.qdacity.util.DataStoreUtil;
 
 import javax.jdo.PersistenceManager;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class EventLogger {
 
@@ -15,29 +15,31 @@ public class EventLogger {
 	return PMF.get().getPersistenceManager();
 	}
 
-	public static void logDailyUserLogin(String userId) {
+	public static void logDailyUserLogins() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		Date startOfDay = calendar.getTime();
+		calendar.add(Calendar.DATE, -1);
+		Date startOfPreviousDay = calendar.getTime();
 
-		Query.Filter userIdFilter = new Query.FilterPredicate("userId", Query.FilterOperator.EQUAL, userId);
-		Query.Filter datetimeFilter = new Query.FilterPredicate("datetime", Query.FilterOperator.EQUAL, startOfDay);
-		Query.Filter filter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND, Arrays.asList(userIdFilter, datetimeFilter));
-		final int existingEvents = DataStoreUtil.countEntitiesWithFilter("Event", filter);
+		Query.Filter loggedInTodayFilter = new Query.FilterPredicate("lastLogin", Query.FilterOperator.GREATER_THAN_OR_EQUAL, startOfPreviousDay);
 
-		if(existingEvents == 0) {
-			PersistenceManager mgr = getPersistenceManager();
-			try {
-				Event loginEvent = new Event(startOfDay, EventType.DAILY_USER_LOGIN, userId);
-				mgr.makePersistent(loginEvent);
-			} finally {
-				mgr.close();
-			}
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query("User");
+		q.setFilter(loggedInTodayFilter);
+		PreparedQuery pq = datastore.prepare(q);
+		Iterable<Entity> entities = pq.asIterable(FetchOptions.Builder.withDefaults());
+
+		List<Event> events = new ArrayList<>();
+		for (Entity entity: entities) {
+			String userId = entity.getKey().getName();
+			events.add(new Event(startOfPreviousDay, EventType.DAILY_USER_LOGIN, userId));
 		}
-	}
 
+		getPersistenceManager().makePersistentAll(events);
+		getPersistenceManager().close();
+	}
 }
