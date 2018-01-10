@@ -1,10 +1,19 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { FormattedMessage } from 'react-intl';
 
-import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
+import ReactLoading from '../common/ReactLoading.jsx';
 
 const StyledPanel = styled.div `
+padding: 20px 50px 20px 50px;
+    border: 1px solid ${props => props.theme.borderDefault};
+	background-color:  ${props => props.theme.defaultPaneBg};
+	& > div {
+		font-size: 18px;
+	}
+    `;
+
+const CenteredDiv = styled.div `
     flex-grow: 1;
     text-align: center;
     max-width: 500px;
@@ -12,34 +21,7 @@ const StyledPanel = styled.div `
     margin-left: auto;
     margin-right: auto;
     margin-top: 250px;
-	margin-bottom:20px;
-    border: 1px solid ${props => props.theme.borderDefault};
-	padding: 20px 50px 20px 50px;
-	background-color:  ${props => props.theme.defaultPaneBg};
-	& > div {
-		font-size: 18px;
-	}
-    `;
-
-
-const loadingAnimation = keyframes `
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-`;
-const StyledLoader = styled.div `
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 250px;
     margin-bottom:20px;
-    
-    width: 150px;
-    height: 150px;
-
-    border: 20px solid #f2f2f2;
-    border-radius: 50%;
-    border-top: 20px solid #428bca;
-
-    animation: ${loadingAnimation} 2s linear infinite;
 `;
 
 export default class UnauthenticatedUserPanel extends React.Component {
@@ -61,12 +43,15 @@ export default class UnauthenticatedUserPanel extends React.Component {
 	render() {
         if(this.state.loading) {
             return (
-                <StyledLoader/>
+                <CenteredDiv>
+                    <ReactLoading color="#000" size={100} />
+                </CenteredDiv>
             );
         }
         else {
             return (
-                <StyledPanel>
+                <CenteredDiv>
+                    <StyledPanel>
                         <h4><FormattedMessage id='unauthenticated_user_panel.not_logged_in_statement' defaultMessage='You are currently not logged in!' /></h4>
                         <p><FormattedMessage id='unauthenticated_user_panel.sign_in_or_register_note' defaultMessage='Please sign-in or register to access this page.' /></p>
                         <p><FormattedMessage id='unauthenticated_user_panel.redirect_to_home' 
@@ -75,7 +60,8 @@ export default class UnauthenticatedUserPanel extends React.Component {
                                 redirect_url: (<a href="/">here</a>),
                             }} />
                         </p>
-                    </StyledPanel>
+                    </StyledPanel>  
+                </CenteredDiv>
                 );
             }
 	}
