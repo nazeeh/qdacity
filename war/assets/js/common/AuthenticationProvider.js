@@ -210,8 +210,8 @@ export default class AuthenticationProvider {
           // elsewise check gapi.auth2
           idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
         }
-        const headerToken = _this.encodeTokenWithIdentityProvider(idToken, _this.network.google);
-        // Google just allows Authorization header costomization by using this:
+        const headerToken = _this.encodeTokenWithIdentityProvider(idToken, _this.network.google); // format: <id_token> <authentication_provider_identifier>
+        // Google just allows Authorization header customization with id_token by using the access_token attribute:
         gapi.client.setToken({access_token: 'Bearer ' + headerToken});
       });
     return promise
