@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 const StyledCollaboratorCount = styled.div `
-	text-align: center;
+	text-align: left;
 	font-size: 12px;
 	line-height: 2em;
 	color: #999;
@@ -13,12 +13,11 @@ const StyledCollaboratorBox = styled.ul `
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	justify-content: center;
 	width: 100%;
 	max-height: 200px;
 	margin: 0;
 	list-style: none;
-	padding: 0;
+	padding: 0 0 4px;
 	overflow: auto;
 `;
 
