@@ -12,7 +12,7 @@
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
     <init-param>
       <param-name>services</param-name>
-      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.CourseEndpoint,com.qdacity.endpoint.DataMigrationEndpoint,com.qdacity.endpoint.ExerciseEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEntityEndpoint,com.qdacity.endpoint.MetaModelRelationEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.SaturationEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UmlCodePositionEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint</param-value>
+      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.CourseEndpoint,com.qdacity.endpoint.DataMigrationEndpoint,com.qdacity.endpoint.ExerciseEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEntityEndpoint,com.qdacity.endpoint.MetaModelRelationEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.SaturationEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UmlCodePositionEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint,com.qdacity.endpoint.EventEndpoint</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -30,6 +30,16 @@
   <servlet-mapping>
     <servlet-name>letsencrypt</servlet-name>
     <url-pattern>/.well-known/acme-challenge/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>daily_events</servlet-name>
+    <servlet-class>com.qdacity.servlet.DailyEventsServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>daily_events</servlet-name>
+    <url-pattern>/daily_events</url-pattern>
   </servlet-mapping>
 
   <servlet>

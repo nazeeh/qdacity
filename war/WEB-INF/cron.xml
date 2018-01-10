@@ -5,4 +5,9 @@
     <description>Repopulate the cache every 5 minutes</description>
     <schedule>every 5 minutes</schedule>
   </cron>
+  <cron>
+    <url>/daily_events</url>
+    <description>Create DAILY_USER_LOGIN events for every user that was active this day</description>
+    <schedule>every day 00:00</schedule>
+  </cron>
 </cronentries>
