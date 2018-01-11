@@ -84,9 +84,7 @@ public class CodeEndpoint {
 		audiences = { Constants.WEB_CLIENT_ID })
 	public Code insertCode(
 			@Named("relationId") @Nullable Long relationId, 
-			@Named("relationSourceCodeId") @Nullable Long relationSourceCodeId,
-			Code code,
- User user) throws UnauthorizedException {
+ @Named("relationSourceCodeId") @Nullable Long relationSourceCodeId, @Named("parentId") Long parentID, Code code, User user) throws UnauthorizedException {
 
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
@@ -121,6 +119,11 @@ public class CodeEndpoint {
 				code.setMmElementIDs(mmElementIds);
 			}
 			
+			// Update the parent
+			Code parentCode = mgr.getObjectById(Code.class, parentID);
+			parentCode.addSubCodeID(code.getCodeID());
+			mgr.makePersistent(parentCode);
+
 			// Save the code
 			code = mgr.makePersistent(code);
 

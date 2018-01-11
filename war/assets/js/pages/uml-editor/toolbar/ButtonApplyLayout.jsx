@@ -1,5 +1,8 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import {
@@ -22,12 +25,14 @@ export default class ButtonApplyLayout extends React.Component {
 
 	render() {
 		const _this = this;
+		const {formatMessage} = IntlProvider.intl;
+		const applyLayout = formatMessage({id: 'buttonapplylayout.title', defaultMessage: 'Click to apply a new layout to the graph. The layouting algorithm tries to reduce the amount of overlapping nodes and edges.'});
 
 		return (
-			<BtnDefault title="Click to apply a new layout to the graph. The layouting algorithm tries to reduce the amount of overlapping nodes and edges." onClick={_this.buttonClicked}>
-		        <i className="fa fa-th"></i>
-		        <span><FormattedMessage id='buttonapplylayout.apply_layout' defaultMessage='Apply Layout' /></span>
-	        </BtnDefault>
+			<BtnDefault title={applyLayout} onClick={_this.buttonClicked}>
+				<i className="fa fa-th"></i>
+				<span><FormattedMessage id='buttonapplylayout.apply_layout' defaultMessage='Apply Layout' /></span>
+			</BtnDefault>
 		);
 	}
 

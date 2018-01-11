@@ -1,5 +1,7 @@
 import React from 'react'
-import {FormattedMessage} from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
@@ -25,7 +27,8 @@ const StyledFooterBanner = styled.div `
 const StyledFooterText = styled.span `
 	justify-self: center;
 	text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
-	font-size: 3em;
+	padding-top: 10px;
+	font-size: 2em;
 `;
 
 const StyledSocialMediaButtons = styled.div `
@@ -58,11 +61,9 @@ export default class Index extends React.Component {
 			                <div className="col-lg-12">
 			                    <div className="intro-message">
 			                        <h1><FormattedMessage id="index.title" defaultMessage='QDAcity' /></h1>
-			                        <h3><FormattedMessage id="index.subtitle" defaultMessage='QDA on steroids' /></h3>
+			                        <h3><FormattedMessage id="index.subtitle" defaultMessage='Easy qualitative data analysis for all' /></h3>
 			                        <hr className="intro-divider"/>
-
-											<SigninWithGoogleBtn account={this.props.account} history={this.props.history} />
-
+									<SigninWithGoogleBtn account={this.props.account} history={this.props.history} />
 			                    </div>
 			                </div>
 			            </div>
@@ -77,8 +78,9 @@ export default class Index extends React.Component {
 			                    <hr className="section-heading-spacer"/>
 			                    <div className="clearfix"></div>
 			                    <h2 className="section-heading"><FormattedMessage id="index.organize.title" defaultMessage='Organize your thoughts' /></h2>
-			                    <p className="lead"><FormattedMessage id="index.organize.description" defaultMessage='QDAcity helps you structure, store and version all your analysis artifacts' /></p>
-
+			                    <p className="lead">
+									<FormattedMessage id="index.organize.description" defaultMessage='QDAcity helps you structure, store, and version all your analysis artifacts' />
+								</p>
 			                </div>
 			                <div className="col-lg-5 col-lg-offset-2 col-sm-6">
 			                    <img className="img-responsive" src="assets/img/notes.jpg" alt=""/>
@@ -118,7 +120,7 @@ export default class Index extends React.Component {
 			                    <hr className="section-heading-spacer"/>
 			                    <div className="clearfix"></div>
 			                    <h2 className="section-heading"><FormattedMessage id="index.cloud.title" defaultMessage='Cloud goodness' /></h2>
-			                    <p className="lead"><FormattedMessage id="index.cloud.description" defaultMessage="QDAcity runs completely in the cloud, which means you don't need to install anything. All you need is your webbrowser and an internet connection, to work on your project from anywhere at anytime." /></p>
+			                    <p className="lead"><FormattedMessage id="index.cloud.description" defaultMessage="QDAcity runs completely in the cloud, which means you don't need to install anything. All your work is safe and professionally backed-up, so you will never lose any work." /></p>
 			                </div>
 			                <div className="col-lg-5 col-lg-offset-2 col-sm-6">
 			                    <img className="img-responsive" src="assets/img/cloud.png" alt=""/>
@@ -130,20 +132,20 @@ export default class Index extends React.Component {
 			    <StyledFooterBanner>
                     <StyledFooterText><FormattedMessage id="index.contact_us" defaultMessage='Contact us directly' /></StyledFooterText>
                     <StyledSocialMediaButtons>
-						<BtnLg>
-							<a href="https://twitter.com/osrgroup">
+						<BtnLg onClick={() => {location.href='https://twitter.com/qdacity';}}>
+							<a>
 								<i className="fa fa-twitter fa-2x"></i>
 							</a>
 							 <span>Twitter</span>
 						</BtnLg>
-						<BtnLg>
-							<a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308">
+						<BtnLg onClick={() => {location.href='https://www.facebook.com/qdacity/';}}>
+							<a>
 								<i className="fa fa-facebook-square fa-2x"></i>
 							</a>
 							 <span>Facebook</span>
 						</BtnLg>
-						<BtnLg>
-							<a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support">
+						<BtnLg onClick={() => {location.href='mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support';}}>
+							<a>
 								<i className="fa fa-envelope-o fa-2x"></i>
 							</a>
 							<span>Email</span>

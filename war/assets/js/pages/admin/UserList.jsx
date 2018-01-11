@@ -4,12 +4,12 @@ import UserListCtrl from './UserListCtrl.jsx';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
 import {
 	StyledListItemDefault
-} from "../../common/styles/List";
+} from "../../common/styles/ItemList.jsx";
 
 const StyledListItemUser = StyledListItemDefault.extend `
-	&:hover {
-		cursor: pointer;	
-	}
+    &:hover {
+        cursor: pointer;
+    }
 `;
 export default class UserList extends React.Component {
 	constructor(props) {
@@ -61,18 +61,18 @@ export default class UserList extends React.Component {
 
 
 			<div className="list-group">
-				{
-					this.props.selectedUserId && <UserListCtrl user={activeUser} updateUser={this.updateUser} removeUser={this.props.removeUser}
-								  test={1}/>
-				}
-				{
-					this.props.users.map(function (user) {
-						return <StyledListItemUser className={_this.isActive(user.id)} key={user.id} href={"#"}
-												   onClick={_this.selectUser.bind(null, user.id)}><span>{user.givenName} {user.surName}</span><span
-							className="pull-right"><em>{user.email}</em></span></StyledListItemUser>
-					})
-				}
-			</div>
+                {
+                    this.props.selectedUserId && <UserListCtrl user={activeUser} updateUser={this.updateUser} removeUser={this.props.removeUser}
+                                  test={1}/>
+                }
+                {
+                    this.props.users.map(function (user) {
+                        return <StyledListItemUser className={_this.isActive(user.id)} key={user.id} href={"#"}
+                                                   onClick={_this.selectUser.bind(null, user.id)}><span>{user.givenName} {user.surName}</span><span
+                            className="pull-right"><em>{user.email}</em></span></StyledListItemUser>
+                    })
+                }
+            </div>
 		);
 	}
 

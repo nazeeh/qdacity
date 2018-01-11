@@ -1,5 +1,7 @@
 import React from 'react'
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 
 import {
@@ -559,4 +561,5 @@ class CodingEditor extends React.Component {
 		);
 	}
 }
+
 export default DragDropContext(HTML5Backend)(CodingEditor);

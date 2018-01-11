@@ -4,6 +4,8 @@ import 'script-loader!../../../../components/Squire/squire-raw.js';
 import 'script-loader!../../../../components/tooltip/tooltip.js';
 import 'script-loader!../../../../components/imagesloaded/imagesloaded.pkgd.min.js';
 
+import IntlProvider from '../../common/Localization/LocalizationProvider';
+
 export default class EditorCtrl {
 
 	constructor(getCodeByCodeID, agreementMap) {
@@ -305,8 +307,8 @@ export default class EditorCtrl {
 			_createShowAllButton: function () {
 				var input = this.input,
 					wasOpen = false;
-
-				$("<a>").attr("tabIndex", -1).attr("title", "Show All Items").appendTo(this.wrapper).button({
+				const {formatMessage} = IntlProvider.intl;
+				$('<a>').attr('tabIndex', -1).attr('title', formatMessage({id: 'editorctrl.show_all_items', defaultMessage: 'Show All Items'})).appendTo(this.wrapper).button({
 					icons: {
 						primary: "ui-icon-triangle-1-s"
 					},
@@ -341,6 +343,7 @@ export default class EditorCtrl {
 			},
 
 			_removeIfInvalid: function (event, ui) {
+				const {formatMessage} = IntlProvider.intl;
 
 				// Selected an item, nothing to do
 				if (ui.item) {
@@ -364,8 +367,9 @@ export default class EditorCtrl {
 				}
 
 				// Remove invalid value
-				this.input.val("").tooltip("set", "content", value + " is not supported").tooltip("show");
-				this.element.val("");
+				this.input.val('').tooltip('set', 'content',
+					formatMessage({ id: 'editorctrl.value_not_supported', defaultMessage: '{value} is not supported'}, { value: value})).tooltip('show');
+				this.element.val('');
 				this._delay(function () {
 					this.input.tooltip("hide");
 				}, 2500);

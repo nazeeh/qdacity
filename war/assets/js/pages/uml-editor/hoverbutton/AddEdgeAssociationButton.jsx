@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
 	EdgeType
@@ -22,7 +23,8 @@ export default class AddEdgeAssociationButton extends HoverButton {
 	}
 
 	getToolTip() {
-		return 'Add a new association.';
+		const {formatMessage} = IntlProvider.intl;
+		return formatMessage({id: 'addedgeassociationbutton.tooltip', defaultMessage: 'Add a new association.'});
 	}
 
 	getBounds() {

@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import ReactDOM from 'react-dom';
 
 import styled from 'styled-components';
@@ -191,7 +193,7 @@ export default class Codesystem extends SimpleCodesystem {
 			mmElementIDs: (mmElementIDs != null ? mmElementIDs : [])
 		};
 
-		CodesEndpoint.insertCode(code, relationId, relationSourceCodeId).then(function (resp) {
+		CodesEndpoint.insertCode(code, this.state.selected.id, relationId, relationSourceCodeId).then(function (resp) {
 			// Update the relation
 			if (relationId != null && relationSourceCodeId != null) {
 				let relationSourceCode = _this.getCodeById(relationSourceCodeId);
@@ -205,6 +207,8 @@ export default class Codesystem extends SimpleCodesystem {
 				}
 			}
 			resp.codingCount = 0;
+
+			// Insert the code into the tree
 			_this.insertCode(resp);
 
 			if (select) {
@@ -217,11 +221,7 @@ export default class Codesystem extends SimpleCodesystem {
 		code.children = [];
 		this.state.selected.children.push(code);
 		this.updateSubCodeIDs(this.state.selected);
-		var _this = this;
-		CodesEndpoint.updateCode(this.state.selected).then(function (resp2) {
-			_this.forceUpdate();
-		});
-
+		this.forceUpdate();
 		this.props.insertCode(code);
 	}
 

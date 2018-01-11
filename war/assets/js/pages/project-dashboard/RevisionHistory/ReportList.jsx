@@ -7,12 +7,12 @@ import ValidationEndpoint from '../../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
 
 import {
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
-	StyledBoxList,
-	StyledListItemDefault
-} from '../../../common/styles/List';
+	StyledListItemPrimary,
+	StyledListItemDefault,
+} from '../../../common/styles/ItemList.jsx';
 
 const StyledReportDate = styled.span `
 	width:85px;
@@ -21,32 +21,18 @@ const StyledReportDate = styled.span `
 export default class ReportList extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
-			reports: this.props.reports,
-			// pagination
-			currentPage: 1,
-			itemsPerPage: 8,
-			search: ''
+			reports: this.props.reports
 		};
 
-		this.paginationClick = this.paginationClick.bind(this);
+		this.renderReport = this.renderReport.bind(this);
 	}
-
-	paginationClick(event) {
-		this.setState({
-			currentPage: Number(event.target.id)
-		});
-	}
-
-
-	isActivePage(page) {
-		return (page == this.state.currentPage);
-	}
-
-
 
 	deleteReport(e, reportId, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var validationEndpoint = new ValidationEndpoint();
@@ -55,7 +41,10 @@ export default class ReportList extends React.Component {
 			.then(
 				function (val) {
 					alertify.success(
-						formatMessage({ id: 'reportlist.report_deleted', defaultMessage: "Report has been deleted" })
+						formatMessage({
+							id: 'reportlist.report_deleted',
+							defaultMessage: "Report has been deleted"
+						})
 					);
 					_this.state.reports.splice(index, 1);
 					_this.setState({
@@ -69,75 +58,41 @@ export default class ReportList extends React.Component {
 		if (this.props.isProjectOwner) agreementModal.showModal();
 	}
 
-
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
 			return (
 				<StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-						<i className="fa fa-trash"></i>
-					</StyledListItemBtn>
+					<i className="fa fa-trash"></i>
+				</StyledListItemBtn>
 			);
 		else return '';
 	}
 
-	render() {
-		var _this = this;
+	renderReport(report, index) {
+		var datetime = report.datetime;
 
-		//Render Components
-
-		const lastItem = this.state.currentPage * this.state.itemsPerPage;
-		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = this.state.reports.slice(firstItem, lastItem);
-
-		function prjClick(prj) {
-			console.log('Link');
-		}
-
-		const renderListItems = itemsToDisplay.map((report, index) => {
-			var datetime = report.datetime;
-			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
-			else datetime = "";
-			return (
-				<StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
-					<span> {report.name} </span>
-					<span>
-						<StyledReportDate >{'[' + datetime + '] '}</StyledReportDate>
-						{this.renderReportDeleteBtn(report, index)}
-					</span>
-
-				</StyledListItemDefault>
-			);
-		})
-
-		//Render Pagination
-		const pageNumbers = [];
-		for (let i = 1; i <= Math.ceil(this.state.reports.length / this.state.itemsPerPage); i++) {
-			pageNumbers.push(i);
-		}
-		const renderPagination = pageNumbers.map(pageNo => {
-			return (
-				<StyledPaginationItem
-	              key={pageNo}
-	              id={pageNo}
-	              onClick={this.paginationClick}
-	              active= {this.isActivePage(pageNo)}
-	            >
-	              {pageNo}
-			  </StyledPaginationItem>
-			);
-		});
+		if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
+		else datetime = "";
 
 		return (
-			<div>
-				<StyledBoxList>
-					{renderListItems}
-	            </StyledBoxList>
-	            <StyledPagination>
-					{renderPagination}
-            	</StyledPagination>
-     		</div>
+			<StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
+                <span> {report.name} </span>
+                <span>
+                    <StyledReportDate >{'[' + datetime + '] '}</StyledReportDate>
+                    {this.renderReportDeleteBtn(report, index)}
+                </span>
+
+            </StyledListItemDefault>
 		);
 	}
 
-
+	render() {
+		return (
+			<ItemList 
+                hasPagination={true}
+                itemsPerPage={8}
+                items={this.state.reports} 
+                renderItem={this.renderReport} />
+		);
+	}
 }

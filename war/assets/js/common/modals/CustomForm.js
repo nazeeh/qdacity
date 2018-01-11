@@ -93,6 +93,7 @@ export default class CustomForm extends VexModal {
 			function (resolve, reject) {
 
 				var formElements = _this.formElements;
+				const {formatMessage} = IntlProvider.intl;
 
 				vex.dialog.open({
 					message: _this.message,
@@ -101,9 +102,9 @@ export default class CustomForm extends VexModal {
 					},
 					input: formElements,
 					buttons: [$.extend({}, vex.dialog.buttons.YES, {
-						text: 'OK'
+						text: formatMessage({id: 'modal.ok', defaultMessage: 'OK' })
 					}), $.extend({}, vex.dialog.buttons.NO, {
-						text: 'Cancel'
+						text: formatMessage({id: 'modal.cancel', defaultMessage: 'Cancel' })
 					})],
 					callback: function (data) {
 						if (data != false) {

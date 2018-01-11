@@ -11,22 +11,27 @@ export default class SaturationCategoryDetail extends VexModal {
 		this.saturationCategory = saturationCategory;
 	}
 	showModal() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		vex.dialog.open({
 			message: formatMessage({
-					id: 'saturationcategorydetail.modal',
-					defaultMessage: "Saturation Details for {category}",
-				},
-				{ category: _this.modalHeader }
-			),
+				id: 'saturationcategorydetail.modal',
+				defaultMessage: "Saturation Details for {category}",
+			}, {
+				category: _this.modalHeader
+			}),
 			contentCSS: {
 				width: '900px'
 			},
 			input: _this.formElements,
 			buttons: [
 				$.extend({}, vex.dialog.buttons.YES, {
-					text: formatMessage({ id: 'modal.ok', defaultMessage: 'OK' })
+					text: formatMessage({
+						id: 'modal.ok',
+						defaultMessage: 'OK'
+					})
 				})
 			]
 		});
@@ -35,7 +40,9 @@ export default class SaturationCategoryDetail extends VexModal {
 
 	setupDataTable() {
 		// TODO: check if this is called on every draw / render
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var dataSet = [];
 
 		var columnsArray = [];
