@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
 import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class CustomForm extends VexModal {
 
