@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
-import TwoDropDowns from '../../common/styles/TwoDropDowns.jsx';
+import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
 
 export default class NewExerciseForm extends VexModal {
 
@@ -37,7 +37,7 @@ export default class NewExerciseForm extends VexModal {
 
 	addDropDown(projects) {
 		this.projects = projects;
-		this.formElements += '<div id="TwoDropDowns">';
+		this.formElements += '<div id="ProjectRevisionSelector">';
 		this.formElements += '</div>';
 	}
 
@@ -91,7 +91,7 @@ export default class NewExerciseForm extends VexModal {
 						} else reject(data);
 					}
 				});
-				ReactDOM.render(<TwoDropDowns setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>, document.getElementById('TwoDropDowns'));
+				ReactDOM.render(<ProjectRevisionSelector setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>, document.getElementById('ProjectRevisionSelector'));
 			}
 		);
 

@@ -15,7 +15,7 @@ const labelContainer = styled.div `
 	margin-right: 5px !important;
 `;
 
-export default class TwoDropDowns extends React.Component {
+export default class ProjectRevisionSelector extends React.Component {
 
 	constructor(props) {
 		super(props);
