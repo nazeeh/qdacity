@@ -5,7 +5,6 @@ import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
-import NewExerciseForm from '../../../common/modals/NewExerciseForm';
 import Theme from '../../../common/styles/Theme.js';
 import Confirm from '../../../common/modals/Confirm';
 import IntlProvider from '../../../common/Localization/LocalizationProvider';
@@ -71,7 +70,7 @@ export default class ExerciseList extends React.Component {
 		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 
-		var modal = new NewExerciseForm(formatMessage({
+		var modal = new CustomForm(formatMessage({
 			id: 'ExerciseList.createNewExercise',
 			defaultMessage: 'Create a new exercise'
 		}, ''));

@@ -1,4 +1,6 @@
+import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
+import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
 
 export default class CustomForm extends VexModal {
 
@@ -6,6 +8,14 @@ export default class CustomForm extends VexModal {
 		super();
 		this.formElements = "";
 		this.message = message;
+		this.isProjectRevisionSelector = false;
+		this.projects = [];
+		this.selectedRevisionID = '';
+		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+	}
+
+	setSelectedRevisionID (revisionID) {
+		this.selectedRevisionID = revisionID;
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -23,6 +33,13 @@ export default class CustomForm extends VexModal {
 		this.formElements += '<div class="vex-custom-input-wrapper">';
 		this.formElements += '<textarea placeholder="' + placeholder + '" rows="15" cols="200" name="' + name + '" type="text" value="' + value + '" ></textarea>';
 		this.formElements += '</div>';
+		this.formElements += '</div>';
+	}
+
+	addDropDown(projects) {
+		this.isProjectRevisionSelector = true;
+		this.projects = projects;
+		this.formElements += '<div id="ProjectRevisionSelector">';
 		this.formElements += '</div>';
 	}
 
@@ -89,12 +106,15 @@ export default class CustomForm extends VexModal {
 						text: 'Cancel'
 					})],
 					callback: function (data) {
-
 						if (data != false) {
+							data.SelectedRevisionID = _this.selectedRevisionID;
 							resolve(data);
 						} else reject(data);
 					}
 				});
+				if (_this.isProjectRevisionSelector) {
+					ReactDOM.render(<ProjectRevisionSelector setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>, document.getElementById('ProjectRevisionSelector'));
+				}
 			}
 		);
 
