@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -47,7 +48,7 @@ public class ChangeEndpointTest {
 	/**
 	 * Tests if changes are logged when adding and removing codes
 	 */
-
+	@Test
 	public void testGetAllChanges() {
 		latch.reset(5);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -85,7 +86,7 @@ public class ChangeEndpointTest {
 	/**
 	 * Tests if changes are logged when adding and removing codes
 	 */
-
+	@Test
 	public void testListChangeStats() {
 		latch.reset(5);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -117,7 +118,7 @@ public class ChangeEndpointTest {
 
 	}
 
-
+	@Test
 	public void testGetChanges() {
 		latch.reset(5);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);

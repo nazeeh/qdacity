@@ -38,7 +38,6 @@ public class CodeEndpointTestHelper {
 
 			Long parentDbId = pq.asSingleEntity().getKey().getId();
 
-			updateParentsSubCodeIds(parentID, codesystemID, codeID);
 			Code code = new Code();
 			code.setId(id);
 			code.setAuthor(authorName);
