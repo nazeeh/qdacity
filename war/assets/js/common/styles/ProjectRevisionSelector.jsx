@@ -48,7 +48,7 @@ export default class ProjectRevisionSelector extends React.Component {
 		ProjectEndpoint.listRevisions(this.props.projects.items[0].id).then(function (revisions) {
 			revisions.items.forEach(function (revision) {
 				revisionNameList.push({
-					text: revision.name,
+					text: revision.revision,
 					onClick: _this.revisionClicked.bind(_this, revision.id)
 					});
 				});
@@ -68,7 +68,7 @@ export default class ProjectRevisionSelector extends React.Component {
 	revisions.items = revisions.items || [];
 		revisions.items.forEach(function (revision) {
 			revisionNameList.push({
-				text: revision.name,
+				text: revision.revision,
 				onClick: _this.revisionClicked.bind(_this, revision.id)
 				});
 			});
