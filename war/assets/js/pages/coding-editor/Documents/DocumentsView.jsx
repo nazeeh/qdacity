@@ -11,7 +11,6 @@ import {
 } from './Document.jsx';
 
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
-import CollaboratorBubbles from '../../../common/SyncService/CollaboratorBubbles';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx'
 

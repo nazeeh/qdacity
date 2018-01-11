@@ -14,13 +14,14 @@ import {
 	getEmptyImage
 } from 'react-dnd-html5-backend'
 
+import CollaboratorBubbles from '../../../common/SyncService/CollaboratorBubbles';
+
 const StyledDocumentItem = styled.a `
 	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : '#fff'};
 	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
 	padding: 2px 2px;
 	position: relative;
 	display: flex;
-	max-width: 270px;
 	margin-bottom: -1px;
 	border: 1px solid ${props => props.theme.borderPrimary};
 	opacity: ${props => props.isDragging ? 0.0 : 1};
@@ -146,7 +147,7 @@ class Document extends React.Component {
 						</StyledDocumentItemTitle>
 						<CollaboratorBubbles
 							syncService={this.props.syncService}
-							docid={doc.id}
+							docid={this.props.doc.id}
 						/>
 					</StyledDocumentItem>
 				</div>
