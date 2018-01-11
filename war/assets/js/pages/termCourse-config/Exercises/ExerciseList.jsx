@@ -8,6 +8,7 @@ import CustomForm from '../../../common/modals/CustomForm';
 import NewExerciseForm from '../../../common/modals/NewExerciseForm';
 import Theme from '../../../common/styles/Theme.js';
 import Confirm from '../../../common/modals/Confirm';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
 	StyledBoxList,
@@ -67,10 +68,18 @@ export default class ExerciseList extends React.Component {
 	}
 
 	showNewExerciseModal() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var modal = new NewExerciseForm('Create a new exercise', '');
+
+		var modal = new NewExerciseForm(formatMessage({
+			id: 'ExerciseList.createNewExercise',
+			defaultMessage: 'Create a new exercise'
+		}, ''));
 		modal.addDropDown(this.state.projects);
-		modal.addTextInput('name', "Exercise Name", 'Name', '');
+		modal.addTextInput('name', formatMessage({
+			id: 'ExerciseList.name',
+			defaultMessage: 'Exercise Name: '
+		}), 'Name', '');
 		modal.showModal().then(function (data) {
 			_this.createNewExercise(data.name, data.SelectedRevisionID);
 		});
