@@ -2,6 +2,10 @@ import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
 import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
+import Theme from '../../common/styles/Theme.js';
+import {
+	ThemeProvider
+} from 'styled-components';
 
 export default class CustomForm extends VexModal {
 
@@ -115,7 +119,10 @@ export default class CustomForm extends VexModal {
 					}
 				});
 				if (_this.isProjectRevisionSelector) {
-					ReactDOM.render(<ProjectRevisionSelector setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>, document.getElementById('ProjectRevisionSelector'));
+					ReactDOM.render(
+					<ThemeProvider theme={Theme}>
+						<ProjectRevisionSelector setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>
+					</ThemeProvider>, document.getElementById('ProjectRevisionSelector'));
 				}
 			}
 		);
