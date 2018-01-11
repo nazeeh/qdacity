@@ -125,7 +125,7 @@ public class TextDocumentEndpointTest {
 		TextDocumentCodeContainer textDocumentCode = new TextDocumentCodeContainer();
 		doc.setText(new Text("Yet another text"));
 		textDocumentCode.textDocument = doc;
-		CodeEndpointTestHelper.addCode(123L, 1L, 1L, 1L, 15648758L, "Author Name", "#fff", testUser);
+		CodeEndpointTestHelper.addCode(123L, 1L, 1L, 15648758L, "Author Name", "#fff", testUser);
 		Code code = CodeEndpointTestHelper.getCode(123L, testUser);
 		textDocumentCode.code = code;
 		try {

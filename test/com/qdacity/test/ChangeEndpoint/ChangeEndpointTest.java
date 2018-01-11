@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -48,14 +47,14 @@ public class ChangeEndpointTest {
 	/**
 	 * Tests if changes are logged when adding and removing codes
 	 */
-	@Test
+
 	public void testGetAllChanges() {
 		latch.reset(5);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
-		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1l, 15648758L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 1l, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
 		CodeEndpointTestHelper.removeCode(22L, testUser);
 
 		try {
@@ -86,14 +85,14 @@ public class ChangeEndpointTest {
 	/**
 	 * Tests if changes are logged when adding and removing codes
 	 */
-	@Test
+
 	public void testListChangeStats() {
 		latch.reset(5);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
-		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1l, 15648758L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 1l, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
 		CodeEndpointTestHelper.removeCode(22L, testUser);
 
 		try {
@@ -118,14 +117,14 @@ public class ChangeEndpointTest {
 
 	}
 
-	@Test
+
 	public void testGetChanges() {
 		latch.reset(5);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
-		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1l, 15648758L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 1l, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
 		CodeEndpointTestHelper.removeCode(22L, testUser);
 
 		try {
