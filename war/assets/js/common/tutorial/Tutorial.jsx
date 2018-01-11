@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import {FormattedMessage} from 'react-intl';
 import styled from 'styled-components';
 
 //Base Structure
@@ -17,7 +18,7 @@ const OverlayVisual = styled.div `
 	z-index: 2000;
 `;
 
-//Overlay, which appears for blocking most of the visible dom-objects to be clicked or interacted 
+//Overlay, which appears for blocking most of the visible dom-objects to be clicked or interacted
 //(if i want steer a user in a certain direction)
 const OverlayBlockInteraction = styled.div `
 	position: fixed;
@@ -43,8 +44,8 @@ const MessageBox = styled.div `
 	margin: auto;
 	z-index: 2010;
 	color:#543f3f;
-	background-color: white;	
-	
+	background-color: white;
+
 	font-family: "Helvetica Neue", sans-serif;
 	color: rgb(0, 0, 0);
 	font-size: 1.1em;
@@ -70,7 +71,7 @@ const MBTutorialOverview = styled.div `
 const ButtonGeneric = styled.button `
 	background: ${props =>props.white ? '000' : 'fff'};
 	color: background: ${props =>props.white ? 'fff' : '000'};
-	border: 2px solid #000;	
+	border: 2px solid #000;
 	float: right;
 	margin: 0 0 0 .5em;
 	font-family: inherit;
@@ -78,15 +79,15 @@ const ButtonGeneric = styled.button `
 	letter-spacing: .1em;
 	font-size: .8em;
 	line-height: 1em;
-	padding: .75em 2em;	
+	padding: .75em 2em;
 `;
 
 const Pointer = styled.div `
-	height:20px; 
-	width:20px; 
-	position: absolute; 
-	z-index:1905; 
-	top: ${props =>props.tutorial.tutorialState.pointer.top}px; 
+	height:20px;
+	width:20px;
+	position: absolute;
+	z-index:1905;
+	top: ${props =>props.tutorial.tutorialState.pointer.top}px;
 	left: ${props =>props.tutorial.tutorialState.pointer.left}px;
 	display: ${props =>props.tutorial.tutorialState.pointer.show ? 'inline' : 'none'};
 `;
@@ -110,25 +111,27 @@ export default class Tutorial extends React.Component {
 	render() {
 		if (this.props.tutorial.tutorialState.isActive) {
 			return (
-				<div>						
-						<OverlayVisual {...this.props}/>
-						<OverlayBlockInteraction {...this.props}/>
-						<Pointer  {...this.props}><img src={"/assets/img/tutorial/arrow"+this.props.tutorial.tutorialState.pointer.direction+"Directed.png"}/></Pointer>						
-						<MessageBox {...this.props}>
-							<MBLoading {...this.props}>please wait the content is loaded... </MBLoading>
-							<MBTutorialOverview  {...this.props}>
-								<center>
-									<TutorialOverviewTitle><b>Tutorial Overview</b></TutorialOverviewTitle>
-									<br/>
-									<div>TODO Struktur kommt</div>
-									<br/><br/>									
-								</center>
-							</MBTutorialOverview>
-							<div>
-								<ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}>Close</ButtonGeneric>
-							</div>
-						</MessageBox>						
-					</div>
+				<div>
+					<OverlayVisual {...this.props} />
+					<OverlayBlockInteraction {...this.props} />
+					<Pointer  {...this.props}><img src={'/assets/img/tutorial/arrow' + this.props.tutorial.tutorialState.pointer.direction + 'Directed.png'} /></Pointer>
+					<MessageBox {...this.props}>
+						<MBLoading {...this.props}><FormattedMessage id='tutorial.loading' defaultMessage='please wait until the content is loaded...' /></MBLoading>
+						<MBTutorialOverview  {...this.props}>
+							<center>
+								<TutorialOverviewTitle><b><FormattedMessage id='tutorial.overview' defaultMessage='Tutorial Overview' /></b></TutorialOverviewTitle>
+								<br />
+								<div><FormattedMessage id='tutorial.todo' defaultMessage='TODO Struktur kommt' /></div>
+								<br /><br />
+							</center>
+						</MBTutorialOverview>
+						<div>
+							<ButtonGeneric white onClick={function () { this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true); }.bind(this)}>
+								<FormattedMessage id='modal.close' defaultMessage='Close' />
+							</ButtonGeneric>
+						</div>
+					</MessageBox>
+				</div>
 			);
 		}
 

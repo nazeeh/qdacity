@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import DropDownButton from '../../../common/styles/DropDownButton.jsx';
@@ -36,6 +37,7 @@ export default class ButtonZoomSelect extends React.Component {
 
 	render() {
 		const _this = this;
+		const {formatMessage} = IntlProvider.intl;
 
 		const items = [];
 		items.push({
@@ -66,11 +68,11 @@ export default class ButtonZoomSelect extends React.Component {
 			text: '150 %',
 			onClick: _this.buttonClicked.bind(_this, 150)
 		});
-
+		const selectZoom = formatMessage({id:'buttonzoomselect.select_zoom', defaultMessage: 'Select a zoom value.'});
 		return (
-			<StyledZoomBtn title="Select a zoom value.">
-		        <DropDownButton ref={(r) => {if (r) _this.dropDownButtonRef = r}} initText={this.zoomValue} items={items} fixedWidth={'35px'}></DropDownButton>
-	        </StyledZoomBtn>
+			<StyledZoomBtn title={selectZoom}>
+				<DropDownButton ref={(r) => { if (r) _this.dropDownButtonRef = r; }} initText={this.zoomValue} items={items} fixedWidth={'35px'}></DropDownButton>
+			</StyledZoomBtn>
 		);
 	}
 

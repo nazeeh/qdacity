@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
 	BtnDefault
@@ -25,11 +26,14 @@ export default class ButtonZoomOut extends React.Component {
 
 	render() {
 		const _this = this;
+		const {formatMessage} = IntlProvider.intl;
+
+		const zoomAway = formatMessage({id:'buttonzoomselect.select_zoom', defaultMessage: 'Zoom away from the graph.'});
 
 		return (
-			<StyledZoomBtn title="Zoom away from the graph." onClick={_this.buttonClicked}>
-		        <i className="fa fa-search-minus"></i>
-	        </StyledZoomBtn>
+			<StyledZoomBtn title={zoomAway} onClick={_this.buttonClicked}>
+				<i className="fa fa-search-minus"></i>
+			</StyledZoomBtn>
 		);
 	}
 

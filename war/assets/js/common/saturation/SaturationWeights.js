@@ -1,25 +1,84 @@
+import IntlProvider from '../Localization/LocalizationProvider';
+
 export default class SaturationWeights {
 	constructor(saturationParameters) {
 		this.saturationParameters = saturationParameters;
 	}
 
 	getNameAndWeightsArray() {
+		const {formatMessage} = IntlProvider.intl;
 		var sp = this.saturationParameters;
 		var saturationWeights = [
-			['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight, sp.deleteCodeRelationShipSaturationMaximum], //0
-			['Deleted Codes', sp.deleteCodeChangeWeight, sp.deleteCodeSaturationMaximum], //1
-			['New Code Relationships', sp.insertCodeRelationShipChangeWeight, sp.insertCodeRelationShipSaturationMaximum], //2
-			['New Codes', sp.insertCodeChangeWeight, sp.insertCodeSaturationMaximum], //3
-			['Relocated Codes', sp.relocateCodeChangeWeight, sp.relocateCodeSaturationMaximum], //4
-			['Code Author Changes', sp.updateCodeAuthorChangeWeight, sp.updateCodeAuthorSaturationMaximum], //5
-			['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight, sp.updateCodeBookEntryDefinitionSaturationMaximum], //6
-			['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight, sp.updateCodeBookEntryExampleSaturationMaximum], //7
-			['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight, sp.updateCodeBookEntryShortDefinitionSaturationMaximum], //8
-			['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight, sp.updateCodeBookEntryWhenNotToUseSaturationMaximum], //9
-			['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight, sp.updateCodeBookEntryWhenToUseSaturationMaximum], //10
-			['Code Color Changes', sp.updateCodeColorChangeWeight, sp.updateCodeColorSaturationMaximum], //11
-			['Code Memo Changes', sp.updateCodeMemoChangeWeight, sp.updateCodeMemoSaturationMaximum], //12
-			['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum] //13
+			[
+				formatMessage({id: 'saturationweights.deleted_code_relationships', defaultMessage: 'Deleted Code Relationships'}),
+				sp.deleteCodeRelationShipChangeWeight,
+				sp.deleteCodeRelationShipSaturationMaximum
+			], //0
+			[
+				formatMessage({id: 'saturationweights.deleted_codes', defaultMessage: 'Deleted Codes' }),
+				sp.deleteCodeChangeWeight,
+				sp.deleteCodeSaturationMaximum
+			], //1
+			[
+				formatMessage({id: 'saturationweights.new_code_relationships', defaultMessage: 'New Code Relationships' }),
+				sp.insertCodeRelationShipChangeWeight,
+				sp.insertCodeRelationShipSaturationMaximum
+			], //2
+			[
+				formatMessage({id: 'saturationweights.new_codes', defaultMessage: 'New Codes'}),
+				sp.insertCodeChangeWeight,
+				sp.insertCodeSaturationMaximum
+			], //3
+			[
+				formatMessage({id: 'saturationweights.relocated_codes', defaultMessage: 'Relocated Codes' }),
+				sp.relocateCodeChangeWeight,
+				sp.relocateCodeSaturationMaximum
+			], //4
+			[
+				formatMessage({id: 'saturationweights.code_author_changes', defaultMessage: 'Code Author Changes'}),
+				sp.updateCodeAuthorChangeWeight,
+				sp.updateCodeAuthorSaturationMaximum
+			], //5
+			[
+				formatMessage({id: 'saturationweights.code_book_entry_definition_changes', defaultMessage: 'CodeBookEntry Definition Changes' }),
+				sp.updateCodeBookEntryDefinitionChangeWeight,
+				sp.updateCodeBookEntryDefinitionSaturationMaximum
+			], //6
+			[
+				formatMessage({id: 'saturationweights.code_book_entry_example_changes', defaultMessage: 'CodeBookEntry Example Changes'}),
+				sp.updateCodeBookEntryExampleChangeWeight,
+				sp.updateCodeBookEntryExampleSaturationMaximum
+			], //7
+			[
+				formatMessage({id: 'saturationweights.code_book_entry_short_definition_changes', defaultMessage: 'CodeBookEntry Short Definition Changes'}),
+				sp.updateCodeBookEntryShortDefinitionChangeWeight,
+				sp.updateCodeBookEntryShortDefinitionSaturationMaximum
+			], //8
+			[
+				formatMessage({id: 'saturationweights.code_book_entry_when_not_to_use_changes', defaultMessage: 'CodeBookEntry When Not To Use Changes'}),
+				sp.updateCodeBookEntryWhenNotToUseChangeWeight,
+				sp.updateCodeBookEntryWhenNotToUseSaturationMaximum
+			], //9
+			[
+				formatMessage({id: 'saturationweights.code_book_entry_when_to_use_changes', defaultMessage: 'CodeBookEntry When To Use Changes' }),
+				sp.updateCodeBookEntryWhenToUseChangeWeight,
+				sp.updateCodeBookEntryWhenToUseSaturationMaximum
+			], //10
+			[
+				formatMessage({id: 'saturationweights.code_color_changes', defaultMessage: 'Code Color Changes' }),
+				sp.updateCodeColorChangeWeight,
+				sp.updateCodeColorSaturationMaximum
+			], //11
+			[
+				formatMessage({id: 'saturationweights.code_memo_changes', defaultMessage: 'Code Memo Changes' }),
+				sp.updateCodeMemoChangeWeight,
+				sp.updateCodeMemoSaturationMaximum
+			], //12
+			[
+				formatMessage({id: 'saturationweights.code_name_changes', defaultMessage: 'Code Name Changes' }),
+				sp.updateCodeNameChangeWeight,
+				sp.updateCodeNameSaturationMaximum
+			] //13
 		];
 
 		return saturationWeights;
@@ -70,6 +129,7 @@ export default class SaturationWeights {
 	}
 
 	getCategoryForIndex(i) {
+		const {formatMessage} = IntlProvider.intl;
 		var integer = parseInt(i, 10);
 		var catArr = this.getCategorizedArray();
 		for (var category in catArr) {
@@ -79,7 +139,7 @@ export default class SaturationWeights {
 				}
 			}
 		}
-		return "NO CATEGORY FOR INDEX " + i;
+		return formatMessage({id: 'error.no_category_for_index', defaultMessage: 'NO CATEGORY FOR INDEX {index}'}, {index: i});
 	}
 
 	getCompleteCategory(saturation, category) {

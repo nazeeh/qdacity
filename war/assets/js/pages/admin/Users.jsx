@@ -17,6 +17,7 @@ import {
 	BtnDefault
 } from "../../common/styles/Btn.jsx";
 
+
 const StyledUserSearch = StyledSearchFieldContainer.extend `
 	& > .searchfield{
 		margin-right: 5px;
@@ -93,10 +94,10 @@ export default class Users extends React.Component {
 				</div>
 				<div className="box-body">
 					<StyledUserSearch>
-                        <SearchBox onSearch={this.updateSearch} onKeyPress={this.onSearchFieldKeyPress} />  
+                        <SearchBox onSearch={this.updateSearch} onKeyPress={this.onSearchFieldKeyPress} />
 						<BtnDefault id="btnSearch" onClick={this.findUsers}>
 							<i className="fa fa-search"/>
-						</BtnDefault>			
+						</BtnDefault>
 					</StyledUserSearch>
 					<UserList  users={this.state.users} removeUser={this.removeUser} setSelectedUserId={(userId) => this.setSelectedUserId(userId)} selectedUserId={this.state.selectedUserId}/>
 					<ul id="user-list" className="list compactBoxList">

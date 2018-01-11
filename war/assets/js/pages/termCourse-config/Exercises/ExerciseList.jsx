@@ -1,4 +1,9 @@
 import React from 'react';
+import {
+	FormattedMessage
+} from 'react-intl';
+
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
@@ -51,9 +56,24 @@ export default class ExerciseList extends React.Component {
 	}
 
 	showNewExerciseModal() {
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
-		var modal = new CustomForm('Create a new exercise', '');
-		modal.addTextInput('name', "Exercise Name", 'Name', '');
+		var modal = new CustomForm(
+			formatMessage({
+				id: 'excerciselist.create_new_excercise',
+				defaultMessage: 'Create a new exercise'
+			}), '');
+		modal.addTextInput(
+			'name',
+			formatMessage({
+				id: 'excerciselist.excercise_name',
+				defaultMessage: 'Exercise Name'
+			}),
+			'Name',
+			''
+		);
 		modal.showModal().then(function (data) {
 			_this.createNewExercise(data.name);
 		});
@@ -74,11 +94,21 @@ export default class ExerciseList extends React.Component {
 		})
 	}
 
-	deleteExercise(e, exercise, index) {
+	deleteExercise(e, exercise) {
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var exercises = this.state.exercises;
 		e.stopPropagation();
-		var confirm = new Confirm('Do you want to delete the exercise ' + exercise.name + '?');
+		var confirm = new Confirm(
+			formatMessage({
+				id: 'exerciselist.delete_excercise',
+				defaultMessage: 'Do you want to delete the exercise {name}?'
+			}, {
+				name: exercise.name
+			})
+		);
 		confirm.showModal().then(function () {
 			ExerciseEndpoint.removeExercise(exercise.id).then(function (resp) {
 				var index = exercises.indexOf(exercises.find(o => o.id === exercise.id));
@@ -94,24 +124,24 @@ export default class ExerciseList extends React.Component {
 	renderNewExerciseButton() {
 		return (
 			<StyledNewExBtn>
-                <BtnDefault onClick={this.showNewExerciseModal}>
-                    <i className="fa fa-plus fa-fw"></i>
-                    New Exercise
-                </BtnDefault>
-            </StyledNewExBtn>
+				<BtnDefault onClick={this.showNewExerciseModal}>
+					<i className="fa fa-plus fa-fw"></i>
+					<FormattedMessage id='exerciselist.new_excercise' defaultMessage='New Exercise' />
+				</BtnDefault>
+			</StyledNewExBtn>
 		);
 	}
 
 	renderExercise(exercise, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
-                <span > {exercise.name} </span>
-                    <div>
-                    <StyledListItemBtn onClick={(e) => this.deleteExercise(e, exercise, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-                        <i className="fa fa-trash "></i>
-                    </StyledListItemBtn>
-                </div>
-            </StyledListItemDefault>
+				<span > {exercise.name} </span>
+				<div>
+					<StyledListItemBtn onClick={(e) => this.deleteExercise(e, exercise, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash "></i>
+					</StyledListItemBtn>
+				</div>
+			</StyledListItemDefault>
 		);
 	}
 

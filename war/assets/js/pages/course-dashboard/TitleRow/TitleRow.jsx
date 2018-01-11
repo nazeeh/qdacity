@@ -1,4 +1,5 @@
 import React from 'react';
+import {FormattedMessage} from 'react-intl';
 import styled from 'styled-components';
 
 const StyledName = styled.span `
@@ -16,14 +17,14 @@ export default class TitleRow extends React.Component {
 	}
 
 	render() {
-		var courseName = (this.props.course.name ? this.props.course.name : "")
+		var courseName = (this.props.course.name ? this.props.course.name : '');
 		return (
 			<StyledHeading>
-			<i className="fa fa-newspaper-o"></i>
-			<StyledName onClick={(e) => this.courseTitleClicked(e)}>
-				This course: {courseName}
-			</StyledName>
-          </StyledHeading>
+				<i className="fa fa-newspaper-o"></i>
+				<StyledName onClick={(e) => this.courseTitleClicked(e)}>
+					<FormattedMessage id='titlerow.course' defaultMessage='This course: {name}' values={{ name: courseName }} />
+				</StyledName>
+			</StyledHeading>
 		);
 	}
 

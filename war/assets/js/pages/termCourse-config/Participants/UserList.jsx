@@ -55,11 +55,11 @@ export default class UserList extends React.Component {
 
 	render() {
 		return (
-			<ItemList 
+			<ItemList
                 key={"itemlist"}
                 hasPagination={true}
                 itemsPerPage={8}
-                items={this.state.users} 
+                items={this.state.users}
                 renderItem={this.renderUser} />
 		);
 	}

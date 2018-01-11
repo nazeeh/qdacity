@@ -8,13 +8,17 @@ import {
 } from "../../common/styles/Btn.jsx";
 import StyledInput from '../../common/styles/Input.jsx';
 
-const SELECTION = {
-	WEEK: "Week",
-	MONTH: "Month",
-	QUARTER: "Quarter",
-	YEAR: "Year",
-	CUSTOM: "Custom"
+//import IntlProvider from '../../common/Localization/LocalizationProvider';
+import {
+	FormattedMessage
+} from 'react-intl';
 
+const SELECTION = {
+	WEEK: 'Week',
+	MONTH: 'Month',
+	QUARTER: 'Quarter',
+	YEAR: 'Year',
+	CUSTOM: 'Custom'
 };
 
 const DEFAULT_SELECTION = SELECTION.MONTH;
@@ -180,7 +184,7 @@ export default class UserRegistrationsChart extends React.Component {
 									 max={UserRegistrationsChart.toDateString(new Date())}/>
 
 					<StyledApplyButton onClick={() => this.sendEvent()}>
-						Apply
+						<FormattedMessage id='modal.apply' defaultMessage='Apply' />
 					</StyledApplyButton>
 				</div>}
 			</CenteringDiv>

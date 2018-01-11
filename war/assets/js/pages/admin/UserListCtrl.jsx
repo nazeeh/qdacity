@@ -27,19 +27,19 @@ export default class UserListCtrl extends React.Component {
 		}));
 		modal.addTextInput('firstName', formatMessage({
 			id: 'userlistctrl.first_name',
-			defaultMessage: "First Name"
+			defaultMessage: 'First Name'
 		}), '', user.givenName);
 		modal.addTextInput('lastName', formatMessage({
 			id: 'userlistctrl.last_name',
-			defaultMessage: "Last Name"
+			defaultMessage: 'Last Name'
 		}), '', user.surName);
 		modal.addTextInput('email', formatMessage({
 			id: 'userlistctrl.email',
-			defaultMessage: "Email"
+			defaultMessage: 'Email'
 		}), '', user.email);
-		modal.addSelect('type', ["USER", "ADMIN"], "Type", user.type);
+		modal.addSelect('type', ['USER', 'ADMIN'], 'Type', user.type);
 		modal.showModal().then((data) => {
-			this.props.updateUser(data)
+			this.props.updateUser(data);
 		});
 	}
 

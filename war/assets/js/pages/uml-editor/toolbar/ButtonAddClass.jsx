@@ -44,11 +44,13 @@ export default class ButtonAddClass extends React.Component {
 
 	render() {
 		const _this = this;
+		const {formatMessage} = IntlProvider.intl;
+		const addClass = formatMessage({id: 'buttonaddclass.title', defaultMessage: 'Click to create a new class (code).'});
 
 		return (
-			<BtnDefault title="Click to create a new class (code)." onClick={_this.buttonClicked}>
-		        <i className="fa fa-plus"></i>
-	        </BtnDefault>
+			<BtnDefault title={addClass} onClick={_this.buttonClicked}>
+				<i className="fa fa-plus"></i>
+			</BtnDefault>
 		);
 	}
 

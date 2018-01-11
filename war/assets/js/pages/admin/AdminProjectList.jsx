@@ -8,6 +8,7 @@ import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
 import CustomForm from '../../common/modals/CustomForm';
 import Confirm from '../../common/modals/Confirm';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import {
 	ItemList,
@@ -78,9 +79,12 @@ export default class AdminProjectList extends React.Component {
 	}
 
 	deleteProject(e, project, index) {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
-		var confirm = new Confirm('Do you want to delete the project ' + project.name + '?');
+		var confirm = new Confirm(
+			formatMessage({id: 'adminprojectlist.delete_project', defaultMessage: 'Do you want to delete the project {name}?'}, {name: project.name })
+		);
 		confirm.showModal().then(function () {
 			ProjectEndpoint.removeProject(project.id).then(function (resp) {
 				// remove project from parent state
@@ -142,11 +146,11 @@ export default class AdminProjectList extends React.Component {
 
 	render() {
 		return (
-			<ItemList 
+			<ItemList
                 hasSearch={true}
                 hasPagination={true}
                 itemsPerPage={8}
-                items={this.props.projects} 
+                items={this.props.projects}
                 renderItem={this.renderProject} />
 		);
 	}

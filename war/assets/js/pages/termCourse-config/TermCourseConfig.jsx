@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
@@ -87,7 +88,10 @@ export default class TermCourseConfig extends React.Component {
 
 	addParticipant(e) {
 		var _this = this;
-		var confirm = new Confirm('Do you want to join this term course?');
+		const {formatMessage} = IntlProvider.intl;
+		var confirm = new Confirm(
+			formatMessage({id: 'termcourseconfig.join_term_course', defaultMessage: 'Do you want to join this term course?'})
+		);
 		confirm.showModal().then(function () {
 			//Add the user to participants & set isUserParticipant to true for that term
 			var termCourse = _this.state.termCourse;
@@ -105,7 +109,9 @@ export default class TermCourseConfig extends React.Component {
 
 	removeParticipant(e) {
 		var _this = this;
-		var confirm = new Confirm('Do you want to leave this term course?');
+		const {formatMessage} = IntlProvider.intl;
+		var confirm = new Confirm(
+			formatMessage({id: 'termcourseconfig.leave_term_course', defaultMessage: 'Do you want to leave this term course?'}));
 		confirm.showModal().then(function () {
 			//Remove the user from the termcourse participants
 			var termCourse = _this.state.termCourse;

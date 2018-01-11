@@ -19,6 +19,7 @@ export default class Settings extends VexModal {
 		var _this = this;
 		var promise = new Promise(
 			function (resolve, reject) {
+				const {formatMessage} = IntlProvider.intl;
 
 				var formElements = '';
 
@@ -29,7 +30,7 @@ export default class Settings extends VexModal {
 				if (umlEditorEnabled) checked = ' checked';
 
 				formElements += '<div class="checkbox">';
-				formElements += '<label><input id="settingsUmlEditorEnabled" type="checkbox" value=""' + checked + '>Enable UML Editor</label>';
+				formElements += '<label><input id="settingsUmlEditorEnabled" type="checkbox" value=""' + checked + '>'+formatMessage({id: 'settings.enable_uml', defaultMessage: 'Enable UML Editor'})+'</label>';
 				formElements += '</div>';
 				formElements += '<div id="saturationSettings">';
 				formElements += '</div>';
@@ -39,15 +40,15 @@ export default class Settings extends VexModal {
 				formElements += '</div>';
 
 				vex.dialog.open({
-					message: "Settings",
+					message: formatMessage({id: 'settings.settings', defaultMessage: 'Settings'}),
 					contentCSS: {
 						width: '600px',
 						"margin-top": '-100px'
 					},
 					input: formElements,
 					buttons: [$.extend({}, vex.dialog.buttons.YES, {
-						text: 'Save',
-						click: function ($vexContent, event) {
+						text: formatMessage({id: 'settings.save', defaultMessage: 'Save'}),
+						click: function ($vexContent) {
 							$vexContent.data().vex.value = {
 								'umlEditorEnabled': $('#settingsUmlEditorEnabled').prop('checked')
 							};
@@ -90,7 +91,7 @@ export default class Settings extends VexModal {
 							vex.close($vexContent.data().vex.id);
 						}
 					}), $.extend({}, vex.dialog.buttons.NO, {
-						text: 'Cancel'
+						text: formatMessage({id: 'modal.cancel', defaultMessage: 'Cancel'})
 					})],
 					callback: function (data) {
 						if (data != false) {
