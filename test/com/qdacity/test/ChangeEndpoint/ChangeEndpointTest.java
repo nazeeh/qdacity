@@ -54,8 +54,8 @@ public class ChangeEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
-		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1l, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 1l, 15648758L, "authorName", "fff", testUser);
 		CodeEndpointTestHelper.removeCode(22L, testUser);
 
 		try {
@@ -92,8 +92,8 @@ public class ChangeEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
-		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1l, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 1l, 15648758L, "authorName", "fff", testUser);
 		CodeEndpointTestHelper.removeCode(22L, testUser);
 
 		try {
@@ -124,8 +124,8 @@ public class ChangeEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
-		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1l, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 2L, 1l, 15648758L, "authorName", "fff", testUser);
 		CodeEndpointTestHelper.removeCode(22L, testUser);
 
 		try {

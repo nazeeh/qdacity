@@ -62,7 +62,7 @@ public class CodeEndpointTest {
 			fail("User could not be authorized for code creation");
 			e.printStackTrace();
 		}
-		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 1L, 1L, "authorName", "fff", testUser);
 
 		try {
 			latch.await(5, TimeUnit.SECONDS);
@@ -123,8 +123,8 @@ public class CodeEndpointTest {
 		CodeEndpoint ce = new CodeEndpoint();
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		testCodeInsert();
-		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 1L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(44L, 4L, 1L, 1L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 1L, 1L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(44L, 4L, 1L, 1L, 1L, "authorName", "fff", testUser);
 		assertEquals(4, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -167,7 +167,7 @@ public class CodeEndpointTest {
 		CodeEndpoint ce = new CodeEndpoint();
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		testCodeInsert();
-		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 1L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 1L, 1L, "authorName", "fff", testUser);
 		CodeBookEntry entry = new CodeBookEntry();
 		entry.setDefinition("my new definition");
 		entry.setExample("my new example");

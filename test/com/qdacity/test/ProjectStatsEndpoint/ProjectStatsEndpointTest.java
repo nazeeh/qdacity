@@ -51,8 +51,8 @@ public class ProjectStatsEndpointTest {
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "I'm testing this to evaluate a revision", testUser);
 		ProjectStatsEndpoint pse = new ProjectStatsEndpoint();
 		
-		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 15648758L, "authorName", "fff", testUser);
-		CodeEndpointTestHelper.addCode(44L, 4L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(33L, 3L, 1L, 1L, 15648758L, "authorName", "fff", testUser);
+		CodeEndpointTestHelper.addCode(44L, 4L, 1L, 1L, 15648758L, "authorName", "fff", testUser);
 
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text. </br> <coding id=\"337\" code_id=\"28\" author=\"Author Name\" codename=\"a code\" title=\"a code\" data-toggle=\"tooltip\" data-placement=\"bottom\">some text</coding>", "First Title", testUser);
 

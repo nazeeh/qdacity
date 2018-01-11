@@ -15,7 +15,7 @@ import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.project.codesystem.Code;
 
 public class CodeEndpointTestHelper {
-	static public void addCode(Long id, Long codeID, Long parentID, Long codesystemID, String authorName, String color, com.google.appengine.api.users.User loggedInUser) {
+	static public void addCode(Long id, Long codeID, Long parentID, Long parentDbId, Long codesystemID, String authorName, String color, com.google.appengine.api.users.User loggedInUser) {
 		try {
 
 			updateParentsSubCodeIds(parentID, codesystemID, codeID);
@@ -27,7 +27,7 @@ public class CodeEndpointTestHelper {
 			code.setCodesystemID(codesystemID);
 			code.setColor(color);
 			CodeEndpoint ce = new CodeEndpoint();
-			ce.insertCode(null, null, code, loggedInUser);
+			ce.insertCode(null, null, parentDbId, code, loggedInUser);
 
 
 		} catch (UnauthorizedException e) {
