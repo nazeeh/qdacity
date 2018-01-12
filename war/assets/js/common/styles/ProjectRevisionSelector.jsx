@@ -19,6 +19,8 @@ export default class ProjectRevisionSelector extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.revisionSelectorRef = null;
 		this.state = {
 			projects: this.props.projects,
 			projectNameList: [],
@@ -72,10 +74,13 @@ export default class ProjectRevisionSelector extends React.Component {
 				onClick: _this.revisionClicked.bind(_this, revision.id)
 				});
 			});
+
+				_this.revisionSelectorRef.setText(revisionNameList[0].text);
 				_this.setState({
 					revisions: revisions,
 					revisionNameList: revisionNameList
 					});
+
 	});
 	}
 
@@ -105,7 +110,7 @@ export default class ProjectRevisionSelector extends React.Component {
 				</ProjectDropDownContainer>
 				<div>
 					<label>Select a revision: </label>
-					<DropDownButton isListItemButton={true} items={this.state.revisionNameList} initText = {this.state.revisionInitText}></DropDownButton>
+					<DropDownButton ref={(r) => {this.revisionSelectorRef = r;}} isListItemButton={true} items={this.state.revisionNameList} initText = {this.state.revisionInitText}></DropDownButton>
 				</div>
 			</div>
 		)
