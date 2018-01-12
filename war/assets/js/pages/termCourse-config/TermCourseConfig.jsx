@@ -72,7 +72,7 @@ export default class TermCourseConfig extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		this.updateUserStatusFromProps(nextProps);
 	}
-	
+
 	updateUserStatusFromProps(targetedProps) {
 		this.state.authState = targetedProps.auth.authState;
 		this.setState(this.state);

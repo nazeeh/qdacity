@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import ReactDOM from 'react-dom';
 
 import styled from 'styled-components';
@@ -60,7 +62,7 @@ export default class Codesystem extends SimpleCodesystem {
 			codesystemID: -1,
 			codesystem: [],
 			height: "100px",
-			
+
 			userProfile: {
 				name: '',
 				email: '',
@@ -86,12 +88,12 @@ export default class Codesystem extends SimpleCodesystem {
 
 		this.updateUserProfileStatusFromProps(props);
 	}
-	
+
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		this.updateUserProfileStatusFromProps(nextProps);
 	}
-	
+
 	updateUserProfileStatusFromProps(targetedProps) {
 		const _this = this;
 		_this.state.userProfile = targetedProps.userProfile

@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 
 
@@ -57,7 +59,7 @@ export default class CourseDashboard extends React.Component {
 		this.authenticationProvider = props.auth.authentication;
 
 		const _this = this;
-		
+
 		// update on initialization
 		this.updateUserStatusFromProps(props);
 	}
@@ -66,7 +68,7 @@ export default class CourseDashboard extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		this.updateUserStatusFromProps(nextProps);
 	}
-	
+
 	updateUserStatusFromProps(targetedProps) {
 		this.state.authState = targetedProps.auth.authState;
 		this.setState(this.state);

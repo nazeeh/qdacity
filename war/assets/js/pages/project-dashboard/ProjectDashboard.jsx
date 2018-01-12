@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 
 import Project from './Project';
@@ -55,7 +57,7 @@ export default class ProjectDashboard extends React.Component {
 
 		// update on initialization
 		this.updateUserStatusFromProps(props);
-		
+
 		scroll(0, 0);
 	}
 
@@ -66,12 +68,12 @@ export default class ProjectDashboard extends React.Component {
 			this.setProjectProperties();
 		}
 	}
-	
+
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		this.updateUserStatusFromProps(nextProps);
 	}
-	
+
 	updateUserStatusFromProps(targetedProps) {
 		this.state.authState = targetedProps.auth.authState;
 		this.setState(this.state);
@@ -122,12 +124,12 @@ export default class ProjectDashboard extends React.Component {
 		if (!this.state.googleChartsLoaded) return null;
 		return <AgreementStats  reports={this.state.reports} chartScriptPromise={this.props.chartScriptPromise}/>
 	}
-	
+
 	updateUserStatus() {
 		const loginStatus = this.authenticationProvider.isSignedIn();
-		if(loginStatus !== this.state.isSignedIn) {
+		if (loginStatus !== this.state.isSignedIn) {
 			this.state.isSignedIn = loginStatus;
-			this.setState(this.state); 
+			this.setState(this.state);
 		}
 	}
 

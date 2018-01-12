@@ -35,19 +35,18 @@ export default class App extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-		};
+		this.state = {};
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
-		var t=new TutorialEngine(this);
+		var t = new TutorialEngine(this);
 		this.state = {
 			language: 'en',
 			locale: 'en-US',
 			messages: {},
 
 			tutorialEngine: t,
-			tutorialState:t.tutorialState,
-			
+			tutorialState: t.tutorialState,
+
 			isUserSignedIn: false,
 			isUserRegistered: false
 		};
@@ -55,24 +54,24 @@ export default class App extends React.Component {
 		this.authorizationProvider = new AuthorizationProvider();
 
 		const _this = this;
-		this.authenticationProvider.addAuthStateListener(function() {
+		this.authenticationProvider.addAuthStateListener(function () {
 			// update on every auth state change
 			_this.updateUserStatus();
 		});
-	
+
 		// on page reloads: also reload profile data		
-		if(this.authenticationProvider.isSignedIn()) {
+		if (this.authenticationProvider.isSignedIn()) {
 			_this.authenticationProvider.synchronizeTokenWithGapi();
 		} else {
 			// try silent sign in
-			_this.authenticationProvider.silentSignInWithGoogle().then(function() {
+			_this.authenticationProvider.silentSignInWithGoogle().then(function () {
 				_this.authenticationProvider.synchronizeTokenWithGapi();
 				_this.updateUserStatus() // somehow the auth state listener triggers too early!
 			});
 		}
 	}
 
-	
+
 	/**
 	 * Updates the state -> the supplied authState
 	 * @returns {Promise}
@@ -82,7 +81,7 @@ export default class App extends React.Component {
 		const promise = new Promise(
 			function (resolve, reject) {
 				const loginStatus = _this.authenticationProvider.isSignedIn();
-				if(!loginStatus && !_this.state.isUserSignedIn) {
+				if (!loginStatus && !_this.state.isUserSignedIn) {
 					// no need to rerender!
 					resolve();
 					return;
@@ -90,26 +89,25 @@ export default class App extends React.Component {
 
 				_this.state.isUserSignedIn = loginStatus;
 				// don't rerender here in order to not show "you are not logged in" prompt!
-				if(!loginStatus) {
+				if (!loginStatus) {
 					resolve();
 					return;
 				}
 
-				_this.authenticationProvider.getCurrentUser().then(function(user) {
+				_this.authenticationProvider.getCurrentUser().then(function (user) {
 					_this.state.isUserRegistered = !!user;
-					_this.setState(_this.state); 
+					_this.setState(_this.state);
 					resolve();
-				}, function(err) {
+				}, function (err) {
 					_this.state.isUserRegistered = false;
-					_this.setState(_this.state); 
+					_this.setState(_this.state);
 					resolve();
 				})
 			});
 		return promise;
 	}
 
-	componentDidMount()
-	{
+	componentDidMount() {
 		this.state.tutorialEngine.appRootDidMount();
 	}
 
@@ -119,7 +117,9 @@ export default class App extends React.Component {
 				isUserSignedIn: this.state.isUserSignedIn,
 				isUserRegistered: this.state.isUserRegistered
 			},
-			updateUserStatus: () => { return this.updateUserStatus() },
+			updateUserStatus: () => {
+				return this.updateUserStatus()
+			},
 			authentication: this.authenticationProvider,
 			authorization: this.authorizationProvider
 		}
@@ -127,7 +127,10 @@ export default class App extends React.Component {
 
 	render() {
 
-		var tut={tutorialEngine:this.state.tutorialEngine, tutorialState: this.state.tutorialState};
+		var tut = {
+			tutorialEngine: this.state.tutorialEngine,
+			tutorialState: this.state.tutorialState
+		};
 
 		return (
 			<IntlProvider app={this} locale={this.state.locale} language={this.state.language} messages={this.state.messages}>

@@ -1,5 +1,7 @@
 import React from 'react'
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 
 import UserList from './UserList.jsx';
@@ -25,8 +27,8 @@ export default class Users extends React.Component {
 		this.state = {
 			users: [],
 			search: '',
-            selectedUserId: ''
-        };
+			selectedUserId: ''
+		};
 
 		this.updateSearch = this.updateSearch.bind(this);
 		this.findUsers = this.findUsers.bind(this);
@@ -74,12 +76,12 @@ export default class Users extends React.Component {
 		}
 	}
 
-    setSelectedUserId(userId) {
-        this.props.setSelectedUserId(userId)
-        this.setState({
-            selectedUserId: userId
-        });
-    }
+	setSelectedUserId(userId) {
+		this.props.setSelectedUserId(userId)
+		this.setState({
+			selectedUserId: userId
+		});
+	}
 
 	render() {
 		return (

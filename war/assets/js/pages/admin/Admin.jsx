@@ -1,5 +1,7 @@
 import React from 'react'
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import Users from './Users.jsx';
 import AdminStats from './AdminStats.jsx';
@@ -11,16 +13,16 @@ export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-            projects: [],
+			projects: [],
 			selectedUserId: '',
 			authState: {
 				isUserSignedIn: false,
 				isUserRegistered: false
 			}
-        };
+		};
 
-        this.setProjects = this.setProjects.bind(this);
-        this.removeProject = this.removeProject.bind(this);
+		this.setProjects = this.setProjects.bind(this);
+		this.removeProject = this.removeProject.bind(this);
 
 		// update on initialization
 		this.updateUserStatusFromProps(props);
@@ -43,22 +45,22 @@ export default class Admin extends React.Component {
 		});
 	}
 
-    setProjects(projects) {
-        this.setState({
-            projects: projects
-        });
-    }
+	setProjects(projects) {
+		this.setState({
+			projects: projects
+		});
+	}
 
-    removeProject(index) {
-        this.state.projects.splice(index, 1);
-        this.setState({
-            projects: this.state.projects
-        });
-    }
+	removeProject(index) {
+		this.state.projects.splice(index, 1);
+		this.setState({
+			projects: this.state.projects
+		});
+	}
 
 
-    render() {
-        if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+	render() {
+		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 		return (

@@ -173,7 +173,9 @@ export default class SyncService {
 	_handleUserListChange(userlist) {
 		this._fireEvent(
 			'changeUserList',
-			userlist.filter(({ email }) => email !== this._account.email)
+			userlist.filter(({
+				email
+			}) => email !== this._account.email)
 		);
 	}
 

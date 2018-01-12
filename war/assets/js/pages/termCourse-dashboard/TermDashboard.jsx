@@ -1,5 +1,7 @@
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
@@ -71,7 +73,7 @@ export default class TermDashboard extends React.Component {
 		};
 		this.updateUserStatusFromProps(props);
 	}
-	
+
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		this.updateUserStatusFromProps(nextProps);
@@ -116,10 +118,15 @@ export default class TermDashboard extends React.Component {
 	}
 
 	addParticipant(e) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var confirm = new Confirm(
-			formatMessage({ id: 'termdashboard.join_term_confirm', defaultMessage: 'Do you want to join this term course?' })
+			formatMessage({
+				id: 'termdashboard.join_term_confirm',
+				defaultMessage: 'Do you want to join this term course?'
+			})
 		);
 		confirm.showModal().then(function () {
 			//Add the user to participants & set isUserParticipant to true for that term
@@ -137,10 +144,15 @@ export default class TermDashboard extends React.Component {
 	}
 
 	removeParticipant(e) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var confirm = new Confirm(
-			formatMessage({ id: 'termdashboard.leave_term_confirm', defaultMessage: 'Do you want to leave this term course?'})
+			formatMessage({
+				id: 'termdashboard.leave_term_confirm',
+				defaultMessage: 'Do you want to leave this term course?'
+			})
 		);
 		confirm.showModal().then(function () {
 			//Add the user to participants & set isUserParticipant to true for that term

@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import {
 	BtnDefault,
@@ -18,12 +20,12 @@ export default class Account extends React.Component {
 			email: '',
 			picSrc: ''
 		};
-		
+
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 
 		this.updateFromProps(props);
 	}
-	
+
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		this.updateFromProps(nextProps);
@@ -32,7 +34,7 @@ export default class Account extends React.Component {
 	updateFromProps(targetedProps) {
 		this.authenticationProvider = targetedProps.auth.authentication;
 		const _this = this;
-		this.authenticationProvider.getProfile().then(function(profile) {
+		this.authenticationProvider.getProfile().then(function (profile) {
 			_this.state.name = profile.name;
 			_this.state.email = profile.email;
 			_this.state.picSrc = profile.thumbnail;
@@ -41,16 +43,16 @@ export default class Account extends React.Component {
 	}
 
 	/**
-	* Redirects to the personal dashboard
-	*/
+	 * Redirects to the personal dashboard
+	 */
 	redirectToPersonalDashbaord() {
 		this.props.history.push('/PersonalDashboard');
 	}
 
 	onSignOut() {
 		const _this = this;
-		this.authenticationProvider.signOut().then(() => { 
-			_this.props.history.push('/'); 
+		this.authenticationProvider.signOut().then(() => {
+			_this.props.history.push('/');
 		});
 	}
 

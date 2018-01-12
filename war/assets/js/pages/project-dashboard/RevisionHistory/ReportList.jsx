@@ -46,7 +46,9 @@ export default class ReportList extends React.Component {
 
 
 	deleteReport(e, reportId, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var validationEndpoint = new ValidationEndpoint();
@@ -55,7 +57,10 @@ export default class ReportList extends React.Component {
 			.then(
 				function (val) {
 					alertify.success(
-						formatMessage({ id: 'reportlist.report_deleted', defaultMessage: "Report has been deleted" })
+						formatMessage({
+							id: 'reportlist.report_deleted',
+							defaultMessage: "Report has been deleted"
+						})
 					);
 					_this.state.reports.splice(index, 1);
 					_this.setState({

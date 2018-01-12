@@ -1,7 +1,11 @@
 ///@ts-check
 /// <reference types="react-intl" />
-import { IntlProvider } from 'react-intl';
-import { Component } from 'react';
+import {
+	IntlProvider
+} from 'react-intl';
+import {
+	Component
+} from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -28,16 +32,18 @@ const globalLocalizationState = {
 async function loadMessages(language = 'en') {
 	try {
 		const response = await fetch(`assets/translations/${language}.json`);
-		if(response.ok) return await response.json();
+		if (response.ok) return await response.json();
 		throw response.statusText;
-	} catch(error) {
+	} catch (error) {
 		console.error(error);
 		return null;
 	}
 }
 
 export default class LocalizationProvider extends IntlProvider {
-	constructor(props, context = {intl: LocalizationProvider.intl}) {
+	constructor(props, context = {
+		intl: LocalizationProvider.intl
+	}) {
 		super(props, context);
 		globalLocalizationState.intl = this.getChildContext().intl;
 		if (window['QDAcityLocalization'] == undefined) {

@@ -1,6 +1,10 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
-import { FormattedMessage } from 'react-intl';
+import styled, {
+	keyframes
+} from 'styled-components';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
 
@@ -44,29 +48,28 @@ const StyledLoader = styled.div `
 
 export default class UnauthenticatedUserPanel extends React.Component {
 	constructor(props) {
-        super(props);
-        
-        this.state = {
-            loading: true
-        }
-        const timeout = props.timeout || 2000;
+		super(props);
 
-        const _this = this;
-        setTimeout(function() {
-            _this.state.loading = false
-            _this.setState(_this.state);
-        }, timeout)
-    }
-    
+		this.state = {
+			loading: true
+		}
+		const timeout = props.timeout || 2000;
+
+		const _this = this;
+		setTimeout(function () {
+			_this.state.loading = false
+			_this.setState(_this.state);
+		}, timeout)
+	}
+
 	render() {
-        if(this.state.loading) {
-            return (
-                <StyledLoader/>
-            );
-        }
-        else {
-            return (
-                <StyledPanel>
+		if (this.state.loading) {
+			return (
+				<StyledLoader/>
+			);
+		} else {
+			return (
+				<StyledPanel>
                         <h4><FormattedMessage id='unauthenticated_user_panel.not_logged_in_statement' defaultMessage='You are currently not logged in!' /></h4>
                         <p><FormattedMessage id='unauthenticated_user_panel.sign_in_or_register_note' defaultMessage='Please sign-in or register to access this page.' /></p>
                         <p><FormattedMessage id='unauthenticated_user_panel.redirect_to_home' 
@@ -76,7 +79,7 @@ export default class UnauthenticatedUserPanel extends React.Component {
                             }} />
                         </p>
                     </StyledPanel>
-                );
-            }
+			);
+		}
 	}
 }

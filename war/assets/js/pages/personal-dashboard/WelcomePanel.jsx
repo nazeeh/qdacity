@@ -1,7 +1,9 @@
 import React from 'react';
 
 import Jumbotron from '../../common/styles/Jumbotron';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 export default class WelcomePanel extends React.Component {
 	constructor(props) {

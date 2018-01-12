@@ -64,35 +64,35 @@ const SuccessMsg = styled.p `
 
 export default class UserMigration extends React.Component {
 	constructor(props) {
-        super(props);
+		super(props);
 
-        this.state = {
+		this.state = {
 			name: '',
 			email: '',
-            picSrc: '',
+			picSrc: '',
 			authState: {
 				isUserSignedIn: false,
 				isUserRegistered: false
 			},
-            isAlreadyMigrated: null,
-            migrationStatus: null
-        };
+			isAlreadyMigrated: null,
+			migrationStatus: null
+		};
 
-        this.access_token = null;
-        this.id_token = null;
+		this.access_token = null;
+		this.id_token = null;
 
-        this.authenticationProvider = this.props.auth.authentication;
+		this.authenticationProvider = this.props.auth.authentication;
 
-        const _this = this;
-        this.authenticationProvider.addAuthStateListener(function(payload) {
-            // update on every auth state change
-            if(!! payload.authResponse) {
-                _this.access_token = payload.authResponse.access_token;
-                _this.id_token = payload.authResponse.id_token;
-            }
+		const _this = this;
+		this.authenticationProvider.addAuthStateListener(function (payload) {
+			// update on every auth state change
+			if (!!payload.authResponse) {
+				_this.access_token = payload.authResponse.access_token;
+				_this.id_token = payload.authResponse.id_token;
+			}
 			_this.updateUserStatus();
 		});
-		
+
 		// update on initialization
 		this.updateAuthStatusFromProps(props);
 	}
@@ -101,126 +101,130 @@ export default class UserMigration extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		this.updateAuthStatusFromProps(nextProps);
 	}
-	
+
 	updateAuthStatusFromProps(targetedProps) {
 		this.state.authState = targetedProps.auth.authState;
-        this.setState(this.state);
-        this.updateUserStatus();
+		this.setState(this.state);
+		this.updateUserStatus();
 	}
 
-    updateUserStatus() {
-        const _this = this;
-        this.authenticationProvider.getProfile().then((profile) => {
-            _this.state.name = profile.displayName;
-            _this.state.email = profile.email;
-            _this.state.picSrc = profile.thumbnail;
-            _this.setState(_this.state);
-            _this.checkMigrationPreconditions();
-        })
-    }
-    
-    checkMigrationPreconditions() {
-        const _this = this;
+	updateUserStatus() {
+		const _this = this;
+		this.authenticationProvider.getProfile().then((profile) => {
+			_this.state.name = profile.displayName;
+			_this.state.email = profile.email;
+			_this.state.picSrc = profile.thumbnail;
+			_this.setState(_this.state);
+			_this.checkMigrationPreconditions();
+		})
+	}
 
-        // custom request because we need access_token here as header
-        gapi.client.setToken({
-            access_token: this.access_token
-        });
-        gapi.client.qdacityusermigration.isOldUserRegistered({}).execute((resp) => {
-            _this.state.authState.isUserRegistered = resp.value;
-            _this.setState(_this.state);
-            
-            // all other requests need id_token here as header
-            _this.resetGapiToken();
-            
-            this.authenticationProvider.getCurrentUser().then((user) => {
-                _this.state.isAlreadyMigrated = !! user.id;
-                _this.setState(_this.state);
-            }, (error) => {
-                _this.state.isAlreadyMigrated = false;
-                _this.setState(_this.state);
-            });
-        }, (err) => {
-            console.error("Error in updating the preconditions for migration!");
-            // all other requests need id_token here as header
-            _this.resetGapiToken();
-        });
-        
-    }
+	checkMigrationPreconditions() {
+		const _this = this;
 
-    signIn() {
-        this.authenticationProvider.signInWithGoogle().then(function() {
+		// custom request because we need access_token here as header
+		gapi.client.setToken({
+			access_token: this.access_token
+		});
+		gapi.client.qdacityusermigration.isOldUserRegistered({}).execute((resp) => {
+			_this.state.authState.isUserRegistered = resp.value;
+			_this.setState(_this.state);
 
-        }, (error) => {
-            console.error("Sign in failed.");
-        });
-    }
+			// all other requests need id_token here as header
+			_this.resetGapiToken();
 
-    signOut() {
-        this.authenticationProvider.signOut().then(function() {
-            
-        }, (err) => {
-            console.error("Sign out failed.");
-        });
-    }
+			this.authenticationProvider.getCurrentUser().then((user) => {
+				_this.state.isAlreadyMigrated = !!user.id;
+				_this.setState(_this.state);
+			}, (error) => {
+				_this.state.isAlreadyMigrated = false;
+				_this.setState(_this.state);
+			});
+		}, (err) => {
+			console.error("Error in updating the preconditions for migration!");
+			// all other requests need id_token here as header
+			_this.resetGapiToken();
+		});
 
-    migrate() {
-        if(!this.state.authState.isUserRegistered || this.state.isAlreadyMigrated) {
-            console.error("Preconditions for migration are not met!");
-            return;
-        }
-        if(!this.access_token || !this.id_token) {
-            console.error("Did not receive access_token or id_token!");
-            return;
-        }
+	}
 
-        // custom request because we need access_token here as header
-        gapi.client.setToken({
-            access_token: this.access_token
-        });
-        const _this = this;
-        this.state.migrationStatus = null;
-        this.setState(this.state);
-        gapi.client.qdacityusermigration.migrateFromGoogleIdentityToCustomAuthentication({
-            idToken: this.id_token
-        }).then((success) => {
-            _this.state.migrationStatus = true;
-            _this.setState(_this.state);
-            
-            // all other requests need id_token here as header
-            _this.resetGapiToken();
+	signIn() {
+		this.authenticationProvider.signInWithGoogle().then(function () {
 
-            _this.props.auth.updateUserStatus();
-        }, (failure) => {
-            _this.state.migrationStatus = false;
-            _this.setState(_this.state);
-            
-            // all other requests need id_token here as header
-            _this.resetGapiToken();
-        });
-    }
+		}, (error) => {
+			console.error("Sign in failed.");
+		});
+	}
 
-    resetGapiToken() {
-        gapi.client.setToken({
-            access_token: this.id_token + ' GOOGLE'
-        });
-    }
+	signOut() {
+		this.authenticationProvider.signOut().then(function () {
 
-    render() {
-        /* ------------------- Google Sign In Button --------------- */
-        const GoogleSignIn = ({show}) => (
-            show ? <div>
+		}, (err) => {
+			console.error("Sign out failed.");
+		});
+	}
+
+	migrate() {
+		if (!this.state.authState.isUserRegistered || this.state.isAlreadyMigrated) {
+			console.error("Preconditions for migration are not met!");
+			return;
+		}
+		if (!this.access_token || !this.id_token) {
+			console.error("Did not receive access_token or id_token!");
+			return;
+		}
+
+		// custom request because we need access_token here as header
+		gapi.client.setToken({
+			access_token: this.access_token
+		});
+		const _this = this;
+		this.state.migrationStatus = null;
+		this.setState(this.state);
+		gapi.client.qdacityusermigration.migrateFromGoogleIdentityToCustomAuthentication({
+			idToken: this.id_token
+		}).then((success) => {
+			_this.state.migrationStatus = true;
+			_this.setState(_this.state);
+
+			// all other requests need id_token here as header
+			_this.resetGapiToken();
+
+			_this.props.auth.updateUserStatus();
+		}, (failure) => {
+			_this.state.migrationStatus = false;
+			_this.setState(_this.state);
+
+			// all other requests need id_token here as header
+			_this.resetGapiToken();
+		});
+	}
+
+	resetGapiToken() {
+		gapi.client.setToken({
+			access_token: this.id_token + ' GOOGLE'
+		});
+	}
+
+	render() {
+		/* ------------------- Google Sign In Button --------------- */
+		const GoogleSignIn = ({
+			show
+		}) => (
+			show ? <div>
                 <StyledSignInButtonWrapper>
                     <StyledSignInButton className="btn btn-primary" onClick={() => {this.signIn()}}>
                         Sign-In with Google
                     </StyledSignInButton>
                 </StyledSignInButtonWrapper>
-            </div>: null
-        );
+            </div> : null
+		);
 
-        /* ------------------- Profile Info --------------- */
-        const ProfileInfo = ({ show }) => (
-            show ? <div>
+		/* ------------------- Profile Info --------------- */
+		const ProfileInfo = ({
+			show
+		}) => (
+			show ? <div>
                 <div className="col-xs-12">
                     <div>
                         <StyledHeader3>Google Profile:</StyledHeader3>
@@ -241,21 +245,25 @@ export default class UserMigration extends React.Component {
                     <div className="col-xs-7"/>
                 </div>
             </div> : null
-        );
+		);
 
-        /* ------------------- Migration Preconditions --------------- */
-        const MigrationPreconditions = ({show}) => (
-            show ? <div>
+		/* ------------------- Migration Preconditions --------------- */
+		const MigrationPreconditions = ({
+			show
+		}) => (
+			show ? <div>
                 <div className="col-xs-12">
                     <StyledHeader3>Preconditions for Migration:</StyledHeader3>
                     <PreconditionStatusLoading show={this.state.authState.isUserRegistered === null || this.state.isAlreadyMigrated === null} />
                     <MigrationPrecondisionsList show={this.state.authState.isUserRegistered !== null && this.state.isAlreadyMigrated !== null} />
                 </div>
                 <MigrationNotPossible show={(!this.state.authState.isUserRegistered || this.state.isAlreadyMigrated) && this.state.authState.isUserRegistered !== null && this.state.isAlreadyMigrated !== null}/>
-            </div>: null
-        );
-        const MigrationPrecondisionsList = ({show}) => (
-            show ? <div>
+            </div> : null
+		);
+		const MigrationPrecondisionsList = ({
+			show
+		}) => (
+			show ? <div>
                 <p>
                     <PreconditionsStatus fulfilled={this.state.authState.isUserRegistered} />
                     You are registered at QDAcity with an old account (2017 or before)
@@ -265,23 +273,31 @@ export default class UserMigration extends React.Component {
                     You are not migrated yet 
                 </p>
             </div> : null
-        );
+		);
 
-        const PreconditionsStatus = ({fulfilled}) => (
-            fulfilled === null ? <StyledPreconditionsStatus className="fa fa-question" aria-hidden="true" /> : fulfilled ? <StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> : <StyledPreconditionsStatus className="fa fa-times" aria-hidden="true" />
-        );
-        const PreconditionStatusLoading = ({show}) => (
-            show ? <ReactLoading show={show} color={'#000000'}/> : null
-        );
-        const MigrationNotPossible = ({show}) => (
-            show ? <div>
+		const PreconditionsStatus = ({
+			fulfilled
+		}) => (
+			fulfilled === null ? <StyledPreconditionsStatus className="fa fa-question" aria-hidden="true" /> : fulfilled ? <StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> : <StyledPreconditionsStatus className="fa fa-times" aria-hidden="true" />
+		);
+		const PreconditionStatusLoading = ({
+			show
+		}) => (
+			show ? <ReactLoading show={show} color={'#000000'}/> : null
+		);
+		const MigrationNotPossible = ({
+			show
+		}) => (
+			show ? <div>
                 <ErrorMsg><strong><StyledPreconditionsStatus className="fa fa-exclamation-triangle" aria-hidden="true" /> Preconditions are not met! Please choose another account to migrate.</strong></ErrorMsg>
-            </div> : null 
-        );
+            </div> : null
+		);
 
-        /* ------------------- Migration --------------- */
-        const MigrationButton = ({show}) => (
-            show ? <div>
+		/* ------------------- Migration --------------- */
+		const MigrationButton = ({
+			show
+		}) => (
+			show ? <div>
                 <div className="col-xs-12">
                     <div className="col-md-3"/>
                     <div className="col-md-4">
@@ -290,20 +306,23 @@ export default class UserMigration extends React.Component {
                         </StyledButton>
                     </div>
                 </div>
-            </div> : null 
-        );
+            </div> : null
+		);
 
-        const MigrationMessage = ({show, successful}) => (
-            show && !successful ? <div>
+		const MigrationMessage = ({
+			show,
+			successful
+		}) => (
+			show && !successful ? <div>
                 <ErrorMsg><strong><StyledPreconditionsStatus className="fa fa-exclamation-triangle" aria-hidden="true" /> Migration was not successful!</strong></ErrorMsg>
             </div> : show && successful ? <div>
                 <SuccessMsg><strong><StyledPreconditionsStatus className="fa fa-check" aria-hidden="true" /> Migration was successful!</strong></SuccessMsg>
             </div> : null
-        );
+		);
 
-        /* ------------------- render --------------- */
-        return (
-            <StyledContent>
+		/* ------------------- render --------------- */
+		return (
+			<StyledContent>
                 <StyledHeader1>User Migration</StyledHeader1>
                 <StyledMigrationDescription>
                     <p>Thank you for participating in our user migration! Please follow the steps below:</p>
@@ -323,6 +342,6 @@ export default class UserMigration extends React.Component {
 
                 </StyledMigrationFunctionality>
             </StyledContent>
-        );
-    }
+		);
+	}
 }

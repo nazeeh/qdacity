@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import styled from 'styled-components';
 import Account from './Account.jsx';
@@ -42,7 +44,7 @@ export default class NavBar extends React.Component {
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(this);
 	}
-	
+
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		const _this = this;
@@ -67,15 +69,15 @@ export default class NavBar extends React.Component {
 	showSigninDropdown() {
 		document.getElementById("signinView").classList.toggle("show");
 	}
-	
+
 	showHelpDropdown() {
 		document.getElementById("helpView").classList.toggle("show");
 	}
-	
-	
+
+
 
 	render() {
-				
+
 		return (
 			<nav className="navbar navbar-default navbar-fixed-top topnav" role="navigation">
 					<div className="container topnav">

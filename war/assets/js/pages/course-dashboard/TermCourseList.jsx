@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
@@ -98,17 +100,28 @@ export default class TermCourseList extends React.Component {
 	}
 
 	showNewTermCourseModal() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var course = this.props.course;
 		var modal = new CustomForm(
-			formatMessage({ id: 'termcourselist', defaultMessage: 'Create a new term course' }),
+			formatMessage({
+				id: 'termcourselist',
+				defaultMessage: 'Create a new term course'
+			}),
 			''
 		);
 		modal.addTextInput(
 			'name',
-			formatMessage({ id: 'term.course.term_name', defaultMessage: "Term Name" }),
-			formatMessage({ id: 'term.course.term_name.sample', defaultMessage: 'Name' }),
+			formatMessage({
+				id: 'term.course.term_name',
+				defaultMessage: "Term Name"
+			}),
+			formatMessage({
+				id: 'term.course.term_name.sample',
+				defaultMessage: 'Name'
+			}),
 			''
 		);
 		modal.showModal().then(function (data) {
@@ -138,15 +151,20 @@ export default class TermCourseList extends React.Component {
 	}
 
 	removeTermCourse(e, term, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var course = this.props.course;
 		var courseTerms = course.terms;
 		var confirm = new Confirm(
-			formatMessage({ id: 'term.course.delete_term', defaultMessage: 'Do you want to delete the term {name} of this course?' },
-				{ name: term.text }
-			)
+			formatMessage({
+				id: 'term.course.delete_term',
+				defaultMessage: 'Do you want to delete the term {name} of this course?'
+			}, {
+				name: term.text
+			})
 		);
 		confirm.showModal().then(function () {
 			CourseEndPoint.removeTermCourse(term.id).then(function (resp) {
@@ -159,14 +177,19 @@ export default class TermCourseList extends React.Component {
 	}
 
 	joinTermCourse(e, term, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 
 		var confirm = new Confirm(
-			formatMessage({ id: 'term.course.join_term', defaultMessage: 'Do you want to join the term {name} of this course?' },
-				{ name: term.text }
-			)
+			formatMessage({
+				id: 'term.course.join_term',
+				defaultMessage: 'Do you want to join the term {name} of this course?'
+			}, {
+				name: term.text
+			})
 		);
 		confirm.showModal().then(function () {
 			_this.props.auth.authentication.getCurrentUser().then(function (resp) {
@@ -178,14 +201,19 @@ export default class TermCourseList extends React.Component {
 	}
 
 	leaveTermCourse(e, term, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 
 		var confirm = new Confirm(
-			formatMessage({ id: 'term.course.leave_term', defaultMessage: 'Do you want to leave the term {name} of this course?' },
-				{ name: term.text }
-			)
+			formatMessage({
+				id: 'term.course.leave_term',
+				defaultMessage: 'Do you want to leave the term {name} of this course?'
+			}, {
+				name: term.text
+			})
 		);
 		confirm.showModal().then(function () {
 			_this.authenticationProvider.getCurrentUser().then(function (resp) {
@@ -252,10 +280,15 @@ export default class TermCourseList extends React.Component {
 		}
 	}
 	render() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 
-		const searchFieldPlaceholder = formatMessage({ id: 'term.course.search', defaultMessage: 'Search' });
+		const searchFieldPlaceholder = formatMessage({
+			id: 'term.course.search',
+			defaultMessage: 'Search'
+		});
 		const projectListMenu = <StyledProjectListMenu>
 
 

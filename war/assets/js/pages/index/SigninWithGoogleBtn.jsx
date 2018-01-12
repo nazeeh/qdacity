@@ -1,7 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 
@@ -33,44 +35,54 @@ export default class SigninWithGoogleBtn extends React.Component {
 		}, function (value) {
 			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
 			decider.showModal().then(function (value) {
-				if (value == 'optionA'){
-					_this.authenticationProvider.changeAccount().then(function() {
+				if (value == 'optionA') {
+					_this.authenticationProvider.changeAccount().then(function () {
 						that.redirect();
 					});
-				}
-				else _this.registerAccount();
+				} else _this.registerAccount();
 			});
 		});
 	}
 
 	registerAccount() {
-		const {formatMessage} = IntlProvider.intl;
-		
+		const {
+			formatMessage
+		} = IntlProvider.intl;
+
 		var _this = this;
-		_this.authenticationProvider.getProfile().then(function(userProfile) {
+		_this.authenticationProvider.getProfile().then(function (userProfile) {
 
 			var displayNameParts = userProfile.name.split(' ');
 			var displayLastName = displayNameParts.pop();
 			var displayFirstName = displayNameParts.join(' ');
 			vex.dialog.open({
-				message: formatMessage({ id: 'sign.in.with.google.btn.confirm', defaultMessage: 'Please confirm:' }),
+				message: formatMessage({
+					id: 'sign.in.with.google.btn.confirm',
+					defaultMessage: 'Please confirm:'
+				}),
 				// FIXME
 				input: '<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' + displayFirstName + '" required />'
 					+ '<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' + displayLastName + '" required />\n'
 					+ '<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' + userProfile.email + '" required />\n\n',
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
-						text: formatMessage({ id: 'sign.in.with.google.btn.register', defaultMessage: 'Register' })
+						text: formatMessage({
+							id: 'sign.in.with.google.btn.register',
+							defaultMessage: 'Register'
+						})
 					}), $.extend({}, vex.dialog.buttons.NO, {
-						text: formatMessage({ id: 'sign.in.with.google.btn.cancel', defaultMessage: 'Cancel' })
+						text: formatMessage({
+							id: 'sign.in.with.google.btn.cancel',
+							defaultMessage: 'Cancel'
+						})
 					})
 				],
 				callback: function (data) {
 					if (data === false) {
 						return console.log('Cancelled');
 					}
-					_this.authenticationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(function() {
-						_this.props.auth.updateUserStatus().then(function() {
+					_this.authenticationProvider.registerCurrentUser(data.firstName, data.lastName, data.email).then(function () {
+						_this.props.auth.updateUserStatus().then(function () {
 							_this.redirect();
 						});
 					});
@@ -89,11 +101,11 @@ export default class SigninWithGoogleBtn extends React.Component {
 			this.redirect();
 		} else {
 			var _this = this;
-			this.authenticationProvider.signInWithGoogle().then(function() {
-				if(_this.authenticationProvider.isSignedIn()) {
+			this.authenticationProvider.signInWithGoogle().then(function () {
+				if (_this.authenticationProvider.isSignedIn()) {
 					_this.redirect();
 				}
-      		});
+			});
 		}
 	}
 

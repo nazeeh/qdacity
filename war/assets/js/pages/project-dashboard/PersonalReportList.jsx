@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import ValidationEndpoint from '../../common/endpoints/ValidationEndpoint';
 import IntercoderAgreementByDoc from '../../common/modals/IntercoderAgreementByDoc';
