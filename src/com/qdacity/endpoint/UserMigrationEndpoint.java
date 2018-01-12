@@ -2,7 +2,9 @@ package com.qdacity.endpoint;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
@@ -186,11 +188,14 @@ public class UserMigrationEndpoint {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean exists = false;
 		try {
-			Query query = mgr.newQuery(UserLoginProviderInformation.class);
-			query.setFilter("externalUserId == userIdParam && provider == providerParam");
-			query.declareParameters("String userIdParam, String providerParam");
-			
-			List<UserLoginProviderInformation> results = (List<UserLoginProviderInformation>) query.execute(userId, providerType);
+			Query query = mgr.newQuery(UserLoginProviderInformation.class, "externalUserId == :externalUserId  && provider == :provider");
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("externalUserId", userId);
+			params.put("provider", providerType.toString());
+
+			query.executeWithMap(params);
+
+			List<UserLoginProviderInformation> results = (List<UserLoginProviderInformation>) query.executeWithMap(params);
 			
 			if(!results.isEmpty()) {
 				exists = true;
