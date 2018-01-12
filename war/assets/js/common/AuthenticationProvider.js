@@ -23,7 +23,8 @@ export default class AuthenticationProvider {
 		})
 
 		this.network = {
-			google: 'google'
+			google: 'google',
+			google_silent: 'gapi'
 		}
 
 		/**
@@ -76,7 +77,7 @@ export default class AuthenticationProvider {
 		const promise = new Promise(
 			function (resolve, reject) {
 				_this.auth2.isSignedIn.listen(function (googleUser) {
-					_this.activeNetwork = 'gapi';
+					_this.activeNetwork = _this.network.google_silent;
 					resolve();
 				});
 			});
@@ -89,7 +90,7 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	getProfile() {
-		if (this.activeNetwork !== 'gapi') {
+		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			return hello(this.activeNetwork).api('me');
 		} else {
@@ -115,7 +116,7 @@ export default class AuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
-		if (this.activeNetwork !== 'gapi') {
+		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
 			const currentTime = (new Date()).getTime() / 1000;
@@ -133,7 +134,7 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	signOut() {
-		if (this.activeNetwork !== 'gapi') {
+		if (this.activeNetwork !== this.network.google_silent) {
 			this.auth2.disconnect();
 			// check hellojs
 			return hello(this.network.google).logout();
@@ -198,7 +199,7 @@ export default class AuthenticationProvider {
 				}
 
 				let idToken = '';
-				if (_this.activeNetwork !== 'gapi') {
+				if (_this.activeNetwork !== _this.network.google_silent) {
 					// check hellojs
 					const session = hello.getAuthResponse(_this.network.google);
 					idToken = session.id_token;
