@@ -53,12 +53,18 @@ export default class Account extends React.Component {
 		const _this = this;
 		this.authenticationProvider.signOut().then(() => {
 			_this.props.history.push('/');
+		}, (error) => {
+			console.log(error);
+			_this.props.history.push('/');
 		});
 	}
 
 	onChanceUser() {
 		this.authenticationProvider.changeAccount().then(() => {
 			location.reload();
+		}, (error) => {
+			console.log(error);
+			_this.props.history.push('/');
 		});
 	}
 
