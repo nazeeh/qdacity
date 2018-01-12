@@ -4,9 +4,6 @@ import hello from 'hellojs';
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email'
 
-/* ------------------------------- hello-js init ----------------------------------- */
-
-
 /* ------------------------------- AuthenticationProvider ----------------------------------- */
 export default class AuthenticationProvider {
 
@@ -23,8 +20,8 @@ export default class AuthenticationProvider {
 		})
 
 		this.network = {
-			google: 'google',
-			google_silent: 'gapi'
+			google: 'google', // uses hellojs
+			google_silent: 'gapi' // uses gapi.auth2
 		}
 
 		/**
