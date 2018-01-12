@@ -1,7 +1,7 @@
 import hello from 'hellojs';
 
 
-const GOOGLE_CLIENT_ID = '385639345148-k8ph3ug699i8974d8f8vjcffd1tr9llg.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email'
 
 /* ------------------------------- hello-js init ----------------------------------- */
