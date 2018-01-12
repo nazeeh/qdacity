@@ -60,6 +60,7 @@ export default class Account extends React.Component {
 	}
 
 	onChanceUser() {
+		const _this = this;
 		this.authenticationProvider.changeAccount().then(() => {
 			location.reload();
 		}, (error) => {
