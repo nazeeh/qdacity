@@ -19,6 +19,7 @@ import TermDashboard from "./termCourse-dashboard/TermDashboard.jsx"
 import TermCourseConfig from "./termCourse-config/TermCourseConfig.jsx"
 import Admin from './admin/Admin.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
+import Faq from './help/Faq.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
 
@@ -73,6 +74,7 @@ export default class App extends React.Component {
 							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
 							<Route path="/Admin" render={(props) => <Admin account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
 							<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
+							<Route path="/Faq" render={(props) => <Faq account={this.account} {...props} />} />
 							<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
 							<Route path="/" render={(props)=><Tutorial tutorial={tut} {...props}/>}/>
 						</div>

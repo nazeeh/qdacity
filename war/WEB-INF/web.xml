@@ -51,43 +51,47 @@
     <servlet-name>page</servlet-name>
     <jsp-file>/index.jsp</jsp-file>
 </servlet>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/PersonalDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/ProjectDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/CourseDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/TermDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/TermCourseConfig</url-pattern>
-</servlet-mapping>
- <servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/Admin</url-pattern>
-</servlet-mapping>
- <servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/CodingEditor</url-pattern>
-</servlet-mapping>
-  <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>qdacity</web-resource-name>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/PersonalDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/ProjectDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/CourseDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/TermDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/TermCourseConfig</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Admin</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/CodingEditor</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Faq</url-pattern>
+	</servlet-mapping>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>qdacity</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
 
 
 </web-app>
