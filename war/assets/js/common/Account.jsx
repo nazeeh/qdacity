@@ -56,6 +56,12 @@ export default class Account extends React.Component {
 		});
 	}
 
+	onChanceUser() {
+		this.authenticationProvider.changeAccount().then(() => {
+			location.reload();
+		});
+	}
+
 	render() {
 		return (
 			<div>
@@ -78,7 +84,7 @@ export default class Account extends React.Component {
 					<div className="navbar-footer-content">
 						<div className="row">
 							<div className="col-xs-6">
-								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={() => this.authenticationProvider.changeAccount().then(() => location.reload())}><FormattedMessage id='account.switch_user' defaultMessage='Switch User' /></BtnDefault>
+								<BtnDefault id="navBtnSwitchAccount"  href="#" className="btn btn-default btn-sm" onClick={() => this.onChanceUser()}><FormattedMessage id='account.switch_user' defaultMessage='Switch User' /></BtnDefault>
 							</div>
 							<div className="col-xs-6">
 								<BtnDefault id="navBtnSignOut" className="btn btn-default btn-sm pull-right" onClick={() => this.onSignOut()}><FormattedMessage id='account.sign_out' defaultMessage='Sign Out' /></BtnDefault>
