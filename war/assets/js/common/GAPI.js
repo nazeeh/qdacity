@@ -20,7 +20,7 @@ export default function loadGAPIs(allLoadedCallback) {
 					});
 				}
 			}
-			apisToLoad = 2;
+			apisToLoad = 3;
 			//Parameters are APIName,APIVersion,CallBack function,API Root
 			gapi.client.load('qdacity', api_version, callback, api_path);
 			gapi.client.load('qdacityusermigration', api_version, callback, api_path);
