@@ -372,8 +372,8 @@ export default class DocumentsView extends React.Component {
 	}
 
 	renderDocument(doc, index) {
-		return <DragDocument 
-                doc={doc} 
+		return <DragDocument
+                doc={doc}
                 key={doc.id}
                 index={index}
                 active={doc.id == this.state.selected}

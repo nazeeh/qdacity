@@ -8,7 +8,7 @@ import {
 
 const StyledListItemUser = StyledListItemDefault.extend `
     &:hover {
-        cursor: pointer;    
+        cursor: pointer;
     }
 `;
 export default class UserList extends React.Component {

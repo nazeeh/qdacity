@@ -3,14 +3,14 @@ import {
 	FormattedMessage
 } from 'react-intl';
 
-import IntlProvider from '../../../common/Localization/LocalizationProvider';
-
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
+import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
 import Theme from '../../../common/styles/Theme.js';
 import Confirm from '../../../common/modals/Confirm';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
 	ItemList,
@@ -32,7 +32,11 @@ export default class ExerciseList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			exercises: []
+			exercises: [],
+			projects: [],
+			// pagination
+			currentPage: 1,
+			itemsPerPage: 5
 		};
 
 		this.init();
@@ -42,49 +46,54 @@ export default class ExerciseList extends React.Component {
 	}
 
 	init() {
-		this.getExercises();
+		if (!this.userPromise) {
+			this.userPromise = this.props.account.getCurrentUser();
+			this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId());
+			this.fetchTermCourseData();
+		}
 	}
 
-	getExercises() {
+	fetchTermCourseData() {
 		var _this = this;
-		ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId()).then(function (resp) {
+		var projects = [];
+		this.getExercisesPromise.then(function (resp) {
 			resp.items = resp.items || [];
-			_this.setState({
-				exercises: resp.items
+			_this.userPromise.then(function (userAccount) {
+				ProjectEndpoint.listProjectByUserId(userAccount.id).then(function (projectsResp) {
+					_this.setState({
+						exercises: resp.items,
+						projects: projectsResp
+					});
+				});
 			});
 		});
 	}
 
 	showNewExerciseModal() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var modal = new CustomForm(
-			formatMessage({
-				id: 'excerciselist.create_new_excercise',
-				defaultMessage: 'Create a new exercise'
-			}), '');
-		modal.addTextInput(
-			'name',
-			formatMessage({
-				id: 'excerciselist.excercise_name',
-				defaultMessage: 'Exercise Name'
-			}),
-			'Name',
-			''
-		);
+
+		var modal = new CustomForm(formatMessage({
+			id: 'ExerciseList.createNewExercise',
+			defaultMessage: 'Create a new exercise'
+		}, ''));
+		modal.addDropDown(this.state.projects);
+		modal.addTextInput('name', formatMessage({
+			id: 'ExerciseList.name',
+			defaultMessage: 'Exercise Name: '
+		}), 'Name', '');
 		modal.showModal().then(function (data) {
-			_this.createNewExercise(data.name);
+			_this.createNewExercise(data.name, data.SelectedRevisionID);
 		});
 	}
 
-	createNewExercise(name) {
+	createNewExercise(name, projectRevisionID) {
 		var _this = this;
 		var exercise = {};
 		var termCourseID = this.props.termCourse.id;
 		var exercises = this.state.exercises;
 		exercise.name = name;
+		exercise.projectRevisionID = projectRevisionID;
 		exercise.termCourseID = termCourseID;
 		ExerciseEndpoint.insertExercise(exercise).then(function (resp) {
 			exercises.push(resp);
@@ -121,6 +130,7 @@ export default class ExerciseList extends React.Component {
 
 	}
 
+
 	renderNewExerciseButton() {
 		return (
 			<StyledNewExBtn>
@@ -146,15 +156,20 @@ export default class ExerciseList extends React.Component {
 	}
 
 	render() {
+
+		var _this = this;
+
+		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
+
 		return (
 			<div>
 				{this.renderNewExerciseButton()}
-				
-				<ItemList 
+
+				<ItemList
                     key={"itemlist"}
                     hasPagination={true}
                     itemsPerPage={8}
-                    items={this.state.exercises} 
+                    items={this.state.exercises}
                     renderItem={this.renderExercise} />
      		</div>
 		);

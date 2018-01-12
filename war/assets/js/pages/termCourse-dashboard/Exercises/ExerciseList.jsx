@@ -47,13 +47,14 @@ export default class ExerciseList extends React.Component {
 
 	render() {
 		return (
-			<ItemList 
+			<ItemList
                 key={"itemlist"}
                 hasPagination={true}
                 itemsPerPage={8}
-                items={this.state.exercises} 
+                items={this.state.exercises}
                 renderItem={this.renderExercise} />
 		);
 	}
+
 
 }
