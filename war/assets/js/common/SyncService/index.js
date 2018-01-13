@@ -37,7 +37,7 @@ export default class SyncService {
 	constructor() {
 		this._socket = null;
 		this._listeners = {};
-		this._account = {
+		this._userdata = {
 			apiRoot: '$API_PATH$',
 			apiVersion: '$API_VERSION$',
 		};
@@ -60,18 +60,18 @@ export default class SyncService {
 	/**
 	 * Send current user's data to sync service
 	 * @access public
-	 * @arg {object} account - Any serializable object
+	 * @arg {object} userdata - Any serializable object
 	 */
-	updateUser(account) {
+	updateUser(userdata) {
 
-		// Clone current account and update fields included in account parameter
-		account = Object.assign(JSON.parse(JSON.stringify(this._account)), account);
+		// Clone current userdata and update fields included in userdata parameter
+		userdata = Object.assign(JSON.parse(JSON.stringify(this._userdata)), userdata);
 
-		if (JSON.stringify(account) === JSON.stringify(this._account)) {
+		if (JSON.stringify(userdata) === JSON.stringify(this._userdata)) {
 			return;
 		}
 
-		this._account = account;
+		this._userdata = userdata;
 		this._emitUserUpdate();
 	}
 
@@ -211,12 +211,12 @@ export default class SyncService {
 	};
 
 	/**
-	 * Emit user.update message to sync service, sending {@link this#_account}.
+	 * Emit user.update message to sync service, sending {@link this#_userdata}.
 	 * Used to identify the current user at the sync service.
 	 * @access private
 	 */
 	_emitUserUpdate() {
-		this._emit(MSG.USER.UPDATE, this._account);
+		this._emit(MSG.USER.UPDATE, this._userdata);
 	};
 
 	/**
@@ -240,9 +240,7 @@ export default class SyncService {
 	_handleUserListChange(userlist) {
 		this._fireEvent(
 			'userlistUpdated',
-			userlist.filter(({
-				email
-			}) => email !== this._account.email)
+			userlist.filter(user => user.email !== this._userdata.email)
 		);
 	}
 

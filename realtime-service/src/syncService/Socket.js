@@ -80,8 +80,8 @@ class Socket {
     // Loop over socket's rooms/documents and remove socket from each
     Object.keys(this._socket.rooms).map(room => {
       this._socket.leave(room);
-      this._emitUserUpdated(room);
     });
+    this._emitUserUpdated();
 
     console.info(`${this._socket.id} disconnected`);
   };
@@ -103,7 +103,7 @@ class Socket {
         token: data.token,
       });
 
-      // Join project room and notify all other users
+      // (Leave previous and) join new project room
       this._updateRoom(PRJ_ROOM, data.project);
 
       // (Leave others and) join new document room
@@ -209,24 +209,28 @@ class Socket {
       const { roomType, roomId } = room.split(ROOM_SEP);
       if (type === roomType && id !== roomId) {
         this._socket.leave(room);
-        this._emitUserUpdated(room);
       }
     });
 
     // Join new room
     const newRoom = `${type}${ROOM_SEP}${id}`;
     this._socket.join(newRoom);
-    this._emitUserUpdated(newRoom);
+
+    // Emit user update to project room
+    this._emitUserUpdated();
 
     // Update property
     this[property] = id;
   };
 
   /**
-   * Notify all sockets that watch a specific room, that the user list on
-   * that room changed
+   * Notify all sockets that watch a specific project room, that the user list
+   * on that project changed
    */
-  _emitUserUpdated(roomid) {
+  _emitUserUpdated() {
+
+    // Get project room name
+    const roomid = `${PRJ_ROOM}${ROOM_SEP}${this._project}`;
 
     // Get all sockets in the document room. `clients` contains the socket ids
     this._io.in(roomid).clients((error, clients) => {
@@ -249,10 +253,15 @@ class Socket {
             const json = JSON.parse(clientData);
             return json.data || {};
           })
-          .filter(data => data.name && data.email && data.picSrc);
+          .filter(
+            data => data.project == this._project
+              && data.name
+              && data.email
+              && data.picSrc
+          );
 
         // Broadcast event "user.updated" to document room if any data
-        this._emitToRoom(roomid, EVT.USER.UPDATED, data);
+        this._emitToProject(EVT.USER.UPDATED, data);
       });
     });
   };

@@ -86,15 +86,29 @@ export default class CollaboratorList extends React.Component {
 		const syncService = this.props.syncService;
 		this.listenerID = syncService && syncService.on(
 			'userlistUpdated',
-			list => this.setState({
-				collaborators: list
-			})
+			this.updateUserList.bind(this)
 		);
 	}
 
 	componentWillUnmount() {
 		const syncService = this.props.syncService;
 		syncService && syncService.off('userlistUpdated', this.listenerID);
+	}
+
+	updateUserList(list) {
+		const deduplicatedList = list
+			.map(user => ({ email: user.email, user: user }))
+			.reduce((result, { email, user }) => {
+				if (result.emails.indexOf(email) < 0) {
+					result.emails.push(email);
+					result.users.push(user);
+				}
+				return result;
+			}, { emails: [], users: [] }).users;
+
+		this.setState({
+			collaborators: deduplicatedList
+		})
 	}
 
 	render() {
