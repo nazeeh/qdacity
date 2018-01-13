@@ -15,10 +15,18 @@ export default class SearchResutls extends React.Component {
 
 
 	render() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		const tabTitle = {
-			documents: formatMessage({ id: 'search.results.documents', defaultMessage: 'Documents' }),
-			memo: formatMessage({ id: 'search.results.memo', defaultMessage: 'Memo' })
+			documents: formatMessage({
+				id: 'search.results.documents',
+				defaultMessage: 'Documents'
+			}),
+			memo: formatMessage({
+				id: 'search.results.memo',
+				defaultMessage: 'Memo'
+			})
 		};
 
 		return (

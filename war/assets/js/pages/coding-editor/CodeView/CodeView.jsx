@@ -25,7 +25,9 @@ export default class CodeView extends React.Component {
 	tabChanged() {}
 
 	render() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		const {
 			editorCtrl,
 			documentsView
@@ -40,11 +42,26 @@ export default class CodeView extends React.Component {
 			deleteRelationship
 		} = this.props;
 		const tabTitle = {
-			codings: formatMessage({ id: 'codeview.codings', defaultMessage: 'Codings' }),
-			codeProperties: formatMessage({ id: 'codeview.code_properties', defaultMessage: 'Code Properties' }),
-			metaModel: formatMessage({ id: 'codeview.meta_model', defaultMessage: 'Meta Model' }),
-			codeMemo: formatMessage({ id: 'codeview.code_memo', defaultMessage: 'Code Memo' }),
-			codeBookEntry: formatMessage({ id: 'codeview.code_book_entry', defaultMessage: 'Code Book Entry' }),
+			codings: formatMessage({
+				id: 'codeview.codings',
+				defaultMessage: 'Codings'
+			}),
+			codeProperties: formatMessage({
+				id: 'codeview.code_properties',
+				defaultMessage: 'Code Properties'
+			}),
+			metaModel: formatMessage({
+				id: 'codeview.meta_model',
+				defaultMessage: 'Meta Model'
+			}),
+			codeMemo: formatMessage({
+				id: 'codeview.code_memo',
+				defaultMessage: 'Code Memo'
+			}),
+			codeBookEntry: formatMessage({
+				id: 'codeview.code_book_entry',
+				defaultMessage: 'Code Book Entry'
+			}),
 		};
 		return (
 			<div>

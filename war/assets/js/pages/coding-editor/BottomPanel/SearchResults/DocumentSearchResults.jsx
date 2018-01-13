@@ -10,7 +10,9 @@ export default class DocumentSearchResults extends React.Component {
 	}
 
 	render() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		let tableContent = [];
 		let results = this.props.documentResults;
 		for (var i = 0; i < results.length; i++) {
@@ -22,8 +24,14 @@ export default class DocumentSearchResults extends React.Component {
 		}
 
 		const tableHeader = [
-			formatMessage({ id: 'documentsearchresults.document', defaultMessage: 'Document' }),
-			formatMessage({ id: 'documentsearchresults.excerpt', defaultMessage: 'Excerpt' }),
+			formatMessage({
+				id: 'documentsearchresults.document',
+				defaultMessage: 'Document'
+			}),
+			formatMessage({
+				id: 'documentsearchresults.excerpt',
+				defaultMessage: 'Excerpt'
+			}),
 		];
 
 		return (

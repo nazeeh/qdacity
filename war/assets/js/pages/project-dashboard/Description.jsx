@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import TextField from '../../common/modals/TextField';
@@ -16,11 +18,19 @@ export default class Description extends React.Component {
 	}
 
 	showDescriptionModal() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var modal = new TextField(
-			formatMessage({id: 'description.change_project', defaultMessage: 'Change the project description'}),
-			formatMessage({id: 'description.change_projectdescription', defaultMessage: 'Description'})
+			formatMessage({
+				id: 'description.change_project',
+				defaultMessage: 'Change the project description'
+			}),
+			formatMessage({
+				id: 'description.change_projectdescription',
+				defaultMessage: 'Description'
+			})
 		);
 		modal.showModal().then(function (text) {
 			ProjectEndpoint.setDescription(_this.props.project.getId(), _this.props.project.getType(), text).then(function (resp) {

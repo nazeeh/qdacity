@@ -24,6 +24,7 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
+import com.qdacity.endpoint.datastructures.TextDocumentList;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
@@ -137,6 +138,55 @@ public class TextDocumentEndpointTest {
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * Tests if a registered user can insert a text document for a project
+	 */
+	@Test
+	public void testTextDocumentUpdateMultiple() {
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "My description", testUser);
+
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "Second document text", "Second Title", testUser);
+		TextDocumentEndpointTestHelper.addTextDocument(1L, "Third document text", "Third Title", testUser);
+
+		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		TextDocument doc1 = (TextDocument)documents.toArray()[0];
+		TextDocument doc2 = (TextDocument)documents.toArray()[1];
+		TextDocument doc3 = (TextDocument)documents.toArray()[2];
+		
+		doc1.setPositionInOrder(5L);
+		
+		Text text = new Text("A changed text");
+		doc2.setText(text);
+		
+		doc3.setTitle("Title test");
+		doc3.setPositionInOrder(4L);
+		
+		TextDocumentEndpoint tde = new TextDocumentEndpoint();
+
+		TextDocumentList list = new TextDocumentList();
+		list.setDocuments(java.util.Arrays.<TextDocument>asList(documents.<TextDocument>toArray(new TextDocument[3])));
+		
+		try {
+			tde.updateTextDocuments(list, testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for updating multiple text documents");
+		}
+
+		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		doc1 = (TextDocument)documents.toArray()[0];
+		doc2 = (TextDocument)documents.toArray()[1];
+		doc3 = (TextDocument)documents.toArray()[2];
+		
+		assertEquals(5L, doc1.getPositionInOrder(), 0);
+		assertEquals("A changed text", doc2.getText().getValue());
+		assertEquals(4L, doc3.getPositionInOrder(), 0);
+		assertEquals("Title test", doc3.getTitle());
 	}
 
 	@Rule

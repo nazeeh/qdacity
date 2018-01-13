@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import styled from 'styled-components';
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import NewCodeRelation from '../../../common/modals/NewCodeRelation';
@@ -234,7 +236,7 @@ export default class CodeRelationsView extends React.Component {
 
 		if (relation.relationshipCodeId == null) {
 			return (
-				<StyledRelationshipCodeButton className="pull-right" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledRelationshipCodeButton>
+				<StyledRelationshipCodeButton className="pull-right" onClick={() => _this.createRelationshipCode(relation)}><i className="fa fa-plus"></i> <FormattedMessage id='coderelationsview.create_relationship_code' defaultMessage='Create relationship code' /></StyledRelationshipCodeButton>
 			);
 		} else {
 			return null;
@@ -246,7 +248,7 @@ export default class CodeRelationsView extends React.Component {
 
 		if (relation.relationshipCodeId != null) {
 			return (
-				<StyledRelationshipCodeButton className="pull-right" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledRelationshipCodeButton>
+				<StyledRelationshipCodeButton className="pull-right" onClick={() => _this.goToRelationshipCode(relation)}><i className="fa fa-arrow-right"></i>  <FormattedMessage id='coderelationsview.go_to_relationship_code' defaultMessage='Go to relationship code' /></StyledRelationshipCodeButton>
 			);
 		} else {
 			return null;

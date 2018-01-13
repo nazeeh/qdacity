@@ -15,16 +15,17 @@ export default class SaturationModal extends VexModal {
 	}
 
 	showModal() {
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		var promise = new Promise(
 			function (resolve, reject) {
 
 				var formElements = _this.formElements;
 				var buttonArray = [$.extend({}, vex.dialog.buttons.YES, {
-					text: 'OK'
+					text: formatMessage({id: 'modal.ok', defaultMessage: 'OK'})
 				})];
 				vex.dialog.open({
-					message: "Saturation",
+					message: formatMessage({id: 'saturationmodal.saturation', defaultMessage: 'Saturation'}),
 					contentCSS: {
 						width: '900px'
 					},

@@ -1,21 +1,24 @@
 import React from 'react';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
-import NewExerciseForm from '../../../common/modals/NewExerciseForm';
 import Theme from '../../../common/styles/Theme.js';
 import Confirm from '../../../common/modals/Confirm';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
-	StyledListItemDefault
-} from '../../../common/styles/List';
+	StyledListItemPrimary,
+	StyledListItemDefault,
+} from '../../../common/styles/ItemList.jsx';
 
 import {
 	BtnDefault
@@ -38,7 +41,7 @@ export default class ExerciseList extends React.Component {
 
 		this.init();
 
-		this.paginationClick = this.paginationClick.bind(this);
+		this.renderExercise = this.renderExercise.bind(this);
 		this.showNewExerciseModal = this.showNewExerciseModal.bind(this);
 	}
 
@@ -67,10 +70,18 @@ export default class ExerciseList extends React.Component {
 	}
 
 	showNewExerciseModal() {
+		const {formatMessage} = IntlProvider.intl;
 		var _this = this;
-		var modal = new NewExerciseForm('Create a new exercise', '');
+
+		var modal = new CustomForm(formatMessage({
+			id: 'ExerciseList.createNewExercise',
+			defaultMessage: 'Create a new exercise'
+		}, ''));
 		modal.addDropDown(this.state.projects);
-		modal.addTextInput('name', "Exercise Name", 'Name', '');
+		modal.addTextInput('name', formatMessage({
+			id: 'ExerciseList.name',
+			defaultMessage: 'Exercise Name: '
+		}), 'Name', '');
 		modal.showModal().then(function (data) {
 			_this.createNewExercise(data.name, data.SelectedRevisionID);
 		});
@@ -92,51 +103,21 @@ export default class ExerciseList extends React.Component {
 		})
 	}
 
-	paginationClick(event) {
-		this.setState({
-			currentPage: Number(event.target.id)
-		});
-	}
-
-
-	isActivePage(page) {
-		return (page == this.state.currentPage);
-	}
-
-	renderPaginationIfNeccessary() {
-		if (this.state.exercises.length <= this.state.itemsPerPage) {
-			return '';
-		} else {
-			//Render Pagination
-			const pageNumbers = [];
-			for (let i = 1; i <= Math.ceil(this.state.exercises.length / this.state.itemsPerPage); i++) {
-				pageNumbers.push(i);
-			}
-			const renderPaginationItems = pageNumbers.map(pageNo => {
-				return (
-					<StyledPaginationItem
-		              key={pageNo}
-		              id={pageNo}
-		              onClick={this.paginationClick}
-		              active= {this.isActivePage(pageNo)}
-		            >
-		              {pageNo}
-				  </StyledPaginationItem>
-				);
-			});
-			return <StyledPagination key={"pagination"}>
-					{renderPaginationItems}
-            	</StyledPagination>
-		}
-
-	}
-
-
-	deleteExercise(e, exercise, index) {
+	deleteExercise(e, exercise) {
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var exercises = this.state.exercises;
 		e.stopPropagation();
-		var confirm = new Confirm('Do you want to delete the exercise ' + exercise.name + '?');
+		var confirm = new Confirm(
+			formatMessage({
+				id: 'exerciselist.delete_excercise',
+				defaultMessage: 'Do you want to delete the exercise {name}?'
+			}, {
+				name: exercise.name
+			})
+		);
 		confirm.showModal().then(function () {
 			ExerciseEndpoint.removeExercise(exercise.id).then(function (resp) {
 				var index = exercises.indexOf(exercises.find(o => o.id === exercise.id));
@@ -148,44 +129,48 @@ export default class ExerciseList extends React.Component {
 		});
 
 	}
+
+
+	renderNewExerciseButton() {
+		return (
+			<StyledNewExBtn>
+				<BtnDefault onClick={this.showNewExerciseModal}>
+					<i className="fa fa-plus fa-fw"></i>
+					<FormattedMessage id='exerciselist.new_excercise' defaultMessage='New Exercise' />
+				</BtnDefault>
+			</StyledNewExBtn>
+		);
+	}
+
+	renderExercise(exercise, index) {
+		return (
+			<StyledListItemDefault key={index} className="clickable">
+				<span > {exercise.name} </span>
+				<div>
+					<StyledListItemBtn onClick={(e) => this.deleteExercise(e, exercise, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+						<i className="fa fa-trash "></i>
+					</StyledListItemBtn>
+				</div>
+			</StyledListItemDefault>
+		);
+	}
+
 	render() {
+
 		var _this = this;
 
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
 
-		const newExerciseButton = <StyledNewExBtn>
-
-					<BtnDefault onClick={this.showNewExerciseModal}>
-					<i className="fa fa-plus fa-fw"></i>
-					New Exercise
-					</BtnDefault>
-
-		</StyledNewExBtn>
-		//Render Components
-		const lastItem = this.state.currentPage * this.state.itemsPerPage;
-		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = this.state.exercises.slice(firstItem, lastItem);
-
-		const renderListItems = itemsToDisplay.map((exercise, index) => {
-			return <StyledListItemDefault key={index} className="clickable">
-					<span > {exercise.name} </span>
-						<div>
-						<StyledListItemBtn onClick={(e) => this.deleteExercise(e, exercise, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-							<i className="fa fa-trash "></i>
-						</StyledListItemBtn>
-					</div>
-				</StyledListItemDefault>;
-		})
-
-
-
 		return (
 			<div>
-				{newExerciseButton}
-				<StyledBoxList key={"itemList"}>
-					{renderListItems}
-	            </StyledBoxList>
-				{this.renderPaginationIfNeccessary()}
+				{this.renderNewExerciseButton()}
+
+				<ItemList
+                    key={"itemlist"}
+                    hasPagination={true}
+                    itemsPerPage={8}
+                    items={this.state.exercises}
+                    renderItem={this.renderExercise} />
      		</div>
 		);
 	}

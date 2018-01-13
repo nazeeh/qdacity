@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
@@ -129,24 +131,34 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	createNewRevision(prjId, comment) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		ProjectEndpoint.createSnapshot(prjId, comment).then(function (resp) {
 			alertify.success(
-				formatMessage({ id: 'revisionhistory.revision_created', defaultMessage: "New revision has been created" })
+				formatMessage({
+					id: 'revisionhistory.revision_created',
+					defaultMessage: "New revision has been created"
+				})
 			);
 			_this.addRevision(resp);
 
 		}).catch(function (resp) {
 			alertify.error(
-				formatMessage({ id: 'revisionhistory.revision_creation_failed', defaultMessage: "New revision has not been created" })
+				formatMessage({
+					id: 'revisionhistory.revision_creation_failed',
+					defaultMessage: "New revision has not been created"
+				})
 			);
 		});
 	}
 
 
 	deleteRevision(revisionId, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var projectEndpoint = new ProjectEndpoint();
 
@@ -154,7 +166,10 @@ export default class RevisionHistory extends React.Component {
 			.then(
 				function (val) {
 					alertify.success(
-						formatMessage({ id: 'revisionhistory.revision_deleted', defaultMessage: "Revision has been deleted" })
+						formatMessage({
+							id: 'revisionhistory.revision_deleted',
+							defaultMessage: "Revision has been deleted"
+						})
 					);
 					_this.state.revisions.splice(index, 1);
 					_this.setState({
@@ -167,15 +182,23 @@ export default class RevisionHistory extends React.Component {
 
 
 	createReport(revId) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var projectEndpoint = new ProjectEndpoint();
 		DocumentsEndpoint.getDocuments(revId, "REVISION").then(function (documents) {
 			var modal = new CustomForm(
-				formatMessage({ id: 'revisionhistory.create_validation_report', defaultMessage: 'Create Validation Report' })
+				formatMessage({
+					id: 'revisionhistory.create_validation_report',
+					defaultMessage: 'Create Validation Report'
+				})
 			);
 			modal.addTextInput(
 				'title',
-				formatMessage({ id: 'revisionhistory.report_title', defaultMessage: "Report Title" }),
+				formatMessage({
+					id: 'revisionhistory.report_title',
+					defaultMessage: "Report Title"
+				}),
 				'',
 				''
 			);
@@ -188,10 +211,16 @@ export default class RevisionHistory extends React.Component {
 			var units = ["paragraph", "sentence"];
 
 			modal.addSelect("method", methods,
-				formatMessage({ id: 'revisionhistory.evaluation_method', defaultMessage: "Evaluation Method" })
+				formatMessage({
+					id: 'revisionhistory.evaluation_method',
+					defaultMessage: "Evaluation Method"
+				})
 			);
 			modal.addSelect("unit", units,
-				formatMessage({ id: 'revisionhistory.unit_of_coding', defaultMessage: "Unit of Coding" })
+				formatMessage({
+					id: 'revisionhistory.unit_of_coding',
+					defaultMessage: "Unit of Coding"
+				})
 			);
 
 			modal.showModal().then(function (data) {
@@ -200,7 +229,10 @@ export default class RevisionHistory extends React.Component {
 					.then(
 						function (val) {
 							alertify.success(
-								formatMessage({ id: 'revisionhistory.report_initiated', defaultMessage: "Report Initiated. This may take a few minutes" })
+								formatMessage({
+									id: 'revisionhistory.report_initiated',
+									defaultMessage: "Report Initiated. This may take a few minutes"
+								})
 							);
 						})
 					.catch(this.handleBadResponse);
@@ -209,9 +241,14 @@ export default class RevisionHistory extends React.Component {
 	}
 
 	handleBadResponse(reason) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		alertify.error(
-			formatMessage({ id: 'revisionhistory.error', defaultMessage: "There was an error" })
+			formatMessage({
+				id: 'revisionhistory.error',
+				defaultMessage: "There was an error"
+			})
 		);
 		console.log(reason.message);
 	}
@@ -272,7 +309,9 @@ export default class RevisionHistory extends React.Component {
 
 
 	render() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 
 		if (this.props.project.type != "PROJECT") return null;

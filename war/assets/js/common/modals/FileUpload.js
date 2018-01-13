@@ -1,4 +1,5 @@
 import VexModal from './VexModal';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class FileUpload extends VexModal {
 
@@ -19,7 +20,10 @@ export default class FileUpload extends VexModal {
 					input: '<form action="" method="post" class="filerModal" enctype="multipart/form-data"><input type="file" name="files" id="filer_input" multiple="multiple">    </form>',
 
 					afterOpen: function ($vexContent) {
-						var filerInput = $vexContent.find("#filer_input");
+						var filerInput = $vexContent.find('#filer_input');
+						const {
+							formatMessage
+						} = IntlProvider.intl;
 						filerInput.filer({
 							limit: 10,
 							maxSize: 3,
@@ -28,7 +32,10 @@ export default class FileUpload extends VexModal {
 							showThumbs: true,
 							captions: {
 								errors: {
-									filesType: "Only RTF files are allowed to be uploaded.",
+									filesType: formatMessage({
+										id: 'errors.only_rtf',
+										defaultMessage: 'Only RTF files are allowed to be uploaded.'
+									}),
 								}
 							}
 

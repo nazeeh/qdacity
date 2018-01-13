@@ -1,5 +1,5 @@
 import BaseCondition from './BaseCondition.js';
-
+import IntlProvider from '../../../../common/Localization/LocalizationProvider';
 import {
 	Target
 } from '../Target.js';
@@ -17,12 +17,13 @@ export default class HasMetaModelEntityCondition extends BaseCondition {
 	}
 
 	evaluate(target) {
+		const {formatMessage} = IntlProvider.intl;
 		if (this.getRule().getTargetType() == Target.CODE) {
 			return this.evaluateCode(target);
 		} else if (this.getRule().getTargetType() == Target.RELATION) {
 			return this.evaluateRelation(target);
 		} else {
-			throw new Error('Unknown target type ' + this.getRule().getTarget());
+			throw new Error(formatMessage({id: 'hasmetamodelentitycondition.unknown_type', defaultMessage: 'Unknown target type {target}'}, {target: this.getRule().getTarget()}));
 		}
 	}
 
@@ -45,6 +46,7 @@ export default class HasMetaModelEntityCondition extends BaseCondition {
 	}
 
 	evaluateRelation(relation) {
+		const {formatMessage} = IntlProvider.intl;
 		// Relation has metaModelEntity
 		if (this.evaluationTarget == null || this.evaluationTarget == EvaluationTarget.THIS) {
 			let mmElementId = relation.mmElementId;
@@ -65,7 +67,7 @@ export default class HasMetaModelEntityCondition extends BaseCondition {
 		}
 		// Error
 		else {
-			throw new Error('Unknown target type ' + this.evaluationTarget);
+			throw new Error(formatMessage({id: 'hasmetamodelentitycondition.unknown_type', defaultMessage: 'Unknown target type {target}'}, {target: this.evaluationTarget()}));
 		}
 	}
 

@@ -1,5 +1,7 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
@@ -14,54 +16,33 @@ import CustomForm from '../../common/modals/CustomForm';
 import Confirm from '../../common/modals/Confirm';
 
 import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
 	StyledListItemDefault,
-} from '../../common/styles/List';
+} from '../../common/styles/ItemList.jsx';
 
-import StyledSearchField from '../../common/styles/SearchField.jsx';
 import {
 	BtnDefault
 } from '../../common/styles/Btn.jsx';
 
-const StyledNewPrjBtn = styled.div `
+const StyledNewCourseBtn = styled.div `
 	padding-left: 5px;
 `;
-
-const StyledProjectListMenu = styled.div `
-	display:flex;
-	flex-direction:row;
-	& > .searchfield{
-		height: inherit !important;
-		flex:1;
-	}
-`;
-
-
-const StyledProjectList = StyledBoxList.extend `
-	padding-top: 5px;
-`;
-
 
 export default class CourseList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			// pagination
-			currentPage: 1,
-			itemsPerPage: 8,
-			search: '',
 			listStatus: []
 		};
 
+		this.itemList = null;
 
 		this.init();
 
-		this.paginationClick = this.paginationClick.bind(this);
-		this.updateSearch = this.updateSearch.bind(this);
+		this.renderCourse = this.renderCourse.bind(this);
 		this.showNewCourseModal = this.showNewCourseModal.bind(this);
 		this.createNewCourse = this.createNewCourse.bind(this);
 
@@ -184,22 +165,25 @@ export default class CourseList extends React.Component {
 		return courses;
 	}
 
-
-
-	paginationClick(event) {
-		this.setState({
-			currentPage: Number(event.target.id)
-		});
-	}
-
 	leaveCourse(e, course, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var decider = new BinaryDecider(
-			formatMessage({ id: 'courselist.leave_course', defaultMessage: 'Please confirm leaving this course' }),
-			formatMessage({ id: 'modal.cancel', defaultMessage: 'Cancel' }),
-			formatMessage({ id: 'modal.leave', defaultMessage: 'Leave' })
+			formatMessage({
+				id: 'courselist.leave_course',
+				defaultMessage: 'Please confirm leaving this course'
+			}),
+			formatMessage({
+				id: 'modal.cancel',
+				defaultMessage: 'Cancel'
+			}),
+			formatMessage({
+				id: 'modal.leave',
+				defaultMessage: 'Leave'
+			})
 		);
 		decider.showModal().then(function (value) {
 			if (value == 'optionB') {
@@ -213,11 +197,18 @@ export default class CourseList extends React.Component {
 	}
 
 	deleteCourse(e, course, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var confirm = new Confirm(
-			formatMessage({ id: 'courselist.delete', defaultMessage: 'Do you want to delete the course {course}?' }, { course: course.name })
+			formatMessage({
+				id: 'courselist.delete',
+				defaultMessage: 'Do you want to delete the course {course}?'
+			}, {
+				course: course.name
+			})
 		);
 		confirm.showModal().then(function () {
 			var type = course.type;
@@ -236,13 +227,18 @@ export default class CourseList extends React.Component {
 	}
 
 	courseClick(course, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
 		var statusArray = this.state.listStatus;
 		var courseIndex = statusArray.indexOf(statusArray.find(o => o.selectedCourseID === course.id));
 		if (typeof statusArray[courseIndex] == 'undefined') {
 			var confirm = new Confirm(
-				formatMessage({ id: 'courselist.assign_term', defaultMessage: 'This course has no terms, would you like to configure it?'})
+				formatMessage({
+					id: 'courselist.assign_term',
+					defaultMessage: 'This course has no terms, would you like to configure it?'
+				})
 			);
 			confirm.showModal().then(function () {
 				_this.props.history.push('/CourseDashboard?course=' + course.id);
@@ -253,26 +249,27 @@ export default class CourseList extends React.Component {
 		}
 	}
 
-	updateSearch(e) {
-		this.setState({
-			search: e.target.value
-		});
-
-	}
-
-	isActivePage(page) {
-		return ((page == this.state.currentPage) ? 'active' : ' ');
-	}
-
-
-
 	showNewCourseModal() {
-		const {formatMessage} = IntlProvider.intl;
+		const {
+			formatMessage
+		} = IntlProvider.intl;
 		var _this = this;
-		var modal = new CustomForm(formatMessage({ id: 'courselist.create', defaultMessage: 'Create a new course' }), '');
-		modal.addTextInput('name', formatMessage({ id: 'courselist.course_name', defaultMessage: "Course Name" }), 'Name', '');
-		modal.addTextInput('term', formatMessage({ id: 'courselist.course_term', defaultMessage: "Course Term" }), 'Term', '');
-		modal.addTextField('desc', formatMessage({ id: 'courselist.course_desc', defaultMessage: "Course Description" }), 'Description');
+		var modal = new CustomForm(formatMessage({
+			id: 'courselist.create',
+			defaultMessage: 'Create a new course'
+		}), '');
+		modal.addTextInput('name', formatMessage({
+			id: 'courselist.course_name',
+			defaultMessage: "Course Name"
+		}), 'Name', '');
+		modal.addTextInput('term', formatMessage({
+			id: 'courselist.course_term',
+			defaultMessage: "Course Term"
+		}), 'Term', '');
+		modal.addTextField('desc', formatMessage({
+			id: 'courselist.course_desc',
+			defaultMessage: "Course Description"
+		}), 'Description');
 		modal.showModal().then(function (data) {
 			_this.createNewCourse(data.name, data.desc, data.term);
 		});
@@ -328,108 +325,58 @@ export default class CourseList extends React.Component {
 		this.state.listStatus[this.state.listStatus.indexOf(courseIndex)].selectedTermCourseID = termCourse.id;
 	}
 
-	render() {
-		var _this = this;
-		const {formatMessage} = IntlProvider.intl;
-
-		//Render Components
-
-		//Render search and newPrjBtn
-
-		const searchFieldPlaceholder = formatMessage({ id: 'courselist.search', defaultMessage: 'Search' });
-		const projectListMenu = <StyledProjectListMenu>
-			<StyledSearchField className="searchfield" id="searchform">
-				<input
-					type="text"
-					placeholder={searchFieldPlaceholder}
-					value={this.state.search}
-					onChange={this.updateSearch}
-				/>
-				<StyledNewPrjBtn id="newProject">
-					<BtnDefault
-						id="newPrjBtn"
-						href="#"
-						onClick={this.showNewCourseModal}
-
-					>
-					<i className="fa fa-plus fa-fw"></i>
-					<FormattedMessage id='courselist.new_course' defaultMessage='New Course' />
-					</BtnDefault>
-				</StyledNewPrjBtn>
-
-			</StyledSearchField>
-
-		</StyledProjectListMenu>
-
-		//Rebder List Items
-		var filteredList = this.props.courses.filter(
-			(course) => {
-				return course.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-			}
-		);
-		const lastItem = this.state.currentPage * this.state.itemsPerPage;
-		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = filteredList.slice(firstItem, lastItem);
-
-
-
-		const renderListItemContent = (course, index) => {
-
-			return ([
-				<span>{course.name}</span>,
-				<div>
-					<DropDownButton isListItemButton={true} items={course.terms} initText={this.defineInitText(course, index)}></DropDownButton>
-				<StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-					<i className="fa fa-trash "></i>
-				</StyledListItemBtn>
-				<StyledListItemBtn onClick={(e) => this.configureCourse(e, course, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-					<i className="fa fa-cog "></i>
-				</StyledListItemBtn>
-				<StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-					<i className="fa fa-sign-out"></i>
-				</StyledListItemBtn>
-
-			</div>
-			])
-		}
-		const renderListItems = itemsToDisplay.map((course, index) => {
-			return <StyledListItemPrimary key={course.id} onClick={() => this.courseClick(course, index)} clickable={true}>
-						{renderListItemContent(course, index)}
-					</StyledListItemPrimary>;
-
-		})
-
-		//Render Pagination
-		const pageNumbers = [];
-		for (let i = 1; i <= Math.ceil(this.props.courses.length / this.state.itemsPerPage); i++) {
-			pageNumbers.push(i);
-		}
-		const renderPagination = pageNumbers.map(pageNo => {
-			return (
-				<StyledPaginationItem
-	              key={pageNo}
-	              id={pageNo}
-	              onClick={this.paginationClick}
-	              className= {this.isActivePage(pageNo)}
-	            >
-	              {pageNo}
-			  </StyledPaginationItem>
-			);
-		});
-
-		return (
+	renderCourseContent(course, index) {
+		return ([
+			<span>{course.name}</span>,
 			<div>
+                <DropDownButton isListItemButton={true} items={course.terms} initText={this.defineInitText(course, index)}></DropDownButton>
+                <StyledListItemBtn onClick={(e) => this.deleteCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+                    <i className="fa fa-trash "></i>
+                </StyledListItemBtn>
+                <StyledListItemBtn onClick={(e) => this.configureCourse(e, course, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+                    <i className="fa fa-cog "></i>
+                </StyledListItemBtn>
+                <StyledListItemBtn onClick={(e) => this.leaveCourse(e, course, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
+                    <i className="fa fa-sign-out"></i>
+                </StyledListItemBtn>
+            </div>
+		]);
+	}
 
-				{projectListMenu}
-				<StyledProjectList className="">
-					{renderListItems}
-	            </StyledProjectList>
-	            <StyledPagination className="pagination">
-					{renderPagination}
-            	</StyledPagination>
-     		</div>
+	renderCourse(course, index) {
+		return (
+			<StyledListItemPrimary key={course.id} onClick={() => this.courseClick(course, index)} clickable={true}>
+                { this.renderCourseContent(course, index) }
+            </StyledListItemPrimary>
 		);
 	}
 
-
+	render() {
+		return (
+			<div>
+                <ListMenu>
+                    { this.itemList ? this.itemList.renderSearchBox() : '' }
+            
+                    <StyledNewCourseBtn id="newProject">
+                        <BtnDefault
+                            id="newPrjBtn"
+                            href="#"
+                            onClick={this.showNewCourseModal}>
+                            <i className="fa fa-plus fa-fw"></i>
+                    <FormattedMessage id='courselist.new_course' defaultMessage='New Course' />
+                        </BtnDefault>
+                    </StyledNewCourseBtn>
+                </ListMenu>
+                        
+				<ItemList 
+                    ref={(r) => {if (r) this.itemList = r}}
+                    hasSearch={true}
+                    hasPagination={true}
+                    doNotrenderSearch={true}
+                    itemsPerPage={8}
+                    items={this.props.courses} 
+                    renderItem={this.renderCourse} />	
+     		</div>
+		);
+	}
 }

@@ -1,8 +1,11 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {
+	FormattedMessage
+} from 'react-intl';
 
 import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
 import UserRegistrationsChart from "./UserRegistrationsChart.jsx";
+import ActiveUsersChart from "./ActiveUsersChart.jsx";
 
 export default class AdminStats extends React.Component {
 	constructor(props) {
@@ -81,6 +84,14 @@ export default class AdminStats extends React.Component {
 					</div>
 					<div className="box-body">
 						<UserRegistrationsChart chartScriptPromise={this.props.chartScriptPromise}/>
+					</div>
+				</div>
+				<div className="box box-default">
+					<div className="box-header with-border">
+						<h3 className="box-title"><FormattedMessage id='adminstats.active_users_over_time' defaultMessage='Active users over time' /></h3>
+					</div>
+					<div className="box-body">
+						<ActiveUsersChart chartScriptPromise={this.props.chartScriptPromise}/>
 					</div>
 				</div>
 			</div>

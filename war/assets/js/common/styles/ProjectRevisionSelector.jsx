@@ -15,10 +15,12 @@ const labelContainer = styled.div `
 	margin-right: 5px !important;
 `;
 
-export default class TwoDropDowns extends React.Component {
+export default class ProjectRevisionSelector extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.revisionSelectorRef = null;
 		this.state = {
 			projects: this.props.projects,
 			projectNameList: [],
@@ -48,7 +50,7 @@ export default class TwoDropDowns extends React.Component {
 		ProjectEndpoint.listRevisions(this.props.projects.items[0].id).then(function (revisions) {
 			revisions.items.forEach(function (revision) {
 				revisionNameList.push({
-					text: revision.name,
+					text: revision.revision,
 					onClick: _this.revisionClicked.bind(_this, revision.id)
 					});
 				});
@@ -68,14 +70,17 @@ export default class TwoDropDowns extends React.Component {
 	revisions.items = revisions.items || [];
 		revisions.items.forEach(function (revision) {
 			revisionNameList.push({
-				text: revision.name,
+				text: revision.revision,
 				onClick: _this.revisionClicked.bind(_this, revision.id)
 				});
 			});
+
+				_this.revisionSelectorRef.setText(revisionNameList[0].text);
 				_this.setState({
 					revisions: revisions,
 					revisionNameList: revisionNameList
 					});
+
 	});
 	}
 
@@ -105,7 +110,7 @@ export default class TwoDropDowns extends React.Component {
 				</ProjectDropDownContainer>
 				<div>
 					<label>Select a revision: </label>
-					<DropDownButton isListItemButton={true} items={this.state.revisionNameList} initText = {this.state.revisionInitText}></DropDownButton>
+					<DropDownButton ref={(r) => {this.revisionSelectorRef = r;}} isListItemButton={true} items={this.state.revisionNameList} initText = {this.state.revisionInitText}></DropDownButton>
 				</div>
 			</div>
 		)

@@ -5,26 +5,23 @@ import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import Theme from '../../../common/styles/Theme.js';
 
 import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
-	StyledListItemDefault
-} from '../../../common/styles/List';
+	StyledListItemPrimary,
+	StyledListItemDefault,
+} from '../../../common/styles/ItemList.jsx';
 
 export default class ExerciseList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			exercises: [],
-			// pagination
-			currentPage: 1,
-			itemsPerPage: 5
+			exercises: []
 		};
 
 		this.init();
 
-		this.paginationClick = this.paginationClick.bind(this);
+		this.renderExercise = this.renderExercise.bind(this);
 	}
 
 	init() {
@@ -46,46 +43,12 @@ export default class ExerciseList extends React.Component {
 		});
 	}
 
-
-
-
-	paginationClick(event) {
-		this.setState({
-			currentPage: Number(event.target.id)
-		});
-	}
-
-
-	isActivePage(page) {
-		return (page == this.state.currentPage);
-	}
-
-	renderPaginationIfNeccessary() {
-		if (this.state.exercises.length <= this.state.itemsPerPage) {
-			return '';
-		} else {
-			//Render Pagination
-			const pageNumbers = [];
-			for (let i = 1; i <= Math.ceil(this.state.exercises.length / this.state.itemsPerPage); i++) {
-				pageNumbers.push(i);
-			}
-			const renderPaginationItems = pageNumbers.map(pageNo => {
-				return (
-					<StyledPaginationItem
-		              key={pageNo}
-		              id={pageNo}
-		              onClick={this.paginationClick}
-		              active= {this.isActivePage(pageNo)}
-		            >
-		              {pageNo}
-				  </StyledPaginationItem>
-				);
-			});
-			return <StyledPagination key={"pagination"}>
-					{renderPaginationItems}
-            	</StyledPagination>
-		}
-
+	renderExercise(exercise, index) {
+		return (
+			<StyledListItemDefault key={index} className="clickable">
+                <span > {exercise.name} </span>
+            </StyledListItemDefault>
+		);
 	}
 
 	editorClick (e, exercise, index) {
@@ -116,37 +79,16 @@ export default class ExerciseList extends React.Component {
 	}
 
 	render() {
-		var _this = this;
-
+		
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
 
-		//Render Components
-		const lastItem = this.state.currentPage * this.state.itemsPerPage;
-		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = this.state.exercises.slice(firstItem, lastItem);
-
-		function prjClick(prj) {}
-
-		const renderListItems = itemsToDisplay.map((exercise, index) => {
-			return <StyledListItemDefault key={index} className="clickable">
-					<span > {exercise.name} </span>
-						<div>
-						<StyledListItemBtn onClick={(e) => this.editorClick(e, exercise, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-							<i className="fa fa-tags"></i>
-						</StyledListItemBtn>
-					</div>
-				</StyledListItemDefault>;
-		})
-
-
-
 		return (
-			<div>
-				<StyledBoxList key={"itemList"}>
-					{renderListItems}
-	            </StyledBoxList>
-				{this.renderPaginationIfNeccessary()}
-     		</div>
+			<ItemList
+                key={"itemlist"}
+                hasPagination={true}
+                itemsPerPage={8}
+                items={this.state.exercises}
+                renderItem={this.renderExercise} />
 		);
 	}
 
