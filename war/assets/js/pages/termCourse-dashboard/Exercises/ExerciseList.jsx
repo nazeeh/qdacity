@@ -46,8 +46,13 @@ export default class ExerciseList extends React.Component {
 	renderExercise(exercise, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
-                <span > {exercise.name} </span>
-            </StyledListItemDefault>
+					<span > {exercise.name} </span>
+						<div>
+						<StyledListItemBtn onClick={(e) => this.editorClick(e, exercise, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
+							<i className="fa fa-tags"></i>
+						</StyledListItemBtn>
+					</div>
+				</StyledListItemDefault>
 		);
 	}
 
@@ -79,17 +84,22 @@ export default class ExerciseList extends React.Component {
 	}
 
 	render() {
-		
+
+		var _this = this;
+
 		if (!this.props.account.getProfile() || !this.props.account.isSignedIn()) return null;
 
 		return (
-			<ItemList
-                key={"itemlist"}
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.state.exercises}
-                renderItem={this.renderExercise} />
-		);
+					<ItemList
+		                key={"itemlist"}
+		                hasPagination={true}
+		                itemsPerPage={8}
+		                items={this.state.exercises}
+		                renderItem={this.renderExercise} />
+				);
+
+
+
 	}
 
 
