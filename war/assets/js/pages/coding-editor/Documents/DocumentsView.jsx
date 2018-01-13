@@ -38,8 +38,7 @@ const StyledToolBar = styled.div `
 `;
 
 const StyledDocumentList = styled.div `
-
-    margin:5px 5px 5px 5px;
+	margin:5px 5px 5px 5px;
 `;
 
 export default class DocumentsView extends React.Component {
@@ -243,12 +242,11 @@ export default class DocumentsView extends React.Component {
 		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
-		this.props.syncService.handleDocumentChange(
-			this.state.selected === -1 ? null : this.state.selected.toString(),
-			selectedID.toString()
-		);
+		this.props.syncService.updateUser({
+			document: selectedID.toString(),
+		});
 		this.setState({
-			selected: selectedID
+			selected: selectedID,
 		});
 		this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
 
@@ -372,71 +370,86 @@ export default class DocumentsView extends React.Component {
 	}
 
 	renderDocument(doc, index) {
-		return <DragDocument
-                doc={doc}
-                key={doc.id}
-                index={index}
-                active={doc.id == this.state.selected}
-                setActiveDocument={this.setActiveDocument}
-                swapDocuments={this.swapDocuments}
-                persistSwappedDocuments={this.persistSwappedDocuments}
-                >{doc.title}</DragDocument>;
+		return (
+			<DragDocument
+				doc={doc}
+				key={doc.id}
+				index={index}
+				active={doc.id == this.state.selected}
+				setActiveDocument={this.setActiveDocument}
+				swapDocuments={this.swapDocuments}
+				persistSwappedDocuments={this.persistSwappedDocuments}
+				syncService={this.props.syncService}
+			>
+				{doc.title}
+			</DragDocument>
+		);
 	}
 
 	renderDocuments() {
-		var _this = this;
-
 		if (!this.state.isExpanded) {
-			return <StyledInfoBox>
-        		       <b><FormattedMessage id='documentsview.current_document' defaultMessage='Current Document' />: {this.getActiveDocument().title}</b>
-        		   </StyledInfoBox>
+			return (
+				<StyledInfoBox>
+					<b>
+						<FormattedMessage
+							id='documentsview.current_document'
+							defaultMessage='Current Document'
+						/>:
+						{this.getActiveDocument().title}
+					</b>
+				</StyledInfoBox>
+			);
 		}
+
 		return (
 			<div>
-                <StyledToolBar>
-                    {this.renderToolbar()}
-                </StyledToolBar>
-                <StyledDocumentList>
-                    {
-                      this.state.documents.map(function(doc, index) {
-                        return _this.renderDocument(doc, index);
-                      })
-                    }
-                </StyledDocumentList>
-            </div>
+				<StyledToolBar>
+					{this.renderToolbar()}
+				</StyledToolBar>
+				<StyledDocumentList>
+					{ this.state.documents.map((doc, index) => {
+						return this.renderDocument(doc, index);
+					})}
+				</StyledDocumentList>
+			</div>
 		);
-	}
-
-	renderDocumentsContent() {
-		if (!this.state.loading) {
-			return this.renderDocuments();
-		} else {
-			return <ReactLoading color={"#020202"}/>;
-		}
 	}
 
 	render() {
-		var _this = this;
 		return (
 			<div>
-                <StyledDocumentsHeader>
-                    <div className="row no-gutters" >
-                        <span className="col-xs-1"></span>
-                        <span className="col-xs-10">
-                            <b><FormattedMessage id='documentsview.documents' defaultMessage='Documents' /></b>
-                            <br/>
-                            <span id="docToolBox"  className="collapse in">
-                            </span>
-                        </span>
-                        <span className="col-xs-1">
-                            <a id="documentsToggleBtn" className="editorPanelTogel pull-right" onClick={() => this.toggleIsExpanded()}>
-                                {this.renderCollapseIcon()}
-                            </a>
-                        </span>
-                    </div>
-                </StyledDocumentsHeader>
-                {this.renderDocumentsContent()}
-            </div>
+				<StyledDocumentsHeader>
+					<div className="row no-gutters">
+						<span className="col-xs-1" />
+						<span className="col-xs-10">
+							<b>
+								<FormattedMessage
+									id='documentsview.documents'
+									defaultMessage='Documents'
+								/>
+							</b>
+							<br/>
+							<span
+								id="docToolBox"
+								className="collapse in"
+							/>
+						</span>
+						<span className="col-xs-1">
+							<a
+								id="documentsToggleBtn"
+								className="editorPanelTogel pull-right"
+								onClick={() => this.toggleIsExpanded()}
+							>
+								{this.renderCollapseIcon()}
+							</a>
+						</span>
+					</div>
+				</StyledDocumentsHeader>
+				{this.state.loading
+					? <ReactLoading color={"#020202"} />
+					: this.renderDocuments() }
+			</div>
 		);
 	}
+
 }

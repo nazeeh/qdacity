@@ -35,7 +35,6 @@ import {
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import SyncService from '../../common/SyncService';
-import CollaboratorList from '../../common/SyncService/CollaboratorList';
 
 const StyledCodingEditor = styled.div `
     padding-top: 51px;
@@ -49,7 +48,7 @@ const StyledCodingEditor = styled.div `
 `;
 
 const StyledEditorToolbar = styled.div `
-    display: ${props => (props.selectedEditor !== PageView.UML) ? 'flex' : 'none'} !important;
+    display: ${props => (props.selectedEditor === PageView.TEXT) ? 'flex' : 'none'} !important;
     text-align: center;
     padding: 5px;
 `;
@@ -171,18 +170,24 @@ class CodingEditor extends React.Component {
 
 	}
 
+	updateUserAtSyncService() {
+		const account = this.props.account.state;
+		this.syncService.updateUser({
+			name: account.name,
+			email: account.email,
+			picSrc: account.picSrc,
+			project: this.state.project.id,
+		});
+	}
+
 	componentDidMount() {
-		if (this.props.account.state.email !== '') {
-			this.syncService.logon(this.props.account.state);
-		}
+		this.updateUserAtSyncService();
 
 		document.getElementsByTagName("body")[0].style["overflow-y"] = "hidden";
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.account.state.email !== '') {
-			this.syncService.logon(nextProps.account.state);
-		}
+	componentWillReceiveProps() {
+		this.updateUserAtSyncService();
 	}
 
 	componentWillUnmount() {
@@ -358,7 +363,7 @@ class CodingEditor extends React.Component {
                 deleteCode={this.deleteCode}
                 toggleCodingView={this.toggleCodingView}
                 deleteRelationship={this.deleteRelationship}
-                syncService={this.syncService} />;
+            />;
 		}
 		return null;
 	}
@@ -451,7 +456,9 @@ class CodingEditor extends React.Component {
                             history={this.props.history}
                             documentsView = {this.documentsViewRef}
                             showCodingView = {this.showCodingView}
-                            selectedEditor={this.state.selectedEditor}/>
+                            selectedEditor={this.state.selectedEditor}
+                            syncService={this.syncService}
+                        />
                     </div>
                 </StyledSideBarEditor>
                 <StyledSideBarDocuments>
@@ -522,14 +529,12 @@ class CodingEditor extends React.Component {
 
                         </StyledTextEditorMenu>
                         <StyledPlaceholder />
-                        <CollaboratorList
-                            syncService={this.syncService} />
                     </StyledEditorToolbar>
                     <TextEditor
                         initEditorCtrl={this.initEditorCtrl}
                         selectedEditor={this.state.selectedEditor}
                         showCodingView={this.state.showCodingView}
-                        syncService={this.syncService} />
+                    />
                     <StyledUMLEditor
                         selectedEditor={this.state.selectedEditor}
                         showCodingView={this.state.showCodingView}

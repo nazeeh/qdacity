@@ -1,123 +1,154 @@
-/**
- * SyncService entry point
- *
- * socket.io provides "rooms", i.e. channels/groups of sockets. Here one room
- * is used per document (identified by the document id). This makes it easy
- * to broadcast any changes regarding a document to its room.
- */
-
 const SERVER_NAME = require('../utils/serverName');
 
-// redis instance, injected from outside
-let redis;
+// Message and event constants
+const { MSG, EVT } = require('./constants.js');
 
-// socket.io instance, injected from outside
-let io;
+// Key to use for socket data hash in redis
+const REDIS_SOCKET_DATA = 'socketdata';
+
+// Separator to combine type, id to room id
+const ROOM_SEP = '/';
+
+// Room Types
+const DOC_ROOM = 'doc';
+const PRJ_ROOM = 'prj';
+
 
 /**
- * Notify all sockets that watch a specific document, that the user list on
- * that document changed
+ * class SyncService
+ *
+ * socket.io provides "rooms", i.e. channels/groups of sockets. Here rooms are
+ * used per project and document (identified by the respective id). This makes
+ * it easy to broadcast any changes regarding a project/document to its room.
  */
-const emitUserChange = docid => {
-  // Get all sockets in the document room. `clients` contains the socket ids
-  io.in(docid).clients((error, clients) => {
+class SyncService {
 
-    // Get data for those clients to match additional data
-    redis.hmget(['socketdata'].concat(clients), (err, res) => {
+  /**
+   * SyncService constructor
+   */
+  constructor(io, redis) {
+    this.io = io;
+    this.redis = redis;
 
-      // Augment socket ids with data from shared application state
-      const data = res ? res.map(json => JSON.parse(json).data) : [];
+    io.on('connection', socket => {
+      console.info(`${socket.id} connected`);
 
-      // Broadcast message "user_change" to document room
-      io.to(docid).emit(
-        'user_change',
-        data
+      // Send connection acknowledgement to user
+      socket.emit(EVT.USER.CONNECTED, SERVER_NAME);
+
+      // Listen for messages from user
+      socket.on(
+        MSG.USER.UPDATE,
+        data => this._handleUserUpdate(socket, data)
       );
+
+      // Handle disconnection
+      socket.on('disconnecting', () => this._handleSocketDisconnecting(socket));
     });
-  });
-};
-
-/**
- * Creator for listener to be called on logon message
- */
-const onLogon = socket => (data, cb) => {
-  console.info(`user ${socket.id} logged on with ${JSON.stringify(data)}`);
-
-  // Add socket and its data to shared application state
-  redis.hset([
-    'socketdata',
-    socket.id,
-    JSON.stringify({
-      data,
-      server: SERVER_NAME,
-    }),
-  ]);
-
-  // Call callback if defined
-  if (cb) {
-    cb();
   }
 
-  // Notify all sockets that share a room with the new socket
-  Object.keys(socket.rooms).map(docid => emitUserChange(docid));
-};
+  /**
+   * Handle socket logon
+   */
+  _handleUserUpdate(socket, data) {
+    console.info(`${socket.id} user.update ${JSON.stringify(data)}`);
+
+    // Add socket and its data to shared application state
+    this.redis.hset([
+      REDIS_SOCKET_DATA,
+      socket.id,
+      JSON.stringify({
+        data,
+        server: SERVER_NAME,
+      }),
+    ]);
+
+    // Leave all document rooms that are not in updated data
+    Object.keys(socket.rooms).map(room => {
+      const { roomType, roomId } = room.split(ROOM_SEP);
+      if (roomType === DOC_ROOM && roomId !== data.document) {
+        socket.leave(room);
+      }
+    });
+
+    // Join document room
+    if (data.document) {
+      socket.join(`${DOC_ROOM}${ROOM_SEP}${data.document}`);
+    }
+
+    // Join project room and notify all other users
+    if (data.project) {
+      const projectRoom = `${PRJ_ROOM}${ROOM_SEP}${data.project}`;
+      socket.join(projectRoom);
+      this._emitUserUpdate(projectRoom);
+    }
+  };
+
+  /**
+   * Handle disconnection of sockets
+   */
+  _handleSocketDisconnecting(socket) {
+
+    // Remove socket data from shared application state
+    this.redis.hdel(REDIS_SOCKET_DATA, socket.id);
+
+    // Loop over socket's rooms/documents and remove socket from each
+    Object.keys(socket.rooms).map(room => {
+      socket.leave(room);
+
+      // Emit user.updated in project room only
+      if (room.split(ROOM_SEP)[0] === PRJ_ROOM) {
+        this._emitUserUpdate(room);
+      }
+    });
+
+    console.info(`${socket.id} disconnected`);
+  };
+
+  /**
+   * Notify all sockets that watch a specific room, that the user list on
+   * that room changed
+   */
+  _emitUserUpdate(roomid) {
+
+    // Get all sockets in the document room. `clients` contains the socket ids
+    this.io.in(roomid).clients((error, clients) => {
+
+      // Build Redis command arguments for HMGET <key> <value> <value> …
+      const redisArgs = [REDIS_SOCKET_DATA].concat(clients);
+
+      // Get data for those clients to match additional data
+      this.redis.hmget(redisArgs, (err, res) => {
+
+        // Return empty array if anything goes wrong
+        let data = [];
+
+        // Only read data if res is truthy
+        if (res) {
+          // Map res array to data field if present, or fallback to {} and
+          // filter out users that have not yet logged on with name, email and
+          // picSrc
+          data = res
+            .map(clientData => JSON.parse(clientData))
+            .map(json => json.data || {})
+            .filter(data => data.name && data.email && data.picSrc);
+        }
+
+        // Broadcast event "user.updated" to document room if any data
+        if (data.length > 0) {
+          this.io.to(roomid).emit(
+            EVT.USER.UPDATED,
+            data
+          );
+        }
+      });
+    });
+  };
+}
 
 /**
- * Creator for listener to be called on use_enter message
+ * Create and return new SyncService instance
  */
-const onUserEnter = socket => docid => addSocketToDocument(socket, docid);
-
-/**
- * Creator for listener to be called on user_leave message
- */
-const onUserLeave = socket => docid => removeSocketFromDocument(socket, docid);
-
-/**
- * Remove socket from document and notify all other sockets on the same doc
- */
-const removeSocketFromDocument = (socket, docid) => {
-  socket.leave(docid);
-  emitUserChange(docid);
-};
-
-/**
- * Add socket to document room, notify other sockets in room
- */
-const addSocketToDocument = (socket, docid) => {
-  socket.join(docid);
-  emitUserChange(docid);
-};
-
-/**
- * Creator for listener to be called right before a socket disconnects
- */
-const onSocketDisconnecting = socket => () => {
-  // Remove socket data from shared application state
-  redis.hdel('socketdata', socket.id);
-
-  // Loop over socket's rooms/documents and remove socket from each
-  Object.keys(socket.rooms).map(docid => {
-    removeSocketFromDocument(socket, docid);
-  });
-
-  console.info(`user ${socket.id} disconnected`);
-};
-
-/**
- * Initialize SyncService
- */
-module.exports = (_io, _redis) => {
-  io = _io;
-  redis = _redis;
-
-  io.on('connection', socket => {
-    console.info(`user ${socket.id} connected`);
-
-    socket.emit('welcome', SERVER_NAME);
-
-    socket.on('logon', onLogon(socket));
-    socket.on('documentEnter', onUserEnter(socket));
-    socket.on('documentLeave', onUserLeave(socket));
-    socket.on('disconnecting', onSocketDisconnecting(socket));
-  });
+module.exports = (io, redis) => {
+  return new SyncService(io, redis);
 };

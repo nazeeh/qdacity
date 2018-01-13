@@ -14,25 +14,32 @@ import {
 	getEmptyImage
 } from 'react-dnd-html5-backend'
 
+import CollaboratorBubbles from '../../../common/SyncService/CollaboratorBubbles';
+
 const StyledDocumentItem = styled.a `
-	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
-    color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
-    padding: 2px 2px !important;
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    margin-bottom: -1px;
-    background-color: #fff;
-    border: 1px solid ;
-    border-color: ${props => props.theme.borderPrimary} !important;
-    opacity: ${props => props.isDragging ? 0.0 : 1};
-    &:hover {
-        text-decoration: none;
-        cursor: pointer;
-        background-color: ${props => props.isDragging ? props.theme.bgPrimary : props.theme.bgPrimaryHighlight};
-        color: ${props => props.isDragging ? props.theme.fgPrimary : props.theme.fgPrimaryHighlight};
-    }
+	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : '#fff'};
+	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
+	padding: 2px 2px;
+	position: relative;
+	display: flex;
+	margin-bottom: -1px;
+	border: 1px solid ${props => props.theme.borderPrimary};
+	opacity: ${props => props.isDragging ? 0.0 : 1};
+	&:hover {
+		text-decoration: none;
+		cursor: pointer;
+		background-color: ${props => props.isDragging ? props.theme.bgPrimary : props.theme.bgPrimaryHighlight};
+		color: ${props => props.isDragging ? props.theme.fgPrimary : props.theme.fgPrimaryHighlight};
+	}
 `;
+
+const StyledDocumentItemTitle = styled.div `
+	flex: 1 1 auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+`;
+
 
 const documentSource = {
 	beginDrag(props, monitor, component) {
@@ -130,12 +137,20 @@ class Document extends React.Component {
 		return connectDragSource(
 			connectDropTarget(
 				<div>
-    				<StyledDocumentItem 
-    			        isDragging={isDragging}
-                        active={this.props.active} 
-				        onClick={this.onClick}
-                        >{this.props.doc.title}</StyledDocumentItem>
-                </div>
+					<StyledDocumentItem
+						isDragging={isDragging}
+						active={this.props.active}
+						onClick={this.onClick}
+					>
+						<StyledDocumentItemTitle>
+							{this.props.doc.title}
+						</StyledDocumentItemTitle>
+						<CollaboratorBubbles
+							syncService={this.props.syncService}
+							docid={this.props.doc.id}
+						/>
+					</StyledDocumentItem>
+				</div>
 			)
 		);
 	}
