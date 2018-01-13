@@ -171,12 +171,13 @@ class CodingEditor extends React.Component {
 	}
 
 	updateUserAtSyncService() {
-		const account = this.props.account.state;
+		const account = this.props.account;
 		this.syncService.updateUser({
-			name: account.name,
-			email: account.email,
-			picSrc: account.picSrc,
+			name: account.state.name,
+			email: account.state.email,
+			picSrc: account.state.picSrc,
 			project: this.state.project.id,
+			token: account.getToken(),
 		});
 	}
 
@@ -307,7 +308,7 @@ class CodingEditor extends React.Component {
 	}
 
 	deleteCode(code) {
-		this.codesystemViewRef.deleteCode(code);
+		this.codesystemViewRef.removeCode(code);
 	}
 
 	insertCode(code) {
@@ -493,6 +494,7 @@ class CodingEditor extends React.Component {
                             insertCode={this.insertCode}
                             codeRemoved={this.codeRemoved}
                             documentsView = {this.documentsViewRef}
+                            syncService={this.syncService}
                          />
                 </StyledSideBarCodesystem>
             </StyledSideBar>

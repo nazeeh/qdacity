@@ -54,6 +54,13 @@ export default class Account extends React.Component {
 		return this.auth2.currentUser.get().getBasicProfile();
 	}
 
+	getToken() {
+		const authResponse = this.auth2.currentUser.get().getAuthResponse(true);
+		return authResponse
+			? authResponse.access_token
+			: undefined;
+	}
+
 	isSignedIn() {
 		return this.auth2.isSignedIn.get();
 	}

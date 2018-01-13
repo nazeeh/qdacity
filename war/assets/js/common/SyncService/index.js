@@ -2,19 +2,32 @@ import openSocket from 'socket.io-client';
 
 import { MSG, EVT } from './constants.js';
 
-// Sync server URL to be inserted in build process
-const SYNC_SERVICE = '$SYNC_SERVICE$';
-
 /**
  * Provides collaboration features for CodingEditor and sub-components
  *
  * Events:
- * - changeUserList: Fired when receiving updates on the list of users that are
- *                   connected to the same document as the current client.
+ * - userlistUpdated: Fired when receiving updates on the list of users that
+ *                    are connected to the same document as the current client.
  *   parameters:
- *     {object[]} userlist - Array of all users at the current document.Format
- *                           of the objects matches the format of objects sent
- *                           to {@link this#updateUser}.
+ *   parameters:
+ *     {object[]} - Array of all users at the current document. Format of the
+ *                  objects matches the format of objects sent to 
+ *                  {@link this#updateUser}.
+ *
+ * - codeInserted: Fired when a new code has been inserted into the current
+ *                 Codesystem
+ *   parameters:
+ *     {object} - Object representing the newly inserted code
+ *
+ * - codeRelocated: Fired when an existing code has been relocated inside the
+ *                  current Codesystem
+ *   parameters:
+ *     {object} - Object representing the relocated code
+ *
+ * - codeRemoved: Fired when an existing code has been removed from the current
+ *                Codesystem
+ *   parameters:
+ *     {object} - Object representing the removed code
  */
 export default class SyncService {
 
@@ -24,7 +37,10 @@ export default class SyncService {
 	constructor() {
 		this._socket = null;
 		this._listeners = {};
-		this._account = {};
+		this._account = {
+			apiRoot: '$API_PATH$',
+			apiVersion: '$API_VERSION$',
+		};
 		this._nextListenerId = 1;
 
 		// Bind public methods to this
@@ -60,24 +76,66 @@ export default class SyncService {
 	}
 
 	/**
+	 * Send command to insert new Code into Codesystem
+	 * @access public
+	 * @arg {object} code - new Code object
+	 * @arg {int} parentID - ID of parent of new Code object
+	 * @return {Promise} - Promise (will never be rejected)
+	 */
+	insertCode(code, parentID) {
+		this.log('code insert with', code, parentID);
+		return this._emit(MSG.CODE.INSERT, {
+			code,
+			parentID,
+		});
+	}
+
+	/**
+	 * Send command to relocate new Code to new parent in same Codesystem
+	 * @access public
+	 * @arg {int} codeId - ID of Code to be relocated
+	 * @arg {int} newParentID - ID of Code where the code should be moved to
+	 * @return {Promise} - Promise (will never be rejected)
+	 */
+	relocateCode(codeId, newParentID) {
+		return this._emit(MSG.CODE.RELOCATE, {
+			codeId,
+			newParentID,
+		});
+	}
+
+	/**
+	 * Send command to remove Code from Codesystem
+	 * @access public
+	 * @arg {object} code - Code object to be removed
+	 * @return {Promise} - Promise (will never be rejected)
+	 */
+	removeCode(code) {
+		return this._emit(MSG.CODE.REMOVE,
+			code
+		);
+	}
+
+
+	/**
 	 * Listen to event from SyncService. See class documentation for available
 	 * events.
 	 * @access public
 	 * @arg {string} evt - The name of the event to listen to
-	 * @arg {function} cb - Callback to call if event occurs. See class
-	 *                      documentation for number and type of arguments
-	 *                      passed to the callback.
+	 * @arg {function} callback - Callback to call if event occurs. See class
+	 *                            documentation for number and type of
+	 *                            arguments passed to the callback.
 	 * @return {string} - Listener ID. Can be used to remove listener with
 	 *                    {@link this#off}
 	 */
-	on(evt, cb) {
+	on(evt, callback) {
 		// Lazily initialize listener list for that event
 		if (!this._listeners[evt]) {
 			this._listeners[evt] = {};
 		}
 
 		const listenerId = this._getNextListenerId();
-		this._listeners[evt][listenerId] = cb;
+		this._listeners[evt][listenerId] = callback;
 
 		return listenerId;
 	}
@@ -108,30 +166,49 @@ export default class SyncService {
 	 * @access private
 	 */
 	_connect() {
-		// If the SYNC_SERVICE constant starts with a `$` character, it has
-		// not been set in build process.
-		if (SYNC_SERVICE.substr(0, 1) === '$') {
-			throw new Error('SYNC_SERVICE url was not configured. Please check your build configuration');
-		}
-
 		// Open a websocket to the sync server and register message handlers
-		this._socket = openSocket(SYNC_SERVICE);
-		this._socket.on(
-			'reconnect',
-			() => this._emitUserUpdate()
-		);
-		this._socket.on(
-			EVT.USER.CONNECTED,
-			hostname => this.log('Connected to realtime-service:', hostname)
-		);
-		this._socket.on(
-			EVT.USER.UPDATED,
-			userlist => this._handleUserListChange(userlist)
-		);
+		this._socket = openSocket('$SYNC_SERVICE$');
+
+		// Initialize listeners
+		[
+			// Send user data again on reconnect
+			['reconnect', this._emitUserUpdate],
+
+			// Handle user events
+			[EVT.USER.CONNECTED, this._handleUserConnected],
+			[EVT.USER.UPDATED, this._handleUserListChange],
+
+			// Handle code events
+			[EVT.CODE.INSERTED, this._handleCodeInserted],
+			[EVT.CODE.RELOCATED, this._handleCodeRelocated],
+			[EVT.CODE.REMOVED, this._handleCodeRemoved],
+		].map(def => this._socket.on(def[0], def[1].bind(this)));
 
 		// Make sure, the websocket is closed when the browser is closed
 		window.addEventListener('unload', this.disconnect);
 	}
+
+	/**
+	 * Emit message to sync service
+	 * @access private
+	 * @return {Promise} - resolves on success, will never be rejected, any
+	 *                     API errors will handled internally.
+	 */
+	_emit(messageType, arg) {
+		return new Promise((resolve, reject) => {
+			this._socket.emit(
+				messageType,
+				arg,
+				(status, ...args) => {
+					if (status === 'ok') {
+						resolve(...args);
+					} else {
+						this.console.error('API error', ...args);
+					}
+				}
+			);
+		});
+	};
 
 	/**
 	 * Emit user.update message to sync service, sending {@link this#_account}.
@@ -139,11 +216,21 @@ export default class SyncService {
 	 * @access private
 	 */
 	_emitUserUpdate() {
-		this._socket.emit(MSG.USER.UPDATE, this._account);
-	}
+		this._emit(MSG.USER.UPDATE, this._account);
+	};
 
 	/**
-	 * Handle changeUserList message from sync service. Used to notify clients
+	 * Handle user.connected message from sync service. Used to welcome clients
+	 * telling which server they are connected to.
+	 * @access private
+	 * @arg {string} serverName - Name of the connected server
+	 */
+	_handleUserConnected(serverName) {
+		this.log('Connected to realtime-service:', serverName)
+	};
+
+	/**
+	 * Handle user.updated message from sync service. Used to notify clients
 	 * about users entering or leaving the current document.
 	 * @access private
 	 * @arg {object[]} userlist - Array of all users at the current document.
@@ -152,10 +239,49 @@ export default class SyncService {
 	 */
 	_handleUserListChange(userlist) {
 		this._fireEvent(
-			'changeUserList',
+			'userlistUpdated',
 			userlist.filter(({
 				email
 			}) => email !== this._account.email)
+		);
+	}
+
+	/**
+	 * Handle code.inserted message from sync service. Used to notify clients
+	 * about new Codes inserted in their current CodeSystem.
+	 * @access private
+	 * @arg {object} code - The Code that has been inserted.
+	 */
+	_handleCodeInserted(code) {
+		this._fireEvent(
+			'codeInserted',
+			code
+		);
+	}
+
+	/**
+	 * Handle code.relocated message from sync service. Used to notify clients
+	 * about new Codes relocated inside their current CodeSystem.
+	 * @access private
+	 * @arg {object} code - The Code that has been relocated.
+	 */
+	_handleCodeRelocated(code) {
+		this._fireEvent(
+			'codeRelocated',
+			code
+		);
+	}
+
+	/**
+	 * Handle code.removed message from sync service. Used to notify clients
+	 * about Codes being removed from their current CodeSystem.
+	 * @access private
+	 * @arg {object} code - The Code that has been removed.
+	 */
+	_handleCodeRemoved(code) {
+		this._fireEvent(
+			'codeRemoved',
+			code
 		);
 	}
 

@@ -85,7 +85,7 @@ export default class CollaboratorList extends React.Component {
 	componentDidMount() {
 		const syncService = this.props.syncService;
 		this.listenerID = syncService && syncService.on(
-			'changeUserList',
+			'userlistUpdated',
 			list => this.setState({
 				collaborators: list
 			})
@@ -94,7 +94,7 @@ export default class CollaboratorList extends React.Component {
 
 	componentWillUnmount() {
 		const syncService = this.props.syncService;
-		syncService && syncService.off('changeUserList', this.listenerID);
+		syncService && syncService.off('userlistUpdated', this.listenerID);
 	}
 
 	render() {
