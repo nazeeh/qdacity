@@ -10,6 +10,28 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static getExerciseProjectByRevisionID(revisionID) {
+		var apiMethod = gapi.client.qdacity.exercise.getExerciseProjectByRevisionID({
+			'revisionID': revisionID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static addValidationCoder(exerciseProjectID) {
+		var apiMethod = gapi.client.qdacity.exercise.addValidationCoder({
+			'exerciseProjectID': exerciseProjectID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static createExerciseProject(revisionID, exerciseID) {
+		var apiMethod = gapi.client.qdacity.exercise.createExerciseProject({
+			'revisionID': revisionID,
+			'exerciseID': exerciseID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static insertExercise(exercise) {
 		var apiMethod = gapi.client.qdacity.exercise.insertExercise(exercise);
 		return Promisizer.makePromise(apiMethod);

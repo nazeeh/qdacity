@@ -14,7 +14,7 @@ import com.google.appengine.api.datastore.Text;
 	identityType = IdentityType.APPLICATION)
 public class TextDocument implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2828710144827032363L;
 
@@ -33,8 +33,11 @@ public class TextDocument implements Serializable {
 	Text text;
 
 	@Persistent
+	Long exerciseID;
+
+	@Persistent
 	Long positionInOrder;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -67,6 +70,14 @@ public class TextDocument implements Serializable {
 		this.projectID = projectID;
 	}
 
+	public Long getExerciseID() {
+		return exerciseID;
+	}
+
+	public void setExerciseID(Long exerciseID) {
+		this.exerciseID = exerciseID;
+	}
+	
 	public Long getPositionInOrder() {
 		return positionInOrder;
 	}

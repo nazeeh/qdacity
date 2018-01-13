@@ -1,12 +1,15 @@
 package com.qdacity.endpoint;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
+
+import org.json.JSONException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -18,6 +21,11 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
+import com.qdacity.exercise.ExerciseProject;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ValidationProject;
+import com.qdacity.user.UserNotification;
+import com.qdacity.user.UserNotificationType;
 
 
 @Api(name = "qdacity",
@@ -126,6 +134,95 @@ public class ExerciseEndpoint {
 		} finally {
 			mgr.close();
 		}
+	}
+	
+
+	@ApiMethod(name = "exercise.createExerciseProject",
+		scopes = { Constants.EMAIL_SCOPE },
+		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+		audiences = { Constants.WEB_CLIENT_ID })
+	public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
+		ProjectRevision project = null;
+		ExerciseProject cloneExerciseProject = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			project = mgr.getObjectById(ProjectRevision.class, revisionID);
+
+			cloneExerciseProject = createExerciseProject(project, user);
+
+			cloneExerciseProject.addValidationCoder(user.getUserId());
+			cloneExerciseProject.setExerciseID(exerciseID);
+			com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+			cloneExerciseProject.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());
+
+			cloneExerciseProject = mgr.makePersistent(cloneExerciseProject);
+			project = mgr.makePersistent(project);
+
+			TextDocumentEndpoint.cloneTextDocuments(project, cloneExerciseProject.getId(), true, user);
+
+
+		} finally {
+			mgr.close();
+		}
+		return cloneExerciseProject;
+	}
+	
+	@ApiMethod(name = "exercise.addValidationCoder",
+			path = "addValidationCoder",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public ExerciseProject addValidationCoder(@Named("exerciseProjectID") Long exerciseProjectID,  User user) throws UnauthorizedException {
+
+			ExerciseProject exerciseProject = null;
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				exerciseProject = mgr.getObjectById(ExerciseProject.class, exerciseProjectID);
+
+
+				exerciseProject.addValidationCoder(user.getUserId());
+
+				exerciseProject = mgr.makePersistent(exerciseProject);
+
+			} finally {
+				mgr.close();
+			}
+			return exerciseProject;
+		}
+	
+	
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public ExerciseProject getExerciseProjectByRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
+			PersistenceManager mgr = getPersistenceManager();
+			List<ExerciseProject> exerciseProjects = null;
+			ExerciseProject exerciseProject = null;
+			try {
+
+				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(revisionID)");
+
+				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(revisionID));
+				if (exerciseProjects.size() > 0) {
+					exerciseProject = exerciseProjects.get(0);
+				}
+			} finally {
+				mgr.close();
+			}
+			return exerciseProject;
+		}
+	
+	private ExerciseProject createExerciseProject(ProjectRevision projectRev, User user) throws UnauthorizedException {
+
+		ExerciseProject cloneProject = new ExerciseProject(projectRev);
+
+		cloneProject.setCodesystemID(projectRev.getCodesystemID());
+
+		return cloneProject;
+
 	}
 	
 	private boolean containsExercise(Exercise exercise) {

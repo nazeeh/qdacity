@@ -89,6 +89,7 @@ export default class TermDashboard extends React.Component {
 				(typeof (termCourse.participants.find(o => o.id === user.id)) == 'undefined') ? isUserParticipant = false: isUserParticipant = true;
 				_this.getTermCoursePromise.then(function (resp) {
 					termCourse.term = resp.term;
+					termCourse.isUserParticipant = isUserParticipant;
 					CourseEndpoint.getCourse(resp.courseID).then(function (course) {
 						_this.setState({
 							course: course,
@@ -182,7 +183,7 @@ export default class TermDashboard extends React.Component {
 		if (!termCourse.isUserParticipant) {
 			return '';
 		} else {
-			return <Exercises termCourse={this.state.termCourse}/>
+			return <Exercises termCourse={this.state.termCourse} account = {this.props.account} history={this.props.history}/>
 		}
 	}
 
