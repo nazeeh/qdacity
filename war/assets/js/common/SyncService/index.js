@@ -1,5 +1,7 @@
 import openSocket from 'socket.io-client';
 
+import { MSG, EVT } from './constants.js';
+
 // Sync server URL to be inserted in build process
 const SYNC_SERVICE = '$SYNC_SERVICE$';
 
@@ -12,7 +14,7 @@ const SYNC_SERVICE = '$SYNC_SERVICE$';
  *   parameters:
  *     {object[]} userlist - Array of all users at the current document.Format
  *                           of the objects matches the format of objects sent
- *                           to {@link this#logon}.
+ *                           to {@link this#updateUser}.
  */
 export default class SyncService {
 
@@ -26,8 +28,7 @@ export default class SyncService {
 		this._nextListenerId = 1;
 
 		// Bind public methods to this
-		this.logon = this.logon.bind(this);
-		this.handleDocumentChange = this.handleDocumentChange.bind(this);
+		this.updateUser = this.updateUser.bind(this);
 		this.on = this.on.bind(this);
 		this.off = this.off.bind(this);
 		this.disconnect = this.disconnect.bind(this);
@@ -41,31 +42,21 @@ export default class SyncService {
 	}
 
 	/**
-	 * Logon at sync server.
+	 * Send current user's data to sync service
 	 * @access public
 	 * @arg {object} account - Any serializable object
 	 */
-	logon(account) {
+	updateUser(account) {
+
+		// Clone current account and update fields included in account parameter
+		account = Object.assign(JSON.parse(JSON.stringify(this._account)), account);
 
 		if (JSON.stringify(account) === JSON.stringify(this._account)) {
 			return;
 		}
 
 		this._account = account;
-		this._emitLogon();
-	}
-
-	/**
-	 * Notify SyncService about a document change in the UI.
-	 * @access public
-	 * @arg {null|string} oldDocumentId - ID of document that is left
-	 * @arg {string} newDocumentId - ID of document that is entered
-	 */
-	handleDocumentChange(oldDocumentId, newDocumentId) {
-		if (oldDocumentId !== null) {
-			this._emitDocumentLeave(oldDocumentId);
-		}
-		this._emitDocumentEnter(newDocumentId);
+		this._emitUserUpdate();
 	}
 
 	/**
@@ -125,41 +116,30 @@ export default class SyncService {
 
 		// Open a websocket to the sync server and register message handlers
 		this._socket = openSocket(SYNC_SERVICE);
-		this._socket.on('welcome', hostname => this.log('Connected to rtc-svc-server:', hostname));
-		this._socket.on('reconnect', () => this._emitLogon());
-		this._socket.on('user_change', userlist => this._handleUserListChange(userlist));
+		this._socket.on(
+			'reconnect',
+			() => this._emitUserUpdate()
+		);
+		this._socket.on(
+			EVT.USER.CONNECTED,
+			hostname => this.log('Connected to realtime-service:', hostname)
+		);
+		this._socket.on(
+			EVT.USER.UPDATED,
+			userlist => this._handleUserListChange(userlist)
+		);
 
 		// Make sure, the websocket is closed when the browser is closed
-		window.addEventListener('unload', () => this.disconnect());
+		window.addEventListener('unload', this.disconnect);
 	}
 
 	/**
-	 * Emit logon message to sync service, sending {@link this#_account}.
+	 * Emit user.update message to sync service, sending {@link this#_account}.
 	 * Used to identify the current user at the sync service.
 	 * @access private
 	 */
-	_emitLogon() {
-		this._socket.emit('logon', this._account);
-	}
-
-	/**
-	 * Emit documentEnter message to sync service. Used to subscribe to changes
-	 * to that document at the sync service.
-	 * @access private
-	 * @arg {string} docid - ID of document that is entered
-	 */
-	_emitDocumentEnter(docid) {
-		this._socket.emit('documentEnter', docid);
-	}
-
-	/**
-	 * Emit documentLeave message to sync service. Used to unsubscribe from
-	 * changes to that document at the sync service.
-	 * @access private
-	 * @arg {string} docid - ID of document that is left
-	 */
-	_emitDocumentLeave(docid) {
-		this._socket.emit('documentLeave', docid);
+	_emitUserUpdate() {
+		this._socket.emit(MSG.USER.UPDATE, this._account);
 	}
 
 	/**
@@ -168,7 +148,7 @@ export default class SyncService {
 	 * @access private
 	 * @arg {object[]} userlist - Array of all users at the current document.
 	 *                            Format of the objects matches the format of
-	 *                            objects sent to {@link this#logon}.
+	 *                            objects sent to {@link this#updateUser}.
 	 */
 	_handleUserListChange(userlist) {
 		this._fireEvent(
