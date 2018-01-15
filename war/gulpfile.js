@@ -158,8 +158,12 @@ gulp.task('watch',function() {
 	.pipe(gulp.dest('../target/qdacity-war/dist/js/'));
 });
 
-gulp.task('test', () =>
-    gulp.src('./tests/unit-tests/*.js').pipe(jasmine())
+gulp.task('unit-tests', () =>
+    gulp.src('./tests/unit-tests/**/*.js').pipe(jasmine())
+);
+
+gulp.task('acceptance-tests', () =>
+    gulp.src('./tests/acceptance-tests/**/*.js').pipe(jasmine())
 );
  
 gulp.task('default', ['watch']);
