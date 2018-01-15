@@ -85,8 +85,8 @@ export default class SyncService {
 	insertCode(code, parentID) {
 		this.log('code insert with', code, parentID);
 		return this._emit(MSG.CODE.INSERT, {
-			resource: data.code,
-			parentId: data.parentID,
+			resource: code,
+			parentId: parentID,
 		});
 	}
 
@@ -111,9 +111,9 @@ export default class SyncService {
 	 * @return {Promise} - Promise (will never be rejected)
 	 */
 	removeCode(code) {
-		return this._emit(MSG.CODE.REMOVE,
+		return this._emit(MSG.CODE.REMOVE, {
 			id: code.id,
-		);
+		});
 	}
 
 
