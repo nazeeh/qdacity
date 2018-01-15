@@ -111,6 +111,25 @@ frontend_prod_unittest:
   dependencies:
     - frontend_prod_build
 
+acceptance_tests:
+  tags:
+    - qdacity
+  stage: test
+  environment: Production
+  only:
+    - master
+  cache:
+    key: "node_modules"
+    untracked: true
+    paths:
+    - war/node_modules/
+    expire_in: 6 mos
+    policy: pull
+  script:
+    - rm -f ./war/WEB-INF/appengine-generated/local_db.bin
+    - mvn appengine:devserver -DskipTests
+    - gulp acceptance-tests
+
 rtcsvc_prod_unittest:
   tags:
     - qdacity
