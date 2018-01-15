@@ -123,7 +123,6 @@ acceptance_tests:
     untracked: true
     paths:
     - war/node_modules/
-    expire_in: 6 mos
     policy: pull
   script:
     - rm -f ./war/WEB-INF/appengine-generated/local_db.bin
