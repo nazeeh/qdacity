@@ -94,11 +94,11 @@ export default class NavBar extends React.Component {
 								<StyledHelpTab loggedIn={isLoggedIn} className="dropdown">
 									<StyledNavbarItem className="dropdownToggle clickable" onClick={function(){this.showHelpDropdown();}.bind(this)}>Help</StyledNavbarItem>
 									<div id="helpView" className="dropdown-menu dropdownContent">
-										<StyledDropdownLinks loggedIn={isLoggedIn} className="clickable" onClick={function(){alert("Coming Soon...");}}>		
+										<StyledDropdownLinks loggedIn={isLoggedIn} className="clickable" onClick={() =>  this.props.history.push('/Faq')}>
 											<div>Faq</div>
 										</StyledDropdownLinks>
 										<StyledDropdownLinks showOnlyIfLoggedIn loggedIn={isLoggedIn} className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
-											<div>Tutorial Overview</div>	
+											<div>Tutorial Overview</div>
 										</StyledDropdownLinks>
 									</div>
 								</StyledHelpTab>
