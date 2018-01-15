@@ -1,8 +1,12 @@
 import React from 'react'
-
+import styled from 'styled-components';
 import {
 	FormattedMessage
 } from 'react-intl';
+
+const StyledPage = styled.div `
+	margin-top: 35px;
+`;
 
 export default class Faq extends React.Component {
 	constructor(props) {
@@ -14,7 +18,7 @@ export default class Faq extends React.Component {
 
 	render(){
 		return(
-			<div>
+			<StyledPage className="container main-content">
 				<h1><FormattedMessage id='faq.title' defaultMessage='FAQ' /></h1>
 				<h2><FormattedMessage id='faq.signin.title' defaultMessage='Signin problems' /></h2>
 				<div>
@@ -26,7 +30,7 @@ export default class Faq extends React.Component {
 				<div>
 
 				</div>
-			</div>
+			</StyledPage>
 		);
 	}
 }
