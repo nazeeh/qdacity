@@ -1,93 +1,58 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import SyncService from '../../common/SyncService';
+const StyledCollaboratorCount = styled.div `
+	text-align: left;
+	font-size: 12px;
+	line-height: 2em;
+	color: #999;
+`;
 
 const StyledCollaboratorBox = styled.ul `
-	position: relative;
-	margin: 0;
-	list-style: none;
-	padding: 0;
 	display: flex;
 	flex-direction: row;
-	justify-content: flex-end;
-	width: ${props => props.width}px;
-	height: 30px;
+	flex-wrap: wrap;
+	width: 100%;
+	max-height: 200px;
+	margin: 0;
+	list-style: none;
+	padding: 0 0 4px;
+	overflow: auto;
 `;
-const StyledPlaceholder = styled.li `
-	line-height: 30px;
-	font-size: 12px;
-	white-space: pre;
-`;
 
-const StyledMoreCount = styled.li `
-	position: relative;
-	line-height: 30px;
-	height: 30px;
-	width: 30px;
-	margin-left: -15px;
-	border-radius: 50%;
-	background: white;
-	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-
-	&:before {
-		content: "+";
-	}
-
+const StyledCollaboratorItem = styled.li `
 	ul:hover > & {
-		display: none;
+		width: 100%;
+		margin: 
 	}
 `;
 
-const StyledCollaborator = styled.li `
+const StyledCollaborator = styled.div `
 	position: relative;
-	display: flex;
+	display: block;
 	justify-content: center;
 	flex-direction: column;
-	width: 30px;
-	height: 30px;
-	margin: 0 5px 0 -15px;
+	width: ${props => props.diameter}px;
+	height: ${props => props.diameter}px;
+	margin: ${props => props.diameter / 10}px;
 	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
 	border-radius: 50%;
 
-	&:nth-child(1n+3) {
-		display: none;
-	}
-	ul:hover > &:nth-child(1n+${props => props.displayCount}) {
-		display: flex;
-	}
-
-	ul:hover & {
-		position: absolute;
-		right: 0;
-		top: ${props => props.hoverOffset}px;
-		z-index: 1;
-	}
-
-	&:before {
+	ul:hover > li > &:before {
 		content: "${props => props.name}";
 		position: absolute;
 		top: 0;
-		right: 0;
+		left: 0;
 		background: #fefefe;
 		box-shadow: 1px 1px 4px rgba(0,0,0,.5);
-		border-radius: 25px;
-		padding-right: 20px;
-		padding-left: 10px;
-		line-height: 30px;
-		white-space: pre;
-		max-width: 0;
-		transition: max-width 250ms cubic-bezier(0.55, 0.055, 0.675, 0.19),
-					padding-right 250ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	&:hover:before {
-		max-width: 300px;
-		padding-right: 35px;
-		transition: max-width 300ms cubic-bezier(0.215, 0.61, 0.355, 1),
-					padding-right 300ms cubic-bezier(0.215, 0.61, 0.355, 1);
+		border-radius: ${props => props.diameter / 2}px;
+		padding-right: ${props => props.diameter / 3}px;
+		padding-left: ${props => props.diameter / 3 * 4}px;
+		font-size: ${props => props.diameter * .6}px;
+		color: #333;
+		line-height: ${props => props.diameter}px;
+		white-space: nowrap;
 	}
 
 	&:after {
@@ -98,10 +63,12 @@ const StyledCollaborator = styled.li `
 		background: url(${props => props.picSrc}) no-repeat;
 		background-size: cover;
 		border-radius: 50%;
-		width: 30px;
-		height: 30px;
+		width: ${props => props.diameter}px;
+		height: ${props => props.diameter}px;
 	}
 `;
+
+
 
 export default class CollaboratorList extends React.Component {
 
@@ -116,7 +83,8 @@ export default class CollaboratorList extends React.Component {
 	}
 
 	componentDidMount() {
-		this.listenerID = this.props.syncService.on(
+		const syncService = this.props.syncService;
+		this.listenerID = syncService && syncService.on(
 			'changeUserList',
 			list => this.setState({
 				collaborators: list
@@ -125,36 +93,48 @@ export default class CollaboratorList extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.props.syncService.off('changeUserList', this.listenerID);
+		const syncService = this.props.syncService;
+		syncService && syncService.off('changeUserList', this.listenerID);
 	}
 
 	render() {
 
-		// Get a copy of the collaborators and reverse it
+		// Get props
+		const diameter = this.props.diameter;
+
+		// Get collaborators from state and filter by docid if set
 		const collaborators = this.state.collaborators;
 
-		// Get displayCount prop or fallback to default value
-		const displayCount = this.props.displayCount || 3;
-
-		// Calculate number of collaborators in Dropdown
-		const moreCount = Math.max(collaborators.length - displayCount + 1, 0);
-
 		return (
-			<StyledCollaboratorBox width={displayCount*30-15}>
-				{ collaborators.length == 0 ? (
-					<StyledPlaceholder>
-						No collaborators
-					</StyledPlaceholder>
-				) : null }
-				{ collaborators.map((c, i) => (
-					<StyledCollaborator
-						picSrc={c.picSrc}
-						name={c.name}
-						displayCount={displayCount}
-						hoverOffset={i * 28} />
-				))}
-				{ moreCount > 0 ? <StyledMoreCount>{moreCount}</StyledMoreCount> : null }
-			</StyledCollaboratorBox>
+			<div>
+				<StyledCollaboratorCount>
+					<FormattedMessage
+						id='collaborators.count'
+						defaultMessage={`{count, plural,
+							=0 {No collaborators}
+							one {# collaborator}
+							other {# collaborators}
+						}`}
+						values={{ count: collaborators.length }}
+					/>
+				</StyledCollaboratorCount>
+				<StyledCollaboratorBox diameter={diameter}>
+					{ collaborators.map((c, i) => (
+						<StyledCollaboratorItem>
+							<StyledCollaborator
+								picSrc={c.picSrc}
+								name={c.name}
+								hoverOffset={i * (diameter-2)}
+								diameter={diameter}
+							/>
+						</StyledCollaboratorItem>
+					))}
+				</StyledCollaboratorBox>
+			</div>
 		);
 	}
+};
+
+CollaboratorList.defaultProps = {
+	diameter: 20,
 };
