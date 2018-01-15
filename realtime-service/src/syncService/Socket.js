@@ -1,5 +1,6 @@
 const SERVER_NAME = require('../utils/serverName');
 const Endpoint = require('../endpoints/Endpoint');
+const CodesHandler = require('./CodesHandler');
 const {
   MSG,
   EVT
@@ -28,72 +29,63 @@ class Socket {
    * Constructor for Socket initializes listeners and sends ack to client
    */
   constructor(io, ioSocket, redis) {
-    this._api = new Endpoint();
+    // Public properties
+    this.socket = ioSocket;
+    this.api = new Endpoint();
 
+    // Private properties
     this._io = io;
-    this._socket = ioSocket;
     this._redis = redis;
-
     this._project = '';
     this._document = '';
 
-    // Listen to messages from client
-    this._listen();
+    // Listen to meta messages from client
+    this.socket.on(MSG.USER.UPDATE, this._handleUserUpdate.bind(this));
+    this.socket.on('disconnecting', this._handleUserDisconnecting.bind(this));
+
+    // Initialize handlers for specific domains
+    new CodesHandler(this);
 
     // Send connection acknowledgement to client
-    this._socket.emit(EVT.USER.CONNECTED, SERVER_NAME);
-  };
-
-  /**
-   * Initialize listeners for messages sent by clients
-   * @access private
-   * @arg {object} account - Any serializable object
-   */
-  _listen() {
-    [
-      // Handle user messages
-      [MSG.USER.UPDATE, this._handleUserUpdate],
-
-      // Handle code messages
-      [MSG.CODE.INSERT, this._handleCodeInsert],
-      [MSG.CODE.RELOCATE, this._handleCodeRelocate],
-      [MSG.CODE.REMOVE, this._handleCodeRemove],
-
-      // Handle socket.io-internal message
-      ['disconnecting', this._cleanup],
-    ].map(def => this._socket.on(def[0], def[1].bind(this)));
+    this.socket.emit(EVT.USER.CONNECTED, SERVER_NAME);
   };
 
   /**
    * Cleanup on socket disconnection
-   * @access private
+   * @private
    */
-  _cleanup() {
+  _handleUserDisconnecting() {
 
     // Remove socket data from shared application state
-    this._redis.hdel(REDIS_SOCKET_DATA, this._socket.id);
+    this._redis.hdel(REDIS_SOCKET_DATA, this.socket.id);
 
     // Loop over socket's rooms/documents and remove socket from each
-    Object.keys(this._socket.rooms).map(room => {
-      this._socket.leave(room);
+    Object.keys(this.socket.rooms).map(room => {
+      this.socket.leave(room);
     });
     this._emitUserUpdated();
 
-    console.info(`${this._socket.id} disconnected`);
+    console.info(`${this.socket.id} disconnected`);
   };
 
   /**
-   * Handle socket logon
+   * Handle update of user data
+   * @private
+   * @arg {object} data - object describing the connected user. Expected keys:
+   *                      { name, email, picSrc, apiRoot, apiVersion, token,
+   *                        project, document }
+   * @arg {function} ack - acknowledge function will be called with argument
+   *                       ("ok") on success or ("error", stack) on failure
    */
   _handleUserUpdate(data, ack) {
-    console.info(`${this._socket.id} user.update ${JSON.stringify(data)}`);
+    console.info(`${this.socket.id} user.update ${JSON.stringify(data)}`);
 
     try {
       // Add socket and its data to shared application state
       this._updateRedis(data);
 
       // Update API client
-      this._api.updateParameters(
+      this.api.updateParameters(
         data.apiRoot,
         data.apiVersion,
         data.token,
@@ -112,56 +104,32 @@ class Socket {
   };
 
   /**
-   * Handle code insertion
+   * Handle successful API response and send ("ok", data) to initiating
+   * client (via ack function) and emit event with data to all connected clients
+   * @public
+   * @arg {string} event - The event to be sent to all clients. Should be one
+   *                       of EVT constants. Will sent data parameter.
+   * @arg {function} ack - acknowledge function will be called with arguments
+   *                       ("ok", data), with data being data parameter.
+   * @arg {mixed} data - Data to be sent with ack and event.
    */
-  _handleCodeInsert(data, ack) {
-    console.info(`${this._socket.id} code.insert ${JSON.stringify(data)}`);
-
-    // Call backend API to insert code
-    this._api.codes.insertCode({
-      resource: data.code,
-      parentId: data.parentID,
-    })
-      .then(res => this._handleApiResponse(EVT.CODE.INSERTED, ack, res))
-      .catch((...foo) => ack('error', ...foo));
-  };
-
-  /**
-   * Handle code relocation
-   */
-  _handleCodeRelocate(data, ack) {
-    console.info(`${this._socket.id} code.relocate ${JSON.stringify(data)}`);
-
-    // Call backend API to relocate code
-    this._api.codes.relocateCode(data)
-      .then(res => this._handleApiResponse(EVT.CODE.RELOCATED, ack, res))
-      .catch((...foo) => ack('error', ...foo));
-  };
-
-  /**
-   * Handle code removal
-   */
-  _handleCodeRemove(data, ack) {
-    console.info(`${this._socket.id} code.remove ${JSON.stringify(data)}`);
-
-    this._api.codes.removeCode({
-      id: code.id,
-    })
-      .then(res => this._handleApiResponse(EVT.CODE.REMOVED, ack, data))
-      .catch((...foo) => ack('error', ...foo));
-  };
-
-  _handleApiResponse(event, ack, data) {
+  handleApiResponse(event, ack, data) {
+    // Send acknowledgement to initiating client
     ack('ok', data);
 
-    // Emit code.removed event to socket's projectRoom
+    // Emit event to socket's projectRoom
     this._emitToProject(event, data);
   };
 
+  /**
+   * Update shared socket data in redis database.
+   * @private
+   * @arg {object} data - Data of the user connected via this socket.
+   */
   _updateRedis(data) {
     this._redis.hset([
       REDIS_SOCKET_DATA,
-      this._socket.id,
+      this.socket.id,
       JSON.stringify({
         data: {
           name: data.name,
@@ -175,28 +143,12 @@ class Socket {
     ]);
   };
 
-  _updateApi(newApiData) {
-    // Do not update if api data did not change
-    if (JSON.stringify(this._apiData) === JSON.stringify(newApiData)) {
-      return;
-    }
-
-    // Update property
-    this._apiData = newApiData;
-
-    // Do not connect to API, if any of the arguments is falsy
-    if (!newApiData.root || !newApiData.version || !newApiData.token) {
-      return;
-    }
-
-    this._api.connect(
-      newApiData.root,
-      newApiData.version,
-      newApiData.token
-    );
-
-  };
-
+  /**
+   * Update this sockets project or document and emit change to all clients.
+   * @private
+   * @arg {string} type - Room type. Use only constants DOC_ROOM and PRJ_ROOM
+   * @arg {string} id - ID of the document or project room
+   */
   _updateRoom(type, id) {
     // Allow only certain room types
     if (type !== DOC_ROOM && type !== PRJ_ROOM) {
@@ -211,51 +163,52 @@ class Socket {
       return;
     }
 
+    // Update property
+    this[property] = id;
+
     // Leave all rooms that are not in updated data
-    Object.keys(this._socket.rooms).map(room => {
+    Object.keys(this.socket.rooms).map(room => {
       const { roomType, roomId } = room.split(ROOM_SEP);
       if (type === roomType && id !== roomId) {
-        this._socket.leave(room);
+        this.socket.leave(room);
       }
     });
 
     // Join new room
     const newRoom = `${type}${ROOM_SEP}${id}`;
-    this._socket.join(newRoom);
+    this.socket.join(newRoom);
 
     // Emit user update to project room
     this._emitUserUpdated();
-
-    // Update property
-    this[property] = id;
   };
 
   /**
-   * Notify all sockets that watch a specific project room, that the user list
-   * on that project changed
+   * Send event to all clients in the same project room as this socket, that
+   * the user list of this project has changed.
+   * @private
    */
   _emitUserUpdated() {
 
     // Get project room name
     const roomid = `${PRJ_ROOM}${ROOM_SEP}${this._project}`;
 
-    // Get all sockets in the document room. `clients` contains the socket ids
-    this._io.in(roomid).clients((error, clients) => {
+    // Get all sockets in the document room.
+    this._io.in(roomid).clients((error, socketIds) => {
 
       // Build Redis command arguments for HMGET <key> <value> <value> …
-      const redisArgs = [REDIS_SOCKET_DATA].concat(clients);
+      const redisArgs = [REDIS_SOCKET_DATA].concat(socketIds);
 
       // Get data for those clients to match additional data
-      this._redis.hmget(redisArgs, (err, res) => {
-        // Do not emit if res is falsy
-        if (!res) {
+      this._redis.hmget(redisArgs, (error, response) => {
+        // Do not emit if response is falsy
+        if (!response) {
           return;
         }
 
-        // Map res array to data field if present, or fallback to {} and
+        // Map response array to data field if present, or fallback to {} and
         // filter out users that have not yet logged on with name, email and
-        // picSrc
-        const data = res
+        // picSrc or are not in same project.
+        const data = response
           .map(clientData => {
             const json = JSON.parse(clientData);
             return json.data || {};
@@ -267,20 +220,39 @@ class Socket {
               && data.picSrc
           );
 
-        // Broadcast event "user.updated" to document room if any data
+        // Send event "user.updated" to project room
         this._emitToProject(EVT.USER.UPDATED, data);
       });
     });
   };
 
+  /**
+   * Send event to this socket's project room
+   * @private
+   * @arg {string} event - The event to emit
+   * @arg {...mixed} args - Any arguments to send with the event
+   */
   _emitToProject(event, ...args) {
     this._emitToRoom(`${PRJ_ROOM}${ROOM_SEP}${this._project}`, event, ...args);
   };
 
+  /**
+   * Send event to this socket's document room
+   * @private
+   * @arg {string} event - The event to emit
+   * @arg {...mixed} args - Any arguments to send with the event
+   */
   _emitToDocument(event, ...args) {
     this._emitToRoom(`${DOC_ROOM}${ROOM_SEP}${this._document}`, event, ...args);
   };
 
+  /**
+   * Send event to some room
+   * @private
+   * @arg {string} room - The room to send to
+   * @arg {string} event - The event to emit
+   * @arg {...mixed} args - Any arguments to send with the event
+   */
   _emitToRoom(room, event, ...args) {
     this._io.to(room).emit(event, ...args);
   };
