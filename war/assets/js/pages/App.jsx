@@ -54,14 +54,11 @@ export default class App extends React.Component {
 		this.authorizationProvider = new AuthorizationProvider();
 
 		const _this = this;
-		this.authenticationProvider.addAuthStateListener(function () {
-			// update on every auth state change
-			_this.updateUserStatus();
-		});
-
+		
 		// on page reloads: also reload profile data		
 		if (this.authenticationProvider.isSignedIn()) {
 			_this.authenticationProvider.synchronizeTokenWithGapi();
+			_this.updateUserStatus();
 		} else {
 			// try silent sign in
 			_this.authenticationProvider.silentSignInWithGoogle().then(function () {
@@ -69,6 +66,11 @@ export default class App extends React.Component {
 				_this.updateUserStatus() // somehow the auth state listener triggers too early!
 			});
 		}
+
+		this.authenticationProvider.addAuthStateListener(function () {
+			// update on every auth state change
+			_this.updateUserStatus();
+		});
 	}
 
 

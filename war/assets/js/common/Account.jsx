@@ -62,7 +62,7 @@ export default class Account extends React.Component {
 	onChanceUser() {
 		const _this = this;
 		this.authenticationProvider.changeAccount().then(() => {
-			location.reload();
+			// no redirect neccessary because App.jsx rerenders if auth state changes
 		}, (error) => {
 			console.log(error);
 			_this.props.history.push('/');

@@ -14,10 +14,7 @@ export default class AuthenticationProvider {
 			scope: 'profile'
 		});
 
-
-		hello.init({
-			google: GOOGLE_CLIENT_ID
-		})
+		this.initHelloJs();
 
 		this.network = {
 			google: 'google', // uses hellojs
@@ -29,6 +26,16 @@ export default class AuthenticationProvider {
 		 * Equals one of the network properties or 'gapi'.
 		 */
 		this.activeNetwork = this.network.google;
+	}
+
+	/**
+	 * Inits the HelloJS library
+	 */
+	initHelloJs() {
+		
+		hello.init({
+			google: GOOGLE_CLIENT_ID
+		})
 	}
 
 
