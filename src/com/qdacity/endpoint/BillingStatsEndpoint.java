@@ -30,21 +30,22 @@ public class BillingStatsEndpoint {
 
 		BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 
-
 		TimeZone timeZone = TimeZone.getTimeZone("UTC");
 		DateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		timestampFormat.setTimeZone(timeZone);
 
+		Date queryStartDate = startDate != null ? startDate : new Date(0);
+		Date queryEndDate = endDate != null ? endDate : new Date();
+
 		QueryJobConfiguration queryJobConfiguration = QueryJobConfiguration.newBuilder(
 				"SELECT FORMAT_TIMESTAMP(\"%F\", usage_start_time) as day, SUM(cost) as cost " +
 						"FROM `" + Constants.BILLING_TABLE + "` " +
-						//TODO handle null dates
 						"WHERE usage_start_time >= @startTime " +
 						"AND usage_start_time < @endTime " +
 						"GROUP BY day"
 		)
-				.addNamedParameter("startTime", QueryParameterValue.string(timestampFormat.format(startDate)))
-				.addNamedParameter("endTime", QueryParameterValue.string(timestampFormat.format(endDate)))
+				.addNamedParameter("startTime", QueryParameterValue.string(timestampFormat.format(queryStartDate)))
+				.addNamedParameter("endTime", QueryParameterValue.string(timestampFormat.format(queryEndDate)))
 				.setUseLegacySql(false)
 				.build();
 
