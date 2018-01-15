@@ -1,6 +1,6 @@
 import Promisizer from './Promisizer'
 
-export default class BIllingStatsEndpoint {
+export default class BillingStatsEndpoint {
 	constructor() {}
 
 	static getDailyCosts(startDate, endDate) {
