@@ -5,10 +5,6 @@ const google = require('googleapis');
  *
  * One instance is created per connected socket, using the connected user's
  * credentials and their configured API URL.
- *
- * Additionally to the documented methods, API endpoints can be called
- * directly. E.g. endpoint.codes.insertCode(args) resolves to
- * endpoint.request('codes.insertCode', args);
  */
 class Endpoint {
   constructor() {
@@ -21,22 +17,6 @@ class Endpoint {
     // Initialize api and queue
     this._api = null;
     this._queue = [];
-
-    // Return proxy to directly handle api endpoints as objects with methods
-    // e.g. endpoint.codes.insertCode(param) resolves to
-    // endpoint._executeRequest('codes.insertCode', param);
-    return new Proxy(this, {
-      get: (target, property) => {
-        return target.propertyIsEnumerable(property)
-            || typeof target[property] === 'function'
-          ? target[property]
-          : new Proxy(target, {
-              get: (target, method) => {
-                return target.request.bind(target, `${property}.${method}`);
-              }
-            });
-      }
-    });
   }
 
   /**
@@ -108,11 +88,6 @@ class Endpoint {
 
   /**
    * Send request to API endpoint.
-   *
-   * Instead of using this method, rather call the endpoints directly.
-   * E.g. this.codes.insertCode(args) resolves to
-   * this.request('codes.insertCode', args);
-   *
    * @public
    * @arg {string} endpoint - Dot-notated sub method of the api. E.g.
    *                          `codes.insertCode`
@@ -156,23 +131,18 @@ class Endpoint {
   _executeRequest(endpoint, args) {
 
     return new Promise((resolve, reject) => {
+
       // Translate dot-notated method to real function instance
       const fn = endpoint.split('.').reduce(
         (fn, segment) => fn[segment],
         this._api
       );
 
+      // Define Response handle that translates to promise resolve/reject
+      const handleResponse = (err, res) => err ? reject(err) : resolve(res);
+
       // Call the function with arguments and pass result to resolve/reject
-      fn(
-        args,
-        (err, res) => {
-          if(err) {
-            reject(err);
-          } else {
-            resolve(res);
-          }
-        }
-      );
+      fn(args, handleResponse);
 
     });
 
