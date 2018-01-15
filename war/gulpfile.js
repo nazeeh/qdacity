@@ -159,7 +159,7 @@ gulp.task('watch',function() {
 });
 
 gulp.task('test', () =>
-    gulp.src('./tests/*.js').pipe(jasmine())
+    gulp.src('./tests/unit-tests/*.js').pipe(jasmine())
 );
  
 gulp.task('default', ['watch']);
