@@ -1,4 +1,4 @@
-import Rule from '../../../assets/js/pages/uml-editor/mapping/Rule.js';
+import Rule from '../../../../assets/js/pages/uml-editor/mapping/Rule.js';
 import {
 	Target
 } from '../../../assets/js/pages/uml-editor/mapping/Target.js';
