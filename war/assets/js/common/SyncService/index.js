@@ -1,5 +1,6 @@
 import openSocket from 'socket.io-client';
 
+import CodesService from './CodesService';
 import { MSG, EVT } from './constants.js';
 
 /**
@@ -55,6 +56,9 @@ export default class SyncService {
 
 		// Connect to sync server
 		this._connect();
+
+		// Register sub-services
+		this.codes = new CodesService(this, this._socket);
 	}
 
 	/**
@@ -76,48 +80,6 @@ export default class SyncService {
 	}
 
 	/**
-	 * Send command to insert new Code into Codesystem
-	 * @access public
-	 * @arg {object} code - new Code object
-	 * @arg {int} parentID - ID of parent of new Code object
-	 * @return {Promise} - Promise (will never be rejected)
-	 */
-	insertCode(code, parentID) {
-		this.log('code insert with', code, parentID);
-		return this._emit(MSG.CODE.INSERT, {
-			resource: code,
-			parentId: parentID,
-		});
-	}
-
-	/**
-	 * Send command to relocate new Code to new parent in same Codesystem
-	 * @access public
-	 * @arg {int} codeId - ID of Code to be relocated
-	 * @arg {int} newParentID - ID of Code where the code should be moved to
-	 * @return {Promise} - Promise (will never be rejected)
-	 */
-	relocateCode(codeId, newParentID) {
-		return this._emit(MSG.CODE.RELOCATE, {
-			codeId,
-			newParentID,
-		});
-	}
-
-	/**
-	 * Send command to remove Code from Codesystem
-	 * @access public
-	 * @arg {object} code - Code object to be removed
-	 * @return {Promise} - Promise (will never be rejected)
-	 */
-	removeCode(code) {
-		return this._emit(MSG.CODE.REMOVE, {
-			id: code.id,
-		});
-	}
-
-
-	/**
 	 * Listen to event from SyncService. See class documentation for available
 	 * events.
 	 * @access public
@@ -134,7 +96,7 @@ export default class SyncService {
 			this._listeners[evt] = {};
 		}
 
-		const listenerId = this._getNextListenerId();
+		const listenerId = `_l_${this._nextListenerId++}`;
 		this._listeners[evt][listenerId] = callback;
 
 		return listenerId;
@@ -162,39 +124,26 @@ export default class SyncService {
 	}
 
 	/**
-	 * Connect to the sync server.
-	 * @access private
+	 * Notify potential listeners for specific event.
+	 * @access package
+	 * @arg {string} evt - The name of the event to fire
+	 * @arg {...*} args - Arguments to pass to the listeners' callbacks. See
+	 *                    class documentation for number and type of arguments
+	 *                    to be passed.
 	 */
-	_connect() {
-		// Open a websocket to the sync server and register message handlers
-		this._socket = openSocket('$SYNC_SERVICE$');
-
-		// Initialize listeners
-		[
-			// Send user data again on reconnect
-			['reconnect', this._emitUserUpdate],
-
-			// Handle user events
-			[EVT.USER.CONNECTED, this._handleUserConnected],
-			[EVT.USER.UPDATED, this._handleUserListChange],
-
-			// Handle code events
-			[EVT.CODE.INSERTED, this._handleCodeInserted],
-			[EVT.CODE.RELOCATED, this._handleCodeRelocated],
-			[EVT.CODE.REMOVED, this._handleCodeRemoved],
-		].map(def => this._socket.on(def[0], def[1].bind(this)));
-
-		// Make sure, the websocket is closed when the browser is closed
-		window.addEventListener('unload', this.disconnect);
+	fireEvent(evt, ...args) {
+		if (this._listeners[evt]) {
+			Object.values(this._listeners[evt]).forEach(cb => cb(...args));
+		}
 	}
 
 	/**
 	 * Emit message to sync service
-	 * @access private
+	 * @access package
 	 * @return {Promise} - resolves on success, will never be rejected, any
 	 *                     API errors will handled internally.
 	 */
-	_emit(messageType, arg) {
+	emit(messageType, arg) {
 		return new Promise((resolve, reject) => {
 			this._socket.emit(
 				messageType,
@@ -211,12 +160,35 @@ export default class SyncService {
 	};
 
 	/**
+	 * Connect to the sync server.
+	 * @access private
+	 */
+	_connect() {
+		// Open a websocket to the sync server and register message handlers
+		this._socket = openSocket('$SYNC_SERVICE$');
+
+		// Initialize listeners
+		[
+			// Send user data again on reconnect
+			['reconnect', this._emitUserUpdate],
+
+			// Handle user events
+			[EVT.USER.CONNECTED, this._handleUserConnected],
+			[EVT.USER.UPDATED, this._handleUserListChange],
+
+		].map(def => this._socket.on(def[0], def[1].bind(this)));
+
+		// Make sure, the websocket is closed when the browser is closed
+		window.addEventListener('unload', this.disconnect);
+	}
+
+	/**
 	 * Emit user.update message to sync service, sending {@link this#_userdata}.
 	 * Used to identify the current user at the sync service.
 	 * @access private
 	 */
 	_emitUserUpdate() {
-		this._emit(MSG.USER.UPDATE, this._userdata);
+		this.emit(MSG.USER.UPDATE, this._userdata);
 	};
 
 	/**
@@ -238,70 +210,10 @@ export default class SyncService {
 	 *                            objects sent to {@link this#updateUser}.
 	 */
 	_handleUserListChange(userlist) {
-		this._fireEvent(
+		this.fireEvent(
 			'userlistUpdated',
 			userlist.filter(user => user.email !== this._userdata.email)
 		);
 	}
 
-	/**
-	 * Handle code.inserted message from sync service. Used to notify clients
-	 * about new Codes inserted in their current CodeSystem.
-	 * @access private
-	 * @arg {object} code - The Code that has been inserted.
-	 */
-	_handleCodeInserted(code) {
-		this._fireEvent(
-			'codeInserted',
-			code
-		);
-	}
-
-	/**
-	 * Handle code.relocated message from sync service. Used to notify clients
-	 * about new Codes relocated inside their current CodeSystem.
-	 * @access private
-	 * @arg {object} code - The Code that has been relocated.
-	 */
-	_handleCodeRelocated(code) {
-		this._fireEvent(
-			'codeRelocated',
-			code
-		);
-	}
-
-	/**
-	 * Handle code.removed message from sync service. Used to notify clients
-	 * about Codes being removed from their current CodeSystem.
-	 * @access private
-	 * @arg {object} code - The Code that has been removed.
-	 */
-	_handleCodeRemoved(code) {
-		this._fireEvent(
-			'codeRemoved',
-			code
-		);
-	}
-
-	/**
-	 * Generate new unique listener ID.
-	 * @access private
-	 */
-	_getNextListenerId() {
-		return `_l_${this._nextListenerId++}`;
-	}
-
-	/**
-	 * Notify potential listeners for specific event.
-	 * @access private
-	 * @arg {string} evt - The name of the event to fire
-	 * @arg {...*} args - Arguments to pass to the listeners' callbacks. See
-	 *                    class documentation for number and type of arguments
-	 *                    to be passed.
-	 */
-	_fireEvent(evt, ...args) {
-		if (this._listeners[evt]) {
-			Object.values(this._listeners[evt]).forEach(cb => cb(...args));
-		}
-	}
 };

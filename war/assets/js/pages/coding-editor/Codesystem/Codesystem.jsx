@@ -230,7 +230,7 @@ export default class Codesystem extends SimpleCodesystem {
 			mmElementIDs: (mmElementIDs != null ? mmElementIDs : [])
 		};
 
-		this.props.syncService.insertCode(code, this.state.selected.id).then(resp => {
+		this.props.syncService.codes.insertCode(code, this.state.selected.id).then(resp => {
 			// Update the relation
 			if (relationId != null && relationSourceCodeId != null) {
 				const relationSourceCode = this.getCodeById(relationSourceCodeId);
@@ -267,7 +267,7 @@ export default class Codesystem extends SimpleCodesystem {
 			return;
 		}
 
-		this.props.syncService.removeCode(code);
+		this.props.syncService.codes.removeCode(code);
 	}
 
 	initCodingCount() {
@@ -301,7 +301,7 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	relocateCode(movingNode, targetID) {
-		this.props.syncService.relocateCode(movingNode.id, targetID);
+		this.props.syncService.codes.relocateCode(movingNode.id, targetID);
 	}
 
 	onCodeRelocation(code) {
