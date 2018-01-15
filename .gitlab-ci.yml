@@ -126,7 +126,7 @@ acceptance_tests:
     policy: pull
   script:
     - rm -f ./war/WEB-INF/appengine-generated/local_db.bin
-    - mvn appengine:devserver -DskipTests
+    - mvn appengine:devserver -DskipTests &
     - gulp acceptance-tests
 
 rtcsvc_prod_unittest:
