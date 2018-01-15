@@ -38,6 +38,7 @@ public class BillingStatsEndpoint {
 		QueryJobConfiguration queryJobConfiguration = QueryJobConfiguration.newBuilder(
 				"SELECT FORMAT_TIMESTAMP(\"%F\", usage_start_time) as day, SUM(cost) as cost " +
 						"FROM `" + Constants.BILLING_TABLE + "` " +
+						//TODO handle null dates
 						"WHERE usage_start_time >= @startTime " +
 						"AND usage_start_time < @endTime " +
 						"GROUP BY day"
