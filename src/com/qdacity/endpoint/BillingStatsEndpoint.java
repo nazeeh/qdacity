@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.cloud.bigquery.*;
 import com.qdacity.Constants;
+import com.qdacity.endpoint.datastructures.BillingStats;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -25,7 +26,7 @@ public class BillingStatsEndpoint {
 	@ApiMethod(
 			name = "billing.getDailyCosts"
 	)
-	public Map<Date, Double> getDailyCosts(@Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) throws InterruptedException, ParseException {
+	public BillingStats getDailyCosts(@Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) throws InterruptedException, ParseException {
 
 		BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 
@@ -41,7 +42,6 @@ public class BillingStatsEndpoint {
 						"AND usage_start_time < @endTime " +
 						"GROUP BY day"
 		)
-				.addNamedParameter("table", QueryParameterValue.string("`amse-qdacity.qdacity_amse_billing.gcp_billing_export_v1_005083_BC6F93_4D2352`"))
 				.addNamedParameter("startTime", QueryParameterValue.string(timestampFormat.format(startDate)))
 				.addNamedParameter("endTime", QueryParameterValue.string(timestampFormat.format(endDate)))
 				.setUseLegacySql(false)
@@ -58,14 +58,16 @@ public class BillingStatsEndpoint {
 		QueryResult queryResult = response.getResult();
 
 
-		Map<Date, Double> result = new HashMap<>();
+		Map<Date, Double> resultMap = new HashMap<>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
 
 		for (FieldValueList row : queryResult.iterateAll()) {
 			Date day = dateFormat.parse(row.get("day").getStringValue());
 			Double cost = row.get("cost").getDoubleValue();
-			result.put(day, cost);
+			resultMap.put(day, cost);
 		}
+		BillingStats result = new BillingStats();
+		result.setDailyCosts(resultMap);
 
 		return result;
 	}
