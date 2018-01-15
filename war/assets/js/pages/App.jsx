@@ -95,7 +95,7 @@ export default class App extends React.Component {
 					resolve();
 					return;
 				}
-
+				_this.authenticationProvider.synchronizeTokenWithGapi(); // Bugfix: sometimes the token seems to get lost!
 				_this.authenticationProvider.getCurrentUser().then(function (user) {
 					_this.state.isUserRegistered = !!user;
 					_this.setState(_this.state);
