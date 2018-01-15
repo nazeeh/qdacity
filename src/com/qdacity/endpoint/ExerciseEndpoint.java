@@ -133,24 +133,6 @@ public class ExerciseEndpoint {
 	}
 	
 
-	@ApiMethod(name = "exercise.createExerciseProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
-		ProjectRevision project = null;
-		ExerciseProject cloneExerciseProject = null;
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			
-			cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
-
-		} finally {
-			mgr.close();
-		}
-		return cloneExerciseProject;
-	}
-	
 	@SuppressWarnings({ "unchecked"})
 	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded",
 			scopes = { Constants.EMAIL_SCOPE },
