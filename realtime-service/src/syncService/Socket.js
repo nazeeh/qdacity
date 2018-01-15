@@ -1,10 +1,7 @@
 const SERVER_NAME = require('../utils/serverName');
 const Endpoint = require('../endpoints/Endpoint');
 const CodesHandler = require('./CodesHandler');
-const {
-  MSG,
-  EVT
-} = require('./constants.js');
+const { MSG, EVT } = require('./constants.js');
 
 // Key to use for socket data hash in redis
 const REDIS_SOCKET_DATA = 'socketdata';
@@ -24,7 +21,6 @@ const PRJ_ROOM = 'prj';
  * it easy to broadcast any changes regarding a project/document to its room.
  */
 class Socket {
-
   /**
    * Constructor for Socket initializes listeners and sends ack to client
    */
@@ -48,14 +44,13 @@ class Socket {
 
     // Send connection acknowledgement to client
     this.socket.emit(EVT.USER.CONNECTED, SERVER_NAME);
-  };
+  }
 
   /**
    * Cleanup on socket disconnection
    * @private
    */
   _handleUserDisconnecting() {
-
     // Remove socket data from shared application state
     this._redis.hdel(REDIS_SOCKET_DATA, this.socket.id);
 
@@ -66,7 +61,7 @@ class Socket {
     this._emitUserUpdated();
 
     console.info(`${this.socket.id} disconnected`);
-  };
+  }
 
   /**
    * Handle update of user data
@@ -85,11 +80,7 @@ class Socket {
       this._updateRedis(data);
 
       // Update API client
-      this.api.updateParameters(
-        data.apiRoot,
-        data.apiVersion,
-        data.token,
-      );
+      this.api.updateParameters(data.apiRoot, data.apiVersion, data.token);
 
       // (Leave previous and) join new project room
       this._updateRoom(PRJ_ROOM, data.project);
@@ -101,7 +92,7 @@ class Socket {
     } catch (e) {
       ack('error', e.stack);
     }
-  };
+  }
 
   /**
    * Handle successful API response and send ("ok", data) to initiating
@@ -119,7 +110,7 @@ class Socket {
 
     // Emit event to socket's projectRoom
     this._emitToProject(event, data);
-  };
+  }
 
   /**
    * Update shared socket data in redis database.
@@ -141,7 +132,7 @@ class Socket {
         server: SERVER_NAME,
       }),
     ]);
-  };
+  }
 
   /**
    * Update this sockets project or document and emit change to all clients.
@@ -180,7 +171,7 @@ class Socket {
 
     // Emit user update to project room
     this._emitUserUpdated();
-  };
+  }
 
   /**
    * Send event to all clients in the same project room as this socket, that
@@ -188,13 +179,11 @@ class Socket {
    * @private
    */
   _emitUserUpdated() {
-
     // Get project room name
     const roomid = `${PRJ_ROOM}${ROOM_SEP}${this._project}`;
 
     // Get all sockets in the document room.
     this._io.in(roomid).clients((error, socketIds) => {
-
       // Build Redis command arguments for HMGET <key> <value> <value> …
       const redisArgs = [REDIS_SOCKET_DATA].concat(socketIds);
 
@@ -214,17 +203,18 @@ class Socket {
             return json.data || {};
           })
           .filter(
-            data => data.project == this._project
-              && data.name
-              && data.email
-              && data.picSrc
+            data =>
+              data.project == this._project &&
+              data.name &&
+              data.email &&
+              data.picSrc
           );
 
         // Send event "user.updated" to project room
         this._emitToProject(EVT.USER.UPDATED, data);
       });
     });
-  };
+  }
 
   /**
    * Send event to this socket's project room
@@ -234,7 +224,7 @@ class Socket {
    */
   _emitToProject(event, ...args) {
     this._emitToRoom(`${PRJ_ROOM}${ROOM_SEP}${this._project}`, event, ...args);
-  };
+  }
 
   /**
    * Send event to this socket's document room
@@ -244,7 +234,7 @@ class Socket {
    */
   _emitToDocument(event, ...args) {
     this._emitToRoom(`${DOC_ROOM}${ROOM_SEP}${this._document}`, event, ...args);
-  };
+  }
 
   /**
    * Send event to some room
@@ -255,8 +245,7 @@ class Socket {
    */
   _emitToRoom(room, event, ...args) {
     this._io.to(room).emit(event, ...args);
-  };
-
-};
+  }
+}
 
 module.exports = Socket;

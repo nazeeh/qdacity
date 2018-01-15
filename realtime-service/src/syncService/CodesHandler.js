@@ -1,13 +1,9 @@
-const {
-  MSG,
-  EVT
-} = require('./constants.js');
+const { MSG, EVT } = require('./constants.js');
 
 /**
  * Handler for all messages regarding codes endpoint
  */
 class CodesHandler {
-
   /**
    * CodesHandler constructor
    * @public
@@ -45,10 +41,11 @@ class CodesHandler {
     console.info(`${this._ioSocket.id} code.insert ${JSON.stringify(data)}`);
 
     // Call backend API to insert code
-    this._socket.api.request('codes.insertCode', data)
+    this._socket.api
+      .request('codes.insertCode', data)
       .then(res => this._socket.handleApiResponse(EVT.CODE.INSERTED, ack, res))
       .catch((...foo) => ack('error', ...foo));
-  };
+  }
 
   /**
    * Handle code relocation
@@ -62,10 +59,11 @@ class CodesHandler {
     console.info(`${this._ioSocket.id} code.relocate ${JSON.stringify(data)}`);
 
     // Call backend API to relocate code
-    this._socket.api.request('codes.relocateCode', data)
+    this._socket.api
+      .request('codes.relocateCode', data)
       .then(res => this._socket.handleApiResponse(EVT.CODE.RELOCATED, ack, res))
       .catch((...foo) => ack('error', ...foo));
-  };
+  }
 
   /**
    * Handle code removal
@@ -77,11 +75,11 @@ class CodesHandler {
     console.info(`${this._ioSocket.id} code.remove ${JSON.stringify(data)}`);
 
     // Call backend API to remove code
-    this._socket.api.request('codes.removeCode', data)
+    this._socket.api
+      .request('codes.removeCode', data)
       .then(res => this._socket.handleApiResponse(EVT.CODE.REMOVED, ack, data))
       .catch((...foo) => ack('error', ...foo));
-  };
-
-};
+  }
+}
 
 module.exports = CodesHandler;

@@ -8,7 +8,6 @@ const google = require('googleapis');
  */
 class Endpoint {
   constructor() {
-
     // Initialize API parameters
     this._apiRoot;
     this._apiVersion;
@@ -29,11 +28,12 @@ class Endpoint {
    * @arg {string} token - The authorization token.
    */
   updateParameters(root, version, token) {
-
     // Do not update if api data did not change
-    if (root == this._apiRoot
-        && version == this._apiVersion
-        && token == this._apiToken) {
+    if (
+      root == this._apiRoot &&
+      version == this._apiVersion &&
+      token == this._apiToken
+    ) {
       return;
     }
 
@@ -64,11 +64,10 @@ class Endpoint {
         auth: oauth2Client,
       },
       (err, api) => {
-
         // Error: Something went wrong, e.g. API configuration wrong or
         // authorization invalid.
-        if(err) {
-          console.error("API discovery failed", err);
+        if (err) {
+          console.error('API discovery failed', err);
           this._queue.map(params => params.reject('API discovery failed'));
           return;
         }
@@ -76,14 +75,13 @@ class Endpoint {
         // Set new api and process queued requests
         this._api = api;
         this._queue.map(params => {
-          this._executeRequest(
-            params.endpoint,
-            params.args,
-          ).then(params.resolve, params.reject)
+          this._executeRequest(params.endpoint, params.args).then(
+            params.resolve,
+            params.reject
+          );
         });
       }
     );
-
   }
 
   /**
@@ -129,25 +127,19 @@ class Endpoint {
    *                     errors.
    */
   _executeRequest(endpoint, args) {
-
     return new Promise((resolve, reject) => {
-
       // Translate dot-notated method to real function instance
-      const fn = endpoint.split('.').reduce(
-        (fn, segment) => fn[segment],
-        this._api
-      );
+      const fn = endpoint
+        .split('.')
+        .reduce((fn, segment) => fn[segment], this._api);
 
       // Define Response handle that translates to promise resolve/reject
-      const handleResponse = (err, res) => err ? reject(err) : resolve(res);
+      const handleResponse = (err, res) => (err ? reject(err) : resolve(res));
 
       // Call the function with arguments and pass result to resolve/reject
       fn(args, handleResponse);
-
     });
-
   }
-
-};
+}
 
 module.exports = Endpoint;
