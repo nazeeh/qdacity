@@ -1,9 +1,8 @@
 package com.qdacity.endpoint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -23,9 +22,6 @@ import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
 import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.ProjectRevision;
-import com.qdacity.project.ValidationProject;
-import com.qdacity.user.UserNotification;
-import com.qdacity.user.UserNotificationType;
 
 
 @Api(name = "qdacity",
@@ -146,27 +142,48 @@ public class ExerciseEndpoint {
 		ExerciseProject cloneExerciseProject = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			project = mgr.getObjectById(ProjectRevision.class, revisionID);
-
-			cloneExerciseProject = createExerciseProject(project, user);
-
-			cloneExerciseProject.addValidationCoder(user.getUserId());
-			cloneExerciseProject.setExerciseID(exerciseID);
-			com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-
-			cloneExerciseProject.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());
-
-			cloneExerciseProject = mgr.makePersistent(cloneExerciseProject);
-			project = mgr.makePersistent(project);
-
-			TextDocumentEndpoint.cloneTextDocuments(project, cloneExerciseProject.getId(), true, user);
-
+			
+			cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
 
 		} finally {
 			mgr.close();
 		}
 		return cloneExerciseProject;
 	}
+	
+	@SuppressWarnings({ "unchecked"})
+	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public ExerciseProject createExerciseProjectIfNeeded(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
+			
+			ExerciseProject cloneExerciseProject = null;
+			List<ExerciseProject> exerciseProjects = null;
+			List<String> validationCodersList = new ArrayList<String>();
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+				
+				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(revisionID)");
+				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(revisionID));
+				if (exerciseProjects.size() == 0) {
+					cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
+				}
+				else {
+					for (ExerciseProject exerciseProject : exerciseProjects) {						
+						validationCodersList.addAll(exerciseProject.getValidationCoders());
+					};
+					
+					if (!(validationCodersList.contains(user.getUserId()))) {
+						cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
+					}
+				}
+				
+			} finally {
+				mgr.close();
+			}
+			return cloneExerciseProject;
+		}
 	
 	@ApiMethod(name = "exercise.addValidationCoder",
 			path = "addValidationCoder",
@@ -215,7 +232,7 @@ public class ExerciseEndpoint {
 			return exerciseProject;
 		}
 	
-	private ExerciseProject createExerciseProject(ProjectRevision projectRev, User user) throws UnauthorizedException {
+	private ExerciseProject cloneExerciseProject(ProjectRevision projectRev, User user) throws UnauthorizedException {
 
 		ExerciseProject cloneProject = new ExerciseProject(projectRev);
 
@@ -223,6 +240,31 @@ public class ExerciseEndpoint {
 
 		return cloneProject;
 
+	}
+	
+	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID ,User user) throws UnauthorizedException {
+
+		PersistenceManager mgr = getPersistenceManager();
+		
+		ProjectRevision project = null;
+		ExerciseProject cloneExerciseProject = null;
+		
+		project = mgr.getObjectById(ProjectRevision.class, revisionID);
+
+		cloneExerciseProject = cloneExerciseProject(project, user);
+
+		cloneExerciseProject.addValidationCoder(user.getUserId());
+		cloneExerciseProject.setExerciseID(exerciseID);
+		com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+
+		cloneExerciseProject.setCreatorName(validationCoder.getGivenName() + " " + validationCoder.getSurName());
+
+		cloneExerciseProject = mgr.makePersistent(cloneExerciseProject);
+		project = mgr.makePersistent(project);
+
+		TextDocumentEndpoint.cloneTextDocuments(project, cloneExerciseProject.getId(), true, user);
+		
+		return cloneExerciseProject;
 	}
 	
 	private boolean containsExercise(Exercise exercise) {
