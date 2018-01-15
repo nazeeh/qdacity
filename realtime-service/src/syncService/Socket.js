@@ -28,18 +28,14 @@ class Socket {
    * Constructor for Socket initializes listeners and sends ack to client
    */
   constructor(io, ioSocket, redis) {
+    this._api = new Endpoint();
+
     this._io = io;
     this._socket = ioSocket;
     this._redis = redis;
 
     this._project = '';
     this._document = '';
-    this._api = new Endpoint();
-    this._apiData = {
-      root: '',
-      apiVersion: '',
-      token: '',
-    };
 
     // Listen to messages from client
     this._listen();
@@ -97,11 +93,11 @@ class Socket {
       this._updateRedis(data);
 
       // Update API client
-      this._updateApi({
-        root: data.apiRoot,
-        version: data.apiVersion,
-        token: data.token,
-      });
+      this._api.updateParameters(
+        data.apiRoot,
+        data.apiVersion,
+        data.token,
+      );
 
       // (Leave previous and) join new project room
       this._updateRoom(PRJ_ROOM, data.project);

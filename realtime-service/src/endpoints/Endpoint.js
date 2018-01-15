@@ -9,10 +9,14 @@ const google = require('googleapis');
  * Additionally to the documented methods, API endpoints can be called
  * directly. E.g. endpoint.codes.insertCode(args) resolves to
  * endpoint.request('codes.insertCode', args);
- *
  */
 class Endpoint {
   constructor() {
+
+    // Initialize API parameters
+    this._apiRoot;
+    this._apiVersion;
+    this._apiToken;
 
     // Initialize api and queue
     this._api = null;
@@ -36,17 +40,32 @@ class Endpoint {
   }
 
   /**
-   * Connect or reconnect to specific API URL with specific authorization
-   * token. Should be called initially and if authorization token changes.
-   * Requests that are made before first connection or while reconnecting,
-   * are queued and executed afterwards.
+   * Update API parameters. Endpoint tries to connect to the API as soon as
+   * the provided parameters are complete, and after that only reconnects if
+   * at least one of the parameters changed.
    * @public
-   * @arg {string} apiRoot - The API's root url, e.g.
-   *                         "https://myapp.appspot.com/_ah/api"
-   * @arg {string} apiVersion - The API version, e.g. "v10"
+   * @arg {string} root - The API's root url, e.g. "https://myapp.appspot.com/_ah/api"
+   * @arg {string} version - The API version, e.g. "v10"
    * @arg {string} token - The authorization token.
    */
-  connect(apiRoot, apiVersion, token) {
+  updateParameters(root, version, token) {
+
+    // Do not update if api data did not change
+    if (root == this._apiRoot
+        && version == this._apiVersion
+        && token == this._apiToken) {
+      return;
+    }
+
+    // Update properties
+    this._apiRoot = root;
+    this._apiVersion = version;
+    this._apiToken = token;
+
+    // Do not connect to API, if any of the arguments is falsy
+    if (!root || !version || !token) {
+      return;
+    }
 
     // Reset queue and set current API to null to enable queueing
     this._queue = [];
@@ -60,7 +79,7 @@ class Endpoint {
 
     // Try to discover the API
     google.discoverAPI(
-      `${apiRoot}/discovery/v1/apis/qdacity/${apiVersion}/rest`,
+      `${root}/discovery/v1/apis/qdacity/${version}/rest`,
       {
         auth: oauth2Client,
       },
