@@ -34,7 +34,7 @@ class Socket {
 
     this._project = '';
     this._document = '';
-    this._api = null;
+    this._api = new Endpoint();
     this._apiData = {
       root: '',
       apiVersion: '',
@@ -122,7 +122,10 @@ class Socket {
     console.info(`${this._socket.id} code.insert ${JSON.stringify(data)}`);
 
     // Call backend API to insert code
-    this._api.codes.insertCode(data.code, `${data.parentID}`)
+    this._api.codes.insertCode({
+      resource: data.code,
+      parentId: data.parentID,
+    })
       .then(res => this._handleApiResponse(EVT.CODE.INSERTED, ack, res))
       .catch((...foo) => ack('error', ...foo));
   };
@@ -145,7 +148,9 @@ class Socket {
   _handleCodeRemove(data, ack) {
     console.info(`${this._socket.id} code.remove ${JSON.stringify(data)}`);
 
-    this._api.codes.removeCode(data)
+    this._api.codes.removeCode({
+      id: code.id,
+    })
       .then(res => this._handleApiResponse(EVT.CODE.REMOVED, ack, data))
       .catch((...foo) => ack('error', ...foo));
   };
@@ -180,14 +185,20 @@ class Socket {
       return;
     }
 
-    this._api = new Endpoint(
+    // Update property
+    this._apiData = newApiData;
+
+    // Do not connect to API, if any of the arguments is falsy
+    if (!newApiData.root || !newApiData.version || !newApiData.token) {
+      return;
+    }
+
+    this._api.connect(
       newApiData.root,
       newApiData.version,
       newApiData.token
     );
 
-    // Update property
-    this._apiData = newApiData;
   };
 
   _updateRoom(type, id) {
