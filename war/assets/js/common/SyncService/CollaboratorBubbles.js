@@ -115,14 +115,20 @@ export default class CollaboratorBubbles extends React.Component {
 	componentDidMount() {
 		const syncService = this.props.syncService;
 		this.listenerID = syncService && syncService.on(
-			'changeUserList',
-			list => this.setState({ collaborators: list })
+			'userlistUpdated',
+			this.updateUserList.bind(this)
 		);
 	}
 
 	componentWillUnmount() {
 		const syncService = this.props.syncService;
-		syncService && syncService.off('changeUserList', this.listenerID);
+		syncService && syncService.off('userlistUpdated', this.listenerID);
+	}
+
+	updateUserList(list) {
+		this.setState({
+			collaborators: list.filter(user => user.document === this.props.docid),
+		})
 	}
 
 	render() {
@@ -134,10 +140,8 @@ export default class CollaboratorBubbles extends React.Component {
 			docid,
 		} = this.props;
 
-		// Get collaborators from state and filter by docid if set
-		const collaborators = this.state.collaborators.filter(
-			c => docid === null || c.document === docid
-		);
+		// Get collaborators from state
+		const collaborators = this.state.collaborators;
 
 		// Calculate number of collaborators in Dropdown
 		const moreCount = Math.max(collaborators.length - displayCount + 1, 0);
