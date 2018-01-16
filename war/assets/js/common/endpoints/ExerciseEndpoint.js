@@ -24,8 +24,8 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static createExerciseProject(revisionID, exerciseID) {
-		var apiMethod = gapi.client.qdacity.exercise.createExerciseProject({
+	static createExerciseProjectIfNeeded(revisionID, exerciseID) {
+		var apiMethod = gapi.client.qdacity.exercise.createExerciseProjectIfNeeded({
 			'revisionID': revisionID,
 			'exerciseID': exerciseID
 		});
