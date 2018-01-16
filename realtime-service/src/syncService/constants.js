@@ -3,6 +3,11 @@ const MSG = {
   USER: {
     UPDATE: 'user.update',
   },
+  CODE: {
+    INSERT: 'code.insert',
+    RELOCATE: 'code.relocate',
+    REMOVE: 'code.remove',
+  },
 };
 
 // Events that might be sent to the users
@@ -11,10 +16,14 @@ const EVT = {
     CONNECTED: 'user.connected',
     UPDATED: 'user.updated',
   },
+  CODE: {
+    INSERTED: 'code.inserted',
+    RELOCATED: 'code.relocated',
+    REMOVED: 'code.removed',
+  },
 };
 
 module.exports = {
   MSG,
   EVT,
 };
-
