@@ -35,8 +35,9 @@ export default class Admin extends React.Component {
 	}
 
 	updateUserStatusFromProps(targetedProps) {
-		this.state.authState = targetedProps.auth.authState;
-		this.setState(this.state);
+		this.setState({
+			authState: targetedProps.auth.authState
+		});
 	}
 
 	setSelectedUserId(userId) {

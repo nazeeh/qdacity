@@ -35,10 +35,11 @@ export default class Account extends React.Component {
 		this.authenticationProvider = targetedProps.auth.authentication;
 		const _this = this;
 		this.authenticationProvider.getProfile().then(function (profile) {
-			_this.state.name = profile.name;
-			_this.state.email = profile.email;
-			_this.state.picSrc = profile.thumbnail;
-			_this.setState(_this.state);
+			_this.setState({
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail
+			});
 		});
 	}
 

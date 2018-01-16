@@ -57,8 +57,9 @@ export default class UnauthenticatedUserPanel extends React.Component {
 
 		const _this = this;
 		setTimeout(function () {
-			_this.state.loading = false
-			_this.setState(_this.state);
+			_this.setState({
+				loading: false
+			});
 		}, timeout)
 	}
 

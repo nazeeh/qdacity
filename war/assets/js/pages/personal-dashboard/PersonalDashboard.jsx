@@ -43,8 +43,9 @@ export default class PersonalDashboard extends React.Component {
 	}
 
 	updateAuthStatusFromProps(targetedProps) {
-		this.state.authState = targetedProps.auth.authState;
-		this.setState(this.state);
+		this.setState({
+			authState: targetedProps.auth.authState
+		});
 	}
 
 	setProjects(projects) {

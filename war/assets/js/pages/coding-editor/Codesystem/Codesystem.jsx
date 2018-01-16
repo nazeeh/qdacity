@@ -95,9 +95,9 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	updateUserProfileStatusFromProps(targetedProps) {
-		const _this = this;
-		_this.state.userProfile = targetedProps.userProfile
-		_this.setState(_this.state);
+		_this.setState({
+			userProfile: targetedProps.userProfile
+		});
 	}
 
 	setUmlEditor(umlEditor) {

@@ -48,11 +48,13 @@ export default class NavBar extends React.Component {
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		const _this = this;
-		this.state.authState = nextProps.auth.authState;
-		this.setState(this.state);
+		this.setState({
+			authState: nextProps.auth.authState
+		});
 		this.authenticationProvider.getCurrentUser().then((user) => {
-			_this.state.userData = user;
-			_this.setState(_this.state);
+			_this.setState({
+				userData: user
+			});
 		}, () => {
 			console.log("Could not get current user")
 		});

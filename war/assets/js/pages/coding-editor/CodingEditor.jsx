@@ -195,17 +195,19 @@ class CodingEditor extends React.Component {
 	}
 
 	updateUserStatusFromProps(targetedProps) {
-		this.state.authState = targetedProps.auth.authState;
-		this.setState(this.state);
+		this.setState({
+			authState: targetedProps.auth.authState
+		});
 
 		const _this = this;
 		targetedProps.auth.authentication.getProfile().then(function (profile) {
-			_this.state.userProfile = {
-				name: profile.name,
-				email: profile.email,
-				picSrc: profile.thumbnail
-			};
-			_this.setState(_this.state);
+			_this.setState({
+				userProfile: {
+					name: profile.name,
+					email: profile.email,
+					picSrc: profile.thumbnail
+				}
+			});
 
 			if (_this.state.userProfile.email !== '') {
 				_this.syncService.logon(_this.state.userProfile);

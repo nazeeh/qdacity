@@ -53,9 +53,9 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	updateUserProfileStatusFromProps(targetedProps) {
-		const _this = this;
-		_this.state.userProfile = targetedProps.userProfile
-		_this.setState(_this.state);
+		_this.setState({
+			userProfile: targetedProps.userProfile
+		});
 	}
 
 	removeCode(code) {
