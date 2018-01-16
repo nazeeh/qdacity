@@ -29,11 +29,17 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 
 	redirect() {
+		const {formatMessage} = IntlProvider.intl;
+
 		var _this = this;
 		this.authenticationProvider.getCurrentUser().then(function (value) {
 			_this.props.history.push('/PersonalDashboard');
 		}, function (value) {
-			var decider = new BinaryDecider('Your account does not seem to be registered with QDAcity.', 'Use Different Account', 'Register Account');
+			var decider = new BinaryDecider(
+				formatMessage({ id: 'sign.in.with.google.btn.register_prompt', defaultMessage: 'Your account does not seem to be registered with QDAcity.' }),
+				formatMessage({ id: 'sign.in.with.google.btn.use_different', defaultMessage: 'Use Different Account' }),
+				formatMessage({ id: 'sign.in.with.google.btn.register_account', defaultMessage: 'Register Account' })
+			);
 			decider.showModal().then(function (value) {
 				if (value == 'optionA') {
 					_this.authenticationProvider.changeAccount().then(function () {
@@ -117,7 +123,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 					<a>
 						<i className="fa fa-google fa-2x"></i>
 					</a>
-					<span>Sign in with Google</span>
+					<span><FormattedMessage id='sign.in.with.google.btn.sign_in_with_google' defaultMessage='Sign in with Google' /></span>
 			</BtnLg>
 		);
 	}
