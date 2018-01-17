@@ -46,6 +46,7 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.tasks.LastProjectUsed;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
+import com.qdacity.exercise.ExerciseProject;
 
 @Api(name = "qdacity",
 	version = Constants.VERSION,
@@ -192,9 +193,11 @@ public class ProjectEndpoint {
 					Authorization.checkAuthorization((ValidationProject) project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				case "REVISION":
-
 					project = (ProjectRevision) Cache.getOrLoad(id, ProjectRevision.class);
 					// Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
+					break;
+				case "EXERCISE":
+					project = (ExerciseProject) Cache.getOrLoad(id, ExerciseProject.class);
 					break;
 				default:
 					project = (Project) Cache.getOrLoad(id, Project.class);
