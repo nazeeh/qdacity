@@ -9,6 +9,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Text;
+import com.qdacity.project.ProjectType;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
@@ -38,6 +39,9 @@ public class TextDocument implements Serializable {
 	@Persistent
 	Long positionInOrder;
 
+	@Persistent
+	ProjectType projectType;
+	
 	public Long getId() {
 		return id;
 	}
@@ -84,5 +88,13 @@ public class TextDocument implements Serializable {
 
 	public void setPositionInOrder(Long positionInOrder) {
 		this.positionInOrder = positionInOrder;
+	}
+	
+	public ProjectType getProjectType() {
+		return projectType;
+	}
+
+	public void setProjectType(ProjectType projectType) {
+		this.projectType = projectType;
 	}
 }
