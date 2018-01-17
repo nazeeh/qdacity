@@ -1,5 +1,6 @@
 package com.qdacity.tutorial;
 
+import java.lang.reflect.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import javax.jdo.Query;
 
 import com.google.appengine.api.users.User;
 import com.qdacity.PMF;
+import com.qdacity.metamodel.MetaModelEntity;
 
 
 public class TutorialManager {
@@ -23,10 +25,15 @@ public class TutorialManager {
 	//TODO maybe DI?
 	TutorialCreator tutorialCreator;
 	
+	private ArrayList<SystemTutorialUnit> cachedSystemTutorials=new ArrayList<SystemTutorialUnit>();
+	//private PersistenceManager cachedPersistenceManager=null;
 	
 	public TutorialManager(TutorialCreator tutorialCreator) {	
 		this.tutorialCreator=tutorialCreator;
 	}
+	
+	
+
 	
 	public List<TutorialOverview> getUserSpecificOverviewData(String userId){
 		
@@ -35,11 +42,22 @@ public class TutorialManager {
 		PersistenceManager mgr = getPersistenceManager();
 		try 
 		{
-			Hashtable<Long, TutorialUnit> tutorialUnits=tutorialCreator.getTutorialUnits();		
-			List<Long> tutorialUnitsKeys = Collections.list(tutorialUnits.keys());
+			Hashtable<Long, TutorialUnit> tutorialUnits=new Hashtable<Long, TutorialUnit>();	
+			
+			this.createSystemTutorialsAndPushThemIntoDatabase();//TODO for testing/debugging purposes, remove it!
+
+			ArrayList<SystemTutorialUnit> systemTutorialUnits=this.getAllSystemTutorials(false);
+			List<Long> tutorialUnitsKeys = new ArrayList<Long>();
+			for(SystemTutorialUnit row : systemTutorialUnits)
+			{
+				tutorialUnitsKeys.add(row.getId());
+				tutorialUnits.put(row.getId(), row);
+			}
 			Collections.sort(tutorialUnitsKeys);
 			Iterator<Long> tutorialUnitsKeysIterator = tutorialUnitsKeys.iterator();
-
+			
+			
+			
 			while(tutorialUnitsKeysIterator.hasNext())
 			{
 				
@@ -92,7 +110,9 @@ public class TutorialManager {
 
 		}
 		catch(Exception e) {
-			tutorialOverviewList.remove(tutorialOverviewList.size()-1);//remove current one
+			e.printStackTrace();
+			tutorialOverviewList.clear();
+			
 		}
 		finally {
 			mgr.close();
@@ -101,23 +121,58 @@ public class TutorialManager {
 		return tutorialOverviewList;
 		
 	}
+
 	
 	
 	public void createSystemTutorialsAndPushThemIntoDatabase()
 	{
-		Hashtable<Long, TutorialUnit> systemTutorials = this.tutorialCreator.createSystemTutorials();
-		TutorialList tutorialList = new TutorialList();
-		tutorialList.setAllTutorials(systemTutorials);
+		ArrayList<SystemTutorialUnit> systemTutorials = this.tutorialCreator.createSystemTutorials();
 		
 		 PersistenceManager mgr = getPersistenceManager();
-		 mgr.makePersistent(tutorialList);
+		 try {
+			 mgr.deletePersistentAll(this.getAllSystemTutorials(true,mgr));
+			 mgr.makePersistentAll(systemTutorials);
+			 this.cachedSystemTutorials.clear();//man koennte auch direkt auf systemTutorials setzen, ABER, so fehlen eventuell neu erstellte IDs
+		 }
+		 finally {
+			mgr.close();
+		}	
+	}
+	
+	public ArrayList<SystemTutorialUnit> getAllSystemTutorials(boolean clearCache)
+	{
+		return this.getAllSystemTutorials(clearCache,null);
+	}
+	
+	
+	public ArrayList<SystemTutorialUnit> getAllSystemTutorials(boolean clearCache, PersistenceManager pm)
+	{
+		if(clearCache || this.cachedSystemTutorials.size()==0)
+		{
+			PersistenceManager mgr=(pm==null)?getPersistenceManager():pm;
+			//PersistenceManager mgr = getPersistenceManager();
+			List<SystemTutorialUnit> result=(List<SystemTutorialUnit>)(mgr.newQuery(SystemTutorialUnit.class).execute());
+			this.cachedSystemTutorials.clear();
+			this.cachedSystemTutorials.addAll(result);
+			System.out.println(result);
+			ArrayList<SystemTutorialUnit> tmp= new ArrayList<SystemTutorialUnit>();
+			tmp.addAll(result);
+			return tmp;
+		}
+		return this.cachedSystemTutorials;
 		
 		
 	}
 	
 	
-	 private static PersistenceManager getPersistenceManager() {
-			return PMF.get().getPersistenceManager();
+	 private PersistenceManager getPersistenceManager() {
+		 /*if(this.cachedPersistenceManager==null) {
+		 		 this.cachedPersistenceManager=PMF.get().getPersistenceManager();
+		 	}
+		 	return this.cachedPersistenceManager;
+		 	*/
+		 return PMF.get().getPersistenceManager();
+		 
 	 }
 
 	 //return: timestamp in secounds since 01.01.1970

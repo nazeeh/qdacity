@@ -127,6 +127,13 @@ export default class TutorialEngine {
 		this.tutorialState.showOverlay1=false;
 		this.tutorialState.showMessageBoxContent=0;
 		if(update)this.updateReact();
-	} 
+	}
+	
+	showShortDescriptionBox(show, key)
+	{
+		alert(key);
+		this.tutorialState.overviewData[key].showShortDescription=show;
+		this.updateReact();
+	}
 
 }

@@ -72,7 +72,7 @@ public class MaintenanceEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, User user) throws UnauthorizedException {
+	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, @Named("initializeSystemTutorials") Boolean initializeSystemTutorials, User user) throws UnauthorizedException {
 		
 		Authorization.checkDatabaseInitalizationAuthorization(user);
 
@@ -80,8 +80,21 @@ public class MaintenanceEndpoint {
 			initializeMetaModelEntities(user);
 			initializeMetaModelRelations(user);
 		}
+		
+		
+		if (initializeSystemTutorials) {
+			initializeSystemTutorials();
+		}
+		
+		
+		
 	}
 	
+	private void initializeSystemTutorials() {
+		new TutorialManager(new TutorialCreator()).createSystemTutorialsAndPushThemIntoDatabase();
+		
+	}
+
 	/**
 	 * Initializes the database with the MetaModelEntities.
 	 * 

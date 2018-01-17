@@ -26,16 +26,17 @@ public class TutorialCreator {
 		//extract hashtable and set Hashtable here
 		 
 		 //for testing:
-		 this.tutorialUnits=createSystemTutorials();
+		 //this.tutorialUnits=createSystemTutorials();
 		 
 	}
 	
 	
-	public Hashtable<Long, TutorialUnit> createSystemTutorials()
+	public ArrayList<SystemTutorialUnit> createSystemTutorials()
 	{
 		//some common work
 				Hashtable<Long, TutorialUnit> result=new Hashtable<Long, TutorialUnit>();
-				TutorialUnit t;
+				ArrayList<SystemTutorialUnit> result2=new ArrayList<SystemTutorialUnit>();
+				SystemTutorialUnit t;
 				
 				
 				//Tutorial Unit 1 | Example Tutorial
@@ -77,29 +78,32 @@ public class TutorialCreator {
 				//........
 				
 				//Tutorial Unit 1 Group BASIC | Basic Tutorial
-				t=new TutorialUnit(1, TutorialGroup.BASIC, "Basic Tutorial");
+				t=new SystemTutorialUnit(1, TutorialGroup.BASIC, "Basic Tutorial");
 				result.put(t.getId(), t);
+				result2.add(t);
 				t.setDescriptionTextShort("A basic tutorial for basic things");
 				t.setDescriptionTextLong("A basic tutorial for basic things and some more informations");
 				t.setMaxSteps(7);
 				
 				
 				//Tutorial Unit 2 Group BASIC | Basic Tutorial
-				t=new TutorialUnit(2, TutorialGroup.BASIC, "Second Tutorial");
+				t=new SystemTutorialUnit(2, TutorialGroup.BASIC, "Second Tutorial");
 				result.put(t.getId(), t);
+				result2.add(t);
 				t.setDescriptionTextShort("blub blab blub");
 				t.setDescriptionTextLong("blub blab blub and one more blub");
 				t.setMaxSteps(9);
 				
 				
 				//Tutorial Unit 3 Group BASIC | Basic Tutorial
-				t=new TutorialUnit(3, TutorialGroup.BASIC, "Third Tutorial");
+				t=new SystemTutorialUnit(3, TutorialGroup.BASIC, "Third Tutorial");
 				result.put(t.getId(), t);
+				result2.add(t);
 				t.setDescriptionTextShort("hmmmm ok");
 				t.setDescriptionTextLong("hmmmmmmmmmmmmmmm ok");
 				t.setMaxSteps(5);
 				
-				return result;
+				return result2;
 	}
 	
 	

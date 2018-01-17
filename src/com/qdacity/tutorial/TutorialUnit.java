@@ -2,8 +2,16 @@ package com.qdacity.tutorial;
 
 import java.util.ArrayList;
 
+import javax.jdo.annotations.Inheritance;
+import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+
+
+@PersistenceCapable
+@Inheritance(
+		strategy = InheritanceStrategy.SUBCLASS_TABLE)
 public class TutorialUnit {
 	
 	long id;
@@ -31,6 +39,7 @@ public class TutorialUnit {
 		this.id=id;
 		this.inGroup=inGroup;
 		this.title=title;
+	
 	}
 
 	public long getId() {

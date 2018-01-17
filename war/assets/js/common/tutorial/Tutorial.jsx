@@ -100,7 +100,7 @@ const TutorialOverviewSubBox = styled.div`
 	padding: 10px; 
 	margin: 10px; 
 	position:relative; 
-	height: 100px;
+	min-height: 150px;
 	opacity:0.6;
 	&:hover {
 		opacity:1 !important;
@@ -136,6 +136,11 @@ const TutorialOverviewContainer = styled.div`
 	overflow-y: scroll;
 `;
 
+const TutorialOverviewSubBoxShortDescription = styled.div`
+	margin-top: 20px;
+	margin-bottom:20px;
+	//height: 20px;
+`;
 
 
 
@@ -161,9 +166,10 @@ export default class Tutorial extends React.Component {
 				<TutorialOverviewSubBoxStatistic1>finished {data.finishedRelative}%</TutorialOverviewSubBoxStatistic1>
 				<TutorialOverviewSubBoxStatistic2>finished at: {data.finishedAt}</TutorialOverviewSubBoxStatistic2>
 				<TutorialOverviewSubBoxClearing/>
+				<TutorialOverviewSubBoxShortDescription>{data.descriptionTextShort}</TutorialOverviewSubBoxShortDescription>
 			</b>
 			<TutorialOverviewSubBoxPlaceholder/>
-			<ButtonGeneric white={false}>Start Tutorial</ButtonGeneric><ButtonGeneric white>Open Description</ButtonGeneric>
+			<ButtonGeneric white={false}>Start Tutorial</ButtonGeneric><ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.showShortDescriptionBox(true, data.tutorialUnitId)}.bind(this)}>Open Description</ButtonGeneric>
 		</TutorialOverviewSubBox>
 		);
 		
