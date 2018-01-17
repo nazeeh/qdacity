@@ -109,7 +109,10 @@ public class TextDocumentEndpoint {
 				Authorization.checkAuthorization(validationProject.getProjectID(), user);
 			} else if (prjType != null && prjType.equals("VALIDATION")) {
 				// FIXME auth
-			} else {
+			} else if (prjType != null && prjType.equals("EXERCISE")) {
+				// FIXME auth
+			}
+			else {
 				Authorization.checkAuthorization(id, user);
 			}
 
