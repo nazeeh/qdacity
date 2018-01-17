@@ -59,8 +59,14 @@ export default class ExerciseList extends React.Component {
 	editorClick (e, exercise, index) {
 		var _this = this;
 		ExerciseEndpoint.createExerciseProjectIfNeeded(exercise.projectRevisionID, exercise.id).then (function (resp2) {
-			console.log(resp2);
-			//_this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=VALIDATION');
+			if (typeof resp2.id == "undefined") {
+				ExerciseEndpoint.getExerciseProjectByRevisionID(exercise.projectRevisionID).then (function (exerciseProjectResp) {
+					//_this.props.history.push('/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE');
+				})
+			}
+			else {
+				//_this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=EXERCISE');
+			}
 		})
 	}
 
