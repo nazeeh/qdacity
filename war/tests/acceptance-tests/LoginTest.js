@@ -1,6 +1,7 @@
 var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
+var chrome = require("selenium-webdriver/chrome");
 
 describe('Login test', function() {
 
@@ -9,14 +10,20 @@ describe('Login test', function() {
 	var driver = null;
 	
     beforeEach((done) => {
+    	console.log('STARTING LOGIN ACCEPTANCE TEST');
+    	
+    	const options = new chrome.Options();
+    	options.addArguments('headless');
+    	options.addArguments('window-size=1200x600');
+    	
+//    	options.addArguments('user-data-dir=C:\Users\Felix\AppData\Local\Google\Chrome\User Data\Profile 1');
+//    	options.addArguments('start-maximized');   	
+
         this.driver = new webdriver.Builder()
 	        .forBrowser('chrome')
+	        .withCapabilities(options.toCapabilities())
 	        .build();
 
-    	// Fullscreen
-    	this.driver.manage().window().maximize();
-    	
-    	// Open QDAcity
         this.driver.get('http://localhost:8888/').then(done);
     }, defaultTimeout);
 
