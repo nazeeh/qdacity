@@ -24,9 +24,9 @@ function setConfig() {
 
 gulp.task('bundle-ci', ['bundle', 'set-constants-ci']);
 
-gulp.task('bundle', ['lint', 'bundle-task']);
+gulp.task('bundle', ['format', 'bundle-task']);
 
-gulp.task('lint', () => {
+gulp.task('format', () => {
 	gulp
 		.src([
 			'**/*.jsx',
