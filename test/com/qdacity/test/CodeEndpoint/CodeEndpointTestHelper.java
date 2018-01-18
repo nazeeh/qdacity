@@ -2,6 +2,7 @@ package com.qdacity.test.CodeEndpoint;
 
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,14 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.project.codesystem.Code;
@@ -18,7 +27,17 @@ public class CodeEndpointTestHelper {
 	static public void addCode(Long id, Long codeID, Long parentID, Long codesystemID, String authorName, String color, com.google.appengine.api.users.User loggedInUser) {
 		try {
 
-			updateParentsSubCodeIds(parentID, codesystemID, codeID);
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			Filter codeIdFilter = new FilterPredicate("codeID", FilterOperator.EQUAL, parentID);
+			Filter codeSystemFilter = new FilterPredicate("codesystemID", FilterOperator.EQUAL, codesystemID);
+			Filter filter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(codeIdFilter, codeSystemFilter));
+
+			com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("Code").setFilter(filter);
+
+			PreparedQuery pq = datastore.prepare(q);
+
+			Long parentDbId = pq.asSingleEntity().getKey().getId();
+
 			Code code = new Code();
 			code.setId(id);
 			code.setAuthor(authorName);
@@ -27,7 +46,7 @@ public class CodeEndpointTestHelper {
 			code.setCodesystemID(codesystemID);
 			code.setColor(color);
 			CodeEndpoint ce = new CodeEndpoint();
-			ce.insertCode(null, null, code, loggedInUser);
+			ce.insertCode(null, null, parentDbId, code, loggedInUser);
 
 
 		} catch (UnauthorizedException e) {

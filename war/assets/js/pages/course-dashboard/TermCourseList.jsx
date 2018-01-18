@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
@@ -18,15 +16,13 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../common/styles/ItemList.jsx';
 
-import {
-	BtnDefault
-} from '../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../common/styles/Btn.jsx';
 
-const StyledNewPrjBtn = styled.div `
-    padding-left: 5px;
+const StyledNewPrjBtn = styled.div`
+	padding-left: 5px;
 `;
 
 export default class TermCourseList extends React.Component {
@@ -52,20 +48,21 @@ export default class TermCourseList extends React.Component {
 		var getAccountPromise = this.props.account.getCurrentUser();
 
 		//Get the course, its terms, participants and save all info in the course object
-		coursePromise.then(function (resp) {
+		coursePromise.then(function(resp) {
 			if (!(typeof resp.owners == 'undefined')) owners = resp.owners;
 			course.setName(resp.name);
 			course.setDescription(resp.description);
-			getAccountPromise.then(function (resp2) {
+			getAccountPromise.then(function(resp2) {
 				isUserOwner = owners.includes(resp2.id);
-				courseTermListPromise.then(function (resp3) {
+				courseTermListPromise.then(function(resp3) {
 					var termList = [];
 					resp3.items = resp3.items || [];
-					resp3.items.forEach(function (crs) {
+					resp3.items.forEach(function(crs) {
 						var participants = [];
 						var isUserParticipant = [];
 						//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
-						if (!(typeof crs.participants == 'undefined')) participants = crs.participants;
+						if (!(typeof crs.participants == 'undefined'))
+							participants = crs.participants;
 						status = crs.open;
 						isUserParticipant = participants.includes(resp2.id);
 						termList.push({
@@ -86,9 +83,7 @@ export default class TermCourseList extends React.Component {
 	}
 
 	showNewTermCourseModal() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		var course = this.props.course;
 		var modal = new CustomForm(
@@ -102,7 +97,7 @@ export default class TermCourseList extends React.Component {
 			'name',
 			formatMessage({
 				id: 'term.course.term_name',
-				defaultMessage: "Term Name"
+				defaultMessage: 'Term Name'
 			}),
 			formatMessage({
 				id: 'term.course.term_name.sample',
@@ -110,7 +105,7 @@ export default class TermCourseList extends React.Component {
 			}),
 			''
 		);
-		modal.showModal().then(function (data) {
+		modal.showModal().then(function(data) {
 			_this.insertTermCourse(course, data.name);
 		});
 	}
@@ -122,14 +117,16 @@ export default class TermCourseList extends React.Component {
 		var termCourse = {};
 		termCourse.courseID = course.id;
 		termCourse.term = term;
-		CourseEndPoint.insertTermCourse(termCourse).then(function (insertedTermCourse) {
+		CourseEndPoint.insertTermCourse(termCourse).then(function(
+			insertedTermCourse
+		) {
 			var termList = courseTerms;
 			termList.push({
 				text: term,
 				id: insertedTermCourse.id,
 				participants: [],
 				isUserParticipant: false,
-				isOpen: "true"
+				isOpen: 'true'
 			});
 			course.setTerms(termList);
 			_this.props.setCourse(course);
@@ -137,24 +134,28 @@ export default class TermCourseList extends React.Component {
 	}
 
 	removeTermCourse(e, term, index) {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var course = this.props.course;
 		var courseTerms = course.terms;
 		var confirm = new Confirm(
-			formatMessage({
-				id: 'term.course.delete_term',
-				defaultMessage: 'Do you want to delete the term {name} of this course?'
-			}, {
-				name: term.text
-			})
+			formatMessage(
+				{
+					id: 'term.course.delete_term',
+					defaultMessage:
+						'Do you want to delete the term {name} of this course?'
+				},
+				{
+					name: term.text
+				}
+			)
 		);
-		confirm.showModal().then(function () {
-			CourseEndPoint.removeTermCourse(term.id).then(function (resp) {
-				var termToRemove = courseTerms.find(thisTerm => thisTerm.id === term.id);
+		confirm.showModal().then(function() {
+			CourseEndPoint.removeTermCourse(term.id).then(function(resp) {
+				var termToRemove = courseTerms.find(
+					thisTerm => thisTerm.id === term.id
+				);
 				courseTerms.splice(courseTerms.indexOf(termToRemove.id), 1);
 				course.setTerms(courseTerms);
 				_this.props.setCourse(course);
@@ -163,23 +164,24 @@ export default class TermCourseList extends React.Component {
 	}
 
 	joinTermCourse(e, term, index) {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 
 		var confirm = new Confirm(
-			formatMessage({
-				id: 'term.course.join_term',
-				defaultMessage: 'Do you want to join the term {name} of this course?'
-			}, {
-				name: term.text
-			})
+			formatMessage(
+				{
+					id: 'term.course.join_term',
+					defaultMessage: 'Do you want to join the term {name} of this course?'
+				},
+				{
+					name: term.text
+				}
+			)
 		);
-		confirm.showModal().then(function () {
-			_this.props.account.getCurrentUser().then(function (resp) {
-				CourseEndPoint.addParticipant(term.id, resp.id).then(function (resp2) {
+		confirm.showModal().then(function() {
+			_this.props.account.getCurrentUser().then(function(resp) {
+				CourseEndPoint.addParticipant(term.id, resp.id).then(function(resp2) {
 					_this.props.addParticipant(term);
 				});
 			});
@@ -187,23 +189,26 @@ export default class TermCourseList extends React.Component {
 	}
 
 	leaveTermCourse(e, term, index) {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 
 		var confirm = new Confirm(
-			formatMessage({
-				id: 'term.course.leave_term',
-				defaultMessage: 'Do you want to leave the term {name} of this course?'
-			}, {
-				name: term.text
-			})
+			formatMessage(
+				{
+					id: 'term.course.leave_term',
+					defaultMessage: 'Do you want to leave the term {name} of this course?'
+				},
+				{
+					name: term.text
+				}
+			)
 		);
-		confirm.showModal().then(function () {
-			_this.props.account.getCurrentUser().then(function (resp) {
-				CourseEndPoint.removeParticipant(term.id, resp.id).then(function (resp2) {
+		confirm.showModal().then(function() {
+			_this.props.account.getCurrentUser().then(function(resp) {
+				CourseEndPoint.removeParticipant(term.id, resp.id).then(function(
+					resp2
+				) {
 					_this.props.removeParticipant(term);
 				});
 			});
@@ -217,91 +222,125 @@ export default class TermCourseList extends React.Component {
 	}
 	renderJoinButton(term, index) {
 		var course = this.props.course;
-		if (course.isUserOwner) return "";
+		if (course.isUserOwner) return '';
 		//Show join/leave button depending on whether the user is a participant in the course
 		if (!term.isUserParticipant) {
-			return <StyledListItemBtn onClick={(e) => this.joinTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-                <i className="fa fa-tags"></i>
-            </StyledListItemBtn>
+			return (
+				<StyledListItemBtn
+					onClick={e => this.joinTermCourse(e, term, index)}
+					className=" btn fa-lg"
+					color={Theme.darkGreen}
+					colorAccent={Theme.darkGreenAccent}
+				>
+					<i className="fa fa-tags" />
+				</StyledListItemBtn>
+			);
 		} else {
-			return <StyledListItemBtn onClick={(e) => this.leaveTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-                    <i className="fa fa-sign-out"></i>
-                </StyledListItemBtn>
+			return (
+				<StyledListItemBtn
+					onClick={e => this.leaveTermCourse(e, term, index)}
+					className=" btn fa-lg"
+					color={Theme.rubyRed}
+					colorAccent={Theme.rubyRedAccent}
+				>
+					<i className="fa fa-sign-out" />
+				</StyledListItemBtn>
+			);
 		}
 	}
 
 	renderDeleteButton(term, index) {
 		var course = this.props.course;
 		if (course.isUserOwner) {
-			return <StyledListItemBtn onClick={(e) => this.removeTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-            <i className="fa fa-trash "></i>
-        </StyledListItemBtn>
+			return (
+				<StyledListItemBtn
+					onClick={e => this.removeTermCourse(e, term, index)}
+					className=" btn fa-lg"
+					color={Theme.rubyRed}
+					colorAccent={Theme.rubyRedAccent}
+				>
+					<i className="fa fa-trash " />
+				</StyledListItemBtn>
+			);
 		}
 	}
 
 	renderConfigureButton(term, index) {
 		var course = this.props.course;
 		if (course.isUserOwner) {
-			return <StyledListItemBtn onClick={(e) => this.configureTermCourse(e, term, index)} className=" btn fa-lg" color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-            <i className="fa fa-cog "></i>
-        </StyledListItemBtn>
+			return (
+				<StyledListItemBtn
+					onClick={e => this.configureTermCourse(e, term, index)}
+					className=" btn fa-lg"
+					color={Theme.darkGreen}
+					colorAccent={Theme.darkGreenAccent}
+				>
+					<i className="fa fa-cog " />
+				</StyledListItemBtn>
+			);
 		}
 	}
 
 	renderCreateTermButton() {
 		var course = this.props.course;
 		if (course.isUserOwner) {
-			return ([
-				<StyledNewPrjBtn id="newProject">  
-                    <BtnDefault
-                        id="newPrjBtn"
-                        href="#"
-                        onClick={this.showNewTermCourseModal}
-                    >
-                        <i className="fa fa-plus fa-fw"></i>
-                        <FormattedMessage id='term.course.new_term' defaultMessage='New Term Course' />
-                    </BtnDefault>
-                </StyledNewPrjBtn>
-			])
+			return [
+				<StyledNewPrjBtn id="newProject">
+					<BtnDefault
+						id="newPrjBtn"
+						href="#"
+						onClick={this.showNewTermCourseModal}
+					>
+						<i className="fa fa-plus fa-fw" />
+						<FormattedMessage
+							id="term.course.new_term"
+							defaultMessage="New Term Course"
+						/>
+					</BtnDefault>
+				</StyledNewPrjBtn>
+			];
 		}
 	}
 
 	renderTerm(term, index) {
-		if (term.isOpen == "true") {
+		if (term.isOpen == 'true') {
 			return (
 				<StyledListItemPrimary>
-                    <span>{term.text}</span>
-                    <div>
-                        {this.renderJoinButton(term, index)}
-                        {this.renderDeleteButton(term, index)}
-                        {this.renderConfigureButton(term, index)}
-                    </div>
-                </StyledListItemPrimary>
+					<span>{term.text}</span>
+					<div>
+						{this.renderJoinButton(term, index)}
+						{this.renderDeleteButton(term, index)}
+						{this.renderConfigureButton(term, index)}
+					</div>
+				</StyledListItemPrimary>
 			);
 		} else {
-			return "";
+			return '';
 		}
 	}
 
 	render() {
 		return (
 			<div>
-                <ListMenu>
-                    { this.itemList ? this.itemList.renderSearchBox() : '' }
-                    
-                    { this.renderCreateTermButton() }
-                </ListMenu>
-                        
-                <ItemList 
-                    ref={(r) => {if (r) this.itemList = r}}
-                    hasSearch={true}
-                    hasPagination={true}
-                    doNotrenderSearch={true}
-                    itemsPerPage={8}
-                    items={this.props.course.terms} 
-                    renderItem={this.renderTerm}
-                    getItemText={(item) => item.text}/>
-            </div>
+				<ListMenu>
+					{this.itemList ? this.itemList.renderSearchBox() : ''}
+
+					{this.renderCreateTermButton()}
+				</ListMenu>
+
+				<ItemList
+					ref={r => {
+						if (r) this.itemList = r;
+					}}
+					hasSearch={true}
+					hasPagination={true}
+					doNotrenderSearch={true}
+					itemsPerPage={8}
+					items={this.props.course.terms}
+					renderItem={this.renderTerm}
+					getItemText={item => item.text}
+				/>
+			</div>
 		);
 	}
 }

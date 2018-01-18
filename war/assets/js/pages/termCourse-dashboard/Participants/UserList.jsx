@@ -7,7 +7,7 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
 
 export default class UserList extends React.Component {
@@ -31,7 +31,9 @@ export default class UserList extends React.Component {
 
 	addOwners() {
 		var _this = this;
-		CourseEndpoint.listTermCourseParticipants(this.props.termCourse.getId()).then(function (resp) {
+		CourseEndpoint.listTermCourseParticipants(
+			this.props.termCourse.getId()
+		).then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
@@ -42,21 +44,20 @@ export default class UserList extends React.Component {
 	renderUser(user, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
-                <span > {user.givenName + " " + user.surName} </span>
-            </StyledListItemDefault>
+				<span> {user.givenName + ' ' + user.surName} </span>
+			</StyledListItemDefault>
 		);
 	}
 
 	render() {
 		return (
-			<ItemList 
-                key={"itemlist"}
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.state.users} 
-                renderItem={this.renderUser} />
+			<ItemList
+				key={'itemlist'}
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.state.users}
+				renderItem={this.renderUser}
+			/>
 		);
 	}
-
-
 }

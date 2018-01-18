@@ -1,4 +1,4 @@
-import Promisizer from './Promisizer'
+import Promisizer from './Promisizer';
 
 export default class UploadEndpoint {
 	constructor() {}
@@ -7,6 +7,4 @@ export default class UploadEndpoint {
 		var apiMethod = gapi.client.qdacity.upload.insertUpload(upload);
 		return Promisizer.makePromise(apiMethod);
 	}
-
-
 }

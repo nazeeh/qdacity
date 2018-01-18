@@ -1,11 +1,11 @@
-import Promisizer from './Promisizer'
+import Promisizer from './Promisizer';
 
 export default class ExerciseEndpoint {
 	constructor() {}
 
 	static listTermCourseExercises(termCourseID) {
 		var apiMethod = gapi.client.qdacity.exercise.listTermCourseExercises({
-			'termCrsID': termCourseID
+			termCrsID: termCourseID
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -17,7 +17,7 @@ export default class ExerciseEndpoint {
 
 	static removeExercise(ExerciseID) {
 		var apiMethod = gapi.client.qdacity.exercise.removeExercise({
-			'id': ExerciseID
+			id: ExerciseID
 		});
 		return Promisizer.makePromise(apiMethod);
 	}

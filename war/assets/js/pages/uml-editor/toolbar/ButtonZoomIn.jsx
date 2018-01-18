@@ -1,11 +1,9 @@
 import React from 'react';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 export default class ButtonZoomIn extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -20,12 +18,16 @@ export default class ButtonZoomIn extends React.Component {
 
 	render() {
 		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+		const zoomIn = formatMessage({
+			id: 'buttonzoomin',
+			defaultMessage: 'Zoom into the graph.'
+		});
 
 		return (
-			<BtnDefault title="Zoom into the graph." onClick={_this.buttonClicked}>
-		        <i className="fa fa-search-plus"></i>
-	        </BtnDefault>
+			<BtnDefault title={zoomIn} onClick={_this.buttonClicked}>
+				<i className="fa fa-search-plus" />
+			</BtnDefault>
 		);
 	}
-
 }

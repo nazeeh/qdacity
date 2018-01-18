@@ -1,7 +1,6 @@
 import MultipleCondition from './MultipleCondition.js';
 
 export default class OrCondition extends MultipleCondition {
-
 	constructor(conditions) {
 		super(conditions);
 	}

@@ -1,11 +1,8 @@
 import BaseAction from './BaseAction.js';
 
-import {
-	Target
-} from '../Target.js';
+import { Target } from '../Target.js';
 
 export default class CreateNodeAction extends BaseAction {
-
 	getIdentifier() {
 		return 'CREATE_NODE';
 	}
@@ -15,10 +12,16 @@ export default class CreateNodeAction extends BaseAction {
 	}
 
 	doExecute(code) {
-		this.getRule().getMapper().getUmlEditor().addNode(code);
+		this.getRule()
+			.getMapper()
+			.getUmlEditor()
+			.addNode(code);
 	}
 
 	doUndo(code) {
-		this.getRule().getMapper().getUmlEditor().removeNode(code);
+		this.getRule()
+			.getMapper()
+			.getUmlEditor()
+			.removeNode(code);
 	}
 }

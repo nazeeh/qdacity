@@ -12,7 +12,7 @@
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
     <init-param>
       <param-name>services</param-name>
-      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.CourseEndpoint,com.qdacity.endpoint.DataMigrationEndpoint,com.qdacity.endpoint.ExerciseEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEntityEndpoint,com.qdacity.endpoint.MetaModelRelationEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.SaturationEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UmlCodePositionEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint</param-value>
+      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.CourseEndpoint,com.qdacity.endpoint.DataMigrationEndpoint,com.qdacity.endpoint.EventEndpoint,com.qdacity.endpoint.ExerciseEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEntityEndpoint,com.qdacity.endpoint.MetaModelRelationEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.SaturationEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UmlCodePositionEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -33,6 +33,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>daily_events</servlet-name>
+    <servlet-class>com.qdacity.servlet.DailyEventsServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>daily_events</servlet-name>
+    <url-pattern>/daily_events</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
   <servlet-name>_ah_warmup</servlet-name>
   <servlet-class>com.qdacity.servlet.WarmupServlet</servlet-class>
   </servlet>
@@ -41,43 +51,47 @@
     <servlet-name>page</servlet-name>
     <jsp-file>/index.jsp</jsp-file>
 </servlet>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/PersonalDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/ProjectDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/CourseDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/TermDashboard</url-pattern>
-</servlet-mapping>
-<servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/TermCourseConfig</url-pattern>
-</servlet-mapping>
- <servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/Admin</url-pattern>
-</servlet-mapping>
- <servlet-mapping>
-    <servlet-name>page</servlet-name>
-    <url-pattern>/CodingEditor</url-pattern>
-</servlet-mapping>
-  <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>qdacity</web-resource-name>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/PersonalDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/ProjectDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/CourseDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/TermDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/TermCourseConfig</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Admin</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/CodingEditor</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Faq</url-pattern>
+	</servlet-mapping>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>qdacity</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
 
 
 </web-app>

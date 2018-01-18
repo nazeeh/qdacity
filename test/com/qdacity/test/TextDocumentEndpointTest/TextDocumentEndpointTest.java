@@ -30,7 +30,6 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
-import com.uwyn.jhighlight.fastutil.Arrays;
 
 public class TextDocumentEndpointTest {
 

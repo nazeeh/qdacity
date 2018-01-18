@@ -1,7 +1,7 @@
 export default class TermCourse {
 	constructor(termCourseId) {
 		this.id = termCourseId;
-		this.term = "";
+		this.term = '';
 		this.participants = [];
 	}
 
@@ -20,5 +20,4 @@ export default class TermCourse {
 	getParticipants() {
 		return this.participants;
 	}
-
 }

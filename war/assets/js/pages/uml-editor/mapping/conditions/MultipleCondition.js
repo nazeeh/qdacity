@@ -1,7 +1,6 @@
 import BaseCondition from './BaseCondition.js';
 
 export default class MultipleCondition extends BaseCondition {
-
 	constructor(conditions) {
 		super();
 		this.conditions = conditions;

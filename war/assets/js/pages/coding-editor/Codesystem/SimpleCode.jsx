@@ -3,30 +3,31 @@ import styled from 'styled-components';
 
 import Theme from '../../../common/styles/Theme.js';
 
-export const StyledCode = styled.div `
-    font-family: tahoma, arial, helvetica;
-    font-size: 10pt;
-    font-weight: ${props => props.fontWeight};
-    margin-left:${props => (props.level * 15) + 'px' };
-    display: flex;
-    align-items: center;
-    cursor: ${props => props.isCodeSelectable ? 'default' : 'not-allowed !important'};
-    color: ${props => props.textColor};
-    background-color: ${props => props.backgroundColor};
-    
-    &:hover {
-        background: ${props => props.backgroundHoverColor};
-    }
+export const StyledCode = styled.div`
+	font-family: tahoma, arial, helvetica;
+	font-size: 10pt;
+	font-weight: ${props => props.fontWeight};
+	margin-left: ${props => props.level * 15 + 'px'};
+	display: flex;
+	align-items: center;
+	cursor: ${props =>
+		props.isCodeSelectable ? 'default' : 'not-allowed !important'};
+	color: ${props => props.textColor};
+	background-color: ${props => props.backgroundColor};
+
+	&:hover {
+		background: ${props => props.backgroundHoverColor};
+	}
 `;
 
-export const StyledExpander = styled.a `
-    padding-left:${props => props.hasChildren ? '' : '18px'};
-    color: ${props => props.color};
+export const StyledExpander = styled.a`
+	padding-left: ${props => (props.hasChildren ? '' : '18px')};
+	color: ${props => props.color};
 `;
 
-export const StyledCodeIcon = styled.i `
-    color: ${props => props.color};
-    padding-right: 4px;
+export const StyledCodeIcon = styled.i`
+	color: ${props => props.color};
+	padding-right: 4px;
 `;
 
 export default class SimpleCode extends React.Component {
@@ -63,27 +64,28 @@ export default class SimpleCode extends React.Component {
 	}
 
 	renderExpander(node, textColor) {
-		var caret = ""
+		var caret = '';
 		if (this.hasChildren()) {
 			var direction = this.props.node.collapsed ? 'right' : 'down';
 			var caretClassName = 'fa fa-caret-' + direction + ' fa-fw';
-			caret = <i className={caretClassName} />
+			caret = <i className={caretClassName} />;
 		}
 
 		const hasChildren = this.hasChildren();
 		const selected = this.props.node == this.props.selected;
-		const className = "node-link";
+		const className = 'node-link';
 		const onClick = () => this.nodeIconClick(node);
 
 		return (
-			<StyledExpander 
-	                    hasChildren={hasChildren} 
-	                    selected={selected} 
-	                    className={className}
-	                    onClick={onClick}
-	                    color={textColor}>
-	                    {caret}
-	                </StyledExpander>
+			<StyledExpander
+				hasChildren={hasChildren}
+				selected={selected}
+				className={className}
+				onClick={onClick}
+				color={textColor}
+			>
+				{caret}
+			</StyledExpander>
 		);
 	}
 
@@ -92,7 +94,7 @@ export default class SimpleCode extends React.Component {
 	 ** Can be overridden to add an optional UI for the coding count
 	 */
 	renderCodingCount() {
-		return "";
+		return '';
 	}
 
 	getFontWeight(code, selected) {
@@ -120,7 +122,10 @@ export default class SimpleCode extends React.Component {
 		color = this.doGetTextColor(code, selected);
 
 		if (color == null) {
-			if (this.props.isCodeSelectable != null && !this.props.isCodeSelectable(code)) {
+			if (
+				this.props.isCodeSelectable != null &&
+				!this.props.isCodeSelectable(code)
+			) {
 				color = '#707070';
 			} else {
 				if (selected) {
@@ -170,7 +175,10 @@ export default class SimpleCode extends React.Component {
 		color = this.doGetBackgroundHoverColor(code, selected);
 
 		if (color == null) {
-			if (this.props.isCodeSelectable != null && !this.props.isCodeSelectable(code)) {
+			if (
+				this.props.isCodeSelectable != null &&
+				!this.props.isCodeSelectable(code)
+			) {
 				color = '#e0e0e0';
 			} else {
 				color = Theme.bgHover;
@@ -189,61 +197,92 @@ export default class SimpleCode extends React.Component {
 
 	renderNode(level) {
 		const selected = this.props.node == this.props.selected;
-		const className = "clickable";
-		const key = "CS" + "_" + level;
+		const className = 'clickable';
+		const key = 'CS' + '_' + level;
 		const fontWeight = this.getFontWeight(this.props.node, selected);
 		const textColor = this.getTextColor(this.props.node, selected);
 		const backgroundColor = this.getBackgroundColor(this.props.node, selected);
-		const backgroundHoverColor = this.getBackgroundHoverColor(this.props.node, selected);
-		const isCodeSelectable = (this.props.isCodeSelectable != null ? this.props.isCodeSelectable(this.props.node) : true);
+		const backgroundHoverColor = this.getBackgroundHoverColor(
+			this.props.node,
+			selected
+		);
+		const isCodeSelectable =
+			this.props.isCodeSelectable != null
+				? this.props.isCodeSelectable(this.props.node)
+				: true;
 		const onClick = () => {
 			if (isCodeSelectable) {
 				this.props.setSelected(this.props.node);
 			}
-		}
+		};
 
 		return (
 			<div className="">
-		            {this.renderStyledNode(selected, level, className, key, onClick, isCodeSelectable, fontWeight, textColor, backgroundColor, backgroundHoverColor)}
-            </div>
+				{this.renderStyledNode(
+					selected,
+					level,
+					className,
+					key,
+					onClick,
+					isCodeSelectable,
+					fontWeight,
+					textColor,
+					backgroundColor,
+					backgroundHoverColor
+				)}
+			</div>
 		);
 	}
 
-	renderStyledNode(selected, level, className, key, onClick, isCodeSelectable, fontWeight, textColor, backgroundColor, backgroundHoverColor) {
+	renderStyledNode(
+		selected,
+		level,
+		className,
+		key,
+		onClick,
+		isCodeSelectable,
+		fontWeight,
+		textColor,
+		backgroundColor,
+		backgroundHoverColor
+	) {
 		return (
 			<StyledCode
-                        selected={selected} 
-		                isCodeSelectable={isCodeSelectable}
-		                fontWeight={fontWeight}
-                        textColor={textColor}
-        		        backgroundColor={backgroundColor}
-        		        backgroundHoverColor={backgroundHoverColor}
-                        level={level}
-                        className={className}
-                        key={key}
-		                onClick={onClick}
-                    >
-                    {this.renderExpander(this.props.node, textColor)}
-                    {this.renderNodeIcon()}
-                    {this.renderNodeName()}
-                    {this.renderCodingCount()}
-                </StyledCode>
+				selected={selected}
+				isCodeSelectable={isCodeSelectable}
+				fontWeight={fontWeight}
+				textColor={textColor}
+				backgroundColor={backgroundColor}
+				backgroundHoverColor={backgroundHoverColor}
+				level={level}
+				className={className}
+				key={key}
+				onClick={onClick}
+			>
+				{this.renderExpander(this.props.node, textColor)}
+				{this.renderNodeIcon()}
+				{this.renderNodeName()}
+				{this.renderCodingCount()}
+			</StyledCode>
 		);
 	}
 
 	renderNodeIcon() {
 		return (
-			<StyledCodeIcon className="fa fa-tag fa-lg" color={this.props.node.color}/>
+			<StyledCodeIcon
+				className="fa fa-tag fa-lg"
+				color={this.props.node.color}
+			/>
 		);
 	}
 
 	renderNodeName() {
-		return (this.props.node.name);
+		return this.props.node.name;
 	}
 
 	renderChild(childCode, level, index) {
 		const newLevel = level + 1;
-		const key = "CS" + "_" + level + "_" + index;
+		const key = 'CS' + '_' + level + '_' + index;
 
 		return this.renderChildSimple(childCode, newLevel, key);
 	}
@@ -251,21 +290,20 @@ export default class SimpleCode extends React.Component {
 	renderChildSimple(childCode, level, key) {
 		return (
 			<SimpleCode
-                    documentsView={this.props.documentsView}
-                    level={level}
-                    node={childCode}
-                    selected={this.props.selected}
-                    setSelected={this.props.setSelected}
-                    relocateCode={this.props.relocateCode}
-                    showFooter={this.props.showFooter}
-                    key={key}
-		            isCodeSelectable = {this.props.isCodeSelectable}
-                    getFontWeight={this.props.getFontWeight}
-    		        getTextColor={this.props.getTextColor}
-                    getBackgroundColor={this.props.getBackgroundColor}
-                    getBackgroundHoverColor={this.props.getBackgroundHoverColor}
-                >
-                </SimpleCode>
+				documentsView={this.props.documentsView}
+				level={level}
+				node={childCode}
+				selected={this.props.selected}
+				setSelected={this.props.setSelected}
+				relocateCode={this.props.relocateCode}
+				showFooter={this.props.showFooter}
+				key={key}
+				isCodeSelectable={this.props.isCodeSelectable}
+				getFontWeight={this.props.getFontWeight}
+				getTextColor={this.props.getTextColor}
+				getBackgroundColor={this.props.getBackgroundColor}
+				getBackgroundHoverColor={this.props.getBackgroundHoverColor}
+			/>
 		);
 	}
 
@@ -274,7 +312,7 @@ export default class SimpleCode extends React.Component {
 		let count = 0;
 		var node = this.props.node;
 		const thisNode = _this.renderNode(level);
-		var children = "";
+		var children = '';
 		if (!node.collapsed && !node.leaf && node.children) {
 			children = node.children.map((childCode, index) => {
 				return _this.renderChild(childCode, level, index);
@@ -282,20 +320,16 @@ export default class SimpleCode extends React.Component {
 		}
 
 		return (
-			<div key={"CS" + "_" + level}
-                     >
-                        {thisNode}
-                        {children}
-                    </div>
+			<div key={'CS' + '_' + level}>
+				{thisNode}
+				{children}
+			</div>
 		);
-	};
+	}
 
 	render() {
 		return (
-			<div>
-                       {this.renderNodesRecursive(this.props.node, this.props.level)}
-                </div>
+			<div>{this.renderNodesRecursive(this.props.node, this.props.level)}</div>
 		);
-
 	}
 }
