@@ -95,7 +95,7 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	updateUserProfileStatusFromProps(targetedProps) {
-		_this.setState({
+		this.setState({
 			userProfile: targetedProps.userProfile
 		});
 	}

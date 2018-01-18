@@ -46,11 +46,7 @@ export default class CourseDashboard extends React.Component {
 
 		this.state = {
 			course: course,
-			isCourseOwner: false,
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			}
+			isCourseOwner: false
 		};
 		$("body").css({
 			overflow: "auto"
@@ -59,22 +55,7 @@ export default class CourseDashboard extends React.Component {
 		this.authenticationProvider = props.auth.authentication;
 
 		const _this = this;
-
-		// update on initialization
-		this.updateUserStatusFromProps(props);
 	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
-	}
-
-	updateUserStatusFromProps(targetedProps) {
-		this.setState({
-			authState: targetedProps.auth.authState
-		});
-	}
-
 
 	setCourse(course) {
 		this.setState({
@@ -124,7 +105,7 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+		if (!this.props.auth.authState.isUserSignedIn || !this.props.auth.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 

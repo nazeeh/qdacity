@@ -14,30 +14,13 @@ export default class Admin extends React.Component {
 		super(props);
 		this.state = {
 			projects: [],
-			selectedUserId: '',
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			}
+			selectedUserId: ''
 		};
 
 		this.setProjects = this.setProjects.bind(this);
 		this.removeProject = this.removeProject.bind(this);
 
-		// update on initialization
-		this.updateUserStatusFromProps(props);
 		scroll(0, 0);
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
-	}
-
-	updateUserStatusFromProps(targetedProps) {
-		this.setState({
-			authState: targetedProps.auth.authState
-		});
 	}
 
 	setSelectedUserId(userId) {
@@ -61,7 +44,7 @@ export default class Admin extends React.Component {
 
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+		if (!this.props.auth.authState.isUserSignedIn || !this.props.auth.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 		return (

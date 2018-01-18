@@ -69,20 +69,7 @@ export default class TermDashboard extends React.Component {
 			course: [],
 			termCourse: termCourse,
 			isTermCourseOwner: false,
-			authState: props.auth.authState
 		};
-		this.updateUserStatusFromProps(props);
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
-	}
-
-	updateUserStatusFromProps(targetedProps) {
-		this.setState({
-			authState: targetedProps.auth.authState
-		});
 	}
 
 	init() {
@@ -204,7 +191,7 @@ export default class TermDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+		if (!this.props.auth.authState.isUserSignedIn || !this.props.auth.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 

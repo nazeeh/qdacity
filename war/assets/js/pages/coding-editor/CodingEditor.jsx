@@ -140,11 +140,7 @@ class CodingEditor extends React.Component {
 			isSignedIn: false,
 			isRegistered: false,
 			fontSize: 13,
-
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			},
+			
 			userProfile: {
 				name: '',
 				email: '',
@@ -195,10 +191,6 @@ class CodingEditor extends React.Component {
 	}
 
 	updateUserStatusFromProps(targetedProps) {
-		this.setState({
-			authState: targetedProps.auth.authState
-		});
-
 		const _this = this;
 		targetedProps.auth.authentication.getProfile().then(function (profile) {
 			_this.setState({
@@ -411,7 +403,7 @@ class CodingEditor extends React.Component {
 	};
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		if (!this.props.auth.authState.isUserSignedIn || !this.props.auth.authState.isUserRegistered) return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		if (this.state.project.getCodesystemID() == -1) this.init();
 
 		const fonts = [{

@@ -36,6 +36,9 @@ export default class App extends React.Component {
 		super(props);
 
 		this.state = {};
+		
+		this.authenticationProvider = new AuthenticationProvider();
+		this.authorizationProvider = new AuthorizationProvider();
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
 		var t = new TutorialEngine(this);
@@ -46,12 +49,18 @@ export default class App extends React.Component {
 
 			tutorialEngine: t,
 			tutorialState: t.tutorialState,
-
-			isUserSignedIn: false,
-			isUserRegistered: false
+			auth: {
+				authState: {
+					isUserSignedIn: false,
+					isUserRegistered: false
+				},
+				updateUserStatus: () => {
+					return this.updateUserStatus()
+				},
+				authentication: this.authenticationProvider,
+				authorization: this.authorizationProvider
+			}
 		};
-		this.authenticationProvider = new AuthenticationProvider();
-		this.authorizationProvider = new AuthorizationProvider();
 
 		const _this = this;
 		
@@ -89,19 +98,19 @@ export default class App extends React.Component {
 					return;
 				}
 
-				_this.state.isUserSignedIn = loginStatus;
-				// don't rerender here in order to not show "you are not logged in" prompt!
-				if (!loginStatus) {
-					resolve();
-					return;
-				}
 				_this.authenticationProvider.synchronizeTokenWithGapi(); // Bugfix: sometimes the token seems to get lost!
 				_this.authenticationProvider.getCurrentUser().then(function (user) {
-					_this.state.isUserRegistered = !!user;
+					_this.state.auth.authState = {
+						isUserSignedIn: loginStatus,
+						isUserRegistered: !!user
+					};
 					_this.setState(_this.state);
 					resolve();
 				}, function (err) {
-					_this.state.isUserRegistered = false;
+					_this.state.auth.authState = {
+						isUserSignedIn: loginStatus,
+						isUserRegistered: false
+					};
 					_this.setState(_this.state);
 					resolve();
 				})
@@ -111,20 +120,6 @@ export default class App extends React.Component {
 
 	componentDidMount() {
 		this.state.tutorialEngine.appRootDidMount();
-	}
-
-	getAuthBundle() {
-		return {
-			authState: {
-				isUserSignedIn: this.state.isUserSignedIn,
-				isUserRegistered: this.state.isUserRegistered
-			},
-			updateUserStatus: () => {
-				return this.updateUserStatus()
-			},
-			authentication: this.authenticationProvider,
-			authorization: this.authorizationProvider
-		}
 	}
 
 	render() {
@@ -139,16 +134,16 @@ export default class App extends React.Component {
 				<Router>
 					<ThemeProvider theme={Theme}>
 						<div>
-							<Route path="/" render={(props) => <NavBar auth={this.getAuthBundle()} client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} tutorial={tut} {...props} />} />
-							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard auth={this.getAuthBundle()} {...props} />} />
-							<Route path="/ProjectDashboard" render={(props) => <ProjectDashboard auth={this.getAuthBundle()} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
-							<Route path="/CourseDashboard" render={(props) => <CourseDashboard auth={this.getAuthBundle()} {...props} />} />
-							<Route path="/TermDashboard" render={(props)=><TermDashboard auth={this.getAuthBundle()} {...props} />}/>
-							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig auth={this.getAuthBundle()} {...props} />}/>
-							<Route path="/Admin" render={(props) => <Admin auth={this.getAuthBundle()} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
-							<Route path="/CodingEditor" render={(props) => <CodingEditor auth={this.getAuthBundle()} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
-							<Route path="/UserMigration" render={(props) => <UserMigration auth={this.getAuthBundle()} {...props} />} />
-							<Route exact path="/" render={(props) => <Index auth={this.getAuthBundle()}  {...props} />} />
+							<Route path="/" render={(props) => <NavBar auth={this.state.auth} client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} tutorial={tut} {...props} />} />
+							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard auth={this.state.auth} {...props} />} />
+							<Route path="/ProjectDashboard" render={(props) => <ProjectDashboard auth={this.state.auth} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
+							<Route path="/CourseDashboard" render={(props) => <CourseDashboard auth={this.state.auth} {...props} />} />
+							<Route path="/TermDashboard" render={(props)=><TermDashboard auth={this.state.auth} {...props} />}/>
+							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig auth={this.state.auth} {...props} />}/>
+							<Route path="/Admin" render={(props) => <Admin auth={this.state.auth} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
+							<Route path="/CodingEditor" render={(props) => <CodingEditor auth={this.state.auth} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
+							<Route path="/UserMigration" render={(props) => <UserMigration auth={this.state.auth} {...props} />} />
+							<Route exact path="/" render={(props) => <Index auth={this.state.auth}  {...props} />} />
 							<Route path="/" render={(props)=><Tutorial tutorial={tut} {...props}/>}/>
 						</div>
 					</ThemeProvider>

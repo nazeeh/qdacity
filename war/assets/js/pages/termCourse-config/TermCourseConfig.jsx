@@ -58,24 +58,8 @@ export default class TermCourseConfig extends React.Component {
 			course: [],
 			termCourse: termCourse,
 			isTermCourseOwner: false,
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			}
 		};
 
-		// update on initialization
-		this.updateUserStatusFromProps(props);
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
-	}
-
-	updateUserStatusFromProps(targetedProps) {
-		this.state.authState = targetedProps.auth.authState;
-		this.setState(this.state);
 	}
 
 	init() {
@@ -170,7 +154,7 @@ export default class TermCourseConfig extends React.Component {
 	}
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+		if (!this.props.auth.authState.isUserSignedIn || !this.props.auth.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 		this.init();

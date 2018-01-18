@@ -40,10 +40,6 @@ export default class ProjectDashboard extends React.Component {
 			isProjectOwner: false,
 			isValidationCoder: false,
 			googleChartsLoaded: false,
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			}
 		};
 
 		this.authenticationProvider = this.props.auth.authentication;
@@ -55,9 +51,6 @@ export default class ProjectDashboard extends React.Component {
 		});
 		this.addReports = this.addReports.bind(this);
 
-		// update on initialization
-		this.updateUserStatusFromProps(props);
-
 		scroll(0, 0);
 	}
 
@@ -67,16 +60,6 @@ export default class ProjectDashboard extends React.Component {
 			this.setUserRights();
 			this.setProjectProperties();
 		}
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
-	}
-
-	updateUserStatusFromProps(targetedProps) {
-		this.state.authState = targetedProps.auth.authState;
-		this.setState(this.state);
 	}
 
 	setUserRights() {
@@ -134,7 +117,7 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+		if (!this.props.auth.authState.isUserSignedIn || !this.props.auth.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 		this.init();

@@ -53,7 +53,7 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	updateUserProfileStatusFromProps(targetedProps) {
-		_this.setState({
+		this.setState({
 			userProfile: targetedProps.userProfile
 		});
 	}

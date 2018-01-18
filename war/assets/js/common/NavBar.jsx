@@ -36,8 +36,7 @@ export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userData: {},
-			authState: props.auth.authState
+			userData: {}
 		};
 
 		this.authenticationProvider = props.auth.authentication;
@@ -48,9 +47,6 @@ export default class NavBar extends React.Component {
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		const _this = this;
-		this.setState({
-			authState: nextProps.auth.authState
-		});
 		this.authenticationProvider.getCurrentUser().then((user) => {
 			_this.setState({
 				userData: user
@@ -91,13 +87,13 @@ export default class NavBar extends React.Component {
 						</div>
 						<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 							<ul className="nav navbar-nav navbar-right">
-								<StyledHelpTab loggedIn={this.state.authState.isUserSignedIn} className="dropdown">
+								<StyledHelpTab loggedIn={this.props.auth.authState.isUserSignedIn} className="dropdown">
 									<StyledNavbarItem className="dropdownToggle clickable" onClick={function(){this.showHelpDropdown();}.bind(this)}>Help</StyledNavbarItem>
 									<div id="helpView" className="dropdown-menu dropdownContent">
-										<StyledDropdownLinks loggedIn={this.state.authState.isUserSignedIn} className="clickable" onClick={function(){alert("Coming Soon...");}}>		
+										<StyledDropdownLinks loggedIn={this.props.auth.authState.isUserSignedIn} className="clickable" onClick={function(){alert("Coming Soon...");}}>		
 											<div>Faq</div>
 										</StyledDropdownLinks>
-										<StyledDropdownLinks showOnlyIfLoggedIn loggedIn={this.state.authState.isUserSignedIn} className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
+										<StyledDropdownLinks showOnlyIfLoggedIn loggedIn={this.props.auth.authState.isUserSignedIn} className="clickable" onClick={function(){this.props.tutorial.tutorialEngine.showOverviewWindow();}.bind(this)}>
 											<div>Tutorial Overview</div>	
 										</StyledDropdownLinks>
 									</div>

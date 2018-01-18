@@ -19,10 +19,6 @@ export default class PersonalDashboard extends React.Component {
 		this.state = {
 			projects: [],
 			courses: [],
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			}
 		};
 
 		this.setProjects = this.setProjects.bind(this);
@@ -32,22 +28,8 @@ export default class PersonalDashboard extends React.Component {
 		this.addCourse = this.addCourse.bind(this);
 		this.removeCourse = this.removeCourse.bind(this);
 
-		this.updateAuthStatusFromProps(props);
-
 		scroll(0, 0);
 	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateAuthStatusFromProps(nextProps);
-	}
-
-	updateAuthStatusFromProps(targetedProps) {
-		this.setState({
-			authState: targetedProps.auth.authState
-		});
-	}
-
 	setProjects(projects) {
 		this.setState({
 			projects: projects
@@ -90,14 +72,14 @@ export default class PersonalDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
+		if (!this.props.auth.authState.isUserSignedIn || !this.props.auth.authState.isUserRegistered) {
 			return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		}
 		return (
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
-						  <WelcomePanel auth={this.props.auth} auth={this.props.auth}  history={this.props.history}/>
+						  <WelcomePanel auth={this.props.auth} history={this.props.history}/>
 						  <AdvertPanel/>
 					</div>
 					<div className="col-lg-4">
