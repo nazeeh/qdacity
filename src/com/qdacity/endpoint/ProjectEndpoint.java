@@ -230,6 +230,7 @@ public class ProjectEndpoint {
 			switch (type) {
 				case "EXERCISE":
 					project = mgr.getObjectById(ExerciseProject.class, projectID);
+					break;
 				case "VALIDATION":
 					project = mgr.getObjectById(ValidationProject.class, projectID);
 					break;
