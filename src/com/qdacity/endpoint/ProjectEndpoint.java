@@ -228,6 +228,8 @@ public class ProjectEndpoint {
 		AbstractProject project = null;
 		try {
 			switch (type) {
+				case "EXERCISE":
+					project = mgr.getObjectById(ExerciseProject.class, projectID);
 				case "VALIDATION":
 					project = mgr.getObjectById(ValidationProject.class, projectID);
 					break;
