@@ -128,6 +128,7 @@ acceptance_tests:
     - rm -f ./war/WEB-INF/appengine-generated/local_db.bin
     - mvn appengine:devserver -DskipTests &
     - cd war
+    - chmod +x ./startAcceptanceTests.sh
     - ./startAcceptanceTests.sh
   dependencies:
     - frontend_prod_build
