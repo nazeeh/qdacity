@@ -8,14 +8,12 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
-const StyledInviteButton = styled.div `
+const StyledInviteButton = styled.div`
 	padding-bottom: 5px;
 `;
 
@@ -37,7 +35,9 @@ export default class UserList extends React.Component {
 
 	addOwners() {
 		var _this = this;
-		CourseEndpoint.listTermCourseParticipants(this.props.termCourse.getId()).then(function (resp) {
+		CourseEndpoint.listTermCourseParticipants(
+			this.props.termCourse.getId()
+		).then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
@@ -48,19 +48,20 @@ export default class UserList extends React.Component {
 	renderUser(user, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
-                <span > {user.givenName + " " + user.surName} </span>
-            </StyledListItemDefault>
+				<span> {user.givenName + ' ' + user.surName} </span>
+			</StyledListItemDefault>
 		);
 	}
 
 	render() {
 		return (
 			<ItemList
-                key={"itemlist"}
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.state.users}
-                renderItem={this.renderUser} />
+				key={'itemlist'}
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.state.users}
+				renderItem={this.renderUser}
+			/>
 		);
 	}
 }

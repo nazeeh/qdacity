@@ -1,8 +1,5 @@
 import React from 'react';
-import styled, {
-	keyframes,
-	css
-} from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 import CodingViewButton from './CodingViewButton.jsx';
 import DeleteCodeButton from './DeleteCodeButton.jsx';
@@ -13,15 +10,14 @@ import AddEdgeAssociationButton from './AddEdgeAssociationButton.jsx';
 
 import RemoveEdgeButton from './RemoveEdgeButton.jsx';
 
-const StyledButtonsContainer = styled.div `
-    position: relative;
-    top: 0px;
-    left: -100%;
-    pointer-events: none;
+const StyledButtonsContainer = styled.div`
+	position: relative;
+	top: 0px;
+	left: -100%;
+	pointer-events: none;
 `;
 
 export default class HoverButtons extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -83,28 +79,99 @@ export default class HoverButtons extends React.Component {
 			return null;
 		}
 
-		const isUmlClass = this.props.umlEditor.getGraphView().isCellUmlClass(this.state.cell);
+		const isUmlClass = this.props.umlEditor
+			.getGraphView()
+			.isCellUmlClass(this.state.cell);
 
 		// Hoverbuttons for cells
 		if (isUmlClass) {
 			return (
 				<StyledButtonsContainer>
-                    <CodingViewButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale} toggleCodingView={this.props.toggleCodingView}></CodingViewButton>
-			        <DeleteCodeButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></DeleteCodeButton>
-                    
-                    <AddEdgeButton hoverButtons={this} umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeButton>
-                    <AddEdgeGeneralizationButton ref={(addEdgeGeneralizationButton) => {_this.addEdgeGeneralizationButton = addEdgeGeneralizationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeGeneralizationButton>
-                    <AddEdgeAggregationButton ref={(addEdgeAggregationButton) => {_this.addEdgeAggregationButton = addEdgeAggregationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeAggregationButton>
-                    <AddEdgeAssociationButton ref={(addEdgeAssociationButton) => {_this.addEdgeAssociationButton = addEdgeAssociationButton}} umlEditor={this.props.umlEditor} cell={this.state.cell} show={false} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></AddEdgeAssociationButton>
-                </StyledButtonsContainer>
+					<CodingViewButton
+						umlEditor={this.props.umlEditor}
+						cell={this.state.cell}
+						x={this.state.x}
+						y={this.state.y}
+						width={this.state.width}
+						height={this.state.height}
+						scale={this.state.scale}
+						toggleCodingView={this.props.toggleCodingView}
+					/>
+					<DeleteCodeButton
+						umlEditor={this.props.umlEditor}
+						cell={this.state.cell}
+						x={this.state.x}
+						y={this.state.y}
+						width={this.state.width}
+						height={this.state.height}
+						scale={this.state.scale}
+					/>
+
+					<AddEdgeButton
+						hoverButtons={this}
+						umlEditor={this.props.umlEditor}
+						cell={this.state.cell}
+						x={this.state.x}
+						y={this.state.y}
+						width={this.state.width}
+						height={this.state.height}
+						scale={this.state.scale}
+					/>
+					<AddEdgeGeneralizationButton
+						ref={addEdgeGeneralizationButton => {
+							_this.addEdgeGeneralizationButton = addEdgeGeneralizationButton;
+						}}
+						umlEditor={this.props.umlEditor}
+						cell={this.state.cell}
+						show={false}
+						x={this.state.x}
+						y={this.state.y}
+						width={this.state.width}
+						height={this.state.height}
+						scale={this.state.scale}
+					/>
+					<AddEdgeAggregationButton
+						ref={addEdgeAggregationButton => {
+							_this.addEdgeAggregationButton = addEdgeAggregationButton;
+						}}
+						umlEditor={this.props.umlEditor}
+						cell={this.state.cell}
+						show={false}
+						x={this.state.x}
+						y={this.state.y}
+						width={this.state.width}
+						height={this.state.height}
+						scale={this.state.scale}
+					/>
+					<AddEdgeAssociationButton
+						ref={addEdgeAssociationButton => {
+							_this.addEdgeAssociationButton = addEdgeAssociationButton;
+						}}
+						umlEditor={this.props.umlEditor}
+						cell={this.state.cell}
+						show={false}
+						x={this.state.x}
+						y={this.state.y}
+						width={this.state.width}
+						height={this.state.height}
+						scale={this.state.scale}
+					/>
+				</StyledButtonsContainer>
 			);
-		}
-		// Hoverbuttons for edges
-		else {
+		} else {
+			// Hoverbuttons for edges
 			return (
 				<StyledButtonsContainer>
-                    <RemoveEdgeButton umlEditor={this.props.umlEditor} cell={this.state.cell} x={this.state.x} y={this.state.y} width={this.state.width} height={this.state.height} scale={this.state.scale}></RemoveEdgeButton>
-                </StyledButtonsContainer>
+					<RemoveEdgeButton
+						umlEditor={this.props.umlEditor}
+						cell={this.state.cell}
+						x={this.state.x}
+						y={this.state.y}
+						width={this.state.width}
+						height={this.state.height}
+						scale={this.state.scale}
+					/>
+				</StyledButtonsContainer>
 			);
 		}
 	}

@@ -1,45 +1,44 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-	DragSource,
-	DropTarget
-} from 'react-dnd';
+import { DragSource, DropTarget } from 'react-dnd';
 
-import {
-	findDOMNode
-} from 'react-dom';
+import { findDOMNode } from 'react-dom';
 
-import {
-	getEmptyImage
-} from 'react-dnd-html5-backend'
+import { getEmptyImage } from 'react-dnd-html5-backend';
 
 import CollaboratorBubbles from '../../../common/SyncService/CollaboratorBubbles';
 
-const StyledDocumentItem = styled.a `
-	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : '#fff'};
-	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
+const StyledDocumentItem = styled.a`
+	background-color: ${props =>
+		props.active ? props.theme.bgPrimaryHighlight : '#fff'};
+	color: ${props => (props.active ? props.theme.fgPrimaryHighlight : '')};
 	padding: 2px 2px;
 	position: relative;
 	display: flex;
 	margin-bottom: -1px;
 	border: 1px solid ${props => props.theme.borderPrimary};
-	opacity: ${props => props.isDragging ? 0.0 : 1};
+	opacity: ${props => (props.isDragging ? 0.0 : 1)};
 	&:hover {
 		text-decoration: none;
 		cursor: pointer;
-		background-color: ${props => props.isDragging ? props.theme.bgPrimary : props.theme.bgPrimaryHighlight};
-		color: ${props => props.isDragging ? props.theme.fgPrimary : props.theme.fgPrimaryHighlight};
+		background-color: ${props =>
+			props.isDragging
+				? props.theme.bgPrimary
+				: props.theme.bgPrimaryHighlight};
+		color: ${props =>
+			props.isDragging
+				? props.theme.fgPrimary
+				: props.theme.fgPrimaryHighlight};
 	}
 `;
 
-const StyledDocumentItemTitle = styled.div `
+const StyledDocumentItemTitle = styled.div`
 	flex: 1 1 auto;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 `;
-
 
 const documentSource = {
 	beginDrag(props, monitor, component) {
@@ -101,7 +100,7 @@ function collectSource(connect, monitor) {
 	return {
 		connectDragSource: connect.dragSource(),
 		connectDragPreview: connect.dragPreview(),
-		isDragging: monitor.isDragging(),
+		isDragging: monitor.isDragging()
 	};
 }
 
@@ -114,7 +113,6 @@ function collectTarget(connect, monitor) {
 }
 
 class Document extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -128,11 +126,7 @@ class Document extends React.Component {
 	render() {
 		const _this = this;
 
-		const {
-			isDragging,
-			connectDragSource,
-			connectDropTarget
-		} = this.props;
+		const { isDragging, connectDragSource, connectDropTarget } = this.props;
 
 		return connectDragSource(
 			connectDropTarget(
@@ -156,9 +150,11 @@ class Document extends React.Component {
 	}
 }
 
-const DropDocument = DropTarget("document", documentTarget, collectTarget)(Document)
-const DragDocument = DragSource("document", documentSource, collectSource)(DropDocument)
+const DropDocument = DropTarget('document', documentTarget, collectTarget)(
+	Document
+);
+const DragDocument = DragSource('document', documentSource, collectSource)(
+	DropDocument
+);
 
-export {
-	DragDocument
-};
+export { DragDocument };

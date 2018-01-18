@@ -1,16 +1,17 @@
-import Promisizer from './Promisizer'
+import Promisizer from './Promisizer';
 
 export default class DocumentsEndpoint {
 	constructor() {}
 
 	static getDocuments(projectId, projectType) {
 		var _this = this;
-		var promise = new Promise(
-			function (resolve, reject) {
-				gapi.client.qdacity.documents.getTextDocument({
-					'id': projectId,
-					'projectType': projectType
-				}).execute(function (resp) {
+		var promise = new Promise(function(resolve, reject) {
+			gapi.client.qdacity.documents
+				.getTextDocument({
+					id: projectId,
+					projectType: projectType
+				})
+				.execute(function(resp) {
 					if (!resp.code) {
 						resp.items = resp.items || [];
 
@@ -19,9 +20,7 @@ export default class DocumentsEndpoint {
 						reject(resp.code);
 					}
 				});
-			}
-
-		);
+		});
 		return promise;
 	}
 
@@ -37,7 +36,7 @@ export default class DocumentsEndpoint {
 
 	static updateTextDocuments(documents) {
 		var apiMethod = gapi.client.qdacity.documents.updateTextDocuments({
-			'documents': documents
+			documents: documents
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -53,20 +52,23 @@ export default class DocumentsEndpoint {
 			});
 		}
 
-		var apiMethod = gapi.client.qdacity.documents.reorderAgreementMapPositions({
-			'id': id,
-			'projectType': project_type
-		}, {
-			'agreementMapPositions': agreementMapPositions
-		});
+		var apiMethod = gapi.client.qdacity.documents.reorderAgreementMapPositions(
+			{
+				id: id,
+				projectType: project_type
+			},
+			{
+				agreementMapPositions: agreementMapPositions
+			}
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static applyCode(doc, code) {
-		var documentCode = new function () {
+		var documentCode = new function() {
 			this.textDocument = doc;
 			this.code = code;
-		}
+		}();
 		var apiMethod = gapi.client.qdacity.documents.applyCode(documentCode);
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -78,11 +80,9 @@ export default class DocumentsEndpoint {
 
 	static getAgreementMaps(mapId, prjType) {
 		var apiMethod = gapi.client.qdacity.documents.getAgreementMaps({
-			'id': mapId,
-			'projectType': prjType
+			id: mapId,
+			projectType: prjType
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-
-
 }

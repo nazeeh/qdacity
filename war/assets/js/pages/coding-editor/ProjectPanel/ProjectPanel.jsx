@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import CollaboratorList from '../../../common/SyncService/CollaboratorList';
@@ -11,50 +9,48 @@ import SearchProjectBtn from './SearchProjectBtn.jsx';
 import ProjectSearch from './ProjectSearch.jsx';
 import PageViewChooser from './PageViewChooser.jsx';
 
-
-const StyledSettingsPanel = styled.div `
+const StyledSettingsPanel = styled.div`
 	background-color: ${props => props.theme.defaultPaneBg};
 `;
 
-const StyledPanelContent = styled.div `
-	margin:5px 5px 0px 5px;
+const StyledPanelContent = styled.div`
+	margin: 5px 5px 0px 5px;
 `;
 
-const StyledPanelHeader = styled.div `
+const StyledPanelHeader = styled.div`
 	text-align: center;
-	position:relative;
+	position: relative;
 	background-color: #e7e7e7;
 	padding-bottom: 5px;
- `;
+`;
 
-const StyledPanelTitle = styled.b `
- 	padding-left: 17.14px;
- `;
+const StyledPanelTitle = styled.b`
+	padding-left: 17.14px;
+`;
 
-const StyledTopBtns = styled.div `
+const StyledTopBtns = styled.div`
 	display: grid;
-	grid-template-columns:  1fr 1fr;
+	grid-template-columns: 1fr 1fr;
 	grid-column-gap: 5px;
+`;
 
- `;
-
-const StyledExpanderToggle = styled.a `
+const StyledExpanderToggle = styled.a`
 	margin-right: 2px;
 	margin-top: 0px;
 	font-size: 20px;
 	color: grey;
 	cursor: pointer;
-	&:hover{
-		color:black;
+	&:hover {
+		color: black;
 	}
-`
+`;
 
 export default class ProjectPanel extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			showSearchBar: false,
-			isExpanded: true,
+			isExpanded: true
 		};
 
 		this.toggleSearchBar = this.toggleSearchBar.bind(this);
@@ -69,9 +65,9 @@ export default class ProjectPanel extends React.Component {
 
 	renderCollapseIcon() {
 		if (this.state.isExpanded) {
-			return <i className="fa fa-compress fa-1x"></i>;
+			return <i className="fa fa-compress fa-1x" />;
 		} else {
-			return <i className="fa fa-expand fa-1x"></i>;
+			return <i className="fa fa-expand fa-1x" />;
 		}
 	}
 
@@ -95,7 +91,6 @@ export default class ProjectPanel extends React.Component {
 		this.props.setSearchResults(results);
 	}
 
-
 	renderPanelContent() {
 		if (!this.state.isExpanded) return null;
 
@@ -112,15 +107,14 @@ export default class ProjectPanel extends React.Component {
 						history={this.props.history}
 					/>
 				</StyledTopBtns>
-				{this.state.showSearchBar
-					? <ProjectSearch
+				{this.state.showSearchBar ? (
+					<ProjectSearch
 						documentsView={this.props.documentsView}
 						codesystemView={this.props.codesystemView}
 						setSearchResults={this.setSearchResults}
 						showCodingView={this.props.showCodingView}
 					/>
-					: null
-				}
+				) : null}
 				<PageViewChooser
 					project={this.props.project}
 					view={this.props.selectedEditor}
@@ -135,15 +129,22 @@ export default class ProjectPanel extends React.Component {
 		return (
 			<StyledSettingsPanel>
 				<StyledPanelHeader>
-					<StyledPanelTitle><FormattedMessage id='projectpanel.project' defaultMessage='Project' /></StyledPanelTitle>
+					<StyledPanelTitle>
+						<FormattedMessage
+							id="projectpanel.project"
+							defaultMessage="Project"
+						/>
+					</StyledPanelTitle>
 
-					<StyledExpanderToggle className="pull-right" onClick={() => this.toggleIsExpanded()}>
+					<StyledExpanderToggle
+						className="pull-right"
+						onClick={() => this.toggleIsExpanded()}
+					>
 						{this.renderCollapseIcon()}
 					</StyledExpanderToggle>
 				</StyledPanelHeader>
 				{this.renderPanelContent()}
 			</StyledSettingsPanel>
-
 		);
 	}
 }

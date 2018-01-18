@@ -5,15 +5,14 @@ import styled from 'styled-components';
 
 import GoogleColumnChart from '../../common/GoogleColumnChart.jsx';
 
-const StyledAgreementStats = styled.div `
-    margin-left:25px;
-	margin-right:25px;
+const StyledAgreementStats = styled.div`
+	margin-left: 25px;
+	margin-right: 25px;
 	padding-top: 5px;
 	padding-bottom: 20px;
 `;
 
 export default class AgreementStats extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -34,9 +33,7 @@ export default class AgreementStats extends React.Component {
 	}
 
 	getOptions() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		return {
 			title: formatMessage({
 				id: 'agreementstats.agreement_by_document',
@@ -48,8 +45,7 @@ export default class AgreementStats extends React.Component {
 					id: 'agreementstats.documents',
 					defaultMessage: 'Documents'
 				}),
-				format: 'h:mm a',
-
+				format: 'h:mm a'
 			},
 			vAxis: {
 				title: formatMessage({
@@ -64,8 +60,8 @@ export default class AgreementStats extends React.Component {
 			chartArea: {
 				left: '8%',
 				top: '8%',
-				width: "70%",
-				height: "70%"
+				width: '70%',
+				height: '70%'
 			}
 		};
 	}
@@ -79,53 +75,72 @@ export default class AgreementStats extends React.Component {
 	}
 
 	renderReport(report, index) {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 
 		var data = new google.visualization.DataTable();
-		data.addColumn('string', formatMessage({
-			id: 'agreementstats.document',
-			defaultMessage: 'Document'
-		}));
-		data.addColumn('number', formatMessage({
-			id: 'agreementstats.f_measure',
-			defaultMessage: 'F-Measure'
-		}));
-		data.addColumn('number', formatMessage({
-			id: 'agreementstats.recall',
-			defaultMessage: 'Recall'
-		}));
-		data.addColumn('number', formatMessage({
-			id: 'agreementstats.precision',
-			defaultMessage: 'Precision'
-		}));
+		data.addColumn(
+			'string',
+			formatMessage({
+				id: 'agreementstats.document',
+				defaultMessage: 'Document'
+			})
+		);
+		data.addColumn(
+			'number',
+			formatMessage({
+				id: 'agreementstats.f_measure',
+				defaultMessage: 'F-Measure'
+			})
+		);
+		data.addColumn(
+			'number',
+			formatMessage({
+				id: 'agreementstats.recall',
+				defaultMessage: 'Recall'
+			})
+		);
+		data.addColumn(
+			'number',
+			formatMessage({
+				id: 'agreementstats.precision',
+				defaultMessage: 'Precision'
+			})
+		);
 
-		report.documentResults.forEach(function (docResult) {
-			var cells = docResult.reportRow.split(",");
-			data.addRow([cells[0], parseFloat(cells[1]), parseFloat(cells[2]), parseFloat(cells[3])]);
+		report.documentResults.forEach(function(docResult) {
+			var cells = docResult.reportRow.split(',');
+			data.addRow([
+				cells[0],
+				parseFloat(cells[1]),
+				parseFloat(cells[2]),
+				parseFloat(cells[3])
+			]);
 		});
 
 		return (
-			<GoogleColumnChart key={"agreementChart_"+ report.id + "_" + index} graphID={"agreementChartId_"+ report.id + "_" + index} data={data} options={this.getOptions()}/>
+			<GoogleColumnChart
+				key={'agreementChart_' + report.id + '_' + index}
+				graphID={'agreementChartId_' + report.id + '_' + index}
+				data={data}
+				options={this.getOptions()}
+			/>
 		);
-
 	}
 
 	renderCharts() {
 		var _this = this;
-		if (this.props.reports.length == 0) return (<div></div>);
+		if (this.props.reports.length == 0) return <div />;
 		return this.props.reports.map((report, index) => {
 			if (!report.documentResults) return '';
 			return (
-				<div key={"agreementChartContainer_"+ report.id + "_" + index}>
-					<h4 key={"agreementChartHeader_"+ report.id + "_" + index}>
-					<b>{report.name}</b>
+				<div key={'agreementChartContainer_' + report.id + '_' + index}>
+					<h4 key={'agreementChartHeader_' + report.id + '_' + index}>
+						<b>{report.name}</b>
 					</h4>
 					{_this.renderReport(report, index)}
 				</div>
 			);
-		})
+		});
 	}
 
 	render() {
@@ -141,12 +156,9 @@ export default class AgreementStats extends React.Component {
 			arrows: true
 		};
 
-
 		return (
 			<StyledAgreementStats>
-				<Slider {...settings}>
-					{this.renderCharts()}
-				</Slider>
+				<Slider {...settings}>{this.renderCharts()}</Slider>
 			</StyledAgreementStats>
 		);
 	}

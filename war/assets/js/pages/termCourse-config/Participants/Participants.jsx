@@ -1,8 +1,8 @@
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
-import UserList from "./UserList.jsx"
-import InviteUserField from "./InviteUserField.jsx"
+import UserList from './UserList.jsx';
+import InviteUserField from './InviteUserField.jsx';
 
 export default class Participants extends React.Component {
 	constructor(props) {
@@ -10,22 +10,25 @@ export default class Participants extends React.Component {
 	}
 
 	render() {
-
 		return (
 			<div id="user-section" className="box box-default">
-
 				<div className="box-header with-border">
 					<h3 className="box-title">
-						<FormattedMessage id='participants.participants' defaultMessage='Participants' /></h3>
+						<FormattedMessage
+							id="participants.participants"
+							defaultMessage="Participants"
+						/>
+					</h3>
 				</div>
 				<div className="box-body">
 					<div className="List-menu">
-						<InviteUserField termCourse={this.props.termCourse}/>
+						<InviteUserField termCourse={this.props.termCourse} />
 					</div>
 					<div>
-						<UserList termCourse={this.props.termCourse}/>
+						<UserList termCourse={this.props.termCourse} />
 					</div>
 				</div>
-		</div>);
+			</div>
+		);
 	}
 }

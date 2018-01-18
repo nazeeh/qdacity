@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import MetaModelView from './MetaModelView.jsx';
@@ -12,8 +10,8 @@ import SimpleCodesystem from '../Codesystem/SimpleCodesystem.jsx';
 import MetaModelEntityEndpoint from '../../../common/endpoints/MetaModelEntityEndpoint';
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 
-const StyledCodeviewComponent = styled.div `
-    padding: 8px 8px 0px 8px;
+const StyledCodeviewComponent = styled.div`
+	padding: 8px 8px 0px 8px;
 `;
 
 export default class MetaModel extends React.Component {
@@ -35,7 +33,9 @@ export default class MetaModel extends React.Component {
 		this.setActiveElement = this.setActiveElement.bind(this);
 		this.updateActiveElement = this.updateActiveElement.bind(this);
 		this.relatinoshipSourceChanged = this.relatinoshipSourceChanged.bind(this);
-		this.relatinoshipDestinationChanged = this.relatinoshipDestinationChanged.bind(this);
+		this.relatinoshipDestinationChanged = this.relatinoshipDestinationChanged.bind(
+			this
+		);
 	}
 
 	setElements(elements) {
@@ -50,7 +50,7 @@ export default class MetaModel extends React.Component {
 		_this.resetSelection();
 
 		if (elementIds != null) {
-			elementIds.forEach((elementId) => _this.setActiveId(elementId));
+			elementIds.forEach(elementId => _this.setActiveId(elementId));
 		} else {
 			this.setActiveId(null);
 		}
@@ -67,8 +67,10 @@ export default class MetaModel extends React.Component {
 	}
 
 	updateActiveElement(element) {
-
-		const previousMetaModelElementIds = (this.props.code.mmElementIDs != null ? this.props.code.mmElementIDs.slice(0) : []);
+		const previousMetaModelElementIds =
+			this.props.code.mmElementIDs != null
+				? this.props.code.mmElementIDs.slice(0)
+				: [];
 
 		this.setActiveElement(element);
 		this.props.code.mmElementIDs = this.state.selected.slice(0);
@@ -76,7 +78,10 @@ export default class MetaModel extends React.Component {
 		if (element.type == 'RELATIONSHIP') {
 			if (previousMetaModelElementIds.length != 0) {
 				for (let i = 0; i < previousMetaModelElementIds.length; i++) {
-					if (this.getElement(previousMetaModelElementIds[i]).type != 'RELATIONSHIP') {
+					if (
+						this.getElement(previousMetaModelElementIds[i]).type !=
+						'RELATIONSHIP'
+					) {
 						// Changed from normal code to relationship code
 						this.convertNormalCodeToRelationshipCode();
 						return;
@@ -90,7 +95,10 @@ export default class MetaModel extends React.Component {
 		} else {
 			if (previousMetaModelElementIds.length != 0) {
 				for (let i = 0; i < previousMetaModelElementIds.length; i++) {
-					if (this.getElement(previousMetaModelElementIds[i]).type == 'RELATIONSHIP') {
+					if (
+						this.getElement(previousMetaModelElementIds[i]).type ==
+						'RELATIONSHIP'
+					) {
 						// Changed from relationship code to normal code
 						this.convertRelationshipCodeToNormalCode();
 						return;
@@ -113,7 +121,7 @@ export default class MetaModel extends React.Component {
 		const _this = this;
 
 		// Compare element with selection
-		this.state.selected.forEach((selectedId) => {
+		this.state.selected.forEach(selectedId => {
 			const selected = _this.getElement(selectedId);
 
 			if (element.type != selected.type) {
@@ -121,7 +129,6 @@ export default class MetaModel extends React.Component {
 				_this.resetSelectionForGroup(groupId);
 			}
 		});
-
 
 		let group = this.state.elements[element.getGroup()];
 
@@ -135,7 +142,7 @@ export default class MetaModel extends React.Component {
 
 	selectGeneralizations(elementID, group) {
 		let _this = this;
-		group.forEach(function (el) {
+		group.forEach(function(el) {
 			if (el.hasSpecialization(elementID)) {
 				el.setSelected(true);
 				//recursion
@@ -153,7 +160,7 @@ export default class MetaModel extends React.Component {
 	resetSelectionForGroup(group) {
 		let _this = this;
 
-		group.forEach(function (el) {
+		group.forEach(function(el) {
 			el.setSelected(false);
 
 			let index = _this.state.selected.indexOf(el.id);
@@ -168,9 +175,9 @@ export default class MetaModel extends React.Component {
 	}
 
 	getElement(elementId) {
-		let idFilter = function (el) {
+		let idFilter = function(el) {
 			return el.getId() === elementId;
-		}
+		};
 
 		for (let key in this.state.elements) {
 			let element = this.state.elements[key].find(idFilter);
@@ -187,7 +194,7 @@ export default class MetaModel extends React.Component {
 		this.setState({
 			code: code
 		});
-	};
+	}
 
 	saveSettings() {
 		this.props.code.mmElementIDs = this.state.selected;
@@ -201,7 +208,7 @@ export default class MetaModel extends React.Component {
 
 		this.state.selected.forEach(selectedId => {
 			const selected = _this.getElement(selectedId);
-			if (selected.type == "RELATIONSHIP") {
+			if (selected.type == 'RELATIONSHIP') {
 				isRelationship = true;
 			}
 		});
@@ -215,7 +222,10 @@ export default class MetaModel extends React.Component {
 		let relation = this.props.code.relationshipCode;
 
 		if (relation != null) {
-			CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
+			CodesEndpoint.removeRelationship(
+				relation.key.parent.id,
+				relation.key.id
+			).then(resp => {
 				// Update the code
 				const storedCode = _this.props.getCodeByCodeID(resp.codeID);
 				storedCode.relations = resp.relations;
@@ -231,7 +241,7 @@ export default class MetaModel extends React.Component {
 	convertNormalCodeToRelationshipCode() {
 		const _this = this;
 
-		CodesEndpoint.removeAllRelationships(this.props.code.id).then((resp) => {
+		CodesEndpoint.removeAllRelationships(this.props.code.id).then(resp => {
 			// Update the code
 			const storedCode = _this.props.getCodeByCodeID(resp.codeID);
 			storedCode.relations = resp.relations;
@@ -244,9 +254,13 @@ export default class MetaModel extends React.Component {
 	relationshipCodeMetaModelChanged() {
 		const _this = this;
 
-		CodesEndpoint.updateRelationshipCodeMetaModel(this.props.code.id, this.props.code.mmElementIDs[0]).then((resp) => {
+		CodesEndpoint.updateRelationshipCodeMetaModel(
+			this.props.code.id,
+			this.props.code.mmElementIDs[0]
+		).then(resp => {
 			if (_this.props.code.relationshipCode != null) {
-				_this.props.code.relationshipCode.mmElementId = _this.props.code.mmElementIDs[0];
+				_this.props.code.relationshipCode.mmElementId =
+					_this.props.code.mmElementIDs[0];
 
 				// Update the relation
 				let code = _this.props.getCodeById(resp.relationshipCode.key.parent.id);
@@ -275,7 +289,11 @@ export default class MetaModel extends React.Component {
 		const _this = this;
 
 		const updateCode = (relationSourceCode, newRelation) => {
-			CodesEndpoint.updateRelationshipCode(_this.props.code.id, relationSourceCode.id, newRelation.key.id).then((resp3) => {
+			CodesEndpoint.updateRelationshipCode(
+				_this.props.code.id,
+				relationSourceCode.id,
+				newRelation.key.id
+			).then(resp3 => {
 				_this.props.code.relationshipCode = resp3.relationshipCode;
 
 				// Update the relation
@@ -290,8 +308,17 @@ export default class MetaModel extends React.Component {
 			});
 		};
 
-		const addNewRelationship = (newRelationSourceId, newRelationDestinationCodeId, relationMetaModelId) => {
-			CodesEndpoint.addRelationship(newRelationSourceId, newRelationDestinationCodeId, relationMetaModelId, false).then((resp2) => {
+		const addNewRelationship = (
+			newRelationSourceId,
+			newRelationDestinationCodeId,
+			relationMetaModelId
+		) => {
+			CodesEndpoint.addRelationship(
+				newRelationSourceId,
+				newRelationDestinationCodeId,
+				relationMetaModelId,
+				false
+			).then(resp2 => {
 				// Update the code
 				const relationSourceCode = _this.props.getCodeByCodeID(resp2.codeID);
 				relationSourceCode.relations = resp2.relations;
@@ -302,9 +329,11 @@ export default class MetaModel extends React.Component {
 				for (let i = 0; i < resp2.relations.length; i++) {
 					let rel = resp2.relations[i];
 
-					if (rel.mmElementId == relationMetaModelId
-						&& rel.codeId == newRelationDestinationCodeId
-						&& rel.key.parent.id == newRelationSourceId) {
+					if (
+						rel.mmElementId == relationMetaModelId &&
+						rel.codeId == newRelationDestinationCodeId &&
+						rel.key.parent.id == newRelationSourceId
+					) {
 						newRelation = rel;
 						break;
 					}
@@ -314,8 +343,11 @@ export default class MetaModel extends React.Component {
 			});
 		};
 
-		const removeOldRelationship = (relation) => {
-			CodesEndpoint.removeRelationship(relation.key.parent.id, relation.key.id).then((resp) => {
+		const removeOldRelationship = relation => {
+			CodesEndpoint.removeRelationship(
+				relation.key.parent.id,
+				relation.key.id
+			).then(resp => {
 				// Update the code
 				const storedCode = _this.props.getCodeByCodeID(resp.codeID);
 				storedCode.relations = resp.relations;
@@ -337,19 +369,21 @@ export default class MetaModel extends React.Component {
 					newRelationDestinationCodeId = relation.codeId;
 				}
 
-				addNewRelationship(newRelationSourceId, newRelationDestinationCodeId, relation.mmElementId);
+				addNewRelationship(
+					newRelationSourceId,
+					newRelationDestinationCodeId,
+					relation.mmElementId
+				);
 			});
 		};
-
 
 		let relation = this.props.code.relationshipCode;
 
 		// Remove relation, add relation, update relationship-code
 		if (relation != null) {
 			removeOldRelationship(relation);
-		}
-		// Create a relation
-		else {
+		} else {
+			// Create a relation
 			let sourceId = null;
 			let destinationCodeId = null;
 
@@ -361,11 +395,16 @@ export default class MetaModel extends React.Component {
 			if (newDestinationCode != null) {
 				destinationCodeId = newDestinationCode.codeID;
 			} else {
-				destinationCodeId = this.destinationCodeCodesystemRef.getSelected().codeID;
+				destinationCodeId = this.destinationCodeCodesystemRef.getSelected()
+					.codeID;
 			}
 
 			if (sourceId != null && destinationCodeId != null) {
-				addNewRelationship(sourceId, destinationCodeId, this.props.code.mmElementIDs[0]);
+				addNewRelationship(
+					sourceId,
+					destinationCodeId,
+					this.props.code.mmElementIDs[0]
+				);
 			}
 		}
 	}
@@ -376,30 +415,69 @@ export default class MetaModel extends React.Component {
 		if (!this.isRelationshipCode()) {
 			return (
 				<div>
-                    <div className="col-sm-6">
-			            <CodeRelationsView {...this.props} code={this.props.code} getElement={this.getElement} elements={this.state.elements} getCodeById={this.props.getCodeById} getCodeByCodeID={this.props.getCodeByCodeID} getCodesystem={this.props.getCodeSystem} createCode={this.props.createCode} selectCode={this.props.selectCode} deleteRelationship={this.props.deleteRelationship} />
-                    </div>
-		        </div>
+					<div className="col-sm-6">
+						<CodeRelationsView
+							{...this.props}
+							code={this.props.code}
+							getElement={this.getElement}
+							elements={this.state.elements}
+							getCodeById={this.props.getCodeById}
+							getCodeByCodeID={this.props.getCodeByCodeID}
+							getCodesystem={this.props.getCodeSystem}
+							createCode={this.props.createCode}
+							selectCode={this.props.selectCode}
+							deleteRelationship={this.props.deleteRelationship}
+						/>
+					</div>
+				</div>
 			);
 		} else {
-			const sourceCode = (this.props.code.relationshipCode ? this.props.getCodeById(this.props.code.relationshipCode.key.parent.id) : null);
-			const destinationCode = (this.props.code.relationshipCode ? this.props.getCodeByCodeID(this.props.code.relationshipCode.codeId) : null);
+			const sourceCode = this.props.code.relationshipCode
+				? this.props.getCodeById(this.props.code.relationshipCode.key.parent.id)
+				: null;
+			const destinationCode = this.props.code.relationshipCode
+				? this.props.getCodeByCodeID(this.props.code.relationshipCode.codeId)
+				: null;
 
-			let isCodeSelectable = (code) => {
+			let isCodeSelectable = code => {
 				return code.relationshipCode == null && code.id != _this.props.code.id;
 			};
 
 			return (
 				<div>
-                    <div className="col-sm-3">
-                        <FormattedMessage id='metamodel.source_code' defaultMessage='Source-Code' />:
-                        <SimpleCodesystem ref={(c) => {if (c) this.sourceCodeCodesystemRef = c;}} height="200" selected={sourceCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipSourceChanged} isCodeSelectable={isCodeSelectable} />
-                    </div>
-                    <div className="col-sm-3">
-                        <FormattedMessage id='metamodel.dest_code' defaultMessage='Destination-Code' />:
-                        <SimpleCodesystem ref={(c) => {if (c) this.destinationCodeCodesystemRef = c;}} height="200" selected={destinationCode} codesystem={this.props.getCodeSystem()} notifyOnSelected={this.relatinoshipDestinationChanged} isCodeSelectable={isCodeSelectable} />
-                    </div>
-                </div>
+					<div className="col-sm-3">
+						<FormattedMessage
+							id="metamodel.source_code"
+							defaultMessage="Source-Code"
+						/>:
+						<SimpleCodesystem
+							ref={c => {
+								if (c) this.sourceCodeCodesystemRef = c;
+							}}
+							height="200"
+							selected={sourceCode}
+							codesystem={this.props.getCodeSystem()}
+							notifyOnSelected={this.relatinoshipSourceChanged}
+							isCodeSelectable={isCodeSelectable}
+						/>
+					</div>
+					<div className="col-sm-3">
+						<FormattedMessage
+							id="metamodel.dest_code"
+							defaultMessage="Destination-Code"
+						/>:
+						<SimpleCodesystem
+							ref={c => {
+								if (c) this.destinationCodeCodesystemRef = c;
+							}}
+							height="200"
+							selected={destinationCode}
+							codesystem={this.props.getCodeSystem()}
+							notifyOnSelected={this.relatinoshipDestinationChanged}
+							isCodeSelectable={isCodeSelectable}
+						/>
+					</div>
+				</div>
 			);
 		}
 	}
@@ -412,10 +490,16 @@ export default class MetaModel extends React.Component {
 		return (
 			<StyledCodeviewComponent>
 				<div>
-    		        <div className="col-sm-6">
-		                <MetaModelView code={this.props.code} selected={this.state.selected} elements={this.state.elements} updateActiveElement={this.updateActiveElement} setElements={this.setElements}/>
-    	            </div>
-		            {this.renderContent()}
+					<div className="col-sm-6">
+						<MetaModelView
+							code={this.props.code}
+							selected={this.state.selected}
+							elements={this.state.elements}
+							updateActiveElement={this.updateActiveElement}
+							setElements={this.setElements}
+						/>
+					</div>
+					{this.renderContent()}
 				</div>
 			</StyledCodeviewComponent>
 		);

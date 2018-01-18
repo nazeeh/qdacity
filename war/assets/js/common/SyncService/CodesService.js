@@ -1,7 +1,4 @@
-import {
-	MSG,
-	EVT
-} from './constants.js';
+import { MSG, EVT } from './constants.js';
 
 export default class CodesService {
 	constructor(syncService, socket) {
@@ -16,7 +13,7 @@ export default class CodesService {
 		[
 			[EVT.CODE.INSERTED, this._handleCodeInserted],
 			[EVT.CODE.RELOCATED, this._handleCodeRelocated],
-			[EVT.CODE.REMOVED, this._handleCodeRemoved],
+			[EVT.CODE.REMOVED, this._handleCodeRemoved]
 		].map(def => socket.on(def[0], def[1].bind(this)));
 	}
 
@@ -30,7 +27,7 @@ export default class CodesService {
 	insertCode(code, parentID) {
 		return this.syncService.emit(MSG.CODE.INSERT, {
 			resource: code,
-			parentId: parentID,
+			parentId: parentID
 		});
 	}
 
@@ -44,7 +41,7 @@ export default class CodesService {
 	relocateCode(codeId, newParentID) {
 		return this.syncService.emit(MSG.CODE.RELOCATE, {
 			codeId,
-			newParentID,
+			newParentID
 		});
 	}
 
@@ -56,7 +53,7 @@ export default class CodesService {
 	 */
 	removeCode(code) {
 		return this.syncService.emit(MSG.CODE.REMOVE, {
-			id: code.id,
+			id: code.id
 		});
 	}
 
@@ -67,10 +64,7 @@ export default class CodesService {
 	 * @arg {object} code - The Code that has been inserted.
 	 */
 	_handleCodeInserted(code) {
-		this.syncService.fireEvent(
-			'codeInserted',
-			code
-		);
+		this.syncService.fireEvent('codeInserted', code);
 	}
 
 	/**
@@ -80,10 +74,7 @@ export default class CodesService {
 	 * @arg {object} code - The Code that has been relocated.
 	 */
 	_handleCodeRelocated(code) {
-		this.syncService.fireEvent(
-			'codeRelocated',
-			code
-		);
+		this.syncService.fireEvent('codeRelocated', code);
 	}
 
 	/**
@@ -93,9 +84,6 @@ export default class CodesService {
 	 * @arg {object} code - The Code that has been removed.
 	 */
 	_handleCodeRemoved(code) {
-		this.syncService.fireEvent(
-			'codeRemoved',
-			code
-		);
+		this.syncService.fireEvent('codeRemoved', code);
 	}
-};
+}

@@ -12,7 +12,7 @@ import { MSG, EVT } from './constants.js';
  *   parameters:
  *   parameters:
  *     {object[]} - Array of all users at the current document. Format of the
- *                  objects matches the format of objects sent to 
+ *                  objects matches the format of objects sent to
  *                  {@link this#updateUser}.
  *
  * - codeInserted: Fired when a new code has been inserted into the current
@@ -31,7 +31,6 @@ import { MSG, EVT } from './constants.js';
  *     {object} - Object representing the removed code
  */
 export default class SyncService {
-
 	/**
 	 * Constructor for SyncService.
 	 */
@@ -40,7 +39,7 @@ export default class SyncService {
 		this._listeners = {};
 		this._userdata = {
 			apiRoot: '$API_PATH$',
-			apiVersion: '$API_VERSION$',
+			apiVersion: '$API_VERSION$'
 		};
 		this._nextListenerId = 1;
 
@@ -67,9 +66,11 @@ export default class SyncService {
 	 * @arg {object} userdata - Any serializable object
 	 */
 	updateUser(userdata) {
-
 		// Clone current userdata and update fields included in userdata parameter
-		userdata = Object.assign(JSON.parse(JSON.stringify(this._userdata)), userdata);
+		userdata = Object.assign(
+			JSON.parse(JSON.stringify(this._userdata)),
+			userdata
+		);
 
 		if (JSON.stringify(userdata) === JSON.stringify(this._userdata)) {
 			return;
@@ -145,19 +146,15 @@ export default class SyncService {
 	 */
 	emit(messageType, arg) {
 		return new Promise((resolve, reject) => {
-			this._socket.emit(
-				messageType,
-				arg,
-				(status, ...args) => {
-					if (status === 'ok') {
-						resolve(...args);
-					} else {
-						this.console.error('API error', ...args);
-					}
+			this._socket.emit(messageType, arg, (status, ...args) => {
+				if (status === 'ok') {
+					resolve(...args);
+				} else {
+					this.console.error('API error', ...args);
 				}
-			);
+			});
 		});
-	};
+	}
 
 	/**
 	 * Connect to the sync server.
@@ -174,8 +171,7 @@ export default class SyncService {
 
 			// Handle user events
 			[EVT.USER.CONNECTED, this._handleUserConnected],
-			[EVT.USER.UPDATED, this._handleUserListChange],
-
+			[EVT.USER.UPDATED, this._handleUserListChange]
 		].map(def => this._socket.on(def[0], def[1].bind(this)));
 
 		// Make sure, the websocket is closed when the browser is closed
@@ -189,7 +185,7 @@ export default class SyncService {
 	 */
 	_emitUserUpdate() {
 		this.emit(MSG.USER.UPDATE, this._userdata);
-	};
+	}
 
 	/**
 	 * Handle user.connected message from sync service. Used to welcome clients
@@ -198,8 +194,8 @@ export default class SyncService {
 	 * @arg {string} serverName - Name of the connected server
 	 */
 	_handleUserConnected(serverName) {
-		this.log('Connected to realtime-service:', serverName)
-	};
+		this.log('Connected to realtime-service:', serverName);
+	}
 
 	/**
 	 * Handle user.updated message from sync service. Used to notify clients
@@ -215,5 +211,4 @@ export default class SyncService {
 			userlist.filter(user => user.email !== this._userdata.email)
 		);
 	}
-
-};
+}

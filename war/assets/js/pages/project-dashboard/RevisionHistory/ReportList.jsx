@@ -11,11 +11,11 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
 
-const StyledReportDate = styled.span `
-	width:85px;
+const StyledReportDate = styled.span`
+	width: 85px;
 `;
 
 export default class ReportList extends React.Component {
@@ -30,27 +30,23 @@ export default class ReportList extends React.Component {
 	}
 
 	deleteReport(e, reportId, index) {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var validationEndpoint = new ValidationEndpoint();
 
-		validationEndpoint.deleteReport(reportId)
-			.then(
-				function (val) {
-					alertify.success(
-						formatMessage({
-							id: 'reportlist.report_deleted',
-							defaultMessage: "Report has been deleted"
-						})
-					);
-					_this.state.reports.splice(index, 1);
-					_this.setState({
-						reports: _this.state.reports
-					})
+		validationEndpoint.deleteReport(reportId).then(function(val) {
+			alertify.success(
+				formatMessage({
+					id: 'reportlist.report_deleted',
+					defaultMessage: 'Report has been deleted'
 				})
+			);
+			_this.state.reports.splice(index, 1);
+			_this.setState({
+				reports: _this.state.reports
+			});
+		});
 	}
 
 	showValidationReports(report) {
@@ -61,8 +57,13 @@ export default class ReportList extends React.Component {
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
 			return (
-				<StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-					<i className="fa fa-trash"></i>
+				<StyledListItemBtn
+					onClick={e => this.deleteReport(e, report.id, index)}
+					className="btn fa-lg"
+					color={Theme.rubyRed}
+					colorAccent={Theme.rubyRedAccent}
+				>
+					<i className="fa fa-trash" />
 				</StyledListItemBtn>
 			);
 		else return '';
@@ -71,28 +72,33 @@ export default class ReportList extends React.Component {
 	renderReport(report, index) {
 		var datetime = report.datetime;
 
-		if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
-		else datetime = "";
+		if (typeof datetime != 'undefined')
+			datetime = datetime.split('T')[0]; // split to get date only
+		else datetime = '';
 
 		return (
-			<StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
-                <span> {report.name} </span>
-                <span>
-                    <StyledReportDate >{'[' + datetime + '] '}</StyledReportDate>
-                    {this.renderReportDeleteBtn(report, index)}
-                </span>
-
-            </StyledListItemDefault>
+			<StyledListItemDefault
+				key={report.id}
+				onClick={() => this.showValidationReports(report)}
+				clickable={true}
+			>
+				<span> {report.name} </span>
+				<span>
+					<StyledReportDate>{'[' + datetime + '] '}</StyledReportDate>
+					{this.renderReportDeleteBtn(report, index)}
+				</span>
+			</StyledListItemDefault>
 		);
 	}
 
 	render() {
 		return (
-			<ItemList 
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.state.reports} 
-                renderItem={this.renderReport} />
+			<ItemList
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.state.reports}
+				renderItem={this.renderReport}
+			/>
 		);
 	}
 }

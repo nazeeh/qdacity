@@ -7,7 +7,7 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
 
 export default class UserList extends React.Component {
@@ -24,23 +24,21 @@ export default class UserList extends React.Component {
 	}
 
 	init() {
-
 		switch (this.props.project.getType()) {
-		case "VALIDATION":
-			this.addValidationCoders();
-			break;
-		case "PROJECT":
-			this.addOwners();
-			break;
-		default:
-			break;
-
+			case 'VALIDATION':
+				this.addValidationCoders();
+				break;
+			case 'PROJECT':
+				this.addOwners();
+				break;
+			default:
+				break;
 		}
 	}
 
 	addOwners() {
 		var _this = this;
-		UserEndpoint.listUser(this.props.project.getId()).then(function (resp) {
+		UserEndpoint.listUser(this.props.project.getId()).then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
@@ -50,7 +48,9 @@ export default class UserList extends React.Component {
 
 	addValidationCoders() {
 		var _this = this;
-		UserEndpoint.listValidationCoders(this.props.project.getId()).then(function (resp) {
+		UserEndpoint.listValidationCoders(this.props.project.getId()).then(function(
+			resp
+		) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
@@ -61,19 +61,20 @@ export default class UserList extends React.Component {
 	renderUser(user, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
-                <span > {user.givenName + " " + user.surName} </span>
-            </StyledListItemDefault>
+				<span> {user.givenName + ' ' + user.surName} </span>
+			</StyledListItemDefault>
 		);
 	}
 
 	render() {
 		return (
-			<ItemList 
-                key={"itemlist"}
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.state.users} 
-                renderItem={this.renderUser} />
+			<ItemList
+				key={'itemlist'}
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.state.users}
+				renderItem={this.renderUser}
+			/>
 		);
 	}
 }

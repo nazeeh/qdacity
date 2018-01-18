@@ -1,5 +1,4 @@
 export default class EdgeValue {
-
 	constructor(relationId) {
 		this.relationId = relationId;
 	}
