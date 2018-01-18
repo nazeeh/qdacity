@@ -411,7 +411,7 @@ class CodingEditor extends React.Component {
 	};
 
 	render() {
-		if (!this.state.isSignedIn || !this.state.isRegistered) return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) return (<UnauthenticatedUserPanel history={this.props.history}/>);
 		if (this.state.project.getCodesystemID() == -1) this.init();
 
 		const fonts = [{
