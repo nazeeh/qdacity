@@ -110,17 +110,12 @@ frontend_prod_unittest:
     - frontend_prod_build
 
 acceptance_tests:
-  tags:
-    - qdacity
+  <<: *job_definition
   stage: test
-  environment: Production
   only:
-    - master
+    - branches
   cache:
-    key: "node_modules"
-    untracked: true
-    paths:
-    - war/node_modules/
+    <<: *node_cache
     policy: pull
   script:
     - rm -f ./war/WEB-INF/appengine-generated/local_db.bin
@@ -128,9 +123,6 @@ acceptance_tests:
     - cd war
     - chmod +x ./startAcceptanceTests.sh
     - ./startAcceptanceTests.sh
-  dependencies:
-    - frontend_prod_build
-    - backend_prod_build
 
 rtcsvc_prod_unittest:
   <<: *job_definition
