@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 import styled from 'styled-components';
 
-const StyledTabHeader = styled.div `
+const StyledTabHeader = styled.div`
 	display: -webkit-flex;
 	display: flex;
 	-webkit-flex-direction: row;
@@ -47,9 +47,7 @@ export default class Tabs extends React.Component {
 	render() {
 		return (
 			<div>
-				<StyledTabHeader>
-					{this.renderTabsHeader()}
-				</StyledTabHeader>
+				<StyledTabHeader>{this.renderTabsHeader()}</StyledTabHeader>
 				{this.renderActiveTab()}
 			</div>
 		);

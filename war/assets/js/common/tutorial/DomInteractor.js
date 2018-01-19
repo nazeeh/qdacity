@@ -1,4 +1,4 @@
-import Promisizer from '../endpoints/Promisizer'
+import Promisizer from '../endpoints/Promisizer';
 
 /**
  * @author Robin Kreuzer
@@ -10,8 +10,6 @@ export default class DomInteractor {
 	constructor() {
 		this.funcs = [];
 	}
-
-
 
 	getElementById(id) {
 		return document.getElementById(id);
@@ -30,27 +28,25 @@ export default class DomInteractor {
 	//last state of display can be important: https://stackoverflow.com/questions/13688238/javascript-style-display-none-or-jquery-hide-is-more-efficient
 	//but is not yet implemented
 	showElement(domObject) {
-		domObject.classList.remove("noneDisplay");
-		if (domObject.style.display == "none") {
-			domObject.style.display = "inline";
+		domObject.classList.remove('noneDisplay');
+		if (domObject.style.display == 'none') {
+			domObject.style.display = 'inline';
 		}
 	}
 
 	showElementAnimated(domObject, duration) {
 		$(domObject).stop(true);
 		$(domObject).show(duration);
-
 	}
 
 	hideElement(domObject) {
-		domObject.classList.add("noneDisplay");
+		domObject.classList.add('noneDisplay');
 	}
 
 	hideElementAnimated(domObject, duration) {
 		$(domObject).stop(true);
 		$(domObject).hide(duration);
 	}
-
 
 	//**************
 	//the following methods are only be used, if i dont have direct access to the dom elements,
@@ -61,9 +57,11 @@ export default class DomInteractor {
 	future_jq(func_jq, test_if_exists) {
 		var dhis = this;
 
-
-		obs = function (func) {
-			if (test_if_exists().html() != undefined && test_if_exists().html() != "") {
+		obs = function(func) {
+			if (
+				test_if_exists().html() != undefined &&
+				test_if_exists().html() != ''
+			) {
 				func_jq();
 				dhis.delete_observer(func);
 			}

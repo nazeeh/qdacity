@@ -1,11 +1,7 @@
 ///@ts-check
 /// <reference types="react-intl" />
-import {
-	IntlProvider
-} from 'react-intl';
-import {
-	Component
-} from 'react';
+import { IntlProvider } from 'react-intl';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -19,9 +15,7 @@ const globalLocalizationState = {
 	/** @type {ReactIntl.InjectedIntl} */
 	intl: undefined,
 	/** @type {Set<String>} */
-	supportedLanguages: new Set([
-		'en'
-	]),
+	supportedLanguages: new Set(['en'])
 };
 
 /**
@@ -41,9 +35,12 @@ async function loadMessages(language = 'en') {
 }
 
 export default class LocalizationProvider extends IntlProvider {
-	constructor(props, context = {
-		intl: LocalizationProvider.intl
-	}) {
+	constructor(
+		props,
+		context = {
+			intl: LocalizationProvider.intl
+		}
+	) {
 		super(props, context);
 		globalLocalizationState.intl = this.getChildContext().intl;
 		if (window['QDAcityLocalization'] == undefined) {
@@ -94,8 +91,9 @@ export default class LocalizationProvider extends IntlProvider {
 	 */
 	static get userLanguage() {
 		// @ts-ignore
-		const localeOrLanguage = navigator.language || navigator.browserLanguage || 'en-US';
+		const localeOrLanguage =
+			navigator.language || navigator.browserLanguage || 'en-US';
 		const language = localeOrLanguage.split('-', 2).shift();
 		return language;
 	}
-};
+}

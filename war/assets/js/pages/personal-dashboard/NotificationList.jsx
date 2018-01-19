@@ -12,14 +12,14 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../common/styles/ItemList.jsx';
 
-const StyledNotificationInfo = styled.div `
+const StyledNotificationInfo = styled.div`
 	flex-grow: 1;
 `;
 
-const StyledActionBtns = styled.div `
+const StyledActionBtns = styled.div`
 	display: flex;
 	flex-direction: row;
 	& > button {
@@ -28,11 +28,11 @@ const StyledActionBtns = styled.div `
 	}
 `;
 
-const StyledGreenIcon = styled.a `
+const StyledGreenIcon = styled.a`
 	color: green;
 `;
 
-const StyledGreyIcon = styled.a `
+const StyledGreyIcon = styled.a`
 	color: grey;
 `;
 
@@ -54,7 +54,7 @@ export default class NotificationList extends React.Component {
 	init() {
 		var _this = this;
 		_this.state.notifications = [];
-		UserEndpoint.listUserNotification().then(function (resp) {
+		UserEndpoint.listUserNotification().then(function(resp) {
 			var items = resp.items || [];
 			items = _this.sortNotifications(items);
 			_this.setState({
@@ -65,7 +65,7 @@ export default class NotificationList extends React.Component {
 
 	// TODO possibly sort
 	sortNotifications(notifications) {
-		notifications.sort(function (a, b) {
+		notifications.sort(function(a, b) {
 			if (a.datetime > b.datetime) return -1;
 			if (a.datetime < b.datetime) return 1;
 			return 0;
@@ -75,8 +75,8 @@ export default class NotificationList extends React.Component {
 
 	acceptInvitation(notification) {
 		var _this = this;
-		ProjectEndpoint.addOwner(notification.project).then(function (resp) {
-			resp.type = "PROJECT";
+		ProjectEndpoint.addOwner(notification.project).then(function(resp) {
+			resp.type = 'PROJECT';
 			_this.props.addProject(resp);
 		});
 
@@ -85,12 +85,12 @@ export default class NotificationList extends React.Component {
 
 	acceptInvitationCourse(notification) {
 		var _this = this;
-		CourseEndpoint.addCourseOwner(notification.course).then(function (resp) {
+		CourseEndpoint.addCourseOwner(notification.course).then(function(resp) {
 			var course = resp;
-			CourseEndpoint.listTermCourse(notification.course).then(function (resp2) {
+			CourseEndpoint.listTermCourse(notification.course).then(function(resp2) {
 				var termList = [];
 				resp2.items = resp2.items || [];
-				resp2.items.forEach(function (crs) {
+				resp2.items.forEach(function(crs) {
 					termList.push({
 						text: crs.term
 					});
@@ -105,7 +105,7 @@ export default class NotificationList extends React.Component {
 	acceptInvitationTermCourse(notification) {
 		var _this = this;
 		console.log(notification);
-		CourseEndpoint.addParticipant(notification.termCourse).then(function (resp) {
+		CourseEndpoint.addParticipant(notification.termCourse).then(function(resp) {
 			var termCourse = resp;
 			console.log(resp);
 			_this.settleNotification(notification);
@@ -113,20 +113,25 @@ export default class NotificationList extends React.Component {
 	}
 
 	createValidationProject(notification) {
-
-		ProjectEndpoint.createValidationProject(notification.project, notification.originUser).then(function (resp) {});
+		ProjectEndpoint.createValidationProject(
+			notification.project,
+			notification.originUser
+		).then(function(resp) {});
 
 		this.settleNotification(notification);
 	}
 
 	isValidationProject(project) {
-		return 'clickable ' + ((project.type == "VALIDATION") ? 'validationProjectItem' : ' ');
+		return (
+			'clickable ' +
+			(project.type == 'VALIDATION' ? 'validationProjectItem' : ' ')
+		);
 	}
 
 	settleNotification(notification) {
 		var _this = this;
 		notification.settled = true;
-		UserEndpoint.updateUserNotification(notification).then(function (resp) {
+		UserEndpoint.updateUserNotification(notification).then(function(resp) {
 			_this.setState({
 				notifications: _this.state.notifications
 			});
@@ -135,108 +140,167 @@ export default class NotificationList extends React.Component {
 
 	renderButtons(notification) {
 		switch (notification.type) {
-		case "INVITATION":
-			if (notification.settled) {
-				return <StyledGreenIcon className=" fa-lg">
-							<i  className="fa fa-check fa-2x "></i>
+			case 'INVITATION':
+				if (notification.settled) {
+					return (
+						<StyledGreenIcon className=" fa-lg">
+							<i className="fa fa-check fa-2x " />
 						</StyledGreenIcon>
-			} else {
-				return <StyledActionBtns>
-						<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-							<i className="fa fa-times"></i>
-						</StyledListItemBtn>
-						<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitation(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-							<i className="fa fa-check"></i>
-						</StyledListItemBtn>
-					</StyledActionBtns>
-			}
-			break;
-		case "VALIDATION_REQUEST":
-			if (notification.settled) {
-				return <StyledGreenIcon className=" fa-lg">
-							<i  className="fa fa-check fa-2x "></i>
-						</StyledGreenIcon>
-			} else {
-				return <StyledActionBtns>
-						<StyledListItemBtn className=" btn fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-							<i className="fa fa-times"></i>
-						</StyledListItemBtn>
-						<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.createValidationProject(notification)}  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-							<i className="fa fa-check"></i>
-						</StyledListItemBtn>
-					</StyledActionBtns>
-			}
-			break;
-		case "POSTED_VALIDATION_REQUEST":
-			return <StyledGreyIcon className=" fa-lg">
-						<i  className="fa fa-key fa-2x "></i>
-					</StyledGreyIcon>
-			break;
-		case "VALIDATION_REQUEST_GRANTED":
-			return <StyledGreenIcon className=" fa-lg">
-						<i  className="fa fa-key fa-2x "></i>
-					</StyledGreenIcon>
-			break;
-		case "INVITATION_COURSE":
-			if (notification.settled) {
-				return <StyledGreenIcon className=" fa-lg">
-								<i  className="fa fa-check fa-2x "></i>
-							</StyledGreenIcon>
-			} else {
-				return <StyledActionBtns>
-							<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-								<i className="fa fa-times"></i>
+					);
+				} else {
+					return (
+						<StyledActionBtns>
+							<StyledListItemBtn
+								className=" btn  fa-lg"
+								onClick={() => this.settleNotification(notification)}
+								color={Theme.rubyRed}
+								colorAccent={Theme.rubyRedAccent}
+							>
+								<i className="fa fa-times" />
 							</StyledListItemBtn>
-							<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitationCourse(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-								<i className="fa fa-check"></i>
+							<StyledListItemBtn
+								className=" btn fa-lg notificationAccept"
+								onClick={() => this.acceptInvitation(notification)}
+								color={Theme.darkGreen}
+								colorAccent={Theme.darkGreenAccent}
+							>
+								<i className="fa fa-check" />
 							</StyledListItemBtn>
 						</StyledActionBtns>
-			}
-			break;
-		case "INVITATION_TERM_COURSE":
-			if (notification.settled) {
-				return <StyledGreenIcon className=" fa-lg">
-									<i  className="fa fa-check fa-2x "></i>
-								</StyledGreenIcon>
-			} else {
-				return <StyledActionBtns>
-								<StyledListItemBtn className=" btn  fa-lg" onClick={() => this.settleNotification(notification)}  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-									<i className="fa fa-times"></i>
-								</StyledListItemBtn>
-								<StyledListItemBtn className=" btn fa-lg notificationAccept"  onClick={() => this.acceptInvitationTermCourse(notification)} color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-									<i className="fa fa-check"></i>
-								</StyledListItemBtn>
-							</StyledActionBtns>
-			}
-			break;
-		default:
-			return "";
-			break;
+					);
+				}
+				break;
+			case 'VALIDATION_REQUEST':
+				if (notification.settled) {
+					return (
+						<StyledGreenIcon className=" fa-lg">
+							<i className="fa fa-check fa-2x " />
+						</StyledGreenIcon>
+					);
+				} else {
+					return (
+						<StyledActionBtns>
+							<StyledListItemBtn
+								className=" btn fa-lg"
+								onClick={() => this.settleNotification(notification)}
+								color={Theme.rubyRed}
+								colorAccent={Theme.rubyRedAccent}
+							>
+								<i className="fa fa-times" />
+							</StyledListItemBtn>
+							<StyledListItemBtn
+								className=" btn fa-lg notificationAccept"
+								onClick={() => this.createValidationProject(notification)}
+								color={Theme.darkGreen}
+								colorAccent={Theme.darkGreenAccent}
+							>
+								<i className="fa fa-check" />
+							</StyledListItemBtn>
+						</StyledActionBtns>
+					);
+				}
+				break;
+			case 'POSTED_VALIDATION_REQUEST':
+				return (
+					<StyledGreyIcon className=" fa-lg">
+						<i className="fa fa-key fa-2x " />
+					</StyledGreyIcon>
+				);
+				break;
+			case 'VALIDATION_REQUEST_GRANTED':
+				return (
+					<StyledGreenIcon className=" fa-lg">
+						<i className="fa fa-key fa-2x " />
+					</StyledGreenIcon>
+				);
+				break;
+			case 'INVITATION_COURSE':
+				if (notification.settled) {
+					return (
+						<StyledGreenIcon className=" fa-lg">
+							<i className="fa fa-check fa-2x " />
+						</StyledGreenIcon>
+					);
+				} else {
+					return (
+						<StyledActionBtns>
+							<StyledListItemBtn
+								className=" btn  fa-lg"
+								onClick={() => this.settleNotification(notification)}
+								color={Theme.rubyRed}
+								colorAccent={Theme.rubyRedAccent}
+							>
+								<i className="fa fa-times" />
+							</StyledListItemBtn>
+							<StyledListItemBtn
+								className=" btn fa-lg notificationAccept"
+								onClick={() => this.acceptInvitationCourse(notification)}
+								color={Theme.darkGreen}
+								colorAccent={Theme.darkGreenAccent}
+							>
+								<i className="fa fa-check" />
+							</StyledListItemBtn>
+						</StyledActionBtns>
+					);
+				}
+				break;
+			case 'INVITATION_TERM_COURSE':
+				if (notification.settled) {
+					return (
+						<StyledGreenIcon className=" fa-lg">
+							<i className="fa fa-check fa-2x " />
+						</StyledGreenIcon>
+					);
+				} else {
+					return (
+						<StyledActionBtns>
+							<StyledListItemBtn
+								className=" btn  fa-lg"
+								onClick={() => this.settleNotification(notification)}
+								color={Theme.rubyRed}
+								colorAccent={Theme.rubyRedAccent}
+							>
+								<i className="fa fa-times" />
+							</StyledListItemBtn>
+							<StyledListItemBtn
+								className=" btn fa-lg notificationAccept"
+								onClick={() => this.acceptInvitationTermCourse(notification)}
+								color={Theme.darkGreen}
+								colorAccent={Theme.darkGreenAccent}
+							>
+								<i className="fa fa-check" />
+							</StyledListItemBtn>
+						</StyledActionBtns>
+					);
+				}
+				break;
+			default:
+				return '';
+				break;
 		}
 	}
 
 	renderCourse(notification, index) {
 		return (
 			<StyledListItemDefault key={notification.id}>
-                <StyledNotificationInfo>
-                    <span dangerouslySetInnerHTML={{__html: notification.subject}}></span>
-                    <br/>
-                    <span dangerouslySetInnerHTML={{__html: notification.message}}></span>
-                </StyledNotificationInfo>
-                {this.renderButtons(notification)}
-            </StyledListItemDefault>
+				<StyledNotificationInfo>
+					<span dangerouslySetInnerHTML={{ __html: notification.subject }} />
+					<br />
+					<span dangerouslySetInnerHTML={{ __html: notification.message }} />
+				</StyledNotificationInfo>
+				{this.renderButtons(notification)}
+			</StyledListItemDefault>
 		);
 	}
 
 	render() {
 		return (
-			<ItemList 
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.state.notifications} 
-                renderItem={this.renderCourse} />
+			<ItemList
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.state.notifications}
+				renderItem={this.renderCourse}
+			/>
 		);
 	}
-
-
 }

@@ -5,7 +5,6 @@ import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import HoverButton from './HoverButton.jsx';
 
 export default class AddEdgeButton extends HoverButton {
-
 	constructor(props) {
 		super(props);
 	}
@@ -21,8 +20,11 @@ export default class AddEdgeButton extends HoverButton {
 	}
 
 	getToolTip() {
-		const {formatMessage} = IntlProvider.intl;
-		return formatMessage({id: 'addedgebutton.tooltip', defaultMessage: 'Adds a new edge (relation) to the model.'});
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'addedgebutton.tooltip',
+			defaultMessage: 'Adds a new edge (relation) to the model.'
+		});
 	}
 
 	getBounds() {

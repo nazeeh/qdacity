@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
@@ -26,9 +24,7 @@ export default class SaturationDetails extends React.Component {
 	}
 
 	initTable() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var dataSet = [];
 		var tableMount = $('#saturationTable');
 		var columnsArray = [];
@@ -50,26 +46,24 @@ export default class SaturationDetails extends React.Component {
 				defaultMessages: 'Configured Maximum'
 			})
 		];
-		var width = 100 / (columnLabelsArray.length);
+		var width = 100 / columnLabelsArray.length;
 		for (var col in columnLabelsArray) {
-			columnsArray = columnsArray.concat([{
-				"title": columnLabelsArray[col],
-				"width": "" + width + "%"
-			}]);
-
+			columnsArray = columnsArray.concat([
+				{
+					title: columnLabelsArray[col],
+					width: '' + width + '%'
+				}
+			]);
 		}
 
 		var table = tableMount.dataTable({
-			"paging": false,
-			"scrollY": "170px",
-			"bLengthChange": false,
-			"data": dataSet,
-			"autoWidth": false,
-			"columns": columnsArray,
-			"aaSorting": [
-				[1, 'asc'],
-				[2, 'desc']
-			],
+			paging: false,
+			scrollY: '170px',
+			bLengthChange: false,
+			data: dataSet,
+			autoWidth: false,
+			columns: columnsArray,
+			aaSorting: [[1, 'asc'], [2, 'desc']]
 		});
 	}
 
@@ -78,51 +72,74 @@ export default class SaturationDetails extends React.Component {
 			var table = $('#saturationTable').DataTable();
 			table.clear();
 
-			var saturationWeights = new SaturationWeights(this.props.saturation.saturationParameters);
+			var saturationWeights = new SaturationWeights(
+				this.props.saturation.saturationParameters
+			);
 			var satCategories = saturationWeights.getCategorizedArray();
 			var satAvg = new SaturationAverage(this.props.saturation);
 
 			for (var i in satCategories) {
 				var categoryAvg = satAvg.averageForCategory(i);
-				table.row.add([i, this.toPercent(categoryAvg[0]), this.toPercent(categoryAvg[1]), this.toPercent(categoryAvg[2])]);
+				table.row.add([
+					i,
+					this.toPercent(categoryAvg[0]),
+					this.toPercent(categoryAvg[1]),
+					this.toPercent(categoryAvg[2])
+				]);
 			}
 
 			var _this = this;
-			$('#saturationTable tbody').on('click', 'tr', function () {
-				var categoryId = $(this).find("td").eq(0).html();
-				var saturationCatDetails = new SaturationCategoryDetail(saturationWeights.getCompleteCategory(_this.props.saturation, categoryId), categoryId);
+			$('#saturationTable tbody').on('click', 'tr', function() {
+				var categoryId = $(this)
+					.find('td')
+					.eq(0)
+					.html();
+				var saturationCatDetails = new SaturationCategoryDetail(
+					saturationWeights.getCompleteCategory(
+						_this.props.saturation,
+						categoryId
+					),
+					categoryId
+				);
 				saturationCatDetails.showModal();
-
-
 			});
 
 			table.draw();
-
 		}
 	}
 
 	toPercent(value) {
-		return (value * 100).toFixed(2) + "%";
+		return (value * 100).toFixed(2) + '%';
 	}
 
 	render() {
-		const {
-			formatDate
-		} = IntlProvider.intl;
-		if (!this.props.saturation)
-			return null;
-		return (<div>
-			<p><FormattedMessage id='saturationdetails.last_calculation' defaultMessage='Last calculation of saturation is from {startDate} to {endDate}' values={{
-				startDate: formatDate(this.props.saturation.evaluationStartDate),
-				endDate: formatDate(this.props.saturation.creationTime)
-			}} /></p>
-            <table id="saturationTable" className="display">
-
-            </table>
-            <p><FormattedMessage id='saturationdetails.parameters' defaultMessage='Parameters used from : {date}' values={{
-				date: formatDate(this.props.saturation.saturationParameters.creationTime)
-			}} /></p>
-        </div>);
+		const { formatDate } = IntlProvider.intl;
+		if (!this.props.saturation) return null;
+		return (
+			<div>
+				<p>
+					<FormattedMessage
+						id="saturationdetails.last_calculation"
+						defaultMessage="Last calculation of saturation is from {startDate} to {endDate}"
+						values={{
+							startDate: formatDate(this.props.saturation.evaluationStartDate),
+							endDate: formatDate(this.props.saturation.creationTime)
+						}}
+					/>
+				</p>
+				<table id="saturationTable" className="display" />
+				<p>
+					<FormattedMessage
+						id="saturationdetails.parameters"
+						defaultMessage="Parameters used from : {date}"
+						values={{
+							date: formatDate(
+								this.props.saturation.saturationParameters.creationTime
+							)
+						}}
+					/>
+				</p>
+			</div>
+		);
 	}
-
 }
