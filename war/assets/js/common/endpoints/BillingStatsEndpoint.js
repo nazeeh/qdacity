@@ -10,4 +10,13 @@ export default class BillingStatsEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static getCostsByService(startDate, endDate) {
+		let apiMethod = gapi.client.qdacity.billing.getCostsByService({
+			startDate: startDate.toISOString(),
+			endDate: endDate.toISOString()
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 }
