@@ -3,7 +3,7 @@
   <cron>
     <url>/_ah/warmup</url>
     <description>Repopulate the cache every 5 minutes</description>
-    <schedule>every 5 minutes</schedule>
+    <schedule>every 500000 minutes</schedule>
   </cron>
   <cron>
     <url>/daily_events</url>
