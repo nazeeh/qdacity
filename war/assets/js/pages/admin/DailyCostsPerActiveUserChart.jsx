@@ -36,9 +36,9 @@ export default class DailyCostsPerActiveUserChart extends React.Component {
 			this.state.startDate,
 			this.state.endDate
 		).then(result => {
-			result.costsByService = result.costsByService || {};
+			result.dailyCosts = result.dailyCosts || {};
 			this.setState({
-				dailyCosts: result.costsByService
+				dailyCosts: result.dailyCosts
 			});
 		});
 	}
@@ -141,7 +141,7 @@ export default class DailyCostsPerActiveUserChart extends React.Component {
 			})
 		);
 
-		data.addRows(this.getDataRows(this.state.costsByService, this.state.dailyUserLoginEvents));
+		data.addRows(this.getDataRows(this.state.dailyCosts, this.state.dailyUserLoginEvents));
 
 		const options = {
 			width: 700,
@@ -182,7 +182,7 @@ export default class DailyCostsPerActiveUserChart extends React.Component {
 					}
 				/>
 				{this.state.googleChartsLoaded &&
-				this.state.costsByService &&
+				this.state.dailyCosts &&
 				this.state.dailyUserLoginEvents &&
 				this.state.startDate &&
 				this.state.endDate
