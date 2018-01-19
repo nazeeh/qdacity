@@ -1,18 +1,14 @@
 import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
-const StyledSettingsBtn = BtnDefault.extend `
+const StyledSettingsBtn = BtnDefault.extend`
 	margin-left: 5px;
 	& > i {
-    	padding-right: 5px;
-  	}
+		padding-right: 5px;
+	}
 `;
 
 export default class SettingsBtn extends React.Component {
@@ -22,7 +18,12 @@ export default class SettingsBtn extends React.Component {
 	}
 
 	redirectToCodingEditor() {
-		this.props.history.push('/CodingEditor?project=' + this.props.project.getId() + '&type=' + this.props.project.getType());
+		this.props.history.push(
+			'/CodingEditor?project=' +
+				this.props.project.getId() +
+				'&type=' +
+				this.props.project.getType()
+		);
 	}
 
 	render() {
@@ -33,12 +34,17 @@ export default class SettingsBtn extends React.Component {
 					className="btn btn-default btn-sm pull-right"
 					onClick={this.redirectToCodingEditor}
 				>
-					<i className="fa fa-tags fa-lg"></i><b><FormattedMessage id='settingsbtn.codeing_editor' defaultMessage='Coding Editor' /></b>
+					<i className="fa fa-tags fa-lg" />
+					<b>
+						<FormattedMessage
+							id="settingsbtn.codeing_editor"
+							defaultMessage="Coding Editor"
+						/>
+					</b>
 				</StyledSettingsBtn>
 			);
 		} else {
 			return null;
 		}
-
 	}
 }

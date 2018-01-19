@@ -7,7 +7,6 @@ import 'script-loader!../../../../components/imagesloaded/imagesloaded.pkgd.min.
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class EditorCtrl {
-
 	constructor(getCodeByCodeID, agreementMap) {
 		this.getCodeByCodeID = getCodeByCodeID;
 		this.agreementMap = agreementMap;
@@ -42,17 +41,17 @@ export default class EditorCtrl {
 		this.editor = new Squire(doc, {
 			blockTag: 'p',
 			blockAttributes: {
-				'class': 'paragraph'
+				class: 'paragraph'
 			},
 			tagAttributes: {
 				ul: {
-					'class': 'UL'
+					class: 'UL'
 				},
 				ol: {
-					'class': 'OL'
+					class: 'OL'
 				},
 				li: {
-					'class': 'listItem'
+					class: 'listItem'
 				}
 			}
 		});
@@ -71,27 +70,24 @@ export default class EditorCtrl {
 		this.registerEventHandlers(this.editor);
 	}
 
-
 	showsAgreementMap(mapFlag) {
 		this.agreementMap = mapFlag;
 	}
 
 	registerEventHandlers(editor) {
-		document.getElementById('btnTxtBold').onclick = function () {
+		document.getElementById('btnTxtBold').onclick = function() {
 			editor['bold']();
-		}
+		};
 
-		document.getElementById('btnTxtItalic').onclick = function () {
+		document.getElementById('btnTxtItalic').onclick = function() {
 			editor['italic']();
-		}
+		};
 
-		document.getElementById('btnTxtUnderline').onclick = function () {
+		document.getElementById('btnTxtUnderline').onclick = function() {
 			editor['underline']();
-		}
+		};
 
-
-
-		$("#txtSizeSpinner").on("spin", function (event, ui) {
+		$('#txtSizeSpinner').on('spin', function(event, ui) {
 			editor['setFontSize'](ui.value);
 		});
 	}
@@ -109,22 +105,22 @@ export default class EditorCtrl {
 	setDocumentView(doc) {
 		var _this = this;
 		if (typeof doc.text == 'undefined') {
-			this.editor.setHTML("");
+			this.editor.setHTML('');
 		} else {
 			this.editor.setHTML(doc.text);
 			this.addTooltipsToEditor(doc);
 		}
 		this.addCodingBrackets();
 		if (this.agreementMap) {
-			$("#agreementMapSettings").removeClass("hidden");
+			$('#agreementMapSettings').removeClass('hidden');
 			var maxVal = this.getMaxFalseNeg();
 			this.highlightAgreementMap(Math.ceil(maxVal / 2));
-			$("#agreementMapSlider").slider({
-				range: "max",
+			$('#agreementMapSlider').slider({
+				range: 'max',
 				min: 1,
 				max: maxVal,
 				value: Math.ceil(maxVal / 2),
-				slide: function (event, ui) {
+				slide: function(event, ui) {
 					_this.highlightAgreementMap(ui.value);
 				}
 			});
@@ -133,77 +129,96 @@ export default class EditorCtrl {
 
 	addTooltipsToEditor(doc) {
 		var elements = doc.text;
-		var foundArray = $("#textEditor").contents().find('coding');
+		var foundArray = $('#textEditor')
+			.contents()
+			.find('coding');
 
 		foundArray = foundArray.toArray();
 
 		for (var i = 0; i < foundArray.length; i++) {
 			var node = foundArray[i];
 			$(node).tooltip({
-				"content": "Code [" + $(node).attr('codeName') + "]",
+				content: 'Code [' + $(node).attr('codeName') + ']',
 				placement: 'top'
 			});
-
 		}
 	}
 
 	highlightAgreementMap(maxValue) {
-		$("#maxFalseNeg").html(maxValue);
-		var all = $("#textEditor").contents().find('p');
-		var filtered = $("#textEditor").contents().find('p').filter(function () {
-			var falseNegCount = $(this).attr('falsenegcount');
-			return falseNegCount >= maxValue;
-		});
+		$('#maxFalseNeg').html(maxValue);
+		var all = $('#textEditor')
+			.contents()
+			.find('p');
+		var filtered = $('#textEditor')
+			.contents()
+			.find('p')
+			.filter(function() {
+				var falseNegCount = $(this).attr('falsenegcount');
+				return falseNegCount >= maxValue;
+			});
 
-		filtered.css("backgroundColor", "#cc6666");
-		all.not(filtered).css("backgroundColor", "white");
+		filtered.css('backgroundColor', '#cc6666');
+		all.not(filtered).css('backgroundColor', 'white');
 	}
 
 	getMaxFalseNeg() {
 		var max = 0;
-		$("#textEditor").contents().find('p').each(function () {
-			var falsenegcount = $(this).attr('falsenegcount');
-			if (falsenegcount > max) max = falsenegcount;
-		});
+		$('#textEditor')
+			.contents()
+			.find('p')
+			.each(function() {
+				var falsenegcount = $(this).attr('falsenegcount');
+				if (falsenegcount > max) max = falsenegcount;
+			});
 		return max;
 	}
 
 	addCodingBrackets() {
 		var doc = this.iframe.contentDocument;
 		var _this = this;
-		$(doc).imagesLoaded(function () {
-			$(doc).find(".svgContainer").remove();
+		$(doc).imagesLoaded(function() {
+			$(doc)
+				.find('.svgContainer')
+				.remove();
 			var codingsMap = _this.getCodingsFromText(doc);
-			var svgDiv = (new CodingBrackets(_this)).createCodingBrackets(doc, codingsMap);
+			var svgDiv = new CodingBrackets(_this).createCodingBrackets(
+				doc,
+				codingsMap
+			);
 			var body = doc.querySelector('body');
 			body.insertBefore(svgDiv, body.firstChild);
 		});
-
 	}
 
 	getCodingsFromText(text) {
 		var codingMap = {};
-		var codingNodes = $("#textEditor").contents().find('coding');
+		var codingNodes = $('#textEditor')
+			.contents()
+			.find('coding');
 		if (codingNodes.length > 0) {
 			var codingData = {};
 			var currentID = -1;
 			for (var i = 0; i < codingNodes.length; i++) {
 				var codingNode = codingNodes[i];
-				currentID = codingNode.getAttribute("id");
+				currentID = codingNode.getAttribute('id');
 				// One code ID may have multiple DOM elements, if this is a new one create a coding object
 				if (!(currentID in codingMap)) {
 					codingData = {};
 					codingData.offsetTop = codingNode.offsetTop;
 					codingData.height = codingNode.offsetHeight;
-					codingData.name = codingNode.getAttribute("title");
+					codingData.name = codingNode.getAttribute('title');
 					codingData.codingId = currentID;
-					codingData.color = this.getCodeColor(codingNode.getAttribute("code_id"));
+					codingData.color = this.getCodeColor(
+						codingNode.getAttribute('code_id')
+					);
 
 					codingMap[currentID] = codingData;
-				}
-				// if this is just another DOM element for a coding that has already been created, then adjust the hight
-				else {
-					codingMap[currentID].height = codingNode.offsetTop - codingMap[currentID].offsetTop + codingNode.offsetHeight;
+				} else {
+					// if this is just another DOM element for a coding that has already been created, then adjust the hight
+					codingMap[currentID].height =
+						codingNode.offsetTop -
+						codingMap[currentID].offsetTop +
+						codingNode.offsetHeight;
 				}
 			}
 		}
@@ -214,13 +229,15 @@ export default class EditorCtrl {
 	getCodeColor(id, target) {
 		var node = this.getCodeByCodeID(id);
 		if (node != null) return node.color;
-		else return "#000";
+		else return '#000';
 	}
 
 	activateCodingInEditor(codingID, scrollToSection) {
 		var range;
 		range = document.createRange();
-		var codingNodes = $("#textEditor").contents().find('coding[id=\'' + codingID + '\']');
+		var codingNodes = $('#textEditor')
+			.contents()
+			.find("coding[id='" + codingID + "']");
 		var startNode = codingNodes[0];
 		var endNode = codingNodes[codingNodes.length - 1];
 
@@ -232,7 +249,9 @@ export default class EditorCtrl {
 		//Scroll to selection
 		if (scrollToSection) {
 			var offset = startNode.offsetTop;
-			$("#textEditor").contents().scrollTop(offset);
+			$('#textEditor')
+				.contents()
+				.scrollTop(offset);
 		}
 
 		//			}
@@ -255,7 +274,7 @@ export default class EditorCtrl {
 	}
 
 	getHTML() {
-		return this.editor.getHTML()
+		return this.editor.getHTML();
 	}
 
 	toggleReadOnly() {
@@ -270,80 +289,109 @@ export default class EditorCtrl {
 
 	setupFontSelector() {
 		var _this = this;
-		$.widget("custom.combobox", {
-			_create: function () {
-				this.wrapper = $("<span>").addClass("custom-combobox").insertAfter(this.element);
+		$.widget('custom.combobox', {
+			_create: function() {
+				this.wrapper = $('<span>')
+					.addClass('custom-combobox')
+					.insertAfter(this.element);
 
 				this.element.hide();
 				this._createAutocomplete();
 				this._createShowAllButton();
 			},
 
-			_createAutocomplete: function () {
-				var selected = this.element.children(":selected"),
-					value = selected.val() ? selected.text() : " ";
+			_createAutocomplete: function() {
+				var selected = this.element.children(':selected'),
+					value = selected.val() ? selected.text() : ' ';
 
-				this.input = $("<input>").appendTo(this.wrapper).val(value).attr("title", "").addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left").autocomplete({
-					delay: 0,
-					minLength: 0,
-					source: $.proxy(this, "_source")
-				}).tooltip({
-					"trigger": "manual"
-				});
+				this.input = $('<input>')
+					.appendTo(this.wrapper)
+					.val(value)
+					.attr('title', '')
+					.addClass(
+						'custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left'
+					)
+					.autocomplete({
+						delay: 0,
+						minLength: 0,
+						source: $.proxy(this, '_source')
+					})
+					.tooltip({
+						trigger: 'manual'
+					});
 
 				this._on(this.input, {
-					autocompleteselect: function (event, ui) {
+					autocompleteselect: function(event, ui) {
 						ui.item.option.selected = true;
-						this._trigger("select", event, {
+						this._trigger('select', event, {
 							item: ui.item.option
 						});
 						_this.editor.setFontFace(ui.item.option.innerHTML);
 					},
 
-					autocompletechange: "_removeIfInvalid"
+					autocompletechange: '_removeIfInvalid'
 				});
 			},
 
-			_createShowAllButton: function () {
+			_createShowAllButton: function() {
 				var input = this.input,
 					wasOpen = false;
-				const {formatMessage} = IntlProvider.intl;
-				$('<a>').attr('tabIndex', -1).attr('title', formatMessage({id: 'editorctrl.show_all_items', defaultMessage: 'Show All Items'})).appendTo(this.wrapper).button({
-					icons: {
-						primary: "ui-icon-triangle-1-s"
-					},
-					text: false
-				}).removeClass("ui-corner-all").addClass("custom-combobox-toggle ui-corner-right").mousedown(function () {
-					wasOpen = input.autocomplete("widget").is(":visible");
-				}).click(function () {
-					input.focus();
+				const { formatMessage } = IntlProvider.intl;
+				$('<a>')
+					.attr('tabIndex', -1)
+					.attr(
+						'title',
+						formatMessage({
+							id: 'editorctrl.show_all_items',
+							defaultMessage: 'Show All Items'
+						})
+					)
+					.appendTo(this.wrapper)
+					.button({
+						icons: {
+							primary: 'ui-icon-triangle-1-s'
+						},
+						text: false
+					})
+					.removeClass('ui-corner-all')
+					.addClass('custom-combobox-toggle ui-corner-right')
+					.mousedown(function() {
+						wasOpen = input.autocomplete('widget').is(':visible');
+					})
+					.click(function() {
+						input.focus();
 
-					// Close if already visible
-					if (wasOpen) {
-						return;
-					}
+						// Close if already visible
+						if (wasOpen) {
+							return;
+						}
 
-					// Pass empty string as value to search for, displaying all
-					// results
-					input.autocomplete("search", "");
-				});
+						// Pass empty string as value to search for, displaying all
+						// results
+						input.autocomplete('search', '');
+					});
 			},
 
-			_source: function (request, response) {
-				var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-				response(this.element.children("option").map(function () {
-					var text = $(this).text();
-					if (this.value && (!request.term || matcher.test(text)))
-						return {
-							label: text,
-							value: text,
-							option: this
-						};
-				}));
+			_source: function(request, response) {
+				var matcher = new RegExp(
+					$.ui.autocomplete.escapeRegex(request.term),
+					'i'
+				);
+				response(
+					this.element.children('option').map(function() {
+						var text = $(this).text();
+						if (this.value && (!request.term || matcher.test(text)))
+							return {
+								label: text,
+								value: text,
+								option: this
+							};
+					})
+				);
 			},
 
-			_removeIfInvalid: function (event, ui) {
-				const {formatMessage} = IntlProvider.intl;
+			_removeIfInvalid: function(event, ui) {
+				const { formatMessage } = IntlProvider.intl;
 
 				// Selected an item, nothing to do
 				if (ui.item) {
@@ -354,8 +402,12 @@ export default class EditorCtrl {
 				var value = this.input.val(),
 					valueLowerCase = value.toLowerCase(),
 					valid = false;
-				this.element.children("option").each(function () {
-					if ($(this).text().toLowerCase() === valueLowerCase) {
+				this.element.children('option').each(function() {
+					if (
+						$(this)
+							.text()
+							.toLowerCase() === valueLowerCase
+					) {
 						this.selected = valid = true;
 						return false;
 					}
@@ -367,25 +419,37 @@ export default class EditorCtrl {
 				}
 
 				// Remove invalid value
-				this.input.val('').tooltip('set', 'content',
-					formatMessage({ id: 'editorctrl.value_not_supported', defaultMessage: '{value} is not supported'}, { value: value})).tooltip('show');
+				this.input
+					.val('')
+					.tooltip(
+						'set',
+						'content',
+						formatMessage(
+							{
+								id: 'editorctrl.value_not_supported',
+								defaultMessage: '{value} is not supported'
+							},
+							{ value: value }
+						)
+					)
+					.tooltip('show');
 				this.element.val('');
-				this._delay(function () {
-					this.input.tooltip("hide");
+				this._delay(function() {
+					this.input.tooltip('hide');
 				}, 2500);
-				this.input.autocomplete("instance").term = "";
+				this.input.autocomplete('instance').term = '';
 			},
 
-			_destroy: function () {
+			_destroy: function() {
 				this.wrapper.remove();
 				this.element.show();
 			}
 		});
 
 		//make searchable and styled:
-		$("#combobox").combobox();
-		$("#toggle").click(function () {
-			$("#combobox").toggle();
+		$('#combobox').combobox();
+		$('#toggle').click(function() {
+			$('#combobox').toggle();
 		});
 	}
 

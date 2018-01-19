@@ -1,37 +1,43 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-	DragSource,
-	DropTarget
-} from 'react-dnd';
+import { DragSource, DropTarget } from 'react-dnd';
 
-import {
-	findDOMNode
-} from 'react-dom';
+import { findDOMNode } from 'react-dom';
 
-import {
-	getEmptyImage
-} from 'react-dnd-html5-backend'
+import { getEmptyImage } from 'react-dnd-html5-backend';
 
-const StyledDocumentItem = styled.a `
-	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
-    color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
-    padding: 2px 2px !important;
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    margin-bottom: -1px;
-    background-color: #fff;
-    border: 1px solid ;
-    border-color: ${props => props.theme.borderPrimary} !important;
-    opacity: ${props => props.isDragging ? 0.0 : 1};
-    &:hover {
-        text-decoration: none;
-        cursor: pointer;
-        background-color: ${props => props.isDragging ? props.theme.bgPrimary : props.theme.bgPrimaryHighlight};
-        color: ${props => props.isDragging ? props.theme.fgPrimary : props.theme.fgPrimaryHighlight};
-    }
+import CollaboratorBubbles from '../../../common/SyncService/CollaboratorBubbles';
+
+const StyledDocumentItem = styled.a`
+	background-color: ${props =>
+		props.active ? props.theme.bgPrimaryHighlight : '#fff'};
+	color: ${props => (props.active ? props.theme.fgPrimaryHighlight : '')};
+	padding: 2px 2px;
+	position: relative;
+	display: flex;
+	margin-bottom: -1px;
+	border: 1px solid ${props => props.theme.borderPrimary};
+	opacity: ${props => (props.isDragging ? 0.0 : 1)};
+	&:hover {
+		text-decoration: none;
+		cursor: pointer;
+		background-color: ${props =>
+			props.isDragging
+				? props.theme.bgPrimary
+				: props.theme.bgPrimaryHighlight};
+		color: ${props =>
+			props.isDragging
+				? props.theme.fgPrimary
+				: props.theme.fgPrimaryHighlight};
+	}
+`;
+
+const StyledDocumentItemTitle = styled.div`
+	flex: 1 1 auto;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 `;
 
 const documentSource = {
@@ -94,7 +100,7 @@ function collectSource(connect, monitor) {
 	return {
 		connectDragSource: connect.dragSource(),
 		connectDragPreview: connect.dragPreview(),
-		isDragging: monitor.isDragging(),
+		isDragging: monitor.isDragging()
 	};
 }
 
@@ -107,7 +113,6 @@ function collectTarget(connect, monitor) {
 }
 
 class Document extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -121,29 +126,35 @@ class Document extends React.Component {
 	render() {
 		const _this = this;
 
-		const {
-			isDragging,
-			connectDragSource,
-			connectDropTarget
-		} = this.props;
+		const { isDragging, connectDragSource, connectDropTarget } = this.props;
 
 		return connectDragSource(
 			connectDropTarget(
 				<div>
-    				<StyledDocumentItem 
-    			        isDragging={isDragging}
-                        active={this.props.active} 
-				        onClick={this.onClick}
-                        >{this.props.doc.title}</StyledDocumentItem>
-                </div>
+					<StyledDocumentItem
+						isDragging={isDragging}
+						active={this.props.active}
+						onClick={this.onClick}
+					>
+						<StyledDocumentItemTitle>
+							{this.props.doc.title}
+						</StyledDocumentItemTitle>
+						<CollaboratorBubbles
+							syncService={this.props.syncService}
+							docid={this.props.doc.id}
+						/>
+					</StyledDocumentItem>
+				</div>
 			)
 		);
 	}
 }
 
-const DropDocument = DropTarget("document", documentTarget, collectTarget)(Document)
-const DragDocument = DragSource("document", documentSource, collectSource)(DropDocument)
+const DropDocument = DropTarget('document', documentTarget, collectTarget)(
+	Document
+);
+const DragDocument = DragSource('document', documentSource, collectSource)(
+	DropDocument
+);
 
-export {
-	DragDocument
-};
+export { DragDocument };

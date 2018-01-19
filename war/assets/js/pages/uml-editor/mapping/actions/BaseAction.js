@@ -1,5 +1,4 @@
 export default class BaseAction {
-
 	constructor() {
 		this.rule = null;
 	}
@@ -35,7 +34,7 @@ export default class BaseAction {
 	}
 
 	doUndo(target) {
-		// Override		
+		// Override
 	}
 
 	assertTargetType() {
@@ -43,7 +42,13 @@ export default class BaseAction {
 		const targetType = this.getRule().getTargetType();
 
 		if (targetType != requiredTargetType) {
-			throw new Error('Invalid target type ' + targetType + '. Expected ' + requiredTargetType + '.');
+			throw new Error(
+				'Invalid target type ' +
+					targetType +
+					'. Expected ' +
+					requiredTargetType +
+					'.'
+			);
 		}
 	}
 }

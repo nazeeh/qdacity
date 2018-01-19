@@ -1,33 +1,50 @@
 import openSocket from 'socket.io-client';
 
-// Sync server URL to be inserted in build process
-const SYNC_SERVICE = '$SYNC_SERVICE$';
+import CodesService from './CodesService';
+import { MSG, EVT } from './constants.js';
 
 /**
  * Provides collaboration features for CodingEditor and sub-components
  *
  * Events:
- * - changeUserList: Fired when receiving updates on the list of users that are
- *                   connected to the same document as the current client.
+ * - userlistUpdated: Fired when receiving updates on the list of users that
+ *                    are connected to the same document as the current client.
  *   parameters:
- *     {object[]} userlist - Array of all users at the current document.Format
- *                           of the objects matches the format of objects sent
- *                           to {@link this#logon}.
+ *   parameters:
+ *     {object[]} - Array of all users at the current document. Format of the
+ *                  objects matches the format of objects sent to
+ *                  {@link this#updateUser}.
+ *
+ * - codeInserted: Fired when a new code has been inserted into the current
+ *                 Codesystem
+ *   parameters:
+ *     {object} - Object representing the newly inserted code
+ *
+ * - codeRelocated: Fired when an existing code has been relocated inside the
+ *                  current Codesystem
+ *   parameters:
+ *     {object} - Object representing the relocated code
+ *
+ * - codeRemoved: Fired when an existing code has been removed from the current
+ *                Codesystem
+ *   parameters:
+ *     {object} - Object representing the removed code
  */
 export default class SyncService {
-
 	/**
 	 * Constructor for SyncService.
 	 */
 	constructor() {
 		this._socket = null;
 		this._listeners = {};
-		this._account = {};
+		this._userdata = {
+			apiRoot: '$API_PATH$',
+			apiVersion: '$API_VERSION$'
+		};
 		this._nextListenerId = 1;
 
 		// Bind public methods to this
-		this.logon = this.logon.bind(this);
-		this.handleDocumentChange = this.handleDocumentChange.bind(this);
+		this.updateUser = this.updateUser.bind(this);
 		this.on = this.on.bind(this);
 		this.off = this.off.bind(this);
 		this.disconnect = this.disconnect.bind(this);
@@ -38,34 +55,29 @@ export default class SyncService {
 
 		// Connect to sync server
 		this._connect();
+
+		// Register sub-services
+		this.codes = new CodesService(this, this._socket);
 	}
 
 	/**
-	 * Logon at sync server.
+	 * Send current user's data to sync service
 	 * @access public
-	 * @arg {object} account - Any serializable object
+	 * @arg {object} userdata - Any serializable object
 	 */
-	logon(account) {
+	updateUser(userdata) {
+		// Clone current userdata and update fields included in userdata parameter
+		userdata = Object.assign(
+			JSON.parse(JSON.stringify(this._userdata)),
+			userdata
+		);
 
-		if (JSON.stringify(account) === JSON.stringify(this._account)) {
+		if (JSON.stringify(userdata) === JSON.stringify(this._userdata)) {
 			return;
 		}
 
-		this._account = account;
-		this._emitLogon();
-	}
-
-	/**
-	 * Notify SyncService about a document change in the UI.
-	 * @access public
-	 * @arg {null|string} oldDocumentId - ID of document that is left
-	 * @arg {string} newDocumentId - ID of document that is entered
-	 */
-	handleDocumentChange(oldDocumentId, newDocumentId) {
-		if (oldDocumentId !== null) {
-			this._emitDocumentLeave(oldDocumentId);
-		}
-		this._emitDocumentEnter(newDocumentId);
+		this._userdata = userdata;
+		this._emitUserUpdate();
 	}
 
 	/**
@@ -73,20 +85,20 @@ export default class SyncService {
 	 * events.
 	 * @access public
 	 * @arg {string} evt - The name of the event to listen to
-	 * @arg {function} cb - Callback to call if event occurs. See class
-	 *                      documentation for number and type of arguments
-	 *                      passed to the callback.
+	 * @arg {function} callback - Callback to call if event occurs. See class
+	 *                            documentation for number and type of
+	 *                            arguments passed to the callback.
 	 * @return {string} - Listener ID. Can be used to remove listener with
 	 *                    {@link this#off}
 	 */
-	on(evt, cb) {
+	on(evt, callback) {
 		// Lazily initialize listener list for that event
 		if (!this._listeners[evt]) {
 			this._listeners[evt] = {};
 		}
 
-		const listenerId = this._getNextListenerId();
-		this._listeners[evt][listenerId] = cb;
+		const listenerId = `_l_${this._nextListenerId++}`;
+		this._listeners[evt][listenerId] = callback;
 
 		return listenerId;
 	}
@@ -113,91 +125,90 @@ export default class SyncService {
 	}
 
 	/**
-	 * Connect to the sync server.
-	 * @access private
-	 */
-	_connect() {
-		// If the SYNC_SERVICE constant starts with a `$` character, it has
-		// not been set in build process.
-		if (SYNC_SERVICE.substr(0, 1) === '$') {
-			throw new Error('SYNC_SERVICE url was not configured. Please check your build configuration');
-		}
-
-		// Open a websocket to the sync server and register message handlers
-		this._socket = openSocket(SYNC_SERVICE);
-		this._socket.on('welcome', hostname => this.log('Connected to rtc-svc-server:', hostname));
-		this._socket.on('reconnect', () => this._emitLogon());
-		this._socket.on('user_change', userlist => this._handleUserListChange(userlist));
-
-		// Make sure, the websocket is closed when the browser is closed
-		window.addEventListener('unload', () => this.disconnect());
-	}
-
-	/**
-	 * Emit logon message to sync service, sending {@link this#_account}.
-	 * Used to identify the current user at the sync service.
-	 * @access private
-	 */
-	_emitLogon() {
-		this._socket.emit('logon', this._account);
-	}
-
-	/**
-	 * Emit documentEnter message to sync service. Used to subscribe to changes
-	 * to that document at the sync service.
-	 * @access private
-	 * @arg {string} docid - ID of document that is entered
-	 */
-	_emitDocumentEnter(docid) {
-		this._socket.emit('documentEnter', docid);
-	}
-
-	/**
-	 * Emit documentLeave message to sync service. Used to unsubscribe from
-	 * changes to that document at the sync service.
-	 * @access private
-	 * @arg {string} docid - ID of document that is left
-	 */
-	_emitDocumentLeave(docid) {
-		this._socket.emit('documentLeave', docid);
-	}
-
-	/**
-	 * Handle changeUserList message from sync service. Used to notify clients
-	 * about users entering or leaving the current document.
-	 * @access private
-	 * @arg {object[]} userlist - Array of all users at the current document.
-	 *                            Format of the objects matches the format of
-	 *                            objects sent to {@link this#logon}.
-	 */
-	_handleUserListChange(userlist) {
-		this._fireEvent(
-			'changeUserList',
-			userlist.filter(({
-				email
-			}) => email !== this._account.email)
-		);
-	}
-
-	/**
-	 * Generate new unique listener ID.
-	 * @access private
-	 */
-	_getNextListenerId() {
-		return `_l_${this._nextListenerId++}`;
-	}
-
-	/**
 	 * Notify potential listeners for specific event.
-	 * @access private
+	 * @access package
 	 * @arg {string} evt - The name of the event to fire
 	 * @arg {...*} args - Arguments to pass to the listeners' callbacks. See
 	 *                    class documentation for number and type of arguments
 	 *                    to be passed.
 	 */
-	_fireEvent(evt, ...args) {
+	fireEvent(evt, ...args) {
 		if (this._listeners[evt]) {
 			Object.values(this._listeners[evt]).forEach(cb => cb(...args));
 		}
 	}
-};
+
+	/**
+	 * Emit message to sync service
+	 * @access package
+	 * @return {Promise} - resolves on success, will never be rejected, any
+	 *                     API errors will handled internally.
+	 */
+	emit(messageType, arg) {
+		return new Promise((resolve, reject) => {
+			this._socket.emit(messageType, arg, (status, ...args) => {
+				if (status === 'ok') {
+					resolve(...args);
+				} else {
+					this.console.error('API error', ...args);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Connect to the sync server.
+	 * @access private
+	 */
+	_connect() {
+		// Open a websocket to the sync server and register message handlers
+		this._socket = openSocket('$SYNC_SERVICE$');
+
+		// Initialize listeners
+		[
+			// Send user data again on reconnect
+			['reconnect', this._emitUserUpdate],
+
+			// Handle user events
+			[EVT.USER.CONNECTED, this._handleUserConnected],
+			[EVT.USER.UPDATED, this._handleUserListChange]
+		].map(def => this._socket.on(def[0], def[1].bind(this)));
+
+		// Make sure, the websocket is closed when the browser is closed
+		window.addEventListener('unload', this.disconnect);
+	}
+
+	/**
+	 * Emit user.update message to sync service, sending {@link this#_userdata}.
+	 * Used to identify the current user at the sync service.
+	 * @access private
+	 */
+	_emitUserUpdate() {
+		this.emit(MSG.USER.UPDATE, this._userdata);
+	}
+
+	/**
+	 * Handle user.connected message from sync service. Used to welcome clients
+	 * telling which server they are connected to.
+	 * @access private
+	 * @arg {string} serverName - Name of the connected server
+	 */
+	_handleUserConnected(serverName) {
+		this.log('Connected to realtime-service:', serverName);
+	}
+
+	/**
+	 * Handle user.updated message from sync service. Used to notify clients
+	 * about users entering or leaving the current document.
+	 * @access private
+	 * @arg {object[]} userlist - Array of all users at the current document.
+	 *                            Format of the objects matches the format of
+	 *                            objects sent to {@link this#updateUser}.
+	 */
+	_handleUserListChange(userlist) {
+		this.fireEvent(
+			'userlistUpdated',
+			userlist.filter(user => user.email !== this._userdata.email)
+		);
+	}
+}

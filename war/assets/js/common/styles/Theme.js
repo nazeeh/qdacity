@@ -30,4 +30,4 @@ export default {
 	rubyRedAccent: '#b80b0b',
 	yellow: '#ffec21',
 	yellowAccent: '#e5d41e'
-}
+};

@@ -6,7 +6,6 @@ import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpo
  * The positions are stored as key value pairs (key = code.codeID, value = position object).
  */
 export default class CodePositionManager {
-
 	constructor() {
 		this.codePositions = {};
 	}
@@ -64,7 +63,7 @@ export default class CodePositionManager {
 		const _this = this;
 
 		if (umlCodePositions != null) {
-			umlCodePositions.forEach((umlCodePosition) => {
+			umlCodePositions.forEach(umlCodePosition => {
 				_this.setCodePosition(umlCodePosition.codeId, umlCodePosition);
 			});
 		}
@@ -76,7 +75,7 @@ export default class CodePositionManager {
 	listCodePositions(codesystemId, callback) {
 		const _this = this;
 
-		UmlCodePositionEndpoint.listCodePositions(codesystemId).then((resp) => {
+		UmlCodePositionEndpoint.listCodePositions(codesystemId).then(resp => {
 			let umlCodePositions = resp.items || [];
 
 			_this.refreshUmlCodePositions(umlCodePositions);
@@ -103,10 +102,12 @@ export default class CodePositionManager {
 
 		_this.refreshUmlCodePositions(codePositions);
 
-		UmlCodePositionEndpoint.insertOrUpdateCodePositions(codePositions).then((resp) => {
-			// ids updated
-			_this.refreshUmlCodePositions(resp.items);
-		});
+		UmlCodePositionEndpoint.insertOrUpdateCodePositions(codePositions).then(
+			resp => {
+				// ids updated
+				_this.refreshUmlCodePositions(resp.items);
+			}
+		);
 	}
 
 	/**
@@ -118,7 +119,7 @@ export default class CodePositionManager {
 		if (codePosition != null) {
 			this.removeCodePosition(codeId);
 
-			UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then((resp) => {
+			UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then(resp => {
 				// Do nothing
 			});
 		}

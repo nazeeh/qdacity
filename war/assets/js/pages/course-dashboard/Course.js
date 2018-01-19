@@ -1,8 +1,8 @@
 export default class Course {
 	constructor(crsId) {
 		this.id = crsId;
-		this.name = "";
-		this.description = "";
+		this.name = '';
+		this.description = '';
 		this.terms = [];
 	}
 
@@ -28,5 +28,4 @@ export default class Course {
 	setDescription(desc) {
 		this.description = desc;
 	}
-
 }

@@ -15,12 +15,10 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../common/styles/ItemList.jsx';
 
-import {
-	BtnDefault
-} from '../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../common/styles/Btn.jsx';
 
 export default class AdminProjectList extends React.Component {
 	constructor(props) {
@@ -49,20 +47,22 @@ export default class AdminProjectList extends React.Component {
 		}
 		var _this = this;
 		var projectList = [];
-		var validationPrjPromise = ProjectEndpoint.listValidationProjectByUserId(userId);
-		ProjectEndpoint.listProjectByUserId(userId).then(function (resp) {
+		var validationPrjPromise = ProjectEndpoint.listValidationProjectByUserId(
+			userId
+		);
+		ProjectEndpoint.listProjectByUserId(userId).then(function(resp) {
 			resp.items = resp.items || [];
-			resp.items.forEach(function (prj) {
-				prj.type = "PROJECT";
+			resp.items.forEach(function(prj) {
+				prj.type = 'PROJECT';
 			});
-			var projects = projectList.concat(resp.items)
+			var projects = projectList.concat(resp.items);
 
-			validationPrjPromise.then(function (resp2) {
+			validationPrjPromise.then(function(resp2) {
 				resp2.items = resp2.items || [];
-				resp2.items.forEach(function (prj) {
-					prj.type = "VALIDATION";
+				resp2.items.forEach(function(prj) {
+					prj.type = 'VALIDATION';
 				});
-				projects = projects.concat(resp2.items)
+				projects = projects.concat(resp2.items);
 				projects = _this.sortProjects(projects);
 				_this.props.setProjects(projects);
 			});
@@ -70,7 +70,7 @@ export default class AdminProjectList extends React.Component {
 	}
 
 	sortProjects(projects) {
-		projects.sort(function (a, b) {
+		projects.sort(function(a, b) {
 			if (a.name < b.name) return -1;
 			if (a.name > b.name) return 1;
 			return 0;
@@ -79,79 +79,111 @@ export default class AdminProjectList extends React.Component {
 	}
 
 	deleteProject(e, project, index) {
-		const {formatMessage} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var confirm = new Confirm(
-			formatMessage({id: 'adminprojectlist.delete_project', defaultMessage: 'Do you want to delete the project {name}?'}, {name: project.name })
+			formatMessage(
+				{
+					id: 'adminprojectlist.delete_project',
+					defaultMessage: 'Do you want to delete the project {name}?'
+				},
+				{ name: project.name }
+			)
 		);
-		confirm.showModal().then(function () {
-			ProjectEndpoint.removeProject(project.id).then(function (resp) {
+		confirm.showModal().then(function() {
+			ProjectEndpoint.removeProject(project.id).then(function(resp) {
 				// remove project from parent state
 				_this.props.removeProject(index);
 			});
 		});
-
 	}
 
 	isValidationProject(project) {
-		if (project.type == "VALIDATION") return true;
+		if (project.type == 'VALIDATION') return true;
 		return false;
 	}
 
 	renderDeleteBtn(project, index) {
-
-		if (typeof project.revisionID == "undefined") {
-			return <StyledListItemBtn onClick={(e) => this.deleteProject(e, project, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-                        <i className="fa fa-trash "></i>
-                    </StyledListItemBtn>
+		if (typeof project.revisionID == 'undefined') {
+			return (
+				<StyledListItemBtn
+					onClick={e => this.deleteProject(e, project, index)}
+					className=" btn fa-lg"
+					color={Theme.rubyRed}
+					colorAccent={Theme.rubyRedAccent}
+				>
+					<i className="fa fa-trash " />
+				</StyledListItemBtn>
+			);
 		} else {
-			return "";
+			return '';
 		}
 	}
 
 	editorClick(e, prj, index) {
 		e.stopPropagation();
-		this.props.history.push('/CodingEditor?project=' + prj.id + '&type=' + prj.type);
+		this.props.history.push(
+			'/CodingEditor?project=' + prj.id + '&type=' + prj.type
+		);
 	}
 
 	prjClick(prj) {
-		_this.props.history.push('/ProjectDashboard?project=' + prj.id + '&type=' + prj.type);
+		_this.props.history.push(
+			'/ProjectDashboard?project=' + prj.id + '&type=' + prj.type
+		);
 	}
 
 	renderListItemContent(project, index) {
-		return ([
+		return [
 			<span>{project.name}</span>,
 			<div>
-                 {this.renderDeleteBtn(project, index)}
-                 <StyledListItemBtn onClick={(e) => this.editorClick(e, project, index)} className=" btn fa-lg"  color={Theme.darkGreen} colorAccent={Theme.darkGreenAccent}>
-                     <i className="fa fa-tags"></i>
-                 </StyledListItemBtn>
-             </div>
-		]);
+				{this.renderDeleteBtn(project, index)}
+				<StyledListItemBtn
+					onClick={e => this.editorClick(e, project, index)}
+					className=" btn fa-lg"
+					color={Theme.darkGreen}
+					colorAccent={Theme.darkGreenAccent}
+				>
+					<i className="fa fa-tags" />
+				</StyledListItemBtn>
+			</div>
+		];
 	}
 
 	renderProject(project, index) {
-
 		if (this.isValidationProject(project)) {
-			return <StyledListItemDefault key={project.id} onClick={this.prjClick} clickable={true}>
-                    {this.renderListItemContent(project, index)}
-                </StyledListItemDefault>;
+			return (
+				<StyledListItemDefault
+					key={project.id}
+					onClick={this.prjClick}
+					clickable={true}
+				>
+					{this.renderListItemContent(project, index)}
+				</StyledListItemDefault>
+			);
 		} else {
-			return <StyledListItemPrimary key={project.id} onClick={this.prjClick} clickable={true}>
-                    {this.renderListItemContent(project, index)}
-                </StyledListItemPrimary>;
+			return (
+				<StyledListItemPrimary
+					key={project.id}
+					onClick={this.prjClick}
+					clickable={true}
+				>
+					{this.renderListItemContent(project, index)}
+				</StyledListItemPrimary>
+			);
 		}
 	}
 
 	render() {
 		return (
 			<ItemList
-                hasSearch={true}
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.props.projects}
-                renderItem={this.renderProject} />
+				hasSearch={true}
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.props.projects}
+				renderItem={this.renderProject}
+			/>
 		);
 	}
 }

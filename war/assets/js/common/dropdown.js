@@ -9,11 +9,9 @@ export default class Dropdown {
 		return false;
 	}
 	static initDropDown() {
-		window.onclick = function (event) {
-
+		window.onclick = function(event) {
 			if (!Dropdown.isDropDownToggle(event.target)) {
-
-				var dropdowns = document.getElementsByClassName("dropdownContent");
+				var dropdowns = document.getElementsByClassName('dropdownContent');
 
 				for (var i = 0; i < dropdowns.length; i++) {
 					var openDropdown = dropdowns[i];
@@ -29,16 +27,20 @@ export default class Dropdown {
 			var element = event.target;
 
 			while (element != null && eventTargetIsNotDropdown == true) {
-				if (element.classList != null && element.classList.contains('customDropDownParent')) {
+				if (
+					element.classList != null &&
+					element.classList.contains('customDropDownParent')
+				) {
 					eventTargetIsNotDropdown = false;
 				}
 
 				element = element.parentNode;
 			}
 
-
 			if (eventTargetIsNotDropdown) {
-				var customDropdownComponents = document.getElementsByClassName("customDropDownEventNode");
+				var customDropdownComponents = document.getElementsByClassName(
+					'customDropDownEventNode'
+				);
 
 				var event = new Event('hideDropDown');
 
@@ -47,7 +49,6 @@ export default class Dropdown {
 					customDropdownComponent.dispatchEvent(event);
 				}
 			}
-		}
+		};
 	}
-
 }

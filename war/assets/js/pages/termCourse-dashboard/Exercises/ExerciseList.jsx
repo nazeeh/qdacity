@@ -8,7 +8,7 @@ import {
 	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
-	StyledListItemDefault,
+	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
 
 export default class ExerciseList extends React.Component {
@@ -29,7 +29,9 @@ export default class ExerciseList extends React.Component {
 
 	getExercises() {
 		var _this = this;
-		ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId()).then(function (resp) {
+		ExerciseEndpoint.listTermCourseExercises(
+			this.props.termCourse.getId()
+		).then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				exercises: resp.items
@@ -40,21 +42,20 @@ export default class ExerciseList extends React.Component {
 	renderExercise(exercise, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
-                <span > {exercise.name} </span>
-            </StyledListItemDefault>
+				<span> {exercise.name} </span>
+			</StyledListItemDefault>
 		);
 	}
 
 	render() {
 		return (
 			<ItemList
-                key={"itemlist"}
-                hasPagination={true}
-                itemsPerPage={8}
-                items={this.state.exercises}
-                renderItem={this.renderExercise} />
+				key={'itemlist'}
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.state.exercises}
+				renderItem={this.renderExercise}
+			/>
 		);
 	}
-
-
 }

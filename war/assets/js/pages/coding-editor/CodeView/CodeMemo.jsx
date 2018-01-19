@@ -1,25 +1,21 @@
-import React from 'react'
-import {
-	FormattedMessage
-} from 'react-intl';
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
-const StyledCodeviewComponent = styled.div `
-    padding: 8px 8px 0px 8px;
+const StyledCodeviewComponent = styled.div`
+	padding: 8px 8px 0px 8px;
 `;
 
-const StyledMemoField = styled.textarea `
-    height:200px;
-	width:100%;
-	background-color: #FFF;
+const StyledMemoField = styled.textarea`
+	height: 200px;
+	width: 100%;
+	background-color: #fff;
 	resize: none;
 `;
 
-const StyledSaveBtn = styled.div `
+const StyledSaveBtn = styled.div`
 	text-align: center;
 `;
 
@@ -38,12 +34,15 @@ export default class ClassName extends React.Component {
 		const memo = this.props.code.memo;
 		return (
 			<StyledCodeviewComponent>
-				<StyledMemoField value={memo ? memo : ""} onChange={this.changeMemo}>
-				</StyledMemoField>
+				<StyledMemoField value={memo ? memo : ''} onChange={this.changeMemo} />
 				<StyledSaveBtn>
-					<BtnDefault onClick={() => this.props.updateSelectedCode(this.props.code, true)}>
-							<i className="fa fa-floppy-o "></i>
-							<span><FormattedMessage id='classname.save' defaultMessage='Save' /></span>
+					<BtnDefault
+						onClick={() => this.props.updateSelectedCode(this.props.code, true)}
+					>
+						<i className="fa fa-floppy-o " />
+						<span>
+							<FormattedMessage id="classname.save" defaultMessage="Save" />
+						</span>
 					</BtnDefault>
 				</StyledSaveBtn>
 			</StyledCodeviewComponent>

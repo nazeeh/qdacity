@@ -1,12 +1,11 @@
 import React from 'react';
 
 import GoogleLineChart from '../../common/GoogleLineChart.jsx';
-import ChartTimeFrameChooser from "./ChartTimeFrameChooser.jsx"
-import EventsEndpoint from "../../common/endpoints/EventsEndpoint";
-import IntlProvider from "../../common/Localization/LocalizationProvider";
+import ChartTimeFrameChooser from './ChartTimeFrameChooser.jsx';
+import EventsEndpoint from '../../common/endpoints/EventsEndpoint';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class ActiveUsersChart extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -31,29 +30,48 @@ export default class ActiveUsersChart extends React.Component {
 	}
 
 	fetchEvents() {
-		EventsEndpoint.getEvents("DAILY_USER_LOGIN", null, this.state.startDate, this.state.endDate).then((result) => {
+		EventsEndpoint.getEvents(
+			'DAILY_USER_LOGIN',
+			null,
+			this.state.startDate,
+			this.state.endDate
+		).then(result => {
 			result.items = result.items || [];
 			this.setState({
 				dailyUserLoginEvents: result.items
-			})
+			});
 		});
 	}
 
 	getDataRows(changes) {
 		const dict = {};
 
-		for(const iteratingDate = new Date(this.state.endDate.getTime()); this.state.startDate <= iteratingDate; iteratingDate.setDate(iteratingDate.getDate() - 1)) {
-			dict[new Date(iteratingDate.getFullYear(), iteratingDate.getMonth(), iteratingDate.getDate()).toISOString()] = 0;
+		for (
+			const iteratingDate = new Date(this.state.endDate.getTime());
+			this.state.startDate <= iteratingDate;
+			iteratingDate.setDate(iteratingDate.getDate() - 1)
+		) {
+			dict[
+				new Date(
+					iteratingDate.getFullYear(),
+					iteratingDate.getMonth(),
+					iteratingDate.getDate()
+				).toISOString()
+			] = 0;
 		}
 
-		changes.forEach((e) => {
+		changes.forEach(e => {
 			const date = new Date(e.datetime);
-			const day = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+			const day = new Date(
+				date.getFullYear(),
+				date.getMonth(),
+				date.getDate()
+			).toISOString();
 			dict[day]++;
 		});
 
 		const result = [];
-		Object.keys(dict).forEach((key) => {
+		Object.keys(dict).forEach(key => {
 			result.push([new Date(key), dict[new Date(key).toISOString()]]);
 		});
 
@@ -61,21 +79,32 @@ export default class ActiveUsersChart extends React.Component {
 	}
 
 	setTimeFrame(startDate, endDate) {
-		this.setState({
-			startDate: startDate,
-			endDate: endDate,
-			dailyUserLoginEvents: null
-		}, () => this.fetchEvents());
+		this.setState(
+			{
+				startDate: startDate,
+				endDate: endDate,
+				dailyUserLoginEvents: null
+			},
+			() => this.fetchEvents()
+		);
 	}
 
 	renderChart() {
-
 		const data = new google.visualization.DataTable();
 
-		const {formatMessage} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 
-		data.addColumn('date', formatMessage({ id: 'activeuserschart.axis_day', defaultMessage: 'Day' }));
-		data.addColumn('number', formatMessage({ id: 'activeuserschart.axis_users', defaultMessage: 'Active Users' }));
+		data.addColumn(
+			'date',
+			formatMessage({ id: 'activeuserschart.axis_day', defaultMessage: 'Day' })
+		);
+		data.addColumn(
+			'number',
+			formatMessage({
+				id: 'activeuserschart.axis_users',
+				defaultMessage: 'Active Users'
+			})
+		);
 
 		data.addRows(this.getDataRows(this.state.dailyUserLoginEvents));
 
@@ -84,14 +113,14 @@ export default class ActiveUsersChart extends React.Component {
 			height: 400,
 			hAxis: {
 				format: 'MMM dd, yyyy',
-				gridlines: {count: 15},
+				gridlines: { count: 15 }
 			},
 			vAxis: {
-				gridlines: {color: 'none'},
-				viewWindowMode: "pretty"
+				gridlines: { color: 'none' },
+				viewWindowMode: 'pretty'
 			},
 			legend: {
-				position: "none"
+				position: 'none'
 			},
 			chartArea: {
 				left: 70,
@@ -100,18 +129,29 @@ export default class ActiveUsersChart extends React.Component {
 			}
 		};
 
-
 		return (
-			<GoogleLineChart graphID="activeUsersChart" data={data} options={options}/>
+			<GoogleLineChart
+				graphID="activeUsersChart"
+				data={data}
+				options={options}
+			/>
 		);
-
 	}
 
 	render() {
 		return (
 			<div>
-				<ChartTimeFrameChooser onChangeTimeFrame={(startDate, endDate) => this.setTimeFrame(startDate, endDate)}/>
-				{this.state.googleChartsLoaded && this.state.dailyUserLoginEvents && this.state.startDate && this.state.endDate ? this.renderChart() : null}
+				<ChartTimeFrameChooser
+					onChangeTimeFrame={(startDate, endDate) =>
+						this.setTimeFrame(startDate, endDate)
+					}
+				/>
+				{this.state.googleChartsLoaded &&
+				this.state.dailyUserLoginEvents &&
+				this.state.startDate &&
+				this.state.endDate
+					? this.renderChart()
+					: null}
 			</div>
 		);
 	}
