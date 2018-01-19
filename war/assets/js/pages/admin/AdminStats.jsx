@@ -5,6 +5,7 @@ import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
 import UserRegistrationsChart from './UserRegistrationsChart.jsx';
 import ActiveUsersChart from './ActiveUsersChart.jsx';
 import DailyCostsChart from './DailyCostsChart.jsx';
+import DailyCostsPerActiveUserChart from "./DailyCostsPerActiveUserChart.jsx";
 
 export default class AdminStats extends React.Component {
 	constructor(props) {
@@ -147,6 +148,21 @@ export default class AdminStats extends React.Component {
 					</div>
 					<div className="box-body">
 						<DailyCostsChart
+							chartScriptPromise={this.props.chartScriptPromise}
+						/>
+					</div>
+				</div>
+				<div className="box box-default">
+					<div className="box-header with-border">
+						<h3 className="box-title">
+							<FormattedMessage
+								id="adminstats.daily_costs_per_active_user"
+								defaultMessage="Daily costs per active user"
+							/>
+						</h3>
+					</div>
+					<div className="box-body">
+						<DailyCostsPerActiveUserChart
 							chartScriptPromise={this.props.chartScriptPromise}
 						/>
 					</div>
