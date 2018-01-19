@@ -3,7 +3,7 @@ package com.qdacity.endpoint.datastructures;
 import java.util.Date;
 import java.util.Map;
 
-public class BillingStats {
+public class DailyCostsBillingStats {
 
 	private Map<Date, Double> dailyCosts;
 
