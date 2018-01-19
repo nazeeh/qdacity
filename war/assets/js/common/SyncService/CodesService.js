@@ -8,12 +8,14 @@ export default class CodesService {
 		this.insertCode = this.insertCode.bind(this);
 		this.relocateCode = this.relocateCode.bind(this);
 		this.removeCode = this.removeCode.bind(this);
+		this.updateCode = this.updateCode.bind(this);
 
 		// Initialize listeners
 		[
 			[EVT.CODE.INSERTED, this._handleCodeInserted],
 			[EVT.CODE.RELOCATED, this._handleCodeRelocated],
-			[EVT.CODE.REMOVED, this._handleCodeRemoved]
+			[EVT.CODE.REMOVED, this._handleCodeRemoved],
+			[EVT.CODE.UPDATED, this._handleCodeUpdated]
 		].map(def => socket.on(def[0], def[1].bind(this)));
 	}
 
@@ -58,6 +60,18 @@ export default class CodesService {
 	}
 
 	/**
+	 * Send command to updated Code in Codesystem
+	 * @access public
+	 * @arg {object} code - Code object to be updated
+	 * @return {Promise} - Promise (will never be rejected)
+	 */
+	updateCode(code) {
+		return this.syncService.emit(MSG.CODE.UPDATE, {
+			resource: code
+		});
+	}
+
+	/**
 	 * Handle code.inserted message from sync service. Used to notify clients
 	 * about new Codes inserted in their current CodeSystem.
 	 * @access private
@@ -85,5 +99,15 @@ export default class CodesService {
 	 */
 	_handleCodeRemoved(code) {
 		this.syncService.fireEvent('codeRemoved', code);
+	}
+
+	/**
+	 * Handle code.updated message from sync service. Used to notify clients
+	 * about Codes being updated inside their current CodeSystem.
+	 * @access private
+	 * @arg {object} code - The Code that has been updated.
+	 */
+	_handleCodeUpdated(code) {
+		this.syncService.fireEvent('codeUpdated', code);
 	}
 }
