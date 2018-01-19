@@ -1,12 +1,11 @@
 import React from 'react';
 
 import GoogleLineChart from '../../common/GoogleLineChart.jsx';
-import ChartTimeFrameChooser from "./ChartTimeFrameChooser.jsx"
-import IntlProvider from "../../common/Localization/LocalizationProvider";
-import BillingStatsEndpoint from "../../common/endpoints/BillingStatsEndpoint";
+import ChartTimeFrameChooser from './ChartTimeFrameChooser.jsx';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
+import BillingStatsEndpoint from '../../common/endpoints/BillingStatsEndpoint';
 
 export default class DailyCostsChart extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -31,29 +30,46 @@ export default class DailyCostsChart extends React.Component {
 	}
 
 	fetchDailyCosts() {
-		BillingStatsEndpoint.getDailyCosts(this.state.startDate, this.state.endDate).then((result) => {
+		BillingStatsEndpoint.getDailyCosts(
+			this.state.startDate,
+			this.state.endDate
+		).then(result => {
 			result.dailyCosts = result.dailyCosts || {};
 			this.setState({
 				dailyCosts: result.dailyCosts
-			})
+			});
 		});
 	}
 
 	getDataRows(dailyCosts) {
 		const dict = {};
 
-		for(const iteratingDate = new Date(this.state.endDate.getTime()); this.state.startDate <= iteratingDate; iteratingDate.setDate(iteratingDate.getDate() - 1)) {
-			dict[new Date(iteratingDate.getFullYear(), iteratingDate.getMonth(), iteratingDate.getDate()).toISOString()] = 0;
+		for (
+			const iteratingDate = new Date(this.state.endDate.getTime());
+			this.state.startDate <= iteratingDate;
+			iteratingDate.setDate(iteratingDate.getDate() - 1)
+		) {
+			dict[
+				new Date(
+					iteratingDate.getFullYear(),
+					iteratingDate.getMonth(),
+					iteratingDate.getDate()
+				).toISOString()
+			] = 0;
 		}
 
-		Object.keys(dailyCosts).forEach((key) => {
+		Object.keys(dailyCosts).forEach(key => {
 			const date = new Date(key);
-			const day = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+			const day = new Date(
+				date.getFullYear(),
+				date.getMonth(),
+				date.getDate()
+			).toISOString();
 			dict[day] = dailyCosts[key];
 		});
 
 		const result = [];
-		Object.keys(dict).forEach((key) => {
+		Object.keys(dict).forEach(key => {
 			result.push([new Date(key), dict[new Date(key).toISOString()]]);
 		});
 
@@ -61,21 +77,32 @@ export default class DailyCostsChart extends React.Component {
 	}
 
 	setTimeFrame(startDate, endDate) {
-		this.setState({
-			startDate: startDate,
-			endDate: endDate,
-			dailyCosts: null
-		}, () => this.fetchDailyCosts());
+		this.setState(
+			{
+				startDate: startDate,
+				endDate: endDate,
+				dailyCosts: null
+			},
+			() => this.fetchDailyCosts()
+		);
 	}
 
 	renderChart() {
-
 		const data = new google.visualization.DataTable();
 
-		const {formatMessage} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 
-		data.addColumn('date', formatMessage({ id: 'dailycostschart.axis_day', defaultMessage: 'Day' }));
-		data.addColumn('number', formatMessage({ id: 'dailycostschart.axis_costs', defaultMessage: 'Costs' }));
+		data.addColumn(
+			'date',
+			formatMessage({ id: 'dailycostschart.axis_day', defaultMessage: 'Day' })
+		);
+		data.addColumn(
+			'number',
+			formatMessage({
+				id: 'dailycostschart.axis_costs',
+				defaultMessage: 'Costs'
+			})
+		);
 
 		data.addRows(this.getDataRows(this.state.dailyCosts));
 
@@ -84,14 +111,14 @@ export default class DailyCostsChart extends React.Component {
 			height: 400,
 			hAxis: {
 				format: 'MMM dd, yyyy',
-				gridlines: {count: 15},
+				gridlines: { count: 15 }
 			},
 			vAxis: {
-				gridlines: {color: 'none'},
-				viewWindowMode: "pretty"
+				gridlines: { color: 'none' },
+				viewWindowMode: 'pretty'
 			},
 			legend: {
-				position: "none"
+				position: 'none'
 			},
 			chartArea: {
 				left: 70,
@@ -100,18 +127,29 @@ export default class DailyCostsChart extends React.Component {
 			}
 		};
 
-
 		return (
-			<GoogleLineChart graphID="dailyCostsChart" data={data} options={options}/>
+			<GoogleLineChart
+				graphID="dailyCostsChart"
+				data={data}
+				options={options}
+			/>
 		);
-
 	}
 
 	render() {
 		return (
 			<div>
-				<ChartTimeFrameChooser onChangeTimeFrame={(startDate, endDate) => this.setTimeFrame(startDate, endDate)}/>
-				{this.state.googleChartsLoaded && this.state.dailyCosts && this.state.startDate && this.state.endDate ? this.renderChart() : null}
+				<ChartTimeFrameChooser
+					onChangeTimeFrame={(startDate, endDate) =>
+						this.setTimeFrame(startDate, endDate)
+					}
+				/>
+				{this.state.googleChartsLoaded &&
+				this.state.dailyCosts &&
+				this.state.startDate &&
+				this.state.endDate
+					? this.renderChart()
+					: null}
 			</div>
 		);
 	}

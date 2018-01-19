@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
 import UserRegistrationsChart from './UserRegistrationsChart.jsx';
 import ActiveUsersChart from './ActiveUsersChart.jsx';
-import DailyCostsChart from "./DailyCostsChart.jsx";
+import DailyCostsChart from './DailyCostsChart.jsx';
 
 export default class AdminStats extends React.Component {
 	constructor(props) {
@@ -138,10 +138,17 @@ export default class AdminStats extends React.Component {
 				</div>
 				<div className="box box-default">
 					<div className="box-header with-border">
-						<h3 className="box-title"><FormattedMessage id='adminstats.daily_costs' defaultMessage='Daily costs' /></h3>
+						<h3 className="box-title">
+							<FormattedMessage
+								id="adminstats.daily_costs"
+								defaultMessage="Daily costs"
+							/>
+						</h3>
 					</div>
 					<div className="box-body">
-						<DailyCostsChart chartScriptPromise={this.props.chartScriptPromise}/>
+						<DailyCostsChart
+							chartScriptPromise={this.props.chartScriptPromise}
+						/>
 					</div>
 				</div>
 			</div>
