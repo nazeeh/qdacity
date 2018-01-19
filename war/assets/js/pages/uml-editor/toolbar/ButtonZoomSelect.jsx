@@ -3,16 +3,15 @@ import styled from 'styled-components';
 
 import DropDownButton from '../../../common/styles/DropDownButton.jsx';
 
-const StyledZoomBtn = styled.div `
-    display: inline-block;
+const StyledZoomBtn = styled.div`
+	display: inline-block;
 `;
 
 export default class ButtonZoomSelect extends React.Component {
-
 	constructor(props) {
 		super(props);
 
-		this.zoomValue = this.getZoomValue(100)
+		this.zoomValue = this.getZoomValue(100);
 
 		this.umlEditor = this.props.umlEditor;
 
@@ -24,14 +23,14 @@ export default class ButtonZoomSelect extends React.Component {
 	}
 
 	onZoom(percentage) {
-		this.zoomValue = this.getZoomValue(percentage)
+		this.zoomValue = this.getZoomValue(percentage);
 
 		this.dropDownButtonRef.setText(this.zoomValue);
 	}
 
 	getZoomValue(percentage) {
 		const rounded = Math.round(percentage * 100) / 100;
-		return (rounded) + '%';
+		return rounded + '%';
 	}
 
 	render() {
@@ -69,9 +68,15 @@ export default class ButtonZoomSelect extends React.Component {
 
 		return (
 			<StyledZoomBtn title="Select a zoom value.">
-		        <DropDownButton ref={(r) => {if (r) _this.dropDownButtonRef = r}} initText={this.zoomValue} items={items} fixedWidth={'35px'}></DropDownButton>
-	        </StyledZoomBtn>
+				<DropDownButton
+					ref={r => {
+						if (r) _this.dropDownButtonRef = r;
+					}}
+					initText={this.zoomValue}
+					items={items}
+					fixedWidth={'35px'}
+				/>
+			</StyledZoomBtn>
 		);
 	}
-
 }

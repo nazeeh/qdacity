@@ -1,16 +1,14 @@
-import React from 'react'
+import React from 'react';
 import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import StyledSearchField from '../../../common/styles/SearchField.jsx';
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 export default class ProjectSearch extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			search: "",
+			search: ''
 		};
 		this.input = {};
 		this.updateSearch = this.updateSearch.bind(this);
@@ -24,11 +22,10 @@ export default class ProjectSearch extends React.Component {
 	}
 
 	searchProject() {
-
 		let results = {
 			documentResults: this.searchDocuments(),
 			memoResults: this.searchMemos()
-		}
+		};
 		this.props.setSearchResults(results);
 	}
 
@@ -38,11 +35,13 @@ export default class ProjectSearch extends React.Component {
 		const docs = this.props.documentsView.getDocuments();
 		for (var i in docs) {
 			var doc = docs[i];
-			if (doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1) {
+			if (
+				doc.text.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1
+			) {
 				const id = doc.id;
 				doc.onClick = () => {
-					this.props.documentsView.setActiveDocument(id)
-				}
+					this.props.documentsView.setActiveDocument(id);
+				};
 				documents.push(doc);
 			}
 		}
@@ -54,12 +53,15 @@ export default class ProjectSearch extends React.Component {
 		let codesystem = this.props.codesystemView.getAllCodes();
 		for (var i in codesystem) {
 			var code = codesystem[i];
-			if (code.memo && code.memo.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1) {
+			if (
+				code.memo &&
+				code.memo.toLowerCase().indexOf(this.state.search.toLowerCase()) != -1
+			) {
 				const thisCode = code;
 				code.onClick = () => {
 					this.props.codesystemView.setSelected(thisCode);
 					this.props.showCodingView();
-				}
+				};
 				codes.push(code);
 			}
 		}
@@ -71,9 +73,7 @@ export default class ProjectSearch extends React.Component {
 	}
 
 	render() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		const searchFieldPlaceholder = formatMessage({
 			id: 'projectsearch.search_field',
 			defaultMessage: 'Search for anything'
@@ -82,15 +82,17 @@ export default class ProjectSearch extends React.Component {
 		return (
 			<StyledSearchField className="searchfield" id="searchform">
 				<input
-					ref={(c) => this.input = c}
+					ref={c => (this.input = c)}
 					type="text"
 					placeholder={searchFieldPlaceholder}
 					value={this.state.search}
 					onChange={this.updateSearch}
-					onKeyPress={(e) => { if (e.key === 'Enter') this.searchProject();}}
+					onKeyPress={e => {
+						if (e.key === 'Enter') this.searchProject();
+					}}
 				/>
 				<BtnDefault type="button" onClick={() => this.searchProject()}>
-					<i className="fa fa-search  fa-lg"></i>
+					<i className="fa fa-search  fa-lg" />
 				</BtnDefault>
 			</StyledSearchField>
 		);

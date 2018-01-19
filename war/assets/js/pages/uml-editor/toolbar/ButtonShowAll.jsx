@@ -1,15 +1,10 @@
 import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 export default class ButtonShowAll extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -26,11 +21,18 @@ export default class ButtonShowAll extends React.Component {
 		const _this = this;
 
 		return (
-			<BtnDefault title="Zooms the graph until all classes fit into the screen." onClick={_this.buttonClicked}>
-                <i className="fa fa-arrows-alt"></i>
-                <span><FormattedMessage id='buttonshowall.show_all' defaultMessage='Show all' /></span>
-	        </BtnDefault>
+			<BtnDefault
+				title="Zooms the graph until all classes fit into the screen."
+				onClick={_this.buttonClicked}
+			>
+				<i className="fa fa-arrows-alt" />
+				<span>
+					<FormattedMessage
+						id="buttonshowall.show_all"
+						defaultMessage="Show all"
+					/>
+				</span>
+			</BtnDefault>
 		);
 	}
-
 }

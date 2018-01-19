@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import HoverButton from './HoverButton.jsx';
 
 export default class AddEdgeButton extends HoverButton {
-
 	constructor(props) {
 		super(props);
 	}

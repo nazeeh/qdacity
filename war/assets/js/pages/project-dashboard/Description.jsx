@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import TextField from '../../common/modals/TextField';
@@ -18,9 +16,7 @@ export default class Description extends React.Component {
 	}
 
 	showDescriptionModal() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		var modal = new TextField(
 			formatMessage({
@@ -32,8 +28,12 @@ export default class Description extends React.Component {
 				defaultMessage: 'Description'
 			})
 		);
-		modal.showModal().then(function (text) {
-			ProjectEndpoint.setDescription(_this.props.project.getId(), _this.props.project.getType(), text).then(function (resp) {
+		modal.showModal().then(function(text) {
+			ProjectEndpoint.setDescription(
+				_this.props.project.getId(),
+				_this.props.project.getType(),
+				text
+			).then(function(resp) {
 				_this.props.project.setDescription(text);
 				_this.forceUpdate();
 			});
@@ -41,16 +41,19 @@ export default class Description extends React.Component {
 	}
 
 	renderEditBtn() {
-		if (!this.props.isProjectOwner) return "";
-		else return <div className="box-tools pull-right">
-				<button
-					type="button"
-					className="btn btn-box-tool"
-					onClick={this.showDescriptionModal}
-				>
-		        	<i className="fa fa-pencil fa-lg  hoverHand"></i>
-		        </button>
-			</div>
+		if (!this.props.isProjectOwner) return '';
+		else
+			return (
+				<div className="box-tools pull-right">
+					<button
+						type="button"
+						className="btn btn-box-tool"
+						onClick={this.showDescriptionModal}
+					>
+						<i className="fa fa-pencil fa-lg  hoverHand" />
+					</button>
+				</div>
+			);
 	}
 
 	render() {
@@ -59,15 +62,16 @@ export default class Description extends React.Component {
 		return (
 			<div className="box box-default">
 				<div className="box-header with-border">
-				<h3 className="box-title"><FormattedMessage id='description.project_description' defaultMessage='Project Description' /></h3>
-				{this.renderEditBtn()}
+					<h3 className="box-title">
+						<FormattedMessage
+							id="description.project_description"
+							defaultMessage="Project Description"
+						/>
+					</h3>
+					{this.renderEditBtn()}
 				</div>
-				<div className="box-body">
-					{this.props.project.getDescription()}
-				</div>
+				<div className="box-body">{this.props.project.getDescription()}</div>
 			</div>
 		);
 	}
-
-
 }

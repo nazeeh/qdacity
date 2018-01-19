@@ -1,11 +1,8 @@
 import React from 'react';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 export default class ButtonZoomIn extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -23,9 +20,8 @@ export default class ButtonZoomIn extends React.Component {
 
 		return (
 			<BtnDefault title="Zoom into the graph." onClick={_this.buttonClicked}>
-		        <i className="fa fa-search-plus"></i>
-	        </BtnDefault>
+				<i className="fa fa-search-plus" />
+			</BtnDefault>
 		);
 	}
-
 }

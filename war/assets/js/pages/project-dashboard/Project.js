@@ -1,8 +1,8 @@
 export default class Project {
 	constructor(prjId, type) {
 		this.id = prjId;
-		this.name = "";
-		this.description = "";
+		this.name = '';
+		this.description = '';
 		this.type = type;
 		this.reports = {}; // hashmap indexed by revision ID
 		this.revisions = [];
@@ -48,12 +48,11 @@ export default class Project {
 	getReport(revID, reportID) {
 		var reports = this.reports[revID];
 
-		var report = reports.find(function (report) {
+		var report = reports.find(function(report) {
 			return report.id == reportID;
 		});
 
 		return report;
-
 	}
 
 	setReports(reports) {
@@ -66,7 +65,6 @@ export default class Project {
 
 	getValidationProject(revId) {
 		return this.validationProjects[revId];
-
 	}
 
 	addRevision(rev) {
@@ -82,7 +80,7 @@ export default class Project {
 	}
 
 	getRevision(revID) {
-		return this.revisions.find((x) => x.id === revID);
+		return this.revisions.find(x => x.id === revID);
 	}
 
 	setUmlEditorEnabled(umlEditorEnabled) {

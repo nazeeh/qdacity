@@ -1,12 +1,11 @@
 import hello from 'hellojs';
 
-
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
-const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email'
+const GOOGLE_SCOPES =
+	'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email';
 
 /* ------------------------------- AuthenticationProvider ----------------------------------- */
 export default class AuthenticationProvider {
-
 	constructor() {
 		// gapi auth2 is used for silent sign-in
 		this.auth2 = gapi.auth2.init({
@@ -19,7 +18,7 @@ export default class AuthenticationProvider {
 		this.network = {
 			google: 'google', // uses hellojs
 			google_silent: 'gapi' // uses gapi.auth2
-		}
+		};
 
 		/**
 		 * The active network.
@@ -32,12 +31,10 @@ export default class AuthenticationProvider {
 	 * Inits the HelloJS library
 	 */
 	initHelloJs() {
-		
 		hello.init({
 			google: GOOGLE_CLIENT_ID
-		})
+		});
 	}
-
 
 	/**
 	 * Signs-in on google account via a popup.
@@ -47,28 +44,31 @@ export default class AuthenticationProvider {
 	 */
 	signInWithGoogle() {
 		const _this = this;
-		const promise = new Promise(
-			function (resolve, reject) {
-				hello.on('auth.login', function (auth) {
-					_this.activeNetwork = _this.network.google;
-					_this.synchronizeTokenWithGapi();
-					resolve();
-				});
+		const promise = new Promise(function(resolve, reject) {
+			hello.on('auth.login', function(auth) {
+				_this.activeNetwork = _this.network.google;
+				_this.synchronizeTokenWithGapi();
+				resolve();
+			});
 
-				hello(_this.network.google).login({
+			hello(_this.network.google)
+				.login({
 					display: 'popup',
 					response_type: 'token id_token',
 					scope: GOOGLE_SCOPES,
 					force: true // let user choose which account he wants to login with
-				}).then(function () {
-					// do nothing because the listener  gets the result.
-					_this.activeNetwork = _this.network.google;
-				}, function (err) {
-					console.log(err);
-					reject(err);
-				});
-			}
-		);
+				})
+				.then(
+					function() {
+						// do nothing because the listener  gets the result.
+						_this.activeNetwork = _this.network.google;
+					},
+					function(err) {
+						console.log(err);
+						reject(err);
+					}
+				);
+		});
 		return promise;
 	}
 
@@ -78,13 +78,12 @@ export default class AuthenticationProvider {
 	 */
 	silentSignInWithGoogle() {
 		var _this = this;
-		const promise = new Promise(
-			function (resolve, reject) {
-				_this.auth2.isSignedIn.listen(function (googleUser) {
-					_this.activeNetwork = _this.network.google_silent;
-					resolve();
-				});
+		const promise = new Promise(function(resolve, reject) {
+			_this.auth2.isSignedIn.listen(function(googleUser) {
+				_this.activeNetwork = _this.network.google_silent;
+				resolve();
 			});
+		});
 		return promise;
 	}
 
@@ -100,16 +99,15 @@ export default class AuthenticationProvider {
 		} else {
 			// elsewise check gapi.auth2
 			var _this = this;
-			const promise = new Promise(
-				function (resolve, reject) {
-					const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
-					const profile = {
-						name: gapiProfile.getName(),
-						email: gapiProfile.getEmail(),
-						thumbnail: gapiProfile.getImageUrl()
-					}
-					resolve(profile);
-				});
+			const promise = new Promise(function(resolve, reject) {
+				const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
+				const profile = {
+					name: gapiProfile.getName(),
+					email: gapiProfile.getEmail(),
+					thumbnail: gapiProfile.getImageUrl()
+				};
+				resolve(profile);
+			});
 			return promise;
 		}
 	}
@@ -123,7 +121,7 @@ export default class AuthenticationProvider {
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
-			const currentTime = (new Date()).getTime() / 1000;
+			const currentTime = new Date().getTime() / 1000;
 			return session && session.access_token && session.expires > currentTime;
 		} else {
 			// elsewise check gapi.auth2
@@ -157,20 +155,25 @@ export default class AuthenticationProvider {
 	 */
 	changeAccount() {
 		var _this = this;
-		var promise = new Promise(
-			function (resolve, reject) {
-				_this.signOut().then(function () {
-					_this.signInWithGoogle().then(function () {
-						resolve();
-					}, function (err) {
-						console.log('Error at changing Account!');
-						reject(err);
-					})
-				}, function (err) {
+		var promise = new Promise(function(resolve, reject) {
+			_this.signOut().then(
+				function() {
+					_this.signInWithGoogle().then(
+						function() {
+							resolve();
+						},
+						function(err) {
+							console.log('Error at changing Account!');
+							reject(err);
+						}
+					);
+				},
+				function(err) {
 					console.log('Error at changing Account!');
 					reject(err);
-				});
-			});
+				}
+			);
+		});
 		return promise;
 	}
 
@@ -185,7 +188,7 @@ export default class AuthenticationProvider {
 
 		// add to gapi.auth2
 		this.auth2.currentUser.listen(callback);
-	};
+	}
 
 	/**
 	 * Gets the newest id token and provides the gapi with it.
@@ -194,38 +197,39 @@ export default class AuthenticationProvider {
 	 */
 	synchronizeTokenWithGapi() {
 		const _this = this;
-		const promise = new Promise(
-			function (resolve, reject) {
+		const promise = new Promise(function(resolve, reject) {
+			if (!_this.isSignedIn()) {
+				reject();
+				return;
+			}
 
-				if (!_this.isSignedIn()) {
-					reject();
-					return;
-				}
-
-				let idToken = '';
-				if (_this.activeNetwork !== _this.network.google_silent) {
-					// check hellojs
-					const session = hello.getAuthResponse(_this.network.google);
-					idToken = session.id_token;
-				} else {
-					// elsewise check gapi.auth2
-					idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
-				}
-				const headerToken = _this.encodeTokenWithIdentityProvider(idToken, _this.network.google); // format: <id_token> <authentication_provider_identifier>
-				// Google just allows Authorization header customization with id_token by using the access_token attribute:
-				gapi.client.setToken({
-					access_token: headerToken // gapi prepends 'Bearer ' automatically!
-				});
+			let idToken = '';
+			if (_this.activeNetwork !== _this.network.google_silent) {
+				// check hellojs
+				const session = hello.getAuthResponse(_this.network.google);
+				idToken = session.id_token;
+			} else {
+				// elsewise check gapi.auth2
+				idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
+			}
+			const headerToken = _this.encodeTokenWithIdentityProvider(
+				idToken,
+				_this.network.google
+			); // format: <id_token> <authentication_provider_identifier>
+			// Google just allows Authorization header customization with id_token by using the access_token attribute:
+			gapi.client.setToken({
+				access_token: headerToken // gapi prepends 'Bearer ' automatically!
 			});
-		return promise
+		});
+		return promise;
 	}
 
 	/**
 	 * Encodes the token with federate identity provider information.
 	 * This is a workaround because gapi.client doesn't provider header
 	 * specification with the discovered API.
-	 * @param {String} token 
-	 * @param {Atring} provider 
+	 * @param {String} token
+	 * @param {Atring} provider
 	 * @returns the ecoded token as string.
 	 */
 	encodeTokenWithIdentityProvider(token, provider) {
@@ -244,26 +248,23 @@ export default class AuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	registerCurrentUser(givenName, surName, email) {
-		var promise = new Promise(
-			function (resolve, reject) {
-				var user = {};
-				user.email = email;
-				user.givenName = givenName;
-				user.surName = surName;
+		var promise = new Promise(function(resolve, reject) {
+			var user = {};
+			user.email = email;
+			user.givenName = givenName;
+			user.surName = surName;
 
-				gapi.client.qdacity.insertUser(user).execute(function (resp) {
-					if (!resp.code) {
-						resolve(resp);
-					} else {
-						reject(resp);
-					}
-				});
-			}
-		);
+			gapi.client.qdacity.insertUser(user).execute(function(resp) {
+				if (!resp.code) {
+					resolve(resp);
+				} else {
+					reject(resp);
+				}
+			});
+		});
 
 		return promise;
 	}
-
 
 	/**
 	 * Gets the current user from qdacity server.
@@ -271,17 +272,15 @@ export default class AuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	getCurrentUser() {
-		var promise = new Promise(
-			function (resolve, reject) {
-				gapi.client.qdacity.user.getCurrentUser().execute(function (resp) {
-					if (!resp.code) {
-						resolve(resp);
-					} else {
-						reject(resp);
-					}
-				});
-			}
-		);
+		var promise = new Promise(function(resolve, reject) {
+			gapi.client.qdacity.user.getCurrentUser().execute(function(resp) {
+				if (!resp.code) {
+					resolve(resp);
+				} else {
+					reject(resp);
+				}
+			});
+		});
 		return promise;
 	}
 }

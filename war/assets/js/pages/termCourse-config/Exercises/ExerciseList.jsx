@@ -15,11 +15,9 @@ import {
 	StyledListItemDefault
 } from '../../../common/styles/List';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
-const StyledNewExBtn = styled.div `
+const StyledNewExBtn = styled.div`
 	padding-bottom: 5px;
 `;
 
@@ -45,7 +43,9 @@ export default class ExerciseList extends React.Component {
 
 	getExercises() {
 		var _this = this;
-		ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId()).then(function (resp) {
+		ExerciseEndpoint.listTermCourseExercises(
+			this.props.termCourse.getId()
+		).then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				exercises: resp.items
@@ -56,8 +56,8 @@ export default class ExerciseList extends React.Component {
 	showNewExerciseModal() {
 		var _this = this;
 		var modal = new CustomForm('Create a new exercise', '');
-		modal.addTextInput('name', "Exercise Name", 'Name', '');
-		modal.showModal().then(function (data) {
+		modal.addTextInput('name', 'Exercise Name', 'Name', '');
+		modal.showModal().then(function(data) {
 			_this.createNewExercise(data.name);
 		});
 	}
@@ -69,12 +69,12 @@ export default class ExerciseList extends React.Component {
 		var exercises = this.state.exercises;
 		exercise.name = name;
 		exercise.termCourseID = termCourseID;
-		ExerciseEndpoint.insertExercise(exercise).then(function (resp) {
+		ExerciseEndpoint.insertExercise(exercise).then(function(resp) {
 			exercises.push(resp);
 			_this.setState({
 				exercises: exercises
-			})
-		})
+			});
+		});
 	}
 
 	paginationClick(event) {
@@ -83,9 +83,8 @@ export default class ExerciseList extends React.Component {
 		});
 	}
 
-
 	isActivePage(page) {
-		return (page == this.state.currentPage);
+		return page == this.state.currentPage;
 	}
 
 	renderPaginationIfNeccessary() {
@@ -94,85 +93,92 @@ export default class ExerciseList extends React.Component {
 		} else {
 			//Render Pagination
 			const pageNumbers = [];
-			for (let i = 1; i <= Math.ceil(this.state.exercises.length / this.state.itemsPerPage); i++) {
+			for (
+				let i = 1;
+				i <= Math.ceil(this.state.exercises.length / this.state.itemsPerPage);
+				i++
+			) {
 				pageNumbers.push(i);
 			}
 			const renderPaginationItems = pageNumbers.map(pageNo => {
 				return (
 					<StyledPaginationItem
-		              key={pageNo}
-		              id={pageNo}
-		              onClick={this.paginationClick}
-		              active= {this.isActivePage(pageNo)}
-		            >
-		              {pageNo}
-				  </StyledPaginationItem>
+						key={pageNo}
+						id={pageNo}
+						onClick={this.paginationClick}
+						active={this.isActivePage(pageNo)}
+					>
+						{pageNo}
+					</StyledPaginationItem>
 				);
 			});
-			return <StyledPagination key={"pagination"}>
+			return (
+				<StyledPagination key={'pagination'}>
 					{renderPaginationItems}
-            	</StyledPagination>
+				</StyledPagination>
+			);
 		}
-
 	}
-
 
 	deleteExercise(e, exercise, index) {
 		var _this = this;
 		var exercises = this.state.exercises;
 		e.stopPropagation();
-		var confirm = new Confirm('Do you want to delete the exercise ' + exercise.name + '?');
-		confirm.showModal().then(function () {
-			ExerciseEndpoint.removeExercise(exercise.id).then(function (resp) {
-				var index = exercises.indexOf(exercises.find(o => o.id === exercise.id));
+		var confirm = new Confirm(
+			'Do you want to delete the exercise ' + exercise.name + '?'
+		);
+		confirm.showModal().then(function() {
+			ExerciseEndpoint.removeExercise(exercise.id).then(function(resp) {
+				var index = exercises.indexOf(
+					exercises.find(o => o.id === exercise.id)
+				);
 				exercises.splice(index, 1);
 				_this.setState({
 					exercises: exercises
 				});
 			});
 		});
-
 	}
 	render() {
 		var _this = this;
 
-
-		const newExerciseButton = <StyledNewExBtn>
-
-					<BtnDefault onClick={this.showNewExerciseModal}>
-					<i className="fa fa-plus fa-fw"></i>
+		const newExerciseButton = (
+			<StyledNewExBtn>
+				<BtnDefault onClick={this.showNewExerciseModal}>
+					<i className="fa fa-plus fa-fw" />
 					New Exercise
-					</BtnDefault>
-
-		</StyledNewExBtn>
+				</BtnDefault>
+			</StyledNewExBtn>
+		);
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = this.state.exercises.slice(firstItem, lastItem);
 
 		const renderListItems = itemsToDisplay.map((exercise, index) => {
-			return <StyledListItemDefault key={index} className="clickable">
-					<span > {exercise.name} </span>
-						<div>
-						<StyledListItemBtn onClick={(e) => this.deleteExercise(e, exercise, index)} className=" btn fa-lg" color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-							<i className="fa fa-trash "></i>
+			return (
+				<StyledListItemDefault key={index} className="clickable">
+					<span> {exercise.name} </span>
+					<div>
+						<StyledListItemBtn
+							onClick={e => this.deleteExercise(e, exercise, index)}
+							className=" btn fa-lg"
+							color={Theme.rubyRed}
+							colorAccent={Theme.rubyRedAccent}
+						>
+							<i className="fa fa-trash " />
 						</StyledListItemBtn>
 					</div>
-				</StyledListItemDefault>;
-		})
-
-
+				</StyledListItemDefault>
+			);
+		});
 
 		return (
 			<div>
 				{newExerciseButton}
-				<StyledBoxList key={"itemList"}>
-					{renderListItems}
-	            </StyledBoxList>
+				<StyledBoxList key={'itemList'}>{renderListItems}</StyledBoxList>
 				{this.renderPaginationIfNeccessary()}
-     		</div>
+			</div>
 		);
 	}
-
-
 }

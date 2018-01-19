@@ -6,32 +6,33 @@ export default class SaturationView extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			'results': [],
-			'mrSat': undefined
+			results: [],
+			mrSat: undefined
 		};
 		this.projectId = props.projectId;
 
 		this.showSaturationView();
 	}
 
-
 	showSaturationView() {
 		var _this = this;
-		gapi.client.qdacity.saturation.getHistoricalSaturationResults({
-			'projectId': _this.projectId
-		}).execute(function (resp) {
-			if (!resp.code) {
-				$('#loadingAnimation').addClass('hidden');
-				var res = resp.items || [];
-				var sat = _this.getMostRecentSaturation(res);
-				_this.setState({
-					results: res,
-					mrSat: sat
-				});
-			} else {
-				// Log error
-			}
-		});
+		gapi.client.qdacity.saturation
+			.getHistoricalSaturationResults({
+				projectId: _this.projectId
+			})
+			.execute(function(resp) {
+				if (!resp.code) {
+					$('#loadingAnimation').addClass('hidden');
+					var res = resp.items || [];
+					var sat = _this.getMostRecentSaturation(res);
+					_this.setState({
+						results: res,
+						mrSat: sat
+					});
+				} else {
+					// Log error
+				}
+			});
 	}
 
 	getMostRecentSaturation(results) {
@@ -53,10 +54,9 @@ export default class SaturationView extends React.Component {
 	render() {
 		return (
 			<div>
-                    <SaturationDetails saturation={this.state.mrSat} />
-                    <SaturationChart results={this.state.results} />
-                </div>
+				<SaturationDetails saturation={this.state.mrSat} />
+				<SaturationChart results={this.state.results} />
+			</div>
 		);
 	}
-
 }

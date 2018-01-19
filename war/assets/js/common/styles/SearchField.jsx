@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const StyledSearchField = styled.div `
+const StyledSearchField = styled.div`
 	float: none;
 	width: 100%;
 	display:flex;

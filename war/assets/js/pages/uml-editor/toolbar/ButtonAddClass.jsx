@@ -3,12 +3,9 @@ import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import Prompt from '../../../common/modals/Prompt';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 export default class ButtonAddClass extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -18,9 +15,7 @@ export default class ButtonAddClass extends React.Component {
 	}
 
 	buttonClicked() {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		const _this = this;
 
 		let prompt = new Prompt(
@@ -34,9 +29,13 @@ export default class ButtonAddClass extends React.Component {
 			})
 		);
 
-		prompt.showModal().then(function (codeName) {
+		prompt.showModal().then(function(codeName) {
 			let mmElementIDs = [];
-			mmElementIDs.push(_this.umlEditor.getMetaModelEntityByName(_this.umlEditor.getMetaModelMapper().getDefaultUmlClassMetaModelName()).id);
+			mmElementIDs.push(
+				_this.umlEditor.getMetaModelEntityByName(
+					_this.umlEditor.getMetaModelMapper().getDefaultUmlClassMetaModelName()
+				).id
+			);
 
 			_this.props.createCode(codeName, mmElementIDs);
 		});
@@ -46,10 +45,12 @@ export default class ButtonAddClass extends React.Component {
 		const _this = this;
 
 		return (
-			<BtnDefault title="Click to create a new class (code)." onClick={_this.buttonClicked}>
-		        <i className="fa fa-plus"></i>
-	        </BtnDefault>
+			<BtnDefault
+				title="Click to create a new class (code)."
+				onClick={_this.buttonClicked}
+			>
+				<i className="fa fa-plus" />
+			</BtnDefault>
 		);
 	}
-
 }

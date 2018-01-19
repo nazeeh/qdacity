@@ -1,5 +1,4 @@
 export default class Rule {
-
 	static create() {
 		return new Rule();
 	}

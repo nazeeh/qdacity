@@ -1,5 +1,4 @@
 export default class BaseCondition {
-
 	constructor() {
 		this.rule = null;
 	}

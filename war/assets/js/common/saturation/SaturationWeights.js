@@ -6,20 +6,72 @@ export default class SaturationWeights {
 	getNameAndWeightsArray() {
 		var sp = this.saturationParameters;
 		var saturationWeights = [
-			['Deleted Code Relationships', sp.deleteCodeRelationShipChangeWeight, sp.deleteCodeRelationShipSaturationMaximum], //0
-			['Deleted Codes', sp.deleteCodeChangeWeight, sp.deleteCodeSaturationMaximum], //1
-			['New Code Relationships', sp.insertCodeRelationShipChangeWeight, sp.insertCodeRelationShipSaturationMaximum], //2
+			[
+				'Deleted Code Relationships',
+				sp.deleteCodeRelationShipChangeWeight,
+				sp.deleteCodeRelationShipSaturationMaximum
+			], //0
+			[
+				'Deleted Codes',
+				sp.deleteCodeChangeWeight,
+				sp.deleteCodeSaturationMaximum
+			], //1
+			[
+				'New Code Relationships',
+				sp.insertCodeRelationShipChangeWeight,
+				sp.insertCodeRelationShipSaturationMaximum
+			], //2
 			['New Codes', sp.insertCodeChangeWeight, sp.insertCodeSaturationMaximum], //3
-			['Relocated Codes', sp.relocateCodeChangeWeight, sp.relocateCodeSaturationMaximum], //4
-			['Code Author Changes', sp.updateCodeAuthorChangeWeight, sp.updateCodeAuthorSaturationMaximum], //5
-			['CodeBookEntry Definition Changes', sp.updateCodeBookEntryDefinitionChangeWeight, sp.updateCodeBookEntryDefinitionSaturationMaximum], //6
-			['CodeBookEntry Example Changes', sp.updateCodeBookEntryExampleChangeWeight, sp.updateCodeBookEntryExampleSaturationMaximum], //7
-			['CodeBookEntry Short Definition Changes', sp.updateCodeBookEntryShortDefinitionChangeWeight, sp.updateCodeBookEntryShortDefinitionSaturationMaximum], //8
-			['CodeBookEntry When Not To Use Changes', sp.updateCodeBookEntryWhenNotToUseChangeWeight, sp.updateCodeBookEntryWhenNotToUseSaturationMaximum], //9
-			['CodeBookEntry When To Use Changes', sp.updateCodeBookEntryWhenToUseChangeWeight, sp.updateCodeBookEntryWhenToUseSaturationMaximum], //10
-			['Code Color Changes', sp.updateCodeColorChangeWeight, sp.updateCodeColorSaturationMaximum], //11
-			['Code Memo Changes', sp.updateCodeMemoChangeWeight, sp.updateCodeMemoSaturationMaximum], //12
-			['Code Name Changes', sp.updateCodeNameChangeWeight, sp.updateCodeNameSaturationMaximum] //13
+			[
+				'Relocated Codes',
+				sp.relocateCodeChangeWeight,
+				sp.relocateCodeSaturationMaximum
+			], //4
+			[
+				'Code Author Changes',
+				sp.updateCodeAuthorChangeWeight,
+				sp.updateCodeAuthorSaturationMaximum
+			], //5
+			[
+				'CodeBookEntry Definition Changes',
+				sp.updateCodeBookEntryDefinitionChangeWeight,
+				sp.updateCodeBookEntryDefinitionSaturationMaximum
+			], //6
+			[
+				'CodeBookEntry Example Changes',
+				sp.updateCodeBookEntryExampleChangeWeight,
+				sp.updateCodeBookEntryExampleSaturationMaximum
+			], //7
+			[
+				'CodeBookEntry Short Definition Changes',
+				sp.updateCodeBookEntryShortDefinitionChangeWeight,
+				sp.updateCodeBookEntryShortDefinitionSaturationMaximum
+			], //8
+			[
+				'CodeBookEntry When Not To Use Changes',
+				sp.updateCodeBookEntryWhenNotToUseChangeWeight,
+				sp.updateCodeBookEntryWhenNotToUseSaturationMaximum
+			], //9
+			[
+				'CodeBookEntry When To Use Changes',
+				sp.updateCodeBookEntryWhenToUseChangeWeight,
+				sp.updateCodeBookEntryWhenToUseSaturationMaximum
+			], //10
+			[
+				'Code Color Changes',
+				sp.updateCodeColorChangeWeight,
+				sp.updateCodeColorSaturationMaximum
+			], //11
+			[
+				'Code Memo Changes',
+				sp.updateCodeMemoChangeWeight,
+				sp.updateCodeMemoSaturationMaximum
+			], //12
+			[
+				'Code Name Changes',
+				sp.updateCodeNameChangeWeight,
+				sp.updateCodeNameSaturationMaximum
+			] //13
 		];
 
 		return saturationWeights;
@@ -32,37 +84,18 @@ export default class SaturationWeights {
 		//meaning "Title" : [<indices of NameAndWeightsArray which are in this category>]
 		//make sure not to use a index twice
 		var catArray = {
-			"Insert/Delete Codes": [
-				3,
-				1
-			],
-			"Code Changes": [
-				4,
-				5,
-				11,
-				12,
-				13
-			],
-			"Codebook Entry Changes": [
-				6,
-				7,
-				8,
-				9,
-				10
-			],
-			"Code Relationship Changes": [
-				2,
-				0
-			]
-		}
+			'Insert/Delete Codes': [3, 1],
+			'Code Changes': [4, 5, 11, 12, 13],
+			'Codebook Entry Changes': [6, 7, 8, 9, 10],
+			'Code Relationship Changes': [2, 0]
+		};
 		return catArray;
 	}
 
 	getArtificialCategoryIndex(category) {
 		var artificalIdx = 0;
 		for (var i in this.getCategorizedArray()) {
-			if (i === category)
-				return artificalIdx;
+			if (i === category) return artificalIdx;
 
 			artificalIdx = artificalIdx + 1;
 		}
@@ -79,7 +112,7 @@ export default class SaturationWeights {
 				}
 			}
 		}
-		return "NO CATEGORY FOR INDEX " + i;
+		return 'NO CATEGORY FOR INDEX ' + i;
 	}
 
 	getCompleteCategory(saturation, category) {
@@ -113,7 +146,7 @@ export default class SaturationWeights {
 			'updateCodeBookEntryWhenToUse', //10
 			'updateCodeColor', //11
 			'updateCodeMemo', //12
-			'updateCodeName', //13
+			'updateCodeName' //13
 		];
 
 		return propertyNames;
@@ -137,20 +170,48 @@ export default class SaturationWeights {
 
 	getNameAndWeightsAndSaturationArray(saturation) {
 		var nameAndWeights = this.getNameAndWeightsArray();
-		nameAndWeights[0] = nameAndWeights[0].concat(saturation.deleteCodeRelationShipSaturation);
-		nameAndWeights[1] = nameAndWeights[1].concat(saturation.deleteCodeSaturation);
-		nameAndWeights[2] = nameAndWeights[2].concat(saturation.insertCodeRelationShipSaturation);
-		nameAndWeights[3] = nameAndWeights[3].concat(saturation.insertCodeSaturation);
-		nameAndWeights[4] = nameAndWeights[4].concat(saturation.relocateCodeSaturation);
-		nameAndWeights[5] = nameAndWeights[5].concat(saturation.updateCodeAuthorSaturation);
-		nameAndWeights[6] = nameAndWeights[6].concat(saturation.updateCodeBookEntryDefinitionSaturation);
-		nameAndWeights[7] = nameAndWeights[7].concat(saturation.updateCodeBookEntryExampleSaturation);
-		nameAndWeights[8] = nameAndWeights[8].concat(saturation.updateCodeBookEntryShortDefinitionSaturation);
-		nameAndWeights[9] = nameAndWeights[9].concat(saturation.updateCodeBookEntryWhenNotToUseSaturation);
-		nameAndWeights[10] = nameAndWeights[10].concat(saturation.updateCodeBookEntryWhenToUseSaturation);
-		nameAndWeights[11] = nameAndWeights[11].concat(saturation.updateCodeColorSaturation);
-		nameAndWeights[12] = nameAndWeights[12].concat(saturation.updateCodeMemoSaturation);
-		nameAndWeights[13] = nameAndWeights[13].concat(saturation.updateCodeNameSaturation);
+		nameAndWeights[0] = nameAndWeights[0].concat(
+			saturation.deleteCodeRelationShipSaturation
+		);
+		nameAndWeights[1] = nameAndWeights[1].concat(
+			saturation.deleteCodeSaturation
+		);
+		nameAndWeights[2] = nameAndWeights[2].concat(
+			saturation.insertCodeRelationShipSaturation
+		);
+		nameAndWeights[3] = nameAndWeights[3].concat(
+			saturation.insertCodeSaturation
+		);
+		nameAndWeights[4] = nameAndWeights[4].concat(
+			saturation.relocateCodeSaturation
+		);
+		nameAndWeights[5] = nameAndWeights[5].concat(
+			saturation.updateCodeAuthorSaturation
+		);
+		nameAndWeights[6] = nameAndWeights[6].concat(
+			saturation.updateCodeBookEntryDefinitionSaturation
+		);
+		nameAndWeights[7] = nameAndWeights[7].concat(
+			saturation.updateCodeBookEntryExampleSaturation
+		);
+		nameAndWeights[8] = nameAndWeights[8].concat(
+			saturation.updateCodeBookEntryShortDefinitionSaturation
+		);
+		nameAndWeights[9] = nameAndWeights[9].concat(
+			saturation.updateCodeBookEntryWhenNotToUseSaturation
+		);
+		nameAndWeights[10] = nameAndWeights[10].concat(
+			saturation.updateCodeBookEntryWhenToUseSaturation
+		);
+		nameAndWeights[11] = nameAndWeights[11].concat(
+			saturation.updateCodeColorSaturation
+		);
+		nameAndWeights[12] = nameAndWeights[12].concat(
+			saturation.updateCodeMemoSaturation
+		);
+		nameAndWeights[13] = nameAndWeights[13].concat(
+			saturation.updateCodeNameSaturation
+		);
 
 		return nameAndWeights;
 	}

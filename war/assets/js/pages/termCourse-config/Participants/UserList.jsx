@@ -11,11 +11,9 @@ import {
 	StyledListItemDefault
 } from '../../../common/styles/List';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
-const StyledInviteButton = styled.div `
+const StyledInviteButton = styled.div`
 	padding-bottom: 5px;
 `;
 
@@ -40,7 +38,9 @@ export default class UserList extends React.Component {
 
 	addOwners() {
 		var _this = this;
-		CourseEndpoint.listTermCourseParticipants(this.props.termCourse.getId()).then(function (resp) {
+		CourseEndpoint.listTermCourseParticipants(
+			this.props.termCourse.getId()
+		).then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				users: resp.items
@@ -48,18 +48,14 @@ export default class UserList extends React.Component {
 		});
 	}
 
-
-
-
 	paginationClick(event) {
 		this.setState({
 			currentPage: Number(event.target.id)
 		});
 	}
 
-
 	isActivePage(page) {
-		return (page == this.state.currentPage);
+		return page == this.state.currentPage;
 	}
 
 	renderPaginationIfNeccessary() {
@@ -68,63 +64,63 @@ export default class UserList extends React.Component {
 		} else {
 			//Render Pagination
 			const pageNumbers = [];
-			for (let i = 1; i <= Math.ceil(this.state.users.length / this.state.itemsPerPage); i++) {
+			for (
+				let i = 1;
+				i <= Math.ceil(this.state.users.length / this.state.itemsPerPage);
+				i++
+			) {
 				pageNumbers.push(i);
 			}
 			const renderPaginationItems = pageNumbers.map(pageNo => {
 				return (
 					<StyledPaginationItem
-		              key={pageNo}
-		              id={pageNo}
-		              onClick={this.paginationClick}
-		              active= {this.isActivePage(pageNo)}
-		            >
-		              {pageNo}
-				  </StyledPaginationItem>
+						key={pageNo}
+						id={pageNo}
+						onClick={this.paginationClick}
+						active={this.isActivePage(pageNo)}
+					>
+						{pageNo}
+					</StyledPaginationItem>
 				);
 			});
-			return <StyledPagination key={"pagination"}>
+			return (
+				<StyledPagination key={'pagination'}>
 					{renderPaginationItems}
-            	</StyledPagination>
+				</StyledPagination>
+			);
 		}
-
 	}
 
 	render() {
 		var _this = this;
 
-		const newExerciseButton = <StyledInviteButton>
-
-					<BtnDefault onClick={this.showNewExerciseModal}>
-					<i className="fa fa-plus fa-fw"></i>
+		const newExerciseButton = (
+			<StyledInviteButton>
+				<BtnDefault onClick={this.showNewExerciseModal}>
+					<i className="fa fa-plus fa-fw" />
 					Invite a participant
-					</BtnDefault>
-
-		</StyledInviteButton>
+				</BtnDefault>
+			</StyledInviteButton>
+		);
 
 		//Render Components
 		const lastItem = this.state.currentPage * this.state.itemsPerPage;
 		const firstItem = lastItem - this.state.itemsPerPage;
 		const itemsToDisplay = this.state.users.slice(firstItem, lastItem);
 
-
 		const renderListItems = itemsToDisplay.map((user, index) => {
-			return <StyledListItemDefault key={index} className="clickable">
-					<span > {user.givenName + " " + user.surName} </span>
-				</StyledListItemDefault>;
-		})
-
-
+			return (
+				<StyledListItemDefault key={index} className="clickable">
+					<span> {user.givenName + ' ' + user.surName} </span>
+				</StyledListItemDefault>
+			);
+		});
 
 		return (
 			<div>
-				<StyledBoxList key={"itemList"}>
-					{renderListItems}
-	            </StyledBoxList>
+				<StyledBoxList key={'itemList'}>{renderListItems}</StyledBoxList>
 				{this.renderPaginationIfNeccessary()}
-     		</div>
+			</div>
 		);
 	}
-
-
 }

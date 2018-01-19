@@ -1,15 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-	Code
-} from './Code.jsx';
+import { Code } from './Code.jsx';
 import SimpleCode from './SimpleCode.jsx';
 
-const StyledSimpleCodesystem = styled.div `
-    height: ${props => props.height } !important;
-    max-height: ${props => props.maxHeight } !important;
-    overflow: auto;
+const StyledSimpleCodesystem = styled.div`
+	height: ${props => props.height} !important;
+	max-height: ${props => props.maxHeight} !important;
+	overflow: auto;
 `;
 
 export default class SimpleCodesystem extends React.Component {
@@ -55,11 +53,11 @@ export default class SimpleCodesystem extends React.Component {
 			return a.name > b.name;
 		});
 
-		codeSiblings.forEach((code) => {
+		codeSiblings.forEach(code => {
 			if (code.children) {
 				_this.sortCodes(code.children);
 			}
-		})
+		});
 	}
 
 	setSelected(code) {
@@ -153,7 +151,7 @@ export default class SimpleCodesystem extends React.Component {
 	renderRoots(codes) {
 		return codes.map((code, index) => {
 			const level = 0;
-			const key = "CS" + "_" + 0 + "_" + index;
+			const key = 'CS' + '_' + 0 + '_' + index;
 
 			return this.renderRoot(code, level, key);
 		});
@@ -162,28 +160,23 @@ export default class SimpleCodesystem extends React.Component {
 	renderRoot(code, level, key) {
 		return (
 			<SimpleCode
-                    level={level}
-                    node={code}
-                    selected={this.state.selected}
-                    setSelected={this.setSelected}
-                    key={key}
-		            isCodeSelectable = {this.props.isCodeSelectable}
-                    getFontWeight={this.props.getFontWeight}
-                    getTextColor={this.props.getTextColor}
-                    getBackgroundColor={this.props.getBackgroundColor}
-                    getBackgroundHoverColor={this.props.getBackgroundHoverColor}
-                >
-                </SimpleCode>
+				level={level}
+				node={code}
+				selected={this.state.selected}
+				setSelected={this.setSelected}
+				key={key}
+				isCodeSelectable={this.props.isCodeSelectable}
+				getFontWeight={this.props.getFontWeight}
+				getTextColor={this.props.getTextColor}
+				getBackgroundColor={this.props.getBackgroundColor}
+				getBackgroundHoverColor={this.props.getBackgroundHoverColor}
+			/>
 		);
 	}
 
 	renderNodes(codeSiblings, level) {
-		return (
-			<div>
-				{this.renderRoots(codeSiblings)}
-			</div>
-		);
-	};
+		return <div>{this.renderRoots(codeSiblings)}</div>;
+	}
 
 	renderCodesystem() {
 		return this.renderNodes(this.state.codesystem);
@@ -194,21 +187,25 @@ export default class SimpleCodesystem extends React.Component {
 		let maxHeight = null;
 
 		if (this.state.height != null) {
-			height = this.state.height + "px";
+			height = this.state.height + 'px';
 		} else {
-			height = "auto";
+			height = 'auto';
 		}
 
 		if (this.state.maxHeight != null) {
-			maxHeight = this.state.maxHeight + "px";
+			maxHeight = this.state.maxHeight + 'px';
 		} else {
-			maxHeight = "auto";
+			maxHeight = 'auto';
 		}
 
 		return (
-			<StyledSimpleCodesystem height={height} maxHeight={maxHeight} className="codesystemView">
-		        {this.renderCodesystem()}
-	        </StyledSimpleCodesystem>
+			<StyledSimpleCodesystem
+				height={height}
+				maxHeight={maxHeight}
+				className="codesystemView"
+			>
+				{this.renderCodesystem()}
+			</StyledSimpleCodesystem>
 		);
 	}
 }

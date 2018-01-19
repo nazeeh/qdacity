@@ -4,13 +4,14 @@ import styled from 'styled-components';
 import ImageHoverButton from './ImageHoverButton.jsx';
 
 export default class CodingViewButton extends ImageHoverButton {
-
 	constructor(props) {
 		super(props);
 	}
 
 	onClick() {
-		this.props.umlEditor.props.deleteCode(this.props.umlEditor.getCodeByNode(this.props.cell));
+		this.props.umlEditor.props.deleteCode(
+			this.props.umlEditor.getCodeByNode(this.props.cell)
+		);
 	}
 
 	getImageClassName() {
@@ -29,7 +30,8 @@ export default class CodingViewButton extends ImageHoverButton {
 		const offsetRight = 40 * this.props.scale;
 
 		const x = this.props.x + offsetRight;
-		const y = this.props.y - (this.props.scale * sizeY) - offsetToNode * this.props.scale;
+		const y =
+			this.props.y - this.props.scale * sizeY - offsetToNode * this.props.scale;
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
 

@@ -1,10 +1,9 @@
 import VexModal from './VexModal';
 
 export default class CustomForm extends VexModal {
-
 	constructor(message) {
 		super();
-		this.formElements = "";
+		this.formElements = '';
 		this.message = message;
 	}
 
@@ -12,7 +11,14 @@ export default class CustomForm extends VexModal {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<label for="' + name + '">' + label + '</label>';
 		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += '<input placeholder="' + placeholder + '" name="' + name + '" type="text" value="' + value + '" ></input>';
+		this.formElements +=
+			'<input placeholder="' +
+			placeholder +
+			'" name="' +
+			name +
+			'" type="text" value="' +
+			value +
+			'" ></input>';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
 	}
@@ -21,7 +27,14 @@ export default class CustomForm extends VexModal {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<label for="' + name + '">' + label + '</label>';
 		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += '<textarea placeholder="' + placeholder + '" rows="15" cols="200" name="' + name + '" type="text" value="' + value + '" ></textarea>';
+		this.formElements +=
+			'<textarea placeholder="' +
+			placeholder +
+			'" rows="15" cols="200" name="' +
+			name +
+			'" type="text" value="' +
+			value +
+			'" ></textarea>';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
 	}
@@ -34,24 +47,25 @@ export default class CustomForm extends VexModal {
 		this.formElements += label + ': ';
 		this.formElements += '<select name="' + name + '">';
 
-		var isDefault = function (el) {
-			return ((el == initialValue) ? 'selected="selected"' : '');
-		}
+		var isDefault = function(el) {
+			return el == initialValue ? 'selected="selected"' : '';
+		};
 
-		options.forEach(function (el) {
-			_this.formElements += '<option value="' + el + '" ' + isDefault(el) + '>' + el + '</option>';
+		options.forEach(function(el) {
+			_this.formElements +=
+				'<option value="' + el + '" ' + isDefault(el) + '>' + el + '</option>';
 		});
 		this.formElements += '</select>';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
-
 	}
 
 	addCheckBox(name, label, checked, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 
 		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += '<input type="checkbox" name="' + name + '" value="' + value + '"'
+		this.formElements +=
+			'<input type="checkbox" name="' + name + '" value="' + value + '"';
 		if (checked) this.formElements += ' checked';
 		this.formElements += '>' + value + '<br>';
 		this.formElements += '</div>';
@@ -63,8 +77,15 @@ export default class CustomForm extends VexModal {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 
 		this.formElements += '<div class="vex-custom-input-wrapper">';
-		itemList.forEach(function (el) {
-			_this.formElements += '<input type="checkbox" name="' + name + '" value="' + el.id + '">' + el.title + '<br>';
+		itemList.forEach(function(el) {
+			_this.formElements +=
+				'<input type="checkbox" name="' +
+				name +
+				'" value="' +
+				el.id +
+				'">' +
+				el.title +
+				'<br>';
 		});
 		this.formElements += '</div>';
 		this.formElements += '</div>';
@@ -72,33 +93,31 @@ export default class CustomForm extends VexModal {
 
 	showModal() {
 		var _this = this;
-		var promise = new Promise(
-			function (resolve, reject) {
+		var promise = new Promise(function(resolve, reject) {
+			var formElements = _this.formElements;
 
-				var formElements = _this.formElements;
-
-				vex.dialog.open({
-					message: _this.message,
-					contentCSS: {
-						width: '600px'
-					},
-					input: formElements,
-					buttons: [$.extend({}, vex.dialog.buttons.YES, {
+			vex.dialog.open({
+				message: _this.message,
+				contentCSS: {
+					width: '600px'
+				},
+				input: formElements,
+				buttons: [
+					$.extend({}, vex.dialog.buttons.YES, {
 						text: 'OK'
-					}), $.extend({}, vex.dialog.buttons.NO, {
+					}),
+					$.extend({}, vex.dialog.buttons.NO, {
 						text: 'Cancel'
-					})],
-					callback: function (data) {
-
-						if (data != false) {
-							resolve(data);
-						} else reject(data);
-					}
-				});
-			}
-		);
+					})
+				],
+				callback: function(data) {
+					if (data != false) {
+						resolve(data);
+					} else reject(data);
+				}
+			});
+		});
 
 		return promise;
 	}
-
 }

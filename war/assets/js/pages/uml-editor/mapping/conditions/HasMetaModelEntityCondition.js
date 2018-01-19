@@ -1,15 +1,10 @@
 import BaseCondition from './BaseCondition.js';
 
-import {
-	Target
-} from '../Target.js';
+import { Target } from '../Target.js';
 
-import {
-	EvaluationTarget
-} from './EvaluationTarget.js';
+import { EvaluationTarget } from './EvaluationTarget.js';
 
 export default class HasMetaModelEntityCondition extends BaseCondition {
-
 	constructor(metaModelEntityName, evaluationTarget) {
 		super();
 		this.metaModelEntityName = metaModelEntityName;
@@ -46,30 +41,36 @@ export default class HasMetaModelEntityCondition extends BaseCondition {
 
 	evaluateRelation(relation) {
 		// Relation has metaModelEntity
-		if (this.evaluationTarget == null || this.evaluationTarget == EvaluationTarget.THIS) {
+		if (
+			this.evaluationTarget == null ||
+			this.evaluationTarget == EvaluationTarget.THIS
+		) {
 			let mmElementId = relation.mmElementId;
 
 			const entity = this.getMetaModelEntityById(mmElementId);
 
 			return entity != null && entity.name == this.metaModelEntityName;
-		}
-		// Relation source code has metaModelEntity
-		else if (this.evaluationTarget == EvaluationTarget.SOURCE) {
-			let sourceCode = this.getRule().getMapper().getCodeById(relation.key.parent.id);
+		} else if (this.evaluationTarget == EvaluationTarget.SOURCE) {
+			// Relation source code has metaModelEntity
+			let sourceCode = this.getRule()
+				.getMapper()
+				.getCodeById(relation.key.parent.id);
 			return this.evaluateCode(sourceCode);
-		}
-		// Relation destination code has metaModelEntity
-		else if (this.evaluationTarget == EvaluationTarget.DESTINATION) {
-			let destinationCode = this.getRule().getMapper().getCodeByCodeId(relation.codeId);
+		} else if (this.evaluationTarget == EvaluationTarget.DESTINATION) {
+			// Relation destination code has metaModelEntity
+			let destinationCode = this.getRule()
+				.getMapper()
+				.getCodeByCodeId(relation.codeId);
 			return this.evaluateCode(destinationCode);
-		}
-		// Error
-		else {
+		} else {
+			// Error
 			throw new Error('Unknown target type ' + this.evaluationTarget);
 		}
 	}
 
 	getMetaModelEntityById(metaModelElementId) {
-		return this.getRule().getMapper().getMetaModelEntityById(metaModelElementId);
+		return this.getRule()
+			.getMapper()
+			.getMetaModelEntityById(metaModelElementId);
 	}
 }

@@ -1,9 +1,9 @@
-import React from 'react'
+import React from 'react';
 import styled from 'styled-components';
 
 import SyncService from '../../common/SyncService';
 
-const StyledCollaboratorBox = styled.ul `
+const StyledCollaboratorBox = styled.ul`
 	position: relative;
 	margin: 0;
 	list-style: none;
@@ -14,13 +14,13 @@ const StyledCollaboratorBox = styled.ul `
 	width: ${props => props.width}px;
 	height: 30px;
 `;
-const StyledPlaceholder = styled.li `
+const StyledPlaceholder = styled.li`
 	line-height: 30px;
 	font-size: 12px;
 	white-space: pre;
 `;
 
-const StyledMoreCount = styled.li `
+const StyledMoreCount = styled.li`
 	position: relative;
 	line-height: 30px;
 	height: 30px;
@@ -28,10 +28,10 @@ const StyledMoreCount = styled.li `
 	margin-left: -15px;
 	border-radius: 50%;
 	background: white;
-	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 
 	&:before {
-		content: "+";
+		content: '+';
 	}
 
 	ul:hover > & {
@@ -39,7 +39,7 @@ const StyledMoreCount = styled.li `
 	}
 `;
 
-const StyledCollaborator = styled.li `
+const StyledCollaborator = styled.li`
 	position: relative;
 	display: flex;
 	justify-content: center;
@@ -104,21 +104,19 @@ const StyledCollaborator = styled.li `
 `;
 
 export default class CollaboratorList extends React.Component {
-
 	constructor(props) {
 		super(props);
 
 		this.listenerID = '';
 
 		this.state = {
-			collaborators: [],
+			collaborators: []
 		};
 	}
 
 	componentDidMount() {
-		this.listenerID = this.props.syncService.on(
-			'changeUserList',
-			list => this.setState({
+		this.listenerID = this.props.syncService.on('changeUserList', list =>
+			this.setState({
 				collaborators: list
 			})
 		);
@@ -129,7 +127,6 @@ export default class CollaboratorList extends React.Component {
 	}
 
 	render() {
-
 		// Get a copy of the collaborators and reverse it
 		const collaborators = this.state.collaborators;
 
@@ -140,21 +137,20 @@ export default class CollaboratorList extends React.Component {
 		const moreCount = Math.max(collaborators.length - displayCount + 1, 0);
 
 		return (
-			<StyledCollaboratorBox width={displayCount*30-15}>
-				{ collaborators.length == 0 ? (
-					<StyledPlaceholder>
-						No collaborators
-					</StyledPlaceholder>
-				) : null }
-				{ collaborators.map((c, i) => (
+			<StyledCollaboratorBox width={displayCount * 30 - 15}>
+				{collaborators.length == 0 ? (
+					<StyledPlaceholder>No collaborators</StyledPlaceholder>
+				) : null}
+				{collaborators.map((c, i) => (
 					<StyledCollaborator
 						picSrc={c.picSrc}
 						name={c.name}
 						displayCount={displayCount}
-						hoverOffset={i * 28} />
+						hoverOffset={i * 28}
+					/>
 				))}
-				{ moreCount > 0 ? <StyledMoreCount>{moreCount}</StyledMoreCount> : null }
+				{moreCount > 0 ? <StyledMoreCount>{moreCount}</StyledMoreCount> : null}
 			</StyledCollaboratorBox>
 		);
 	}
-};
+}

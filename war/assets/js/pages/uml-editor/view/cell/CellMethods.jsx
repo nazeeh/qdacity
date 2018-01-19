@@ -3,7 +3,6 @@ import React from 'react';
 import CellElementList from './CellElementList.jsx';
 
 export default class CellMethods extends CellElementList {
-
 	constructor(props) {
 		super(props);
 	}

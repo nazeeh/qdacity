@@ -34,11 +34,11 @@ export default class MetaModelElement {
 	}
 
 	hasGeneralization(generalization) {
-		return this.generalizations.indexOf(generalization) != -1
+		return this.generalizations.indexOf(generalization) != -1;
 	}
 
 	hasSpecialization(generalization) {
-		return this.specializations.indexOf(generalization) != -1
+		return this.specializations.indexOf(generalization) != -1;
 	}
 
 	setSpecialization(specialization) {
@@ -54,11 +54,10 @@ export default class MetaModelElement {
 	}
 
 	toggleSelected() {
-		this.selected = (this.selected == true) ? false : true;
+		this.selected = this.selected == true ? false : true;
 	}
 
 	isSelected() {
 		return this.selected;
 	}
-
 }

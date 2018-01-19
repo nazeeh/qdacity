@@ -14,8 +14,8 @@ import {
 	StyledListItemDefault
 } from '../../../common/styles/List';
 
-const StyledReportDate = styled.span `
-	width:85px;
+const StyledReportDate = styled.span`
+	width: 85px;
 `;
 
 export default class ReportList extends React.Component {
@@ -38,35 +38,28 @@ export default class ReportList extends React.Component {
 		});
 	}
 
-
 	isActivePage(page) {
-		return (page == this.state.currentPage);
+		return page == this.state.currentPage;
 	}
 
-
-
 	deleteReport(e, reportId, index) {
-		const {
-			formatMessage
-		} = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
 		var validationEndpoint = new ValidationEndpoint();
 
-		validationEndpoint.deleteReport(reportId)
-			.then(
-				function (val) {
-					alertify.success(
-						formatMessage({
-							id: 'reportlist.report_deleted',
-							defaultMessage: "Report has been deleted"
-						})
-					);
-					_this.state.reports.splice(index, 1);
-					_this.setState({
-						reports: _this.state.reports
-					})
+		validationEndpoint.deleteReport(reportId).then(function(val) {
+			alertify.success(
+				formatMessage({
+					id: 'reportlist.report_deleted',
+					defaultMessage: 'Report has been deleted'
 				})
+			);
+			_this.state.reports.splice(index, 1);
+			_this.setState({
+				reports: _this.state.reports
+			});
+		});
 	}
 
 	showValidationReports(report) {
@@ -74,13 +67,17 @@ export default class ReportList extends React.Component {
 		if (this.props.isProjectOwner) agreementModal.showModal();
 	}
 
-
 	renderReportDeleteBtn(report, index) {
 		if (this.props.isAdmin || this.props.isProjectOwner)
 			return (
-				<StyledListItemBtn onClick={(e) => this.deleteReport(e, report.id, index)} className="btn fa-lg"  color={Theme.rubyRed} colorAccent={Theme.rubyRedAccent}>
-						<i className="fa fa-trash"></i>
-					</StyledListItemBtn>
+				<StyledListItemBtn
+					onClick={e => this.deleteReport(e, report.id, index)}
+					className="btn fa-lg"
+					color={Theme.rubyRed}
+					colorAccent={Theme.rubyRedAccent}
+				>
+					<i className="fa fa-trash" />
+				</StyledListItemBtn>
 			);
 		else return '';
 	}
@@ -100,49 +97,51 @@ export default class ReportList extends React.Component {
 
 		const renderListItems = itemsToDisplay.map((report, index) => {
 			var datetime = report.datetime;
-			if (typeof datetime != 'undefined') datetime = datetime.split("T")[0]; // split to get date only
-			else datetime = "";
+			if (typeof datetime != 'undefined')
+				datetime = datetime.split('T')[0]; // split to get date only
+			else datetime = '';
 			return (
-				<StyledListItemDefault key={report.id} onClick={() => this.showValidationReports(report)}  clickable={true}>
+				<StyledListItemDefault
+					key={report.id}
+					onClick={() => this.showValidationReports(report)}
+					clickable={true}
+				>
 					<span> {report.name} </span>
 					<span>
-						<StyledReportDate >{'[' + datetime + '] '}</StyledReportDate>
+						<StyledReportDate>{'[' + datetime + '] '}</StyledReportDate>
 						{this.renderReportDeleteBtn(report, index)}
 					</span>
-
 				</StyledListItemDefault>
 			);
-		})
+		});
 
 		//Render Pagination
 		const pageNumbers = [];
-		for (let i = 1; i <= Math.ceil(this.state.reports.length / this.state.itemsPerPage); i++) {
+		for (
+			let i = 1;
+			i <= Math.ceil(this.state.reports.length / this.state.itemsPerPage);
+			i++
+		) {
 			pageNumbers.push(i);
 		}
 		const renderPagination = pageNumbers.map(pageNo => {
 			return (
 				<StyledPaginationItem
-	              key={pageNo}
-	              id={pageNo}
-	              onClick={this.paginationClick}
-	              active= {this.isActivePage(pageNo)}
-	            >
-	              {pageNo}
-			  </StyledPaginationItem>
+					key={pageNo}
+					id={pageNo}
+					onClick={this.paginationClick}
+					active={this.isActivePage(pageNo)}
+				>
+					{pageNo}
+				</StyledPaginationItem>
 			);
 		});
 
 		return (
 			<div>
-				<StyledBoxList>
-					{renderListItems}
-	            </StyledBoxList>
-	            <StyledPagination>
-					{renderPagination}
-            	</StyledPagination>
-     		</div>
+				<StyledBoxList>{renderListItems}</StyledBoxList>
+				<StyledPagination>{renderPagination}</StyledPagination>
+			</div>
 		);
 	}
-
-
 }

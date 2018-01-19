@@ -15,7 +15,6 @@ const SYNC_SERVICE = '$SYNC_SERVICE$';
  *                           to {@link this#logon}.
  */
 export default class SyncService {
-
 	/**
 	 * Constructor for SyncService.
 	 */
@@ -46,7 +45,6 @@ export default class SyncService {
 	 * @arg {object} account - Any serializable object
 	 */
 	logon(account) {
-
 		if (JSON.stringify(account) === JSON.stringify(this._account)) {
 			return;
 		}
@@ -120,14 +118,20 @@ export default class SyncService {
 		// If the SYNC_SERVICE constant starts with a `$` character, it has
 		// not been set in build process.
 		if (SYNC_SERVICE.substr(0, 1) === '$') {
-			throw new Error('SYNC_SERVICE url was not configured. Please check your build configuration');
+			throw new Error(
+				'SYNC_SERVICE url was not configured. Please check your build configuration'
+			);
 		}
 
 		// Open a websocket to the sync server and register message handlers
 		this._socket = openSocket(SYNC_SERVICE);
-		this._socket.on('welcome', hostname => this.log('Connected to rtc-svc-server:', hostname));
+		this._socket.on('welcome', hostname =>
+			this.log('Connected to rtc-svc-server:', hostname)
+		);
 		this._socket.on('reconnect', () => this._emitLogon());
-		this._socket.on('user_change', userlist => this._handleUserListChange(userlist));
+		this._socket.on('user_change', userlist =>
+			this._handleUserListChange(userlist)
+		);
 
 		// Make sure, the websocket is closed when the browser is closed
 		window.addEventListener('unload', () => this.disconnect());
@@ -173,9 +177,7 @@ export default class SyncService {
 	_handleUserListChange(userlist) {
 		this._fireEvent(
 			'changeUserList',
-			userlist.filter(({
-				email
-			}) => email !== this._account.email)
+			userlist.filter(({ email }) => email !== this._account.email)
 		);
 	}
 
@@ -200,4 +202,4 @@ export default class SyncService {
 			Object.values(this._listeners[evt]).forEach(cb => cb(...args));
 		}
 	}
-};
+}

@@ -1,8 +1,7 @@
-import Promisizer from './Promisizer'
+import Promisizer from './Promisizer';
 
 export default class CodesEndpoint {
 	constructor() {}
-
 
 	static insertCode(code, relationId, relationSourceCodeId) {
 		if (relationId == undefined) {
@@ -12,10 +11,13 @@ export default class CodesEndpoint {
 			relationSourceCodeId = null;
 		}
 
-		var apiMethod = gapi.client.qdacity.codes.insertCode({
-			'relationId': relationId,
-			'relationSourceCodeId': relationSourceCodeId
-		}, code);
+		var apiMethod = gapi.client.qdacity.codes.insertCode(
+			{
+				relationId: relationId,
+				relationSourceCodeId: relationSourceCodeId
+			},
+			code
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 
@@ -24,19 +26,23 @@ export default class CodesEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static updateRelationshipCode(relationshipCodeId, relationSourceId, relationId) {
+	static updateRelationshipCode(
+		relationshipCodeId,
+		relationSourceId,
+		relationId
+	) {
 		var apiMethod = gapi.client.qdacity.codes.updateRelationshipCode({
-			'relationshipCodeId': relationshipCodeId,
-			'relationSourceId': relationSourceId,
-			'relationId': relationId
+			relationshipCodeId: relationshipCodeId,
+			relationSourceId: relationSourceId,
+			relationId: relationId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static updateRelationshipCodeMetaModel(relationshipCodeId, newMetaModelId) {
 		var apiMethod = gapi.client.qdacity.codes.updateRelationshipCodeMetaModel({
-			'relationshipCodeId': relationshipCodeId,
-			'newMetaModelId': newMetaModelId
+			relationshipCodeId: relationshipCodeId,
+			newMetaModelId: newMetaModelId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -47,23 +53,26 @@ export default class CodesEndpoint {
 	}
 
 	static setCodeBookEntry(codeId, codebookEntry) {
-		var apiMethod = gapi.client.qdacity.codes.setCodeBookEntry({
-			'codeId': codeId
-		}, codebookEntry);
+		var apiMethod = gapi.client.qdacity.codes.setCodeBookEntry(
+			{
+				codeId: codeId
+			},
+			codebookEntry
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static relocateCode(codeId, newParentId) {
 		var apiMethod = gapi.client.qdacity.codes.relocateCode({
-			'codeId': codeId,
-			'newParentID': newParentId
+			codeId: codeId,
+			newParentID: newParentId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static getCode(codeId) {
 		var apiMethod = gapi.client.qdacity.codes.getCode({
-			'id': codeId
+			id: codeId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -73,27 +82,30 @@ export default class CodesEndpoint {
 			createIfItExists = true;
 		}
 
-		var apiMethod = gapi.client.qdacity.codes.addRelationship({
-			'sourceCode': srcId,
-			'createIfItExists': createIfItExists
-		}, {
-			'codeId': dstId,
-			'mmElementId': mmElementId
-		});
+		var apiMethod = gapi.client.qdacity.codes.addRelationship(
+			{
+				sourceCode: srcId,
+				createIfItExists: createIfItExists
+			},
+			{
+				codeId: dstId,
+				mmElementId: mmElementId
+			}
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static removeRelationship(codeId, relationshipId) {
 		var apiMethod = gapi.client.qdacity.codes.removeRelationship({
-			'codeId': codeId,
-			'relationshipId': relationshipId
+			codeId: codeId,
+			relationshipId: relationshipId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static removeAllRelationships(id) {
 		var apiMethod = gapi.client.qdacity.codes.removeAllRelationships({
-			'id': id
+			id: id
 		});
 		return Promisizer.makePromise(apiMethod);
 	}

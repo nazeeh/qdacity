@@ -1,4 +1,4 @@
-import Promisizer from './Promisizer'
+import Promisizer from './Promisizer';
 
 export default class AdminEndpoint {
 	constructor() {}
@@ -7,5 +7,4 @@ export default class AdminEndpoint {
 		var apiMethod = gapi.client.qdacity.admin.getAdminStats();
 		return Promisizer.makePromise(apiMethod);
 	}
-
 }

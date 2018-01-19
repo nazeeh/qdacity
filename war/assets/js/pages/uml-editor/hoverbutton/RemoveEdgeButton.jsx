@@ -4,13 +4,15 @@ import styled from 'styled-components';
 import ImageHoverButton from './ImageHoverButton.jsx';
 
 export default class RemoveEdgeButton extends ImageHoverButton {
-
 	constructor(props) {
 		super(props);
 	}
 
 	onClick() {
-		this.props.umlEditor.deleteEdge(this.props.cell.source, this.props.cell.value.relationId);
+		this.props.umlEditor.deleteEdge(
+			this.props.cell.source,
+			this.props.cell.value.relationId
+		);
 	}
 
 	getImageClassName() {
@@ -28,12 +30,16 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
 
-		// TODO 
+		// TODO
 		// Weil x und y hier nicht benutzt wird, wird es nicht beim update verschoben
 
-		let state = this.props.umlEditor.getGraphView().graph.view.getState(this.props.cell);
+		let state = this.props.umlEditor
+			.getGraphView()
+			.graph.view.getState(this.props.cell);
 
-		let handler = this.props.umlEditor.getGraphView().graph.selectionCellsHandler.handlers.get(this.props.cell);
+		let handler = this.props.umlEditor
+			.getGraphView()
+			.graph.selectionCellsHandler.handlers.get(this.props.cell);
 
 		let abspoints = handler.abspoints;
 

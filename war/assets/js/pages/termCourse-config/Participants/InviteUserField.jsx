@@ -3,9 +3,7 @@ import styled from 'styled-components';
 
 import CourseEndPoint from '../../../common/endpoints/CourseEndpoint';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 import StyledSearchField from '../../../common/styles/SearchField.jsx';
 
 export default class InviteUserField extends React.Component {
@@ -22,35 +20,41 @@ export default class InviteUserField extends React.Component {
 		this.setState({
 			userEmail: e.target.value
 		});
-
 	}
 
 	inviteUser() {
 		var _this = this;
 		console.log(this.props.termCourse);
-		CourseEndPoint.inviteUserTermCourse(this.props.termCourse.id, this.state.userEmail).then(function (resp) {
-			alertify.success(_this.state.userEmail + " has been invited");
-		}).catch(function (resp) {
-			alertify.error(_this.state.userEmail + " was not found");
-		});
+		CourseEndPoint.inviteUserTermCourse(
+			this.props.termCourse.id,
+			this.state.userEmail
+		)
+			.then(function(resp) {
+				alertify.success(_this.state.userEmail + ' has been invited');
+			})
+			.catch(function(resp) {
+				alertify.error(_this.state.userEmail + ' was not found');
+			});
 	}
 
 	render() {
 		var _this = this;
 
-		return (<StyledSearchField>
+		return (
+			<StyledSearchField>
 				<input
 					type="text"
 					placeholder="User Email"
 					value={this.state.userEmail}
 					onChange={this.updateUserEmail}
-					onKeyPress={(e) => { if (e.key === 'Enter') this.inviteUser();}}>
-				</input>
+					onKeyPress={e => {
+						if (e.key === 'Enter') this.inviteUser();
+					}}
+				/>
 				<BtnDefault type="button" onClick={this.inviteUser}>
-					<i className="fa fa-paper-plane  fa-lg"></i> Invite
+					<i className="fa fa-paper-plane  fa-lg" /> Invite
 				</BtnDefault>
-			</StyledSearchField>);
+			</StyledSearchField>
+		);
 	}
-
-
 }

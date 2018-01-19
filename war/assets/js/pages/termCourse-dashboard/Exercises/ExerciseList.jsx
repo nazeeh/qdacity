@@ -32,7 +32,9 @@ export default class ExerciseList extends React.Component {
 
 	getExercises() {
 		var _this = this;
-		ExerciseEndpoint.listTermCourseExercises(this.props.termCourse.getId()).then(function (resp) {
+		ExerciseEndpoint.listTermCourseExercises(
+			this.props.termCourse.getId()
+		).then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
 				exercises: resp.items
@@ -40,18 +42,14 @@ export default class ExerciseList extends React.Component {
 		});
 	}
 
-
-
-
 	paginationClick(event) {
 		this.setState({
 			currentPage: Number(event.target.id)
 		});
 	}
 
-
 	isActivePage(page) {
-		return (page == this.state.currentPage);
+		return page == this.state.currentPage;
 	}
 
 	renderPaginationIfNeccessary() {
@@ -60,26 +58,31 @@ export default class ExerciseList extends React.Component {
 		} else {
 			//Render Pagination
 			const pageNumbers = [];
-			for (let i = 1; i <= Math.ceil(this.state.exercises.length / this.state.itemsPerPage); i++) {
+			for (
+				let i = 1;
+				i <= Math.ceil(this.state.exercises.length / this.state.itemsPerPage);
+				i++
+			) {
 				pageNumbers.push(i);
 			}
 			const renderPaginationItems = pageNumbers.map(pageNo => {
 				return (
 					<StyledPaginationItem
-		              key={pageNo}
-		              id={pageNo}
-		              onClick={this.paginationClick}
-		              active= {this.isActivePage(pageNo)}
-		            >
-		              {pageNo}
-				  </StyledPaginationItem>
+						key={pageNo}
+						id={pageNo}
+						onClick={this.paginationClick}
+						active={this.isActivePage(pageNo)}
+					>
+						{pageNo}
+					</StyledPaginationItem>
 				);
 			});
-			return <StyledPagination key={"pagination"}>
+			return (
+				<StyledPagination key={'pagination'}>
 					{renderPaginationItems}
-            	</StyledPagination>
+				</StyledPagination>
+			);
 		}
-
 	}
 
 	render() {
@@ -93,22 +96,18 @@ export default class ExerciseList extends React.Component {
 		function prjClick(prj) {}
 
 		const renderListItems = itemsToDisplay.map((exercise, index) => {
-			return <StyledListItemDefault key={index} className="clickable">
-					<span > {exercise.name} </span>
-				</StyledListItemDefault>;
-		})
-
-
+			return (
+				<StyledListItemDefault key={index} className="clickable">
+					<span> {exercise.name} </span>
+				</StyledListItemDefault>
+			);
+		});
 
 		return (
 			<div>
-				<StyledBoxList key={"itemList"}>
-					{renderListItems}
-	            </StyledBoxList>
+				<StyledBoxList key={'itemList'}>{renderListItems}</StyledBoxList>
 				{this.renderPaginationIfNeccessary()}
-     		</div>
+			</div>
 		);
 	}
-
-
 }
