@@ -93,6 +93,8 @@ describe('Login test', function() {
     	let byPasswordInput = By.xpath("//input[@type='password' and @name='password']");
     	this.driver.wait(until.elementLocated(byPasswordInput));
     	this.driver.wait(until.elementIsVisible(this.driver.findElement(byPasswordInput))).sendKeys(googlePassword);
+
+    	console.log('LOGIN-TEST: found password field');
     	
     	// Wait
     	this.driver.sleep(200);
@@ -102,16 +104,22 @@ describe('Login test', function() {
     	this.driver.wait(until.elementLocated(byNextButtonPassword));
     	this.driver.wait(until.elementIsVisible(this.driver.findElement(byNextButtonPassword))).click();   	
 
+    	console.log('LOGIN-TEST: continue with next button');
+    	
     	// Switch back to main window
     	this.driver.sleep(500).then(() => {
     		_this.driver.switchTo().window(currentWindow.handle);
     	});
+
+    	console.log('LOGIN-TEST: switched back to main window');
     	
     	// These steps are necessary if the test-account is not registered yet
     	this.driver.wait(until.elementLocated(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register Account']")), 3000).then(() => {
         	// Register Account (QDAcity)
     		_this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register Account']")).click();
-    		
+
+        	console.log('LOGIN-TEST: registering account');
+        	
     		// First name
     		let fieldFirstName = _this.driver.findElement(By.xpath("//input[@name='firstName']"));
     		fieldFirstName.clear();
@@ -136,6 +144,8 @@ describe('Login test', function() {
 		// Check welcome message and URL
     	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
     		_this.driver.getCurrentUrl().then((currentUrl) => {
+    	    	console.log('LOGIN-TEST: found welcome message');
+    	    	
     			// Check the welcome message
         		expect(text).toBe("Welcome " + googleFirstName);
         		
