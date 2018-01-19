@@ -45,8 +45,12 @@ describe('Login test', function() {
     	
     	const _this = this;
     	
+    	console.log('LOGIN-TEST: first step');
+    	
     	// Click login button
     	this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]"))).click();    	
+
+    	console.log('LOGIN-TEST: found login button');
     	
     	// Switch to Google-Login popup window
     	const currentWindow = { handle: null };
@@ -67,11 +71,15 @@ describe('Login test', function() {
 	    		}	    		
         	});
     	});
+
+    	console.log('LOGIN-TEST: switched to google popup');
     	
     	// Email
     	let byEmailInput = By.xpath("//input[@type='email' and @name='identifier']");
     	this.driver.wait(until.elementLocated(byEmailInput));
     	this.driver.wait(until.elementIsVisible(this.driver.findElement(byEmailInput))).sendKeys(googleLogin);
+
+    	console.log('LOGIN-TEST: found email field');
     	
     	// Wait
     	this.driver.sleep(200);

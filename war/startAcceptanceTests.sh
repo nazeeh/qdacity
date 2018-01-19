@@ -32,7 +32,7 @@ if [ $isPortOpen -eq 1 ]; then
 	
 	# Give the server more time to properly start
 	#sleep 5
-	sleep 100
+	sleep 80
 	echo "START ACCEPTANCE TESTS NOW"
 	
 	# Start the acceptance tests
