@@ -31,7 +31,9 @@ if [ $isPortOpen -eq 1 ]; then
 	echo "Port is open. Start acceptance tests now."
 	
 	# Give the server more time to properly start
-	sleep 5
+	#sleep 5
+	sleep 100
+	echo "START ACCEPTANCE TESTS NOW"
 	
 	# Start the acceptance tests
 	gulp acceptance-tests
