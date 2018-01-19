@@ -13,11 +13,11 @@ describe('Login test', function() {
     	console.log('STARTING LOGIN ACCEPTANCE TEST');
     	
     	const options = new chrome.Options();
-    	options.addArguments('headless');
-    	options.addArguments('window-size=1200x600');
+    	//options.addArguments('headless');
+    	//options.addArguments('window-size=1200x600');
     	
 //    	options.addArguments('user-data-dir=C:\Users\Felix\AppData\Local\Google\Chrome\User Data\Profile 1');
-//    	options.addArguments('start-maximized');   	
+    	options.addArguments('start-maximized');   	
 
         this.driver = new webdriver.Builder()
 	        .forBrowser('chrome')
