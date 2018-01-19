@@ -1,133 +1,159 @@
-import ReactDOM from 'react-dom';
-import VexModal from './VexModal';
-import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
-import IntlProvider from '../../common/Localization/LocalizationProvider';
-import Theme from '../../common/styles/Theme.js';
-import {
-	ThemeProvider
-} from 'styled-components';
+import ReactDOM from "react-dom";
+import VexModal from "./VexModal";
+import ProjectRevisionSelector from "../../common/styles/ProjectRevisionSelector.jsx";
+import IntlProvider from "../../common/Localization/LocalizationProvider";
+import Theme from "../../common/styles/Theme.js";
+import { ThemeProvider } from "styled-components";
 
 export default class CustomForm extends VexModal {
+  constructor(message) {
+    super();
+    this.formElements = "";
+    this.message = message;
+    this.isProjectRevisionSelector = false;
+    this.projects = [];
+    this.selectedRevisionID = "";
+    this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+  }
 
-	constructor(message) {
-		super();
-		this.formElements = "";
-		this.message = message;
-		this.isProjectRevisionSelector = false;
-		this.projects = [];
-		this.selectedRevisionID = '';
-		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
-	}
+  setSelectedRevisionID(revisionID) {
+    this.selectedRevisionID = revisionID;
+  }
 
-	setSelectedRevisionID (revisionID) {
-		this.selectedRevisionID = revisionID;
-	}
+  addTextInput(name, label, placeholder, value) {
+    this.formElements += '<div class="vex-custom-field-wrapper">';
+    this.formElements += '<label for="' + name + '">' + label + "</label>";
+    this.formElements += '<div class="vex-custom-input-wrapper">';
+    this.formElements +=
+      '<input placeholder="' +
+      placeholder +
+      '" name="' +
+      name +
+      '" type="text" value="' +
+      value +
+      '" ></input>';
+    this.formElements += "</div>";
+    this.formElements += "</div>";
+  }
 
-	addTextInput(name, label, placeholder, value) {
-		this.formElements += '<div class="vex-custom-field-wrapper">';
-		this.formElements += '<label for="' + name + '">' + label + '</label>';
-		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += '<input placeholder="' + placeholder + '" name="' + name + '" type="text" value="' + value + '" ></input>';
-		this.formElements += '</div>';
-		this.formElements += '</div>';
-	}
+  addTextField(name, label, placeholder, value) {
+    this.formElements += '<div class="vex-custom-field-wrapper">';
+    this.formElements += '<label for="' + name + '">' + label + "</label>";
+    this.formElements += '<div class="vex-custom-input-wrapper">';
+    this.formElements +=
+      '<textarea placeholder="' +
+      placeholder +
+      '" rows="15" cols="200" name="' +
+      name +
+      '" type="text" value="' +
+      value +
+      '" ></textarea>';
+    this.formElements += "</div>";
+    this.formElements += "</div>";
+  }
 
-	addTextField(name, label, placeholder, value) {
-		this.formElements += '<div class="vex-custom-field-wrapper">';
-		this.formElements += '<label for="' + name + '">' + label + '</label>';
-		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += '<textarea placeholder="' + placeholder + '" rows="15" cols="200" name="' + name + '" type="text" value="' + value + '" ></textarea>';
-		this.formElements += '</div>';
-		this.formElements += '</div>';
-	}
+  addDropDown(projects) {
+    this.isProjectRevisionSelector = true;
+    this.projects = projects;
+    this.formElements += '<div id="ProjectRevisionSelector">';
+    this.formElements += "</div>";
+  }
 
-	addDropDown(projects) {
-		this.isProjectRevisionSelector = true;
-		this.projects = projects;
-		this.formElements += '<div id="ProjectRevisionSelector">';
-		this.formElements += '</div>';
-	}
+  addSelect(name, options, label, initialValue) {
+    var _this = this;
+    this.formElements += '<div class="vex-custom-field-wrapper">';
 
-	addSelect(name, options, label, initialValue) {
-		var _this = this;
-		this.formElements += '<div class="vex-custom-field-wrapper">';
+    this.formElements += '<div class="vex-custom-input-wrapper">';
+    this.formElements += label + ": ";
+    this.formElements += '<select name="' + name + '">';
 
-		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += label + ': ';
-		this.formElements += '<select name="' + name + '">';
+    var isDefault = function(el) {
+      return el == initialValue ? 'selected="selected"' : "";
+    };
 
-		var isDefault = function (el) {
-			return ((el == initialValue) ? 'selected="selected"' : '');
-		}
+    options.forEach(function(el) {
+      _this.formElements +=
+        '<option value="' + el + '" ' + isDefault(el) + ">" + el + "</option>";
+    });
+    this.formElements += "</select>";
+    this.formElements += "</div>";
+    this.formElements += "</div>";
+  }
 
-		options.forEach(function (el) {
-			_this.formElements += '<option value="' + el + '" ' + isDefault(el) + '>' + el + '</option>';
-		});
-		this.formElements += '</select>';
-		this.formElements += '</div>';
-		this.formElements += '</div>';
+  addCheckBox(name, label, checked, value) {
+    this.formElements += '<div class="vex-custom-field-wrapper">';
 
-	}
+    this.formElements += '<div class="vex-custom-input-wrapper">';
+    this.formElements +=
+      '<input type="checkbox" name="' + name + '" value="' + value + '"';
+    if (checked) this.formElements += " checked";
+    this.formElements += ">" + value + "<br>";
+    this.formElements += "</div>";
+    this.formElements += "</div>";
+  }
 
-	addCheckBox(name, label, checked, value) {
-		this.formElements += '<div class="vex-custom-field-wrapper">';
+  addCheckBoxes(name, itemList) {
+    var _this = this;
+    this.formElements += '<div class="vex-custom-field-wrapper">';
 
-		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += '<input type="checkbox" name="' + name + '" value="' + value + '"'
-		if (checked) this.formElements += ' checked';
-		this.formElements += '>' + value + '<br>';
-		this.formElements += '</div>';
-		this.formElements += '</div>';
-	}
+    this.formElements += '<div class="vex-custom-input-wrapper">';
+    itemList.forEach(function(el) {
+      _this.formElements +=
+        '<input type="checkbox" name="' +
+        name +
+        '" value="' +
+        el.id +
+        '">' +
+        el.title +
+        "<br>";
+    });
+    this.formElements += "</div>";
+    this.formElements += "</div>";
+  }
 
-	addCheckBoxes(name, itemList) {
-		var _this = this;
-		this.formElements += '<div class="vex-custom-field-wrapper">';
+  showModal() {
+    var _this = this;
+    var promise = new Promise(function(resolve, reject) {
+      var formElements = _this.formElements;
+      const { formatMessage } = IntlProvider.intl;
 
-		this.formElements += '<div class="vex-custom-input-wrapper">';
-		itemList.forEach(function (el) {
-			_this.formElements += '<input type="checkbox" name="' + name + '" value="' + el.id + '">' + el.title + '<br>';
-		});
-		this.formElements += '</div>';
-		this.formElements += '</div>';
-	}
+      vex.dialog.open({
+        message: _this.message,
+        contentCSS: {
+          width: "600px"
+        },
+        input: formElements,
+        buttons: [
+          $.extend({}, vex.dialog.buttons.YES, {
+            text: formatMessage({ id: "modal.ok", defaultMessage: "OK" })
+          }),
+          $.extend({}, vex.dialog.buttons.NO, {
+            text: formatMessage({
+              id: "modal.cancel",
+              defaultMessage: "Cancel"
+            })
+          })
+        ],
+        callback: function(data) {
+          if (data != false) {
+            data.SelectedRevisionID = _this.selectedRevisionID;
+            resolve(data);
+          } else reject(data);
+        }
+      });
+      if (_this.isProjectRevisionSelector) {
+        ReactDOM.render(
+          <ThemeProvider theme={Theme}>
+            <ProjectRevisionSelector
+              setSelectedRevisionID={_this.setSelectedRevisionID}
+              projects={_this.projects}
+            />
+          </ThemeProvider>,
+          document.getElementById("ProjectRevisionSelector")
+        );
+      }
+    });
 
-	showModal() {
-		var _this = this;
-		var promise = new Promise(
-			function (resolve, reject) {
-
-				var formElements = _this.formElements;
-				const {formatMessage} = IntlProvider.intl;
-
-				vex.dialog.open({
-					message: _this.message,
-					contentCSS: {
-						width: '600px'
-					},
-					input: formElements,
-					buttons: [$.extend({}, vex.dialog.buttons.YES, {
-						text: formatMessage({id: 'modal.ok', defaultMessage: 'OK' })
-					}), $.extend({}, vex.dialog.buttons.NO, {
-						text: formatMessage({id: 'modal.cancel', defaultMessage: 'Cancel' })
-					})],
-					callback: function (data) {
-						if (data != false) {
-							data.SelectedRevisionID = _this.selectedRevisionID;
-							resolve(data);
-						} else reject(data);
-					}
-				});
-				if (_this.isProjectRevisionSelector) {
-					ReactDOM.render(
-					<ThemeProvider theme={Theme}>
-						<ProjectRevisionSelector setSelectedRevisionID = {_this.setSelectedRevisionID} projects={_this.projects}/>
-					</ThemeProvider>, document.getElementById('ProjectRevisionSelector'));
-				}
-			}
-		);
-
-		return promise;
-	}
-
+    return promise;
+  }
 }

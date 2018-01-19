@@ -1,40 +1,40 @@
-import React from 'react'
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-const StyledCollaboratorBox = styled.ul `
-	position: relative;
-	margin: 0;
-	list-style: none;
-	padding: 0;
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-end;
-	width: ${props => props.width}px;
-	height: ${props => props.diameter}px;
+const StyledCollaboratorBox = styled.ul`
+  position: relative;
+  margin: 0;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: ${props => props.width}px;
+  height: ${props => props.diameter}px;
 `;
 
-const StyledMoreCount = styled.li `
-	position: relative;
-	line-height: ${props => props.diameter}px;
-	height: ${props => props.diameter}px;
-	width: ${props => props.diameter}px;
-	margin-left: -${props => props.diameter / 2}px;
-	border-radius: 50%;
-	background: white;
-	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-	font-size: ${props => props.diameter * .6}px;
-	color: #333;
+const StyledMoreCount = styled.li`
+  position: relative;
+  line-height: ${props => props.diameter}px;
+  height: ${props => props.diameter}px;
+  width: ${props => props.diameter}px;
+  margin-left: -${props => props.diameter / 2}px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+  font-size: ${props => props.diameter * 0.6}px;
+  color: #333;
 
-	&:before {
-		content: "+";
-	}
+  &:before {
+    content: "+";
+  }
 
-	ul:hover > & {
-		display: none;
-	}
+  ul:hover > & {
+    display: none;
+  }
 `;
 
-const StyledCollaborator = styled.li `
+const StyledCollaborator = styled.li`
 	position: relative;
 	display: flex;
 	justify-content: center;
@@ -69,7 +69,7 @@ const StyledCollaborator = styled.li `
 		border-radius: ${props => props.diameter / 2}px;
 		padding-right: ${props => props.diameter / 3 * 2}px;
 		padding-left: ${props => props.diameter / 3}px;
-		font-size: ${props => props.diameter * .6}px;
+		font-size: ${props => props.diameter * 0.6}px;
 		color: #333;
 		line-height: ${props => props.diameter}px;
 		white-space: nowrap;
@@ -101,78 +101,71 @@ const StyledCollaborator = styled.li `
 `;
 
 export default class CollaboratorBubbles extends React.Component {
+  constructor(props) {
+    super(props);
 
-	constructor(props) {
-		super(props);
+    this.listenerID = "";
 
-		this.listenerID = '';
+    this.state = {
+      collaborators: []
+    };
+  }
 
-		this.state = {
-			collaborators: [],
-		};
-	}
+  componentDidMount() {
+    const syncService = this.props.syncService;
+    this.listenerID =
+      syncService &&
+      syncService.on("userlistUpdated", this.updateUserList.bind(this));
+  }
 
-	componentDidMount() {
-		const syncService = this.props.syncService;
-		this.listenerID = syncService && syncService.on(
-			'userlistUpdated',
-			this.updateUserList.bind(this)
-		);
-	}
+  componentWillUnmount() {
+    const syncService = this.props.syncService;
+    syncService && syncService.off("userlistUpdated", this.listenerID);
+  }
 
-	componentWillUnmount() {
-		const syncService = this.props.syncService;
-		syncService && syncService.off('userlistUpdated', this.listenerID);
-	}
+  updateUserList(list) {
+    this.setState({
+      collaborators: list.filter(user => user.document === this.props.docid)
+    });
+  }
 
-	updateUserList(list) {
-		this.setState({
-			collaborators: list.filter(user => user.document === this.props.docid),
-		})
-	}
+  render() {
+    // Get props
+    const { diameter, displayCount, docid } = this.props;
 
-	render() {
+    // Get collaborators from state
+    const collaborators = this.state.collaborators;
 
-		// Get props
-		const {
-			diameter,
-			displayCount,
-			docid,
-		} = this.props;
+    // Calculate number of collaborators in Dropdown
+    const moreCount = Math.max(collaborators.length - displayCount + 1, 0);
 
-		// Get collaborators from state
-		const collaborators = this.state.collaborators;
-
-		// Calculate number of collaborators in Dropdown
-		const moreCount = Math.max(collaborators.length - displayCount + 1, 0);
-
-		return (
-			<StyledCollaboratorBox
-				width={(Math.min(displayCount, collaborators.length) + 1) * diameter * 0.5}
-				diameter={diameter}
-			>
-				{ collaborators.map((c, i) => (
-					<StyledCollaborator
-						picSrc={c.picSrc}
-						name={c.name}
-						displayCount={displayCount}
-						hoverOffset={i * (diameter-2)}
-						diameter={diameter}
-					/>
-				))}
-				{ moreCount > 0
-					? <StyledMoreCount diameter={diameter}>
-						{moreCount}
-					</StyledMoreCount>
-					: null }
-			</StyledCollaboratorBox>
-		);
-	}
-};
+    return (
+      <StyledCollaboratorBox
+        width={
+          (Math.min(displayCount, collaborators.length) + 1) * diameter * 0.5
+        }
+        diameter={diameter}
+      >
+        {collaborators.map((c, i) => (
+          <StyledCollaborator
+            picSrc={c.picSrc}
+            name={c.name}
+            displayCount={displayCount}
+            hoverOffset={i * (diameter - 2)}
+            diameter={diameter}
+          />
+        ))}
+        {moreCount > 0 ? (
+          <StyledMoreCount diameter={diameter}>{moreCount}</StyledMoreCount>
+        ) : null}
+      </StyledCollaboratorBox>
+    );
+  }
+}
 
 CollaboratorBubbles.defaultProps = {
-	diameter: 20,
-	syncService: null,
-	displayCount: 3,
-	docid: null,
+  diameter: 20,
+  syncService: null,
+  displayCount: 3,
+  docid: null
 };

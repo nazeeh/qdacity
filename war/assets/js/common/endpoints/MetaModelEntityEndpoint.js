@@ -1,13 +1,12 @@
-import Promisizer from './Promisizer'
+import Promisizer from "./Promisizer";
 
 export default class MetaModelEntityEndpoint {
-	constructor() {}
+  constructor() {}
 
-	static listEntities(mmId) {
-		var apiMethod = gapi.client.qdacity.metaModelEntity.listEntities({
-			'metaModelId': mmId
-		});
-		return Promisizer.makePromise(apiMethod);
-	}
-
+  static listEntities(mmId) {
+    var apiMethod = gapi.client.qdacity.metaModelEntity.listEntities({
+      metaModelId: mmId
+    });
+    return Promisizer.makePromise(apiMethod);
+  }
 }

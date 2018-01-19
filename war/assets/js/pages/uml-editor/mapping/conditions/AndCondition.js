@@ -1,12 +1,11 @@
-import MultipleCondition from './MultipleCondition.js';
+import MultipleCondition from "./MultipleCondition.js";
 
 export default class AndCondition extends MultipleCondition {
+  constructor(conditions) {
+    super(conditions);
+  }
 
-	constructor(conditions) {
-		super(conditions);
-	}
-
-	compare(resultA, resultB) {
-		return resultA && resultB;
-	}
+  compare(resultA, resultB) {
+    return resultA && resultB;
+  }
 }

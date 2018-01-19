@@ -1,49 +1,42 @@
-import React from 'react';
-import {
-	FormattedMessage
-} from 'react-intl';
-import ReactDOM from 'react-dom';
+import React from "react";
+import { FormattedMessage } from "react-intl";
+import ReactDOM from "react-dom";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import ReactLoading from '../../../common/ReactLoading.jsx';
+import ReactLoading from "../../../common/ReactLoading.jsx";
 
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
-import CodesystemEndpoint from '../../../common/endpoints/CodesystemEndpoint';
-import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
-import {
-	DragAndDropCode
-} from './Code.jsx';
+import CSSTransitionGroup from "react-transition-group/CSSTransitionGroup";
+import CodesystemEndpoint from "../../../common/endpoints/CodesystemEndpoint";
+import ProjectEndpoint from "../../../common/endpoints/ProjectEndpoint";
+import { DragAndDropCode } from "./Code.jsx";
 
-import {
-	PageView
-} from '../View/PageView.js';
+import { PageView } from "../View/PageView.js";
 
-import CodesystemToolbar from "./CodesystemToolbar.jsx"
+import CodesystemToolbar from "./CodesystemToolbar.jsx";
 
-import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
-import SimpleCodesystem from './SimpleCodesystem.jsx';
+import CodesEndpoint from "../../../common/endpoints/CodesEndpoint";
+import SimpleCodesystem from "./SimpleCodesystem.jsx";
 
-const StyledCodeSystemView = styled.div `
- `;
+const StyledCodeSystemView = styled.div``;
 
-
-const StyledEditorCtrlHeader = styled.div `
-	text-align: center;
-	position:relative;
-	background-color: #e7e7e7;
- `;
-
-const StyledToolBar = styled.div `
-	text-align: center;
-	position: relative;
-	background-color: #e7e7e7;
+const StyledEditorCtrlHeader = styled.div`
+  text-align: center;
+  position: relative;
+  background-color: #e7e7e7;
 `;
 
-const StyledCodeSystem = styled.div `
-    height: ${props => props.height - (props.codingViewIsVisible ? 300 : 0) + "px" } !important;
+const StyledToolBar = styled.div`
+  text-align: center;
+  position: relative;
+  background-color: #e7e7e7;
+`;
 
-    overflow: auto;
+const StyledCodeSystem = styled.div`
+  height: ${props =>
+    props.height - (props.codingViewIsVisible ? 300 : 0) + "px"} !important;
+
+  overflow: auto;
 `;
 
 /*
@@ -55,406 +48,425 @@ const StyledCodeSystem = styled.div `
  **
  */
 export default class Codesystem extends SimpleCodesystem {
-	constructor(props) {
-		super(props);
-		this.state = {
-			selected: {},
-			codesystemID: -1,
-			codesystem: [],
-			height: "100px"
-		};
+  constructor(props) {
+    super(props);
+    this.state = {
+      selected: {},
+      codesystemID: -1,
+      codesystem: [],
+      height: "100px"
+    };
 
-		this.listenerIDs = {};
-		this.codesystemTop = 0;
-		this.initUMLEditor = false;
+    this.listenerIDs = {};
+    this.codesystemTop = 0;
+    this.initUMLEditor = false;
 
-		this.umlEditor = null;
+    this.umlEditor = null;
 
-		this.toolbarRef = null;
+    this.toolbarRef = null;
 
-		this.relocateCode = this.relocateCode.bind(this);
-		this.createCode = this.createCode.bind(this);
-		this.removeCode = this.removeCode.bind(this);
-		this.updateCodingCount = this.updateCodingCount.bind(this);
-		this.initCodingCount = this.initCodingCount.bind(this);
-		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
-		this.init = this.init.bind(this);
-	}
+    this.relocateCode = this.relocateCode.bind(this);
+    this.createCode = this.createCode.bind(this);
+    this.removeCode = this.removeCode.bind(this);
+    this.updateCodingCount = this.updateCodingCount.bind(this);
+    this.initCodingCount = this.initCodingCount.bind(this);
+    this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
+    this.init = this.init.bind(this);
+  }
 
-	setUmlEditor(umlEditor) {
-		this.umlEditor = umlEditor;
-	}
+  setUmlEditor(umlEditor) {
+    this.umlEditor = umlEditor;
+  }
 
-	init() {
-		var _this = this;
-		var promise = new Promise(
-			function (resolve, reject) {
-				CodesystemEndpoint.getCodeSystem(_this.props.codesystemId).then(function (resp) {
+  init() {
+    var _this = this;
+    var promise = new Promise(function(resolve, reject) {
+      CodesystemEndpoint.getCodeSystem(_this.props.codesystemId).then(function(
+        resp
+      ) {
+        var codes = resp.items || [];
 
-					var codes = resp.items || [];
+        var rootCodes = codes.filter(function(code) {
+          return !code.parentID;
+        });
 
-					var rootCodes = codes.filter(function (code) {
-						return !code.parentID;
-					});
+        for (var i = 0; i < rootCodes.length; i++) {
+          rootCodes[i].collapsed = false;
+          _this.buildTree(rootCodes[i], codes, false);
+        }
+        var selected = {};
+        if (rootCodes.length > 0) selected = rootCodes[0];
+        _this.sortCodes(rootCodes);
+        _this.initCodingCountRecurive(rootCodes);
+        _this.setState({
+          codesystem: rootCodes,
+          selected: selected,
+          codesystemID: _this.props.codesystemId
+        });
+        $("#codesystemLoadingDiv").addClass("hidden");
+        _this.props.umlEditor.codesystemFinishedLoading();
+        _this.props.selectionChanged(selected);
+        resolve();
+      });
+    });
+    return promise;
+  }
 
-					for (var i = 0; i < rootCodes.length; i++) {
-						rootCodes[i].collapsed = false;
-						_this.buildTree(rootCodes[i], codes, false)
-					}
-					var selected = {}
-					if (rootCodes.length > 0) selected = rootCodes[0];
-					_this.sortCodes(rootCodes);
-					_this.initCodingCountRecurive(rootCodes);
-					_this.setState({
-						codesystem: rootCodes,
-						selected: selected,
-						codesystemID: _this.props.codesystemId,
-					});
-					$("#codesystemLoadingDiv").addClass("hidden");
-					_this.props.umlEditor.codesystemFinishedLoading();
-					_this.props.selectionChanged(selected);
-					resolve();
-				});
-			}
-		);
-		return promise;
+  // Overriding super method
+  notifyOnSelection(newCode) {
+    this.props.selectionChanged(newCode);
+  }
 
-	}
+  buildTree(currentCode, allCodes, currentNodeCollapsed) {
+    var _this = this;
+    currentCode.collapsed = currentNodeCollapsed;
 
-	// Overriding super method
-	notifyOnSelection(newCode) {
-		this.props.selectionChanged(newCode);
-	}
+    if (currentCode.subCodesIDs) {
+      var subCodes = allCodes.filter(function(code) {
+        return currentCode.subCodesIDs.indexOf(code.codeID) != -1;
+      });
+      currentCode.children = subCodes;
 
-	buildTree(currentCode, allCodes, currentNodeCollapsed) {
-		var _this = this;
-		currentCode.collapsed = currentNodeCollapsed;
+      subCodes.forEach(subCode => {
+        _this.buildTree(subCode, allCodes, true);
+      });
+    } else {
+      currentCode.children = [];
+    }
+  }
 
-		if (currentCode.subCodesIDs) {
-			var subCodes = allCodes.filter(function (code) {
-				return currentCode.subCodesIDs.indexOf(code.codeID) != -1;
-			});
-			currentCode.children = subCodes;
+  updateSelected(code, persist) {
+    if (!persist) {
+      Object.assign(this.state.selected, code);
+      this.forceUpdate();
+    } else this.saveAndUpdate(code);
+  }
 
-			subCodes.forEach((subCode) => {
-				_this.buildTree(subCode, allCodes, true)
-			});
-		} else {
-			currentCode.children = [];
-		}
-	}
+  saveAndUpdate(code) {
+    var _this = this;
+    CodesEndpoint.updateCode(code).then(function(resp) {
+      _this.updateSelected(resp, false);
+    });
+  }
 
-	updateSelected(code, persist) {
-		if (!persist) {
-			Object.assign(this.state.selected, code);
-			this.forceUpdate();
-		} else this.saveAndUpdate(code)
+  codeRemoved(code) {
+    code = this.getCodeById(code.id);
 
-	}
+    this.removeAllCodings(code.codeID);
 
-	saveAndUpdate(code) {
-		var _this = this;
-		CodesEndpoint.updateCode(code).then(function (resp) {
-			_this.updateSelected(resp, false);
-		});
-	}
+    const parent = this.getCodeByCodeID(code.parentID);
+    parent.children = parent.children.filter(child => code != child);
 
+    if (code == this.state.selected) {
+      this.setState({
+        selected: parent
+      });
+    }
 
+    this.props.codeRemoved(code);
 
-	codeRemoved(code) {
-		code = this.getCodeById(code.id);
+    // Code is a relationship-code
+    if (code.relationshipCode != null) {
+      // delete the relationshipCodeId of the relation
+      this.getCodeById(code.relationshipCode.key.parent.id).relations.some(
+        rel => {
+          if (rel.key.id == code.relationshipCode.key.id) {
+            rel.relationshipCodeId = null;
+            return true;
+          }
+        }
+      );
+    }
 
-		this.removeAllCodings(code.codeID);
+    // Check the relations of the code. If a relationship belongs to a relationship-code
+    // => update the relationship-code and set the relation to null
+    const updateRelation = relation => {
+      if (relation.relationshipCodeId != null) {
+        const relationshipCode = this.getCodeById(relation.relationshipCodeId);
+        relationshipCode.relationshipCode = null;
+        relationshipCode.mmElementIDs = [];
 
-		const parent = this.getCodeByCodeID(code.parentID)
-		parent.children = parent.children.filter(child => code != child);
+        CodesEndpoint.updateCode(relationshipCode);
+      }
+    };
 
-		if (code == this.state.selected) {
-			this.setState({
-				selected: parent
-			});
-		}
+    const checkCode = c => {
+      if (c.relations != null) {
+        c.relations.map(rel => updateRelation(rel));
+      }
 
-		this.props.codeRemoved(code);
+      if (c.children != null) {
+        c.children.map(child => checkCode(child));
+      }
+    };
 
-		// Code is a relationship-code
-		if (code.relationshipCode != null) {
-			// delete the relationshipCodeId of the relation
-			this.getCodeById(code.relationshipCode.key.parent.id)
-				.relations
-				.some(rel => {
-					if (rel.key.id == code.relationshipCode.key.id) {
-						rel.relationshipCodeId = null;
-						return true;
-					}
-				});
-		}
+    checkCode(code);
 
-		// Check the relations of the code. If a relationship belongs to a relationship-code
-		// => update the relationship-code and set the relation to null
-		const updateRelation = relation => {
-			if (relation.relationshipCodeId != null) {
-				const relationshipCode = this.getCodeById(relation.relationshipCodeId);
-				relationshipCode.relationshipCode = null;
-				relationshipCode.mmElementIDs = [];
+    this.forceUpdate();
+  }
 
-				CodesEndpoint.updateCode(relationshipCode);
-			}
-		};
+  createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
+    // Build the Request Object
+    const code = {
+      author: this.props.account.getProfile().getName(),
+      name: name,
+      subCodesIDs: [],
+      parentID: this.state.selected.codeID,
+      codesystemID: this.state.selected.codesystemID,
+      color: "#000000",
+      mmElementIDs: mmElementIDs != null ? mmElementIDs : []
+    };
 
-		const checkCode = c => {
-			if (c.relations != null) {
-				c.relations.map(rel => updateRelation(rel));
-			}
+    this.props.syncService.codes
+      .insertCode(code, this.state.selected.id)
+      .then(resp => {
+        // Update the relation
+        if (relationId != null && relationSourceCodeId != null) {
+          const relationSourceCode = this.getCodeById(relationSourceCodeId);
+          relationSourceCode.relations.some(rel => {
+            if (rel.key.id == relationId) {
+              rel.relationshipCodeId = resp.id;
+              return true;
+            }
+          });
+        }
 
-			if (c.children != null) {
-				c.children.map(child => checkCode(child));
-			}
-		};
+        if (select) {
+          _this.setSelected(resp);
+        }
+      });
+  }
 
-		checkCode(code);
+  insertCode(code) {
+    const parent = this.getCodeByCodeID(code.parentID);
 
-		this.forceUpdate();
-	}
+    code.codingCount = 0;
+    code.children = [];
+    parent.children.push(code);
+    this.updateSubCodeIDs(parent);
 
-	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
+    this.forceUpdate();
 
-		// Build the Request Object
-		const code = {
-			author: this.props.account.getProfile().getName(),
-			name: name,
-			subCodesIDs: [],
-			parentID: this.state.selected.codeID,
-			codesystemID: this.state.selected.codesystemID,
-			color: "#000000",
-			mmElementIDs: (mmElementIDs != null ? mmElementIDs : [])
-		};
+    this.props.insertCode(code);
+  }
 
-		this.props.syncService.codes.insertCode(code, this.state.selected.id).then(resp => {
-			// Update the relation
-			if (relationId != null && relationSourceCodeId != null) {
-				const relationSourceCode = this.getCodeById(relationSourceCodeId);
-				relationSourceCode.relations.some(rel => {
-					if (rel.key.id == relationId) {
-						rel.relationshipCodeId = resp.id;
-						return true;
-					}
-				});
-			}
+  removeCode(code) {
+    // root should not be removed
+    if (code.codeID == 1) {
+      return;
+    }
 
-			if (select) {
-				_this.setSelected(resp);
-			}
-		});
-	}
+    this.props.syncService.codes.removeCode(code);
+  }
 
-	insertCode(code) {
-		const parent = this.getCodeByCodeID(code.parentID);
+  initCodingCount() {
+    this.initCodingCountRecurive(this.state.codesystem);
+    this.setState({
+      codesystem: this.state.codesystem
+    });
+  }
 
-		code.codingCount = 0;
-		code.children = [];
-		parent.children.push(code);
-		this.updateSubCodeIDs(parent);
+  initCodingCountRecurive(codeSiblings) {
+    var _this = this;
+    codeSiblings.forEach(code => {
+      code.codingCount = this.props.documentsView.calculateCodingCount(
+        code.codeID
+      );
+      if (code.children) _this.initCodingCountRecurive(code.children); // recursion
+    });
+  }
+  updateCodingCount() {
+    this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(
+      this.state.selected.codeID
+    );
+    this.setState({
+      selected: this.state.selected,
+      codesystem: this.state.codesystem
+    });
+  }
 
-		this.forceUpdate();
+  updateSubCodeIDs(code) {
+    code.subCodesIDs = [];
+    code.children.forEach(childCode => {
+      code.subCodesIDs.push(childCode.codeID);
+    });
+  }
 
-		this.props.insertCode(code);
-	}
+  relocateCode(movingNode, targetID) {
+    this.props.syncService.codes.relocateCode(movingNode.id, targetID);
+  }
 
-	removeCode(code) {
-		// root should not be removed
-		if (code.codeID == 1) {
-			return;
-		}
+  onCodeRelocation(code) {
+    const newParentID = code.parentID;
+    code = this.getCodeById(code.id);
 
-		this.props.syncService.codes.removeCode(code);
-	}
+    const sourceNode = this.getCodeByCodeID(code.parentID);
+    const indexSrc = sourceNode.children.indexOf(code);
+    sourceNode.children.splice(indexSrc, 1);
+    this.updateSubCodeIDs(sourceNode);
 
-	initCodingCount() {
-		this.initCodingCountRecurive(this.state.codesystem);
-		this.setState({
-			codesystem: this.state.codesystem
-		});
+    code.parentID = newParentID;
 
-	}
+    const targetNode = this.getCodeByCodeID(newParentID);
+    targetNode.children.push(code);
+    this.updateSubCodeIDs(targetNode);
+    this.sortCodes(this.state.codesystem);
+    this.setState({
+      codesystem: this.state.codesystem
+    });
+  }
 
-	initCodingCountRecurive(codeSiblings) {
-		var _this = this;
-		codeSiblings.forEach((code) => {
-			code.codingCount = this.props.documentsView.calculateCodingCount(code.codeID);
-			if (code.children) _this.initCodingCountRecurive(code.children); // recursion
-		});
-	}
-	updateCodingCount() {
-		this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(this.state.selected.codeID);
-		this.setState({
-			selected: this.state.selected,
-			codesystem: this.state.codesystem
-		});
-	}
+  removeAllCodings(codingID) {
+    var documents = this.props.documentsView.getDocuments();
+    var activeDocId = this.props.documentsView.getActiveDocumentId();
 
-	updateSubCodeIDs(code) {
-		code.subCodesIDs = [];
-		code.children.forEach((childCode) => {
-			code.subCodesIDs.push(childCode.codeID);
-		})
-	}
+    for (var i in documents) {
+      var doc = documents[i];
+      var elements = $("<div>" + doc.text + "</div>");
+      var originalText = elements.html();
+      elements
+        .find("coding[code_id='" + codingID + "']")
+        .contents()
+        .unwrap();
+      var strippedText = elements.html();
+      if (strippedText !== originalText) {
+        doc.text = strippedText;
+        this.props.documentsView.changeDocumentData(doc);
+        if (activeDocId === doc.id) this.props.editorCtrl.setDocumentView(doc);
+      }
+    }
+  }
 
-	relocateCode(movingNode, targetID) {
-		this.props.syncService.codes.relocateCode(movingNode.id, targetID);
-	}
+  shouldHighlightNode(code) {
+    // Not initialized yet
+    if (this.props.umlEditor.getMetaModelMapper() == null) {
+      return false;
+    }
 
-	onCodeRelocation(code) {
-		const newParentID = code.parentID;
-		code = this.getCodeById(code.id);
+    // Evaluate actions
+    let actions = null;
 
+    if (code.relationshipCode != null) {
+      actions = this.props.umlEditor
+        .getMetaModelMapper()
+        .evaluateActionsForTarget(code.relationshipCode);
+    } else {
+      actions = this.props.umlEditor
+        .getMetaModelMapper()
+        .evaluateActionsForTarget(code);
+    }
 
-		const sourceNode = this.getCodeByCodeID(code.parentID);
-		const indexSrc = sourceNode.children.indexOf(code);
-		sourceNode.children.splice(indexSrc, 1);
-		this.updateSubCodeIDs(sourceNode);
+    // Highlight if the mapper returns mapping-actions
+    return (
+      this.props.pageView == PageView.UML &&
+      actions != null &&
+      actions.length > 0
+    );
+  }
 
-		code.parentID = newParentID;
+  componentDidMount() {
+    const syncService = this.props.syncService;
+    if (syncService) {
+      this.listenerIDs = {
+        codeInserted: syncService.on("codeInserted", code =>
+          this.insertCode(code)
+        ),
+        codeRelocated: syncService.on("codeRelocated", code =>
+          this.onCodeRelocation(code)
+        ),
+        codeRemoved: syncService.on("codeRemoved", code =>
+          this.codeRemoved(code)
+        )
+      };
+    }
+  }
 
-		const targetNode = this.getCodeByCodeID(newParentID);
-		targetNode.children.push(code);
-		this.updateSubCodeIDs(targetNode);
-		this.sortCodes(this.state.codesystem);
-		this.setState({
-			codesystem: this.state.codesystem
-		})
-	}
+  componentWillUnmount() {
+    const syncService = this.props.syncService;
+    if (syncService) {
+      syncService.off("codeInserted", this.listenerIDs["codeInserted"]);
+      syncService.off("codeRelocated", this.listenerIDs["codeRelocated"]);
+      syncService.off("codeRemoved", this.listenerIDs["codeRemoved"]);
+    }
+  }
 
-	removeAllCodings(codingID) {
-		var documents = this.props.documentsView.getDocuments();
-		var activeDocId = this.props.documentsView.getActiveDocumentId();
+  renderRoot(code, level, key) {
+    return (
+      <DragAndDropCode
+        showSimpleView={false}
+        documentsView={this.props.documentsView}
+        level={level}
+        node={code}
+        selected={this.state.selected}
+        setSelected={this.setSelected}
+        relocateCode={this.relocateCode}
+        showFooter={this.props.showFooter}
+        key={key}
+        isCodeSelectable={this.props.isCodeSelectable}
+        shouldHighlightNode={this.shouldHighlightNode}
+        getFontWeight={this.props.getFontWeight}
+        getTextColor={this.props.getTextColor}
+        getBackgroundColor={this.props.getBackgroundColor}
+        getBackgroundHoverColor={this.props.getBackgroundHoverColor}
+      />
+    );
+  }
 
-		for (var i in documents) {
-			var doc = documents[i];
-			var elements = $('<div>' + doc.text + '</div>');
-			var originalText = elements.html();
-			elements.find('coding[code_id=\'' + codingID + '\']').contents().unwrap();
-			var strippedText = elements.html();
-			if (strippedText !== originalText) {
-				doc.text = strippedText;
-				this.props.documentsView.changeDocumentData(doc);
-				if (activeDocId === doc.id) this.props.editorCtrl.setDocumentView(doc);
-			}
-		}
-	}
+  renderCodesystemContent() {
+    if (this.state.codesystem.length != 0) {
+      return this.renderCodesystem();
+    } else {
+      return <ReactLoading color={"#020202"} />;
+    }
+  }
 
-	shouldHighlightNode(code) {
-		// Not initialized yet
-		if (this.props.umlEditor.getMetaModelMapper() == null) {
-			return false;
-		}
+  render() {
+    if (this.state.codesystemID != this.props.codesystemId) {
+      this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
+    }
+    const height =
+      $(window).height() -
+      (this.codesystemRef
+        ? ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top
+        : 0);
+    return (
+      <StyledCodeSystemView>
+        <StyledEditorCtrlHeader>
+          <b>
+            <FormattedMessage
+              id="codesystemcodesystem"
+              defaultMessage="Code System"
+            />
+          </b>
+        </StyledEditorCtrlHeader>
+        <StyledToolBar>
+          <CodesystemToolbar
+            ref={r => (this.toolbarRef = r)}
+            projectID={this.props.projectID}
+            projectType={this.props.projectType}
+            selected={this.state.selected}
+            account={this.props.account}
+            createCode={this.createCode}
+            removeCode={this.removeCode}
+            updateCodingCount={this.updateCodingCount}
+            toggleCodingView={this.props.toggleCodingView}
+            editorCtrl={this.props.editorCtrl}
+            documentsView={this.props.documentsView}
+            pageView={this.props.pageView}
+            getCodeById={this.getCodeById}
+          />
+        </StyledToolBar>
 
-		// Evaluate actions
-		let actions = null;
-
-		if (code.relationshipCode != null) {
-			actions = this.props.umlEditor.getMetaModelMapper().evaluateActionsForTarget(code.relationshipCode);
-		} else {
-			actions = this.props.umlEditor.getMetaModelMapper().evaluateActionsForTarget(code);
-		}
-
-		// Highlight if the mapper returns mapping-actions
-		return this.props.pageView == PageView.UML && actions != null && actions.length > 0;
-	}
-
-	componentDidMount() {
-		const syncService = this.props.syncService;
-		if (syncService) {
-			this.listenerIDs = {
-				codeInserted: syncService.on('codeInserted', code => this.insertCode(code)),
-				codeRelocated: syncService.on('codeRelocated', code => this.onCodeRelocation(code)),
-				codeRemoved: syncService.on('codeRemoved', code => this.codeRemoved(code)),
-			};
-		}
-	}
-
-	componentWillUnmount() {
-		const syncService = this.props.syncService;
-		if (syncService) {
-			syncService.off('codeInserted', this.listenerIDs['codeInserted']);
-			syncService.off('codeRelocated', this.listenerIDs['codeRelocated']);
-			syncService.off('codeRemoved', this.listenerIDs['codeRemoved']);
-		}
-	}
-
-	renderRoot(code, level, key) {
-		return (
-			<DragAndDropCode
-				showSimpleView={false}
-				documentsView={this.props.documentsView}
-				level={level}
-				node={code}
-				selected={this.state.selected}
-				setSelected={this.setSelected}
-				relocateCode={this.relocateCode}
-				showFooter={this.props.showFooter}
-				key={key}
-				isCodeSelectable = {this.props.isCodeSelectable}
-				shouldHighlightNode={this.shouldHighlightNode}
-				getFontWeight={this.props.getFontWeight}
-				getTextColor={this.props.getTextColor}
-				getBackgroundColor={this.props.getBackgroundColor}
-				getBackgroundHoverColor={this.props.getBackgroundHoverColor}
-			/>
-		);
-	}
-
-	renderCodesystemContent() {
-		if (this.state.codesystem.length != 0) {
-			return this.renderCodesystem();
-		} else {
-			return <ReactLoading color={"#020202"}/>;
-		}
-	}
-
-	render() {
-		if (this.state.codesystemID != this.props.codesystemId) {
-			this.init().then(this.props.umlEditor.codesystemFinishedLoading); // if codesystem ID changed, re-initialize+
-		}
-		const height = $(window).height() - (this.codesystemRef ? ReactDOM.findDOMNode(this.codesystemRef).getBoundingClientRect().top : 0);
-		return (
-			<StyledCodeSystemView >
-				<StyledEditorCtrlHeader>
-					<b>
-						<FormattedMessage
-							id='codesystemcodesystem'
-							defaultMessage='Code System'
-						/>
-					</b>
-				</StyledEditorCtrlHeader>
-				<StyledToolBar>
-					<CodesystemToolbar
-						ref={ r => this.toolbarRef = r }
-						projectID={this.props.projectID}
-						projectType={this.props.projectType}
-						selected={this.state.selected}
-						account={this.props.account}
-						createCode={this.createCode}
-						removeCode={this.removeCode}
-						updateCodingCount={this.updateCodingCount}
-						toggleCodingView={this.props.toggleCodingView}
-						editorCtrl={this.props.editorCtrl}
-						documentsView={this.props.documentsView}
-						pageView={this.props.pageView}
-						getCodeById={this.getCodeById}
-					/>
-				</StyledToolBar>
-
-				<StyledCodeSystem
-					ref={ c => this.codesystemRef = c }
-					id="codesystemTree"
-					className="codesystemView"
-					height={height}
-					codingViewIsVisible={this.props.codingViewIsVisible}
-				>
-					{this.renderCodesystemContent()}
-				</StyledCodeSystem>
-			</StyledCodeSystemView>
-		);
-	}
+        <StyledCodeSystem
+          ref={c => (this.codesystemRef = c)}
+          id="codesystemTree"
+          className="codesystemView"
+          height={height}
+          codingViewIsVisible={this.props.codingViewIsVisible}
+        >
+          {this.renderCodesystemContent()}
+        </StyledCodeSystem>
+      </StyledCodeSystemView>
+    );
+  }
 }

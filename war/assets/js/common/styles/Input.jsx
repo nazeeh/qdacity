@@ -1,6 +1,6 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-const StyledInput = styled.input `
+const StyledInput = styled.input`
 	
 	height: 30px;
 	padding:0.3em;
