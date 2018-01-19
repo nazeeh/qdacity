@@ -6,7 +6,7 @@ import IntlProvider from '../../common/Localization/LocalizationProvider';
 import BillingStatsEndpoint from '../../common/endpoints/BillingStatsEndpoint';
 import EventsEndpoint from "../../common/endpoints/EventsEndpoint";
 
-export default class DailyCostsChart extends React.Component {
+export default class DailyCostsPerActiveUserChart extends React.Component {
 	constructor(props) {
 		super(props);
 
