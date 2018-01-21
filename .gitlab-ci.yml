@@ -120,8 +120,6 @@ acceptance_tests:
   script:
     - rm -f ./war/WEB-INF/appengine-generated/local_db.bin
     - mvn appengine:devserver -DskipTests &
-    #- Xvfb :1 -screen 5 1280x1024x16 &
-    #- export DISPLAY=:1.5
     - cd war
     - chmod +x ./startAcceptanceTests.sh
     - ./startAcceptanceTests.sh
