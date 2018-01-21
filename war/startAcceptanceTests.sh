@@ -33,18 +33,23 @@ if [ $isPortOpen -eq 1 ]; then
 	# Give the server more time to properly start
 	#sleep 5
 	sleep 70
-	echo "START ACCEPTANCE TESTS NOW"
+	echo "SERVER IS RUNNING NOW"
 	
 	# Start Xvfb
-	Xvfb :2 -screen 5 1024x768x8
+	echo "START XVFB"
+	Xvfb :2 -screen 5 1024x768x8 &
     export DISPLAY=:2.5
 	
+	sleep 10
+	
 	# Start the selenium server
+	echo "START SELENIUM SERVER"
     java -jar selenium-server-standalone-3.8.1.jar &
 	
 	sleep 10
 	
 	# Start the acceptance tests
+	echo "START ACCEPTANCE TESTS NOW"
 	gulp acceptance-tests
 	
 	exit 0
