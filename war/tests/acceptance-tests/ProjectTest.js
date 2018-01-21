@@ -31,6 +31,8 @@ describe('Project test', function() {
     	const projectName = 'Project_01';
     	const projectDescription = 'The project description.'
     	
+    	const _this = this;
+    		
     	// Click new project button
     	this.driver.wait(until.elementLocated(By.id('newPrjBtn'))).click();    	
     	
@@ -48,33 +50,19 @@ describe('Project test', function() {
     	// If the project was created properly, open it by clicking on it.
     	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']"))).click();    	
     	
-    	// Find the project title
-    	this.driver.wait(until.elementLocated(By.xpath("//h2[@class='page-header']/span[text()='" + projectName + "']")));    	
-    	
-    	// Check the project description
-    	this.driver.findElement(By.xpath(""));    	
-    	// TODO
-    	
-    	// überprüfen ob die Description übereinstimmt
-    	// überprüfen ob in der URL /ProjectDashboard steht
-    	
-    	
-    	
-    	
-		// Check the URL
-//    	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
-//    		_this.driver.getCurrentUrl().then((currentUrl) => {
-//    			// Check the welcome message
-//        		expect(text).toBe("Welcome " + googleFirstName);
-//        		
-//        		// Does the URL end with /PersonalDashboard?
-//        		const urlEnd = "/PersonalDashboard";
-//        		expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
-//        		
-//    		    done();
-//    		})
-//    	});
-
-    	
+		// Find the project title
+    	this.driver.wait(until.elementLocated(By.xpath("//h2[@class='page-header']/span[text()='" + projectName + "']"))).then((text) => {
+    		// Find the project description
+        	_this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'box')]/div[text()='" + projectDescription + "']"))).then((text) => {
+        		// Check the URL
+	    		_this.driver.getCurrentUrl().then((currentUrl) => {
+	        		// Does the URL end with /ProjectDashboard?
+	        		const urlContent = "/ProjectDashboard";
+	        		expect(currentUrl.includes(urlContent)).toBeTruthy();
+	        		
+	    		    done();
+	    		});
+        	});
+    	});
     }, defaultTimeout);
 });
