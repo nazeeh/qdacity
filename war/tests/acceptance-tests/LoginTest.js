@@ -17,7 +17,7 @@ describe('Login test', function() {
     	//options.addArguments('window-size=1200x600');
     	
 //    	options.addArguments('user-data-dir=C:\Users\Felix\AppData\Local\Google\Chrome\User Data\Profile 1');
-    	options.addArguments('start-maximized');   	
+//    	options.addArguments('start-maximized');   	
 
         this.driver = new webdriver.Builder()
 	        .forBrowser('chrome')
