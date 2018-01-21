@@ -203,6 +203,10 @@ export default class App extends React.Component {
 								render={props => <Faq auth={this.state.auth} {...props} />}
 							/>
 							<Route
+								path="/UserMigration"
+								render={props => <UserMigration auth={this.state.auth} {...props} />}
+							/>
+							<Route
 								exact
 								path="/"
 								render={props => <Index auth={this.state.auth} {...props} />}
