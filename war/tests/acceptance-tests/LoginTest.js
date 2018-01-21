@@ -149,13 +149,6 @@ describe('Login test', function() {
 
     	console.log('LOGIN-TEST: Waited 5 Seconds');
     	
-    	// DEBUG
-    	this.driver.wait(until.elementLocated(By.xpath("//h1/span[starts-with(text(),'QDAcity')]"))).getText().then((text) => {
-	    	console.log('LOGIN-TEST: WE ARE STILL ON THE HOMEPAGE');
-    		
-    	});	
-    	
-		
 		// Check welcome message and URL
     	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
     		_this.driver.getCurrentUrl().then((currentUrl) => {
