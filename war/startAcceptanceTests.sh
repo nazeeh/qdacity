@@ -52,6 +52,7 @@ if [ $isPortOpen -eq 1 ]; then
 	echo "START ACCEPTANCE TESTS NOW"
 	gulp acceptance-tests
 	
+	echo "EXIT 0"
 	exit 0
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
