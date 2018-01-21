@@ -143,6 +143,7 @@ public class CourseEndpoint {
 				// Authorize User
 				Authorization.isUserRegistered(qdacityUser);
 				qdacityUser.addCourseAuthorization(course.getId());
+				mgr.makePersistent(qdacityUser);
 				
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				Cache.cache(user.getId(), com.qdacity.user.User.class, qdacityUser); // also cache external user id
