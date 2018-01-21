@@ -36,11 +36,13 @@ if [ $isPortOpen -eq 1 ]; then
 	echo "START ACCEPTANCE TESTS NOW"
 	
 	# Start Xvfb
-	Xvfb :1 -screen 5 1024x768x8
-    export DISPLAY=:1.5
+	Xvfb :2 -screen 5 1024x768x8
+    export DISPLAY=:2.5
 	
 	# Start the selenium server
-    java -jar selenium-server-standalone-3.8.1.jar
+    java -jar selenium-server-standalone-3.8.1.jar &
+	
+	sleep 10
 	
 	# Start the acceptance tests
 	gulp acceptance-tests
