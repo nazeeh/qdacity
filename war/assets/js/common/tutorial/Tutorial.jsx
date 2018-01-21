@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 //Base Structure
@@ -83,7 +84,7 @@ const MBTutorialOverview = styled.div`
 const ButtonGeneric = styled.button`
 	background: ${props => (props.white ? '000' : 'fff')};
 	color: background: ${props => (props.white ? 'fff' : '000')};
-	border: 2px solid #000;	
+	border: 2px solid #000;
 	float: right;
 	margin: 0 0 0 .5em;
 	font-family: inherit;
@@ -91,7 +92,7 @@ const ButtonGeneric = styled.button`
 	letter-spacing: .1em;
 	font-size: .8em;
 	line-height: 1em;
-	padding: .75em 2em;	
+	padding: .75em 2em;
 `;
 
 const Pointer = styled.div`
@@ -137,15 +138,28 @@ export default class Tutorial extends React.Component {
 					</Pointer>
 					<MessageBox {...this.props}>
 						<MBLoading {...this.props}>
-							please wait the content is loaded...{' '}
+							<FormattedMessage
+								id="tutorial.loading"
+								defaultMessage="please wait until the content is loaded..."
+							/>
 						</MBLoading>
 						<MBTutorialOverview {...this.props}>
 							<center>
 								<TutorialOverviewTitle>
-									<b>Tutorial Overview</b>
+									<b>
+										<FormattedMessage
+											id="tutorial.overview"
+											defaultMessage="Tutorial Overview"
+										/>
+									</b>
 								</TutorialOverviewTitle>
 								<br />
-								<div>TODO Struktur kommt</div>
+								<div>
+									<FormattedMessage
+										id="tutorial.todo"
+										defaultMessage="TODO Struktur kommt"
+									/>
+								</div>
 								<br />
 								<br />
 							</center>
@@ -159,7 +173,7 @@ export default class Tutorial extends React.Component {
 									);
 								}.bind(this)}
 							>
-								Close
+								<FormattedMessage id="modal.close" defaultMessage="Close" />
 							</ButtonGeneric>
 						</div>
 					</MessageBox>

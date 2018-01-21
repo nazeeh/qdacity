@@ -17,13 +17,10 @@ import Confirm from '../../common/modals/Confirm';
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
 import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
 	StyledListItemBtn,
 	StyledListItemPrimary,
 	StyledListItemDefault
-} from '../../common/styles/List';
+} from '../../common/styles/ItemList.jsx';
 
 const StyledNewPrjBtn = styled.div`
 	padding-left: 5px;

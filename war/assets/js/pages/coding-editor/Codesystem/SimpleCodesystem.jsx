@@ -109,8 +109,6 @@ export default class SimpleCodesystem extends React.Component {
 	}
 
 	getCodeById(id) {
-		const _this = this;
-
 		const find = (codeArr, id) => {
 			for (var i in codeArr) {
 				var code = codeArr[i];

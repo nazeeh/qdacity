@@ -178,6 +178,21 @@ export default class AuthenticationProvider {
 	}
 
 	/**
+	 * Get the auth token (id_token)
+	 * @returns the token
+	 */
+	getToken() {
+		if (this.activeNetwork !== this.network.google_silent) {
+			// check hellojs
+			const session = hello.getAuthResponse(this.network.google);
+			return session.id_token;
+		} else {
+			// elsewise check gapi.auth2
+			return this.auth2.currentUser.get().getAuthResponse().id_token;
+		}
+	}
+
+	/**
 	 * Always calls the given callback if the auth state changes.
 	 *
 	 * @param callback
@@ -203,15 +218,7 @@ export default class AuthenticationProvider {
 				return;
 			}
 
-			let idToken = '';
-			if (_this.activeNetwork !== _this.network.google_silent) {
-				// check hellojs
-				const session = hello.getAuthResponse(_this.network.google);
-				idToken = session.id_token;
-			} else {
-				// elsewise check gapi.auth2
-				idToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
-			}
+			const idToken = _this.getToken();
 			const headerToken = _this.encodeTokenWithIdentityProvider(
 				idToken,
 				_this.network.google

@@ -7,9 +7,6 @@ import InviteUserField from './InviteUserField.jsx';
 export default class Users extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			isProjectOwner: false
-		};
 	}
 
 	render() {
@@ -29,7 +26,10 @@ export default class Users extends React.Component {
 							/>
 						</div>
 						<div>
-							<UserList project={this.props.project} />
+							<UserList
+								project={this.props.project}
+								isProjectOwner={this.props.isProjectOwner}
+							/>
 						</div>
 					</div>
 				</div>

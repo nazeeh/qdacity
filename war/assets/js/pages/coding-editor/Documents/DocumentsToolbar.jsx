@@ -95,9 +95,10 @@ export default class DocumentsToolbar extends React.Component {
 		doc.projectID = this.props.projectID;
 		doc.text = ' '; // can not be empty
 		doc.title = title;
+		doc.positionInOrder = this.props.getNewDocumentPosition();
 
 		DocumentsEndpoint.insertTextDocument(doc).then(function(resp) {
-			_this.props.addDocument(resp.id, resp.title, resp.text.value);
+			_this.props.addDocument(resp);
 		});
 	}
 

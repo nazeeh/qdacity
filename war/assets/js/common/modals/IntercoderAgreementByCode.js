@@ -1,4 +1,5 @@
 import VexModal from './VexModal';
+import IntlProvider from '../Localization/LocalizationProvider';
 
 import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 
@@ -12,16 +13,20 @@ export default class IntercoderAgreementByCode extends VexModal {
 		this.results = results;
 	}
 	showModal() {
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		vex.dialog.open({
-			message: 'Agreement By Code',
+			message: formatMessage({
+				id: 'intercoderagreementbycode.agreement_by_code',
+				defaultMessage: 'Agreement By Code'
+			}),
 			contentCSS: {
 				width: '900px'
 			},
 			input: _this.formElements,
 			buttons: [
 				$.extend({}, vex.dialog.buttons.YES, {
-					text: 'OK'
+					text: formatMessage({ id: 'modal.ok', defaultMessage: 'OK' })
 				})
 			]
 		});

@@ -64,10 +64,14 @@ export default class UmlCodePropertyModal extends VexModal {
 			let possibleSaveButtons = document.getElementsByClassName(
 				'vex-dialog-button-primary'
 			);
-
+			const { formatMessage } = IntlProvider.intl;
 			if (possibleSaveButtons == null || possibleSaveButtons.length != 1) {
 				throw new Error(
-					'Detected more than one (or none) possible vex save button.'
+					formatMessage({
+						id: 'error.vex_save',
+						defaultMessage:
+							'Detected more than one (or none) possible vex save button.'
+					})
 				);
 			}
 
@@ -83,6 +87,7 @@ export default class UmlCodePropertyModal extends VexModal {
 		};
 
 		let promise = new Promise(function(resolve, reject) {
+			const { formatMessage } = IntlProvider.intl;
 			const codesystemContainerId = 'umlCodePropertyModalCodesystemView';
 			let formElements = '<div id="' + codesystemContainerId + '"></div>';
 
@@ -94,10 +99,13 @@ export default class UmlCodePropertyModal extends VexModal {
 				input: formElements,
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
-						text: 'Save'
+						text: formatMessage({ id: 'modal.save', defaultMessage: 'Save' })
 					}),
 					$.extend({}, vex.dialog.buttons.NO, {
-						text: 'Cancel'
+						text: formatMessage({
+							id: 'modal.cancel',
+							defaultMessage: 'Cancel'
+						})
 					})
 				],
 				callback: function(data) {

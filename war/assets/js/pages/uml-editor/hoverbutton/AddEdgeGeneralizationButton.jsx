@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import { EdgeType } from '../util/EdgeType.js';
 
@@ -21,7 +22,11 @@ export default class AddEdgeGeneralizationButton extends HoverButton {
 	}
 
 	getToolTip() {
-		return 'Add a new generalization.';
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'addedgegeneralizationbutton.tooltip',
+			defaultMessage: 'Add a new generalization.'
+		});
 	}
 
 	getBounds() {

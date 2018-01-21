@@ -253,11 +253,13 @@ export default class CodeRelationsView extends React.Component {
 			return (
 				<StyledRelationshipCodeButton
 					className="pull-right"
-					onClick={() => {
-						_this.createRelationshipCode(relation);
-					}}
+					onClick={() => _this.createRelationshipCode(relation)}
 				>
-					<i className="fa fa-plus" /> Create relationship code
+					<i className="fa fa-plus" />{' '}
+					<FormattedMessage
+						id="coderelationsview.create_relationship_code"
+						defaultMessage="Create relationship code"
+					/>
 				</StyledRelationshipCodeButton>
 			);
 		} else {
@@ -272,11 +274,13 @@ export default class CodeRelationsView extends React.Component {
 			return (
 				<StyledRelationshipCodeButton
 					className="pull-right"
-					onClick={() => {
-						_this.goToRelationshipCode(relation);
-					}}
+					onClick={() => _this.goToRelationshipCode(relation)}
 				>
-					<i className="fa fa-arrow-right" /> Go to relationship code
+					<i className="fa fa-arrow-right" />{' '}
+					<FormattedMessage
+						id="coderelationsview.go_to_relationship_code"
+						defaultMessage="Go to relationship code"
+					/>
 				</StyledRelationshipCodeButton>
 			);
 		} else {

@@ -49,19 +49,29 @@ export default class NewCodeRelation extends VexModal {
 		var _this = this;
 		var promise = new Promise(function(resolve, reject) {
 			var formElements = _this.formElements;
+			const { formatMessage } = IntlProvider.intl;
 
 			vex.dialog.open({
-				message: 'New Code Relationship',
+				message: formatMessage({
+					id: 'newcoderelation.new_code_relationship',
+					defaultMessage: 'New Code Relationship'
+				}),
 				contentCSS: {
 					width: '900px'
 				},
 				input: formElements,
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
-						text: 'Create'
+						text: formatMessage({
+							id: 'modal.create',
+							defaultMessage: 'Create'
+						})
 					}),
 					$.extend({}, vex.dialog.buttons.NO, {
-						text: 'Cancel'
+						text: formatMessage({
+							id: 'modal.cancel',
+							defaultMessage: 'Cancel'
+						})
 					})
 				],
 				callback: function(data) {

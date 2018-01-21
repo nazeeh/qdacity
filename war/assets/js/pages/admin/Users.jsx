@@ -5,14 +5,16 @@ import styled from 'styled-components';
 import UserList from './UserList.jsx';
 
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
-import StyledSearchField from '../../common/styles/SearchField.jsx';
+
+import {
+	SearchBox,
+	StyledSearchFieldContainer
+} from '../../common/styles/SearchBox.jsx';
+
 import { BtnDefault } from '../../common/styles/Btn.jsx';
 
-const StyledUserSearch = styled.div`
-	display: flex;
-	flex-direction: row;
+const StyledUserSearch = StyledSearchFieldContainer.extend`
 	& > .searchfield {
-		flex: 1;
 		margin-right: 5px;
 	}
 `;
@@ -27,14 +29,14 @@ export default class Users extends React.Component {
 		};
 
 		this.updateSearch = this.updateSearch.bind(this);
+		this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
 		this.findUsers = this.findUsers.bind(this);
 		this.removeUser = this.removeUser.bind(this);
-		this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
 	}
 
-	updateSearch(e) {
+	updateSearch(text) {
 		this.setState({
-			search: e.target.value
+			search: text
 		});
 	}
 
@@ -90,19 +92,13 @@ export default class Users extends React.Component {
 				</div>
 				<div className="box-body">
 					<StyledUserSearch>
-						<StyledSearchField className="searchfield" id="searchform">
-							<input
-								type="text"
-								className="search"
-								placeholder="Search"
-								value={this.state.search}
-								onChange={this.updateSearch}
-								onKeyPress={this.onSearchFieldKeyPress}
-							/>
-							<BtnDefault id="btnSearch" onClick={this.findUsers}>
-								<i className="fa fa-search" />
-							</BtnDefault>
-						</StyledSearchField>
+						<SearchBox
+							onSearch={this.updateSearch}
+							onKeyPress={this.onSearchFieldKeyPress}
+						/>
+						<BtnDefault id="btnSearch" onClick={this.findUsers}>
+							<i className="fa fa-search" />
+						</BtnDefault>
 					</StyledUserSearch>
 					<UserList
 						users={this.state.users}

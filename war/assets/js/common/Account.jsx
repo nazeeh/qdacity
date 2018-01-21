@@ -2,7 +2,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { BtnDefault, BtnPrimary } from './styles/Btn.jsx';
-
 export default class Account extends React.Component {
 	constructor(props) {
 		super(props);
@@ -78,7 +77,7 @@ export default class Account extends React.Component {
 			<div>
 				<div className="navbar-content">
 					<div className="row">
-						<div className="col-xs-3">
+						<div className="col-xs-5">
 							<img
 								id="currentUserPicture"
 								src={this.state.picSrc}
@@ -87,7 +86,7 @@ export default class Account extends React.Component {
 							/>
 							<p className="text-center small" />
 						</div>
-						<div className="col-xs-9">
+						<div className="col-xs-7">
 							<span id="currentUserName">{this.state.name}</span>
 							<p id="currentUserEmail" className="text-muted small">
 								{this.state.email}

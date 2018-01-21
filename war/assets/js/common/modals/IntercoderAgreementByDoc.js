@@ -5,6 +5,7 @@ import ReactLoading from '../ReactLoading.jsx';
 import VexModal from './VexModal';
 
 import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
+import IntlProvider from '../Localization/LocalizationProvider';
 
 export default class IntercoderAgreementByDoc extends VexModal {
 	constructor(resultID, validationProjectID, projectID, history) {
@@ -25,23 +26,30 @@ export default class IntercoderAgreementByDoc extends VexModal {
 
 	showModal() {
 		var _this = this;
+		const { formatMessage } = IntlProvider.intl;
 		var promise = new Promise(function(resolve, reject) {
 			var formElements = _this.formElements;
 
 			vex.dialog.open({
-				message: 'Agreement By Document',
+				message: formatMessage({
+					id: 'intercoderagreementbydoc.agreement_by_doc',
+					defaultMessage: 'Agreement By Document'
+				}),
 				contentCSS: {
 					width: '900px'
 				},
 				input: formElements,
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
-						text: 'OK'
+						text: formatMessage({ id: 'modal.ok', defaultMessage: 'OK' })
 					}),
 					$.extend({}, vex.dialog.buttons.NO, {
 						className: 'vex-dialog-button-primary',
-						text: 'Agreement Maps',
-						click: function($vexContent, event) {
+						text: formatMessage({
+							id: 'intercoderagreementbydoc.agreement_maps',
+							defaultMessage: 'Agreement Maps'
+						}),
+						click: function() {
 							_this.history.push(
 								'/CodingEditor?project=' +
 									_this.validationProjectID +

@@ -24,7 +24,6 @@ import { BottomPanelType } from './BottomPanel/BottomPanelType.js';
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import SyncService from '../../common/SyncService';
-import CollaboratorList from '../../common/SyncService/CollaboratorList';
 
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
@@ -41,7 +40,7 @@ const StyledCodingEditor = styled.div`
 
 const StyledEditorToolbar = styled.div`
 	display: ${props =>
-		props.selectedEditor !== PageView.UML ? 'flex' : 'none'} !important;
+		props.selectedEditor === PageView.TEXT ? 'flex' : 'none'} !important;
 	text-align: center;
 	padding: 5px;
 `;
@@ -181,6 +180,19 @@ class CodingEditor extends React.Component {
 		this.updateUserStatusFromProps(nextProps);
 	}
 
+	updateUserAtSyncService() {
+		const _this = this;
+		this.props.auth.authentication.getProfile().then((profile) => {
+			this.syncService.updateUser({
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail,
+				project: _this.state.project.id,
+				token: _this.props.auth.authentication.getToken()
+			});
+		})
+	}
+
 	updateUserStatusFromProps(targetedProps) {
 		const _this = this;
 		targetedProps.auth.authentication.getProfile().then(function(profile) {
@@ -191,13 +203,22 @@ class CodingEditor extends React.Component {
 					picSrc: profile.thumbnail
 				}
 			});
-
-			if (_this.state.userProfile.email !== '') {
-				_this.syncService.logon(_this.state.userProfile);
-			}
 		});
 	}
 
+	componentDidMount() {
+		this.updateUserAtSyncService();
+
+		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
+		if (_this.state.userProfile.email !== '') {
+			_this.syncService.logon(_this.state.userProfile);
+		}
+	}
+
+	componentWillReceiveProps() {
+		this.updateUserAtSyncService();
+	}
+	
 	componentDidMount() {
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
 	}
@@ -328,7 +349,7 @@ class CodingEditor extends React.Component {
 	}
 
 	deleteCode(code) {
-		this.codesystemViewRef.deleteCode(code);
+		this.codesystemViewRef.removeCode(code);
 	}
 
 	insertCode(code) {
@@ -387,7 +408,6 @@ class CodingEditor extends React.Component {
 					deleteCode={this.deleteCode}
 					toggleCodingView={this.toggleCodingView}
 					deleteRelationship={this.deleteRelationship}
-					syncService={this.syncService}
 				/>
 			);
 		}
@@ -497,6 +517,7 @@ class CodingEditor extends React.Component {
 								documentsView={this.documentsViewRef}
 								showCodingView={this.showCodingView}
 								selectedEditor={this.state.selectedEditor}
+								syncService={this.syncService}
 							/>
 						</div>
 					</StyledSideBarEditor>
@@ -524,7 +545,7 @@ class CodingEditor extends React.Component {
 							umlEditor={this.umlEditorRef}
 							projectID={this.state.project.getId()}
 							projectType={this.state.project.getType()}
-							userProfile={this.state.userProfile}
+							auth={this.props.auth}
 							codesystemId={this.state.project.getCodesystemID()}
 							toggleCodingView={this.toggleCodingView}
 							editorCtrl={this.state.editorCtrl}
@@ -534,6 +555,7 @@ class CodingEditor extends React.Component {
 							insertCode={this.insertCode}
 							codeRemoved={this.codeRemoved}
 							documentsView={this.documentsViewRef}
+							syncService={this.syncService}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>
@@ -568,13 +590,11 @@ class CodingEditor extends React.Component {
 								</BtnGroup>
 							</StyledTextEditorMenu>
 							<StyledPlaceholder />
-							<CollaboratorList syncService={this.syncService} />
 						</StyledEditorToolbar>
 						<TextEditor
 							initEditorCtrl={this.initEditorCtrl}
 							selectedEditor={this.state.selectedEditor}
 							showCodingView={this.state.showCodingView}
-							syncService={this.syncService}
 						/>
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}
@@ -610,4 +630,5 @@ class CodingEditor extends React.Component {
 		);
 	}
 }
+
 export default DragDropContext(HTML5Backend)(CodingEditor);

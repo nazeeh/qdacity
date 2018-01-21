@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import { BtnDefault } from '../../../common/styles/Btn.jsx';
@@ -19,9 +20,14 @@ export default class ButtonExpandAll extends React.Component {
 
 	render() {
 		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+		const expandAll = formatMessage({
+			id: 'buttonexpandall.title',
+			defaultMessage: 'Expands all classes.'
+		});
 
 		return (
-			<BtnDefault title="Expands all classes." onClick={_this.buttonClicked}>
+			<BtnDefault title={expandAll} onClick={_this.buttonClicked}>
 				<i className="fa fa-plus-square-o" />
 				<span>
 					<FormattedMessage

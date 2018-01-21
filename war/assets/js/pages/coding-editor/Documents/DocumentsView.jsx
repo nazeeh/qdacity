@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 import ReactLoading from '../../../common/ReactLoading.jsx';
 
+import { DragDocument } from './Document.jsx';
+
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx';
@@ -35,26 +37,6 @@ const StyledDocumentList = styled.div`
 	margin: 5px 5px 5px 5px;
 `;
 
-const StyledDocumentItem = styled.a`
-	background-color: ${props =>
-		props.active ? props.theme.bgPrimaryHighlight : ''} !important;
-	color: ${props => (props.active ? props.theme.fgPrimaryHighlight : '')};
-	padding: 2px 2px !important;
-	position: relative;
-	display: block;
-	padding: 10px 15px;
-	margin-bottom: -1px;
-	background-color: #fff;
-	border: 1px solid;
-	border-color: ${props => props.theme.borderPrimary} !important;
-	&:hover {
-		text-decoration: none;
-		cursor: pointer;
-		background-color: ${props => props.theme.borderPrimary};
-		color: ${props => props.theme.fgPrimaryHighlight};
-	}
-`;
-
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
@@ -74,8 +56,18 @@ export default class DocumentsView extends React.Component {
 		const _this = this;
 		setupPromise.then(() => {
 			_this.setState({
-				loading: false
+				loading: false,
+				documents: _this.state.documents.sort((doc1, doc2) => {
+					return doc1.positionInOrder - doc2.positionInOrder;
+				})
 			});
+
+			// Persists the order of documents if no order is persisted in the database.
+			_this.persistDocumentsOrderIfNecessary();
+
+			if (this.state.documents.length > 0) {
+				_this.setActiveDocument(this.state.documents[0].id);
+			}
 		});
 
 		this.addDocument = this.addDocument.bind(this);
@@ -89,6 +81,9 @@ export default class DocumentsView extends React.Component {
 		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(
 			this
 		);
+		this.swapDocuments = this.swapDocuments.bind(this);
+		this.persistSwappedDocuments = this.persistSwappedDocuments.bind(this);
+		this.getNewDocumentPosition = this.getNewDocumentPosition.bind(this);
 	}
 
 	setupView(project_id, project_type, agreement_map) {
@@ -99,11 +94,9 @@ export default class DocumentsView extends React.Component {
 					.then(function(resp) {
 						resp.items = resp.items || [];
 						for (var i = 0; i < resp.items.length; i++) {
-							_this.addDocument(
-								resp.items[i].textDocumentID,
-								resp.items[i].title,
-								resp.items[i].text.value
-							);
+							let doc = resp.items[i];
+							doc.id = doc.textDocumentID;
+							_this.addDocument(doc);
 						}
 						resolve();
 					})
@@ -114,11 +107,7 @@ export default class DocumentsView extends React.Component {
 				DocumentsEndpoint.getDocuments(project_id, project_type)
 					.then(function(items) {
 						for (var i = 0; i < items.length; i++) {
-							_this.addDocument(
-								items[i].id,
-								items[i].title,
-								items[i].text.value
-							);
+							_this.addDocument(items[i]);
 						}
 						resolve();
 					})
@@ -160,11 +149,8 @@ export default class DocumentsView extends React.Component {
 	}
 
 	// Adds a document and selects the new document as active
-	addDocument(pId, pTitle, pText) {
-		var doc = {};
-		doc.id = pId;
-		doc.title = pTitle;
-		doc.text = pText;
+	addDocument(doc) {
+		doc.text = doc.text.value;
 		this.state.documents.push(doc);
 		this.setState({
 			documents: this.state.documents
@@ -256,10 +242,9 @@ export default class DocumentsView extends React.Component {
 		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
-		this.props.syncService.handleDocumentChange(
-			this.state.selected === -1 ? null : this.state.selected.toString(),
-			selectedID.toString()
-		);
+		this.props.syncService.updateUser({
+			document: selectedID.toString()
+		});
 		this.setState({
 			selected: selectedID
 		});
@@ -282,6 +267,18 @@ export default class DocumentsView extends React.Component {
 		return activeDoc;
 	}
 
+	getNewDocumentPosition() {
+		if (this.state.documents == null || this.state.documents.length == 0) {
+			return 1;
+		}
+
+		return (
+			parseInt(
+				this.state.documents[this.state.documents.length - 1].positionInOrder
+			) + 1
+		);
+	}
+
 	setDocumentWithCoding(codingID) {
 		var documents = this.state.documents;
 		for (var i in documents) {
@@ -291,6 +288,70 @@ export default class DocumentsView extends React.Component {
 			var foundArray = $(doc.text).find("coding[id='" + codingID + "']");
 			if (foundArray.length > 0) {
 				this.setActiveDocument(doc.id);
+			}
+		}
+	}
+
+	swapDocuments(dragIndex, hoverIndex) {
+		const swap = this.state.documents[dragIndex];
+
+		this.state.documents[dragIndex] = this.state.documents[hoverIndex];
+		this.state.documents[hoverIndex] = swap;
+
+		this.forceUpdate();
+	}
+
+	persistSwappedDocuments(dragIndex, targetIndex) {
+		this.persistOrderOfDocuments();
+	}
+
+	/**
+	 * Checks if the order of documents is already persisted in the database and persists the current order if not.
+	 */
+	persistDocumentsOrderIfNecessary() {
+		let persistOrder = false;
+
+		for (let i = 0; i < this.state.documents.length; i++) {
+			if (
+				this.state.documents[i].positionInOrder == 0 ||
+				this.state.documents[i].positionInOrder == null
+			) {
+				persistOrder = true;
+			}
+		}
+
+		if (persistOrder) {
+			this.persistOrderOfDocuments();
+		}
+	}
+
+	/**
+	 * Persist the current order of documents in the database.
+	 */
+	persistOrderOfDocuments() {
+		for (let i = 0; i < this.state.documents.length; i++) {
+			this.state.documents[i].positionInOrder = i + 1;
+		}
+
+		if (this.state.documents.length > 0) {
+			// AgreementMaps and TextDocuments are updated with different Endpoints
+
+			// AgreementMaps
+			if (this.state.documents[0].textDocumentID) {
+				DocumentsEndpoint.reorderAgreementMapPositions(
+					this.props.report,
+					this.props.projectType,
+					this.state.documents
+				).then(function(resp) {
+					// Do nothing
+				});
+			} else {
+				// TextDocuments
+				DocumentsEndpoint.updateTextDocuments(this.state.documents).then(
+					function(resp) {
+						// Do nothing
+					}
+				);
 			}
 		}
 	}
@@ -309,6 +370,7 @@ export default class DocumentsView extends React.Component {
 					addDocument={this.addDocument}
 					removeActiveDocument={this.removeActiveDocument}
 					changeDocumentData={this.changeDocumentData}
+					getNewDocumentPosition={this.getNewDocumentPosition}
 				/>
 			);
 		} else {
@@ -316,8 +378,24 @@ export default class DocumentsView extends React.Component {
 		}
 	}
 
+	renderDocument(doc, index) {
+		return (
+			<DragDocument
+				doc={doc}
+				key={doc.id}
+				index={index}
+				active={doc.id == this.state.selected}
+				setActiveDocument={this.setActiveDocument}
+				swapDocuments={this.swapDocuments}
+				persistSwappedDocuments={this.persistSwappedDocuments}
+				syncService={this.props.syncService}
+			>
+				{doc.title}
+			</DragDocument>
+		);
+	}
+
 	renderDocuments() {
-		var _this = this;
 		if (!this.state.isExpanded) {
 			return (
 				<StyledInfoBox>
@@ -325,41 +403,26 @@ export default class DocumentsView extends React.Component {
 						<FormattedMessage
 							id="documentsview.current_document"
 							defaultMessage="Current Document"
-						/>: {this.getActiveDocument().title}
+						/>:
+						{this.getActiveDocument().title}
 					</b>
 				</StyledInfoBox>
 			);
 		}
+
 		return (
 			<div>
 				<StyledToolBar>{this.renderToolbar()}</StyledToolBar>
 				<StyledDocumentList>
-					{this.state.documents.map(function(doc) {
-						return (
-							<StyledDocumentItem
-								active={doc.id == _this.state.selected}
-								key={doc.id}
-								onClick={_this.setActiveDocument.bind(null, doc.id)}
-							>
-								{doc.title}
-							</StyledDocumentItem>
-						);
+					{this.state.documents.map((doc, index) => {
+						return this.renderDocument(doc, index);
 					})}
 				</StyledDocumentList>
 			</div>
 		);
 	}
 
-	renderDocumentsContent() {
-		if (!this.state.loading) {
-			return this.renderDocuments();
-		} else {
-			return <ReactLoading color={'#020202'} />;
-		}
-	}
-
 	render() {
-		var _this = this;
 		return (
 			<div>
 				<StyledDocumentsHeader>
@@ -386,7 +449,11 @@ export default class DocumentsView extends React.Component {
 						</span>
 					</div>
 				</StyledDocumentsHeader>
-				{this.renderDocumentsContent()}
+				{this.state.loading ? (
+					<ReactLoading color={'#020202'} />
+				) : (
+					this.renderDocuments()
+				)}
 			</div>
 		);
 	}

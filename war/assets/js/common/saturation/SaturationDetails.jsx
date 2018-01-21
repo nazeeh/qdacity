@@ -24,7 +24,7 @@ export default class SaturationDetails extends React.Component {
 	}
 
 	initTable() {
-		const { formatMessage, formatDate } = IntlProvider.intl;
+		const { formatMessage } = IntlProvider.intl;
 		var dataSet = [];
 		var tableMount = $('#saturationTable');
 		var columnsArray = [];
@@ -113,7 +113,7 @@ export default class SaturationDetails extends React.Component {
 	}
 
 	render() {
-		const { formatMessage, formatDate } = IntlProvider.intl;
+		const { formatDate } = IntlProvider.intl;
 		if (!this.props.saturation) return null;
 		return (
 			<div>

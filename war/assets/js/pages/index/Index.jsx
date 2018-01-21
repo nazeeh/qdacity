@@ -23,7 +23,8 @@ const StyledFooterBanner = styled.div`
 const StyledFooterText = styled.span`
 	justify-self: center;
 	text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.6);
-	font-size: 3em;
+	padding-top: 10px;
+	font-size: 2em;
 `;
 
 const StyledSocialMediaButtons = styled.div`
@@ -61,11 +62,10 @@ export default class Index extends React.Component {
 									<h3>
 										<FormattedMessage
 											id="index.subtitle"
-											defaultMessage="QDA on steroids"
+											defaultMessage="Easy qualitative data analysis for all"
 										/>
 									</h3>
 									<hr className="intro-divider" />
-
 									<SigninWithGoogleBtn
 										auth={this.props.auth}
 										history={this.props.history}
@@ -91,7 +91,7 @@ export default class Index extends React.Component {
 								<p className="lead">
 									<FormattedMessage
 										id="index.organize.description"
-										defaultMessage="QDAcity helps you structure, store and version all your analysis artifacts"
+										defaultMessage="QDAcity helps you structure, store, and version all your analysis artifacts"
 									/>
 								</p>
 							</div>
@@ -151,7 +151,7 @@ export default class Index extends React.Component {
 								<p className="lead">
 									<FormattedMessage
 										id="index.cloud.description"
-										defaultMessage="QDAcity runs completely in the cloud, which means you don't need to install anything. All you need is your webbrowser and an internet connection, to work on your project from anywhere at anytime."
+										defaultMessage="QDAcity runs completely in the cloud, which means you don't need to install anything. All your work is safe and professionally backed-up, so you will never lose any work."
 									/>
 								</p>
 							</div>
@@ -173,20 +173,33 @@ export default class Index extends React.Component {
 						/>
 					</StyledFooterText>
 					<StyledSocialMediaButtons>
-						<BtnLg>
-							<a href="https://twitter.com/osrgroup">
+						<BtnLg
+							onClick={() => {
+								location.href = 'https://twitter.com/qdacity';
+							}}
+						>
+							<a>
 								<i className="fa fa-twitter fa-2x" />
 							</a>
 							<span>Twitter</span>
 						</BtnLg>
-						<BtnLg>
-							<a href="https://www.facebook.com/pages/Open-Source-Research-Group-at-FAU/105099549532308">
+						<BtnLg
+							onClick={() => {
+								location.href = 'https://www.facebook.com/qdacity/';
+							}}
+						>
+							<a>
 								<i className="fa fa-facebook-square fa-2x" />
 							</a>
 							<span>Facebook</span>
 						</BtnLg>
-						<BtnLg>
-							<a href="mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support">
+						<BtnLg
+							onClick={() => {
+								location.href =
+									'mailto:kaufmann@group.riehle.org?Subject=QDAcity%20support';
+							}}
+						>
+							<a>
 								<i className="fa fa-envelope-o fa-2x" />
 							</a>
 							<span>Email</span>

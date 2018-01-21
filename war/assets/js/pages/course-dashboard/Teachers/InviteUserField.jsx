@@ -5,7 +5,9 @@ import styled from 'styled-components';
 import CourseEndPoint from '../../../common/endpoints/CourseEndpoint';
 
 import { BtnDefault } from '../../../common/styles/Btn.jsx';
-import StyledSearchField from '../../../common/styles/SearchField.jsx';
+import { ListMenu } from '../../../common/styles/ItemList.jsx';
+
+import { StyledSearchField } from '../../../common/styles/SearchBox.jsx';
 
 export default class InviteUserField extends React.Component {
 	constructor(props) {
@@ -57,16 +59,17 @@ export default class InviteUserField extends React.Component {
 
 	render() {
 		const { formatMessage } = IntlProvider.intl;
-		var _this = this;
+		const _this = this;
 		const searchFieldPlaceholder = formatMessage({
 			id: 'inviteuserfield.search',
 			defaultMessage: 'User Email'
 		});
 
 		return (
-			<StyledSearchField>
-				<input
+			<ListMenu>
+				<StyledSearchField
 					type="text"
+					className="searchfield"
 					placeholder={searchFieldPlaceholder}
 					value={this.state.userEmail}
 					onChange={this.updateUserEmail}
@@ -77,7 +80,7 @@ export default class InviteUserField extends React.Component {
 				<BtnDefault type="button" onClick={this.inviteUser}>
 					<i className="fa fa-paper-plane  fa-lg" /> Invite
 				</BtnDefault>
-			</StyledSearchField>
+			</ListMenu>
 		);
 	}
 }

@@ -12,42 +12,31 @@ import CustomForm from '../../common/modals/CustomForm';
 import Confirm from '../../common/modals/Confirm';
 
 import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
+	ItemList,
+	ListMenu,
 	StyledListItemBtn,
 	StyledListItemPrimary,
 	StyledListItemDefault
-} from '../../common/styles/List';
+} from '../../common/styles/ItemList.jsx';
 
-import StyledSearchField from '../../common/styles/SearchField.jsx';
 import { BtnDefault } from '../../common/styles/Btn.jsx';
 
 const StyledNewPrjBtn = styled.div`
 	padding-left: 5px;
 `;
 
-const StyledProjectListMenu = styled.div`
-	display: flex;
-	flex-direction: row;
-	& > .searchfield {
-		height: inherit !important;
-		flex: 1;
-	}
-`;
-
-const StyledProjectList = StyledBoxList.extend`
-	padding-top: 5px;
-`;
-
 export default class TermCourseList extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.itemList = null;
 
 		this.showNewTermCourseModal = this.showNewTermCourseModal.bind(this);
 		this.authenticationProvider = props.auth.authentication;
 
 		this.init();
+
+		this.renderTerm = this.renderTerm.bind(this);
 	}
 
 	init() {
@@ -313,50 +302,45 @@ export default class TermCourseList extends React.Component {
 			];
 		}
 	}
-	render() {
-		const { formatMessage } = IntlProvider.intl;
-		var _this = this;
 
-		const searchFieldPlaceholder = formatMessage({
-			id: 'term.course.search',
-			defaultMessage: 'Search'
-		});
-		const projectListMenu = (
-			<StyledProjectListMenu>
-				<StyledSearchField className="searchfield" id="searchform">
-					<input type="text" placeholder={searchFieldPlaceholder} />
-					{this.renderCreateTermButton()}
-				</StyledSearchField>
-			</StyledProjectListMenu>
-		);
-
-		const renderListItemContent = (term, index) => {
-			return [
-				<span>{term.text}</span>,
-				<div>
+	renderTerm(term, index) {
+		if (term.isOpen == 'true') {
+			return (
+				<StyledListItemPrimary>
+					<span>{term.text}</span>
+					<div>
 					{this.renderJoinButton(term, index)}
 					{this.renderDeleteButton(term, index)}
 					{this.renderConfigureButton(term, index)}
-				</div>
-			];
-		};
-		const itemsToDisplay = this.props.course.terms;
-		const renderListItems = itemsToDisplay.map((term, index) => {
-			if (term.isOpen == 'true') {
-				return (
-					<StyledListItemPrimary>
-						{renderListItemContent(term, index)}
-					</StyledListItemPrimary>
-				);
-			} else {
-				return '';
-			}
-		});
+					</div>
+				</StyledListItemPrimary>
+			);
+		} else {
+			return '';
+		}
+	}
 
+	render() {
 		return (
 			<div>
-				{projectListMenu}
-				<StyledProjectList className="">{renderListItems}</StyledProjectList>
+				<ListMenu>
+					{this.itemList ? this.itemList.renderSearchBox() : ''}
+
+					{this.renderCreateTermButton()}
+				</ListMenu>
+
+				<ItemList
+					ref={r => {
+						if (r) this.itemList = r;
+					}}
+					hasSearch={true}
+					hasPagination={true}
+					doNotrenderSearch={true}
+					itemsPerPage={8}
+					items={this.props.course.terms}
+					renderItem={this.renderTerm}
+					getItemText={item => item.text}
+				/>
 			</div>
 		);
 	}

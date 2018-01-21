@@ -24,7 +24,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 	redirect() {
 		const { formatMessage } = IntlProvider.intl;
 
-		var _this = this;
+		const _this = this;
 		this.authenticationProvider.getCurrentUser().then(
 			function(value) {
 				_this.props.history.push('/PersonalDashboard');
@@ -61,25 +61,40 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 		var _this = this;
 		_this.authenticationProvider.getProfile().then(function(userProfile) {
-			var displayNameParts = userProfile.name.split(' ');
-			var displayLastName = displayNameParts.pop();
-			var displayFirstName = displayNameParts.join(' ');
+			const esc = text =>
+						text.replace(
+							/([&<>"'` !@$%()[\]=+{}])/g,
+							code => `&#${code.charCodeAt(0)};`
+						);
+			const displayNameParts = userProfile.name.split(' ');
+			const lastName = esc(displayNameParts.pop());
+			const firstName = esc(displayNameParts.join(' '));
+			const email = esc(userProfile.email);
+
+			const firstNameLabel = formatMessage({
+				id: 'signinwithgooglebtn.first_name',
+				defaultMessage: 'First Name'
+			});
+			const lastNameLabel = formatMessage({
+				id: 'signinwithgooglebtn.last_name',
+				defaultMessage: 'Last Name'
+			});
+			const emailLabel = formatMessage({
+				id: 'signinwithgooglebtn.email',
+				defaultMessage: 'Email'
+			});
+
 			vex.dialog.open({
 				message: formatMessage({
 					id: 'sign.in.with.google.btn.confirm',
 					defaultMessage: 'Please confirm:'
 				}),
 				// FIXME
-				input:
-					'<label for"firstName">First Name</label><input name="firstName" type="text" placeholder="First Name" value="' +
-					displayFirstName +
-					'" required />' +
-					'<label for"lastName">Last Name</label><input name="lastName" type="text" placeholder="Last Name" value="' +
-					displayLastName +
-					'" required />\n' +
-					'<label for"email">Email</label><input name="email" type="text" placeholder="Email" value="' +
-					userProfile.email +
-					'" required />\n\n',
+				input: [
+					`<label for="firstName">${firstNameLabel}</label><input name="firstName" type="text" placeholder="${firstNameLabel}" value="${firstName}" required />`,
+					`<label for="lastName">${lastNameLabel}</label><input name="lastName" type="text" placeholder="${lastNameLabel}" value="${lastName}" required />`,
+					`<label for="email">${emailLabel}</label><input name="email" type="text" placeholder="${emailLabel}" value="${email}" required />`
+				].join('\n'),
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
 						text: formatMessage({

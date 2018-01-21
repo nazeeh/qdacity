@@ -45,7 +45,7 @@ export default class ParentProject extends React.Component {
 				<div className="box-body">
 					<FormattedMessage
 						id="parentproject.validation_project_belonging_to"
-						defaultMessage="This is an validation project belonging to this {parent_project}"
+						defaultMessage="This is a validation project belonging to this {parent_project}"
 						values={{
 							parent_project: parentProject
 						}}

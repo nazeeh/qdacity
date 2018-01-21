@@ -139,6 +139,7 @@ export default class ProjectDashboard extends React.Component {
 		return (
 			<StyledDashboard className="container main-content">
 				<TitleRow
+					auth={this.props.auth}
 					project={this.state.project}
 					isProjectOwner={this.state.isProjectOwner}
 					isValidationCoder={this.state.isValidationCoder}
@@ -182,6 +183,7 @@ export default class ProjectDashboard extends React.Component {
 						/>
 						{this.state.project.getParentID() ? (
 							<PersonalReportList
+								auth={this.props.auth}
 								project={this.state.project}
 								history={this.props.history}
 							/>

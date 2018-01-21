@@ -3,7 +3,7 @@ import Promisizer from './Promisizer';
 export default class CodesEndpoint {
 	constructor() {}
 
-	static insertCode(code, relationId, relationSourceCodeId) {
+	static insertCode(code, parentID, relationId, relationSourceCodeId) {
 		if (relationId == undefined) {
 			relationId = null;
 		}
@@ -14,7 +14,8 @@ export default class CodesEndpoint {
 		var apiMethod = gapi.client.qdacity.codes.insertCode(
 			{
 				relationId: relationId,
-				relationSourceCodeId: relationSourceCodeId
+				relationSourceCodeId: relationSourceCodeId,
+				parentId: parentID
 			},
 			code
 		);

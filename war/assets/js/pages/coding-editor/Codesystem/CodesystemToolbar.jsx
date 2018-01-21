@@ -57,9 +57,12 @@ export default class CodesystemToolbar extends React.Component {
 		const { formatMessage } = IntlProvider.intl;
 		const _this = this;
 
-		if (code.codeID == 1) return; //root should not be removed
+		// root should not be removed
+		if (code.codeID == 1) {
+			return;
+		}
 
-		var confirm = new Confirm(
+		new Confirm(
 			formatMessage(
 				{
 					id: 'codesystemtoolbar.confirm_delete',
@@ -69,72 +72,15 @@ export default class CodesystemToolbar extends React.Component {
 					name: code.name
 				}
 			)
-		);
-		confirm.showModal().then(function() {
-			CodesEndpoint.removeCode(code).then(function(resp) {
-				_this.props.codeRemoved(code.codeID);
-
-				// Code is a relationship-code
-				if (code.relationshipCode != null) {
-					// delete the relationshipCodeId of the relation
-					let sourceCode = _this.props.getCodeById(
-						code.relationshipCode.key.parent.id
-					);
-
-					// find the relation
-					let relation = null;
-
-					for (let i = 0; i < sourceCode.relations.length; i++) {
-						if (
-							sourceCode.relations[i].key.id == code.relationshipCode.key.id
-						) {
-							relation = sourceCode.relations[i];
-							break;
-						}
-					}
-
-					relation.relationshipCodeId = null;
-				}
-
-				// Check the relations of the code. If a relationship belongs to a relationship-code
-				// => update the relationship-code and set the relation to null
-				let updateRelation = relation => {
-					if (relation.relationshipCodeId != null) {
-						let relationshipCode = _this.props.getCodeById(
-							relation.relationshipCodeId
-						);
-						relationshipCode.relationshipCode = null;
-						relationshipCode.mmElementIDs = [];
-
-						CodesEndpoint.updateCode(relationshipCode).then(resp2 => {
-							// Do nothing
-						});
-					}
-				};
-
-				let checkCode = c => {
-					if (c.relations != null) {
-						for (let i = 0; i < c.relations.length; i++) {
-							updateRelation(c.relations[i]);
-						}
-					}
-
-					if (c.children != null) {
-						for (let i = 0; i < c.children.length; i++) {
-							checkCode(c.children[i]);
-						}
-					}
-				};
-
-				checkCode(code);
-			});
-		});
+		)
+			.showModal()
+			.then(() => this.props.removeCode(code));
 	}
 
 	insertCode() {
 		const { formatMessage } = IntlProvider.intl;
-		var _this = this;
-		var prompt = new Prompt(
+
+		new Prompt(
 			formatMessage({
 				id: 'codesystemtoolbar.prompt_name',
 				defaultMessage: 'Give your code a name'
@@ -143,10 +89,9 @@ export default class CodesystemToolbar extends React.Component {
 				id: 'codesystemtoolbar.prompt_name.sample',
 				defaultMessage: 'Code Name'
 			})
-		);
-		prompt.showModal().then(function(codeName) {
-			_this.props.createCode(codeName);
-		});
+		)
+			.showModal()
+			.then(codeName => this.props.createCode(codeName));
 	}
 
 	applyCode() {

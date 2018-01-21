@@ -4,6 +4,8 @@ import GoogleLineChart from '../../common/GoogleLineChart.jsx';
 import ChangeLogEndpoint from '../../common/endpoints/ChangeLogEndpoint';
 import ChartTimeFrameChooser from './ChartTimeFrameChooser.jsx';
 
+import IntlProvider from '../../common/Localization/LocalizationProvider';
+
 export default class UserRegistrationsChart extends React.Component {
 	constructor(props) {
 		super(props);
@@ -90,9 +92,19 @@ export default class UserRegistrationsChart extends React.Component {
 
 	renderChart() {
 		const data = new google.visualization.DataTable();
+		const { formatMessage } = IntlProvider.intl;
 
-		data.addColumn('date', 'Day');
-		data.addColumn('number', 'User registrations');
+		data.addColumn(
+			'date',
+			formatMessage({ id: 'userregistrationschart.day', defaultMessage: 'Day' })
+		);
+		data.addColumn(
+			'number',
+			formatMessage({
+				id: 'userregistrationschart.user_registrations',
+				defaultMessage: 'User registrations'
+			})
+		);
 
 		data.addRows(this.getDataRows(this.state.userCreatedChanges));
 

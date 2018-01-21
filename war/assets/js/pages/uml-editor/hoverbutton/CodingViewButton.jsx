@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import ImageHoverButton from './ImageHoverButton.jsx';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 export default class CodingViewButton extends ImageHoverButton {
 	constructor(props) {
@@ -17,7 +18,11 @@ export default class CodingViewButton extends ImageHoverButton {
 	}
 
 	getToolTip() {
-		return 'Opens the coding-view.';
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'codingviewbutton.tooltip',
+			defaultMessage: 'Opens the coding-view.'
+		});
 	}
 
 	getBounds() {

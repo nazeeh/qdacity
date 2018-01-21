@@ -10,7 +10,6 @@ import ButtonApplyLayout from './ButtonApplyLayout.jsx';
 import ButtonExpandAll from './ButtonExpandAll.jsx';
 import ButtonCollapseAll from './ButtonCollapseAll.jsx';
 import { BtnGroup } from '../../../common/styles/Btn.jsx';
-import CollaboratorList from '../../../common/SyncService/CollaboratorList';
 
 const StyledToolbar = styled.div`
 	display: flex;
@@ -70,7 +69,6 @@ export default class Toolbar extends React.Component {
 					</BtnGroup>
 				</div>
 				<StyledPlaceholder />
-				<CollaboratorList syncService={this.props.syncService} />
 			</StyledToolbar>
 		);
 	}

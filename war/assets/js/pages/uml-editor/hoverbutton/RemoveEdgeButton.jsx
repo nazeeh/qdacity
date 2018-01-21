@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import ImageHoverButton from './ImageHoverButton.jsx';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 export default class RemoveEdgeButton extends ImageHoverButton {
 	constructor(props) {
@@ -20,7 +21,11 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 	}
 
 	getToolTip() {
-		return 'Removes the edge (relation) from the model.';
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'removeedgebutton.tooltip',
+			defaultMessage: 'Removes the edge (relation) from the model.'
+		});
 	}
 
 	getBounds() {

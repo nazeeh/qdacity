@@ -6,6 +6,9 @@ import DropDownButton from '../../common/styles/DropDownButton.jsx';
 import { BtnDefault } from '../../common/styles/Btn.jsx';
 import StyledInput from '../../common/styles/Input.jsx';
 
+//import IntlProvider from '../../common/Localization/LocalizationProvider';
+import { FormattedMessage } from 'react-intl';
+
 const SELECTION = {
 	WEEK: 'Week',
 	MONTH: 'Month',
@@ -205,7 +208,7 @@ export default class UserRegistrationsChart extends React.Component {
 						/>
 
 						<StyledApplyButton onClick={() => this.sendEvent()}>
-							Apply
+							<FormattedMessage id="modal.apply" defaultMessage="Apply" />
 						</StyledApplyButton>
 					</div>
 				)}

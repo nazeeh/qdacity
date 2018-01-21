@@ -2,6 +2,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
+import CollaboratorList from '../../../common/SyncService/CollaboratorList';
+
 import ProjectDashboardBtn from './ProjectDashboardBtn.jsx';
 import SearchProjectBtn from './SearchProjectBtn.jsx';
 import ProjectSearch from './ProjectSearch.jsx';
@@ -62,8 +64,11 @@ export default class ProjectPanel extends React.Component {
 	}
 
 	renderCollapseIcon() {
-		if (this.state.isExpanded) return <i className="fa fa-compress fa-1x" />;
-		else return <i className="fa fa-expand fa-1x" />;
+		if (this.state.isExpanded) {
+			return <i className="fa fa-compress fa-1x" />;
+		} else {
+			return <i className="fa fa-expand fa-1x" />;
+		}
 	}
 
 	toggleSearchBar() {
@@ -88,6 +93,7 @@ export default class ProjectPanel extends React.Component {
 
 	renderPanelContent() {
 		if (!this.state.isExpanded) return null;
+
 		return (
 			<StyledPanelContent>
 				<StyledTopBtns>
@@ -101,22 +107,20 @@ export default class ProjectPanel extends React.Component {
 						history={this.props.history}
 					/>
 				</StyledTopBtns>
-				{(() => {
-					if (!this.state.showSearchBar) return null;
-					return (
-						<ProjectSearch
-							documentsView={this.props.documentsView}
-							codesystemView={this.props.codesystemView}
-							setSearchResults={this.setSearchResults}
-							showCodingView={this.props.showCodingView}
-						/>
-					);
-				})()}
+				{this.state.showSearchBar ? (
+					<ProjectSearch
+						documentsView={this.props.documentsView}
+						codesystemView={this.props.codesystemView}
+						setSearchResults={this.setSearchResults}
+						showCodingView={this.props.showCodingView}
+					/>
+				) : null}
 				<PageViewChooser
 					project={this.props.project}
 					view={this.props.selectedEditor}
 					viewChanged={this.props.viewChanged}
 				/>
+				<CollaboratorList syncService={this.props.syncService} />
 			</StyledPanelContent>
 		);
 	}

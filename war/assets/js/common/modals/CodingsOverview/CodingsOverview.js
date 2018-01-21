@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import React from 'react';
 
 import VexModal from '../VexModal';
 import CodingInstances from './CodingInstances.jsx';
@@ -15,17 +16,24 @@ export default class CodingsOverview extends VexModal {
 	showModal(codeID, documentsView) {
 		var _this = this;
 		var promise = new Promise(function(resolve, reject) {
+			const { formatMessage } = IntlProvider.intl;
 			var formElements = _this.formElements;
 
 			vex.dialog.open({
-				message: 'Coded text segments',
+				message: formatMessage({
+					id: 'codingsoverview.coded_text_segments',
+					defaultMessage: 'Coded text segments'
+				}),
 				contentCSS: {
 					width: '900px'
 				},
 				input: formElements,
 				buttons: [
 					$.extend({}, vex.dialog.buttons.NO, {
-						text: 'Close'
+						text: formatMessage({
+							id: 'codingsoverview.close',
+							defaultMessage: 'Close'
+						})
 					})
 				],
 				callback: function(data) {

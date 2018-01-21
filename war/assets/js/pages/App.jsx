@@ -16,6 +16,7 @@ import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
+import Faq from './help/Faq.jsx';
 import UserMigration from './user-migration/UserMigration.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
@@ -135,9 +136,9 @@ export default class App extends React.Component {
 								path="/"
 								render={props => (
 									<NavBar
-										auth={this.state.auth}
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
+										auth={this.state.auth}
 										tutorial={tut}
 										{...props}
 									/>
@@ -146,7 +147,7 @@ export default class App extends React.Component {
 							<Route
 								path="/PersonalDashboard"
 								render={props => (
-									<PersonalDashboard auth={this.state.auth} {...props} />
+									<PersonalDashboard 	auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
@@ -198,10 +199,8 @@ export default class App extends React.Component {
 								)}
 							/>
 							<Route
-								path="/UserMigration"
-								render={props => (
-									<UserMigration auth={this.state.auth} {...props} />
-								)}
+								path="/Faq"
+								render={props => <Faq auth={this.state.auth} {...props} />}
 							/>
 							<Route
 								exact

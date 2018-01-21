@@ -6,13 +6,14 @@ import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CourseEndpoint from '../../common/endpoints/CourseEndpoint';
 import CodesystemEndpoint from '../../common/endpoints/CodesystemEndpoint';
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
+
 import {
-	StyledPagination,
-	StyledPaginationItem,
-	StyledBoxList,
-	StyledListItemDefault,
-	StyledListItemBtn
-} from '../../common/styles/List';
+	ItemList,
+	ListMenu,
+	StyledListItemBtn,
+	StyledListItemPrimary,
+	StyledListItemDefault
+} from '../../common/styles/ItemList.jsx';
 
 const StyledNotificationInfo = styled.div`
 	flex-grow: 1;
@@ -39,16 +40,12 @@ export default class NotificationList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			notifications: [],
-			// pagination
-			currentPage: 1,
-			itemsPerPage: 8,
-			search: ''
+			notifications: []
 		};
 
 		this.init();
 
-		this.paginationClick = this.paginationClick.bind(this);
+		this.renderCourse = this.renderCourse.bind(this);
 		this.acceptInvitation = this.acceptInvitation.bind(this);
 		this.settleNotification = this.settleNotification.bind(this);
 		this.createValidationProject = this.createValidationProject.bind(this);
@@ -74,12 +71,6 @@ export default class NotificationList extends React.Component {
 			return 0;
 		});
 		return notifications;
-	}
-
-	paginationClick(event) {
-		this.setState({
-			currentPage: Number(event.target.id)
-		});
 	}
 
 	acceptInvitation(notification) {
@@ -128,10 +119,6 @@ export default class NotificationList extends React.Component {
 		).then(function(resp) {});
 
 		this.settleNotification(notification);
-	}
-
-	isActivePage(page) {
-		return page == this.state.currentPage;
 	}
 
 	isValidationProject(project) {
@@ -293,53 +280,27 @@ export default class NotificationList extends React.Component {
 		}
 	}
 
-	render() {
-		var _this = this;
-
-		const lastItem = this.state.currentPage * this.state.itemsPerPage;
-		const firstItem = lastItem - this.state.itemsPerPage;
-		const itemsToDisplay = this.state.notifications.slice(firstItem, lastItem);
-
-		const renderListItems = itemsToDisplay.map((notification, index) => {
-			return (
-				<StyledListItemDefault key={notification.id}>
-					<StyledNotificationInfo>
-						<span dangerouslySetInnerHTML={{ __html: notification.subject }} />
-						<br />
-						<span dangerouslySetInnerHTML={{ __html: notification.message }} />
-					</StyledNotificationInfo>
-					{this.renderButtons(notification)}
-				</StyledListItemDefault>
-			);
-		});
-
-		//Render Pagination
-		const pageNumbers = [];
-		for (
-			let i = 1;
-			i <= Math.ceil(this.state.notifications.length / this.state.itemsPerPage);
-			i++
-		) {
-			pageNumbers.push(i);
-		}
-		const renderPagination = pageNumbers.map(pageNo => {
-			return (
-				<StyledPaginationItem
-					key={pageNo}
-					id={pageNo}
-					onClick={this.paginationClick}
-					active={this.isActivePage(pageNo)}
-				>
-					{pageNo}
-				</StyledPaginationItem>
-			);
-		});
-
+	renderCourse(notification, index) {
 		return (
-			<div>
-				<StyledBoxList>{renderListItems}</StyledBoxList>
-				<StyledPagination>{renderPagination}</StyledPagination>
-			</div>
+			<StyledListItemDefault key={notification.id}>
+				<StyledNotificationInfo>
+					<span dangerouslySetInnerHTML={{ __html: notification.subject }} />
+					<br />
+					<span dangerouslySetInnerHTML={{ __html: notification.message }} />
+				</StyledNotificationInfo>
+				{this.renderButtons(notification)}
+			</StyledListItemDefault>
+		);
+	}
+
+	render() {
+		return (
+			<ItemList
+				hasPagination={true}
+				itemsPerPage={8}
+				items={this.state.notifications}
+				renderItem={this.renderCourse}
+			/>
 		);
 	}
 }

@@ -1,10 +1,23 @@
+import ReactDOM from 'react-dom';
 import VexModal from './VexModal';
+import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
+import Theme from '../../common/styles/Theme.js';
+import { ThemeProvider } from 'styled-components';
 
 export default class CustomForm extends VexModal {
 	constructor(message) {
 		super();
 		this.formElements = '';
 		this.message = message;
+		this.isProjectRevisionSelector = false;
+		this.projects = [];
+		this.selectedRevisionID = '';
+		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+	}
+
+	setSelectedRevisionID(revisionID) {
+		this.selectedRevisionID = revisionID;
 	}
 
 	addTextInput(name, label, placeholder, value) {
@@ -36,6 +49,13 @@ export default class CustomForm extends VexModal {
 			value +
 			'" ></textarea>';
 		this.formElements += '</div>';
+		this.formElements += '</div>';
+	}
+
+	addDropDown(projects) {
+		this.isProjectRevisionSelector = true;
+		this.projects = projects;
+		this.formElements += '<div id="ProjectRevisionSelector">';
 		this.formElements += '</div>';
 	}
 
@@ -95,6 +115,7 @@ export default class CustomForm extends VexModal {
 		var _this = this;
 		var promise = new Promise(function(resolve, reject) {
 			var formElements = _this.formElements;
+			const { formatMessage } = IntlProvider.intl;
 
 			vex.dialog.open({
 				message: _this.message,
@@ -104,18 +125,33 @@ export default class CustomForm extends VexModal {
 				input: formElements,
 				buttons: [
 					$.extend({}, vex.dialog.buttons.YES, {
-						text: 'OK'
+						text: formatMessage({ id: 'modal.ok', defaultMessage: 'OK' })
 					}),
 					$.extend({}, vex.dialog.buttons.NO, {
-						text: 'Cancel'
+						text: formatMessage({
+							id: 'modal.cancel',
+							defaultMessage: 'Cancel'
+						})
 					})
 				],
 				callback: function(data) {
 					if (data != false) {
+						data.SelectedRevisionID = _this.selectedRevisionID;
 						resolve(data);
 					} else reject(data);
 				}
 			});
+			if (_this.isProjectRevisionSelector) {
+				ReactDOM.render(
+					<ThemeProvider theme={Theme}>
+						<ProjectRevisionSelector
+							setSelectedRevisionID={_this.setSelectedRevisionID}
+							projects={_this.projects}
+						/>
+					</ThemeProvider>,
+					document.getElementById('ProjectRevisionSelector')
+				);
+			}
 		});
 
 		return promise;

@@ -28,9 +28,13 @@ public class TextDocument implements Serializable {
 
 	@Persistent
 	String title;
+
 	@Persistent
 	Text text;
 
+	@Persistent
+	Long positionInOrder;
+	
 	public Long getId() {
 		return id;
 	}
@@ -63,4 +67,11 @@ public class TextDocument implements Serializable {
 		this.projectID = projectID;
 	}
 
+	public Long getPositionInOrder() {
+		return positionInOrder;
+	}
+
+	public void setPositionInOrder(Long positionInOrder) {
+		this.positionInOrder = positionInOrder;
+	}
 }
