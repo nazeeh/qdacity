@@ -5,7 +5,7 @@ var chrome = require("selenium-webdriver/chrome");
 
 describe('Login test', function() {
 
-	var defaultTimeout = 20000;
+	var defaultTimeout = 40000;
 	
 	var driver = null;
 	
