@@ -41,14 +41,37 @@ describe('Project test', function() {
     	this.driver.wait(until.elementLocated(By.id('addCodeButtonId'))).click();   
 
     	// Find code name field
-    	this.driver.wait(until.elementLocated(By.xpath("//input[@name='vex' and @type='text' and @class='vex-dialog-prompt-input']"))).sendKeys(codeName); 
+    	let codeNameField = By.xpath("//input[@name='vex' and @type='text' and @class='vex-dialog-prompt-input']");
+    	this.driver.wait(until.elementLocated(codeNameField)).sendKeys(codeName); 
+    	this.driver.findElement(codeNameField).sendKeys(webdriver.Key.TAB);
     	
     	// Find the OK button
     	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();    	
     	
     	// Find the code in the codesystem
     	this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'clickable') and text()='" + codeName + "']"))).then(() => {
-    		done();
+        	done();
     	});    		
+    }, defaultTimeout);
+    
+    it('Should add a coding to a document', (done) => {
+    	const projectName = 'Project_01';
+    	const documentName = 'Document_01';
+    	const codeName = 'Code_01';
+
+    	// Find an existing project
+    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']"))).click();    	
+    	
+    	// Find the coding editor button
+    	this.driver.wait(until.elementLocated(By.xpath("//button[contains(@class,'btn')]/i[contains(@class,'fa-tags')]"))).click();   
+
+    	// Find the code in the codesystem
+    	this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'clickable') and text()='" + codeName + "']"))).click();
+
+    	// Find the document in the documents-list	
+    	this.driver.wait(until.elementLocated(By.xpath("//a/div[text()='" + documentName + "']"))).click();
+    	
+    	// TODO
+    		
     }, defaultTimeout);
 });
