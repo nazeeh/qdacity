@@ -12,6 +12,13 @@ describe('Project test', function() {
     beforeEach((done) => {
     	const options = new chrome.Options();
 
+    	// TODO this might work - didnt try yet
+    	// TODO THIS WILL HELP https://github.com/SeleniumHQ/selenium/issues/854
+//    	capabilities = DesiredCapabilities.chrome();
+//    	String[] switches = {"user-data-dir=\\path\\to\\your\\custom\\chrome\\profile\\directory"};
+//    	capabilities.setCapability("chrome.switches", switches);
+//    	webDriver = new RemoteWebDriver(gridServerURL, capabilities);
+    	
     	options.addArguments('user-data-dir=C:\\Users\\Felix\\AppData\\Local\\Google\\Chrome\\User Data');
     	options.addArguments('start-maximized');   	
 
@@ -51,9 +58,9 @@ describe('Project test', function() {
     	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']"))).click();    	
     	
 		// Find the project title
-    	this.driver.wait(until.elementLocated(By.xpath("//h2[@class='page-header']/span[text()='" + projectName + "']"))).then((text) => {
+    	this.driver.wait(until.elementLocated(By.xpath("//h2[@class='page-header']/span[text()='" + projectName + "']"))).then(() => {
     		// Find the project description
-        	_this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'box')]/div[text()='" + projectDescription + "']"))).then((text) => {
+        	_this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'box')]/div[text()='" + projectDescription + "']"))).then(() => {
         		// Check the URL
 	    		_this.driver.getCurrentUrl().then((currentUrl) => {
 	        		// Does the URL end with /ProjectDashboard?
