@@ -140,7 +140,7 @@ export default class DocumentsToolbar extends React.Component {
 			var doc = documents[i];
 			var elements = doc.text;
 
-			var foundArray = $(doc.text).find("coding[id='" + codingID + "']");
+			var foundArray = $(doc.text).find('coding[id=\'' + codingID + '\']');
 			if (foundArray.length > 0) {
 				this.view.setActiveDocument(doc.id);
 			}
