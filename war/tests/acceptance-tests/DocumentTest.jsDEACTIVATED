@@ -55,7 +55,6 @@ describe('Project test', function() {
     	});
     }, defaultTimeout);
     
-
     it('Should add text to a document', (done) => {
     	const projectName = 'Project_01';
     	const documentName = 'Document_01';
