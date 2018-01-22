@@ -1,5 +1,5 @@
 export const EvaluationTarget = {
-  THIS: 1,
-  SOURCE: 2,
-  DESTINATION: 3
+	THIS: 1,
+	SOURCE: 2,
+	DESTINATION: 3
 };

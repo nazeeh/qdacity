@@ -1,50 +1,50 @@
-import React from "react";
-import { FormattedMessage } from "react-intl";
-import styled from "styled-components";
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import styled from 'styled-components';
 
-import { BtnDefault } from "../../../common/styles/Btn.jsx";
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 const StyledSettingsBtn = BtnDefault.extend`
-  margin-left: 5px;
-  & > i {
-    padding-right: 5px;
-  }
+	margin-left: 5px;
+	& > i {
+		padding-right: 5px;
+	}
 `;
 
 export default class SettingsBtn extends React.Component {
-  constructor(props) {
-    super(props);
-    this.redirectToCodingEditor = this.redirectToCodingEditor.bind(this);
-  }
+	constructor(props) {
+		super(props);
+		this.redirectToCodingEditor = this.redirectToCodingEditor.bind(this);
+	}
 
-  redirectToCodingEditor() {
-    this.props.history.push(
-      "/CodingEditor?project=" +
-        this.props.project.getId() +
-        "&type=" +
-        this.props.project.getType()
-    );
-  }
+	redirectToCodingEditor() {
+		this.props.history.push(
+			'/CodingEditor?project=' +
+				this.props.project.getId() +
+				'&type=' +
+				this.props.project.getType()
+		);
+	}
 
-  render() {
-    if (this.props.isProjectOwner || this.props.isValidationCoder) {
-      return (
-        <StyledSettingsBtn
-          type="button"
-          className="btn btn-default btn-sm pull-right"
-          onClick={this.redirectToCodingEditor}
-        >
-          <i className="fa fa-tags fa-lg" />
-          <b>
-            <FormattedMessage
-              id="settingsbtn.codeing_editor"
-              defaultMessage="Coding Editor"
-            />
-          </b>
-        </StyledSettingsBtn>
-      );
-    } else {
-      return null;
-    }
-  }
+	render() {
+		if (this.props.isProjectOwner || this.props.isValidationCoder) {
+			return (
+				<StyledSettingsBtn
+					type="button"
+					className="btn btn-default btn-sm pull-right"
+					onClick={this.redirectToCodingEditor}
+				>
+					<i className="fa fa-tags fa-lg" />
+					<b>
+						<FormattedMessage
+							id="settingsbtn.codeing_editor"
+							defaultMessage="Coding Editor"
+						/>
+					</b>
+				</StyledSettingsBtn>
+			);
+		} else {
+			return null;
+		}
+	}
 }

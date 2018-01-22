@@ -1,25 +1,25 @@
-import React from "react";
+import React from 'react';
 
-import CellElementList from "./CellElementList.jsx";
+import CellElementList from './CellElementList.jsx';
 
 export default class CellFields extends CellElementList {
-  constructor(props) {
-    super(props);
-  }
+	constructor(props) {
+		super(props);
+	}
 
-  getElements() {
-    return this.props.cellValue.getFields();
-  }
+	getElements() {
+		return this.props.cellValue.getFields();
+	}
 
-  getElementName() {
-    return "Field";
-  }
+	getElementName() {
+		return 'Field';
+	}
 
-  addElementClicked() {
-    this.props.umlEditor.openClassFieldModal(this.props.cell);
-  }
+	addElementClicked() {
+		this.props.umlEditor.openClassFieldModal(this.props.cell);
+	}
 
-  removeElementClicked(relationId) {
-    this.props.umlEditor.deleteClassField(this.props.cell, relationId);
-  }
+	removeElementClicked(relationId) {
+		this.props.umlEditor.deleteClassField(this.props.cell, relationId);
+	}
 }
