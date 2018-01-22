@@ -54,4 +54,47 @@ describe('Project test', function() {
     		done();
     	});
     }, defaultTimeout);
+    
+
+    it('Should add text to a document', (done) => {
+    	const projectName = 'Project_01';
+    	const documentName = 'Document_01';
+    	
+    	const documentText = 'This is the first line.\nThis is the second line.\nThis is the third line.';
+    	
+    	const _this = this;
+    	
+    	// Find an existing project
+    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']"))).click();    	
+    	
+    	// Find the coding editor button
+    	this.driver.wait(until.elementLocated(By.xpath("//button[contains(@class,'btn')]/i[contains(@class,'fa-tags')]"))).click();   
+    	
+    	// Find the document and select it
+    	this.driver.wait(until.elementLocated(By.xpath("//div[text()='" + documentName + "']"))).click();
+    	
+    	// Open Text-Editor
+    	this.driver.wait(until.elementLocated(By.xpath("//button/span[text()='Text-Editor']"))).click();
+    	
+    	// Switch to iframe
+    	this.driver.switchTo().frame(this.driver.findElement(By.id('textEditor')));
+
+    	// Focus text field and send input
+    	this.driver.actions().click(this.driver.findElement(By.xpath("//html/body/p[@class='paragraph']"))).sendKeys(documentText).perform();
+    	
+    	// Switch back
+        this.driver.switchTo().defaultContent();
+        
+        // Go to coding-editor
+        this.driver.wait(until.elementLocated(By.xpath("//button/span[text()='Coding-Editor']"))).click();
+
+    	// Switch to iframe
+    	this.driver.switchTo().frame(this.driver.findElement(By.id('textEditor')));
+    	 
+    	// Find text field
+    	this.driver.wait(until.elementLocated(By.xpath("//html/body"))).getText().then((text) => {
+    		expect(text).toBe(documentText);
+    		done();
+    	});
+    }, defaultTimeout);
 });
