@@ -182,6 +182,7 @@ export default class CodesystemToolbar extends React.Component {
 
 		return [
 			<BtnDefault
+				id="addCodeButtonId"
 				key="applyCodeBtn"
 				className="btn btn-default"
 				onClick={this.insertCode}
