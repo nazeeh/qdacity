@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
-import javax.jdo.FetchGroup;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -41,7 +40,10 @@ import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
-import com.qdacity.logs.*;
+import com.qdacity.course.TermCourse;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeBuilder;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.Project;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
@@ -339,18 +341,71 @@ public class UserEndpoint {
 	 */
 	@ApiMethod(name = "removeUser")
 	public void removeUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		
+		User user = (User) Cache.getOrLoad(id, User.class);
+
+		// Check if user is authorized
+		Authorization.checkAuthorization(user, loggedInUser);
+		
+		// remove from projects
+		if(user.getProjects() != null) {
+			ProjectEndpoint projectEndpoint = new ProjectEndpoint();
+			for(Long projectId: user.getProjects()) {
+				
+				Project project = (Project) Cache.getOrLoad(projectId, Project.class);
+				if(project.getOwners().contains(user.getId()) && project.getOwners().size() == 1) {
+					// last owner -> delete project
+					projectEndpoint.removeProject(projectId, loggedInUser);
+				} else {
+					// just remove user
+					projectEndpoint.removeUser(projectId, "PROJECT", user.getId(), loggedInUser);
+				}
+			}
+		}
+		
+		// remove from courses
+		CourseEndpoint courseEndpoint = new CourseEndpoint();
+		if(user.getCourses() != null) {
+			for(Long courserId: user.getCourses()) {
+				
+				Course course = (Course) Cache.getOrLoad(courserId, Course.class);
+				if(course.getOwners().contains(user.getId()) && course.getOwners().size() == 1) {
+					// last owner
+					courseEndpoint.removeCourse(courserId, loggedInUser);
+				} else {
+					// just remove user
+					courseEndpoint.removeUser(courserId, loggedInUser);
+				}
+			}
+		}
+		
+		// remove from termCourses
+		if(user.getTermCourses() != null) {
+			for(Long termCourserId: user.getTermCourses()) {
+				
+				TermCourse termCourse = (TermCourse) Cache.getOrLoad(termCourserId, TermCourse.class);
+				if(termCourse.getOwners().contains(user.getId()) && termCourse.getOwners().size() == 1) {
+					// last owner
+					courseEndpoint.removeTermCourse(termCourserId, loggedInUser);
+				} else {
+					// just remove user
+					courseEndpoint.removeParticipant(termCourserId, user.getId(), loggedInUser);
+				}
+			}
+		}
+		
+		// finally delete user
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = (User) Cache.getOrLoad(id, User.class, mgr);
-			User myUser = user;
-			System.out.println("This is the id " + user.getId());
-
-			// Check if user is authorized
-			Authorization.checkAuthorization(user, loggedInUser);
-			mgr.deletePersistent(myUser);
+			user = (User) Cache.getOrLoad(id, User.class);
+			Cache.invalidate(user.getId(), User.class);
+			Cache.invalidatUserLogins(user);
+			mgr.makePersistent(user); // can't delete transient instance
+			mgr.deletePersistent(user);
 		} finally {
 			mgr.close();
 		}
+		
 	}
 
 	@SuppressWarnings("unchecked")
