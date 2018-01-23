@@ -68,11 +68,8 @@ export default class UserMigration extends React.Component {
 			name: '',
 			email: '',
 			picSrc: '',
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			},
 			isAlreadyMigrated: null,
+			isRegisteredAsOldAccount: null,
 			migrationStatus: null
 		};
 
@@ -90,20 +87,6 @@ export default class UserMigration extends React.Component {
 			}
 			_this.updateUserStatus();
 		});
-
-		// update on initialization
-		this.updateAuthStatusFromProps(props);
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateAuthStatusFromProps(nextProps);
-	}
-
-	updateAuthStatusFromProps(targetedProps) {
-		this.state.authState = targetedProps.auth.authState;
-		this.setState(this.state);
-		this.updateUserStatus();
 	}
 
 	updateUserStatus() {
@@ -126,7 +109,7 @@ export default class UserMigration extends React.Component {
 		});
 		gapi.client.qdacityusermigration.isOldUserRegistered({}).execute(
 			resp => {
-				_this.state.authState.isUserRegistered = resp.value;
+				_this.state.isRegisteredAsOldAccount = resp.value;
 				_this.setState(_this.state);
 
 				// all other requests need id_token here as header
@@ -159,15 +142,9 @@ export default class UserMigration extends React.Component {
 			});
 	}
 
-	signOut() {
-		this.authenticationProvider.signOut().then(function() {}, err => {
-			console.error('Sign out failed.');
-		});
-	}
-
 	migrate() {
 		if (
-			!this.state.authState.isUserRegistered ||
+			!this.state.isRegisteredAsOldAccount ||
 			this.state.isAlreadyMigrated
 		) {
 			console.error('Preconditions for migration are not met!');
@@ -261,7 +238,7 @@ export default class UserMigration extends React.Component {
 						<StyledButton
 							className="btn btn-primary col-xs-3"
 							onClick={() => {
-								this.signOut();
+								this.authenticationProvider.signOut();
 							}}
 						>
 							Sign-Out!
@@ -279,22 +256,22 @@ export default class UserMigration extends React.Component {
 						<StyledHeader3>Preconditions for Migration:</StyledHeader3>
 						<PreconditionStatusLoading
 							show={
-								this.state.authState.isUserRegistered === null ||
+								this.state.isRegisteredAsOldAccount === null ||
 								this.state.isAlreadyMigrated === null
 							}
 						/>
 						<MigrationPrecondisionsList
 							show={
-								this.state.authState.isUserRegistered !== null &&
+								this.state.isRegisteredAsOldAccount !== null &&
 								this.state.isAlreadyMigrated !== null
 							}
 						/>
 					</div>
 					<MigrationNotPossible
 						show={
-							(!this.state.authState.isUserRegistered ||
-								this.state.isAlreadyMigrated) &&
-							this.state.authState.isUserRegistered !== null &&
+							(!this.state.isRegisteredAsOldAccount ||
+								!this.state.isAlreadyMigrated) &&
+							this.state.isRegisteredAsOldAccount !== null &&
 							this.state.isAlreadyMigrated !== null
 						}
 					/>
@@ -305,7 +282,7 @@ export default class UserMigration extends React.Component {
 				<div>
 					<p>
 						<PreconditionsStatus
-							fulfilled={this.state.authState.isUserRegistered}
+							fulfilled={this.state.isRegisteredAsOldAccount}
 						/>
 						You are registered at QDAcity with an old account (2017 or before)
 					</p>
@@ -417,19 +394,20 @@ export default class UserMigration extends React.Component {
 					</ol>
 				</StyledMigrationDescription>
 				<StyledMigrationFunctionality>
-					<GoogleSignIn show={!this.state.authState.isUserSignedIn} />
-					<ProfileInfo show={this.state.authState.isUserSignedIn} />
-					<MigrationPreconditions show={this.state.authState.isUserSignedIn} />
+					<GoogleSignIn show={!this.props.auth.authState.isUserSignedIn} />
+					<ProfileInfo show={this.props.auth.authState.isUserSignedIn} />
+					<MigrationPreconditions show={this.props.auth.authState.isUserSignedIn} />
 					<MigrationButton
 						show={
-							this.state.authState.isUserRegistered &&
+							this.props.auth.authState.isUserSignedIn &&
+							this.state.isRegisteredAsOldAccount &&
 							!this.state.isAlreadyMigrated &&
 							!this.state.migrationStatus
 						}
 					/>
 					<MigrationMessage
 						show={
-							this.state.authState.isUserRegistered &&
+							this.state.isRegisteredAsOldAccount &&
 							!this.state.isAlreadyMigrated &&
 							this.state.migrationStatus !== null
 						}

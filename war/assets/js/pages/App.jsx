@@ -83,7 +83,7 @@ export default class App extends React.Component {
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
 			const loginStatus = _this.authenticationProvider.isSignedIn();
-			if (!loginStatus && !_this.state.isUserSignedIn) {
+			if (!loginStatus && !_this.state.auth.authState.isUserSignedIn) {
 				// no need to rerender!
 				resolve();
 				return;
