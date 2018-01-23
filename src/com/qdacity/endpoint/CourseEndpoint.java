@@ -26,6 +26,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
@@ -146,7 +147,8 @@ public class CourseEndpoint {
 				mgr.makePersistent(qdacityUser);
 				
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
-				Cache.cache(user.getId(), com.qdacity.user.User.class, qdacityUser); // also cache external user id
+				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
 			}
 			catch (javax.jdo.JDOObjectNotFoundException ex) {
 				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
@@ -446,7 +448,8 @@ public class CourseEndpoint {
 				mgr.makePersistent(qdacityUser);
 				
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
-				Cache.cache(user.getId(), com.qdacity.user.User.class, qdacityUser); // also cache external user id
+				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
 			} finally {
 				mgr.close();
 			}
@@ -497,7 +500,8 @@ public class CourseEndpoint {
 				mgr.makePersistent(qdacityUser);
 				
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
-				Cache.cache(user.getId(), com.qdacity.user.User.class, qdacityUser); // also cache external user id
+				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
 			} finally {
 				mgr.close();
 			}
