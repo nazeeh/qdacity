@@ -103,6 +103,12 @@ export default class UserMigration extends React.Component {
 	checkMigrationPreconditions() {
 		const _this = this;
 
+		if(!this.access_token || !this.id_token) {
+			// This should not happen, because user needs to re-authenticate!
+			console.log("token not loaded yet!");
+			return;
+		}
+
 		// custom request because we need access_token here as header
 		gapi.client.setToken({
 			access_token: this.access_token
@@ -175,6 +181,7 @@ export default class UserMigration extends React.Component {
 					_this.resetGapiToken();
 
 					_this.props.auth.updateUserStatus();
+					_this.props.history.push('/');
 				},
 				failure => {
 					_this.state.migrationStatus = false;
@@ -394,9 +401,9 @@ export default class UserMigration extends React.Component {
 					</ol>
 				</StyledMigrationDescription>
 				<StyledMigrationFunctionality>
-					<GoogleSignIn show={!this.props.auth.authState.isUserSignedIn} />
-					<ProfileInfo show={this.props.auth.authState.isUserSignedIn} />
-					<MigrationPreconditions show={this.props.auth.authState.isUserSignedIn} />
+					<GoogleSignIn show={!this.props.auth.authState.isUserSignedIn || this.access_token === null && this.id_token === null} />
+					<ProfileInfo show={this.props.auth.authState.isUserSignedIn && this.access_token !== null && this.id_token !== null} />
+					<MigrationPreconditions show={this.props.auth.authState.isUserSignedIn && this.access_token !== null && this.id_token !== null} />
 					<MigrationButton
 						show={
 							this.props.auth.authState.isUserSignedIn &&
@@ -407,6 +414,7 @@ export default class UserMigration extends React.Component {
 					/>
 					<MigrationMessage
 						show={
+							this.props.auth.authState.isUserSignedIn &&
 							this.state.isRegisteredAsOldAccount &&
 							!this.state.isAlreadyMigrated &&
 							this.state.migrationStatus !== null
