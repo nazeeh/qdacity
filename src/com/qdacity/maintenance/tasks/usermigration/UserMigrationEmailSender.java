@@ -27,11 +27,20 @@ public class UserMigrationEmailSender implements DeferredTask {
 	private void sendUserMigrationEmail(User user, String href) {
 		Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER, Credentials.SENDGRID_PW);
 		
-		String name = Normalizer.normalize(user.getGivenName(), Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "") + " " + Normalizer.normalize(user.getSurName(), Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "");
+		String givenName = user.getGivenName() == null ? "User" : user.getGivenName();
+		String surName = user.getSurName() == null ? "" : user.getSurName();
+		
+		String name = Normalizer.normalize(givenName, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "") + " " + Normalizer.normalize(surName, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "");
 		Logger.getLogger("logger").log(Level.INFO, "Sending notification mail to: " + name + "(" + user.getEmail() + ")");
+		
+		if(user.getEmail() == null) {
+			Logger.getLogger("logger").log(Level.INFO, "User with ID: " + user.getId() + "has no email adress! Sending aborted!");
+			return;
+		}
+		
 		mail.addTo(user.getEmail(), name);
 		
-		String greetingName = user.getGivenName() + ", ";
+		String greetingName = givenName + ", ";
 		
 		String msgBody = "Hi " + greetingName + "<br>";
 		msgBody += 	"<p>"
@@ -41,6 +50,8 @@ public class UserMigrationEmailSender implements DeferredTask {
 				+ 	"Because of this, every user needs to <strong>migrate his/her account</strong>. No worries, it is just clicking the link and following the instructions (~1min)."
 				+	"<br>"
 				+	"<a href=" + href + ">" + href + "</a>"
+				+	"<br>"
+				+	"If you do not want to be part of the QDAcity community anymore, just ignore this mail! All <strong>unmigrated accounts will be deleted in about 90 days</strong>!"
 				+	"<br>"
 				+	"<br>"
 				+ 	"We hope you are looking forward to the new features."
