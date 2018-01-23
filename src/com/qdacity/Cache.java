@@ -10,7 +10,9 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 
 public class Cache {
 
@@ -116,13 +118,25 @@ public class Cache {
 		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
 
 		syncCache.delete(keyString);
+	}
+	
+	public static void invalidate(String id, Class type) {
+		String keyString = KeyFactory.createKeyString(type.toString(), id);
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
 
+		syncCache.delete(keyString);
 	}
 	
 	public static void cacheAuthenticatedUser(AuthenticatedUser authenticatedUser, User qdacityUser) {
 		Class type = User.class;
 		String id = authenticatedUser.getProvider().toString() + ":" + authenticatedUser.getId();
 		cache(id, type, qdacityUser);
+	}
+
+	public static void invalidatUserLogins(User qdacityUser) {
+		for(UserLoginProviderInformation loginInfo: qdacityUser.getLoginProviderInformation()) {
+			invalidate(loginInfo.getProvider().toString() + ":" + loginInfo.getExternalUserId(), User.class);
+		}
 	}
 
 	private static PersistenceManager getPersistenceManager() {
