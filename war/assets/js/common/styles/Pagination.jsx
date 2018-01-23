@@ -27,11 +27,11 @@ const StyledItem = StyledBaseItem.extend`
 
 	&:hover {
 		background-color: ${props =>
-			props.active
-				? props.theme.bgPrimaryHighlight
-				: props.theme.defaultPaneBg};
+		props.active
+			? props.theme.bgPrimaryHighlight
+			: props.theme.defaultPaneBg};
 		color: ${props =>
-			props.active ? props.theme.fgPrimaryHighlight : props.theme.fgDefault};
+		props.active ? props.theme.fgPrimaryHighlight : props.theme.fgDefault};
 		text-decoration: none;
 	}
 `;

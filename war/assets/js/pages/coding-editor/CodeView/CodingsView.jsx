@@ -88,7 +88,7 @@ export default class CodingsView extends React.Component {
 			var elements = doc.text;
 			var found = $('coding', elements);
 			var foundArray = $(
-				"coding[code_id='" + _this.props.code.codeID + "']",
+				'coding[code_id=\'' + _this.props.code.codeID + '\']',
 				elements
 			).map(function() {
 				var tmp = {};

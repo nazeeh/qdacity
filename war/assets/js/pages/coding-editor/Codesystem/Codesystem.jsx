@@ -344,7 +344,7 @@ export default class Codesystem extends SimpleCodesystem {
 			var elements = $('<div>' + doc.text + '</div>');
 			var originalText = elements.html();
 			elements
-				.find("coding[code_id='" + codingID + "']")
+				.find('coding[code_id=\'' + codingID + '\']')
 				.contents()
 				.unwrap();
 			var strippedText = elements.html();

@@ -125,7 +125,7 @@ export default class DocumentsView extends React.Component {
 		for (var index in documents) {
 			var doc = documents[index];
 			var elements = doc.text;
-			var foundArray = $("coding[code_id='" + codID + "']", elements).map(
+			var foundArray = $('coding[code_id=\'' + codID + '\']', elements).map(
 				function() {
 					return $(this).attr('id');
 				}
@@ -285,7 +285,7 @@ export default class DocumentsView extends React.Component {
 			var doc = documents[i];
 			var elements = doc.text;
 
-			var foundArray = $(doc.text).find("coding[id='" + codingID + "']");
+			var foundArray = $(doc.text).find('coding[id=\'' + codingID + '\']');
 			if (foundArray.length > 0) {
 				this.setActiveDocument(doc.id);
 			}

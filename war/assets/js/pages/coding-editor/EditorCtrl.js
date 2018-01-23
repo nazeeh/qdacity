@@ -237,7 +237,7 @@ export default class EditorCtrl {
 		range = document.createRange();
 		var codingNodes = $('#textEditor')
 			.contents()
-			.find("coding[id='" + codingID + "']");
+			.find('coding[id=\'' + codingID + '\']');
 		var startNode = codingNodes[0];
 		var endNode = codingNodes[codingNodes.length - 1];
 

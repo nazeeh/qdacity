@@ -51,7 +51,7 @@ export default class CodingInstances extends React.Component {
 			var elements = doc.text;
 			var found = $('coding', elements);
 			var foundArray = $(
-				"coding[code_id='" + this.props.codeID + "']",
+				'coding[code_id=\'' + this.props.codeID + '\']',
 				elements
 			).map(function() {
 				var tmp = {};

@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-const prettierEslint = require('gulp-prettier-eslint');
+const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpack = require('webpack-stream');
 const uglify = require('gulp-uglify');
 const jasmine = require('gulp-jasmine');
@@ -46,16 +46,16 @@ gulp.task('format', () => {
 gulp.task('bundle-task', function() {
 	setConfig();
 	return (gulp
-			.src('') //doesn't matter what to put as src,
-			//since webpack.config fetches from entry points
-			.pipe(webpack(require('./webpack.config.js')))
-			.on('error', handleError)
-			.pipe(replace('$API_PATH$', config.api_path))
-			.pipe(replace('$API_VERSION$', config.api_version))
-			.pipe(replace('$CLIENT_ID$', config.client_id))
-			.pipe(replace('$SYNC_SERVICE$', config.sync_service))
-			.pipe(gulp.dest('dist/js/'))
-			.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+		.src('') //doesn't matter what to put as src,
+	//since webpack.config fetches from entry points
+		.pipe(webpack(require('./webpack.config.js')))
+		.on('error', handleError)
+		.pipe(replace('$API_PATH$', config.api_path))
+		.pipe(replace('$API_VERSION$', config.api_version))
+		.pipe(replace('$CLIENT_ID$', config.client_id))
+		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(gulp.dest('dist/js/'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });
 
 gulp.task('set-react-production', function() {
@@ -102,22 +102,22 @@ gulp.task('minify', function() {
 gulp.task('watch', function() {
 	setConfig();
 	return (gulp
-			.src('') //doesn't matter what to put as src,
-			//since webpack.config fetches from entry points
-			.pipe(
-				webpack(
-					Object.assign(require('./webpack.config.js'), {
-						watch: true
-					})
-				)
+		.src('') //doesn't matter what to put as src,
+	//since webpack.config fetches from entry points
+		.pipe(
+			webpack(
+				Object.assign(require('./webpack.config.js'), {
+					watch: true
+				})
 			)
-			.on('error', handleError)
-			.pipe(replace('$API_PATH$', config.api_path))
-			.pipe(replace('$API_VERSION$', config.api_version))
-			.pipe(replace('$CLIENT_ID$', config.client_id))
-			.pipe(replace('$SYNC_SERVICE$', config.sync_service))
-			.pipe(gulp.dest('dist/js/'))
-			.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+		)
+		.on('error', handleError)
+		.pipe(replace('$API_PATH$', config.api_path))
+		.pipe(replace('$API_VERSION$', config.api_version))
+		.pipe(replace('$CLIENT_ID$', config.client_id))
+		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(gulp.dest('dist/js/'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });
 
 gulp.task('test', () => gulp.src('./tests/*.js').pipe(jasmine()));
