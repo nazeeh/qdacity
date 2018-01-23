@@ -97,18 +97,13 @@ public class CourseEndpointTestHelper {
 		return terms;
 	}
 	
-	static public void addTermCourse(Long id, Long courseID, String term, com.google.api.server.spi.auth.common.User loggedInUser) {
+	static public void addTermCourse(Long id, Long courseID, String term, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		TermCourse termCourse = new TermCourse();
 		termCourse.setId(id);
 		termCourse.setCourseID(courseID);
 		
 		CourseEndpoint ce = new CourseEndpoint();
-		try {
-			ce.insertTermCourse(termCourse, loggedInUser);
-		} catch (UnauthorizedException e) {
-			e.printStackTrace();
-			fail("User could not be authorized for term creation");
-		}
+		ce.insertTermCourse(termCourse, loggedInUser);
 	}
 	
 	static public void addTermCourse(Long termCourseId, com.google.api.server.spi.auth.common.User loggedInUser) {

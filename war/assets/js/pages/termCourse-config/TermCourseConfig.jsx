@@ -1,4 +1,5 @@
 import React from 'react';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
@@ -7,40 +8,29 @@ import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import TermCourse from './TermCourse';
 import BtnDefault from '../../common/styles/Btn.jsx';
-import Participants from "./Participants/Participants.jsx";
-import Exercises from "./Exercises/Exercises.jsx";
-import TitleRow from "./TitleRow/TitleRow.jsx"
+import Participants from './Participants/Participants.jsx';
+import Exercises from './Exercises/Exercises.jsx';
+import TitleRow from './TitleRow/TitleRow.jsx';
 import Confirm from '../../common/modals/Confirm';
 
-import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
-
-import {
-	StyledBoxList,
-	StyledPagination,
-	StyledPaginationItem,
-	StyledListItemBtn,
-	StyledListItemPrimary,
-	StyledListItemDefault,
-} from '../../common/styles/List';
-
-const StyledNewPrjBtn = styled.div `
+const StyledNewPrjBtn = styled.div`
 	padding-left: 5px;
 `;
-const StyledDashboard = styled.div `
+const StyledDashboard = styled.div`
 	margin-top: 70px;
 	margin-left: auto;
 	margin-right: auto;
 	width: 1170px;
 	display: grid;
-    grid-template-columns: 6fr 6fr;
-    grid-template-areas:
-				"titlerow titlerow"
-        "terms teachers";
+	grid-template-columns: 6fr 6fr;
+	grid-template-areas:
+		'titlerow titlerow'
+		'terms teachers';
 	grid-column-gap: 20px;
 `;
 
-const StyledTitleRow = styled.div `
-    grid-area: titlerow;
+const StyledTitleRow = styled.div`
+	grid-area: titlerow;
 `;
 
 export default class TermCourseConfig extends React.Component {
@@ -57,32 +47,19 @@ export default class TermCourseConfig extends React.Component {
 		this.state = {
 			course: [],
 			termCourse: termCourse,
-			isTermCourseOwner: false,
-			authState: {
-				isUserSignedIn: false,
-				isUserRegistered: false
-			}
+			isTermCourseOwner: false
 		};
-
-		// update on initialization
-		this.updateUserStatusFromProps(props);
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
-	}
-	
-	updateUserStatusFromProps(targetedProps) {
-		this.state.authState = targetedProps.auth.authState;
-		this.setState(this.state);
 	}
 
 	init() {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
-			this.getTermCoursePromise = CourseEndpoint.getTermCourse(this.state.termCourse.id);
-			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(this.state.termCourse.getId());
+			this.getTermCoursePromise = CourseEndpoint.getTermCourse(
+				this.state.termCourse.id
+			);
+			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(
+				this.state.termCourse.getId()
+			);
 			this.setTermCourseInfo();
 		}
 	}
@@ -90,23 +67,29 @@ export default class TermCourseConfig extends React.Component {
 	setTermCourseInfo() {
 		var _this = this;
 		var isUserParticipant = false;
-		this.userPromise.then(function (user) {
-			var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(user, _this.state.termCourse.getId());
-			_this.listTermCourseParticipantsPromise.then(function (resp) {
+		this.userPromise.then(function(user) {
+			var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
+				user,
+				_this.state.termCourse.getId()
+			);
+			_this.listTermCourseParticipantsPromise.then(function(resp) {
 				var termCourse = _this.state.termCourse;
 				resp.items = resp.items || [];
 				termCourse.participants = resp.items;
-				(typeof (termCourse.participants.find(o => o.id === user.id)) == 'undefined') ? isUserParticipant = false: isUserParticipant = true;
+				typeof termCourse.participants.find(o => o.id === user.id) ==
+				'undefined'
+					? (isUserParticipant = false)
+					: (isUserParticipant = true);
 				termCourse.isUserParticipant = isUserParticipant;
-				_this.getTermCoursePromise.then(function (resp) {
+				_this.getTermCoursePromise.then(function(resp) {
 					termCourse.term = resp.term;
-					CourseEndpoint.getCourse(resp.courseID).then(function (course) {
+					CourseEndpoint.getCourse(resp.courseID).then(function(course) {
 						_this.setState({
 							course: course,
 							termCourse: termCourse,
-							isTermCourseOwner: isTermCourseOwner,
+							isTermCourseOwner: isTermCourseOwner
 						});
-					})
+					});
 				});
 			});
 		});
@@ -114,12 +97,20 @@ export default class TermCourseConfig extends React.Component {
 
 	addParticipant(e) {
 		var _this = this;
-		var confirm = new Confirm('Do you want to join this term course?');
-		confirm.showModal().then(function () {
+		const { formatMessage } = IntlProvider.intl;
+		var confirm = new Confirm(
+			formatMessage({
+				id: 'termcourseconfig.join_term_course',
+				defaultMessage: 'Do you want to join this term course?'
+			})
+		);
+		confirm.showModal().then(function() {
 			//Add the user to participants & set isUserParticipant to true for that term
 			var termCourse = _this.state.termCourse;
-			_this.userPromise.then(function (resp) {
-				CourseEndpoint.addParticipant(termCourse.id, resp.id).then(function (resp2) {
+			_this.userPromise.then(function(resp) {
+				CourseEndpoint.addParticipant(termCourse.id, resp.id).then(function(
+					resp2
+				) {
 					termCourse.participants.push(resp);
 					termCourse.isUserParticipant = true;
 					_this.setState({
@@ -132,13 +123,24 @@ export default class TermCourseConfig extends React.Component {
 
 	removeParticipant(e) {
 		var _this = this;
-		var confirm = new Confirm('Do you want to leave this term course?');
-		confirm.showModal().then(function () {
+		const { formatMessage } = IntlProvider.intl;
+		var confirm = new Confirm(
+			formatMessage({
+				id: 'termcourseconfig.leave_term_course',
+				defaultMessage: 'Do you want to leave this term course?'
+			})
+		);
+		confirm.showModal().then(function() {
 			//Remove the user from the termcourse participants
 			var termCourse = _this.state.termCourse;
-			_this.userPromise.then(function (resp) {
-				CourseEndpoint.removeParticipant(termCourse.id, resp.id).then(function (resp2) {
-					var userIndex = termCourse.participants.indexOf((typeof (termCourse.participants.find(o => o.id === resp.id)) == 'undefined'));
+			_this.userPromise.then(function(resp) {
+				CourseEndpoint.removeParticipant(termCourse.id, resp.id).then(function(
+					resp2
+				) {
+					var userIndex = termCourse.participants.indexOf(
+						typeof termCourse.participants.find(o => o.id === resp.id) ==
+							'undefined'
+					);
 					termCourse.participants.splice(userIndex, 1);
 					termCourse.isUserParticipant = false;
 					_this.setState({
@@ -155,7 +157,7 @@ export default class TermCourseConfig extends React.Component {
 		if (!isUserTermCourseOwner) {
 			return '';
 		} else {
-			return <Participants termCourse={this.state.termCourse}/>
+			return <Participants termCourse={this.state.termCourse} />;
 		}
 	}
 
@@ -165,22 +167,36 @@ export default class TermCourseConfig extends React.Component {
 		if (!isUserTermCourseOwner) {
 			return '';
 		} else {
-			return <Exercises termCourse={this.state.termCourse}/>
+			return (
+				<Exercises
+					termCourse={this.state.termCourse}
+					auth={this.props.auth}
+				/>
+			);
 		}
 	}
 
 	render() {
-		if (!this.state.authState.isUserSignedIn || !this.state.authState.isUserRegistered) {
-			return (<UnauthenticatedUserPanel history={this.props.history}/>);
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		) {
+			return <UnauthenticatedUserPanel history={this.props.history} />;
 		}
 		this.init();
 		var termCourse = this.state.termCourse;
 		return (
 			<StyledDashboard>
-			<StyledTitleRow><TitleRow course={this.state.course} termCourse={this.state.termCourse} history={this.props.history}/></StyledTitleRow>
-						{this.renderExercises()}
-						{this.renderParticipants()}
-		  	</StyledDashboard>
+				<StyledTitleRow>
+					<TitleRow
+						course={this.state.course}
+						termCourse={this.state.termCourse}
+						history={this.props.history}
+					/>
+				</StyledTitleRow>
+				{this.renderExercises()}
+				{this.renderParticipants()}
+			</StyledDashboard>
 		);
 	}
 }

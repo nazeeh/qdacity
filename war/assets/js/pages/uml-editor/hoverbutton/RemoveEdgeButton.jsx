@@ -2,15 +2,18 @@ import React from 'react';
 import styled from 'styled-components';
 
 import ImageHoverButton from './ImageHoverButton.jsx';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 export default class RemoveEdgeButton extends ImageHoverButton {
-
 	constructor(props) {
 		super(props);
 	}
 
 	onClick() {
-		this.props.umlEditor.deleteEdge(this.props.cell.source, this.props.cell.value.relationId);
+		this.props.umlEditor.deleteEdge(
+			this.props.cell.source,
+			this.props.cell.value.relationId
+		);
 	}
 
 	getImageClassName() {
@@ -18,7 +21,11 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 	}
 
 	getToolTip() {
-		return 'Removes the edge (relation) from the model.';
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'removeedgebutton.tooltip',
+			defaultMessage: 'Removes the edge (relation) from the model.'
+		});
 	}
 
 	getBounds() {
@@ -28,12 +35,16 @@ export default class RemoveEdgeButton extends ImageHoverButton {
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
 
-		// TODO 
+		// TODO
 		// Weil x und y hier nicht benutzt wird, wird es nicht beim update verschoben
 
-		let state = this.props.umlEditor.getGraphView().graph.view.getState(this.props.cell);
+		let state = this.props.umlEditor
+			.getGraphView()
+			.graph.view.getState(this.props.cell);
 
-		let handler = this.props.umlEditor.getGraphView().graph.selectionCellsHandler.handlers.get(this.props.cell);
+		let handler = this.props.umlEditor
+			.getGraphView()
+			.graph.selectionCellsHandler.handlers.get(this.props.cell);
 
 		let abspoints = handler.abspoints;
 

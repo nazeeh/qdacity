@@ -35,18 +35,23 @@ import java.util.*;
 	authenticators = {QdacityAuthenticator.class})
 public class ChangeEndpoint {
 
+	UserEndpoint userEndpoint = new UserEndpoint();
+	
 	/**
 	 * This method lists all the entities inserted in datastore. It uses HTTP GET method and paging support.
 	 *
 	 * @return A CollectionResponse class containing the list of all entities persisted and a cursor to the next page.
+	 * @throws UnauthorizedException 
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
 	@ApiMethod(name = "changelog.listChange", path = "log")
-	public CollectionResponse<Change> listChange(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) {
+	public CollectionResponse<Change> listChange(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
 		List<Change> execute = null;
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
 		try {
 			mgr = getPersistenceManager();
@@ -66,7 +71,7 @@ public class ChangeEndpoint {
 			// Set filter
 			query.setFilter("userID == :theID");
 			Map<String, String> paramValues = new HashMap<String, String>();
-			paramValues.put("theID", user.getId());
+			paramValues.put("theID", qdacityUser.getId());
 
 			execute = (List<Change>) query.executeWithMap(paramValues);
 			cursor = JDOCursorHelper.getCursor(execute);
@@ -98,6 +103,8 @@ public class ChangeEndpoint {
 	@ApiMethod(name = "changelog.listChangeStats", path = "stats")
 	public List<ChangeStats> listChangeStats(@Nullable @Named("period") String period, @Named("filterType") String filterType, @Nullable @Named("projectID") Long projectID, @Nullable @Named("projectType") String projectType, User user) throws UnauthorizedException {
 
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		if (filterType.equals("project")) {
 			// FIXME authorization for different project types
 			// Authorization.checkAuthorization(projectID, user);
@@ -117,7 +124,7 @@ public class ChangeEndpoint {
 			Filter projectIdFilter = new FilterPredicate("projectID", FilterOperator.EQUAL, projectID);
 			filter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(projectIdFilter, projectTypeFilter));
 		} else if (filterType.equals("user")) {
-			filter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getId());
+			filter = new FilterPredicate("userID", FilterOperator.EQUAL, qdacityUser.getId());
 		}
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

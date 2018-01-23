@@ -2,8 +2,8 @@ import React from 'react';
 
 import styled from 'styled-components';
 
-const StyledChart = styled.div `
-    height: 200px;
+const StyledChart = styled.div`
+	height: 200px;
 `;
 
 export default class GoogleColumnChart extends React.Component {
@@ -27,9 +27,6 @@ export default class GoogleColumnChart extends React.Component {
 	}
 
 	render() {
-		return (
-			<StyledChart id={this.props.graphID}>
-		</StyledChart>);
+		return <StyledChart id={this.props.graphID} />;
 	}
-
 }

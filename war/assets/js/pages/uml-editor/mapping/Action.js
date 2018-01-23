@@ -6,7 +6,6 @@ import CreateClassFieldAction from './actions/CreateClassFieldAction.js';
 import CreateClassMethodAction from './actions/CreateClassMethodAction.js';
 
 export default class Action {
-
 	static createNode() {
 		return new CreateNodeAction();
 	}

@@ -113,9 +113,9 @@ public class ChangeBuilder {
         return change;
     }
 
-    public Change makeApplyCodeChange(TextDocument textdocument, Code code, User user, ProjectType projectType) {
+    public Change makeApplyCodeChange(TextDocument textdocument, Code code, String userId, ProjectType projectType) {
 
-        Change change = new Change(now(), textdocument.getProjectID(), projectType, ChangeType.APPLY, user.getId(), ChangeObject.DOCUMENT, textdocument.getId());
+        Change change = new Change(now(), textdocument.getProjectID(), projectType, ChangeType.APPLY, userId, ChangeObject.DOCUMENT, textdocument.getId());
         change.setNewValue(code.getCodeID().toString());
 
         return change;

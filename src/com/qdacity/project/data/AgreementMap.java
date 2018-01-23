@@ -1,5 +1,7 @@
 package com.qdacity.project.data;
 
+import java.util.logging.Level;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -30,11 +32,23 @@ public class AgreementMap {
 	@Persistent
 	Long textDocumentID;
 
-	public AgreementMap(Long id, Long projectID, String title, String textValue) {
+	@Persistent
+	Long positionInOrder;
+	
+	public AgreementMap(Long id, Long projectID, String title, String textValue, Long positionInOrder) {
 		this.textDocumentID = id;
 		this.projectID = projectID;
 		this.title = title;
 		this.text = new Text(textValue);
+		this.positionInOrder = positionInOrder;
+	}
+	
+	public Key getKey() {
+		return key;
+	}
+
+	public void setKey(Key key) {
+		this.key = key;
 	}
 
 	public Long getProjectID() {
@@ -69,4 +83,11 @@ public class AgreementMap {
 		this.textDocumentID = textDocumentID;
 	}
 
+	public Long getPositionInOrder() {
+		return positionInOrder;
+	}
+
+	public void setPositionInOrder(Long positionInOrder) {
+		this.positionInOrder = positionInOrder;
+	}
 }

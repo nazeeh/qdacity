@@ -56,6 +56,7 @@ import com.qdacity.user.UserNotificationType;
 	authenticators = {QdacityAuthenticator.class})
 public class ProjectEndpoint {
 
+	private UserEndpoint userEndpoint = new UserEndpoint();
 	
 	/**
 	 * This method lists all the entities inserted in datastore.
@@ -68,10 +69,12 @@ public class ProjectEndpoint {
 	@SuppressWarnings({ "unchecked", "unused" })
 	@ApiMethod(name = "project.listProject", path = "projects")
 	public CollectionResponse<Project> listProject(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 		
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
-		return getProjectsByUserId(cursorString, user.getId());
+		return getProjectsByUserId(cursorString, qdacityUser.getId());
 	}
 
 	@ApiMethod(name = "project.listProjectByUserId",
@@ -112,9 +115,10 @@ public class ProjectEndpoint {
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "project.listValidationProject")
 	public List<ValidationProject> listValidationProject(User user) throws UnauthorizedException {
-		final String userId = user.getId();
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
-		return getValidationProjectsByUserId(user, userId);
+		return getValidationProjectsByUserId(user, qdacityUser.getId());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -161,17 +165,18 @@ public class ProjectEndpoint {
 	 */
 	@ApiMethod(name = "project.getProject",	path = "project")
 	public AbstractProject getProject(@Named("id") Long id, @Named("type") String type, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		PersistenceManager mgr = getPersistenceManager();
 		AbstractProject project = null;
 		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Project " + id);
-
 			Authorization.isUserNotNull(user);
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
 
-			if (dbUser.getLastProjectId() != id) { // Check if lastProject property of user has to be updated
+			if (qdacityUser.getLastProjectId() != id) { // Check if lastProject property of user has to be updated
 				// Update User async TODO: check if actually faster than saving directly
-				LastProjectUsed task = new LastProjectUsed(dbUser, id, ProjectType.valueOf(type));
+				LastProjectUsed task = new LastProjectUsed(qdacityUser, id, ProjectType.valueOf(type));
 				Queue queue = QueueFactory.getDefaultQueue();
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
@@ -181,7 +186,7 @@ public class ProjectEndpoint {
 			switch (type) {
 				case "VALIDATION":
 					project = (ValidationProject) Cache.getOrLoad(id, ValidationProject.class);
-					Authorization.checkAuthorization((ValidationProject) project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
+					Authorization.checkAuthorization((ValidationProject) project, qdacityUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				case "REVISION":
 
@@ -244,6 +249,7 @@ public class ProjectEndpoint {
 	public Project insertProject(Project project, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -254,16 +260,15 @@ public class ProjectEndpoint {
 			}
 
 			try {
-				// Get User from DB
-				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
-
-				project.addOwner(user.getId());
+				project.addOwner(qdacityUser.getId());
 				project.setRevision(0);
 				project.setMaxCodingID(0L);
 				mgr.makePersistent(project);
 
-				dbUser.addProjectAuthorization(project.getId());
-				Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+				qdacityUser.addProjectAuthorization(project.getId());
+				
+				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
+				Cache.cache(user.getId(), com.qdacity.user.User.class, qdacityUser); // also cache external user id
 			} catch (JDOObjectNotFoundException e) {
 				throw new UnauthorizedException("User is not registered");
 			}
@@ -304,21 +309,24 @@ public class ProjectEndpoint {
 
 	@ApiMethod(name = "project.addOwner")
 	public Project addOwner(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addOwner(userID);
-			else project.addOwner(user.getId());
-
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
-			dbUser.addProjectAuthorization(projectID);
+			else project.addOwner(qdacityUser.getId());
+			
+			qdacityUser.addProjectAuthorization(projectID);
 
 			mgr.makePersistent(project);
 			Cache.cache(projectID, Project.class, project);
-			mgr.makePersistent(dbUser);
-			Cache.cache(user.getId(), com.qdacity.user.User.class, dbUser);
-
+			mgr.makePersistent(qdacityUser);
+			
+			Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
+			Cache.cache(user.getId(), com.qdacity.user.User.class, qdacityUser); // also cache external user id
 		} finally {
 			mgr.close();
 		}
@@ -327,12 +335,15 @@ public class ProjectEndpoint {
 
 	@ApiMethod(name = "project.addCoder")
 	public Project addCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addCoder(userID);
-			else project.addCoder(user.getId());
+			else project.addCoder(qdacityUser.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
@@ -343,12 +354,15 @@ public class ProjectEndpoint {
 
 	@ApiMethod(name = "project.addValidationCoder")
 	public Project addValidationCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addValidationCoder(userID);
-			else project.addValidationCoder(user.getId());
+			else project.addValidationCoder(qdacityUser.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
@@ -360,12 +374,14 @@ public class ProjectEndpoint {
 	@ApiMethod(name = "project.removeUser")
 	public void removeUser(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			String userIdToRemove = "";
 
 			if (userID != null) userIdToRemove = userID;
-			else userIdToRemove = user.getId();
+			else userIdToRemove = qdacityUser.getId();
 
 			if (projectType.equals("PROJECT")) {
 				Project project = (Project) Cache.getOrLoad(projectID, Project.class);
@@ -394,6 +410,9 @@ public class ProjectEndpoint {
 
 	@ApiMethod(name = "project.inviteUser")
 	public Project inviteUser(@Named("projectID") Long projectID, @Named("userEmail") String userEmail, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -405,11 +424,11 @@ public class ProjectEndpoint {
 			String userID = dbUsers.get(0).getId();
 
 			// Get the inviting user
-			com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
+			com.qdacity.user.User invitingUser = qdacityUser;
 
 			// Insert user into project as invited user
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
-			project.addInvitedUser(user.getId());
+			project.addInvitedUser(qdacityUser.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 
@@ -418,7 +437,7 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage("Project: " + project.getName());
 			notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
-			notification.setOriginUser(user.getId());
+			notification.setOriginUser(qdacityUser.getId());
 			notification.setProject(projectID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.INVITATION);
@@ -513,6 +532,9 @@ public class ProjectEndpoint {
 
 	@ApiMethod(name = "project.requestValidationAccess")
 	public ValidationProject requestValidationAccess(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		ProjectRevision projectRevision = null;
 		Project project = null;
 		ValidationProject cloneProject = null;
@@ -521,7 +543,7 @@ public class ProjectEndpoint {
 			projectRevision = mgr.getObjectById(ProjectRevision.class, revisionID);
 			project = (Project) Cache.getOrLoad(projectRevision.getProjectID(), Project.class);
 			// Get the inviting user
-			com.qdacity.user.User requestingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
+			com.qdacity.user.User requestingUser = qdacityUser;
 
 			// Create notification
 			List<String> owners = project.getOwners();
@@ -531,7 +553,7 @@ public class ProjectEndpoint {
 				notification.setDatetime(new Date());
 				notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
 				notification.setSubject("Validation request by <b>" + requestingUser.getGivenName() + " " + requestingUser.getSurName() + "</b>");
-				notification.setOriginUser(user.getId());
+				notification.setOriginUser(qdacityUser.getId());
 				notification.setProject(revisionID);
 				notification.setSettled(false);
 				notification.setType(UserNotificationType.VALIDATION_REQUEST);
@@ -544,11 +566,11 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
 			notification.setSubject("You have requiested access");
-			notification.setOriginUser(user.getId());
+			notification.setOriginUser(qdacityUser.getId());
 			notification.setProject(revisionID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.POSTED_VALIDATION_REQUEST);
-			notification.setUser(user.getId());
+			notification.setUser(qdacityUser.getId());
 
 			mgr.makePersistent(notification);
 
@@ -560,6 +582,9 @@ public class ProjectEndpoint {
 
 	@ApiMethod(name = "project.createValidationProject")
 	public ValidationProject createValidationProject(@Named("projectID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException, JSONException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		ProjectRevision project = null;
 		ValidationProject cloneProject = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -584,7 +609,7 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage(project.getName() + " (Revision " + project.getRevision() + " )");
 			notification.setSubject("Your request was granted");
-			notification.setOriginUser(user.getId());
+			notification.setOriginUser(qdacityUser.getId());
 			notification.setProject(revisionID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.VALIDATION_REQUEST_GRANTED);

@@ -28,6 +28,8 @@ import com.qdacity.exercise.Exercise;
 		packagePath = "server.project"),
 	authenticators = {QdacityAuthenticator.class})
 public class ExerciseEndpoint {
+	
+	private UserEndpoint userEndpoint = new UserEndpoint();
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
@@ -81,6 +83,7 @@ public class ExerciseEndpoint {
 	)
 	public List<Exercise> listTermCourseExercises(@Named("termCrsID") Long termCourseID, User user) throws UnauthorizedException {
 
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 		
 		PersistenceManager mgr = null;
 		List<Exercise> execute = null;
@@ -88,7 +91,7 @@ public class ExerciseEndpoint {
 		try {
 			mgr = getPersistenceManager();
 			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
-			Authorization.checkAuthTermCourseParticipation(termCourse, user.getId(), user);
+			Authorization.checkAuthTermCourseParticipation(termCourse, qdacityUser.getId(), user);
 			Query q = mgr.newQuery(Exercise.class, ":p.contains(termCourseID)");
 
 			execute = (List<Exercise>) q.execute(Arrays.asList(termCourseID));

@@ -1,7 +1,6 @@
 import Cell from '../cell/Cell.jsx';
 
 export default class GraphLayouting {
-
 	constructor(graph) {
 		this.graph = graph;
 
@@ -23,7 +22,8 @@ export default class GraphLayouting {
 		this.layout = new mxFastOrganicLayout(this.graph);
 		this.layout.disableEdgeStyle = false;
 		this.layout.forceConstant = 200;
-		this.layout.forceConstantSquared = this.layout.forceConstant * this.layout.forceConstant;
+		this.layout.forceConstantSquared =
+			this.layout.forceConstant * this.layout.forceConstant;
 	}
 
 	applyLayout() {
@@ -72,7 +72,9 @@ export default class GraphLayouting {
 
 	isAreaFree(cell, x, y, width, height) {
 		// Does the area contain another node?
-		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+		const allNodes = this.graph
+			.getModel()
+			.getChildren(this.graph.getDefaultParent());
 
 		if (allNodes != null) {
 			for (let i = 0; i < allNodes.length; i++) {
@@ -87,10 +89,14 @@ export default class GraphLayouting {
 					const height2 = node.getGeometry().height;
 
 					// Intersects?
-					if (!(x > (x2 + width2)
-							|| (x + width) < x2
-							|| y > (y2 + height2)
-							|| (y + height) < y2)) {
+					if (
+						!(
+							x > x2 + width2 ||
+							x + width < x2 ||
+							y > y2 + height2 ||
+							y + height < y2
+						)
+					) {
 						return false;
 					}
 				}

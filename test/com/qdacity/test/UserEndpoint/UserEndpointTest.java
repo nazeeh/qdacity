@@ -243,21 +243,13 @@ public class UserEndpointTest {
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", loggedInUserA);
 		
 		List<User> users = null;
-		PersistenceManager mgr = getPersistenceManager();
-		
+		UserEndpoint ue = new UserEndpoint();
 		try {
-			
-			UserEndpoint ue = new UserEndpoint();
-			try {
-				users = ue.listUserByCourse(null, null, 1L, loggedInUserA);
-			} catch (UnauthorizedException e) {
-				e.printStackTrace();
-				fail("User could not be authorized");
-			}
-		} finally {
-			mgr.close();
+			users = ue.listUserByCourse(null, null, 1L, loggedInUserA);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
 		}
-		
 		assertEquals(1, users.size());
 		
 	}

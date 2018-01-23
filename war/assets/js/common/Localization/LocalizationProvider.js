@@ -15,9 +15,7 @@ const globalLocalizationState = {
 	/** @type {ReactIntl.InjectedIntl} */
 	intl: undefined,
 	/** @type {Set<String>} */
-	supportedLanguages: new Set([
-		'en'
-	]),
+	supportedLanguages: new Set(['en'])
 };
 
 /**
@@ -28,16 +26,21 @@ const globalLocalizationState = {
 async function loadMessages(language = 'en') {
 	try {
 		const response = await fetch(`assets/translations/${language}.json`);
-		if(response.ok) return await response.json();
+		if (response.ok) return await response.json();
 		throw response.statusText;
-	} catch(error) {
+	} catch (error) {
 		console.error(error);
 		return null;
 	}
 }
 
 export default class LocalizationProvider extends IntlProvider {
-	constructor(props, context = {intl: LocalizationProvider.intl}) {
+	constructor(
+		props,
+		context = {
+			intl: LocalizationProvider.intl
+		}
+	) {
 		super(props, context);
 		globalLocalizationState.intl = this.getChildContext().intl;
 		if (window['QDAcityLocalization'] == undefined) {
@@ -88,8 +91,9 @@ export default class LocalizationProvider extends IntlProvider {
 	 */
 	static get userLanguage() {
 		// @ts-ignore
-		const localeOrLanguage = navigator.language || navigator.browserLanguage || 'en-US';
+		const localeOrLanguage =
+			navigator.language || navigator.browserLanguage || 'en-US';
 		const language = localeOrLanguage.split('-', 2).shift();
 		return language;
 	}
-};
+}

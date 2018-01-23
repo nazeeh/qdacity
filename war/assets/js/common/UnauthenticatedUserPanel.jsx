@@ -7,11 +7,11 @@ import ReactLoading from '../common/ReactLoading.jsx';
 const StyledPanel = styled.div `
 padding: 20px 50px 20px 50px;
     border: 1px solid ${props => props.theme.borderDefault};
-	background-color:  ${props => props.theme.defaultPaneBg};
+	background-color: ${props => props.theme.defaultPaneBg};
 	& > div {
 		font-size: 18px;
 	}
-    `;
+`;
 
 const CenteredDiv = styled.div `
     flex-grow: 1;
@@ -26,20 +26,21 @@ const CenteredDiv = styled.div `
 
 export default class UnauthenticatedUserPanel extends React.Component {
 	constructor(props) {
-        super(props);
-        
-        this.state = {
-            loading: true
-        }
-        const timeout = props.timeout || 2000;
+		super(props);
 
-        const _this = this;
-        setTimeout(function() {
-            _this.state.loading = false
-            _this.setState(_this.state);
-        }, timeout)
-    }
-    
+		this.state = {
+			loading: true
+		};
+		const timeout = props.timeout || 2000;
+
+		const _this = this;
+		setTimeout(function() {
+			_this.setState({
+				loading: false
+			});
+		}, timeout);
+	}
+
 	render() {
         if(this.state.loading) {
             return (

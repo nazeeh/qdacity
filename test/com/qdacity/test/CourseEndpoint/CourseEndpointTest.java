@@ -79,7 +79,7 @@ public class CourseEndpointTest {
 	@Test
 	public void testCourseInsertAuthorization() throws UnauthorizedException {
 		
-		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expect(UnauthorizedException.class);
 		expectedException.expectMessage(is("User is not registered"));
 		
 		CourseEndpoint ce = new CourseEndpoint();
@@ -506,17 +506,16 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a non registered user can create a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTermCourseInsertNonReg() {
+	public void testTermCourseInsertNonReg() throws UnauthorizedException {
 		
-		
-		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expect(UnauthorizedException.class);
 		expectedException.expectMessage(is("User is not registered"));
 
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		
-
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
 	}

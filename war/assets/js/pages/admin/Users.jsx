@@ -1,20 +1,20 @@
-import React from 'react'
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import UserList from './UserList.jsx';
 
 import UserEndpoint from '../../common/endpoints/UserEndpoint';
-import StyledSearchField from '../../common/styles/SearchField.jsx';
-import {
-	BtnDefault
-} from "../../common/styles/Btn.jsx";
 
-const StyledUserSearch = styled.div `
-	display:flex;
-	flex-direction:row;
-	& > .searchfield{
-		flex:1;
+import {
+	SearchBox,
+	StyledSearchFieldContainer
+} from '../../common/styles/SearchBox.jsx';
+
+import { BtnDefault } from '../../common/styles/Btn.jsx';
+
+const StyledUserSearch = StyledSearchFieldContainer.extend`
+	& > .searchfield {
 		margin-right: 5px;
 	}
 `;
@@ -25,39 +25,41 @@ export default class Users extends React.Component {
 		this.state = {
 			users: [],
 			search: '',
-            selectedUserId: ''
-        };
+			selectedUserId: ''
+		};
 
 		this.updateSearch = this.updateSearch.bind(this);
+		this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
 		this.findUsers = this.findUsers.bind(this);
 		this.removeUser = this.removeUser.bind(this);
-		this.onSearchFieldKeyPress = this.onSearchFieldKeyPress.bind(this);
 	}
 
-	updateSearch(e) {
+	updateSearch(text) {
 		this.setState({
-			search: e.target.value
+			search: text
 		});
 	}
 
 	findUsers() {
 		var _this = this;
-		UserEndpoint.findUsers(this.state.search).then(function (resp) {
-			_this.setState({
-				users: resp.items
+		UserEndpoint.findUsers(this.state.search)
+			.then(function(resp) {
+				_this.setState({
+					users: resp.items
+				});
+				_this.setSelectedUserId(null);
+			})
+			.catch(function(resp) {
+				_this.setState({
+					users: []
+				});
+				_this.setSelectedUserId(null);
 			});
-			_this.setSelectedUserId(null)
-		}).catch(function (resp) {
-			_this.setState({
-				users: []
-			});
-			_this.setSelectedUserId(null)
-		});
 	}
 
 	removeUser(pId) {
-		UserEndpoint.removeUser(pId).then(function (resp) {
-			var index = this.state.users.findIndex(function (user, index, array) {
+		UserEndpoint.removeUser(pId).then(function(resp) {
+			var index = this.state.users.findIndex(function(user, index, array) {
 				return user.id == pId;
 			});
 			this.state.users.splice(index, 1);
@@ -65,47 +67,46 @@ export default class Users extends React.Component {
 				users: this.state.users
 			});
 		});
-
 	}
 
 	onSearchFieldKeyPress(event) {
-		if (event.key === "Enter") {
+		if (event.key === 'Enter') {
 			this.findUsers();
 		}
 	}
 
-    setSelectedUserId(userId) {
-        this.props.setSelectedUserId(userId)
-        this.setState({
-            selectedUserId: userId
-        });
-    }
+	setSelectedUserId(userId) {
+		this.props.setSelectedUserId(userId);
+		this.setState({
+			selectedUserId: userId
+		});
+	}
 
 	render() {
 		return (
 			<div className="box box-default">
 				<div className="box-header with-border">
-					<h3 className="box-title"><FormattedMessage id='usersusers' defaultMessage='Users' /></h3>
+					<h3 className="box-title">
+						<FormattedMessage id="usersusers" defaultMessage="Users" />
+					</h3>
 				</div>
 				<div className="box-body">
 					<StyledUserSearch>
-						<StyledSearchField className="searchfield" id="searchform">
-							<input
-                                type="text"
-                                className="search"
-                                placeholder="Search"
-                                value={this.state.search}
-                                onChange={this.updateSearch}
-                                onKeyPress={this.onSearchFieldKeyPress}
-							/>
-							<BtnDefault id="btnSearch" onClick={this.findUsers}>
-								<i className="fa fa-search"/>
-							</BtnDefault>
-						</StyledSearchField>
+						<SearchBox
+							onSearch={this.updateSearch}
+							onKeyPress={this.onSearchFieldKeyPress}
+						/>
+						<BtnDefault id="btnSearch" onClick={this.findUsers}>
+							<i className="fa fa-search" />
+						</BtnDefault>
 					</StyledUserSearch>
-					<UserList  users={this.state.users} removeUser={this.removeUser} setSelectedUserId={(userId) => this.setSelectedUserId(userId)} selectedUserId={this.state.selectedUserId}/>
-					<ul id="user-list" className="list compactBoxList">
-					</ul>
+					<UserList
+						users={this.state.users}
+						removeUser={this.removeUser}
+						setSelectedUserId={userId => this.setSelectedUserId(userId)}
+						selectedUserId={this.state.selectedUserId}
+					/>
+					<ul id="user-list" className="list compactBoxList" />
 				</div>
 			</div>
 		);

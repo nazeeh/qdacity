@@ -1,28 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
-const StyledButton = BtnDefault.extend `
-    position: absolute;
-    left: ${props => props.x + "px"};
-    top: ${props => props.y + "px"};
-    width: ${props => props.width + "px"} !important;
-    height: ${props => props.height + "px"} !important;
-    line-height: ${props => props.height + "px"} !important;
-    
-    padding: 0px !important;
-    
-    border-width: ${props => (1 * props.scale) + "px"};
-    
-    cursor: pointer;
-    pointer-events: auto;
+const StyledButton = BtnDefault.extend`
+	position: absolute;
+	left: ${props => props.x + 'px'};
+	top: ${props => props.y + 'px'};
+	width: ${props => props.width + 'px'} !important;
+	height: ${props => props.height + 'px'} !important;
+	line-height: ${props => props.height + 'px'} !important;
+
+	padding: 0px !important;
+
+	border-width: ${props => 1 * props.scale + 'px'};
+
+	cursor: pointer;
+	pointer-events: auto;
 `;
 
 export default class HoverButton extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -45,9 +42,7 @@ export default class HoverButton extends React.Component {
 		});
 	}
 
-	onClick() {
-
-	}
+	onClick() {}
 
 	getBounds() {
 		return [0, 0, 0, 0];
@@ -79,9 +74,18 @@ export default class HoverButton extends React.Component {
 		}
 
 		return (
-			<StyledButton title={this.getToolTip()} className={this.getButtonClassName()} x={x} y={y} width={width} height={height} scale={scale} onClick={this.onClick}>
-		        {this.renderContent(x, y, width, height)}
-		    </StyledButton>
+			<StyledButton
+				title={this.getToolTip()}
+				className={this.getButtonClassName()}
+				x={x}
+				y={y}
+				width={width}
+				height={height}
+				scale={scale}
+				onClick={this.onClick}
+			>
+				{this.renderContent(x, y, width, height)}
+			</StyledButton>
 		);
 	}
 }
