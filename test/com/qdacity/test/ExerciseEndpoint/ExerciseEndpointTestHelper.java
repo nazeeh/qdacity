@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.endpoint.ExerciseEndpoint;
 import com.qdacity.exercise.Exercise;
+import com.qdacity.exercise.ExerciseProject;
 
 public class ExerciseEndpointTestHelper {
 	static public void addExercise(Long id, Long termCourseID, String name, com.google.appengine.api.users.User loggedInUser) {
@@ -46,4 +47,27 @@ public class ExerciseEndpointTestHelper {
 		return exercises;
 	}
 	
+	
+	static public void createExerciseProject(Long revisionID, Long exerciseID, com.google.appengine.api.users.User loggedInUser) {
+		
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		try {
+			ee.createExerciseProject(revisionID, exerciseID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for exercise project creation");
+		}
+	}
+	
+	static public ExerciseProject getExerciseProjectByRevisionID(Long revisionID, com.google.appengine.api.users.User loggedInUser) {
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		ExerciseProject exerciseProject = null;
+		try {
+			exerciseProject = ee.getExerciseProjectByRevisionID(revisionID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for Course Term retrieval");
+		}
+		return exerciseProject;
+	}
 }

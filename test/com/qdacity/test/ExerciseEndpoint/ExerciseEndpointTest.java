@@ -2,20 +2,27 @@ package com.qdacity.test.ExerciseEndpoint;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.exercise.Exercise;
+import com.qdacity.exercise.ExerciseProject;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
+import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 
 public class ExerciseEndpointTest {
@@ -47,6 +54,7 @@ public class ExerciseEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
 	}
+	
 	
 
 	/**
@@ -82,6 +90,31 @@ public class ExerciseEndpointTest {
 		retrievedExercises = (List<Exercise>) ExerciseEndpointTestHelper.listExercises(1L, testUser);
 		
 		assertEquals(1, retrievedExercises.size());
+	}
+	
+	/**
+	 * Tests if a registered user can create an exercise
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void getExerciseProjectByRevisionIDTest() throws UnauthorizedException {
+		ProjectEndpoint pe = new ProjectEndpoint();
+		
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		CodeSystemTestHelper.addCodeSystem(2L, testUser);
+		ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
+		ExerciseProject exerciseProject = ExerciseEndpointTestHelper.getExerciseProjectByRevisionID(revision.getId(), testUser);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query("ExerciseProject");
+		Entity queryResult = ds.prepare(q).asSingleEntity();
+		
+		assertEquals(Long.valueOf(queryResult.getKey().getId()), exerciseProject.getId());
 	}
 	
 }
