@@ -167,28 +167,6 @@ public class ExerciseEndpoint {
 			return cloneExerciseProject;
 		}
 	
-	@ApiMethod(name = "exercise.addValidationCoder",
-			path = "addValidationCoder",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
-		public ExerciseProject addValidationCoder(@Named("exerciseProjectID") Long exerciseProjectID,  User user) throws UnauthorizedException {
-
-			ExerciseProject exerciseProject = null;
-			PersistenceManager mgr = getPersistenceManager();
-			try {
-				exerciseProject = mgr.getObjectById(ExerciseProject.class, exerciseProjectID);
-
-
-				exerciseProject.addValidationCoder(user.getUserId());
-
-				exerciseProject = mgr.makePersistent(exerciseProject);
-
-			} finally {
-				mgr.close();
-			}
-			return exerciseProject;
-		}
 	
 	
 	@SuppressWarnings("unchecked")
