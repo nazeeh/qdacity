@@ -59,6 +59,17 @@ public class ExerciseEndpointTestHelper {
 		}
 	}
 	
+static public void createExerciseProjectIfNeeded(Long revisionID, Long exerciseID, com.google.appengine.api.users.User loggedInUser) {
+		
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		try {
+			ee.createExerciseProjectIfNeeded(revisionID, exerciseID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for exercise project creation");
+		}
+	}
+	
 	static public ExerciseProject getExerciseProjectByRevisionID(Long revisionID, com.google.appengine.api.users.User loggedInUser) {
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		ExerciseProject exerciseProject = null;

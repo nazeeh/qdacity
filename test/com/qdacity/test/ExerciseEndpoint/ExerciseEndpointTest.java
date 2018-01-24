@@ -137,4 +137,27 @@ public class ExerciseEndpointTest {
 		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
 	}
 	
+	/**
+	 * Tests if a registered user can create an exercise project
+	 * @throws UnauthorizedException 
+	 */
+	@Test
+	public void createExerciseProjectIfNeededTest() throws UnauthorizedException {
+		ProjectEndpoint pe = new ProjectEndpoint();
+		
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		CodeSystemTestHelper.addCodeSystem(2L, testUser);
+		ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.createExerciseProjectIfNeeded(revision.getId(), 1L, testUser);
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
+		
+		ExerciseEndpointTestHelper.createExerciseProjectIfNeeded(revision.getId(), 1L, testUser);
+		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
+	}
+	
 }
