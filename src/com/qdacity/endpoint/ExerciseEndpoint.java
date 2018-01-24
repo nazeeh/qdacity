@@ -140,7 +140,13 @@ public class ExerciseEndpoint {
 		public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
 			ExerciseProject cloneExerciseProject = null;
 			PersistenceManager mgr = getPersistenceManager();
+			
 			try {
+				
+				Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
+				TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+				// Check if user is authorized
+				Authorization.checkAuthorizationTermCourse(termCourse, user);
 				
 				cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
 
@@ -163,6 +169,11 @@ public class ExerciseEndpoint {
 			List<String> validationCodersList = new ArrayList<String>();
 			PersistenceManager mgr = getPersistenceManager();
 			try {
+				
+				Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
+				TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+				// Check if user is authorized
+				Authorization.checkAuthorizationTermCourse(termCourse, user);
 				
 				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(revisionID)");
 				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(revisionID));

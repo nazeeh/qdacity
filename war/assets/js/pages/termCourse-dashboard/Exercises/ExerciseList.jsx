@@ -77,7 +77,7 @@ export default class ExerciseList extends React.Component {
           );
         });
       } else {
-        //_this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=EXERCISE');
+        _this.props.history.push('/CodingEditor?project=' + resp2.id + '&type=EXERCISE');
       }
     });
   }
