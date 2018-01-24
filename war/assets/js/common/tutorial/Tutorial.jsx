@@ -169,7 +169,7 @@ export default class Tutorial extends React.Component {
 				<TutorialOverviewSubBoxShortDescription>{data.descriptionTextShort}</TutorialOverviewSubBoxShortDescription>
 			</b>
 			<TutorialOverviewSubBoxPlaceholder/>
-			<ButtonGeneric white={false}>Start Tutorial</ButtonGeneric><ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.showShortDescriptionBox(true, data.tutorialUnitId)}.bind(this)}>Open Description</ButtonGeneric>
+			<ButtonGeneric white={false} onClick={function(){this.props.tutorial.tutorialEngine.showSidebar(true, data.tutorialUnitId); this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}>Start Tutorial</ButtonGeneric><ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.showShortDescriptionBox(true, data.tutorialUnitId)}.bind(this)}>Open Description</ButtonGeneric>
 		</TutorialOverviewSubBox>
 		);
 		

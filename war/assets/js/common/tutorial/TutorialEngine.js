@@ -1,10 +1,12 @@
 import Promisizer from '../endpoints/Promisizer'
 import DomInteractor from './DomInteractor'
+import SystemTutorials from './SystemTutorials'
 
 export default class TutorialEngine {
 	constructor(appRoot) {
 		this.d=new DomInteractor();
-		this.appRoot=appRoot;		
+		this.appRoot=appRoot;
+		this.systemTutorials=new SystemTutorials();
 		this.tutorialState={
 			isActive: false,		
 		};
@@ -26,7 +28,9 @@ export default class TutorialEngine {
 					top:0,
 					left:0,
 				},
-				overviewData:[]
+				overviewData:[],
+				showSidebar:false,
+				currentStepsView: []
 			}			
 	}
 	
@@ -66,7 +70,7 @@ export default class TutorialEngine {
 		this.showMessageBoxAndOverlay(false);		
 		this.updateReact();		
 		
-		
+		/*
 		var apiMethod = gapi.client.qdacity.tutorial.loadTutorialData({'which':1});
 		var back=Promisizer.makePromise(apiMethod);
 		back.then(function (resp) {
@@ -82,7 +86,16 @@ export default class TutorialEngine {
 			this.tutorialState.showMessageBoxContent=2;
 			this.updateReact();
 			
-		}.bind(this));		
+		}.bind(this));	
+		
+			*/
+		
+		this.tutorialState.overviewData=this.systemTutorials.getData();		
+		
+		this.tutorialState.showMessageBoxContent=2;
+		this.updateReact();
+		
+		
 
 	
 	}
@@ -135,5 +148,16 @@ export default class TutorialEngine {
 		this.tutorialState.overviewData[key].showShortDescription=show;
 		this.updateReact();
 	}
+	
+	showSidebar(show, tutorialId)
+	{	
+		
+		var tutorialData=this.systemTutorials.getData();
+		alert(tutorialId);
+		this.tutorialState.currentStepsView=tutorialData[tutorialId].steps;
+		this.tutorialState.showSidebar=show;
+		this.updateReact();
+	}
+	
 
 }

@@ -21,6 +21,8 @@ import Admin from './admin/Admin.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
+import Sidebar from '../common/tutorial/Sidebar.jsx';
+import styled from 'styled-components';
 
 // React-Intl
 import {
@@ -30,6 +32,47 @@ import {
 	isSupportedLanguage,
 	loadMessages
 } from '../common/languageProvider.js';
+
+
+
+const ContentLeftRightSplitter = styled.div`
+	background-Color:red;
+	display: grid;
+	/*grid-template-columns: auto 200px;*/ //is now in activated or deactivated -SideBar
+	/*grid-template-rows: auto;*/
+	grid-template-areas: "leftContent rightContent";
+	/*
+	width: 100vw;
+	height: 100vh;
+	*/
+`;
+
+const LeftContent = styled.div`
+	grid-area: leftContent;
+	background-color: yellow;
+`;
+
+const RightContent = styled.div`
+	/*  width:200px;*/
+	padding-top:50px;
+	color:white;
+	grid-area: rightContent;
+	background-color: black;
+`;
+
+
+var activatedSideBar= 
+{
+	gridTemplateColumns: "auto 200px"
+};
+
+var deactivatedSideBar=
+{
+	gridTemplateColumns: "auto 0px"
+};
+
+
+
 
 export default class App extends React.Component {
 	constructor(props) {
@@ -83,20 +126,30 @@ export default class App extends React.Component {
 		
 		var tut={tutorialEngine:this.state.tutorialEngine, tutorialState: this.state.tutorialState};
 		
+		var showSideBar=(tut.tutorialState.showSidebar)?activatedSideBar:deactivatedSideBar;
+		
+		
 		return (
 			<IntlProvider locale={this.state.locale} language={this.state.language} messages={this.state.messages}>
 				<Router>
 					<ThemeProvider theme={Theme}>
 						<div>
 							<Route path="/" render={(props) => <NavBar client_id={this.props.apiCfg.client_id} scopes={this.props.apiCfg.scopes} tutorial={tut} callback={(acc) => { this.account = acc; this.forceUpdate() }} {...props} />} />
-							<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard account={this.account}  {...props} />} />
-							<Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
-							<Route path="/CourseDashboard" render={(props) => <CourseDashboard account={this.account} {...props} />} />
-							<Route path="/TermDashboard" render={(props)=><TermDashboard account={this.account} {...props} />}/>
-							<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
-							<Route path="/Admin" render={(props) => <Admin account={this.account} {...props} />} />
-							<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
-							<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
+							<ContentLeftRightSplitter className="ContentLeftRightSplitter" style={showSideBar}>
+								<LeftContent>
+									<Route path="/PersonalDashboard" render={(props) => <PersonalDashboard account={this.account}  {...props} />} />
+									<Route path="/ProjectDashboard" render={(props) => <ProjectDashboard account={this.account} chartScriptPromise={this.props.chartScriptPromise} {...props} />} />
+									<Route path="/CourseDashboard" render={(props) => <CourseDashboard account={this.account} {...props} />} />
+									<Route path="/TermDashboard" render={(props)=><TermDashboard account={this.account} {...props} />}/>
+									<Route path="/TermCourseConfig" render={(props)=><TermCourseConfig account={this.account} {...props} />}/>
+									<Route path="/Admin" render={(props) => <Admin account={this.account} {...props} />} />
+									<Route path="/CodingEditor" render={(props) => <CodingEditor account={this.account} mxGraphPromise={this.props.mxGraphPromise} {...props} />} />
+									<Route exact path="/" render={(props) => <Index account={this.account}  {...props} />} />
+								</LeftContent>
+								<RightContent>									
+									<Sidebar tutorial={tut} /> 
+								</RightContent>
+							</ContentLeftRightSplitter>
 							<Route path="/" render={(props)=><Tutorial tutorial={tut} {...props}/>}/>	
 						</div>
 					</ThemeProvider>
