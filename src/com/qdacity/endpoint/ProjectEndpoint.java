@@ -705,6 +705,34 @@ public class ProjectEndpoint {
 		}
 		return revisions;
 	}
+	
+	@ApiMethod(name = "project.listRevisionsExcludingValidation",
+			path = "exercises",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public List<ProjectRevision> listRevisionsForExerciseProject(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+			List<ProjectRevision> revisions = new ArrayList<ProjectRevision>();
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+
+				Query q;
+				q = mgr.newQuery(ProjectRevision.class, " projectID  == :projectID");
+
+				Map<String, Long> params = new HashMap<String, Long>();
+				params.put("projectID", projectID);
+
+				@SuppressWarnings("unchecked")
+				List<ProjectRevision> snapshots = (List<ProjectRevision>) q.executeWithMap(params);
+				Collections.sort(snapshots, new RevisionComparator()); // Sort by revision number
+
+				revisions.addAll(snapshots);
+
+			} finally {
+				mgr.close();
+			}
+			return revisions;
+		}
 
 	/**
 	 * This method removes the entity with primary key id.

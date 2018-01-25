@@ -66,7 +66,7 @@ export default class ProjectRevisionSelector extends React.Component {
 	projectClicked(projectID) {
 		var _this = this;
 		var revisionNameList = [];
-		ProjectEndpoint.listRevisions(projectID).then(function(revisions) {
+		ProjectEndpoint.listRevisionsExcludingValidation(projectID).then(function(revisions) {
 			revisions.items = revisions.items || [];
 			revisions.items.forEach(function(revision) {
 				revisionNameList.push({
