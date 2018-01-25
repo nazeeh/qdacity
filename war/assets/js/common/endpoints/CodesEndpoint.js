@@ -3,34 +3,6 @@ import Promisizer from './Promisizer';
 export default class CodesEndpoint {
 	constructor() {}
 
-	/* replaced by realtime-syncservice
-	static insertCode(code, parentID, relationId, relationSourceCodeId) {
-		if (relationId == undefined) {
-			relationId = null;
-		}
-		if (relationSourceCodeId == undefined) {
-			relationSourceCodeId = null;
-		}
-
-		var apiMethod = gapi.client.qdacity.codes.insertCode(
-			{
-				relationId: relationId,
-				relationSourceCodeId: relationSourceCodeId,
-				parentId: parentID
-			},
-			code
-		);
-		return Promisizer.makePromise(apiMethod);
-	}
-	*/
-
-	/* replaced by realtime-syncservice
-	static updateCode(code) {
-		var apiMethod = gapi.client.qdacity.codes.updateCode(code);
-		return Promisizer.makePromise(apiMethod);
-	}
-	*/
-
 	static updateRelationshipCode(
 		relationshipCodeId,
 		relationSourceId,
@@ -52,13 +24,6 @@ export default class CodesEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	/* replaced by realtime-syncservice
-	static removeCode(code) {
-		var apiMethod = gapi.client.qdacity.codes.removeCode(code);
-		return Promisizer.makePromise(apiMethod);
-	}
-	*/
-
 	static setCodeBookEntry(codeId, codebookEntry) {
 		var apiMethod = gapi.client.qdacity.codes.setCodeBookEntry(
 			{
@@ -68,16 +33,6 @@ export default class CodesEndpoint {
 		);
 		return Promisizer.makePromise(apiMethod);
 	}
-
-	/* replaced by realtime-syncservice
-	static relocateCode(codeId, newParentId) {
-		var apiMethod = gapi.client.qdacity.codes.relocateCode({
-			codeId: codeId,
-			newParentID: newParentId
-		});
-		return Promisizer.makePromise(apiMethod);
-	}
-	*/
 
 	static getCode(codeId) {
 		var apiMethod = gapi.client.qdacity.codes.getCode({
