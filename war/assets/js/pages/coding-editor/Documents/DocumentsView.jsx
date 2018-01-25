@@ -371,6 +371,7 @@ export default class DocumentsView extends React.Component {
 					removeActiveDocument={this.removeActiveDocument}
 					changeDocumentData={this.changeDocumentData}
 					getNewDocumentPosition={this.getNewDocumentPosition}
+					projectType = {this.props.projectType}
 				/>
 			);
 		} else {
