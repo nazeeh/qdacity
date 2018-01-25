@@ -393,6 +393,7 @@ public class CourseEndpoint {
 					mgr.makePersistent(termCourse);
 					dbUser.addTermCourseAuthorization(termCourse.getId());
 					mgr.makePersistent(dbUser);
+					Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
 				}
 				catch (javax.jdo.JDOObjectNotFoundException ex) {
 					throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
