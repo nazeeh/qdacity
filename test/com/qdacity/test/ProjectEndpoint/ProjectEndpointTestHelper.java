@@ -38,15 +38,15 @@ public class ProjectEndpointTestHelper {
 		return null;
 	}
 
-	static public void setupProjectWithCodesystem(Long id, String name, String description, User loggedInUser) {
+	static public Project setupProjectWithCodesystem(Long id, String name, String description, User loggedInUser) {
 		CodeSystemTestHelper.addCodeSystem(15648758L, loggedInUser);
 		try {
-			addProject(id, name, description, 15648758L, loggedInUser);
+			return addProject(id, name, description, 15648758L, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("Authorization failed for adding a project");
 		}
-
+		return null;
 
 	}
 

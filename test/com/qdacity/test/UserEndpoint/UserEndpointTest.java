@@ -276,9 +276,12 @@ public class UserEndpointTest {
 
 	@Test
 	public void testUserDeleteValidationProjectOwnerRemoved() throws UnauthorizedException {		
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUserA = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 		User insertedTestUser = UserEndpointTestHelper.addUser("test@abc.de", "test", "abc", testUser);
 		
-		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "coding system test", "test", testUser);
+		Project project = ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "coding system test", "test", testUser);
+		projectEndpoint.addOwner(1L, insertedUserA.getId(), testUser);
 		ProjectRevision revision = projectEndpoint.createSnapshot(1L, "testComment", testUser);
 		ValidationProject validationProject = projectEndpoint.createValidationProject(revision.getId(), insertedTestUser.getId(), testUser);
 		// creator automatically added validation coder
@@ -296,7 +299,7 @@ public class UserEndpointTest {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			validationProject = mgr.getObjectById(ValidationProject.class, validationProject.getId());
-			assertEquals(1, validationProject.getValidationCoders().size());
+			assertEquals(0, validationProject.getValidationCoders().size());
 		} finally {
 			mgr.close();
 		}
