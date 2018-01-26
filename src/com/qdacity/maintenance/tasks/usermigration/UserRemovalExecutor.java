@@ -35,8 +35,7 @@ public class UserRemovalExecutor implements DeferredTask {
 			userEndpoint.removeUser(user.getId(), executingUser);
 			Logger.getLogger("logger").log(Level.INFO, "Deleted user: " + user.getId());
 		} catch (UnauthorizedException e) {
-			Logger.getLogger("logger").log(Level.SEVERE, "Could not delete user: " + user.getId());
-			e.printStackTrace();
+			Logger.getLogger("logger").log(Level.SEVERE, "Could not delete user: " + user.getId(), e);
 		}
 	}
 
