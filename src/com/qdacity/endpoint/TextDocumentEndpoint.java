@@ -44,6 +44,7 @@ import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
@@ -372,7 +373,7 @@ public class TextDocumentEndpoint {
 		}
 	}
 
-	public static void cloneTextDocuments(AbstractProject project, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
+	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Collection<TextDocument> documents = null;
 		if (project.getClass() == ProjectRevision.class) documents = tde.getTextDocument(project.getId(), "REVISION", user).getItems();
@@ -393,7 +394,7 @@ public class TextDocumentEndpoint {
 				cloneDocument.setTitle(textDocument.getTitle());
 				cloneDocument.setText(text);
 				cloneDocument.setPositionInOrder(positionInOrder);
-
+				cloneDocument.setProjectType(projectType);
 				mgr.makePersistent(cloneDocument);
 			}
 		} finally {

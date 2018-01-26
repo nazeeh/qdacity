@@ -22,6 +22,7 @@ import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
 import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
 
 
 @Api(name = "qdacity",
@@ -251,7 +252,7 @@ public class ExerciseEndpoint {
 		cloneExerciseProject = mgr.makePersistent(cloneExerciseProject);
 		project = mgr.makePersistent(project);
 
-		TextDocumentEndpoint.cloneTextDocuments(project, cloneExerciseProject.getId(), true, user);
+		TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.EXERCISE, cloneExerciseProject.getId(), true, user);
 		
 		return cloneExerciseProject;
 	}

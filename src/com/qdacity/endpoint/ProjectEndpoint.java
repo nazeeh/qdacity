@@ -547,7 +547,7 @@ public class ProjectEndpoint {
 			// Set the ID that was just generated
 			CodeSystemEndpoint.setProject(cloneProject.getCodesystemID(), cloneProject.getId());
 
-			TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), false, user);
+			TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.REVISION, cloneProject.getId(), false, user);
 			
 			//Every time a new Project revision is created a new Saturation needs to be calculated.
 			SaturationEndpoint se = new SaturationEndpoint();
@@ -631,7 +631,7 @@ public class ProjectEndpoint {
 			cloneProject = mgr.makePersistent(cloneProject);
 			project = mgr.makePersistent(project);
 
-			TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), true, user);
+			TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.VALIDATION, cloneProject.getId(), true, user);
 
 			// Notify user of accepted request
 			UserNotification notification = new UserNotification();
