@@ -277,7 +277,7 @@ export default class UserMigration extends React.Component {
 					<MigrationNotPossible
 						show={
 							(this.state.isRegisteredAsOldAccount === false ||
-								this.state.isAlreadyMigrated === false)
+								this.state.isAlreadyMigrated === true)
 						}
 					/>
 				</div>
