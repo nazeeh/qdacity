@@ -376,7 +376,11 @@ public class CourseEndpoint {
 					Authorization.checkAuthorizationTermCourse(termCourse, user);
 					mgr.makePersistent(termCourse);
 					qdacityUser.addTermCourseAuthorization(termCourse.getId());
+					
 					mgr.makePersistent(qdacityUser);
+					Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
+					AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+					Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
 				}
 				catch (javax.jdo.JDOObjectNotFoundException ex) {
 					throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
