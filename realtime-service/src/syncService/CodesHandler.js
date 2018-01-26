@@ -26,6 +26,7 @@ class CodesHandler {
       [MSG.CODE.INSERT, this._handleCodeInsert],
       [MSG.CODE.RELOCATE, this._handleCodeRelocate],
       [MSG.CODE.REMOVE, this._handleCodeRemove],
+      [MSG.CODE.UPDATE, this._handleCodeUpdate],
     ].map(def => this._ioSocket.on(def[0], def[1].bind(this)));
   }
 
@@ -78,6 +79,23 @@ class CodesHandler {
     this._socket.api
       .request('codes.removeCode', data)
       .then(res => this._socket.handleApiResponse(EVT.CODE.REMOVED, ack, data))
+      .catch((...foo) => ack('error', ...foo));
+  }
+
+  /**
+   * Handle code update
+   * @private
+   * @arg {object} data - object with at least one key:
+   *                      {object} resource - describing the code to be updated
+   * @arg {function} ack - acknowledge function for response
+   */
+  _handleCodeUpdate(data, ack) {
+    console.info(`${this._ioSocket.id} code.update ${JSON.stringify(data)}`);
+
+    // Call backend API to insert code
+    this._socket.api
+      .request('codes.updateCode', data)
+      .then(res => this._socket.handleApiResponse(EVT.CODE.UPDATED, ack, res))
       .catch((...foo) => ack('error', ...foo));
   }
 }

@@ -29,6 +29,10 @@ import { MSG, EVT } from './constants.js';
  *                Codesystem
  *   parameters:
  *     {object} - Object representing the removed code
+ *
+ * - codeUpdated: Fired when an existing code has been updated
+ *   parameters:
+ *     {object} - Object representing the updated code
  */
 export default class SyncService {
 	/**
