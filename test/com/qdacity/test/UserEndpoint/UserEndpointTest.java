@@ -35,7 +35,9 @@ import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.user.LoginProviderType;
@@ -271,6 +273,35 @@ public class UserEndpointTest {
 			mgr.close();
 		}
 	}
+
+	@Test
+	public void testUserDeleteValidationProjectOwnerRemoved() throws UnauthorizedException {		
+		User insertedTestUser = UserEndpointTestHelper.addUser("test@abc.de", "test", "abc", testUser);
+		
+		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "coding system test", "test", testUser);
+		ProjectRevision revision = projectEndpoint.createSnapshot(1L, "testComment", testUser);
+		ValidationProject validationProject = projectEndpoint.createValidationProject(revision.getId(), insertedTestUser.getId(), testUser);
+		// creator automatically added validation coder
+		
+		assertEquals(1, validationProject.getValidationCoders().size());
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(testUser.getId(), testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			validationProject = mgr.getObjectById(ValidationProject.class, validationProject.getId());
+			assertEquals(1, validationProject.getValidationCoders().size());
+		} finally {
+			mgr.close();
+		}
+	}	
+	
 	
 	@Test
 	public void testUserDeleteAuthorization() throws UnauthorizedException {

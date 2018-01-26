@@ -335,6 +335,11 @@ public class UserEndpoint {
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
+	 * 
+	 * Removes associations from Projects. Deletes the project if this is the last owner.
+	 * Removes associations from ValidationProjects.
+	 * Removes associations from Courses. Deletes the course if this is the last owner.
+	 * Removes associations from TermCourses. Deletes the TermCourse if this is the last owner.
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
@@ -348,8 +353,8 @@ public class UserEndpoint {
 		Authorization.checkAuthorization(user, loggedInUser);
 		
 		// remove from projects
+		ProjectEndpoint projectEndpoint = new ProjectEndpoint();
 		if(user.getProjects() != null) {
-			ProjectEndpoint projectEndpoint = new ProjectEndpoint();
 			for(Long projectId: user.getProjects()) {
 				
 				Project project = (Project) Cache.getOrLoad(projectId, Project.class);
@@ -362,6 +367,13 @@ public class UserEndpoint {
 				}
 			}
 		}
+		
+		// remove from validationProjects
+		List<ValidationProject> validationProjects = projectEndpoint.listValidationProject(loggedInUser);
+		for(ValidationProject validationProject: validationProjects) {
+			projectEndpoint.removeUser(validationProject.getId(), "VALIDATION", user.getId(), loggedInUser);
+		}
+		
 		
 		// remove from courses
 		CourseEndpoint courseEndpoint = new CourseEndpoint();
@@ -394,7 +406,6 @@ public class UserEndpoint {
 			}
 		}
 		
-		// TODO: remove from validationProjects
 		
 		
 		// finally delete user
