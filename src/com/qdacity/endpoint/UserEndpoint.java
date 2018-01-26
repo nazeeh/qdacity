@@ -394,6 +394,9 @@ public class UserEndpoint {
 			}
 		}
 		
+		// TODO: remove from validationProjects
+		
+		
 		// finally delete user
 		PersistenceManager mgr = getPersistenceManager();
 		try {
