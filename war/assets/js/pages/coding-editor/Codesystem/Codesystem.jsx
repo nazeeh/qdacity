@@ -15,7 +15,6 @@ import { PageView } from '../View/PageView.js';
 
 import CodesystemToolbar from './CodesystemToolbar.jsx';
 
-import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import SimpleCodesystem from './SimpleCodesystem.jsx';
 
 const StyledCodeSystemView = styled.div``;
@@ -155,17 +154,12 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	updateSelected(code, persist) {
-		if (!persist) {
+		if (persist) {
+			this.props.syncService.codes.updateCode(code);
+		} else {
 			Object.assign(this.state.selected, code);
 			this.forceUpdate();
-		} else this.saveAndUpdate(code);
-	}
-
-	saveAndUpdate(code) {
-		var _this = this;
-		CodesEndpoint.updateCode(code).then(function(resp) {
-			_this.updateSelected(resp, false);
-		});
+		}
 	}
 
 	codeRemoved(code) {
@@ -205,7 +199,7 @@ export default class Codesystem extends SimpleCodesystem {
 				relationshipCode.relationshipCode = null;
 				relationshipCode.mmElementIDs = [];
 
-				CodesEndpoint.updateCode(relationshipCode);
+				this.props.syncService.codes.updateCode(relationshipCode);
 			}
 		};
 
@@ -221,6 +215,12 @@ export default class Codesystem extends SimpleCodesystem {
 
 		checkCode(code);
 
+		this.forceUpdate();
+	}
+
+	codeUpdated(code) {
+		const existingCode = this.getCodeByCodeID(code.codeID);
+		Object.assign(existingCode, code);
 		this.forceUpdate();
 	}
 
@@ -395,6 +395,9 @@ export default class Codesystem extends SimpleCodesystem {
 				),
 				codeRemoved: syncService.on('codeRemoved', code =>
 					this.codeRemoved(code)
+				),
+				codeUpdated: syncService.on('codeUpdated', code =>
+					this.codeUpdated(code)
 				)
 			};
 		}
@@ -406,6 +409,7 @@ export default class Codesystem extends SimpleCodesystem {
 			syncService.off('codeInserted', this.listenerIDs['codeInserted']);
 			syncService.off('codeRelocated', this.listenerIDs['codeRelocated']);
 			syncService.off('codeRemoved', this.listenerIDs['codeRemoved']);
+			syncService.off('codeUpdated', this.listenerIDs['codeUpdated']);
 		}
 	}
 
