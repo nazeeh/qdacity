@@ -12,6 +12,7 @@ import ProjectDashboard from './project-dashboard/ProjectDashboard.jsx';
 import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
+import AdminStats from './admin/AdminStats.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
 import Faq from './help/Faq.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
@@ -117,6 +118,16 @@ export default class App extends React.Component {
 								path="/Admin"
 								render={props => (
 									<Admin
+										account={this.account}
+										chartScriptPromise={this.props.chartScriptPromise}
+										{...props}
+									/>
+								)}
+							/>
+							<Route
+								path="/AdminStats"
+								render={props => (
+									<AdminStats
 										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}

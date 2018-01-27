@@ -2,8 +2,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Users from './Users.jsx';
-import AdminStats from './AdminStats.jsx';
 import AdminProjectList from './AdminProjectList.jsx';
+import {BtnDefault} from "../../common/styles/Btn.jsx";
 
 export default class Admin extends React.Component {
 	constructor(props) {
@@ -38,16 +38,29 @@ export default class Admin extends React.Component {
 		});
 	}
 
+	navigateToStats() {
+		this.props.history.push(
+			'/AdminStats'
+		);
+	}
+
 	render() {
 		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
 			return null;
 		return (
 			<div className="container main-content">
 				<div className="row">
-					<div className="col-lg-8">
-						<AdminStats chartScriptPromise={this.props.chartScriptPromise} />
-						<div id="changeLog" />
-					</div>
+					<BtnDefault
+						onClick={() => this.navigateToStats()}
+					>
+						<FormattedMessage id="admin.section.stats" defaultMessage="Statistics" />
+					</BtnDefault>
+				</div>
+				<div className="row">
+					{/*<div className="col-lg-8">*/}
+						{/*<AdminStats chartScriptPromise={this.props.chartScriptPromise} />*/}
+						{/*<div id="changeLog" />*/}
+					{/*</div>*/}
 					<div className="col-lg-4">
 						<div id="project-selection">
 							<Users
