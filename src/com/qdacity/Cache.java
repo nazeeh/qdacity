@@ -134,6 +134,8 @@ public class Cache {
 	}
 
 	public static void invalidatUserLogins(User qdacityUser) {
+		if(qdacityUser.getLoginProviderInformation() == null) return;
+		
 		for(UserLoginProviderInformation loginInfo: qdacityUser.getLoginProviderInformation()) {
 			invalidate(loginInfo.getProvider().toString() + ":" + loginInfo.getExternalUserId(), User.class);
 		}

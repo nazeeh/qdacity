@@ -349,8 +349,10 @@ public class UserEndpoint {
 		
 		User user = (User) Cache.getOrLoad(id, User.class);
 
-		// Check if user is authorized
-		Authorization.checkAuthorization(user, loggedInUser);
+		if(!Authorization.isUserAdmin(loggedInUser)) {
+			// Check if user is authorized
+			Authorization.checkAuthorization(user, loggedInUser);
+		} // else he is admin and is also privileged to to this action!
 		
 		// remove from projects
 		ProjectEndpoint projectEndpoint = new ProjectEndpoint();
@@ -411,7 +413,7 @@ public class UserEndpoint {
 		// finally delete user
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			user = (User) Cache.getOrLoad(id, User.class);
+			user = mgr.getObjectById(User.class, id);
 			Cache.invalidate(user.getId(), User.class);
 			Cache.invalidatUserLogins(user);
 			mgr.makePersistent(user); // can't delete transient instance

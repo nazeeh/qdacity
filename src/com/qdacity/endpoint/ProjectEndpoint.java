@@ -691,8 +691,10 @@ public class ProjectEndpoint {
 		try {
 			Project project = (Project) mgr.getObjectById(Project.class, id);
 
-			// Check if user is authorized
-			Authorization.checkAuthorization(project, user);
+			if(!Authorization.isUserAdmin(user)) {
+				// Check if user is authorized
+				Authorization.checkAuthorization(project, user);
+			} // else he is admin and also privileged
 
 			List<String> userIDs = project.getOwners();
 
