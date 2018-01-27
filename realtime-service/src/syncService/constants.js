@@ -7,6 +7,7 @@ const MSG = {
     INSERT: 'code.insert',
     RELOCATE: 'code.relocate',
     REMOVE: 'code.remove',
+    UPDATE: 'code.update',
   },
 };
 
@@ -20,6 +21,7 @@ const EVT = {
     INSERTED: 'code.inserted',
     RELOCATED: 'code.relocated',
     REMOVED: 'code.removed',
+    UPDATED: 'code.updated',
   },
 };
 

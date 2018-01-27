@@ -41,7 +41,7 @@ public class UserMigrationEmailNotifier implements DeferredTask {
 			Query query = mgr.newQuery(User.class);
 			List<User> userList = (List<User>) query.execute();
 			
-			Logger.getLogger("logger").log(Level.INFO, "Starting sending user migration emails to all users.");
+			Logger.getLogger("logger").log(Level.INFO, "Starting sending user migration emails to all " + userList.size() + " users.");
 			for(User user: userList) {
 				UserMigrationEmailSender task = new UserMigrationEmailSender(user, href);
 

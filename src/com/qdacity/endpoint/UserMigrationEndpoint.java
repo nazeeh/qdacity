@@ -166,7 +166,7 @@ public class UserMigrationEndpoint {
 		// ready for migration:
 			// add the newUser to UserLoginProivderInformation.
 		dbUser.addLoginProviderInformation(new UserLoginProviderInformation(newUser.getProvider(), newUser.getId()));
-		persistUpdatedUser(dbUser);
+		persistUpdatedUser(dbUser, newUser);
 		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Migration was successful!");
 	}
 	
@@ -216,11 +216,12 @@ public class UserMigrationEndpoint {
 		}
 	}
 	
-	private void persistUpdatedUser(User user) {
+	private void persistUpdatedUser(User user, AuthenticatedUser authenticatedUser) {
 		PersistenceManager mgr = getPersistenceManager();
 		try{
 			mgr.makePersistent(user);
 			Cache.cache(user.getId(), User.class, user);
+			Cache.cacheAuthenticatedUser(authenticatedUser, user); // also cache external user id
 		} finally {
 			mgr.close();
 		}

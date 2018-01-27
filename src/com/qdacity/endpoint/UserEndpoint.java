@@ -233,6 +233,8 @@ public class UserEndpoint {
 
 			mgr.makePersistent(user);
 			Cache.cache(id, User.class, user);
+			AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+			Cache.cacheAuthenticatedUser(authenticatedUser, user); // also cache external user id
 
 		} finally {
 			mgr.close();
@@ -320,6 +322,8 @@ public class UserEndpoint {
 			}
 			mgr.makePersistent(user);
 			Cache.cache(user.getId(), User.class, user);
+			AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+			Cache.cacheAuthenticatedUser(authenticatedUser, user); // also cache external user id
 		} finally {
 			mgr.close();
 		}
@@ -373,6 +377,7 @@ public class UserEndpoint {
 					mgr.close();
 				}
 				Cache.cache(user.getId(), User.class, user);
+				// not caching external user id because we don't know which the fetched user will take!
 			}
 
 			// PreLoad User Data
