@@ -33,7 +33,7 @@ export default class AdminStats extends React.Component {
 	render() {
 		var _this = this;
 		return (
-			<div>
+			<div className="container main-content">
 				<div className="box box-default">
 					<div className="box-header with-border">
 						<h3 className="box-title">
