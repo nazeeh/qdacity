@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
 import Users from './Users.jsx';
 import AdminProjectList from './AdminProjectList.jsx';
@@ -43,12 +43,14 @@ export default class AdminControl extends React.Component {
 		return (
 			<div className="container main-content">
 				<div className="row">
-					<div className="col-lg-4">
+					<div className="col-lg-6">
 						<div id="project-selection">
 							<Users
 								setSelectedUserId={userId => this.setSelectedUserId(userId)}
 							/>
 						</div>
+					</div>
+					<div className="col-lg-6">
 						{this.state.selectedUserId && (
 							<div className="box box-default">
 								<div className="box-header with-border">
