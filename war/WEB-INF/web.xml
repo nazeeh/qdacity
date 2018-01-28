@@ -77,10 +77,6 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>page</servlet-name>
-		<url-pattern>/AdminStats</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>page</servlet-name>
 		<url-pattern>/CodingEditor</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
