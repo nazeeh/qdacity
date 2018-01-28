@@ -2,6 +2,11 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import {BtnDefault} from "../../common/styles/Btn.jsx";
+import styled from 'styled-components';
+
+const StyledContainer = styled.div`
+	margin-bottom: -50px;
+`;
 
 export default class Admin extends React.Component {
 	constructor(props) {
@@ -52,7 +57,7 @@ export default class Admin extends React.Component {
 		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
 			return null;
 		return (
-			<div className="container main-content">
+			<StyledContainer className="container main-content">
 				<div className="row">
 					<BtnDefault
 						onClick={() => this.navigateToStats()}
@@ -65,7 +70,7 @@ export default class Admin extends React.Component {
 						<FormattedMessage id="admin.section.control" defaultMessage="Administration" />
 					</BtnDefault>
 				</div>
-			</div>
+			</StyledContainer>
 		);
 	}
 }
