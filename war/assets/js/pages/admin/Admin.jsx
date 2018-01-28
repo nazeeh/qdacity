@@ -41,15 +41,9 @@ export default class Admin extends React.Component {
 		});
 	}
 
-	navigateToStats() {
+	navigateTo(to) {
 		this.props.history.push(
-			'/Admin/Stats'
-		);
-	}
-
-	navigateToControl() {
-		this.props.history.push(
-			'/Admin/Control'
+			'/Admin/' + to
 		);
 	}
 
@@ -60,12 +54,17 @@ export default class Admin extends React.Component {
 			<StyledContainer className="container main-content">
 				<div className="row">
 					<BtnDefault
-						onClick={() => this.navigateToStats()}
+						onClick={() => this.navigateTo("Stats")}
 					>
 						<FormattedMessage id="admin.section.stats" defaultMessage="Statistics" />
 					</BtnDefault>
 					<BtnDefault
-						onClick={() => this.navigateToControl()}
+						onClick={() => this.navigateTo("Costs")}
+					>
+						<FormattedMessage id="admin.section.stats" defaultMessage="Costs" />
+					</BtnDefault>
+					<BtnDefault
+						onClick={() => this.navigateTo("Control")}
 					>
 						<FormattedMessage id="admin.section.control" defaultMessage="Administration" />
 					</BtnDefault>

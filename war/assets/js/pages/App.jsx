@@ -14,6 +14,7 @@ import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
 import AdminStats from './admin/AdminStats.jsx';
 import AdminControl from "./admin/AdminControl.jsx";
+import AdminCosts from "./admin/AdminCosts.jsx";
 import CodingEditor from './coding-editor/CodingEditor.jsx';
 import Faq from './help/Faq.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
@@ -137,6 +138,16 @@ export default class App extends React.Component {
 								path="/Admin/Stats"
 								render={props => (
 									<AdminStats
+										account={this.account}
+										chartScriptPromise={this.props.chartScriptPromise}
+										{...props}
+									/>
+								)}
+							/>
+							<Route
+								path="/Admin/Costs"
+								render={props => (
+									<AdminCosts
 										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
