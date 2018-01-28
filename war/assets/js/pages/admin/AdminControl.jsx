@@ -37,12 +37,6 @@ export default class AdminControl extends React.Component {
 		});
 	}
 
-	navigateToStats() {
-		this.props.history.push(
-			'/AdminStats'
-		);
-	}
-
 	render() {
 		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
 			return null;
