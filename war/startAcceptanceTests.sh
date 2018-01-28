@@ -1,58 +1,44 @@
+#!/bin/bash
 # This script waits until the port 8888 is open and then launches the acceptance-tests.
 
 SERVER=localhost
 PORT=8888
 
-TIMEOUT=120
-TIME_OFFSET=3
+TIMEOUT=180
+TIME_INTERVAL=5
+
+PORT_OPEN=1
+PORT_CLOSED=0
 
 echo "Starting shell script which runs the acceptance tests."
 
-let isPortOpen=0
-let time=0
+time=0
+isPortOpen=0
 
-while [ $time -lt $TIMEOUT -a "$isPortOpen" == 0 ]
+while [ $time -lt $TIMEOUT ] && [ $isPortOpen -eq $PORT_CLOSED ];
 do 
-	echo "Waiting for the port: ${time} seconds passed..."
+	#echo "Waiting for the port: ${time} seconds passed..."
 	
 	# Connect to the port
-	</dev/tcp/$SERVER/$PORT
-	if [ "$?" -ne 0 ]; then
-		let isPortOpen=0
+	(echo > /dev/tcp/$SERVER/$PORT) >/dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		isPortOpen=$PORT_CLOSED
 	else
-		let isPortOpen=1
+		isPortOpen=$PORT_OPEN
 	fi
 	
-	let time=$time+$TIME_OFFSET	
-    sleep $TIME_OFFSET
+	time=$(($time+$TIME_INTERVAL))
+    sleep $TIME_INTERVAL
 done
 
-if [ $isPortOpen -eq 1 ]; then
-	echo "Port is open. Start acceptance tests now."
-	
+if [ $isPortOpen -eq $PORT_OPEN ]; then
 	# Give the server more time to properly start
-	#sleep 5
-	sleep 70
-	echo "SERVER IS RUNNING NOW"
+	sleep 5
+
+	echo "Port is open after ${time} seconds. Start acceptance tests now."
 	
-	# Start Xvfb
-	echo "START XVFB"
-	Xvfb :2 -screen 5 1024x768x8 &
-    export DISPLAY=:2.5
-	
-	sleep 10
-	
-	# Start the selenium server
-	echo "START SELENIUM SERVER"
-    java -jar selenium-server-standalone-3.8.1.jar &
-	
-	sleep 10
-	
-	# Start the acceptance tests
-	echo "START ACCEPTANCE TESTS NOW"
 	gulp acceptance-tests
 	
-	echo "EXIT 0"
 	exit 0
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
