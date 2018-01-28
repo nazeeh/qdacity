@@ -1,3 +1,4 @@
+# Starts the selenium server and the local dev-server.
 
 echo "Start the selenium server"
 
