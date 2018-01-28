@@ -49,10 +49,6 @@ export default class AdminControl extends React.Component {
 		return (
 			<div className="container main-content">
 				<div className="row">
-					{/*<div className="col-lg-8">*/}
-						{/*<AdminStats chartScriptPromise={this.props.chartScriptPromise} />*/}
-						{/*<div id="changeLog" />*/}
-					{/*</div>*/}
 					<div className="col-lg-4">
 						<div id="project-selection">
 							<Users
