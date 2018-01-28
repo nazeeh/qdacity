@@ -13,7 +13,8 @@ export default class AdminCosts extends React.Component {
 	render() {
 		return (
 			<div className="container main-content">
-				<div className="box box-default">
+				<div className="row">
+					<div className="col-lg-6">	<div className="box box-default">
 					<div className="box-header with-border">
 						<h3 className="box-title">
 							<FormattedMessage
@@ -27,8 +28,10 @@ export default class AdminCosts extends React.Component {
 							chartScriptPromise={this.props.chartScriptPromise}
 						/>
 					</div>
+					</div>
 				</div>
-				<div className="box box-default">
+					<div className="col-lg-6">
+					<div className="box box-default">
 					<div className="box-header with-border">
 						<h3 className="box-title">
 							<FormattedMessage
@@ -42,8 +45,12 @@ export default class AdminCosts extends React.Component {
 							chartScriptPromise={this.props.chartScriptPromise}
 						/>
 					</div>
+					</div>
+					</div>
 				</div>
-				<div className="box box-default">
+				<div className="row">
+					<div className="col-lg-6">
+					<div className="box box-default">
 					<div className="box-header with-border">
 						<h3 className="box-title">
 							<FormattedMessage
@@ -56,6 +63,8 @@ export default class AdminCosts extends React.Component {
 						<CostsByServiceChart
 							chartScriptPromise={this.props.chartScriptPromise}
 						/>
+					</div>
+					</div>
 					</div>
 				</div>
 			</div>
