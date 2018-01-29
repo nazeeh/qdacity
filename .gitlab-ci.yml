@@ -109,6 +109,15 @@ frontend_prod_unittest:
   dependencies:
     - frontend_prod_build
 
+acceptance_tests:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  script:
+    - docker build -t qda .
+    - docker run -it -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 qda
+
 rtcsvc_prod_unittest:
   <<: *job_definition
   stage: test
