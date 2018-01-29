@@ -114,6 +114,12 @@ export default class App extends React.Component {
 								)}
 							/>
 							<Route
+								path="/ExercisePage"
+								render={props => (
+									<TermCourseConfig account={this.account} {...props} />
+								)}
+							/>
+							<Route
 								path="/Admin"
 								render={props => (
 									<Admin

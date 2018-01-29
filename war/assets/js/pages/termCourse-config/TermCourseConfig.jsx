@@ -161,6 +161,8 @@ export default class TermCourseConfig extends React.Component {
     }
   }
 
+
+
   renderExercises() {
     var termCourse = this.state.termCourse;
     var isUserTermCourseOwner = this.state.isTermCourseOwner;
@@ -171,6 +173,7 @@ export default class TermCourseConfig extends React.Component {
         <Exercises
           termCourse={this.state.termCourse}
           account={this.props.account}
+          history={this.props.history}
         />
       );
     }

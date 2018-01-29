@@ -156,9 +156,15 @@ export default class ExerciseList extends React.Component {
     );
   }
 
+  exerciseClick(exercise) {
+    this.props.history.push(
+      '/ExercisePage?exercise=' + exercise.id
+    );
+  }
+
   renderExercise(exercise, index) {
     return (
-      <StyledListItemDefault key={index} className="clickable">
+      <StyledListItemDefault key={index} className="clickable" onClick={this.exerciseClick.bind(this, exercise)}>
         <span> {exercise.name} </span>
         <div>
           <StyledListItemBtn
