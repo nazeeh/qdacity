@@ -7,6 +7,7 @@ import ExerciseEndpoint from "endpoints/ExerciseEndpoint";
 import "script-loader!../../../../components/URIjs/URI.min.js";
 import "script-loader!../../../../components/alertify/alertify-0.3.js";
 import Exercise from "./Exercise";
+import ExerciseProjects from "./ExerciseProjects/ExerciseProjects.jsx";
 import BtnDefault from "../../common/styles/Btn.jsx";
 import Confirm from "../../common/modals/Confirm";
 
@@ -46,46 +47,37 @@ export default class ExercisePage extends React.Component {
   init() {
     if (!this.userPromise) {
       this.userPromise = this.props.account.getCurrentUser();
-      this.getExercisesPromise = ExerciseEndpoint.getExerciseByID(
+      this.getExerciseByIDPromise = ExerciseEndpoint.getExerciseByID(
         this.state.exercise.id
       );
-      this.getExerciseProjectsPromise = ExerciseEndpoint.getExerciseProjectsByExerciseID(
-        this.state.exercise.id
-      );
-      this.setExerciseProjectsInfo();
+
+      this.setExerciseInfo();
     }
   }
 
-  setExerciseProjectsInfo() {
+  setExerciseInfo() {
     var _this = this;
     var exercise = this.state.exercise;
     this.userPromise.then(function(user) {
-      var isTermCourseOwner = _this.props.account.isTermCourseOwner(
-        user,
-        _this.state.exercise.getTermCourseID()
-      );
-      console.log(isTermCourseOwner);
-      console.log(_this.state.exercise);
-      _this.getExerciseProjectsPromise.then(function(exerciseProjects) {
-        exercise.exerciseProjects = exerciseProjects;
-            _this.setState({
-              exercise: exercise,
-              isTermCourseOwner: isTermCourseOwner
-            });
-      });
+      _this.getExerciseByIDPromise.then(function(exerciseResp) {
+        var isTermCourseOwner = _this.props.account.isTermCourseOwner(
+          user,
+          exerciseResp.termCourseID
+        );
+        _this.setState({
+          exercise: exercise,
+          isTermCourseOwner: isTermCourseOwner
+        });
+      })
     });
   }
 
   renderExerciseProjects() {
-    console.log(this.state);
     var isUserTermCourseOwner = this.state.isTermCourseOwner;
     if (!isUserTermCourseOwner) {
       return "";
     } else {
-      return (
-        <span>
-        hi</span>
-      );
+      return <ExerciseProjects exercise={this.state.exercise} account={this.props.account}/>;
     }
   }
 
