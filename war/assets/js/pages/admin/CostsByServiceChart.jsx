@@ -92,6 +92,8 @@ export default class CostsByServiceChart extends React.Component {
 			}
 		};
 
+		data.sort([{column: 1, desc: true}]);
+
 		return (
 			<GooglePieChart
 				graphID="costsByServiceChart"
