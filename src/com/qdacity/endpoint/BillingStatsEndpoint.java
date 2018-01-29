@@ -91,11 +91,12 @@ public class BillingStatsEndpoint {
 		Date queryEndDate = endDate != null ? endDate : new Date();
 
 		QueryJobConfiguration queryJobConfiguration = QueryJobConfiguration.newBuilder(
-				"SELECT service.description, SUM(cost) as cost " +
+				"SELECT service.description as service, sku.description as description, SUM(cost) as cost " +
 						"FROM `" + Constants.BILLING_TABLE + "` " +
 						"WHERE usage_start_time >= @startTime " +
 						"AND usage_start_time < @endTime " +
-						"GROUP BY service.description"
+						"GROUP BY service, description " +
+						"ORDER BY cost DESC"
 		)
 				.addNamedParameter("startTime", QueryParameterValue.string(timestampFormat.format(queryStartDate)))
 				.addNamedParameter("endTime", QueryParameterValue.string(timestampFormat.format(queryEndDate)))
@@ -115,9 +116,10 @@ public class BillingStatsEndpoint {
 
 		Map<String, Double> resultMap = new HashMap<>();
 		for (FieldValueList row : queryResult.iterateAll()) {
+			String service = row.get("service").getStringValue();
 			String description = row.get("description").getStringValue();
 			Double cost = row.get("cost").getDoubleValue();
-			resultMap.put(description, cost);
+			resultMap.put(service + "." + description, cost);
 		}
 		ServiceCostsBillingStats result = new ServiceCostsBillingStats();
 		result.setServiceCosts(resultMap);
