@@ -61,7 +61,7 @@ public class User implements Serializable {
 
 	@Persistent(defaultFetchGroup = "true")
 	@Element(dependent = "true")
-	@Column(name = "relations")
+	@Column(name = "loginProviderInformations")
 	List<UserLoginProviderInformation> loginProviderInformationList;
 
 	public String getId() {
