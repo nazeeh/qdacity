@@ -10,6 +10,7 @@ import PersonalDashboard from './personal-dashboard/PersonalDashboard.jsx';
 import CourseDashboard from './course-dashboard/CourseDashboard.jsx';
 import ProjectDashboard from './project-dashboard/ProjectDashboard.jsx';
 import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
+import ExercisePage from './ExercisePage/ExercisePage.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
@@ -116,7 +117,7 @@ export default class App extends React.Component {
 							<Route
 								path="/ExercisePage"
 								render={props => (
-									<TermCourseConfig account={this.account} {...props} />
+									<ExercisePage account={this.account} {...props} />
 								)}
 							/>
 							<Route

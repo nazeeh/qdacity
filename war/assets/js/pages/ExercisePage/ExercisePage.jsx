@@ -3,14 +3,11 @@ import IntlProvider from "../../common/Localization/LocalizationProvider";
 import styled from "styled-components";
 import Theme from "../../common/styles/Theme.js";
 
-import CourseEndpoint from "endpoints/CourseEndpoint";
+import ExerciseEndpoint from "endpoints/ExerciseEndpoint";
 import "script-loader!../../../../components/URIjs/URI.min.js";
 import "script-loader!../../../../components/alertify/alertify-0.3.js";
-import TermCourse from "./TermCourse";
+import Exercise from "./Exercise";
 import BtnDefault from "../../common/styles/Btn.jsx";
-import Participants from "./Participants/Participants.jsx";
-import Exercises from "./Exercises/Exercises.jsx";
-import TitleRow from "./TitleRow/TitleRow.jsx";
 import Confirm from "../../common/modals/Confirm";
 
 const StyledNewPrjBtn = styled.div`
@@ -38,18 +35,25 @@ export default class ExercisePage extends React.Component {
     super(props);
 
     var urlParams = URI(window.location.search).query(true);
+    var exercise = new Exercise(urlParams.exercise);
 
+    this.state = {
+      exercise: exercise,
+      isTermCourseOwner: false
+    };
   }
 
   init() {
     if (!this.userPromise) {
       this.userPromise = this.props.account.getCurrentUser();
-      this.setTermCourseInfo();
+      this.getExerciseProjectsPromise = ExerciseEndpoint.getExerciseProjectsByExerciseID(
+        this.state.exercise.id
+      );
     }
   }
 
 
   render() {
-    return null;
+      return null;
   }
 }
