@@ -241,7 +241,27 @@ public class ExerciseEndpoint {
 			}
 			return exerciseProjects;
 		}
-	
+
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "exercise.getExerciseByID",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+	public Exercise getExerciseByID(@Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
+		PersistenceManager mgr = getPersistenceManager();
+		Exercise exercise = null;
+		try {
+
+			Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(exerciseID)");
+
+			exercise = mgr.getObjectById(Exercise.class, exerciseID);
+
+		} finally {
+			mgr.close();
+		}
+		return exercise;
+	}
+
 	private ExerciseProject cloneExerciseProject(ProjectRevision projectRev, User user) throws UnauthorizedException {
 
 		ExerciseProject cloneProject = new ExerciseProject(projectRev);
