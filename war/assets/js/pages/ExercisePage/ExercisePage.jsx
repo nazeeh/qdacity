@@ -7,7 +7,6 @@ import ExerciseEndpoint from "endpoints/ExerciseEndpoint";
 import "script-loader!../../../../components/URIjs/URI.min.js";
 import "script-loader!../../../../components/alertify/alertify-0.3.js";
 import Exercise from "./Exercise";
-import ExerciseProjects from "./ExerciseProjects/ExerciseProjects.jsx";
 import BtnDefault from "../../common/styles/Btn.jsx";
 import Confirm from "../../common/modals/Confirm";
 
