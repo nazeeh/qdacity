@@ -1,0 +1,34 @@
+{
+  "name": "babel-plugin-qdacity-localization",
+  "version": "1.0.0",
+  "description": "Babel plugin to extract localization strings from react app qdacity",
+  "main": "index.js",
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-plugin-tester": "^5.0.0",
+    "babel-template": "^6.26.0",
+    "babel-types": "^6.26.0"
+  },
+  "devDependencies": {
+    "@types/babel-core": "^6.25.3",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^4.16.0",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-react": "^7.5.1",
+    "jest": "^22.1.4",
+    "mocha": "^5.0.0",
+    "npm-install-webpack-plugin": "^4.0.5",
+    "webpack": "^3.10.0"
+  },
+  "scripts": {
+    "test": "mocha --require babel-core/register tests",
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "watch-test": "mocha --watch --require babel-core/register tests"
+  },
+  "author": "Robert Obermeier",
+  "license": "MIT"
+}
