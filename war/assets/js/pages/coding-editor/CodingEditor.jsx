@@ -190,7 +190,7 @@ class CodingEditor extends React.Component {
 				email: profile.email,
 				picSrc: profile.thumbnail,
 				project: _this.state.project.id,
-				token: _this.props.auth.authentication.getToken()
+				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
 			});
 		})
 	}
