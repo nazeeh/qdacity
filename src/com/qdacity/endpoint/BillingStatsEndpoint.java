@@ -49,6 +49,7 @@ public class BillingStatsEndpoint {
 
 		AggregatedBillingStats result = new AggregatedBillingStats();
 		result.setCostThisMonth(totalCostLastMonth);
+		result.setUsersThisMonth(totalUsersLastMonth);
 		result.setCostPerUserThisMonth(totalCostLastMonth / totalUsersLastMonth);
 
 		return result;

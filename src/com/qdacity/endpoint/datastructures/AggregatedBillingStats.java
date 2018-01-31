@@ -6,6 +6,7 @@ import java.util.Map;
 public class AggregatedBillingStats {
 
 	private double costThisMonth;
+	private int usersThisMonth;
 	private double costPerUserThisMonth;
 
 	public double getCostThisMonth() {
@@ -14,6 +15,14 @@ public class AggregatedBillingStats {
 
 	public void setCostThisMonth(double costThisMonth) {
 		this.costThisMonth = costThisMonth;
+	}
+
+	public int getUsersThisMonth() {
+		return usersThisMonth;
+	}
+
+	public void setUsersThisMonth(int usersThisMonth) {
+		this.usersThisMonth = usersThisMonth;
 	}
 
 	public double getCostPerUserThisMonth() {
