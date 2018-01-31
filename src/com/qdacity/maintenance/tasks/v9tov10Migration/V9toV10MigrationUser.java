@@ -14,8 +14,8 @@ public class V9toV10MigrationUser implements DeferredTask {
 	@Override
 	public void run() {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Iterable<Entity> reports = getAll("User", datastore);
-		for (Entity user : reports) {
+		Iterable<Entity> users = getAll("User", datastore);
+		for (Entity user : users) {
 			try {
 				// If the user does not already have the new attribute we need to add it
 				if (!user.hasProperty("loginProviderInformations")){
