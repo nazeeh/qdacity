@@ -267,7 +267,7 @@ public class ProjectEndpoint {
 				mgr.makePersistent(project);
 
 				qdacityUser.addProjectAuthorization(project.getId());
-				
+				mgr.makePersistent(qdacityUser);
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
 				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
