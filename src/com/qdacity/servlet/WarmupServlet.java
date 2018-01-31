@@ -23,13 +23,13 @@ import com.qdacity.project.tasks.ProjectDataPreloader;
 public class WarmupServlet extends HttpServlet {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -8409689949482466830L;
 	User user;
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException  {
 		if (!req.getRequestURI().startsWith("/_ah/warmup")) {
 			resp.sendError(404);
 			return;
@@ -40,7 +40,7 @@ public class WarmupServlet extends HttpServlet {
 		user = new User("112909287246196217207", "testdummy.smash@gmail.com");
 
 		warmupUserEndpoint(user);
-		
+
 		warmupProjectEndpoint(user);
 
 		warmupProjectStatsEndpoint(user);
@@ -91,8 +91,12 @@ public class WarmupServlet extends HttpServlet {
 
 	private void warmupUserNotificationEndpoint(User user) {
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
+		try {
+			une.listUserNotification(null, null, user);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+		}
 
-		une.listUserNotification(null, null, user);
 	}
 
 	private void warmupProjectStatsEndpoint(User user) {
