@@ -23,8 +23,13 @@ const SelectedPage = {
 export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
+
+		const urlParts = this.props.history.location.pathname.split("/");
+		let page = urlParts[urlParts.length - 1];
+		page = page === "Admin" ? SelectedPage.CONTROL : page;
+
 		this.state = {
-			selectedPage: SelectedPage.CONTROL
+			selectedPage: page
 		};
 	}
 
