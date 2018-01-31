@@ -10,20 +10,15 @@ import GraphStyles from './GraphStyles.js';
 import GraphLayouting from './GraphLayouting.js';
 import GraphConnectionHandler from './GraphConnectionHandler.js';
 
-import {
-	EdgeType
-} from '../../util/EdgeType.js';
+import { EdgeType } from '../../util/EdgeType.js';
 
-import {
-	DropTarget
-} from 'react-dnd';
+import { DropTarget } from 'react-dnd';
 
 import HoverButtons from '../../hoverbutton/HoverButtons.jsx';
 
 import UmlCodePositionEndpoint from '../../../../common/endpoints/UmlCodePositionEndpoint';
 
 class GraphView extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -86,7 +81,6 @@ class GraphView extends React.Component {
 		// Disabled anti aliasing
 		mxCellRenderer.prototype.antiAlias = false;
 
-
 		// Enables rubberband selection
 		new mxRubberband(this.graph);
 
@@ -114,7 +108,11 @@ class GraphView extends React.Component {
 	}
 
 	initializeConnections() {
-		this.graphConnectionHandler = new GraphConnectionHandler(this.props.umlEditor, this, this.graph);
+		this.graphConnectionHandler = new GraphConnectionHandler(
+			this.props.umlEditor,
+			this,
+			this.graph
+		);
 	}
 
 	initializePanning() {
@@ -127,7 +125,7 @@ class GraphView extends React.Component {
 		const _this = this;
 
 		// Html content of the node
-		this.graph.getLabel = function (cell) {
+		this.graph.getLabel = function(cell) {
 			if (_this.graph.getModel().isVertex(cell)) {
 				// Return something not empty to render the react component
 				return '<div></div>';
@@ -136,12 +134,11 @@ class GraphView extends React.Component {
 			}
 		};
 
-
 		// Properly set the div position for the cell. This div will be used to display the cell cotent.
 		// Add event listeners to cell components
 		const oldRedrawLabel = this.graph.cellRenderer.redrawLabel;
 
-		this.graph.cellRenderer.redrawLabel = function (state) {
+		this.graph.cellRenderer.redrawLabel = function(state) {
 			// super
 			oldRedrawLabel.apply(this, arguments);
 
@@ -150,13 +147,13 @@ class GraphView extends React.Component {
 			if (_this.graph.getModel().isVertex(cell) && state.text != null) {
 				const divBase = state.text.node.children[0];
 
-				// Render the react component 
+				// Render the react component
 				// unmount happens in recalculateNodeSize()
 				ReactDOM.render(_this.getCellContent(cell), divBase);
 
 				// Set size of the main div
 				state.text.node.style.overflow = 'hidden';
-				state.text.node.style.top = (state.y + 1) + 'px';
+				state.text.node.style.top = state.y + 1 + 'px';
 
 				let div = state.text.node.getElementsByTagName('div')[0];
 
@@ -165,7 +162,8 @@ class GraphView extends React.Component {
 
 					div.style.display = 'block';
 					div.style.width = Math.max(1, Math.round(state.width / scale)) + 'px';
-					div.style.height = Math.max(1, Math.round(state.height / scale)) + 'px';
+					div.style.height =
+						Math.max(1, Math.round(state.height / scale)) + 'px';
 				}
 			}
 		};
@@ -175,7 +173,7 @@ class GraphView extends React.Component {
 		const _this = this;
 
 		// Mouse wheel
-		mxEvent.addMouseWheelListener(function (wheelevt) {
+		mxEvent.addMouseWheelListener(function(wheelevt) {
 			// Check if the target is the uml editor
 			let targetIsUmlEditor = false;
 
@@ -202,62 +200,74 @@ class GraphView extends React.Component {
 		});
 
 		// Cells moved
-		this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {
-			_this.updateHoverButtons(null, evt.properties.dx * _this.graph.view.scale, evt.properties.dy * _this.graph.view.scale);
+		this.graph.addListener(mxEvent.CELLS_MOVED, function(sender, evt) {
+			_this.updateHoverButtons(
+				null,
+				evt.properties.dx * _this.graph.view.scale,
+				evt.properties.dy * _this.graph.view.scale
+			);
 		});
 
 		// Panning
-		this.graph.panningHandler.addListener(mxEvent.PAN_START, function (sender, evt) {
+		this.graph.panningHandler.addListener(mxEvent.PAN_START, function(
+			sender,
+			evt
+		) {
 			_this.panning = true;
 		});
-		this.graph.panningHandler.addListener(mxEvent.PAN_END, function (sender, evt) {
+		this.graph.panningHandler.addListener(mxEvent.PAN_END, function(
+			sender,
+			evt
+		) {
 			_this.panning = false;
 			_this.updateHoverButtons();
 		});
-		this.graph.panningHandler.addListener(mxEvent.PAN, function (sender, evt) {
+		this.graph.panningHandler.addListener(mxEvent.PAN, function(sender, evt) {
 			_this.updateHoverButtons();
 		});
 
 		// Selection changed
 		this.lastSelectedCells = [];
 
-		this.graph.getSelectionModel().addListener(mxEvent.CHANGE, function (sender, evt) {
-			var cells = sender.cells;
+		this.graph
+			.getSelectionModel()
+			.addListener(mxEvent.CHANGE, function(sender, evt) {
+				var cells = sender.cells;
 
-			if (_this.isConnectingEdge()) {
-				return;
-			}
-
-			if (_this.lastSelectedCells != null) {
-				// remove last overlays
-				_this.hoverButtons.hide();
-
-				// Update last selected cells
-				for (let i = 0; i < _this.lastSelectedCells.length; i++) {
-					_this.recalculateNodeSize(_this.lastSelectedCells[i]);
+				if (_this.isConnectingEdge()) {
+					return;
 				}
-			}
 
-			// display overlay if one node selected
-			if (cells != null && cells.length == 1) {
-				let cell = cells[0];
+				if (_this.lastSelectedCells != null) {
+					// remove last overlays
+					_this.hoverButtons.hide();
 
-				_this.hoverButtons.show(cell);
-				_this.updateHoverButtons(cell);
+					// Update last selected cells
+					for (let i = 0; i < _this.lastSelectedCells.length; i++) {
+						_this.recalculateNodeSize(_this.lastSelectedCells[i]);
+					}
+				}
 
-				// Update
-				_this.recalculateNodeSize(cell);
-			}
+				// display overlay if one node selected
+				if (cells != null && cells.length == 1) {
+					let cell = cells[0];
 
-			_this.lastSelectedCells = cells.slice(); // use a copy
-		});
+					_this.hoverButtons.show(cell);
+					_this.updateHoverButtons(cell);
+
+					// Update
+					_this.recalculateNodeSize(cell);
+				}
+
+				_this.lastSelectedCells = cells.slice(); // use a copy
+			});
 	}
 
 	initializeClassSizeCalculator() {
 		const container = document.createElement('div');
 		container.id = 'classSizeCalculatorContainer';
-		container.style.visibility = "hidden";
-		container.style.position = "absolute";
+		container.style.visibility = 'hidden';
+		container.style.position = 'absolute';
 		document.body.appendChild(container);
 
 		return container;
@@ -283,15 +293,24 @@ class GraphView extends React.Component {
 	getCellContent(cell) {
 		const cellValue = cell.value;
 		const collapsed = this.graph.isCellCollapsed(cell);
-		const selected = this.graph.isCellSelected(cell) && this.graph.getSelectionCount() == 1;
+		const selected =
+			this.graph.isCellSelected(cell) && this.graph.getSelectionCount() == 1;
 
 		return (
-			<Cell umlEditor={this.props.umlEditor} cell={cell} cellValue={cellValue} collapsed={collapsed} selected={selected} />
+			<Cell
+				umlEditor={this.props.umlEditor}
+				cell={cell}
+				cellValue={cellValue}
+				collapsed={collapsed}
+				selected={selected}
+			/>
 		);
 	}
 
 	getNodeByCodeId(id) {
-		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+		const allNodes = this.graph
+			.getModel()
+			.getChildren(this.graph.getDefaultParent());
 
 		if (allNodes != null) {
 			for (let i = 0; i < allNodes.length; i++) {
@@ -307,7 +326,9 @@ class GraphView extends React.Component {
 	}
 
 	getEdgeByRelationId(id) {
-		const allCells = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+		const allCells = this.graph
+			.getModel()
+			.getChildren(this.graph.getDefaultParent());
 
 		if (allCells != null) {
 			for (let i = 0; i < allCells.length; i++) {
@@ -339,7 +360,11 @@ class GraphView extends React.Component {
 	}
 
 	updateHoverButtons(cell, dx, dy) {
-		if (cell == null && this.lastSelectedCells != null && this.lastSelectedCells.length == 1) {
+		if (
+			cell == null &&
+			this.lastSelectedCells != null &&
+			this.lastSelectedCells.length == 1
+		) {
 			cell = this.lastSelectedCells[0];
 		}
 
@@ -388,7 +413,9 @@ class GraphView extends React.Component {
 	}
 
 	panAndZoomToFitAllCells() {
-		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+		const allNodes = this.graph
+			.getModel()
+			.getChildren(this.graph.getDefaultParent());
 
 		// Calculate max/min for the bounds
 		let left = 0;
@@ -423,7 +450,6 @@ class GraphView extends React.Component {
 		let zoom = 1;
 
 		while (zoom * 100 >= this.minZoomPercentage) {
-
 			if (width * zoom <= windowWidth && height * zoom <= windowHeight) {
 				break;
 			}
@@ -432,8 +458,8 @@ class GraphView extends React.Component {
 		}
 
 		// Calculate pan value
-		let panX = (x + (width / 2)) - (windowWidth / 2) * (1 / zoom);
-		let panY = (y + (height / 2)) - (windowHeight / 2) * (1 / zoom);
+		let panX = x + width / 2 - windowWidth / 2 * (1 / zoom);
+		let panY = y + height / 2 - windowHeight / 2 * (1 / zoom);
 
 		this.zoomTo(zoom * 100);
 
@@ -451,7 +477,9 @@ class GraphView extends React.Component {
 	}
 
 	expandAll() {
-		const children = this.graph.model.getChildren(this.graph.getDefaultParent());
+		const children = this.graph.model.getChildren(
+			this.graph.getDefaultParent()
+		);
 		if (children != null) {
 			children.forEach(cell => {
 				if (cell.vertex) this.expandCell(cell);
@@ -460,10 +488,12 @@ class GraphView extends React.Component {
 	}
 
 	collapseAll() {
-		const children = this.graph.model.getChildren(this.graph.getDefaultParent());
+		const children = this.graph.model.getChildren(
+			this.graph.getDefaultParent()
+		);
 
 		if (children != null) {
-			children.forEach((cell) => {
+			children.forEach(cell => {
 				if (cell.vertex) this.collapseCell(cell);
 			});
 		}
@@ -503,7 +533,11 @@ class GraphView extends React.Component {
 	}
 
 	isCellUmlClass(cell) {
-		return cell != null && cell.vertex == true && cell.parent == this.graph.getDefaultParent();
+		return (
+			cell != null &&
+			cell.vertex == true &&
+			cell.parent == this.graph.getDefaultParent()
+		);
 	}
 
 	isCellEdge(cell) {
@@ -511,7 +545,9 @@ class GraphView extends React.Component {
 	}
 
 	refreshAllNodes() {
-		const allNodes = this.graph.getModel().getChildren(this.graph.getDefaultParent());
+		const allNodes = this.graph
+			.getModel()
+			.getChildren(this.graph.getDefaultParent());
 
 		// Refresh all nodes
 		if (allNodes != null) {
@@ -534,7 +570,10 @@ class GraphView extends React.Component {
 		for (let i = 0; i < outgoingEdges.length; i++) {
 			let outgoingEdge = outgoingEdges[i];
 
-			if (outgoingEdge.value.getRelationId() == -1 && outgoingEdge.style == edgeType) {
+			if (
+				outgoingEdge.value.getRelationId() == -1 &&
+				outgoingEdge.style == edgeType
+			) {
 				outgoingEdge.value = edgeValue;
 				return;
 			}
@@ -545,7 +584,14 @@ class GraphView extends React.Component {
 
 		let edge;
 		try {
-			edge = this.graph.insertEdge(parent, null, edgeValue, nodeFrom, nodeTo, edgeType);
+			edge = this.graph.insertEdge(
+				parent,
+				null,
+				edgeValue,
+				nodeFrom,
+				nodeTo,
+				edgeType
+			);
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
@@ -574,7 +620,6 @@ class GraphView extends React.Component {
 				this.graph.getModel().remove(edge);
 
 				this.graph.refresh(edge);
-
 			} finally {
 				this.graph.getModel().endUpdate();
 			}
@@ -592,11 +637,18 @@ class GraphView extends React.Component {
 			cellValue.setCodeId(codeId);
 			cellValue.setHeader(name);
 
-			cell = new mxCell(cellValue, new mxGeometry(0, 0, this.umlClassDefaultWidth, this.umlClassDefaultHeight));
+			cell = new mxCell(
+				cellValue,
+				new mxGeometry(
+					0,
+					0,
+					this.umlClassDefaultWidth,
+					this.umlClassDefaultHeight
+				)
+			);
 			cell.vertex = true;
 
 			this.graph.addCell(cell);
-
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
@@ -620,7 +672,6 @@ class GraphView extends React.Component {
 			}
 
 			this.graph.refresh(node);
-
 		} finally {
 			this.graph.getModel().endUpdate();
 		}
@@ -630,8 +681,8 @@ class GraphView extends React.Component {
 		this.graph.getModel().beginUpdate();
 
 		try {
-			let dx = (-node.getGeometry().x) + x;
-			let dy = (-node.getGeometry().y) + y;
+			let dx = -node.getGeometry().x + x;
+			let dy = -node.getGeometry().y + y;
 
 			this.graph.translateCell(node, dx, dy);
 		} finally {
@@ -697,18 +748,28 @@ class GraphView extends React.Component {
 		// Refresh Fields + Methods
 		for (let i = 0; i < cellValue.getFields().length; i++) {
 			const element = cellValue.getFields()[i];
-			const relation = this.props.umlEditor.getRelationOfCode(this.props.umlEditor.getCodeById(cellValue.getCodeId()), element.getRelationId());
+			const relation = this.props.umlEditor.getRelationOfCode(
+				this.props.umlEditor.getCodeById(cellValue.getCodeId()),
+				element.getRelationId()
+			);
 
 			if (relation != null) {
-				element.setText(this.props.umlEditor.getMetaModelMapper().getClassFieldText(relation));
+				element.setText(
+					this.props.umlEditor.getMetaModelMapper().getClassFieldText(relation)
+				);
 			}
 		}
 		for (let i = 0; i < cellValue.getMethods().length; i++) {
 			const element = cellValue.getMethods()[i];
-			const relation = this.props.umlEditor.getRelationOfCode(this.props.umlEditor.getCodeById(cellValue.getCodeId()), element.getRelationId());
+			const relation = this.props.umlEditor.getRelationOfCode(
+				this.props.umlEditor.getCodeById(cellValue.getCodeId()),
+				element.getRelationId()
+			);
 
 			if (relation != null) {
-				element.setText(this.props.umlEditor.getMetaModelMapper().getClassMethodText(relation));
+				element.setText(
+					this.props.umlEditor.getMetaModelMapper().getClassMethodText(relation)
+				);
 			}
 		}
 
@@ -750,7 +811,7 @@ class GraphView extends React.Component {
 			percentage = this.maxZoomPercentage;
 		}
 
-		this.zoom((percentage / 100) / this.graph.view.scale);
+		this.zoom(percentage / 100 / this.graph.view.scale);
 	}
 
 	zoom(value) {
@@ -774,16 +835,32 @@ class GraphView extends React.Component {
 	render() {
 		const _this = this;
 
-		const {
-			connectDropTarget
-		} = this.props;
+		const { connectDropTarget } = this.props;
 
 		// mxGraph requires an element that is not a styled-component
 		return connectDropTarget(
-			<div style={{ overflow: 'hidden', cursor: 'default', display: 'flex', flex: '1' }}>
-                <div ref={(umlGraphContainer) => {_this.umlGraphContainer = umlGraphContainer}} style={{ flex: '1', overflow: 'hidden' }}></div>
-                <HoverButtons ref={(hoverButtons) => {_this.hoverButtons = hoverButtons}} umlEditor={_this.props.umlEditor} toggleCodingView={this.props.toggleCodingView}></HoverButtons>
-            </div>
+			<div
+				style={{
+					overflow: 'hidden',
+					cursor: 'default',
+					display: 'flex',
+					flex: '1'
+				}}
+			>
+				<div
+					ref={umlGraphContainer => {
+						_this.umlGraphContainer = umlGraphContainer;
+					}}
+					style={{ flex: '1', overflow: 'hidden' }}
+				/>
+				<HoverButtons
+					ref={hoverButtons => {
+						_this.hoverButtons = hoverButtons;
+					}}
+					umlEditor={_this.props.umlEditor}
+					toggleCodingView={this.props.toggleCodingView}
+				/>
+			</div>
 		);
 	}
 }
@@ -812,4 +889,4 @@ function collectTarget(connect, monitor) {
 	};
 }
 
-export default DropTarget("code", graphViewTarget, collectTarget)(GraphView)
+export default DropTarget('code', graphViewTarget, collectTarget)(GraphView);

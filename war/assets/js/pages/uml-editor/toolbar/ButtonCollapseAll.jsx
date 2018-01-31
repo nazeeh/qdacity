@@ -1,12 +1,11 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 export default class ButtonCollapseAll extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -21,13 +20,22 @@ export default class ButtonCollapseAll extends React.Component {
 
 	render() {
 		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+		const collapseAll = formatMessage({
+			id: 'buttoncollapseall.title',
+			defaultMessage: 'Collapses all classes.'
+		});
 
 		return (
-			<BtnDefault title="Collapses all classes." onClick={_this.buttonClicked}>
-		        <i className="fa fa-minus-square-o"></i>
-		        <span>Collapse all</span>
-	        </BtnDefault>
+			<BtnDefault title={collapseAll} onClick={_this.buttonClicked}>
+				<i className="fa fa-minus-square-o" />
+				<span>
+					<FormattedMessage
+						id="buttoncollapseall.collapse_all"
+						defaultMessage="Collapse all"
+					/>
+				</span>
+			</BtnDefault>
 		);
 	}
-
 }

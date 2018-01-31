@@ -1,13 +1,12 @@
-import Promisizer from './Promisizer'
+import Promisizer from './Promisizer';
 
 export default class CodesystemEndpoint {
 	constructor() {}
 
-
 	static insertCodeSystem(prjId, prjType) {
 		var apiMethod = gapi.client.qdacity.codesystem.insertCodeSystem({
-			'project': prjId,
-			'projectType': prjType
+			project: prjId,
+			projectType: prjType
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -19,10 +18,8 @@ export default class CodesystemEndpoint {
 
 	static getCodeSystem(codeSystemId) {
 		var apiMethod = gapi.client.qdacity.codesystem.getCodeSystem({
-			'id': codeSystemId
+			id: codeSystemId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-
-
 }

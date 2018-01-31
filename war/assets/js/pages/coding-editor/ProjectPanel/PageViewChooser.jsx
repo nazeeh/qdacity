@@ -1,27 +1,22 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import {
-	PageView
-} from '../View/PageView.js';
+import { PageView } from '../View/PageView.js';
 
-import {
-	BtnDefault,
-	BtnPrimary
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault, BtnPrimary } from '../../../common/styles/Btn.jsx';
 
-const StyledButtonGroup = styled.div `
-    display: flex;
-    justify-content: center;
+const StyledButtonGroup = styled.div`
+	display: flex;
+	justify-content: center;
 
 	padding-bottom: 5px;
 `;
-const StyledEditorBtn = BtnPrimary.extend `
-	display: ${props => props.showBtn ? 'block' : 'none'};
+const StyledEditorBtn = BtnPrimary.extend`
+	display: ${props => (props.showBtn ? 'block' : 'none')};
 `;
 
 export default class PageViewChooser extends React.Component {
-
 	constructor(props) {
 		super(props);
 	}
@@ -51,16 +46,48 @@ export default class PageViewChooser extends React.Component {
 	}
 
 	render() {
-		if (this.props.project.getType() === "VALIDATION") return null;
+		if (this.props.project.getType() === 'VALIDATION') return null;
 
 		const view = this.props.view;
 
 		return (
 			<StyledButtonGroup className="btn-group">
-				<StyledEditorBtn showBtn={true} active={view == PageView.CODING} type="button" className="btn" onClick={this.buttonCodingEditorClicked.bind(this)}>Coding-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={true} active={view == PageView.TEXT} className="btn" onClick={this.buttonTextEditorClicked.bind(this)}>Text-Editor</StyledEditorBtn>
-		        <StyledEditorBtn showBtn={this.props.project.isUmlEditorEnabled()} active={view == PageView.UML} type="button" className="btn" onClick={this.buttonUmlEditorClicked.bind(this)}>Uml-Editor</StyledEditorBtn>
-		    </StyledButtonGroup>
+				<StyledEditorBtn
+					showBtn={true}
+					active={view == PageView.CODING}
+					type="button"
+					className="btn"
+					onClick={this.buttonCodingEditorClicked.bind(this)}
+				>
+					<FormattedMessage
+						id="pageviewchooser.coding"
+						defaultMessage="Coding-Editor"
+					/>
+				</StyledEditorBtn>
+				<StyledEditorBtn
+					showBtn={true}
+					active={view == PageView.TEXT}
+					className="btn"
+					onClick={this.buttonTextEditorClicked.bind(this)}
+				>
+					<FormattedMessage
+						id="pageviewchooser.text"
+						defaultMessage="Text-Editor"
+					/>
+				</StyledEditorBtn>
+				<StyledEditorBtn
+					showBtn={this.props.project.isUmlEditorEnabled()}
+					active={view == PageView.UML}
+					type="button"
+					className="btn"
+					onClick={this.buttonUmlEditorClicked.bind(this)}
+				>
+					<FormattedMessage
+						id="pageviewchooser.uml"
+						defaultMessage="UML-Editor"
+					/>
+				</StyledEditorBtn>
+			</StyledButtonGroup>
 		);
 	}
 }

@@ -1,9 +1,6 @@
-import {
-	EdgeType
-} from '../../util/EdgeType.js';
+import { EdgeType } from '../../util/EdgeType.js';
 
 export default class GraphStyles {
-
 	static initializeStyles(graph) {
 		GraphStyles.initializeDefaultStyles(graph);
 		GraphStyles.initializeCustomStyles(graph);
@@ -21,7 +18,7 @@ export default class GraphStyles {
 
 		mxConstants.OUTLINE_COLOR = '#00A2E8';
 		mxConstants.OUTLINE_HANDLE_STROKECOLOR = '#00A2E8';
-		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8'
+		mxConstants.OUTLINE_HIGHLIGHT_COLOR = '#00A2E8';
 		mxConstants.DEFAULT_VALID_COLOR = '#00A2E8';
 		mxConstants.HIGHLIGHT_COLOR = '##00A2E8';
 		mxConstants.HIGHLIGHT_STROKEWIDTH = 3;

@@ -24,7 +24,6 @@ const KEEP_ALIVE_NAMESPACE = 'server';
  * Initialize Redis connection
  */
 const buildRedisConnectionOptions = () => {
-
   // Set Redis connection settings from environment
   const redisConnectionOptions = {};
   REDIS_SOCKET && (redisConnectionOptions.path = REDIS_SOCKET);
@@ -33,13 +32,12 @@ const buildRedisConnectionOptions = () => {
   REDIS_AUTH && (redisConnectionOptions.password = REDIS_AUTH);
 
   return redisConnectionOptions;
-}
+};
 
 /**
  * Setup periodical keep-alive messages to Redis
  */
 const initRedisKeepAlive = redis => {
-
   // Key to be used for keepalive entry in Redis
   const key = `${KEEP_ALIVE_NAMESPACE}:${SERVER_NAME}`;
 
@@ -58,7 +56,6 @@ const initRedisKeepAlive = redis => {
  */
 const initRedisCleanup = redis => {
   setInterval(() => {
-
     // Get all entries of shared application state (containing logged on users)
     redis.hgetall('socketdata', (err, res) => {
       // Nothing to do
@@ -73,13 +70,11 @@ const initRedisCleanup = redis => {
 
         // Get the keepalive entry of the corresponding server
         redis.get(`${KEEP_ALIVE_NAMESPACE}:${server}`, (err, res) => {
-
           // If keepalive entry expired, delete this socket's data
-          res === null && redis.hdel('socketdata', id)
+          res === null && redis.hdel('socketdata', id);
         });
       });
     });
-
   }, parseInt(KEEP_ALIVE_CLEANUP_INTERVAL));
 };
 

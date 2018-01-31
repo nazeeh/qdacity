@@ -1,12 +1,11 @@
 import React from 'react';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 
 import ConsistencyManager from './ConsistencyManager.js';
 
 import MetaModelMapper from './mapping/MetaModelMapper.js';
-import {
-	DefaultRuleSet
-} from './DefaultRuleSet.js';
+import { DefaultRuleSet } from './DefaultRuleSet.js';
 
 import CreateClassFieldAction from './mapping/actions/CreateClassFieldAction.js';
 import CreateClassMethodAction from './mapping/actions/CreateClassMethodAction.js';
@@ -22,15 +21,14 @@ import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import MetaModelEntityEndpoint from '../../common/endpoints/MetaModelEntityEndpoint';
 import MetaModelRelationEndpoint from '../../common/endpoints/MetaModelRelationEndpoint';
 
-const StyledUmlEditor = styled.div `
-    display: flex;
-    flex-direction: column;
-    height: inherit;
-    border-left: 1px solid #B0B0B0;
+const StyledUmlEditor = styled.div`
+	display: flex;
+	flex-direction: column;
+	height: inherit;
+	border-left: 1px solid #b0b0b0;
 `;
 
 export default class UmlEditor extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -73,11 +71,11 @@ export default class UmlEditor extends React.Component {
 	}
 
 	getMetaModelEntityById(id) {
-		return this.mmEntities.find((mmEntity) => mmEntity.id == id);
+		return this.mmEntities.find(mmEntity => mmEntity.id == id);
 	}
 
 	getMetaModelEntityByName(name) {
-		return this.mmEntities.find((mmEntity) => mmEntity.name == name);
+		return this.mmEntities.find(mmEntity => mmEntity.name == name);
 	}
 
 	componentDidMount() {
@@ -87,10 +85,10 @@ export default class UmlEditor extends React.Component {
 	loadMetaModel() {
 		const _this = this;
 
-		MetaModelEntityEndpoint.listEntities(1).then(function (resp) {
+		MetaModelEntityEndpoint.listEntities(1).then(function(resp) {
 			_this.mmEntities = resp.items || [];
 
-			MetaModelRelationEndpoint.listRelations(1).then(function (resp) {
+			MetaModelRelationEndpoint.listRelations(1).then(function(resp) {
 				_this.mmRelations = resp.items || [];
 
 				_this.metaModelFinishedLoading();
@@ -128,9 +126,12 @@ export default class UmlEditor extends React.Component {
 
 		this.initCellsMovedEventListener();
 
-		this.codePositionManager.listCodePositions(this.props.codesystemId, (umlCodePositions) => {
-			_this.initializeNodes();
-		});
+		this.codePositionManager.listCodePositions(
+			this.props.codesystemId,
+			umlCodePositions => {
+				_this.initializeNodes();
+			}
+		);
 	}
 
 	initializeMapping() {
@@ -152,7 +153,9 @@ export default class UmlEditor extends React.Component {
 						const code = _this.getCodeByNode(cell);
 						this.props.codesystemView.setSelected(code);
 					} else if (_this.graphView.isCellEdge(cell)) {
-						const relationshipCode = _this.getRelationshipCodeByRelationId(cell.value.getRelationId())
+						const relationshipCode = _this.getRelationshipCodeByRelationId(
+							cell.value.getRelationId()
+						);
 
 						// Relation can exist without a relationship code
 						if (relationshipCode != null) {
@@ -193,18 +196,20 @@ export default class UmlEditor extends React.Component {
 	initCellsMovedEventListener() {
 		let _this = this;
 
-		this.graphView.addCellsMovedEventListener(function (sender, event) {
+		this.graphView.addCellsMovedEventListener(function(sender, event) {
 			let cells = event.properties.cells;
 			let dx = event.properties.dx;
 			let dy = event.properties.dy;
 
 			let umlCodePositions = [];
 
-			cells.forEach((cell) => {
+			cells.forEach(cell => {
 				if (_this.graphView.isCellUmlClass(cell)) {
 					let code = _this.getCodeByNode(cell);
 
-					let codePosition = _this.codePositionManager.getCodePosition(code.codeID);
+					let codePosition = _this.codePositionManager.getCodePosition(
+						code.codeID
+					);
 					codePosition.x = cell.getGeometry().x;
 					codePosition.y = cell.getGeometry().y;
 
@@ -258,7 +263,7 @@ export default class UmlEditor extends React.Component {
 	}
 
 	/**
-	 * Callback for the graphView zoom function. 
+	 * Callback for the graphView zoom function.
 	 */
 	onZoom(percentage) {
 		this.umlEditor.toolbar.onZoom(percentage);
@@ -268,16 +273,27 @@ export default class UmlEditor extends React.Component {
 	 * Opens a modal, where the user can select a can select a code for a new class field.
 	 */
 	openClassFieldModal(cell) {
+		const { formatMessage } = IntlProvider.intl;
 		const _this = this;
 
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
-		const mappingIdentifier = (new CreateClassFieldAction()).getIdentifier();
+		const mappingIdentifier = new CreateClassFieldAction().getIdentifier();
 
-		const addFieldModal = new UmlCodePropertyModal(this, 'Add new Field', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
+		const addFieldModal = new UmlCodePropertyModal(
+			this,
+			formatMessage({
+				id: 'umleditor.add_field',
+				defaultMessage: 'Add new Field'
+			}),
+			code,
+			_this.props.codesystemView,
+			relationMetaModelEntityName,
+			mappingIdentifier
+		);
 
-		addFieldModal.showModal().then(function (data) {
+		addFieldModal.showModal().then(function(data) {
 			_this.createField(code, data.selectedCode);
 		});
 	}
@@ -286,16 +302,27 @@ export default class UmlEditor extends React.Component {
 	 * Opens a modal, where the user can select a can select a code for a new class method.
 	 */
 	openClassMethodModal(cell) {
+		const { formatMessage } = IntlProvider.intl;
 		const _this = this;
 
 		const code = this.getCodeByNode(cell);
 
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
-		const mappingIdentifier = (new CreateClassMethodAction()).getIdentifier();
+		const mappingIdentifier = new CreateClassMethodAction().getIdentifier();
 
-		const addMethodModal = new UmlCodePropertyModal(this, 'Add new Method', code, _this.props.codesystemView, relationMetaModelEntityName, mappingIdentifier);
+		const addMethodModal = new UmlCodePropertyModal(
+			this,
+			formatMessage({
+				id: 'umleditor.add_method',
+				defaultMessage: 'Add new Method'
+			}),
+			code,
+			_this.props.codesystemView,
+			relationMetaModelEntityName,
+			mappingIdentifier
+		);
 
-		addMethodModal.showModal().then(function (data) {
+		addMethodModal.showModal().then(function(data) {
 			_this.createMethod(code, data.selectedCode);
 		});
 	}
@@ -307,28 +334,30 @@ export default class UmlEditor extends React.Component {
 		// Convert codes into a simple array
 		let codes = [];
 
-		let convertCodeIntoSimpleArray = (code) => {
+		let convertCodeIntoSimpleArray = code => {
 			codes.push(code);
 
 			if (code.children) {
 				code.children.forEach(convertCodeIntoSimpleArray);
 			}
-		}
+		};
 
-		this.props.codesystemView.getCodesystem().forEach(convertCodeIntoSimpleArray);
+		this.props.codesystemView
+			.getCodesystem()
+			.forEach(convertCodeIntoSimpleArray);
 
 		return codes;
 	}
 
 	/**
-	 * Returns the code with the given id. 
+	 * Returns the code with the given id.
 	 */
 	getCodeById(id) {
 		return this.props.getCodeById(id);
 	}
 
 	/**
-	 * Returns the code with the given codeId. 
+	 * Returns the code with the given codeId.
 	 */
 	getCodeByCodeId(codeId) {
 		return this.props.getCodeByCodeId(codeId);
@@ -392,13 +421,13 @@ export default class UmlEditor extends React.Component {
 	 * Updates the meta-model of the code in the database. This method will insert a new meta-model, which ensures, that the code is mapped in the uml-editor.
 	 */
 	makeCodeVisibleInEditor(codeId) {
-		const _this = this;
-
 		const code = this.getCodeByCodeId(codeId);
 
 		const newMMElementIds = [];
 
-		const newMMElement = this.getMetaModelEntityByName(this.metaModelMapper.getDefaultUmlClassMetaModelName());
+		const newMMElement = this.getMetaModelEntityByName(
+			this.metaModelMapper.getDefaultUmlClassMetaModelName()
+		);
 		newMMElementIds.push(newMMElement.id);
 
 		// Save old mmElementIds
@@ -414,10 +443,9 @@ export default class UmlEditor extends React.Component {
 
 		code.mmElementIDs = newMMElementIds;
 
-		CodesEndpoint.updateCode(code).then((resp) => {
+		this.props.syncService.codes.updateCode(code).then(resp => {
 			code.mmElementIDs = resp.mmElementIDs;
-
-			_this.props.updateCode(code);
+			this.props.updateCode(code);
 		});
 	}
 
@@ -425,60 +453,95 @@ export default class UmlEditor extends React.Component {
 	 * Creates a new edge with type aggregation.
 	 */
 	createEdgeAggregation(sourceCode, destinationCode) {
-		this.createEdge(sourceCode, destinationCode, EdgeType.AGGREGATION, edgeNode);
+		this.createEdge(
+			sourceCode,
+			destinationCode,
+			EdgeType.AGGREGATION,
+			edgeNode
+		);
 	}
 
 	/**
 	 * Creates a new edge with type generalization.
 	 */
 	createEdgeGeneralization(sourceCode, destinationCode) {
-		this.createEdge(sourceCode, destinationCode, EdgeType.GENERALIZATION, edgeNode);
+		this.createEdge(
+			sourceCode,
+			destinationCode,
+			EdgeType.GENERALIZATION,
+			edgeNode
+		);
 	}
 
 	/**
 	 * Creates a new edge with type association.
 	 */
 	createEdgeDirectedAssociation(sourceCode, destinationCode) {
-		this.createEdge(sourceCode, destinationCode, EdgeType.DIRECTED_ASSOCIATION, edgeNode);
+		this.createEdge(
+			sourceCode,
+			destinationCode,
+			EdgeType.DIRECTED_ASSOCIATION,
+			edgeNode
+		);
 	}
 
 	/**
-	 * Adds a new edge to the database. 
+	 * Adds a new edge to the database.
 	 */
 	createEdge(sourceCode, destinationCode, edgeType) {
-		const relationMetaModelEntityName = this.metaModelMapper.getEdgeRelationEntityName(edgeType);
+		const relationMetaModelEntityName = this.metaModelMapper.getEdgeRelationEntityName(
+			edgeType
+		);
 
-		this.createRelation(sourceCode, destinationCode, relationMetaModelEntityName);
+		this.createRelation(
+			sourceCode,
+			destinationCode,
+			relationMetaModelEntityName
+		);
 	}
 
 	/**
-	 * Adds a new field to the database. 
+	 * Adds a new field to the database.
 	 */
 	createField(sourceCode, destinationCode) {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassFieldRelationEntityName();
 
-		this.createRelation(sourceCode, destinationCode, relationMetaModelEntityName);
+		this.createRelation(
+			sourceCode,
+			destinationCode,
+			relationMetaModelEntityName
+		);
 	}
 
 	/**
-	 * Adds a new method to the database. 
+	 * Adds a new method to the database.
 	 */
 	createMethod(sourceCode, destinationCode) {
 		const relationMetaModelEntityName = this.metaModelMapper.getClassMethodRelationEntityName();
 
-		this.createRelation(sourceCode, destinationCode, relationMetaModelEntityName);
+		this.createRelation(
+			sourceCode,
+			destinationCode,
+			relationMetaModelEntityName
+		);
 	}
 
 	/**
-	 * Create a new relation in the database. 
+	 * Create a new relation in the database.
 	 */
 	createRelation(sourceCode, destinationCode, relationMetaModelEntityName) {
 		const _this = this;
 
-		const relationMetaModelEntity = this.getMetaModelEntityByName(relationMetaModelEntityName);
+		const relationMetaModelEntity = this.getMetaModelEntityByName(
+			relationMetaModelEntityName
+		);
 
 		// Update database
-		CodesEndpoint.addRelationship(sourceCode.id, destinationCode.codeID, relationMetaModelEntity.id).then((resp) => {
+		CodesEndpoint.addRelationship(
+			sourceCode.id,
+			destinationCode.codeID,
+			relationMetaModelEntity.id
+		).then(resp => {
 			sourceCode.relations = resp.relations;
 
 			_this.props.updateCode(sourceCode);
@@ -534,9 +597,14 @@ export default class UmlEditor extends React.Component {
 			[x, y] = this.graphView.getFreeNodePosition(node);
 
 			// insert into database
-			codePosition = this.codePositionManager.createCodePositionObject(null, code.codeID, code.codesystemID, x, y);
+			codePosition = this.codePositionManager.createCodePositionObject(
+				null,
+				code.codeID,
+				code.codesystemID,
+				x,
+				y
+			);
 			this.codePositionManager.insertOrUpdateCodePosition(codePosition);
-
 		} else {
 			x = codePosition.x;
 			y = codePosition.y;
@@ -614,7 +682,12 @@ export default class UmlEditor extends React.Component {
 		const sourceNode = this.getNodeByCodeId(sourceCode.id);
 		const destinationNode = this.getNodeByCodeId(destinationCode.id);
 
-		const edge = this.graphView.addEdge(sourceNode, destinationNode, relation.key.id, edgeType);
+		const edge = this.graphView.addEdge(
+			sourceNode,
+			destinationNode,
+			relation.key.id,
+			edgeType
+		);
 	}
 
 	/**
@@ -655,15 +728,25 @@ export default class UmlEditor extends React.Component {
 
 		return (
 			<StyledUmlEditor>
-                <Toolbar
-                    ref={(toolbar) => {if (toolbar != null) this.toolbar = toolbar}}
-                    className="row no-gutters"
-                    umlEditor={_this}
-                    createCode={_this.props.createCode}
-                    syncService={this.props.syncService}
-                />
-                <GraphView ref={(graphView) => {if (graphView != null) _this.graphView = graphView.decoratedComponentInstance}} umlEditor={_this} onZoom={_this.onZoom} toggleCodingView={this.props.toggleCodingView}/>
-            </StyledUmlEditor>
+				<Toolbar
+					ref={toolbar => {
+						if (toolbar != null) this.toolbar = toolbar;
+					}}
+					className="row no-gutters"
+					umlEditor={_this}
+					createCode={_this.props.createCode}
+					syncService={this.props.syncService}
+				/>
+				<GraphView
+					ref={graphView => {
+						if (graphView != null)
+							_this.graphView = graphView.decoratedComponentInstance;
+					}}
+					umlEditor={_this}
+					onZoom={_this.onZoom}
+					toggleCodingView={this.props.toggleCodingView}
+				/>
+			</StyledUmlEditor>
 		);
 	}
 }

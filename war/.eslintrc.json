@@ -1,0 +1,89 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true,
+        "jquery": true
+    },
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true,
+            "jsx": true
+        },
+        "ecmaVersion": 8,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "indent": [
+            "error",
+            "tab",
+            { "SwitchCase": 1 }
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+		"max-len": [
+			"error", {
+				"code": 80,
+				"ignoreTemplateLiterals": true
+			}
+		],
+        "no-unused-vars": "off",
+        "react/prop-types": [
+            "warn", {
+                "skipUndeclared": true
+            }
+        ],
+        "react/no-direct-mutation-state": "off",
+        "react/jsx-key": "off",
+        "no-console": "off",
+        "no-constant-condition": "off",
+        "no-unreachable": "off",
+        "no-redeclare": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/display-name": "off",
+        "react/no-find-dom-node": "off",
+        "react/no-unescaped-entities": "off",
+        "no-global-assign": "off",
+        "no-undef": "off"
+    },
+    "globals": {
+        "gapi": false,
+        "vex": false,
+        "alertify": false,
+        "google": false,
+        "d3": false,
+        "edgeNode": false,
+        "EdgeType": false,
+        "URI": false,
+        "googleClientPromise": false,
+        "googlePlatformPromise": false,
+        "mxEvent": false,
+        "mxGraph": false,
+        "mxClient": false,
+        "mxMouseEvent": false,
+        "mxConstants": false,
+        "mxEdgeStyle": false,
+        "mxCell": false,
+        "mxCellState": false,
+        "mxCellHighlight": false,
+        "mxConnectionHandler": false,
+        "mxFastOrganicLayout": false,
+        "mxGeometry": false,
+        "mxRubberband": false,
+        "mxPanningHandler": false,
+        "mxCellRenderer": false,
+        "mxGraphHandler": false,
+        "handleBadResponse": false
+    }
+}

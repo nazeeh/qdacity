@@ -1,76 +1,74 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import NewCodeRelation from '../../../common/modals/NewCodeRelation';
 
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
-const StyledRelationsView = styled.div `
-    display: flex;
-    flex-direction: column;
+const StyledRelationsView = styled.div`
+	display: flex;
+	flex-direction: column;
 `;
 
-const StyledRelationsList = styled.div `
-    overflow: auto;
-    height: 210px !important;
+const StyledRelationsList = styled.div`
+	overflow: auto;
+	height: 210px !important;
 `;
 
-const StyledHeadline = styled.div `
-    font-size: 17px;
-    margin-top: 3px;
-    font-weight: bold;
-    float: left;
+const StyledHeadline = styled.div`
+	font-size: 17px;
+	margin-top: 3px;
+	font-weight: bold;
+	float: left;
 `;
 
-const StyledAddRelationBtn = BtnDefault.extend `
-	background-color: #FAFAFA !important;
+const StyledAddRelationBtn = BtnDefault.extend`
+	background-color: #fafafa !important;
 	border-left-style: solid;
 	border-left-width: thick;
 	border-left-color: #337ab7;
 	margin-bottom: 7px;
 	float: right;
 	&:hover {
-        background: #337ab7 !important;
-		color: #FFF;
-    }
+		background: #337ab7 !important;
+		color: #fff;
+	}
 `;
 
-const StyledRelationItem = styled.li `
-	background-color: #DDD !important;
+const StyledRelationItem = styled.li`
+	background-color: #ddd !important;
 	border-left-style: solid;
 	border-left-width: thick;
 	border-left-color: #444;
 `;
 
-const StyledCodeName = styled.span `
+const StyledCodeName = styled.span`
 	font-size: 14px;
 `;
 
-const StyledCodeHighlightName = styled.a `
-    font-size: 14px;
-    font-weight: bold;
-    
-    &:hover {
-        cursor: pointer;
-    }
+const StyledCodeHighlightName = styled.a`
+	font-size: 14px;
+	font-weight: bold;
+
+	&:hover {
+		cursor: pointer;
+	}
 `;
 
-const StyledRelationName = styled.span `
-    font-size: 14px;
-    font-weight: bold;
-    font-style: italic;
+const StyledRelationName = styled.span`
+	font-size: 14px;
+	font-weight: bold;
+	font-style: italic;
 `;
 
-const StyledRelationshipCodeButton = BtnDefault.extend `
-    margin-top: 3px;
-    margin-right: 10px;
-    height: 32px;
+const StyledRelationshipCodeButton = BtnDefault.extend`
+	margin-top: 3px;
+	margin-right: 10px;
+	height: 32px;
 `;
 
-const StyledDeleteButton = BtnDefault.extend `
-`;
+const StyledDeleteButton = BtnDefault.extend``;
 
 export default class CodeRelationsView extends React.Component {
 	constructor(props) {
@@ -95,9 +93,9 @@ export default class CodeRelationsView extends React.Component {
 		let sourceCode = this.props.getCodeById(relation.key.parent.id);
 		let destinationCode = this.props.getCodeByCodeID(relation.codeId);
 
-		let mmElementName = "undefined";
-		let sourceCodeName = "undefined";
-		let destinationCodeName = "undefined";
+		let mmElementName = 'undefined';
+		let sourceCodeName = 'undefined';
+		let destinationCodeName = 'undefined';
 
 		if (mmElement != null) mmElementName = mmElement.name;
 		if (sourceCode != null) sourceCodeName = sourceCode.name;
@@ -120,21 +118,23 @@ export default class CodeRelationsView extends React.Component {
 
 		this.state.incomingRelationships = [];
 
-		let checkRelation = (relation) => {
+		let checkRelation = relation => {
 			if (relation.codeId == code.codeID) {
-				_this.state.incomingRelationships.push(_this.createRelationObject(relation));
+				_this.state.incomingRelationships.push(
+					_this.createRelationObject(relation)
+				);
 			}
 		};
 
-		let checkCode = (c) => {
+		let checkCode = c => {
 			if (c.relations != null) {
-				c.relations.forEach((relation) => {
+				c.relations.forEach(relation => {
 					checkRelation(relation);
 				});
 			}
 
 			if (c.children != null) {
-				c.children.forEach((child) => {
+				c.children.forEach(child => {
 					checkCode(child);
 				});
 			}
@@ -152,7 +152,7 @@ export default class CodeRelationsView extends React.Component {
 
 		if (typeof relations == 'undefined') return;
 
-		relations.forEach((relation) => {
+		relations.forEach(relation => {
 			_this.addRelationship(relation);
 		});
 	}
@@ -162,7 +162,7 @@ export default class CodeRelationsView extends React.Component {
 	}
 
 	removeRelationship(pId) {
-		var index = this.state.relationships.findIndex(function (rel, index, array) {
+		var index = this.state.relationships.findIndex(function(rel, index, array) {
 			return rel.id == pId;
 		});
 		this.state.relationships.splice(index, 1);
@@ -177,9 +177,16 @@ export default class CodeRelationsView extends React.Component {
 
 	createRelationship() {
 		var _this = this;
-		var newRelationModal = new NewCodeRelation(this.props.elements, this.props.getCodeSystem());
-		newRelationModal.showModal().then(function (data) {
-			CodesEndpoint.addRelationship(_this.state.sourceCode, data.codeId, data.mmElement.id).then(function (resp) {
+		var newRelationModal = new NewCodeRelation(
+			this.props.elements,
+			this.props.getCodeSystem()
+		);
+		newRelationModal.showModal().then(function(data) {
+			CodesEndpoint.addRelationship(
+				_this.state.sourceCode,
+				data.codeId,
+				data.mmElement.id
+			).then(function(resp) {
 				var mmElementName = data.mmElement.name;
 				var code = _this.props.code;
 				code.relations = resp.relations;
@@ -202,11 +209,17 @@ export default class CodeRelationsView extends React.Component {
 	createIncomingRelationship() {
 		var _this = this;
 
-		var newRelationModal = new NewCodeRelation(this.props.elements, this.props.getCodeSystem());
+		var newRelationModal = new NewCodeRelation(
+			this.props.elements,
+			this.props.getCodeSystem()
+		);
 
-		newRelationModal.showModal().then(function (data) {
-
-			CodesEndpoint.addRelationship(data.id, _this.props.code.codeID, data.mmElement.id).then(function (resp) {
+		newRelationModal.showModal().then(function(data) {
+			CodesEndpoint.addRelationship(
+				data.id,
+				_this.props.code.codeID,
+				data.mmElement.id
+			).then(function(resp) {
 				let sourceCode = _this.props.getCodeById(data.id);
 				sourceCode.relations = resp.relations;
 
@@ -216,7 +229,12 @@ export default class CodeRelationsView extends React.Component {
 	}
 
 	createRelationshipCode(relation) {
-		const name = this.props.code.name + " " + relation.name + " " + relation.destinationName;
+		const name =
+			this.props.code.name +
+			' ' +
+			relation.name +
+			' ' +
+			relation.destinationName;
 		this.props.createCode(name, null, relation.id, this.state.sourceCode, true);
 	}
 
@@ -233,7 +251,16 @@ export default class CodeRelationsView extends React.Component {
 
 		if (relation.relationshipCodeId == null) {
 			return (
-				<StyledRelationshipCodeButton className="pull-right" onClick={() => {_this.createRelationshipCode(relation)}}><i className="fa fa-plus"></i>  Create relationship code</StyledRelationshipCodeButton>
+				<StyledRelationshipCodeButton
+					className="pull-right"
+					onClick={() => _this.createRelationshipCode(relation)}
+				>
+					<i className="fa fa-plus" />{' '}
+					<FormattedMessage
+						id="coderelationsview.create_relationship_code"
+						defaultMessage="Create relationship code"
+					/>
+				</StyledRelationshipCodeButton>
 			);
 		} else {
 			return null;
@@ -245,7 +272,16 @@ export default class CodeRelationsView extends React.Component {
 
 		if (relation.relationshipCodeId != null) {
 			return (
-				<StyledRelationshipCodeButton className="pull-right" onClick={() => {_this.goToRelationshipCode(relation)}}><i className="fa fa-arrow-right"></i>  Go to relationship code</StyledRelationshipCodeButton>
+				<StyledRelationshipCodeButton
+					className="pull-right"
+					onClick={() => _this.goToRelationshipCode(relation)}
+				>
+					<i className="fa fa-arrow-right" />{' '}
+					<FormattedMessage
+						id="coderelationsview.go_to_relationship_code"
+						defaultMessage="Go to relationship code"
+					/>
+				</StyledRelationshipCodeButton>
 			);
 		} else {
 			return null;
@@ -255,9 +291,14 @@ export default class CodeRelationsView extends React.Component {
 	renderAddRelationButton(onClick) {
 		return (
 			<StyledAddRelationBtn onClick={onClick}>
-                <i className="fa fa-plus fa-lg "></i>
-                <span>Add Relationship</span>
-            </StyledAddRelationBtn>
+				<i className="fa fa-plus fa-lg " />
+				<span>
+					<FormattedMessage
+						id="coderelationsview.add_relationship"
+						defaultMessage="Add Relationship"
+					/>
+				</span>
+			</StyledAddRelationBtn>
 		);
 	}
 
@@ -268,36 +309,50 @@ export default class CodeRelationsView extends React.Component {
 
 		return (
 			<StyledRelationsView className="col-sm-7">
-                <div>
-                    <StyledHeadline>Outgoing relations</StyledHeadline>
+				<div>
+					<StyledHeadline>
+						<FormattedMessage
+							id="coderelationsview.outgoing_relations"
+							defaultMessage="Outgoing relations"
+						/>
+					</StyledHeadline>
 
-                    {_this.renderAddRelationButton(() => {_this.createRelationship()})}
-                </div>
+					{_this.renderAddRelationButton(() => {
+						_this.createRelationship();
+					})}
+				</div>
 
+				<StyledRelationsList className="list compactBoxList">
+					{this.state.relationships.map(function(rel) {
+						return (
+							<StyledRelationItem key={rel.id} className="clickable">
+								<a
+									className="pull-right fa-stack fa-lg"
+									onClick={() => {
+										_this.deleteRelationship(rel);
+									}}
+								>
+									<i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover" />
+									<i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn" />
+								</a>
 
-                <StyledRelationsList className="list compactBoxList">
-                    {
-                        this.state.relationships.map(function(rel) {
-                            return (
-                                <StyledRelationItem key={rel.id} className="clickable">
-                                    <a className="pull-right fa-stack fa-lg" onClick={() => {_this.deleteRelationship(rel)}}>
-                                        <i className="fa fa-square fa-stack-2x fa-cancel-btn-circle fa-hover"></i>
-                                        <i className="fa fa-trash fa-stack-1x fa-inverse fa-cancel-btn"></i>
-                                    </a>
+								{_this.renderCreateRelationshipCodeButton(rel)}
+								{_this.renderGoToRelationshipCodeButton(rel)}
 
-                                    {_this.renderCreateRelationshipCodeButton(rel)}
-                                    {_this.renderGoToRelationshipCodeButton(rel)}
-
-                                    <StyledCodeName>{rel.sourceName}</StyledCodeName>
-                                    <br/>
-                                    <StyledRelationName>{rel.name + ' '}</StyledRelationName>
-                                    <StyledCodeHighlightName onClick={_this.selectCode.bind(_this, rel.dst)}> {rel.destinationName}</StyledCodeHighlightName>
-                                </StyledRelationItem>
-                            );
-                        })
-                    }
-                </StyledRelationsList>
-            </StyledRelationsView>
+								<StyledCodeName>{rel.sourceName}</StyledCodeName>
+								<br />
+								<StyledRelationName>{rel.name + ' '}</StyledRelationName>
+								<StyledCodeHighlightName
+									onClick={_this.selectCode.bind(_this, rel.dst)}
+								>
+									{' '}
+									{rel.destinationName}
+								</StyledCodeHighlightName>
+							</StyledRelationItem>
+						);
+					})}
+				</StyledRelationsList>
+			</StyledRelationsView>
 		);
 	}
 
@@ -308,36 +363,45 @@ export default class CodeRelationsView extends React.Component {
 
 		return (
 			<StyledRelationsView className="col-sm-5">
-		        <div>
-    		        <StyledHeadline>Incoming relations</StyledHeadline>
+				<div>
+					<StyledHeadline>
+						<FormattedMessage
+							id="coderelationsview.incoming_relations"
+							defaultMessage="Incoming relations"
+						/>
+					</StyledHeadline>
 
-                    {_this.renderAddRelationButton(() => {_this.createIncomingRelationship()})}
-		        </div>
+					{_this.renderAddRelationButton(() => {
+						_this.createIncomingRelationship();
+					})}
+				</div>
 
-                <StyledRelationsList className="list compactBoxList">
-                    {
-                        _this.state.incomingRelationships.map((rel) => {
-                            return (
-                                <StyledRelationItem key={rel.id}>
-                                    <StyledCodeHighlightName onClick={_this.selectCode.bind(_this, rel.src)}>{rel.sourceName}</StyledCodeHighlightName>
-                                    <StyledRelationName>{' ' + rel.name}</StyledRelationName>
-                                    <br/>
-                                    <StyledCodeName>{rel.destinationName}</StyledCodeName>
-                                </StyledRelationItem>
-                            );
-                        })
-                    }
-                </StyledRelationsList>
-            </StyledRelationsView>
+				<StyledRelationsList className="list compactBoxList">
+					{_this.state.incomingRelationships.map(rel => {
+						return (
+							<StyledRelationItem key={rel.id}>
+								<StyledCodeHighlightName
+									onClick={_this.selectCode.bind(_this, rel.src)}
+								>
+									{rel.sourceName}
+								</StyledCodeHighlightName>
+								<StyledRelationName>{' ' + rel.name}</StyledRelationName>
+								<br />
+								<StyledCodeName>{rel.destinationName}</StyledCodeName>
+							</StyledRelationItem>
+						);
+					})}
+				</StyledRelationsList>
+			</StyledRelationsView>
 		);
 	}
 
 	render() {
 		return (
 			<div>
-                {this.renderIncomingRelations()}
-		        {this.renderOutgoingRelations()}
-            </div>
+				{this.renderIncomingRelations()}
+				{this.renderOutgoingRelations()}
+			</div>
 		);
 	}
 }

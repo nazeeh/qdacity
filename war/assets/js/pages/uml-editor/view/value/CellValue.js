@@ -1,9 +1,8 @@
 export default class CellValue {
-
 	constructor() {
 		this.codeId = null;
 
-		this.header = ""
+		this.header = '';
 
 		this.fields = [];
 
@@ -51,7 +50,7 @@ export default class CellValue {
 	}
 
 	removeElementByRelationId(arr, relationId) {
-		let index = arr.findIndex((element) => {
+		let index = arr.findIndex(element => {
 			return element.getRelationId() == relationId;
 		});
 
@@ -62,7 +61,6 @@ export default class CellValue {
 }
 
 class ClassElement {
-
 	constructor(relationId, accessibility, text) {
 		this.text = text;
 		this.accessibility = accessibility;

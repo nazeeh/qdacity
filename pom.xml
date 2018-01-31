@@ -70,6 +70,12 @@
 			<artifactId>appengine-api-labs</artifactId>
 			<version>1.9.59</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-bigquery</artifactId>
+			<version>0.32.0-beta</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -219,6 +225,7 @@
 			   <artifactId>appengine-maven-plugin</artifactId>
 			   <version>1.9.59</version>
 				<configuration>
+					<enableJarSplitting>true</enableJarSplitting>
 					<port>8888</port>
 					<fullScanSeconds>2</fullScanSeconds>
 				</configuration>

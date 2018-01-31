@@ -1,12 +1,11 @@
-import React from 'react'
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
-import {
-	BtnDefault
-} from '../../../common/styles/Btn.jsx';
-const StyledPrjSearchBtn = BtnDefault.extend `
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
+const StyledPrjSearchBtn = BtnDefault.extend`
 	text-align: center;
 	width: 100%;
-	margin-bottom:5px;
+	margin-bottom: 5px;
 `;
 
 export default class SearchProjectBtn extends React.Component {
@@ -17,9 +16,14 @@ export default class SearchProjectBtn extends React.Component {
 
 	render() {
 		return (
-			<StyledPrjSearchBtn  onClick={this.props.toggleSearchBar}>
-				<i className="fa fa-search fa-lg"></i>
-				<span>Search Project</span>
+			<StyledPrjSearchBtn onClick={this.props.toggleSearchBar}>
+				<i className="fa fa-search fa-lg" />
+				<span>
+					<FormattedMessage
+						id="searchprojectbtn.search_project"
+						defaultMessage="Search Project"
+					/>
+				</span>
 			</StyledPrjSearchBtn>
 		);
 	}

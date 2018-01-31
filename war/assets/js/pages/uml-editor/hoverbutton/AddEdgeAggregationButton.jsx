@@ -1,14 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
-import {
-	EdgeType
-} from '../util/EdgeType.js';
+import { EdgeType } from '../util/EdgeType.js';
 
 import HoverButton from './HoverButton.jsx';
 
 export default class AddEdgeAggregationButton extends HoverButton {
-
 	constructor(props) {
 		super(props);
 	}
@@ -22,7 +20,11 @@ export default class AddEdgeAggregationButton extends HoverButton {
 	}
 
 	getToolTip() {
-		return 'Add a new aggregation.';
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'addedgeaggregationbutton.tooltip',
+			defaultMessage: 'Add a new aggregation.'
+		});
 	}
 
 	getBounds() {
@@ -32,8 +34,16 @@ export default class AddEdgeAggregationButton extends HoverButton {
 		const offsetToNode = 6;
 		const offsetToButton = 6;
 
-		const x = this.props.x + this.props.width + offsetToNode * this.props.scale + sizeX * this.props.scale + offsetToButton * this.props.scale;
-		const y = this.props.y - offsetToButton * this.props.scale - sizeY * this.props.scale;
+		const x =
+			this.props.x +
+			this.props.width +
+			offsetToNode * this.props.scale +
+			sizeX * this.props.scale +
+			offsetToButton * this.props.scale;
+		const y =
+			this.props.y -
+			offsetToButton * this.props.scale -
+			sizeY * this.props.scale;
 		const width = sizeX * this.props.scale;
 		const height = sizeY * this.props.scale;
 

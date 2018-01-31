@@ -1,13 +1,12 @@
-import Promisizer from './Promisizer'
+import Promisizer from './Promisizer';
 
 export default class MetaModelRelationEndpoint {
 	constructor() {}
 
 	static listRelations(mmId) {
 		var apiMethod = gapi.client.qdacity.metaModelRelation.listRelations({
-			'metaModelId': mmId
+			metaModelId: mmId
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-
 }

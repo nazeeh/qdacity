@@ -210,7 +210,7 @@ public class DocumentResult implements Serializable {
 		}
 
 		textDocument.setText(new Text(originalDoc.toString()));
-		AgreementMap map = new AgreementMap(textDocument.getId(), textDocument.getProjectID(), textDocument.getTitle(), originalDoc.toString());
+		AgreementMap map = new AgreementMap(textDocument.getId(), textDocument.getProjectID(), textDocument.getTitle(), originalDoc.toString(), textDocument.getPositionInOrder());
 		this.agreementMap = map;
 	}
 

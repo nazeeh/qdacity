@@ -1,11 +1,8 @@
 import BaseAction from './BaseAction.js';
 
-import {
-	Target
-} from '../Target.js';
+import { Target } from '../Target.js';
 
 export default class CreateRelationAction extends BaseAction {
-
 	getRequiredTargetType() {
 		return Target.RELATION;
 	}

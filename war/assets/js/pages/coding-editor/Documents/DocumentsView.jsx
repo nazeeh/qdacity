@@ -1,57 +1,40 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import ReactLoading from '../../../common/ReactLoading.jsx';
 
+import { DragDocument } from './Document.jsx';
+
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 
-import DocumentsToolbar from './DocumentsToolbar.jsx'
+import DocumentsToolbar from './DocumentsToolbar.jsx';
 
-const StyledDocumentsHeader = styled.div `
+const StyledDocumentsHeader = styled.div`
 	text-align: center;
-	position:relative;
+	position: relative;
 	background-color: #e7e7e7;
- `;
+`;
 
-const StyledInfoBox = styled.div `
-	background-color: ${props =>  props.theme.defaultPaneBg };
+const StyledInfoBox = styled.div`
+	background-color: ${props => props.theme.defaultPaneBg};
 	border-left-style: solid;
 	border-left-width: thick;
-	border-left-color: ${props =>  props.theme.borderPrimaryHighlight };
+	border-left-color: ${props => props.theme.borderPrimaryHighlight};
 	border-right-style: solid;
 	border-right-width: thick;
-	border-right-color: ${props =>  props.theme.borderPrimaryHighlight };
+	border-right-color: ${props => props.theme.borderPrimaryHighlight};
 	text-align: center;
 `;
 
-const StyledToolBar = styled.div `
+const StyledToolBar = styled.div`
 	text-align: center;
 	position: relative;
 	background-color: #e7e7e7;
 `;
 
-const StyledDocumentList = styled.div `
-
-	margin:5px 5px 5px 5px;
-`;
-
-const StyledDocumentItem = styled.a `
-	background-color: ${props => props.active ? props.theme.bgPrimaryHighlight : ''} !important;
-	color: ${props => props.active ? props.theme.fgPrimaryHighlight : ''};
-	padding: 2px 2px !important;
-	position: relative;
-	display: block;
-	padding: 10px 15px;
-	margin-bottom: -1px;
-	background-color: #fff;
-	border: 1px solid ;
-	border-color: ${props => props.theme.borderPrimary} !important;
-	&:hover {
-		text-decoration: none;
-		cursor: pointer;
-		background-color: ${props => props.theme.borderPrimary};
-		color: ${props => props.theme.fgPrimaryHighlight};
-	}
+const StyledDocumentList = styled.div`
+	margin: 5px 5px 5px 5px;
 `;
 
 export default class DocumentsView extends React.Component {
@@ -61,16 +44,30 @@ export default class DocumentsView extends React.Component {
 			documents: [],
 			selected: -1,
 			isExpanded: true,
-			loading: true,
+			loading: true
 		};
 
-		var setupPromise = this.setupView(this.props.projectID, this.props.projectType, this.props.report);
+		var setupPromise = this.setupView(
+			this.props.projectID,
+			this.props.projectType,
+			this.props.report
+		);
 
 		const _this = this;
 		setupPromise.then(() => {
 			_this.setState({
-				loading: false
+				loading: false,
+				documents: _this.state.documents.sort((doc1, doc2) => {
+					return doc1.positionInOrder - doc2.positionInOrder;
+				})
 			});
+
+			// Persists the order of documents if no order is persisted in the database.
+			_this.persistDocumentsOrderIfNecessary();
+
+			if (this.state.documents.length > 0) {
+				_this.setActiveDocument(this.state.documents[0].id);
+			}
 		});
 
 		this.addDocument = this.addDocument.bind(this);
@@ -81,38 +78,44 @@ export default class DocumentsView extends React.Component {
 		this.saveDocument = this.saveDocument.bind(this);
 		this.updateCurrentDocument = this.updateCurrentDocument.bind(this);
 		this.changeDocumentData = this.changeDocumentData.bind(this);
-		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(this);
+		this.applyCodeToCurrentDocument = this.applyCodeToCurrentDocument.bind(
+			this
+		);
+		this.swapDocuments = this.swapDocuments.bind(this);
+		this.persistSwappedDocuments = this.persistSwappedDocuments.bind(this);
+		this.getNewDocumentPosition = this.getNewDocumentPosition.bind(this);
 	}
 
 	setupView(project_id, project_type, agreement_map) {
 		var _this = this;
-		var promise = new Promise(
-			function (resolve, reject) {
-
-				if (typeof agreement_map != 'undefined') {
-					DocumentsEndpoint.getAgreementMaps(agreement_map, project_type).then(function (resp) {
+		var promise = new Promise(function(resolve, reject) {
+			if (typeof agreement_map != 'undefined') {
+				DocumentsEndpoint.getAgreementMaps(agreement_map, project_type)
+					.then(function(resp) {
 						resp.items = resp.items || [];
 						for (var i = 0; i < resp.items.length; i++) {
-							_this.addDocument(resp.items[i].textDocumentID, resp.items[i].title, resp.items[i].text.value);
+							let doc = resp.items[i];
+							doc.id = doc.textDocumentID;
+							_this.addDocument(doc);
 						}
 						resolve();
-					}).catch(function (resp) {
+					})
+					.catch(function(resp) {
 						reject();
 					});
-				} else {
-					DocumentsEndpoint.getDocuments(project_id, project_type).then(function (items) {
+			} else {
+				DocumentsEndpoint.getDocuments(project_id, project_type)
+					.then(function(items) {
 						for (var i = 0; i < items.length; i++) {
-							_this.addDocument(items[i].id, items[i].title, items[i].text.value);
+							_this.addDocument(items[i]);
 						}
 						resolve();
-					}).catch(function (resp) {
+					})
+					.catch(function(resp) {
 						reject();
 					});
-				}
-
 			}
-
-		);
+		});
 		return promise;
 	}
 
@@ -122,15 +125,16 @@ export default class DocumentsView extends React.Component {
 		for (var index in documents) {
 			var doc = documents[index];
 			var elements = doc.text;
-			var foundArray = $('coding[code_id=\'' + codID + '\']', elements).map(function () {
-				return $(this).attr('id');
-			});
+			var foundArray = $('coding[code_id=\'' + codID + '\']', elements).map(
+				function() {
+					return $(this).attr('id');
+				}
+			);
 			var idsCounted = []; // When a coding spans multiple HTML blocks,
 			// then there will be multiple elements with
 			// the same ID
 			for (var j = 0; j < foundArray.length; j++) {
-				if ($.inArray(foundArray[j], idsCounted) != -1)
-					continue;
+				if ($.inArray(foundArray[j], idsCounted) != -1) continue;
 				codingCount++;
 				idsCounted.push(foundArray[j]);
 			}
@@ -145,11 +149,8 @@ export default class DocumentsView extends React.Component {
 	}
 
 	// Adds a document and selects the new document as active
-	addDocument(pId, pTitle, pText) {
-		var doc = {};
-		doc.id = pId;
-		doc.title = pTitle;
-		doc.text = pText;
+	addDocument(doc) {
+		doc.text = doc.text.value;
 		this.state.documents.push(doc);
 		this.setState({
 			documents: this.state.documents
@@ -158,14 +159,13 @@ export default class DocumentsView extends React.Component {
 	}
 
 	renameDocument(pId, pNewTitle) {
-		var index = this.state.documents.findIndex(function (doc, index, array) {
+		var index = this.state.documents.findIndex(function(doc, index, array) {
 			return doc.id == pId;
 		});
 		this.state.documents[index].title = pNewTitle;
 		this.setState({
 			documents: this.state.documents
 		});
-
 	}
 
 	updateCurrentDocument(text) {
@@ -179,7 +179,7 @@ export default class DocumentsView extends React.Component {
 		doc.text = text;
 		doc.projectID = this.props.projectID;
 		var _this = this;
-		DocumentsEndpoint.applyCode(doc, code).then(function (resp) {
+		DocumentsEndpoint.applyCode(doc, code).then(function(resp) {
 			_this.updateDocument(doc.id, doc.title, doc.text);
 		});
 	}
@@ -187,13 +187,13 @@ export default class DocumentsView extends React.Component {
 	changeDocumentData(doc) {
 		var _this = this;
 		doc.projectID = this.props.projectID;
-		DocumentsEndpoint.updateTextDocument(doc).then(function (resp) {
+		DocumentsEndpoint.updateTextDocument(doc).then(function(resp) {
 			_this.updateDocument(doc.id, doc.title, doc.text);
 		});
 	}
 
 	updateDocument(pId, pNewTitle, pText) {
-		var index = this.state.documents.findIndex(function (doc, index, array) {
+		var index = this.state.documents.findIndex(function(doc, index, array) {
 			return doc.id == pId;
 		});
 		this.state.documents[index].title = pNewTitle;
@@ -201,12 +201,11 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			documents: this.state.documents
 		});
-
 	}
 
 	removeActiveDocument() {
 		var _this = this;
-		var index = this.state.documents.findIndex(function (doc, index, array) {
+		var index = this.state.documents.findIndex(function(doc, index, array) {
 			return doc.id == _this.state.selected;
 		});
 		this.state.documents.splice(index, 1);
@@ -218,20 +217,20 @@ export default class DocumentsView extends React.Component {
 
 	saveCurrentDocument() {
 		var doc = this.getActiveDocument();
-		if (typeof doc != "undefined") {
+		if (typeof doc != 'undefined') {
 			doc.text = this.props.editorCtrl.getHTML();
 			this.setState({
 				documents: this.state.documents
 			});
 			this.saveDocument(doc);
 		}
-
 	}
 
 	saveDocument(doc) {
 		doc.projectID = this.props.projectID;
 		var _this = this;
-		DocumentsEndpoint.updateTextDocument(doc).then(function (resp) { // FIXME not working
+		DocumentsEndpoint.updateTextDocument(doc).then(function(resp) {
+			// FIXME not working
 		});
 	}
 
@@ -243,15 +242,13 @@ export default class DocumentsView extends React.Component {
 		if (this.props.editorCtrl.isReadOnly === false) {
 			this.saveCurrentDocument();
 		}
-		this.props.syncService.handleDocumentChange(
-			this.state.selected === -1 ? null : this.state.selected.toString(),
-			selectedID.toString()
-		);
+		this.props.syncService.updateUser({
+			document: selectedID.toString()
+		});
 		this.setState({
 			selected: selectedID
 		});
 		this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
-
 	}
 
 	getActiveDocumentId() {
@@ -264,10 +261,22 @@ export default class DocumentsView extends React.Component {
 
 	getDocument(docId) {
 		var _this = this;
-		var activeDoc = this.state.documents.find(function (doc) {
+		var activeDoc = this.state.documents.find(function(doc) {
 			return doc.id == docId;
 		});
 		return activeDoc;
+	}
+
+	getNewDocumentPosition() {
+		if (this.state.documents == null || this.state.documents.length == 0) {
+			return 1;
+		}
+
+		return (
+			parseInt(
+				this.state.documents[this.state.documents.length - 1].positionInOrder
+			) + 1
+		);
 	}
 
 	setDocumentWithCoding(codingID) {
@@ -280,17 +289,80 @@ export default class DocumentsView extends React.Component {
 			if (foundArray.length > 0) {
 				this.setActiveDocument(doc.id);
 			}
+		}
+	}
 
+	swapDocuments(dragIndex, hoverIndex) {
+		const swap = this.state.documents[dragIndex];
+
+		this.state.documents[dragIndex] = this.state.documents[hoverIndex];
+		this.state.documents[hoverIndex] = swap;
+
+		this.forceUpdate();
+	}
+
+	persistSwappedDocuments(dragIndex, targetIndex) {
+		this.persistOrderOfDocuments();
+	}
+
+	/**
+	 * Checks if the order of documents is already persisted in the database and persists the current order if not.
+	 */
+	persistDocumentsOrderIfNecessary() {
+		let persistOrder = false;
+
+		for (let i = 0; i < this.state.documents.length; i++) {
+			if (
+				this.state.documents[i].positionInOrder == 0 ||
+				this.state.documents[i].positionInOrder == null
+			) {
+				persistOrder = true;
+			}
+		}
+
+		if (persistOrder) {
+			this.persistOrderOfDocuments();
+		}
+	}
+
+	/**
+	 * Persist the current order of documents in the database.
+	 */
+	persistOrderOfDocuments() {
+		for (let i = 0; i < this.state.documents.length; i++) {
+			this.state.documents[i].positionInOrder = i + 1;
+		}
+
+		if (this.state.documents.length > 0) {
+			// AgreementMaps and TextDocuments are updated with different Endpoints
+
+			// AgreementMaps
+			if (this.state.documents[0].textDocumentID) {
+				DocumentsEndpoint.reorderAgreementMapPositions(
+					this.props.report,
+					this.props.projectType,
+					this.state.documents
+				).then(function(resp) {
+					// Do nothing
+				});
+			} else {
+				// TextDocuments
+				DocumentsEndpoint.updateTextDocuments(this.state.documents).then(
+					function(resp) {
+						// Do nothing
+					}
+				);
+			}
 		}
 	}
 
 	renderCollapseIcon() {
-		if (this.state.isExpanded) return (<i className="fa fa-compress fa-1x"></i>);
-		else return (<i className="fa fa-expand fa-1x"></i>);
+		if (this.state.isExpanded) return <i className="fa fa-compress fa-1x" />;
+		else return <i className="fa fa-expand fa-1x" />;
 	}
 
 	renderToolbar() {
-		if (this.props.projectType == "PROJECT") {
+		if (this.props.projectType == 'PROJECT') {
 			return (
 				<DocumentsToolbar
 					projectID={this.props.projectID}
@@ -298,69 +370,91 @@ export default class DocumentsView extends React.Component {
 					addDocument={this.addDocument}
 					removeActiveDocument={this.removeActiveDocument}
 					changeDocumentData={this.changeDocumentData}
+					getNewDocumentPosition={this.getNewDocumentPosition}
 				/>
 			);
 		} else {
 			return null;
 		}
+	}
 
+	renderDocument(doc, index) {
+		return (
+			<DragDocument
+				doc={doc}
+				key={doc.id}
+				index={index}
+				active={doc.id == this.state.selected}
+				setActiveDocument={this.setActiveDocument}
+				swapDocuments={this.swapDocuments}
+				persistSwappedDocuments={this.persistSwappedDocuments}
+				syncService={this.props.syncService}
+			>
+				{doc.title}
+			</DragDocument>
+		);
 	}
 
 	renderDocuments() {
-		var _this = this;
 		if (!this.state.isExpanded) {
-			return <StyledInfoBox>
-		      <b>Current Document: {this.getActiveDocument().title}</b>
-		    </StyledInfoBox>
+			return (
+				<StyledInfoBox>
+					<b>
+						<FormattedMessage
+							id="documentsview.current_document"
+							defaultMessage="Current Document"
+						/>:
+						{this.getActiveDocument().title}
+					</b>
+				</StyledInfoBox>
+			);
 		}
+
 		return (
 			<div>
-				<StyledToolBar>
-					{this.renderToolbar()}
-				</StyledToolBar>
+				<StyledToolBar>{this.renderToolbar()}</StyledToolBar>
 				<StyledDocumentList>
-		        {
-		          this.state.documents.map(function(doc) {
-		            return <StyledDocumentItem active={doc.id == _this.state.selected} key={doc.id}  onClick={_this.setActiveDocument.bind(null,doc.id)}>{doc.title}</StyledDocumentItem>
-		          })
-		        }
-		  		</StyledDocumentList>
+					{this.state.documents.map((doc, index) => {
+						return this.renderDocument(doc, index);
+					})}
+				</StyledDocumentList>
 			</div>
 		);
 	}
 
-	renderDocumentsContent() {
-		if (!this.state.loading) {
-			return this.renderDocuments();
-		} else {
-			return <ReactLoading color={"#020202"}/>;
-		}
-	}
-
 	render() {
-		var _this = this;
 		return (
 			<div>
 				<StyledDocumentsHeader>
-					<div className="row no-gutters" >
-						<span className="col-xs-1"></span>
+					<div className="row no-gutters">
+						<span className="col-xs-1" />
 						<span className="col-xs-10">
-							<b>Documents</b>
-							<br/>
-							<span id="docToolBox"  className="collapse in">
-							</span>
+							<b>
+								<FormattedMessage
+									id="documentsview.documents"
+									defaultMessage="Documents"
+								/>
+							</b>
+							<br />
+							<span id="docToolBox" className="collapse in" />
 						</span>
 						<span className="col-xs-1">
-							<a id="documentsToggleBtn" className="editorPanelTogel pull-right" onClick={() => this.toggleIsExpanded()}>
+							<a
+								id="documentsToggleBtn"
+								className="editorPanelTogel pull-right"
+								onClick={() => this.toggleIsExpanded()}
+							>
 								{this.renderCollapseIcon()}
 							</a>
 						</span>
 					</div>
 				</StyledDocumentsHeader>
-				{this.renderDocumentsContent()}
-     	</div>
+				{this.state.loading ? (
+					<ReactLoading color={'#020202'} />
+				) : (
+					this.renderDocuments()
+				)}
+			</div>
 		);
 	}
-
-
 }
