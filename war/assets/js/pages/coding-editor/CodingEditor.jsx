@@ -554,6 +554,7 @@ class CodingEditor extends React.Component {
 							codeRemoved={this.codeRemoved}
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
+							userProfile={this.state.userProfile}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>

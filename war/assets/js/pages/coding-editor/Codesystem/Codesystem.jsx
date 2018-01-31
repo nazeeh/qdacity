@@ -476,7 +476,7 @@ export default class Codesystem extends SimpleCodesystem {
 						documentsView={this.props.documentsView}
 						pageView={this.props.pageView}
 						getCodeById={this.getCodeById}
-						userProfile={this.state.userProfile}
+						userProfile={this.props.userProfile}
 					/>
 				</StyledToolBar>
 

@@ -102,7 +102,7 @@ export default class CodesystemToolbar extends React.Component {
 			_this.props.projectType
 		).then(function(resp) {
 			var codingID = resp.maxCodingID;
-			var author = this.state.userProfile.name;
+			var author = _this.props.userProfile.name;
 
 			_this.props.editorCtrl.setCoding(
 				codingID,
