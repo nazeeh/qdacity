@@ -6,6 +6,8 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.cloud.bigquery.*;
 import com.qdacity.Constants;
 import com.qdacity.endpoint.datastructures.DailyCostsBillingStats;
+import com.qdacity.endpoint.datastructures.ExtendedServiceCostsBillingItem;
+import com.qdacity.endpoint.datastructures.ExtendedServiceCostsBillingStats;
 import com.qdacity.endpoint.datastructures.ServiceCostsBillingStats;
 
 import javax.annotation.Nullable;
@@ -127,7 +129,7 @@ public class BillingStatsEndpoint {
 	@ApiMethod(
 			name = "billing.getExtendedCostsByService"
 	)
-	public ServiceCostsBillingStats getExtendedCostsByService(@Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) throws InterruptedException {
+	public ExtendedServiceCostsBillingStats getExtendedCostsByService(@Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) throws InterruptedException {
 
 		BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 
@@ -162,15 +164,18 @@ public class BillingStatsEndpoint {
 		QueryResult queryResult = response.getResult();
 
 
-		Map<String, Double> resultMap = new HashMap<>();
+		List<ExtendedServiceCostsBillingItem> resultList = new ArrayList<>();
 		for (FieldValueList row : queryResult.iterateAll()) {
-			String service = row.get("service").getStringValue();
-			String description = row.get("description").getStringValue();
-			Double cost = row.get("cost").getDoubleValue();
-			resultMap.put(service + " " + description, cost);
+			ExtendedServiceCostsBillingItem resultItem = new ExtendedServiceCostsBillingItem();
+
+			resultItem.setService(row.get("service").getStringValue());
+			resultItem.setDescription(row.get("description").getStringValue());
+			resultItem.setCost(row.get("cost").getDoubleValue());
+
+			resultList.add(resultItem);
 		}
-		ServiceCostsBillingStats result = new ServiceCostsBillingStats();
-		result.setServiceCosts(resultMap);
+		ExtendedServiceCostsBillingStats result = new ExtendedServiceCostsBillingStats();
+		result.setItems(resultList);
 
 		return result;
 	}
