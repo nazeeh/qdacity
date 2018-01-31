@@ -18,7 +18,7 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 
 		this.props.chartScriptPromise.then(() => {
 			google.charts.load('current', {
-				packages: ['corechart']
+				packages: ['table']
 			});
 
 			google.charts.setOnLoadCallback(() => {
@@ -34,9 +34,9 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 			this.state.startDate,
 			this.state.endDate
 		).then(result => {
-			result.serviceCosts = result.serviceCosts || {};
+			result.items = result.items || [];
 			this.setState({
-				extendedCostsByService: result.serviceCosts
+				extendedCostsByService: result.items
 			});
 		});
 	}
@@ -44,8 +44,14 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 	getDataRows(costsByService) {
 
 		const result = [];
-		Object.keys(costsByService).forEach(key => {
-			result.push([key, costsByService[key]]);
+
+		const currencyFormatter = new Intl.NumberFormat('de', {
+			style: 'currency',
+			currency: 'EUR',
+		});
+
+		costsByService.forEach(item => {
+			result.push([item.service, item.description, currencyFormatter.format(item.cost)]);
 		});
 
 		return result;
@@ -72,7 +78,11 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 			formatMessage({ id: 'extended_costs_by_service_table.service', defaultMessage: 'Service' })
 		);
 		data.addColumn(
-			'number',
+			'string',
+			formatMessage({ id: 'extended_costs_by_service_table.description', defaultMessage: 'Description' })
+		);
+		data.addColumn(
+			'string',
 			formatMessage({
 				id: 'extended_costs_by_service_table.costs',
 				defaultMessage: 'Costs'
@@ -82,17 +92,16 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 		data.addRows(this.getDataRows(this.state.extendedCostsByService));
 
 		const options = {
-			pieHole: 0.4,
 			width: 540,
-			height: 400,
-			chartArea: {
-				left: 70,
-				right: 0,
-				top: 10
-			}
+			height: 300,
+			allowHtml: true,
+			sortColumn: 2,
+			sortAscending: false,
 		};
+		data.setProperty(0, 0, 'style', 'width:150px');
+		data.setProperty(0, 1, 'style', 'width:250px');
 
-		data.sort([{column: 1, desc: true}]);
+		data.sort([{column: 2, desc: true}]);
 
 		return (
 			<GoogleTableChart
