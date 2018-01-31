@@ -167,6 +167,8 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
+		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
+		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
 
 		// update on initialization
 		this.updateUserStatusFromProps(props);
@@ -183,7 +185,7 @@ class CodingEditor extends React.Component {
 	updateUserAtSyncService() {
 		const _this = this;
 		this.props.auth.authentication.getProfile().then((profile) => {
-			this.syncService.updateUser({
+			_this.syncService.updateUser({
 				name: profile.name,
 				email: profile.email,
 				picSrc: profile.thumbnail,
@@ -210,15 +212,15 @@ class CodingEditor extends React.Component {
 		this.updateUserAtSyncService();
 
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
-		if (_this.state.userProfile.email !== '') {
-			_this.syncService.logon(_this.state.userProfile);
+		if (this.state.userProfile.email !== '') {
+			this.syncService.logon(this.state.userProfile);
 		}
 	}
 
 	componentWillReceiveProps() {
 		this.updateUserAtSyncService();
 	}
-	
+
 	componentDidMount() {
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
 	}
