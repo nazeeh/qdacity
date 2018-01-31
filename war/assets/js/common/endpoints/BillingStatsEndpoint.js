@@ -3,6 +3,11 @@ import Promisizer from './Promisizer';
 export default class BillingStatsEndpoint {
 	constructor() {}
 
+	static getAggregatedStats() {
+		let apiMethod = gapi.client.qdacity.billing.getAggregatedStats();
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static getDailyCosts(startDate, endDate) {
 		let apiMethod = gapi.client.qdacity.billing.getDailyCosts({
 			startDate: startDate.toISOString(),
