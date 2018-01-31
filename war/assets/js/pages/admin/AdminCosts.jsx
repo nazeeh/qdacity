@@ -4,6 +4,7 @@ import {FormattedMessage} from 'react-intl';
 import DailyCostsChart from './DailyCostsChart.jsx';
 import DailyCostsPerActiveUserChart from "./DailyCostsPerActiveUserChart.jsx";
 import CostsByServiceChart from "./CostsByServiceChart.jsx";
+import ExtendedCostsByServiceTable from "./ExtendedCostsByServiceTable.jsx";
 
 export default class AdminCosts extends React.Component {
 	constructor(props) {
@@ -62,6 +63,23 @@ export default class AdminCosts extends React.Component {
 							</div>
 							<div className="box-body">
 								<CostsByServiceChart
+									chartScriptPromise={this.props.chartScriptPromise}
+								/>
+							</div>
+						</div>
+					</div>
+					<div className="col-lg-6">
+						<div className="box box-default">
+							<div className="box-header with-border">
+								<h3 className="box-title">
+									<FormattedMessage
+										id="adminstats.extended_costs_by_service"
+										defaultMessage="Costs by service extended"
+									/>
+								</h3>
+							</div>
+							<div className="box-body">
+								<ExtendedCostsByServiceTable
 									chartScriptPromise={this.props.chartScriptPromise}
 								/>
 							</div>
