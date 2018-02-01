@@ -115,8 +115,8 @@ acceptance_tests:
   only:
     - branches
   script:
-    - sudo docker build -t qda .
-    - sudo docker run -it -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 qda
+    - docker build -t qda .
+    - docker run -it -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 qda
 
 rtcsvc_prod_unittest:
   <<: *job_definition
