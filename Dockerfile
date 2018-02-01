@@ -35,7 +35,7 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 RUN sudo apt-get install -y nodejs
 
 # Install gulp
-RUN sudo npm install -g gulp --silent
+RUN sudo npm install -g gulp
 
 # Install jasmine
 RUN sudo npm install -g jasmine --silent
