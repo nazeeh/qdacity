@@ -120,8 +120,6 @@ acceptance_tests:
     - echo "AVAILABLE IMAGES"
     - docker image ls
     
-    - docker container rm --force $(docker container ls -a -q)
-    - docker image rm $(docker image ls -a -q)
     - docker run -it -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 qda
 
 rtcsvc_prod_unittest:
