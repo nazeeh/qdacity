@@ -205,6 +205,13 @@ class CodingEditor extends React.Component {
 					picSrc: profile.thumbnail
 				}
 			});
+			_this.syncService.updateUser({
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail,
+				project: _this.state.project.id,
+				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
+			});
 		});
 	}
 
@@ -215,10 +222,6 @@ class CodingEditor extends React.Component {
 		if (this.state.userProfile.email !== '') {
 			this.syncService.logon(this.state.userProfile);
 		}
-	}
-
-	componentWillReceiveProps() {
-		this.updateUserAtSyncService();
 	}
 
 	componentDidMount() {
@@ -242,7 +245,7 @@ class CodingEditor extends React.Component {
 					project: project
 				});
 			}
-		);
+		).catch(()=>{console.log("could not load project")});
 	}
 
 	resizeElements() {
