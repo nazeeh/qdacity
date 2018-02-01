@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
 
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
@@ -13,6 +13,9 @@ import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
 import ExercisePage from './ExercisePage/ExercisePage.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
+import AdminStats from './admin/AdminStats.jsx';
+import AdminControl from "./admin/AdminControl.jsx";
+import AdminCosts from "./admin/AdminCosts.jsx";
 import CodingEditor from './coding-editor/CodingEditor.jsx';
 import Faq from './help/Faq.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
@@ -124,6 +127,44 @@ export default class App extends React.Component {
 								path="/Admin"
 								render={props => (
 									<Admin
+										account={this.account}
+										chartScriptPromise={this.props.chartScriptPromise}
+										{...props}
+									/>
+								)}
+							/>
+							<Route
+								exact path="/Admin"
+								render={() => (
+									<Redirect
+										to="/Admin/Control"
+									/>
+								)}
+							/>
+							<Route
+								path="/Admin/Stats"
+								render={props => (
+									<AdminStats
+										account={this.account}
+										chartScriptPromise={this.props.chartScriptPromise}
+										{...props}
+									/>
+								)}
+							/>
+							<Route
+								path="/Admin/Costs"
+								render={props => (
+									<AdminCosts
+										account={this.account}
+										chartScriptPromise={this.props.chartScriptPromise}
+										{...props}
+									/>
+								)}
+							/>
+							<Route
+								path="/Admin/Control"
+								render={props => (
+									<AdminControl
 										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
