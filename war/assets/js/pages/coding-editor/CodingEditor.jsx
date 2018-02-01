@@ -128,8 +128,6 @@ class CodingEditor extends React.Component {
 				documentResults: []
 			},
 			mxGraphLoaded: false,
-			isSignedIn: false,
-			isRegistered: false,
 			fontSize: 13,
 
 			userProfile: {
