@@ -38,7 +38,7 @@ RUN sudo apt-get install -y nodejs
 #RUN sudo npm install -g gulp --silent
 
 # Install jasmine
-RUN sudo npm install -g jasmine --silent
+#RUN sudo npm install -g jasmine --silent
 
 # Copy repository
 WORKDIR /app
