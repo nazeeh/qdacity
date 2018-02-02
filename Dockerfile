@@ -45,7 +45,7 @@ WORKDIR /app
 ADD . /app
 
 # Download dependencies
-RUN mvn dependency:resolve
+#RUN mvn dependency:resolve
 
 # Run script which starts the devserver and executes the tests
 ENTRYPOINT ./testExecuteTests.sh
