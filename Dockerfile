@@ -44,6 +44,10 @@ RUN sudo apt-get install -y nodejs
 WORKDIR /app
 ADD . /app
 
+# Allow execute
+RUN sudo chmod +x ./testExecuteTests.sh
+RUN sudo chmod +x ./war/startAcceptanceTests.sh
+
 # Download dependencies
 #RUN mvn dependency:resolve
 
