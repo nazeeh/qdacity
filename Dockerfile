@@ -49,7 +49,7 @@ RUN sudo chmod +x ./testExecuteTests.sh
 RUN sudo chmod +x ./war/startAcceptanceTests.sh
 
 # Download dependencies
-RUN mvn dependency:resolve
+#RUN mvn dependency:resolve
 
 # Run script which starts the devserver and executes the tests
 ENTRYPOINT ./testExecuteTests.sh

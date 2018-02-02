@@ -1,5 +1,9 @@
 # Starts the selenium server and the local dev-server.
 
+# Install some stuff
+sudo npm install -g gulp --silent
+sudo npm install -g jasmine --silent
+
 echo "Start the selenium server"
 
 # Start selenium
