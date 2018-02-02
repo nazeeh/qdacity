@@ -115,7 +115,7 @@ acceptance_tests:
   only:
     - branches
   script:
-    - sudo chmod +x ./executeAcceptanceTestsJob.sh
+    - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
 
 rtcsvc_prod_unittest:
