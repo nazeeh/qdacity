@@ -77,6 +77,18 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>page</servlet-name>
+		<url-pattern>/Admin/Stats</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Admin/Control</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Admin/Costs</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
 		<url-pattern>/CodingEditor</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
