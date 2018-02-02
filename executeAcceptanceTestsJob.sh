@@ -21,7 +21,7 @@ docker image ls
     
 echo "START BUILD"
 
-IMAGE_NAME="qdatest"+$CI_PROJECT_ID
+IMAGE_NAME="qdatest${CI_PROJECT_ID}"
 
 docker build -t $IMAGE_NAME .
 docker run -t -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 $IMAGE_NAME
