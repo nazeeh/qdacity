@@ -137,7 +137,7 @@ acceptance_tests:
     - echo "START BUILD"
     
     - docker build -t qda .
-    - docker run -it -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 qda
+    - docker run -t -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 qda
 
 rtcsvc_prod_unittest:
   <<: *job_definition
