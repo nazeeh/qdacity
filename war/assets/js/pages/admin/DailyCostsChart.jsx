@@ -107,7 +107,7 @@ export default class DailyCostsChart extends React.Component {
 		data.addRows(this.getDataRows(this.state.dailyCosts));
 
 		const options = {
-			width: 700,
+			width: 540,
 			height: 400,
 			hAxis: {
 				format: 'MMM dd, yyyy',
