@@ -226,12 +226,6 @@ public class CourseEndpoint {
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 			Authorization.isUserRegistered(dbUser);
 
-			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
-				LastCourseUsed task = new LastCourseUsed(dbUser, id);
-				Queue queue = QueueFactory.getDefaultQueue();
-				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-			}
-
 			course = (Course) Cache.getOrLoad(id, Course.class);
 
 		} finally {
