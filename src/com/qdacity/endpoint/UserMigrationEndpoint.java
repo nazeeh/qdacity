@@ -234,7 +234,7 @@ public class UserMigrationEndpoint {
 		mgr.setIgnoreCache(true);
 		try {
 			User dbUser = mgr.getObjectById(User.class, oldUser.getUserId());
-			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Fetched old user with id " + dbUser.getId() + " and " + dbUser.getLoginProviderInformation().size() + " connected login providers");
+			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Fetched old user with id " + dbUser.getId() + " and " + dbUser.getLoginProviderInformation() + " connected login providers");
 			dbUser = mgr.detachCopy(dbUser);
 			return dbUser;
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
