@@ -13,10 +13,11 @@ import org.json.JSONException;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
+import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.DocumentResult;
@@ -56,6 +57,7 @@ public class DeferredEmailNotification implements DeferredTask {
 			results = (List<ValidationResult>) q2.execute(reportID);
 
 			ValidationEndpoint ve = new ValidationEndpoint();
+			UserEndpoint userEndpoint = new UserEndpoint();
 
 			for (ValidationResult result : results) {
 				Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER, Credentials.SENDGRID_PW);
@@ -70,7 +72,9 @@ public class DeferredEmailNotification implements DeferredTask {
 					mail.addTo(coder.getEmail(), name);
 					greetingName += coder.getGivenName() + ", ";
 				}
-				mail.addTo(user.getEmail(), user.getNickname());
+				// TODO: check if this really works!
+				com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user);
+				mail.addTo(user.getEmail(), qdacityUser.getGivenName());
 				String msgBody = "Hi " + greetingName + "<br>";
 				msgBody += "<p>";
 				msgBody += "We have analyzed your codings, and you've achieved the following scores:<br>";

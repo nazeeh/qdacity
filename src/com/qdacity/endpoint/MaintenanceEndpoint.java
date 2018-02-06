@@ -5,17 +5,19 @@ import java.util.List;
 import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.maintenance.tasks.OrphanDeletion;
 import com.qdacity.maintenance.tasks.ValidationCleanup;
+import com.qdacity.maintenance.tasks.usermigration.UserMigrationEmailNotifier;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelEntityType;
 import com.qdacity.metamodel.MetaModelRelation;
@@ -26,23 +28,38 @@ import com.qdacity.metamodel.MetaModelRelation;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class MaintenanceEndpoint {
 
 	private MetaModelEntityEndpoint metaModelEntityEndpoint = new MetaModelEntityEndpoint();
 	private MetaModelRelationEndpoint metaModelRelationEndpoint = new MetaModelRelationEndpoint();
 	
-	@ApiMethod(
-		name = "maintenance.cleanupValidationResults",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public void cleanupValidationResults(com.google.appengine.api.users.User user) throws UnauthorizedException {
+	@ApiMethod(name = "maintenance.cleanupValidationResults")
+	public void cleanupValidationResults(User user) throws UnauthorizedException {
 
 		cleanUpValidationResults();
 
 		cleanUpOrphans();
 
+	}
+	
+	/**
+	 * Sends emails to all users with the migration notification and the link to the migration site
+	 * @param user
+	 * @param href the link to the miration site.
+	 * @throws UnauthorizedException it the user is no ADMIN
+	 */
+	@ApiMethod(name = "maintenance.sendUserMigrationEmails")
+	public void sendUserMigrationEmails(User user, @Named("migrationLink") String href) throws UnauthorizedException {
+		if(!Authorization.isUserAdmin(user)) {
+			throw new UnauthorizedException("Only Admins are authorized to trigger this endpoint!");
+		}
+		
+		UserMigrationEmailNotifier task = new UserMigrationEmailNotifier(href);
+		
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 	}
 
 	private void cleanUpValidationResults() {
@@ -64,11 +81,7 @@ public class MaintenanceEndpoint {
 	 * @param user
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "maintenance.initializeDatabase",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "maintenance.initializeDatabase")
 	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, User user) throws UnauthorizedException {
 		
 		Authorization.checkDatabaseInitalizationAuthorization(user);

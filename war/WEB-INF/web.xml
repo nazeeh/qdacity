@@ -12,7 +12,7 @@
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
     <init-param>
       <param-name>services</param-name>
-      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.BillingStatsEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.CourseEndpoint,com.qdacity.endpoint.DataMigrationEndpoint,com.qdacity.endpoint.EventEndpoint,com.qdacity.endpoint.ExerciseEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEntityEndpoint,com.qdacity.endpoint.MetaModelRelationEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.SaturationEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UmlCodePositionEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint</param-value>
+      <param-value>com.qdacity.endpoint.AdminEndpoint,com.qdacity.endpoint.BillingStatsEndpoint,com.qdacity.endpoint.ChangeEndpoint,com.qdacity.endpoint.CodeEndpoint,com.qdacity.endpoint.CodeSystemEndpoint,com.qdacity.endpoint.CourseEndpoint,com.qdacity.endpoint.DataMigrationEndpoint,com.qdacity.endpoint.EventEndpoint,com.qdacity.endpoint.ExerciseEndpoint,com.qdacity.endpoint.MaintenanceEndpoint,com.qdacity.endpoint.MetaModelEntityEndpoint,com.qdacity.endpoint.MetaModelRelationEndpoint,com.qdacity.endpoint.ProjectEndpoint,com.qdacity.endpoint.ProjectStatsEndpoint,com.qdacity.endpoint.SaturationEndpoint,com.qdacity.endpoint.TextDocumentEndpoint,com.qdacity.endpoint.UmlCodePositionEndpoint,com.qdacity.endpoint.UploadEndpoint,com.qdacity.endpoint.UserEndpoint,com.qdacity.endpoint.UserMigrationEndpoint,com.qdacity.endpoint.UserNotificationEndpoint,com.qdacity.endpoint.ValidationEndpoint</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -90,6 +90,10 @@
 	<servlet-mapping>
 		<servlet-name>page</servlet-name>
 		<url-pattern>/CodingEditor</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+	    <servlet-name>page</servlet-name>
+	    <url-pattern>/UserMigration</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>page</servlet-name>

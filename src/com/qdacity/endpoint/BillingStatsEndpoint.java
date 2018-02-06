@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.cloud.bigquery.*;
 import com.qdacity.Constants;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.endpoint.datastructures.DailyCostsBillingStats;
 import com.qdacity.endpoint.datastructures.ServiceCostsBillingStats;
 
@@ -19,14 +20,13 @@ import java.util.*;
 		name = "qdacity",
 		version = Constants.VERSION,
 		namespace = @ApiNamespace(
-				ownerDomain = "qdacity.com",
-				ownerName = "qdacity.com",
-				packagePath = "server.project"))
+			ownerDomain = "qdacity.com",
+			ownerName = "qdacity.com",
+			packagePath = "server.project"),
+		authenticators = {QdacityAuthenticator.class})
 public class BillingStatsEndpoint {
 
-	@ApiMethod(
-			name = "billing.getDailyCosts"
-	)
+	@ApiMethod(name = "billing.getDailyCosts")
 	public DailyCostsBillingStats getDailyCosts(@Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) throws InterruptedException, ParseException {
 
 		BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
@@ -76,9 +76,7 @@ public class BillingStatsEndpoint {
 	}
 
 
-	@ApiMethod(
-			name = "billing.getCostsByService"
-	)
+	@ApiMethod(name = "billing.getCostsByService")
 	public ServiceCostsBillingStats getCostsByService(@Nullable @Named("startDate") Date startDate, @Nullable @Named("endDate") Date endDate) throws InterruptedException {
 
 		BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();

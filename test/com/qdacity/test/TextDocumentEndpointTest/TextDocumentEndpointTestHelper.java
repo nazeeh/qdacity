@@ -8,12 +8,12 @@ import java.util.Collection;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.data.TextDocument;
 
 public class TextDocumentEndpointTestHelper {
-	static public TextDocument addTextDocument(long projectID, String textString, String title, com.google.appengine.api.users.User loggedInUser) {
+	static public TextDocument addTextDocument(long projectID, String textString, String title, com.google.api.server.spi.auth.common.User loggedInUser) {
 		TextDocument doc = new TextDocument();
 		doc.setProjectID(projectID);
 		doc.setTitle(title);
@@ -31,7 +31,7 @@ public class TextDocumentEndpointTestHelper {
 		return null;
 	}
 
-	static public void updateTextDocument(TextDocument doc, com.google.appengine.api.users.User loggedInUser) {
+	static public void updateTextDocument(TextDocument doc, com.google.api.server.spi.auth.common.User loggedInUser) {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		try {
 			tde.updateTextDocument(doc, loggedInUser);
@@ -52,7 +52,7 @@ public class TextDocumentEndpointTestHelper {
 		}
 	}
 
-	static public Collection<TextDocument> getTextDocuments(long projectID, String projectType, com.google.appengine.api.users.User loggedInUser) {
+	static public Collection<TextDocument> getTextDocuments(long projectID, String projectType, com.google.api.server.spi.auth.common.User loggedInUser) {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		try {
 			CollectionResponse<TextDocument> docs = tde.getTextDocument(projectID, projectType, loggedInUser);

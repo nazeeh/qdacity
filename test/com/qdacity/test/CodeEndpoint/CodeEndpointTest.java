@@ -20,19 +20,21 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 
 public class CodeEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 
 	@Before
 	public void setUp() {
@@ -46,11 +48,12 @@ public class CodeEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a new code for a code system
+	 * @throws UnauthorizedException 
 	 * 
 	 * @throws InterruptedException
 	 */
 	@Test
-	public void testCodeInsert() {
+	public void testCodeInsert() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
@@ -76,9 +79,10 @@ public class CodeEndpointTest {
 
 	/**
 	 * Tests if a registered user can remove a code for a code system
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCodeRemove() {
+	public void testCodeRemove() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		testCodeInsert();
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));
@@ -91,9 +95,10 @@ public class CodeEndpointTest {
 
 	/**
 	 * Tests if a registered user can update the properties of a code in a project he is authorized for
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCodeUpdate() {
+	public void testCodeUpdate() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		testCodeInsert();
 		assertEquals(2, ds.prepare(new Query("Code")).countEntities(withLimit(10)));

@@ -21,6 +21,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.SaturationEndpoint;
 import com.qdacity.project.ProjectRevision;
@@ -31,12 +32,13 @@ import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 
 public class SaturationTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 
 	private final SaturationEndpoint se = new SaturationEndpoint();
 	@Before
@@ -49,7 +51,7 @@ public class SaturationTest {
 		helper.tearDown();
 	}
 
-	private void setUpProject() {
+	private void setUpProject() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CodeSystemTestHelper.addCodeSystem(1L, testUser);
 		try {
@@ -62,9 +64,10 @@ public class SaturationTest {
 
 	/**
 	 * Tests if the default parameters are loaded if none have been specified for a given project
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testDefaultParameters() {
+	public void testDefaultParameters() throws UnauthorizedException {
 		setUpProject();
 		try {
 			SaturationParameters params = se.getSaturationParameters(1L);
@@ -119,9 +122,10 @@ public class SaturationTest {
 
 	/**
 	 * Tests if the parameters can be changed and persisted
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testSetParameters() {
+	public void testSetParameters() throws UnauthorizedException {
 		setUpProject();
 		try {
 			SaturationParameters params = se.getSaturationParameters(1L);
@@ -219,7 +223,7 @@ public class SaturationTest {
 	}
 
 	@Test
-	public void testSaturationTrigger() {
+	public void testSaturationTrigger() throws UnauthorizedException {
 		setUpProject();
 	}
 

@@ -12,10 +12,11 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.TermCourse;
 import com.qdacity.exercise.Exercise;
 
@@ -24,8 +25,11 @@ import com.qdacity.exercise.Exercise;
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class ExerciseEndpoint {
+	
+	private UserEndpoint userEndpoint = new UserEndpoint();
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
@@ -36,10 +40,7 @@ public class ExerciseEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "exercise.insertExercise",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "exercise.insertExercise")
 	public Exercise insertExercise(Exercise exercise, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -76,13 +77,13 @@ public class ExerciseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked" })
-	@ApiMethod(name = "exercise.listTermCourseExercises",
-		path = "listTermCourseExercises",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(
+		name = "exercise.listTermCourseExercises",
+		path = "listTermCourseExercises"
+	)
 	public List<Exercise> listTermCourseExercises(@Named("termCrsID") Long termCourseID, User user) throws UnauthorizedException {
 
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 		
 		PersistenceManager mgr = null;
 		List<Exercise> execute = null;
@@ -90,7 +91,7 @@ public class ExerciseEndpoint {
 		try {
 			mgr = getPersistenceManager();
 			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
-			Authorization.checkAuthTermCourseParticipation(termCourse, user.getUserId(), user);
+			Authorization.checkAuthTermCourseParticipation(termCourse, qdacityUser.getId(), user);
 			Query q = mgr.newQuery(Exercise.class, ":p.contains(termCourseID)");
 
 			execute = (List<Exercise>) q.execute(Arrays.asList(termCourseID));
@@ -109,11 +110,7 @@ public class ExerciseEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "exercise.removeExercise",
-
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "exercise.removeExercise")
 	public void removeExercise(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

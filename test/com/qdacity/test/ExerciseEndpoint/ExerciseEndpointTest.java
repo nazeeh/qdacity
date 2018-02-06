@@ -8,20 +8,24 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.exercise.Exercise;
 import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 
 public class ExerciseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	
 	@Before
 	public void setUp() {
@@ -36,9 +40,10 @@ public class ExerciseEndpointTest {
 	
 	/**
 	 * Tests if a registered user can create an exercise
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testExerciseInsert() {
+	public void testExerciseInsert() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
@@ -51,9 +56,10 @@ public class ExerciseEndpointTest {
 
 	/**
 	 * Tests if a user can delete his own exercise
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testExerciseRemove() {
+	public void testExerciseRemove() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
@@ -69,9 +75,10 @@ public class ExerciseEndpointTest {
 	
 	/**
 	 * Tests if a registered can list exercises
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListExercise() {
+	public void testListExercise() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);

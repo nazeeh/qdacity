@@ -19,6 +19,7 @@ import javax.persistence.EntityExistsException;
 
 import org.json.JSONException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -27,13 +28,14 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
+import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
@@ -51,9 +53,12 @@ import com.qdacity.user.UserNotificationType;
 	version = Constants.VERSION,
 	namespace = @ApiNamespace(ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class ProjectEndpoint {
 
+	private UserEndpoint userEndpoint = new UserEndpoint();
+	
 	/**
 	 * This method lists all the entities inserted in datastore.
 	 * It uses HTTP GET method and paging support.
@@ -63,16 +68,14 @@ public class ProjectEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(name = "project.listProject",
-		path = "projects",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.listProject", path = "projects")
 	public CollectionResponse<Project> listProject(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all projects
 
-		return getProjectsByUserId(cursorString, user.getUserId());
+		return getProjectsByUserId(cursorString, qdacityUser.getId());
 	}
 
 	@ApiMethod(name = "project.listProjectByUserId",
@@ -111,14 +114,12 @@ public class ProjectEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "project.listValidationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.listValidationProject")
 	public List<ValidationProject> listValidationProject(User user) throws UnauthorizedException {
-		final String userId = user.getUserId();
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
-		return getValidationProjectsByUserId(user, userId);
+		return getValidationProjectsByUserId(user, qdacityUser.getId());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -163,23 +164,20 @@ public class ProjectEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.getProject",
-		path = "project",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.getProject",	path = "project")
 	public AbstractProject getProject(@Named("id") Long id, @Named("type") String type, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		PersistenceManager mgr = getPersistenceManager();
 		AbstractProject project = null;
 		try {
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Project " + id);
-
 			Authorization.isUserNotNull(user);
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 
-			if (dbUser.getLastProjectId() != id) { // Check if lastProject property of user has to be updated
+			if (qdacityUser.getLastProjectId() != id) { // Check if lastProject property of user has to be updated
 				// Update User async TODO: check if actually faster than saving directly
-				LastProjectUsed task = new LastProjectUsed(dbUser, id, ProjectType.valueOf(type));
+				LastProjectUsed task = new LastProjectUsed(qdacityUser, id, ProjectType.valueOf(type));
 				Queue queue = QueueFactory.getDefaultQueue();
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
@@ -189,7 +187,7 @@ public class ProjectEndpoint {
 			switch (type) {
 				case "VALIDATION":
 					project = (ValidationProject) Cache.getOrLoad(id, ValidationProject.class);
-					Authorization.checkAuthorization((ValidationProject) project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
+					Authorization.checkAuthorization((ValidationProject) project, qdacityUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				case "REVISION":
 
@@ -215,11 +213,7 @@ public class ProjectEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.incrCodingId",
-		path = "codings",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.incrCodingId", path = "codings")
 	public AbstractProject getAndIncrCodingId(@Named("id") Long projectID, @Named("type") String type, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		AbstractProject project = null;
@@ -252,13 +246,11 @@ public class ProjectEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.insertProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.insertProject")
 	public Project insertProject(Project project, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -269,16 +261,16 @@ public class ProjectEndpoint {
 			}
 
 			try {
-				// Get User from DB
-				com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-
-				project.addOwner(user.getUserId());
+				project.addOwner(qdacityUser.getId());
 				project.setRevision(0);
 				project.setMaxCodingID(0L);
 				mgr.makePersistent(project);
 
-				dbUser.addProjectAuthorization(project.getId());
-				Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+				qdacityUser.addProjectAuthorization(project.getId());
+				mgr.makePersistent(qdacityUser);
+				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
+				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
 			} catch (JDOObjectNotFoundException e) {
 				throw new UnauthorizedException("User is not registered");
 			}
@@ -298,10 +290,7 @@ public class ProjectEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.updateProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.updateProject")
 	public AbstractProject updateProject(AbstractProject project, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(project, user);
@@ -320,43 +309,44 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.addOwner",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.addOwner")
 	public Project addOwner(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addOwner(userID);
-			else project.addOwner(user.getUserId());
-
-			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
-			dbUser.addProjectAuthorization(projectID);
+			else project.addOwner(qdacityUser.getId());
+			
+			qdacityUser.addProjectAuthorization(projectID);
 
 			mgr.makePersistent(project);
 			Cache.cache(projectID, Project.class, project);
-			mgr.makePersistent(dbUser);
-			Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
-
+			mgr.makePersistent(qdacityUser);
+			
+			Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
+			AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+			Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
 		} finally {
 			mgr.close();
 		}
 		return project;
 	}
 
-	@ApiMethod(name = "project.addCoder",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.addCoder")
 	public Project addCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addCoder(userID);
-			else project.addCoder(user.getUserId());
+			else project.addCoder(qdacityUser.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
@@ -365,17 +355,17 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.addValidationCoder",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.addValidationCoder")
 	public Project addValidationCoder(@Named("projectID") Long projectID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
 			if (userID != null) project.addValidationCoder(userID);
-			else project.addValidationCoder(user.getUserId());
+			else project.addValidationCoder(qdacityUser.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 		} finally {
@@ -384,18 +374,17 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.removeUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeUser")
 	public void removeUser(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
 
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			String userIdToRemove = "";
 
 			if (userID != null) userIdToRemove = userID;
-			else userIdToRemove = user.getUserId();
+			else userIdToRemove = qdacityUser.getId();
 
 			if (projectType.equals("PROJECT")) {
 				Project project = (Project) Cache.getOrLoad(projectID, Project.class);
@@ -422,11 +411,11 @@ public class ProjectEndpoint {
 		}
 	}
 
-	@ApiMethod(name = "project.inviteUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.inviteUser")
 	public Project inviteUser(@Named("projectID") Long projectID, @Named("userEmail") String userEmail, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		Project project = null;
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -438,11 +427,11 @@ public class ProjectEndpoint {
 			String userID = dbUsers.get(0).getId();
 
 			// Get the inviting user
-			com.qdacity.user.User invitingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User invitingUser = qdacityUser;
 
 			// Insert user into project as invited user
 			project = (Project) Cache.getOrLoad(projectID, Project.class);
-			project.addInvitedUser(user.getUserId());
+			project.addInvitedUser(qdacityUser.getId());
 			Cache.cache(projectID, Project.class, project);
 			mgr.makePersistent(project);
 
@@ -451,7 +440,7 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage("Project: " + project.getName());
 			notification.setSubject("Invitation by <b>" + invitingUser.getGivenName() + " " + invitingUser.getSurName() + "</b>");
-			notification.setOriginUser(user.getUserId());
+			notification.setOriginUser(qdacityUser.getId());
 			notification.setProject(projectID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.INVITATION);
@@ -465,10 +454,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.setDescription",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.setDescription")
 	public AbstractProject setDescription(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("description") String description, User user) throws UnauthorizedException {
 		AbstractProject project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -492,10 +478,7 @@ public class ProjectEndpoint {
 		return project;
 	}
 
-	@ApiMethod(name = "project.setUmlEditorEnabled",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.setUmlEditorEnabled")
 	public AbstractProject setUmlEditorEnabled(@Named("projectID") Long projectID, @Named("projectType") String projectType, @Named("umlEditorEnabled") boolean umlEditorEnabled, User user) throws UnauthorizedException {
 		AbstractProject project = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -519,10 +502,7 @@ public class ProjectEndpoint {
 		return project;
 	}	
 	
-	@ApiMethod(name = "project.createSnapshot",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.createSnapshot")
 	public ProjectRevision createSnapshot(@Named("projectID") Long projectID, @Named("comment") String comment, User user) throws UnauthorizedException {
 		ProjectRevision cloneProject = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -553,11 +533,11 @@ public class ProjectEndpoint {
 		return cloneProject;
 	}
 
-	@ApiMethod(name = "project.requestValidationAccess",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.requestValidationAccess")
 	public ValidationProject requestValidationAccess(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		ProjectRevision projectRevision = null;
 		Project project = null;
 		ValidationProject cloneProject = null;
@@ -566,7 +546,7 @@ public class ProjectEndpoint {
 			projectRevision = mgr.getObjectById(ProjectRevision.class, revisionID);
 			project = (Project) Cache.getOrLoad(projectRevision.getProjectID(), Project.class);
 			// Get the inviting user
-			com.qdacity.user.User requestingUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+			com.qdacity.user.User requestingUser = qdacityUser;
 
 			// Create notification
 			List<String> owners = project.getOwners();
@@ -576,7 +556,7 @@ public class ProjectEndpoint {
 				notification.setDatetime(new Date());
 				notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
 				notification.setSubject("Validation request by <b>" + requestingUser.getGivenName() + " " + requestingUser.getSurName() + "</b>");
-				notification.setOriginUser(user.getUserId());
+				notification.setOriginUser(qdacityUser.getId());
 				notification.setProject(revisionID);
 				notification.setSettled(false);
 				notification.setType(UserNotificationType.VALIDATION_REQUEST);
@@ -589,11 +569,11 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage(project.getName() + " (Revision " + projectRevision.getRevision() + " )");
 			notification.setSubject("You have requiested access");
-			notification.setOriginUser(user.getUserId());
+			notification.setOriginUser(qdacityUser.getId());
 			notification.setProject(revisionID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.POSTED_VALIDATION_REQUEST);
-			notification.setUser(user.getUserId());
+			notification.setUser(qdacityUser.getId());
 
 			mgr.makePersistent(notification);
 
@@ -603,11 +583,11 @@ public class ProjectEndpoint {
 		return cloneProject;
 	}
 
-	@ApiMethod(name = "project.createValidationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.createValidationProject")
 	public ValidationProject createValidationProject(@Named("projectID") Long revisionID, @Named("userID") String userID, User user) throws UnauthorizedException, JSONException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		ProjectRevision project = null;
 		ValidationProject cloneProject = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -632,7 +612,7 @@ public class ProjectEndpoint {
 			notification.setDatetime(new Date());
 			notification.setMessage(project.getName() + " (Revision " + project.getRevision() + " )");
 			notification.setSubject("Your request was granted");
-			notification.setOriginUser(user.getUserId());
+			notification.setOriginUser(qdacityUser.getId());
 			notification.setProject(revisionID);
 			notification.setSettled(false);
 			notification.setType(UserNotificationType.VALIDATION_REQUEST_GRANTED);
@@ -667,10 +647,7 @@ public class ProjectEndpoint {
 
 	}
 
-	@ApiMethod(name = "project.listRevisions",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.listRevisions")
 	public List<ProjectRevision> listRevisions(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
 		List<ProjectRevision> revisions = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -708,10 +685,7 @@ public class ProjectEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "project.removeProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeProject")
 	public void removeProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -787,10 +761,7 @@ public class ProjectEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.removeProjectRevision",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeProjectRevision")
 	public void removeProjectRevision(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -841,10 +812,7 @@ public class ProjectEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "project.removeValidationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "project.removeValidationProject")
 	public void removeValidationProject(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

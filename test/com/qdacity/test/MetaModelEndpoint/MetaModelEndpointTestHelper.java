@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.MaintenanceEndpoint;
 import com.qdacity.endpoint.MetaModelEntityEndpoint;
 import com.qdacity.endpoint.UmlCodePositionEndpoint;
@@ -30,7 +30,7 @@ public class MetaModelEndpointTestHelper {
 		}
 	}
 	
-	static public void insertMetaModelEntity(Long id, String name, int group, com.google.appengine.api.users.User loggedInUser) {
+	static public void insertMetaModelEntity(Long id, String name, int group, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			final MetaModelEntity metaModelEntity = new MetaModelEntity();
 			metaModelEntity.setId(id);

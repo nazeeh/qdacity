@@ -8,6 +8,8 @@ const StyledContainer = styled.div`
 	margin-bottom: -50px;
 `;
 
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+
 export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
@@ -48,8 +50,12 @@ export default class Admin extends React.Component {
 	}
 
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
-			return null;
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		) {
+			return <UnauthenticatedUserPanel history={this.props.history} />;
+		}
 		return (
 			<StyledContainer className="container main-content">
 				<div className="row">

@@ -20,7 +20,7 @@ import com.qdacity.umleditor.UmlCodePositionList;
 
 public class UmlCodePositionEndpointTestHelper {
 
-	static public List<UmlCodePosition> listUmlCodePositions(Long codesystemId, com.google.appengine.api.users.User loggedInUser) {
+	static public List<UmlCodePosition> listUmlCodePositions(Long codesystemId, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			UmlCodePositionEndpoint endpoint = new UmlCodePositionEndpoint();
 
@@ -32,7 +32,7 @@ public class UmlCodePositionEndpointTestHelper {
 		return null;
 	}
 	
-	static public void insertUmlCodePosition(Long id, Long codeID, Long codesystemID, double x, double y, com.google.appengine.api.users.User loggedInUser) {
+	static public void insertUmlCodePosition(Long id, Long codeID, Long codesystemID, double x, double y, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			final UmlCodePosition umlCodePosition = new UmlCodePosition();
 			umlCodePosition.setId(id);
@@ -58,7 +58,7 @@ public class UmlCodePositionEndpointTestHelper {
 		}
 	}
 	
-	static public void insertOrUpdateUmlCodePositions(List<UmlCodePosition> codePositions, com.google.appengine.api.users.User loggedInUser) {
+	static public void insertOrUpdateUmlCodePositions(List<UmlCodePosition> codePositions, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			final UmlCodePositionList umlCodePositionList = new UmlCodePositionList(codePositions);
 			
@@ -74,7 +74,7 @@ public class UmlCodePositionEndpointTestHelper {
 		}
 	}
 	
-	static public void removeUmlCodePosition(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public void removeUmlCodePosition(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
 		try {
 			UmlCodePositionEndpoint endpoint = new UmlCodePositionEndpoint();
 			endpoint.removeCodePosition(id, loggedInUser);
