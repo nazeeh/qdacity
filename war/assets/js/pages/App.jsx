@@ -223,7 +223,7 @@ export default class App extends React.Component {
 								path="/Admin/Control"
 								render={props => (
 									<AdminControl
-										account={this.account}
+										auth={this.state.auth}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
