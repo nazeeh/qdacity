@@ -142,6 +142,12 @@
 			<groupId>com.google.api</groupId>
 			<artifactId>api-common</artifactId>
 			<version>1.1.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.http-client</groupId>
@@ -152,6 +158,12 @@
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client</artifactId>
 			<version>1.22.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>guava-jdk5</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.http-client</groupId>
@@ -202,6 +214,12 @@
 		  <groupId>com.google.truth</groupId>
 		  <artifactId>truth</artifactId>
 		  <version>0.33</version>
+		  <exclusions>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+			</exclusions>
 		  <scope>test</scope>
 		</dependency>
 
