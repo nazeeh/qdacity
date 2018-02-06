@@ -199,6 +199,7 @@ public class User implements Serializable {
 	}
 
 	public List<UserLoginProviderInformation> getLoginProviderInformation() {
+		if(loginProviderInformationList == null) loginProviderInformationList = new ArrayList<UserLoginProviderInformation>();
 		return loginProviderInformationList;
 	}
 
