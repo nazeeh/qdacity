@@ -13,16 +13,17 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
@@ -38,8 +39,11 @@ import com.qdacity.util.DataStoreUtil;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class CodeEndpoint {
+	
+	private UserEndpoint userEndpoint = new UserEndpoint();
 
 	/**
 	 * This method gets the entity having primary key id. It uses HTTP GET method.
@@ -48,11 +52,7 @@ public class CodeEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.getCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.getCode")
 	public Code getCode(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		Code code = null;
@@ -77,15 +77,13 @@ public class CodeEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.insertCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.insertCode")
 	public Code insertCode(
 			@Named("relationId") @Nullable Long relationId, 
  @Named("relationSourceCodeId") @Nullable Long relationSourceCodeId, @Named("parentId") Long parentID, Code code, User user) throws UnauthorizedException {
-
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
 		Long codesystemId = code.getCodesystemID();
@@ -135,7 +133,7 @@ public class CodeEndpoint {
 			
 			// Log change
 			 CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			 Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), user.getUserId(), code);
+			 Change change = new ChangeBuilder().makeInsertCodeChange(cs.getProject(), cs.getProjectType(), qdacityUser.getId(), code);
 			 ChangeLogger.logChange(change);
 
 		} finally {
@@ -153,12 +151,11 @@ public class CodeEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.updateCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.updateCode")
 	public Code updateCode(Code code, User user) throws UnauthorizedException {
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		// Check if user is authorized
 		Authorization.checkAuthorization(code, user);
 		
@@ -187,7 +184,7 @@ public class CodeEndpoint {
 
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeUpdateCodeChange(stored, code, cs.getProject(), cs.getProjectType(), user.getUserId());
+			Change change = new ChangeBuilder().makeUpdateCodeChange(stored, code, cs.getProject(), cs.getProjectType(), qdacityUser.getId());
 			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
@@ -205,11 +202,7 @@ public class CodeEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.updateRelationshipCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.updateRelationshipCode")
 	public Code updateRelationshipCode(
 			@Named("relationshipCodeId") Long relationshipCodeId, 
 			@Named("relationSourceId") Long relationSourceId, 
@@ -250,11 +243,7 @@ public class CodeEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.updateRelationshipCodeMetaModel",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.updateRelationshipCodeMetaModel")
 	public Code updateRelationshipCodeMetaModel(
 			@Named("relationshipCodeId") Long relationshipCodeId, 
 			@Named("newMetaModelId") Long newMetaModelId,
@@ -287,12 +276,11 @@ public class CodeEndpoint {
 		return code;
 	}
 	
-	@ApiMethod(
-		name = "codes.setCodeBookEntry",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.setCodeBookEntry")
 	public Code setCodeBookEntry(@Named("codeId") Long codeID, CodeBookEntry entry, User user) throws UnauthorizedException {
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		// Fixme Authorization
 		Code code = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -307,7 +295,7 @@ public class CodeEndpoint {
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
 			//this can be a set or an update, the change can cover both
-			Change change = new ChangeBuilder().makeUpdateCodeBookEntryChange(oldCodeBookEntry, entry, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			Change change = new ChangeBuilder().makeUpdateCodeBookEntryChange(oldCodeBookEntry, entry, cs.getProject(), cs.getProjectType(), qdacityUser.getId(), codeID);
 			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
@@ -315,12 +303,11 @@ public class CodeEndpoint {
 		return code;
 	}
 
-	@ApiMethod(
-		name = "codes.addRelationship",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.addRelationship")
 	public Code addRelationship(@Named("sourceCode") Long codeID, @Named("createIfItExists") Boolean createIfItExists, CodeRelation relation, User user) throws UnauthorizedException {
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		// Fixme Authorization
 		Code code = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -352,7 +339,7 @@ public class CodeEndpoint {
 			
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeAddRelationShipChange(relation, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			Change change = new ChangeBuilder().makeAddRelationShipChange(relation, cs.getProject(), cs.getProjectType(), qdacityUser.getId(), codeID);
 			ChangeLogger.logChange(change);
 		} finally {
 			mgr.close();
@@ -360,12 +347,11 @@ public class CodeEndpoint {
 		return code;
 	}
 
-	@ApiMethod(
-		name = "codes.removeRelationship",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.removeRelationship")
 	public Code removeRelationship(@Named("codeId") Long codeID, @Named("relationshipId") Long relationId, User user) throws UnauthorizedException {
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		// Fixme Authorization
 		Code code = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -378,7 +364,7 @@ public class CodeEndpoint {
 
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeRemoveRelationShipChange(relation, cs.getProject(), cs.getProjectType(), user.getUserId(), codeID);
+			Change change = new ChangeBuilder().makeRemoveRelationShipChange(relation, cs.getProject(), cs.getProjectType(), qdacityUser.getId(), codeID);
 			ChangeLogger.logChange(change);
 			
 			//Do actual Change
@@ -395,11 +381,7 @@ public class CodeEndpoint {
 		return code;
 	}
 	
-	@ApiMethod(
-			name = "codes.removeAllRelationships",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.removeAllRelationships")
 	public Code removeAllRelationships(@Named("id") Long id, User user) throws UnauthorizedException {
 		Code code = getCode(id, user);
 		Code result = code;
@@ -418,12 +400,11 @@ public class CodeEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codes.removeCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.removeCode")
 	public void removeCode(@Named("id") Long id, User user) throws UnauthorizedException {
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			Code code = mgr.getObjectById(Code.class, id);
@@ -445,7 +426,7 @@ public class CodeEndpoint {
 			// Delete link from parent code
 			Query query = mgr.newQuery(Code.class);
 			
-			logRemoveCode(mgr, code, user);
+			logRemoveCode(mgr, code, qdacityUser);
 
 			//Actual Delete
 			query.setFilter("codeID == :code && codesystemID == :codesystem");
@@ -461,7 +442,7 @@ public class CodeEndpoint {
 				mgr.makePersistent(parentCode);
 			}
 
-			removeSubCodes(code, user);
+			removeSubCodes(code, qdacityUser);
 
 			mgr.deletePersistent(code);
 
@@ -470,19 +451,18 @@ public class CodeEndpoint {
 		}
 	}
 
-	private void logRemoveCode(PersistenceManager mgr, Code code, User user) {
+	private void logRemoveCode(PersistenceManager mgr, Code code, com.qdacity.user.User user) {
 	    //Log a code remove change
 	    CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-	    Change change = new ChangeBuilder().makeDeleteCodeChange(code, cs.getProject(), cs.getProjectType(), user.getUserId());
+	    Change change = new ChangeBuilder().makeDeleteCodeChange(code, cs.getProject(), cs.getProjectType(), user.getId());
 	    ChangeLogger.logChange(change);
 	}
 
-	@ApiMethod(
-		name = "codes.relocateCode",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codes.relocateCode")
 	public Code relocateCode(@Named("codeId") Long codeID, @Named("newParentID") Long newParentID, User user) throws UnauthorizedException {
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		// Fixme Authorization
 		Code code = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -507,7 +487,7 @@ public class CodeEndpoint {
 			
 			//Log change
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, code.getCodesystemID());
-			Change change = new ChangeBuilder().makeRelocateCodeChange(code, oldParentID, cs.getProject(), cs.getProjectType(), user.getUserId());
+			Change change = new ChangeBuilder().makeRelocateCodeChange(code, oldParentID, cs.getProject(), cs.getProjectType(), qdacityUser.getId());
 			ChangeLogger.logChange(change);
 
 		} finally {
@@ -535,7 +515,7 @@ public class CodeEndpoint {
 		return code;
 	}
 
-	private void removeSubCodes(Code code, User user) throws UnauthorizedException {
+	private void removeSubCodes(Code code, com.qdacity.user.User user) throws UnauthorizedException {
 		List<Long> subcodeIDs = code.getSubCodesIDs();
 
 		if (subcodeIDs != null && subcodeIDs.size() > 0) {

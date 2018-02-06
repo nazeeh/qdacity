@@ -25,18 +25,20 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserType;
 
 public class CourseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-	private final com.google.appengine.api.users.User testUser2 = new com.google.appengine.api.users.User("asdf@asdf.de", "bla", "12345678");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+	private final com.google.api.server.spi.auth.common.User testUser2 = new AuthenticatedUser("12345678", "asdf@asdf.de", LoginProviderType.GOOGLE);
 	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -53,9 +55,10 @@ public class CourseEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a course more than once
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCourseInsertMultiple() {
+	public void testCourseInsertMultiple() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		expectedException.expect(EntityExistsException.class);
@@ -76,7 +79,7 @@ public class CourseEndpointTest {
 	@Test
 	public void testCourseInsertAuthorization() throws UnauthorizedException {
 		
-		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expect(UnauthorizedException.class);
 		expectedException.expectMessage(is("User is not registered"));
 		
 		CourseEndpoint ce = new CourseEndpoint();
@@ -92,9 +95,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered user can create a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCourseInsert() {
+	public void testCourseInsert() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 
@@ -104,9 +108,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can delete his own course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCourseRemove() {
+	public void testCourseRemove() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
@@ -118,9 +123,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can get a course in which he's an owner
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testGetCourse() {
+	public void testGetCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		Course retrievedCourse = new Course();
 		Long retrievedId = 0L;
@@ -159,9 +165,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can get a course if he's an Admin
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testGetCourseWithAdmin() {
+	public void testGetCourseWithAdmin() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		Course retrievedCourse = new Course();
 		Long retrievedId = 0L;
@@ -172,13 +179,13 @@ public class CourseEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 		
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, loggedInUserB.getUserId());
+			User user = mgr.getObjectById(User.class, loggedInUserB.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {
@@ -196,9 +203,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered can list courses
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListCourse() {
+	public void testListCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CollectionResponse<Course> retrievedCourses = null;
 		
@@ -231,9 +239,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can delete his own course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTermCourseRemove() {
+	public void testTermCourseRemove() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CourseEndpointTestHelper.addTermCourse(1L, testUser);
@@ -245,9 +254,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered can list terms for a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListTermCourse() {
+	public void testListTermCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		List<TermCourse> retrievedTerms = null;
 		
@@ -263,17 +273,18 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered can list terms for a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListTermCourseByParticipant() {
+	public void testListTermCourseByParticipant() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		List<TermCourse> retrievedTerms = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description", testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getId(), testUser);
 		
 		retrievedTerms = CourseEndpointTestHelper.listTermCourseByParticipant(1L, testUser);
 		
@@ -283,9 +294,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can get a term course in which he's an owner 
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testGetTermCourse() {
+	public void testGetTermCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		TermCourse retrievedCourse = new TermCourse();
 		Long retrievedId = 0L;
@@ -306,9 +318,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a user can become a participant of a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testAddParticipant() {
+	public void testAddParticipant() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		
@@ -316,7 +329,7 @@ public class CourseEndpointTest {
 		TermCourse thisCourse = new TermCourse();
 		
 		CourseEndpointTestHelper.addTermCourse(1L, testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getId(), testUser);
 		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
@@ -335,27 +348,28 @@ public class CourseEndpointTest {
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisCourse.getParticipants().contains(testUser.getUserId()));
+		assertEquals(true, thisCourse.getParticipants().contains(testUser.getId()));
 		
 	}
 	
 	/**
 	 * Tests if a user can become a participant of a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testRemoveParticipant() {
+	public void testRemoveParticipant() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		PersistenceManager mgr = getPersistenceManager();
 		TermCourse thisCourse = new TermCourse();
 		
 		CourseEndpointTestHelper.addTermCourse(1L, testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getId(), testUser);
 		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
 		
-		CourseEndpointTestHelper.removeParticipantTermCourse(1L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.removeParticipantTermCourse(1L, testUser.getId(), testUser);
 		javax.jdo.Query q = mgr.newQuery(TermCourse.class);
 		q.setFilter("id == theID");
 		q.declareParameters("String theID");
@@ -370,15 +384,16 @@ public class CourseEndpointTest {
 			  q.closeAll();
 			}
 		
-		assertEquals(false, thisCourse.getParticipants().contains(testUser.getUserId()));
+		assertEquals(false, thisCourse.getParticipants().contains(testUser.getId()));
 		
 	}
 	
 	/**
 	 * Tests if a user can become a participant of a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testAddSetStatus() {
+	public void testAddSetStatus() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		PersistenceManager mgr = getPersistenceManager();
@@ -417,10 +432,10 @@ public class CourseEndpointTest {
 	public void testCourseRemoveAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
@@ -448,16 +463,16 @@ public class CourseEndpointTest {
 	public void testCourseRemoveAuthWithAdmin() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserA = new com.google.appengine.api.users.User("asd@asd.de", "bla", "1");
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
-		com.google.appengine.api.users.User loggedInUserB = new com.google.appengine.api.users.User("asd@asd.de", "bla", "2");
+		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, loggedInUserB.getUserId());
+			User user = mgr.getObjectById(User.class, loggedInUserB.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {
@@ -477,9 +492,10 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a registered user can create a term course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTermCourseInsert() {
+	public void testTermCourseInsert() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
@@ -490,17 +506,16 @@ public class CourseEndpointTest {
 	
 	/**
 	 * Tests if a non registered user can create a course
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testTermCourseInsertNonReg() {
+	public void testTermCourseInsertNonReg() throws UnauthorizedException {
 		
-		
-		expectedException.expect(javax.jdo.JDOObjectNotFoundException.class);
+		expectedException.expect(UnauthorizedException.class);
 		expectedException.expectMessage(is("User is not registered"));
 
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		
-
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("TermCourse")).countEntities(withLimit(10)));
 	}
@@ -547,13 +562,13 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!courses.isEmpty()) {
 			    	thisCourse = courses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
+		assertEquals(false, thisCourse.getOwners().contains(testUser.getId()));
 	}
 	
 	/**
@@ -589,7 +604,7 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		Course thisCourse = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
-		CourseEndpointTestHelper.addCourseOwner(1L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addCourseOwner(1L, testUser.getId(), testUser);
 		
 		javax.jdo.Query q = mgr.newQuery(Course.class);
 		q.setFilter("id == theID");
@@ -601,13 +616,13 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!courses.isEmpty()) {
 			    	thisCourse = courses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisCourse.getOwners().contains(testUser.getUserId()));
+		assertEquals(true, thisCourse.getOwners().contains(testUser.getId()));
 	}
 	
 	/**
@@ -639,13 +654,13 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!courses.isEmpty()) {
 			    	thisCourse = courses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(false, thisCourse.getOwners().contains(testUser.getUserId()));
+		assertEquals(false, thisCourse.getOwners().contains(testUser.getId()));
 	}
 	
 	/**
@@ -674,13 +689,13 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!courses.isEmpty()) {
 			    	thisCourse = courses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisCourse.getInvitedUsers().contains(testUser2.getUserId()));
+		assertEquals(true, thisCourse.getInvitedUsers().contains(testUser2.getId()));
 	}
 	
 	/**
@@ -710,13 +725,13 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!termCourses.isEmpty()) {
 			    	thisTermCourse = termCourses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getUserId()));
+		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getId()));
 	}
 	
 	/**
@@ -735,7 +750,7 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpoint ce = new CourseEndpoint();
 		
 		ce.inviteUserCourse(1L, testUser2.getEmail(), testUser);
-		ce.addCourseOwner(1L, testUser2.getUserId(), testUser2);
+		ce.addCourseOwner(1L, testUser2.getId(), testUser2);
 		
 		javax.jdo.Query q = mgr.newQuery(Course.class);
 		q.setFilter("id == theID");
@@ -747,26 +762,27 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  if (!courses.isEmpty()) {
 			    	thisCourse = courses.get(0);
 			  } else {
-				  throw new UnauthorizedException("User " + testUser2.getUserId() + " was not found");
+				  throw new UnauthorizedException("User " + testUser2.getId() + " was not found");
 			  }
 			} finally {
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisCourse.getOwners().contains(testUser2.getUserId()));
+		assertEquals(true, thisCourse.getOwners().contains(testUser2.getId()));
 	}
 	
 	/**
 	 * Tests if a registered user can list participants of a termCourse
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testListTermCourseParticipants() {
+	public void testListTermCourseParticipants() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CollectionResponse<User> users = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(2L, testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getUserId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getId(), testUser);
 		
 		users = (CollectionResponse<User>) CourseEndpointTestHelper.listTermCourseParticipants(2L, testUser);
 		

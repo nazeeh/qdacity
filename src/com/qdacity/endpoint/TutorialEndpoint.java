@@ -35,6 +35,7 @@ import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
 import com.qdacity.admin.AdminStats;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.saturation.SaturationResult;
 import com.qdacity.util.DataStoreUtil;
@@ -45,17 +46,15 @@ import com.qdacity.util.DataStoreUtil;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class}
+)
 public class TutorialEndpoint {
 	
 	TutorialCreator tutorialCreator=new TutorialCreator();
 	TutorialManager tutorialManager=new TutorialManager(tutorialCreator);
 	
-	@ApiMethod(
-			name = "tutorial.loadTutorialData",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "tutorial.loadTutorialData")
 	public List<TutorialOverview> loadTutorialData(@Named("which") int which, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized");

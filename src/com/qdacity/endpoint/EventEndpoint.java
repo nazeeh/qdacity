@@ -1,17 +1,23 @@
 package com.qdacity.endpoint;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.qdacity.Constants;
-import com.qdacity.PMF;
-import com.qdacity.logs.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import java.util.*;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiNamespace;
+import com.qdacity.Constants;
+import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
+import com.qdacity.logs.Event;
+import com.qdacity.logs.EventType;
 
 @Api(
 	name = "qdacity",
@@ -19,7 +25,8 @@ import java.util.*;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+		authenticators = {QdacityAuthenticator.class})
 public class EventEndpoint {
 
 	@ApiMethod(

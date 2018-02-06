@@ -7,10 +7,11 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.datastore.Query.*;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeObject;
 import com.qdacity.logs.ChangeStats;
@@ -30,26 +31,27 @@ import java.util.*;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class ChangeEndpoint {
 
+	UserEndpoint userEndpoint = new UserEndpoint();
+	
 	/**
 	 * This method lists all the entities inserted in datastore. It uses HTTP GET method and paging support.
 	 *
 	 * @return A CollectionResponse class containing the list of all entities persisted and a cursor to the next page.
+	 * @throws UnauthorizedException 
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "changelog.listChange",
-		path = "log",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public CollectionResponse<Change> listChange(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) {
+	@ApiMethod(name = "changelog.listChange", path = "log")
+	public CollectionResponse<Change> listChange(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
 		List<Change> execute = null;
+		
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
 		try {
 			mgr = getPersistenceManager();
@@ -69,7 +71,7 @@ public class ChangeEndpoint {
 			// Set filter
 			query.setFilter("userID == :theID");
 			Map<String, String> paramValues = new HashMap<String, String>();
-			paramValues.put("theID", user.getUserId());
+			paramValues.put("theID", qdacityUser.getId());
 
 			execute = (List<Change>) query.executeWithMap(paramValues);
 			cursor = JDOCursorHelper.getCursor(execute);
@@ -98,14 +100,11 @@ public class ChangeEndpoint {
 	return changes;
 	}
 
-	@ApiMethod(
-		name = "changelog.listChangeStats",
-		path = "stats",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "changelog.listChangeStats", path = "stats")
 	public List<ChangeStats> listChangeStats(@Nullable @Named("period") String period, @Named("filterType") String filterType, @Nullable @Named("projectID") Long projectID, @Nullable @Named("projectType") String projectType, User user) throws UnauthorizedException {
 
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		
 		if (filterType.equals("project")) {
 			// FIXME authorization for different project types
 			// Authorization.checkAuthorization(projectID, user);
@@ -125,7 +124,7 @@ public class ChangeEndpoint {
 			Filter projectIdFilter = new FilterPredicate("projectID", FilterOperator.EQUAL, projectID);
 			filter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(projectIdFilter, projectTypeFilter));
 		} else if (filterType.equals("user")) {
-			filter = new FilterPredicate("userID", FilterOperator.EQUAL, user.getUserId());
+			filter = new FilterPredicate("userID", FilterOperator.EQUAL, qdacityUser.getId());
 		}
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -182,8 +181,7 @@ public class ChangeEndpoint {
 	 * @param id the primary key of the java bean.
 	 * @return The entity with primary key id.
 	 */
-	@ApiMethod(
-		name = "changelog.getChange")
+	@ApiMethod(name = "changelog.getChange")
 	public Change getChange(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		Change change = null;
@@ -234,8 +232,7 @@ public class ChangeEndpoint {
 	 * @param change the entity to be inserted.
 	 * @return The inserted entity.
 	 */
-	@ApiMethod(
-		name = "changelog.insertChange")
+	@ApiMethod(name = "changelog.insertChange")
 	public Change insertChange(Change change) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -255,8 +252,7 @@ public class ChangeEndpoint {
 	 * @param change the entity to be updated.
 	 * @return The updated entity.
 	 */
-	@ApiMethod(
-		name = "changelog.updateChange")
+	@ApiMethod(name = "changelog.updateChange")
 	public Change updateChange(Change change) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -275,8 +271,7 @@ public class ChangeEndpoint {
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 */
-	@ApiMethod(
-		name = "changelog.removeChange")
+	@ApiMethod(name = "changelog.removeChange")
 	public void removeChange(@Named("id") Long id) {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

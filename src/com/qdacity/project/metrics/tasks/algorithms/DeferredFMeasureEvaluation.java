@@ -10,7 +10,7 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;

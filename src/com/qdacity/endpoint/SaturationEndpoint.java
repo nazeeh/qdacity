@@ -11,16 +11,17 @@ import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.saturation.DefaultSaturationParameters;
 import com.qdacity.project.saturation.DeferredSaturationCalculationTask;
 import com.qdacity.project.saturation.SaturationParameters;
@@ -32,14 +33,11 @@ import com.qdacity.project.saturation.SaturationResult;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class SaturationEndpoint {
 
-    @ApiMethod(
-	    name = "saturation.calculateNewSaturation",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "saturation.calculateNewSaturation")
     public void calculateNewSaturation(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
 	DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId);
 	Queue queue = QueueFactory.getDefaultQueue();
@@ -55,11 +53,7 @@ public class SaturationEndpoint {
      * @param user
      * @return
      */
-    @ApiMethod(
-	    name = "saturation.getLatestSaturation",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "saturation.getLatestSaturation")
     public SaturationResult getLatestSaturation(@Named("projectId") Long projectId, User user) {
 	List<SaturationResult> allSaturations = getHistoricalSaturationResults(projectId, user);
 	SaturationResult latestSaturation = new SaturationResult();
@@ -73,11 +67,7 @@ public class SaturationEndpoint {
 	return latestSaturation;
     }
 
-    @ApiMethod(
-	    name = "saturation.getHistoricalSaturationResults",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "saturation.getHistoricalSaturationResults")
     public List<SaturationResult> getHistoricalSaturationResults(@Named("projectId") Long projectId, User user) {
 		List<SaturationResult> lazySatResults = new ArrayList<SaturationResult>();
 		PersistenceManager mgr = getPersistenceManager();
@@ -97,11 +87,7 @@ public class SaturationEndpoint {
 		return lazySatResults;
     }
 
-    @ApiMethod(
-	    name = "saturation.setSaturationParameters",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "saturation.setSaturationParameters")
     public void setSaturationParameters(SaturationParameters saturationParams, User user) throws UnauthorizedException {
 	Authorization.checkAuthorization(saturationParams.getProjectId(), user);
 	PersistenceManager pmr = getPersistenceManager();
@@ -118,11 +104,7 @@ public class SaturationEndpoint {
      * @return
      * @throws UnauthorizedException
      */
-    @ApiMethod(
-	    name = "saturation.getSaturationParameters",
-	    scopes = {Constants.EMAIL_SCOPE},
-	    clientIds = {Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID},
-	    audiences = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "saturation.getSaturationParameters")
     public SaturationParameters getSaturationParameters(@Named("projectId") Long projectId) throws UnauthorizedException {
 	PersistenceManager pmr = getPersistenceManager();
 	pmr.setMultithreaded(true);
