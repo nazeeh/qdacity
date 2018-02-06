@@ -231,6 +231,7 @@ public class UserMigrationEndpoint {
 
 	private User fetchOldUser(com.google.appengine.api.users.User oldUser) {
 		PersistenceManager mgr = getPersistenceManager();
+		mgr.setIgnoreCache(true);
 		try {
 			User dbUser = mgr.getObjectById(User.class, oldUser.getUserId());
 			java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Fetched old user with id " + dbUser.getId() + " and " + dbUser.getLoginProviderInformation().size() + " connected login providers");
