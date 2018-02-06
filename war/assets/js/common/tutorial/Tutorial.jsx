@@ -220,13 +220,9 @@ export default class Tutorial extends React.Component {
 									</b>
 								</TutorialOverviewTitle>
 								<br />
-								<div>
-									<FormattedMessage
-										id="tutorial.todo"
-										defaultMessage="TODO Struktur kommt"
-									/>
-								</div>
-								<br />
+								<TutorialOverviewContainer>
+									{tutorialOverviewItems}
+								</TutorialOverviewContainer>
 								<br />
 							</center>
 						</MBTutorialOverview>
