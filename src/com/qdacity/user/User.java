@@ -3,6 +3,7 @@ package com.qdacity.user;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
