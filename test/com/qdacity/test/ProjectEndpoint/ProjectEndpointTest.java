@@ -433,7 +433,7 @@ public class ProjectEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Project")).countEntities(withLimit(10)));
 		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
 		assertEquals(1, ds.prepare(new Query("ProjectRevision")).countEntities(withLimit(10)));
-		Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(revision.getId(), "REVISION", testUser);
+		Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(revision.getId(), ProjectType.REVISION, testUser);
 		assertEquals(1, docs.size());
 
 	}

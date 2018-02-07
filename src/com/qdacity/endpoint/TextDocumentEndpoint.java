@@ -14,6 +14,7 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.qdacity.project.*;
 import org.apache.cxf.common.util.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,10 +43,6 @@ import com.qdacity.endpoint.datastructures.TextDocumentList;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
-import com.qdacity.project.AbstractProject;
-import com.qdacity.project.ProjectRevision;
-import com.qdacity.project.ProjectType;
-import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
@@ -94,7 +91,7 @@ public class TextDocumentEndpoint {
 		scopes = { Constants.EMAIL_SCOPE },
 		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
 		audiences = { Constants.WEB_CLIENT_ID })
-	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, @Nullable @Named("projectType") String prjType, User user) throws UnauthorizedException {
+	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, @Named("projectType") ProjectType prjType, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
@@ -105,12 +102,12 @@ public class TextDocumentEndpoint {
 			mgr = getPersistenceManager();
 			mgr.setMultithreaded(true);
 			// Check authorization
-			if (prjType.equals("REVISION")) {
+			if (prjType == ProjectType.REVISION) {
 				ProjectRevision validationProject = mgr.getObjectById(ProjectRevision.class, id);
 				Authorization.checkAuthorization(validationProject.getProjectID(), user);
-			} else if (prjType != null && prjType.equals("VALIDATION")) {
+			} else if (prjType == ProjectType.VALIDATION) {
 				// FIXME auth
-			} else if (prjType != null && prjType.equals("EXERCISE")) {
+			} else if (prjType == ProjectType.EXERCISE) {
 				// FIXME auth
 			}
 			else {
@@ -376,8 +373,8 @@ public class TextDocumentEndpoint {
 	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Collection<TextDocument> documents = null;
-		if (project.getClass() == ProjectRevision.class) documents = tde.getTextDocument(project.getId(), "REVISION", user).getItems();
-		else documents = tde.getTextDocument(project.getId(), "PROJECT", user).getItems();
+		if (project.getClass() == ProjectRevision.class) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, user).getItems();
+		else documents = tde.getTextDocument(project.getId(), ProjectType.PROJECT, user).getItems();
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -436,7 +433,7 @@ public class TextDocumentEndpoint {
 		//Not possible to filter by IDs as the IDs of the documents of the different rates are different!
 		for (ValidationProject project : validationProjects) {
 		    //gets the documents from the validationProject of a user with the rights of our user.
-		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), "VALIDATION", user).getItems();
+		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
 		    for(TextDocument doc : textDocuments) {
 			if(docTitles.contains(doc.getTitle())) {
 			    if(null == sameDocumentsFromDifferentRaters.get(doc.getTitle())) {
