@@ -10,13 +10,9 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
-import { BtnDefault, BtnGroup } from '../../common/styles/Btn.jsx';
-import DropDownButton from '../../common/styles/DropDownButton.jsx';
-import NumberField from '../../common/styles/NumberField.jsx';
 
-import TextEditor from './TextEditor.jsx';
+import TextEditor from './TextEditor/TextEditor.jsx';
 
-import EditorCtrl from './EditorCtrl';
 import Project from '../project-dashboard/Project';
 import { PageView } from './View/PageView.js';
 import { BottomPanelType } from './BottomPanel/BottomPanelType.js';
@@ -36,18 +32,7 @@ const StyledCodingEditor = styled.div`
 		'sidebarDocuments editor'
 		'sidebarCodesystem editor'
 		'footer footer';
-`;
-
-const StyledEditorToolbar = styled.div`
-	display: ${props =>
-		props.selectedEditor === PageView.TEXT ? 'flex' : 'none'} !important;
-	text-align: center;
-	padding: 5px;
-`;
-
-const StyledTextEditorMenu = styled.div`
-	display: ${props =>
-		props.selectedEditor === PageView.TEXT ? 'block' : 'none'} !important;
+	height: ${props => props.height}px;
 `;
 
 const StyledEditableToggle = styled.a`
@@ -75,10 +60,11 @@ const StyledSideBarCodesystem = styled.div`
 const StyledEditor = styled.div`
 	grid-area: editor;
 	min-width: 0;
+	overflow: hidden;
 `;
 
-const StyledPlaceholder = styled.div`
-	flex-grow: 1;
+const StyledTextdocumentUi = styled.div`
+	height: 100%;
 `;
 
 const StyledFooter = styled.div`
@@ -115,12 +101,13 @@ class CodingEditor extends React.Component {
 		this.codesystemViewRef = {};
 		this.umlEditorRef = {};
 		this.codeViewRef = {};
+		this.textEditor = {};
 		this.syncService = new SyncService();
 		this.state = {
 			project: project,
-			editorCtrl: {},
 			showCodingView: false,
 			showAgreementMap: urlParams.report ? true : false,
+			agreementMapHighlightThreshold: 100,
 			selectedCode: {},
 			selectedEditor: PageView.CODING,
 			bottomPanelType: BottomPanelType.SEARCHRESULTS,
@@ -128,13 +115,11 @@ class CodingEditor extends React.Component {
 				documentResults: []
 			},
 			mxGraphLoaded: false,
-			fontSize: 13,
-
 			userProfile: {
 				name: '',
 				email: '',
 				picSrc: ''
-			}
+			},
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -142,8 +127,6 @@ class CodingEditor extends React.Component {
 				mxGraphLoaded: true
 			});
 		});
-
-		this._handleFontSizeChange = this._handleFontSizeChange.bind(this);
 
 		const _this = this;
 
@@ -163,7 +146,6 @@ class CodingEditor extends React.Component {
 		this.codeRemoved = this.codeRemoved.bind(this);
 		this.deleteRelationship = this.deleteRelationship.bind(this);
 		this.resizeElements = this.resizeElements.bind(this);
-		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
 		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
@@ -249,32 +231,14 @@ class CodingEditor extends React.Component {
 	}
 
 	resizeElements() {
-		this.state.editorCtrl.addCodingBrackets();
 		this.forceUpdate();
-	}
-
-	initEditorCtrl() {
-		this.setState({
-			editorCtrl: new EditorCtrl(
-				this.getCodeByCodeID,
-				this.state.showAgreementMap
-			)
-		});
 	}
 
 	changeView(view) {}
 
 	viewChanged(view) {
-		if (this.state.editorCtrl.setReadOnly) {
-			if (view === PageView.TEXT) {
-				this.state.editorCtrl.setReadOnly(false);
-			} else {
-				this.state.editorCtrl.setReadOnly(true);
-			}
-		}
-
 		this.setState({
-			selectedEditor: view
+			selectedEditor: view,
 		});
 	}
 
@@ -417,19 +381,6 @@ class CodingEditor extends React.Component {
 		return null;
 	}
 
-	_setFontFace(fontface) {
-		this.state.editorCtrl.setFontFace(fontface);
-	}
-
-	_handleFontSizeChange(e) {
-		const fontSize = e.target.value;
-		this.setState({
-			fontSize
-		});
-		this.state.editorCtrl.setFontSize(fontSize);
-		e.target.focus();
-	}
-
 	render() {
 		if (
 			!this.props.auth.authState.isUserSignedIn ||
@@ -437,57 +388,6 @@ class CodingEditor extends React.Component {
 		)
 			return <UnauthenticatedUserPanel history={this.props.history} />;
 		if (this.state.project.getCodesystemID() == -1) this.init();
-
-		const fonts = [
-			{
-				text: 'Arial',
-				onClick: () => this._setFontFace('Arial')
-			},
-			{
-				text: 'Arial Black',
-				onClick: () => this._setFontFace('Arial Black')
-			},
-			{
-				text: 'Comic Sans MS',
-				onClick: () => this._setFontFace('Comic Sans MS')
-			},
-			{
-				text: 'Courier New',
-				onClick: () => this._setFontFace('Courier New')
-			},
-			{
-				text: 'Georgia',
-				onClick: () => this._setFontFace('Georgia')
-			},
-			{
-				text: 'Impact',
-				onClick: () => this._setFontFace('Impact')
-			},
-			{
-				text: 'Lucida Console',
-				onClick: () => this._setFontFace('Lucida Console')
-			},
-			{
-				text: 'Palatino Linotype',
-				onClick: () => this._setFontFace('Palatino Linotype')
-			},
-			{
-				text: 'Tahoma',
-				onClick: () => this._setFontFace('Tahoma')
-			},
-			{
-				text: 'Times New Roman',
-				onClick: () => this._setFontFace('Times New Roman')
-			},
-			{
-				text: 'Trebuchet MS',
-				onClick: () => this._setFontFace('Trebuchet MS')
-			},
-			{
-				text: 'Verdana',
-				onClick: () => this._setFontFace('Verdana')
-			}
-		];
 
 		return (
 			<StyledCodingEditor
@@ -497,7 +397,10 @@ class CodingEditor extends React.Component {
 				<StyledSideBar>
 					<StyledSideBarEditor>
 						<div>
-							<div id="agreementMapSettings" className="hidden">
+							<div
+								id="agreementMapSettings"
+								className={this.state.showAgreementMap ? '' : 'hidden'}
+							>
 								<p>
 									<span>
 										<FormattedMessage
@@ -529,7 +432,7 @@ class CodingEditor extends React.Component {
 							<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
 								<DocumentsView
 									ref={c => (this.documentsViewRef = c)}
-									editorCtrl={this.state.editorCtrl}
+									textEditor={this.textEditor}
 									projectID={this.state.project.getId()}
 									projectType={this.state.project.getType()}
 									report={this.report}
@@ -551,7 +454,7 @@ class CodingEditor extends React.Component {
 							auth={this.props.auth}
 							codesystemId={this.state.project.getCodesystemID()}
 							toggleCodingView={this.toggleCodingView}
-							editorCtrl={this.state.editorCtrl}
+							textEditor={this.textEditor}
 							umlEditorEnabled={this.state.project.isUmlEditorEnabled()}
 							showFooter={this.showCodingView}
 							selectionChanged={this.selectionChanged}
@@ -564,41 +467,15 @@ class CodingEditor extends React.Component {
 					</StyledSideBarCodesystem>
 				</StyledSideBar>
 				<StyledEditor>
-					<div id="textdocument-ui">
-						<StyledEditorToolbar selectedEditor={this.state.selectedEditor}>
-							<StyledTextEditorMenu selectedEditor={this.state.selectedEditor}>
-								<BtnGroup>
-									<BtnDefault id="btnTxtBold">
-										<i className="fa fa-bold" />
-									</BtnDefault>
-									<BtnDefault id="btnTxtItalic">
-										<i className="fa fa-italic" />
-									</BtnDefault>
-									<BtnDefault id="btnTxtUnderline">
-										<i className="fa fa-underline" />
-									</BtnDefault>
-								</BtnGroup>
-
-								<BtnGroup>
-									<DropDownButton
-										initText={'Select a font...'}
-										items={fonts}
-										fixedWidth={'150px'}
-									/>
-									<NumberField
-										key="fontSizeField"
-										onChange={this._handleFontSizeChange}
-										value={this.state.fontSize}
-										style={{ width: '50px' }}
-									/>
-								</BtnGroup>
-							</StyledTextEditorMenu>
-							<StyledPlaceholder />
-						</StyledEditorToolbar>
+					<StyledTextdocumentUi>
 						<TextEditor
-							initEditorCtrl={this.initEditorCtrl}
-							selectedEditor={this.state.selectedEditor}
-							showCodingView={this.state.showCodingView}
+							ref={r => this.textEditor = r}
+							textEditable={this.state.selectedEditor === PageView.TEXT}
+							projectID={this.state.project.getId()}
+							projectType={this.state.project.getType()}
+							getCodeByCodeID={this.getCodeByCodeID}
+							showAgreementMap={this.state.showAgreementMap}
+							agreementMapHighlightThreshold={this.state.agreementMapHighlightThreshold}
 						/>
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}
@@ -607,7 +484,7 @@ class CodingEditor extends React.Component {
 						>
 							{this.renderUMLEditor()}
 						</StyledUMLEditor>
-					</div>
+					</StyledTextdocumentUi>
 				</StyledEditor>
 				<StyledFooter showCodingView={this.state.showCodingView}>
 					<BottomPanel
@@ -617,7 +494,7 @@ class CodingEditor extends React.Component {
 						panelType={this.state.bottomPanelType}
 						searchResults={this.state.searchResults}
 						code={this.state.selectedCode}
-						editorCtrl={this.state.editorCtrl}
+						textEditor={this.textEditor}
 						documentsView={this.documentsViewRef}
 						updateSelectedCode={this.updateSelectedCode}
 						getCodeById={this.getCodeById}

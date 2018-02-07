@@ -8,9 +8,13 @@
   "dependencies": {
     "bootstrap-slider": "^9.7.1",
     "hellojs": "^1.15.1",
+    "immutable": "^3.8.2",
     "react-intl": "^2.4.0",
     "react-router-dom": "^4.1.2",
     "react-slick": "^0.14.11",
+    "slate": "^0.32.2",
+    "slate-html-serializer": "^0.5.2",
+    "slate-react": "^0.11.2",
     "slick-carousel": "^1.6.0",
     "socket.io-client": "^2.0.4"
   },
