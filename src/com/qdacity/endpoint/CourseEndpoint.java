@@ -226,13 +226,13 @@ public class CourseEndpoint {
 			com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 			Authorization.isUserRegistered(dbUser);
 
-			if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
-				LastCourseUsed task = new LastCourseUsed(dbUser, id);
-				Queue queue = QueueFactory.getDefaultQueue();
-				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-			}
+            if (dbUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
+                LastCourseUsed task = new LastCourseUsed(dbUser, id);
+                Queue queue = QueueFactory.getDefaultQueue();
+                queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+            }
 
-			course = (Course) Cache.getOrLoad(id, Course.class);
+            course = (Course) Cache.getOrLoad(id, Course.class);
 
 		} finally {
 			mgr.close();
@@ -377,7 +377,7 @@ public class CourseEndpoint {
 		
 			termCourse.setOpen(true);
 			termCourse.setCreationDate(new Date());
-			termCourse.addOwner(user.getUserId());
+
 		
 			PersistenceManager mgr = getPersistenceManager();
 			try {
@@ -387,13 +387,13 @@ public class CourseEndpoint {
 					}
 				}
 				try {
-					// Authorize User
-					com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+					termCourse.addOwner(user.getUserId());
 					Authorization.checkAuthorizationTermCourse(termCourse, user);
 					mgr.makePersistent(termCourse);
+					// Authorize User
+					com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
 					dbUser.addTermCourseAuthorization(termCourse.getId());
-					mgr.makePersistent(dbUser);
-					Cache.cache(user.getUserId(), com.qdacity.user.User.class, dbUser);
+					Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
 				}
 				catch (javax.jdo.JDOObjectNotFoundException ex) {
 					throw new javax.jdo.JDOObjectNotFoundException("User is not registered");

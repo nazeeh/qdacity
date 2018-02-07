@@ -1,6 +1,7 @@
 package com.qdacity.user;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -118,7 +119,10 @@ public class User implements Serializable {
 	}
 	
 	public void addTermCourseAuthorization(Long termCourseID) {
-		if (termCourses != null) {termCourses.add(termCourseID);}
+		if (termCourses == null) {
+			termCourses = new ArrayList<Long>();
+		}
+		{termCourses.add(termCourseID);}
 	}
 
 	public void removeCourseAuthorization(Long course) {

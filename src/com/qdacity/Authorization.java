@@ -72,7 +72,13 @@ public class Authorization {
 		PersistenceManager mgr = getPersistenceManager();
 		try {			
 			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getUserId());
-			if (termCourse.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+			if (termCourse.getParticipants() != null) {
+				if (termCourse.getParticipants().contains(googleUser.getUserId()) || termCourse.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+			}
+			else
+			{
+				if (termCourse.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+			}
 		} finally {
 			mgr.close();
 		}

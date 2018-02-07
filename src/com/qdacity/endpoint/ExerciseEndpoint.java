@@ -1,8 +1,6 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -167,38 +165,40 @@ public class ExerciseEndpoint {
 			
 			ExerciseProject cloneExerciseProject = null;
 			List<ExerciseProject> exerciseProjects = null;
-			List<String> validationCodersList = new ArrayList<String>();
 			PersistenceManager mgr = getPersistenceManager();
+            StringBuilder filters = new StringBuilder();
+            Map<String, Object> parameters = new HashMap<>();
+
 			try {
-				
-				Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
-				TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
-				// Check if user is authorized
-				Authorization.checkAuthorizationTermCourse(termCourse, user);
-				
-				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(revisionID)");
-				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(revisionID));
-				if (exerciseProjects.size() == 0) {
-					cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
-				}
-				else {
-					for (ExerciseProject exerciseProject : exerciseProjects) {						
-						validationCodersList.addAll(exerciseProject.getValidationCoders());
-					};
-					
-					if (!(validationCodersList.contains(user.getUserId()))) {
-						cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
-					}
-				}
-				
+
+
+                Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
+                TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+                // Check if user is authorized
+                Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+                filters.append("exerciseID == exerciseID && ");
+                parameters.put("exerciseID", exerciseID);
+                filters.append("validationCoders == :userID");
+                parameters.put("userID", user.getUserId());
+                Query q = mgr.newQuery(ExerciseProject.class);
+
+                q.setFilter(filters.toString());
+                exerciseProjects = (List<ExerciseProject>)q.executeWithMap(parameters);
+
+                if (exerciseProjects != null) {
+                    if (exerciseProjects.size() == 0) {
+                        cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
+                    }
+                }
+
 			} finally {
 				mgr.close();
 			}
 			return cloneExerciseProject;
 		}
-	
-	
-	
+
+		
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID",
 			scopes = { Constants.EMAIL_SCOPE },
