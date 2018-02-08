@@ -1,24 +1,24 @@
 import React from 'react';
 
-import GooglePieChart from '../../common/GooglePieChart.jsx';
+import GoogleTableChart from "../../common/GoogleTableChart.jsx";
 import ChartTimeFrameChooser from './ChartTimeFrameChooser.jsx';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import BillingStatsEndpoint from '../../common/endpoints/BillingStatsEndpoint';
 
-export default class CostsByServiceChart extends React.Component {
+export default class ExtendedCostsByServiceTable extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			googleChartsLoaded: false,
-			costsByService: null,
+			extendedCostsByService: null,
 			startDate: null,
 			endDate: null
 		};
 
 		this.props.chartScriptPromise.then(() => {
 			google.charts.load('current', {
-				packages: ['corechart']
+				packages: ['table']
 			});
 
 			google.charts.setOnLoadCallback(() => {
@@ -29,14 +29,14 @@ export default class CostsByServiceChart extends React.Component {
 		});
 	}
 
-	fetchCostsByService() {
-		BillingStatsEndpoint.getCostsByService(
+	fetchExtendedCostsByService() {
+		BillingStatsEndpoint.getExtendedCostsByService(
 			this.state.startDate,
 			this.state.endDate
 		).then(result => {
-			result.serviceCosts = result.serviceCosts || {};
+			result.items = result.items || [];
 			this.setState({
-				costsByService: result.serviceCosts
+				extendedCostsByService: result.items
 			});
 		});
 	}
@@ -44,8 +44,14 @@ export default class CostsByServiceChart extends React.Component {
 	getDataRows(costsByService) {
 
 		const result = [];
-		Object.keys(costsByService).forEach(key => {
-			result.push([key, costsByService[key]]);
+
+		const currencyFormatter = new Intl.NumberFormat('de', {
+			style: 'currency',
+			currency: 'EUR',
+		});
+
+		costsByService.forEach(item => {
+			result.push([item.service, item.description, currencyFormatter.format(item.cost)]);
 		});
 
 		return result;
@@ -56,9 +62,9 @@ export default class CostsByServiceChart extends React.Component {
 			{
 				startDate: startDate,
 				endDate: endDate,
-				costsByService: null
+				extendedCostsByService: null
 			},
-			() => this.fetchCostsByService()
+			() => this.fetchExtendedCostsByService()
 		);
 	}
 
@@ -69,34 +75,37 @@ export default class CostsByServiceChart extends React.Component {
 
 		data.addColumn(
 			'string',
-			formatMessage({ id: 'costs_by_service_chart.service', defaultMessage: 'Service' })
+			formatMessage({ id: 'extended_costs_by_service_table.service', defaultMessage: 'Service' })
 		);
 		data.addColumn(
-			'number',
+			'string',
+			formatMessage({ id: 'extended_costs_by_service_table.description', defaultMessage: 'Description' })
+		);
+		data.addColumn(
+			'string',
 			formatMessage({
-				id: 'costs_by_service_chart.costs',
+				id: 'extended_costs_by_service_table.costs',
 				defaultMessage: 'Costs'
 			})
 		);
 
-		data.addRows(this.getDataRows(this.state.costsByService));
+		data.addRows(this.getDataRows(this.state.extendedCostsByService));
 
 		const options = {
-			pieHole: 0.4,
 			width: 540,
-			height: 400,
-			chartArea: {
-				left: 70,
-				right: 0,
-				top: 10
-			}
+			height: 300,
+			allowHtml: true,
+			sortColumn: 2,
+			sortAscending: false,
 		};
+		data.setProperty(0, 0, 'style', 'width:150px');
+		data.setProperty(0, 1, 'style', 'width:250px');
 
-		data.sort([{column: 1, desc: true}]);
+		data.sort([{column: 2, desc: true}]);
 
 		return (
-			<GooglePieChart
-				graphID="costsByServiceChart"
+			<GoogleTableChart
+				graphID="extendedCostsByServiceChart"
 				data={data}
 				options={options}
 			/>
@@ -112,7 +121,7 @@ export default class CostsByServiceChart extends React.Component {
 					}
 				/>
 				{this.state.googleChartsLoaded &&
-				this.state.costsByService &&
+				this.state.extendedCostsByService &&
 				this.state.startDate &&
 				this.state.endDate
 					? this.renderChart()
