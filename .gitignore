@@ -20,3 +20,7 @@ war/nbproject/
 target
 /.idea/
 /war/package-lock.json
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.m2e.core.prefs
+.settings/org.eclipse.wst.common.component
+war/META-INF/MANIFEST.MF
