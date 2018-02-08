@@ -182,15 +182,15 @@ class CodingEditor extends React.Component {
 
 	updateUserAtSyncService() {
 		const _this = this;
-		this.props.auth.authentication.getProfile().then((profile) => {
+		this.props.auth.authentication.getProfile().then(profile => {
 			_this.syncService.updateUser({
 				name: profile.name,
 				email: profile.email,
 				picSrc: profile.thumbnail,
 				project: _this.state.project.id,
-				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
+				token: _this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
 			});
-		})
+		});
 	}
 
 	updateUserStatusFromProps(targetedProps) {
@@ -208,7 +208,7 @@ class CodingEditor extends React.Component {
 				email: profile.email,
 				picSrc: profile.thumbnail,
 				project: _this.state.project.id,
-				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
+				token: _this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
 			});
 		});
 	}
@@ -235,15 +235,17 @@ class CodingEditor extends React.Component {
 	init() {
 		const _this = this;
 		var project = this.state.project;
-		ProjectEndpoint.getProject(project.getId(), project.getType()).then(
-			function(resp) {
+		ProjectEndpoint.getProject(project.getId(), project.getType())
+			.then(function(resp) {
 				project.setCodesystemID(resp.codesystemID);
 				project.setUmlEditorEnabled(resp.umlEditorEnabled);
 				_this.setState({
 					project: project
 				});
-			}
-		).catch(()=>{console.log("could not load project")});
+			})
+			.catch(() => {
+				console.log('could not load project');
+			});
 	}
 
 	resizeElements() {

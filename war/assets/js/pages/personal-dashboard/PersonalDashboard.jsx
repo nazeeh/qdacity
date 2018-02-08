@@ -77,10 +77,7 @@ export default class PersonalDashboard extends React.Component {
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
-						<WelcomePanel
-							auth={this.props.auth}
-							history={this.props.history}
-						/>
+						<WelcomePanel auth={this.props.auth} history={this.props.history} />
 						<AdvertPanel />
 					</div>
 					<div className="col-lg-4">

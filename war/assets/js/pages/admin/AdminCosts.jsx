@@ -1,11 +1,11 @@
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import DailyCostsChart from './DailyCostsChart.jsx';
-import DailyCostsPerActiveUserChart from "./DailyCostsPerActiveUserChart.jsx";
-import CostsByServiceChart from "./CostsByServiceChart.jsx";
-import ExtendedCostsByServiceTable from "./ExtendedCostsByServiceTable.jsx";
-import BillingStatsEndpoint from "../../common/endpoints/BillingStatsEndpoint";
+import DailyCostsPerActiveUserChart from './DailyCostsPerActiveUserChart.jsx';
+import CostsByServiceChart from './CostsByServiceChart.jsx';
+import ExtendedCostsByServiceTable from './ExtendedCostsByServiceTable.jsx';
+import BillingStatsEndpoint from '../../common/endpoints/BillingStatsEndpoint';
 
 export default class AdminCosts extends React.Component {
 	constructor(props) {
@@ -13,17 +13,17 @@ export default class AdminCosts extends React.Component {
 		this.state = {
 			costThisMonth: null,
 			usersThisMonth: null,
-			costPerUserThisMonth: null,
+			costPerUserThisMonth: null
 		};
 		this.init();
 	}
 
 	init() {
-		BillingStatsEndpoint.getAggregatedStats().then((resp) => {
+		BillingStatsEndpoint.getAggregatedStats().then(resp => {
 			this.setState({
 				costThisMonth: resp.costThisMonth,
 				usersThisMonth: resp.usersThisMonth,
-				costPerUserThisMonth: resp.costPerUserThisMonth,
+				costPerUserThisMonth: resp.costPerUserThisMonth
 			});
 		});
 	}
@@ -31,7 +31,7 @@ export default class AdminCosts extends React.Component {
 	render() {
 		const currencyFormatter = new Intl.NumberFormat('de', {
 			style: 'currency',
-			currency: 'EUR',
+			currency: 'EUR'
 		});
 
 		return (
@@ -51,7 +51,7 @@ export default class AdminCosts extends React.Component {
 								<div className="col-lg-4 col-xs-6 small-gutter-right">
 									<div className="info-box">
 										<div className="info-box-icon bg-aqua">
-											<i className="fa fa-eur" aria-hidden="true"/>
+											<i className="fa fa-eur" aria-hidden="true" />
 										</div>
 										<div className="info-box-content">
 											<span className="info-box-text">
@@ -60,16 +60,21 @@ export default class AdminCosts extends React.Component {
 													defaultMessage="Costs this month"
 												/>
 											</span>
-											{this.state.costThisMonth && <span id="topStatsDocuments" className="info-box-number">
-												{currencyFormatter.format(this.state.costThisMonth)}
-											</span>}
+											{this.state.costThisMonth && (
+												<span
+													id="topStatsDocuments"
+													className="info-box-number"
+												>
+													{currencyFormatter.format(this.state.costThisMonth)}
+												</span>
+											)}
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-4 col-xs-6 small-gutter">
 									<div className="info-box">
 										<div className="info-box-icon bg-yellow">
-											<i className="fa fa-heartbeat" aria-hidden="true"/>
+											<i className="fa fa-heartbeat" aria-hidden="true" />
 										</div>
 										<div className="info-box-content">
 											<span className="info-box-text">
@@ -78,16 +83,18 @@ export default class AdminCosts extends React.Component {
 													defaultMessage="Users this month"
 												/>
 											</span>
-											{this.state.usersThisMonth && <span id="topStatsCodes" className="info-box-number">
-												{this.state.usersThisMonth}
-											</span>}
+											{this.state.usersThisMonth && (
+												<span id="topStatsCodes" className="info-box-number">
+													{this.state.usersThisMonth}
+												</span>
+											)}
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-4 col-xs-6 small-gutter">
 									<div className="info-box">
 										<div className="info-box-icon bg-red">
-											<i className="fa fa-eur" aria-hidden="true"/>
+											<i className="fa fa-eur" aria-hidden="true" />
 										</div>
 										<div className="info-box-content">
 											<span className="info-box-text">
@@ -96,9 +103,13 @@ export default class AdminCosts extends React.Component {
 													defaultMessage="Costs per user this month"
 												/>
 											</span>
-											{this.state.costPerUserThisMonth && <span id="topStatsCodes" className="info-box-number">
-												{currencyFormatter.format(this.state.costPerUserThisMonth)}
-											</span>}
+											{this.state.costPerUserThisMonth && (
+												<span id="topStatsCodes" className="info-box-number">
+													{currencyFormatter.format(
+														this.state.costPerUserThisMonth
+													)}
+												</span>
+											)}
 										</div>
 									</div>
 								</div>

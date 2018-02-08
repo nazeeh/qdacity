@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 const StyledChart = styled.div`
 	height: 300px;
-
 `;
 export default class GoogleTableChart extends React.Component {
 	constructor(props) {

@@ -1,27 +1,27 @@
-import React from "react";
-import { FormattedMessage } from "react-intl";
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
-import CourseEndpoint from "../../../common/endpoints/CourseEndpoint";
-import ExerciseEndpoint from "../../../common/endpoints/ExerciseEndpoint";
-import ProjectEndpoint from "../../../common/endpoints/ProjectEndpoint";
-import styled from "styled-components";
-import CustomForm from "../../../common/modals/CustomForm";
-import Theme from "../../../common/styles/Theme.js";
-import Confirm from "../../../common/modals/Confirm";
-import IntlProvider from "../../../common/Localization/LocalizationProvider";
+import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
+import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
+import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+import styled from 'styled-components';
+import CustomForm from '../../../common/modals/CustomForm';
+import Theme from '../../../common/styles/Theme.js';
+import Confirm from '../../../common/modals/Confirm';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
-  ItemList,
-  ListMenu,
-  StyledListItemBtn,
-  StyledListItemPrimary,
-  StyledListItemDefault
-} from "../../../common/styles/ItemList.jsx";
+	ItemList,
+	ListMenu,
+	StyledListItemBtn,
+	StyledListItemPrimary,
+	StyledListItemDefault
+} from '../../../common/styles/ItemList.jsx';
 
-import { BtnDefault } from "../../../common/styles/Btn.jsx";
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 const StyledNewExBtn = styled.div`
-  padding-bottom: 5px;
+	padding-bottom: 5px;
 `;
 
 export default class ExerciseList extends React.Component {
@@ -177,8 +177,7 @@ export default class ExerciseList extends React.Component {
 	render() {
 		var _this = this;
 
-		if (!this.props.auth.authentication.isSignedIn())
-			return null;
+		if (!this.props.auth.authentication.isSignedIn()) return null;
 
 		return (
 			<div>

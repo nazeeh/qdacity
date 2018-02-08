@@ -1,6 +1,6 @@
 import React from 'react';
 
-import GoogleTableChart from "../../common/GoogleTableChart.jsx";
+import GoogleTableChart from '../../common/GoogleTableChart.jsx';
 import ChartTimeFrameChooser from './ChartTimeFrameChooser.jsx';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import BillingStatsEndpoint from '../../common/endpoints/BillingStatsEndpoint';
@@ -42,16 +42,19 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 	}
 
 	getDataRows(costsByService) {
-
 		const result = [];
 
 		const currencyFormatter = new Intl.NumberFormat('de', {
 			style: 'currency',
-			currency: 'EUR',
+			currency: 'EUR'
 		});
 
 		costsByService.forEach(item => {
-			result.push([item.service, item.description, currencyFormatter.format(item.cost)]);
+			result.push([
+				item.service,
+				item.description,
+				currencyFormatter.format(item.cost)
+			]);
 		});
 
 		return result;
@@ -75,11 +78,17 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 
 		data.addColumn(
 			'string',
-			formatMessage({ id: 'extended_costs_by_service_table.service', defaultMessage: 'Service' })
+			formatMessage({
+				id: 'extended_costs_by_service_table.service',
+				defaultMessage: 'Service'
+			})
 		);
 		data.addColumn(
 			'string',
-			formatMessage({ id: 'extended_costs_by_service_table.description', defaultMessage: 'Description' })
+			formatMessage({
+				id: 'extended_costs_by_service_table.description',
+				defaultMessage: 'Description'
+			})
 		);
 		data.addColumn(
 			'string',
@@ -96,12 +105,12 @@ export default class ExtendedCostsByServiceTable extends React.Component {
 			height: 300,
 			allowHtml: true,
 			sortColumn: 2,
-			sortAscending: false,
+			sortAscending: false
 		};
 		data.setProperty(0, 0, 'style', 'width:150px');
 		data.setProperty(0, 1, 'style', 'width:250px');
 
-		data.sort([{column: 2, desc: true}]);
+		data.sort([{ column: 2, desc: true }]);
 
 		return (
 			<GoogleTableChart

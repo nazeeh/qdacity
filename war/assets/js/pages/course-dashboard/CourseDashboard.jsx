@@ -1,44 +1,44 @@
-import React from "react";
-import { FormattedMessage } from "react-intl";
-import styled from "styled-components";
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import styled from 'styled-components';
 
-import CourseEndpoint from "endpoints/CourseEndpoint";
-import TermCourseList from "./TermCourseList.jsx";
-import Course from "./Course";
-import "script-loader!../../../../components/URIjs/URI.min.js";
-import "script-loader!../../../../components/alertify/alertify-0.3.js";
-import Teachers from "./Teachers/Teachers.jsx";
-import TitleRow from "./TitleRow/TitleRow.jsx";
+import CourseEndpoint from 'endpoints/CourseEndpoint';
+import TermCourseList from './TermCourseList.jsx';
+import Course from './Course';
+import 'script-loader!../../../../components/URIjs/URI.min.js';
+import 'script-loader!../../../../components/alertify/alertify-0.3.js';
+import Teachers from './Teachers/Teachers.jsx';
+import TitleRow from './TitleRow/TitleRow.jsx';
 
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
 const StyledDashboard = styled.div`
-  margin-top: 70px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 1170px;
-  display: grid;
-  grid-template-columns: 6fr 6fr;
-  grid-template-areas:
-    "titlerow titlerow"
-    "terms teachers";
-  grid-column-gap: 20px;
+	margin-top: 70px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1170px;
+	display: grid;
+	grid-template-columns: 6fr 6fr;
+	grid-template-areas:
+		'titlerow titlerow'
+		'terms teachers';
+	grid-column-gap: 20px;
 `;
 
 const StyledTitleRow = styled.div`
-  grid-area: titlerow;
+	grid-area: titlerow;
 `;
 
 export default class CourseDashboard extends React.Component {
-  constructor(props) {
-    super(props);
+	constructor(props) {
+		super(props);
 
-    var urlParams = URI(window.location.search).query(true);
+		var urlParams = URI(window.location.search).query(true);
 
-    var course = new Course(urlParams.course);
-    this.setCourse = this.setCourse.bind(this);
-    this.addParticipant = this.addParticipant.bind(this);
-    this.removeParticipant = this.removeParticipant.bind(this);
+		var course = new Course(urlParams.course);
+		this.setCourse = this.setCourse.bind(this);
+		this.addParticipant = this.addParticipant.bind(this);
+		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
 			course: course,

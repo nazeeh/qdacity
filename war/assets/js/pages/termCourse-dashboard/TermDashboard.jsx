@@ -1,53 +1,53 @@
-import React from "react";
-import { FormattedMessage } from "react-intl";
-import IntlProvider from "../../common/Localization/LocalizationProvider";
-import styled from "styled-components";
-import Theme from "../../common/styles/Theme.js";
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
+import styled from 'styled-components';
+import Theme from '../../common/styles/Theme.js';
 
-import CourseEndpoint from "endpoints/CourseEndpoint";
-import "script-loader!../../../../components/URIjs/URI.min.js";
-import "script-loader!../../../../components/alertify/alertify-0.3.js";
-import TermCourse from "./TermCourse";
-import BtnDefault from "../../common/styles/Btn.jsx";
-import Participants from "./Participants/Participants.jsx";
-import Exercises from "./Exercises/Exercises.jsx";
-import TitleRow from "./TitleRow/TitleRow.jsx";
-import Confirm from "../../common/modals/Confirm";
+import CourseEndpoint from 'endpoints/CourseEndpoint';
+import 'script-loader!../../../../components/URIjs/URI.min.js';
+import 'script-loader!../../../../components/alertify/alertify-0.3.js';
+import TermCourse from './TermCourse';
+import BtnDefault from '../../common/styles/Btn.jsx';
+import Participants from './Participants/Participants.jsx';
+import Exercises from './Exercises/Exercises.jsx';
+import TitleRow from './TitleRow/TitleRow.jsx';
+import Confirm from '../../common/modals/Confirm';
 
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
 import {
-  StyledListItemBtn,
-  StyledListItemPrimary,
-  StyledListItemDefault
-} from "../../common/styles/ItemList.jsx";
+	StyledListItemBtn,
+	StyledListItemPrimary,
+	StyledListItemDefault
+} from '../../common/styles/ItemList.jsx';
 
 const StyledNewPrjBtn = styled.div`
-  padding-left: 5px;
+	padding-left: 5px;
 `;
 const StyledDashboard = styled.div`
-  margin-top: 70px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 1170px;
-  display: grid;
-  grid-template-columns: 6fr 6fr;
-  grid-template-areas:
-    "titlerow titlerow"
-    "terms teachers"
-    "joinButton joinButton";
-  grid-column-gap: 20px;
+	margin-top: 70px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1170px;
+	display: grid;
+	grid-template-columns: 6fr 6fr;
+	grid-template-areas:
+		'titlerow titlerow'
+		'terms teachers'
+		'joinButton joinButton';
+	grid-column-gap: 20px;
 `;
 
 const StyledTitleRow = styled.div`
-  grid-area: titlerow;
+	grid-area: titlerow;
 `;
 
 const StyledButton = styled.div`
-  grid-area: joinButton;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 100px;
+	grid-area: joinButton;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 100px;
 `;
 export default class TermDashboard extends React.Component {
 	constructor(props) {

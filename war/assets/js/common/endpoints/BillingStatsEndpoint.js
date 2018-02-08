@@ -31,5 +31,4 @@ export default class BillingStatsEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-
 }
