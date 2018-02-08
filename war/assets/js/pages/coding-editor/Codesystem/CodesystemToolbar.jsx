@@ -7,7 +7,6 @@ import Prompt from '../../../common/modals/Prompt';
 import { PageView } from '../View/PageView.js';
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
-import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import Confirm from '../../../common/modals/Confirm';
 import CodingsOverview from '../../../common/modals/CodingsOverview/CodingsOverview';
 
@@ -95,39 +94,28 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	applyCode() {
-		var _this = this;
-		var selected = this.props.selected;
-		ProjectEndpoint.incrCodingId(
-			_this.props.projectID,
-			_this.props.projectType
-		).then(function(resp) {
-			var codingID = resp.maxCodingID;
-			var author = _this.props.userProfile.name;
+		const selected = this.props.selected;
+		const author = this.props.userProfile.name;
 
-			_this.props.textEditor.setCoding(
-				codingID,
-				selected.codeID,
-				selected.name,
-				author
-			);
-			//_this.props.documentsView.updateCurrentDocument(_this.props.textEditor.getHTML());
-			_this.props.documentsView.applyCodeToCurrentDocument(
-				_this.props.textEditor.getHTML(),
-				selected
-			);
-			_this.props.updateCodingCount();
-		});
+		this.props.textEditor.setCoding(selected.codeID, selected.name, author)
+			.then(html => {
+				this.props.documentsView.applyCodeToCurrentDocument(html, selected);
+				this.props.updateCodingCount();
+			})
+			.catch(error => {
+				console.error(error);
+			});
 	}
 
 	removeCoding() {
-		const selected = this.props.selected;
-		this.props.textEditor.removeCoding(selected.codeID)
+		const codeID = this.props.selected.codeID;
+		this.props.textEditor.removeCoding(codeID)
 			.then(html => {
 				this.props.documentsView.updateCurrentDocument(html);
 				this.props.updateCodingCount();
 			})
-			.catch(errors => {
-				console.error(errors);
+			.catch(error => {
+				console.error(error);
 			});
 	}
 
