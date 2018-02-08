@@ -4,6 +4,9 @@ import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
+import AuthenticationProvider from '../common/AuthenticationProvider.js';
+import AuthorizationProvider from '../common/AuthorizationProvider.js';
+
 import NavBar from '../common/NavBar.jsx';
 import Index from './index/Index.jsx';
 import PersonalDashboard from './personal-dashboard/PersonalDashboard.jsx';
@@ -17,6 +20,7 @@ import AdminControl from "./admin/AdminControl.jsx";
 import AdminCosts from "./admin/AdminCosts.jsx";
 import CodingEditor from './coding-editor/CodingEditor.jsx';
 import Faq from './help/Faq.jsx';
+import UserMigration from './user-migration/UserMigration.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
 
@@ -27,24 +31,88 @@ export default class App extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			language: 'en',
-			locale: 'en-US',
-			messages: {}
-		};
+		this.state = {};
 
-		this.account = {
-			isSignedIn: () => {
-				return false;
-			}
-		};
+		this.authenticationProvider = new AuthenticationProvider();
+		this.authorizationProvider = new AuthorizationProvider();
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
 		var t = new TutorialEngine(this);
 		this.state = {
+			language: 'en',
+			locale: 'en-US',
+			messages: {},
+
 			tutorialEngine: t,
-			tutorialState: t.tutorialState
+			tutorialState: t.tutorialState,
+			auth: {
+				authState: {
+					isUserSignedIn: false,
+					isUserRegistered: false
+				},
+				updateUserStatus: () => {
+					return this.updateUserStatus();
+				},
+				authentication: this.authenticationProvider,
+				authorization: this.authorizationProvider
+			}
 		};
+
+		const _this = this;
+
+		// on page reloads: also reload profile data
+		if (this.authenticationProvider.isSignedIn()) {
+			_this.authenticationProvider.synchronizeTokenWithGapi();
+			_this.updateUserStatus();
+		} else {
+			// try silent sign in
+			_this.authenticationProvider.silentSignInWithGoogle().then(function() {
+				_this.authenticationProvider.synchronizeTokenWithGapi();
+				_this.updateUserStatus(); // somehow the auth state listener triggers too early!
+			});
+		}
+
+		this.authenticationProvider.addAuthStateListener(function() {
+			// update on every auth state change
+			_this.updateUserStatus();
+		});
+	}
+
+	/**
+	 * Updates the state -> the supplied authState
+	 * @returns {Promise}
+	 */
+	updateUserStatus() {
+		const _this = this;
+		const promise = new Promise(function(resolve, reject) {
+			const loginStatus = _this.authenticationProvider.isSignedIn();
+			if (!loginStatus && !_this.state.auth.authState.isUserSignedIn) {
+				// no need to rerender!
+				resolve();
+				return;
+			}
+
+			_this.authenticationProvider.synchronizeTokenWithGapi(); // Bugfix: sometimes the token seems to get lost!
+			_this.authenticationProvider.getCurrentUser().then(
+				function(user) {
+					_this.state.auth.authState = {
+						isUserSignedIn: loginStatus,
+						isUserRegistered: !!user
+					};
+					_this.setState(_this.state);
+					resolve();
+				},
+				function(err) {
+					_this.state.auth.authState = {
+						isUserSignedIn: loginStatus,
+						isUserRegistered: false
+					};
+					_this.setState(_this.state);
+					resolve();
+				}
+			);
+		});
+		return promise;
 	}
 
 	componentDidMount() {
@@ -73,11 +141,8 @@ export default class App extends React.Component {
 									<NavBar
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
+										auth={this.state.auth}
 										tutorial={tut}
-										callback={acc => {
-											this.account = acc;
-											this.forceUpdate();
-										}}
 										{...props}
 									/>
 								)}
@@ -85,14 +150,14 @@ export default class App extends React.Component {
 							<Route
 								path="/PersonalDashboard"
 								render={props => (
-									<PersonalDashboard account={this.account} {...props} />
+									<PersonalDashboard 	auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
 								path="/ProjectDashboard"
 								render={props => (
 									<ProjectDashboard
-										account={this.account}
+										auth={this.state.auth}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -101,26 +166,26 @@ export default class App extends React.Component {
 							<Route
 								path="/CourseDashboard"
 								render={props => (
-									<CourseDashboard account={this.account} {...props} />
+									<CourseDashboard auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
 								path="/TermDashboard"
 								render={props => (
-									<TermDashboard account={this.account} {...props} />
+									<TermDashboard auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
 								path="/TermCourseConfig"
 								render={props => (
-									<TermCourseConfig account={this.account} {...props} />
+									<TermCourseConfig auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
 								path="/Admin"
 								render={props => (
 									<Admin
-										account={this.account}
+										auth={this.state.auth}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -138,7 +203,6 @@ export default class App extends React.Component {
 								path="/Admin/Stats"
 								render={props => (
 									<AdminStats
-										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -148,7 +212,6 @@ export default class App extends React.Component {
 								path="/Admin/Costs"
 								render={props => (
 									<AdminCosts
-										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -158,7 +221,7 @@ export default class App extends React.Component {
 								path="/Admin/Control"
 								render={props => (
 									<AdminControl
-										account={this.account}
+										auth={this.state.auth}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -168,7 +231,7 @@ export default class App extends React.Component {
 								path="/CodingEditor"
 								render={props => (
 									<CodingEditor
-										account={this.account}
+										auth={this.state.auth}
 										mxGraphPromise={this.props.mxGraphPromise}
 										{...props}
 									/>
@@ -176,12 +239,16 @@ export default class App extends React.Component {
 							/>
 							<Route
 								path="/Faq"
-								render={props => <Faq account={this.account} {...props} />}
+								render={props => <Faq auth={this.state.auth} {...props} />}
+							/>
+							<Route
+								path="/UserMigration"
+								render={props => <UserMigration auth={this.state.auth} {...props} />}
 							/>
 							<Route
 								exact
 								path="/"
-								render={props => <Index account={this.account} {...props} />}
+								render={props => <Index auth={this.state.auth} {...props} />}
 							/>
 							<Route
 								path="/"

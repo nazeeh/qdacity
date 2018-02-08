@@ -16,6 +16,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.exercise.Exercise;
 import com.qdacity.exercise.ExerciseProject;
@@ -24,12 +25,13 @@ import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 
 public class ExerciseEndpointTest {
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
-	
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+
 	@Before
 	public void setUp() {
 		helper.setUp();
@@ -40,12 +42,13 @@ public class ExerciseEndpointTest {
 		helper.tearDown();
 	}
 
-	
+
 	/**
 	 * Tests if a registered user can create an exercise
+	 * @throws UnauthorizedException
 	 */
 	@Test
-	public void testExerciseInsert() {
+	public void testExerciseInsert() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
@@ -54,52 +57,54 @@ public class ExerciseEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
 	}
-	
-	
+
+
 
 	/**
 	 * Tests if a user can delete his own exercise
+	 * @throws UnauthorizedException
 	 */
 	@Test
-	public void testExerciseRemove() {
+	public void testExerciseRemove() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		ExerciseEndpointTestHelper.addExercise(1L, 1L, "ex 1", testUser);
-		
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
 		ExerciseEndpointTestHelper.removeExercise(1L, testUser);
-		
+
 		assertEquals(0, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
 	}
-	
+
 	/**
 	 * Tests if a registered can list exercises
+	 * @throws UnauthorizedException
 	 */
 	@Test
-	public void testListExercise() {
+	public void testListExercise() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
-		
+
 		List<Exercise> retrievedExercises = null;
 
 		retrievedExercises = (List<Exercise>) ExerciseEndpointTestHelper.listExercises(1L, testUser);
-		
+
 		assertEquals(1, retrievedExercises.size());
 	}
-	
+
 	/**
 	 * Tests if a registered user can get an exerciseProject by its revision id
-	 * @throws UnauthorizedException 
+	 * @throws UnauthorizedException
 	 */
 	@Test
 	public void getExerciseProjectByRevisionIDTest() throws UnauthorizedException {
 		ProjectEndpoint pe = new ProjectEndpoint();
-		
+
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CodeSystemTestHelper.addCodeSystem(2L, testUser);
 		ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
@@ -109,22 +114,22 @@ public class ExerciseEndpointTest {
 		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
 		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
 		ExerciseProject exerciseProject = ExerciseEndpointTestHelper.getExerciseProjectByRevisionID(revision.getId(), testUser);
-		
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query("ExerciseProject");
 		Entity queryResult = ds.prepare(q).asSingleEntity();
-		
+
 		assertEquals(Long.valueOf(queryResult.getKey().getId()), exerciseProject.getId());
 	}
-	
+
 	/**
 	 * Tests if a registered user can create an exercise project
-	 * @throws UnauthorizedException 
+	 * @throws UnauthorizedException
 	 */
 	@Test
 	public void createExerciseProjectTest() throws UnauthorizedException {
 		ProjectEndpoint pe = new ProjectEndpoint();
-		
+
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CodeSystemTestHelper.addCodeSystem(2L, testUser);
 		ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
@@ -136,15 +141,15 @@ public class ExerciseEndpointTest {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
 	}
-	
+
 	/**
 	 * Tests if a registered user can create an exercise project
-	 * @throws UnauthorizedException 
+	 * @throws UnauthorizedException
 	 */
 	@Test
 	public void createExerciseProjectIfNeededTest() throws UnauthorizedException {
 		ProjectEndpoint pe = new ProjectEndpoint();
-		
+
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CodeSystemTestHelper.addCodeSystem(2L, testUser);
 		ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
@@ -155,9 +160,9 @@ public class ExerciseEndpointTest {
 		ExerciseEndpointTestHelper.createExerciseProjectIfNeeded(revision.getId(), 1L, testUser);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
-		
+
 		ExerciseEndpointTestHelper.createExerciseProjectIfNeeded(revision.getId(), 1L, testUser);
 		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
 	}
-	
+
 }

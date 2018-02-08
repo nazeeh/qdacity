@@ -4,26 +4,29 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
+import javax.jdo.annotations.Column;
+import javax.jdo.annotations.Element;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
 import com.qdacity.project.ProjectType;
 
-@PersistenceCapable(
-	identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class User implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2378677713032476995L;
 
 	@PrimaryKey
-	@Persistent(
-		valueStrategy = IdGeneratorStrategy.IDENTITY)
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	String id;
 
 	@Persistent
@@ -48,17 +51,21 @@ public class User implements Serializable {
 
 	@Persistent
 	List<Long> projects;
-	
 
 	@Persistent
 	List<Long> courses;
-	
+
 	@Persistent
 	List<Long> termCourses;
-	
+
 	@Persistent
 	Long lastCourseId; // Used to pre-load to cache when user signs in
-	
+
+	@Persistent(defaultFetchGroup = "true")
+	@Element(dependent = "true")
+	@Column(name = "loginProviderInformations")
+	List<UserLoginProviderInformation> loginProviderInformationList;
+
 	public String getId() {
 		return id;
 	}
@@ -94,18 +101,19 @@ public class User implements Serializable {
 	public void setCourses(List<Long> courses) {
 		this.courses = courses;
 	}
-	
+
 	public List<Long> getCourses() {
 		return courses;
 	}
-	
+
 	public void setTermCourses(List<Long> termCourses) {
 		this.termCourses = termCourses;
-}
+	}
+
 	public List<Long> getTermCourses() {
 		return termCourses;
 	}
-	
+
 	public void addProjectAuthorization(Long project) {
 		projects.add(project);
 	}
@@ -113,11 +121,11 @@ public class User implements Serializable {
 	public void removeProjectAuthorization(Long project) {
 		projects.remove(project);
 	}
-	
+
 	public void addCourseAuthorization(Long course) {
 		courses.add(course);
 	}
-	
+
 	public void addTermCourseAuthorization(Long termCourseID) {
 		if (termCourses == null) {
 			termCourses = new ArrayList<Long>();
@@ -128,12 +136,13 @@ public class User implements Serializable {
 	public void removeCourseAuthorization(Long course) {
 		courses.remove(course);
 	}
-	
+
 	public void removeTermCourseAuthorization(Long termCourse) {
-		if (termCourses != null) {termCourses.remove(termCourse);}
+		if (termCourses != null) {
+			termCourses.remove(termCourse);
+		}
 	}
-	
-	
+
 	public String getEmail() {
 		return email;
 	}
@@ -161,11 +170,11 @@ public class User implements Serializable {
 	public Long getLastCourseId() {
 		return lastCourseId;
 	}
-	
+
 	public void setLastCourseId(Long lastCourseId) {
 		this.lastCourseId = lastCourseId;
 	}
-	
+
 	public ProjectType getLastProjectType() {
 		return lastProjectType;
 	}
@@ -182,4 +191,23 @@ public class User implements Serializable {
 		this.lastLogin = lastLogin;
 	}
 
+	public void removeLoginProviderInformation(UserLoginProviderInformation loginInfo) {
+		loginProviderInformationList.remove(loginInfo);
+	}
+
+	public void addLoginProviderInformation(UserLoginProviderInformation loginInfo) {
+		if (loginInfo != null) {
+			loginProviderInformationList.add(loginInfo);
+		}
+	}
+
+	public List<UserLoginProviderInformation> getLoginProviderInformation() {
+		if(loginProviderInformationList == null) loginProviderInformationList = new ArrayList<UserLoginProviderInformation>();
+		return loginProviderInformationList;
+	}
+
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE) // do not expect from client
+	public void setLoginProviderInformation(List<UserLoginProviderInformation> loginProviderInformationList) {
+		this.loginProviderInformationList = loginProviderInformationList;
+	}
 }

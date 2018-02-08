@@ -9,7 +9,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.UserEndpoint;
@@ -26,7 +26,7 @@ import com.qdacity.user.UserType;
 public class Authorization {
 
 	private static UserEndpoint userEndpoint = new UserEndpoint();
-	
+
 	public static Boolean isUserAuthorized(User googleUser, Long projectID) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -44,7 +44,10 @@ public class Authorization {
 				throw new UnauthorizedException("Project " + projectID + " was not found");
 			}
 			Project project = projects.get(0);
-			if (project.getOwners().contains(googleUser.getUserId())) return true;
+
+			String userId = userEndpoint.getCurrentUser(googleUser).getId();
+
+			if (project.getOwners().contains(userId)) return true;
 		} finally {
 			mgr.close();
 		}
@@ -55,37 +58,42 @@ public class Authorization {
 
 	public static Boolean isUserAuthorizedCourse(User googleUser, Course course) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
-		boolean userIsInvited = false;
-		if (course.getInvitedUsers() != null) {
-			if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(googleUser.getUserId());
-		}
 		try {
-			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getUserId());
-			if (course.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN || userIsInvited) return true;
+			String authenticatedUserId = userEndpoint.getCurrentUser(googleUser).getId();
+
+			boolean userIsInvited = false;
+			if (course.getInvitedUsers() != null) {
+				if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(authenticatedUserId);
+			}
+			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
+			if (course.getOwners().contains(googleUser.getId()) || courseUser.getType() == UserType.ADMIN || userIsInvited) return true;
 		} finally {
 			mgr.close();
 		}
 		return false;
 	}
-	
-	public static Boolean isUserAuthorizedTermCourse(User googleUser, TermCourse termCourse) throws UnauthorizedException {
+
+
+		public static Boolean isUserAuthorizedTermCourse(User googleUser, TermCourse termCourse) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
-		try {			
-			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, googleUser.getUserId());
+		try {
+			String authenticatedUserId = userEndpoint.getCurrentUser(googleUser).getId();
+
+			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
 			if (termCourse.getParticipants() != null) {
-				if (termCourse.getParticipants().contains(googleUser.getUserId()) || termCourse.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+				if (termCourse.getParticipants().contains(authenticatedUserId) || termCourse.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN) return true;
 			}
-			else
-			{
-				if (termCourse.getOwners().contains(googleUser.getUserId()) || courseUser.getType() == UserType.ADMIN) return true;
+			else {
+				if (termCourse.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN) return true;
 			}
+
 		} finally {
 			mgr.close();
 		}
-		
+
 		return false;
 	}
-	
+
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
@@ -110,7 +118,7 @@ public class Authorization {
 			mgr.close();
 		}
 	}
-	
+
 	public static void checkAuthorization(Code code, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -135,13 +143,13 @@ public class Authorization {
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 
 	}
-	
+
 	public static void checkAuthorizationCourse(Course course, User user) throws UnauthorizedException {
 		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorizedCourse(user, course);
 		if (!authorized) throw new UnauthorizedException("User is Not Authorized");
 	}
-	
+
 	public static void checkAuthorizationTermCourse(TermCourse termCourse, User user) throws UnauthorizedException {
 		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorizedTermCourse(user, termCourse);
@@ -150,10 +158,12 @@ public class Authorization {
 
 	public static void checkAuthTermCourseParticipation(TermCourse termCourse, String userID ,User user) throws UnauthorizedException {
 		isUserNotNull(user);
-		
+
 		PersistenceManager mgr = getPersistenceManager();
-		try {			
-			com.qdacity.user.User adder = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());
+		try {
+			String authenticatedUserId = userEndpoint.getCurrentUser(user).getId();
+
+			com.qdacity.user.User adder = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
 			if (!termCourse.isOpen()) {
 				if (!(termCourse.getOwners().contains(adder.getId()) || adder.getType() == UserType.ADMIN)) throw new UnauthorizedException("User is not authorized for adding participants");
 			}
@@ -164,23 +174,25 @@ public class Authorization {
 			mgr.close();
 		}
 	}
-	
+
 	public static void checkAuthTermCourseUserRemoval(TermCourse termCourse, String userID ,User user) throws UnauthorizedException {
 		isUserNotNull(user);
-		
+
 		PersistenceManager mgr = getPersistenceManager();
-		try {			
-				com.qdacity.user.User remover = mgr.getObjectById(com.qdacity.user.User.class, user.getUserId());			
-				if (!remover.getId().equals(userID))
-					{
-						if (!(termCourse.getOwners().contains(remover.getId()) || remover.getType() == UserType.ADMIN)) throw new UnauthorizedException("User is not authorized for removing participants");
-					}
-				else if (!termCourse.getParticipants().contains(remover.getId())) throw new UnauthorizedException("User is not a participant in this term course");
+		try {
+			String authenticatedUserId = userEndpoint.getCurrentUser(user).getId();
+
+			com.qdacity.user.User remover = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
+			if (!remover.getId().equals(userID))
+				{
+					if (!(termCourse.getOwners().contains(remover.getId()) || remover.getType() == UserType.ADMIN)) throw new UnauthorizedException("User is not authorized for removing participants");
+				}
+			else if (!termCourse.getParticipants().contains(remover.getId())) throw new UnauthorizedException("User is not a participant in this term course");
 		} finally {
 			mgr.close();
 		}
 	}
-	
+
 	public static void checkAuthorization(Long projectID, User user) throws UnauthorizedException {
 		isUserNotNull(user);
 		Boolean authorized = Authorization.isUserAuthorized(user, projectID) || isUserAdmin(user);
@@ -190,7 +202,7 @@ public class Authorization {
 
 	public static boolean isUserRegistered (com.qdacity.user.User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
-		
+
 		Query q = mgr.newQuery(com.qdacity.user.User.class);
 		q.setFilter("id == theID");
 		q.declareParameters("String theID");
@@ -207,19 +219,24 @@ public class Authorization {
 		} finally {
 		  q.closeAll();
 		}
-		
+
 		return false;
 	}
 
 	public static void checkAuthorization(com.qdacity.user.User userRequested, User userLoggedIn) throws UnauthorizedException {
 		isUserNotNull(userLoggedIn);
-		Boolean isAdmin = isUserAdmin(userLoggedIn);
+		String authenticatedUserId = null;
 
-		Boolean userUpdatesSelf = (userLoggedIn.getUserId().equals(userRequested.getId()));
-		if (!userUpdatesSelf && !isAdmin) throw new UnauthorizedException("User " + userLoggedIn.getUserId() + " is not authorized to update a user other than himself");
+		authenticatedUserId = userEndpoint.getCurrentUser(userLoggedIn).getId();
+
+		Boolean authorized = (authenticatedUserId.equals(userRequested.getId()));
+		Boolean isAdmin = isUserAdmin(userLoggedIn);
+		if (!authorized) throw new UnauthorizedException("User " + authenticatedUserId + " is Not Authorized");
+		Boolean userUpdatesSelf = (userLoggedIn.getId().equals(userRequested.getId()));
+		if (!userUpdatesSelf && !isAdmin) throw new UnauthorizedException("User " + authenticatedUserId + " is not authorized to update a user other than himself");
 		if (userRequested.getType() == UserType.ADMIN && !isAdmin) throw new UnauthorizedException("Non admin user tried to set ADMIN status");
 	}
-	
+
 	public static void checkAuthorization(MetaModelEntity metaModelEntity, User userLoggedIn) throws UnauthorizedException {
 		isUserNotNull(userLoggedIn);
 
@@ -251,7 +268,7 @@ public class Authorization {
 		java.util.logging.Logger.getLogger("logger").log(Level.INFO, user.getId() + " is not owner of project " + parentProject.getId());
 		throw new UnauthorizedException("User is Not Authorized.");
 	}
-	
+
 	public static Boolean isUserAdmin(User googleUser) throws UnauthorizedException {
 		com.qdacity.user.User user = userEndpoint.getCurrentUser(googleUser);
 		if (user.getType() == UserType.ADMIN) return true;

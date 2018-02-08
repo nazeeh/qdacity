@@ -25,6 +25,8 @@ import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint';
 import CodesEndpoint from '../../common/endpoints/CodesEndpoint';
 import SyncService from '../../common/SyncService';
 
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+
 const StyledCodingEditor = styled.div`
 	padding-top: 51px;
 	display: grid;
@@ -126,7 +128,13 @@ class CodingEditor extends React.Component {
 				documentResults: []
 			},
 			mxGraphLoaded: false,
-			fontSize: 13
+			fontSize: 13,
+
+			userProfile: {
+				name: '',
+				email: '',
+				picSrc: ''
+			}
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -157,18 +165,51 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
+		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
+		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
+
+		// update on initialization
+		this.updateUserStatusFromProps(props);
+
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
 	}
 
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserStatusFromProps(nextProps);
+	}
+
 	updateUserAtSyncService() {
-		const account = this.props.account;
-		this.syncService.updateUser({
-			name: account.state.name,
-			email: account.state.email,
-			picSrc: account.state.picSrc,
-			project: this.state.project.id,
-			token: account.getToken()
+		const _this = this;
+		this.props.auth.authentication.getProfile().then((profile) => {
+			_this.syncService.updateUser({
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail,
+				project: _this.state.project.id,
+				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
+			});
+		})
+	}
+
+	updateUserStatusFromProps(targetedProps) {
+		const _this = this;
+		targetedProps.auth.authentication.getProfile().then(function(profile) {
+			_this.setState({
+				userProfile: {
+					name: profile.name,
+					email: profile.email,
+					picSrc: profile.thumbnail
+				}
+			});
+			_this.syncService.updateUser({
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail,
+				project: _this.state.project.id,
+				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
+			});
 		});
 	}
 
@@ -176,10 +217,13 @@ class CodingEditor extends React.Component {
 		this.updateUserAtSyncService();
 
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
+		if (this.state.userProfile.email !== '') {
+			this.syncService.logon(this.state.userProfile);
+		}
 	}
 
-	componentWillReceiveProps() {
-		this.updateUserAtSyncService();
+	componentDidMount() {
+		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
 	}
 
 	componentWillUnmount() {
@@ -199,7 +243,7 @@ class CodingEditor extends React.Component {
 					project: project
 				});
 			}
-		);
+		).catch(()=>{console.log("could not load project")});
 	}
 
 	resizeElements() {
@@ -385,8 +429,11 @@ class CodingEditor extends React.Component {
 	}
 
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
-			return null;
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		)
+			return <UnauthenticatedUserPanel history={this.props.history} />;
 		if (this.state.project.getCodesystemID() == -1) this.init();
 
 		const fonts = [
@@ -499,7 +546,7 @@ class CodingEditor extends React.Component {
 							umlEditor={this.umlEditorRef}
 							projectID={this.state.project.getId()}
 							projectType={this.state.project.getType()}
-							account={this.props.account}
+							auth={this.props.auth}
 							codesystemId={this.state.project.getCodesystemID()}
 							toggleCodingView={this.toggleCodingView}
 							editorCtrl={this.state.editorCtrl}
@@ -510,6 +557,7 @@ class CodingEditor extends React.Component {
 							codeRemoved={this.codeRemoved}
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
+							userProfile={this.state.userProfile}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>

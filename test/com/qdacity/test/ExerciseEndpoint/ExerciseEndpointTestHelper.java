@@ -10,7 +10,7 @@ import com.qdacity.exercise.Exercise;
 import com.qdacity.exercise.ExerciseProject;
 
 public class ExerciseEndpointTestHelper {
-	static public void addExercise(Long id, Long termCourseID, String name, com.google.appengine.api.users.User loggedInUser) {
+	static public void addExercise(Long id, Long termCourseID, String name, com.google.api.server.spi.auth.common.User loggedInUser) {
 		Exercise exercise = new Exercise();
 		exercise.setId(id);
 		exercise.setName(name);
@@ -25,7 +25,7 @@ public class ExerciseEndpointTestHelper {
 		}
 	}
 	
-	static public void removeExercise(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public void removeExercise(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		try {
 			ee.removeExercise(id, loggedInUser);
@@ -35,7 +35,7 @@ public class ExerciseEndpointTestHelper {
 		}
 	}
 	
-	static public List<Exercise> listExercises(Long termCourseID, com.google.appengine.api.users.User loggedInUser) {
+	static public List<Exercise> listExercises(Long termCourseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		List<Exercise> exercises = null;
 		try {
@@ -48,7 +48,7 @@ public class ExerciseEndpointTestHelper {
 	}
 	
 	
-	static public void createExerciseProject(Long revisionID, Long exerciseID, com.google.appengine.api.users.User loggedInUser) {
+	static public void createExerciseProject(Long revisionID, Long exerciseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		try {
@@ -59,7 +59,7 @@ public class ExerciseEndpointTestHelper {
 		}
 	}
 	
-static public void createExerciseProjectIfNeeded(Long revisionID, Long exerciseID, com.google.appengine.api.users.User loggedInUser) {
+static public void createExerciseProjectIfNeeded(Long revisionID, Long exerciseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		try {
@@ -70,7 +70,7 @@ static public void createExerciseProjectIfNeeded(Long revisionID, Long exerciseI
 		}
 	}
 	
-	static public ExerciseProject getExerciseProjectByRevisionID(Long revisionID, com.google.appengine.api.users.User loggedInUser) {
+	static public ExerciseProject getExerciseProjectByRevisionID(Long revisionID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		ExerciseProject exerciseProject = null;
 		try {

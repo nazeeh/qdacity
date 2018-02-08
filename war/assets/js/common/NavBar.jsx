@@ -1,7 +1,9 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+
 import styled from 'styled-components';
 import Account from './Account.jsx';
+import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
 
 const StyledAccountTab = styled.li`
 	display: ${props => (props.loggedIn ? 'block' : 'none')} !important;
@@ -35,15 +37,29 @@ export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			user: {}
+			userData: {}
 		};
 
-		this.account = {};
+		this.authenticationProvider = props.auth.authentication;
 
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(
 			this
 		);
-		this.initializeAccount = this.initializeAccount.bind(this);
+	}
+
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		const _this = this;
+		this.authenticationProvider.getCurrentUser().then(
+			user => {
+				_this.setState({
+					userData: user
+				});
+			},
+			() => {
+				console.log('Could not get current user');
+			}
+		);
 	}
 
 	redirectToPersonalDashbaord() {
@@ -62,27 +78,7 @@ export default class NavBar extends React.Component {
 		document.getElementById('helpView').classList.toggle('show');
 	}
 
-	initializeAccount(c) {
-		this.account = c;
-		this.account.auth2.currentUser.listen(googleUser => {
-			if (googleUser.isSignedIn()) {
-				this.account.getCurrentUser().then(
-					value => {
-						this.setState({
-							user: value
-						});
-					},
-					() => {
-						console.log('Could not get current user');
-					}
-				);
-			}
-		});
-	}
-
 	render() {
-		var isLoggedIn = this.account.isSignedIn && this.account.isSignedIn();
-
 		return (
 			<nav
 				className="navbar navbar-default navbar-fixed-top topnav"
@@ -117,7 +113,10 @@ export default class NavBar extends React.Component {
 						id="bs-example-navbar-collapse-1"
 					>
 						<ul className="nav navbar-nav navbar-right">
-							<StyledHelpTab loggedIn={isLoggedIn} className="dropdown">
+							<StyledHelpTab
+								loggedIn={this.props.auth.authState.isUserSignedIn}
+								className="dropdown"
+							>
 								<StyledNavbarItem
 									className="dropdownToggle clickable"
 									onClick={function() {
@@ -128,15 +127,17 @@ export default class NavBar extends React.Component {
 								</StyledNavbarItem>
 								<div id="helpView" className="dropdown-menu dropdownContent">
 									<StyledDropdownLinks
-										loggedIn={isLoggedIn}
+										loggedIn={this.props.auth.authState.isUserSignedIn}
 										className="clickable"
-										onClick={() => this.props.history.push('/Faq')}
+										onClick={function() {
+											alert('Coming Soon...');
+										}}
 									>
 										<div>Faq</div>
 									</StyledDropdownLinks>
 									<StyledDropdownLinks
 										showOnlyIfLoggedIn
-										loggedIn={isLoggedIn}
+										loggedIn={this.props.auth.authState.isUserSignedIn}
 										className="clickable"
 										onClick={function() {
 											this.props.tutorial.tutorialEngine.showOverviewWindow();
@@ -146,7 +147,13 @@ export default class NavBar extends React.Component {
 									</StyledDropdownLinks>
 								</div>
 							</StyledHelpTab>
-							<StyledAccountTab loggedIn={isLoggedIn} className="dropdown">
+							<StyledAccountTab
+								loggedIn={
+									this.authenticationProvider.isSignedIn &&
+									this.authenticationProvider.isSignedIn()
+								}
+								className="dropdown"
+							>
 								<StyledNavbarItem
 									className="dropdownToggle clickable"
 									onClick={this.showAccountDropdown}
@@ -159,58 +166,12 @@ export default class NavBar extends React.Component {
 								</StyledNavbarItem>
 								<div id="accountView" className="dropdown-menu dropdownContent">
 									<Account
-										ref={this.initializeAccount}
-										client_id={this.props.client_id}
-										scopes={this.props.scopes}
-										callback={this.props.callback}
+										auth={this.props.auth}
 										history={this.props.history}
 									/>
 								</div>
 							</StyledAccountTab>
-							<StyledSigninTab loggedIn={isLoggedIn} className="dropdown">
-								<StyledNavbarItem
-									href="#"
-									className="dropdownToggle"
-									onClick={this.showSigninDropdown}
-								>
-									<FormattedMessage
-										id="navbar.sign_in"
-										defaultMessage="Sign in"
-									/>{' '}
-									<b className="caret" />
-								</StyledNavbarItem>
-								<ul id="signinView" className="dropdown-menu dropdownContent">
-									<li>
-										<div className="navbar-content">
-											<div className="row">
-												<div className="col-md-12">
-													<a
-														id="navBtnSigninGoogle"
-														className="btn  btn-primary"
-														href="#"
-													>
-														<i className="fa fa-google fa-2x pull-left" />
-														<span>
-															<FormattedMessage
-																id="navbar.google_sign_in"
-																defaultMessage="Sign in with Google"
-															/>
-														</span>
-													</a>
-												</div>
-											</div>
-										</div>
-										<div className="navbar-footer">
-											<div className="navbar-footer-content">
-												<div className="row">
-													<div className="col-md-12" />
-												</div>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</StyledSigninTab>
-							{this.state.user.type === 'ADMIN' && (
+							{this.state.userData.type === 'ADMIN' && (
 								<li>
 									<StyledNavbarItem
 										className="topnav clickable"

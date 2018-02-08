@@ -13,17 +13,18 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.users.User;
 import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
@@ -36,7 +37,8 @@ import com.qdacity.project.codesystem.CodeSystem;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class CodeSystemEndpoint {
 
 	/**
@@ -49,11 +51,7 @@ public class CodeSystemEndpoint {
 	 *         persisted and a cursor to the next page.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codesystem.listCodeSystem",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codesystem.listCodeSystem")
 	public CollectionResponse<CodeSystem> listCodeSystem(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 		if (user == null) throw new UnauthorizedException("User is Not Valid");
 
@@ -69,11 +67,7 @@ public class CodeSystemEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "codesystem.getCodeSystem",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codesystem.getCodeSystem")
 	public CollectionResponse<Code> getCodeSystem(@Named("id") Long id, @Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = null;
@@ -140,11 +134,7 @@ public class CodeSystemEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codesystem.insertCodeSystem",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codesystem.insertCodeSystem")
 	public CodeSystem insertCodeSystem(CodeSystem codesystem, User user) throws UnauthorizedException {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(codesystem, user); // FIXME only check if user is in DB
@@ -188,11 +178,7 @@ public class CodeSystemEndpoint {
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codesystem.updateCodeSystem",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codesystem.updateCodeSystem")
 	public CodeSystem updateCodeSystem(CodeSystem codesystem, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -221,11 +207,7 @@ public class CodeSystemEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "codesystem.removeCodeSystem",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "codesystem.removeCodeSystem")
 	public void removeCodeSystem(@Named("id") Long id, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {

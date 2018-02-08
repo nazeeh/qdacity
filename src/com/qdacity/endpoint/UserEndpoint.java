@@ -1,35 +1,53 @@
 package com.qdacity.endpoint;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.jdo.FetchGroup;
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.*;
-import com.google.appengine.api.datastore.Query.*;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.logs.*;
 import com.qdacity.project.Project;
-import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 import com.qdacity.user.UserType;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Api(
 	name = "qdacity",
@@ -37,7 +55,9 @@ import java.util.logging.Logger;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class}
+)
 public class UserEndpoint {
 
 	/**
@@ -49,13 +69,8 @@ public class UserEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "user.listUser",
-		path = "userlist",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public List<User> listUser(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, com.google.appengine.api.users.User user) throws UnauthorizedException {
+	@ApiMethod(name = "user.listUser",	path = "userlist")
+	public List<User> listUser(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("projectID") Long projectID, com.google.api.server.spi.auth.common.User user) throws UnauthorizedException {
 		Project project = null;
 		List<User> myusers = null;
 		PersistenceManager mgr = getPersistenceManager();
@@ -94,13 +109,9 @@ public class UserEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "user.listUserByCourse",
-		path = "userlistbycourse",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public List<User> listUserByCourse(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("courseID") Long courseID, com.google.appengine.api.users.User user) throws UnauthorizedException {
+	@ApiMethod(		name = "user.listUserByCourse",
+		path = "userlistbycourse")
+	public List<User> listUserByCourse(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("courseID") Long courseID, com.google.api.server.spi.auth.common.User user) throws UnauthorizedException {
 
 		Course course = null;
 		List<User> myusers = null;
@@ -116,13 +127,8 @@ public class UserEndpoint {
 	}
 
 	@SuppressWarnings({ "unchecked", "unused" })
-	@ApiMethod(
-		name = "user.findUsers",
-		path = "userlist",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public List<User> findUsers(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("searchTerm") String searchTerm, com.google.appengine.api.users.User user) throws UnauthorizedException {
+	@ApiMethod(name = "user.findUsers", path = "userlist")
+	public List<User> findUsers(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("searchTerm") String searchTerm, com.google.api.server.spi.auth.common.User user) throws UnauthorizedException {
 
 		// Authorization.checkAuthorization(projectID, user); //FIXME only ADMIN
 
@@ -165,13 +171,8 @@ public class UserEndpoint {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(
-		name = "user.listValidationCoders",
-		path = "validationProject",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public List<User> listValidationCoders(@Named("validationProject") Long projectID, com.google.appengine.api.users.User user) {
+	@ApiMethod(name = "user.listValidationCoders", path = "validationProject")
+	public List<User> listValidationCoders(@Named("validationProject") Long projectID, com.google.api.server.spi.auth.common.User user) {
 		List<User> users = new ArrayList<User>();
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -196,12 +197,8 @@ public class UserEndpoint {
 	 * @return The entity with primary key id.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "getUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public User getUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	@ApiMethod(name = "getUser")
+	public User getUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 
 		User user = getUser(id);
 
@@ -213,12 +210,8 @@ public class UserEndpoint {
 
 
 
-	@ApiMethod(
-		name = "updateUserType",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public User updateUserType(@Named("id") String id, @Named("type") String type, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	@ApiMethod(name = "updateUserType")
+	public User updateUserType(@Named("id") String id, @Named("type") String type, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		User user = null;
 		try {
@@ -240,6 +233,8 @@ public class UserEndpoint {
 
 			mgr.makePersistent(user);
 			Cache.cache(id, User.class, user);
+			AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+			Cache.cacheAuthenticatedUser(authenticatedUser, user); // also cache external user id
 
 		} finally {
 			mgr.close();
@@ -247,34 +242,47 @@ public class UserEndpoint {
 		return user;
 	}
 
-	@ApiMethod(
-		name = "user.getCurrentUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public User getCurrentUser(com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
-		return getUser(loggedInUser.getUserId());
+	/**
+	 * Gets the current user by given Login Information.
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "user.getCurrentUser")
+	public User getCurrentUser(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		return getUserByLoginProviderId(loggedInUser);
 	}
+
+	
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
 	 * exists in the datastore, an exception is thrown.
 	 * It uses HTTP POST method.
+	 * Be sure that the authenticator injects an instance of AuthenticatedUser, otherwise an Exception is thrown.
 	 *
 	 * @param user the entity to be inserted.
 	 * @return The inserted entity.
+	 * @throws UnauthorizedException 
+	 * @throws IllegalArgumentException if the loggedInUser is not an instance of AuthenticatedUser.
 	 */
-	@ApiMethod(
-		name = "insertUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public User insertUser(User user, com.google.appengine.api.users.User loggedInUser) {
-		user.setId(loggedInUser.getUserId());
+	@ApiMethod(name = "insertUser")
+	public User insertUser(User user, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		
+		if(loggedInUser == null) {
+			throw new UnauthorizedException("The User could not be authenticated");
+		}
+		if(!(loggedInUser instanceof AuthenticatedUser)) {
+			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
+		}
+		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+		
+		user.setId(authenticatedUser.getId());
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		user.setLastLogin(new Date());
+		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId())));
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (user.getId() != null && containsUser(user)) {
@@ -302,12 +310,8 @@ public class UserEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	// FIXME Possibly remove, or make secure.
-	@ApiMethod(
-		name = "updateUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public User updateUser(User user, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	@ApiMethod(name = "updateUser")
+	public User updateUser(User user, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		// Check if user is authorized
 		Authorization.checkAuthorization(user, loggedInUser);
 
@@ -318,6 +322,8 @@ public class UserEndpoint {
 			}
 			mgr.makePersistent(user);
 			Cache.cache(user.getId(), User.class, user);
+			AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+			Cache.cacheAuthenticatedUser(authenticatedUser, user); // also cache external user id
 		} finally {
 			mgr.close();
 		}
@@ -331,12 +337,8 @@ public class UserEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "removeUser",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
-	public void removeUser(@Named("id") String id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	@ApiMethod(name = "removeUser")
+	public void removeUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			User user = (User) Cache.getOrLoad(id, User.class, mgr);
@@ -359,31 +361,23 @@ public class UserEndpoint {
 			user = (User) Cache.get(userId, User.class);
 
 			if (user == null || user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
-
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Key key = KeyFactory.createKey("User", userId);
-				Entity userEntity = datastore.get(key);
-
-				user = new User();
-				user.setEmail((String) userEntity.getProperty("email"));
-				user.setGivenName((String) userEntity.getProperty("givenName"));
-				user.setId(userEntity.getKey().getName());
-				user.setProjects((List<Long>) userEntity.getProperty("projects"));
-				user.setCourses((List<Long>) userEntity.getProperty("courses"));
-				user.setTermCourses((List<Long>) userEntity.getProperty("termCourses"));
-				user.setSurName((String) userEntity.getProperty("surName"));
-				user.setType(UserType.valueOf((String) userEntity.getProperty("type")));
-				user.setLastProjectId((Long) userEntity.getProperty("lastProjectId"));
-				user.setLastLogin((Date) userEntity.getProperty("lastLogin"));
-				Object lastPrjType = userEntity.getProperty("lastProjectType");
-				if (lastPrjType != null) user.setLastProjectType(ProjectType.valueOf((String) userEntity.getProperty("lastProjectType")));
-
-				if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
-					user.setLastLogin(new Date());
-					userEntity.setProperty("lastLogin", new Date());
-					datastore.put(userEntity);
+				
+				PersistenceManager mgr = getPersistenceManager();
+				try {
+					// TODO: redo with DataStoreService
+					user = mgr.getObjectById(User.class, userId);
+					// detatch copy, otherwise referenced default fetched objects filled with nulls
+					user = mgr.detachCopy(user);
+			
+					if (user.getLastLogin() == null || ((new Date()).getTime() - user.getLastLogin().getTime() > 600000)) {
+						user.setLastLogin(new Date());
+						mgr.makePersistent(user);
+					}
+				} finally {
+					mgr.close();
 				}
 				Cache.cache(user.getId(), User.class, user);
+				// not caching external user id because we don't know which the fetched user will take!
 			}
 
 			// PreLoad User Data
@@ -393,12 +387,57 @@ public class UserEndpoint {
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}
 
-		} catch (com.google.appengine.api.datastore.EntityNotFoundException e) {
+		} catch (JDOObjectNotFoundException e) {
 			e.printStackTrace();
 			throw new UnauthorizedException("User is not registered");
 
 		}
 		return user;
+	}
+
+	/**
+	 * Gets the qdacity.User by the given authentication information.
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException if the loggedInUser is null or there was no user found.
+	 * @throws IllegalArgumentException if the user is not an instance of AuthenticatedUser
+	 * @throws IllegalStateException if there are inconsistencies in db: more than one user linked with the given provider id
+	 */
+	@SuppressWarnings("unchecked")
+	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+		if(loggedInUser == null) {
+			throw new UnauthorizedException("The User could not be authenticated");
+		}
+		if(!(loggedInUser instanceof AuthenticatedUser)) {
+			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
+		}
+		
+		AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			Query query = mgr.newQuery(User.class);
+			query.setFilter("loginProviderInformationList.contains(loginProviderVar) && loginProviderVar.externalUserId == externalIdParam && loginProviderVar.provider == providerParam");
+			query.declareVariables("com.qdacity.user.UserLoginProviderInformation loginProviderVar");
+			query.declareParameters("String externalIdParam, String providerParam");
+			
+			List<User> queriedUserList = (List<User>) query.execute(authUser.getId(), authUser.getProvider());
+			
+			if(queriedUserList.size() > 1) {
+				throw new IllegalStateException("There are multiple Users connected with a federate Auth Provider!");
+			}
+			if(queriedUserList.size() == 0) {
+				throw new UnauthorizedException("User is not registered");
+			}
+			
+			User user = queriedUserList.get(0);
+			// detatch copy, otherwise referenced default fetched objects filled with nulls
+			user = mgr.detachCopy(user);
+			return user;
+		} finally {
+			mgr.close();
+		}
 	}
 
 	private boolean containsUser(User user) {

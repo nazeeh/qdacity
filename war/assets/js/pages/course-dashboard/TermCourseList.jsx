@@ -31,21 +31,22 @@ export default class TermCourseList extends React.Component {
 
     this.itemList = null;
 
-    this.showNewTermCourseModal = this.showNewTermCourseModal.bind(this);
+		this.showNewTermCourseModal = this.showNewTermCourseModal.bind(this);
+		this.authenticationProvider = props.auth.authentication;
 
     this.init();
 
     this.renderTerm = this.renderTerm.bind(this);
   }
 
-  init() {
-    var _this = this;
-    var course = this.props.course;
-    var owners = [];
-    var isUserOwner = [];
-    var coursePromise = CourseEndpoint.getCourse(course.getId());
-    var courseTermListPromise = CourseEndpoint.listTermCourse(course.getId());
-    var getAccountPromise = this.props.account.getCurrentUser();
+	init() {
+		var _this = this;
+		var course = this.props.course;
+		var owners = [];
+		var isUserOwner = [];
+		var coursePromise = CourseEndpoint.getCourse(course.getId());
+		var courseTermListPromise = CourseEndpoint.listTermCourse(course.getId());
+		var getAccountPromise = this.authenticationProvider.getCurrentUser();
 
     //Get the course, its terms, participants and save all info in the course object
     coursePromise.then(function(resp) {
@@ -168,52 +169,52 @@ export default class TermCourseList extends React.Component {
     var _this = this;
     e.stopPropagation();
 
-    var confirm = new Confirm(
-      formatMessage(
-        {
-          id: "term.course.join_term",
-          defaultMessage: "Do you want to join the term {name} of this course?"
-        },
-        {
-          name: term.text
-        }
-      )
-    );
-    confirm.showModal().then(function() {
-      _this.props.account.getCurrentUser().then(function(resp) {
-        CourseEndPoint.addParticipant(term.id, resp.id).then(function(resp2) {
-          _this.props.addParticipant(term);
-        });
-      });
-    });
-  }
+		var confirm = new Confirm(
+			formatMessage(
+				{
+					id: 'term.course.join_term',
+					defaultMessage: 'Do you want to join the term {name} of this course?'
+				},
+				{
+					name: term.text
+				}
+			)
+		);
+		confirm.showModal().then(function() {
+			_this.props.auth.authentication.getCurrentUser().then(function(resp) {
+				CourseEndPoint.addParticipant(term.id, resp.id).then(function(resp2) {
+					_this.props.addParticipant(term);
+				});
+			});
+		});
+	}
 
   leaveTermCourse(e, term, index) {
     const { formatMessage } = IntlProvider.intl;
     var _this = this;
     e.stopPropagation();
 
-    var confirm = new Confirm(
-      formatMessage(
-        {
-          id: "term.course.leave_term",
-          defaultMessage: "Do you want to leave the term {name} of this course?"
-        },
-        {
-          name: term.text
-        }
-      )
-    );
-    confirm.showModal().then(function() {
-      _this.props.account.getCurrentUser().then(function(resp) {
-        CourseEndPoint.removeParticipant(term.id, resp.id).then(function(
-          resp2
-        ) {
-          _this.props.removeParticipant(term);
-        });
-      });
-    });
-  }
+		var confirm = new Confirm(
+			formatMessage(
+				{
+					id: 'term.course.leave_term',
+					defaultMessage: 'Do you want to leave the term {name} of this course?'
+				},
+				{
+					name: term.text
+				}
+			)
+		);
+		confirm.showModal().then(function() {
+			_this.authenticationProvider.getCurrentUser().then(function(resp) {
+				CourseEndPoint.removeParticipant(term.id, resp.id).then(function(
+					resp2
+				) {
+					_this.props.removeParticipant(term);
+				});
+			});
+		});
+	}
 
   configureTermCourse(e, term, index) {
     var _this = this;
@@ -302,22 +303,22 @@ export default class TermCourseList extends React.Component {
     }
   }
 
-  renderTerm(term, index) {
-    if (term.isOpen == "true") {
-      return (
-        <StyledListItemPrimary>
-          <span>{term.text}</span>
-          <div>
-            {this.renderJoinButton(term, index)}
-            {this.renderDeleteButton(term, index)}
-            {this.renderConfigureButton(term, index)}
-          </div>
-        </StyledListItemPrimary>
-      );
-    } else {
-      return "";
-    }
-  }
+	renderTerm(term, index) {
+		if (term.isOpen == 'true') {
+			return (
+				<StyledListItemPrimary>
+					<span>{term.text}</span>
+					<div>
+					{this.renderJoinButton(term, index)}
+					{this.renderDeleteButton(term, index)}
+					{this.renderConfigureButton(term, index)}
+					</div>
+				</StyledListItemPrimary>
+			);
+		} else {
+			return '';
+		}
+	}
 
   render() {
     return (

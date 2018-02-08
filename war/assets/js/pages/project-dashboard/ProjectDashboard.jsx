@@ -15,6 +15,8 @@ import RevisionHistory from './RevisionHistory/RevisionHistory.jsx';
 import ParentProject from './ParentProject/ParentProject.jsx';
 import PersonalReportList from './PersonalReportList.jsx';
 
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 
@@ -38,18 +40,21 @@ export default class ProjectDashboard extends React.Component {
 			googleChartsLoaded: false
 		};
 
+		this.authenticationProvider = this.props.auth.authentication;
+
 		this.props.chartScriptPromise.then(() => {
 			this.setState({
 				googleChartsLoaded: true
 			});
 		});
 		this.addReports = this.addReports.bind(this);
+
 		scroll(0, 0);
 	}
 
 	init() {
 		if (!this.userPromise) {
-			this.userPromise = this.props.account.getCurrentUser();
+			this.userPromise = this.authenticationProvider.getCurrentUser();
 			this.setUserRights();
 			this.setProjectProperties();
 		}
@@ -58,7 +63,7 @@ export default class ProjectDashboard extends React.Component {
 	setUserRights() {
 		var _this = this;
 		this.userPromise.then(function(user) {
-			var isProjectOwner = _this.props.account.isProjectOwner(
+			var isProjectOwner = _this.props.auth.authorization.isProjectOwner(
 				user,
 				_this.state.project.getId()
 			);
@@ -74,7 +79,7 @@ export default class ProjectDashboard extends React.Component {
 		ProjectEndpoint.getProject(project.getId(), project.getType()).then(
 			function(resp) {
 				_this.userPromise.then(function(user) {
-					var isValidationCoder = _this.props.account.isValidationCoder(
+					var isValidationCoder = _this.props.auth.authorization.isValidationCoder(
 						user,
 						resp
 					);
@@ -114,15 +119,27 @@ export default class ProjectDashboard extends React.Component {
 		);
 	}
 
+	updateUserStatus() {
+		const loginStatus = this.authenticationProvider.isSignedIn();
+		if (loginStatus !== this.state.isSignedIn) {
+			this.state.isSignedIn = loginStatus;
+			this.setState(this.state);
+		}
+	}
+
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
-			return null;
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		) {
+			return <UnauthenticatedUserPanel history={this.props.history} />;
+		}
 		this.init();
 
 		return (
 			<StyledDashboard className="container main-content">
 				<TitleRow
-					account={this.props.account}
+					auth={this.props.auth}
 					project={this.state.project}
 					isProjectOwner={this.state.isProjectOwner}
 					isValidationCoder={this.state.isValidationCoder}
@@ -166,8 +183,8 @@ export default class ProjectDashboard extends React.Component {
 						/>
 						{this.state.project.getParentID() ? (
 							<PersonalReportList
+								auth={this.props.auth}
 								project={this.state.project}
-								account={this.props.account}
 								history={this.props.history}
 							/>
 						) : (

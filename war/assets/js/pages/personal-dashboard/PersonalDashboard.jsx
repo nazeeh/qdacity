@@ -6,10 +6,12 @@ import CourseList from './CourseList.jsx';
 import NotificationList from './NotificationList.jsx';
 import WelcomePanel from './WelcomePanel.jsx';
 import AdvertPanel from './AdvertPanel.jsx';
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
 export default class PersonalDashboard extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
 			projects: [],
 			courses: []
@@ -24,7 +26,6 @@ export default class PersonalDashboard extends React.Component {
 
 		scroll(0, 0);
 	}
-
 	setProjects(projects) {
 		this.setState({
 			projects: projects
@@ -66,14 +67,18 @@ export default class PersonalDashboard extends React.Component {
 	}
 
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
-			return null;
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		) {
+			return <UnauthenticatedUserPanel history={this.props.history} />;
+		}
 		return (
 			<div className="container main-content">
 				<div className="row">
 					<div className="col-lg-8">
 						<WelcomePanel
-							account={this.props.account}
+							auth={this.props.auth}
 							history={this.props.history}
 						/>
 						<AdvertPanel />
