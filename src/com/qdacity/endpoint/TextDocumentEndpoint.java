@@ -373,7 +373,12 @@ public class TextDocumentEndpoint {
 	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Collection<TextDocument> documents = null;
-		if (project.getClass() == ProjectRevision.class) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, user).getItems();
+		if (project.getClass() == ProjectRevision.class)
+        {
+            if (projectType == ProjectType.REVISION) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, user).getItems();
+            else if (projectType == ProjectType.EXERCISE) documents = tde.getTextDocument(project.getId(), ProjectType.EXERCISE, user).getItems();
+            else if (projectType == ProjectType.VALIDATION) documents = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
+        }
 		else documents = tde.getTextDocument(project.getId(), ProjectType.PROJECT, user).getItems();
 
 		PersistenceManager mgr = getPersistenceManager();
