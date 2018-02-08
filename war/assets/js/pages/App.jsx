@@ -203,7 +203,6 @@ export default class App extends React.Component {
 								path="/Admin/Stats"
 								render={props => (
 									<AdminStats
-										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -213,7 +212,6 @@ export default class App extends React.Component {
 								path="/Admin/Costs"
 								render={props => (
 									<AdminCosts
-										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
