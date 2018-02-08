@@ -621,6 +621,7 @@ export default class TextEditor extends React.Component {
 			case 'fontface': return <Marks.FontFace {...props} />;
 			case 'fontsize': return <Marks.FontSize {...props} />;
 			case 'italic': return <Marks.Italic {...props} />;
+			case 'underline': return <Marks.Underline {...props} />;
 		};
 	}
 
