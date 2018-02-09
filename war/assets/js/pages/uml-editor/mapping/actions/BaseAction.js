@@ -1,54 +1,54 @@
 export default class BaseAction {
-	constructor() {
-		this.rule = null;
-	}
+  constructor() {
+    this.rule = null;
+  }
 
-	getRule() {
-		return this.rule;
-	}
+  getRule() {
+    return this.rule;
+  }
 
-	setRule(rule) {
-		this.rule = rule;
-	}
+  setRule(rule) {
+    this.rule = rule;
+  }
 
-	getIdentifier() {
-		// Override
-	}
+  getIdentifier() {
+    // Override
+  }
 
-	getRequiredTargetType() {
-		// Override
-	}
+  getRequiredTargetType() {
+    // Override
+  }
 
-	execute(target) {
-		this.assertTargetType();
-		this.doExecute(target);
-	}
+  execute(target) {
+    this.assertTargetType();
+    this.doExecute(target);
+  }
 
-	doExecute(target) {
-		// Override
-	}
+  doExecute(target) {
+    // Override
+  }
 
-	undo(target) {
-		this.assertTargetType();
-		this.doUndo(target);
-	}
+  undo(target) {
+    this.assertTargetType();
+    this.doUndo(target);
+  }
 
-	doUndo(target) {
-		// Override
-	}
+  doUndo(target) {
+    // Override
+  }
 
-	assertTargetType() {
-		const requiredTargetType = this.getRequiredTargetType();
-		const targetType = this.getRule().getTargetType();
+  assertTargetType() {
+    const requiredTargetType = this.getRequiredTargetType();
+    const targetType = this.getRule().getTargetType();
 
-		if (targetType != requiredTargetType) {
-			throw new Error(
-				'Invalid target type ' +
-					targetType +
-					'. Expected ' +
-					requiredTargetType +
-					'.'
-			);
-		}
-	}
+    if (targetType != requiredTargetType) {
+      throw new Error(
+        "Invalid target type " +
+          targetType +
+          ". Expected " +
+          requiredTargetType +
+          "."
+      );
+    }
+  }
 }

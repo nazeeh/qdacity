@@ -28,7 +28,7 @@ export default class ExerciseProjectList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      exerciseProjects: [],
+      exerciseProjects: []
     };
 
     this.init();
@@ -56,11 +56,7 @@ export default class ExerciseProjectList extends React.Component {
     });
   }
 
-
-  editorClick(e, exerciseProject) {
-
-  }
-
+  editorClick(e, exerciseProject) {}
 
   renderExerciseProject(exerciseProject, index) {
     return (

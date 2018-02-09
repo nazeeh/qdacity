@@ -1,74 +1,74 @@
 export default class Rule {
-	static create() {
-		return new Rule();
-	}
+  static create() {
+    return new Rule();
+  }
 
-	constructor() {
-		this.targetType = null;
-		this.condition = null;
-		this.action = null;
+  constructor() {
+    this.targetType = null;
+    this.condition = null;
+    this.action = null;
 
-		this.mapper = null;
-	}
+    this.mapper = null;
+  }
 
-	getTargetType() {
-		return this.targetType;
-	}
+  getTargetType() {
+    return this.targetType;
+  }
 
-	getCondition() {
-		return this.condition;
-	}
+  getCondition() {
+    return this.condition;
+  }
 
-	getAction() {
-		return this.action;
-	}
+  getAction() {
+    return this.action;
+  }
 
-	getMapper() {
-		return this.mapper;
-	}
+  getMapper() {
+    return this.mapper;
+  }
 
-	setMapper(mapper) {
-		this.mapper = mapper;
-	}
+  setMapper(mapper) {
+    this.mapper = mapper;
+  }
 
-	expect(targetType) {
-		this.targetType = targetType;
-		return this;
-	}
+  expect(targetType) {
+    this.targetType = targetType;
+    return this;
+  }
 
-	require(condition) {
-		this.condition = condition;
-		this.condition.setRule(this);
-		return this;
-	}
+  require(condition) {
+    this.condition = condition;
+    this.condition.setRule(this);
+    return this;
+  }
 
-	then(action) {
-		this.action = action;
-		this.action.setRule(this);
-		return this;
-	}
+  then(action) {
+    this.action = action;
+    this.action.setRule(this);
+    return this;
+  }
 
-	evaluate(target) {
-		if (this.condition != null) {
-			return this.condition.evaluate(target);
-		}
+  evaluate(target) {
+    if (this.condition != null) {
+      return this.condition.evaluate(target);
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	execute(target) {
-		if (this.evaluate(target)) {
-			if (this.action != null) {
-				return this.action.execute(target);
-			}
-		}
-	}
+  execute(target) {
+    if (this.evaluate(target)) {
+      if (this.action != null) {
+        return this.action.execute(target);
+      }
+    }
+  }
 
-	undo(target) {
-		if (this.evaluate(target)) {
-			if (this.action != null) {
-				return this.action.undo(target);
-			}
-		}
-	}
+  undo(target) {
+    if (this.evaluate(target)) {
+      if (this.action != null) {
+        return this.action.undo(target);
+      }
+    }
+  }
 }

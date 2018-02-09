@@ -68,7 +68,7 @@ export default class ExercisePage extends React.Component {
           exercise: exercise,
           isTermCourseOwner: isTermCourseOwner
         });
-      })
+      });
     });
   }
 
@@ -77,7 +77,12 @@ export default class ExercisePage extends React.Component {
     if (!isUserTermCourseOwner) {
       return "";
     } else {
-      return <ExerciseProjects exercise={this.state.exercise} account={this.props.account}/>;
+      return (
+        <ExerciseProjects
+          exercise={this.state.exercise}
+          account={this.props.account}
+        />
+      );
     }
   }
 
@@ -86,10 +91,6 @@ export default class ExercisePage extends React.Component {
       return null;
     this.init();
 
-    return (
-      <StyledDashboard>
-        {this.renderExerciseProjects()}
-      </StyledDashboard>
-    );
+    return <StyledDashboard>{this.renderExerciseProjects()}</StyledDashboard>;
   }
 }

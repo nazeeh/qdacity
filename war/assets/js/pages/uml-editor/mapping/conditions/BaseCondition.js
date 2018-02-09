@@ -1,17 +1,17 @@
 export default class BaseCondition {
-	constructor() {
-		this.rule = null;
-	}
+  constructor() {
+    this.rule = null;
+  }
 
-	getRule() {
-		return this.rule;
-	}
+  getRule() {
+    return this.rule;
+  }
 
-	setRule(rule) {
-		this.rule = rule;
-	}
+  setRule(rule) {
+    this.rule = rule;
+  }
 
-	evaluate(target) {
-		return false;
-	}
+  evaluate(target) {
+    return false;
+  }
 }

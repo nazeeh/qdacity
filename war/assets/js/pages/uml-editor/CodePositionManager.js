@@ -1,4 +1,4 @@
-import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpoint';
+import UmlCodePositionEndpoint from "../../common/endpoints/UmlCodePositionEndpoint";
 
 /**
  * This class handles the access to the UmlCodePosition objects from the database. A UmlCodePosition
@@ -6,122 +6,122 @@ import UmlCodePositionEndpoint from '../../common/endpoints/UmlCodePositionEndpo
  * The positions are stored as key value pairs (key = code.codeID, value = position object).
  */
 export default class CodePositionManager {
-	constructor() {
-		this.codePositions = {};
-	}
+  constructor() {
+    this.codePositions = {};
+  }
 
-	/**
-	 * Returns a codePosition with the given id from the "client storage" (not from the database).
-	 */
-	getCodePosition(codeId) {
-		const key = codeId;
+  /**
+   * Returns a codePosition with the given id from the "client storage" (not from the database).
+   */
+  getCodePosition(codeId) {
+    const key = codeId;
 
-		if (this.codePositions.hasOwnProperty(key)) {
-			return this.codePositions[key];
-		}
+    if (this.codePositions.hasOwnProperty(key)) {
+      return this.codePositions[key];
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/**
-	 * Creates a new code position object with the given parameters.
-	 */
-	createCodePositionObject(id, codeId, codesystemId, x, y) {
-		return {
-			id: id,
-			codeId: codeId,
-			codesystemId: codesystemId,
-			x: x,
-			y: y
-		};
-	}
+  /**
+   * Creates a new code position object with the given parameters.
+   */
+  createCodePositionObject(id, codeId, codesystemId, x, y) {
+    return {
+      id: id,
+      codeId: codeId,
+      codesystemId: codesystemId,
+      x: x,
+      y: y
+    };
+  }
 
-	/**
-	 * Saves the code position with the given key. Is not persisted in the database.
-	 */
-	setCodePosition(codeId, umlCodePosition) {
-		const key = codeId;
+  /**
+   * Saves the code position with the given key. Is not persisted in the database.
+   */
+  setCodePosition(codeId, umlCodePosition) {
+    const key = codeId;
 
-		this.codePositions[key] = umlCodePosition;
-	}
+    this.codePositions[key] = umlCodePosition;
+  }
 
-	/**
-	 * Removes the code position from the client storage.
-	 */
-	removeCodePosition(codeId) {
-		const key = codeId;
+  /**
+   * Removes the code position from the client storage.
+   */
+  removeCodePosition(codeId) {
+    const key = codeId;
 
-		if (this.codePositions.hasOwnProperty(key)) {
-			delete this.codePositions[key];
-		}
-	}
+    if (this.codePositions.hasOwnProperty(key)) {
+      delete this.codePositions[key];
+    }
+  }
 
-	/**
-	 * Updates an array of code positions.
-	 */
-	refreshUmlCodePositions(umlCodePositions) {
-		const _this = this;
+  /**
+   * Updates an array of code positions.
+   */
+  refreshUmlCodePositions(umlCodePositions) {
+    const _this = this;
 
-		if (umlCodePositions != null) {
-			umlCodePositions.forEach(umlCodePosition => {
-				_this.setCodePosition(umlCodePosition.codeId, umlCodePosition);
-			});
-		}
-	}
+    if (umlCodePositions != null) {
+      umlCodePositions.forEach(umlCodePosition => {
+        _this.setCodePosition(umlCodePosition.codeId, umlCodePosition);
+      });
+    }
+  }
 
-	/**
-	 * Returns all code positions with the given codesystemId from the database.
-	 */
-	listCodePositions(codesystemId, callback) {
-		const _this = this;
+  /**
+   * Returns all code positions with the given codesystemId from the database.
+   */
+  listCodePositions(codesystemId, callback) {
+    const _this = this;
 
-		UmlCodePositionEndpoint.listCodePositions(codesystemId).then(resp => {
-			let umlCodePositions = resp.items || [];
+    UmlCodePositionEndpoint.listCodePositions(codesystemId).then(resp => {
+      let umlCodePositions = resp.items || [];
 
-			_this.refreshUmlCodePositions(umlCodePositions);
+      _this.refreshUmlCodePositions(umlCodePositions);
 
-			callback(umlCodePositions);
-		});
-	}
+      callback(umlCodePositions);
+    });
+  }
 
-	/**
-	 * Inserts or updates a given code position in the database.
-	 */
-	insertOrUpdateCodePosition(codePosition) {
-		let codePositions = [];
-		codePositions.push(codePosition);
+  /**
+   * Inserts or updates a given code position in the database.
+   */
+  insertOrUpdateCodePosition(codePosition) {
+    let codePositions = [];
+    codePositions.push(codePosition);
 
-		this.insertOrUpdateCodePositions(codePositions);
-	}
+    this.insertOrUpdateCodePositions(codePositions);
+  }
 
-	/**
-	 * Inserts or updates multiple code positions in the database.
-	 */
-	insertOrUpdateCodePositions(codePositions) {
-		const _this = this;
+  /**
+   * Inserts or updates multiple code positions in the database.
+   */
+  insertOrUpdateCodePositions(codePositions) {
+    const _this = this;
 
-		_this.refreshUmlCodePositions(codePositions);
+    _this.refreshUmlCodePositions(codePositions);
 
-		UmlCodePositionEndpoint.insertOrUpdateCodePositions(codePositions).then(
-			resp => {
-				// ids updated
-				_this.refreshUmlCodePositions(resp.items);
-			}
-		);
-	}
+    UmlCodePositionEndpoint.insertOrUpdateCodePositions(codePositions).then(
+      resp => {
+        // ids updated
+        _this.refreshUmlCodePositions(resp.items);
+      }
+    );
+  }
 
-	/**
-	 * Deletes a code position from the database.
-	 */
-	deleteCodePosition(codeId) {
-		const codePosition = this.getCodePosition(codeId);
+  /**
+   * Deletes a code position from the database.
+   */
+  deleteCodePosition(codeId) {
+    const codePosition = this.getCodePosition(codeId);
 
-		if (codePosition != null) {
-			this.removeCodePosition(codeId);
+    if (codePosition != null) {
+      this.removeCodePosition(codeId);
 
-			UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then(resp => {
-				// Do nothing
-			});
-		}
-	}
+      UmlCodePositionEndpoint.removeCodePosition(codePosition.id).then(resp => {
+        // Do nothing
+      });
+    }
+  }
 }
