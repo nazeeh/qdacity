@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import AdminEndpoint from '../../common/endpoints/AdminEndpoint';
 import UserRegistrationsChart from './UserRegistrationsChart.jsx';
@@ -18,7 +18,7 @@ export default class AdminStats extends React.Component {
 
 	init() {
 		var _this = this;
-		AdminEndpoint.getAdminStats().then(function (resp) {
+		AdminEndpoint.getAdminStats().then(function(resp) {
 			_this.setState({
 				registeredUsers: resp.registeredUsers,
 				activeUsers: resp.activeUsers,
@@ -46,7 +46,7 @@ export default class AdminStats extends React.Component {
 								<div className="col-lg-4 col-xs-6 small-gutter-right">
 									<div className="info-box">
 										<div className="info-box-icon bg-aqua">
-											<i className="fa fa-users" aria-hidden="true"/>
+											<i className="fa fa-users" aria-hidden="true" />
 										</div>
 										<div className="info-box-content">
 											<span className="info-box-text">
@@ -64,7 +64,7 @@ export default class AdminStats extends React.Component {
 								<div className="col-lg-4 col-xs-6 small-gutter">
 									<div className="info-box">
 										<div className="info-box-icon bg-yellow">
-											<i className="fa fa-heartbeat" aria-hidden="true"/>
+											<i className="fa fa-heartbeat" aria-hidden="true" />
 										</div>
 										<div className="info-box-content">
 											<span className="info-box-text">
@@ -73,9 +73,9 @@ export default class AdminStats extends React.Component {
 													defaultMessage="Active Users"
 												/>{' '}
 												(<FormattedMessage
-												id="adminstats.last_thirty_days"
-												defaultMessage="30 days"
-											/>)
+													id="adminstats.last_thirty_days"
+													defaultMessage="30 days"
+												/>)
 											</span>
 											<span id="topStatsCodes" className="info-box-number">
 												{this.state.activeUsers}
@@ -86,7 +86,7 @@ export default class AdminStats extends React.Component {
 								<div className="col-lg-4 col-xs-6 small-gutter-left">
 									<div className="info-box">
 										<div className="info-box-icon bg-red">
-											<i className="fa fa-folder" aria-hidden="true"/>
+											<i className="fa fa-folder" aria-hidden="true" />
 										</div>
 										<div className="info-box-content">
 											<span className="info-box-text">

@@ -1,10 +1,12 @@
 import React from 'react';
+
 import Jumbotron from '../../common/styles/Jumbotron';
 import { FormattedMessage } from 'react-intl';
 
 export default class WelcomePanel extends React.Component {
 	constructor(props) {
 		super(props);
+		this.authenticationProvider = props.auth.authentication;
 		this.redirectToNytProject = this.redirectToNytProject.bind(this);
 	}
 
@@ -22,7 +24,7 @@ export default class WelcomePanel extends React.Component {
 						id="welcomepanel.welcome_user"
 						defaultMessage="Welcome {user}"
 						values={{
-							user: this.props.account.getProfile().getGivenName()
+							user: this.authenticationProvider.getProfile().displayName
 						}}
 					/>
 				</h1>

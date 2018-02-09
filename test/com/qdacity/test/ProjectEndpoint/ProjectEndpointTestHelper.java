@@ -3,13 +3,13 @@ package com.qdacity.test.ProjectEndpoint;
 import static org.junit.Assert.fail;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.project.Project;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 
 public class ProjectEndpointTestHelper {
-	static public void addProject(Long id, String name, String description, Long codesystemID, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	static public void addProject(Long id, String name, String description, Long codesystemID, User loggedInUser) throws UnauthorizedException {
 		Project project = new Project();
 		project.setId(id);
 		project.setName(name);
@@ -20,12 +20,12 @@ public class ProjectEndpointTestHelper {
 		ue.insertProject(project, loggedInUser);
 	}
 
-	static public void removeProject(Long id, com.google.appengine.api.users.User loggedInUser) throws UnauthorizedException {
+	static public void removeProject(Long id, User loggedInUser) throws UnauthorizedException {
 		ProjectEndpoint ue = new ProjectEndpoint();
 		ue.removeProject(id, loggedInUser);
 	}
 
-	static public Project getProject(Long id, com.google.appengine.api.users.User loggedInUser) {
+	static public Project getProject(Long id, User loggedInUser) {
 
 		try {
 			ProjectEndpoint pe = new ProjectEndpoint();

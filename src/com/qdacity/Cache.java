@@ -9,6 +9,8 @@ import javax.jdo.PersistenceManager;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.user.User;
 
 public class Cache {
 
@@ -115,6 +117,12 @@ public class Cache {
 
 		syncCache.delete(keyString);
 
+	}
+	
+	public static void cacheAuthenticatedUser(AuthenticatedUser authenticatedUser, User qdacityUser) {
+		Class type = User.class;
+		String id = authenticatedUser.getProvider().toString() + ":" + authenticatedUser.getId();
+		cache(id, type, qdacityUser);
 	}
 
 	private static PersistenceManager getPersistenceManager() {

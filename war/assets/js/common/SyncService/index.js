@@ -75,7 +75,6 @@ export default class SyncService {
 			JSON.parse(JSON.stringify(this._userdata)),
 			userdata
 		);
-
 		if (JSON.stringify(userdata) === JSON.stringify(this._userdata)) {
 			return;
 		}

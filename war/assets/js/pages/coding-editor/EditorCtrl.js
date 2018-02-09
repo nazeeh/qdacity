@@ -405,8 +405,8 @@ export default class EditorCtrl {
 				this.element.children('option').each(function() {
 					if (
 						$(this)
-							.text()
-							.toLowerCase() === valueLowerCase
+						.text()
+						.toLowerCase() === valueLowerCase
 					) {
 						this.selected = valid = true;
 						return false;

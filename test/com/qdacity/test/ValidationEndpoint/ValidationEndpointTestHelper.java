@@ -7,11 +7,12 @@ import java.util.List;
 
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
@@ -40,17 +41,17 @@ public class ValidationEndpointTestHelper {
 			Long revID = revisions.get(0).getId();
 
 			pe.requestValidationAccess(revID, validationCoderA);
-			ValidationProject valprjA = pe.createValidationProject(revID, validationCoderA.getUserId(), testUser);
+			ValidationProject valprjA = pe.createValidationProject(revID, validationCoderA.getId(), testUser);
 
 			pe.requestValidationAccess(revID, validationCoderB);
-			ValidationProject valprjB = pe.createValidationProject(revID, validationCoderB.getUserId(), testUser);
+			ValidationProject valprjB = pe.createValidationProject(revID, validationCoderB.getId(), testUser);
 
 			TextDocumentEndpoint tde = new TextDocumentEndpoint();
 			TextDocumentCodeContainer textDocumentCode = new TextDocumentCodeContainer();
-			CollectionResponse<TextDocument> docs = tde.getTextDocument(valprjA.getId(), "VALIDATION", testUser);
+			CollectionResponse<TextDocument> docs = tde.getTextDocument(valprjA.getId(), ProjectType.VALIDATION, testUser);
 			assertEquals(1, docs.getItems().size());
 
-			docs = tde.getTextDocument(valprjB.getId(), "VALIDATION", testUser);
+			docs = tde.getTextDocument(valprjB.getId(), ProjectType.VALIDATION, testUser);
 			assertEquals(1, docs.getItems().size());
 
 			return valprjA;

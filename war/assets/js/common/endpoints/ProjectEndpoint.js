@@ -99,9 +99,11 @@ export default class ProjectEndpoint {
 	}
 
 	static listRevisionsExcludingValidation(prjID) {
-		var apiMethod = gapi.client.qdacity.project.listRevisionsExcludingValidation({
-			projectID: prjID
-		});
+		var apiMethod = gapi.client.qdacity.project.listRevisionsExcludingValidation(
+			{
+				projectID: prjID
+			}
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import Users from './Users.jsx';
 import AdminProjectList from './AdminProjectList.jsx';
@@ -38,7 +38,10 @@ export default class AdminControl extends React.Component {
 	}
 
 	render() {
-		if (!this.props.account.getProfile || !this.props.account.isSignedIn())
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		)
 			return null;
 		return (
 			<div className="container main-content">

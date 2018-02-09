@@ -42,7 +42,6 @@ export default class CostsByServiceChart extends React.Component {
 	}
 
 	getDataRows(costsByService) {
-
 		const result = [];
 		Object.keys(costsByService).forEach(key => {
 			result.push([key, costsByService[key]]);
@@ -69,7 +68,10 @@ export default class CostsByServiceChart extends React.Component {
 
 		data.addColumn(
 			'string',
-			formatMessage({ id: 'costs_by_service_chart.service', defaultMessage: 'Service' })
+			formatMessage({
+				id: 'costs_by_service_chart.service',
+				defaultMessage: 'Service'
+			})
 		);
 		data.addColumn(
 			'number',
@@ -91,6 +93,8 @@ export default class CostsByServiceChart extends React.Component {
 				top: 10
 			}
 		};
+
+		data.sort([{ column: 1, desc: true }]);
 
 		return (
 			<GooglePieChart
