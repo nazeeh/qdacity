@@ -11,6 +11,7 @@ import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
@@ -65,7 +66,7 @@ public class ValidationEndpointTest {
 		UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
 
 		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
-		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
+		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), ProjectType.REVISION);
 		ValidationEndpoint ve = new ValidationEndpoint();
 		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", docsToEvaluate, EvaluationMethod.F_MEASURE.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
 
@@ -118,7 +119,7 @@ public class ValidationEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
 
 		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
-		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
+		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), ProjectType.REVISION);
 		ValidationEndpoint ve = new ValidationEndpoint();
 		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", docsToEvaluate, EvaluationMethod.KRIPPENDORFFS_ALPHA.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
 
@@ -157,7 +158,7 @@ public class ValidationEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
 
 		ValidationProject valPrj = ValidationEndpointTestHelper.setUpValidationProject(testUser, studentA, studentB);
-		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), "REVISION");
+		String docsToEvaluate = getDocumentsAsCSV(valPrj.getRevisionID(), ProjectType.REVISION);
 		ValidationEndpoint ve = new ValidationEndpoint();
 		ve.evaluateRevision(valPrj.getRevisionID(), "ReportTest", docsToEvaluate, EvaluationMethod.FLEISS_KAPPA.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
 
@@ -182,7 +183,7 @@ public class ValidationEndpointTest {
 		assertEquals("ReportTest", report.getName());
 	}
 
-	private String getDocumentsAsCSV(long projectID, String projectType) {
+	private String getDocumentsAsCSV(long projectID, ProjectType projectType) {
 		Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(projectID, projectType, testUser);
 		String documentsToEvaluate = "";
 		for (TextDocument textDocument : docs) {

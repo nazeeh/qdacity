@@ -10,6 +10,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.data.TextDocument;
 
 public class TextDocumentEndpointTestHelper {
@@ -52,7 +53,7 @@ public class TextDocumentEndpointTestHelper {
 		}
 	}
 
-	static public Collection<TextDocument> getTextDocuments(long projectID, String projectType, com.google.api.server.spi.auth.common.User loggedInUser) {
+	static public Collection<TextDocument> getTextDocuments(long projectID, ProjectType projectType, com.google.api.server.spi.auth.common.User loggedInUser) {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		try {
 			CollectionResponse<TextDocument> docs = tde.getTextDocument(projectID, projectType, loggedInUser);

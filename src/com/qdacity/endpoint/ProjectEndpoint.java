@@ -48,6 +48,7 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.tasks.LastProjectUsed;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
+import com.qdacity.exercise.ExerciseProject;
 
 @Api(name = "qdacity",
 	version = Constants.VERSION,
@@ -190,9 +191,11 @@ public class ProjectEndpoint {
 					Authorization.checkAuthorization((ValidationProject) project, qdacityUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				case "REVISION":
-
 					project = (ProjectRevision) Cache.getOrLoad(id, ProjectRevision.class);
 					// Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
+					break;
+				case "EXERCISE":
+					project = (ExerciseProject) Cache.getOrLoad(id, ExerciseProject.class);
 					break;
 				default:
 					project = (Project) Cache.getOrLoad(id, Project.class);
@@ -219,6 +222,9 @@ public class ProjectEndpoint {
 		AbstractProject project = null;
 		try {
 			switch (type) {
+				case "EXERCISE":
+					project = mgr.getObjectById(ExerciseProject.class, projectID);
+					break;
 				case "VALIDATION":
 					project = mgr.getObjectById(ValidationProject.class, projectID);
 					break;
@@ -521,7 +527,7 @@ public class ProjectEndpoint {
 			// Set the ID that was just generated
 			CodeSystemEndpoint.setProject(cloneProject.getCodesystemID(), cloneProject.getId());
 
-			TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), false, user);
+			TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.REVISION, cloneProject.getId(), false, user);
 			
 			//Every time a new Project revision is created a new Saturation needs to be calculated.
 			SaturationEndpoint se = new SaturationEndpoint();
@@ -605,7 +611,7 @@ public class ProjectEndpoint {
 			cloneProject = mgr.makePersistent(cloneProject);
 			project = mgr.makePersistent(project);
 
-			TextDocumentEndpoint.cloneTextDocuments(project, cloneProject.getId(), true, user);
+			TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.VALIDATION, cloneProject.getId(), true, user);
 
 			// Notify user of accepted request
 			UserNotification notification = new UserNotification();
@@ -676,6 +682,34 @@ public class ProjectEndpoint {
 		}
 		return revisions;
 	}
+	
+	@ApiMethod(name = "project.listRevisionsExcludingValidation",
+			path = "exercises",
+			scopes = { Constants.EMAIL_SCOPE },
+			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
+			audiences = { Constants.WEB_CLIENT_ID })
+		public List<ProjectRevision> listRevisionsForExerciseProject(@Named("projectID") Long projectID, User user) throws UnauthorizedException {
+			List<ProjectRevision> revisions = new ArrayList<ProjectRevision>();
+			PersistenceManager mgr = getPersistenceManager();
+			try {
+
+				Query q;
+				q = mgr.newQuery(ProjectRevision.class, " projectID  == :projectID");
+
+				Map<String, Long> params = new HashMap<String, Long>();
+				params.put("projectID", projectID);
+
+				@SuppressWarnings("unchecked")
+				List<ProjectRevision> snapshots = (List<ProjectRevision>) q.executeWithMap(params);
+				Collections.sort(snapshots, new RevisionComparator()); // Sort by revision number
+
+				revisions.addAll(snapshots);
+
+			} finally {
+				mgr.close();
+			}
+			return revisions;
+		}
 
 	/**
 	 * This method removes the entity with primary key id.

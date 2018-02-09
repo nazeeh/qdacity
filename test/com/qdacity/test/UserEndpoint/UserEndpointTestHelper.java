@@ -17,6 +17,7 @@ public class UserEndpointTestHelper {
 		return ue.insertUser(user, loggedInUser);
 	}
 
+
 	static public User getUser(com.google.api.server.spi.auth.common.User loggedInUser) {
 		UserEndpoint ue = new UserEndpoint();
 		User user = null;
@@ -28,4 +29,5 @@ public class UserEndpointTestHelper {
 		}
 		return user;
 	}
+
 }

@@ -1,6 +1,7 @@
 package com.qdacity.user;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import com.qdacity.project.ProjectType;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class User implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2378677713032476995L;
 
@@ -126,9 +127,10 @@ public class User implements Serializable {
 	}
 
 	public void addTermCourseAuthorization(Long termCourseID) {
-		if (termCourses != null) {
-			termCourses.add(termCourseID);
+		if (termCourses == null) {
+			termCourses = new ArrayList<Long>();
 		}
+		{termCourses.add(termCourseID);}
 	}
 
 	public void removeCourseAuthorization(Long course) {

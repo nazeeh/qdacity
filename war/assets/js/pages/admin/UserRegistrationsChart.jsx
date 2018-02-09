@@ -54,10 +54,10 @@ export default class UserRegistrationsChart extends React.Component {
 		) {
 			dict[
 				new Date(
-					iteratingDate.getFullYear(),
-					iteratingDate.getMonth(),
-					iteratingDate.getDate()
-				).toISOString()
+				iteratingDate.getFullYear(),
+				iteratingDate.getMonth(),
+				iteratingDate.getDate()
+			).toISOString()
 			] = 0;
 		}
 

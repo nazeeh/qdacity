@@ -10,6 +10,7 @@ import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.qdacity.project.ProjectType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,7 +65,7 @@ public class TextDocumentEndpointTest {
 
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "Second document text", "Second Title", testUser);
-		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 		
 		assertEquals(2, documents.size());
 	}
@@ -86,13 +87,13 @@ public class TextDocumentEndpointTest {
 
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
 
-		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 		assertEquals(1, documents.size());
 		TextDocument doc = (TextDocument) documents.toArray()[0];
 
 		TextDocumentEndpointTestHelper.removeTextDocument(doc.getId(), testUser);
 
-		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 		assertEquals(0, documents.size());
 
 	}
@@ -109,7 +110,7 @@ public class TextDocumentEndpointTest {
 
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "First document text", "First Title", testUser);
 
-		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 		TextDocument doc = (TextDocument)documents.toArray()[0];
 		Text text = new Text("A changed text");
 		doc.setText(text);
@@ -123,7 +124,7 @@ public class TextDocumentEndpointTest {
 			fail("User could not be authorized for updating a text document");
 		}
 
-		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 		doc = (TextDocument) documents.toArray()[0];
 		assertEquals("A changed text", doc.getText().getValue());
 
@@ -135,7 +136,7 @@ public class TextDocumentEndpointTest {
 		textDocumentCode.code = code;
 		try {
 			tde.applyCode(textDocumentCode, testUser);
-			documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+			documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 			doc = (TextDocument) documents.toArray()[0];
 			assertEquals("Yet another text", doc.getText().getValue());
 		} catch (UnauthorizedException e) {
@@ -159,7 +160,7 @@ public class TextDocumentEndpointTest {
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "Second document text", "Second Title", testUser);
 		TextDocumentEndpointTestHelper.addTextDocument(1L, "Third document text", "Third Title", testUser);
 
-		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		Collection<TextDocument> documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 		TextDocument doc1 = (TextDocument)documents.toArray()[0];
 		TextDocument doc2 = (TextDocument)documents.toArray()[1];
 		TextDocument doc3 = (TextDocument)documents.toArray()[2];
@@ -184,7 +185,7 @@ public class TextDocumentEndpointTest {
 			fail("User could not be authorized for updating multiple text documents");
 		}
 
-		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, "PROJECT", testUser);
+		documents = TextDocumentEndpointTestHelper.getTextDocuments(1L, ProjectType.PROJECT, testUser);
 		doc1 = (TextDocument)documents.toArray()[0];
 		doc2 = (TextDocument)documents.toArray()[1];
 		doc3 = (TextDocument)documents.toArray()[2];

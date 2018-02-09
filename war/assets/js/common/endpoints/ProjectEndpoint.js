@@ -98,6 +98,15 @@ export default class ProjectEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static listRevisionsExcludingValidation(prjID) {
+		var apiMethod = gapi.client.qdacity.project.listRevisionsExcludingValidation(
+			{
+				projectID: prjID
+			}
+		);
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static inviteUser(prjID, userEmail) {
 		var apiMethod = gapi.client.qdacity.project.inviteUser({
 			projectID: prjID,
