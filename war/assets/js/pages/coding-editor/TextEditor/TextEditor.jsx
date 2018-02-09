@@ -6,14 +6,11 @@ import {
 	Range,
 	resetKeyGenerator,
 } from 'slate';
-import {
-	Editor,
-	findDOMNode as findSlateDOMNode,
-} from 'slate-react';
+import { Editor } from 'slate-react';
 import Html from 'slate-html-serializer';
 
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
-import CodingBrackets from './CodingBrackets.jsx';
+import SlateCodingBracketAdapter from './SlateCodingBracketAdapter.jsx';
 import TextEditorToolbar from './TextEditorToolbar.jsx';
 import documentSchema from './documentSchema.js';
 import Marks from './Marks';
@@ -93,7 +90,18 @@ export default class TextEditor extends React.Component {
 		// Initialize state
 		this.state = {
 
-			// Empty document
+			/**
+			 * Slate Value object of the SlateReact.Editor
+			 * See https://docs.slatejs.org/slate-core/value
+			 * Value({
+			 *   document: Document
+			 *   selection: Range,
+			 *   history: History,
+			 *   schema: Schema,
+			 *   data: Data,
+			 *   decorations: List<Ranges>|Null,
+			 * })
+			 */
 			value: this._htmlSerializer.deserialize('<p></p>'),
 
 			// Default font size to be selected in toolbar
@@ -108,6 +116,7 @@ export default class TextEditor extends React.Component {
 		this.activateCodingInEditor = this.activateCodingInEditor.bind(this);
 		this.isTextEditable = this.isTextEditable.bind(this);
 		this.getMaxFalseNeg = this.getMaxFalseNeg.bind(this);
+		this.toggleSimpleMark = this.toggleSimpleMark.bind(this);
 		this.handleEditorChange = this.handleEditorChange.bind(this);
 		this.handleFontFaceChange = this.handleFontFaceChange.bind(this);
 		this.handleFontSizeChange = this.handleFontSizeChange.bind(this);
@@ -259,6 +268,10 @@ export default class TextEditor extends React.Component {
 			// Returns Immutable.Set
 			const splittingPromises = codingsToRemove.map(coding => {
 
+				// Get curried coding searchers
+				const findCodingStart = this._findCodingStart.bind(this, coding.data.get('id'));
+				const findCodingEnd = this._findCodingEnd.bind(this, coding.data.get('id'));
+
 				// Prepare return value
 				const changeParameters = {
 					oldCoding: coding,
@@ -289,7 +302,7 @@ export default class TextEditor extends React.Component {
 				const characters = textNode.characters.slice(currentSelection.endOffset);
 
 				// Find first character that has not the current coding
-				let endOffset = characters.findKey(c => !c.marks.find(m => m.equals(coding)));
+				let endOffset = findCodingEnd(characters);
 
 				// If the immediate next character has not the current coding,
 				// no splitting is needed
@@ -316,8 +329,7 @@ export default class TextEditor extends React.Component {
 					}
 
 					// Find first character that has not the current coding
-					endOffset = textNode.characters
-						.findKey(c => !c.marks.find(m => m.equals(coding)));
+					endOffset = findCodingEnd(textNode.characters);
 				}
 
 				// Get new coding id from API
@@ -399,70 +411,26 @@ export default class TextEditor extends React.Component {
 	 *
 	 * @public
 	 * @arg {string} codingID - The Id of the coding to select
-	 * @arg {boolean} scrollToSection - If true the editor attempts to scroll
+	 * @arg {boolean} scrollIntoView - If true the editor attempts to scroll
 	 *                                  the selected code into the viewport.
 	 *                                  Defaults to false.
 	 */
-	activateCodingInEditor(codingID, scrollToSection) {
-		// Find coding
-		const textBlocks = this.state.value.document.getBlocks()
-			.map(block => block.getFirstText());
+	activateCodingInEditor(codingID, scrollIntoView) {
+		// Find coding and set focus
+		let range = this._getCodingRange(codingID);
 
-		// Iterate over text nodes to find first and last apperance of coding
-		// with the given coding id
-		const range = textBlocks.reduce((range, text) => {
+		// Nothing to highlight if no range found
+		if (typeof range === 'undefined') {
+			return;
+		}
 
-			// Iterate over text node's characters and find offset and length
-			// of first coding apperance
-			const result = text.characters.reduce((data, c, offset) => {
-
-				if (c.marks.some(mark => mark.type === 'coding' && mark.data.get('id') === codingID)) {
-					// If not yet found the beginning, set it now
-					if (typeof data.offset === 'undefined') {
-						data.offset = offset;
-						data.length = 1;
-					} else {
-						// Increase length
-						data.length += 1;
-					}
-				}
-
-				return data;
-
-			}, {});
-
-			// If coding was found, create or update range
-			if (result.offset > -1) {
-				// No start point defined yet, do it now
-				if (typeof range.anchorKey === 'undefined') {
-					range.anchorKey = text.key;
-					range.anchorOffset = result.offset;
-				}
-				// Set or update end of range.
-				range.focusKey = text.key;
-				range.focusOffset = result.offset + result.length;
-			}
-
-			return range;
-
-		}, { isFocused: true });
+		range = range.set('isFocused', true);
 
 		this.setState(
 			prevState => ({ value: prevState.value.change().select(range).value }),
-			() => {
-				// If requested, scroll to the new selection
-				if (scrollToSection) {
-					// Get the DOM range and try to use the getBoundingClientRect
-					// API. This is not available in all older browser versions,
-					// so there the feature might not work.
-					const domRange = findDOMRange(this.state.value.selection);
-					if (domRange.getBoundingClientRect) {
-						const y = domRange.getBoundingClientRect().y;
-						const scrollContainer = findDOMNode(this.scrollContainer)
-						scrollContainer.scrollBy(0, y - scrollContainer.offsetTop);
-					}
-				}
-			}
+
+			// If requested, scroll the new selection into view after state change
+			() => scrollIntoView && this.scrollRangeIntoView(range)
 		);
 	}
 
@@ -487,6 +455,37 @@ export default class TextEditor extends React.Component {
 		return this.state.value.document.getBlocks()
 			.map(block => block.data.get('falsenegcount'))
 			.reduce((max, fnc) => fnc ? Math.max(max, fnc) : 0, 0);
+	}
+
+	/**
+	 * Scroll the text editor to get a specific range into view
+	 *
+	 * @public
+	 * @arg {Slate.Range} - The range to scroll to
+	 */
+	scrollRangeIntoView(range) {
+		const domRange = findDOMRange(range);
+
+		// Try to use the getBoundingClientRect API. This is not available in
+		// all older browser versions, so the feature might not work everywhere
+		if (domRange.getBoundingClientRect) {
+			const y = domRange.getBoundingClientRect().y;
+			const scrollContainer = findDOMNode(this.scrollContainer)
+			scrollContainer.scrollBy(0, y - scrollContainer.offsetTop);
+		}
+	}
+
+	/**
+	 * Toggle a simple (no metadata) mark on the current selection
+	 *
+	 * @public
+	 * @arg {string} mark - Type of mark to add or remove.  Use 'bold',
+	 *                      'italic' or 'underline'.
+	 */
+	toggleSimpleMark(mark) {
+		this.setState(prevState => ({
+			value: prevState.value.change().toggleMark(mark).value,
+		}));
 	}
 
 	/**
@@ -654,73 +653,102 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
-	 * Generator for mark click handlers.
+	 * Get range of specific coding
 	 *
 	 * @private
-	 * @arg {string} mark - Type of mark to use in the created event handler.
-	 *                      Use 'bold', 'italic' or 'underline'.
-	 * @return {function} - Calling that function toggles the specified mark on
-	 *                      the editor's current selection.
+	 * @arg {string} codingID - The ID of the coding to search for
+	 * @return {undefined|Slate.Range} - The range where the coding is applied
+	 *                                   or undefined if not found at all
 	 */
-	_createMarkClickHandler(mark) {
-		return () => this.setState(prevState => ({
-			value: prevState.value.change().toggleMark(mark).value,
-		}));
+	_getCodingRange(codingID) {
+		const document = this.state.value.document;
+
+		// Get curried coding searchers
+		const findCodingStart = this._findCodingStart.bind(this, codingID);
+		const findCodingEnd = this._findCodingEnd.bind(this, codingID);
+
+		// Start searching for the first mark occurence in first text node
+		let startText = document.getFirstText();
+		let startOffset = findCodingStart(startText.characters);
+
+		// If not already found, search subsequent Text nodes
+		while (typeof startOffset === 'undefined') {
+			startText = document.getNextText(startText.key);
+
+			// No Text node left, coding not found
+			if (!startText) {
+				return;
+			}
+
+			startOffset = findCodingStart(startText.characters);
+		}
+
+		// Search for the last mark occurence
+		let endText = startText;
+		let endOffset = findCodingEnd(endText.characters.slice(startOffset));
+
+		// If already found, add the selection end offset to
+		// get correct character offset in Text node
+		if (typeof endOffset !== 'undefined') {
+			endOffset += startOffset;
+		}
+
+		// If not already found, search subsequent Text nodes
+		while (typeof endOffset === 'undefined') {
+			endText = document.getNextText(endText.key);
+
+			// No Text node left, coding is applied until document end
+			if (!endText) {
+				endText = document.getLastText();
+				endOffset = endText.characters.size;
+				break;
+			}
+
+			endOffset = findCodingEnd(endText.characters);
+		}
+
+		return Range.create({
+			anchorKey: startText.key,
+			anchorOffset: startOffset,
+			focusKey: endText.key,
+			focusOffset: endOffset,
+		});
 	}
 
 	/**
-	 * Get bracket data for rendering the Coding Brackets
+	 * Find first character in a list of characters that has specific coding
 	 *
 	 * @private
-	 * @return {array} - Array of objects, containing bracket data.
+	 * @arg {string} codingID - The ID of the coding to search for
+	 * @arg {Immutable.List} characters - The list of characters to search in
+	 * @return {undefined|number} - The character's offset if found, or
+	 *                              undefined if no match found
 	 */
-	_getBracketData() {
-		// If anything in the processing fails, the rendering might be
-		// incomplete
-		try {
-			// Get all coding's DOM nodes as array
-			const domNodeArray = [].slice.call(
-				findSlateDOMNode(this.state.value.document)
-					.querySelectorAll('span[data-mark-type="coding"]')
-			);
+	_findCodingStart(codingID, characters) {
+		return characters.findKey(
+			c => c.marks.find(
+				m => m.type === 'coding' && m.data.get('id') === codingID
+			)
+		);
+	}
 
-			// Create bracket data from DOM node information
-			const dataMap = domNodeArray.reduce((data, tag) => {
-				// Get DOM node attributes and position information
-				const codingId = tag.getAttribute('data-coding-id');
-				const name = tag.getAttribute('data-coding-title');
-				const offsetTop = tag.offsetTop;
-				const height = tag.offsetHeight;
-
-				// Get color information from Codesystem and default to black
-				const codeID = tag.getAttribute('data-coding-codeid');
-				const code = this.props.getCodeByCodeID(codeID);
-				const color = code ? code.color : '#000';
-
-				// If coding ID was already found before, extend the bracket
-				// height
-				if (codingId in data) {
-					data[codingId].height = offsetTop - data[codingId].offsetTop + height;
-				} else {
-					data[codingId] = {
-						offsetTop,
-						height,
-						name,
-						codingId,
-						color,
-					};
-				}
-
-				return data;
-			}, {});
-
-			// Remove Object keys and return only array of values
-			return Object.values(dataMap);
-
-		} catch(e) {
-			return [];
-		}
-	};
+	/**
+	 * Find first character in a list of characters that DOES NOT have specific
+	 * coding
+	 *
+	 * @private
+	 * @arg {string} codingID - The ID of the coding to search for
+	 * @arg {Immutable.List} characters - The list of characters to search in
+	 * @return {undefined|number} - The character's offset if found, or
+	 *                              undefined if no match found
+	 */
+	_findCodingEnd(codingID, characters) {
+		return characters.findKey(
+			c => !c.marks.find(
+				m => m.type === 'coding' && m.data.get('id') === codingID
+			)
+		);
+	}
 
 	/**
 	 * React main render method.
@@ -736,15 +764,16 @@ export default class TextEditor extends React.Component {
 						fontSize={this.state.selectedFontSize}
 						onFontFaceChange={this.handleFontFaceChange}
 						onFontSizeChange={this.handleFontSizeChange}
-						onBoldClick={this._createMarkClickHandler('bold')}
-						onItalicClick={this._createMarkClickHandler('italic')}
-						onUnderlineClick={this._createMarkClickHandler('underline')}
+						onBoldClick={this.toggleSimpleMark.bind(this, 'bold')}
+						onItalicClick={this.toggleSimpleMark.bind(this, 'italic')}
+						onUnderlineClick={this.toggleSimpleMark.bind(this, 'underline')}
 					/>
 				) }
 				<StyledDocumentWrapper ref={r => this.scrollContainer = r}>
 					<StyledCodingBracketsContainer ref={r => this.bracketContainerRef = r}>
-						<CodingBrackets
-							codingData={this._getBracketData()}
+						<SlateCodingBracketAdapter
+							slateValue={this.state.value}
+							getCodeByCodeID={this.props.getCodeByCodeID}
 							onBracketClick={this.activateCodingInEditor}
 						/>
 					</StyledCodingBracketsContainer>

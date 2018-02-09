@@ -11,7 +11,7 @@ import Codesystem from './Codesystem/Codesystem.jsx';
 import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
 
-import TextEditor from './TextEditor';
+import TextEditor from './TextEditor/TextEditor.jsx';
 
 import Project from '../project-dashboard/Project';
 import { PageView } from './View/PageView.js';
