@@ -309,9 +309,9 @@ export default class TermCourseList extends React.Component {
 				<StyledListItemPrimary>
 					<span>{term.text}</span>
 					<div>
-					{this.renderJoinButton(term, index)}
-					{this.renderDeleteButton(term, index)}
-					{this.renderConfigureButton(term, index)}
+						{this.renderJoinButton(term, index)}
+						{this.renderDeleteButton(term, index)}
+						{this.renderConfigureButton(term, index)}
 					</div>
 				</StyledListItemPrimary>
 			);

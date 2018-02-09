@@ -62,10 +62,10 @@ export default class SigninWithGoogleBtn extends React.Component {
 		var _this = this;
 		_this.authenticationProvider.getProfile().then(function(userProfile) {
 			const esc = text =>
-						text.replace(
-							/([&<>"'` !@$%()[\]=+{}])/g,
-							code => `&#${code.charCodeAt(0)};`
-						);
+				text.replace(
+					/([&<>"'` !@$%()[\]=+{}])/g,
+					code => `&#${code.charCodeAt(0)};`
+				);
 			const displayNameParts = userProfile.name.split(' ');
 			const lastName = esc(displayNameParts.pop());
 			const firstName = esc(displayNameParts.join(' '));

@@ -168,10 +168,7 @@ export default class TermCourseConfig extends React.Component {
 			return '';
 		} else {
 			return (
-				<Exercises
-					termCourse={this.state.termCourse}
-					auth={this.props.auth}
-				/>
+				<Exercises termCourse={this.state.termCourse} auth={this.props.auth} />
 			);
 		}
 	}

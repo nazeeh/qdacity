@@ -4,7 +4,7 @@ import GoogleLineChart from '../../common/GoogleLineChart.jsx';
 import ChartTimeFrameChooser from './ChartTimeFrameChooser.jsx';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import BillingStatsEndpoint from '../../common/endpoints/BillingStatsEndpoint';
-import EventsEndpoint from "../../common/endpoints/EventsEndpoint";
+import EventsEndpoint from '../../common/endpoints/EventsEndpoint';
 
 export default class DailyCostsPerActiveUserChart extends React.Component {
 	constructor(props) {
@@ -66,7 +66,6 @@ export default class DailyCostsPerActiveUserChart extends React.Component {
 			this.state.startDate <= iteratingDate;
 			iteratingDate.setDate(iteratingDate.getDate() - 1)
 		) {
-
 			let date = new Date(
 				iteratingDate.getFullYear(),
 				iteratingDate.getMonth(),
@@ -131,7 +130,10 @@ export default class DailyCostsPerActiveUserChart extends React.Component {
 
 		data.addColumn(
 			'date',
-			formatMessage({ id: 'daily_costs_per_active_user_chart.axis_day', defaultMessage: 'Day' })
+			formatMessage({
+				id: 'daily_costs_per_active_user_chart.axis_day',
+				defaultMessage: 'Day'
+			})
 		);
 		data.addColumn(
 			'number',
@@ -141,7 +143,9 @@ export default class DailyCostsPerActiveUserChart extends React.Component {
 			})
 		);
 
-		data.addRows(this.getDataRows(this.state.dailyCosts, this.state.dailyUserLoginEvents));
+		data.addRows(
+			this.getDataRows(this.state.dailyCosts, this.state.dailyUserLoginEvents)
+		);
 
 		const options = {
 			width: 540,

@@ -81,7 +81,7 @@ export default class UserMigration extends React.Component {
 		const _this = this;
 		this.authenticationProvider.addAuthStateListener(function(payload) {
 			// update on every auth state change
-			if (!!payload.authResponse) {
+			if (payload.authResponse) {
 				_this.access_token = payload.authResponse.access_token;
 				_this.id_token = payload.authResponse.id_token;
 			}
@@ -103,9 +103,9 @@ export default class UserMigration extends React.Component {
 	checkMigrationPreconditions() {
 		const _this = this;
 
-		if(!this.access_token || !this.id_token) {
+		if (!this.access_token || !this.id_token) {
 			// This should not happen, because user needs to re-authenticate!
-			console.log("token not loaded yet!");
+			console.log('token not loaded yet!');
 			return;
 		}
 
@@ -149,10 +149,7 @@ export default class UserMigration extends React.Component {
 	}
 
 	migrate() {
-		if (
-			!this.state.isRegisteredAsOldAccount ||
-			this.state.isAlreadyMigrated
-		) {
+		if (!this.state.isRegisteredAsOldAccount || this.state.isAlreadyMigrated) {
 			console.error('Preconditions for migration are not met!');
 			return;
 		}
@@ -276,8 +273,8 @@ export default class UserMigration extends React.Component {
 					</div>
 					<MigrationNotPossible
 						show={
-							(this.state.isRegisteredAsOldAccount === false ||
-								this.state.isAlreadyMigrated === true)
+							this.state.isRegisteredAsOldAccount === false ||
+							this.state.isAlreadyMigrated === true
 						}
 					/>
 				</div>
@@ -399,9 +396,26 @@ export default class UserMigration extends React.Component {
 					</ol>
 				</StyledMigrationDescription>
 				<StyledMigrationFunctionality>
-					<GoogleSignIn show={!this.props.auth.authState.isUserSignedIn || this.access_token === null && this.id_token === null} />
-					<ProfileInfo show={this.props.auth.authState.isUserSignedIn && this.access_token !== null && this.id_token !== null} />
-					<MigrationPreconditions show={this.props.auth.authState.isUserSignedIn && this.access_token !== null && this.id_token !== null} />
+					<GoogleSignIn
+						show={
+							!this.props.auth.authState.isUserSignedIn ||
+							(this.access_token === null && this.id_token === null)
+						}
+					/>
+					<ProfileInfo
+						show={
+							this.props.auth.authState.isUserSignedIn &&
+							this.access_token !== null &&
+							this.id_token !== null
+						}
+					/>
+					<MigrationPreconditions
+						show={
+							this.props.auth.authState.isUserSignedIn &&
+							this.access_token !== null &&
+							this.id_token !== null
+						}
+					/>
 					<MigrationButton
 						show={
 							this.props.auth.authState.isUserSignedIn &&

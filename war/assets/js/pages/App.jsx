@@ -1,5 +1,10 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
+import {
+	BrowserRouter as Router,
+	Route,
+	Link,
+	Redirect
+} from 'react-router-dom';
 
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
@@ -16,8 +21,8 @@ import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
 import AdminStats from './admin/AdminStats.jsx';
-import AdminControl from "./admin/AdminControl.jsx";
-import AdminCosts from "./admin/AdminCosts.jsx";
+import AdminControl from './admin/AdminControl.jsx';
+import AdminCosts from './admin/AdminCosts.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
 import Faq from './help/Faq.jsx';
 import UserMigration from './user-migration/UserMigration.jsx';
@@ -150,7 +155,7 @@ export default class App extends React.Component {
 							<Route
 								path="/PersonalDashboard"
 								render={props => (
-									<PersonalDashboard 	auth={this.state.auth} {...props} />
+									<PersonalDashboard auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
@@ -192,12 +197,9 @@ export default class App extends React.Component {
 								)}
 							/>
 							<Route
-								exact path="/Admin"
-								render={() => (
-									<Redirect
-										to="/Admin/Control"
-									/>
-								)}
+								exact
+								path="/Admin"
+								render={() => <Redirect to="/Admin/Control" />}
 							/>
 							<Route
 								path="/Admin/Stats"
@@ -243,7 +245,9 @@ export default class App extends React.Component {
 							/>
 							<Route
 								path="/UserMigration"
-								render={props => <UserMigration auth={this.state.auth} {...props} />}
+								render={props => (
+									<UserMigration auth={this.state.auth} {...props} />
+								)}
 							/>
 							<Route
 								exact

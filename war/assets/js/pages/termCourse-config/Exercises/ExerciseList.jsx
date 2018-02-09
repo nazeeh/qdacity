@@ -177,8 +177,7 @@ export default class ExerciseList extends React.Component {
 	render() {
 		var _this = this;
 
-		if (!this.props.auth.authentication.isSignedIn())
-			return null;
+		if (!this.props.auth.authentication.isSignedIn()) return null;
 
 		return (
 			<div>

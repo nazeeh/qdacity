@@ -26,7 +26,7 @@ export default class CodingsOverview extends VexModal {
 				}),
 				contentCSS: {
 					width: '1000px',
-					'margin-top':'-90px'
+					'margin-top': '-90px'
 				},
 				input: formElements,
 				buttons: [
