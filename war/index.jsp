@@ -24,10 +24,10 @@
 		<script src="https://apis.google.com/js/platform.js?onload=resolvePlatform" async></script>
 
 		<!-- Themes -->
-		<link rel="preload" href="components/font-awesome/css/font-awesome.min.css" as="style">
+		<link rel="preload" href="/components/font-awesome/css/font-awesome.min.css" as="style">
 		<link rel="preload" type="text/css" charset="utf-8" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css" as="style"/>
 		<link rel="preload" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"  as="style">
-		<link rel="stylesheet" type="text/css" href="dist/js/styles.css">
+		<link rel="stylesheet" type="text/css" href="/dist/js/styles.css">
 
 		<script type="text/javascript">
 			mxBasePath = 'components/mxGraph/javascript/src';
@@ -41,8 +41,8 @@
 	<div id="navBar"></div>
 	<div id=indexContent></div>
 
-    <script src="dist/js/index.dist.js"></script>
-	<link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script src="/dist/js/index.dist.js"></script>
+	<link href="/components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" type="text/css" charset="utf-8" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css" as="style"/>
 	<link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" as="style"/>
 </body>

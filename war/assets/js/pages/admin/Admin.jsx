@@ -1,43 +1,45 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import Users from './Users.jsx';
-import AdminStats from './AdminStats.jsx';
-import AdminProjectList from './AdminProjectList.jsx';
-
+import {BtnPrimary} from "../../common/styles/Btn.jsx";
+import styled from 'styled-components';
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
+const StyledContainer = styled.div`
+	margin-bottom: -50px;
+`;
+const StyledButtonGroup = styled.div`
+	display: flex;
+	justify-content: center;
+
+	padding-bottom: 5px;
+`;
+
+const SelectedPage = {
+	STATISTICS: 'Stats',
+	COSTS: 'Costs',
+	CONTROL: 'Control'
+};
 export default class Admin extends React.Component {
 	constructor(props) {
 		super(props);
+
+		const urlParts = this.props.history.location.pathname.split("/");
+		let page = urlParts[urlParts.length - 1];
+		page = page === "Admin" ? SelectedPage.CONTROL : page;
+
 		this.state = {
-			projects: [],
-			selectedUserId: ''
+			selectedPage: page
 		};
-
-		this.setProjects = this.setProjects.bind(this);
-		this.removeProject = this.removeProject.bind(this);
-
-		scroll(0, 0);
 	}
 
-	setSelectedUserId(userId) {
+	navigateTo(to) {
 		this.setState({
-			selectedUserId: userId
+			selectedPage: to
 		});
-	}
-
-	setProjects(projects) {
-		this.setState({
-			projects: projects
-		});
-	}
-
-	removeProject(index) {
-		this.state.projects.splice(index, 1);
-		this.setState({
-			projects: this.state.projects
-		});
+		this.props.history.push(
+			'/Admin/' + to
+		);
 	}
 
 	render() {
@@ -47,43 +49,31 @@ export default class Admin extends React.Component {
 		) {
 			return <UnauthenticatedUserPanel history={this.props.history} />;
 		}
+
+		const page = this.state.selectedPage;
 		return (
-			<div className="container main-content">
-				<div className="row">
-					<div className="col-lg-8">
-						<AdminStats chartScriptPromise={this.props.chartScriptPromise} />
-						<div id="changeLog" />
-					</div>
-					<div className="col-lg-4">
-						<div id="project-selection">
-							<Users
-								setSelectedUserId={userId => this.setSelectedUserId(userId)}
-							/>
-						</div>
-						{this.state.selectedUserId && (
-							<div className="box box-default">
-								<div className="box-header with-border">
-									<h3 className="box-title">
-										<FormattedMessage
-											id="admin.projects"
-											defaultMessage="Projects"
-										/>
-									</h3>
-								</div>
-								<div className="box-body">
-									<AdminProjectList
-										projects={this.state.projects}
-										setProjects={this.setProjects}
-										removeProject={this.removeProject}
-										history={this.props.history}
-										userId={this.state.selectedUserId}
-									/>
-								</div>
-							</div>
-						)}
-					</div>
-				</div>
-			</div>
+			<StyledContainer className="container main-content">
+				<StyledButtonGroup className="btn-group">
+				<BtnPrimary
+						active={page === SelectedPage.STATISTICS}
+						onClick={() => this.navigateTo("Stats")}
+					>
+						<FormattedMessage id="admin.section.stats" defaultMessage="Statistics" />
+					</BtnPrimary>
+					<BtnPrimary
+						active={page === SelectedPage.COSTS}
+						onClick={() => this.navigateTo("Costs")}
+					>
+						<FormattedMessage id="admin.section.stats" defaultMessage="Costs" />
+					</BtnPrimary>
+					<BtnPrimary
+						active={page === SelectedPage.CONTROL}
+						onClick={() => this.navigateTo("Control")}
+					>
+						<FormattedMessage id="admin.section.control" defaultMessage="Administration" />
+					</BtnPrimary>
+				</StyledButtonGroup>
+			</StyledContainer>
 		);
 	}
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;
@@ -63,7 +64,7 @@ public class User implements Serializable {
 
 	@Persistent(defaultFetchGroup = "true")
 	@Element(dependent = "true")
-	@Column(name = "relations")
+	@Column(name = "loginProviderInformations")
 	List<UserLoginProviderInformation> loginProviderInformationList;
 
 	public String getId() {
@@ -202,6 +203,7 @@ public class User implements Serializable {
 	}
 
 	public List<UserLoginProviderInformation> getLoginProviderInformation() {
+		if(loginProviderInformationList == null) loginProviderInformationList = new ArrayList<UserLoginProviderInformation>();
 		return loginProviderInformationList;
 	}
 

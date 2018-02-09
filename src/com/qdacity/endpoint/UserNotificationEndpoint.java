@@ -10,6 +10,7 @@ import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import com.google.api.server.spi.response.UnauthorizedException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -28,6 +29,7 @@ import com.qdacity.PMF;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
+import com.qdacity.endpoint.UserEndpoint;
 
 @Api(
 	name = "qdacity",
@@ -47,9 +49,11 @@ public class UserNotificationEndpoint {
 	 *         persisted and a cursor to the next page.
 	 */
 	@ApiMethod(name = "user.listUserNotification")
-	public List<UserNotification> listUserNotification(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, com.google.api.server.spi.auth.common.User user) {
+	public List<UserNotification> listUserNotification(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, com.google.api.server.spi.auth.common.User user) throws UnauthorizedException {
 
-		Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user.getId());
+		UserEndpoint ue = new UserEndpoint();
+		com.qdacity.user.User qdacityUser = ue.getCurrentUser(user);
+		Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, qdacityUser.getId());
 
 		Date thirtyDaysAgo = new Date(new Date().getTime() - 2592000000L);
 		Filter dateFilter = new FilterPredicate("datetime", FilterOperator.GREATER_THAN, thirtyDaysAgo);

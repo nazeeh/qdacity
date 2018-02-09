@@ -12,7 +12,7 @@ import javax.jdo.annotations.Unique;
 import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-@Unique(members = {"provider", "userId"})
+@Unique(members = {"provider", "externalUserId"})
 public class UserLoginProviderInformation implements Serializable {
 
 	/**

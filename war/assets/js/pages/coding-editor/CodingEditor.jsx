@@ -128,8 +128,6 @@ class CodingEditor extends React.Component {
 				documentResults: []
 			},
 			mxGraphLoaded: false,
-			isSignedIn: false,
-			isRegistered: false,
 			fontSize: 13,
 
 			userProfile: {
@@ -167,6 +165,8 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.initEditorCtrl = this.initEditorCtrl.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
+		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
+		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
 
 		// update on initialization
 		this.updateUserStatusFromProps(props);
@@ -183,12 +183,12 @@ class CodingEditor extends React.Component {
 	updateUserAtSyncService() {
 		const _this = this;
 		this.props.auth.authentication.getProfile().then((profile) => {
-			this.syncService.updateUser({
+			_this.syncService.updateUser({
 				name: profile.name,
 				email: profile.email,
 				picSrc: profile.thumbnail,
 				project: _this.state.project.id,
-				token: _this.props.auth.authentication.getToken()
+				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
 			});
 		})
 	}
@@ -203,6 +203,13 @@ class CodingEditor extends React.Component {
 					picSrc: profile.thumbnail
 				}
 			});
+			_this.syncService.updateUser({
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail,
+				project: _this.state.project.id,
+				token: _this.props.auth.authentication.getToken() + " google" //FIXME this is just a workaround since the provider type was missing at the end of the token
+			});
 		});
 	}
 
@@ -210,15 +217,11 @@ class CodingEditor extends React.Component {
 		this.updateUserAtSyncService();
 
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
-		if (_this.state.userProfile.email !== '') {
-			_this.syncService.logon(_this.state.userProfile);
+		if (this.state.userProfile.email !== '') {
+			this.syncService.logon(this.state.userProfile);
 		}
 	}
 
-	componentWillReceiveProps() {
-		this.updateUserAtSyncService();
-	}
-	
 	componentDidMount() {
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
 	}
@@ -240,7 +243,7 @@ class CodingEditor extends React.Component {
 					project: project
 				});
 			}
-		);
+		).catch(()=>{console.log("could not load project")});
 	}
 
 	resizeElements() {
@@ -554,6 +557,7 @@ class CodingEditor extends React.Component {
 							codeRemoved={this.codeRemoved}
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
+							userProfile={this.state.userProfile}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>
