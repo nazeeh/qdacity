@@ -142,14 +142,12 @@ export default class TextEditor extends React.Component {
 			// Remove div#svgContainer (added in previous versions)
 			.replace(/<div id="svgContainer".*?<\/div>/, '');
 
-		// Parse HTML to Slate.Value
-		const newValue = this._htmlSerializer.deserialize(sanitizedText);
-
 		this.setState((prevState, props) => {
 			// Reset key generator to get consistent Slate node IDs
 			resetKeyGenerator();
 
-			return { value: newValue };
+			// Parse HTML to Slate.Value
+			return { value: this._htmlSerializer.deserialize(sanitizedText) };
 		});
 	}
 
