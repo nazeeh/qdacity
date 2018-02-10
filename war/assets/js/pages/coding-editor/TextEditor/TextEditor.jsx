@@ -24,22 +24,13 @@ const StyledContainer = styled.div`
 
 // Container to wrap columns for Coding Brackets and Slate Editor
 const StyledDocumentWrapper = styled.div`
-	display: flex;
+	display: grid;
+	grid-template-columns: 170px auto;
 	flex: 1 1 auto;
 	border: 1px solid #888;
 	overflow-y: auto;
 	position: relative; // important to calculate bracket offsets correctly!
-`;
-
-// Column for Coding Brackets
-const StyledCodingBracketsContainer = styled.div`
-	width: 170px;
-	flex: 0 0 auto;
-`;
-
-// Column for Slate Editor
-const StyledTextEditor = styled.div`
-	flex: 1 auto;
+	min-height: 100%;
 `;
 
 // Style to use for paragraphs inside the slate editor
@@ -130,7 +121,6 @@ export default class TextEditor extends React.Component {
 		this.handleEditorChange = this.handleEditorChange.bind(this);
 		this.handleFontFaceChange = this.handleFontFaceChange.bind(this);
 		this.handleFontSizeChange = this.handleFontSizeChange.bind(this);
-		this.handleEditorWrapperClick = this.handleEditorWrapperClick.bind(this);
 		this.renderMark = this.renderMark.bind(this);
 		this.renderNode = this.renderNode.bind(this);
 	}
@@ -601,43 +591,6 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
-	 * Catch clicks inside the editor wrapper and focus the editor.
-	 *
-	 * When clicking in the div that holds the Slate Editor, the editor should
-	 * be focused. This is especially needed if the document is empty, so the
-	 * user can click everywhere in the wrapper and does not need to aim
-	 * exactly at the empty <p>
-	 *
-	 * @arg {Event} e - The event to catch. Expected to have `target` property
-	 */
-	handleEditorWrapperClick(e) {
-		// Should only work if event was triggered on the containing div
-		// All clicks inside the text editor also trigger this function
-		if (e.target.hasAttribute('data-focus-editor')) {
-			// Set the selection to the last position of the document
-			this.setState(prevState => {
-				const document = prevState.value.document;
-				const change = prevState.value.change();
-
-				const lastText = document.getLastText();
-				const offset = lastText.characters.size;
-
-				change.select(Range.create({
-					anchorKey: lastText.key,
-					anchorOffset: offset,
-					focusKey: lastText.key,
-					focusOffset: offset,
-					isFocused: true,
-				}));
-
-				return {
-					value: change.value,
-				}
-			});
-		}
-	}
-
-	/**
 	 * Define rendering components for marks inside the editor
 	 * @see {@link https://docs.slatejs.org/walkthroughs/applying-custom-formatting}
 	 *
@@ -815,23 +768,17 @@ export default class TextEditor extends React.Component {
 					/>
 				) }
 				<StyledDocumentWrapper>
-					<StyledCodingBracketsContainer>
-						<SlateCodingBracketAdapter
-							slateValue={this.state.value}
-							getCodeByCodeID={this.props.getCodeByCodeID}
-							onBracketClick={this.activateCodingInEditor}
-						/>
-					</StyledCodingBracketsContainer>
-					<StyledTextEditor
-						onClick={this.handleEditorWrapperClick}
-						data-focus-editor>
-						<Editor
-							value={this.state.value}
-							onChange={this.handleEditorChange}
-							renderNode={this.renderNode}
-							renderMark={this.renderMark}
-						/>
-					</StyledTextEditor>
+					<SlateCodingBracketAdapter
+						slateValue={this.state.value}
+						getCodeByCodeID={this.props.getCodeByCodeID}
+						onBracketClick={this.activateCodingInEditor}
+					/>
+					<Editor
+						value={this.state.value}
+						onChange={this.handleEditorChange}
+						renderNode={this.renderNode}
+						renderMark={this.renderMark}
+					/>
 				</StyledDocumentWrapper>
 			</StyledContainer>
 		);
