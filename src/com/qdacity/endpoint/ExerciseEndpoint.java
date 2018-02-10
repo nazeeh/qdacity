@@ -211,10 +211,7 @@ public class ExerciseEndpoint {
 		}
 	
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "exercise.getExerciseProjectsByExerciseID",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "exercise.getExerciseProjectsByExerciseID")
 		public List<ExerciseProject> getExerciseProjectsByExerciseID(@Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
 			PersistenceManager mgr = getPersistenceManager();
 			List<ExerciseProject> exerciseProjects = null;
@@ -231,10 +228,7 @@ public class ExerciseEndpoint {
 		}
 
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "exercise.getExerciseByID",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "exercise.getExerciseByID")
 	public Exercise getExerciseByID(@Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
 		PersistenceManager mgr = getPersistenceManager();
 		Exercise exercise = null;
