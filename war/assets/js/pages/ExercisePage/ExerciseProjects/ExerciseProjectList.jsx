@@ -61,7 +61,7 @@ export default class ExerciseProjectList extends React.Component {
   renderExerciseProject(exerciseProject, index) {
     return (
       <StyledListItemDefault key={index} className="clickable">
-        <span> {exerciseProject.name} </span>
+        <span> {exerciseProject.creatorName} </span>
         <div>
           <StyledListItemBtn
             onClick={e => this.editorClick(e, exerciseProject, index)}
