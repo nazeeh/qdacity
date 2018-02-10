@@ -10,6 +10,7 @@ import Exercise from "./Exercise";
 import ExerciseProjects from "./ExerciseProjects/ExerciseProjects.jsx";
 import BtnDefault from "../../common/styles/Btn.jsx";
 import Confirm from "../../common/modals/Confirm";
+import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
 
 const StyledNewPrjBtn = styled.div`
   padding-left: 5px;
@@ -46,7 +47,7 @@ export default class ExercisePage extends React.Component {
 
   init() {
     if (!this.userPromise) {
-      this.userPromise = this.props.account.getCurrentUser();
+      this.userPromise = this.props.auth.authentication.getCurrentUser();
       this.getExerciseByIDPromise = ExerciseEndpoint.getExerciseByID(
         this.state.exercise.id
       );
@@ -60,7 +61,7 @@ export default class ExercisePage extends React.Component {
     var exercise = this.state.exercise;
     this.userPromise.then(function(user) {
       _this.getExerciseByIDPromise.then(function(exerciseResp) {
-        var isTermCourseOwner = _this.props.account.isTermCourseOwner(
+        var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
           user,
           exerciseResp.termCourseID
         );
@@ -80,15 +81,20 @@ export default class ExercisePage extends React.Component {
       return (
         <ExerciseProjects
           exercise={this.state.exercise}
-          account={this.props.account}
+          auth={this.props.auth}
+          history={this.props.history}
         />
       );
     }
   }
 
   render() {
-    if (!this.props.account.getProfile() || !this.props.account.isSignedIn())
-      return null;
+    if (
+      !this.props.auth.authState.isUserSignedIn ||
+      !this.props.auth.authState.isUserRegistered
+    ) {
+      return <UnauthenticatedUserPanel history={this.props.history} />;
+    }
     this.init();
 
     return <StyledDashboard>{this.renderExerciseProjects()}</StyledDashboard>;

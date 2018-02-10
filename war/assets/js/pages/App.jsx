@@ -190,7 +190,7 @@ export default class App extends React.Component {
               <Route
                 path="/ExercisePage"
                 render={props => (
-                  <ExercisePage account={this.account} {...props} />
+                  <ExercisePage auth={this.state.auth} {...props} />
                 )}
               />
               <Route
