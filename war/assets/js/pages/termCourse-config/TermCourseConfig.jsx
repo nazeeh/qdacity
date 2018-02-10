@@ -12,6 +12,7 @@ import Participants from "./Participants/Participants.jsx";
 import Exercises from "./Exercises/Exercises.jsx";
 import TitleRow from "./TitleRow/TitleRow.jsx";
 import Confirm from "../../common/modals/Confirm";
+import UnauthenticatedUserPanel from "../../common/UnauthenticatedUserPanel.jsx";
 
 const StyledNewPrjBtn = styled.div`
   padding-left: 5px;

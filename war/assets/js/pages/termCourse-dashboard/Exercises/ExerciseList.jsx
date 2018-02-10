@@ -26,7 +26,7 @@ export default class ExerciseList extends React.Component {
 
   init() {
     if (!this.userPromise) {
-      this.userPromise = this.props.account.getCurrentUser();
+      this.userPromise = this.props.auth.authentication.getCurrentUser();
       this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(
         this.props.termCourse.getId()
       );
@@ -87,8 +87,7 @@ export default class ExerciseList extends React.Component {
   render() {
     var _this = this;
 
-    if (!this.props.account.getProfile() || !this.props.account.isSignedIn())
-      return null;
+    if (!this.props.auth.authentication.isSignedIn()) return null;
 
     return (
       <ItemList

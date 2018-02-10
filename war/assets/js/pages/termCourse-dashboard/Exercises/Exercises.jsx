@@ -26,7 +26,7 @@ export default class Exercises extends React.Component {
             <ExerciseList
               termCourse={this.props.termCourse}
               history={this.props.history}
-              account={this.props.account}
+              auth={this.props.auth}
             />
           </div>
         </div>
