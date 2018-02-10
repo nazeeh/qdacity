@@ -56,7 +56,12 @@ export default class ExerciseProjectList extends React.Component {
     });
   }
 
-  editorClick(e, exerciseProject) {}
+  editorClick(e, exerciseProject) {
+    var _this = this;
+    this.props.history.push(
+      "/CodingEditor?project=" + exerciseProject.id + "&type=EXERCISE"
+    );
+  }
 
   renderExerciseProject(exerciseProject, index) {
     return (
@@ -64,12 +69,12 @@ export default class ExerciseProjectList extends React.Component {
         <span> {exerciseProject.creatorName} </span>
         <div>
           <StyledListItemBtn
-            onClick={e => this.editorClick(e, exerciseProject, index)}
+            onClick={e => this.editorClick(e, exerciseProject)}
             className=" btn fa-lg"
-            color={Theme.rubyRed}
-            colorAccent={Theme.rubyRedAccent}
+            color={Theme.darkGreen}
+            colorAccent={Theme.darkGreenAccent}
           >
-            <i className="fa fa-trash " />
+            <i className="fa fa-tags" />
           </StyledListItemBtn>
         </div>
       </StyledListItemDefault>
