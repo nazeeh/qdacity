@@ -46,6 +46,16 @@ const StyledTextEditor = styled.div`
 const StyledEditorParagraph = styled.p`
 	margin: 1em 0;
 	background-color: ${props => props.highlight ? '#c66' : 'initial'};
+
+	&:first-child {
+		margin-top: 0;
+		padding-top: 1em;
+	}
+
+	&:last-child {
+		margin-bottom: 0;
+		padding-bottom: 1em;
+	}
 `;
 
 // Slate operations that are permitted while in "read-only" Coding-Editor
@@ -64,7 +74,7 @@ const fontFaces = [
 	{ text: 'Arial Black', value: 'Arial Black, sans-serif' },
 	{ text: 'Comic Sans MS', value: 'Comic Sans MS, cursive' },
 	{ text: 'Courier New', value: 'Courier New, monospace' },
-	{ text: 'Georgia', value: 'Georgia, serfi' },
+	{ text: 'Georgia', value: 'Georgia, serif' },
 	{ text: 'Impact', value: 'Impact, fantasy' },
 	{ text: 'Lucida Console', value: 'Lucida Console, monospace' },
 	{ text: 'Palatino Linotype', value: 'Palatino Linotype, serif' },
@@ -116,10 +126,11 @@ export default class TextEditor extends React.Component {
 		this.activateCodingInEditor = this.activateCodingInEditor.bind(this);
 		this.isTextEditable = this.isTextEditable.bind(this);
 		this.getMaxFalseNeg = this.getMaxFalseNeg.bind(this);
-		this.toggleSimpleMark = this.toggleSimpleMark.bind(this);
+		this.handleSimpleMarkClick = this.handleSimpleMarkClick.bind(this);
 		this.handleEditorChange = this.handleEditorChange.bind(this);
 		this.handleFontFaceChange = this.handleFontFaceChange.bind(this);
 		this.handleFontSizeChange = this.handleFontSizeChange.bind(this);
+		this.handleEditorWrapperClick = this.handleEditorWrapperClick.bind(this);
 		this.renderMark = this.renderMark.bind(this);
 		this.renderNode = this.renderNode.bind(this);
 	}
@@ -411,27 +422,23 @@ export default class TextEditor extends React.Component {
 	 *
 	 * @public
 	 * @arg {string} codingID - The Id of the coding to select
-	 * @arg {boolean} scrollIntoView - If true the editor attempts to scroll
-	 *                                  the selected code into the viewport.
-	 *                                  Defaults to false.
 	 */
-	activateCodingInEditor(codingID, scrollIntoView) {
+	activateCodingInEditor(codingID) {
 		// Find coding and set focus
-		let range = this._getCodingRange(codingID);
+		const range = this._getCodingRange(codingID);
 
 		// Nothing to highlight if no range found
 		if (typeof range === 'undefined') {
 			return;
 		}
 
-		range = range.set('isFocused', true);
-
-		this.setState(
-			prevState => ({ value: prevState.value.change().select(range).value }),
-
-			// If requested, scroll the new selection into view after state change
-			() => scrollIntoView && this.scrollRangeIntoView(range)
-		);
+		this.setState(prevState => {
+			const change = prevState.value.change();
+			change.select(range.set('isFocused', true));
+			return {
+				value: change.value,
+			}
+		});
 	}
 
 	/**
@@ -458,31 +465,15 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
-	 * Scroll the text editor to get a specific range into view
-	 *
-	 * @public
-	 * @arg {Slate.Range} - The range to scroll to
-	 */
-	scrollRangeIntoView(range) {
-		const domRange = findDOMRange(range);
-
-		// Try to use the getBoundingClientRect API. This is not available in
-		// all older browser versions, so the feature might not work everywhere
-		if (domRange.getBoundingClientRect) {
-			const y = domRange.getBoundingClientRect().y;
-			const scrollContainer = findDOMNode(this.scrollContainer)
-			scrollContainer.scrollBy(0, y - scrollContainer.offsetTop);
-		}
-	}
-
-	/**
 	 * Toggle a simple (no metadata) mark on the current selection
 	 *
 	 * @public
 	 * @arg {string} mark - Type of mark to add or remove.  Use 'bold',
 	 *                      'italic' or 'underline'.
+	 * @arg {Event} e - The DOM event that triggered this function
 	 */
-	toggleSimpleMark(mark) {
+	handleSimpleMarkClick(mark, e) {
+		e.preventDefault();
 		this.setState(prevState => ({
 			value: prevState.value.change().toggleMark(mark).value,
 		}));
@@ -517,8 +508,10 @@ export default class TextEditor extends React.Component {
 	 * @public
 	 * @arg {null|string} font - The font face to apply. If null, no font face
 	 *                           is applied.
+	 * @arg {Event} e - The DOM event that triggered this function
 	 */
-	handleFontFaceChange(font) {
+	handleFontFaceChange(font, e) {
+		e.preventDefault();
 		const currentSelection = this.state.value.selection;
 
 		// Nothing selected, return early
@@ -567,6 +560,7 @@ export default class TextEditor extends React.Component {
 	 *                  interpreted as pixel value.
 	 */
 	handleFontSizeChange(e) {
+		e.preventDefault();
 		const currentSelection = this.state.value.selection;
 
 		// Nothing selected, return early
@@ -604,6 +598,43 @@ export default class TextEditor extends React.Component {
 
 		// Keep focus in font size input field
 		e.target.focus();
+	}
+
+	/**
+	 * Catch clicks inside the editor wrapper and focus the editor.
+	 *
+	 * When clicking in the div that holds the Slate Editor, the editor should
+	 * be focused. This is especially needed if the document is empty, so the
+	 * user can click everywhere in the wrapper and does not need to aim
+	 * exactly at the empty <p>
+	 *
+	 * @arg {Event} e - The event to catch. Expected to have `target` property
+	 */
+	handleEditorWrapperClick(e) {
+		// Should only work if event was triggered on the containing div
+		// All clicks inside the text editor also trigger this function
+		if (e.target.hasAttribute('data-focus-editor')) {
+			// Set the selection to the last position of the document
+			this.setState(prevState => {
+				const document = prevState.value.document;
+				const change = prevState.value.change();
+
+				const lastText = document.getLastText();
+				const offset = lastText.characters.size;
+
+				change.select(Range.create({
+					anchorKey: lastText.key,
+					anchorOffset: offset,
+					focusKey: lastText.key,
+					focusOffset: offset,
+					isFocused: true,
+				}));
+
+				return {
+					value: change.value,
+				}
+			});
+		}
 	}
 
 	/**
@@ -751,6 +782,17 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
+	 * Check if active selection has specific mark
+	 *
+	 * @private
+	 * @arg {string} markType - The mark type to check for
+	 * @return {bool} - Wether the active selection has the specified mark
+	 */
+	_selectionHasMark(markType) {
+		return this.state.value.activeMarks.some(m => m.type === markType);
+	}
+
+	/**
 	 * React main render method.
 	 *
 	 * @public
@@ -762,22 +804,27 @@ export default class TextEditor extends React.Component {
 					<TextEditorToolbar
 						fontFaces={fontFaces}
 						fontSize={this.state.selectedFontSize}
+						boldActive={this._selectionHasMark('bold')}
+						italicActive={this._selectionHasMark('italic')}
+						underlineActive={this._selectionHasMark('underline')}
 						onFontFaceChange={this.handleFontFaceChange}
 						onFontSizeChange={this.handleFontSizeChange}
-						onBoldClick={this.toggleSimpleMark.bind(this, 'bold')}
-						onItalicClick={this.toggleSimpleMark.bind(this, 'italic')}
-						onUnderlineClick={this.toggleSimpleMark.bind(this, 'underline')}
+						onBoldClick={this.handleSimpleMarkClick.bind(this, 'bold')}
+						onItalicClick={this.handleSimpleMarkClick.bind(this, 'italic')}
+						onUnderlineClick={this.handleSimpleMarkClick.bind(this, 'underline')}
 					/>
 				) }
-				<StyledDocumentWrapper ref={r => this.scrollContainer = r}>
-					<StyledCodingBracketsContainer ref={r => this.bracketContainerRef = r}>
+				<StyledDocumentWrapper>
+					<StyledCodingBracketsContainer>
 						<SlateCodingBracketAdapter
 							slateValue={this.state.value}
 							getCodeByCodeID={this.props.getCodeByCodeID}
 							onBracketClick={this.activateCodingInEditor}
 						/>
 					</StyledCodingBracketsContainer>
-					<StyledTextEditor>
+					<StyledTextEditor
+						onClick={this.handleEditorWrapperClick}
+						data-focus-editor>
 						<Editor
 							value={this.state.value}
 							onChange={this.handleEditorChange}

@@ -71,6 +71,7 @@ const StyledFooter = styled.div`
 	grid-area: footer;
 	display: ${props => (props.showCodingView ? 'block' : 'none')} !important;
 	z-index: 1;
+	height: 300px;
 `;
 
 const StyledUMLEditor = styled.div`

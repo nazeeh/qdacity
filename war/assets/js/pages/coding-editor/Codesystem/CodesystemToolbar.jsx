@@ -93,7 +93,8 @@ export default class CodesystemToolbar extends React.Component {
 			.then(codeName => this.props.createCode(codeName));
 	}
 
-	applyCode() {
+	applyCode(e) {
+		e.preventDefault();
 		const selected = this.props.selected;
 		const author = this.props.userProfile.name;
 
@@ -107,7 +108,8 @@ export default class CodesystemToolbar extends React.Component {
 			});
 	}
 
-	removeCoding() {
+	removeCoding(e) {
+		e.preventDefault();
 		const codeID = this.props.selected.codeID;
 		this.props.textEditor.removeCoding(codeID)
 			.then(html => {
@@ -160,13 +162,13 @@ export default class CodesystemToolbar extends React.Component {
 
 		return (
 			<StyledBtnGroup className="btn-group">
-				<BtnDefault className="btn btn-default" onClick={this.applyCode}>
+				<BtnDefault className="btn btn-default" onMouseDown={this.applyCode}>
 					<StyledBtnStack className="fa-stack fa-lg">
 						<i className="fa fa-tag fa-stack-2x" />
 						<i className="fa fa-plus fa-stack-1x fa-inverse" />
 					</StyledBtnStack>
 				</BtnDefault>
-				<BtnDefault className="btn btn-default" onClick={this.removeCoding}>
+				<BtnDefault className="btn btn-default" onMouseDown={this.removeCoding}>
 					<StyledBtnStack className="fa-stack fa-lg">
 						<i className="fa fa-tag fa-stack-2x" />
 						<i className="fa fa-minus fa-stack-1x fa-inverse" />

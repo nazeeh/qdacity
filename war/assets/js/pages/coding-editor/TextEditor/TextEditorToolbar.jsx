@@ -17,6 +17,9 @@ const TextEditorToolbar = props => {
 	const {
 		fontFaces,
 		fontSize,
+		boldActive,
+		italicActive,
+		underlineActive,
 		onFontFaceChange,
 		onFontSizeChange,
 		onBoldClick,
@@ -27,20 +30,20 @@ const TextEditorToolbar = props => {
 	// Create dropdown item data structure from props font list
 	const dropDownItems = fontFaces.map(font => ({
 		text: font.text,
-		onClick: () => onFontFaceChange(font.value),
+		onClick: e => onFontFaceChange(font.value, e),
 	}));
 
 	return (
 		<StyledEditorToolbar>
 
 			<BtnGroup>
-				<BtnDefault onClick={onBoldClick}>
+				<BtnDefault onMouseDown={onBoldClick} active={boldActive}>
 					<i className="fa fa-bold" />
 				</BtnDefault>
-				<BtnDefault onClick={onItalicClick}>
+				<BtnDefault onMouseDown={onItalicClick} active={italicActive}>
 					<i className="fa fa-italic" />
 				</BtnDefault>
-				<BtnDefault onClick={onUnderlineClick}>
+				<BtnDefault onMouseDown={onUnderlineClick} active={underlineActive}>
 					<i className="fa fa-underline" />
 				</BtnDefault>
 			</BtnGroup>

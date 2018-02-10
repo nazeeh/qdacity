@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Btn = styled.button`
+const Btn = styled.span`
 	display: inline-block;
 	padding: 6px 12px;
 	margin-bottom: 0;
@@ -27,9 +27,12 @@ const BtnSm = Btn.extend`
 `;
 
 const BtnDefault = BtnSm.extend`
-	color: ${props => props.theme.fgDefault};
-	background-color: ${props => props.theme.bgDefault};
-	border-color: ${props => props.theme.borderDefault};
+	color: ${props => 
+		props.active ? props.theme.fgDefaultHighlight : props.theme.fgDefault};
+	background-color: ${props => 
+		props.active ? props.theme.bgDefaultHighlight : props.theme.bgDefault};
+	border-color: ${props => 
+		props.active ? props.theme.borderDefaultHighlight : props.theme.borderDefault};
 	&:hover {
 		background-color: ${props => props.theme.borderDefaultHighlight};
 		border-color: ${props => props.theme.borderDefaultHighlight};
@@ -81,13 +84,13 @@ const BtnGroup = styled.div`
 	margin-left: 10px;
 	display: inline;
 
-	& > button:nth-child(n + 2),
+	& > span:nth-child(n + 2),
 	& > input:nth-child(n + 2) {
 		border-left: none;
 	}
 `;
 
-const BtnLg = styled.button`
+const BtnLg = styled.span`
 	padding: 6px 12px;
 	background-image: none;
 	box-shadow: none;
