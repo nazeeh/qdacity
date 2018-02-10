@@ -98,6 +98,7 @@ export default class TermDashboard extends React.Component {
           : (isUserParticipant = true);
         _this.getTermCoursePromise.then(function(resp) {
           termCourse.term = resp.term;
+          termCourse.isUserParticipant = isUserParticipant;
           CourseEndpoint.getCourse(resp.courseID).then(function(course) {
             _this.setState({
               course: course,
