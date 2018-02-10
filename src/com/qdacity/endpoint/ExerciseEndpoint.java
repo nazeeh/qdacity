@@ -129,10 +129,7 @@ public class ExerciseEndpoint {
 	}
 	
 
-	@ApiMethod(name = "exercise.createExerciseProject",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "exercise.createExerciseProject")
 		public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
 			ExerciseProject cloneExerciseProject = null;
 			PersistenceManager mgr = getPersistenceManager();
@@ -154,10 +151,7 @@ public class ExerciseEndpoint {
 
 	
 	@SuppressWarnings({ "unchecked"})
-	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded")
 		public ExerciseProject createExerciseProjectIfNeeded(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
 			
 			ExerciseProject cloneExerciseProject = null;
@@ -197,10 +191,7 @@ public class ExerciseEndpoint {
 
 		
 	@SuppressWarnings("unchecked")
-	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID")
 		public ExerciseProject getExerciseProjectByRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
 			PersistenceManager mgr = getPersistenceManager();
 			List<ExerciseProject> exerciseProjects = null;
