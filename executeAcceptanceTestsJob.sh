@@ -1,5 +1,15 @@
 #!/bin/bash
 
+ls
+
+mvn package
+
+ls
+ls ./target/classes/com/qdacity/
+ls ./target/classes/com/qdacity/servlet
+
+
+
 echo "ALL CONTAINERS"
 docker container ls -a
 echo "RUNNING CONTAINERS"
