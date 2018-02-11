@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mvn package
+
 echo "ALL CONTAINERS"
 docker container ls -a
 echo "RUNNING CONTAINERS"
