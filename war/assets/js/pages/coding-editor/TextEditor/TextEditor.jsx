@@ -38,14 +38,14 @@ const StyledEditorParagraph = styled.p`
 	margin: 1em 0;
 	background-color: ${props => props.highlight ? '#c66' : 'initial'};
 
-	&:first-child {
-		margin-top: 0;
-		padding-top: 1em;
-	}
+	color: ${props => props.showCaret ? 'initial' : 'transparent' };
+	text-shadow: ${props => props.showCaret ? 'initial' : '0 0 0 #000' };
 
-	&:last-child {
-		margin-bottom: 0;
-		padding-bottom: 1em;
+	& span::-moz-selection {
+		background: transparent;
+	}
+	& span::selection {
+		background: transparent;
 	}
 `;
 
@@ -100,7 +100,7 @@ export default class TextEditor extends React.Component {
 			 *   history: History,
 			 *   schema: Schema,
 			 *   data: Data,
-			 *   decorations: List<Ranges>|Null,
+			 *   decorations: Immutable.List<Ranges>|Null,
 			 * })
 			 */
 			value: this._htmlSerializer.deserialize('<p></p>'),
@@ -458,10 +458,8 @@ export default class TextEditor extends React.Component {
 	 * @public
 	 * @arg {string} mark - Type of mark to add or remove.  Use 'bold',
 	 *                      'italic' or 'underline'.
-	 * @arg {Event} e - The DOM event that triggered this function
 	 */
-	handleSimpleMarkClick(mark, e) {
-		e.preventDefault();
+	handleSimpleMarkClick(mark) {
 		this.setState(prevState => ({
 			value: prevState.value.change().toggleMark(mark).value,
 		}));
@@ -478,7 +476,7 @@ export default class TextEditor extends React.Component {
 	 */
 	handleEditorChange(change) {
 		// Get operation types
-		const operations = change.operations.toJS().map(op => op.type);
+		const operations = change.operations.map(op => op.type);
 
 		// Only apply change if in textEditable mode or all operations are in
 		// readOnlyOperations
@@ -496,10 +494,8 @@ export default class TextEditor extends React.Component {
 	 * @public
 	 * @arg {null|string} font - The font face to apply. If null, no font face
 	 *                           is applied.
-	 * @arg {Event} e - The DOM event that triggered this function
 	 */
-	handleFontFaceChange(font, e) {
-		e.preventDefault();
+	handleFontFaceChange(font) {
 		const currentSelection = this.state.value.selection;
 
 		// Nothing selected, return early
@@ -548,7 +544,6 @@ export default class TextEditor extends React.Component {
 	 *                  interpreted as pixel value.
 	 */
 	handleFontSizeChange(e) {
-		e.preventDefault();
 		const currentSelection = this.state.value.selection;
 
 		// Nothing selected, return early
@@ -602,6 +597,7 @@ export default class TextEditor extends React.Component {
 			case 'fontface': return <Marks.FontFace {...props} />;
 			case 'fontsize': return <Marks.FontSize {...props} />;
 			case 'italic': return <Marks.Italic {...props} />;
+			case 'selection': return <Marks.Selection showCaret={this.props.textEditable} {...props} />;
 			case 'underline': return <Marks.Underline {...props} />;
 		};
 	}
@@ -628,6 +624,7 @@ export default class TextEditor extends React.Component {
 			return (
 				<StyledEditorParagraph
 					highlight={highlight}
+					showCaret={this.props.textEditable}
 					{...props}
 				/>
 			);
@@ -749,12 +746,25 @@ export default class TextEditor extends React.Component {
 	 * @public
 	 */
 	render() {
+		const {
+			value,
+			selectedFontSize,
+		} = this.state;
+
+		// Calculate selection decoration
+		const emptyList = value.document.getBlocks().splice(0);
+		const selection = value.selection.isCollapsed
+			? emptyList
+			: emptyList.push(value.selection.set('marks', [{ type: 'selection', }]));
+
+		const valueWithSelection = value.set('decorations', selection);
+
 		return (
 			<StyledContainer>
 				{ this.props.textEditable && (
 					<TextEditorToolbar
 						fontFaces={fontFaces}
-						fontSize={this.state.selectedFontSize}
+						fontSize={selectedFontSize}
 						boldActive={this._selectionHasMark('bold')}
 						italicActive={this._selectionHasMark('italic')}
 						underlineActive={this._selectionHasMark('underline')}
@@ -767,12 +777,12 @@ export default class TextEditor extends React.Component {
 				) }
 				<StyledDocumentWrapper>
 					<SlateCodingBracketAdapter
-						slateValue={this.state.value}
+						slateValue={value}
 						getCodeByCodeID={this.props.getCodeByCodeID}
 						onBracketClick={this.activateCodingInEditor}
 					/>
 					<Editor
-						value={this.state.value}
+						value={valueWithSelection}
 						onChange={this.handleEditorChange}
 						renderNode={this.renderNode}
 						renderMark={this.renderMark}

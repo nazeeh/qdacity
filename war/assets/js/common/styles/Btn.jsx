@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Btn = styled.span`
+const Btn = styled.button`
 	display: inline-block;
 	padding: 6px 12px;
 	margin-bottom: 0;
@@ -84,13 +84,13 @@ const BtnGroup = styled.div`
 	margin-left: 10px;
 	display: inline;
 
-	& > span:nth-child(n + 2),
+	& > button:nth-child(n + 2),
 	& > input:nth-child(n + 2) {
 		border-left: none;
 	}
 `;
 
-const BtnLg = styled.span`
+const BtnLg = styled.button`
 	padding: 6px 12px;
 	background-image: none;
 	box-shadow: none;
