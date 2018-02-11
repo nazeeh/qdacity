@@ -1,117 +1,117 @@
 export default class Project {
-  constructor(prjId, type) {
-    this.id = prjId;
-    this.name = "";
-    this.description = "";
-    this.type = type;
-    this.reports = {}; // hashmap indexed by revision ID
-    this.revisions = [];
-    this.validationProjects = {}; // list indexed by revision ID
-    this.umlEditorEnabled = false;
-    this.parentID = undefined; // when the project is a validationproject this points to the project it is based on
-    this.revisionID = undefined;
-    this.codesystemID = -1;
-  }
+	constructor(prjId, type) {
+		this.id = prjId;
+		this.name = '';
+		this.description = '';
+		this.type = type;
+		this.reports = {}; // hashmap indexed by revision ID
+		this.revisions = [];
+		this.validationProjects = {}; // list indexed by revision ID
+		this.umlEditorEnabled = false;
+		this.parentID = undefined; // when the project is a validationproject this points to the project it is based on
+		this.revisionID = undefined;
+		this.codesystemID = -1;
+	}
 
-  getId() {
-    return this.id;
-  }
+	getId() {
+		return this.id;
+	}
 
-  getType() {
-    return this.type;
-  }
+	getType() {
+		return this.type;
+	}
 
-  getName() {
-    return this.name;
-  }
+	getName() {
+		return this.name;
+	}
 
-  setName(name) {
-    this.name = name;
-  }
+	setName(name) {
+		this.name = name;
+	}
 
-  getDescription() {
-    return this.description;
-  }
+	getDescription() {
+		return this.description;
+	}
 
-  setDescription(desc) {
-    this.description = desc;
-  }
+	setDescription(desc) {
+		this.description = desc;
+	}
 
-  setRevisions(revs) {
-    this.revisions = revs;
-  }
+	setRevisions(revs) {
+		this.revisions = revs;
+	}
 
-  getReportsForRevision(revID) {
-    return this.reports[revID];
-  }
+	getReportsForRevision(revID) {
+		return this.reports[revID];
+	}
 
-  getReport(revID, reportID) {
-    var reports = this.reports[revID];
+	getReport(revID, reportID) {
+		var reports = this.reports[revID];
 
-    var report = reports.find(function(report) {
-      return report.id == reportID;
-    });
+		var report = reports.find(function(report) {
+			return report.id == reportID;
+		});
 
-    return report;
-  }
+		return report;
+	}
 
-  setReports(reports) {
-    this.reports = reports;
-  }
+	setReports(reports) {
+		this.reports = reports;
+	}
 
-  setValidationProjects(prjList) {
-    this.validationProjects = prjList;
-  }
+	setValidationProjects(prjList) {
+		this.validationProjects = prjList;
+	}
 
-  getValidationProject(revId) {
-    return this.validationProjects[revId];
-  }
+	getValidationProject(revId) {
+		return this.validationProjects[revId];
+	}
 
-  addRevision(rev) {
-    this.revisions.push(rev);
-  }
+	addRevision(rev) {
+		this.revisions.push(rev);
+	}
 
-  getRevisions() {
-    return this.revisions;
-  }
+	getRevisions() {
+		return this.revisions;
+	}
 
-  findRevision(id) {
-    return this.revisions.id === id;
-  }
+	findRevision(id) {
+		return this.revisions.id === id;
+	}
 
-  getRevision(revID) {
-    return this.revisions.find(x => x.id === revID);
-  }
+	getRevision(revID) {
+		return this.revisions.find(x => x.id === revID);
+	}
 
-  setUmlEditorEnabled(umlEditorEnabled) {
-    this.umlEditorEnabled = umlEditorEnabled;
-  }
+	setUmlEditorEnabled(umlEditorEnabled) {
+		this.umlEditorEnabled = umlEditorEnabled;
+	}
 
-  isUmlEditorEnabled() {
-    return this.umlEditorEnabled;
-  }
+	isUmlEditorEnabled() {
+		return this.umlEditorEnabled;
+	}
 
-  getParentID() {
-    return this.parentID;
-  }
+	getParentID() {
+		return this.parentID;
+	}
 
-  setParentID(parentID) {
-    this.parentID = parentID;
-  }
+	setParentID(parentID) {
+		this.parentID = parentID;
+	}
 
-  getCodesystemID() {
-    return this.codesystemID;
-  }
+	getCodesystemID() {
+		return this.codesystemID;
+	}
 
-  setCodesystemID(codesystemID) {
-    this.codesystemID = codesystemID;
-  }
+	setCodesystemID(codesystemID) {
+		this.codesystemID = codesystemID;
+	}
 
-  getRevisionID() {
-    return this.revisionID;
-  }
+	getRevisionID() {
+		return this.revisionID;
+	}
 
-  setRevisionID(revisionID) {
-    this.revisionID = revisionID;
-  }
+	setRevisionID(revisionID) {
+		this.revisionID = revisionID;
+	}
 }

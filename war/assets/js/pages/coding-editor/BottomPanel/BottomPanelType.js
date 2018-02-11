@@ -1,4 +1,4 @@
 export const BottomPanelType = {
-  CODEVIEW: "codeview",
-  SEARCHRESULTS: "searchresults"
+	CODEVIEW: 'codeview',
+	SEARCHRESULTS: 'searchresults'
 };

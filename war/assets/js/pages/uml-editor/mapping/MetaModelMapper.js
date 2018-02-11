@@ -1,201 +1,201 @@
-import { EdgeType } from "../util/EdgeType.js";
+import { EdgeType } from '../util/EdgeType.js';
 
-import { Target } from "./Target.js";
+import { Target } from './Target.js';
 
-import IntlProvider from "../../../common/Localization/LocalizationProvider";
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 export default class MetaModelMapper {
-  constructor(umlEditor) {
-    this.umlEditor = umlEditor;
+	constructor(umlEditor) {
+		this.umlEditor = umlEditor;
 
-    this.rules = {};
-  }
+		this.rules = {};
+	}
 
-  getEdgeRelationEntityName(edgeType) {
-    const { formatMessage } = IntlProvider.intl;
-    switch (edgeType) {
-      case EdgeType.GENERALIZATION:
-        return formatMessage({
-          id: "metamodelmapper.generalization",
-          defaultMessage: "is a"
-        });
-      case EdgeType.AGGREGATION:
-        return formatMessage({
-          id: "metamodelmapper.aggregation",
-          defaultMessage: "is part of"
-        });
-      case EdgeType.DIRECTED_ASSOCIATION:
-        return formatMessage({
-          id: "metamodelmapper.direct_association",
-          defaultMessage: "is related to"
-        });
-      default:
-        throw new Error(
-          formatMessage({
-            id: "metamodelmapper.not_implemented",
-            defaultMessage: "EdgeType is not implemented"
-          })
-        );
-    }
-  }
+	getEdgeRelationEntityName(edgeType) {
+		const { formatMessage } = IntlProvider.intl;
+		switch (edgeType) {
+			case EdgeType.GENERALIZATION:
+				return formatMessage({
+					id: 'metamodelmapper.generalization',
+					defaultMessage: 'is a'
+				});
+			case EdgeType.AGGREGATION:
+				return formatMessage({
+					id: 'metamodelmapper.aggregation',
+					defaultMessage: 'is part of'
+				});
+			case EdgeType.DIRECTED_ASSOCIATION:
+				return formatMessage({
+					id: 'metamodelmapper.direct_association',
+					defaultMessage: 'is related to'
+				});
+			default:
+				throw new Error(
+					formatMessage({
+						id: 'metamodelmapper.not_implemented',
+						defaultMessage: 'EdgeType is not implemented'
+					})
+				);
+		}
+	}
 
-  getClassFieldRelationEntityName() {
-    const { formatMessage } = IntlProvider.intl;
-    return formatMessage({
-      id: "metamodelmapper.field_relation_entity_name",
-      defaultMessage: "is related to"
-    });
-  }
+	getClassFieldRelationEntityName() {
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'metamodelmapper.field_relation_entity_name',
+			defaultMessage: 'is related to'
+		});
+	}
 
-  getClassMethodRelationEntityName() {
-    const { formatMessage } = IntlProvider.intl;
-    return formatMessage({
-      id: "metamodelmapper.method_relation_entity_name",
-      defaultMessage: "influences"
-    });
-  }
+	getClassMethodRelationEntityName() {
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'metamodelmapper.method_relation_entity_name',
+			defaultMessage: 'influences'
+		});
+	}
 
-  getDefaultUmlClassMetaModelName() {
-    const { formatMessage } = IntlProvider.intl;
-    return formatMessage({
-      id: "metamodelmapper.meta_model_name",
-      defaultMessage: "Concept"
-    });
-  }
+	getDefaultUmlClassMetaModelName() {
+		const { formatMessage } = IntlProvider.intl;
+		return formatMessage({
+			id: 'metamodelmapper.meta_model_name',
+			defaultMessage: 'Concept'
+		});
+	}
 
-  getClassFieldText(relation) {
-    const destinationCode = this.getCodeByCodeId(relation.codeId);
-    const relationMetaModelElement = this.getMetaModelEntityById(
-      relation.mmElementId
-    );
-    return destinationCode.name + ": " + relationMetaModelElement.name;
-  }
+	getClassFieldText(relation) {
+		const destinationCode = this.getCodeByCodeId(relation.codeId);
+		const relationMetaModelElement = this.getMetaModelEntityById(
+			relation.mmElementId
+		);
+		return destinationCode.name + ': ' + relationMetaModelElement.name;
+	}
 
-  getClassMethodText(relation) {
-    const destinationCode = this.getCodeByCodeId(relation.codeId);
-    const relationMetaModelElement = this.getMetaModelEntityById(
-      relation.mmElementId
-    );
+	getClassMethodText(relation) {
+		const destinationCode = this.getCodeByCodeId(relation.codeId);
+		const relationMetaModelElement = this.getMetaModelEntityById(
+			relation.mmElementId
+		);
 
-    let methodArguments = null;
+		let methodArguments = null;
 
-    if (methodArguments == null) {
-      methodArguments = [];
-    }
+		if (methodArguments == null) {
+			methodArguments = [];
+		}
 
-    return (
-      destinationCode.name +
-      "(" +
-      methodArguments.join(", ") +
-      "): " +
-      relationMetaModelElement.name
-    );
-  }
+		return (
+			destinationCode.name +
+			'(' +
+			methodArguments.join(', ') +
+			'): ' +
+			relationMetaModelElement.name
+		);
+	}
 
-  getUmlEditor() {
-    return this.umlEditor;
-  }
+	getUmlEditor() {
+		return this.umlEditor;
+	}
 
-  getCodeById(id) {
-    return this.umlEditor.getCodeById(id);
-  }
+	getCodeById(id) {
+		return this.umlEditor.getCodeById(id);
+	}
 
-  getCodeByCodeId(codeId) {
-    return this.umlEditor.getCodeByCodeId(codeId);
-  }
+	getCodeByCodeId(codeId) {
+		return this.umlEditor.getCodeByCodeId(codeId);
+	}
 
-  getMetaModelEntityById(metaModelElementId) {
-    return this.umlEditor.getMetaModelEntityById(metaModelElementId);
-  }
+	getMetaModelEntityById(metaModelElementId) {
+		return this.umlEditor.getMetaModelEntityById(metaModelElementId);
+	}
 
-  getTargetType(target) {
-    if (
-      target.hasOwnProperty("codeID") ||
-      target.hasOwnProperty("mmElementIDs")
-    ) {
-      return Target.CODE;
-    } else if (
-      target.hasOwnProperty("codeId") ||
-      target.hasOwnProperty("mmElementId")
-    ) {
-      return Target.RELATION;
-    }
+	getTargetType(target) {
+		if (
+			target.hasOwnProperty('codeID') ||
+			target.hasOwnProperty('mmElementIDs')
+		) {
+			return Target.CODE;
+		} else if (
+			target.hasOwnProperty('codeId') ||
+			target.hasOwnProperty('mmElementId')
+		) {
+			return Target.RELATION;
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  registerRule(rule) {
-    rule.setMapper(this);
+	registerRule(rule) {
+		rule.setMapper(this);
 
-    if (!this.rules.hasOwnProperty(rule.getTargetType())) {
-      this.rules[rule.getTargetType()] = [];
-    }
+		if (!this.rules.hasOwnProperty(rule.getTargetType())) {
+			this.rules[rule.getTargetType()] = [];
+		}
 
-    this.rules[rule.getTargetType()].push(rule);
-  }
+		this.rules[rule.getTargetType()].push(rule);
+	}
 
-  registerRules(rules) {
-    if (rules != null) {
-      for (let i = 0; i < rules.length; i++) {
-        this.registerRule(rules[i]);
-      }
-    }
-  }
+	registerRules(rules) {
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				this.registerRule(rules[i]);
+			}
+		}
+	}
 
-  execute(target, targetType) {
-    if (targetType == null) {
-      targetType = this.getTargetType(target);
-    }
+	execute(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
 
-    const rules = this.rules[targetType];
+		const rules = this.rules[targetType];
 
-    if (rules != null) {
-      for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i];
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
 
-        rule.execute(target);
-      }
-    }
-  }
+				rule.execute(target);
+			}
+		}
+	}
 
-  undo(target, targetType) {
-    if (targetType == null) {
-      targetType = this.getTargetType(target);
-    }
+	undo(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
 
-    const rules = this.rules[targetType];
+		const rules = this.rules[targetType];
 
-    if (rules != null) {
-      for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i];
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
 
-        rule.undo(target);
-      }
-    }
-  }
+				rule.undo(target);
+			}
+		}
+	}
 
-  evaluateActionsForTarget(target, targetType) {
-    if (targetType == null) {
-      targetType = this.getTargetType(target);
-    }
+	evaluateActionsForTarget(target, targetType) {
+		if (targetType == null) {
+			targetType = this.getTargetType(target);
+		}
 
-    const rules = this.rules[targetType];
+		const rules = this.rules[targetType];
 
-    const identifiers = [];
+		const identifiers = [];
 
-    if (rules != null) {
-      for (let i = 0; i < rules.length; i++) {
-        const rule = rules[i];
+		if (rules != null) {
+			for (let i = 0; i < rules.length; i++) {
+				const rule = rules[i];
 
-        if (rule.evaluate(target)) {
-          let action = rule.getAction();
+				if (rule.evaluate(target)) {
+					let action = rule.getAction();
 
-          let identifier = action.getIdentifier();
-          identifiers.push(identifier);
-        }
-      }
-    }
+					let identifier = action.getIdentifier();
+					identifiers.push(identifier);
+				}
+			}
+		}
 
-    return identifiers;
-  }
+		return identifiers;
+	}
 }

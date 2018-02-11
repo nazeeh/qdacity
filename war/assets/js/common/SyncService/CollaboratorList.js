@@ -1,31 +1,31 @@
-import React from "react";
-import { FormattedMessage } from "react-intl";
-import styled from "styled-components";
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import styled from 'styled-components';
 
 const StyledCollaboratorCount = styled.div`
-  text-align: left;
-  font-size: 12px;
-  line-height: 2em;
-  color: #999;
+	text-align: left;
+	font-size: 12px;
+	line-height: 2em;
+	color: #999;
 `;
 
 const StyledCollaboratorBox = styled.ul`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  width: 100%;
-  max-height: 200px;
-  margin: 0;
-  list-style: none;
-  padding: 0 0 4px;
-  overflow: auto;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 100%;
+	max-height: 200px;
+	margin: 0;
+	list-style: none;
+	padding: 0 0 4px;
+	overflow: auto;
 `;
 
 const StyledCollaboratorItem = styled.li`
-  ul:hover > & {
-    width: 100%;
-    margin: ;
-  }
+	ul:hover > & {
+		width: 100%;
+		margin: ;
+	}
 `;
 
 const StyledCollaborator = styled.div`
@@ -69,84 +69,84 @@ const StyledCollaborator = styled.div`
 `;
 
 export default class CollaboratorList extends React.Component {
-  constructor(props) {
-    super(props);
+	constructor(props) {
+		super(props);
 
-    this.listenerID = "";
+		this.listenerID = '';
 
-    this.state = {
-      collaborators: []
-    };
-  }
+		this.state = {
+			collaborators: []
+		};
+	}
 
-  componentDidMount() {
-    const syncService = this.props.syncService;
-    this.listenerID =
-      syncService &&
-      syncService.on("userlistUpdated", this.updateUserList.bind(this));
-  }
+	componentDidMount() {
+		const syncService = this.props.syncService;
+		this.listenerID =
+			syncService &&
+			syncService.on('userlistUpdated', this.updateUserList.bind(this));
+	}
 
-  componentWillUnmount() {
-    const syncService = this.props.syncService;
-    syncService && syncService.off("userlistUpdated", this.listenerID);
-  }
+	componentWillUnmount() {
+		const syncService = this.props.syncService;
+		syncService && syncService.off('userlistUpdated', this.listenerID);
+	}
 
-  updateUserList(list) {
-    const deduplicatedList = list
-      .map(user => ({ email: user.email, user: user }))
-      .reduce(
-        (result, { email, user }) => {
-          if (result.emails.indexOf(email) < 0) {
-            result.emails.push(email);
-            result.users.push(user);
-          }
-          return result;
-        },
-        { emails: [], users: [] }
-      ).users;
+	updateUserList(list) {
+		const deduplicatedList = list
+			.map(user => ({ email: user.email, user: user }))
+			.reduce(
+				(result, { email, user }) => {
+					if (result.emails.indexOf(email) < 0) {
+						result.emails.push(email);
+						result.users.push(user);
+					}
+					return result;
+				},
+				{ emails: [], users: [] }
+			).users;
 
-    this.setState({
-      collaborators: deduplicatedList
-    });
-  }
+		this.setState({
+			collaborators: deduplicatedList
+		});
+	}
 
-  render() {
-    // Get props
-    const diameter = this.props.diameter;
+	render() {
+		// Get props
+		const diameter = this.props.diameter;
 
-    // Get collaborators from state and filter by docid if set
-    const collaborators = this.state.collaborators;
+		// Get collaborators from state and filter by docid if set
+		const collaborators = this.state.collaborators;
 
-    return (
-      <div>
-        <StyledCollaboratorCount>
-          <FormattedMessage
-            id="collaborators.count"
-            defaultMessage={`{count, plural,
+		return (
+			<div>
+				<StyledCollaboratorCount>
+					<FormattedMessage
+						id="collaborators.count"
+						defaultMessage={`{count, plural,
 							=0 {No collaborators}
 							one {# collaborator}
 							other {# collaborators}
 						}`}
-            values={{ count: collaborators.length }}
-          />
-        </StyledCollaboratorCount>
-        <StyledCollaboratorBox diameter={diameter}>
-          {collaborators.map((c, i) => (
-            <StyledCollaboratorItem>
-              <StyledCollaborator
-                picSrc={c.picSrc}
-                name={c.name}
-                hoverOffset={i * (diameter - 2)}
-                diameter={diameter}
-              />
-            </StyledCollaboratorItem>
-          ))}
-        </StyledCollaboratorBox>
-      </div>
-    );
-  }
+						values={{ count: collaborators.length }}
+					/>
+				</StyledCollaboratorCount>
+				<StyledCollaboratorBox diameter={diameter}>
+					{collaborators.map((c, i) => (
+						<StyledCollaboratorItem>
+							<StyledCollaborator
+								picSrc={c.picSrc}
+								name={c.name}
+								hoverOffset={i * (diameter - 2)}
+								diameter={diameter}
+							/>
+						</StyledCollaboratorItem>
+					))}
+				</StyledCollaboratorBox>
+			</div>
+		);
+	}
 }
 
 CollaboratorList.defaultProps = {
-  diameter: 20
+	diameter: 20
 };
