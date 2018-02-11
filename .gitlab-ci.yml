@@ -114,6 +114,9 @@ acceptance_tests:
   stage: test
   only:
     - branches
+  cache:
+    <<: *node_cache
+    policy: pull
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh

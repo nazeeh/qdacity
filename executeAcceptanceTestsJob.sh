@@ -21,9 +21,14 @@ docker image ls
     
 echo "START BUILD"
 
-IMAGE_NAME="qdatest${CI_PROJECT_ID}"
+IMAGE_NAME_BASE="qdacity-tests-base"
+IMAGE_NAME_TESTS="qdacity-tests-${CI_PROJECT_ID}"
 
-echo "IMAGE NAME ${IMAGE_NAME}"
+# Build base
+docker build -f ./docker/acceptance-tests/Dockerfile.base -t $IMAGE_NAME_BASE .
 
-docker build -t $IMAGE_NAME .
-docker run -t -v /dev/shm:/dev/shm -v ~/.m2:/root/.m2 $IMAGE_NAME
+# Build test image
+docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $IMAGE_NAME_TESTS .
+
+# Run test image
+docker run -v /dev/shm:/dev/shm qdacity-tests $IMAGE_NAME_TESTS
