@@ -120,6 +120,9 @@ acceptance_tests:
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
+  dependencies:
+    - frontend_prod_build
+    - backend_prod_build
 
 rtcsvc_prod_unittest:
   <<: *job_definition
