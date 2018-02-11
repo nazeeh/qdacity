@@ -7,9 +7,9 @@ docker container ls
 echo "AVAILABLE IMAGES"
 docker image ls
     
-#echo "CLEAR EVERYTHING" 
-#docker container stop $(docker container ls -a -q) || true
-#docker container rm $(docker container ls -a -q) || true
+echo "CLEAR EVERYTHING" 
+docker container stop $(docker container ls -a -q) || true
+docker container rm $(docker container ls -a -q) || true
 #docker image rm $(docker image ls -a -q) || true
 
 echo "ALL CONTAINERS"
