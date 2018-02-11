@@ -123,6 +123,29 @@ public class ExerciseEndpointTest {
 	}
 
 	/**
+	 * Tests if a registered user can get an exerciseProject by its revision id
+	 * @throws UnauthorizedException
+	 */
+	@Test
+	public void getExerciseProjectsByExerciseIDTest() throws UnauthorizedException {
+		ProjectEndpoint pe = new ProjectEndpoint();
+
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		CodeSystemTestHelper.addCodeSystem(2L, testUser);
+		ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
+		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
+
+		List<ExerciseProject> exerciseProjects = ExerciseEndpointTestHelper.getExerciseProjectsByExerciseID(1L, testUser);
+
+		assertEquals(2, exerciseProjects.size());
+	}
+
+	/**
 	 * Tests if a registered user can create an exercise project
 	 * @throws UnauthorizedException
 	 */
