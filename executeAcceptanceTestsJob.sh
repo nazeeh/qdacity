@@ -1,12 +1,6 @@
 #!/bin/bash
 
-ls
-
 mvn package
-
-ls
-ls ./target/classes/com/qdacity/
-ls ./target/classes/com/qdacity/servlet
 
 
 
