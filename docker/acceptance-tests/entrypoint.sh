@@ -22,7 +22,7 @@ sudo update-java-alternatives -s java-1.7.0-openjdk-amd64
 # Start the dev-server
 echo "Start the devserver"
 
-/opt/appengine-java-sdk/appengine-java-sdk-1.9.62/bin/dev_appserver.sh --port=8888 ./war/ &
+/opt/appengine-java-sdk/appengine-java-sdk-1.9.62/bin/dev_appserver.sh --port=8888 ./target/ &
 
 
 
