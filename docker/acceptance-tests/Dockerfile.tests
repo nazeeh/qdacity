@@ -1,0 +1,12 @@
+FROM qdacity-tests-base:latest
+
+# Copy repository
+WORKDIR /app
+COPY . /app
+
+# Allow execute
+RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
+RUN sudo chmod +x ./docker/acceptance-tests/startTests.sh
+
+# Run script which starts the devserver and executes the tests
+ENTRYPOINT ./docker/acceptance-tests/entrypoint.sh
