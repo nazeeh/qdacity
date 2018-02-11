@@ -179,6 +179,7 @@ export default class TextEditor extends React.Component {
 	 * @arg {string} author - The author for the new coding
 	 *
 	 * @return {Promise} - Resolves when coding is applied, rejects on error
+	 *                     or if nothing is selected
 	 */
 	setCoding(codeID, codeName, author) {
 		// Needed to getting new coding ID from API
@@ -189,6 +190,11 @@ export default class TextEditor extends React.Component {
 
 		// Store selection to be independent of other intermediate changes
 		const currentSelection = this.state.value.selection;
+
+		// Do nothing if no range is selected
+		if (currentSelection.isCollapsed) {
+			return Promise.reject('nothing selected');
+		}
 
 		return new Promise((resolve, reject) => {
 
@@ -239,7 +245,8 @@ export default class TextEditor extends React.Component {
 	 * @return {Promise} - Waits for all code removals and splittings to be
 	 *                     successfully processed. Resolves with the editors
 	 *                     current content as HTML. Rejects if there is an
-	 *                     error while fetching a new coding ID from the API.
+	 *                     error while fetching a new coding ID from the API
+	 *                     or if nothing is selected
 	 */
 	removeCoding(codeID) {
 		// Needed to getting new coding ID from API
@@ -255,6 +262,11 @@ export default class TextEditor extends React.Component {
 			selection: currentSelection,
 			document,
 		} = this.state.value;
+
+		// Do nothing if no range is selected
+		if (currentSelection.isCollapsed) {
+			return Promise.reject('nothing selected');
+		}
 
 		return new Promise((resolve, reject) => {
 

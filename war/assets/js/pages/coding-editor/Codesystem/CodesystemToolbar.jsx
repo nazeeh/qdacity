@@ -103,7 +103,9 @@ export default class CodesystemToolbar extends React.Component {
 				this.props.updateCodingCount();
 			})
 			.catch(error => {
-				console.error(error);
+				if (error !== 'nothing selected') {
+					console.error(error);
+				}
 			});
 	}
 
@@ -115,7 +117,9 @@ export default class CodesystemToolbar extends React.Component {
 				this.props.updateCodingCount();
 			})
 			.catch(error => {
-				console.error(error);
+				if (error !== 'nothing selected') {
+					console.error(error);
+				}
 			});
 	}
 
