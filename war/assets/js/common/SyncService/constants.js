@@ -8,7 +8,10 @@ const MSG = {
 		RELOCATE: 'code.relocate',
 		REMOVE: 'code.remove',
 		UPDATE: 'code.update'
-	}
+	},
+	DOCUMENT: {
+		APPLY_CODE: 'document.applyCode',
+	},
 };
 
 // Events that might be sent to the client by the server
@@ -22,7 +25,7 @@ const EVT = {
 		RELOCATED: 'code.relocated',
 		REMOVED: 'code.removed',
 		UPDATED: 'code.updated'
-	}
+	},
 };
 
 module.exports = {

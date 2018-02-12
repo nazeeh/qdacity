@@ -97,17 +97,7 @@ export default class CodesystemToolbar extends React.Component {
 		const selected = this.props.selected;
 		const author = this.props.userProfile.name;
 
-		this.props.textEditor
-			.setCoding(selected.codeID, selected.name, author)
-			.then(html => {
-				this.props.documentsView.applyCodeToCurrentDocument(html, selected);
-				this.props.updateCodingCount();
-			})
-			.catch(error => {
-				if (error !== 'nothing selected') {
-					console.error(error);
-				}
-			});
+		this.props.textEditor.setCoding(selected, author);
 	}
 
 	removeCoding() {

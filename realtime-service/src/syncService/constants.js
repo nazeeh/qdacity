@@ -9,6 +9,9 @@ const MSG = {
     REMOVE: 'code.remove',
     UPDATE: 'code.update',
   },
+  DOCUMENT: {
+    APPLY_CODE: 'document.applyCode',
+  },
 };
 
 // Events that might be sent to the users

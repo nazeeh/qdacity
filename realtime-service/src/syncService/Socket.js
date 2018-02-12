@@ -1,6 +1,7 @@
 const SERVER_NAME = require('../utils/serverName');
 const Endpoint = require('../endpoints/Endpoint');
 const CodesHandler = require('./CodesHandler');
+const DocumentHandler = require('./DocumentHandler');
 const { MSG, EVT } = require('./constants.js');
 
 // Key to use for socket data hash in redis
@@ -41,6 +42,7 @@ class Socket {
 
     // Initialize handlers for specific domains
     new CodesHandler(this);
+    new DocumentHandler(this);
 
     // Send connection acknowledgement to client
     this.socket.emit(EVT.USER.CONNECTED, SERVER_NAME);

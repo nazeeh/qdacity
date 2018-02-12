@@ -6,6 +6,7 @@ import { Editor } from 'slate-react';
 import Html from 'slate-html-serializer';
 
 import { PageView } from '../View/PageView.js';
+import Alert from '../../../common/modals/Alert';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import SlateCodingBracketAdapter from './SlateCodingBracketAdapter.jsx';
 import TextEditorToolbar from './TextEditorToolbar.jsx';
@@ -181,61 +182,96 @@ export default class TextEditor extends React.Component {
 	 * Apply coding to current selection
 	 *
 	 * @public
-	 * @arg {string} codeID - The ID of the applied code
-	 * @arg {string} codeName - The name of the applied code
+	 * @arg {object} code - The code to apply
 	 * @arg {string} author - The author for the new coding
-	 *
-	 * @return {Promise} - Resolves when coding is applied, rejects on error
-	 *                     or if nothing is selected
 	 */
-	setCoding(codeID, codeName, author) {
-		// Needed to getting new coding ID from API
-		const { projectID, projectType } = this.props;
+	setCoding(code, author) {
+		const {
+			getCodeByCodeID,
+			projectID,
+			projectType,
+		} = this.props;
 
 		// Store selection to be independent of other intermediate changes
 		const currentSelection = this.state.value.selection;
 
 		// Do nothing if no range is selected
 		if (currentSelection.isCollapsed) {
-			return Promise.reject('nothing selected');
+			return;
 		}
 
-		return new Promise((resolve, reject) => {
-			// Get new coding ID from API
-			ProjectEndpoint.incrCodingId(projectID, projectType)
-				.then(({ maxCodingID }) => {
-					this.setState(
-						prevState => {
-							const change = prevState.value.change();
-							change.addMarkAtRange(currentSelection, {
-								object: 'mark',
-								type: 'coding',
-								data: Data.create({
-									id: maxCodingID,
-									code_id: codeID,
-									title: codeName,
-									author: author
-								})
-							});
-							return {
-								value: change.value
-							};
-						},
-						() => {
-							resolve(this.getHTML());
+		// To be called after setState executed
+		const onStateChange = () => {
+			// Update DocumentsView's state
+			this.props.documentsView.updateDocument(
+				this.state.document.id,
+				this.state.document.title,
+				this.getHTML(),
+			);
 
-							// Force update is needed for the coding brackets to
-							// update immediately because they rely on the DOM
-							// nodes that are only changed after rendering is
-							// complete.
-							this.forceUpdate();
-						}
-					);
-				})
-				.catch(error => {
-					console.log('error while fetching next coding ID');
-					reject(error);
-				});
+			// Update coding count in CodeSystem
+			this.props.codesystemView.updateCodingCount();
+
+			// Force update is needed for the coding brackets to update
+			// immediately because they rely on the DOM nodes that are only
+			// changed after rendering is complete.
+			this.forceUpdate();
+		};
+
+		// Get new coding ID from API
+		ProjectEndpoint.incrCodingId(projectID, projectType).then(resp => {
+			const maxCodingID = resp.maxCodingID;
+
+			// Create the mark to be added
+			const codingMark = {
+				object: 'mark',
+				type: 'coding',
+				data: {
+					id: maxCodingID,
+					code_id: code.codeID,
+					title: code.name,
+					author: author,
+				},
+			};
+
+			// Optimistically add the mark locally
+			this.setState(prevState => ({
+				value: prevState.value
+					.change()
+					.addMarkAtRange(currentSelection, codingMark)
+					.value,
+			}), onStateChange);
+
+			// Send change to sync service
+			this.props.syncService.codes.applyCode(
+				this.state.document.id,
+				projectID,
+				projectType,
+				currentSelection.toJSON(),
+				codingMark,
+				getCodeByCodeID(code.codeID)
+			).then(message => {
+
+				// Sync was succesful. Log for now, delete if no action needed
+				console.log('lucky! Sync succeeded');
+
+			}).catch(error => {
+				// Sync failed
+
+				// Inform the user why the mark is disappearing again
+				new Alert('Your new coding could not be saved. Please try again').showModal();
+
+				// Rollback optimistically added mark
+				this.setState(prevState => ({
+					value: prevState.value
+						.change()
+						.removeMarkAtRange(currentSelection, codingMark)
+						.value,
+				}), onStateChange);
+			});
+
+		}).catch(error => {
+			console.error('error while fetching next coding ID', error);
 		});
 	}
 

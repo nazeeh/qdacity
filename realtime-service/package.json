@@ -35,7 +35,13 @@
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "googleapis": "^24.0.0",
+    "immutable": "^3.8.2",
+    "jsdom": "^11.6.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "redis": "^2.8.0",
+    "slate": "^0.32.4",
+    "slate-html-serializer": "^0.5.4",
     "socket.io": "^2.0.4",
     "socket.io-redis": "^5.2.0",
     "winston": "^2.4.1"
