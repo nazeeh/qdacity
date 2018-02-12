@@ -243,7 +243,9 @@ class CodingEditor extends React.Component {
 				relationshipCode.relationshipCode = null;
 				relationshipCode.mmElementIDs = [];
 
-				this.syncService.codes.updateCode(relationshipCode);
+				this.syncService.codes.updateCode(relationshipCode).catch(() => {
+					// Errors are logged in syncService, but need to be catched
+				});
 			}
 
 			code.relations = resp.relations;

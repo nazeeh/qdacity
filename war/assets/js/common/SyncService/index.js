@@ -144,8 +144,7 @@ export default class SyncService {
 	/**
 	 * Emit message to sync service
 	 * @access package
-	 * @return {Promise} - resolves on success, will never be rejected, any
-	 *                     API errors will handled internally.
+	 * @return {Promise} - resolves on success, rejects on failure
 	 */
 	emit(messageType, arg) {
 		return new Promise((resolve, reject) => {
@@ -154,6 +153,7 @@ export default class SyncService {
 					resolve(...args);
 				} else {
 					this.console.error('API error', ...args);
+					reject(...args);
 				}
 			});
 		});

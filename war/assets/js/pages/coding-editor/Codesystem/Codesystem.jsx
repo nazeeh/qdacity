@@ -155,7 +155,9 @@ export default class Codesystem extends SimpleCodesystem {
 
 	updateSelected(code, persist) {
 		if (persist) {
-			this.props.syncService.codes.updateCode(code);
+			this.props.syncService.codes.updateCode(code).catch(() => {
+				// Errors are logged in syncService, but need to be catched
+			});
 		} else {
 			Object.assign(this.state.selected, code);
 			this.forceUpdate();
@@ -199,7 +201,9 @@ export default class Codesystem extends SimpleCodesystem {
 				relationshipCode.relationshipCode = null;
 				relationshipCode.mmElementIDs = [];
 
-				this.props.syncService.codes.updateCode(relationshipCode);
+				this.props.syncService.codes.updateCode(relationshipCode).catch(() => {
+					// Errors are logged in syncService, but need to be catched
+				});
 			}
 		};
 
@@ -253,6 +257,8 @@ export default class Codesystem extends SimpleCodesystem {
 				if (select) {
 					_this.setSelected(resp);
 				}
+			}).catch(() => {
+				// Errors are logged in syncService, but need to be catched
 			});
 	}
 
@@ -275,7 +281,9 @@ export default class Codesystem extends SimpleCodesystem {
 			return;
 		}
 
-		this.props.syncService.codes.removeCode(code);
+		this.props.syncService.codes.removeCode(code).catch(() => {
+			// Errors are logged in syncService, but need to be catched
+		});
 	}
 
 	initCodingCount(allCodes, rootCodes) {
@@ -315,7 +323,9 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	relocateCode(movingNode, targetID) {
-		this.props.syncService.codes.relocateCode(movingNode.id, targetID);
+		this.props.syncService.codes.relocateCode(movingNode.id, targetID).catch(() => {
+			// Errors are logged in syncService, but need to be catched
+		});
 	}
 
 	onCodeRelocation(code) {
