@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "bootstrap-slider": "^9.7.1",
-    "hellojs": "^1.15.1",
+    "hellojs": "^1.16.1",
     "immutable": "^3.8.2",
     "react-intl": "^2.4.0",
     "react-router-dom": "^4.1.2",

@@ -12,6 +12,7 @@ import Participants from './Participants/Participants.jsx';
 import Exercises from './Exercises/Exercises.jsx';
 import TitleRow from './TitleRow/TitleRow.jsx';
 import Confirm from '../../common/modals/Confirm';
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
 const StyledNewPrjBtn = styled.div`
 	padding-left: 5px;
@@ -168,7 +169,11 @@ export default class TermCourseConfig extends React.Component {
 			return '';
 		} else {
 			return (
-				<Exercises termCourse={this.state.termCourse} auth={this.props.auth} />
+				<Exercises
+					termCourse={this.state.termCourse}
+					auth={this.props.auth}
+					history={this.props.history}
+				/>
 			);
 		}
 	}

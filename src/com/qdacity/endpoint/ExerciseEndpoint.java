@@ -210,6 +210,45 @@ public class ExerciseEndpoint {
 			return exerciseProject;
 		}
 	
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "exercise.getExerciseProjectsByExerciseID")
+		public List<ExerciseProject> getExerciseProjectsByExerciseID(@Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
+			PersistenceManager mgr = getPersistenceManager();
+			List<ExerciseProject> exerciseProjects = null;
+			try {
+
+				Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
+				TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+				// Check if user is authorized
+				Authorization.checkAuthorizationTermCourse(termCourse, user);
+				
+				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(exerciseID)");
+
+				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(exerciseID));
+
+			} finally {
+				mgr.close();
+			}
+			return exerciseProjects;
+		}
+
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "exercise.getExerciseByID")
+	public Exercise getExerciseByID(@Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
+		PersistenceManager mgr = getPersistenceManager();
+		Exercise exercise = null;
+		try {
+
+			Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(exerciseID)");
+
+			exercise = mgr.getObjectById(Exercise.class, exerciseID);
+
+		} finally {
+			mgr.close();
+		}
+		return exercise;
+	}
+
 	private ExerciseProject cloneExerciseProject(ProjectRevision projectRev, User user) throws UnauthorizedException {
 
 		ExerciseProject cloneProject = new ExerciseProject(projectRev);

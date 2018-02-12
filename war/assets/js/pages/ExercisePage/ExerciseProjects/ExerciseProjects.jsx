@@ -1,9 +1,9 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import ExerciseList from './ExerciseList.jsx';
+import ExerciseProjectList from './ExerciseProjectList.jsx';
 
-export default class Exercises extends React.Component {
+export default class ExerciseProjects extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -14,15 +14,15 @@ export default class Exercises extends React.Component {
 				<div className="box-header with-border">
 					<h3 className="box-title">
 						<FormattedMessage
-							id="exercises.exercises"
-							defaultMessage="Exercises"
+							id="exerciseProjects.exerciseProjects"
+							defaultMessage="Exercise Projects"
 						/>
 					</h3>
 				</div>
 				<div className="box-body">
 					<div>
-						<ExerciseList
-							termCourse={this.props.termCourse}
+						<ExerciseProjectList
+							exercise={this.props.exercise}
 							auth={this.props.auth}
 							history={this.props.history}
 						/>

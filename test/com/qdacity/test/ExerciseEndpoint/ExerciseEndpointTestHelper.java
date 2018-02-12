@@ -81,4 +81,16 @@ static public void createExerciseProjectIfNeeded(Long revisionID, Long exerciseI
 		}
 		return exerciseProject;
 	}
+
+	static public List<ExerciseProject> getExerciseProjectsByExerciseID(Long exerciseID, com.google.api.server.spi.auth.common.User loggedInUser) {
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		List<ExerciseProject> exerciseProjects = null;
+		try {
+			exerciseProjects = ee.getExerciseProjectsByExerciseID(exerciseID, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for Course Term retrieval");
+		}
+		return exerciseProjects;
+	}
 }

@@ -18,6 +18,7 @@ import PersonalDashboard from './personal-dashboard/PersonalDashboard.jsx';
 import CourseDashboard from './course-dashboard/CourseDashboard.jsx';
 import ProjectDashboard from './project-dashboard/ProjectDashboard.jsx';
 import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
+import ExercisePage from './ExercisePage/ExercisePage.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
 import AdminStats from './admin/AdminStats.jsx';
@@ -184,6 +185,12 @@ export default class App extends React.Component {
 								path="/TermCourseConfig"
 								render={props => (
 									<TermCourseConfig auth={this.state.auth} {...props} />
+								)}
+							/>
+							<Route
+								path="/ExercisePage"
+								render={props => (
+									<ExercisePage auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
