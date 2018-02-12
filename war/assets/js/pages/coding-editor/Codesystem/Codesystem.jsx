@@ -364,7 +364,7 @@ export default class Codesystem extends SimpleCodesystem {
 			if (strippedText !== originalText) {
 				doc.text = strippedText;
 				this.props.documentsView.changeDocumentData(doc);
-				if (activeDocId === doc.id) this.props.textEditor.setHTML(doc.text);
+				if (activeDocId === doc.id) this.props.textEditor.setDocument(doc);
 			}
 		}
 	}

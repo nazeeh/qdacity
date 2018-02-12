@@ -271,7 +271,7 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			selected: selectedID
 		});
-		this.props.textEditor.setHTML(this.getDocument(selectedID).text);
+		this.props.textEditor.setDocument(this.getDocument(selectedID));
 	}
 
 	getActiveDocumentId() {

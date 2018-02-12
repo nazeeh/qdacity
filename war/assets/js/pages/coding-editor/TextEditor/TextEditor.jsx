@@ -91,6 +91,10 @@ export default class TextEditor extends React.Component {
 
 		// Initialize state
 		this.state = {
+
+			// The current document
+			document: {},
+
 			/**
 			 * Slate Value object of the SlateReact.Editor
 			 * See https://docs.slatejs.org/slate-core/value
@@ -110,7 +114,7 @@ export default class TextEditor extends React.Component {
 		};
 
 		// Bind public methods to this
-		this.setHTML = this.setHTML.bind(this);
+		this.setDocument = this.setDocument.bind(this);
 		this.getHTML = this.getHTML.bind(this);
 		this.setCoding = this.setCoding.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
@@ -126,14 +130,14 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
-	 * Set editor content
+	 * Set editor document
 	 *
 	 * @public
-	 * @arg {string} html - The HTML string to load into the editor
+	 * @arg {object} document - The document to load into the editor
 	 */
-	setHTML(html) {
+	setDocument(doc) {
 		// Fallback to empty string if html is falsy
-		html = html || '';
+		const html = doc.text || '';
 
 		// Cleanup the HTMl before parsing it
 		const sanitizedText = html
@@ -147,7 +151,10 @@ export default class TextEditor extends React.Component {
 			resetKeyGenerator();
 
 			// Parse HTML to Slate.Value
-			return { value: this._htmlSerializer.deserialize(sanitizedText) };
+			return {
+				document: doc,
+				value: this._htmlSerializer.deserialize(sanitizedText),
+			};
 		});
 	}
 
