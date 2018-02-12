@@ -118,7 +118,7 @@ export default class DropDownButton extends React.Component {
 			expanded: false
 		});
 
-		item.onClick();
+		item.onClick(e);
 	}
 
 	render() {

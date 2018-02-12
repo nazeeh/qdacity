@@ -218,7 +218,7 @@ export default class DocumentsView extends React.Component {
 	saveCurrentDocument() {
 		var doc = this.getActiveDocument();
 		if (typeof doc != 'undefined') {
-			doc.text = this.props.editorCtrl.getHTML();
+			doc.text = this.props.textEditor.getHTML();
 			this.setState({
 				documents: this.state.documents
 			});
@@ -239,7 +239,7 @@ export default class DocumentsView extends React.Component {
 	}
 
 	setActiveDocument(selectedID) {
-		if (this.props.editorCtrl.isReadOnly === false) {
+		if (this.props.textEditor.isTextEditable()) {
 			this.saveCurrentDocument();
 		}
 		this.props.syncService.updateUser({
@@ -248,7 +248,7 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			selected: selectedID
 		});
-		this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
+		this.props.textEditor.setHTML(this.getDocument(selectedID).text);
 	}
 
 	getActiveDocumentId() {
