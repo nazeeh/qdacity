@@ -11,6 +11,8 @@ export default class CustomForm extends VexModal {
 		this.formElements = '';
 		this.message = message;
 		this.isProjectRevisionSelector = false;
+		this.disableYesButton = false;
+		this.showProjectDropDown = true;
 		this.projects = [];
 		this.selectedRevisionID = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
@@ -55,8 +57,19 @@ export default class CustomForm extends VexModal {
 	addDropDown(projects) {
 		this.isProjectRevisionSelector = true;
 		this.projects = projects;
+
 		this.formElements += '<div id="ProjectRevisionSelector">';
 		this.formElements += '</div>';
+
+		if (
+			(typeof projects.items == 'undefined') ||
+			projects.items.length < 0) {
+			this.disableYesButton = true;
+			this.showProjectDropDown = false;
+			this.formElements += '<div class="vex-custom-input-wrapper">';
+			this.formElements += '<p>Data from an existing project is required for this type of exercise, please create a project with a project revision and try again</p>';
+			this.formElements += '</div>';
+		}
 	}
 
 	addSelect(name, options, label, initialValue) {
@@ -141,7 +154,7 @@ export default class CustomForm extends VexModal {
 					} else reject(data);
 				}
 			});
-			if (_this.isProjectRevisionSelector) {
+			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(
 					<ThemeProvider theme={Theme}>
 						<ProjectRevisionSelector
