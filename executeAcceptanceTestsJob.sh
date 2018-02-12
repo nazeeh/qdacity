@@ -8,21 +8,17 @@ echo "AVAILABLE IMAGES"
 docker image ls
     
 echo "CLEAR EVERYTHING" 
-docker container stop $(docker container ls -a -q) || true
-docker container rm $(docker container ls -a -q) || true
-docker image rm $(docker image ls -a -q) || true
+#docker container stop $(docker container ls -a -q) || true
+#docker container rm $(docker container ls -a -q) || true
+#docker image rm $(docker image ls -a -q) || true
 
 
 # Remove dangling images
 docker rmi $(docker images -qa -f "dangling=true")
 
-echo "ALL CONTAINERS"
-docker container ls -a
-echo "RUNNING CONTAINERS"
-docker container ls
-echo "AVAILABLE IMAGES"
-docker image ls
-    
+
+
+   
 echo "START BUILD"
 
 IMAGE_NAME_BASE="qdacity-tests-base"
