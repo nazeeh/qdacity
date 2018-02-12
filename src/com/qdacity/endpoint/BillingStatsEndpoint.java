@@ -137,7 +137,7 @@ public class BillingStatsEndpoint {
 
 
 		Map<Date, Double> resultMap = new HashMap<>();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 		for (FieldValueList row : queryResult.iterateAll()) {
 			Date day = dateFormat.parse(row.get("day").getStringValue());
