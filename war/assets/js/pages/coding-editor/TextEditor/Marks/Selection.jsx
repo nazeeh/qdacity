@@ -10,8 +10,9 @@ const StyledSelection = styled.span`
 	 * In text-editing mode the text color is colored and the text-shadow
 	 * stays disabled
 	 */
-	color: ${props => props.showCaret ? 'HighlightText' : 'transparent' };
-	text-shadow: ${props => props.showCaret ? 'initial' :  '0 0 0 HighlightText' };
+	color: ${props => (props.showCaret ? 'HighlightText' : 'transparent')};
+	text-shadow: ${props =>
+		props.showCaret ? 'initial' : '0 0 0 HighlightText'};
 `;
 
 const Selection = props => (
@@ -21,5 +22,3 @@ const Selection = props => (
 );
 
 export default Selection;
-
-

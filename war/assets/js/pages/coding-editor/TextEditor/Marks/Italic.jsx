@@ -6,10 +6,7 @@ const StyledItalic = styled.span`
 `;
 
 const Italic = props => (
-	<StyledItalic data-mark-type={props.mark.type}>
-		{props.children}
-	</StyledItalic>
+	<StyledItalic data-mark-type={props.mark.type}>{props.children}</StyledItalic>
 );
 
 export default Italic;
-

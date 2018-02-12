@@ -11,10 +11,10 @@ const StyledSvgContainer = styled.svg`
 const StyledPath = styled.path`
 	stroke-width: 2px;
 	fill: none;
-	margin-left:90px;
+	margin-left: 90px;
 	cursor: pointer;
 
-	.hover>& {
+	.hover > & {
 		stroke: red !important;
 	}
 `;
@@ -25,7 +25,7 @@ const StyledText = styled.text`
 	user-select: none;
 	cursor: pointer;
 
-	.hover>& {
+	.hover > & {
 		fill: red !important;
 	}
 `;
@@ -34,7 +34,6 @@ const StyledText = styled.text`
  * Stateless component to display the coding brackets aside the text editor
  */
 export default class CodingBrackets extends React.Component {
-
 	/**
 	 * When hovering a <text> or <path> append `.hover` class to parent <svg>
 	 * to trigger both siblings to display a hover state. Additionally the
@@ -93,53 +92,53 @@ export default class CodingBrackets extends React.Component {
 		const labelIntervals = [];
 		const labelCorrections = {};
 
-		return this.props.codingData.map(coding => {
-			const {
-				offsetTop: top,
-				codingId,
-			} = coding;
-			const bottom = top + coding.height;
-			labelCorrections[codingId] = 0;
+		return this.props.codingData
+			.map(coding => {
+				const { offsetTop: top, codingId } = coding;
+				const bottom = top + coding.height;
+				labelCorrections[codingId] = 0;
 
-			const offsetX = bracketIntervals.reduce((offsetX, interval) => {
-				if (
-					(top <= interval.bottom && top >= interval.top) ||
-					(bottom <= interval.bottom && bottom >= interval.top) ||
-					(top <= interval.top && bottom >= interval.bottom)
-				) {
-					labelCorrections[interval.codingId] += 7;
-					return offsetX + 7;
-				} else {
-					return offsetX;
-				}
-			}, 0);
+				const offsetX = bracketIntervals.reduce((offsetX, interval) => {
+					if (
+						(top <= interval.bottom && top >= interval.top) ||
+						(bottom <= interval.bottom && bottom >= interval.top) ||
+						(top <= interval.top && bottom >= interval.bottom)
+					) {
+						labelCorrections[interval.codingId] += 7;
+						return offsetX + 7;
+					} else {
+						return offsetX;
+					}
+				}, 0);
 
-			bracketIntervals.push({
-				codingId,
-				top,
-				bottom,
-			});
+				bracketIntervals.push({
+					codingId,
+					top,
+					bottom
+				});
 
-			const labelPosY = this.calculateLabelPosY(
-				top + (bottom - top) / 2,
-				labelIntervals
-			);
+				const labelPosY = this.calculateLabelPosY(
+					top + (bottom - top) / 2,
+					labelIntervals
+				);
 
-			labelIntervals.push(labelPosY);
+				labelIntervals.push(labelPosY);
 
-			return {
-				codingId,
-				label: coding.name,
-				color: coding.color,
-				y0: top,
-				y1: bottom,
-				offsetX,
-				labelY: labelPosY
-			};
-		}).map(bracket => {
-			bracket.labelCorrections = labelCorrections[bracket.codingId];
-			return bracket;
-		}).map(bracket => this.renderBracket(bracket));
+				return {
+					codingId,
+					label: coding.name,
+					color: coding.color,
+					y0: top,
+					y1: bottom,
+					offsetX,
+					labelY: labelPosY
+				};
+			})
+			.map(bracket => {
+				bracket.labelCorrections = labelCorrections[bracket.codingId];
+				return bracket;
+			})
+			.map(bracket => this.renderBracket(bracket));
 	}
 
 	/**
@@ -154,7 +153,7 @@ export default class CodingBrackets extends React.Component {
 			y1,
 			offsetX,
 			labelCorrections,
-			labelY,
+			labelY
 		} = bracket;
 		const x1 = 150;
 		const x0 = x1 - offsetX - 8;
@@ -191,10 +190,6 @@ export default class CodingBrackets extends React.Component {
 	}
 
 	render() {
-		return (
-			<StyledSvgContainer>
-				{this.renderAllBrackets()}
-			</StyledSvgContainer>
-		);
+		return <StyledSvgContainer>{this.renderAllBrackets()}</StyledSvgContainer>;
 	}
 }

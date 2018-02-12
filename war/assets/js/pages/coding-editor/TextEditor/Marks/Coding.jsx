@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Coding = props => {
-
 	const data = props.mark.data.toJS();
 
 	return (

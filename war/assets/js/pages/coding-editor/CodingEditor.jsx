@@ -120,7 +120,7 @@ class CodingEditor extends React.Component {
 				name: '',
 				email: '',
 				picSrc: ''
-			},
+			}
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -239,7 +239,7 @@ class CodingEditor extends React.Component {
 
 	viewChanged(view) {
 		this.setState({
-			selectedEditor: view,
+			selectedEditor: view
 		});
 	}
 
@@ -470,13 +470,15 @@ class CodingEditor extends React.Component {
 				<StyledEditor>
 					<StyledTextdocumentUi>
 						<TextEditor
-							ref={r => this.textEditor = r}
+							ref={r => (this.textEditor = r)}
 							textEditable={this.state.selectedEditor === PageView.TEXT}
 							projectID={this.state.project.getId()}
 							projectType={this.state.project.getType()}
 							getCodeByCodeID={this.getCodeByCodeID}
 							showAgreementMap={this.state.showAgreementMap}
-							agreementMapHighlightThreshold={this.state.agreementMapHighlightThreshold}
+							agreementMapHighlightThreshold={
+								this.state.agreementMapHighlightThreshold
+							}
 						/>
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}

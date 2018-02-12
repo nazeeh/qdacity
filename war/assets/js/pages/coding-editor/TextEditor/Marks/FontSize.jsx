@@ -6,14 +6,10 @@ const StyledFontSize = styled.span`
 `;
 
 const FontSize = props => {
-
 	const data = props.mark.data.toJS();
 
 	return (
-		<StyledFontSize
-			data-mark-type={props.mark.type}
-			fontSize={data.size}
-		>
+		<StyledFontSize data-mark-type={props.mark.type} fontSize={data.size}>
 			{props.children}
 		</StyledFontSize>
 	);

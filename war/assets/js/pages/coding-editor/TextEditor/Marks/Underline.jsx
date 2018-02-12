@@ -12,4 +12,3 @@ const Underline = props => (
 );
 
 export default Underline;
-

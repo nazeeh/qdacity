@@ -6,14 +6,10 @@ const StyledFontFace = styled.span`
 `;
 
 const FontFace = props => {
-
 	const data = props.mark.data.toJS();
 
 	return (
-		<StyledFontFace
-			data-mark-type={props.mark.type}
-			fontFace={data.font}
-		>
+		<StyledFontFace data-mark-type={props.mark.type} fontFace={data.font}>
 			{props.children}
 		</StyledFontFace>
 	);

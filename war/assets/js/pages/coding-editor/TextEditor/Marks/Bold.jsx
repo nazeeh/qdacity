@@ -6,10 +6,7 @@ const StyledBold = styled.span`
 `;
 
 const Bold = props => (
-	<StyledBold data-mark-type={props.mark.type}>
-		{props.children}
-	</StyledBold>
+	<StyledBold data-mark-type={props.mark.type}>{props.children}</StyledBold>
 );
 
 export default Bold;
-

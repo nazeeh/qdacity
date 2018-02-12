@@ -2,13 +2,11 @@ import React from 'react';
 import { findDOMNode } from 'slate-react';
 import CodingBrackets from './CodingBrackets.jsx';
 
-
 /**
  * Adapter class to convert a Slate.Value to the generic coding data used by
  * the CodingBrackets Component
  */
 export default class SlateCodingBracketAdapter extends React.Component {
-
 	/**
 	 * Convert slate value to bracket data for rendering the Coding Brackets
 	 *
@@ -22,8 +20,9 @@ export default class SlateCodingBracketAdapter extends React.Component {
 		try {
 			// Get all coding's DOM nodes as array
 			const domNodeArray = [].slice.call(
-				findDOMNode(value.document)
-					.querySelectorAll('span[data-mark-type="coding"]')
+				findDOMNode(value.document).querySelectorAll(
+					'span[data-mark-type="coding"]'
+				)
 			);
 
 			// Create bracket data from DOM node information
@@ -49,7 +48,7 @@ export default class SlateCodingBracketAdapter extends React.Component {
 						height,
 						name,
 						codingId,
-						color,
+						color
 					};
 				}
 
@@ -58,17 +57,13 @@ export default class SlateCodingBracketAdapter extends React.Component {
 
 			// Remove Object keys and return only array of values
 			return Object.values(dataMap);
-
-		} catch(e) {
+		} catch (e) {
 			return [];
 		}
-	};
+	}
 
 	render() {
-		const {
-			slateValue,
-			onBracketClick,
-		} = this.props;
+		const { slateValue, onBracketClick } = this.props;
 
 		return (
 			<CodingBrackets
@@ -78,4 +73,3 @@ export default class SlateCodingBracketAdapter extends React.Component {
 		);
 	}
 }
-

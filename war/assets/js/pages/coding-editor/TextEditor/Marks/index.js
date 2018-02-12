@@ -13,5 +13,5 @@ export default {
 	FontSize,
 	Italic,
 	Selection,
-	Underline,
+	Underline
 };

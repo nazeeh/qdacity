@@ -1,11 +1,7 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import styled from 'styled-components';
-import {
-	Data,
-	Range,
-	resetKeyGenerator,
-} from 'slate';
+import { Data, Range, resetKeyGenerator } from 'slate';
 import { Editor } from 'slate-react';
 import Html from 'slate-html-serializer';
 
@@ -36,7 +32,7 @@ const StyledDocumentWrapper = styled.div`
 // Style to use for paragraphs inside the slate editor
 const StyledEditorParagraph = styled.p`
 	margin: 1em 0;
-	background-color: ${props => props.highlight ? '#c66' : 'initial'};
+	background-color: ${props => (props.highlight ? '#c66' : 'initial')};
 
 	/*
 	 * When in coding (readonly) mode, the text color is set to transparent
@@ -44,8 +40,8 @@ const StyledEditorParagraph = styled.p`
 	 * That way the blinking cursor line is hidden but the text itself is
 	 * visible.
 	 */
-	color: ${props => props.showCaret ? 'initial' : 'transparent' };
-	text-shadow: ${props => props.showCaret ? 'initial' : '0 0 0 #000' };
+	color: ${props => (props.showCaret ? 'initial' : 'transparent')};
+	text-shadow: ${props => (props.showCaret ? 'initial' : '0 0 0 #000')};
 
 	& span::-moz-selection {
 		background: transparent;
@@ -61,7 +57,7 @@ const readOnlyOperations = [
 	'remove_mark',
 	'set_mark',
 	'set_selection',
-	'set_value',
+	'set_value'
 ];
 
 // Define font list for Toolbar
@@ -78,16 +74,14 @@ const fontFaces = [
 	{ text: 'Tahoma', value: 'Tahoma, sans-serif' },
 	{ text: 'Times New Roman', value: 'Times New Roman, serif' },
 	{ text: 'Trebuchet MS', value: 'Trebuchet MS, sans-serif' },
-	{ text: 'Verdana', value: 'Verdana, sans-serif' },
+	{ text: 'Verdana', value: 'Verdana, sans-serif' }
 ];
-
 
 /**
  * Wrapper component that manages Slate Editor component and provides
  * additional project-specific functionality
  */
 export default class TextEditor extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -96,7 +90,6 @@ export default class TextEditor extends React.Component {
 
 		// Initialize state
 		this.state = {
-
 			/**
 			 * Slate Value object of the SlateReact.Editor
 			 * See https://docs.slatejs.org/slate-core/value
@@ -112,8 +105,8 @@ export default class TextEditor extends React.Component {
 			value: this._htmlSerializer.deserialize('<p></p>'),
 
 			// Default font size to be selected in toolbar
-			selectedFontSize: 13,
-		}
+			selectedFontSize: 13
+		};
 
 		// Bind public methods to this
 		this.setHTML = this.setHTML.bind(this);
@@ -189,10 +182,7 @@ export default class TextEditor extends React.Component {
 	 */
 	setCoding(codeID, codeName, author) {
 		// Needed to getting new coding ID from API
-		const {
-			projectID,
-			projectType,
-		} = this.props;
+		const { projectID, projectType } = this.props;
 
 		// Store selection to be independent of other intermediate changes
 		const currentSelection = this.state.value.selection;
@@ -203,36 +193,38 @@ export default class TextEditor extends React.Component {
 		}
 
 		return new Promise((resolve, reject) => {
-
 			// Get new coding ID from API
 			ProjectEndpoint.incrCodingId(projectID, projectType)
 				.then(({ maxCodingID }) => {
+					this.setState(
+						prevState => {
+							const change = prevState.value.change();
+							change.addMarkAtRange(currentSelection, {
+								object: 'mark',
+								type: 'coding',
+								data: Data.create({
+									id: maxCodingID,
+									code_id: codeID,
+									title: codeName,
+									author: author
+								})
+							});
+							return {
+								value: change.value
+							};
+						},
+						() => {
+							resolve(this.getHTML());
 
-					this.setState(prevState => {
-						const change = prevState.value.change();
-						change.addMarkAtRange(currentSelection, {
-							object: 'mark',
-							type: 'coding',
-							data: Data.create({
-								id: maxCodingID,
-								code_id: codeID,
-								title: codeName,
-								author: author,
-							}),
-						});
-						return {
-							value: change.value,
+							// Force update is needed for the coding brackets to
+							// update immediately because they rely on the DOM
+							// nodes that are only changed after rendering is
+							// complete.
+							this.forceUpdate();
 						}
-					}, () => {
-						resolve(this.getHTML());
-
-						// Force update is needed for the coding brackets to
-						// update immediately because they rely on the DOM
-						// nodes that are only changed after rendering is
-						// complete.
-						this.forceUpdate();
-					});
-				}).catch(error => {
+					);
+				})
+				.catch(error => {
 					console.log('error while fetching next coding ID');
 					reject(error);
 				});
@@ -256,18 +248,12 @@ export default class TextEditor extends React.Component {
 	 */
 	removeCoding(codeID) {
 		// Needed to getting new coding ID from API
-		const {
-			projectID,
-			projectType,
-		} = this.props;
+		const { projectID, projectType } = this.props;
 
 		// Store parts of the state for queries to be independent of other
 		// intermediate changes. MUST NOT BE USED AS BASE FOR STATE UPDATES!
 		// Otherwise intermediate changes would be discarded
-		const {
-			selection: currentSelection,
-			document,
-		} = this.state.value;
+		const { selection: currentSelection, document } = this.state.value;
 
 		// Do nothing if no range is selected
 		if (currentSelection.isCollapsed) {
@@ -275,33 +261,41 @@ export default class TextEditor extends React.Component {
 		}
 
 		return new Promise((resolve, reject) => {
-
 			// Find codings that should be removed
-			const codingsToRemove = document.getMarksAtRange(currentSelection)
+			const codingsToRemove = document
+				.getMarksAtRange(currentSelection)
 				.filter(mark => mark.type === 'coding')
 				.filter(mark => mark.data.get('code_id') === codeID);
 
 			// Calculate parameters for code splitting if necessary.
 			// Returns Immutable.Set
 			const splittingPromises = codingsToRemove.map(coding => {
-
 				// Get curried coding searchers
-				const findCodingStart = this._findCodingStart.bind(this, coding.data.get('id'));
-				const findCodingEnd = this._findCodingEnd.bind(this, coding.data.get('id'));
+				const findCodingStart = this._findCodingStart.bind(
+					this,
+					coding.data.get('id')
+				);
+				const findCodingEnd = this._findCodingEnd.bind(
+					this,
+					coding.data.get('id')
+				);
 
 				// Prepare return value
 				const changeParameters = {
-					oldCoding: coding,
+					oldCoding: coding
 				};
 
 				// Get immediate character before the selection
-				const prevChar = currentSelection.startOffset === 0
-					// Selection starts at block start
-					? document.getPreviousText(currentSelection.startKey)
-						.characters.last()
-					// Selection starts at second character or later
-					: document.getDescendant(currentSelection.startKey)
-						.characters.get(currentSelection.startOffset - 1);
+				const prevChar =
+					currentSelection.startOffset === 0
+						? // Selection starts at block start
+						document
+							.getPreviousText(currentSelection.startKey)
+							.characters.last()
+						: // Selection starts at second character or later
+						document
+							.getDescendant(currentSelection.startKey)
+							.characters.get(currentSelection.startOffset - 1);
 
 				// If character before selection has not the current coding,
 				// no splitting is needed
@@ -316,7 +310,9 @@ export default class TextEditor extends React.Component {
 				let textNode = document.getDescendant(currentSelection.endKey);
 
 				// First textNode is only iterated after end of selection
-				const characters = textNode.characters.slice(currentSelection.endOffset);
+				const characters = textNode.characters.slice(
+					currentSelection.endOffset
+				);
 
 				// Find first character that has not the current coding
 				let endOffset = findCodingEnd(characters);
@@ -334,8 +330,7 @@ export default class TextEditor extends React.Component {
 				}
 
 				// If not already found, search subsequent Text nodes
-				while(typeof endOffset === 'undefined') {
-
+				while (typeof endOffset === 'undefined') {
 					textNode = document.getNextText(textNode.key);
 
 					// No Text node left, coding is applied until document end
@@ -350,9 +345,8 @@ export default class TextEditor extends React.Component {
 				}
 
 				// Get new coding id from API
-				return ProjectEndpoint.incrCodingId(projectID, projectType)
-					.then(({ maxCodingID }) => {
-
+				return ProjectEndpoint.incrCodingId(projectID, projectType).then(
+					({ maxCodingID }) => {
 						// Return parameters for coding removal and splitting
 						// to have all changes atomically
 						return {
@@ -360,65 +354,63 @@ export default class TextEditor extends React.Component {
 								anchorKey: currentSelection.endKey,
 								anchorOffset: currentSelection.endOffset,
 								focusKey: textNode.key,
-								focusOffset: endOffset,
+								focusOffset: endOffset
 							}),
 							oldCoding: coding,
 							newCoding: {
 								object: 'mark',
 								type: 'coding',
-								data: coding.data.set('id', maxCodingID),
-							},
+								data: coding.data.set('id', maxCodingID)
+							}
 						};
-					});
+					}
+				);
 			});
 
 			// Wait for all splittings to resolve
-			Promise.all(splittingPromises).then(parameters => {
+			Promise.all(splittingPromises)
+				.then(parameters => {
+					// Apply all changes atomically
+					this.setState(
+						prevState => {
+							const change = prevState.value.change();
 
-				// Apply all changes atomically
-				this.setState(prevState => {
+							parameters.map(params => {
+								const { rangeToChange, oldCoding, newCoding } = params;
 
-					const change = prevState.value.change();
+								// Remove mark
+								change.removeMarkAtRange(currentSelection, oldCoding);
 
-					parameters.map(params => {
-						const {
-							rangeToChange,
-							oldCoding,
-							newCoding,
-						} = params;
+								// Perform code splitting, if necessary
+								if (rangeToChange) {
+									// Remove current coding
+									change.removeMarkAtRange(rangeToChange, oldCoding);
 
-						// Remove mark
-						change.removeMarkAtRange(currentSelection, oldCoding);
+									// Add coding with new codingID
+									change.addMarkAtRange(rangeToChange, newCoding);
+								}
+							});
 
-						// Perform code splitting, if necessary
-						if (rangeToChange) {
-							// Remove current coding
-							change.removeMarkAtRange(rangeToChange, oldCoding);
+							return {
+								value: change.value
+							};
+						},
+						() => {
+							// Resolve promise with editors current content as HTML
+							resolve(this.getHTML());
 
-							// Add coding with new codingID
-							change.addMarkAtRange(rangeToChange, newCoding);
+							// Force update is needed for the coding brackets to
+							// update immediately because they rely on the DOM
+							// nodes that are only changed after rendering is
+							// complete.
+							this.forceUpdate();
 						}
-					});
-
-					return {
-						value: change.value,
-					};
-
-				}, () => {
-					// Resolve promise with editors current content as HTML
-					resolve(this.getHTML());
-
-					// Force update is needed for the coding brackets to
-					// update immediately because they rely on the DOM
-					// nodes that are only changed after rendering is
-					// complete.
-					this.forceUpdate();
+					);
+				})
+				.catch(error => {
+					console.log('error while fetching next coding ID');
+					reject(error);
 				});
-
-			}).catch(error => {
-				console.log('error while fetching next coding ID');
-				reject(error);
-			});
 		});
 	}
 
@@ -442,8 +434,8 @@ export default class TextEditor extends React.Component {
 			const change = prevState.value.change();
 			change.select(range.set('isFocused', true));
 			return {
-				value: change.value,
-			}
+				value: change.value
+			};
 		});
 	}
 
@@ -465,9 +457,10 @@ export default class TextEditor extends React.Component {
 	 *                    false negative counts are set.
 	 */
 	getMaxFalseNeg() {
-		return this.state.value.document.getBlocks()
+		return this.state.value.document
+			.getBlocks()
 			.map(block => block.data.get('falsenegcount'))
-			.reduce((max, fnc) => fnc ? Math.max(max, fnc) : 0, 0);
+			.reduce((max, fnc) => (fnc ? Math.max(max, fnc) : 0), 0);
 	}
 
 	/**
@@ -479,7 +472,7 @@ export default class TextEditor extends React.Component {
 	 */
 	handleSimpleMarkClick(mark) {
 		this.setState(prevState => ({
-			value: prevState.value.change().toggleMark(mark).value,
+			value: prevState.value.change().toggleMark(mark).value
 		}));
 	}
 
@@ -498,7 +491,10 @@ export default class TextEditor extends React.Component {
 
 		// Only apply change if in textEditable mode or all operations are in
 		// readOnlyOperations
-		if (this.props.textEditable || operations.every(op => readOnlyOperations.includes(op))) {
+		if (
+			this.props.textEditable ||
+			operations.every(op => readOnlyOperations.includes(op))
+		) {
 			this.setState({ value: change.value });
 		}
 	}
@@ -521,19 +517,23 @@ export default class TextEditor extends React.Component {
 			return;
 		}
 
-		const newMark = font === null ? null : {
-			object: 'mark',
-			type: 'fontface',
-			data: Data.create({
-				font,
-			}),
-		};
+		const newMark =
+			font === null
+				? null
+				: {
+					object: 'mark',
+					type: 'fontface',
+					data: Data.create({
+						font
+					})
+				};
 
 		this.setState(prevState => {
 			const change = prevState.value.change();
 
 			// Remove other fontface marks
-			prevState.value.document.getMarksAtRange(currentSelection)
+			prevState.value.document
+				.getMarksAtRange(currentSelection)
 				.filter(mark => mark.type === 'fontface')
 				.forEach(m => change.removeMarkAtRange(currentSelection, m));
 
@@ -543,7 +543,7 @@ export default class TextEditor extends React.Component {
 			}
 
 			return {
-				value: change.value,
+				value: change.value
 			};
 		});
 	}
@@ -570,19 +570,23 @@ export default class TextEditor extends React.Component {
 		}
 
 		const fontsize = e.target.value;
-		const newMark = fontsize === '' ? null : {
-			object: 'mark',
-			type: 'fontsize',
-			data: Data.create({
-				size: `${fontsize}px`,
-			}),
-		}
+		const newMark =
+			fontsize === ''
+				? null
+				: {
+					object: 'mark',
+					type: 'fontsize',
+					data: Data.create({
+						size: `${fontsize}px`
+					})
+				};
 
 		this.setState(prevState => {
 			const change = prevState.value.change();
 
 			// Remove other fontsize marks
-			prevState.value.document.getMarksAtRange(currentSelection)
+			prevState.value.document
+				.getMarksAtRange(currentSelection)
 				.filter(m => m.type === 'fontsize')
 				.forEach(m => change.removeMarkAtRange(currentSelection, m));
 
@@ -593,7 +597,7 @@ export default class TextEditor extends React.Component {
 
 			return {
 				selectedFontSize: fontsize,
-				value: change.value,
+				value: change.value
 			};
 		});
 
@@ -609,15 +613,24 @@ export default class TextEditor extends React.Component {
 	 * @arg {object} props - The props to pass to the component.
 	 */
 	renderMark(props) {
-		switch(props.mark.type) {
-			case 'bold': return <Marks.Bold {...props} />;
-			case 'coding': return <Marks.Coding {...props} />;
-			case 'fontface': return <Marks.FontFace {...props} />;
-			case 'fontsize': return <Marks.FontSize {...props} />;
-			case 'italic': return <Marks.Italic {...props} />;
-			case 'selection': return <Marks.Selection showCaret={this.props.textEditable} {...props} />;
-			case 'underline': return <Marks.Underline {...props} />;
-		};
+		switch (props.mark.type) {
+			case 'bold':
+				return <Marks.Bold {...props} />;
+			case 'coding':
+				return <Marks.Coding {...props} />;
+			case 'fontface':
+				return <Marks.FontFace {...props} />;
+			case 'fontsize':
+				return <Marks.FontSize {...props} />;
+			case 'italic':
+				return <Marks.Italic {...props} />;
+			case 'selection':
+				return (
+					<Marks.Selection showCaret={this.props.textEditable} {...props} />
+				);
+			case 'underline':
+				return <Marks.Underline {...props} />;
+		}
 	}
 
 	/**
@@ -631,12 +644,13 @@ export default class TextEditor extends React.Component {
 		if (props.node.type === 'paragraph') {
 			const {
 				showAgreementMap,
-				agreementMapHighlightThreshold: highlightThreshold,
+				agreementMapHighlightThreshold: highlightThreshold
 			} = this.props;
 
 			// Highlight certain paragraphs if showAgreementMap flag is set
-			const highlight = showAgreementMap
-				&& props.node.data.get('falsenegcount') >= highlightThreshold
+			const highlight =
+				showAgreementMap &&
+				props.node.data.get('falsenegcount') >= highlightThreshold;
 
 			// All props must be passed for slate to work
 			return (
@@ -708,7 +722,7 @@ export default class TextEditor extends React.Component {
 			anchorKey: startText.key,
 			anchorOffset: startOffset,
 			focusKey: endText.key,
-			focusOffset: endOffset,
+			focusOffset: endOffset
 		});
 	}
 
@@ -722,10 +736,8 @@ export default class TextEditor extends React.Component {
 	 *                              undefined if no match found
 	 */
 	_findCodingStart(codingID, characters) {
-		return characters.findKey(
-			c => c.marks.find(
-				m => m.type === 'coding' && m.data.get('id') === codingID
-			)
+		return characters.findKey(c =>
+			c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
 		);
 	}
 
@@ -741,9 +753,8 @@ export default class TextEditor extends React.Component {
 	 */
 	_findCodingEnd(codingID, characters) {
 		return characters.findKey(
-			c => !c.marks.find(
-				m => m.type === 'coding' && m.data.get('id') === codingID
-			)
+			c =>
+				!c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
 		);
 	}
 
@@ -764,10 +775,7 @@ export default class TextEditor extends React.Component {
 	 * @public
 	 */
 	render() {
-		const {
-			value,
-			selectedFontSize,
-		} = this.state;
+		const { value, selectedFontSize } = this.state;
 
 		/*
 		 * Create decorations from current selection
@@ -775,14 +783,14 @@ export default class TextEditor extends React.Component {
 		 * produces much more lag while dragging a selection.
 		 */
 		const valueWithSelection = value.change().setValue({
-			decorations: value.selection.isCollapsed ? [] : [
-				value.selection.set('marks', [{ type: 'selection', }])
-			],
+			decorations: value.selection.isCollapsed
+				? []
+				: [value.selection.set('marks', [{ type: 'selection' }])]
 		}).value;
 
 		return (
 			<StyledContainer>
-				{ this.props.textEditable && (
+				{this.props.textEditable && (
 					<TextEditorToolbar
 						fontFaces={fontFaces}
 						fontSize={selectedFontSize}
@@ -793,9 +801,12 @@ export default class TextEditor extends React.Component {
 						onFontSizeChange={this.handleFontSizeChange}
 						onBoldClick={this.handleSimpleMarkClick.bind(this, 'bold')}
 						onItalicClick={this.handleSimpleMarkClick.bind(this, 'italic')}
-						onUnderlineClick={this.handleSimpleMarkClick.bind(this, 'underline')}
+						onUnderlineClick={this.handleSimpleMarkClick.bind(
+							this,
+							'underline'
+						)}
 					/>
-				) }
+				)}
 				<StyledDocumentWrapper>
 					<SlateCodingBracketAdapter
 						slateValue={value}
