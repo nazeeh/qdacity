@@ -38,6 +38,12 @@ const StyledEditorParagraph = styled.p`
 	margin: 1em 0;
 	background-color: ${props => props.highlight ? '#c66' : 'initial'};
 
+	/*
+	 * When in coding (readonly) mode, the text color is set to transparent
+	 * and therefore a text-shadow without offset and blur is displayed.
+	 * That way the blinking cursor line is hidden but the text itself is
+	 * visible.
+	 */
 	color: ${props => props.showCaret ? 'initial' : 'transparent' };
 	text-shadow: ${props => props.showCaret ? 'initial' : '0 0 0 #000' };
 
