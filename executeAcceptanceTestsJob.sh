@@ -1,11 +1,18 @@
 #!/bin/bash
 
+
+echo "======================================================================="
 echo "ALL CONTAINERS"
 docker container ls -a
+
+echo "============="
 echo "RUNNING CONTAINERS"
 docker container ls
+echo "============="
 echo "AVAILABLE IMAGES"
 docker image ls
+
+echo "======================================================================="
     
 echo "CLEAR EVERYTHING" 
 #docker container stop $(docker container ls -a -q) || true
@@ -32,3 +39,18 @@ docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $IMAGE_NAME_TESTS 
 
 # Run test image
 docker run --rm -v /dev/shm:/dev/shm $IMAGE_NAME_TESTS
+
+
+
+
+echo "======================================================================="
+echo "ALL CONTAINERS"
+docker container ls -a
+echo "============="
+echo "RUNNING CONTAINERS"
+docker container ls
+echo "============="
+echo "AVAILABLE IMAGES"
+docker image ls
+
+echo "======================================================================="
