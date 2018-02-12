@@ -31,19 +31,19 @@ export default class SaturationDetails extends React.Component {
 		var columnLabelsArray = [
 			formatMessage({
 				id: 'saturationdetails.change_category',
-				defaultMessages: 'Change Category'
+				defaultMessage: 'Change Category'
 			}),
 			formatMessage({
 				id: 'saturationdetails.saturation',
-				defaultMessages: 'Saturation'
+				defaultMessage: 'Saturation'
 			}),
 			formatMessage({
 				id: 'saturationdetails.weight',
-				defaultMessages: 'Weight (Importance)'
+				defaultMessage: 'Weight (Importance)'
 			}),
 			formatMessage({
 				id: 'saturationdetails.configured_maximum',
-				defaultMessages: 'Configured Maximum'
+				defaultMessage: 'Configured Maximum'
 			})
 		];
 		var width = 100 / columnLabelsArray.length;

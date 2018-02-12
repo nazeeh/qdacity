@@ -46,7 +46,7 @@ export default class InviteUserField extends React.Component {
 				alertify.error(
 					formatMessage(
 						{
-							id: 'inviteuserfield.invited',
+							id: 'inviteuserfield.not_found',
 							defaultMessage: '{email} was not found'
 						},
 						{

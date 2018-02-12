@@ -7,6 +7,8 @@ gwt-unitCache
 /war/qdacity
 /war/WEB-INF/appengine-generated
 /war/node_modules
+/war/messages
+/war/assets/messages
 /war/WEB-INF/*.api
 dist
 build.xml

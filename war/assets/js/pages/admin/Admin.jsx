@@ -65,7 +65,7 @@ export default class Admin extends React.Component {
 						active={page === SelectedPage.COSTS}
 						onClick={() => this.navigateTo('Costs')}
 					>
-						<FormattedMessage id="admin.section.stats" defaultMessage="Costs" />
+						<FormattedMessage id="admin.section.costs" defaultMessage="Costs" />
 					</BtnPrimary>
 					<BtnPrimary
 						active={page === SelectedPage.CONTROL}
