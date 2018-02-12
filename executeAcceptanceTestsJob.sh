@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#mvn package
-
-
-
 echo "ALL CONTAINERS"
 docker container ls -a
 echo "RUNNING CONTAINERS"
@@ -15,6 +11,10 @@ echo "CLEAR EVERYTHING"
 #docker container stop $(docker container ls -a -q) || true
 #docker container rm $(docker container ls -a -q) || true
 #docker image rm $(docker image ls -a -q) || true
+
+
+# Remove dangling images
+docker rmi $(docker images -qa -f "dangling=true")
 
 echo "ALL CONTAINERS"
 docker container ls -a
