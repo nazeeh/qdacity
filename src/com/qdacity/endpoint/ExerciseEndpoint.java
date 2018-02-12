@@ -217,6 +217,11 @@ public class ExerciseEndpoint {
 			List<ExerciseProject> exerciseProjects = null;
 			try {
 
+				Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
+				TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+				// Check if user is authorized
+				Authorization.checkAuthorizationTermCourse(termCourse, user);
+				
 				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(exerciseID)");
 
 				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(exerciseID));
