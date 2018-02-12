@@ -87,6 +87,9 @@ gulp.task('minify', function() {
 					hoist_funs: true,
 					collapse_vars: true,
 					drop_console: true
+				},
+				output: {
+					ascii_only: true
 				}
 			})
 		)
