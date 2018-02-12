@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Existing container"
+echo "Existing containers"
 docker container ls -a
 
 echo "Existing images"
