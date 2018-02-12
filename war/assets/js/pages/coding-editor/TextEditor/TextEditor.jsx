@@ -763,13 +763,16 @@ export default class TextEditor extends React.Component {
 			selectedFontSize,
 		} = this.state;
 
-		// Calculate selection decoration
-		const emptyList = value.document.getBlocks().splice(0);
-		const selection = value.selection.isCollapsed
-			? emptyList
-			: emptyList.push(value.selection.set('marks', [{ type: 'selection', }]));
-
-		const valueWithSelection = value.set('decorations', selection);
+		/*
+		 * Create decorations from current selection
+		 * It would be cleaner to do this in handleEditorChange(), but that
+		 * produces much more lag while dragging a selection.
+		 */
+		const valueWithSelection = value.change().setValue({
+			decorations: value.selection.isCollapsed ? [] : [
+				value.selection.set('marks', [{ type: 'selection', }])
+			],
+		}).value;
 
 		return (
 			<StyledContainer>
