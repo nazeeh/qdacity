@@ -121,7 +121,6 @@ frontend_babel_plugin_test:
     <<: *node_cache
     policy: pull
   script:
-    - cd localization
     - build_babel_plugin test
 
 rtcsvc_prod_unittest:
