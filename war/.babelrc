@@ -1,7 +1,11 @@
 {
-	"presets": ["env"],
-	"plugins": [
-		"transform-decorators",
+	"presets": [["env", {
+		"targets": {
+			"browsers": [">5%"]
+		}
+	}]],
+		"plugins": [
+			"transform-decorators",
 		"babel-plugin-async-to-promises",
 		["transform-runtime", {
 			"polyfill": false,
