@@ -78,7 +78,8 @@ gulp.task('generate-language-template', ['combine-messages'], () =>
 			return new Buffer(JSON.stringify(messages, null, 2));
 		})).on('error', error => console.error(error))
 		.pipe(rename({ basename: 'test'}))
-		.pipe(gulp.dest('./assets/messages'))
+		.pipe(gulp.dest('./dist/messages'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/messages/'))
 );
 
 gulp.task('bundle-task', function() {
