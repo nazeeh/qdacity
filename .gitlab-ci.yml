@@ -36,8 +36,8 @@ frontend_prod_build:
   <<: *job_definition
   <<: *frontend_build
   script:
-    - build_frontend bundle minify set-react-production
     - build_babel_plugin
+    - build_frontend bundle minify set-react-production
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -45,8 +45,8 @@ frontend_prod_build_nm:
   except:
     - master
   script:
-    - build_frontend bundle
     - build_babel_plugin
+    - build_frontend bundle
 
 backend_prod_build:
   <<: *job_definition
