@@ -65,11 +65,12 @@ gulp.task('combine-messages', ['bundle-task'], () =>
 			}
 			return new Buffer(JSON.stringify(messages, null, 2));
 		})).on('error', error => console.error(error))
-		.pipe(gulp.dest('./assets/messages'))
+		.pipe(gulp.dest('./dist/messages'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/messages/'))
 );
 
 gulp.task('generate-language-template', ['combine-messages'], () =>
-	gulp.src('./assets/messages/en.json', { base: './' })
+	gulp.src('./dist/messages/en.json', { base: './' })
 		.pipe(jsonConcat('en.json', function(data) {
 			const messages = data.en; // en.json contents
 			for(const key in messages) {
