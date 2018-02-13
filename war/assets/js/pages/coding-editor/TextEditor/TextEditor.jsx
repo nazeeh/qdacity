@@ -286,16 +286,23 @@ export default class TextEditor extends React.Component {
 				};
 
 				// Get immediate character before the selection
-				const prevChar =
-					currentSelection.startOffset === 0
-						? // Selection starts at block start
-						document
-							.getPreviousText(currentSelection.startKey)
-							.characters.last()
-						: // Selection starts at second character or later
-						document
-							.getDescendant(currentSelection.startKey)
-							.characters.get(currentSelection.startOffset - 1);
+				let prevChar;
+				// Case 1: selection starts at block start
+				if (currentSelection.startOffset === 0) {
+					// Get previous text block
+					const prevText = document.getPreviousText(currentSelection.startKey);
+
+					// If there is no previous block, no splitting is needed
+					if (typeof prevText === 'undefined') {
+						return changeParameters;
+					}
+
+					prevChar = prevText.characters.last();
+
+				} else {
+					prevChar = document.getDescendant(currentSelection.startKey)
+						.characters.get(currentSelection.startOffset - 1);
+				}
 
 				// If character before selection has not the current coding,
 				// no splitting is needed
