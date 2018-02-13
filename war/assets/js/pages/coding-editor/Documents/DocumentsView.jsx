@@ -158,7 +158,7 @@ export default class DocumentsView extends React.Component {
 	}
 
 	// Adds an array of documents to the state
-	// The first document in the array will be set as active
+	// Does not set an active document
 	addAllDocuments(docList) {
 
 		if (!typeof !docList || !docList.length || docList.length === 0) return;
@@ -171,7 +171,6 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			documents: this.state.documents
 		});
-		this.setActiveDocument(docList[0].id);
 	}
 
 	renameDocument(pId, pNewTitle) {
