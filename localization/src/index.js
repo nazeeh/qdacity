@@ -435,7 +435,7 @@ function extractMessageIdentifier(args, path, state) {
 		return data;
 	}
 	// invalid argument type
-	console.error(args);
+	if(debug) console.error(args);
 	throw path.buildCodeFrameError('Argument is not a MessageIdentifier');
 }
 
