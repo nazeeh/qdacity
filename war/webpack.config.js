@@ -31,7 +31,14 @@ module.exports = {
 					loader: 'babel-loader',
 					options: {
 						presets: ['es2015', 'react'],
-						plugins: ['transform-react-inline-elements']
+						plugins: [
+							['react-intl'],
+							[path.join(__dirname, '..', 'localization', 'src', 'index.js'), {
+								test: false,
+								debug: false,
+							}],
+							'transform-react-inline-elements'
+						]
 					}
 				}
 			},
