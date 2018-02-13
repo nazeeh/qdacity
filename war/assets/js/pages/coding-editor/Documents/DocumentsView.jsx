@@ -106,9 +106,8 @@ export default class DocumentsView extends React.Component {
 			} else {
 				DocumentsEndpoint.getDocuments(project_id, project_type)
 					.then(function(items) {
-						for (var i = 0; i < items.length; i++) {
-							_this.addDocument(items[i]);
-						}
+						items = items || [];
+						_this.addAllDocuments(items);
 						resolve();
 					})
 					.catch(function(resp) {
@@ -156,6 +155,23 @@ export default class DocumentsView extends React.Component {
 			documents: this.state.documents
 		});
 		this.setActiveDocument(doc.id);
+	}
+
+	// Adds an array of documents to the state
+	// The first document in the array will be set as active
+	addAllDocuments(docList) {
+
+		if (!typeof !docList || !docList.length || docList.length === 0) return;
+
+		for (var i = 0; i < docList.length; i++) {
+			let doc = docList[i];
+			doc.text = doc.text.value;
+			this.state.documents.push(doc);
+		}
+		this.setState({
+			documents: this.state.documents
+		});
+		this.setActiveDocument(docList[0].id);
 	}
 
 	renameDocument(pId, pNewTitle) {
