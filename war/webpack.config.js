@@ -2,6 +2,8 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var ExtractMessagesPlugin = require('../localization/webpack');
+require('babel-register'); // replace nodes require with babels on-the-fly c.
+var BabelFormatMessagesPlugin = require('../localization/babel').default;
 
 module.exports = {
 	bail: true,
@@ -32,12 +34,12 @@ module.exports = {
 					loader: 'babel-loader',
 					options: {
 						metadataSubscribers: [ExtractMessagesPlugin.metadataSubscriber],
-						presets: ['es2015', 'react'],
+						presets: ['env', 'react'],
 						plugins: [
 							['react-intl', {
 								extractSourceLocation: true
 							}],
-							[path.join(__dirname, '..', 'localization', 'babel', 'index.js'), {
+							[BabelFormatMessagesPlugin, {
 								test: false,
 								debug: false,
 							}],

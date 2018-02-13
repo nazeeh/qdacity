@@ -1,4 +1,10 @@
 {
-  "presets": ["es2015"],
-  "plugins": ["transform-decorators", "babel-plugin-async-to-promises"]
+	"presets": ["env"],
+	"plugins": [
+		"transform-decorators",
+		"babel-plugin-async-to-promises",
+		["transform-runtime", {
+			"polyfill": false,
+			"regenerator": true
+		}]]
 }
