@@ -1,8 +1,8 @@
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var ExtractMessagesPlugin = require('../localization/webpack');
 require('babel-register'); // replace nodes require with babels on-the-fly c.
+var ExtractMessagesPlugin = require('../localization/webpack').default;
 var BabelFormatMessagesPlugin = require('../localization/babel').default;
 
 module.exports = {

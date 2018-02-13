@@ -50,40 +50,6 @@ gulp.task('format', () => {
 		.pipe(gulp.dest('./'));
 });
 
-gulp.task('combine-messages', () =>
-	gulp.src('./messages/**/*.json', { base: './' })
-		.pipe(jsonConcat('en.json', function(data) {
-			const messages = {};
-			for(const key in data) {
-				const messageIdents = data[key];
-				for(const messageIdent of messageIdents) {
-					if(messages[messageIdent.id] != undefined) {
-						if (messages[messageIdent.id] == messageIdent.defaultMessage) continue;
-						throw new Error(`Colliding message identifiers found: ${messageIdent.id}`);
-					}
-					messages[messageIdent.id] = messageIdent.defaultMessage;
-				}
-			}
-			return new Buffer(JSON.stringify(messages, null, 2));
-		})).on('error', error => console.error(error))
-		.pipe(gulp.dest('./dist/messages'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/messages/'))
-);
-
-gulp.task('generate-language-template', ['combine-messages'], () =>
-	gulp.src('./dist/messages/en.json', { base: './' })
-		.pipe(jsonConcat('en.json', function(data) {
-			const messages = data.en; // en.json contents
-			for(const key in messages) {
-				messages[key] = 'TRαNsLÄTəD “STRiNG”';
-			}
-			return new Buffer(JSON.stringify(messages, null, 2));
-		})).on('error', error => console.error(error))
-		.pipe(rename({ basename: 'test'}))
-		.pipe(gulp.dest('./dist/messages'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/messages/'))
-);
-
 gulp.task('bundle-task', function() {
 	setConfig();
 	return (gulp
