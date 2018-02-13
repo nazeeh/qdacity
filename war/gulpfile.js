@@ -50,11 +50,12 @@ gulp.task('format', () => {
 		.pipe(gulp.dest('./'));
 });
 
-gulp.task('combine-messages', ['bundle-task'], () =>
+gulp.task('combine-messages', () =>
 	gulp.src('./messages/**/*.json', { base: './' })
 		.pipe(jsonConcat('en.json', function(data) {
 			const messages = {};
-			for(const messageIdents of Object.values(data)) {
+			for(const key in data) {
+				const messageIdents = data[key];
 				for(const messageIdent of messageIdents) {
 					if(messages[messageIdent.id] != undefined) {
 						if (messages[messageIdent.id] == messageIdent.defaultMessage) continue;
