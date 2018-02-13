@@ -23,11 +23,14 @@ const globalLocalizationState = {
  * @param {String} [language=en] language to load
  * @returns {Promise<JSON?>}
  */
-async function loadMessages(language = 'en') {
+async function loadMessages(language = 'en', callback) {
 	try {
 		const response = await fetch(`dist/messages/${language}.json`);
-		if (response.ok) return await response.json();
-		throw response.statusText;
+		if(response.ok) {
+			callback(await response.json());
+		} else {
+			throw response.statusText;
+		}
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -96,11 +99,12 @@ export default class LocalizationProvider extends IntlProvider {
 	 */
 	async changeLanguage(language = 'en') {
 		if (!LocalizationProvider.isSupportedLanguage(language)) return;
-		const json = await loadMessages(language);
-		//@ts-ignore
-		this.props.app.setState({
-			messages: json,
-			language: language
+		await loadMessages(language, json => {
+			//@ts-ignore
+			this.props.app.setState({
+				messages: json,
+				language: language
+			});
 		});
 	}
 
