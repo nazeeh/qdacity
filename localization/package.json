@@ -26,9 +26,7 @@
   },
   "scripts": {
     "test": "mocha --require babel-core/register tests",
-    "build": "webpack",
-    "watch": "webpack --watch",
-    "watch-test": "mocha --watch --require babel-core/register tests"
+    "watch": "mocha --watch --require babel-core/register tests"
   },
   "author": "Robert Obermeier",
   "license": "MIT"
