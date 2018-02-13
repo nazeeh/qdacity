@@ -419,7 +419,7 @@ function extractMessageIdentifier(args, path, state) {
 				}
 				throw path.buildCodeFrameError('defaultMessage needs to be a string literal');
 			} else if(property.key.name == 'values') {
-				throw path.buildCodeFrameError('Values is the second argument to formatMessage, to not include it in the MessageIdentifier as it will not work as expected.');
+				throw path.buildCodeFrameError('Values is the second argument to formatMessage, do not include it in the MessageIdentifier as it will not work as expected.');
 			} else if(property.key.name == 'description') {
 				// found message identifier - optional description
 				if (t.isStringLiteral(property.value)) {

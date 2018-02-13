@@ -250,7 +250,7 @@ describe('babel-plugin-qdacity', () => {
 			},
 			(error) => {
 				if (!(error instanceof SyntaxError)) return false;
-				assert.equal(error.message, 'unknown: Values is the second argument to formatMessage, to not include it in the MessageIdentifier as it will not work as expected.', 'Error message does not match expected');
+				assert.equal(error.message, 'unknown: Values is the second argument to formatMessage, do not include it in the MessageIdentifier as it will not work as expected.', 'Error message does not match expected');
 				return true;
 			}, 'Erroneous values usage not found.');
 		});
