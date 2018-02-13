@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var ExtractMessagesPlugin = require('../localization/webpack');
 
 module.exports = {
 	bail: true,
@@ -30,14 +31,18 @@ module.exports = {
 				use: {
 					loader: 'babel-loader',
 					options: {
+						metadataSubscribers: [ExtractMessagesPlugin.metadataSubscriber],
 						presets: ['es2015', 'react'],
 						plugins: [
-							['react-intl'],
-							[path.join(__dirname, '..', 'localization', 'src', 'index.js'), {
+							['react-intl', {
+								extractSourceLocation: true
+							}],
+							[path.join(__dirname, '..', 'localization', 'babel', 'index.js'), {
 								test: false,
 								debug: false,
 							}],
-							'transform-react-inline-elements'
+							//until there is a working solution we cannot use this in development
+							//'transform-react-inline-elements'
 						]
 					}
 				}
@@ -77,6 +82,10 @@ module.exports = {
 			'process.env': {
 				NODE_ENV: JSON.stringify('production')
 			}
+		}),
+
+		new ExtractMessagesPlugin({
+			outputPath: __dirname
 		}),
 
 		new ExtractTextPlugin({

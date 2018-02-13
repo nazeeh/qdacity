@@ -1,6 +1,6 @@
 import pluginTester from 'babel-plugin-tester';
 import path from 'path';
-import plugin from '../src/';
+import plugin from '../';
 import * as babel from 'babel-core';
 import assert from 'assert';
 import { describe, before, it } from 'mocha';

@@ -50,39 +50,14 @@ gulp.task('format', () => {
 		.pipe(gulp.dest('./'));
 });
 
-//gulp.task('extract-messages', () => {});
-gulp.task('extract-messages', () =>
-	gulp.src('./assets/js/**/*.{js,jsx}', { base: './' })
-		.pipe(babel({
-			presets: ['es2015', 'react'],
-			plugins: [
-				//'transform-decorators',
-				['react-intl', {
-					'extractSourceLocation': true,
-				}],
-				[path.join(process.cwd(), '..', 'localization/src/index.js'), {
-					debug: true
-				}]
-			]
-		}))
-		.pipe(filterBy(file => file['babel']['react-intl']['messages'].length > 0))
-		.pipe(transform('utf8', (content, file) => {
-			const messages = file['babel']['react-intl']['messages'];
-			return JSON.stringify(messages, null, 2);
-		}))
-		//.pipe(trim())
-		.pipe(rename({ extname: '.json' }))
-		.pipe(gulp.dest('./messages'))
-);
-
-gulp.task('combine-messages', ['extract-messages'], () =>
+gulp.task('combine-messages', ['bundle-task'], () =>
 	gulp.src('./messages/**/*.json', { base: './' })
 		.pipe(jsonConcat('en.json', function(data) {
 			const messages = {};
 			for(const messageIdents of Object.values(data)) {
 				for(const messageIdent of messageIdents) {
 					if(messages[messageIdent.id] != undefined) {
-						if(messages[messageIdent.id] == messageIdent.defaultMessage) continue;
+						if (messages[messageIdent.id] == messageIdent.defaultMessage) continue;
 						throw new Error(`Colliding message identifiers found: ${messageIdent.id}`);
 					}
 					messages[messageIdent.id] = messageIdent.defaultMessage;
