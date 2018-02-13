@@ -1,6 +1,6 @@
 ///@ts-check
 /// <reference types="react-intl" />
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, intlShape } from 'react-intl';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -50,7 +50,25 @@ export default class LocalizationProvider extends IntlProvider {
 		}
 	}
 
-	static propTypes() {
+	componentDidUpdate() {
+		// update state to our globalLocalization object
+		// this is required, so that modals show new language on next invocation
+		globalLocalizationState.intl = this.getChildContext().intl;
+	}
+
+	/*static get contextTypes() {
+		return {
+			intl: intlShape
+		};
+	}
+
+	static get childContextTypes() {
+		return {
+			intl: intlShape.isRequired
+		};
+	}*/
+
+	static get propTypes() {
 		return {
 			app: PropTypes.element.isRequired
 		};
