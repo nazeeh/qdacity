@@ -33,8 +33,7 @@ function setConfig() {
 
 gulp.task('bundle-ci', ['bundle', 'set-constants-ci']);
 
-gulp.task('bundle', ['format', 'bundle-task', 'copy-web-worker']);
-
+gulp.task('bundle', ['format', 'bundle-task']);
 
 gulp.task('format', () => {
 	gulp
@@ -166,28 +165,7 @@ gulp.task('minify', function() {
 		.pipe(gulp.dest('./'));
 });
 
-gulp.task('copy-web-worker', function() {
-	gulp.src("assets/js/web-worker/*.js")
-		.pipe(gulp.dest('dist/js/web-worker/'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/js/web-worker/'));
-});
-
-gulp.task('watch', ['watch-client', 'watch-web-worker']);
-
-gulp.task('watch-web-worker', () => {
-	gulp.start('copy-web-worker');
-	gulp
-	.watch(["assets/js/web-worker/*.js"])
-	.on("change", function(file) {
-		gulp
-		.src(file.path)
-		.pipe(gulp.dest('dist/js/web-worker/'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/js/web-worker/'));
-	});
-});
-
-gulp.task('watch-client', function() {
-
+gulp.task('watch', function() {
 	setConfig();
 	return (gulp
 		.src('') //doesn't matter what to put as src,
