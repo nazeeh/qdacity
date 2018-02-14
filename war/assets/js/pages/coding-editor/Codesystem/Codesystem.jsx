@@ -115,7 +115,7 @@ export default class Codesystem extends SimpleCodesystem {
 				var selected = {};
 				if (rootCodes.length > 0) selected = rootCodes[0];
 				_this.sortCodes(rootCodes);
-				_this.initCodingCountRecurive(rootCodes);
+				//_this.initCodingCountRecurive(rootCodes); // FIXME refactor initialization of coding count
 				_this.setState({
 					codesystem: rootCodes,
 					selected: selected,
