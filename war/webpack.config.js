@@ -5,7 +5,8 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
 	bail: true,
 	entry: {
-		index: './assets/js/pages/index/index.js'
+		index: './assets/js/pages/index/index.js',
+		'web-worker/webworker': './assets/js/web-worker/webworker.js'
 	},
 	resolve: {
 		alias: {
@@ -15,7 +16,7 @@ module.exports = {
 		}
 	},
 	output: {
-		path: __dirname,
+		path: path.resolve('./dist'),
 		filename: '[name].dist.js'
 	},
 	externals: {
