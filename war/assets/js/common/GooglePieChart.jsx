@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 const StyledChart = styled.div`
 	height: 200px;
-
 `;
 export default class GooglePieChart extends React.Component {
 	constructor(props) {

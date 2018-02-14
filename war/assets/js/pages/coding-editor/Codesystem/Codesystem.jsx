@@ -19,7 +19,7 @@ import SimpleCodesystem from './SimpleCodesystem.jsx';
 
 const StyledCodeSystemView = styled.div``;
 
-const StyledEditorCtrlHeader = styled.div`
+const StyledCodeSystemHeader = styled.div`
 	text-align: center;
 	position: relative;
 	background-color: #e7e7e7;
@@ -115,7 +115,7 @@ export default class Codesystem extends SimpleCodesystem {
 				var selected = {};
 				if (rootCodes.length > 0) selected = rootCodes[0];
 				_this.sortCodes(rootCodes);
-				_this.initCodingCountRecurive(rootCodes);
+				//_this.initCodingCountRecurive(rootCodes); // FIXME refactor initialization of coding count
 				_this.setState({
 					codesystem: rootCodes,
 					selected: selected,
@@ -351,7 +351,7 @@ export default class Codesystem extends SimpleCodesystem {
 			if (strippedText !== originalText) {
 				doc.text = strippedText;
 				this.props.documentsView.changeDocumentData(doc);
-				if (activeDocId === doc.id) this.props.editorCtrl.setDocumentView(doc);
+				if (activeDocId === doc.id) this.props.textEditor.setHTML(doc.text);
 			}
 		}
 	}
@@ -454,14 +454,14 @@ export default class Codesystem extends SimpleCodesystem {
 				: 0);
 		return (
 			<StyledCodeSystemView>
-				<StyledEditorCtrlHeader>
+				<StyledCodeSystemHeader>
 					<b>
 						<FormattedMessage
 							id="codesystemcodesystem"
 							defaultMessage="Code System"
 						/>
 					</b>
-				</StyledEditorCtrlHeader>
+				</StyledCodeSystemHeader>
 				<StyledToolBar>
 					<CodesystemToolbar
 						ref={r => (this.toolbarRef = r)}
@@ -472,7 +472,7 @@ export default class Codesystem extends SimpleCodesystem {
 						removeCode={this.removeCode}
 						updateCodingCount={this.updateCodingCount}
 						toggleCodingView={this.props.toggleCodingView}
-						editorCtrl={this.props.editorCtrl}
+						textEditor={this.props.textEditor}
 						documentsView={this.props.documentsView}
 						pageView={this.props.pageView}
 						getCodeById={this.getCodeById}

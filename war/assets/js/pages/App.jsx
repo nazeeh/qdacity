@@ -1,5 +1,10 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
+import {
+	BrowserRouter as Router,
+	Route,
+	Link,
+	Redirect
+} from 'react-router-dom';
 
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
@@ -13,11 +18,12 @@ import PersonalDashboard from './personal-dashboard/PersonalDashboard.jsx';
 import CourseDashboard from './course-dashboard/CourseDashboard.jsx';
 import ProjectDashboard from './project-dashboard/ProjectDashboard.jsx';
 import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
+import ExercisePage from './ExercisePage/ExercisePage.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
 import Admin from './admin/Admin.jsx';
 import AdminStats from './admin/AdminStats.jsx';
-import AdminControl from "./admin/AdminControl.jsx";
-import AdminCosts from "./admin/AdminCosts.jsx";
+import AdminControl from './admin/AdminControl.jsx';
+import AdminCosts from './admin/AdminCosts.jsx';
 import CodingEditor from './coding-editor/CodingEditor.jsx';
 import Faq from './help/Faq.jsx';
 import UserMigration from './user-migration/UserMigration.jsx';
@@ -198,7 +204,7 @@ export default class App extends React.Component {
 							<Route
 								path="/PersonalDashboard"
 								render={props => (
-									<PersonalDashboard 	auth={this.state.auth} {...props} />
+									<PersonalDashboard auth={this.state.auth} {...props} />
 								)}
 							/>
 							<Route
@@ -230,6 +236,12 @@ export default class App extends React.Component {
 								)}
 							/>
 							<Route
+								path="/ExercisePage"
+								render={props => (
+									<ExercisePage auth={this.state.auth} {...props} />
+								)}
+							/>
+							<Route
 								path="/Admin"
 								render={props => (
 									<Admin
@@ -240,18 +252,14 @@ export default class App extends React.Component {
 								)}
 							/>
 							<Route
-								exact path="/Admin"
-								render={() => (
-									<Redirect
-										to="/Admin/Control"
-									/>
-								)}
+								exact
+								path="/Admin"
+								render={() => <Redirect to="/Admin/Control" />}
 							/>
 							<Route
 								path="/Admin/Stats"
 								render={props => (
 									<AdminStats
-										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -261,7 +269,6 @@ export default class App extends React.Component {
 								path="/Admin/Costs"
 								render={props => (
 									<AdminCosts
-										account={this.account}
 										chartScriptPromise={this.props.chartScriptPromise}
 										{...props}
 									/>
@@ -293,7 +300,9 @@ export default class App extends React.Component {
 							/>
 							<Route
 								path="/UserMigration"
-								render={props => <UserMigration auth={this.state.auth} {...props} />}
+								render={props => (
+									<UserMigration auth={this.state.auth} {...props} />
+								)}
 							/>
 							<Route
 								exact

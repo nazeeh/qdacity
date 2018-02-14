@@ -9,12 +9,13 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Text;
+import com.qdacity.project.ProjectType;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)
 public class TextDocument implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 2828710144827032363L;
 
@@ -33,7 +34,13 @@ public class TextDocument implements Serializable {
 	Text text;
 
 	@Persistent
+	Long exerciseID;
+
+	@Persistent
 	Long positionInOrder;
+
+	@Persistent
+	ProjectType projectType;
 	
 	public Long getId() {
 		return id;
@@ -67,11 +74,27 @@ public class TextDocument implements Serializable {
 		this.projectID = projectID;
 	}
 
+	public Long getExerciseID() {
+		return exerciseID;
+	}
+
+	public void setExerciseID(Long exerciseID) {
+		this.exerciseID = exerciseID;
+	}
+	
 	public Long getPositionInOrder() {
 		return positionInOrder;
 	}
 
 	public void setPositionInOrder(Long positionInOrder) {
 		this.positionInOrder = positionInOrder;
+	}
+	
+	public ProjectType getProjectType() {
+		return projectType;
+	}
+
+	public void setProjectType(ProjectType projectType) {
+		this.projectType = projectType;
 	}
 }

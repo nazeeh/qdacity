@@ -14,6 +14,7 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.qdacity.project.*;
 import org.apache.cxf.common.util.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -43,9 +44,6 @@ import com.qdacity.endpoint.datastructures.TextDocumentList;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
-import com.qdacity.project.AbstractProject;
-import com.qdacity.project.ProjectRevision;
-import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
@@ -87,7 +85,7 @@ public class TextDocumentEndpoint {
 	 */
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "documents.getTextDocument")
-	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, @Nullable @Named("projectType") String prjType, User user) throws UnauthorizedException {
+	public CollectionResponse<TextDocument> getTextDocument(@Named("id") Long id, @Named("projectType") ProjectType prjType, User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = null;
 		Cursor cursor = null;
@@ -98,12 +96,15 @@ public class TextDocumentEndpoint {
 			mgr = getPersistenceManager();
 			mgr.setMultithreaded(true);
 			// Check authorization
-			if (prjType.equals("REVISION")) {
+			if (prjType == ProjectType.REVISION) {
 				ProjectRevision validationProject = mgr.getObjectById(ProjectRevision.class, id);
 				Authorization.checkAuthorization(validationProject.getProjectID(), user);
-			} else if (prjType != null && prjType.equals("VALIDATION")) {
+			} else if (prjType == ProjectType.VALIDATION) {
 				// FIXME auth
-			} else {
+			} else if (prjType == ProjectType.EXERCISE) {
+				// FIXME auth
+			}
+			else {
 				Authorization.checkAuthorization(id, user);
 			}
 
@@ -177,11 +178,11 @@ public class TextDocumentEndpoint {
 				throw new EntityExistsException("Object already exists");
 			}
 			mgr.makePersistent(textdocument);
-			
+
 			//Log Change
 			Change change = new ChangeBuilder().makeInsertTextDocumentChange(textdocument, textdocument.getProjectID(), user.getId());
 			ChangeLogger.logChange(change);
-			
+
 		} finally {
 			mgr.close();
 		}
@@ -226,14 +227,14 @@ public class TextDocumentEndpoint {
 	@ApiMethod(name = "documents.updateTextDocuments")
 	public List<TextDocument> updateTextDocuments(TextDocumentList documentList, User user) throws UnauthorizedException {
 		List<TextDocument> persistedEntities = new ArrayList<>();
-		
+
 		for (TextDocument document : documentList.getDocuments()) {
 			TextDocument updatedDoc = updateTextDocument(document, user);
 			persistedEntities.add(updatedDoc);
 		}
 
 		return persistedEntities;
-	}	
+	}
 
 	/**
 	 * This method is used for reodering the position of agreementMap-documents.
@@ -250,20 +251,20 @@ public class TextDocumentEndpoint {
 
 		// Check authorization
 		// TODO is the authorization in this.getAgreemntMaps() enough?
-		
+
 		PersistenceManager mgr = getPersistenceManager();
-		
+
 		List<SimplifiedAgreementMap> newMaps = agreementMapList.getAgreementMapPositions();
 
 		List<AgreementMap> persistedMaps = getAgreementMaps(id, projectType, user);
-		
+
 		try {
 			for (SimplifiedAgreementMap newMap : newMaps) {
 				// Find persisted map
 				AgreementMap persisted = null;
-				
-				for (AgreementMap persistedMap : persistedMaps) {	
-					
+
+				for (AgreementMap persistedMap : persistedMaps) {
+
 					// Also Compare the DocumentResult IDs
 					if (persistedMap.getKey().getId() == newMap.getKeyId() &&
 						persistedMap.getKey().getParent().getId() == newMap.getParentKeyId()) {
@@ -271,11 +272,11 @@ public class TextDocumentEndpoint {
 						break;
 					}
 				}
-				
+
 				if (persisted == null) {
 					throw new EntityNotFoundException("Agreementmap does not exist");
 				}
-				
+
 				persisted.setPositionInOrder(newMap.getPositionInOrder());
 				persisted = mgr.makePersistent(persisted);
 			}
@@ -285,13 +286,13 @@ public class TextDocumentEndpoint {
 
 		return persistedMaps;
 	}
-	
+
 	/**
 	 * This method is used for applying a code to a TextDocument. If the entity does not
 	 * exist in the datastore, an exception is thrown.
 	 * It uses HTTP PUT method.
 	 *
-	 * @param textDocumentCode the textdocument and the code in a container 
+	 * @param textDocumentCode the textdocument and the code in a container
 	 * @param user
 	 * @return The updated entity.
 	 * @throws UnauthorizedException
@@ -304,7 +305,7 @@ public class TextDocumentEndpoint {
 				throw new EntityNotFoundException("Object does not exist");
 			}
 			mgr.makePersistent(textDocumentCode.textDocument);
-			
+
 			CodeSystem cs = mgr.getObjectById(CodeSystem.class, textDocumentCode.code.getCodesystemID());
 			Change change = new ChangeBuilder().makeApplyCodeChange(textDocumentCode.textDocument, textDocumentCode.code, user.getId(), cs.getProjectType());
 			ChangeLogger.logChange(change);
@@ -335,11 +336,16 @@ public class TextDocumentEndpoint {
 		}
 	}
 
-	public static void cloneTextDocuments(AbstractProject project, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
+	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Collection<TextDocument> documents = null;
-		if (project.getClass() == ProjectRevision.class) documents = tde.getTextDocument(project.getId(), "REVISION", user).getItems();
-		else documents = tde.getTextDocument(project.getId(), "PROJECT", user).getItems();
+		if (project.getClass() == ProjectRevision.class)
+        {
+            if (projectType == ProjectType.REVISION) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, user).getItems();
+            else if (projectType == ProjectType.EXERCISE) documents = tde.getTextDocument(project.getId(), ProjectType.EXERCISE, user).getItems();
+            else if (projectType == ProjectType.VALIDATION) documents = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
+        }
+		else documents = tde.getTextDocument(project.getId(), ProjectType.PROJECT, user).getItems();
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -356,7 +362,7 @@ public class TextDocumentEndpoint {
 				cloneDocument.setTitle(textDocument.getTitle());
 				cloneDocument.setText(text);
 				cloneDocument.setPositionInOrder(positionInOrder);
-
+				cloneDocument.setProjectType(projectType);
 				mgr.makePersistent(cloneDocument);
 			}
 		} finally {
@@ -381,24 +387,24 @@ public class TextDocumentEndpoint {
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
-	
+
 	/**
 	 * For usage with Krippendorffs Alpha or Fleiss Kappa. Automatically puts the documents to Memcache!
 	 * @param validationProjects from which validation projects to get the documents from
 	 * @param docIDs filter for documents from the main project (will filter by title of the documents)
 	 * @param user with sufficient rights to get the documents
 	 * @return a HashMap grouped by Document name containig a list with the corresponding document Ids from the different users
-	 * @throws UnauthorizedException 
+	 * @throws UnauthorizedException
 	 */
 	public static Map<String, ArrayList<Long>> getDocumentsFromDifferentValidationProjectsGroupedByName(List<ValidationProject> validationProjects, List<Long> docIDs, User user) throws UnauthorizedException {
 	    	TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Map<String, ArrayList<Long>> sameDocumentsFromDifferentRaters = new HashMap();
-		
+
 		List<String> docTitles = getDocumentTitles(docIDs); //We need the names to filter for the actually wanted documents in this report.
 		//Not possible to filter by IDs as the IDs of the documents of the different rates are different!
 		for (ValidationProject project : validationProjects) {
 		    //gets the documents from the validationProject of a user with the rights of our user.
-		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), "VALIDATION", user).getItems();
+		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
 		    for(TextDocument doc : textDocuments) {
 			if(docTitles.contains(doc.getTitle())) {
 			    if(null == sameDocumentsFromDifferentRaters.get(doc.getTitle())) {
@@ -411,7 +417,7 @@ public class TextDocumentEndpoint {
 		}
 		return sameDocumentsFromDifferentRaters;
 	}
-	
+
 	/**
 	 * Put a TextDocument to the Memcache to read it faster/cheaper later (within 300 seconds)
 	 * Hint: Not guarantee it is actually put to memcache!
@@ -422,11 +428,11 @@ public class TextDocumentEndpoint {
 	    MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
 	    syncCache.put(keyString, tx, Expiration.byDeltaSeconds(300));
 	}
-	
+
 	/**
 	 * Get the textdocuments from memcache or load them from database. Use this method after putTextDocumentToMemcache
 	 * @param textDocumentIds all the documents you want to collect
-	 * @return 
+	 * @return
 	 */
 	public static List<TextDocument> collectTextDocumentsfromMemcache(List<Long> textDocumentIds) {
 	    PersistenceManager mgr = getPersistenceManager();
@@ -448,7 +454,7 @@ public class TextDocumentEndpoint {
 
 	    return textDocuments;
 	}
-	
+
 	private static List<String> getDocumentTitles(List<Long> docIDs) {
 		PersistenceManager mgr = null;
 		List<TextDocument> tmpDocs;
@@ -475,7 +481,7 @@ public class TextDocumentEndpoint {
 		}
 		return docNames;
 	}
-	
+
     public static int countDocuments(Long projectId) {
 	Filter filter = new com.google.appengine.api.datastore.Query.FilterPredicate("projectID", com.google.appengine.api.datastore.Query.FilterOperator.EQUAL, projectId);
 	return DataStoreUtil.countEntitiesWithFilter("TextDocument", filter);

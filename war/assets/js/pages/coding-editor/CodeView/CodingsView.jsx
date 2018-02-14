@@ -68,7 +68,7 @@ export default class CodingsView extends React.Component {
 
 				_this.props.codingEditor.viewChanged(PageView.CODING);
 				_this.props.documentsView.setDocumentWithCoding(codingID);
-				_this.props.editorCtrl.activateCodingInEditor(codingID, true);
+				_this.props.textEditor.activateCodingInEditor(codingID);
 			}
 		});
 	}

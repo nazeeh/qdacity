@@ -25,7 +25,8 @@ export default class CodingsOverview extends VexModal {
 					defaultMessage: 'Coded text segments'
 				}),
 				contentCSS: {
-					width: '900px'
+					width: '1000px',
+					'margin-top': '-90px'
 				},
 				input: formElements,
 				buttons: [

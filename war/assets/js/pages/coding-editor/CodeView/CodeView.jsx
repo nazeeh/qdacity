@@ -26,8 +26,9 @@ export default class CodeView extends React.Component {
 
 	render() {
 		const { formatMessage } = IntlProvider.intl;
-		const { editorCtrl, documentsView } = this.props;
 		const {
+			textEditor,
+			documentsView,
 			updateSelectedCode,
 			getCodeById,
 			getCodeByCodeID,
@@ -65,7 +66,7 @@ export default class CodeView extends React.Component {
 						<CodingsView
 							documents={this.state.documents}
 							code={this.props.code}
-							editorCtrl={editorCtrl}
+							textEditor={textEditor}
 							documentsView={documentsView}
 							codingEditor={this.props.codingEditor}
 						/>
@@ -73,7 +74,6 @@ export default class CodeView extends React.Component {
 					<Tab tabTitle={tabTitle.codeProperties}>
 						<CodeProperties
 							code={this.props.code}
-							editorCtrl={editorCtrl}
 							documentsView={documentsView}
 							updateSelectedCode={updateSelectedCode}
 						/>

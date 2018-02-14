@@ -12,6 +12,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
@@ -36,7 +37,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	List<FMeasureResult> documentAgreements = new ArrayList<>();
 
-	Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), "VALIDATION", user).getItems();
+	Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), ProjectType.VALIDATION, user).getItems();
 
 	for (TextDocument textDocument : recodedDocs) {
 	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());

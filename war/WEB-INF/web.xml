@@ -71,6 +71,10 @@
 		<servlet-name>page</servlet-name>
 		<url-pattern>/TermCourseConfig</url-pattern>
 	</servlet-mapping>
+  <servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/ExercisePage</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>page</servlet-name>
 		<url-pattern>/Admin</url-pattern>

@@ -156,9 +156,17 @@ export default class ExerciseList extends React.Component {
 		);
 	}
 
+	exerciseClick(exercise) {
+		this.props.history.push('/ExercisePage?exercise=' + exercise.id);
+	}
+
 	renderExercise(exercise, index) {
 		return (
-			<StyledListItemDefault key={index} className="clickable">
+			<StyledListItemDefault
+				key={index}
+				className="clickable"
+				onClick={this.exerciseClick.bind(this, exercise)}
+			>
 				<span> {exercise.name} </span>
 				<div>
 					<StyledListItemBtn
@@ -177,8 +185,7 @@ export default class ExerciseList extends React.Component {
 	render() {
 		var _this = this;
 
-		if (!this.props.auth.authentication.isSignedIn())
-			return null;
+		if (!this.props.auth.authentication.isSignedIn()) return null;
 
 		return (
 			<div>

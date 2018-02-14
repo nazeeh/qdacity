@@ -6,6 +6,13 @@ const jasmine = require('gulp-jasmine');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
+const babel = require("gulp-babel");
+const path = require('path');
+const process = require('process');
+const filterBy = require('gulp-filter-by');
+const transform = require('gulp-transform');
+const rename = require("gulp-rename");
+const jsonConcat = require('gulp-json-concat');
 require('babel-core/register');
 
 const config = require('./api_config.json');
@@ -42,6 +49,62 @@ gulp.task('format', () => {
 		.pipe(prettierEslint())
 		.pipe(gulp.dest('./'));
 });
+
+//gulp.task('extract-messages', () => {});
+gulp.task('extract-messages', () =>
+	gulp.src('./assets/js/**/*.{js,jsx}', { base: './' })
+		.pipe(babel({
+			presets: ['es2015', 'react'],
+			plugins: [
+				//'transform-decorators',
+				['react-intl', {
+					'extractSourceLocation': true,
+				}],
+				[path.join(process.cwd(), '..', 'localization/src/index.js'), {
+					debug: true
+				}]
+			]
+		}))
+		.pipe(filterBy(file => file['babel']['react-intl']['messages'].length > 0))
+		.pipe(transform('utf8', (content, file) => {
+			const messages = file['babel']['react-intl']['messages'];
+			return JSON.stringify(messages, null, 2);
+		}))
+		//.pipe(trim())
+		.pipe(rename({ extname: '.json' }))
+		.pipe(gulp.dest('./messages'))
+);
+
+gulp.task('combine-messages', ['extract-messages'], () =>
+	gulp.src('./messages/**/*.json', { base: './' })
+		.pipe(jsonConcat('en.json', function(data) {
+			const messages = {};
+			for(const messageIdents of Object.values(data)) {
+				for(const messageIdent of messageIdents) {
+					if(messages[messageIdent.id] != undefined) {
+						if(messages[messageIdent.id] == messageIdent.defaultMessage) continue;
+						throw new Error(`Colliding message identifiers found: ${messageIdent.id}`);
+					}
+					messages[messageIdent.id] = messageIdent.defaultMessage;
+				}
+			}
+			return new Buffer(JSON.stringify(messages, null, 2));
+		})).on('error', error => console.error(error))
+		.pipe(gulp.dest('./assets/messages'))
+);
+
+gulp.task('generate-language-template', ['combine-messages'], () =>
+	gulp.src('./assets/messages/en.json', { base: './' })
+		.pipe(jsonConcat('en.json', function(data) {
+			const messages = data.en; // en.json contents
+			for(const key in messages) {
+				messages[key] = 'TRαNsLÄTəD “STRiNG”';
+			}
+			return new Buffer(JSON.stringify(messages, null, 2));
+		})).on('error', error => console.error(error))
+		.pipe(rename({ basename: 'test'}))
+		.pipe(gulp.dest('./assets/messages'))
+);
 
 gulp.task('bundle-task', function() {
 	setConfig();
@@ -87,6 +150,9 @@ gulp.task('minify', function() {
 					hoist_funs: true,
 					collapse_vars: true,
 					drop_console: true
+				},
+				output: {
+					ascii_only: true
 				}
 			})
 		)

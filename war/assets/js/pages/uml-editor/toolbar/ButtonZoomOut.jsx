@@ -26,7 +26,7 @@ export default class ButtonZoomOut extends React.Component {
 		const { formatMessage } = IntlProvider.intl;
 
 		const zoomAway = formatMessage({
-			id: 'buttonzoomselect.select_zoom',
+			id: 'buttonzoomout.select_zoom',
 			defaultMessage: 'Zoom away from the graph.'
 		});
 

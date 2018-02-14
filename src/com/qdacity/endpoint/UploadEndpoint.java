@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.Text;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.authentication.QdacityAuthenticator;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.upload.Upload;
 
@@ -70,7 +71,7 @@ public class UploadEndpoint {
 			document.setProjectID(upload.getProject());
 			document.setText(new Text(html));
 			document.setTitle(upload.getFileName());
-
+			document.setProjectType(ProjectType.PROJECT);
 			TextDocumentEndpoint tde = new TextDocumentEndpoint();
 
 			tde.insertTextDocument(document, user);

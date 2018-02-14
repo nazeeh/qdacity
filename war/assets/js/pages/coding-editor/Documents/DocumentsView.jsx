@@ -106,9 +106,8 @@ export default class DocumentsView extends React.Component {
 			} else {
 				DocumentsEndpoint.getDocuments(project_id, project_type)
 					.then(function(items) {
-						for (var i = 0; i < items.length; i++) {
-							_this.addDocument(items[i]);
-						}
+						items = items || [];
+						_this.addAllDocuments(items);
 						resolve();
 					})
 					.catch(function(resp) {
@@ -156,6 +155,22 @@ export default class DocumentsView extends React.Component {
 			documents: this.state.documents
 		});
 		this.setActiveDocument(doc.id);
+	}
+
+	// Adds an array of documents to the state
+	// Does not set an active document
+	addAllDocuments(docList) {
+
+		if (!typeof !docList || !docList.length || docList.length === 0) return;
+
+		for (var i = 0; i < docList.length; i++) {
+			let doc = docList[i];
+			doc.text = doc.text.value;
+			this.state.documents.push(doc);
+		}
+		this.setState({
+			documents: this.state.documents
+		});
 	}
 
 	renameDocument(pId, pNewTitle) {
@@ -218,7 +233,7 @@ export default class DocumentsView extends React.Component {
 	saveCurrentDocument() {
 		var doc = this.getActiveDocument();
 		if (typeof doc != 'undefined') {
-			doc.text = this.props.editorCtrl.getHTML();
+			doc.text = this.props.textEditor.getHTML();
 			this.setState({
 				documents: this.state.documents
 			});
@@ -239,7 +254,7 @@ export default class DocumentsView extends React.Component {
 	}
 
 	setActiveDocument(selectedID) {
-		if (this.props.editorCtrl.isReadOnly === false) {
+		if (this.props.textEditor.isTextEditable()) {
 			this.saveCurrentDocument();
 		}
 		this.props.syncService.updateUser({
@@ -248,7 +263,7 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			selected: selectedID
 		});
-		this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
+		this.props.textEditor.setHTML(this.getDocument(selectedID).text);
 	}
 
 	getActiveDocumentId() {
@@ -371,6 +386,7 @@ export default class DocumentsView extends React.Component {
 					removeActiveDocument={this.removeActiveDocument}
 					changeDocumentData={this.changeDocumentData}
 					getNewDocumentPosition={this.getNewDocumentPosition}
+					projectType={this.props.projectType}
 				/>
 			);
 		} else {
