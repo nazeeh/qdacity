@@ -294,7 +294,7 @@ export default class Codesystem extends SimpleCodesystem {
 
 	async updateCodingCount () {
 		const codingCountMap = await this.props.documentsView.calculateCodingCount(
-			this.state.selected.codeID
+			[this.state.selected.codeID]
 		);
 		this.state.selected.codingCount = codingCountMap.get(this.state.selected.codeID);
 		this.setState({
