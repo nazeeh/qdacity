@@ -21,8 +21,6 @@ import com.qdacity.maintenance.tasks.usermigration.UserMigrationEmailNotifier;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelEntityType;
 import com.qdacity.metamodel.MetaModelRelation;
-import com.qdacity.tutorial.TutorialCreator;
-import com.qdacity.tutorial.TutorialManager;
 
 @Api(
 	name = "qdacity",
@@ -36,7 +34,6 @@ public class MaintenanceEndpoint {
 
 	private MetaModelEntityEndpoint metaModelEntityEndpoint = new MetaModelEntityEndpoint();
 	private MetaModelRelationEndpoint metaModelRelationEndpoint = new MetaModelRelationEndpoint();
-	private TutorialManager tutorialManager=new TutorialManager(new TutorialCreator());
 	
 	@ApiMethod(name = "maintenance.cleanupValidationResults")
 	public void cleanupValidationResults(User user) throws UnauthorizedException {
@@ -86,7 +83,7 @@ public class MaintenanceEndpoint {
 	 */
 
 	@ApiMethod(name = "maintenance.initializeDatabase")
-	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, @Named("initializeSystemTutorials") Boolean initializeSystemTutorials, User user) throws UnauthorizedException {
+	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, User user) throws UnauthorizedException {
 		
 		Authorization.checkDatabaseInitalizationAuthorization(user);
 
@@ -95,19 +92,8 @@ public class MaintenanceEndpoint {
 			initializeMetaModelRelations(user);
 		}
 		
-		
-		if (initializeSystemTutorials) {
-			initializeSystemTutorials();
-		}
-		
-		
-		
 	}
 	
-	private void initializeSystemTutorials() {
-		new TutorialManager(new TutorialCreator()).createSystemTutorialsAndPushThemIntoDatabase();
-		
-	}
 
 	/**
 	 * Initializes the database with the MetaModelEntities.

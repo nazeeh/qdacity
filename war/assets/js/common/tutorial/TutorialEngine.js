@@ -1,18 +1,19 @@
 import Promisizer from '../endpoints/Promisizer'
 import DomInteractor from './DomInteractor'
 import SystemTutorials from './SystemTutorials'
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class TutorialEngine {
 	constructor(appRoot) {
 		this.d=new DomInteractor();
 		this.appRoot=appRoot;
-		this.systemTutorials=new SystemTutorials();
+		//this.systemTutorials=new SystemTutorials();
 		this.tutorialState={
-			isActive: false,		
+			isActive: false,
 		};
 		this.clearTutorialState();
 	}
-	
+
 	clearTutorialState()
 	{
 		var tmpIsActive=this.tutorialState.isActive;
@@ -28,10 +29,14 @@ export default class TutorialEngine {
 					top:0,
 					left:0,
 				},
-				overviewData:[],
 				showSidebar:false,
-				currentStepsView: []
-			}			
+				currentStepsView: [], //step Data
+				currentActiveTutorial: [],
+				currentActiveStep: -1,
+				currentActiveStepAdvancedData:[],
+				currentActiveTutorial: -1,
+				currentShowShortDescriptionId: -1,
+			}
 	}
 
 	appRootDidMount() {
@@ -54,7 +59,7 @@ export default class TutorialEngine {
 	}
 
 	setIsActive(val) {
-		this.tutorialState['isActive'] = true;
+		this.tutorialState['isActive'] = val;
 	}
 
 	getIsActive() {
@@ -66,14 +71,14 @@ export default class TutorialEngine {
 	showOverviewWindow() {
 		this.setIsActive(true);
 		this.clearTutorialState();
-		this.showMessageBoxAndOverlay(false);		
-		this.updateReact();				
-		
-		this.tutorialState.overviewData=this.systemTutorials.getData();		
-		
+		this.showMessageBoxAndOverlay(false);
+		this.updateReact();
+
+		this.tutorialState.overviewData=this.systemTutorials.getData();
+
 		this.tutorialState.showMessageBoxContent=2;
 		this.updateReact();
-		
+
 
 	}
 
@@ -110,22 +115,85 @@ export default class TutorialEngine {
 		this.tutorialState.showMessageBoxContent = 0;
 		if (update) this.updateReact();
 	}
-	
-	showShortDescriptionBox(show, key)
+
+	/*showShortDescriptionBox(show, key)
 	{
-		alert(key);
+		//alert(key);
 		this.tutorialState.overviewData[key].showShortDescription=show;
 		this.updateReact();
-	}
-	
-	showSidebar(show, tutorialId)
-	{	
-		
+	}*/
+
+
+	activateTutorial(tutorialId)
+	{
 		var tutorialData=this.systemTutorials.getData();
-		alert(tutorialId);
+		this.tutorialState.currentActiveTutorial=tutorialData[tutorialId];
+		this.showSidebar(true, tutorialId);
+		tutorialData[tutorialId].steps[0].constructStep(this);
+	}
+
+
+	showSidebar(show, tutorialId)
+	{
+
+		var tutorialData=this.systemTutorials.getData();
+		//alert(tutorialId);
 		this.tutorialState.currentStepsView=tutorialData[tutorialId].steps;
 		this.tutorialState.showSidebar=show;
 		this.updateReact();
 	}
-	
+
+	closeTutorial()
+	{
+		this.setIsActive(false);
+		this.clearTutorialState();
+		this.updateReact();
+	}
+
+	setCurrentShowShortDescriptionId(id)
+	{
+		this.tutorialState.currentShowShortDescriptionId = id;
+		this.updateReact();
+	}
+
+
+	finishStep(step)
+	{
+		//TODO api call, to save current step.........
+		//QUESTION: sinnvoll, wenn der user in der Mitte oder zu dem Step wieder anfangen kann wo er aufgehoert hat, eventuell pre-conditions
+		//sind eventuell nicht mehr gegeben, der API-call an der stelle wuerde dann nur zu Tracking-Zwecken verwendet werden.
+		//Und um den User zu zeigen wie weit er gekommen ist?
+
+
+		this.tutorialState.currentActiveStep=step+1;
+
+		if(this.this.tutorialState.currentActiveStep > this.currentActiveTutorial.maxSteps)
+		{
+			//FINISH
+			//show finish dialogBox
+
+
+			this.updateReact();
+			return;
+		}
+
+		//prepare next Step:
+
+
+		this.updateReact();
+
+	}
+
+	activateStep(step)
+	{
+
+
+	}
+
+	postInit(formatMessage)
+	{
+		this.systemTutorials=new SystemTutorials(formatMessage);
+	}
+
+
 }

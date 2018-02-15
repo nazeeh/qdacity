@@ -38,7 +38,7 @@ import IntlProvider from '../common/Localization/LocalizationProvider';
 
 
 const ContentLeftRightSplitter = styled.div`
-	background-Color:red;
+	//background-Color:red;
 	display: grid;
 	/*grid-template-columns: auto 200px;*/ //is now in activated or deactivated -SideBar
 	/*grid-template-rows: auto;*/
@@ -51,26 +51,38 @@ const ContentLeftRightSplitter = styled.div`
 
 const LeftContent = styled.div`
 	grid-area: leftContent;
-	background-color: yellow;
+	//background-color: yellow;
 `;
 
 const RightContent = styled.div`
 	/*  width:200px;*/
-	padding-top:50px;
-	color:white;
+	padding:10px;
+	padding-top:60px;
+	color:#333;
 	grid-area: rightContent;
-	background-color: black;
+	background-color: rgb(232, 229, 229);
 `;
 
 
-var activatedSideBar= 
+var activatedSideBar=
 {
-	gridTemplateColumns: "auto 200px"
+	gridTemplateColumns: "auto 250px"
 };
 
 var deactivatedSideBar=
 {
 	gridTemplateColumns: "auto 0px"
+};
+
+
+var activatedSideBar2=
+{
+	display: "inline"
+};
+
+var deactivatedSideBar2=
+{
+	display: "none"
 };
 
 
@@ -175,7 +187,8 @@ export default class App extends React.Component {
 			tutorialState: this.state.tutorialState
 		};
 
-		var showSideBar=(tut.tutorialState.showSidebar)?activatedSideBar:deactivatedSideBar;
+		var showSideBar=(tut.tutorialState.showSidebar)?activatedSideBar:deactivatedSideBar;//if deactivated, the grid is shrinked to 0 px
+		var showSideBar2=(tut.tutorialState.showSidebar)?activatedSideBar2:deactivatedSideBar2;//if deactivated, the right content is epclicit set to display: none
 
 		return (
 			<IntlProvider
@@ -310,8 +323,8 @@ export default class App extends React.Component {
 								render={props => <Index auth={this.state.auth} {...props} />}
 							/>
 						</LeftContent>
-						<RightContent>									
-							<Sidebar tutorial={tut} /> 
+						<RightContent style={showSideBar2}>
+							<Sidebar tutorial={tut} />
 						</RightContent>
 					</ContentLeftRightSplitter>
 							<Route

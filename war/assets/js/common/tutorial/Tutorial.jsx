@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 //Base Structure
 
@@ -114,10 +115,10 @@ const TutorialOverviewTitle = styled.div`
 `;
 
 const TutorialOverviewSubBox = styled.div`
-	background:#ececec; 
-	padding: 10px; 
-	margin: 10px; 
-	position:relative; 
+	background:#ececec;
+	padding: 10px;
+	margin: 10px;
+	position:relative;
 	min-height: 150px;
 	opacity:0.6;
 	&:hover {
@@ -126,19 +127,19 @@ const TutorialOverviewSubBox = styled.div`
 `;
 
 const TutorialOverviewSubBoxTitle = styled.div`
-	float:left; 
-	width:190px; 
-	color:#805506; 
+	float:left;
+	width:190px;
+	color:#805506;
 	font-size:19px;
 `;
 
 const TutorialOverviewSubBoxStatistic1 = styled.div`
-	float:left; 
+	float:left;
 	margin-right:20px;
 `;
 
 const TutorialOverviewSubBoxStatistic2 = styled.div`
-	float:left; 
+	float:left;
 `;
 
 const TutorialOverviewSubBoxClearing = styled.div`
@@ -155,8 +156,11 @@ const TutorialOverviewContainer = styled.div`
 `;
 
 const TutorialOverviewSubBoxShortDescription = styled.div`
-	margin-top: 20px;
+	margin-top: 40px;
 	margin-bottom:20px;
+	background: #d6d6d6;
+	text-align: left !important;
+	display: ${props => (props.show ? 'block' : 'none')};
 	//height: 20px;
 `;
 
@@ -171,24 +175,47 @@ export default class Tutorial extends React.Component {
 		this.state = {};
 	}
 
+
+	renderDescriptionButton(openDescription, tutorialUnitId)
+	{
+		if(openDescription) {
+
+			return ( <ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.setCurrentShowShortDescriptionId(tutorialUnitId);}.bind(this)}><FormattedMessage id="tutorial.openDescription" defaultMessage="Open Description"/></ButtonGeneric> )
+		}
+		else {
+
+			return ( <ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.setCurrentShowShortDescriptionId(-1);}.bind(this)}><FormattedMessage id="tutorial.closeDescription" defaultMessage="Close Description"/></ButtonGeneric> )
+		}
+
+	}
+
+
+
 	render() {
-		
+		const { formatMessage } = IntlProvider.intl;
+		this.props.tutorial.tutorialEngine.postInit(formatMessage);
+
+
 		if(this.props.tutorial.tutorialState.isActive) {
-		
+
 		var tutorialOverviewItems = this.props.tutorial.tutorialState.overviewData.map((data) =>
 		<TutorialOverviewSubBox key={data.tutorialUnitId}>
 			<b>
 				<TutorialOverviewSubBoxTitle>{data.title}</TutorialOverviewSubBoxTitle>
-				<TutorialOverviewSubBoxStatistic1>finished {data.finishedRelative}%</TutorialOverviewSubBoxStatistic1>
-				<TutorialOverviewSubBoxStatistic2>finished at: {data.finishedAt}</TutorialOverviewSubBoxStatistic2>
+				<TutorialOverviewSubBoxStatistic1><FormattedMessage id="tutorial.finished" defaultMessage="finished"/> {data.finishedRelative}%</TutorialOverviewSubBoxStatistic1>
+				<TutorialOverviewSubBoxStatistic2><FormattedMessage id="tutorial.finishedAt" defaultMessage="finished at"/>: {data.finishedAt}</TutorialOverviewSubBoxStatistic2>
 				<TutorialOverviewSubBoxClearing/>
-				<TutorialOverviewSubBoxShortDescription>{data.descriptionTextShort}</TutorialOverviewSubBoxShortDescription>
-			</b>
+				</b>
 			<TutorialOverviewSubBoxPlaceholder/>
-			<ButtonGeneric white={false} onClick={function(){this.props.tutorial.tutorialEngine.showSidebar(true, data.tutorialUnitId); this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}>Start Tutorial</ButtonGeneric><ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.showShortDescriptionBox(true, data.tutorialUnitId)}.bind(this)}>Open Description</ButtonGeneric>
-		</TutorialOverviewSubBox>
-		);					
-		
+			<div>
+			<ButtonGeneric white={false} onClick={function(){this.props.tutorial.tutorialEngine.activateTutorial(data.tutorialUnitId); this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}><FormattedMessage id="tutorial.startTutorial" defaultMessage="Start Tutorial"/></ButtonGeneric>
+			{this.renderDescriptionButton((data.tutorialUnitId != this.props.tutorial.tutorialState.currentShowShortDescriptionId), data.tutorialUnitId)}
+			</div>
+			<TutorialOverviewSubBoxShortDescription show={(data.tutorialUnitId == this.props.tutorial.tutorialState.currentShowShortDescriptionId)}>{data.descriptionTextShort}</TutorialOverviewSubBoxShortDescription>
+
+			</TutorialOverviewSubBox>
+		);
+
 			return (
 				<div>
 					<OverlayVisual {...this.props} />
