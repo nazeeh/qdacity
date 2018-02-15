@@ -29,32 +29,41 @@ self.onmessage = (event) => {
 function processCodingIDs(codeIDs, documents){
 	let codingMap = new Map();
 
+	const codingElements = getCodingsFromDocuments(documents);
+
 	for (let index in codeIDs) {
 		console.log('Processing code ' + codeIDs[index]);
 		const codeID  = codeIDs[index];
-		const codingCount = calculateCodingCount(documents, codeID);
+		const codingCount = calculateCodingCount(codingElements, codeID);
 		codingMap.set(codeID, codingCount);
 	}
 
 	return codingMap;
 }
 
-function calculateCodingCount(documents, codeID){
-	let uniqueIDs = new Set();
+function getCodingsFromDocuments(documents){
+	let codingElements = [];
 	// searching for coding instances in all documents
 	for (let index in documents) {
 		const $ = cheerio.load(documents[index].text);
-
-		// get all coding tags for the codeID
-		// When a coding spans multiple HTML blocks,
-		// then there will be multiple elements with
-		// the same ID
-		let foundArray = $('coding[code_id=\'' + codeID + '\']');
-
-		// put unique ids in set
-		for (let i = 0; i < foundArray.length; i++) {
-			uniqueIDs.add(foundArray[i].attribs.id);
-		}
+		let codings = $('coding');
+		codingElements = codingElements.concat(codings.toArray());
 	}
+
+	return codingElements;
+}
+
+function calculateCodingCount(codingElements, codeID){
+
+	let uniqueIDs = new Set();
+
+	let foundArray= codingElements.filter((el)=>{
+		return el.attribs.code_id === codeID
+	});
+
+	for (let i = 0; i < foundArray.length; i++) {
+		uniqueIDs.add(foundArray[i].attribs.id);
+	}
+
 	return uniqueIDs.size;
 }
