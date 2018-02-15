@@ -51,15 +51,6 @@ import loadGAPIs from '../../common/GAPI';
 
 import $script from 'scriptjs';
 
-window.sendMessageToWebWorker = (message) => {
-	const worker = new Worker('dist/js/web-worker/webworker.js'); // create our worker
-	worker.postMessage({ firstNum: 4, secondNum: 6 }); // post a message to our worker
-
-	worker.onmessage = event => { // listen for events from the worker
-	console.log(`Result is: ${event.data}`);
-	};
-}
-
 var chartScriptPromise = new Promise(function(resolve, reject) {
 	$script('https://www.gstatic.com/charts/loader.js', () => {
 		resolve();
