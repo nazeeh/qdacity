@@ -152,7 +152,13 @@ export default class CustomForm extends VexModal {
 						data.SelectedRevisionID = _this.selectedRevisionID;
 						resolve(data);
 					} else reject(data);
-				}
+				},
+				afterOpen: function ($vexContent) {
+					if (!(_this.showProjectDropDown)) {
+						var submit = $vexContent.find('button[type="submit"]');
+						submit.attr('disabled', true);
+					}
+    	}
 			});
 			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(
