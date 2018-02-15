@@ -6,13 +6,15 @@ module.exports = {
 	bail: true,
 	entry: {
 		index: './assets/js/pages/index/index.js',
-		'web-worker/webworker': './assets/js/web-worker/webworker.js'
+		'web-worker/webworker': './assets/js/web-worker/webworker.js',
+		'web-worker/codingCountWorker': './assets/js/web-worker/codingCountWorker.js'
 	},
 	resolve: {
 		alias: {
 			jquery: path.join(__dirname, './assets/js/jquery-stub.js'),
 			endpoints: path.resolve(__dirname, './assets/js/common/endpoints'),
-			modals: path.resolve(__dirname, './assets/js/common/modals')
+			modals: path.resolve(__dirname, './assets/js/common/modals'),
+			components: path.resolve(__dirname, './components'),
 		}
 	},
 	output: {

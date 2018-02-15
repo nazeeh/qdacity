@@ -294,8 +294,9 @@ export default class Codesystem extends SimpleCodesystem {
 			if (code.children) _this.initCodingCountRecurive(code.children); // recursion
 		});
 	}
-	updateCodingCount() {
-		this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(
+	
+	async updateCodingCount () {
+		this.state.selected.codingCount = await this.props.documentsView.calculateCodingCount(
 			this.state.selected.codeID
 		);
 		this.setState({

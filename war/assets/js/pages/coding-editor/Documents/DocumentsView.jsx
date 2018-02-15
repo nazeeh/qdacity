@@ -118,27 +118,17 @@ export default class DocumentsView extends React.Component {
 		return promise;
 	}
 
+	// returns a promis that resolves in the coding count value
+	// the calculation is handled asynchronously in web worker
 	calculateCodingCount(codID) {
-		var codingCount = 0;
-		var documents = this.state.documents;
-		for (var index in documents) {
-			var doc = documents[index];
-			var elements = doc.text;
-			var foundArray = $('coding[code_id=\'' + codID + '\']', elements).map(
-				function() {
-					return $(this).attr('id');
-				}
-			);
-			var idsCounted = []; // When a coding spans multiple HTML blocks,
-			// then there will be multiple elements with
-			// the same ID
-			for (var j = 0; j < foundArray.length; j++) {
-				if ($.inArray(foundArray[j], idsCounted) != -1) continue;
-				codingCount++;
-				idsCounted.push(foundArray[j]);
-			}
-		}
-		return codingCount;
+		const worker = new Worker('dist/js/web-worker/codingCountWorker.dist.js'); // create web worker
+		worker.postMessage({ documents: this.state.documents, codeID: codID }); // post a message to our worker
+		return new Promise(function(resolve, reject) {
+			worker.onmessage = event => { // listen for events from the worker
+				console.log(`Result is: ${event.data}`);
+				resolve(event.data); // resolve with codingCount
+			};
+		});
 	}
 
 	toggleIsExpanded() {
