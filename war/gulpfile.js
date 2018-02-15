@@ -7,12 +7,12 @@ const jasmine = require('gulp-jasmine');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
-const babel = require("gulp-babel");
+const babel = require('gulp-babel');
 const path = require('path');
 const process = require('process');
 const filterBy = require('gulp-filter-by');
 const transform = require('gulp-transform');
-const rename = require("gulp-rename");
+const rename = require('gulp-rename');
 const diff = require('gulp-diff');
 const chalk = require('chalk');
 const log = require('fancy-log');
@@ -29,7 +29,8 @@ function handleError(err) {
 }
 
 function setConfig() {
-	if (argv.api_path) config.api_path = argv.api_path; //CLI args overwrite JSON config
+	//CLI args overwrite JSON config
+	if (argv.api_path) config.api_path = argv.api_path;
 	if (argv.local) config.api_path = 'http://localhost:8888/_ah/api';
 	if (argv.slocal) config.api_path = 'https://localhost:8888/_ah/api';
 	console.log('Configured server adress: ' + config.api_path);
@@ -42,7 +43,7 @@ gulp.task('bundle-ci', ['bundle', 'set-constants-ci']);
 gulp.task('bundle', ['format', 'bundle-task']);
 
 gulp.task('format', () => {
-	gulp
+	return gulp
 		.src([
 			'**/*.jsx',
 			'**/*.js',
@@ -216,7 +217,8 @@ gulp.task('webpack-watch', function() {
 		.pipe(replace('$CLIENT_ID$', config.client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
 		.pipe(gulp.dest('dist/js/'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/'))
+	);
 });
 
 gulp.task('test', () => gulp.src('./tests/*.js').pipe(jasmine()));
