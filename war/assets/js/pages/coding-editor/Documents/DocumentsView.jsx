@@ -126,11 +126,12 @@ export default class DocumentsView extends React.Component {
 		this.worker.postMessage({ documents: this.state.documents, codeIDs: codeIDs }); // post a message to our worker
 		return new Promise(function(resolve, reject) {
 			_this.worker.addEventListener('message', function handleEvent (event) { // listen for events from the worker
-					console.log(`Results for  ${event.data.keys()} are in`);
-					//if (event.data.keys() === codeIDs){
+					let codingCountKeys = Array.from(event.data.keys());
+					console.log(`Results for  ${codingCountKeys} are in`);
+					if (codeIDs.length==codingCountKeys.length && codeIDs.every((v,i)=> v === codingCountKeys[i])){
 						_this.worker.removeEventListener('message', handleEvent);
 						resolve(event.data); // resolve with codingCount for codeID
-					//}
+					}
 				}
 			);
 		});
