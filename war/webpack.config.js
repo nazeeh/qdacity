@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 require('babel-register'); // replace nodes require with babels on-the-fly c.
+require('babel-polyfill');
 var ExtractMessagesPlugin = require('../localization/webpack').default;
 var BabelFormatMessagesPlugin = require('../localization/babel').default;
 

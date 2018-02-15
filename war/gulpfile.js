@@ -1,3 +1,4 @@
+const fs = require('fs');
 const gulp = require('gulp');
 const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpack = require('webpack-stream');
@@ -12,9 +13,14 @@ const process = require('process');
 const filterBy = require('gulp-filter-by');
 const transform = require('gulp-transform');
 const rename = require("gulp-rename");
+const diff = require('gulp-diff');
+const chalk = require('chalk');
+const log = require('fancy-log');
 const jsonConcat = require('gulp-json-concat');
 require('babel-core/register');
+require('babel-polyfill');
 
+const tf = require('../localization/translationFile');
 const config = require('./api_config.json');
 
 function handleError(err) {
@@ -49,6 +55,89 @@ gulp.task('format', () => {
 		.pipe(prettierEslint())
 		.pipe(gulp.dest('./'));
 });
+
+gulp.task('generate-language-files', () => {
+	const templateFile = tf.TranslationFile.fromContent(
+		fs.readFileSync('translations/template.txt', 'utf8')
+	);
+	const template = templateFile.getMessageIdents();
+
+	return gulp.src('translations/*.txt')
+		.pipe(transform('utf8', (content, file) => {
+			const translationFile = tf.TranslationFile.fromContent(content);
+			const identList = translationFile.getMessageIdents();
+			const messages = {};
+			let fail = false;
+			identList.forEach(ident => {
+				if (messages[ident.id]) {
+					log(chalk.yellow(
+						`Duplicate ident ${chalk.bold(ident.id)}`
+					));
+					fail = true;
+					return;
+				}
+				messages[ident.id] = ident.defaultMessage;
+			});
+			const result = JSON.stringify(messages, null, '\t');
+			template.forEach(ident => {
+				if (!messages.hasOwnProperty(ident.id)) {
+					log(chalk.yellow(
+						`Ident ${chalk.bold(ident.id)} is missing in translation`
+					));
+					fail = true;
+					return;
+				}
+				delete messages[ident.id];
+			});
+			fail |= Object.keys(messages).length > 0;
+			if (fail) {
+				for (const id of Object.keys(messages)) {
+					log(chalk.yellow(
+						`Ident ${chalk.bold(id)} does not exist in template`
+					));
+				}
+				log.error(chalk.red.bold(
+					`Translation file ${file.relative} does not match template`
+				));
+				// We do not throw here for several reasons.
+				// a) Missing identifier is not a fatal error,
+				//   neither are duplicates nor additional identifiers
+				// b) we want to traverse all files and explain all errors
+				// c) one file should not keep others from being processed
+				// this checker might be reworked to allow the pipeline to fail
+				//return Promise.reject('Translation file invalid.');
+			}
+			return result;
+		})).on('error', error => {
+			log.error(chalk.red.bold(error));
+			process.exit(1);
+		})
+		.pipe(rename({ extname: '.json' }))
+		.pipe(gulp.dest('dist/messages/'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/messages/'))
+		// check if messages -> template -> messages is stable
+		.pipe(filterBy(file => {
+			return file.relative.match(/template.json$/);
+		}))
+		.pipe(rename({basename: 'en'}))
+		.pipe(diff('dist/messages/'))
+		.pipe(diff.reporter({fail: true})).on('error', error => {
+			log.error(chalk.red.bold(
+				'Template cannot reassemble extracted messages.\n' +
+				'If you did not modify the template than its a bug'
+			));
+			process.exit(1);
+		});
+});
+
+gulp.task('translation-watch', () => {
+	const watcher = gulp.watch(
+		'translations/*.txt',
+		['generate-language-files']
+	);
+	return watcher;
+});
+
 
 gulp.task('bundle-task', function() {
 	setConfig();
@@ -109,7 +198,7 @@ gulp.task('minify', function() {
 		.pipe(gulp.dest('./'));
 });
 
-gulp.task('watch', function() {
+gulp.task('webpack-watch', function() {
 	setConfig();
 	return (gulp
 		.src('') //doesn't matter what to put as src,
@@ -131,5 +220,5 @@ gulp.task('watch', function() {
 });
 
 gulp.task('test', () => gulp.src('./tests/*.js').pipe(jasmine()));
-
+gulp.task('watch', ['webpack-watch', 'translation-watch']);
 gulp.task('default', ['watch']);
