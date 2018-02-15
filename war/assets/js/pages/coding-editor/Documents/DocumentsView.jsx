@@ -121,8 +121,9 @@ export default class DocumentsView extends React.Component {
 
 	// returns a promis that resolves in the coding count value
 	// the calculation is handled asynchronously in web worker
-	calculateCodingCount(codeIDs) {
+	async calculateCodingCount(codeIDs) {
 		let _this = this;
+		await this.setupPromise;
 		this.worker.postMessage({ documents: this.state.documents, codeIDs: codeIDs }); // post a message to our worker
 		return new Promise(function(resolve, reject) {
 			_this.worker.addEventListener('message', function handleEvent (event) { // listen for events from the worker
