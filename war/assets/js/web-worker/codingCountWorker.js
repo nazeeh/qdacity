@@ -34,6 +34,7 @@ function processCodingIDs(codeIDs, documents){
 	for (let index in codeIDs) {
 		console.log('Processing code ' + codeIDs[index]);
 		const codeID  = codeIDs[index];
+		// calculate the coding count for a code across all documents
 		const codingCount = calculateCodingCount(codingElements, codeID);
 		codingMap.set(codeID, codingCount);
 	}
@@ -57,12 +58,13 @@ function calculateCodingCount(codingElements, codeID){
 
 	let uniqueIDs = new Set();
 
-	let foundArray= codingElements.filter((el)=>{
+	let elementsWithCodeID = codingElements.filter((el)=>{
 		return el.attribs.code_id === codeID
 	});
 
-	for (let i = 0; i < foundArray.length; i++) {
-		uniqueIDs.add(foundArray[i].attribs.id);
+	for (let i = 0; i < elementsWithCodeID.length; i++) {
+		// Only adds each coding id once
+		uniqueIDs.add(elementsWithCodeID[i].attribs.id);
 	}
 
 	return uniqueIDs.size;
