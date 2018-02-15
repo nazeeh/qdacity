@@ -16,16 +16,28 @@ import cheerio from 'cheerio';
 */
 self.onmessage = (event) => {
 	console.log('Received a message in codingCountWebWorker.js');
-
+	var dict = {};
 	// get input data from parameters passed as event data
 	const documents = event.data.documents;
-	const codeID = event.data.codeID;
+	const codeIDs = event.data.codeIDs;
 
-	const codingCount = calculateCodingCount(documents, codeID);
-
+	let codingMap = processCodingIDs(codeIDs, documents);
 	// Send result as a message
-	self.postMessage(codingCount);
+	self.postMessage(codingMap);
 };
+
+function processCodingIDs(codeIDs, documents){
+	let codingMap = new Map();
+
+	for (let index in codeIDs) {
+		console.log('Processing code ' + codeIDs[index]);
+		const codeID  = codeIDs[index];
+		const codingCount = calculateCodingCount(documents, codeID);
+		codingMap.set(codeID, codingCount);
+	}
+
+	return codingMap;
+}
 
 function calculateCodingCount(documents, codeID){
 	let uniqueIDs = new Set();

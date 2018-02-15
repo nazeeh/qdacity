@@ -40,6 +40,7 @@ const StyledDocumentList = styled.div`
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
+		this.worker = new Worker('dist/js/web-worker/codingCountWorker.dist.js'); // create web worker
 		this.state = {
 			documents: [],
 			selected: -1,
@@ -120,14 +121,18 @@ export default class DocumentsView extends React.Component {
 
 	// returns a promis that resolves in the coding count value
 	// the calculation is handled asynchronously in web worker
-	calculateCodingCount(codID) {
-		const worker = new Worker('dist/js/web-worker/codingCountWorker.dist.js'); // create web worker
-		worker.postMessage({ documents: this.state.documents, codeID: codID }); // post a message to our worker
+	calculateCodingCount(codeIDs) {
+		let _this = this;
+		this.worker.postMessage({ documents: this.state.documents, codeIDs: codeIDs }); // post a message to our worker
 		return new Promise(function(resolve, reject) {
-			worker.onmessage = event => { // listen for events from the worker
-				console.log(`Result is: ${event.data}`);
-				resolve(event.data); // resolve with codingCount
-			};
+			_this.worker.addEventListener('message', function handleEvent (event) { // listen for events from the worker
+					console.log(`Results for  ${event.data.keys()} are in`);
+					//if (event.data.keys() === codeIDs){
+						_this.worker.removeEventListener('message', handleEvent);
+						resolve(event.data); // resolve with codingCount for codeID
+					//}
+				}
+			);
 		});
 	}
 
