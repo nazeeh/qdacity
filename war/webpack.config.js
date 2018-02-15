@@ -6,7 +6,6 @@ module.exports = {
 	bail: true,
 	entry: {
 		index: './assets/js/pages/index/index.js',
-		'web-worker/webworker': './assets/js/web-worker/webworker.js',
 		'web-worker/codingCountWorker': './assets/js/web-worker/codingCountWorker.js'
 	},
 	resolve: {
