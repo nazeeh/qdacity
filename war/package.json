@@ -12,9 +12,9 @@
     "react-intl": "^2.4.0",
     "react-router-dom": "^4.1.2",
     "react-slick": "^0.14.11",
-    "slate": "^0.32.2",
-    "slate-html-serializer": "^0.5.2",
-    "slate-react": "^0.11.2",
+    "slate": "^0.32.4",
+    "slate-html-serializer": "^0.5.4",
+    "slate-react": "^0.11.4",
     "slick-carousel": "^1.6.0",
     "socket.io-client": "^2.0.4"
   },
