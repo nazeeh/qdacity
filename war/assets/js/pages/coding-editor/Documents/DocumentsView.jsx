@@ -40,7 +40,9 @@ const StyledDocumentList = styled.div`
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.codingCountWorker = new Worker('dist/js/web-worker/codingCountWorker.dist.js'); // create web worker
+		// create web worker
+		// path is from / to distribution package built with webpack
+		this.codingCountWorker = new Worker('dist/js/web-worker/codingCountWorker.dist.js');
 		this.state = {
 			documents: [],
 			selected: -1,
