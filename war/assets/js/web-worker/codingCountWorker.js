@@ -3,16 +3,16 @@ import cheerio from 'cheerio';
 
 /*
 * handle messages from the client
-* expects documents and codeID as input parameters through the data attribute
+* expects documents and codeIDs as input parameters through the data attribute
 * {
 *  	documents: [{
 *					text: String
 *      			},
 *		]
-*  	codeID: Long
+*  	codeID: [Long]
 * }
 *
-* returns the number of times the code has been applied with unique coding id
+* returns a map with the codeIDs as keys and the codingCount as value
 */
 self.onmessage = (event) => {
 	console.log('Received a message in codingCountWebWorker.js');
