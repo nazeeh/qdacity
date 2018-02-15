@@ -66,8 +66,13 @@ export default class CustomForm extends VexModal {
 			projects.items.length < 0) {
 			this.disableYesButton = true;
 			this.showProjectDropDown = false;
+			const { formatMessage } = IntlProvider.intl;
+			var warningMessage = formatMessage({
+				id: 'modal.warningMessage',
+				defaultMessage: 'Data from an existing project is required for this type of exercise, please create a project with a project revision and try again'
+			})
 			this.formElements += '<div class="vex-custom-input-wrapper">';
-			this.formElements += '<p>Data from an existing project is required for this type of exercise, please create a project with a project revision and try again</p>';
+			this.formElements += '<p>'+warningMessage+'</p>';
 			this.formElements += '</div>';
 		}
 	}
