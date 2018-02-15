@@ -1,6 +1,7 @@
 import path from 'path';
 import {scrambleIdent} from './util';
 import JSONFile from './json-file';
+import {TranslationFile} from '../translationFile';
 const metadataSubscriber = Symbol('ExtractMessagesPlugin');
 
 export default class ExtractMessagesPlugin {
@@ -35,6 +36,7 @@ export default class ExtractMessagesPlugin {
 		});
 		compiler.plugin('emit', (compilation, done) => {
 			const messages = {};
+			const messageList = [];
 			this.messages.forEach((value, key) => {
 				value.forEach((messageIdent) => {
 					if (messages.hasOwnProperty(messageIdent.id)) {
@@ -46,8 +48,12 @@ export default class ExtractMessagesPlugin {
 					}
 
 					messages[messageIdent.id] = messageIdent;
+					messageList.push(messageIdent);
 				});
 			});
+
+			// build translation template file
+			compilation.assets['../../translations/template.txt'] = TranslationFile.fromMessageIdentList(messageList);
 
 			// drop meta information now
 			for(const id in messages) {
