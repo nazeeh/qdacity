@@ -42,7 +42,9 @@ export default class DocumentsView extends React.Component {
 		super(props);
 		// create web worker
 		// path is from / to distribution package built with webpack
-		this.codingCountWorker = new Worker('dist/js/web-worker/codingCountWorker.dist.js');
+		this.codingCountWorker = new Worker(
+			'dist/js/web-worker/codingCountWorker.dist.js'
+		);
 		this.state = {
 			documents: [],
 			selected: -1,
@@ -126,17 +128,25 @@ export default class DocumentsView extends React.Component {
 	async calculateCodingCount(codeIDs) {
 		let _this = this;
 		await this.setupPromise;
-		this.codingCountWorker.postMessage({ documents: this.state.documents, codeIDs: codeIDs }); // post a message to our worker
+		this.codingCountWorker.postMessage({
+			documents: this.state.documents,
+			codeIDs: codeIDs
+		}); // post a message to our worker
 		return new Promise(function(resolve, reject) {
-			_this.codingCountWorker.addEventListener('message', function handleEvent (event) { // listen for events from the worker
-					let codingCountKeys = Array.from(event.data.keys());
-					console.log(`Results for  ${codingCountKeys} are in`);
-					if (codeIDs.length==codingCountKeys.length && codeIDs.every((v,i)=> v === codingCountKeys[i])){
-						_this.codingCountWorker.removeEventListener('message', handleEvent);
-						resolve(event.data); // resolve with codingCount for codeID
-					}
+			_this.codingCountWorker.addEventListener('message', function handleEvent(
+				event
+			) {
+				// listen for events from the worker
+				let codingCountKeys = Array.from(event.data.keys());
+				console.log(`Results for  ${codingCountKeys} are in`);
+				if (
+					codeIDs.length == codingCountKeys.length &&
+					codeIDs.every((v, i) => v === codingCountKeys[i])
+				) {
+					_this.codingCountWorker.removeEventListener('message', handleEvent);
+					resolve(event.data); // resolve with codingCount for codeID
 				}
-			);
+			});
 		});
 	}
 
