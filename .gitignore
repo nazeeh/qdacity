@@ -1,4 +1,6 @@
 .idea
+.settings/
+.project
 qdacity.iml
 endpoint-libs
 gwt-unitCache
@@ -16,6 +18,7 @@ build/
 nbproject/
 src/conf/
 war/nbproject/
+war/coverage
 /nbbuild/
 /nbdist/
 /war/api_config.json
