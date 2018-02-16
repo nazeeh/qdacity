@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
 import Theme from '../../../common/styles/Theme.js';
@@ -69,7 +70,55 @@ export default class ExerciseProjectList extends React.Component {
 			'/CodingEditor?project=' + exerciseProject.id + '&type=EXERCISE'
 		);
 	}
+
 	createReport(exerciseID) {
+		const { formatMessage } = IntlProvider.intl;
+		var projectEndpoint = new ProjectEndpoint();
+		DocumentsEndpoint.getDocuments(exerciseID, 'EXERCISE').then(function(documents) {
+			var modal = new CustomForm(
+				formatMessage({
+					id: 'exercisePage.create_validation_report',
+					defaultMessage: 'Create Evaluation Report'
+				})
+			);
+			modal.addTextInput(
+				'title',
+				formatMessage({
+					id: 'exercisePage.report_title',
+					defaultMessage: 'Report Title'
+				}),
+				'',
+				''
+			);
+			var documentTitles = [];
+
+			modal.addCheckBoxes('docs', documents);
+
+			//TODO should not be hardcoded here
+			var methods = ['f-measure'];
+			var units = ['paragraph', 'sentence'];
+
+			modal.addSelect(
+				'method',
+				methods,
+				formatMessage({
+					id: 'exercisePage.evaluation_method',
+					defaultMessage: 'Evaluation Method'
+				})
+			);
+			modal.addSelect(
+				'unit',
+				units,
+				formatMessage({
+					id: 'exercisePage.unit_of_coding',
+					defaultMessage: 'Unit of Coding'
+				})
+			);
+
+			modal.showModal().then(function(data) {
+				
+			});
+		});
 	}
 
 	renderExerciseProject(exerciseProject, index) {
