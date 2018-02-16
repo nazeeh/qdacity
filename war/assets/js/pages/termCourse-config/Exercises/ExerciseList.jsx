@@ -72,7 +72,7 @@ export default class ExerciseList extends React.Component {
 	showNewExerciseModal() {
 		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
-		var exerciseTypes = ['Codebook Exercise'];
+		var exerciseTypes = ['Codebook'];
 
 		var modal = new CustomForm(
 			formatMessage(
@@ -104,16 +104,17 @@ export default class ExerciseList extends React.Component {
 			''
 		);
 		modal.showModal().then(function(data) {
-			_this.createNewExercise(data.name, data.SelectedRevisionID);
+			_this.createNewExercise(data.name, data.exerciseType, data.SelectedRevisionID);
 		});
 	}
 
-	createNewExercise(name, projectRevisionID) {
+	createNewExercise(name, exerciseType, projectRevisionID) {
 		var _this = this;
 		var exercise = {};
 		var termCourseID = this.props.termCourse.id;
 		var exercises = this.state.exercises;
 		exercise.name = name;
+		exercise.exerciseType = exerciseType;
 		exercise.projectRevisionID = projectRevisionID;
 		exercise.termCourseID = termCourseID;
 		ExerciseEndpoint.insertExercise(exercise).then(function(resp) {
