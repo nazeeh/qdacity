@@ -115,7 +115,7 @@ export default class Codesystem extends SimpleCodesystem {
 				var selected = {};
 				if (rootCodes.length > 0) selected = rootCodes[0];
 				_this.sortCodes(rootCodes);
-				//_this.initCodingCountRecurive(rootCodes); // FIXME refactor initialization of coding count
+				_this.initCodingCount(codes, rootCodes);
 				_this.setState({
 					codesystem: rootCodes,
 					selected: selected,
@@ -278,26 +278,25 @@ export default class Codesystem extends SimpleCodesystem {
 		this.props.syncService.codes.removeCode(code);
 	}
 
-	initCodingCount() {
-		this.initCodingCountRecurive(this.state.codesystem);
-		this.setState({
-			codesystem: this.state.codesystem
+	initCodingCount(allCodes, rootCodes) {
+		const codeIDs = allCodes.map((code) => {return code.codeID})
+		this.props.documentsView.calculateCodingCount(codeIDs).then((codingCountMap)=>{
+			allCodes.forEach((code)=>{
+				code.codingCount = codingCountMap.get(code.codeID);
+			});
+			this.setState({
+				codesystem: this.state.codesystem
+			});
+
 		});
+
 	}
 
-	initCodingCountRecurive(codeSiblings) {
-		var _this = this;
-		codeSiblings.forEach(code => {
-			code.codingCount = this.props.documentsView.calculateCodingCount(
-				code.codeID
-			);
-			if (code.children) _this.initCodingCountRecurive(code.children); // recursion
-		});
-	}
-	updateCodingCount() {
-		this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(
-			this.state.selected.codeID
+	async updateCodingCount () {
+		const codingCountMap = await this.props.documentsView.calculateCodingCount(
+			[this.state.selected.codeID]
 		);
+		this.state.selected.codingCount = codingCountMap.get(this.state.selected.codeID);
 		this.setState({
 			selected: this.state.selected,
 			codesystem: this.state.codesystem
