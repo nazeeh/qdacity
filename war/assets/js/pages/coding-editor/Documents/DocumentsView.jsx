@@ -160,7 +160,6 @@ export default class DocumentsView extends React.Component {
 	// Adds an array of documents to the state
 	// Does not set an active document
 	addAllDocuments(docList) {
-
 		if (!typeof !docList || !docList.length || docList.length === 0) return;
 
 		for (var i = 0; i < docList.length; i++) {
