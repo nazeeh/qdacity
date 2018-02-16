@@ -72,6 +72,7 @@ export default class ExerciseList extends React.Component {
 	showNewExerciseModal() {
 		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
+		var exerciseTypes = ['Codebook Exercise'];
 
 		var modal = new CustomForm(
 			formatMessage(
@@ -83,6 +84,16 @@ export default class ExerciseList extends React.Component {
 			)
 		);
 		modal.addDropDown(this.state.projects);
+
+		modal.addSelect(
+			'exerciseType',
+			exerciseTypes,
+			formatMessage({
+				id: 'exercise.exerciseType',
+				defaultMessage: 'Exercise Type'
+			})
+		);
+
 		modal.addTextInput(
 			'name',
 			formatMessage({
