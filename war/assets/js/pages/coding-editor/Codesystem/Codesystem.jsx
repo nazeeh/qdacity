@@ -279,24 +279,28 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	initCodingCount(allCodes, rootCodes) {
-		const codeIDs = allCodes.map((code) => {return code.codeID})
-		this.props.documentsView.calculateCodingCount(codeIDs).then((codingCountMap)=>{
-			allCodes.forEach((code)=>{
-				code.codingCount = codingCountMap.get(code.codeID);
-			});
-			this.setState({
-				codesystem: this.state.codesystem
-			});
-
+		const codeIDs = allCodes.map(code => {
+			return code.codeID;
 		});
-
+		this.props.documentsView
+			.calculateCodingCount(codeIDs)
+			.then(codingCountMap => {
+				allCodes.forEach(code => {
+					code.codingCount = codingCountMap.get(code.codeID);
+				});
+				this.setState({
+					codesystem: this.state.codesystem
+				});
+			});
 	}
 
-	async updateCodingCount () {
-		const codingCountMap = await this.props.documentsView.calculateCodingCount(
-			[this.state.selected.codeID]
+	async updateCodingCount() {
+		const codingCountMap = await this.props.documentsView.calculateCodingCount([
+			this.state.selected.codeID
+		]);
+		this.state.selected.codingCount = codingCountMap.get(
+			this.state.selected.codeID
 		);
-		this.state.selected.codingCount = codingCountMap.get(this.state.selected.codeID);
 		this.setState({
 			selected: this.state.selected,
 			codesystem: this.state.codesystem

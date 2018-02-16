@@ -61,18 +61,17 @@ export default class CustomForm extends VexModal {
 		this.formElements += '<div id="ProjectRevisionSelector">';
 		this.formElements += '</div>';
 
-		if (
-			(typeof projects.items == 'undefined') ||
-			projects.items.length < 0) {
+		if (typeof projects.items == 'undefined' || projects.items.length < 0) {
 			this.disableYesButton = true;
 			this.showProjectDropDown = false;
 			const { formatMessage } = IntlProvider.intl;
 			var warningMessage = formatMessage({
 				id: 'modal.warningMessage',
-				defaultMessage: 'Data from an existing project is required for this type of exercise, please create a project with a project revision and try again'
-			})
+				defaultMessage:
+					'Data from an existing project is required for this type of exercise, please create a project with a project revision and try again'
+			});
 			this.formElements += '<div class="vex-custom-input-wrapper">';
-			this.formElements += '<p>'+warningMessage+'</p>';
+			this.formElements += '<p>' + warningMessage + '</p>';
 			this.formElements += '</div>';
 		}
 	}
@@ -158,12 +157,12 @@ export default class CustomForm extends VexModal {
 						resolve(data);
 					} else reject(data);
 				},
-				afterOpen: function ($vexContent) {
-					if (!(_this.showProjectDropDown)) {
+				afterOpen: function($vexContent) {
+					if (!_this.showProjectDropDown) {
 						var submit = $vexContent.find('button[type="submit"]');
 						submit.attr('disabled', true);
 					}
-    	}
+				}
 			});
 			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(
