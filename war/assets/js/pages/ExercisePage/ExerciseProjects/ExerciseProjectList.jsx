@@ -17,6 +17,13 @@ import {
 	StyledListItemPrimary,
 	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
+const SyledCreateReportBtn = BtnDefault.extend`
+	margin-top: -6px;
+	margin-bottom: 6px;
+`;
+const StyledBtnIcon = styled.i`
+	font-size: 18px;
+`;
 
 import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
@@ -62,6 +69,8 @@ export default class ExerciseProjectList extends React.Component {
 			'/CodingEditor?project=' + exerciseProject.id + '&type=EXERCISE'
 		);
 	}
+	createReport(exerciseID) {
+	}
 
 	renderExerciseProject(exerciseProject, index) {
 		return (
@@ -81,6 +90,21 @@ export default class ExerciseProjectList extends React.Component {
 		);
 	}
 
+	renderCreateReportBtn(revId) {
+			return (
+				<SyledCreateReportBtn
+					onClick={() => this.createReport(revId)}
+					className=" pull-right"
+				>
+					<StyledBtnIcon className="fa fa-plus-circle" />
+					<FormattedMessage
+						id="exercisePage.create_report"
+						defaultMessage="Create Evaluation Reports"
+					/>
+				</SyledCreateReportBtn>
+			);
+	}
+
 	render() {
 		var _this = this;
 
@@ -88,6 +112,9 @@ export default class ExerciseProjectList extends React.Component {
 
 		return (
 			<div>
+
+				{this.renderCreateReportBtn(this.props.exercise.id)}
+
 				<ItemList
 					key={'itemlist'}
 					hasPagination={true}
