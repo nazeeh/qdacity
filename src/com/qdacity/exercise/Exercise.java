@@ -32,7 +32,10 @@ public class Exercise implements Serializable {
 	
 	@Persistent
 	Long projectRevisionID;
-	
+
+	@Persistent
+	ExerciseType exerciseType;
+
 	public Exercise() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -62,7 +65,10 @@ public class Exercise implements Serializable {
 		return name;
 	}
 	
-	
+	public ExerciseType getExerciseType() { return exerciseType;}
+
+	public void setExerciseType(ExerciseType exerciseType) {this.exerciseType = exerciseType;}
+
 	public Long getTermCourseID() {
 		return termCourseID;
 	}
