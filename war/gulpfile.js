@@ -27,6 +27,8 @@ function setConfig() {
 	if (argv.local) config.api_path = 'http://localhost:8888/_ah/api';
 	if (argv.slocal) config.api_path = 'https://localhost:8888/_ah/api';
 	console.log('Configured server adress: ' + config.api_path);
+	if (argv.local || argv.slocal) config.sync_service = 'http://localhost:8080';
+	console.log('Configured rts server adress: ' + config.sync_service);
 	if (argv.api_version) config.api_version = argv.api_version;
 	if (argv.client_id) config.client_id = argv.client_id;
 }
