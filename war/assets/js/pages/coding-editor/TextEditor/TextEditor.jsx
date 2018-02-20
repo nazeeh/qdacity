@@ -298,9 +298,9 @@ export default class TextEditor extends React.Component {
 					}
 
 					prevChar = prevText.characters.last();
-
 				} else {
-					prevChar = document.getDescendant(currentSelection.startKey)
+					prevChar = document
+						.getDescendant(currentSelection.startKey)
 						.characters.get(currentSelection.startOffset - 1);
 				}
 

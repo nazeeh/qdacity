@@ -197,7 +197,7 @@ deploy_non_minified:
     function build_frontend() {
       cd war
       echo $API_CONFIG_PRODUCTION > ./api_config.json
-      rm -f ./dist/js/*
+      rm -f -r ./dist/js/*
       npm prune
       npm install
       while [ -n "$1" ]; do
