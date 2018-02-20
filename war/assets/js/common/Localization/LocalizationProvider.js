@@ -15,7 +15,7 @@ const globalLocalizationState = {
 	/** @type {ReactIntl.InjectedIntl} */
 	intl: undefined,
 	/** @type {Set<String>} */
-	supportedLanguages: new Set(['en', 'test'])
+	supportedLanguages: new Set(['en', 'de', 'test'])
 };
 
 /**
