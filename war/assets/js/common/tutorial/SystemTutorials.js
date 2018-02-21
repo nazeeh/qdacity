@@ -28,6 +28,7 @@ export default class SystemTutorials {
 					descriptionTextShort: function(){return formatMessage({id: 'tutorial.tut0.descriptionText', defaultMessage: 'Example Tutorial. You have only click the New Project Button'})},
 					/**
 					 * finishedAt and finishedRelative are placeHolder for statistic-data, which come from the server backend next merge-request
+					 * finished at is the time stamp when the tutorial was completed. finishedRelative is the percentage of steps completed
 					 */
 					finishedAt:"-1",
 					finishedRelative:0,
