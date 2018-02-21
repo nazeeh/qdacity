@@ -39,7 +39,7 @@ import com.qdacity.project.metrics.tasks.algorithms.DeferredFMeasureEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredFleissKappaEvaluation;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredKrippendorffsAlphaEvaluation;
 
-public class DeferredEvaluation implements DeferredTask {
+public abstract class DeferredEvaluation implements DeferredTask {
 
     private static final long serialVersionUID = 8021773396438274981L;
     Long revisionID;
@@ -64,11 +64,19 @@ public class DeferredEvaluation implements DeferredTask {
 	this.docIDs = IdCsvStringToLongList.convert(docIDsString);
     }
 
+    public List<ValidationProject> getValidationProjectsFromUsers() {
+        return this.validationProjectsFromUsers;
+    }
+
+    public void setValidationProjectsFromUsers(List<ValidationProject> validationProjectsFromUsers) {
+        this.validationProjectsFromUsers = validationProjectsFromUsers;
+    }
+
     @Override
     public void run() {
 	long startTime = System.nanoTime();
 
-	initValidationProjects();
+	initProjects();
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
 
@@ -113,15 +121,7 @@ public class DeferredEvaluation implements DeferredTask {
      * prepares the validationProjectsFromUsers so it contains the project in
      * the given revision from all users.
      */
-    private void initValidationProjects() {
-	Query q;
-	q = getPersistenceManager().newQuery(ValidationProject.class, "revisionID  == :revisionID");
-
-	Map<String, Long> params = new HashMap<>();
-	params.put("revisionID", revisionID);
-	//Hint: Only gets the validationProjects from Users, but not the project itself. This behaviour is wanted.
-	this.validationProjectsFromUsers = (List<ValidationProject>) q.executeWithMap(params);
-    }
+    public abstract void initProjects();
 
     private Collection<TextDocument> getOriginalDocs(List<Long> docIDs) throws UnauthorizedException {
 	TextDocumentEndpoint tde = new TextDocumentEndpoint();
@@ -220,7 +220,7 @@ public class DeferredEvaluation implements DeferredTask {
 
     private PersistenceManager pm = null;
 
-    private PersistenceManager getPersistenceManager() {
+    protected PersistenceManager getPersistenceManager() {
 	if (this.pm == null) {
 	    this.pm = PMF.get().getPersistenceManager();
 	}
