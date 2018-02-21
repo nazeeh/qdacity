@@ -7,7 +7,6 @@ export default class TutorialEngine {
 	constructor(appRoot) {
 		this.d=new DomInteractor();
 		this.appRoot=appRoot;
-		//this.systemTutorials=new SystemTutorials();
 		this.tutorialState={
 			isActive: false,
 		};
@@ -34,13 +33,14 @@ export default class TutorialEngine {
 				currentActiveTutorial: [],
 				currentActiveStep: -1,
 				currentActiveStepAdvancedData:[],
-				currentActiveTutorial: -1,
+				currentActiveTutorial: null,
 				currentShowShortDescriptionId: -1,
 			}
 	}
 
 	appRootDidMount() {
-		this.instrumentDomWithTutorialMainData();
+		const { formatMessage } = IntlProvider.intl;
+		this.postInit(formatMessage);
 	}
 
 	updateReactCb(callbackFunc) {
@@ -66,7 +66,6 @@ export default class TutorialEngine {
 		return this.tutorialState['isActive'];
 	}
 
-	instrumentDomWithTutorialMainData() {}
 
 	showOverviewWindow() {
 		this.setIsActive(true);
@@ -116,14 +115,6 @@ export default class TutorialEngine {
 		if (update) this.updateReact();
 	}
 
-	/*showShortDescriptionBox(show, key)
-	{
-		//alert(key);
-		this.tutorialState.overviewData[key].showShortDescription=show;
-		this.updateReact();
-	}*/
-
-
 	activateTutorial(tutorialId)
 	{
 		var tutorialData=this.systemTutorials.getData();
@@ -160,18 +151,14 @@ export default class TutorialEngine {
 	finishStep(step)
 	{
 		//TODO api call, to save current step.........
-		//QUESTION: sinnvoll, wenn der user in der Mitte oder zu dem Step wieder anfangen kann wo er aufgehoert hat, eventuell pre-conditions
-		//sind eventuell nicht mehr gegeben, der API-call an der stelle wuerde dann nur zu Tracking-Zwecken verwendet werden.
-		//Und um den User zu zeigen wie weit er gekommen ist?
-
-
+		
 		this.tutorialState.currentActiveStep=step+1;
 
-		if(this.this.tutorialState.currentActiveStep > this.currentActiveTutorial.maxSteps)
+		//TODO resolve BUG in currentActiveTutorial..... its acutally undefined, but it should contain the active Tutorial
+		if(this.tutorialState.currentActiveStep > 99 /*this.currentActiveTutorial.steps.length*/)
 		{
 			//FINISH
 			//show finish dialogBox
-
 
 			this.updateReact();
 			return;

@@ -161,7 +161,6 @@ const TutorialOverviewSubBoxShortDescription = styled.div`
 	background: #d6d6d6;
 	text-align: left !important;
 	display: ${props => (props.show ? 'block' : 'none')};
-	//height: 20px;
 `;
 
 
@@ -192,16 +191,12 @@ export default class Tutorial extends React.Component {
 
 
 	render() {
-		const { formatMessage } = IntlProvider.intl;
-		this.props.tutorial.tutorialEngine.postInit(formatMessage);
-
-
 		if(this.props.tutorial.tutorialState.isActive) {
 
 		var tutorialOverviewItems = this.props.tutorial.tutorialState.overviewData.map((data) =>
 		<TutorialOverviewSubBox key={data.tutorialUnitId}>
 			<b>
-				<TutorialOverviewSubBoxTitle>{data.title}</TutorialOverviewSubBoxTitle>
+				<TutorialOverviewSubBoxTitle>{data.title()}</TutorialOverviewSubBoxTitle>
 				<TutorialOverviewSubBoxStatistic1><FormattedMessage id="tutorial.finished" defaultMessage="finished"/> {data.finishedRelative}%</TutorialOverviewSubBoxStatistic1>
 				<TutorialOverviewSubBoxStatistic2><FormattedMessage id="tutorial.finishedAt" defaultMessage="finished at"/>: {data.finishedAt}</TutorialOverviewSubBoxStatistic2>
 				<TutorialOverviewSubBoxClearing/>
@@ -211,7 +206,7 @@ export default class Tutorial extends React.Component {
 			<ButtonGeneric white={false} onClick={function(){this.props.tutorial.tutorialEngine.activateTutorial(data.tutorialUnitId); this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}><FormattedMessage id="tutorial.startTutorial" defaultMessage="Start Tutorial"/></ButtonGeneric>
 			{this.renderDescriptionButton((data.tutorialUnitId != this.props.tutorial.tutorialState.currentShowShortDescriptionId), data.tutorialUnitId)}
 			</div>
-			<TutorialOverviewSubBoxShortDescription show={(data.tutorialUnitId == this.props.tutorial.tutorialState.currentShowShortDescriptionId)}>{data.descriptionTextShort}</TutorialOverviewSubBoxShortDescription>
+			<TutorialOverviewSubBoxShortDescription show={(data.tutorialUnitId == this.props.tutorial.tutorialState.currentShowShortDescriptionId)}>{data.descriptionTextShort()}</TutorialOverviewSubBoxShortDescription>
 
 			</TutorialOverviewSubBox>
 		);

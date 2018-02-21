@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 
 const StepContainer = styled.div`
-	background: #d6d6d6;
+	background: ${props =>props.finish ? '#91f191' : '#d6d6d6'};
 	padding:10px;
 	margin-bottom:20px;
 `;
@@ -58,9 +58,9 @@ export default class Sidebar extends React.Component {
 
 			var steps = this.props.tutorial.tutorialState.currentStepsView.map((data) =>
 
-			<StepContainer key={data.stepNr}>
+			<StepContainer key={data.stepNr} finish={(data.stepNr<this.props.tutorial.tutorialState.currentActiveStep)}>
 				<StepDescriptionText>
-					{data.text}
+					{data.text()}
 				</StepDescriptionText>
 				<br />
 

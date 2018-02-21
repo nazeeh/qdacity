@@ -1,6 +1,5 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 /**
  * stepTypes:
@@ -26,29 +25,24 @@ export default class SystemTutorials {
 			this.data=
 			[
 				{
-					descriptionTextShort: formatMessage({id: 'tutorial.tut0.descriptionText', defaultMessage: 'Example Tutorial. You have only click the New Project Button'}),
+					descriptionTextShort: function(){return formatMessage({id: 'tutorial.tut0.descriptionText', defaultMessage: 'Example Tutorial. You have only click the New Project Button'})},
+					/**
+					 * finishedAt and finishedRelative are placeHolder for statistic-data, which come from the server backend next merge-request
+					 */
 					finishedAt:"-1",
 					finishedRelative:0,
-					maxSteps:9,
-					title:formatMessage({id: 'tutorial.tut0.title', defaultMessage: 'Example Tutorial. '}),
+					title:function(){return formatMessage({id: 'tutorial.tut0.title', defaultMessage: 'Example Tutorial. '})},
 					tutorialUnitId:"0",
 					steps:[
 						       	{
-							    	stepNr:1,
-							    	text:formatMessage({id: 'tutorial.tut0.step0.text', defaultMessage: 'Click the New Project Button'}),
+							    	stepNr:0,
+							    	text:function(){return formatMessage({id: 'tutorial.tut0.step0.text', defaultMessage: 'Click the New Project Button'})},
 							    	stepType: 3,
 										constructStep: function(tutorialEngine) {
-							
-												//tutorialEngine.tutorialState.showOverlayBlockInteraction=true;
-												tutorialEngine.updateReact();
-												//$(".overlayQdq2").show();
-
-
-												//$("#newProject").addClass("actionx_object");
-												//$("#newProject").css( "z-index", "1905" );
-
-
-													$(document).on( "click", "#newProject", function(){alert("finish!");});
+											var newProjectDom=tutorialEngine.d.getElementById("newProject");
+											if(newProjectDom !=null) {
+												newProjectDom.addEventListener("click", function(){tutorialEngine.finishStep(0);});
+											}
 
 										},
 										destructStep: function(tutorialEngine) {}

@@ -37,33 +37,27 @@ import IntlProvider from '../common/Localization/LocalizationProvider';
 
 
 
-const ContentLeftRightSplitter = styled.div`
-	//background-Color:red;
+const ContentGrid = styled.div`
 	display: grid;
-	/*grid-template-columns: auto 200px;*/ //is now in activated or deactivated -SideBar
-	/*grid-template-rows: auto;*/
-	grid-template-areas: "leftContent rightContent";
-	/*
-	width: 100vw;
-	height: 100vh;
-	*/
+	grid-template-areas: "ContentMain ContentSidebar";
 `;
 
-const LeftContent = styled.div`
-	grid-area: leftContent;
-	//background-color: yellow;
+//there is the normal Site-Content in it
+const ContentMain = styled.div`
+	grid-area: ContentMain;
 `;
 
-const RightContent = styled.div`
-	/*  width:200px;*/
+//there is, if acitvated, the sidebar for the Tutorial
+const ContentSidebar = styled.div`
 	padding:10px;
 	padding-top:60px;
 	color:#333;
-	grid-area: rightContent;
+	grid-area: ContentSidebar;
 	background-color: rgb(232, 229, 229);
 `;
 
-
+//activatedSideBar, activatedSideBar2, deactivatedSideBar, deactivatedSideBar2 are
+// Helper to show or not to show the sidebar
 var activatedSideBar=
 {
 	gridTemplateColumns: "auto 250px"
@@ -84,8 +78,6 @@ var deactivatedSideBar2=
 {
 	display: "none"
 };
-
-
 
 
 export default class App extends React.Component {
@@ -180,6 +172,14 @@ export default class App extends React.Component {
 		this.state.tutorialEngine.appRootDidMount();
 	}
 
+	componentDidUpdate() {
+		var domObj=document.getElementById("ContentSidebarStyle");
+		if(domObj !=null){
+			domObj.style.minHeight = (window.innerHeight-22)+"px";
+		}
+
+	}
+
 	render() {
 
 		var tut = {
@@ -212,8 +212,8 @@ export default class App extends React.Component {
 									/>
 								)}
 							/>
-					<ContentLeftRightSplitter className="ContentLeftRightSplitter" style={showSideBar}>
-						<LeftContent>
+					<ContentGrid className="ContentGrid" style={showSideBar}>
+						<ContentMain>
 							<Route
 								path="/PersonalDashboard"
 								render={props => (
@@ -322,11 +322,11 @@ export default class App extends React.Component {
 								path="/"
 								render={props => <Index auth={this.state.auth} {...props} />}
 							/>
-						</LeftContent>
-						<RightContent style={showSideBar2}>
+						</ContentMain>
+						<ContentSidebar style={showSideBar2} id="ContentSidebarStyle">
 							<Sidebar tutorial={tut} />
-						</RightContent>
-					</ContentLeftRightSplitter>
+						</ContentSidebar>
+					</ContentGrid>
 							<Route
 								path="/"
 								render={props => <Tutorial tutorial={tut} {...props} />}
