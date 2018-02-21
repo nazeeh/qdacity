@@ -104,7 +104,11 @@ export default class ExerciseList extends React.Component {
 			''
 		);
 		modal.showModal().then(function(data) {
-			_this.createNewExercise(data.name, data.exerciseType, data.SelectedRevisionID);
+			_this.createNewExercise(
+				data.name,
+				data.exerciseType,
+				data.SelectedRevisionID
+			);
 		});
 	}
 

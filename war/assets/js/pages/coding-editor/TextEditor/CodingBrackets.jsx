@@ -35,6 +35,23 @@ const StyledText = styled.text`
  */
 export default class CodingBrackets extends React.Component {
 	/**
+	 * We only check if there are the same number of elements and they have the
+	 * same color and name. This catches code inserts/removes/updates.
+	 * We don't compare offsetTop and height, because resizes of the window
+	 * will lead to an explicit forced update.
+	 **/
+	shouldComponentUpdate(nextProps, nextState) {
+		const _this = this;
+		const propsUnchanged =
+			nextProps.codingData.length == this.props.codingData.length &&
+			nextProps.codingData.every((v, i) => {
+				const v2 = _this.props.codingData[i];
+				return v.name === v2.name && v.color === v2.color;
+			});
+		return !propsUnchanged;
+	}
+
+	/**
 	 * When hovering a <text> or <path> append `.hover` class to parent <svg>
 	 * to trigger both siblings to display a hover state. Additionally the
 	 * svg element is moved to the end of its parent to move it in the
