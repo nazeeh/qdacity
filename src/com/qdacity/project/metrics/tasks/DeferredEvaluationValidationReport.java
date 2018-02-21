@@ -2,8 +2,11 @@ package com.qdacity.project.metrics.tasks;
 
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.project.ValidationProject;
+import com.qdacity.project.metrics.Report;
+import com.qdacity.project.metrics.ValidationReport;
 
 import javax.jdo.Query;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,4 +27,16 @@ public class DeferredEvaluationValidationReport extends DeferredEvaluation {
         //Hint: Only gets the validationProjects from Users, but not the project itself. This behaviour is wanted.
         super.setValidationProjectsFromUsers((List<ValidationProject>) q.executeWithMap(params));
     }
+
+    @Override
+    public Report initReport() {
+        ValidationReport validationReport = new ValidationReport();
+        getPersistenceManager().makePersistent(validationReport); // Generate ID right away so we have an ID to pass to ValidationResults
+        validationReport.setRevisionID(revisionID);
+        validationReport.setName(name);
+        validationReport.setDatetime(new Date());
+        validationReport.setEvaluationUnit(super.getEvalUnit());
+        validationReport.setProjectID(super.getValidationProjectsFromUsers().get(0).getProjectID());
+        validationReport.setEvaluationType(super.getEvaluationMethod());
+        return validationReport;    }
 }

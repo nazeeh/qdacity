@@ -24,13 +24,7 @@ import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.DocumentResult;
-import com.qdacity.project.metrics.EvaluationMethod;
-import com.qdacity.project.metrics.EvaluationUnit;
-import com.qdacity.project.metrics.FMeasureResult;
-import com.qdacity.project.metrics.TabularValidationReportRow;
-import com.qdacity.project.metrics.ValidationReport;
-import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.*;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.tasks.algorithms.DeferredAlgorithmEvaluation;
@@ -64,6 +58,14 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	this.docIDs = IdCsvStringToLongList.convert(docIDsString);
     }
 
+    public EvaluationMethod getEvaluationMethod() {
+        return evaluationMethod;
+    }
+
+    public EvaluationUnit getEvalUnit() {
+        return evalUnit;
+    }
+
     public List<ValidationProject> getValidationProjectsFromUsers() {
         return this.validationProjectsFromUsers;
     }
@@ -80,20 +82,20 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
 	taskQueue = new DeferredAlgorithmTaskQueue();
 
-	ValidationReport validationReport = initValidationReport();
+	Report report = initReport();
 
 	try {
 	    switch (evaluationMethod) {
 		case F_MEASURE:
 		    Collection<TextDocument> originalDocs;
 		    originalDocs = getOriginalDocs(docIDs);
-		    calculateFMeasure(originalDocs, validationReport);
+		    calculateFMeasure(originalDocs, report);
 		    break;
 		case KRIPPENDORFFS_ALPHA:
-		    calculateKrippendorffsAlpha(validationReport);
+		    calculateKrippendorffsAlpha(report);
 		    break;
 		case FLEISS_KAPPA:
-		    calculateFleissKappa(validationReport);
+		    calculateFleissKappa(report);
 		    break;
 	    }
 
@@ -105,17 +107,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
     }
 
-    private ValidationReport initValidationReport() {
-	ValidationReport validationReport = new ValidationReport();
-	getPersistenceManager().makePersistent(validationReport); // Generate ID right away so we have an ID to pass to ValidationResults
-	validationReport.setRevisionID(revisionID);
-	validationReport.setName(name);
-	validationReport.setDatetime(new Date());
-	validationReport.setEvaluationUnit(evalUnit);
-	validationReport.setProjectID(validationProjectsFromUsers.get(0).getProjectID());
-	validationReport.setEvaluationType(evaluationMethod);
-	return validationReport;
-    }
+    public abstract Report initReport();
 
     /**
      * prepares the validationProjectsFromUsers so it contains the project in
@@ -138,28 +130,28 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	return originalDocs;
     }
 
-    private void calculateFMeasure(Collection<TextDocument> originalDocs, ValidationReport validationReport) {
+    private void calculateFMeasure(Collection<TextDocument> originalDocs, Report report) {
 	TabularValidationReportRow fmeasureHeaderRow = new TabularValidationReportRow("Coder,FMeasure,Recall,Precision");
-	validationReport.setAverageAgreementHeader(fmeasureHeaderRow);
-	validationReport.setDetailedAgreementHeader(fmeasureHeaderRow);
+        report.setAverageAgreementHeader(fmeasureHeaderRow);
+        report.setDetailedAgreementHeader(fmeasureHeaderRow);
 	try {
 
 	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
 	    for (ValidationProject validationProject : validationProjectsFromUsers) {
-		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, validationReport.getId(), user, evalUnit);
+		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, report.getId(), user, evalUnit);
 		Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
 		taskQueue.launchInTaskQueue(deferredValidation);
 	    }
 
-	    taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), validationReport.getId(), user);
+	    taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), report.getId(), user);
 
-	    aggregateDocAgreement(validationReport);
+	    aggregateDocAgreement(report);
 
-	    Logger.getLogger("logger").log(Level.INFO, "Generating Agreement Map for report : " + validationReport.getDocumentResults().size());
+	    Logger.getLogger("logger").log(Level.INFO, "Generating Agreement Map for report : " + report.getDocumentResults().size());
 
-	    FMeasure.generateAgreementMaps(validationReport.getDocumentResults(), originalDocs);
+	    FMeasure.generateAgreementMaps(report.getDocumentResults(), originalDocs);
 
-	    getPersistenceManager().makePersistent(validationReport);
+	    getPersistenceManager().makePersistent(report);
 
 	} catch (UnauthorizedException e) {
 	    Logger.getLogger("logger").log(Level.INFO, "User not authorized: " + user.getEmail());
@@ -171,7 +163,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	}
     }
 
-    private void aggregateDocAgreement(ValidationReport report) throws UnauthorizedException {
+    private void aggregateDocAgreement(Report report) throws UnauthorizedException {
 	List<FMeasureResult> validationCoderAvg = new ArrayList<>();
 	Map<Long, List<FMeasureResult>> agreementByDoc = new HashMap<>();
 	Map<Long, String> documentNames = new HashMap<>();
@@ -234,7 +226,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
      * @throws UnauthorizedException if user can not see documents of other
      * users
      */
-    private void calculateKrippendorffsAlpha(ValidationReport validationReport) throws UnauthorizedException, ExecutionException, InterruptedException {
+    private void calculateKrippendorffsAlpha(Report report) throws UnauthorizedException, ExecutionException, InterruptedException {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
@@ -247,8 +239,8 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	    tableHead.add(codeName + "");
 	    tableAverageHead.add(codeName + "");
 	}
-	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
-	validationReport.setAverageAgreementHeader(new TabularValidationReportRow(tableAverageHead));
+        report.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
+        report.setAverageAgreementHeader(new TabularValidationReportRow(tableAverageHead));
 
 	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
 		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
@@ -256,7 +248,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    //create all the tasks
-	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, validationReport.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle)));
+	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle)));
 
 	}
 
@@ -265,11 +257,11 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), validationReport.getId(), user);
+	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), report.getId(), user);
 
-	validationReport.setAverageAgreement(calculateAverageAgreement(resultRows));
+        report.setAverageAgreement(calculateAverageAgreement(resultRows));
 
-	getPersistenceManager().makePersistent(validationReport);
+	getPersistenceManager().makePersistent(report);
     }
 
     /**
@@ -300,7 +292,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
      * FleissKappa per Document per Code (as Codes are not Categories).
      * @throws UnauthorizedException 
      */
-    private void calculateFleissKappa(ValidationReport validationReport) throws Exception {
+    private void calculateFleissKappa(Report report) throws Exception {
 	List<DeferredAlgorithmEvaluation> deferredEvals = new ArrayList<>();
 	
 	//get all Codes
@@ -320,27 +312,27 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	headerCells.add("Document \\ Code");
 	headerCells.add("Average All Codes");
 	headerCells.addAll(codeNamesAndIds.keySet());
-	
-	validationReport.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
+
+        report.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
 
 	//Create Deferred Evaluations
 	for(String docName : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    Logger.getLogger("logger").log(Level.INFO, "Create Deferred Fleiss Kappa Task for Document "+docName);
-	    deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, validationReport.getId(), evalUnit));
+	    deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, report.getId(), evalUnit));
 	}
 	
 	//Run deferred Evaluations
 	taskQueue.launchListInTaskQueue(deferredEvals);
 	
 	int amountOfValidationResults = sameDocumentsFromDifferentRatersMap.keySet().size();
-	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, validationReport.getId(), user);
+	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, report.getId(), user);
 	List<String> avgHeaderCells = new ArrayList<>();
 	avgHeaderCells.add("");
 	avgHeaderCells.addAll(sameDocumentsFromDifferentRatersMap.keySet());
-	validationReport.setAverageAgreement(calculateAverageAgreementPerRow(resultRows));
-	validationReport.setAverageAgreementHeader(new TabularValidationReportRow(avgHeaderCells));
+        report.setAverageAgreement(calculateAverageAgreementPerRow(resultRows));
+        report.setAverageAgreementHeader(new TabularValidationReportRow(avgHeaderCells));
 	
-	getPersistenceManager().makePersistent(validationReport);
+	getPersistenceManager().makePersistent(report);
     }
 
     /**
