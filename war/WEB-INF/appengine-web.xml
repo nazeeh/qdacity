@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-<<<<<<< HEAD
   <application>qdacity-tutorial</application>
   <version>9</version>
-=======
-  <application>qdacity-app</application>
-  <version>13</version>
->>>>>>> 88e7f4cfef64a311a0ed1a8a70cd3a4ed2473730
   <ssl-enabled>true</ssl-enabled>
   <warmup-requests-enabled>true</warmup-requests-enabled>
   <inbound-services>
