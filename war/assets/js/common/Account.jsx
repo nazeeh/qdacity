@@ -17,6 +17,29 @@ export default class Account extends React.Component {
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(
 			this
 		);
+
+		this.redirectToSettings = this.redirectToSettings.bind(
+			this
+		);
+
+		this.updateFromProps(props);
+	}
+
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateFromProps(nextProps);
+	}
+
+	updateFromProps(targetedProps) {
+		this.authenticationProvider = targetedProps.auth.authentication;
+		const _this = this;
+		this.authenticationProvider.getProfile().then(function(profile) {
+			_this.setState({
+				name: profile.name,
+				email: profile.email,
+				picSrc: profile.thumbnail
+			});
+		});
 	}
 
 	/**
@@ -24,6 +47,13 @@ export default class Account extends React.Component {
 	 */
 	redirectToPersonalDashbaord() {
 		this.props.history.push('/PersonalDashboard');
+	}
+
+	/**
+	 * Redirects to the personal dashboard
+	 */
+	redirectToSettings() {
+		this.props.history.push('/Settings');
 	}
 
 	onSignOut() {
@@ -69,6 +99,11 @@ export default class Account extends React.Component {
 						</div>
 						<div className="col-xs-7">
 							<span id="currentUserName">{this.props.auth.userProfile.name}</span>
+							<span> </span><span id="settingsIcon">
+								<a href="#" onClick={this.redirectToSettings}>
+									<i className="fa fa-cog fa-1x" />
+								</a>
+							</span>
 							<p id="currentUserEmail" className="text-muted small">
 								{this.props.auth.userProfile.email}
 							</p>
