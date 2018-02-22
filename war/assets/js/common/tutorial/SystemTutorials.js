@@ -1,27 +1,24 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-
-/**
- * stepTypes:
- *  0 => a simple notice  => OK //TODO now
- *  1 => notice in a dialog Box => Dialog-Box-Closing + OK //implementation later
- *  2 => Quiz //implementation later
- *  3 => simple Action, press some object on the site //TODO now
- *  4 => go to a certain URL //Todo now
- *  5 => Advanced Action //implementation later
- *
- *
- *
- */
-
-//
-
-
-
+ 
 
 export default class SystemTutorials {
 	constructor(formatMessage) {
 
+
+		/**
+		 * stepTypes:
+		 *  1 => a simple notice  => OK //TODO now
+		 *  2 => notice in a dialog Box => Dialog-Box-Closing + OK //implementation later
+		 *  3 => Quiz //implementation later
+		 *  4 => simple Action, press some object on the site //TODO now
+		 *  5 => go to a certain URL //Todo now
+		 *  6 => Advanced Action //implementation later
+		 */
+		this.stepType={SimpleNotice:1, DialogBoxNotice:2, Quiz:3, SimplePressAction:4, GoToUrlAction: 5, AdvancedAction:6};
+		Object.freeze(this.stepType);
+		
+		
 			this.data=
 			[
 				{
@@ -38,7 +35,7 @@ export default class SystemTutorials {
 						       	{
 							    	stepNr:0,
 							    	text:function(){return formatMessage({id: 'tutorial.tut0.step0.text', defaultMessage: 'Click the New Project Button'})},
-							    	stepType: 3,
+							    	stepType: this.stepType.SimplePressAction,
 										constructStep: function(tutorialEngine) {
 											var newProjectDom=tutorialEngine.d.getElementById("newProject");
 											if(newProjectDom !=null) {
