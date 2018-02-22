@@ -1,6 +1,7 @@
 package com.qdacity.project.metrics.tasks;
 
 import com.google.api.server.spi.auth.common.User;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.Report;
 import com.qdacity.project.metrics.ValidationReport;
@@ -38,5 +39,6 @@ public class DeferredEvaluationValidationReport extends DeferredEvaluation {
         validationReport.setEvaluationUnit(super.getEvalUnit());
         validationReport.setProjectID(super.getValidationProjectsFromUsers().get(0).getProjectID());
         validationReport.setEvaluationType(super.getEvaluationMethod());
+        super.setProjectType(ProjectType.VALIDATION);
         return validationReport;    }
 }

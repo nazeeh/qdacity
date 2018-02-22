@@ -2,7 +2,6 @@ package com.qdacity.project.metrics.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
+
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
@@ -46,6 +45,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
     private final List<Long> docIDs;
     private List<ValidationProject> validationProjectsFromUsers;
     private DeferredAlgorithmTaskQueue taskQueue;
+    private ProjectType projectType;
 
     public DeferredEvaluation(Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
 	super();
@@ -56,6 +56,14 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	this.evalUnit = EvaluationUnit.fromString(unitOfCoding);
 	this.raterIds = IdCsvStringToLongList.convert(raterIds);
 	this.docIDs = IdCsvStringToLongList.convert(docIDsString);
+    }
+
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
+    }
+
+    public ProjectType getProjectType() {
+        return projectType;
     }
 
     public EvaluationMethod getEvaluationMethod() {
@@ -136,14 +144,15 @@ public abstract class DeferredEvaluation implements DeferredTask {
         report.setDetailedAgreementHeader(fmeasureHeaderRow);
 	try {
 
-	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
-	    for (ValidationProject validationProject : validationProjectsFromUsers) {
-		DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, report.getId(), user, evalUnit);
-		Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
-		taskQueue.launchInTaskQueue(deferredValidation);
-	    }
-
-	    taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), report.getId(), user);
+	    if (this.projectType == ProjectType.VALIDATION) {
+            //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
+            for (ValidationProject validationProject : validationProjectsFromUsers) {
+                DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, report.getId(), user, evalUnit);
+                Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
+                taskQueue.launchInTaskQueue(deferredValidation);
+            }
+            taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), report.getId(), user);
+        }
 
 	    aggregateDocAgreement(report);
 
@@ -229,8 +238,11 @@ public abstract class DeferredEvaluation implements DeferredTask {
     private void calculateKrippendorffsAlpha(Report report) throws UnauthorizedException, ExecutionException, InterruptedException {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
-	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
-
+	Long codeSystemId = null;
+	if (projectType == ProjectType.VALIDATION) {
+        codeSystemId = validationProjectsFromUsers.get(0).getCodesystemID();
+    }
+    Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(codeSystemId, user);
 	List<String> tableHead = new ArrayList<>();
 	List<String> tableAverageHead = new ArrayList<>();
 	tableHead.add("Documents \\ Codes");
@@ -242,14 +254,18 @@ public abstract class DeferredEvaluation implements DeferredTask {
         report.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
         report.setAverageAgreementHeader(new TabularValidationReportRow(tableAverageHead));
 
-	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
-		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
+        Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = null;
+        if (projectType == ProjectType.VALIDATION) {
+            sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
+        }
+
 
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    //create all the tasks
-	    kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle)));
-
+        if (projectType == ProjectType.VALIDATION) {
+            kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle)));
+        }
 	}
 
 	//Now launch all the Tasks
@@ -294,20 +310,26 @@ public abstract class DeferredEvaluation implements DeferredTask {
      */
     private void calculateFleissKappa(Report report) throws Exception {
 	List<DeferredAlgorithmEvaluation> deferredEvals = new ArrayList<>();
-	
+	Long codeSystemId = null;
+	int amountRatersSize = 0;
+	if (projectType == ProjectType.VALIDATION) {
+        codeSystemId = validationProjectsFromUsers.get(0).getCodesystemID();
+        amountRatersSize = validationProjectsFromUsers.size();
+    }
 	//get all Codes
-	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(validationProjectsFromUsers.get(0).getCodesystemID(), user);
+	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(codeSystemId, user);
 	
 	//Amount Raters
-	int amountRaters = validationProjectsFromUsers.size();
+	int amountRaters = amountRatersSize;
 	if(amountRaters < 2) {
 	    throw new Exception("With less than two raters, there is no valid Fleiss Kappa Evaluation possible.");
 	}
 	
 	//get all Document Ids from every Rater
-	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap
-		= TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
-
+	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = null;
+	if (projectType == ProjectType.VALIDATION) {
+        sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
+    }
 	List<String> headerCells = new ArrayList<>();
 	headerCells.add("Document \\ Code");
 	headerCells.add("Average All Codes");
@@ -317,9 +339,11 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
 	//Create Deferred Evaluations
 	for(String docName : sameDocumentsFromDifferentRatersMap.keySet()) {
-	    Logger.getLogger("logger").log(Level.INFO, "Create Deferred Fleiss Kappa Task for Document "+docName);
-	    deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, report.getId(), evalUnit));
-	}
+        Logger.getLogger("logger").log(Level.INFO, "Create Deferred Fleiss Kappa Task for Document " + docName);
+        if (projectType == ProjectType.VALIDATION) {
+            deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, report.getId(), evalUnit));
+        }
+    }
 	
 	//Run deferred Evaluations
 	taskQueue.launchListInTaskQueue(deferredEvals);
