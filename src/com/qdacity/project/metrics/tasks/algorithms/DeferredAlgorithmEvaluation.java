@@ -11,11 +11,12 @@ import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.EvaluationUnit;
+import com.qdacity.project.metrics.Result;
 import com.qdacity.project.metrics.ValidationResult;
 
 /**
  * Template class for DeferredTasks running an EvaluationAlgorithm which
- * produces a ValidationResult
+ * produces a Result
  */
 public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
 
@@ -28,7 +29,7 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     protected final List<Long> textDocumentIds;
     protected List<TextDocument> textDocuments;
 
-    protected ValidationResult valResult;
+    protected Result valResult;
 
     public DeferredAlgorithmEvaluation(ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit, List<Long> textDocumentIds) {
 	this.validationProject = validationProject;
@@ -62,9 +63,9 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
      * reportRow is missing. Set the reportRow in this validationResult and make
      * sure to persist it again.
      *
-     * @return the newly created and initially persisted ValidationResult
+     * @return the newly created and initially persisted Result
      */
-    protected ValidationResult makeNextValidationResult() {
+    protected Result makeNextValidationResult() {
 	ValidationResult newResult = new ValidationResult();
 	newResult.setRevisionID(validationProject.getRevisionID());
 	newResult.setValidationProjectID(validationProject.getId());

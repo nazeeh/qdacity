@@ -13,7 +13,7 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.ValidationEndpoint;
-import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.Result;
 
 /**
  * Wrapper for com.google.appengine.api.taskqueue for easier usage in the
@@ -63,7 +63,7 @@ public class DeferredAlgorithmTaskQueue {
      * @throws UnauthorizedException
      * @throws InterruptedException
      */
-    public List<ValidationResult> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
+    public List<? extends Result> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
 	if (amountValidationProjects == 0) {
 	    return null;
 	}
@@ -74,7 +74,7 @@ public class DeferredAlgorithmTaskQueue {
 	    future.get();
 	}
 	// Poll every 10 seconds. TODO: find better solution
-	List<ValidationResult> valResults = new ArrayList<>();
+	List<? extends Result> valResults = new ArrayList<>();
 		while (valResults.size() != amountValidationProjects || !reportRowsExist(valResults)) {
 			// checking if all validationReports exists. If yes tasks must have finished.
 			ValidationEndpoint ve = new ValidationEndpoint();
@@ -90,8 +90,8 @@ public class DeferredAlgorithmTaskQueue {
 
     }
 
-	private boolean reportRowsExist(List<ValidationResult> valResults) {
-		for (ValidationResult validationResult : valResults) {
+	private boolean reportRowsExist(List<? extends Result> valResults) {
+		for (Result validationResult : valResults) {
 			if (validationResult.getReportRow() == null) {
 				Logger.getLogger("logger").log(Level.INFO, " All results as entities in the DB, but the reportRow has not been written for " + validationResult.getId());
 				return false;

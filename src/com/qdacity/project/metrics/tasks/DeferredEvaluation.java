@@ -178,15 +178,18 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	Map<Long, String> documentNames = new HashMap<>();
 
 	ValidationEndpoint ve = new ValidationEndpoint();
-	List<ValidationResult> validationResults = ve.listValidationResults(report.getId(), user);
-	Logger.getLogger("logger").log(Level.WARNING, " So many results " + validationResults.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
-	for (ValidationResult validationResult : validationResults) {
-	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(validationResult.getReportRow()));
+	List<? extends Result> results = null;
+
+	if (projectType == ProjectType.VALIDATION) results = ve.listValidationResults(report.getId(), user);
+
+	Logger.getLogger("logger").log(Level.WARNING, " So many results " + results.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
+	for (Result result : results) {
+	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(result.getReportRow()));
 	    if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) {
 		validationCoderAvg.add(resultParagraphAgreement);
 	    }
 
-	    List<DocumentResult> docResults = ve.listDocumentResults(validationResult.getId(), user);
+	    List<DocumentResult> docResults = ve.listDocumentResults(result.getId(), user);
 
 	    for (DocumentResult documentResult : docResults) {
 				Long revisionDocumentID = documentResult.getOriginDocumentID();
@@ -273,7 +276,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), report.getId(), user);
+	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), report.getId(), user);
 
         report.setAverageAgreement(calculateAverageAgreement(resultRows));
 
@@ -287,14 +290,14 @@ public abstract class DeferredEvaluation implements DeferredTask {
      * @param myRows the rows where you want to calculate the average
      * @return a new row containing the average
      */
-    private TabularValidationReportRow calculateAverageAgreement(List<ValidationResult> myRows) {
+    private TabularValidationReportRow calculateAverageAgreement(List<? extends Result> myRows) {
 	List<String> averageColumns = new ArrayList<>();
 	averageColumns.add("AVERAGE");
 	if (myRows.size() > 0) {
 	    List<String> masterCells = new TabularValidationReportRow(myRows.get(0).getReportRow()).getCells();
 	    for (int i = 1; i < masterCells.size(); i++) { //SKIP first cell as it is just label
 		double sum = 0;
-		for (ValidationResult row : myRows) {
+		for (Result row : myRows) {
 		    sum += new Double(new TabularValidationReportRow(row.getReportRow()).getCells().get(i));
 		}
 		double average = sum / myRows.size();
@@ -349,7 +352,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	taskQueue.launchListInTaskQueue(deferredEvals);
 	
 	int amountOfValidationResults = sameDocumentsFromDifferentRatersMap.keySet().size();
-	List<ValidationResult> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, report.getId(), user);
+	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, report.getId(), user);
 	List<String> avgHeaderCells = new ArrayList<>();
 	avgHeaderCells.add("");
 	avgHeaderCells.addAll(sameDocumentsFromDifferentRatersMap.keySet());
@@ -364,10 +367,10 @@ public abstract class DeferredEvaluation implements DeferredTask {
      * @param resultRows
      * @return 
      */
-    private TabularValidationReportRow calculateAverageAgreementPerRow(List<ValidationResult> resultRows) {
+    private TabularValidationReportRow calculateAverageAgreementPerRow(List<? extends Result> resultRows) {
 	List<String> averagesPerRow = new ArrayList<>();
 	averagesPerRow.add("AVERAGE");
-	for(ValidationResult row : resultRows) {
+	for(Result row : resultRows) {
 	    TabularValidationReportRow rowForAvg = new TabularValidationReportRow(row.getReportRow());
 	    double sum = 0;
 	    for(int i = 1; i < rowForAvg.getCells().size(); i++){
