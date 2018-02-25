@@ -421,8 +421,6 @@ export default class UmlEditor extends React.Component {
 	 * Updates the meta-model of the code in the database. This method will insert a new meta-model, which ensures, that the code is mapped in the uml-editor.
 	 */
 	makeCodeVisibleInEditor(codeId) {
-		const _this = this;
-
 		const code = this.getCodeByCodeId(codeId);
 
 		const newMMElementIds = [];
@@ -445,10 +443,9 @@ export default class UmlEditor extends React.Component {
 
 		code.mmElementIDs = newMMElementIds;
 
-		CodesEndpoint.updateCode(code).then(resp => {
+		this.props.syncService.codes.updateCode(code).then(resp => {
 			code.mmElementIDs = resp.mmElementIDs;
-
-			_this.props.updateCode(code);
+			this.props.updateCode(code);
 		});
 	}
 

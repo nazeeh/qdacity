@@ -4,11 +4,10 @@ import styled from 'styled-components';
 
 import CourseEndPoint from '../../../common/endpoints/CourseEndpoint';
 
+import { BtnDefault } from '../../../common/styles/Btn.jsx';
 import { ListMenu } from '../../../common/styles/ItemList.jsx';
 
 import { StyledSearchField } from '../../../common/styles/SearchBox.jsx';
-
-import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 export default class InviteUserField extends React.Component {
 	constructor(props) {
@@ -47,7 +46,7 @@ export default class InviteUserField extends React.Component {
 				alertify.error(
 					formatMessage(
 						{
-							id: 'inviteuserfield.invited',
+							id: 'inviteuserfield.not_found',
 							defaultMessage: '{email} was not found'
 						},
 						{
@@ -60,7 +59,7 @@ export default class InviteUserField extends React.Component {
 
 	render() {
 		const { formatMessage } = IntlProvider.intl;
-
+		const _this = this;
 		const searchFieldPlaceholder = formatMessage({
 			id: 'inviteuserfield.search',
 			defaultMessage: 'User Email'

@@ -27,9 +27,14 @@ const BtnSm = Btn.extend`
 `;
 
 const BtnDefault = BtnSm.extend`
-	color: ${props => props.theme.fgDefault};
-	background-color: ${props => props.theme.bgDefault};
-	border-color: ${props => props.theme.borderDefault};
+	color: ${props =>
+		props.active ? props.theme.fgDefaultHighlight : props.theme.fgDefault};
+	background-color: ${props =>
+		props.active ? props.theme.bgDefaultHighlight : props.theme.bgDefault};
+	border-color: ${props =>
+		props.active
+			? props.theme.borderDefaultHighlight
+			: props.theme.borderDefault};
 	&:hover {
 		background-color: ${props => props.theme.borderDefaultHighlight};
 		border-color: ${props => props.theme.borderDefaultHighlight};

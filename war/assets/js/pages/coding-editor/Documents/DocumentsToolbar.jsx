@@ -96,7 +96,7 @@ export default class DocumentsToolbar extends React.Component {
 		doc.text = ' '; // can not be empty
 		doc.title = title;
 		doc.positionInOrder = this.props.getNewDocumentPosition();
-
+		doc.projectType = this.props.projectType;
 		DocumentsEndpoint.insertTextDocument(doc).then(function(resp) {
 			_this.props.addDocument(resp);
 		});
@@ -140,7 +140,7 @@ export default class DocumentsToolbar extends React.Component {
 			var doc = documents[i];
 			var elements = doc.text;
 
-			var foundArray = $(doc.text).find("coding[id='" + codingID + "']");
+			var foundArray = $(doc.text).find('coding[id=\'' + codingID + '\']');
 			if (foundArray.length > 0) {
 				this.view.setActiveDocument(doc.id);
 			}

@@ -43,7 +43,7 @@ export default class ExerciseList extends React.Component {
 
 	init() {
 		if (!this.userPromise) {
-			this.userPromise = this.props.account.getCurrentUser();
+			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(
 				this.props.termCourse.getId()
 			);
@@ -72,6 +72,7 @@ export default class ExerciseList extends React.Component {
 	showNewExerciseModal() {
 		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
+		var exerciseTypes = ['Codebook'];
 
 		var modal = new CustomForm(
 			formatMessage(
@@ -83,6 +84,16 @@ export default class ExerciseList extends React.Component {
 			)
 		);
 		modal.addDropDown(this.state.projects);
+
+		modal.addSelect(
+			'exerciseType',
+			exerciseTypes,
+			formatMessage({
+				id: 'exercise.exerciseType',
+				defaultMessage: 'Exercise Type'
+			})
+		);
+
 		modal.addTextInput(
 			'name',
 			formatMessage({
@@ -93,16 +104,21 @@ export default class ExerciseList extends React.Component {
 			''
 		);
 		modal.showModal().then(function(data) {
-			_this.createNewExercise(data.name, data.SelectedRevisionID);
+			_this.createNewExercise(
+				data.name,
+				data.exerciseType,
+				data.SelectedRevisionID
+			);
 		});
 	}
 
-	createNewExercise(name, projectRevisionID) {
+	createNewExercise(name, exerciseType, projectRevisionID) {
 		var _this = this;
 		var exercise = {};
 		var termCourseID = this.props.termCourse.id;
 		var exercises = this.state.exercises;
 		exercise.name = name;
+		exercise.exerciseType = exerciseType;
 		exercise.projectRevisionID = projectRevisionID;
 		exercise.termCourseID = termCourseID;
 		ExerciseEndpoint.insertExercise(exercise).then(function(resp) {
@@ -156,9 +172,17 @@ export default class ExerciseList extends React.Component {
 		);
 	}
 
+	exerciseClick(exercise) {
+		this.props.history.push('/ExercisePage?exercise=' + exercise.id);
+	}
+
 	renderExercise(exercise, index) {
 		return (
-			<StyledListItemDefault key={index} className="clickable">
+			<StyledListItemDefault
+				key={index}
+				className="clickable"
+				onClick={this.exerciseClick.bind(this, exercise)}
+			>
 				<span> {exercise.name} </span>
 				<div>
 					<StyledListItemBtn
@@ -177,8 +201,7 @@ export default class ExerciseList extends React.Component {
 	render() {
 		var _this = this;
 
-		if (!this.props.account.getProfile() || !this.props.account.isSignedIn())
-			return null;
+		if (!this.props.auth.authentication.isSignedIn()) return null;
 
 		return (
 			<div>

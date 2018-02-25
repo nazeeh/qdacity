@@ -1,11 +1,18 @@
 const gulp = require('gulp');
-const prettierEslint = require('gulp-prettier-eslint');
+const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpack = require('webpack-stream');
 const uglify = require('gulp-uglify');
 const jasmine = require('gulp-jasmine');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
+const babel = require('gulp-babel');
+const path = require('path');
+const process = require('process');
+const filterBy = require('gulp-filter-by');
+const transform = require('gulp-transform');
+const rename = require('gulp-rename');
+const jsonConcat = require('gulp-json-concat');
 require('babel-core/register');
 
 const config = require('./api_config.json');
@@ -18,6 +25,10 @@ function handleError(err) {
 function setConfig() {
 	if (argv.api_path) config.api_path = argv.api_path; //CLI args overwrite JSON config
 	if (argv.local) config.api_path = 'http://localhost:8888/_ah/api';
+	if (argv.slocal) config.api_path = 'https://localhost:8888/_ah/api';
+	console.log('Configured server adress: ' + config.api_path);
+	if (argv.local || argv.slocal) config.sync_service = 'http://localhost:8080';
+	console.log('Configured rts server adress: ' + config.sync_service);
 	if (argv.api_version) config.api_version = argv.api_version;
 	if (argv.client_id) config.client_id = argv.client_id;
 }
@@ -41,19 +52,97 @@ gulp.task('format', () => {
 		.pipe(gulp.dest('./'));
 });
 
+//gulp.task('extract-messages', () => {});
+gulp.task('extract-messages', () =>
+	gulp
+		.src('./assets/js/**/*.{js,jsx}', { base: './' })
+		.pipe(
+			babel({
+				presets: ['es2015', 'react'],
+				plugins: [
+					//'transform-decorators',
+					[
+						'react-intl',
+						{
+							extractSourceLocation: true
+						}
+					],
+					[
+						path.join(process.cwd(), '..', 'localization/src/index.js'),
+						{
+							debug: true
+						}
+					]
+				]
+			})
+		)
+		.pipe(filterBy(file => file['babel']['react-intl']['messages'].length > 0))
+		.pipe(
+			transform('utf8', (content, file) => {
+				const messages = file['babel']['react-intl']['messages'];
+				return JSON.stringify(messages, null, 2);
+			})
+		)
+		//.pipe(trim())
+		.pipe(rename({ extname: '.json' }))
+		.pipe(gulp.dest('./messages'))
+);
+
+gulp.task('combine-messages', ['extract-messages'], () =>
+	gulp
+		.src('./messages/**/*.json', { base: './' })
+		.pipe(
+			jsonConcat('en.json', function(data) {
+				const messages = {};
+				for (const messageIdents of Object.values(data)) {
+					for (const messageIdent of messageIdents) {
+						if (messages[messageIdent.id] != undefined) {
+							if (messages[messageIdent.id] == messageIdent.defaultMessage)
+								continue;
+							throw new Error(
+								`Colliding message identifiers found: ${messageIdent.id}`
+							);
+						}
+						messages[messageIdent.id] = messageIdent.defaultMessage;
+					}
+				}
+				return new Buffer(JSON.stringify(messages, null, 2));
+			})
+		)
+		.on('error', error => console.error(error))
+		.pipe(gulp.dest('./assets/messages'))
+);
+
+gulp.task('generate-language-template', ['combine-messages'], () =>
+	gulp
+		.src('./assets/messages/en.json', { base: './' })
+		.pipe(
+			jsonConcat('en.json', function(data) {
+				const messages = data.en; // en.json contents
+				for (const key in messages) {
+					messages[key] = 'TRαNsLÄTəD “STRiNG”';
+				}
+				return new Buffer(JSON.stringify(messages, null, 2));
+			})
+		)
+		.on('error', error => console.error(error))
+		.pipe(rename({ basename: 'test' }))
+		.pipe(gulp.dest('./assets/messages'))
+);
+
 gulp.task('bundle-task', function() {
 	setConfig();
 	return (gulp
-			.src('') //doesn't matter what to put as src,
-			//since webpack.config fetches from entry points
-			.pipe(webpack(require('./webpack.config.js')))
-			.on('error', handleError)
-			.pipe(replace('$API_PATH$', config.api_path))
-			.pipe(replace('$API_VERSION$', config.api_version))
-			.pipe(replace('$CLIENT_ID$', config.client_id))
-			.pipe(replace('$SYNC_SERVICE$', config.sync_service))
-			.pipe(gulp.dest('dist/js/'))
-			.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+		.src('') //doesn't matter what to put as src,
+	//since webpack.config fetches from entry points
+		.pipe(webpack(require('./webpack.config.js')))
+		.on('error', handleError)
+		.pipe(replace('$API_PATH$', config.api_path))
+		.pipe(replace('$API_VERSION$', config.api_version))
+		.pipe(replace('$CLIENT_ID$', config.client_id))
+		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(gulp.dest('dist/js/'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });
 
 gulp.task('set-react-production', function() {
@@ -85,6 +174,9 @@ gulp.task('minify', function() {
 					hoist_funs: true,
 					collapse_vars: true,
 					drop_console: true
+				},
+				output: {
+					ascii_only: true
 				}
 			})
 		)
@@ -100,22 +192,22 @@ gulp.task('minify', function() {
 gulp.task('watch', function() {
 	setConfig();
 	return (gulp
-			.src('') //doesn't matter what to put as src,
-			//since webpack.config fetches from entry points
-			.pipe(
-				webpack(
-					Object.assign(require('./webpack.config.js'), {
-						watch: true
-					})
-				)
+		.src('') //doesn't matter what to put as src,
+	//since webpack.config fetches from entry points
+		.pipe(
+			webpack(
+				Object.assign(require('./webpack.config.js'), {
+					watch: true
+				})
 			)
-			.on('error', handleError)
-			.pipe(replace('$API_PATH$', config.api_path))
-			.pipe(replace('$API_VERSION$', config.api_version))
-			.pipe(replace('$CLIENT_ID$', config.client_id))
-			.pipe(replace('$SYNC_SERVICE$', config.sync_service))
-			.pipe(gulp.dest('dist/js/'))
-			.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+		)
+		.on('error', handleError)
+		.pipe(replace('$API_PATH$', config.api_path))
+		.pipe(replace('$API_VERSION$', config.api_version))
+		.pipe(replace('$CLIENT_ID$', config.client_id))
+		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(gulp.dest('dist/js/'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });
 
 gulp.task('unit-tests', () =>

@@ -23,13 +23,13 @@ const StyledDocumentItem = styled.a`
 		text-decoration: none;
 		cursor: pointer;
 		background-color: ${props =>
-			props.isDragging
-				? props.theme.bgPrimary
-				: props.theme.bgPrimaryHighlight};
+		props.isDragging
+			? props.theme.bgPrimary
+			: props.theme.bgPrimaryHighlight};
 		color: ${props =>
-			props.isDragging
-				? props.theme.fgPrimary
-				: props.theme.fgPrimaryHighlight};
+		props.isDragging
+			? props.theme.fgPrimary
+			: props.theme.fgPrimaryHighlight};
 	}
 `;
 

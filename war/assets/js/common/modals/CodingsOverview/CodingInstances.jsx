@@ -15,6 +15,11 @@ export const StyledDocumentTitle = styled.div`
 	font-weight: bold;
 `;
 
+export const StyledCodingInstances = styled.div`
+	max-height: 800px;
+	overflow-y: auto;
+`;
+
 export default class CodingInstances extends React.Component {
 	constructor(props) {
 		super(props);
@@ -51,7 +56,7 @@ export default class CodingInstances extends React.Component {
 			var elements = doc.text;
 			var found = $('coding', elements);
 			var foundArray = $(
-				"coding[code_id='" + this.props.codeID + "']",
+				'coding[code_id=\'' + this.props.codeID + '\']',
 				elements
 			).map(function() {
 				var tmp = {};
@@ -90,6 +95,6 @@ export default class CodingInstances extends React.Component {
 
 	render() {
 		const codingInstances = this.renderList();
-		return <div>{codingInstances}</div>;
+		return <StyledCodingInstances>{codingInstances}</StyledCodingInstances>;
 	}
 }

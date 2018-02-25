@@ -7,17 +7,18 @@ import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.User;
 
 public class UserEndpointTestHelper {
-	static public void addUser(String email, String givenName, String surName, com.google.appengine.api.users.User loggedInUser) {
+	static public User addUser(String email, String givenName, String surName, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		User user = new User();
 		user.setEmail(email);
 		user.setGivenName(givenName);
 		user.setSurName(surName);
 
 		UserEndpoint ue = new UserEndpoint();
-		ue.insertUser(user, loggedInUser);
+		return ue.insertUser(user, loggedInUser);
 	}
 
-	static public User getUser(com.google.appengine.api.users.User loggedInUser) {
+
+	static public User getUser(com.google.api.server.spi.auth.common.User loggedInUser) {
 		UserEndpoint ue = new UserEndpoint();
 		User user = null;
 		try {
@@ -28,4 +29,5 @@ public class UserEndpointTestHelper {
 		}
 		return user;
 	}
+
 }

@@ -9,14 +9,15 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.metamodel.MetaModelEntity;
 
 /**
@@ -27,13 +28,11 @@ import com.qdacity.metamodel.MetaModelEntity;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class MetaModelEntityEndpoint {
 	
-	@ApiMethod(name = "metaModelEntity.listEntities",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "metaModelEntity.listEntities")
 	public List<MetaModelEntity> listEntities( @Named("metaModelId") Long metaModelId, User user) throws UnauthorizedException {
 
 		if (user == null) throw new UnauthorizedException("User not authorized");
@@ -69,10 +68,7 @@ public class MetaModelEntityEndpoint {
 	 * @return the inserted entity
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "metaModelEntity.insertMetaModelEntity",
-			scopes = { Constants.EMAIL_SCOPE },
-			clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-			audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "metaModelEntity.insertMetaModelEntity")
 	public MetaModelEntity insertMetaModelEntity(MetaModelEntity metaModelEntity, User user) throws UnauthorizedException {
 
 		Authorization.checkAuthorization(metaModelEntity, user);

@@ -14,5 +14,9 @@
         <property name="changeType" direction="asc"/>
         <property name="objectType" direction="asc"/>
         <property name="datetime" direction="asc"/>
-    </datastore-index>
+	</datastore-index>
+	<datastore-index kind="Event" ancestor="false" source="manual">
+		<property name="eventType" direction="asc"/>
+		<property name="datetime" direction="asc"/>
+	</datastore-index>
 </datastore-indexes>

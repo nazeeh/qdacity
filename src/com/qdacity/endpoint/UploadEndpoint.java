@@ -19,14 +19,16 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.rtf.RTFParser;
 import org.xml.sax.SAXException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.users.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.upload.Upload;
 
@@ -36,7 +38,8 @@ import com.qdacity.upload.Upload;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class UploadEndpoint {
 
 	/**
@@ -48,12 +51,7 @@ public class UploadEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(
-		name = "upload.insertUpload",
-		path = "upload",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	@ApiMethod(name = "upload.insertUpload", path = "upload")
 	public TextDocument insertUpload(Upload upload, User user) throws UnauthorizedException {
 		// FIXME authorization check
 		PersistenceManager mgr = getPersistenceManager();
@@ -73,7 +71,7 @@ public class UploadEndpoint {
 			document.setProjectID(upload.getProject());
 			document.setText(new Text(html));
 			document.setTitle(upload.getFileName());
-
+			document.setProjectType(ProjectType.PROJECT);
 			TextDocumentEndpoint tde = new TextDocumentEndpoint();
 
 			tde.insertTextDocument(document, user);

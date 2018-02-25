@@ -12,6 +12,7 @@ import Participants from './Participants/Participants.jsx';
 import Exercises from './Exercises/Exercises.jsx';
 import TitleRow from './TitleRow/TitleRow.jsx';
 import Confirm from '../../common/modals/Confirm';
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 
 const StyledNewPrjBtn = styled.div`
 	padding-left: 5px;
@@ -53,7 +54,7 @@ export default class TermCourseConfig extends React.Component {
 
 	init() {
 		if (!this.userPromise) {
-			this.userPromise = this.props.account.getCurrentUser();
+			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.getTermCoursePromise = CourseEndpoint.getTermCourse(
 				this.state.termCourse.id
 			);
@@ -68,7 +69,7 @@ export default class TermCourseConfig extends React.Component {
 		var _this = this;
 		var isUserParticipant = false;
 		this.userPromise.then(function(user) {
-			var isTermCourseOwner = _this.props.account.isTermCourseOwner(
+			var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
 				user,
 				_this.state.termCourse.getId()
 			);
@@ -170,15 +171,20 @@ export default class TermCourseConfig extends React.Component {
 			return (
 				<Exercises
 					termCourse={this.state.termCourse}
-					account={this.props.account}
+					auth={this.props.auth}
+					history={this.props.history}
 				/>
 			);
 		}
 	}
 
 	render() {
-		if (!this.props.account.getProfile() || !this.props.account.isSignedIn())
-			return null;
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		) {
+			return <UnauthenticatedUserPanel history={this.props.history} />;
+		}
 		this.init();
 		var termCourse = this.state.termCourse;
 		return (

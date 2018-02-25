@@ -28,8 +28,7 @@ export default class ReCodeBtn extends React.Component {
 							' Once authorized you will see your copy on your dashboard.'
 					})
 				).showModal();
-			})
-			.catch(handleBadResponse);
+			});
 	}
 
 	render() {

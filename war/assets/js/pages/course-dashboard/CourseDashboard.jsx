@@ -10,6 +10,8 @@ import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import Teachers from './Teachers/Teachers.jsx';
 import TitleRow from './TitleRow/TitleRow.jsx';
 
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+
 const StyledDashboard = styled.div`
 	margin-top: 70px;
 	margin-left: auto;
@@ -45,7 +47,12 @@ export default class CourseDashboard extends React.Component {
 		$('body').css({
 			overflow: 'auto'
 		});
+
+		this.authenticationProvider = props.auth.authentication;
+
+		const _this = this;
 	}
+
 	setCourse(course) {
 		this.setState({
 			course: course
@@ -57,12 +64,11 @@ export default class CourseDashboard extends React.Component {
 		var _this = this;
 		var id = term.id;
 		var course = this.state.course;
-		_this.props.account.getCurrentUser().then(function(resp) {
+		this.authenticationProvider.getCurrentUser().then(function(resp) {
 			term.participants.push(resp.id);
 			term.isUserParticipant = true;
-			_this.setState({
-				course: course
-			});
+			_this.state.course = course;
+			_this.setState(_this.state);
 		});
 	}
 
@@ -73,14 +79,13 @@ export default class CourseDashboard extends React.Component {
 		var course = this.state.course;
 		term.participants.splice(term.participants.indexOf(term.id), 1);
 		term.isUserParticipant = false;
-		_this.setState({
-			course: course
-		});
+		_this.state.course = course;
+		_this.setState(_this.state);
 	}
 
 	init() {
 		if (!this.userPromise) {
-			this.userPromise = this.props.account.getCurrentUser();
+			this.userPromise = this.authenticationProvider.getCurrentUser();
 			this.setUserRights();
 		}
 	}
@@ -88,20 +93,21 @@ export default class CourseDashboard extends React.Component {
 	setUserRights() {
 		var _this = this;
 		this.userPromise.then(function(user) {
-			var isCourseOwner = _this.props.account.isCourseOwner(
+			var isCourseOwner = _this.props.auth.authorization.isCourseOwner(
 				user,
 				_this.state.course.getId()
 			);
-			_this.setState({
-				isCourseOwner: isCourseOwner
-			});
+			_this.state.isCourseOwner = isCourseOwner;
 		});
 	}
 
 	render() {
-		if (!this.props.account.getProfile() || !this.props.account.isSignedIn())
-			return null;
-		this.init();
+		if (
+			!this.props.auth.authState.isUserSignedIn ||
+			!this.props.auth.authState.isUserRegistered
+		) {
+			return <UnauthenticatedUserPanel history={this.props.history} />;
+		}
 
 		return (
 			<StyledDashboard>
@@ -120,7 +126,7 @@ export default class CourseDashboard extends React.Component {
 						</div>
 						<div className="box-body">
 							<TermCourseList
-								account={this.props.account}
+								auth={this.props.auth}
 								addParticipant={this.addParticipant}
 								removeParticipant={this.removeParticipant}
 								course={this.state.course}

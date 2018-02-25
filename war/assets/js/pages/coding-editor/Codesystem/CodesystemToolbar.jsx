@@ -7,7 +7,6 @@ import Prompt from '../../../common/modals/Prompt';
 import { PageView } from '../View/PageView.js';
 
 import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
-import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import Confirm from '../../../common/modals/Confirm';
 import CodingsOverview from '../../../common/modals/CodingsOverview/CodingsOverview';
 
@@ -28,7 +27,13 @@ const StyledBtnStack = styled.div`
 export default class CodesystemToolbar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			userProfile: {
+				name: '',
+				email: '',
+				picSrc: ''
+			}
+		};
 
 		this.insertCode = this.insertCode.bind(this);
 		this.applyCode = this.applyCode.bind(this);
@@ -36,8 +41,20 @@ export default class CodesystemToolbar extends React.Component {
 		this.showCodingsOverview = this.showCodingsOverview.bind(this);
 	}
 
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserProfileStatusFromProps(nextProps);
+	}
+
+	updateUserProfileStatusFromProps(targetedProps) {
+		this.setState({
+			userProfile: targetedProps.userProfile
+		});
+	}
+
 	removeCode(code) {
 		const { formatMessage } = IntlProvider.intl;
+		const _this = this;
 
 		// root should not be removed
 		if (code.codeID == 1) {
@@ -77,91 +94,35 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	applyCode() {
-		var _this = this;
-		var selected = this.props.selected;
-		ProjectEndpoint.incrCodingId(
-			_this.props.projectID,
-			_this.props.projectType
-		).then(function(resp) {
-			var codingID = resp.maxCodingID;
-			var author = _this.props.account.getProfile().getName();
+		const selected = this.props.selected;
+		const author = this.props.userProfile.name;
 
-			_this.props.editorCtrl.setCoding(
-				codingID,
-				selected.codeID,
-				selected.name,
-				author
-			);
-			//_this.props.documentsView.updateCurrentDocument(_this.props.editorCtrl.getHTML());
-			_this.props.documentsView.applyCodeToCurrentDocument(
-				_this.props.editorCtrl.getHTML(),
-				selected
-			);
-			_this.props.updateCodingCount();
-		});
+		this.props.textEditor
+			.setCoding(selected.codeID, selected.name, author)
+			.then(html => {
+				this.props.documentsView.applyCodeToCurrentDocument(html, selected);
+				this.props.updateCodingCount();
+			})
+			.catch(error => {
+				if (error !== 'nothing selected') {
+					console.error(error);
+				}
+			});
 	}
 
 	removeCoding() {
-		var _this = this;
-		var selected = this.props.selected;
-		var slection = _this.props.editorCtrl.removeCoding(selected.codeID);
-		this.splitupCoding(slection, selected.codeID).then(function(value) {
-			_this.props.documentsView.updateCurrentDocument(
-				_this.props.editorCtrl.getHTML()
-			);
-			_this.props.editorCtrl.addCodingBrackets();
-			_this.props.updateCodingCount();
-		});
-	}
-
-	splitupCoding(selection, codeID) {
-		var _this = this;
-		var promise = new Promise(function(resolve, reject) {
-			var anchor = $(selection._sel.anchorNode);
-			var codingID = anchor.prev('coding[code_id=' + codeID + ']').attr('id');
-			if (typeof codingID == 'undefined')
-				codingID = anchor
-					.parentsUntil('p')
-					.parent()
-					.prev()
-					.find('coding[code_id=' + codeID + ']')
-					.last()
-					.attr('id');
-			if (typeof codingID == 'undefined')
-				codingID = anchor
-					.parent()
-					.prev()
-					.find('coding[code_id=' + codeID + ']')
-					.last()
-					.attr('id'); // Case beginning of paragraph to middle of paragraph
-
-			if (typeof codingID != 'undefined') {
-				ProjectEndpoint.incrCodingId(
-					_this.props.projectID,
-					_this.props.projectType
-				).then(function(resp) {
-					anchor
-						.nextAll('coding[id=' + codingID + ']')
-						.attr('id', resp.maxCodingID);
-					anchor
-						.parentsUntil('p')
-						.parent()
-						.nextAll()
-						.find('coding[id=' + codingID + ']')
-						.attr('id', resp.maxCodingID);
-					anchor
-						.parent()
-						.nextAll()
-						.find('coding[id=' + codingID + ']')
-						.attr('id', resp.maxCodingID); // Case beginning of paragraph to middle of paragraph
-					resolve();
-				});
-			} else {
-				resolve();
-			}
-		});
-
-		return promise;
+		const codeID = this.props.selected.codeID;
+		this.props.textEditor
+			.removeCoding(codeID)
+			.then(html => {
+				this.props.documentsView.updateCurrentDocument(html);
+				this.props.updateCodingCount();
+			})
+			.catch(error => {
+				if (error !== 'nothing selected') {
+					console.error(error);
+				}
+			});
 	}
 
 	showCodingsOverview() {

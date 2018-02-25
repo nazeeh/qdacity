@@ -7,17 +7,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
+import com.qdacity.user.LoginProviderType;
 
 public class CodeSystemEndpointTest {
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 
 	@Before
 	public void setUp() {
@@ -31,9 +34,10 @@ public class CodeSystemEndpointTest {
 
 	/**
 	 * Tests if a registered user can create a new code system
+	 * @throws UnauthorizedException 
 	 */
 	@Test
-	public void testCodeSystemInsert() {
+	public void testCodeSystemInsert() throws UnauthorizedException {
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 

@@ -22,27 +22,30 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.PMF;
-import com.qdacity.endpoint.CodeEndpoint;
-import com.qdacity.project.codesystem.Code;
-import com.qdacity.project.codesystem.CodeBookEntry;
-import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 import com.qdacity.umleditor.UmlCodePosition;
+import com.qdacity.user.LoginProviderType;
 
 public class UmlCodePositionEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 
-	private final com.google.appengine.api.users.User testUser = new com.google.appengine.api.users.User("asd@asd.de", "bla", "123456");
+	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 
 	@Before
 	public void setUp() {
 		helper.setUp();
 		
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		try {
+			UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		} catch (UnauthorizedException e) {
+			fail("Could not create a AuthenticatedUser");
+			e.printStackTrace();
+		}
 
  		// Prepare project and codesystem
  		CodeSystemTestHelper.addCodeSystem(1L, testUser);

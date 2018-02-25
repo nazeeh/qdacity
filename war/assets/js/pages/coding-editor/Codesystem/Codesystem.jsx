@@ -15,12 +15,11 @@ import { PageView } from '../View/PageView.js';
 
 import CodesystemToolbar from './CodesystemToolbar.jsx';
 
-import CodesEndpoint from '../../../common/endpoints/CodesEndpoint';
 import SimpleCodesystem from './SimpleCodesystem.jsx';
 
 const StyledCodeSystemView = styled.div``;
 
-const StyledEditorCtrlHeader = styled.div`
+const StyledCodeSystemHeader = styled.div`
 	text-align: center;
 	position: relative;
 	background-color: #e7e7e7;
@@ -54,7 +53,13 @@ export default class Codesystem extends SimpleCodesystem {
 			selected: {},
 			codesystemID: -1,
 			codesystem: [],
-			height: '100px'
+			height: '100px',
+
+			userProfile: {
+				name: '',
+				email: '',
+				picSrc: ''
+			}
 		};
 
 		this.listenerIDs = {};
@@ -72,6 +77,19 @@ export default class Codesystem extends SimpleCodesystem {
 		this.initCodingCount = this.initCodingCount.bind(this);
 		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
 		this.init = this.init.bind(this);
+
+		this.updateUserProfileStatusFromProps(props);
+	}
+
+	// lifecycle hook: update state for rerender
+	componentWillReceiveProps(nextProps) {
+		this.updateUserProfileStatusFromProps(nextProps);
+	}
+
+	updateUserProfileStatusFromProps(targetedProps) {
+		this.setState({
+			userProfile: targetedProps.userProfile
+		});
 	}
 
 	setUmlEditor(umlEditor) {
@@ -97,7 +115,7 @@ export default class Codesystem extends SimpleCodesystem {
 				var selected = {};
 				if (rootCodes.length > 0) selected = rootCodes[0];
 				_this.sortCodes(rootCodes);
-				_this.initCodingCountRecurive(rootCodes);
+				_this.initCodingCount(codes, rootCodes);
 				_this.setState({
 					codesystem: rootCodes,
 					selected: selected,
@@ -136,17 +154,12 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	updateSelected(code, persist) {
-		if (!persist) {
+		if (persist) {
+			this.props.syncService.codes.updateCode(code);
+		} else {
 			Object.assign(this.state.selected, code);
 			this.forceUpdate();
-		} else this.saveAndUpdate(code);
-	}
-
-	saveAndUpdate(code) {
-		var _this = this;
-		CodesEndpoint.updateCode(code).then(function(resp) {
-			_this.updateSelected(resp, false);
-		});
+		}
 	}
 
 	codeRemoved(code) {
@@ -186,7 +199,7 @@ export default class Codesystem extends SimpleCodesystem {
 				relationshipCode.relationshipCode = null;
 				relationshipCode.mmElementIDs = [];
 
-				CodesEndpoint.updateCode(relationshipCode);
+				this.props.syncService.codes.updateCode(relationshipCode);
 			}
 		};
 
@@ -205,10 +218,16 @@ export default class Codesystem extends SimpleCodesystem {
 		this.forceUpdate();
 	}
 
+	codeUpdated(code) {
+		const existingCode = this.getCodeByCodeID(code.codeID);
+		Object.assign(existingCode, code);
+		this.forceUpdate();
+	}
+
 	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
 		// Build the Request Object
 		const code = {
-			author: this.props.account.getProfile().getName(),
+			author: this.state.userProfile.name,
 			name: name,
 			subCodesIDs: [],
 			parentID: this.state.selected.codeID,
@@ -259,24 +278,27 @@ export default class Codesystem extends SimpleCodesystem {
 		this.props.syncService.codes.removeCode(code);
 	}
 
-	initCodingCount() {
-		this.initCodingCountRecurive(this.state.codesystem);
-		this.setState({
-			codesystem: this.state.codesystem
+	initCodingCount(allCodes, rootCodes) {
+		const codeIDs = allCodes.map(code => {
+			return code.codeID;
 		});
+		this.props.documentsView
+			.calculateCodingCount(codeIDs)
+			.then(codingCountMap => {
+				allCodes.forEach(code => {
+					code.codingCount = codingCountMap.get(code.codeID);
+				});
+				this.setState({
+					codesystem: this.state.codesystem
+				});
+			});
 	}
 
-	initCodingCountRecurive(codeSiblings) {
-		var _this = this;
-		codeSiblings.forEach(code => {
-			code.codingCount = this.props.documentsView.calculateCodingCount(
-				code.codeID
-			);
-			if (code.children) _this.initCodingCountRecurive(code.children); // recursion
-		});
-	}
-	updateCodingCount() {
-		this.state.selected.codingCount = this.props.documentsView.calculateCodingCount(
+	async updateCodingCount() {
+		const codingCountMap = await this.props.documentsView.calculateCodingCount([
+			this.state.selected.codeID
+		]);
+		this.state.selected.codingCount = codingCountMap.get(
 			this.state.selected.codeID
 		);
 		this.setState({
@@ -325,14 +347,14 @@ export default class Codesystem extends SimpleCodesystem {
 			var elements = $('<div>' + doc.text + '</div>');
 			var originalText = elements.html();
 			elements
-				.find("coding[code_id='" + codingID + "']")
+				.find('coding[code_id=\'' + codingID + '\']')
 				.contents()
 				.unwrap();
 			var strippedText = elements.html();
 			if (strippedText !== originalText) {
 				doc.text = strippedText;
 				this.props.documentsView.changeDocumentData(doc);
-				if (activeDocId === doc.id) this.props.editorCtrl.setDocumentView(doc);
+				if (activeDocId === doc.id) this.props.textEditor.setHTML(doc.text);
 			}
 		}
 	}
@@ -376,6 +398,9 @@ export default class Codesystem extends SimpleCodesystem {
 				),
 				codeRemoved: syncService.on('codeRemoved', code =>
 					this.codeRemoved(code)
+				),
+				codeUpdated: syncService.on('codeUpdated', code =>
+					this.codeUpdated(code)
 				)
 			};
 		}
@@ -387,6 +412,7 @@ export default class Codesystem extends SimpleCodesystem {
 			syncService.off('codeInserted', this.listenerIDs['codeInserted']);
 			syncService.off('codeRelocated', this.listenerIDs['codeRelocated']);
 			syncService.off('codeRemoved', this.listenerIDs['codeRemoved']);
+			syncService.off('codeUpdated', this.listenerIDs['codeUpdated']);
 		}
 	}
 
@@ -431,29 +457,29 @@ export default class Codesystem extends SimpleCodesystem {
 				: 0);
 		return (
 			<StyledCodeSystemView>
-				<StyledEditorCtrlHeader>
+				<StyledCodeSystemHeader>
 					<b>
 						<FormattedMessage
 							id="codesystemcodesystem"
 							defaultMessage="Code System"
 						/>
 					</b>
-				</StyledEditorCtrlHeader>
+				</StyledCodeSystemHeader>
 				<StyledToolBar>
 					<CodesystemToolbar
 						ref={r => (this.toolbarRef = r)}
 						projectID={this.props.projectID}
 						projectType={this.props.projectType}
 						selected={this.state.selected}
-						account={this.props.account}
 						createCode={this.createCode}
 						removeCode={this.removeCode}
 						updateCodingCount={this.updateCodingCount}
 						toggleCodingView={this.props.toggleCodingView}
-						editorCtrl={this.props.editorCtrl}
+						textEditor={this.props.textEditor}
 						documentsView={this.props.documentsView}
 						pageView={this.props.pageView}
 						getCodeById={this.getCodeById}
+						userProfile={this.props.userProfile}
 					/>
 				</StyledToolBar>
 

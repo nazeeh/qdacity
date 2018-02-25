@@ -40,6 +40,11 @@ const StyledDocumentList = styled.div`
 export default class DocumentsView extends React.Component {
 	constructor(props) {
 		super(props);
+		// create web worker
+		// path is from / to distribution package built with webpack
+		this.codingCountWorker = new Worker(
+			'dist/js/web-worker/codingCountWorker.dist.js'
+		);
 		this.state = {
 			documents: [],
 			selected: -1,
@@ -106,9 +111,8 @@ export default class DocumentsView extends React.Component {
 			} else {
 				DocumentsEndpoint.getDocuments(project_id, project_type)
 					.then(function(items) {
-						for (var i = 0; i < items.length; i++) {
-							_this.addDocument(items[i]);
-						}
+						items = items || [];
+						_this.addAllDocuments(items);
 						resolve();
 					})
 					.catch(function(resp) {
@@ -119,27 +123,31 @@ export default class DocumentsView extends React.Component {
 		return promise;
 	}
 
-	calculateCodingCount(codID) {
-		var codingCount = 0;
-		var documents = this.state.documents;
-		for (var index in documents) {
-			var doc = documents[index];
-			var elements = doc.text;
-			var foundArray = $("coding[code_id='" + codID + "']", elements).map(
-				function() {
-					return $(this).attr('id');
+	// returns a promis that resolves in the coding count value
+	// the calculation is handled asynchronously in web worker
+	async calculateCodingCount(codeIDs) {
+		let _this = this;
+		await this.setupPromise;
+		this.codingCountWorker.postMessage({
+			documents: this.state.documents,
+			codeIDs: codeIDs
+		}); // post a message to our worker
+		return new Promise(function(resolve, reject) {
+			_this.codingCountWorker.addEventListener('message', function handleEvent(
+				event
+			) {
+				// listen for events from the worker
+				let codingCountKeys = Array.from(event.data.keys());
+				console.log(`Results for  ${codingCountKeys} are in`);
+				if (
+					codeIDs.length == codingCountKeys.length &&
+					codeIDs.every((v, i) => v === codingCountKeys[i])
+				) {
+					_this.codingCountWorker.removeEventListener('message', handleEvent);
+					resolve(event.data); // resolve with codingCount for codeID
 				}
-			);
-			var idsCounted = []; // When a coding spans multiple HTML blocks,
-			// then there will be multiple elements with
-			// the same ID
-			for (var j = 0; j < foundArray.length; j++) {
-				if ($.inArray(foundArray[j], idsCounted) != -1) continue;
-				codingCount++;
-				idsCounted.push(foundArray[j]);
-			}
-		}
-		return codingCount;
+			});
+		});
 	}
 
 	toggleIsExpanded() {
@@ -156,6 +164,21 @@ export default class DocumentsView extends React.Component {
 			documents: this.state.documents
 		});
 		this.setActiveDocument(doc.id);
+	}
+
+	// Adds an array of documents to the state
+	// Does not set an active document
+	addAllDocuments(docList) {
+		if (!typeof !docList || !docList.length || docList.length === 0) return;
+
+		for (var i = 0; i < docList.length; i++) {
+			let doc = docList[i];
+			doc.text = doc.text.value;
+			this.state.documents.push(doc);
+		}
+		this.setState({
+			documents: this.state.documents
+		});
 	}
 
 	renameDocument(pId, pNewTitle) {
@@ -218,7 +241,7 @@ export default class DocumentsView extends React.Component {
 	saveCurrentDocument() {
 		var doc = this.getActiveDocument();
 		if (typeof doc != 'undefined') {
-			doc.text = this.props.editorCtrl.getHTML();
+			doc.text = this.props.textEditor.getHTML();
 			this.setState({
 				documents: this.state.documents
 			});
@@ -239,7 +262,7 @@ export default class DocumentsView extends React.Component {
 	}
 
 	setActiveDocument(selectedID) {
-		if (this.props.editorCtrl.isReadOnly === false) {
+		if (this.props.textEditor.isTextEditable()) {
 			this.saveCurrentDocument();
 		}
 		this.props.syncService.updateUser({
@@ -248,7 +271,7 @@ export default class DocumentsView extends React.Component {
 		this.setState({
 			selected: selectedID
 		});
-		this.props.editorCtrl.setDocumentView(this.getDocument(selectedID));
+		this.props.textEditor.setHTML(this.getDocument(selectedID).text);
 	}
 
 	getActiveDocumentId() {
@@ -285,7 +308,7 @@ export default class DocumentsView extends React.Component {
 			var doc = documents[i];
 			var elements = doc.text;
 
-			var foundArray = $(doc.text).find("coding[id='" + codingID + "']");
+			var foundArray = $(doc.text).find('coding[id=\'' + codingID + '\']');
 			if (foundArray.length > 0) {
 				this.setActiveDocument(doc.id);
 			}
@@ -371,6 +394,7 @@ export default class DocumentsView extends React.Component {
 					removeActiveDocument={this.removeActiveDocument}
 					changeDocumentData={this.changeDocumentData}
 					getNewDocumentPosition={this.getNewDocumentPosition}
+					projectType={this.props.projectType}
 				/>
 			);
 		} else {

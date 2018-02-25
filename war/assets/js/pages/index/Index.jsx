@@ -6,8 +6,8 @@ import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
 import { BtnLg } from '../../common/styles/Btn.jsx';
 
 const StyledIntroBanner = styled.div`
-	background: url(../assets/img/index-top-man-writing.cache.jpg) no-repeat
-		center center;
+	// prettier-ignore
+	background: url(../assets/img/index-top-man-writing.cache.jpg) no-repeat center;
 	background-size: cover;
 `;
 
@@ -67,7 +67,7 @@ export default class Index extends React.Component {
 									</h3>
 									<hr className="intro-divider" />
 									<SigninWithGoogleBtn
-										account={this.props.account}
+										auth={this.props.auth}
 										history={this.props.history}
 									/>
 								</div>

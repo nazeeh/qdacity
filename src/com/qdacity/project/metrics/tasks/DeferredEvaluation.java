@@ -15,12 +15,13 @@ import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeSystemEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
@@ -125,7 +126,7 @@ public class DeferredEvaluation implements DeferredTask {
     private Collection<TextDocument> getOriginalDocs(List<Long> docIDs) throws UnauthorizedException {
 	TextDocumentEndpoint tde = new TextDocumentEndpoint();
 	Collection<TextDocument> originalDocs;
-	originalDocs = tde.getTextDocument(revisionID, "REVISION", user).getItems(); // FIXME put in Memcache, so for each validationResult it does not have to be fetched again
+	originalDocs = tde.getTextDocument(revisionID, ProjectType.REVISION, user).getItems(); // FIXME put in Memcache, so for each validationResult it does not have to be fetched again
 	orignalDocIDs = new ArrayList<>();
 	for (TextDocument textDocument : originalDocs) {
 

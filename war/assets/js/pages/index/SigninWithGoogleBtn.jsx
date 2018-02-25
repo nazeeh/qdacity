@@ -1,7 +1,8 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import { FormattedMessage } from 'react-intl';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
-import styled from 'styled-components';
 
 import ReactLoading from '../../common/ReactLoading.jsx';
 import BinaryDecider from '../../common/modals/BinaryDecider.js';
@@ -11,6 +12,8 @@ import { BtnLg } from '../../common/styles/Btn.jsx';
 export default class SigninWithGoogleBtn extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.authenticationProvider = props.auth.authentication;
 		this.state = {
 			loading: false
 		};
@@ -20,13 +23,13 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	redirect() {
 		const { formatMessage } = IntlProvider.intl;
-		var that = this;
-		this.props.account.getCurrentUser().then(
+
+		const _this = this;
+		this.authenticationProvider.getCurrentUser().then(
 			function(value) {
-				that.props.history.push('/PersonalDashboard');
+				_this.props.history.push('/PersonalDashboard');
 			},
 			function(value) {
-				var acc = that.props.account;
 				var decider = new BinaryDecider(
 					formatMessage({
 						id: 'sign.in.with.google.btn.register_prompt',
@@ -43,9 +46,11 @@ export default class SigninWithGoogleBtn extends React.Component {
 					})
 				);
 				decider.showModal().then(function(value) {
-					if (value == 'optionA')
-						that.props.account.changeAccount(that.redirect);
-					else that.registerAccount();
+					if (value == 'optionA') {
+						_this.authenticationProvider.changeAccount().then(function() {
+							_this.redirect();
+						});
+					} else _this.registerAccount();
 				});
 			}
 		);
@@ -53,69 +58,78 @@ export default class SigninWithGoogleBtn extends React.Component {
 
 	registerAccount() {
 		const { formatMessage } = IntlProvider.intl;
-		var _this = this;
-		var googleProfile = _this.props.account.getProfile();
-		const esc = text =>
-			text.replace(
-				/([&<>"'` !@$%()[\]=+{}])/g,
-				code => `&#${code.charCodeAt(0)};`
-			);
-		const firstName = esc(googleProfile.getGivenName());
-		const firstNameLabel = formatMessage({
-			id: 'signinwithgooglebtn.first_name',
-			defaultMessage: 'First Name'
-		});
-		const lastName = esc(googleProfile.getFamilyName());
-		const lastNameLabel = formatMessage({
-			id: 'signinwithgooglebtn.last_name',
-			defaultMessage: 'Last Name'
-		});
-		const email = esc(googleProfile.getEmail());
-		const emailLabel = formatMessage({
-			id: 'signinwithgooglebtn.email',
-			defaultMessage: 'Email'
-		});
 
-		vex.dialog.open({
-			message: formatMessage({
-				id: 'sign.in.with.google.btn.confirm',
-				defaultMessage: 'Please confirm:'
-			}),
-			input: [
-				`<label for="firstName">${firstNameLabel}</label><input name="firstName" type="text" placeholder="${firstNameLabel}" value="${firstName}" required />`,
-				`<label for="lastName">${lastNameLabel}</label><input name="lastName" type="text" placeholder="${lastNameLabel}" value="${lastName}" required />`,
-				`<label for="email">${emailLabel}</label><input name="email" type="text" placeholder="${emailLabel}" value="${email}" required />`
-			].join('\n'),
-			buttons: [
-				$.extend({}, vex.dialog.buttons.YES, {
-					text: formatMessage({
-						id: 'sign.in.with.google.btn.register',
-						defaultMessage: 'Register'
-					})
-				}),
-				$.extend({}, vex.dialog.buttons.NO, {
-					text: formatMessage({
-						id: 'sign.in.with.google.btn.cancel',
-						defaultMessage: 'Cancel'
-					})
-				})
-			],
-			callback: function(data) {
-				if (data === false) {
-					return console.log('Cancelled');
-				}
-				_this.props.account
-					.registerCurrentUser(data.firstName, data.lastName, data.email)
-					.then(_this.redirect);
-				return console.log(
-					'First',
-					data.firstName,
-					'Last Name',
-					data.lastName,
-					'Email',
-					data.email
+		var _this = this;
+		_this.authenticationProvider.getProfile().then(function(userProfile) {
+			const esc = text =>
+				text.replace(
+					/([&<>"'` !@$%()[\]=+{}])/g,
+					code => `&#${code.charCodeAt(0)};`
 				);
-			}
+			const displayNameParts = userProfile.name.split(' ');
+			const lastName = esc(displayNameParts.pop());
+			const firstName = esc(displayNameParts.join(' '));
+			const email = esc(userProfile.email);
+
+			const firstNameLabel = formatMessage({
+				id: 'signinwithgooglebtn.first_name',
+				defaultMessage: 'First Name'
+			});
+			const lastNameLabel = formatMessage({
+				id: 'signinwithgooglebtn.last_name',
+				defaultMessage: 'Last Name'
+			});
+			const emailLabel = formatMessage({
+				id: 'signinwithgooglebtn.email',
+				defaultMessage: 'Email'
+			});
+
+			vex.dialog.open({
+				message: formatMessage({
+					id: 'sign.in.with.google.btn.confirm',
+					defaultMessage: 'Please confirm:'
+				}),
+				// FIXME
+				input: [
+					`<label for="firstName">${firstNameLabel}</label><input name="firstName" type="text" placeholder="${firstNameLabel}" value="${firstName}" required />`,
+					`<label for="lastName">${lastNameLabel}</label><input name="lastName" type="text" placeholder="${lastNameLabel}" value="${lastName}" required />`,
+					`<label for="email">${emailLabel}</label><input name="email" type="text" placeholder="${emailLabel}" value="${email}" required />`
+				].join('\n'),
+				buttons: [
+					$.extend({}, vex.dialog.buttons.YES, {
+						text: formatMessage({
+							id: 'sign.in.with.google.btn.register',
+							defaultMessage: 'Register'
+						})
+					}),
+					$.extend({}, vex.dialog.buttons.NO, {
+						text: formatMessage({
+							id: 'sign.in.with.google.btn.cancel',
+							defaultMessage: 'Cancel'
+						})
+					})
+				],
+				callback: function(data) {
+					if (data === false) {
+						return console.log('Cancelled');
+					}
+					_this.authenticationProvider
+						.registerCurrentUser(data.firstName, data.lastName, data.email)
+						.then(function() {
+							_this.props.auth.updateUserStatus().then(function() {
+								_this.redirect();
+							});
+						});
+					return console.log(
+						'First',
+						data.firstName,
+						'Last Name',
+						data.lastName,
+						'Email',
+						data.email
+					);
+				}
+			});
 		});
 	}
 
@@ -124,10 +138,15 @@ export default class SigninWithGoogleBtn extends React.Component {
 			loading: true
 		});
 
-		if (this.props.account.isSignedIn()) {
+		if (this.authenticationProvider.isSignedIn()) {
 			this.redirect();
 		} else {
-			this.props.account.changeAccount(this.redirect);
+			var _this = this;
+			this.authenticationProvider.signInWithGoogle().then(function() {
+				if (_this.authenticationProvider.isSignedIn()) {
+					_this.redirect();
+				}
+			});
 		}
 	}
 

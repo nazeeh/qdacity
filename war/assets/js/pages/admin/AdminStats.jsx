@@ -30,7 +30,7 @@ export default class AdminStats extends React.Component {
 	render() {
 		var _this = this;
 		return (
-			<div>
+			<div className="container main-content">
 				<div className="box box-default">
 					<div className="box-header with-border">
 						<h3 className="box-title">
@@ -105,34 +105,40 @@ export default class AdminStats extends React.Component {
 						</div>
 					</div>
 				</div>
-				<div className="box box-default">
-					<div className="box-header with-border">
-						<h3 className="box-title">
-							<FormattedMessage
-								id="adminstats.user_regs_over_time"
-								defaultMessage="User registrations over time"
-							/>
-						</h3>
+				<div className="row">
+					<div className="col-lg-6">
+						<div className="box box-default">
+							<div className="box-header with-border">
+								<h3 className="box-title">
+									<FormattedMessage
+										id="adminstats.user_regs_over_time"
+										defaultMessage="User registrations over time"
+									/>
+								</h3>
+							</div>
+							<div className="box-body">
+								<UserRegistrationsChart
+									chartScriptPromise={this.props.chartScriptPromise}
+								/>
+							</div>
+						</div>
 					</div>
-					<div className="box-body">
-						<UserRegistrationsChart
-							chartScriptPromise={this.props.chartScriptPromise}
-						/>
-					</div>
-				</div>
-				<div className="box box-default">
-					<div className="box-header with-border">
-						<h3 className="box-title">
-							<FormattedMessage
-								id="adminstats.active_users_over_time"
-								defaultMessage="Active users over time"
-							/>
-						</h3>
-					</div>
-					<div className="box-body">
-						<ActiveUsersChart
-							chartScriptPromise={this.props.chartScriptPromise}
-						/>
+					<div className="col-lg-6">
+						<div className="box box-default">
+							<div className="box-header with-border">
+								<h3 className="box-title">
+									<FormattedMessage
+										id="adminstats.active_users_over_time"
+										defaultMessage="Active users over time"
+									/>
+								</h3>
+							</div>
+							<div className="box-body">
+								<ActiveUsersChart
+									chartScriptPromise={this.props.chartScriptPromise}
+								/>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

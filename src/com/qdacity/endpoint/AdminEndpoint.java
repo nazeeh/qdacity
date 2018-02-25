@@ -9,9 +9,10 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Constants;
 import com.qdacity.admin.AdminStats;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.util.DataStoreUtil;
 
 @Api(
@@ -20,14 +21,12 @@ import com.qdacity.util.DataStoreUtil;
 	namespace = @ApiNamespace(
 		ownerDomain = "qdacity.com",
 		ownerName = "qdacity.com",
-		packagePath = "server.project"))
+		packagePath = "server.project"),
+	authenticators = {QdacityAuthenticator.class})
 public class AdminEndpoint {
 
-	@ApiMethod(
-		name = "admin.getAdminStats",
-		scopes = { Constants.EMAIL_SCOPE },
-		clientIds = { Constants.WEB_CLIENT_ID, com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID },
-		audiences = { Constants.WEB_CLIENT_ID })
+	
+	@ApiMethod(name = "admin.getAdminStats")
 	public AdminStats getAdminStats(User user) throws UnauthorizedException {
 
 		AdminStats statistics = new AdminStats();
