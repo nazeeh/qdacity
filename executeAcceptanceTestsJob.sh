@@ -10,12 +10,6 @@ echo "Clear dangling images"
 docker rmi $(docker images -qa -f "dangling=true")
 
 
-
-docker container stop $(docker container ls -a -q)
-docker container rm $(docker container ls -a -q)
-
-
-
 BASE_IMAGE_TAG="qdacity-tests-base:latest"
 IMAGE_NAME_TESTS="qdacity-tests-${CI_PROJECT_ID}"
 
