@@ -5,7 +5,7 @@ SERVER=localhost
 PORT=8888
 
 TIMEOUT=180
-TIME_INTERVAL=5
+TIME_INTERVAL=3
 
 PORT_OPEN=1
 PORT_CLOSED=0
@@ -37,7 +37,8 @@ if [ $isPortOpen -eq $PORT_OPEN ]; then
 
 	echo "Port is open after ${time} seconds. Start acceptance tests now."
 	
-	gulp acceptance-tests
+	cd war
+	./node_modules/.bin/gulp acceptance-tests
 	
 	exit 0
 else

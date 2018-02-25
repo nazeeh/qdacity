@@ -5,7 +5,7 @@ var chrome = require("selenium-webdriver/chrome");
 
 describe('Project test', function() {
 
-	var defaultTimeout = 20000;
+	var defaultTimeout = 600000; // TODO probably too long
 	
 	var driver = null;
 	
@@ -19,7 +19,8 @@ describe('Project test', function() {
 //    	capabilities.setCapability("chrome.switches", switches);
 //    	webDriver = new RemoteWebDriver(gridServerURL, capabilities);
     	
-    	options.addArguments('user-data-dir=C:\\Users\\Felix\\AppData\\Local\\Google\\Chrome\\User Data');
+    	options.addArguments('user-data-dir=F:\\Dateien\\Ausbildung\\Studium IN Master\\Studium\\Masterarbeit QDAcity\\project\\qdacity\\war\\tests\\acceptance-tests\\chrome-test-profile');
+		options.addArguments("--profile-directory=Profile 1");
     	options.addArguments('start-maximized');   	
 
         this.driver = new webdriver.Builder()
