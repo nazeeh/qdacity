@@ -38,7 +38,7 @@ if [ $isPortOpen -eq $PORT_OPEN ]; then
 	echo "Port is open after ${time} seconds. Start acceptance tests now."
 	
 	cd war
-	TESTS_RESULT=`./node_modules/.bin/gulp acceptance-tests`
+	TESTS_RESULT=$(./node_modules/.bin/gulp acceptance-tests 2>&1)
 	
 	echo "RESULT----------------"
 	echo $TESTS_RESULT
