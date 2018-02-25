@@ -10,9 +10,13 @@ echo "Clear dangling images"
 docker rmi $(docker images -qa -f "dangling=true")
 
 
-# Build docker image
+BASE_IMAGE_TAG="qdacity-tests-base:latest"
 IMAGE_NAME_TESTS="qdacity-tests-${CI_PROJECT_ID}"
 
+# Build the base image if it does not exist
+[ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
+
+# Build the test image
 docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $IMAGE_NAME_TESTS .
 
 # Run docker image
