@@ -40,7 +40,9 @@ if [ $isPortOpen -eq $PORT_OPEN ]; then
 	cd war
 	TESTS_RESULT=`./node_modules/.bin/gulp acceptance-tests`
 	
+	echo "RESULT----------------"
 	echo $TESTS_RESULT
+	echo "RESULT----------------"
 	
 	#exit 0
 else
