@@ -42,7 +42,7 @@ if [ $isPortOpen -eq $PORT_OPEN ]; then
 	
 	echo $TESTS_RESULT
 	
-	exit 0
+	#exit 0
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
 	
