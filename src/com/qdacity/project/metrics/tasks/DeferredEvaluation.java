@@ -340,6 +340,10 @@ public abstract class DeferredEvaluation implements DeferredTask {
         codeSystemId = validationProjectsFromUsers.get(0).getCodesystemID();
         amountRatersSize = validationProjectsFromUsers.size();
     }
+    else if (projectType == ProjectType.EXERCISE) {
+        codeSystemId = exerciseProjectsFromUsers.get(0).getCodesystemID();
+        amountRatersSize = exerciseProjectsFromUsers.size();
+    }
 	//get all Codes
 	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(codeSystemId, user);
 	
