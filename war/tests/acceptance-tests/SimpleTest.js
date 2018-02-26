@@ -27,7 +27,7 @@ describe('Simple test', function() {
     it('The system is working', (done) => {
 		// Find login button
 		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]"))).then(() =>  {
-			expect(1).toBe(2);
+			expect(1).toBe(1);
 			done();
 		});
     }, defaultTimeout);
