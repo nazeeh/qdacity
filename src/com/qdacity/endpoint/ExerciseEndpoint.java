@@ -1,6 +1,8 @@
 package com.qdacity.endpoint;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
@@ -10,8 +12,7 @@ import javax.persistence.EntityExistsException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.metrics.ExerciseResult;
-import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.*;
 import com.qdacity.project.metrics.tasks.DeferredEvaluation;
 import com.qdacity.project.metrics.tasks.DeferredEvaluationExerciseReport;
 import com.qdacity.project.metrics.tasks.DeferredEvaluationValidationReport;
@@ -158,7 +159,38 @@ public class ExerciseEndpoint {
 			return cloneExerciseProject;
 		}
 
-	
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.listExerciseReports")
+    public List<ExerciseReport> listExerciseReports(@Named("projectID") Long prjID, User user) throws UnauthorizedException {
+        List<ExerciseReport> reports = new ArrayList<>();
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            Query q;
+            q = mgr.newQuery(ExerciseReport.class, " projectID  == :projectID");
+
+            Map<String, Long> params = new HashMap<>();
+            params.put("projectID", prjID);
+
+            reports = (List<ExerciseReport>) q.executeWithMap(params);
+
+            if(reports != null) {
+                for (ExerciseReport exerciseReport : reports) {
+                    List<DocumentResult> docresults = exerciseReport.getDocumentResults();
+                    try {
+                        if (docresults != null) for (DocumentResult documentResult : docresults)
+                            documentResult.getReportRow();
+                    } catch (NullPointerException e) {
+                        // should not happen, but if data (old data) for docresults is corrupt, we still want the reports
+                        Logger.getLogger("logger").log(Level.WARNING, "docresults not null, but could not iterate through list");
+                    }
+                }
+            }
+        } finally {
+            mgr.close();
+        }
+        return reports;
+    }
+
 	@SuppressWarnings({ "unchecked"})
 	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded")
 		public ExerciseProject createExerciseProjectIfNeeded(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {

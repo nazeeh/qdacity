@@ -122,7 +122,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	    Logger.getLogger(DeferredEvaluation.class.getName()).log(Level.SEVERE, null, ex);
 	}
 	long elapsed = System.nanoTime() - startTime;
-	Logger.getLogger("logger").log(Level.WARNING, "Time for ValidationReport: " + elapsed);
+	Logger.getLogger("logger").log(Level.WARNING, "Time for Report: " + elapsed);
 
     }
 

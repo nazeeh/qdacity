@@ -16,6 +16,7 @@ import javax.persistence.EntityNotFoundException;
 
 import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.*;
+import com.qdacity.project.metrics.ExerciseReport;
 import org.apache.cxf.common.util.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -144,6 +145,10 @@ public class TextDocumentEndpoint {
 			} else if (projectType.equals("VALIDATION")) {
 				ValidationEndpoint ve = new ValidationEndpoint();
 				documentResults = ve.listDocumentResults(id, user);
+			}
+			else if (projectType.equals("EXERCISE")) {
+				ExerciseReport exerciseReport = mgr.getObjectById(ExerciseReport.class, id);
+				documentResults = exerciseReport.getDocumentResults();
 			}
 			if (documentResults.size() > 0) {
 				for (DocumentResult documentResult : documentResults) {
