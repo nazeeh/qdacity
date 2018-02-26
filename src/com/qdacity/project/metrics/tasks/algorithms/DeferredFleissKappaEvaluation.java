@@ -1,6 +1,8 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
 import com.google.api.server.spi.auth.common.User;
+import com.qdacity.exercise.ExerciseProject;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.TabularValidationReportRow;
@@ -22,11 +24,18 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
     private final String docName;
     private final int amountRaters;
 
-    public DeferredFleissKappaEvaluation(List<Long> docIds, Map<String, Long> codeNamesAndIds, String docName, int amountRaters, ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit) {
-	super(validationProject, user, validationReportId, evalUnit, docIds);
+    public DeferredFleissKappaEvaluation(List<Long> docIds, Map<String, Long> codeNamesAndIds, String docName, int amountRaters, ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit, ProjectType projectType) {
+	super(validationProject, user, validationReportId, evalUnit, docIds, projectType);
 	this.codeNamesAndIds = codeNamesAndIds;
 	this.docName = docName;
 	this.amountRaters = amountRaters;
+    }
+
+    public DeferredFleissKappaEvaluation(List<Long> docIds, Map<String, Long> codeNamesAndIds, String docName, int amountRaters, ExerciseProject exerciseProject, User user, Long validationReportId, EvaluationUnit evalUnit, ProjectType projectType) {
+        super(exerciseProject, user, validationReportId, evalUnit, docIds, projectType);
+        this.codeNamesAndIds = codeNamesAndIds;
+        this.docName = docName;
+        this.amountRaters = amountRaters;
     }
 
     @Override
@@ -56,8 +65,8 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 	    reportRowCells.add(agreement+"");
 	}
 
-	valResult.setReportRow(new TabularValidationReportRow(reportRowCells).toString());
-	mgr.makePersistent(valResult);
+	result.setReportRow(new TabularValidationReportRow(reportRowCells).toString());
+	mgr.makePersistent(result);
 
     }
 

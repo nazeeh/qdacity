@@ -12,6 +12,8 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.exercise.ExerciseProject;
+import com.qdacity.project.Project;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
@@ -27,9 +29,13 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
     List<Long> orignalDocIDs;
 
-    public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit) {
-	super(validationPrj, user, validationReportID, evalUnit, orignalDocIDs);
+    public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit, ProjectType projectType) {
+	super(validationPrj, user, validationReportID, evalUnit, orignalDocIDs, projectType);
     }
+
+	public DeferredFMeasureEvaluation(ExerciseProject exerciseProject, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit, ProjectType projectType) {
+		super(exerciseProject, user, validationReportID, evalUnit, orignalDocIDs, projectType);
+	}
 
     @Override
     protected void runAlgorithm() throws Exception {
@@ -37,7 +43,9 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	List<FMeasureResult> documentAgreements = new ArrayList<>();
 
-	Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), ProjectType.VALIDATION, user).getItems();
+	Collection<TextDocument> recodedDocs = null;
+	if (projectType == ProjectType.VALIDATION) recodedDocs = tde.getTextDocument(validationProject.getId(), ProjectType.VALIDATION, user).getItems();
+	else if (projectType == ProjectType.EXERCISE) recodedDocs = tde.getTextDocument(exerciseProject.getId(), ProjectType.EXERCISE, user).getItems();
 
 	for (TextDocument textDocument : recodedDocs) {
 	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
@@ -55,7 +63,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 		    documentAgreements.add(FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentAgreement.getReportRow())));
 
 		    // valResult.addDocumentResult(documentAgreement);
-		    documentAgreement.setValidationResultID(valResult.getId());
+		    documentAgreement.setValidationResultID(result.getId());
 		    documentAgreement.setOriginDocumentID(original.getId());
 
 		    // Persist all DocumentResults asynchronously
@@ -70,7 +78,7 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	FMeasureResult totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
 	TabularValidationReportRow fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, validationProject.getCreatorName());
-	valResult.setReportRow(fmeasureRow.toString());
+	result.setReportRow(fmeasureRow.toString());
     }
 
 }

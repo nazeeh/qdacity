@@ -6,6 +6,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
+import com.qdacity.project.metrics.ExerciseResult;
+import com.qdacity.project.metrics.ValidationResult;
 import org.json.JSONException;
 
 import com.google.api.server.spi.config.Api;
@@ -258,7 +260,26 @@ public class ExerciseEndpoint {
 		return cloneProject;
 
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	@ApiMethod(name = "exercise.listExerciseResults")
+	public List<ExerciseResult> listExerciseResults(@Named("reportID") Long reportID, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		List<ExerciseResult> results = new ArrayList<ExerciseResult>();
+		mgr.setIgnoreCache(true); // TODO should probably only be set during generation of new reports, but if not set the report generation can run into an infinite loop
+		try {
+			Query q = mgr.newQuery(ExerciseResult.class, "reportID  == :reportID");
+			Map<String, Long> params = new HashMap<String, Long>();
+			params.put("reportID", reportID);
+
+			results = (List<ExerciseResult>) q.execute(reportID);
+
+		} finally {
+			mgr.close();
+		}
+		return results;
+	}
+
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID ,User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();

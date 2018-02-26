@@ -17,9 +17,11 @@ import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeSystemEndpoint;
+import com.qdacity.endpoint.ExerciseEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
+import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
@@ -44,6 +46,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
     private final List<Long> raterIds; //TODO?
     private final List<Long> docIDs;
     private List<ValidationProject> validationProjectsFromUsers;
+    private List<ExerciseProject> exerciseProjectsFromUsers;
     private DeferredAlgorithmTaskQueue taskQueue;
     private ProjectType projectType;
 
@@ -80,6 +83,14 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
     public void setValidationProjectsFromUsers(List<ValidationProject> validationProjectsFromUsers) {
         this.validationProjectsFromUsers = validationProjectsFromUsers;
+    }
+
+    public List<ExerciseProject> getExerciseProjectsFromUsers() {
+        return exerciseProjectsFromUsers;
+    }
+
+    public void setExerciseProjectsFromUsers(List<ExerciseProject> exerciseProjectsFromUsers) {
+        this.exerciseProjectsFromUsers = exerciseProjectsFromUsers;
     }
 
     @Override
@@ -147,11 +158,20 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	    if (this.projectType == ProjectType.VALIDATION) {
             //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
             for (ValidationProject validationProject : validationProjectsFromUsers) {
-                DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, report.getId(), user, evalUnit);
+                DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, report.getId(), user, evalUnit, projectType);
                 Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
                 taskQueue.launchInTaskQueue(deferredValidation);
             }
-            taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), report.getId(), user);
+            taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), report.getId(), user, projectType);
+        }
+        else if (this.projectType == ProjectType.EXERCISE) {
+            //We have more than one exerciseProject, because each user has a copy. Looping over validationProjects means looping over Users here!
+            for (ExerciseProject exerciseProject : exerciseProjectsFromUsers) {
+                DeferredFMeasureEvaluation deferredExercise = new DeferredFMeasureEvaluation(exerciseProject, orignalDocIDs, report.getId(), user, evalUnit, projectType);
+                Logger.getLogger("logger").log(Level.INFO, "Starting ExerciseProject : " + exerciseProject.getId());
+                taskQueue.launchInTaskQueue(deferredExercise);
+            }
+            taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(exerciseProjectsFromUsers.size(), report.getId(), user, projectType);
         }
 
 	    aggregateDocAgreement(report);
@@ -178,9 +198,11 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	Map<Long, String> documentNames = new HashMap<>();
 
 	ValidationEndpoint ve = new ValidationEndpoint();
+	ExerciseEndpoint ee = new ExerciseEndpoint();
 	List<? extends Result> results = null;
 
 	if (projectType == ProjectType.VALIDATION) results = ve.listValidationResults(report.getId(), user);
+    else if (projectType == ProjectType.EXERCISE) results = ee.listExerciseResults(report.getId(), user);
 
 	Logger.getLogger("logger").log(Level.WARNING, " So many results " + results.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
 	for (Result result : results) {
@@ -242,9 +264,9 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
 	Long codeSystemId = null;
-	if (projectType == ProjectType.VALIDATION) {
-        codeSystemId = validationProjectsFromUsers.get(0).getCodesystemID();
-    }
+	if (projectType == ProjectType.VALIDATION) codeSystemId = validationProjectsFromUsers.get(0).getCodesystemID();
+    else if (projectType == ProjectType.EXERCISE) codeSystemId = exerciseProjectsFromUsers.get(0).getCodesystemID();
+
     Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(codeSystemId, user);
 	List<String> tableHead = new ArrayList<>();
 	List<String> tableAverageHead = new ArrayList<>();
@@ -258,25 +280,24 @@ public abstract class DeferredEvaluation implements DeferredTask {
         report.setAverageAgreementHeader(new TabularValidationReportRow(tableAverageHead));
 
         Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = null;
-        if (projectType == ProjectType.VALIDATION) {
-            sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
-        }
+        if (projectType == ProjectType.VALIDATION) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
+        else if (projectType == ProjectType.EXERCISE) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentExerciseProjectsGroupedByName(exerciseProjectsFromUsers, docIDs, user);
 
 
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    //create all the tasks
-        if (projectType == ProjectType.VALIDATION) {
-            kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle)));
-        }
-	}
+        if (projectType == ProjectType.VALIDATION) kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle), projectType));
+        else if (projectType == ProjectType.EXERCISE) kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(exerciseProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle), projectType));
+
+    }
 
 	//Now launch all the Tasks
 	taskQueue.launchListInTaskQueue(kAlphaTasks);
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), report.getId(), user);
+	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), report.getId(), user, projectType);
 
         report.setAverageAgreement(calculateAverageAgreement(resultRows));
 
@@ -330,9 +351,8 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	
 	//get all Document Ids from every Rater
 	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = null;
-	if (projectType == ProjectType.VALIDATION) {
-        sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
-    }
+	if (projectType == ProjectType.VALIDATION) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
+	if (projectType == ProjectType.EXERCISE) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentExerciseProjectsGroupedByName(exerciseProjectsFromUsers, docIDs, user);
 	List<String> headerCells = new ArrayList<>();
 	headerCells.add("Document \\ Code");
 	headerCells.add("Average All Codes");
@@ -343,16 +363,15 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	//Create Deferred Evaluations
 	for(String docName : sameDocumentsFromDifferentRatersMap.keySet()) {
         Logger.getLogger("logger").log(Level.INFO, "Create Deferred Fleiss Kappa Task for Document " + docName);
-        if (projectType == ProjectType.VALIDATION) {
-            deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, report.getId(), evalUnit));
-        }
+        if (projectType == ProjectType.VALIDATION) deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, report.getId(), evalUnit, projectType));
+        if (projectType == ProjectType.EXERCISE) deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, exerciseProjectsFromUsers.get(0), user, report.getId(), evalUnit, projectType));
     }
 	
 	//Run deferred Evaluations
 	taskQueue.launchListInTaskQueue(deferredEvals);
 	
 	int amountOfValidationResults = sameDocumentsFromDifferentRatersMap.keySet().size();
-	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, report.getId(), user);
+	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, report.getId(), user, projectType);
 	List<String> avgHeaderCells = new ArrayList<>();
 	avgHeaderCells.add("");
 	avgHeaderCells.addAll(sameDocumentsFromDifferentRatersMap.keySet());
