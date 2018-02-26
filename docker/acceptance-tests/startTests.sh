@@ -40,6 +40,9 @@ if [ $isPortOpen -eq $PORT_OPEN ]; then
 	cd war
 	TESTS_RESULT=$(./node_modules/.bin/gulp acceptance-tests 2>&1)
 	
+	# Print result
+	echo $TESTS_RESULT
+	
 	# TODO this is a workarround
 	# The returned string ends with "failed"
 	if [[ "$TESTS_RESULT" == *failed ]]
