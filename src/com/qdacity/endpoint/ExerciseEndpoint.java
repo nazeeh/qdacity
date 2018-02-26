@@ -1,13 +1,20 @@
 package com.qdacity.endpoint;
 
 import java.util.*;
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.ExerciseResult;
 import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.metrics.tasks.DeferredEvaluation;
+import com.qdacity.project.metrics.tasks.DeferredEvaluationExerciseReport;
+import com.qdacity.project.metrics.tasks.DeferredEvaluationValidationReport;
 import org.json.JSONException;
 
 import com.google.api.server.spi.config.Api;
@@ -259,6 +266,17 @@ public class ExerciseEndpoint {
 
 		return cloneProject;
 
+	}
+
+	@ApiMethod(name = "exercise.evaluateExerciseRevision")
+	public List<ExerciseProject> evaluateExerciseRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
+
+		DeferredEvaluation task = new DeferredEvaluationExerciseReport(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
+		// Set instance variables etc as you wish
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
