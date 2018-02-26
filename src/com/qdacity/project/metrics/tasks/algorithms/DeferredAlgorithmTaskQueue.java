@@ -84,8 +84,8 @@ public class DeferredAlgorithmTaskQueue {
                 valResults = ve.listValidationResults(reportId, user);
             }
             else if (projectType == ProjectType.EXERCISE) {
-                ExerciseEndpoint ve = new ExerciseEndpoint();
-                valResults = ve.listExerciseResults(reportId, user);
+                ExerciseEndpoint ee = new ExerciseEndpoint();
+                valResults = ee.listExerciseResults(reportId, user);
             }
 			if (valResults.size() != amountValidationProjects || !reportRowsExist(valResults)) {
 				Thread.sleep(SLEEP_TIME);
@@ -99,9 +99,9 @@ public class DeferredAlgorithmTaskQueue {
     }
 
 	private boolean reportRowsExist(List<? extends Result> valResults) {
-		for (Result validationResult : valResults) {
-			if (validationResult.getReportRow() == null) {
-				Logger.getLogger("logger").log(Level.INFO, " All results as entities in the DB, but the reportRow has not been written for " + validationResult.getId());
+		for (Result result : valResults) {
+			if (result.getReportRow() == null) {
+				Logger.getLogger("logger").log(Level.INFO, " All results as entities in the DB, but the reportRow has not been written for " + result.getId());
 				return false;
 			}
 		}

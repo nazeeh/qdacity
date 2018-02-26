@@ -214,6 +214,7 @@ export default class RevisionHistory extends React.Component {
 
 			modal.showModal().then(function(data) {
 				var selectedDocs = [];
+				console.log(revId, data.title, data.docs, data.method, data.unit);
 				projectEndpoint
 					.evaluateRevision(
 						revId,

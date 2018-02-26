@@ -77,7 +77,9 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	}
 
 	FMeasureResult totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
-	TabularValidationReportRow fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, validationProject.getCreatorName());
+	TabularValidationReportRow fmeasureRow = null;
+	if (projectType == ProjectType.VALIDATION) fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, validationProject.getCreatorName());
+	if (projectType == ProjectType.EXERCISE) fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, exerciseProject.getCreatorName());
 	result.setReportRow(fmeasureRow.toString());
     }
 

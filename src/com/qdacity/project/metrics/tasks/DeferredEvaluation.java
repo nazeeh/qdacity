@@ -86,7 +86,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
     }
 
     public List<ExerciseProject> getExerciseProjectsFromUsers() {
-        return exerciseProjectsFromUsers;
+        return this.exerciseProjectsFromUsers;
     }
 
     public void setExerciseProjectsFromUsers(List<ExerciseProject> exerciseProjectsFromUsers) {
@@ -129,7 +129,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
     public abstract Report initReport();
 
     /**
-     * prepares the validationProjectsFromUsers so it contains the project in
+     * prepares the validationProjectsFromUsers/exerciseProjectsFromUsers so it contains the project in
      * the given revision from all users.
      */
     public abstract void initProjects();
