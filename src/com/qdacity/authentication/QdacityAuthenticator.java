@@ -18,6 +18,7 @@ public class QdacityAuthenticator implements Authenticator {
 	
 	TokenValidator googleIdTokenValidator = new GoogleIdTokenValidator();
 	TokenValidator googleAccessTokenValidator = new GoogleAccessTokenValidator();
+	TokenValidator testTokenValidator = new TestTokenValidator();
 	
     /**
      * Validates the received token and returns a User object if the token was valid.
@@ -29,6 +30,9 @@ public class QdacityAuthenticator implements Authenticator {
     public AuthenticatedUser authenticate(HttpServletRequest httpServletRequest) {
         //get token
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
+        // httpServletRequest.getLocalName() // localhost
+        // getPort // 8888
+        // auf welchen port und adresse hört der serveer? localhost:8888 z.b.
         
         //verify
         if(authorizationHeader != null) {
@@ -48,9 +52,12 @@ public class QdacityAuthenticator implements Authenticator {
         	} 
         	
 			switch (provider.toLowerCase()) {
+				case "test":
+					return testTokenValidator.validate(idTokenString);
+			
 				case "google":
 		    		return googleIdTokenValidator.validate(idTokenString);
-		    		
+		    	
 				case "googleaccesstoken":	
 				default:
 					return googleAccessTokenValidator.validate(idTokenString);
