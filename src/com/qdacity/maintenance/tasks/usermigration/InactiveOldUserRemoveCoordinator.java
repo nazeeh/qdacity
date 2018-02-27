@@ -52,8 +52,9 @@ public class InactiveOldUserRemoveCoordinator implements DeferredTask {
 				List<UserLoginProviderInformation> loginInfos = user.getLoginProviderInformation();
 				if(loginInfos == null || loginInfos.size() == 0) {
 					// this is an old account
-					
-					if(user.getLastLogin().before(thresholdInactiveDate)) {
+
+					// if lastLogin is null, the user didn't sign in after the column was added -> also delete!
+					if(user.getLastLogin() == null || user.getLastLogin().before(thresholdInactiveDate)) {
 						// also inactive for given days
 						UserRemovalExecutor task = new UserRemovalExecutor(user, executingUser);
 
