@@ -2,7 +2,9 @@ FROM qdacity-tests-base:latest
 
 # Copy repository
 WORKDIR /app
-COPY . /app
+COPY ./target /app/target
+COPY ./docker /app/docker
+COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
 
 # Allow execute
 RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
