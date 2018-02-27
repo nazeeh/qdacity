@@ -5,6 +5,7 @@ WORKDIR /app
 COPY ./target /app/target
 COPY ./docker /app/docker
 COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
+COPY ./war/gulpfile.js /app/war/gulpfile.js
 COPY ./MY-TEST-FOLDER/node_modules /app/war/node_modules
 
 # Allow execute
