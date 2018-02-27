@@ -1,12 +1,6 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +15,7 @@ import javax.persistence.EntityNotFoundException;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -357,26 +352,26 @@ public class UserEndpoint {
 		// remove from projects
 		ProjectEndpoint projectEndpoint = new ProjectEndpoint();
 		if(user.getProjects() != null) {
-			for(Long projectId: user.getProjects()) {
-				
-				Project project = (Project) Cache.getOrLoad(projectId, Project.class);
+			CollectionResponse<Project> projectResponse = projectEndpoint.listProjectByUserId(null, null, user.getId(), loggedInUser);
+			for(Project project  : projectResponse.getItems()) {
+
 				if(project.getOwners().contains(user.getId()) && project.getOwners().size() == 1) {
 					// last owner -> delete project
-					projectEndpoint.removeProject(projectId, loggedInUser);
+					projectEndpoint.removeProject(project.getId(), loggedInUser);
 				} else {
 					// just remove user
-					projectEndpoint.removeUser(projectId, "PROJECT", user.getId(), loggedInUser);
+					projectEndpoint.removeUser(project.getId(), "PROJECT", user.getId(), loggedInUser);
 				}
 			}
 		}
-		
+
 		// remove from validationProjects
-		List<ValidationProject> validationProjects = projectEndpoint.listValidationProject(loggedInUser);
+		List<ValidationProject> validationProjects = projectEndpoint.listValidationProjectByUserId(user.getId(), loggedInUser);
 		for(ValidationProject validationProject: validationProjects) {
 			projectEndpoint.removeUser(validationProject.getId(), "VALIDATION", user.getId(), loggedInUser);
 		}
-		
-		
+
+
 		// remove from courses
 		CourseEndpoint courseEndpoint = new CourseEndpoint();
 		if(user.getCourses() != null) {
