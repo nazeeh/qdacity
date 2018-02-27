@@ -28,6 +28,7 @@ public class DeferredEvaluationExerciseReport extends DeferredEvaluation {
         params.put("revisionID", revisionID);
         //Hint: Only gets the exerciseProjects from Users, but not the project itself. This behaviour is wanted.
         super.setExerciseProjectsFromUsers((List<ExerciseProject>) q.executeWithMap(params));
+        super.setProjectsFromUsers((List<ExerciseProject>) q.executeWithMap(params));
     }
 
     @Override

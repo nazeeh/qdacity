@@ -133,19 +133,19 @@ public abstract class Report {
 		this.datetime = datetime;
 	}
 
-	public void setAverageAgreementRow(TabularValidationReportRow reportRow) {
+	public void setAverageAgreementRow(TabularReportRow reportRow) {
 	    this.averageAgreementCsvString = reportRow.toString();
 	}
 
-	public void setAverageAgreementHeader(TabularValidationReportRow averageAgreementHeaderCsvString) {
+	public void setAverageAgreementHeader(TabularReportRow averageAgreementHeaderCsvString) {
 	    this.averageAgreementHeaderCsvString = averageAgreementHeaderCsvString.toString();
 	}
 
-	public void setAverageAgreement(TabularValidationReportRow averageAgreementCsvString) {
+	public void setAverageAgreement(TabularReportRow averageAgreementCsvString) {
 	    this.averageAgreementCsvString = averageAgreementCsvString.toString();
 	}
 
-	public void setDetailedAgreementHeader(TabularValidationReportRow detailedAgreementHeaderCsvString) {
+	public void setDetailedAgreementHeader(TabularReportRow detailedAgreementHeaderCsvString) {
 	    this.detailedAgreementHeaderCsvString = detailedAgreementHeaderCsvString.toString();
 	}
 
@@ -187,7 +187,7 @@ public abstract class Report {
 		return false;
 	}
 
-	public void setDocumentResultAverage(Long docID, TabularValidationReportRow averageAgreement) {
+	public void setDocumentResultAverage(Long docID, TabularReportRow averageAgreement) {
 		for (DocumentResult aggregated : documentResults) {
 			if (aggregated.getDocumentID().equals(docID)) {
 				aggregated.setReportRow(averageAgreement.toString());

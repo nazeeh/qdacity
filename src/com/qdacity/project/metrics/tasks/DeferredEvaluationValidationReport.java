@@ -26,6 +26,7 @@ public class DeferredEvaluationValidationReport extends DeferredEvaluation {
         Map<String, Long> params = new HashMap<>();
         params.put("revisionID", revisionID);
         //Hint: Only gets the validationProjects from Users, but not the project itself. This behaviour is wanted.
+        super.setProjectsFromUsers((List<ValidationProject>) q.executeWithMap(params));
         super.setValidationProjectsFromUsers((List<ValidationProject>) q.executeWithMap(params));
     }
 

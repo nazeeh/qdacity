@@ -1,11 +1,9 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
 import com.google.api.server.spi.auth.common.User;
-import com.qdacity.exercise.ExerciseProject;
-import com.qdacity.project.ProjectType;
-import com.qdacity.project.ValidationProject;
+import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.metrics.EvaluationUnit;
-import com.qdacity.project.metrics.TabularValidationReportRow;
+import com.qdacity.project.metrics.TabularReportRow;
 import com.qdacity.project.metrics.algorithms.FleissKappa;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaInputDataGenerator;
 import java.util.ArrayList;
@@ -24,22 +22,16 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
     private final String docName;
     private final int amountRaters;
 
-    public DeferredFleissKappaEvaluation(List<Long> docIds, Map<String, Long> codeNamesAndIds, String docName, int amountRaters, ValidationProject validationProject, User user, Long validationReportId, EvaluationUnit evalUnit, ProjectType projectType) {
-	super(validationProject, user, validationReportId, evalUnit, docIds, projectType);
+    public DeferredFleissKappaEvaluation(List<Long> docIds, Map<String, Long> codeNamesAndIds, String docName, int amountRaters, ProjectRevision project, User user, Long validationReportId, EvaluationUnit evalUnit) {
+	super(project, user, validationReportId, evalUnit, docIds);
 	this.codeNamesAndIds = codeNamesAndIds;
 	this.docName = docName;
 	this.amountRaters = amountRaters;
     }
 
-    public DeferredFleissKappaEvaluation(List<Long> docIds, Map<String, Long> codeNamesAndIds, String docName, int amountRaters, ExerciseProject exerciseProject, User user, Long validationReportId, EvaluationUnit evalUnit, ProjectType projectType) {
-        super(exerciseProject, user, validationReportId, evalUnit, docIds, projectType);
-        this.codeNamesAndIds = codeNamesAndIds;
-        this.docName = docName;
-        this.amountRaters = amountRaters;
-    }
 
     @Override
-    protected void runAlgorithm() throws Exception {
+    protected void runAlgorithm() {
 	//prepare input data
 	Logger.getLogger("logger").log(Level.INFO, "Preparing Fleiss Kappa Input Data for  " + docName);
 	List<Integer[]> inputArrays = new FleissKappaInputDataGenerator(textDocuments, codeNamesAndIds.values(), evalUnit).generateInputData();
@@ -51,8 +43,8 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 	for (Integer[] data : inputArrays) { //looping through this array means looping through the Codes
 	    double categoryAgreement = kappa.compute(data, amountRaters);
 	    categoryAgreementResults.add(categoryAgreement);
-	    //WARNING: this Task creates more than one ValidationResult, we need to create new ones on the fly.
-	    //save ReportRow in ValidationResult.
+	    //WARNING: this Task creates more than one Result, we need to create new ones on the fly.
+	    //save ReportRow in Result.
 	    Logger.getLogger("logger").log(Level.INFO, "Fleiss Kappa Result: " + categoryAgreement);
 	}
 	
@@ -65,7 +57,7 @@ public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 	    reportRowCells.add(agreement+"");
 	}
 
-	result.setReportRow(new TabularValidationReportRow(reportRowCells).toString());
+	result.setReportRow(new TabularReportRow(reportRowCells).toString());
 	mgr.makePersistent(result);
 
     }

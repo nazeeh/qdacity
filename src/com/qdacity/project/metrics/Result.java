@@ -98,7 +98,7 @@ public abstract class Result implements Serializable {
 	
 	public String getName() {
 	    if(reportRow != null) {
-		TabularValidationReportRow row = new TabularValidationReportRow(reportRow);
+            TabularReportRow row = new TabularReportRow(reportRow);
 		return row.getCells().get(0);
 	    }
 	    else {

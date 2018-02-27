@@ -22,6 +22,8 @@ import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.endpoint.inputconverter.IdCsvStringToLongList;
 import com.qdacity.exercise.ExerciseProject;
+import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
@@ -47,6 +49,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
     private final List<Long> docIDs;
     private List<ValidationProject> validationProjectsFromUsers;
     private List<ExerciseProject> exerciseProjectsFromUsers;
+    private List<? extends ProjectRevision> projectsFromUsers;
     private DeferredAlgorithmTaskQueue taskQueue;
     private ProjectType projectType;
 
@@ -91,6 +94,14 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
     public void setExerciseProjectsFromUsers(List<ExerciseProject> exerciseProjectsFromUsers) {
         this.exerciseProjectsFromUsers = exerciseProjectsFromUsers;
+    }
+
+    public void setProjectsFromUsers(List<? extends ProjectRevision> projectsFromUsers) {
+        this.projectsFromUsers = projectsFromUsers;
+    }
+
+    public List<? extends ProjectRevision> getProjectsFromUsers() {
+        return this.projectsFromUsers;
     }
 
     @Override
@@ -150,29 +161,20 @@ public abstract class DeferredEvaluation implements DeferredTask {
     }
 
     private void calculateFMeasure(Collection<TextDocument> originalDocs, Report report) {
-	TabularValidationReportRow fmeasureHeaderRow = new TabularValidationReportRow("Coder,FMeasure,Recall,Precision");
+        TabularReportRow fmeasureHeaderRow = new TabularReportRow("Coder,FMeasure,Recall,Precision");
         report.setAverageAgreementHeader(fmeasureHeaderRow);
         report.setDetailedAgreementHeader(fmeasureHeaderRow);
 	try {
 
-	    if (this.projectType == ProjectType.VALIDATION) {
-            //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
-            for (ValidationProject validationProject : validationProjectsFromUsers) {
-                DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(validationProject, orignalDocIDs, report.getId(), user, evalUnit, projectType);
-                Logger.getLogger("logger").log(Level.INFO, "Starting ValidationProject : " + validationProject.getId());
-                taskQueue.launchInTaskQueue(deferredValidation);
-            }
-            taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(validationProjectsFromUsers.size(), report.getId(), user, projectType);
+
+	    //We have more than one validationProject, because each user has a copy. Looping over validationProjects means looping over Users here!
+        for (ProjectRevision project : projectsFromUsers) {
+            DeferredFMeasureEvaluation deferredValidation = new DeferredFMeasureEvaluation(project, orignalDocIDs, report.getId(), user, evalUnit);
+            Logger.getLogger("logger").log(Level.INFO, "Starting "+ projectType.toString() + "Project : " + project.getId());
+            taskQueue.launchInTaskQueue(deferredValidation);
         }
-        else if (this.projectType == ProjectType.EXERCISE) {
-            //We have more than one exerciseProject, because each user has a copy. Looping over validationProjects means looping over Users here!
-            for (ExerciseProject exerciseProject : exerciseProjectsFromUsers) {
-                DeferredFMeasureEvaluation deferredExercise = new DeferredFMeasureEvaluation(exerciseProject, orignalDocIDs, report.getId(), user, evalUnit, projectType);
-                Logger.getLogger("logger").log(Level.INFO, "Starting ExerciseProject : " + exerciseProject.getId());
-                taskQueue.launchInTaskQueue(deferredExercise);
-            }
-            taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(exerciseProjectsFromUsers.size(), report.getId(), user, projectType);
-        }
+        taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(projectsFromUsers.size(), report.getId(), user, projectType);
+
 
 	    aggregateDocAgreement(report);
 
@@ -206,7 +208,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.WARNING, " So many results " + results.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
 	for (Result result : results) {
-	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(result.getReportRow()));
+	    FMeasureResult resultParagraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularReportRow(result.getReportRow()));
 	    if (!(resultParagraphAgreement.getPrecision() == 1 && resultParagraphAgreement.getRecall() == 0)) {
 		validationCoderAvg.add(resultParagraphAgreement);
 	    }
@@ -220,7 +222,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 				documentResultForAggregation.setDocumentID(revisionDocumentID);
 				report.addDocumentResult(documentResultForAggregation);
 
-				FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResultForAggregation.getReportRow()));
+				FMeasureResult docAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularReportRow(documentResultForAggregation.getReportRow()));
 
 				if (!(docAgreement.getPrecision() == 1 && docAgreement.getRecall() == 0)) {
 					List<FMeasureResult> agreementList = agreementByDoc.get(revisionDocumentID);
@@ -237,11 +239,11 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	for (Long docID : agreementByDoc.keySet()) {
 	    FMeasureResult avgDocAgreement = FMeasure.calculateAverageAgreement(agreementByDoc.get(docID));
 	    Logger.getLogger("logger").log(Level.INFO, "From " + agreementByDoc.get(docID).size() + " items, we calculated an F-Measure of " + avgDocAgreement.getFMeasure());
-			report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgDocAgreement, documentNames.get(docID)));
+			report.setDocumentResultAverage(docID, FMeasureResultConverter.fmeasureResultToTabularReportRow(avgDocAgreement, documentNames.get(docID)));
 	}
 
 	FMeasureResult avgReportAgreement = FMeasure.calculateAverageAgreement(validationCoderAvg);
-	report.setAverageAgreementRow(FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(avgReportAgreement, "Average"));
+	report.setAverageAgreementRow(FMeasureResultConverter.fmeasureResultToTabularReportRow(avgReportAgreement, "Average"));
     }
 
     private PersistenceManager pm = null;
@@ -263,9 +265,8 @@ public abstract class DeferredEvaluation implements DeferredTask {
     private void calculateKrippendorffsAlpha(Report report) throws UnauthorizedException, ExecutionException, InterruptedException {
 
 	Logger.getLogger("logger").log(Level.INFO, "Starting Krippendorffs Alpha");
-	Long codeSystemId = null;
-	if (projectType == ProjectType.VALIDATION) codeSystemId = validationProjectsFromUsers.get(0).getCodesystemID();
-    else if (projectType == ProjectType.EXERCISE) codeSystemId = exerciseProjectsFromUsers.get(0).getCodesystemID();
+	Long codeSystemId = projectsFromUsers.get(0).getCodesystemID();
+
 
     Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(codeSystemId, user);
 	List<String> tableHead = new ArrayList<>();
@@ -276,8 +277,8 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	    tableHead.add(codeName + "");
 	    tableAverageHead.add(codeName + "");
 	}
-        report.setDetailedAgreementHeader(new TabularValidationReportRow(tableHead));
-        report.setAverageAgreementHeader(new TabularValidationReportRow(tableAverageHead));
+        report.setDetailedAgreementHeader(new TabularReportRow(tableHead));
+        report.setAverageAgreementHeader(new TabularReportRow(tableAverageHead));
 
         Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = null;
         if (projectType == ProjectType.VALIDATION) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
@@ -287,8 +288,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
 	for (String documentTitle : sameDocumentsFromDifferentRatersMap.keySet()) {
 	    //create all the tasks
-        if (projectType == ProjectType.VALIDATION) kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(validationProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle), projectType));
-        else if (projectType == ProjectType.EXERCISE) kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(exerciseProjectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle), projectType));
+        kAlphaTasks.add(new DeferredKrippendorffsAlphaEvaluation(projectsFromUsers.get(0), user, report.getId(), documentTitle, evalUnit, new ArrayList(codeNamesAndIds.values()), sameDocumentsFromDifferentRatersMap.get(documentTitle)));
 
     }
 
@@ -311,21 +311,21 @@ public abstract class DeferredEvaluation implements DeferredTask {
      * @param myRows the rows where you want to calculate the average
      * @return a new row containing the average
      */
-    private TabularValidationReportRow calculateAverageAgreement(List<? extends Result> myRows) {
+    private TabularReportRow calculateAverageAgreement(List<? extends Result> myRows) {
 	List<String> averageColumns = new ArrayList<>();
 	averageColumns.add("AVERAGE");
 	if (myRows.size() > 0) {
-	    List<String> masterCells = new TabularValidationReportRow(myRows.get(0).getReportRow()).getCells();
+	    List<String> masterCells = new TabularReportRow(myRows.get(0).getReportRow()).getCells();
 	    for (int i = 1; i < masterCells.size(); i++) { //SKIP first cell as it is just label
 		double sum = 0;
 		for (Result row : myRows) {
-		    sum += new Double(new TabularValidationReportRow(row.getReportRow()).getCells().get(i));
+		    sum += new Double(new TabularReportRow(row.getReportRow()).getCells().get(i));
 		}
 		double average = sum / myRows.size();
 		averageColumns.add(average + "");
 	    }
 	}
-	return new TabularValidationReportRow(averageColumns);
+	return new TabularReportRow(averageColumns);
     }
 
     /**
@@ -334,16 +334,9 @@ public abstract class DeferredEvaluation implements DeferredTask {
      */
     private void calculateFleissKappa(Report report) throws Exception {
 	List<DeferredAlgorithmEvaluation> deferredEvals = new ArrayList<>();
-	Long codeSystemId = null;
-	int amountRatersSize = 0;
-	if (projectType == ProjectType.VALIDATION) {
-        codeSystemId = validationProjectsFromUsers.get(0).getCodesystemID();
-        amountRatersSize = validationProjectsFromUsers.size();
-    }
-    else if (projectType == ProjectType.EXERCISE) {
-        codeSystemId = exerciseProjectsFromUsers.get(0).getCodesystemID();
-        amountRatersSize = exerciseProjectsFromUsers.size();
-    }
+	Long codeSystemId = projectsFromUsers.get(0).getCodesystemID();
+	int amountRatersSize = projectsFromUsers.size();
+
 	//get all Codes
 	Map<String, Long> codeNamesAndIds = CodeSystemEndpoint.getCodeNamesAndIds(codeSystemId, user);
 	
@@ -362,13 +355,12 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	headerCells.add("Average All Codes");
 	headerCells.addAll(codeNamesAndIds.keySet());
 
-        report.setDetailedAgreementHeader(new TabularValidationReportRow(headerCells));
+        report.setDetailedAgreementHeader(new TabularReportRow(headerCells));
 
 	//Create Deferred Evaluations
 	for(String docName : sameDocumentsFromDifferentRatersMap.keySet()) {
         Logger.getLogger("logger").log(Level.INFO, "Create Deferred Fleiss Kappa Task for Document " + docName);
-        if (projectType == ProjectType.VALIDATION) deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, validationProjectsFromUsers.get(0), user, report.getId(), evalUnit, projectType));
-        if (projectType == ProjectType.EXERCISE) deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, exerciseProjectsFromUsers.get(0), user, report.getId(), evalUnit, projectType));
+        deferredEvals.add(new DeferredFleissKappaEvaluation(sameDocumentsFromDifferentRatersMap.get(docName), codeNamesAndIds, docName, amountRaters, projectsFromUsers.get(0), user, report.getId(), evalUnit));
     }
 	
 	//Run deferred Evaluations
@@ -380,7 +372,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	avgHeaderCells.add("");
 	avgHeaderCells.addAll(sameDocumentsFromDifferentRatersMap.keySet());
         report.setAverageAgreement(calculateAverageAgreementPerRow(resultRows));
-        report.setAverageAgreementHeader(new TabularValidationReportRow(avgHeaderCells));
+        report.setAverageAgreementHeader(new TabularReportRow(avgHeaderCells));
 	
 	getPersistenceManager().makePersistent(report);
     }
@@ -390,11 +382,11 @@ public abstract class DeferredEvaluation implements DeferredTask {
      * @param resultRows
      * @return 
      */
-    private TabularValidationReportRow calculateAverageAgreementPerRow(List<? extends Result> resultRows) {
+    private TabularReportRow calculateAverageAgreementPerRow(List<? extends Result> resultRows) {
 	List<String> averagesPerRow = new ArrayList<>();
 	averagesPerRow.add("AVERAGE");
 	for(Result row : resultRows) {
-	    TabularValidationReportRow rowForAvg = new TabularValidationReportRow(row.getReportRow());
+        TabularReportRow rowForAvg = new TabularReportRow(row.getReportRow());
 	    double sum = 0;
 	    for(int i = 1; i < rowForAvg.getCells().size(); i++){
 		sum += new Double(rowForAvg.getCells().get(i));
@@ -402,7 +394,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	    double avg = sum / rowForAvg.getCells().size();
 	    averagesPerRow.add(""+avg);
 	}
-	return new TabularValidationReportRow(averagesPerRow);
+	return new TabularReportRow(averagesPerRow);
     }
 
 }

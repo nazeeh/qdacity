@@ -1,7 +1,7 @@
 package com.qdacity.project.metrics.algorithms.datastructures.converter;
 
 import com.qdacity.project.metrics.FMeasureResult;
-import com.qdacity.project.metrics.TabularValidationReportRow;
+import com.qdacity.project.metrics.TabularReportRow;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class FMeasureResultConverter {
     private static final int RECALL_INDEX = 2;
     private static final int PRECISION_INDEX = 3;
     
-    public static FMeasureResult tabularValidationReportRowToFMeasureResult(TabularValidationReportRow tabularReportRow) {
+    public static FMeasureResult tabularValidationReportRowToFMeasureResult(TabularReportRow tabularReportRow) {
 	FMeasureResult paragraphAgreement = new FMeasureResult();
 	
 	if(tabularReportRow.getCells().size() < 4) {
@@ -30,14 +30,14 @@ public class FMeasureResultConverter {
 	return paragraphAgreement;
     }
     
-    public static TabularValidationReportRow fmeasureResultToTabularValidationReportRow(FMeasureResult fmeasureResult, String coderName) {	
+    public static TabularReportRow fmeasureResultToTabularReportRow(FMeasureResult fmeasureResult, String coderName) {
 	List<String> columns = new ArrayList<>();
 	columns.add(coderName);
 	columns.add(fmeasureResult.getFMeasure()+"");
 	columns.add(fmeasureResult.getRecall()+"");
 	columns.add(fmeasureResult.getPrecision()+"");
 	
-	return 	new TabularValidationReportRow(columns);
+	return 	new TabularReportRow(columns);
     }
     
 }
