@@ -38,19 +38,20 @@ if [ $isPortOpen -eq $PORT_OPEN ]; then
 	echo "Port is open after ${time} seconds. Start acceptance tests now."
 	
 	cd war
-	TESTS_RESULT=$(./node_modules/.bin/gulp acceptance-tests 2>&1)
+	./node_modules/.bin/gulp acceptance-tests
+	#TESTS_RESULT=$(./node_modules/.bin/gulp acceptance-tests 2>&1)
 	
 	# Print result
-	echo $TESTS_RESULT
+	#echo $TESTS_RESULT
 	
 	# TODO this is a workarround
 	# The returned string ends with "failed"
-	if [[ "$TESTS_RESULT" == *failed ]]
-	then
-		exit 1
-	fi
+	#if [[ "$TESTS_RESULT" == *failed ]]
+	#then
+	#	exit 1
+	#fi
 	
-	exit 0
+	#exit 0
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
 	

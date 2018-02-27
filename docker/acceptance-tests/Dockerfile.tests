@@ -6,6 +6,7 @@ COPY ./target /app/target
 COPY ./docker /app/docker
 COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
 COPY ./war/node_modules /app/war/node_modules
+COPY ./war/gulp-plugins /app/war/gulp-plugins
 COPY ./war/gulpfile.js /app/war/gulpfile.js
 
 # Allow execute

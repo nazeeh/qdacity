@@ -215,7 +215,7 @@ gulp.task('unit-tests', () =>
 );
 
 gulp.task('acceptance-tests', () =>
-    gulp.src('./tests/acceptance-tests/**/*.js').pipe(jasmine())
+    gulp.src('./tests/acceptance-tests/**/*.js').pipe(jasmine()).on('error', handleError)
 );
  
 gulp.task('default', ['watch']);

@@ -27,7 +27,7 @@ describe('Load QDAcity', function() {
     it('The system is running', (done) => {
 		// Find login button
 		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]"))).then(() =>  {
-			expect(1).toBe(1);
+			expect(1).toBe(2);
 			done();
 		});
     }, defaultTimeout);
