@@ -3,7 +3,7 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('Simple test', function() {
+describe('Load QDAcity', function() {
 
 	var defaultTimeout = 40000;
 	
@@ -24,7 +24,7 @@ describe('Simple test', function() {
         this.driver.quit().then(done);   
     }, defaultTimeout);
 
-    it('The system is working', (done) => {
+    it('The system is running', (done) => {
 		// Find login button
 		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]"))).then(() =>  {
 			expect(1).toBe(1);

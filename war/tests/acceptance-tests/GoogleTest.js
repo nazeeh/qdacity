@@ -3,7 +3,7 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('google test', function() {
+describe('Google Test', function() {
 
 	var defaultTimeout = 10000;
 	
@@ -24,7 +24,7 @@ describe('google test', function() {
         this.driver.quit().then(done);   
     }, defaultTimeout);
 
-    it('Open google', (done) => {
+    it('Load Google', (done) => {
 		const _this = this;
 		
     	console.log('First test. Waiting for Login button');
