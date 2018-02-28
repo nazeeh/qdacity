@@ -10,6 +10,7 @@ image: java:7
   untracked: true
   paths:
     - war/node_modules/
+    - localization/node_modules/
 
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
@@ -35,7 +36,8 @@ frontend_prod_build:
   <<: *job_definition
   <<: *frontend_build
   script:
-    - build_frontend bundle minify set-react-production
+    - build_babel_plugin
+    - build_frontend bundle generate-language-files minify set-react-production
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -43,7 +45,8 @@ frontend_prod_build_nm:
   except:
     - master
   script:
-    - build_frontend bundle
+    - build_babel_plugin
+    - build_frontend bundle generate-language-files
 
 backend_prod_build:
   <<: *job_definition
@@ -108,6 +111,17 @@ frontend_prod_unittest:
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
+
+frontend_babel_plugin_test:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  cache:
+    <<: *node_cache
+    policy: pull
+  script:
+    - build_babel_plugin test
 
 rtcsvc_prod_unittest:
   <<: *job_definition
@@ -205,6 +219,19 @@ deploy_non_minified:
         shift
         gulp $subcommand
       done
+      cd ..
+    }
+
+    function build_babel_plugin() {
+      cd localization
+      npm prune
+      npm install
+      while [ -n "$1" ]; do
+        subcommand="$1"
+        shift
+        npm run $subcommand
+      done
+      cd ..
     }
 
 before_script:

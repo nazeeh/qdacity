@@ -27,3 +27,4 @@ war/coverage
 target
 /.idea/
 /war/package-lock.json
+/war/translations/template.txt
