@@ -223,6 +223,16 @@ gulp.task('webpack-watch', function() {
 	);
 });
 
-gulp.task('test', () => gulp.src('./tests/*.js').pipe(jasmine()));
+gulp.task('unit-tests', () =>
+    gulp.src('./tests/unit-tests/**/*.js').pipe(jasmine())
+);
+gulp.task('acceptance-tests', () =>
+    gulp.src('./tests/acceptance-tests/**/*.js').pipe(jasmine()).on('error', handleError)
+);
+
 gulp.task('watch', ['webpack-watch', 'translation-watch']);
+gulp.task('acceptance-tests', () =>
+    gulp.src('./tests/acceptance-tests/**/*.js').pipe(jasmine()).on('error', handleError)
+);
+ 
 gulp.task('default', ['watch']);
