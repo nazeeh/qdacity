@@ -78,6 +78,20 @@ rtcsvc_prod_build:
     - cd realtime-service
     - npm install
 
+backend_prod_unittest:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  artifacts:
+    paths:
+      - target/site/jacoco-ut
+    expire_in: 6 mos
+  script:
+    - mvn test
+    - awk -F"," '{ lines += $8 + $9; covered += $9 } END { print covered, "/", lines, " lines covered"; print 100*covered/lines, "% covered" }' target/site/jacoco-ut/jacoco.csv
+  dependencies:
+    - backend_prod_build
 
 frontend_prod_unittest:
   <<: *job_definition
@@ -151,6 +165,8 @@ rtcsvc_prod_unittest:
 pages:
   <<: *job_definition
   stage: report
+  dependencies:
+    - backend_prod_unittest
   script:
     - mv target/site/jacoco-ut/ public/
   artifacts:
