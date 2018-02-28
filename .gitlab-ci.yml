@@ -151,8 +151,6 @@ rtcsvc_prod_unittest:
 pages:
   <<: *job_definition
   stage: report
-  dependencies:
-    - backend_prod_unittest
   script:
     - mv target/site/jacoco-ut/ public/
   artifacts:
