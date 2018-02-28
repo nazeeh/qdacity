@@ -186,7 +186,7 @@ export default class CourseList extends React.Component {
 				defaultMessage: 'Cancel'
 			}),
 			formatMessage({
-				id: 'modal.leave',
+				id: 'modal.confirm_leave',
 				defaultMessage: 'Leave'
 			})
 		);
@@ -271,7 +271,10 @@ export default class CourseList extends React.Component {
 				id: 'courselist.course_name',
 				defaultMessage: 'Course Name'
 			}),
-			'Name',
+			formatMessage({
+				id: 'courselist.course_name_template',
+				defaultMessage: 'Name'
+			}),
 			''
 		);
 		modal.addTextInput(
@@ -280,7 +283,10 @@ export default class CourseList extends React.Component {
 				id: 'courselist.course_term',
 				defaultMessage: 'Course Term'
 			}),
-			'Term',
+			formatMessage({
+				id: 'courselist.course_term_template',
+				defaultMessage: 'Term'
+			}),
 			''
 		);
 		modal.addTextField(
@@ -289,7 +295,10 @@ export default class CourseList extends React.Component {
 				id: 'courselist.course_desc',
 				defaultMessage: 'Course Description'
 			}),
-			'Description'
+			formatMessage({
+				id: 'courselist.course_desc_template',
+				defaultMessage: 'Description'
+			}),
 		);
 		modal.showModal().then(function(data) {
 			_this.createNewCourse(data.name, data.desc, data.term);

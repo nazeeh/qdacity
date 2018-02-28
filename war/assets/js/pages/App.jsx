@@ -29,9 +29,56 @@ import Faq from './help/Faq.jsx';
 import UserMigration from './user-migration/UserMigration.jsx';
 import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
+import Sidebar from '../common/tutorial/Sidebar.jsx';
+import styled from 'styled-components';
 
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
+
+
+
+const ContentGrid = styled.div`
+	display: grid;
+	grid-template-areas: "ContentMain ContentSidebar";
+`;
+
+//there is the normal Site-Content in it
+const ContentMain = styled.div`
+	grid-area: ContentMain;
+`;
+
+//there is, if acitvated, the sidebar for the Tutorial
+const ContentSidebar = styled.div`
+	padding:10px;
+	padding-top:60px;
+	color:#333;
+	grid-area: ContentSidebar;
+	background-color: rgb(232, 229, 229);
+`;
+
+//activatedSideBar, activatedSideBar2, deactivatedSideBar, deactivatedSideBar2 are
+// Helper to show or not to show the sidebar
+var activatedSideBar=
+{
+	gridTemplateColumns: "auto 250px"
+};
+
+var deactivatedSideBar=
+{
+	gridTemplateColumns: "auto 0px"
+};
+
+
+var activatedSideBar2=
+{
+	display: "inline"
+};
+
+var deactivatedSideBar2=
+{
+	display: "none"
+};
+
 
 export default class App extends React.Component {
 	constructor(props) {
@@ -125,11 +172,23 @@ export default class App extends React.Component {
 		this.state.tutorialEngine.appRootDidMount();
 	}
 
+	componentDidUpdate() {
+		var domObj=document.getElementById("ContentSidebarStyle");
+		if(domObj !=null){
+			domObj.style.minHeight = (window.innerHeight-22)+"px";
+		}
+
+	}
+
 	render() {
+
 		var tut = {
 			tutorialEngine: this.state.tutorialEngine,
 			tutorialState: this.state.tutorialState
 		};
+
+		var showSideBar=(tut.tutorialState.showSidebar)?activatedSideBar:deactivatedSideBar;//if deactivated, the grid is shrinked to 0 px
+		var showSideBar2=(tut.tutorialState.showSidebar)?activatedSideBar2:deactivatedSideBar2;//if deactivated, the right content is epclicit set to display: none
 
 		return (
 			<IntlProvider
@@ -153,6 +212,8 @@ export default class App extends React.Component {
 									/>
 								)}
 							/>
+					<ContentGrid className="ContentGrid" style={showSideBar}>
+						<ContentMain>
 							<Route
 								path="/PersonalDashboard"
 								render={props => (
@@ -261,6 +322,11 @@ export default class App extends React.Component {
 								path="/"
 								render={props => <Index auth={this.state.auth} {...props} />}
 							/>
+						</ContentMain>
+						<ContentSidebar style={showSideBar2} id="ContentSidebarStyle">
+							<Sidebar tutorial={tut} />
+						</ContentSidebar>
+					</ContentGrid>
 							<Route
 								path="/"
 								render={props => <Tutorial tutorial={tut} {...props} />}

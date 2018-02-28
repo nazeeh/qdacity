@@ -10,6 +10,7 @@ image: java:7
   untracked: true
   paths:
     - war/node_modules/
+    - localization/node_modules/
 
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
@@ -35,7 +36,8 @@ frontend_prod_build:
   <<: *job_definition
   <<: *frontend_build
   script:
-    - build_frontend bundle minify set-react-production
+    - build_babel_plugin
+    - build_frontend bundle generate-language-files minify set-react-production
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -43,7 +45,8 @@ frontend_prod_build_nm:
   except:
     - master
   script:
-    - build_frontend bundle
+    - build_babel_plugin
+    - build_frontend bundle generate-language-files
 
 backend_prod_build:
   <<: *job_definition
@@ -75,20 +78,6 @@ rtcsvc_prod_build:
     - cd realtime-service
     - npm install
 
-backend_prod_unittest:
-  <<: *job_definition
-  stage: test
-  only:
-    - branches
-  artifacts:
-    paths:
-      - target/site/jacoco-ut
-    expire_in: 6 mos
-  script:
-    - mvn test
-    - awk -F"," '{ lines += $8 + $9; covered += $9 } END { print covered, "/", lines, " lines covered"; print 100*covered/lines, "% covered" }' target/site/jacoco-ut/jacoco.csv
-  dependencies:
-    - backend_prod_build
 
 frontend_prod_unittest:
   <<: *job_definition
@@ -108,6 +97,33 @@ frontend_prod_unittest:
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
+
+acceptance_tests:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  cache:
+    <<: *node_cache
+    policy: pull
+  script:
+    - chmod +x ./executeAcceptanceTestsJob.sh
+    - ./executeAcceptanceTestsJob.sh
+  dependencies:
+    - frontend_prod_build
+    - backend_prod_build
+  allow_failure: true
+
+frontend_babel_plugin_test:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  cache:
+    <<: *node_cache
+    policy: pull
+  script:
+    - build_babel_plugin test
 
 rtcsvc_prod_unittest:
   <<: *job_definition
@@ -135,8 +151,6 @@ rtcsvc_prod_unittest:
 pages:
   <<: *job_definition
   stage: report
-  dependencies:
-    - backend_prod_unittest
   script:
     - mv target/site/jacoco-ut/ public/
   artifacts:
@@ -205,6 +219,19 @@ deploy_non_minified:
         shift
         gulp $subcommand
       done
+      cd ..
+    }
+
+    function build_babel_plugin() {
+      cd localization
+      npm prune
+      npm install
+      while [ -n "$1" ]; do
+        subcommand="$1"
+        shift
+        npm run $subcommand
+      done
+      cd ..
     }
 
 before_script:
