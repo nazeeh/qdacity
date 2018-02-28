@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 //Base Structure
 
@@ -113,6 +114,58 @@ const TutorialOverviewTitle = styled.div`
 	font-size: 18px;
 `;
 
+const TutorialOverviewSubBox = styled.div`
+	background:#ececec;
+	padding: 10px;
+	margin: 10px;
+	position:relative;
+	min-height: 150px;
+	opacity:0.6;
+	&:hover {
+		opacity:1 !important;
+	}
+`;
+
+const TutorialOverviewSubBoxTitle = styled.div`
+	float:left;
+	width:190px;
+	color:#805506;
+	font-size:19px;
+`;
+
+const TutorialOverviewSubBoxStatistic1 = styled.div`
+	float:left;
+	margin-right:20px;
+`;
+
+const TutorialOverviewSubBoxStatistic2 = styled.div`
+	float:left;
+`;
+
+const TutorialOverviewSubBoxClearing = styled.div`
+	clear: both ;
+`;
+
+const TutorialOverviewSubBoxPlaceholder = styled.div`
+	height: 15px ;
+`;
+
+const TutorialOverviewContainer = styled.div`
+	max-height:240px;
+	overflow-y: scroll;
+`;
+
+const TutorialOverviewSubBoxShortDescription = styled.div`
+	margin-top: 40px;
+	margin-bottom:20px;
+	background: #d6d6d6;
+	text-align: left !important;
+	display: ${props => (props.show ? 'block' : 'none')};
+`;
+
+
+
+
 //Detail Structure End
 
 export default class Tutorial extends React.Component {
@@ -121,8 +174,43 @@ export default class Tutorial extends React.Component {
 		this.state = {};
 	}
 
+
+	renderDescriptionButton(openDescription, tutorialUnitId)
+	{
+		if(openDescription) {
+
+			return ( <ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.setCurrentShowShortDescriptionId(tutorialUnitId);}.bind(this)}><FormattedMessage id="tutorial.openDescription" defaultMessage="Open Description"/></ButtonGeneric> )
+		}
+		else {
+
+			return ( <ButtonGeneric white onClick={function(){this.props.tutorial.tutorialEngine.setCurrentShowShortDescriptionId(-1);}.bind(this)}><FormattedMessage id="tutorial.closeDescription" defaultMessage="Close Description"/></ButtonGeneric> )
+		}
+
+	}
+
+
+
 	render() {
-		if (this.props.tutorial.tutorialState.isActive) {
+		if(this.props.tutorial.tutorialState.isActive) {
+
+		var tutorialOverviewItems = this.props.tutorial.tutorialState.overviewData.map((data) =>
+		<TutorialOverviewSubBox key={data.tutorialUnitId}>
+			<b>
+				<TutorialOverviewSubBoxTitle>{data.title()}</TutorialOverviewSubBoxTitle>
+				<TutorialOverviewSubBoxStatistic1><FormattedMessage id="tutorial.finished" defaultMessage="finished"/> {data.finishedRelative}%</TutorialOverviewSubBoxStatistic1>
+				<TutorialOverviewSubBoxStatistic2><FormattedMessage id="tutorial.finishedAt" defaultMessage="finished at"/>: {data.finishedAt}</TutorialOverviewSubBoxStatistic2>
+				<TutorialOverviewSubBoxClearing/>
+				</b>
+			<TutorialOverviewSubBoxPlaceholder/>
+			<div>
+			<ButtonGeneric white={false} onClick={function(){this.props.tutorial.tutorialEngine.activateTutorial(data.tutorialUnitId); this.props.tutorial.tutorialEngine.hideMessageBoxAndOverlay(true);}.bind(this)}><FormattedMessage id="tutorial.startTutorial" defaultMessage="Start Tutorial"/></ButtonGeneric>
+			{this.renderDescriptionButton((data.tutorialUnitId != this.props.tutorial.tutorialState.currentShowShortDescriptionId), data.tutorialUnitId)}
+			</div>
+			<TutorialOverviewSubBoxShortDescription show={(data.tutorialUnitId == this.props.tutorial.tutorialState.currentShowShortDescriptionId)}>{data.descriptionTextShort()}</TutorialOverviewSubBoxShortDescription>
+
+			</TutorialOverviewSubBox>
+		);
+
 			return (
 				<div>
 					<OverlayVisual {...this.props} />
@@ -154,13 +242,9 @@ export default class Tutorial extends React.Component {
 									</b>
 								</TutorialOverviewTitle>
 								<br />
-								<div>
-									<FormattedMessage
-										id="tutorial.todo"
-										defaultMessage="TODO Struktur kommt"
-									/>
-								</div>
-								<br />
+								<TutorialOverviewContainer>
+									{tutorialOverviewItems}
+								</TutorialOverviewContainer>
 								<br />
 							</center>
 						</MBTutorialOverview>
