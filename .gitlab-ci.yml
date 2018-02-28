@@ -75,39 +75,39 @@ rtcsvc_prod_build:
     - cd realtime-service
     - npm install
 
-#backend_prod_unittest:
-#  <<: *job_definition
-#  stage: test
-#  only:
-#    - branches
-#  artifacts:
-#    paths:
-#      - target/site/jacoco-ut
-#    expire_in: 6 mos
-#  script:
-#    - mvn test
-#    - awk -F"," '{ lines += $8 + $9; covered += $9 } END { print covered, "/", lines, " lines covered"; print 100*covered/lines, "% covered" }' target/site/jacoco-ut/jacoco.csv
-#  dependencies:
-#    - backend_prod_build
+backend_prod_unittest:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  artifacts:
+    paths:
+      - target/site/jacoco-ut
+    expire_in: 6 mos
+  script:
+    - mvn test
+    - awk -F"," '{ lines += $8 + $9; covered += $9 } END { print covered, "/", lines, " lines covered"; print 100*covered/lines, "% covered" }' target/site/jacoco-ut/jacoco.csv
+  dependencies:
+    - backend_prod_build
 
-#frontend_prod_unittest:
-#  <<: *job_definition
-#  stage: test
-#  only:
-#    - branches
-#  cache:
-#    <<: *node_cache
-#    policy: pull
-#  artifacts:
-#    paths:
-#      - war/coverage
-#    expire_in: 6 mos
-#  script:
-#    - export DISPLAY=:10
-#    - cd war
-#    - ./node_modules/karma/bin/karma start --single-run
-#  dependencies:
-#    - frontend_prod_build
+frontend_prod_unittest:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  cache:
+    <<: *node_cache
+    policy: pull
+  artifacts:
+    paths:
+      - war/coverage
+    expire_in: 6 mos
+  script:
+    - export DISPLAY=:10
+    - cd war
+    - ./node_modules/karma/bin/karma start --single-run
+  dependencies:
+    - frontend_prod_build
 
 acceptance_tests:
   <<: *job_definition
@@ -124,42 +124,42 @@ acceptance_tests:
     - frontend_prod_build
     - backend_prod_build
 
-#rtcsvc_prod_unittest:
-#  <<: *job_definition
-#  stage: test
-#  only:
-#    - master
-#  cache:
-#    key: "rtcsvc:node_modules"
-#    untracked: true
-#    paths:
-#    - realtime-service/node_modules/
-#    policy: pull
-#  artifacts:
-#    paths:
-#      - realtime-service/coverage
-#    expire_in: 1 mo
-#  script:
-#    - cd realtime-service
-#    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
-#    - npm run test
-#  dependencies:
-#    - rtcsvc_prod_build
+rtcsvc_prod_unittest:
+  <<: *job_definition
+  stage: test
+  only:
+    - master
+  cache:
+    key: "rtcsvc:node_modules"
+    untracked: true
+    paths:
+    - realtime-service/node_modules/
+    policy: pull
+  artifacts:
+    paths:
+      - realtime-service/coverage
+    expire_in: 1 mo
+  script:
+    - cd realtime-service
+    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
+    - npm run test
+  dependencies:
+    - rtcsvc_prod_build
 
 # Does not work yet, with gitlab pages not installed
-#pages:
-#  <<: *job_definition
-#  stage: report
-#  dependencies:
-#    - backend_prod_unittest
-#  script:
-#    - mv target/site/jacoco-ut/ public/
-#  artifacts:
-#    paths:
-#      - public
-#    expire_in: 30 days
-#  only:
-#    - branches
+pages:
+  <<: *job_definition
+  stage: report
+  dependencies:
+    - backend_prod_unittest
+  script:
+    - mv target/site/jacoco-ut/ public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - branches
 
 .deploy_prod: &deployment_template
   <<: *job_definition
@@ -178,35 +178,35 @@ deploy_rtcsvc:
     - cd realtime-service
     - bash ./deployment/deploy_from_gitlab_ci.sh
 
-#deploy_prod:
-#  <<: *deployment_template
-#  dependencies:
-#    - backend_prod_build
-#    - frontend_prod_build
-#  only:
-#    - master
+deploy_prod:
+  <<: *deployment_template
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build
+  only:
+    - master
 
-#deploy_prod_manual:
-#  <<: *deployment_template
-#  only:
-#    - branches
-#  except:
-#    - master
-#  dependencies:
-#    - backend_prod_build
-#    - frontend_prod_build
-#  when: manual
+deploy_prod_manual:
+  <<: *deployment_template
+  only:
+    - branches
+  except:
+    - master
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build
+  when: manual
 
-#deploy_non_minified:
-#  <<: *deployment_template
-#  only:
-#    - branches
-#  except:
-#    - master
-#  dependencies:
-#    - backend_prod_build
-#    - frontend_prod_build_nm
-#  when: manual
+deploy_non_minified:
+  <<: *deployment_template
+  only:
+    - branches
+  except:
+    - master
+  dependencies:
+    - backend_prod_build
+    - frontend_prod_build_nm
+  when: manual
 
 .global_functions: &global_helpers |
     function build_frontend() {
