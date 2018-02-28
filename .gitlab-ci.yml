@@ -75,39 +75,39 @@ rtcsvc_prod_build:
     - cd realtime-service
     - npm install
 
-backend_prod_unittest:
-  <<: *job_definition
-  stage: test
-  only:
-    - branches
-  artifacts:
-    paths:
-      - target/site/jacoco-ut
-    expire_in: 6 mos
-  script:
-    - mvn test
-    - awk -F"," '{ lines += $8 + $9; covered += $9 } END { print covered, "/", lines, " lines covered"; print 100*covered/lines, "% covered" }' target/site/jacoco-ut/jacoco.csv
-  dependencies:
-    - backend_prod_build
+#backend_prod_unittest:
+#  <<: *job_definition
+#  stage: test
+#  only:
+#    - branches
+#  artifacts:
+#    paths:
+#      - target/site/jacoco-ut
+#    expire_in: 6 mos
+#  script:
+#    - mvn test
+#    - awk -F"," '{ lines += $8 + $9; covered += $9 } END { print covered, "/", lines, " lines covered"; print 100*covered/lines, "% covered" }' target/site/jacoco-ut/jacoco.csv
+#  dependencies:
+#    - backend_prod_build
 
-frontend_prod_unittest:
-  <<: *job_definition
-  stage: test
-  only:
-    - branches
-  cache:
-    <<: *node_cache
-    policy: pull
-  artifacts:
-    paths:
-      - war/coverage
-    expire_in: 6 mos
-  script:
-    - export DISPLAY=:10
-    - cd war
-    - ./node_modules/karma/bin/karma start --single-run
-  dependencies:
-    - frontend_prod_build
+#frontend_prod_unittest:
+#  <<: *job_definition
+#  stage: test
+#  only:
+#    - branches
+#  cache:
+#    <<: *node_cache
+#    policy: pull
+#  artifacts:
+#    paths:
+#      - war/coverage
+#    expire_in: 6 mos
+#  script:
+#    - export DISPLAY=:10
+#    - cd war
+#    - ./node_modules/karma/bin/karma start --single-run
+#  dependencies:
+#    - frontend_prod_build
 
 acceptance_tests:
   <<: *job_definition
@@ -124,27 +124,27 @@ acceptance_tests:
     - frontend_prod_build
     - backend_prod_build
 
-rtcsvc_prod_unittest:
-  <<: *job_definition
-  stage: test
-  only:
-    - master
-  cache:
-    key: "rtcsvc:node_modules"
-    untracked: true
-    paths:
-    - realtime-service/node_modules/
-    policy: pull
-  artifacts:
-    paths:
-      - realtime-service/coverage
-    expire_in: 1 mo
-  script:
-    - cd realtime-service
-    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
-    - npm run test
-  dependencies:
-    - rtcsvc_prod_build
+#rtcsvc_prod_unittest:
+#  <<: *job_definition
+#  stage: test
+#  only:
+#    - master
+#  cache:
+#    key: "rtcsvc:node_modules"
+#    untracked: true
+#    paths:
+#    - realtime-service/node_modules/
+#    policy: pull
+#  artifacts:
+#    paths:
+#      - realtime-service/coverage
+#    expire_in: 1 mo
+#  script:
+#    - cd realtime-service
+#    - echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > .env
+#    - npm run test
+#  dependencies:
+#    - rtcsvc_prod_build
 
 # Does not work yet, with gitlab pages not installed
 pages:
