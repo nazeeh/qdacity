@@ -75,7 +75,7 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     protected Result makeNextValidationResult() {
 	    ValidationResult newResult = new ValidationResult();
 	    newResult.setRevisionID(project.getRevisionID());
-	    newResult.setValidationProjectID(project.getId());
+	    newResult.setProjectID(project.getId());
 	    newResult.setReportID(reportId);
 	    newResult.setReportRow(null); //intentionally initialize with null!
 	    mgr.makePersistent(newResult);// make persistent to generate ID which is passed to deferred persistence of DocumentResults
@@ -93,7 +93,7 @@ public abstract class DeferredAlgorithmEvaluation implements DeferredTask {
     protected Result makeNextExerciseResult() {
         ExerciseResult newResult = new ExerciseResult();
         newResult.setRevisionID(project.getRevisionID());
-        newResult.setValidationProjectID(project.getId());
+        newResult.setProjectID(project.getId());
         newResult.setReportID(reportId);
         newResult.setReportRow(null); //intentionally initialize with null!
         mgr.makePersistent(newResult);// make persistent to generate ID which is passed to deferred persistence of DocumentResults

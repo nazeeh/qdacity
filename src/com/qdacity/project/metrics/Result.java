@@ -33,7 +33,7 @@ public abstract class Result implements Serializable {
 	@Persistent(
 		defaultFetchGroup = "true",
 		dependent = "true")
-	Long validationProjectID;
+	Long projectID;
 
 	@Persistent(
 		defaultFetchGroup = "true",
@@ -72,12 +72,12 @@ public abstract class Result implements Serializable {
 		this.reportID = reportID;
 	}
 
-	public Long getValidationProjectID() {
-		return validationProjectID;
+	public Long getProjectID() {
+		return projectID;
 	}
 
-	public void setValidationProjectID(Long validationProjectID) {
-		this.validationProjectID = validationProjectID;
+	public void setProjectID(Long projectID) {
+		this.projectID = projectID;
 	}
 
 	public Long getRevisionId() {

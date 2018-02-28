@@ -440,7 +440,7 @@ public class TextDocumentEndpoint {
 		//Not possible to filter by IDs as the IDs of the documents of the different rates are different!
 		for (ExerciseProject project : exerciseProjects) {
 			//gets the documents from the validationProject of a user with the rights of our user.
-			Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
+			Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), ProjectType.EXERCISE, user).getItems();
 			for(TextDocument doc : textDocuments) {
 				if(docTitles.contains(doc.getTitle())) {
 					if(null == sameDocumentsFromDifferentRaters.get(doc.getTitle())) {

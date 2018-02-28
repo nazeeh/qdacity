@@ -57,7 +57,7 @@ public class DeferredEmailNotification implements DeferredTask {
 
 			for (ValidationResult result : results) {
 				Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER, Credentials.SENDGRID_PW);
-				Long prjID = result.getValidationProjectID();
+				Long prjID = result.getProjectID();
 				ValidationProject project = mgr.getObjectById(ValidationProject.class, prjID);
 				List<String> coderIDs = project.getValidationCoders();
 				String greetingName = "";
