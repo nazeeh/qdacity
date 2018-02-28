@@ -17,7 +17,6 @@ after_script:
 
 stages:
   - build
-  - acceptance_test
   - test
   - report
   - deploy
@@ -56,7 +55,7 @@ backend_prod_build:
     - branches
   artifacts:
     paths:
-      - target/
+      - target/qdacity-war
     expire_in: 3 mos
   script:
     - mvn clean package
@@ -115,7 +114,7 @@ frontend_prod_unittest:
 
 acceptance_tests:
   <<: *job_definition
-  stage: acceptance_test
+  stage: test
   only:
     - branches
   cache:
