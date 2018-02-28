@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Rebuilding backend"
+mvn clean package -DskipTests
+
 echo "Existing containers"
 docker container ls -a
 

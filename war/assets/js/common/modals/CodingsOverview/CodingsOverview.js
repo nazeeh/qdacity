@@ -8,6 +8,7 @@ import IntlProvider from '../../../common/Localization/LocalizationProvider';
 export default class CodingsOverview extends VexModal {
 	constructor() {
 		super();
+		const { formatMessage } = IntlProvider.intl;
 		this.formElements =
 			'<div id="codingsOverview"><div id="overviewMount"></div></div>';
 		//this.setActiveElement = this.setActiveElement.bind(this);

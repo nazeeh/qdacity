@@ -1,7 +1,13 @@
 import React from 'react';
+import styled from 'styled-components';
 import { FormattedMessage } from 'react-intl';
 
 import { BtnDefault, BtnPrimary } from './styles/Btn.jsx';
+
+const UserImage = styled.img`
+	width: 96px;
+`;
+
 export default class Account extends React.Component {
 	constructor(props) {
 		super(props);
@@ -30,10 +36,19 @@ export default class Account extends React.Component {
 		this.authenticationProvider = targetedProps.auth.authentication;
 		const _this = this;
 		this.authenticationProvider.getProfile().then(function(profile) {
+			/*
+			* Removing query parameters from URL.
+			* With google we always got ?sz=50 in the URL which gives you a
+			* small low res thumbnail. Without parameter we get the original
+			* image.
+			* When adding other LoginProviders this needs to be reviewed
+			*/
+			var url = URI(profile.thumbnail).fragment(true);
+			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
 			_this.setState({
 				name: profile.name,
 				email: profile.email,
-				picSrc: profile.thumbnail
+				picSrc: picSrcWithoutParams
 			});
 		});
 	}
@@ -78,7 +93,7 @@ export default class Account extends React.Component {
 				<div className="navbar-content">
 					<div className="row">
 						<div className="col-xs-5">
-							<img
+							<UserImage
 								id="currentUserPicture"
 								src={this.state.picSrc}
 								alt=""

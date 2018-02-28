@@ -26,6 +26,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -397,41 +398,57 @@ public class UserEndpoint {
 
 	/**
 	 * Gets the qdacity.User by the given authentication information.
+	 * 
 	 * @param loggedInUser
 	 * @return
-	 * @throws UnauthorizedException if the loggedInUser is null or there was no user found.
-	 * @throws IllegalArgumentException if the user is not an instance of AuthenticatedUser
-	 * @throws IllegalStateException if there are inconsistencies in db: more than one user linked with the given provider id
+	 * @throws UnauthorizedException
+	 *             if the loggedInUser is null or there was no user found.
+	 * @throws IllegalArgumentException
+	 *             if the user is not an instance of AuthenticatedUser
+	 * @throws IllegalStateException
+	 *             if there are inconsistencies in db: more than one user linked
+	 *             with the given provider id
 	 */
 	@SuppressWarnings("unchecked")
-	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser)
+			throws UnauthorizedException {
 
-		if(loggedInUser == null) {
+		if (loggedInUser == null) {
 			throw new UnauthorizedException("The User could not be authenticated");
 		}
-		if(!(loggedInUser instanceof AuthenticatedUser)) {
-			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
+		if (!(loggedInUser instanceof AuthenticatedUser)) {
+			throw new IllegalArgumentException(
+					"A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
 		}
-		
+
 		AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
-		
+
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			Query query = mgr.newQuery(User.class);
-			query.setFilter("loginProviderInformationList.contains(loginProviderVar) && loginProviderVar.externalUserId == externalIdParam && loginProviderVar.provider == providerParam");
-			query.declareVariables("com.qdacity.user.UserLoginProviderInformation loginProviderVar");
-			query.declareParameters("String externalIdParam, String providerParam");
+
+			// Set filter for UserLoginProviderInformation
+			Filter externalUserIdFilter = new FilterPredicate("externalUserId", FilterOperator.EQUAL, authUser.getId());
+			Filter providerFilter = new FilterPredicate("provider", FilterOperator.EQUAL, "GOOGLE");
+			Filter filter = new CompositeFilter(CompositeFilterOperator.AND,
+					Arrays.asList(externalUserIdFilter, providerFilter));
+
+			com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
+					"UserLoginProviderInformation").setFilter(filter);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+			PreparedQuery pq = datastore.prepare(q);
+
+			Entity providerInformationEntity = pq.asSingleEntity();
 			
-			List<User> queriedUserList = (List<User>) query.execute(authUser.getId(), authUser.getProvider());
-			
-			if(queriedUserList.size() > 1) {
-				throw new IllegalStateException("There are multiple Users connected with a federate Auth Provider!");
-			}
-			if(queriedUserList.size() == 0) {
+			if (providerInformationEntity == null) {
 				throw new UnauthorizedException("User is not registered");
 			}
-			
-			User user = queriedUserList.get(0);
+
+			Key userKey = providerInformationEntity.getParent();
+
+			User user = mgr.getObjectById(User.class, userKey.getName());
+
 			// detatch copy, otherwise referenced default fetched objects filled with nulls
 			user = mgr.detachCopy(user);
 			return user;
