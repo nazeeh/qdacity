@@ -147,19 +147,19 @@ acceptance_tests:
 #    - rtcsvc_prod_build
 
 # Does not work yet, with gitlab pages not installed
-pages:
-  <<: *job_definition
-  stage: report
-  dependencies:
-    - backend_prod_unittest
-  script:
-    - mv target/site/jacoco-ut/ public/
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - branches
+#pages:
+#  <<: *job_definition
+#  stage: report
+#  dependencies:
+#    - backend_prod_unittest
+#  script:
+#    - mv target/site/jacoco-ut/ public/
+#  artifacts:
+#    paths:
+#      - public
+#    expire_in: 30 days
+#  only:
+#    - branches
 
 .deploy_prod: &deployment_template
   <<: *job_definition
@@ -178,35 +178,35 @@ deploy_rtcsvc:
     - cd realtime-service
     - bash ./deployment/deploy_from_gitlab_ci.sh
 
-deploy_prod:
-  <<: *deployment_template
-  dependencies:
-    - backend_prod_build
-    - frontend_prod_build
-  only:
-    - master
+#deploy_prod:
+#  <<: *deployment_template
+#  dependencies:
+#    - backend_prod_build
+#    - frontend_prod_build
+#  only:
+#    - master
 
-deploy_prod_manual:
-  <<: *deployment_template
-  only:
-    - branches
-  except:
-    - master
-  dependencies:
-    - backend_prod_build
-    - frontend_prod_build
-  when: manual
+#deploy_prod_manual:
+#  <<: *deployment_template
+#  only:
+#    - branches
+#  except:
+#    - master
+#  dependencies:
+#    - backend_prod_build
+#    - frontend_prod_build
+#  when: manual
 
-deploy_non_minified:
-  <<: *deployment_template
-  only:
-    - branches
-  except:
-    - master
-  dependencies:
-    - backend_prod_build
-    - frontend_prod_build_nm
-  when: manual
+#deploy_non_minified:
+#  <<: *deployment_template
+#  only:
+#    - branches
+#  except:
+#    - master
+#  dependencies:
+#    - backend_prod_build
+#    - frontend_prod_build_nm
+#  when: manual
 
 .global_functions: &global_helpers |
     function build_frontend() {
