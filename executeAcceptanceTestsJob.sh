@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo "Building backend"
-mvn clean package
-
 echo "Existing containers"
 docker container ls -a
 
