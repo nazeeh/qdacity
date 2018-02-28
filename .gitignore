@@ -1,6 +1,7 @@
 .idea
 .settings/
 .project
+.classpath
 qdacity.iml
 endpoint-libs
 gwt-unitCache
