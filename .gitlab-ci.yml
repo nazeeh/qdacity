@@ -120,6 +120,10 @@ acceptance_tests:
     <<: *node_cache
     policy: pull
   script:
+    - pwd
+    - cd ./target/WEB-INF/lib
+    - ls
+    - cd ../../..
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:
