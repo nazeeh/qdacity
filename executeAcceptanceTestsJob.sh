@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Rebuilding backend"
-mvn clean package -DskipTests
+#mvn clean package -DskipTests
 
 echo "Existing containers"
 docker container ls -a
@@ -20,7 +20,7 @@ IMAGE_NAME_TESTS="qdacity-tests-${CI_PROJECT_ID}"
 [ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 
 # Build the test image
-docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $IMAGE_NAME_TESTS .
+docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.tests -t $IMAGE_NAME_TESTS .
 
 # Run docker image
 docker run --rm -v /dev/shm:/dev/shm $IMAGE_NAME_TESTS
