@@ -121,7 +121,7 @@ acceptance_tests:
     policy: pull
   script:
     - pwd
-    - cd ./target/WEB-INF/lib
+    - cd ./target/qdacity-war/WEB-INF/lib
     - ls
     - cd ../../..
     - chmod +x ./executeAcceptanceTestsJob.sh
