@@ -5,6 +5,7 @@ image: java:7
     - qdacity
   environment: Production
 
+
 .cache_node: &node_cache
   key: "node_modules"
   paths:
@@ -124,7 +125,7 @@ acceptance_tests:
     - cd ./target/qdacity-war/WEB-INF/lib
     - ls
     - cd ../../../..
-    - echo $API_CONFIG_PRODUCTION > ./api_config.json
+    - echo $API_CONFIG_PRODUCTION > ./war/api_config.json
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:
