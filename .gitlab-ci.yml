@@ -58,7 +58,7 @@ backend_prod_build:
       - target/qdacity-war
     expire_in: 3 mos
   script:
-    - mvn clean package
+    - mvn clean package -DskipTests
 
 rtcsvc_prod_build:
   <<: *job_definition
