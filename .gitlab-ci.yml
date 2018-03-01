@@ -123,7 +123,7 @@ acceptance_tests:
     - pwd
     - cd ./target/qdacity-war/WEB-INF/lib
     - ls
-    - cd ../../..
+    - cd ../../../..
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:
