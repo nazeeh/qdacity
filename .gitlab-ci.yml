@@ -7,7 +7,6 @@ image: java:7
 
 .cache_node: &node_cache
   key: "node_modules"
-  untracked: true
   paths:
     - war/node_modules/
     - localization/node_modules/
@@ -117,6 +116,9 @@ acceptance_tests:
   stage: test
   only:
     - branches
+  cache:
+    <<: *node_cache
+    policy: pull
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
