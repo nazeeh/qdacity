@@ -124,6 +124,7 @@ acceptance_tests:
     - cd ./target/qdacity-war/WEB-INF/lib
     - ls
     - cd ../../../..
+    - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:
