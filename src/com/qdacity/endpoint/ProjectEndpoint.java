@@ -36,6 +36,7 @@ import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
+import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.AbstractProject;
 import com.qdacity.project.Project;
 import com.qdacity.project.ProjectRevision;
@@ -48,7 +49,6 @@ import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.tasks.LastProjectUsed;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
-import com.qdacity.exercise.ExerciseProject;
 
 @Api(name = "qdacity",
 	version = Constants.VERSION,

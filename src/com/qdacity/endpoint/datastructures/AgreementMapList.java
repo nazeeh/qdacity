@@ -3,8 +3,6 @@ package com.qdacity.endpoint.datastructures;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.qdacity.project.data.AgreementMap;
-
 public class AgreementMapList {
 
 	public static class SimplifiedAgreementMap {

@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.qdacity.endpoint.CourseEndpoint;
-import com.qdacity.user.User;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.CourseEndpoint;
+import com.qdacity.user.User;
 
 public class CourseEndpointTestHelper {
 	static public void addCourse(Long id, String name, String description, com.google.api.server.spi.auth.common.User loggedInUser) {

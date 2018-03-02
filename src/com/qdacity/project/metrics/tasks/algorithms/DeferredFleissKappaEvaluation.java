@@ -1,16 +1,17 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.TabularValidationReportRow;
 import com.qdacity.project.metrics.algorithms.FleissKappa;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FleissKappaInputDataGenerator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DeferredFleissKappaEvaluation extends DeferredAlgorithmEvaluation {
 

@@ -1,9 +1,10 @@
 package com.qdacity.project.metrics;
 
-import com.qdacity.project.saturation.SaturationResult;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.PrimaryKey;
+
+import com.qdacity.project.saturation.SaturationResult;
 
 @PersistenceCapable(
 	identityType = IdentityType.APPLICATION)

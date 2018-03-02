@@ -1,11 +1,12 @@
 package com.qdacity.project.metrics.algorithms.datastructures.converter;
 
-import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.EvaluationUnit;
-import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.EvaluationUnit;
+import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 
 public class ReliabilityDataGenerator extends AlgorithmInputGenerator {
 

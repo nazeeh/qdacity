@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;

@@ -2,17 +2,11 @@ package com.qdacity.test.MetaModelEndpoint;
 
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.api.server.spi.auth.common.User;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.endpoint.MaintenanceEndpoint;
 import com.qdacity.endpoint.MetaModelEntityEndpoint;
-import com.qdacity.endpoint.UmlCodePositionEndpoint;
 import com.qdacity.metamodel.MetaModelEntity;
-import com.qdacity.umleditor.UmlCodePosition;
-import com.qdacity.umleditor.UmlCodePositionList;
 
 
 

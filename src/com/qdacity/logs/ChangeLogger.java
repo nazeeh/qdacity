@@ -1,10 +1,11 @@
 package com.qdacity.logs;
 
+import javax.jdo.PersistenceManager;
+
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.PMF;
-import javax.jdo.PersistenceManager;
 
 public class ChangeLogger {
 

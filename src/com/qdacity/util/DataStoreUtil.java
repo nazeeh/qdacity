@@ -1,6 +1,11 @@
 package com.qdacity.util;
 
-import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Projection;
+import com.google.appengine.api.datastore.Query;
 
 public class DataStoreUtil {
 	public static int countEntities(String entityName){

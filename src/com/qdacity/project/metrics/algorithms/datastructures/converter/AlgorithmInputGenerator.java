@@ -1,9 +1,10 @@
 package com.qdacity.project.metrics.algorithms.datastructures.converter;
 
-import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.EvaluationUnit;
 import java.util.Collection;
 import java.util.List;
+
+import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.EvaluationUnit;
 
 public abstract class AlgorithmInputGenerator {
 
