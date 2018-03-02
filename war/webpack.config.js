@@ -6,6 +6,9 @@ require('babel-polyfill');
 var ExtractMessagesPlugin = require('../localization/webpack').default;
 var BabelFormatMessagesPlugin = require('../localization/babel').default;
 
+// to find out the source of deprecation warnings un-comment this line
+//process.traceDeprecation = true 
+
 module.exports = {
 	bail: true,
 	entry: {
