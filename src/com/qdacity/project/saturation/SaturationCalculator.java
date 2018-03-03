@@ -1,5 +1,11 @@
 package com.qdacity.project.saturation;
 
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.jdo.PersistenceManager;
+
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -19,10 +25,6 @@ import com.qdacity.logs.CodeBookEntryChangeDetail;
 import com.qdacity.logs.CodeChangeDetail;
 import com.qdacity.project.Project;
 import com.qdacity.util.DataStoreUtil;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.jdo.PersistenceManager;
 
 public class SaturationCalculator {
 

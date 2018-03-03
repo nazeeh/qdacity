@@ -4,6 +4,11 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -18,11 +23,11 @@ import com.qdacity.project.metrics.tasks.DeferredEvaluationExerciseReport;
 import com.qdacity.project.metrics.tasks.DeferredEvaluationValidationReport;
 import org.json.JSONException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
@@ -41,7 +46,7 @@ import com.qdacity.project.ProjectType;
 		packagePath = "server.project"),
 	authenticators = {QdacityAuthenticator.class})
 public class ExerciseEndpoint {
-	
+
 	private UserEndpoint userEndpoint = new UserEndpoint();
 
 	/**
@@ -62,10 +67,10 @@ public class ExerciseEndpoint {
 				if (containsExercise(exercise)) {
 					throw new EntityExistsException("Exercise already exists");
 				}
-				
-				
+
+
 			}
-			
+
 			try {
 				TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
 				Authorization.checkAuthorizationTermCourse(termCourse, user);
@@ -74,13 +79,13 @@ public class ExerciseEndpoint {
 			catch (javax.jdo.JDOObjectNotFoundException ex) {
 				throw new javax.jdo.JDOObjectNotFoundException("The corresponding term course was not found");
 			}
-			
+
 		} finally {
 			mgr.close();
 		}
 		return exercise;
 	}
-	
+
 	/**
 	 * This method lists all the exercises which belong to a specific term course
 	 * It uses HTTP GET method and paging support.
@@ -97,7 +102,7 @@ public class ExerciseEndpoint {
 	public List<Exercise> listTermCourseExercises(@Named("termCrsID") Long termCourseID, User user) throws UnauthorizedException {
 
 		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
-		
+
 		PersistenceManager mgr = null;
 		List<Exercise> execute = null;
 
@@ -115,7 +120,7 @@ public class ExerciseEndpoint {
 
 		return execute;
 	}
-	
+
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
@@ -137,20 +142,20 @@ public class ExerciseEndpoint {
 			mgr.close();
 		}
 	}
-	
+
 
 	@ApiMethod(name = "exercise.createExerciseProject")
 		public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
 			ExerciseProject cloneExerciseProject = null;
 			PersistenceManager mgr = getPersistenceManager();
-			
+
 			try {
-				
+
 				Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
 				TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
 				// Check if user is authorized
 				Authorization.checkAuthorizationTermCourse(termCourse, user);
-				
+
 				cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
 
 			} finally {
@@ -194,7 +199,7 @@ public class ExerciseEndpoint {
 	@SuppressWarnings({ "unchecked"})
 	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded")
 		public ExerciseProject createExerciseProjectIfNeeded(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
-			
+
 			ExerciseProject cloneExerciseProject = null;
 			List<ExerciseProject> exerciseProjects = null;
 			PersistenceManager mgr = getPersistenceManager();
@@ -230,7 +235,7 @@ public class ExerciseEndpoint {
 			return cloneExerciseProject;
 		}
 
-		
+
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID")
 		public ExerciseProject getExerciseProjectByRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
@@ -250,7 +255,7 @@ public class ExerciseEndpoint {
 			}
 			return exerciseProject;
 		}
-	
+
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.getExerciseProjectsByExerciseID")
 		public List<ExerciseProject> getExerciseProjectsByExerciseID(@Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
@@ -333,10 +338,10 @@ public class ExerciseEndpoint {
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID ,User user) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
-		
+
 		ProjectRevision project = null;
 		ExerciseProject cloneExerciseProject = null;
-		
+
 		project = mgr.getObjectById(ProjectRevision.class, revisionID);
 
 		cloneExerciseProject = cloneExerciseProject(project, user);
@@ -351,10 +356,10 @@ public class ExerciseEndpoint {
 		project = mgr.makePersistent(project);
 
 		TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.EXERCISE, cloneExerciseProject.getId(), true, user);
-		
+
 		return cloneExerciseProject;
 	}
-	
+
 	private boolean containsExercise(Exercise exercise) {
 		PersistenceManager mgr = getPersistenceManager();
 		boolean contains = true;
@@ -367,11 +372,11 @@ public class ExerciseEndpoint {
 		}
 		return contains;
 	}
-	
+
 	private static PersistenceManager getPersistenceManager() {
 		return PMF.get().getPersistenceManager();
 	}
 
-	
+
 
 }

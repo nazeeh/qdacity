@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.jdo.PersistenceManager;
 
-import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.api.server.spi.auth.common.User;
+import com.google.appengine.api.taskqueue.DeferredTask;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.exercise.ExerciseProject;

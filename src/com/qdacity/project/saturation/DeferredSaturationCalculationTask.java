@@ -1,15 +1,17 @@
 package com.qdacity.project.saturation;
 
-import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.taskqueue.DeferredTask;
-import com.qdacity.PMF;
-import com.qdacity.endpoint.SaturationEndpoint;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.jdo.PersistenceManager;
+
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.taskqueue.DeferredTask;
+import com.qdacity.PMF;
+import com.qdacity.endpoint.SaturationEndpoint;
 
 public class DeferredSaturationCalculationTask implements DeferredTask {
 

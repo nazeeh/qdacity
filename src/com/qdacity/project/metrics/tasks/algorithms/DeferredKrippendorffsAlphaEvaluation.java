@@ -1,5 +1,11 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.api.server.spi.auth.common.User;
 import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.Project;
@@ -11,11 +17,6 @@ import com.qdacity.project.metrics.TabularReportRow;
 import com.qdacity.project.metrics.algorithms.KrippendorffsAlphaCoefficient;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvaluation {
 

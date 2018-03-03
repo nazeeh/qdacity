@@ -3,18 +3,10 @@ package com.qdacity.test.UmlCodePositionEndpoint;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.qdacity.PMF;
-import com.qdacity.endpoint.CodeEndpoint;
 import com.qdacity.endpoint.UmlCodePositionEndpoint;
-import com.qdacity.project.codesystem.Code;
 import com.qdacity.umleditor.UmlCodePosition;
 import com.qdacity.umleditor.UmlCodePositionList;
 

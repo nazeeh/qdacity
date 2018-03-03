@@ -12,9 +12,9 @@ import javax.jdo.Query;
 import com.qdacity.project.metrics.*;
 import org.json.JSONException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;

@@ -27,7 +27,6 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.MetaModelEntityEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.metamodel.MetaModelEntity;
-import com.qdacity.test.UmlCodePositionEndpoint.UmlCodePositionEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 import com.qdacity.user.LoginProviderType;
 

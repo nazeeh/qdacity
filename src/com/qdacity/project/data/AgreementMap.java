@@ -1,7 +1,5 @@
 package com.qdacity.project.data;
 
-import java.util.logging.Level;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;

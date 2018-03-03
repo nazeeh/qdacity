@@ -5,9 +5,9 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
