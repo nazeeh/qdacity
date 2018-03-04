@@ -375,15 +375,14 @@ public class UserEndpoint {
 		// remove from courses
 		CourseEndpoint courseEndpoint = new CourseEndpoint();
 		if(user.getCourses() != null) {
-			for(Long courserId: user.getCourses()) {
-				
-				Course course = (Course) Cache.getOrLoad(courserId, Course.class);
+			for(Course course : courseEndpoint.listCourseByUserId(user.getId(), null, null, loggedInUser).getItems()) {
+
 				if(course.getOwners().contains(user.getId()) && course.getOwners().size() == 1) {
 					// last owner
-					courseEndpoint.removeCourse(courserId, loggedInUser);
+					courseEndpoint.removeCourse(course.getId(), loggedInUser);
 				} else {
 					// just remove user
-					courseEndpoint.removeUser(courserId, loggedInUser);
+					courseEndpoint.removeUser(course.getId(), loggedInUser);
 				}
 			}
 		}
