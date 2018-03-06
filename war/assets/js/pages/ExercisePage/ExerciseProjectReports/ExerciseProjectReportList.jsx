@@ -73,10 +73,10 @@ export default class ExerciseProjectReportList extends React.Component {
 
 	}
 
-	createReport(exerciseID) {
+	createReport(revId) {
 		const { formatMessage } = IntlProvider.intl;
 		var projectEndpoint = new ProjectEndpoint();
-		DocumentsEndpoint.getDocuments(exerciseID, 'EXERCISE').then(function(documents) {
+		DocumentsEndpoint.getDocuments(revId, 'EXERCISE').then(function(documents) {
 			var modal = new CustomForm(
 				formatMessage({
 					id: 'exercisePage.create_validation_report',
@@ -164,7 +164,7 @@ export default class ExerciseProjectReportList extends React.Component {
 		return (
 			<div>
 
-				{this.renderCreateReportBtn(this.props.exercise.id)}
+				{this.renderCreateReportBtn(this.props.exercise.projectRevisionID)}
 
 				<ItemList
 					key={'itemlist'}
