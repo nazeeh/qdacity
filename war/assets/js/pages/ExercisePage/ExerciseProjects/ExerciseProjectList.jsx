@@ -18,10 +18,7 @@ import {
 	StyledListItemPrimary,
 	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
-const SyledCreateReportBtn = BtnDefault.extend`
-	margin-top: -6px;
-	margin-bottom: 6px;
-`;
+
 const StyledBtnIcon = styled.i`
 	font-size: 18px;
 `;
@@ -71,56 +68,6 @@ export default class ExerciseProjectList extends React.Component {
 		);
 	}
 
-	createReport(exerciseID) {
-		const { formatMessage } = IntlProvider.intl;
-		var projectEndpoint = new ProjectEndpoint();
-		DocumentsEndpoint.getDocuments(exerciseID, 'EXERCISE').then(function(documents) {
-			var modal = new CustomForm(
-				formatMessage({
-					id: 'exercisePage.create_validation_report',
-					defaultMessage: 'Create Evaluation Report'
-				})
-			);
-			modal.addTextInput(
-				'title',
-				formatMessage({
-					id: 'exercisePage.report_title',
-					defaultMessage: 'Report Title'
-				}),
-				'',
-				''
-			);
-			var documentTitles = [];
-
-			modal.addCheckBoxes('docs', documents);
-
-			//TODO should not be hardcoded here
-			var methods = ['f-measure'];
-			var units = ['paragraph', 'sentence'];
-
-			modal.addSelect(
-				'method',
-				methods,
-				formatMessage({
-					id: 'exercisePage.evaluation_method',
-					defaultMessage: 'Evaluation Method'
-				})
-			);
-			modal.addSelect(
-				'unit',
-				units,
-				formatMessage({
-					id: 'exercisePage.unit_of_coding',
-					defaultMessage: 'Unit of Coding'
-				})
-			);
-
-			modal.showModal().then(function(data) {
-				
-			});
-		});
-	}
-
 	renderExerciseProject(exerciseProject, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
@@ -139,21 +86,6 @@ export default class ExerciseProjectList extends React.Component {
 		);
 	}
 
-	renderCreateReportBtn(revId) {
-			return (
-				<SyledCreateReportBtn
-					onClick={() => this.createReport(revId)}
-					className=" pull-right"
-				>
-					<StyledBtnIcon className="fa fa-plus-circle" />
-					<FormattedMessage
-						id="exercisePage.create_report"
-						defaultMessage="Create Evaluation Reports"
-					/>
-				</SyledCreateReportBtn>
-			);
-	}
-
 	render() {
 		var _this = this;
 
@@ -161,9 +93,6 @@ export default class ExerciseProjectList extends React.Component {
 
 		return (
 			<div>
-
-				{this.renderCreateReportBtn(this.props.exercise.id)}
-
 				<ItemList
 					key={'itemlist'}
 					hasPagination={true}
