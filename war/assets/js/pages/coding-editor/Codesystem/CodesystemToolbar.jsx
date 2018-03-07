@@ -140,7 +140,7 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	toggleSearchBar() {
-
+		this.props.toggleCodeSearch();
 	}
 
 	renderAddRemoveCodeBtn() {
