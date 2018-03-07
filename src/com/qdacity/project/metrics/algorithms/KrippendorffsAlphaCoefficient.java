@@ -1,10 +1,11 @@
 package com.qdacity.project.metrics.algorithms;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.qdacity.project.metrics.algorithms.datastructures.CoincidenceMatrix;
 import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataToCoincidenceMatrixConverter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An implementation for the Krippendorff's Alpha Coefficient using

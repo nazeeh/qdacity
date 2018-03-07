@@ -5,10 +5,10 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Text;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.data.TextDocument;

@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
-import javax.jdo.FetchGroup;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -42,7 +41,9 @@ import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
-import com.qdacity.logs.*;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeBuilder;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.Project;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;

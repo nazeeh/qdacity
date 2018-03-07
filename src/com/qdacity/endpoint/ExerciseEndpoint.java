@@ -1,6 +1,10 @@
 package com.qdacity.endpoint;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -8,11 +12,11 @@ import javax.persistence.EntityExistsException;
 
 import org.json.JSONException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;

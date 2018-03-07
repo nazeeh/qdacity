@@ -7,11 +7,11 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.metrics.ValidationResult;
 

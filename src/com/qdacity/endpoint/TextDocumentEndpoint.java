@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -14,8 +13,6 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
-import com.qdacity.project.*;
-import org.apache.cxf.common.util.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -36,14 +33,18 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.endpoint.datastructures.AgreementMapList;
 import com.qdacity.endpoint.datastructures.AgreementMapList.SimplifiedAgreementMap;
-import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.endpoint.datastructures.TextDocumentList;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
+import com.qdacity.project.AbstractProject;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;

@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.PMF;
 import com.qdacity.endpoint.CodeSystemEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;

@@ -2,6 +2,7 @@ package com.qdacity.test.ExerciseEndpoint;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 import org.junit.After;

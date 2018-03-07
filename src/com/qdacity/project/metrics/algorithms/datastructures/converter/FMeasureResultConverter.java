@@ -1,9 +1,10 @@
 package com.qdacity.project.metrics.algorithms.datastructures.converter;
 
-import com.qdacity.project.metrics.FMeasureResult;
-import com.qdacity.project.metrics.TabularValidationReportRow;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.qdacity.project.metrics.FMeasureResult;
+import com.qdacity.project.metrics.TabularValidationReportRow;
 
 
 /**

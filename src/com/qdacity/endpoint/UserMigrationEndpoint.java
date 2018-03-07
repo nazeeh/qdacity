@@ -5,18 +5,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
-
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -24,22 +18,25 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskHandle;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.GoogleIdTokenValidator;
+import com.qdacity.maintenance.tasks.v9tov10Migration.V9toV10MigrationUser;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserLoginProviderInformation;
 import com.qdacity.user.UserType;
-import com.qdacity.Authorization;
-
-import com.qdacity.maintenance.tasks.v9tov10Migration.V9toV10MigrationUser;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskHandle;
 
 
 /**

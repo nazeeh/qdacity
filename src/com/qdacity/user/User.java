@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 import javax.jdo.annotations.Column;
 import javax.jdo.annotations.Element;

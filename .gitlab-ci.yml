@@ -5,9 +5,9 @@ image: java:7
     - qdacity
   environment: Production
 
+
 .cache_node: &node_cache
   key: "node_modules"
-  untracked: true
   paths:
     - war/node_modules/
     - localization/node_modules/
@@ -58,7 +58,7 @@ backend_prod_build:
       - target/qdacity-war
     expire_in: 3 mos
   script:
-    - mvn clean package
+    - mvn clean package -DskipTests
 
 rtcsvc_prod_build:
   <<: *job_definition
@@ -121,6 +121,8 @@ acceptance_tests:
     <<: *node_cache
     policy: pull
   script:
+    - pwd
+    - echo $API_CONFIG_PRODUCTION > ./war/api_config.json
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:

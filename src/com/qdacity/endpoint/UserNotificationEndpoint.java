@@ -10,11 +10,11 @@ import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import com.google.api.server.spi.response.UnauthorizedException;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -29,7 +29,6 @@ import com.qdacity.PMF;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
-import com.qdacity.endpoint.UserEndpoint;
 
 @Api(
 	name = "qdacity",

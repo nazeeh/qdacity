@@ -1,24 +1,42 @@
 package com.qdacity.endpoint;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.google.appengine.api.datastore.Projection;
-import com.google.appengine.api.datastore.PropertyProjection;
-import com.google.appengine.api.datastore.Query;
-import com.google.cloud.bigquery.*;
-import com.qdacity.Constants;
-import com.qdacity.authentication.QdacityAuthenticator;
-import com.qdacity.endpoint.datastructures.*;
-import com.qdacity.logs.EventType;
-import com.qdacity.util.DataStoreUtil;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiNamespace;
+import com.google.appengine.api.datastore.Query;
+import com.google.cloud.bigquery.BigQuery;
+import com.google.cloud.bigquery.BigQueryOptions;
+import com.google.cloud.bigquery.FieldValueList;
+import com.google.cloud.bigquery.Job;
+import com.google.cloud.bigquery.JobId;
+import com.google.cloud.bigquery.JobInfo;
+import com.google.cloud.bigquery.QueryJobConfiguration;
+import com.google.cloud.bigquery.QueryParameterValue;
+import com.google.cloud.bigquery.QueryResponse;
+import com.google.cloud.bigquery.QueryResult;
+import com.qdacity.Constants;
+import com.qdacity.authentication.QdacityAuthenticator;
+import com.qdacity.endpoint.datastructures.AggregatedBillingStats;
+import com.qdacity.endpoint.datastructures.DailyCostsBillingStats;
+import com.qdacity.endpoint.datastructures.ExtendedServiceCostsBillingItem;
+import com.qdacity.endpoint.datastructures.ExtendedServiceCostsBillingStats;
+import com.qdacity.endpoint.datastructures.ServiceCostsBillingStats;
+import com.qdacity.util.DataStoreUtil;
 
 @Api(
 		name = "qdacity",

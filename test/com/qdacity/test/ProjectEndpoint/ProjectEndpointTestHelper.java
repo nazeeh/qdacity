@@ -2,8 +2,8 @@ package com.qdacity.test.ProjectEndpoint;
 
 import static org.junit.Assert.fail;
 
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.api.server.spi.auth.common.User;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.project.Project;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;

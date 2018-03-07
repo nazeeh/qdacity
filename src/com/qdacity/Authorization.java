@@ -8,8 +8,8 @@ import java.util.logging.Level;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.api.server.spi.auth.common.User;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.UserEndpoint;
