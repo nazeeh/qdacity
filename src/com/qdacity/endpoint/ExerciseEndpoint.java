@@ -196,6 +196,26 @@ public class ExerciseEndpoint {
         return reports;
     }
 
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.listExerciseReportsByRevisionID")
+    public List<ExerciseReport> listExerciseReportsByRevisionID(@Named("revisionID") Long revID, User user) throws UnauthorizedException {
+        List<ExerciseReport> reports = new ArrayList<>();
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            Query q;
+            q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID");
+
+            Map<String, Long> params = new HashMap<>();
+            params.put("revisionID", revID);
+
+            reports = (List<ExerciseReport>) q.executeWithMap(params);
+
+        } finally {
+            mgr.close();
+        }
+        return reports;
+    }
+
 	@SuppressWarnings({ "unchecked"})
 	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded")
 		public ExerciseProject createExerciseProjectIfNeeded(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
