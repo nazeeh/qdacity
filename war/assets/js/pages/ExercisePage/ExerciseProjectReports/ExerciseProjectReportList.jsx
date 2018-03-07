@@ -46,26 +46,26 @@ export default class ExerciseProjectReportList extends React.Component {
 	init() {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
-			/*
-			this.getExerciseProjectReportsPromise = ExerciseEndpoint.getExerciseProjectsByExerciseID(
-				this.props.exercise.id
+			
+			this.getExerciseProjectReportsPromise = ExerciseEndpoint.listExerciseReportsByRevisionID(
+				this.props.exercise.projectRevisionID
 			);
-			this.fetchExerciseData();
-			*/
+			this.fetchExerciseReportData();
+
 		}
 	}
 
-/*
-	fetchExerciseData() {
+
+	fetchExerciseReportData() {
 		var _this = this;
-		this.getExerciseProjectsPromise.then(function(resp) {
+		this.getExerciseProjectReportsPromise.then(function(resp) {
 			resp.items = resp.items || [];
 			_this.setState({
-				exerciseProjects: resp.items
+				exerciseProjectReports: resp.items
 			});
 		});
 	}
-*/
+
 
 	deleteExerciseProjectReportClick(e, exerciseProjectReport) {
 		var _this = this;

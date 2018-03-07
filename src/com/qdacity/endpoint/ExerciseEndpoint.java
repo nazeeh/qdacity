@@ -197,7 +197,7 @@ public class ExerciseEndpoint {
     }
 
     @SuppressWarnings("unchecked")
-    @ApiMethod(name = "exercise.listExerciseReportsByRevisionID")
+    @ApiMethod(name = "exercise.listExerciseReportsByRevisionID", path = "exercise.listExerciseReportsByRevisionID")
     public List<ExerciseReport> listExerciseReportsByRevisionID(@Named("revisionID") Long revID, User user) throws UnauthorizedException {
         List<ExerciseReport> reports = new ArrayList<>();
         PersistenceManager mgr = getPersistenceManager();
