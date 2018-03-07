@@ -3,7 +3,6 @@ import { FormattedMessage } from 'react-intl';
 
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
-import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
@@ -75,7 +74,7 @@ export default class ExerciseProjectReportList extends React.Component {
 
 	createReport(revId) {
 		const { formatMessage } = IntlProvider.intl;
-		var projectEndpoint = new ProjectEndpoint();
+		var exerciseEndpoint = new ExerciseEndpoint();
 		DocumentsEndpoint.getDocuments(revId, 'EXERCISE').then(function(documents) {
 			var modal = new CustomForm(
 				formatMessage({
@@ -118,7 +117,24 @@ export default class ExerciseProjectReportList extends React.Component {
 			);
 
 			modal.showModal().then(function(data) {
-
+				var selectedDocs = [];
+				exerciseEndpoint
+					.evaluateExerciseRevision(
+						revId,
+						data.title,
+						data.docs,
+						data.method,
+						data.unit
+					) //TODO
+					.then(function(val) {
+						alertify.success(
+							formatMessage({
+								id: 'exercisePage.report_initiated',
+								defaultMessage: 'Report Initiated. This may take a few minutes'
+							})
+						);
+					})
+					.catch(this.handleBadResponse);
 			});
 		});
 	}
@@ -158,7 +174,6 @@ export default class ExerciseProjectReportList extends React.Component {
 
 	render() {
 		var _this = this;
-
 		if (!this.props.auth.authentication.isSignedIn()) return null;
 
 		return (
