@@ -46,7 +46,7 @@ export default class ExerciseProjectReportList extends React.Component {
 	init() {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
-			
+
 			this.getExerciseProjectReportsPromise = ExerciseEndpoint.listExerciseReportsByRevisionID(
 				this.props.exercise.projectRevisionID
 			);
@@ -142,15 +142,15 @@ export default class ExerciseProjectReportList extends React.Component {
 	renderExerciseProjectReport(exerciseProjectReport, index) {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
-				<span> {exerciseProjectReport.id} </span>
+				<span> {exerciseProjectReport.name} </span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.deleteExerciseProjectReportClick(e, exerciseProjectReport)}
 						className=" btn fa-lg"
-						color={Theme.darkGreen}
-						colorAccent={Theme.darkGreenAccent}
+						color={Theme.rubyRed}
+						colorAccent={Theme.rubyRedAccent}
 					>
-						<i className="fa fa-tags" />
+						<i className="fa fa-trash " />
 					</StyledListItemBtn>
 				</div>
 			</StyledListItemDefault>
