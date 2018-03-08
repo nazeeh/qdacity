@@ -58,6 +58,8 @@ backend_prod_build:
       - target/qdacity-war
     expire_in: 3 mos
   script:
+    - cp ./pom.example.xml ./pom.xml
+    - sed -i -e 's/$$APP-ID$$/'$PROJECT_ID_PRODUCTION'/g' ./pom.xml
     - mvn clean package -DskipTests
 
 rtcsvc_prod_build:
