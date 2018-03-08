@@ -29,3 +29,4 @@ target
 /war/package-lock.json
 /war/translations/template.txt
 /bin/
+/pom.xml
