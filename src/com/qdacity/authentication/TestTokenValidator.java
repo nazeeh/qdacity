@@ -14,7 +14,7 @@ public class TestTokenValidator implements TokenValidator {
 	 */
 	@Override
 	public AuthenticatedUser validate(String token) {
-		return new AuthenticatedUser("test_user", "test_user@test-qdacity", LoginProviderType.GOOGLE);
+		return new AuthenticatedUser("5344212", "test@qdacity.com", LoginProviderType.GOOGLE);
 	}
 
 }
