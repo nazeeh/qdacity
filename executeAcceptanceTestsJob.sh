@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Local build
+cd war
+gulp bundle-task --local
+cd ..
+
 echo "Existing containers"
 docker container ls -a
 
