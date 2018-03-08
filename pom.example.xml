@@ -292,7 +292,7 @@
 				<version>1.0.2</version>
 				<configuration>
 					<!-- plugin configuration -->
-					<hostname>$$APP-ID$$.appspot.com</hostname>
+					<hostname>APPENGINE_APP_ID.appspot.com</hostname>
 				</configuration>
 			</plugin>
 		  <plugin>
