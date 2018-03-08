@@ -69,6 +69,7 @@ export default class ExerciseProjectReportList extends React.Component {
 
 
 	deleteExerciseProjectReportClick(e, exerciseProjectReport) {
+		e.stopPropagation();
 		var _this = this;
 
 	}
