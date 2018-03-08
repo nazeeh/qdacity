@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-
+import React from 'react';
 import ReactLoading from '../ReactLoading.jsx';
 
 import VexModal from './VexModal';
@@ -123,7 +123,7 @@ export default class IntercoderAgreement extends VexModal {
 							_this.history.push(
 								'/CodingEditor?project=' +
 									_this.report.revisionID +
-									'&type=REVISION&report=' +
+									'&type=EXERCISE&report=' +
 									_this.report.id +
 									'&parentproject=' +
 									_this.report.projectID

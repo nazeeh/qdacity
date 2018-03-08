@@ -9,6 +9,7 @@ import CustomForm from '../../../common/modals/CustomForm';
 import Theme from '../../../common/styles/Theme.js';
 import Confirm from '../../../common/modals/Confirm';
 import IntlProvider from '../../../common/Localization/LocalizationProvider';
+import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
 
 import {
 	ItemList,
@@ -139,9 +140,17 @@ export default class ExerciseProjectReportList extends React.Component {
 		});
 	}
 
+	showExerciseReports(exerciseProjectReport) {
+		var agreementModal = new IntercoderAgreement(exerciseProjectReport, this.props.history);
+		if (this.props.isTermCourseOwner) agreementModal.showModal();
+	}
+
 	renderExerciseProjectReport(exerciseProjectReport, index) {
 		return (
-			<StyledListItemDefault key={index} className="clickable">
+			<StyledListItemDefault
+				key={index}
+				className="clickable"
+				onClick={() => this.showExerciseReports(exerciseProjectReport)}>
 				<span> {exerciseProjectReport.name} </span>
 				<div>
 					<StyledListItemBtn

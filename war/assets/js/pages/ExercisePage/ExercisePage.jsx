@@ -97,6 +97,7 @@ export default class ExercisePage extends React.Component {
 				<ExerciseProjectReports
 					exercise={this.state.exercise}
 					auth={this.props.auth}
+					isTermCourseOwner = {this.state.isTermCourseOwner}
 					history={this.props.history}
 				/>
 			);
