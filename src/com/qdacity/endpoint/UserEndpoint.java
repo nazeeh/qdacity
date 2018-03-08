@@ -34,6 +34,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -413,6 +414,16 @@ public class UserEndpoint {
 	@SuppressWarnings("unchecked")
 	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser)
 			throws UnauthorizedException {
+
+		// Return a test account
+		if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development) {
+        	User u = new User();
+			u.setId("5344212");
+			u.setEmail("test@qdacity.com");
+			u.setGivenName("GivenName");
+			u.setSurName("SurName");
+			return u;
+    	}
 
 		if (loggedInUser == null) {
 			throw new UnauthorizedException("The User could not be authenticated");
