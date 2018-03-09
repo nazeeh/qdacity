@@ -2,7 +2,7 @@
 
 # Local build
 cd war
-#gulp bundle-task --local
+gulp bundle-task --local
 cd ..
 
 echo "Existing containers"
