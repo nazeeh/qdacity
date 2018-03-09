@@ -10,12 +10,6 @@ RUN \
   sudo apt-get install -y unzip && \
   sudo apt-get -y upgrade
 
-# Install java 7
-RUN \
-  sudo add-apt-repository ppa:openjdk-r/ppa && \
-  sudo apt-get update && \
-  sudo apt-get install -y openjdk-7-jdk
-
 # Google appengine java sdk
 RUN \
   sudo mkdir -p /opt/appengine-java-sdk && \

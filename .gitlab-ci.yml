@@ -56,8 +56,11 @@ backend_prod_build:
   artifacts:
     paths:
       - target/qdacity-war
+      - ./pom.xml
     expire_in: 3 mos
   script:
+    - cp ./pom.base.xml ./pom.xml
+    - sed -i -e 's/APPENGINE_APP_ID/'$PROJECT_ID_PRODUCTION'/g' ./pom.xml
     - mvn clean package -DskipTests
 
 rtcsvc_prod_build:
