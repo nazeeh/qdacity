@@ -285,6 +285,9 @@
 					<port>8888</port>
 					<fullScanSeconds>2</fullScanSeconds>
 					<deploy.promote>false</deploy.promote>
+					<!-- configure the following for local builds -->
+					<deploy.project>APPENGINE_APP_ID</deploy.project>
+					<deploy.version>APPENGINE_APP_VERSION</deploy.version>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -292,7 +295,7 @@
 				<artifactId>endpoints-framework-maven-plugin</artifactId>
 				<version>1.0.2</version>
 				<configuration>
-					<!-- plugin configuration -->
+					<!-- configure the following for local builds -->
 					<hostname>APPENGINE_APP_ID.appspot.com</hostname>
 				</configuration>
 			</plugin>
