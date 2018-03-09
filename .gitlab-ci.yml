@@ -59,7 +59,7 @@ backend_prod_build:
       - ./pom.xml
     expire_in: 3 mos
   script:
-    - cp ./pom.example.xml ./pom.xml
+    - cp ./pom.base.xml ./pom.xml
     - sed -i -e 's/APPENGINE_APP_ID/'$PROJECT_ID_PRODUCTION'/g' ./pom.xml
     - mvn clean package -DskipTests
 
