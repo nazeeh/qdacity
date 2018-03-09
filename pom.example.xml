@@ -10,13 +10,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<maven.compiler.testSource>1.7</maven.compiler.testSource>
-		<maven.compiler.testTarget>1.7</maven.compiler.testTarget>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.testSource>1.8</maven.compiler.testSource>
+		<maven.compiler.testTarget>1.8</maven.compiler.testTarget>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<archiveClasses>true</archiveClasses>
-		<argLine>-Dbytecode.version=1.7</argLine>
+		<argLine>-Dbytecode.version=1.8</argLine>
 	</properties>
 
 	<prerequisites>
@@ -380,7 +380,7 @@
 			<version>2.20</version>
 			<configuration>
 				<!-- Sets the VM argument line used when unit tests are run. -->
-				<argLine>${surefireArgLine} -Dbytecode.version=1.7</argLine>
+				<argLine>${surefireArgLine} -Dbytecode.version=1.8</argLine>
 				<trimStackTrace>false</trimStackTrace>
 			</configuration>
 		  </plugin>
