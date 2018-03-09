@@ -422,6 +422,10 @@ public class UserEndpoint {
 			u.setEmail("test@qdacity.com");
 			u.setGivenName("GivenName");
 			u.setSurName("SurName");
+			u.setProjects(new ArrayList<Long>());
+			u.setCourses(new ArrayList<Long>());
+			u.setType(UserType.USER);
+			u.setLastLogin(new Date());
 			return u;
     	}
 
