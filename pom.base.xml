@@ -284,6 +284,7 @@
 					<enableJarSplitting>true</enableJarSplitting>
 					<port>8888</port>
 					<fullScanSeconds>2</fullScanSeconds>
+					<deploy.promote>false</deploy.promote>
 				</configuration>
 			</plugin>
 			<plugin>
