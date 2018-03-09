@@ -142,7 +142,7 @@ export default class ExerciseProjectReportList extends React.Component {
 	}
 
 	showExerciseReports(exerciseProjectReport) {
-		var agreementModal = new IntercoderAgreement(exerciseProjectReport, this.props.history);
+		var agreementModal = new IntercoderAgreement(exerciseProjectReport, this.props.history, 'EXERCISE');
 		if (this.props.isTermCourseOwner) agreementModal.showModal();
 	}
 

@@ -8,11 +8,12 @@ import IntercoderAgreementByCode from './IntercoderAgreementByCode';
 import BinaryDecider from './BinaryDecider';
 import ProjectEndpoint from '../endpoints/ProjectEndpoint';
 import ValidationEndpoint from '../endpoints/ValidationEndpoint';
+import ExerciseEndpoint from '../endpoints/ExerciseEndpoint';
 import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class IntercoderAgreement extends VexModal {
-	constructor(report, history) {
+	constructor(report, history, projectType) {
 		super();
 		const { formatMessage } = IntlProvider.intl;
 		this.history = history;
@@ -68,6 +69,7 @@ export default class IntercoderAgreement extends VexModal {
 			'</div>';
 
 		this.report = report;
+		this.projectType = projectType;
 		this.results;
 	}
 
@@ -155,11 +157,12 @@ export default class IntercoderAgreement extends VexModal {
 				document.getElementById('reactLoading')
 			);
 
-			gapi.client.qdacity.validation
-				.listValidationResults({
-					reportID: _this.report.id
-				})
-				.execute(function(resp) {
+
+			if (_this.projectType == "EXERCISE") var resultsPromise = ExerciseEndpoint.listExerciseResults(_this.report.id);
+			else var resultsPromise = ValidationEndpoint.listValidationResults(_this.report.id);
+
+
+			resultsPromise.then(function(resp) {
 					if (!resp.code) {
 						$('#loadingAnimation').addClass('hidden');
 						_this.results = resp.items || [];
