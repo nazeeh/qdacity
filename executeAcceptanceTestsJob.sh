@@ -5,6 +5,9 @@ cd war
 gulp bundle-task --local
 cd ..
 
+# Mvn package
+mvn clean package
+
 echo "Existing containers"
 docker container ls -a
 
