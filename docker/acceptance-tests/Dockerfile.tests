@@ -5,6 +5,7 @@ WORKDIR /app
 COPY ./target /app/target
 COPY ./docker /app/docker
 COPY ./localization /app/localization
+COPY ./war/assets /app/war/assets
 COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
 COPY ./war/node_modules /app/war/node_modules
 COPY ./war/gulp-plugins /app/war/gulp-plugins
