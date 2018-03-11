@@ -13,7 +13,7 @@ RUN \
 # Google appengine java sdk
 RUN \
   sudo mkdir -p /opt/appengine-java-sdk && \
-  sudo curl -o /tmp/appengine-java-sdk.zip https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.62.zip && \
+  sudo curl -o /tmp/appengine-java-sdk.zip https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.59.zip && \
   sudo unzip /tmp/appengine-java-sdk.zip -d /opt/appengine-java-sdk && \
   sudo rm -f /tmp/appengine-java-sdk.zip
 
