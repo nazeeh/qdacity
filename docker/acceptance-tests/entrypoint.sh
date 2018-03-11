@@ -7,11 +7,6 @@ echo "Start the selenium server"
 
 sleep 5
 
-
-# This is a temporary hack. Selenium server requires java 8 and the dev-server requires java 7
-sudo update-java-alternatives -s java-1.7.0-openjdk-amd64
-
-
 # Start the dev-server
 echo "Start the devserver"
 
