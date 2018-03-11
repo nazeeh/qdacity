@@ -122,14 +122,26 @@ export default class IntercoderAgreement extends VexModal {
 							defaultMessage: 'Agreement Maps'
 						}),
 						click: function() {
-							_this.history.push(
-								'/CodingEditor?project=' +
-									_this.report.revisionID +
-									'&type=REVISION&report=' +
-									_this.report.id +
-									'&parentproject=' +
-									_this.report.projectID
-							);
+							if (_this.projectType == "EXERCISE") {
+								_this.history.push(
+									'/CodingEditor?project=' +
+										_this.report.revisionID +
+										'&type=REVISION&report=' +
+										_this.report.id +
+										'&parentproject=' +
+										_this.report.projectID
+								);
+							}
+							else {
+								_this.history.push(
+									'/CodingEditor?project=' +
+										_this.report.revisionID +
+										'&type=REVISION&report=' +
+										_this.report.id +
+										'&parentproject=' +
+										_this.report.projectID
+								);
+							}
 							vex.close(_this);
 						}
 					})
