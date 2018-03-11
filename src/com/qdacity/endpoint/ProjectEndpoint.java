@@ -195,7 +195,7 @@ public class ProjectEndpoint {
 					// Authorization.checkAuthorization((ValidationProject)project, dbUser); // FIXME rethink authorization needs. Consider public projects where the basic info can be accessed, but not changed, by everyone.
 					break;
 				case "EXERCISE":
-					project = (ExerciseProject) Cache.getOrLoad(id, ProjectRevision.class);
+					project = (ProjectRevision) Cache.getOrLoad(id, ProjectRevision.class);
 					break;
 				default:
 					project = (Project) Cache.getOrLoad(id, Project.class);
