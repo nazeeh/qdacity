@@ -69,9 +69,23 @@ export default class ExerciseProjectReportList extends React.Component {
 
 
 	deleteExerciseProjectReportClick(e, exerciseProjectReport) {
-		e.stopPropagation();
-		var _this = this;
+			const { formatMessage } = IntlProvider.intl;
+			var _this = this;
+			e.stopPropagation();
+			var exerciseEndpoint = new ExerciseEndpoint();
 
+			exerciseEndpoint.deleteReport(exerciseProjectReport.id).then(function(val) {
+				alertify.success(
+					formatMessage({
+						id: 'reportlist.report_deleted',
+						defaultMessage: 'Report has been deleted'
+					})
+				);
+				_this.state.exerciseProjectReports.splice(index, 1);
+				_this.setState({
+					exerciseProjectReports: _this.state.exerciseProjectReports
+				});
+			});
 	}
 
 	createReport(revId) {
@@ -142,7 +156,7 @@ export default class ExerciseProjectReportList extends React.Component {
 	}
 
 	showExerciseReports(exerciseProjectReport) {
-		var agreementModal = new IntercoderAgreement(exerciseProjectReport, this.props.history, 'EXERCISE');
+		var agreementModal = new IntercoderAgreement(exerciseProjectReport, this.props.history);
 		if (this.props.isTermCourseOwner) agreementModal.showModal();
 	}
 

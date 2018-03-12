@@ -18,10 +18,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.*;
-import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
-import com.qdacity.project.metrics.tasks.DeferredEvaluation;
-import com.qdacity.project.metrics.tasks.DeferredEvaluationExerciseReport;
-import com.qdacity.project.metrics.tasks.DeferredEvaluationValidationReport;
+import com.qdacity.project.metrics.tasks.*;
 import org.json.JSONException;
 
 import com.google.api.server.spi.auth.common.User;
@@ -68,8 +65,6 @@ public class ExerciseEndpoint {
 				if (containsExercise(exercise)) {
 					throw new EntityExistsException("Exercise already exists");
 				}
-
-
 			}
 
 			try {
@@ -364,6 +359,42 @@ public class ExerciseEndpoint {
 		Queue queue = QueueFactory.getDefaultQueue();
 		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 	}
+
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.deleteExerciseProjectReport")
+    public List<ExerciseReport> deleteExerciseProjectReport(@Named("reportID") Long repID, User user) throws UnauthorizedException {
+        List<ExerciseReport> reports = new ArrayList<>(); // FIXME Why?
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            ExerciseReport report = mgr.getObjectById(ExerciseReport.class, repID);
+
+            List<ExerciseResult> results;
+
+            if (report.getValidationResultIDs().size() > 0) {
+                // Delete all ValidationResults / old - linked from report
+                Query q = mgr.newQuery(ExerciseResult.class, ":p.contains(id)");
+                results = (List<ExerciseResult>) q.execute(report.getValidationResultIDs());
+                mgr.deletePersistentAll(results);
+            } else {
+                DeferredReportDeletion task = new DeferredReportDeletion(repID);
+                Queue queue = QueueFactory.getDefaultQueue();
+                queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+            }
+
+            // Lazy fetch
+            List<DocumentResult> docResults = report.getDocumentResults();
+            for (DocumentResult documentResult : docResults) {
+                documentResult.getAgreementMap();
+            }
+
+            // Delete the actual report
+            mgr.deletePersistent(report);
+
+        } finally {
+            mgr.close();
+        }
+        return reports;
+    }
 
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID ,User user) throws UnauthorizedException {
 

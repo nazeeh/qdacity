@@ -88,4 +88,12 @@ export default class ExerciseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	deleteExerciseProjectReport(repId) {
+		var apiMethod = gapi.client.qdacity.exercise.deleteExerciseProjectReport({
+			reportID: repId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
 }
