@@ -97,7 +97,7 @@ export default class ExercisePage extends React.Component {
 				<ExerciseProjectReports
 					exercise={this.state.exercise}
 					auth={this.props.auth}
-					isTermCourseOwner = {this.state.isTermCourseOwner}
+					isTermCourseOwner={this.state.isTermCourseOwner}
 					history={this.props.history}
 				/>
 			);
@@ -113,9 +113,11 @@ export default class ExercisePage extends React.Component {
 		}
 		this.init();
 
-		return <StyledDashboard>
-			{this.renderExerciseProjects()}
-			{this.renderExerciseProjectReports()}
-		</StyledDashboard>;
+		return (
+			<StyledDashboard>
+				{this.renderExerciseProjects()}
+				{this.renderExerciseProjectReports()}
+			</StyledDashboard>
+		);
 	}
 }

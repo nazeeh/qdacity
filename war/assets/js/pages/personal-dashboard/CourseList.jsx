@@ -298,7 +298,7 @@ export default class CourseList extends React.Component {
 			formatMessage({
 				id: 'courselist.course_desc_template',
 				defaultMessage: 'Description'
-			}),
+			})
 		);
 		modal.showModal().then(function(data) {
 			_this.createNewCourse(data.name, data.desc, data.term);

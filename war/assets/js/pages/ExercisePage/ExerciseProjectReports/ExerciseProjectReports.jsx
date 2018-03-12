@@ -24,7 +24,7 @@ export default class ExerciseProjectReports extends React.Component {
 						<ExerciseProjectReportList
 							exercise={this.props.exercise}
 							auth={this.props.auth}
-							isTermCourseOwner = {this.props.isTermCourseOwner}
+							isTermCourseOwner={this.props.isTermCourseOwner}
 							history={this.props.history}
 						/>
 					</div>

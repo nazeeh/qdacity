@@ -107,15 +107,15 @@ export default class IntercoderAgreement extends VexModal {
 							);
 							decider.showModal().then(function(value) {
 								if (value == 'optionB') {
-									if (_this.projectType == "EXERCISE") {
+									if (_this.projectType == 'EXERCISE') {
 										var exerciseEndpoint = new ExerciseEndpoint();
-										exerciseEndpoint.sendNotificationEmailExercise(_this.report.id);
-									}
-									else {
+										exerciseEndpoint.sendNotificationEmailExercise(
+											_this.report.id
+										);
+									} else {
 										var validationEndpoint = new ValidationEndpoint();
 										validationEndpoint.sendNotificationEmail(_this.report.id);
 									}
-
 								}
 							});
 						}
@@ -129,7 +129,7 @@ export default class IntercoderAgreement extends VexModal {
 							defaultMessage: 'Agreement Maps'
 						}),
 						click: function() {
-							if (_this.projectType == "EXERCISE") {
+							if (_this.projectType == 'EXERCISE') {
 								_this.history.push(
 									'/CodingEditor?project=' +
 										_this.report.revisionID +
@@ -138,8 +138,7 @@ export default class IntercoderAgreement extends VexModal {
 										'&parentproject=' +
 										_this.report.projectID
 								);
-							}
-							else {
+							} else {
 								_this.history.push(
 									'/CodingEditor?project=' +
 										_this.report.revisionID +
@@ -176,20 +175,24 @@ export default class IntercoderAgreement extends VexModal {
 				document.getElementById('reactLoading')
 			);
 
-
-			if (_this.projectType == "EXERCISE") var resultsPromise = ExerciseEndpoint.listExerciseResults(_this.report.id);
-			else var resultsPromise = ValidationEndpoint.listValidationResults(_this.report.id);
-
+			if (_this.projectType == 'EXERCISE')
+				var resultsPromise = ExerciseEndpoint.listExerciseResults(
+					_this.report.id
+				);
+			else
+				var resultsPromise = ValidationEndpoint.listValidationResults(
+					_this.report.id
+				);
 
 			resultsPromise.then(function(resp) {
-					if (!resp.code) {
-						$('#loadingAnimation').addClass('hidden');
-						_this.results = resp.items || [];
-						_this.setupDataTable();
-					} else {
-						// Log error
-					}
-				});
+				if (!resp.code) {
+					$('#loadingAnimation').addClass('hidden');
+					_this.results = resp.items || [];
+					_this.setupDataTable();
+				} else {
+					// Log error
+				}
+			});
 		});
 
 		return promise;

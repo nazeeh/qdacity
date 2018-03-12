@@ -41,7 +41,9 @@ export default class ExerciseProjectReportList extends React.Component {
 
 		this.init();
 
-		this.renderExerciseProjectReport = this.renderExerciseProjectReport.bind(this);
+		this.renderExerciseProjectReport = this.renderExerciseProjectReport.bind(
+			this
+		);
 	}
 
 	init() {
@@ -52,10 +54,8 @@ export default class ExerciseProjectReportList extends React.Component {
 				this.props.exercise.projectRevisionID
 			);
 			this.fetchExerciseReportData();
-
 		}
 	}
-
 
 	fetchExerciseReportData() {
 		var _this = this;
@@ -67,14 +67,15 @@ export default class ExerciseProjectReportList extends React.Component {
 		});
 	}
 
-
 	deleteExerciseProjectReportClick(e, exerciseProjectReport, index) {
-			const { formatMessage } = IntlProvider.intl;
-			var _this = this;
-			e.stopPropagation();
-			var exerciseEndpoint = new ExerciseEndpoint();
+		const { formatMessage } = IntlProvider.intl;
+		var _this = this;
+		e.stopPropagation();
+		var exerciseEndpoint = new ExerciseEndpoint();
 
-			exerciseEndpoint.deleteExerciseProjectReport(exerciseProjectReport.id).then(function(val) {
+		exerciseEndpoint
+			.deleteExerciseProjectReport(exerciseProjectReport.id)
+			.then(function(val) {
 				alertify.success(
 					formatMessage({
 						id: 'reportlist.report_deleted',
@@ -156,7 +157,10 @@ export default class ExerciseProjectReportList extends React.Component {
 	}
 
 	showExerciseReports(exerciseProjectReport) {
-		var agreementModal = new IntercoderAgreement(exerciseProjectReport, this.props.history);
+		var agreementModal = new IntercoderAgreement(
+			exerciseProjectReport,
+			this.props.history
+		);
 		if (this.props.isTermCourseOwner) agreementModal.showModal();
 	}
 
@@ -165,11 +169,18 @@ export default class ExerciseProjectReportList extends React.Component {
 			<StyledListItemDefault
 				key={index}
 				className="clickable"
-				onClick={() => this.showExerciseReports(exerciseProjectReport)}>
+				onClick={() => this.showExerciseReports(exerciseProjectReport)}
+			>
 				<span> {exerciseProjectReport.name} </span>
 				<div>
 					<StyledListItemBtn
-						onClick={e => this.deleteExerciseProjectReportClick(e, exerciseProjectReport, index)}
+						onClick={e =>
+							this.deleteExerciseProjectReportClick(
+								e,
+								exerciseProjectReport,
+								index
+							)
+						}
 						className=" btn fa-lg"
 						color={Theme.rubyRed}
 						colorAccent={Theme.rubyRedAccent}
@@ -182,18 +193,18 @@ export default class ExerciseProjectReportList extends React.Component {
 	}
 
 	renderCreateReportBtn(revId) {
-			return (
-				<SyledCreateReportBtn
-					onClick={() => this.createReport(revId)}
-					className=" pull-right"
-				>
-					<StyledBtnIcon className="fa fa-plus-circle" />
-					<FormattedMessage
-						id="exercisePage.create_report"
-						defaultMessage="Create Evaluation Reports"
-					/>
-				</SyledCreateReportBtn>
-			);
+		return (
+			<SyledCreateReportBtn
+				onClick={() => this.createReport(revId)}
+				className=" pull-right"
+			>
+				<StyledBtnIcon className="fa fa-plus-circle" />
+				<FormattedMessage
+					id="exercisePage.create_report"
+					defaultMessage="Create Evaluation Reports"
+				/>
+			</SyledCreateReportBtn>
+		);
 	}
 
 	render() {
@@ -202,7 +213,6 @@ export default class ExerciseProjectReportList extends React.Component {
 
 		return (
 			<div>
-
 				{this.renderCreateReportBtn(this.props.exercise.projectRevisionID)}
 
 				<ItemList

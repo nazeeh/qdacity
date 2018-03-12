@@ -95,5 +95,4 @@ export default class ExerciseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
-
 }
