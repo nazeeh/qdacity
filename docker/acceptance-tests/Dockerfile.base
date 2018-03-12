@@ -10,19 +10,17 @@ RUN \
   sudo apt-get install -y unzip && \
   sudo apt-get -y upgrade
 
-# Install Python.
+# Install Python
 RUN \
   apt-get update && \
-  apt-get install -y python python-dev python-pip python-virtualenv
+  apt-get install -y python3.6
   
-# Google appengine java sdk
-#RUN \
-#  sudo mkdir -p /opt/google-cloud-sdk && \
-#  sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-183.0.0-linux-x86_64.tar.gz && \
-#  sudo tar -xvzf /tmp/google-cloud-sdk.tar.gz -C /opt/google-cloud-sdk && \
-#  sudo rm -f /tmp/google-cloud-sdk.tar.gz 
+RUN \
+  sudo add-apt-repository ppa:deadsnakes/ppa && \
+  sudo apt-get update && \
+  sudo apt-get install python3.6 && \
 
-
+# Google cloud sdk
 RUN \
   sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz && \
   sudo mkdir -p /usr/local/gcloud && \
@@ -31,6 +29,13 @@ RUN \
   sudo rm -f /tmp/google-cloud-sdk.tar.gz
   
 #ENV $PATH:/usr/local/gcloud/google-cloud-sdk/bin
+
+#RUN \
+#  sudo mkdir -p /opt/google-cloud-sdk && \
+#  sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-183.0.0-linux-x86_64.tar.gz && \
+#  sudo tar -xvzf /tmp/google-cloud-sdk.tar.gz -C /opt/google-cloud-sdk && \
+#  sudo rm -f /tmp/google-cloud-sdk.tar.gz 
+
 
 # Install npm
 RUN \
