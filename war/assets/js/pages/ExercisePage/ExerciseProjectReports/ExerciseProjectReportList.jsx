@@ -68,13 +68,13 @@ export default class ExerciseProjectReportList extends React.Component {
 	}
 
 
-	deleteExerciseProjectReportClick(e, exerciseProjectReport) {
+	deleteExerciseProjectReportClick(e, exerciseProjectReport, index) {
 			const { formatMessage } = IntlProvider.intl;
 			var _this = this;
 			e.stopPropagation();
 			var exerciseEndpoint = new ExerciseEndpoint();
 
-			exerciseEndpoint.deleteReport(exerciseProjectReport.id).then(function(val) {
+			exerciseEndpoint.deleteExerciseProjectReport(exerciseProjectReport.id).then(function(val) {
 				alertify.success(
 					formatMessage({
 						id: 'reportlist.report_deleted',
@@ -169,7 +169,7 @@ export default class ExerciseProjectReportList extends React.Component {
 				<span> {exerciseProjectReport.name} </span>
 				<div>
 					<StyledListItemBtn
-						onClick={e => this.deleteExerciseProjectReportClick(e, exerciseProjectReport)}
+						onClick={e => this.deleteExerciseProjectReportClick(e, exerciseProjectReport, index)}
 						className=" btn fa-lg"
 						color={Theme.rubyRed}
 						colorAccent={Theme.rubyRedAccent}
