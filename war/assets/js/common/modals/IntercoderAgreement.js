@@ -109,7 +109,7 @@ export default class IntercoderAgreement extends VexModal {
 								if (value == 'optionB') {
 									if (_this.projectType == "EXERCISE") {
 										var exerciseEndpoint = new ExerciseEndpoint();
-										exerciseEndpoint.sendNotificationEmail(_this.report.id);
+										exerciseEndpoint.sendNotificationEmailExercise(_this.report.id);
 									}
 									else {
 										var validationEndpoint = new ValidationEndpoint();
