@@ -26,6 +26,9 @@ const EVT = {
     REMOVED: 'code.removed',
     UPDATED: 'code.updated',
   },
+  DOCUMENT: {
+    CODE_APPLIED: 'document.codeApplied',
+  },
 };
 
 module.exports = {

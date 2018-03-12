@@ -20,29 +20,6 @@ export default class CodesService {
 	}
 
 	/**
-	 * Apply code to range of document
-	 * @access public
-	 * @arg {string} documentId - The ID of the document which should receive
-	 *                            the coding
-	 * @arg {string} projectId - The ID of the current project
-	 * @arg {string} projectType - The type of the current project
-	 * @arg {object} range - The Slate.Range to which the coding should apply.
-	 * @arg {object} mark - The Slate.Mark that should be applied.
-	 * @arg {object} code - The code that should be applied.
-	 * @return {Promise}
-	 */
-	applyCode(documentId, projectId, projectType, range, mark, code) {
-		return this.syncService.emit(MSG.DOCUMENT.APPLY_CODE, {
-			documentId,
-			projectId,
-			projectType,
-			range,
-			mark,
-			code,
-		});
-	}
-
-	/**
 	 * Send command to insert new Code into Codesystem
 	 * @access public
 	 * @arg {object} code - new Code object

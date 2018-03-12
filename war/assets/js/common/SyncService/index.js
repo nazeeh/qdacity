@@ -1,6 +1,7 @@
 import openSocket from 'socket.io-client';
 
 import CodesService from './CodesService';
+import DocumentService from './DocumentService';
 import { MSG, EVT } from './constants.js';
 
 /**
@@ -62,6 +63,7 @@ export default class SyncService {
 
 		// Register sub-services
 		this.codes = new CodesService(this, this._socket);
+		this.documents = new DocumentService(this, this._socket);
 	}
 
 	/**

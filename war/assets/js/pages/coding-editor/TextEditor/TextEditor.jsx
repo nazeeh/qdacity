@@ -243,7 +243,7 @@ export default class TextEditor extends React.Component {
 			}), onStateChange);
 
 			// Send change to sync service
-			this.props.syncService.codes.applyCode(
+			this.props.syncService.documents.applyCode(
 				this.state.document.id,
 				projectID,
 				projectType,
@@ -818,6 +818,42 @@ export default class TextEditor extends React.Component {
 	 */
 	_selectionHasMark(markType) {
 		return this.state.value.activeMarks.some(m => m.type === markType);
+	}
+
+	/**
+	 * TODO JSDoc
+	 */
+	_handleCodeApplied(coding) {
+		console.log('incoming coding', coding);
+	}
+
+	/**
+	 * TODO JSDoc
+	 */
+	componentDidMount() {
+		const syncService = this.props.syncService;
+		if (syncService) {
+			this.listenerIDs = {
+				codeApplied: syncService.on(
+					'codeApplied',
+					this._handleCodeApplied
+				),
+			};
+			console.log('attached listeners');
+		} else {
+			console.log('did not attach listeners');
+		}
+	}
+
+	/**
+	 * TODO JSDoc
+	 */
+	componentWillUnmount() {
+		const syncService = this.props.syncService;
+		if (syncService) {
+			syncService.off('codeApplied', this.listenerIDs['codeApplied']);
+			console.log('removed listeners');
+		}
 	}
 
 	/**

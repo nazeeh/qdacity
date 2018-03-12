@@ -55,7 +55,7 @@ class DocumentHandler {
    *                      {object} code - the code that should be applied
    * @arg {function} ack - acknowledge function for response
    */
-  _handleCodeApply(data, ack) {
+  async _handleCodeApply(data, ack) {
     const {
       documentId,
       projectId,
@@ -65,41 +65,50 @@ class DocumentHandler {
       code,
     } = data;
 
-    this._socket.api.request('documents.getTextDocument', {
-      id: projectId,
-      projectType: projectType,
-    }).then(resp => {
-      if (resp.code) {
-        return Promise.reject(resp);
-      } else {
-        const doc = (resp.items || []).filter(doc => doc.id == documentId)[0];
-        return Promise.resolve(doc);
+    try {
+      // Load text document from backend
+      const documentResponse = await this._socket.api.request('documents.getTextDocument', {
+        id: projectId,
+        projectType: projectType,
+      });
+
+      // Error, fail early
+      if (documentResponse.code) {
+        throw documentResponse;
       }
-    }).then(doc => {
+
+      // Extract document HTML from response
+      const doc = (documentResponse.items || []).filter(doc => doc.id == documentId)[0];
+
+      // Assert consistent internal slate IDs
       resetKeyGenerator();
 
+      // Add coding mark to document
       const change = serializer.deserialize(doc.text.value).change();
       change.addMarkAtRange(Range.create(range), mark);
+
+      // Serialize back to html
       doc.text = serializer.serialize(change.value)
         .replace(/(<coding[^>]+?)data-code-id=/g, '$1code_id=')
         .replace(/(<coding[^>]+?)data-author=/g, '$1author=');
 
-      return this._socket.api.request('documents.applyCode', {
+      // Transmit change to backend
+      const codingResponse = await this._socket.api.request('documents.applyCode', {
         resource: {
           textDocument: doc,
           code: code,
         },
       });
-    }).then(resp => {
-      ack('ok');
 
-      // TODO emit sync event with operations to all
+      // Respond to sender and emit sync event
+      this._socket.handleApiResponse(EVT.DOCUMENT.CODE_APPLIED, ack, data);
+
       // TODO emit syncError event to all clients if anything went wrong
 
-    }).catch(err => {
+    } catch(err) {
       console.log('error in handle doc', err);
       ack('err', err);
-    });
+    };
 
   }
 }
