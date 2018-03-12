@@ -1,5 +1,8 @@
 #!/bin/bash
 
+docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
+
+
 # Local build
 cd war
 gulp bundle-task --local
