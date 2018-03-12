@@ -11,13 +11,19 @@ RUN \
   sudo apt-get -y upgrade
 
 # Google appengine java sdk
+#RUN \
+#  sudo mkdir -p /opt/google-cloud-sdk && \
+#  sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-183.0.0-linux-x86_64.tar.gz && \
+#  sudo tar -xvzf /tmp/google-cloud-sdk.tar.gz -C /opt/google-cloud-sdk && \
+#  sudo rm -f /tmp/google-cloud-sdk.tar.gz 
+
+
 RUN \
-  sudo mkdir -p /opt/google-cloud-sdk && \
-  sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-183.0.0-linux-x86_64.tar.gz && \
-  sudo tar -xvzf /tmp/google-cloud-sdk.tar.gz -C /opt/google-cloud-sdk && \
-  sudo rm -f /tmp/google-cloud-sdk.tar.gz
-  
-RUN ls /opt/google-cloud-sdk
+  sudo curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz \
+  sudo mkdir -p /usr/local/gcloud
+  sudo tar -C /usr/local/gcloud -xvf /tmp/google-cloud-sdk.tar.gz \
+  sudo /usr/local/gcloud/google-cloud-sdk/install.sh \
+ENV $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 # Install npm
 RUN \
