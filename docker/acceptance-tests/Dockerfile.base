@@ -10,6 +10,11 @@ RUN \
   sudo apt-get install -y unzip && \
   sudo apt-get -y upgrade
 
+# Install Python.
+RUN \
+  apt-get update && \
+  apt-get install -y python python-dev python-pip python-virtualenv
+  
 # Google appengine java sdk
 #RUN \
 #  sudo mkdir -p /opt/google-cloud-sdk && \
@@ -18,11 +23,13 @@ RUN \
 #  sudo rm -f /tmp/google-cloud-sdk.tar.gz 
 
 
-RUN sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz
-RUN sudo mkdir -p /usr/local/gcloud
-RUN sudo tar xf /tmp/google-cloud-sdk.tar.gz -C /usr/local/gcloud/
-RUN sudo /usr/local/gcloud/google-cloud-sdk/install.sh
-RUN sudo rm -f /tmp/google-cloud-sdk.tar.gz
+RUN \
+  sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz && \
+  sudo mkdir -p /usr/local/gcloud && \
+  sudo tar xf /tmp/google-cloud-sdk.tar.gz -C /usr/local/gcloud/ && \
+  sudo /usr/local/gcloud/google-cloud-sdk/install.sh && \
+  sudo rm -f /tmp/google-cloud-sdk.tar.gz
+  
 #ENV $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 # Install npm
