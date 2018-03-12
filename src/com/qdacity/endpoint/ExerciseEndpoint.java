@@ -18,6 +18,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.*;
+import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
 import com.qdacity.project.metrics.tasks.DeferredEvaluation;
 import com.qdacity.project.metrics.tasks.DeferredEvaluationExerciseReport;
 import com.qdacity.project.metrics.tasks.DeferredEvaluationValidationReport;
@@ -353,6 +354,15 @@ public class ExerciseEndpoint {
 			mgr.close();
 		}
 		return results;
+	}
+
+	@ApiMethod(name = "exercise.sendNotificationEmailExercise")
+	public void sendNotificationEmailExercise(@Named("reportID") Long reportID, User user) throws UnauthorizedException {
+
+		DeferredEmailNotification task = new DeferredEmailNotification(reportID, user);
+		// Set instance variables etc as you wish
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 	}
 
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID ,User user) throws UnauthorizedException {

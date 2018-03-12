@@ -107,8 +107,15 @@ export default class IntercoderAgreement extends VexModal {
 							);
 							decider.showModal().then(function(value) {
 								if (value == 'optionB') {
-									var validationEndpoint = new ValidationEndpoint();
-									validationEndpoint.sendNotificationEmail(_this.report.id);
+									if (_this.projectType == "EXERCISE") {
+										var exerciseEndpoint = new ExerciseEndpoint();
+										exerciseEndpoint.sendNotificationEmail(_this.report.id);
+									}
+									else {
+										var validationEndpoint = new ValidationEndpoint();
+										validationEndpoint.sendNotificationEmail(_this.report.id);
+									}
+
 								}
 							});
 						}
