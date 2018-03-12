@@ -19,7 +19,7 @@ RUN \
 
 
 RUN \
-  sudo curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz \
+  sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz \
   sudo mkdir -p /usr/local/gcloud \
   sudo tar xf /tmp/google-cloud-sdk.tar.gz -C /usr/local/gcloud/  \
   sudo /usr/local/gcloud/google-cloud-sdk/install.sh \
