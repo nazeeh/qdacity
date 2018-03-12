@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 
 import styled from 'styled-components';
 
+import Alert from '../../../common/modals/Alert';
 import ReactLoading from '../../../common/ReactLoading.jsx';
 
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
@@ -156,7 +157,8 @@ export default class Codesystem extends SimpleCodesystem {
 	updateSelected(code, persist) {
 		if (persist) {
 			this.props.syncService.codes.updateCode(code).catch(() => {
-				// Errors are logged in syncService, but need to be catched
+				// Inform the user why the mark is disappearing again
+				new Alert('Code could not be updated. Please try again').showModal();
 			});
 		} else {
 			Object.assign(this.state.selected, code);
@@ -258,7 +260,8 @@ export default class Codesystem extends SimpleCodesystem {
 					_this.setSelected(resp);
 				}
 			}).catch(() => {
-				// Errors are logged in syncService, but need to be catched
+				// Inform the user why the mark is disappearing again
+				new Alert('Code could not be created. Please try again').showModal();
 			});
 	}
 
@@ -282,7 +285,8 @@ export default class Codesystem extends SimpleCodesystem {
 		}
 
 		this.props.syncService.codes.removeCode(code).catch(() => {
-			// Errors are logged in syncService, but need to be catched
+			// Inform the user why the mark is disappearing again
+			new Alert('Code could not be removed. Please try again').showModal();
 		});
 	}
 
@@ -324,7 +328,8 @@ export default class Codesystem extends SimpleCodesystem {
 
 	relocateCode(movingNode, targetID) {
 		this.props.syncService.codes.relocateCode(movingNode.id, targetID).catch(() => {
-			// Errors are logged in syncService, but need to be catched
+			// Inform the user why the mark is disappearing again
+			new Alert('Code could not be relocated. Please try again').showModal();
 		});
 	}
 
