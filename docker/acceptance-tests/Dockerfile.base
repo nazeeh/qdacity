@@ -12,10 +12,10 @@ RUN \
 
 # Google appengine java sdk
 RUN \
-  sudo mkdir -p /opt/appengine-java-sdk && \
-  sudo curl -o /tmp/appengine-java-sdk.zip https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.59.zip && \
-  sudo unzip /tmp/appengine-java-sdk.zip -d /opt/appengine-java-sdk && \
-  sudo rm -f /tmp/appengine-java-sdk.zip
+  sudo mkdir -p /opt/google-clod-sdk && \
+  sudo curl -o /tmp/google-clod-sdk.zip https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-183.0.0-linux-x86_64.tar.gz && \
+  sudo unzip /tmp/google-clod-sdk.zip -d /opt/google-clod-sdk && \
+  sudo rm -f /tmp/google-clod-sdk.zip
 
 # Install npm
 RUN \
