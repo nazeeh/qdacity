@@ -45,7 +45,7 @@ export default class ProjectRevisionSelector extends React.Component {
 			});
 		});
 
-		ProjectEndpoint.listRevisions(this.props.projects.items[0].id).then(
+		ProjectEndpoint.listRevisionsExcludingValidation(this.props.projects.items[0].id).then(
 			function(revisions) {
 				revisions.items.forEach(function(revision) {
 					revisionNameList.push({
