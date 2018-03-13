@@ -502,6 +502,7 @@ class CodingEditor extends React.Component {
 						<CodeQueries 
 							ref={c => { if (c) this.codeQueriesRef = c; }} 
 							selectedEditor={this.state.selectedEditor}
+							getCodeSystem={this.getCodeSystem}
 						/>
 					</StyledTextdocumentUi>
 				</StyledEditor>

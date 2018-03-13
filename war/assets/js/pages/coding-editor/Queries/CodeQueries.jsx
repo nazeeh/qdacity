@@ -24,7 +24,29 @@ export default class CodeQueries extends React.Component {
 		});
 	}
 
+	getCodeSystemArray() {
+		let codes = [];
+
+		let createSimpleArray = code => {
+			codes.push(code);
+
+			if (code.children) {
+				code.children.forEach(createSimpleArray);
+			}
+		};
+
+		this.props.getCodeSystem().forEach(createSimpleArray);
+
+		return codes;
+	}
+
+	calculateOverlap(otherCode) {
+		return 0; // TODO
+	}
+
 	render() {
+		const _this = this;
+
 		// Render only if the page is code_queries
 		if (this.props.selectedEditor != PageView.CODE_QUERIES) {
 			return null;
@@ -37,7 +59,26 @@ export default class CodeQueries extends React.Component {
 
 		return (
 			<StyledContainer>
-				<div>Hello {this.state.selectedCode.name}</div>
+				<div>Selected Code: {this.state.selectedCode.name}</div>
+
+				<table>
+					<thead>
+						<th>Code</th>
+						<th>Overlaps</th>
+					</thead>
+					<tbody>
+						{
+							this.getCodeSystemArray().map((code) => {
+								return (
+									<tr>
+										<td>{code.name}</td>
+										<td>{_this.calculateOverlap(code)}</td>
+									</tr>
+								);
+							})
+						}
+					</tbody>
+				</table>
 			</StyledContainer>
 		);
 	}
