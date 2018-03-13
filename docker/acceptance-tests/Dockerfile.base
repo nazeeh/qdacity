@@ -27,7 +27,7 @@ RUN \
   sudo rm -f /tmp/google-cloud-sdk.tar.gz
 
 RUN sudo chown seluser -R /home/seluser/.config/gcloud
-RUN sudo chown seluser -R /usr/local/gcloud/google-cloud-sdk
+RUN sudo chown seluser -R /usr/local/gcloud
   
 ENV PATH="/usr/local/gcloud/google-cloud-sdk/bin:${PATH}"
 
