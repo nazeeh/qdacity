@@ -11,12 +11,16 @@
 docker container ls -a
 docker container ls
 
+docker stop elegant_perlman
+docker kill elegant_perlman
+docker rm 1906c444672f
+docker container stop elegant_perlman
+docker container kill elegant_perlman
 docker container stop 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
 docker container kill 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
 docker container stop 1906c444672f
 docker container kill 1906c444672f
 docker container rm 1906c444672f
-docker rm 1906c444672f
 
 docker container ls -a
 docker container ls
