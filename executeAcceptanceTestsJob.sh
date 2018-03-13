@@ -11,6 +11,9 @@
 docker container ls -a
 docker container ls
 
+docker rm --force 1906c444672f
+docker rm --force elegant_perlman
+docker rm --force 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
 docker stop elegant_perlman
 docker kill elegant_perlman
 docker rm 1906c444672f
