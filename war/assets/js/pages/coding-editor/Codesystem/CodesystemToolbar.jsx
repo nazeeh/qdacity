@@ -183,6 +183,16 @@ export default class CodesystemToolbar extends React.Component {
 		);
 	}
 
+	renderQueriesButton() {
+		return (
+			<StyledBtnGroup className="btn-group">
+				<BtnDefault className="btn btn-default" onClick={this.props.openCodeQueries} >
+					<i className="fa fa-database fa-1x" />
+				</BtnDefault>
+			</StyledBtnGroup>
+		);
+	}
+
 	render() {
 		return (
 			<StyledToolBar>
@@ -205,6 +215,7 @@ export default class CodesystemToolbar extends React.Component {
 					</BtnDefault>
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}
+				{this.renderQueriesButton()}
 			</StyledToolBar>
 		);
 	}
