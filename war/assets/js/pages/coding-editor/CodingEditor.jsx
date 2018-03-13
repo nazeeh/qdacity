@@ -10,6 +10,7 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
+import CodeQueries from './Queries/CodeQueries.jsx';
 
 import TextEditor from './TextEditor/TextEditor.jsx';
 
@@ -102,6 +103,7 @@ class CodingEditor extends React.Component {
 		this.codesystemViewRef = {};
 		this.umlEditorRef = {};
 		this.codeViewRef = {};
+		this.codeQueriesRef = null;
 		this.textEditor = {};
 		this.syncService = new SyncService();
 		this.state = {
@@ -150,6 +152,7 @@ class CodingEditor extends React.Component {
 		this.setSearchResults = this.setSearchResults.bind(this);
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
 		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
+		this.openCodeQueries = this.openCodeQueries.bind(this);
 
 		// update on initialization
 		this.updateUserStatusFromProps(props);
@@ -243,6 +246,10 @@ class CodingEditor extends React.Component {
 		});
 	}
 
+	openCodeQueries() {
+		this.viewChanged(PageView.CODE_QUERIES);
+	}
+
 	setSearchResults(results) {
 		this.setState({
 			searchResults: results,
@@ -304,6 +311,7 @@ class CodingEditor extends React.Component {
 			selectedCode: newCode
 		});
 		this.umlEditorRef.codesystemSelectionChanged(newCode);
+		this.codeQueriesRef.codesystemSelectionChanged(newCode);
 	}
 
 	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
@@ -464,6 +472,7 @@ class CodingEditor extends React.Component {
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
 							userProfile={this.state.userProfile}
+							openCodeQueries={this.openCodeQueries}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>
@@ -471,6 +480,7 @@ class CodingEditor extends React.Component {
 					<StyledTextdocumentUi>
 						<TextEditor
 							ref={r => (this.textEditor = r)}
+							selectedEditor={this.state.selectedEditor}
 							textEditable={this.state.selectedEditor === PageView.TEXT}
 							projectID={this.state.project.getId()}
 							projectType={this.state.project.getType()}
@@ -480,6 +490,7 @@ class CodingEditor extends React.Component {
 								this.state.agreementMapHighlightThreshold
 							}
 						/>
+
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}
 							showCodingView={this.state.showCodingView}
@@ -487,6 +498,11 @@ class CodingEditor extends React.Component {
 						>
 							{this.renderUMLEditor()}
 						</StyledUMLEditor>
+						
+						<CodeQueries 
+							ref={c => { if (c) this.codeQueriesRef = c; }} 
+							selectedEditor={this.state.selectedEditor}
+						/>
 					</StyledTextdocumentUi>
 				</StyledEditor>
 				<StyledFooter showCodingView={this.state.showCodingView}>

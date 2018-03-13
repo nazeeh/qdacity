@@ -5,6 +5,7 @@ import { Data, Range, resetKeyGenerator } from 'slate';
 import { Editor } from 'slate-react';
 import Html from 'slate-html-serializer';
 
+import { PageView } from '../View/PageView.js';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import SlateCodingBracketAdapter from './SlateCodingBracketAdapter.jsx';
 import TextEditorToolbar from './TextEditorToolbar.jsx';
@@ -783,6 +784,10 @@ export default class TextEditor extends React.Component {
 	 */
 	render() {
 		const { value, selectedFontSize } = this.state;
+
+		if (this.props.selectedEditor != PageView.TEXT && this.props.selectedEditor != PageView.CODING) {
+			return null;
+		}
 
 		/*
 		 * Create decorations from current selection
