@@ -26,6 +26,8 @@ RUN \
   sudo /usr/local/gcloud/google-cloud-sdk/install.sh && \
   sudo rm -f /tmp/google-cloud-sdk.tar.gz
   
+RUN gcloud components update --quiet  
+  
 #ENV $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 #RUN \
