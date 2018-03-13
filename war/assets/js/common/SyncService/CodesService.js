@@ -29,7 +29,9 @@ export default class CodesService {
 	insertCode(code, parentID) {
 		return this.syncService.emit(MSG.CODE.INSERT, {
 			resource: code,
-			parentId: parentID
+			parentId: parentID,
+			relationId: null,
+			relationSourceCodeId: null,
 		});
 	}
 
