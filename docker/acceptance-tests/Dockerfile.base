@@ -15,9 +15,7 @@ RUN \
   sudo add-apt-repository ppa:deadsnakes/ppa && \
   sudo apt-get update && \
   sudo apt-get install -y python
-RUN python -v
-  
-  
+
 # Google cloud sdk
 RUN \
   sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz && \
@@ -31,17 +29,7 @@ RUN sudo chown seluser -R /usr/local/gcloud
   
 ENV PATH="/usr/local/gcloud/google-cloud-sdk/bin:${PATH}"
 
-RUN gcloud version
-
 RUN gcloud components install app-engine-java --quiet
-  
-
-#RUN \
-#  sudo mkdir -p /opt/google-cloud-sdk && \
-#  sudo curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-183.0.0-linux-x86_64.tar.gz && \
-#  sudo tar -xvzf /tmp/google-cloud-sdk.tar.gz -C /opt/google-cloud-sdk && \
-#  sudo rm -f /tmp/google-cloud-sdk.tar.gz 
-
 
 # Install npm
 RUN \
