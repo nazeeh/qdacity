@@ -25,6 +25,8 @@ RUN \
   sudo tar xf /tmp/google-cloud-sdk.tar.gz -C /usr/local/gcloud/ && \
   sudo /usr/local/gcloud/google-cloud-sdk/install.sh && \
   sudo rm -f /tmp/google-cloud-sdk.tar.gz
+
+RUN sudo chown seluser -R /home/seluser/.config/gcloud
   
 ENV PATH="/usr/local/gcloud/google-cloud-sdk/bin:${PATH}"
 
