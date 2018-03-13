@@ -295,25 +295,4 @@ export default class IntercoderAgreement extends VexModal {
 			}
 		});
 	}
-
-	calculateAgreement() {
-		var projectEndpoint = new ProjectEndpoint();
-		var _this = this;
-		const { formatMessage } = IntlProvider.intl;
-		projectEndpoint
-			.evaluateRevision(this.revId)
-			.then(function(val) {
-				_this.valPrjList = val.items;
-				_this.setupDataTable(); // FIXME fix reinitialization of datatable
-				alertify.success(
-					formatMessage({
-						id: 'intercoderagreement.agreement',
-						defaultMessage: 'Agreement'
-					}) +
-						': ' +
-						val.items[0].paragraphFMeasure
-				);
-			})
-			.catch(handleBadResponse);
-	}
 }
