@@ -1,35 +1,5 @@
 #!/bin/bash
 
-#docker container stop $(docker container ls -a -q)
-#docker container rm $(docker container ls -a -q)
-#docker image rm $(docker image ls -a -q)
-#docker volume rm $(docker volume ls -qf dangling=true)
-
-#docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
-
-
-docker container ls -a
-docker container ls
-
-docker rm --force 1906c444672f
-docker rm --force elegant_perlman
-docker rm --force 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
-docker stop elegant_perlman
-docker kill elegant_perlman
-docker rm 1906c444672f
-docker container stop elegant_perlman
-docker container kill elegant_perlman
-docker container stop 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
-docker container kill 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
-docker container stop 1906c444672f
-docker container kill 1906c444672f
-docker container rm 1906c444672f
-
-docker container ls -a
-docker container ls
-
-echo "done"
-
 # Local build
 cd war
 gulp bundle-task --local
