@@ -28,9 +28,9 @@ RUN \
   
 ENV PATH="/usr/local/gcloud/google-cloud-sdk/bin:${PATH}"
 
-RUN gcloud version
+RUN sudo gcloud version
 
-RUN gcloud components update --quiet  
+RUN sudo gcloud components update --quiet  
   
 
 #RUN \
