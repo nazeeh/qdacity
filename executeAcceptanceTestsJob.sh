@@ -1,11 +1,11 @@
 #!/bin/bash
 
-docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 docker container stop $(docker container ls -a -q)
 docker container rm $(docker container ls -a -q)
 docker image rm $(docker image ls -a -q)
 docker volume rm $(docker volume ls -qf dangling=true)
 
+docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 
 
 # Local build
