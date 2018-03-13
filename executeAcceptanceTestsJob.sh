@@ -8,6 +8,9 @@
 #docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 
 
+docker container stop 1906c444672f
+docker container rm 1906c444672f
+
 mvn clean package -DskipTests
 
 
