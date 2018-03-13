@@ -8,11 +8,20 @@
 #docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 
 
+docker container ls -a
+docker container ls
+
+docker container stop 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
+docker container kill 1906c444672f07618c6558c633ab1755f7562a10dff92c71f21800ea19519caa
 docker container stop 1906c444672f
 docker container kill 1906c444672f
 docker container rm 1906c444672f
 docker rm 1906c444672f
 
+docker container ls -a
+docker container ls
+
+echo "done"
 
 # Local build
 cd war
