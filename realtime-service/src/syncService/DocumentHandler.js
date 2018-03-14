@@ -42,17 +42,16 @@ class DocumentHandler {
     ].map(def => this._ioSocket.on(def[0], def[1].bind(this)));
   }
 
-
   /**
    * Handle applying code (creating coding)
    * @private
    * @arg {object} data - object with at least four keys:
    *                      {string} documentId - ID of the document to modify
-   *                      {object} range - Serialization of Slate.Range that
-   *                                       should receive the coding
-   *                      {object} mark - Serialization of Slate.Mark that
-   *                                      should be applied to the range
-   *                      {object} code - the code that should be applied
+   *                      {string} projectId - ID of the project to modify
+   *                      {string} projectType - Type of the project to modify
+   *                      {object} operation - Serialization of the
+   *                                           Slate.Operation to apply
+   *                      {object} code - Code to apply
    * @arg {function} ack - acknowledge function for response
    */
   async _handleCodeApply(data, ack) {
@@ -60,8 +59,7 @@ class DocumentHandler {
       documentId,
       projectId,
       projectType,
-      range,
-      mark,
+      operation,
       code,
     } = data;
 
@@ -83,9 +81,9 @@ class DocumentHandler {
       // Assert consistent internal slate IDs
       resetKeyGenerator();
 
-      // Add coding mark to document
+      // Apply operation to document
       const change = serializer.deserialize(doc.text.value).change();
-      change.addMarkAtRange(Range.create(range), mark);
+      change.applyOperation(operation);
 
       // Serialize back to html
       doc.text = serializer.serialize(change.value)
@@ -101,6 +99,11 @@ class DocumentHandler {
       });
 
       // Respond to sender and emit sync event
+      const data = {
+        authorSocket: this._ioSocket.id,
+        document: documentId,
+        operation,
+      };
       this._socket.handleApiResponse(EVT.DOCUMENT.CODE_APPLIED, ack, data);
 
       // TODO emit syncError event to all clients if anything went wrong

@@ -162,6 +162,15 @@ export default class SyncService {
 	}
 
 	/**
+	 * Getter for socket id
+	 * @access package
+	 * @return {string} socket id
+	 */
+	getSocketId() {
+		return this._socket.id;
+	}
+
+	/**
 	 * Connect to the sync server.
 	 * @access private
 	 */

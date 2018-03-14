@@ -111,11 +111,29 @@ const rangeToPath = (value, range) => {
  */
 const invertOperation = Operations.invert;
 
+/**
+ * Apply one ore more operations to Slate.Value
+ * @arg {Slate.Value} value
+ * @arg {Slate.Operation|Slate.Operation[]} operations
+ */
+const applyOperations = (value, operations) => {
+	const change = value.change();
+
+	if (Array.isArray(operations)) {
+		operations.forEach(operation => change.applyOperation(operation));
+	} else {
+		change.applyOperation(operations);
+	}
+	
+	return change.value;
+};
+
 const SlateUtils = {
 	deserialize,
 	serialize,
 	rangeToPath,
 	invertOperation,
+	applyOperations,
 };
 
 export default SlateUtils;

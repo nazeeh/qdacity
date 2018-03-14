@@ -182,7 +182,15 @@ export default class TextEditor extends React.Component {
 				.change()
 				.applyOperation(operation)
 				.value,
-		}), afterSetState);
+		}), () => {
+			// Force update is needed for the coding brackets to update
+			// immediately because they rely on the DOM nodes that are only
+			// changed after rendering is complete.
+			this.forceUpdate();
+
+			// Call callback if set
+			afterSetState && afterSetState();
+		});
 	}
 
 	/**

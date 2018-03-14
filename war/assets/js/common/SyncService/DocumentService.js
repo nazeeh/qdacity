@@ -14,24 +14,22 @@ export default class DocumentService {
 	}
 
 	/**
-	 * Apply code to range of document
+	 * Apply code to document
+	 *
 	 * @access public
-	 * @arg {string} documentId - The ID of the document which should receive
-	 *                            the coding
-	 * @arg {string} projectId - The ID of the current project
-	 * @arg {string} projectType - The type of the current project
-	 * @arg {object} range - The Slate.Range to which the coding should apply.
-	 * @arg {object} mark - The Slate.Mark that should be applied.
-	 * @arg {object} code - The code that should be applied.
+	 * @arg {string} documentId - ID of the document to apply the coding
+	 * @arg {string} projectId - ID of the current project
+	 * @arg {string} projectType - The current project
+	 * @arg {object} operation - Slate.Operation describing the coding addition
+	 * @arg {object} code - Code that should be applied.
 	 * @return {Promise}
 	 */
-	applyCode(documentId, projectId, projectType, range, mark, code) {
+	applyCode(documentId, projectId, projectType, operation, code) {
 		return this.syncService.emit(MSG.DOCUMENT.APPLY_CODE, {
 			documentId,
 			projectId,
 			projectType,
-			range,
-			mark,
+			operation,
 			code,
 		});
 	}
@@ -39,10 +37,17 @@ export default class DocumentService {
 	/**
 	 * Handle document.codeApplied message from sync service. Used to notify
 	 * clients about Codings being added to a document.
+	 *
 	 * @access private
-	 * @arg {object} code - The Code that has been updated.
+	 * @arg {object} data - Object describing the change. At least contains:
+	 *                      {string} authorSocket - Socket id of the author's
+	 *                      {string} document - Document id to apply to
+	 *                      {object} operation - Slate.Operation to apply
 	 */
-	_handleCodeApplied(coding) {
-		this.syncService.fireEvent('codeApplied', coding);
+	_handleCodeApplied(data) {
+		// Filter events that were initiated by this same client
+		if (data.authorSocket !== this.syncService.getSocketId()) {
+			this.syncService.fireEvent(EVT.DOCUMENT.CODE_APPLIED, data);
+		}
 	}
 }

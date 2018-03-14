@@ -9,6 +9,7 @@ import { DragDocument } from './Document.jsx';
 import Alert from '../../../common/modals/Alert';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
+import { EVT } from '../../../common/SyncService/constants.js';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx';
 
@@ -240,11 +241,6 @@ export default class DocumentsView extends React.Component {
 
 			// Update coding count in CodeSystem
 			this.props.codesystemView.updateCodingCount();
-
-			// Force update is needed for the coding brackets to update
-			// immediately because they rely on the DOM nodes that are only
-			// changed after rendering is complete.
-			this.props.textEditor.forceUpdate();
 		};
 
 		let maxCodingID;
@@ -288,8 +284,7 @@ export default class DocumentsView extends React.Component {
 				document.id,
 				projectID,
 				projectType,
-				currentSelection.toJSON(),
-				operation.mark,
+				operation,
 				getCodeByCodeID(code.codeID)
 			);
 
@@ -379,6 +374,14 @@ export default class DocumentsView extends React.Component {
 		if (!nextDoc.slateValue) {
 			nextDoc.slateValue = SlateUtils.deserialize(nextDoc.text);
 		}
+		// Apply queued operations if any
+		if (nextDoc.operationQueue) {
+			nextDoc.slateValue = SlateUtils.applyOperations(
+				nextDoc.slateValue,
+				nextDoc.operationQueue
+			);
+			nextDoc.operationQueue = [];
+		}
 
 		// Notify sync service (and other clients) that the user changed the
 		// active document
@@ -386,9 +389,10 @@ export default class DocumentsView extends React.Component {
 			document: id.toString()
 		});
 
-		// Change the active document
+		// Change the active document and save document changes
 		this.setState({
-			selected: id
+			selected: id,
+			documents: this.state.documents,
 		});
 
 		// Update the text editor
@@ -501,28 +505,57 @@ export default class DocumentsView extends React.Component {
 	}
 
 	/**
-	 * TODO JSDoc
+	 * Handle incoming codeApplied events from syncService
+	 *
+	 * @private
+	 * @arg {object} data - Object with at least these parameters:
+	 *                      {string} document - ID of the document to apply to
+	 *                      {object} operation - Slate.Operation to apply
 	 */
-	_handleCodeApplied(operation) {
-		console.log('incoming coding', operation);
+	_handleCodeApplied(data) {
+		const {
+			document,
+			operation,
+		} = data;
+
+		// If operation is for current document, apply directly
+		if (document === this.getActiveDocumentId()) {
+			this.props.textEditor.applyOperation(operation);
+
+		// Process operation in DocumentsView
+		} else {
+			const doc = this.getDocument(document);
+
+			// Apply if document has already been deserialized
+			if (doc.slateValue) {
+				doc.slateValue = SlateUtils.applyOperations(doc.slateValue, operation);
+
+			// Else queue the operation for application after deserialization
+			} else {
+				if (!doc.operationQueue) {
+					doc.operationQueue = [];
+				}
+				doc.operationQueue.push(operation);
+			}
+
+			this.setState({
+				documents: this.state.documents
+			});
+		}
 	}
 
-	/**
-	 * TODO JSDoc
-	 */
 	componentDidMount() {
+		// Register event listeners at sync service
 		this.listenerIDs = {
 			codeApplied: this.props.syncService.on(
-				'codeApplied',
-				this._handleCodeApplied
+				EVT.DOCUMENT.CODE_APPLIED,
+				this._handleCodeApplied.bind(this)
 			),
 		};
 	}
 
-	/**
-	 * TODO JSDoc
-	 */
 	componentWillUnmount() {
+		// Unregister event listeners at sync service
 		Object.keys(this.listenerIDs).forEach(key => {
 			this.props.syncService.off(key, this.listenerIDs[key]);
 		});
