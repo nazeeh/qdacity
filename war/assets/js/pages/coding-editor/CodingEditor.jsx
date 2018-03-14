@@ -401,6 +401,8 @@ class CodingEditor extends React.Component {
 									projectType={this.state.project.getType()}
 									report={this.report}
 									syncService={this.syncService}
+									getCodeByCodeID={this.getCodeByCodeID}
+									codesystemView={this.codesystemViewRef}
 								/>
 							</StyledDocumentsView>
 						</div>
@@ -438,12 +440,9 @@ class CodingEditor extends React.Component {
 							textEditable={this.state.selectedEditor === PageView.TEXT}
 							projectID={this.state.project.getId()}
 							projectType={this.state.project.getType()}
-							syncService={this.syncService}
 							getCodeByCodeID={this.getCodeByCodeID}
 							showAgreementMap={this.state.showAgreementMap}
 							agreementMapHighlightThreshold={this.state.agreementMapHighlightThreshold}
-							documentsView={this.documentsViewRef}
-							codesystemView={this.codesystemViewRef}
 						/>
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}

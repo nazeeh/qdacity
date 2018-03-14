@@ -1,16 +1,16 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import styled from 'styled-components';
-import { Data, Range, resetKeyGenerator } from 'slate';
+import { Data, Range, Value } from 'slate';
 import { Editor } from 'slate-react';
-import Html from 'slate-html-serializer';
 
 import { PageView } from '../View/PageView.js';
 import Alert from '../../../common/modals/Alert';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+
 import SlateCodingBracketAdapter from './SlateCodingBracketAdapter.jsx';
+import SlateUtils from './SlateUtils.js';
 import TextEditorToolbar from './TextEditorToolbar.jsx';
-import documentSchema from './documentSchema.js';
 import Marks from './Marks';
 
 // Container to wrap optional Toolbar and StyledDocumentWrapper
@@ -87,9 +87,6 @@ export default class TextEditor extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// Initialize HTML serializer with custom rules
-		this._htmlSerializer = new Html({ rules: documentSchema });
-
 		// Initialize state
 		this.state = {
 
@@ -108,16 +105,29 @@ export default class TextEditor extends React.Component {
 			 *   decorations: Immutable.List<Ranges>|Null,
 			 * })
 			 */
-			value: this._htmlSerializer.deserialize('<p></p>'),
+			value: Value.fromJSON({
+				document: {
+					nodes: [{
+						object: 'block',
+						type: 'paragraph',
+						nodes: [{
+							object: 'text',
+							leaves: [{
+								text: '',
+							}],
+						}],
+					}],
+				},
+			}),
 
 			// Default font size to be selected in toolbar
-			selectedFontSize: 13
+			selectedFontSize: 13,
 		};
 
 		// Bind public methods to this
 		this.setDocument = this.setDocument.bind(this);
-		this.getHTML = this.getHTML.bind(this);
-		this.setCoding = this.setCoding.bind(this);
+		this.getSlateValue = this.getSlateValue.bind(this);
+		this.applyOperation = this.applyOperation.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
 		this.activateCodingInEditor = this.activateCodingInEditor.bind(this);
 		this.isTextEditable = this.isTextEditable.bind(this);
@@ -137,142 +147,42 @@ export default class TextEditor extends React.Component {
 	 * @arg {object} document - The document to load into the editor
 	 */
 	setDocument(doc) {
-		// Fallback to empty string if html is falsy
-		const html = doc.text || '';
-
-		// Cleanup the HTMl before parsing it
-		const sanitizedText = html
-			// Remove trailing <br> tags in each paragraph (added by Squire)
-			.replace(/<br><\/p>/g, '</p>')
-			// Remove div#svgContainer (added in previous versions)
-			.replace(/<div id="svgContainer".*?<\/div>/, '');
-
-		this.setState((prevState, props) => {
-			// Reset key generator to get consistent Slate node IDs
-			resetKeyGenerator();
-
-			// Parse HTML to Slate.Value
-			return {
-				document: doc,
-				value: this._htmlSerializer.deserialize(sanitizedText),
-			};
-		});
-	}
-
-	/**
-	 * Get editor content
-	 *
-	 * @public
-	 * @return {string} The current editor content as HTML string
-	 */
-	getHTML() {
-		// Serialize editor value to HTML
-		const workaroundHTML = this._htmlSerializer.serialize(this.state.value);
-
-		// Attributes `code_id` and `author` are removed by the serializer
-		// and need that workaround. They are serialized to data-code-id and
-		// data-author by the serializer and replaced by their original value
-		// here.
-		return workaroundHTML
-			.replace(/(<coding[^>]+?)data-code-id=/g, '$1code_id=')
-			.replace(/(<coding[^>]+?)data-author=/g, '$1author=');
-	}
-
-	/**
-	 * Apply coding to current selection
-	 *
-	 * @public
-	 * @arg {object} code - The code to apply
-	 * @arg {string} author - The author for the new coding
-	 */
-	setCoding(code, author) {
-		const {
-			getCodeByCodeID,
-			projectID,
-			projectType,
-		} = this.props;
-
-		// Store selection to be independent of other intermediate changes
-		const currentSelection = this.state.value.selection;
-
-		// Do nothing if no range is selected
-		if (currentSelection.isCollapsed) {
-			return;
-		}
-
-		// To be called after setState executed
-		const onStateChange = () => {
-			// Update DocumentsView's state
-			this.props.documentsView.updateDocument(
-				this.state.document.id,
-				this.state.document.title,
-				this.getHTML(),
-			);
-
-			// Update coding count in CodeSystem
-			this.props.codesystemView.updateCodingCount();
-
+		this.setState({
+			document: doc,
+			value: doc.slateValue,
+		}, () => {
 			// Force update is needed for the coding brackets to update
 			// immediately because they rely on the DOM nodes that are only
 			// changed after rendering is complete.
-			this.forceUpdate();
-		};
-
-		// Get new coding ID from API
-		ProjectEndpoint.incrCodingId(projectID, projectType).then(resp => {
-			const maxCodingID = resp.maxCodingID;
-
-			// Create the mark to be added
-			const codingMark = {
-				object: 'mark',
-				type: 'coding',
-				data: {
-					id: maxCodingID,
-					code_id: code.codeID,
-					title: code.name,
-					author: author,
-				},
-			};
-
-			// Optimistically add the mark locally
-			this.setState(prevState => ({
-				value: prevState.value
-					.change()
-					.addMarkAtRange(currentSelection, codingMark)
-					.value,
-			}), onStateChange);
-
-			// Send change to sync service
-			this.props.syncService.documents.applyCode(
-				this.state.document.id,
-				projectID,
-				projectType,
-				currentSelection.toJSON(),
-				codingMark,
-				getCodeByCodeID(code.codeID)
-			).then(message => {
-
-				// Sync was succesful. Log for now, delete if no action needed
-				console.log('lucky! Sync succeeded');
-
-			}).catch(error => {
-				// Sync failed
-
-				// Inform the user why the mark is disappearing again
-				new Alert('Your new coding could not be saved. Please try again').showModal();
-
-				// Rollback optimistically added mark
-				this.setState(prevState => ({
-					value: prevState.value
-						.change()
-						.removeMarkAtRange(currentSelection, codingMark)
-						.value,
-				}), onStateChange);
-			});
-
-		}).catch(error => {
-			console.error('error while fetching next coding ID', error);
+			this.forceUpdate()
 		});
+	}
+
+	/**
+	 * Get the current editor value
+	 *
+	 * @public
+	 * @return {Slate.Value}
+	 */
+	getSlateValue() {
+		return this.state.value;
+	}
+
+	/**
+	 * Apply Slate Operation to current editor state
+	 *
+	 * @public
+	 * @arg {Slate.Operation|object} operation - The operation to apply
+	 * @arg {callable} afterSetState - optional callback to execute after
+	 *                                 setState has been executed
+	 */
+	applyOperation(operation, afterSetState) {
+		this.setState(prevState => ({
+			value: prevState.value
+				.change()
+				.applyOperation(operation)
+				.value,
+		}), afterSetState);
 	}
 
 	/**
@@ -448,7 +358,7 @@ export default class TextEditor extends React.Component {
 						},
 						() => {
 							// Resolve promise with editors current content as HTML
-							resolve(this.getHTML());
+							resolve(SlateUtils.serialize(this.state.value));
 
 							// Force update is needed for the coding brackets to
 							// update immediately because they rely on the DOM
@@ -538,13 +448,13 @@ export default class TextEditor extends React.Component {
 	 */
 	handleEditorChange(change) {
 		// Get operation types
-		const operations = change.operations.map(op => op.type);
+		const operationTypes = change.operations.map(op => op.type);
 
 		// Only apply change if in textEditable mode or all operations are in
 		// readOnlyOperations
 		if (
 			this.props.textEditable ||
-			operations.every(op => readOnlyOperations.includes(op))
+			operationTypes.every(op => readOnlyOperations.includes(op))
 		) {
 			this.setState({ value: change.value });
 		}
@@ -818,42 +728,6 @@ export default class TextEditor extends React.Component {
 	 */
 	_selectionHasMark(markType) {
 		return this.state.value.activeMarks.some(m => m.type === markType);
-	}
-
-	/**
-	 * TODO JSDoc
-	 */
-	_handleCodeApplied(coding) {
-		console.log('incoming coding', coding);
-	}
-
-	/**
-	 * TODO JSDoc
-	 */
-	componentDidMount() {
-		const syncService = this.props.syncService;
-		if (syncService) {
-			this.listenerIDs = {
-				codeApplied: syncService.on(
-					'codeApplied',
-					this._handleCodeApplied
-				),
-			};
-			console.log('attached listeners');
-		} else {
-			console.log('did not attach listeners');
-		}
-	}
-
-	/**
-	 * TODO JSDoc
-	 */
-	componentWillUnmount() {
-		const syncService = this.props.syncService;
-		if (syncService) {
-			syncService.off('codeApplied', this.listenerIDs['codeApplied']);
-			console.log('removed listeners');
-		}
 	}
 
 	/**
