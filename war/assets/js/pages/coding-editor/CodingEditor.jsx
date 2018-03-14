@@ -139,6 +139,7 @@ class CodingEditor extends React.Component {
 		this.updateSelectedCode = this.updateSelectedCode.bind(this);
 		this.viewChanged = this.viewChanged.bind(this);
 		this.getCodeSystem = this.getCodeSystem.bind(this);
+		this.getDocuments = this.getDocuments.bind(this);
 		this.getCodeById = this.getCodeById.bind(this);
 		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
 		this.showCodingView = this.showCodingView.bind(this);
@@ -340,6 +341,10 @@ class CodingEditor extends React.Component {
 		return this.codesystemViewRef.getCodesystem();
 	}
 
+	getDocuments() {
+		return this.documentsViewRef.getDocuments();
+	}
+
 	hideCodingView() {
 		this.setState({
 			showCodingView: false
@@ -440,7 +445,7 @@ class CodingEditor extends React.Component {
 						<div id="documents-ui">
 							<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
 								<DocumentsView
-									ref={c => (this.documentsViewRef = c)}
+									ref={c => { if (c) this.documentsViewRef = c }}
 									textEditor={this.textEditor}
 									projectID={this.state.project.getId()}
 									projectType={this.state.project.getType()}
@@ -502,7 +507,9 @@ class CodingEditor extends React.Component {
 						<CodeQueries 
 							ref={c => { if (c) this.codeQueriesRef = c; }} 
 							selectedEditor={this.state.selectedEditor}
+							textEditor={this.textEditor}
 							getCodeSystem={this.getCodeSystem}
+							getDocuments={this.getDocuments}
 						/>
 					</StyledTextdocumentUi>
 				</StyledEditor>

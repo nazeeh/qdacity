@@ -41,7 +41,19 @@ export default class CodeQueries extends React.Component {
 	}
 
 	calculateOverlap(otherCode) {
-		return 0; // TODO
+		let overlaps = 0;
+
+		let documents = this.props.getDocuments();
+
+		if (documents) {
+			for (let i = 0; i < documents.length; i++) {
+				let document = documents[i];
+
+				console.log(document.title);
+			}
+		}
+
+		return overlaps;
 	}
 
 	render() {
