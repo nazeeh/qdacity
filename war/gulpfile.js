@@ -233,8 +233,12 @@ gulp.task('acceptance-tests', () =>
 );
 
 gulp.task('watch', ['webpack-watch', 'translation-watch']);
-gulp.task('acceptance-tests', () =>
-    gulp.src('./tests/acceptance-tests/**/*.js').pipe(jasmine()).on('error', handleError)
-);
+gulp.task('acceptance-tests', () => {
+	const basePath = './tests/acceptance-tests/';
+	gulp.src([
+		basePath + '*.js', 
+		basePath + 'coding-editor/*.js'
+	]).pipe(jasmine()).on('error', handleError);
+});
  
 gulp.task('default', ['watch']);
