@@ -13,4 +13,17 @@ export default class TestAuthenticationProvider extends AuthenticationProvider {
 		});
 		return promise;
 	}
+
+	getProfile() {
+		const promise = new Promise(function(resolve, reject) {
+			const profile = {
+				name: "Test Name",
+				displayName: "Max Mustermann",
+				email: "test@qdacity.com",
+				thumbnail: ""
+			};
+			resolve(profile);
+		});
+		return promise;
+	}
 }

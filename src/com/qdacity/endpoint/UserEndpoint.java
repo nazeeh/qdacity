@@ -415,20 +415,6 @@ public class UserEndpoint {
 	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser)
 			throws UnauthorizedException {
 
-		// Return a test account
-		if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development) {
-        	User u = new User();
-			u.setId("5344212");
-			u.setEmail("test@qdacity.com");
-			u.setGivenName("GivenName");
-			u.setSurName("SurName");
-			u.setProjects(new ArrayList<Long>());
-			u.setCourses(new ArrayList<Long>());
-			u.setType(UserType.USER);
-			u.setLastLogin(new Date());
-			return u;
-    	}
-
 		if (loggedInUser == null) {
 			throw new UnauthorizedException("The User could not be authenticated");
 		}
