@@ -166,6 +166,8 @@ public class ExerciseEndpoint {
         List<ExerciseReport> reports = new ArrayList<>();
         PersistenceManager mgr = getPersistenceManager();
         try {
+
+
             Query q;
             q = mgr.newQuery(ExerciseReport.class, " projectID  == :projectID");
 
@@ -323,6 +325,12 @@ public class ExerciseEndpoint {
 
 	@ApiMethod(name = "exercise.evaluateExerciseRevision")
 	public List<ExerciseProject> evaluateExerciseRevision(@Named("exerciseID") Long exerciseID, @Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
+
+	    PersistenceManager mgr = getPersistenceManager();
+        Exercise exercise = mgr.getObjectById(Exercise.class, exerciseID);
+        TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+        // Check if user is authorized
+        Authorization.checkAuthorizationTermCourse(termCourse, user);
 
 		DeferredEvaluation task = new DeferredEvaluationExerciseReport(exerciseID, revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
 		// Set instance variables etc as you wish
