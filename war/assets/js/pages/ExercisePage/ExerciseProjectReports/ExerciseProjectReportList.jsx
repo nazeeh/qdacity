@@ -138,7 +138,7 @@ export default class ExerciseProjectReportList extends React.Component {
 				var selectedDocs = [];
 				exerciseEndpoint
 					.evaluateExerciseRevision(
-						this.props.exercise.id,
+						_this.props.exercise.id,
 						revId,
 						data.title,
 						data.docs,
@@ -153,7 +153,7 @@ export default class ExerciseProjectReportList extends React.Component {
 							})
 						);
 					})
-					.catch(this.handleBadResponse);
+					.catch(_this.handleBadResponse);
 			});
 		});
 	}
