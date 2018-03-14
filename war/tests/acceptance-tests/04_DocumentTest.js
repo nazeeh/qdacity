@@ -3,7 +3,7 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('Project test', function() {
+describe('Document test', function() {
 
 	var defaultTimeout = 30000;
 	
