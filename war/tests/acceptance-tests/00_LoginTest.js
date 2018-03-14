@@ -42,8 +42,6 @@ describe('Login test', function() {
 		// Register Account
 		this.driver.wait(until.elementLocated(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register Account']"))).click();
 
-		console.log('LOGIN-TEST: registering account');
-		
 		// First name
 		let fieldFirstName = this.driver.findElement(By.xpath("//input[@name='firstName']"));
 		fieldFirstName.clear();
@@ -66,9 +64,7 @@ describe('Login test', function() {
     	
 		// Check welcome message and URL
     	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
-    		_this.driver.getCurrentUrl().then((currentUrl) => {
-    	    	console.log('LOGIN-TEST: found welcome message');
-    	    	
+    		_this.driver.getCurrentUrl().then((currentUrl) => {	
     			// Check the welcome message
         		expect(text).toBe("Welcome " + displayName);
         		
