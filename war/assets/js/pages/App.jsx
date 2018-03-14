@@ -37,7 +37,7 @@ import styled from 'styled-components';
 import IntlProvider from '../common/Localization/LocalizationProvider';
 
 
-var TEST_MODE = $TEST_MODE$;
+const TEST_MODE = $TEST_MODE$;
 
 
 const ContentGrid = styled.div`
@@ -89,12 +89,7 @@ export default class App extends React.Component {
 
 		this.state = {};
 
-		if (TEST_MODE === true) {
-			this.authenticationProvider = new TestAuthenticationProvider();
-		}
-		else {
-			this.authenticationProvider = new AuthenticationProvider();
-		}
+		this.authenticationProvider = (TEST_MODE == true ? new TestAuthenticationProvider() : new AuthenticationProvider());
 		this.authorizationProvider = new AuthorizationProvider();
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
