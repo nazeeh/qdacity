@@ -15,6 +15,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.api.server.spi.config.AnnotationBoolean;
 import com.google.api.server.spi.config.ApiResourceProperty;
+import com.qdacity.course.TermCourse;
 import com.qdacity.project.ProjectType;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
@@ -129,7 +130,7 @@ public class User implements Serializable {
 		if (termCourses == null) {
 			termCourses = new ArrayList<Long>();
 		}
-		{termCourses.add(termCourseID);}
+		termCourses.add(termCourseID);
 	}
 
 	public void removeCourseAuthorization(Long course) {

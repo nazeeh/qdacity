@@ -5,6 +5,7 @@ import { Data, Range, resetKeyGenerator } from 'slate';
 import { Editor } from 'slate-react';
 import Html from 'slate-html-serializer';
 
+import { PageView } from '../View/PageView.js';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import SlateCodingBracketAdapter from './SlateCodingBracketAdapter.jsx';
 import TextEditorToolbar from './TextEditorToolbar.jsx';
@@ -13,7 +14,7 @@ import Marks from './Marks';
 
 // Container to wrap optional Toolbar and StyledDocumentWrapper
 const StyledContainer = styled.div`
-	display: flex;
+	display: ${props =>(props.selectedEditor === PageView.TEXT || props.selectedEditor === PageView.CODING ) ? 'flex' : 'none'};
 	flex-direction: column;
 	height: 100%;
 `;
@@ -796,7 +797,7 @@ export default class TextEditor extends React.Component {
 		}).value;
 
 		return (
-			<StyledContainer>
+			<StyledContainer selectedEditor={this.props.selectedEditor}>
 				{this.props.textEditable && (
 					<TextEditorToolbar
 						fontFaces={fontFaces}

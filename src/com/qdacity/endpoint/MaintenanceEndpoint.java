@@ -17,6 +17,7 @@ import com.qdacity.Constants;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.maintenance.tasks.OrphanDeletion;
 import com.qdacity.maintenance.tasks.ValidationCleanup;
+import com.qdacity.maintenance.tasks.usermigration.InactiveOldUserRemoveCoordinator;
 import com.qdacity.maintenance.tasks.usermigration.UserMigrationEmailNotifier;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelEntityType;
@@ -57,6 +58,18 @@ public class MaintenanceEndpoint {
 		}
 		
 		UserMigrationEmailNotifier task = new UserMigrationEmailNotifier(href);
+		
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+	}
+	
+	@ApiMethod(name = "maintenance.deleteOldInactiveUsers")
+	public void deleteOldInactiveUsers(User user, @Named("inactiveDays") int inactiveDays) throws UnauthorizedException {
+		if(!Authorization.isUserAdmin(user)) {
+			throw new UnauthorizedException("Only Admins are authorized to trigger this endpoint!");
+		}
+		
+		InactiveOldUserRemoveCoordinator task = new InactiveOldUserRemoveCoordinator(inactiveDays, user);
 		
 		Queue queue = QueueFactory.getDefaultQueue();
 		queue.addAsync(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));

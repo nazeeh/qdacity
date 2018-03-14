@@ -1,12 +1,6 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +15,7 @@ import javax.persistence.EntityNotFoundException;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -42,6 +37,7 @@ import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
@@ -336,24 +332,92 @@ public class UserEndpoint {
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
+	 * 
+	 * Removes associations from Projects. Deletes the project if this is the last owner.
+	 * Removes associations from ValidationProjects.
+	 * Removes associations from Courses. Deletes the course if this is the last owner.
+	 * Removes associations from TermCourses. Deletes the TermCourse if this is the last owner.
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(name = "removeUser")
 	public void removeUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			User user = (User) Cache.getOrLoad(id, User.class, mgr);
-			User myUser = user;
-			System.out.println("This is the id " + user.getId());
+		
+		User user = (User) Cache.getOrLoad(id, User.class);
 
+		if(!Authorization.isUserAdmin(loggedInUser)) {
 			// Check if user is authorized
 			Authorization.checkAuthorization(user, loggedInUser);
-			mgr.deletePersistent(myUser);
+		} // else he is admin and is also privileged to to this action!
+		
+		// remove from projects
+		ProjectEndpoint projectEndpoint = new ProjectEndpoint();
+		if(user.getProjects() != null) {
+			CollectionResponse<Project> projectResponse = projectEndpoint.listProjectByUserId(null, null, user.getId(), loggedInUser);
+			for(Project project  : projectResponse.getItems()) {
+
+				if(project.getOwners().contains(user.getId()) && project.getOwners().size() == 1) {
+					// last owner -> delete project
+					projectEndpoint.removeProject(project.getId(), loggedInUser);
+				} else {
+					// just remove user
+					projectEndpoint.removeUser(project.getId(), "PROJECT", user.getId(), loggedInUser);
+				}
+			}
+		}
+
+		// remove from validationProjects
+		List<ValidationProject> validationProjects = projectEndpoint.listValidationProjectByUserId(user.getId(), loggedInUser);
+		for(ValidationProject validationProject: validationProjects) {
+			projectEndpoint.removeUser(validationProject.getId(), "VALIDATION", user.getId(), loggedInUser);
+		}
+
+
+		// remove from courses
+		CourseEndpoint courseEndpoint = new CourseEndpoint();
+		if(user.getCourses() != null) {
+			for(Course course : courseEndpoint.listCourseByUserId(user.getId(), null, null, loggedInUser).getItems()) {
+
+				if(course.getOwners().contains(user.getId()) && course.getOwners().size() == 1) {
+					// last owner
+					courseEndpoint.removeCourse(course.getId(), loggedInUser);
+				} else {
+					// just remove user
+					courseEndpoint.removeUser(course.getId(), loggedInUser);
+				}
+			}
+		}
+		
+		// remove from termCourses
+		if(user.getTermCourses() != null) {
+			for(Long termCourserId: user.getTermCourses()) {
+				
+				TermCourse termCourse = (TermCourse) Cache.getOrLoad(termCourserId, TermCourse.class);
+				if(termCourse.getOwners().contains(user.getId()) && termCourse.getOwners().size() == 1) {
+					// last owner
+					courseEndpoint.removeTermCourse(termCourserId, loggedInUser);
+				} else {
+					// just remove user
+					courseEndpoint.removeParticipant(termCourserId, user.getId(), loggedInUser);
+				}
+			}
+		}
+		
+		
+		
+		// finally delete user
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			user = mgr.getObjectById(User.class, id);
+			Cache.invalidate(user.getId(), User.class);
+			Cache.invalidatUserLogins(user);
+			mgr.makePersistent(user); // can't delete transient instance
+			mgr.deletePersistent(user);
 		} finally {
 			mgr.close();
 		}
+		
 	}
 
 	@SuppressWarnings("unchecked")
