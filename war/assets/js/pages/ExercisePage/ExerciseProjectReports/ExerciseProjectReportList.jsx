@@ -91,6 +91,7 @@ export default class ExerciseProjectReportList extends React.Component {
 
 	createReport(revId) {
 		const { formatMessage } = IntlProvider.intl;
+		var _this = this;
 		var exerciseEndpoint = new ExerciseEndpoint();
 		DocumentsEndpoint.getDocuments(revId, 'EXERCISE').then(function(documents) {
 			var modal = new CustomForm(
@@ -137,6 +138,7 @@ export default class ExerciseProjectReportList extends React.Component {
 				var selectedDocs = [];
 				exerciseEndpoint
 					.evaluateExerciseRevision(
+						this.props.exercise.id,
 						revId,
 						data.title,
 						data.docs,

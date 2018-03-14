@@ -322,9 +322,9 @@ public class ExerciseEndpoint {
 	}
 
 	@ApiMethod(name = "exercise.evaluateExerciseRevision")
-	public List<ExerciseProject> evaluateExerciseRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
+	public List<ExerciseProject> evaluateExerciseRevision(@Named("exerciseID") Long exerciseID, @Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
 
-		DeferredEvaluation task = new DeferredEvaluationExerciseReport(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
+		DeferredEvaluation task = new DeferredEvaluationExerciseReport(exerciseID, revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
 		// Set instance variables etc as you wish
 		Queue queue = QueueFactory.getDefaultQueue();
 		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));

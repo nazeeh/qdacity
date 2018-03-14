@@ -40,6 +40,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
     private static final long serialVersionUID = 8021773396438274981L;
     Long revisionID;
+    Long exerciseID;
     String name;
     User user;
     private final EvaluationMethod evaluationMethod;
@@ -53,9 +54,10 @@ public abstract class DeferredEvaluation implements DeferredTask {
     private DeferredAlgorithmTaskQueue taskQueue;
     private ProjectType projectType;
 
-    public DeferredEvaluation(Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
+    public DeferredEvaluation(Long exerciseID, Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
 	super();
 	this.revisionID = revisionID;
+	this.exerciseID = exerciseID;
 	this.name = name;
 	this.user = user;
 	this.evaluationMethod = EvaluationMethod.fromString(evaluationMethod);
@@ -63,6 +65,17 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	this.raterIds = IdCsvStringToLongList.convert(raterIds);
 	this.docIDs = IdCsvStringToLongList.convert(docIDsString);
     }
+
+	public DeferredEvaluation(Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
+		super();
+		this.revisionID = revisionID;
+		this.name = name;
+		this.user = user;
+		this.evaluationMethod = EvaluationMethod.fromString(evaluationMethod);
+		this.evalUnit = EvaluationUnit.fromString(unitOfCoding);
+		this.raterIds = IdCsvStringToLongList.convert(raterIds);
+		this.docIDs = IdCsvStringToLongList.convert(docIDsString);
+	}
 
     public void setProjectType(ProjectType projectType) {
         this.projectType = projectType;

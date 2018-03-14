@@ -234,7 +234,7 @@ public class ExerciseEndpointTest {
 
         String docsToEvaluate = getDocumentsAsCSV(exPrj.getRevisionID(), ProjectType.EXERCISE);
         ExerciseEndpoint ee = new ExerciseEndpoint();
-        ee.evaluateExerciseRevision(exPrj.getRevisionID(), "ReportTest", docsToEvaluate,EvaluationMethod.F_MEASURE.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
+        ee.evaluateExerciseRevision(1L, exPrj.getRevisionID(), "ReportTest", docsToEvaluate,EvaluationMethod.F_MEASURE.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
 
         try {
             latch.await(25, TimeUnit.SECONDS);

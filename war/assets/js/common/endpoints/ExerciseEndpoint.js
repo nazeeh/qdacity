@@ -55,8 +55,9 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	evaluateExerciseRevision(revId, name, docs, method, unit) {
+	evaluateExerciseRevision(exerciseID, revId, name, docs, method, unit) {
 		var apiMethod = gapi.client.qdacity.exercise.evaluateExerciseRevision({
+			exerciseID: exerciseID,
 			revisionID: revId,
 			name: name,
 			docs: docs,

@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class DeferredEvaluationExerciseReport extends DeferredEvaluation {
 
-    public DeferredEvaluationExerciseReport(Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
-        super(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
+    public DeferredEvaluationExerciseReport(Long exerciseID ,Long revisionID, String name, String docIDsString, String evaluationMethod, String unitOfCoding, String raterIds, User user) {
+        super(exerciseID, revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
     }
 
     @Override
@@ -36,6 +36,7 @@ public class DeferredEvaluationExerciseReport extends DeferredEvaluation {
         ExerciseReport exerciseReport = new ExerciseReport();
         getPersistenceManager().makePersistent(exerciseReport); // Generate ID right away so we have an ID to pass to ExerciseResults
         exerciseReport.setRevisionID(revisionID);
+        exerciseReport.setExerciseID(exerciseID);
         exerciseReport.setName(name);
         exerciseReport.setDatetime(new Date());
         exerciseReport.setEvaluationUnit(super.getEvalUnit());
