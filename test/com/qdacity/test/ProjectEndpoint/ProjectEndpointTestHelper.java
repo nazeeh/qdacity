@@ -9,7 +9,7 @@ import com.qdacity.project.Project;
 import com.qdacity.test.CodeSystemEndpoint.CodeSystemTestHelper;
 
 public class ProjectEndpointTestHelper {
-	static public void addProject(Long id, String name, String description, Long codesystemID, User loggedInUser) throws UnauthorizedException {
+	static public Project addProject(Long id, String name, String description, Long codesystemID, User loggedInUser) throws UnauthorizedException {
 		Project project = new Project();
 		project.setId(id);
 		project.setName(name);
@@ -17,7 +17,7 @@ public class ProjectEndpointTestHelper {
 		project.setCodesystemID(codesystemID);
 
 		ProjectEndpoint ue = new ProjectEndpoint();
-		ue.insertProject(project, loggedInUser);
+		return ue.insertProject(project, loggedInUser);
 	}
 
 	static public void removeProject(Long id, User loggedInUser) throws UnauthorizedException {
@@ -38,15 +38,15 @@ public class ProjectEndpointTestHelper {
 		return null;
 	}
 
-	static public void setupProjectWithCodesystem(Long id, String name, String description, User loggedInUser) {
+	static public Project setupProjectWithCodesystem(Long id, String name, String description, User loggedInUser) {
 		CodeSystemTestHelper.addCodeSystem(15648758L, loggedInUser);
 		try {
-			addProject(id, name, description, 15648758L, loggedInUser);
+			return addProject(id, name, description, 15648758L, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("Authorization failed for adding a project");
 		}
-
+		return null;
 
 	}
 
