@@ -200,13 +200,24 @@ public class ExerciseEndpoint {
         List<ExerciseReport> reports = new ArrayList<>();
         PersistenceManager mgr = getPersistenceManager();
         try {
-            Query q;
-            q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID");
 
+            Query exerciseQuery;
+            exerciseQuery = mgr.newQuery(Exercise.class, " projectRevisionID  == :projectRevisionID");
+
+            Map<String, Long> exerciseQueryParams = new HashMap<>();
+            exerciseQueryParams.put("projectRevisionID", revID);
+            Exercise exercise = (Exercise) exerciseQuery.execute(exerciseQueryParams);
+            TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+            // Check if user is authorized
+            Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+            Query q;
             Map<String, Long> params = new HashMap<>();
+            q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID");
             params.put("revisionID", revID);
 
             reports = (List<ExerciseReport>) q.executeWithMap(params);
+
 
         } finally {
             mgr.close();
