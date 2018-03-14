@@ -293,9 +293,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
         report.setDetailedAgreementHeader(new TabularReportRow(tableHead));
         report.setAverageAgreementHeader(new TabularReportRow(tableAverageHead));
 
-        Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = null;
-        if (projectType == ProjectType.VALIDATION) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
-        else if (projectType == ProjectType.EXERCISE) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentExerciseProjectsGroupedByName(exerciseProjectsFromUsers, docIDs, user);
+        Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentProjectsGroupedByName(projectsFromUsers,projectType, docIDs, user);
 
 
 	List<DeferredAlgorithmEvaluation> kAlphaTasks = new ArrayList<>();
@@ -360,9 +358,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	}
 	
 	//get all Document Ids from every Rater
-	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = null;
-	if (projectType == ProjectType.VALIDATION) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentValidationProjectsGroupedByName(validationProjectsFromUsers, docIDs, user);
-	if (projectType == ProjectType.EXERCISE) sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentExerciseProjectsGroupedByName(exerciseProjectsFromUsers, docIDs, user);
+	Map<String, ArrayList<Long>> sameDocumentsFromDifferentRatersMap = TextDocumentEndpoint.getDocumentsFromDifferentProjectsGroupedByName(projectsFromUsers, projectType,  docIDs, user);
 	List<String> headerCells = new ArrayList<>();
 	headerCells.add("Document \\ Code");
 	headerCells.add("Average All Codes");
