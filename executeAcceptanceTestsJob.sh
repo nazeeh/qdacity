@@ -39,6 +39,9 @@ docker rmi $(docker images -qa -f "dangling=true")
 BASE_IMAGE_TAG="qdacity-tests-base:latest"
 TEST_IMAGE_TAG="qdacity-tests-${CI_PROJECT_ID}"
 
+##########
+docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
+
 # Build the base image if it does not exist
 [ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 
