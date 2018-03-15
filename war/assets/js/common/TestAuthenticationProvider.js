@@ -26,4 +26,8 @@ export default class TestAuthenticationProvider extends AuthenticationProvider {
 		});
 		return promise;
 	}
+
+	getToken() {
+		return "TEST_TOKEN";
+	}
 }
