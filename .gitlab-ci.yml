@@ -120,15 +120,24 @@ acceptance_tests:
   stage: test
   only:
     - branches
+    
+    
+    
   cache:
     key: "rtcsvc:node_modules"
     untracked: true
     paths:
     - realtime-service/node_modules/
     policy: pull
-  cache:
-    <<: *node_cache
-    policy: pull
+#  cache:
+#    key: "node_modules"
+#    paths:
+#    - war/node_modules/
+#    - localization/node_modules/
+#    policy: pull
+    
+    
+    
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
