@@ -72,15 +72,11 @@ class DocumentHandler {
     const cache = new DocumentCache(this._redis);
 
     try {
-      // Get exclusive lock on that document
-      let lock = false;
-      while (!lock) {
-        try {
-          await documentLock.acquire();
-          lock = true;
-        } catch(error) {
-          await delay(100);
-        }
+      // Wait up to 5 seconds for the exclusive lock on that document
+      try {
+        await documentLock.acquire(5000);
+      } catch(e) {
+        throw 'Could not get document lock';
       }
 
       let doc;
