@@ -42,7 +42,7 @@ class Socket {
 
     // Initialize handlers for specific domains
     new CodesHandler(this);
-    new DocumentHandler(this);
+    new DocumentHandler(this, redis);
 
     // Send connection acknowledgement to client
     this.socket.emit(EVT.USER.CONNECTED, SERVER_NAME);
