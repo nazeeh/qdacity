@@ -4,7 +4,7 @@
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
 echo $RTCS_CONFIG > ./realtime-service/.env
 
-# Install resources
+# Install npm packages
 cd realtime-service
 npm prune
 npm install
@@ -20,7 +20,7 @@ npm prune
 npm install
 cd ..
 
-# Local build
+# Local frontend build
 cd war
 gulp bundle-task --local
 cd ..
