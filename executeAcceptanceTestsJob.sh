@@ -2,8 +2,8 @@
 
 # Create api_config and .env
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
-echo $RTCS_CONFIG > ./realtime_service/.env
-	
+echo $RTCS_CONFIG > ./realtime-service/.env
+
 # Local build
 cd war
 gulp bundle-task --local
