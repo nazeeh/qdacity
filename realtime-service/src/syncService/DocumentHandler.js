@@ -1,5 +1,4 @@
 const {
-  Value,
   Range,
   resetKeyGenerator,
 } = require('slate');
@@ -79,10 +78,10 @@ class DocumentHandler {
         throw 'Could not get document lock';
       }
 
+      // Try to read document from cache and fallback to backend
       let doc;
       try {
         doc = await cache.get(documentId);
-        doc.value = Value.fromJSON(doc.value);
       } catch(e) {
 
         // Load text document from backend
@@ -109,11 +108,9 @@ class DocumentHandler {
       const change = doc.value.change();
       operations.map(operation => change.applyOperation(operation));
 
+      // Cache updated document
       try {
-        await cache.store(documentId, {
-          ...doc,
-          value: change.value.toJSON()
-        });
+        await cache.store(documentId, doc);
       } catch(e) {
         // silently fail
       }
