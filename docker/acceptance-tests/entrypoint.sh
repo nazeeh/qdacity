@@ -1,7 +1,6 @@
 # Starts the selenium server and the local dev-server.
 
 # Start RTCS
-ls
 cd realtime-service
 npm run start &
 cd ..
