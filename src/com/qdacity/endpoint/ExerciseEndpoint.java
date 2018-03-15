@@ -196,18 +196,12 @@ public class ExerciseEndpoint {
 
     @SuppressWarnings("unchecked")
     @ApiMethod(name = "exercise.listExerciseReportsByRevisionID", path = "exercise.listExerciseReportsByRevisionID")
-    public List<ExerciseReport> listExerciseReportsByRevisionID(@Named("revisionID") Long revID, User user) throws UnauthorizedException {
+    public List<ExerciseReport> listExerciseReportsByRevisionID(@Named("revisionID") Long revID, @Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException {
         List<ExerciseReport> reports = new ArrayList<>();
         PersistenceManager mgr = getPersistenceManager();
         try {
 
-            Query exerciseQuery;
-            exerciseQuery = mgr.newQuery(Exercise.class, " projectRevisionID  == :projectRevisionID");
-
-            Map<String, Long> exerciseQueryParams = new HashMap<>();
-            exerciseQueryParams.put("projectRevisionID", revID);
-            Exercise exercise = (Exercise) exerciseQuery.execute(exerciseQueryParams);
-            TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+            TermCourse termCourse = mgr.getObjectById(TermCourse.class, exerciseID);
             // Check if user is authorized
             Authorization.checkAuthorizationTermCourse(termCourse, user);
 

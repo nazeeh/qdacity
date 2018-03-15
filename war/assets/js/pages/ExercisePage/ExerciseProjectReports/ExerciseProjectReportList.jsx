@@ -51,7 +51,8 @@ export default class ExerciseProjectReportList extends React.Component {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 
 			this.getExerciseProjectReportsPromise = ExerciseEndpoint.listExerciseReportsByRevisionID(
-				this.props.exercise.projectRevisionID
+				this.props.exercise.projectRevisionID,
+				this.props.exercise.id
 			);
 			this.fetchExerciseReportData();
 		}
