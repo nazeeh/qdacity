@@ -471,6 +471,7 @@ class CodingEditor extends React.Component {
 					<StyledTextdocumentUi>
 						<TextEditor
 							ref={r => (this.textEditor = r)}
+							selectedEditor={this.state.selectedEditor}
 							textEditable={this.state.selectedEditor === PageView.TEXT}
 							projectID={this.state.project.getId()}
 							projectType={this.state.project.getType()}
