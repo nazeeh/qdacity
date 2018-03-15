@@ -13,7 +13,7 @@ import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.d
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class IntercoderAgreement extends VexModal {
-	constructor(report, history, projectType) {
+	constructor(report, history, projectType, exercise) {
 		super();
 		const { formatMessage } = IntlProvider.intl;
 		this.history = history;
@@ -69,6 +69,7 @@ export default class IntercoderAgreement extends VexModal {
 			'</div>';
 
 		this.report = report;
+		this.exercise = exercise;
 		this.projectType = projectType;
 		this.results;
 	}
@@ -177,7 +178,8 @@ export default class IntercoderAgreement extends VexModal {
 
 			if (_this.projectType == 'EXERCISE')
 				var resultsPromise = ExerciseEndpoint.listExerciseResults(
-					_this.report.id
+					_this.report.id,
+					_this.exercise.id
 				);
 			else
 				var resultsPromise = ValidationEndpoint.listValidationResults(

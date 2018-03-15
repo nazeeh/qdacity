@@ -186,7 +186,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
             Logger.getLogger("logger").log(Level.INFO, "Starting "+ projectType.toString() + "Project : " + project.getId());
             taskQueue.launchInTaskQueue(deferredValidation);
         }
-        taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(projectsFromUsers.size(), report.getId(), user, projectType);
+        taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(projectsFromUsers.size(), report.getId(), exerciseID, user, projectType);
 
 
 	    aggregateDocAgreement(report);
@@ -217,7 +217,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	List<? extends Result> results = null;
 
 	if (projectType == ProjectType.VALIDATION) results = ve.listValidationResults(report.getId(), user);
-    else if (projectType == ProjectType.EXERCISE) results = ee.listExerciseResults(report.getId(), user);
+    else if (projectType == ProjectType.EXERCISE) results = ee.listExerciseResults(report.getId(), exerciseID, user);
 
 	Logger.getLogger("logger").log(Level.WARNING, " So many results " + results.size() + " for report " + report.getId() + " at time " + System.currentTimeMillis());
 	for (Result result : results) {
@@ -308,7 +308,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 
 	Logger.getLogger("logger").log(Level.INFO, "Krippendorffs Alpha Add Paragraph Agreement ");
 
-	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), report.getId(), user, projectType);
+	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(kAlphaTasks.size(), report.getId(), exerciseID, user, projectType);
 
         report.setAverageAgreement(calculateAverageAgreement(resultRows));
 
@@ -376,7 +376,7 @@ public abstract class DeferredEvaluation implements DeferredTask {
 	taskQueue.launchListInTaskQueue(deferredEvals);
 	
 	int amountOfValidationResults = sameDocumentsFromDifferentRatersMap.keySet().size();
-	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, report.getId(), user, projectType);
+	List<? extends Result> resultRows = taskQueue.waitForTasksWhichCreateAnValidationResultToFinish(amountOfValidationResults, report.getId(), exerciseID, user, projectType);
 	List<String> avgHeaderCells = new ArrayList<>();
 	avgHeaderCells.add("");
 	avgHeaderCells.addAll(sameDocumentsFromDifferentRatersMap.keySet());

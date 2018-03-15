@@ -353,11 +353,17 @@ public class ExerciseEndpoint {
 
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.listExerciseResults")
-	public List<ExerciseResult> listExerciseResults(@Named("reportID") Long reportID, User user) throws UnauthorizedException {
+	public List<ExerciseResult> listExerciseResults(@Named("reportID") Long reportID, @Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		List<ExerciseResult> results = new ArrayList<ExerciseResult>();
 		mgr.setIgnoreCache(true); // TODO should probably only be set during generation of new reports, but if not set the report generation can run into an infinite loop
 		try {
+
+            Exercise exercise = mgr.getObjectById(Exercise.class, exerciseID);
+            TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+            // Check if user is authorized
+            Authorization.checkAuthorizationTermCourse(termCourse, user);
+
 			Query q = mgr.newQuery(ExerciseResult.class, "reportID  == :reportID");
 			Map<String, Long> params = new HashMap<String, Long>();
 			params.put("reportID", reportID);

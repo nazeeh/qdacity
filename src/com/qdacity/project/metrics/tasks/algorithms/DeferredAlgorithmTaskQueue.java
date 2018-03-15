@@ -64,7 +64,7 @@ public class DeferredAlgorithmTaskQueue {
      * @throws UnauthorizedException
      * @throws InterruptedException
      */
-    public List<? extends Result> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long reportId, User user, ProjectType projectType) throws ExecutionException, UnauthorizedException, InterruptedException {
+    public List<? extends Result> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long reportId, Long exerciseID, User user, ProjectType projectType) throws ExecutionException, UnauthorizedException, InterruptedException {
 	if (amountValidationProjects == 0) {
 	    return null;
 	}
@@ -84,7 +84,7 @@ public class DeferredAlgorithmTaskQueue {
             }
             else if (projectType == ProjectType.EXERCISE) {
                 ExerciseEndpoint ee = new ExerciseEndpoint();
-                valResults = ee.listExerciseResults(reportId, user);
+                valResults = ee.listExerciseResults(reportId, exerciseID, user);
             }
 			if (valResults.size() != amountValidationProjects || !reportRowsExist(valResults)) {
 				Thread.sleep(SLEEP_TIME);
