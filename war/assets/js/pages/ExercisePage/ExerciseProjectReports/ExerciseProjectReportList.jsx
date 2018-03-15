@@ -164,7 +164,7 @@ export default class ExerciseProjectReportList extends React.Component {
 			exerciseProjectReport,
 			this.props.history,
 			'EXERCISE',
-			_this.props.exercise
+			this.props.exercise
 		);
 		if (this.props.isTermCourseOwner) agreementModal.showModal();
 	}

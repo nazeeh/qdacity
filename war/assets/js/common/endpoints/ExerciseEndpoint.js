@@ -77,9 +77,10 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static listExerciseResults(repId) {
+	static listExerciseResults(repId, exerciseID) {
 		var apiMethod = gapi.client.qdacity.exercise.listExerciseResults({
-			reportID: repId
+			reportID: repId,
+			exerciseID: exerciseID
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
