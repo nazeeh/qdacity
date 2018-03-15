@@ -121,6 +121,12 @@ acceptance_tests:
   only:
     - branches
   cache:
+    key: "rtcsvc:node_modules"
+    untracked: true
+    paths:
+    - realtime-service/node_modules/
+    policy: pull
+  cache:
     <<: *node_cache
     policy: pull
   script:
