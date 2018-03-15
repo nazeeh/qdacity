@@ -4,6 +4,11 @@
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
 echo $RTCS_CONFIG > ./realtime-service/.env
 
+cd realtime-service
+ls
+ls ./node_modules
+cd ..
+
 # Local build
 cd war
 gulp bundle-task --local
