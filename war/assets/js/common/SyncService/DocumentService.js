@@ -9,7 +9,7 @@ export default class DocumentService {
 
 		// Initialize listeners
 		[
-			[EVT.DOCUMENT.CODE_APPLIED, this._handleCodeApplied],
+			[EVT.CODING.ADDED, this._handleCodingAdded],
 		].map(def => socket.on(def[0], def[1].bind(this)));
 	}
 
@@ -25,7 +25,7 @@ export default class DocumentService {
 	 * @return {Promise}
 	 */
 	applyCode(documentId, projectId, projectType, operations, code) {
-		return this.syncService.emit(MSG.DOCUMENT.APPLY_CODE, {
+		return this.syncService.emit(MSG.CODING.ADD, {
 			documentId,
 			projectId,
 			projectType,
@@ -35,7 +35,7 @@ export default class DocumentService {
 	}
 
 	/**
-	 * Handle document.codeApplied message from sync service. Used to notify
+	 * Handle CODING.ADDED message from sync service. Used to notify
 	 * clients about Codings being added to a document.
 	 *
 	 * @access private
@@ -44,10 +44,10 @@ export default class DocumentService {
 	 *                      {string} document - Document id to apply to
 	 *                      {object[]} operations - Slate.Operations to apply
 	 */
-	_handleCodeApplied(data) {
+	_handleCodingAdded(data) {
 		// Filter events that were initiated by this same client
 		if (data.authorSocket !== this.syncService.getSocketId()) {
-			this.syncService.fireEvent(EVT.DOCUMENT.CODE_APPLIED, data);
+			this.syncService.fireEvent(EVT.CODING.ADDED, data);
 		}
 	}
 }

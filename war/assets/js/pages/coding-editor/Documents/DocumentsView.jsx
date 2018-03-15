@@ -711,14 +711,14 @@ export default class DocumentsView extends React.Component {
 	}
 
 	/**
-	 * Handle incoming codeApplied events from syncService
+	 * Handle incoming CODING.ADDED events from syncService
 	 *
 	 * @private
 	 * @arg {object} data - Object with at least these parameters:
 	 *                      {string} document - ID of the document to apply to
 	 *                      {object[]} operations - Slate.Operations to apply
 	 */
-	_handleCodeApplied(data) {
+	_handleCodingAdded(data) {
 		const {
 			document,
 			operations,
@@ -753,9 +753,9 @@ export default class DocumentsView extends React.Component {
 	componentDidMount() {
 		// Register event listeners at sync service
 		this.listenerIDs = {
-			codeApplied: this.props.syncService.on(
-				EVT.DOCUMENT.CODE_APPLIED,
-				this._handleCodeApplied.bind(this)
+			[EVT.CODING.ADDED]: this.props.syncService.on(
+				EVT.CODING.ADDED,
+				this._handleCodingAdded.bind(this)
 			),
 		};
 	}

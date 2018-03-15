@@ -9,8 +9,8 @@ const MSG = {
     REMOVE: 'code.remove',
     UPDATE: 'code.update',
   },
-  DOCUMENT: {
-    APPLY_CODE: 'document.applyCode',
+  CODING: {
+    ADD: 'coding.add',
   },
 };
 
@@ -26,8 +26,8 @@ const EVT = {
     REMOVED: 'code.removed',
     UPDATED: 'code.updated',
   },
-  DOCUMENT: {
-    CODE_APPLIED: 'document.codeApplied',
+  CODING: {
+    ADDED: 'coding.added',
   },
 };
 

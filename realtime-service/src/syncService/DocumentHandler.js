@@ -43,12 +43,11 @@ class DocumentHandler {
    */
   _listen() {
     [
-      [MSG.DOCUMENT.APPLY_CODE, this._handleCodeApply],
+      [MSG.CODING.ADD, this._handleCodingAdd],
     ].map(def => this._ioSocket.on(def[0], def[1].bind(this)));
   }
 
   /**
-   * Handle applying code (creating coding)
    * @private
    * @arg {object} data - object with at least four keys:
    *                      {string} documentId - ID of the document to modify
@@ -59,7 +58,7 @@ class DocumentHandler {
    *                      {object} code - Code to apply
    * @arg {function} ack - acknowledge function for response
    */
-  async _handleCodeApply(data, ack) {
+  async _handleCodingAdd(data, ack) {
     const {
       documentId,
       projectId,
@@ -73,7 +72,6 @@ class DocumentHandler {
     const cache = new DocumentCache(this._redis);
 
     try {
-
       // Get exclusive lock on that document
       let lock = false;
       while (!lock) {
@@ -154,7 +152,7 @@ class DocumentHandler {
         document: documentId,
         operations,
       };
-      this._socket.handleApiResponse(EVT.DOCUMENT.CODE_APPLIED, ack, data);
+      this._socket.handleApiResponse(EVT.CODING.ADDED, ack, data);
 
     } catch(err) {
       documentLock.release();
