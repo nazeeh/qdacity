@@ -201,10 +201,11 @@ public class ExerciseEndpoint {
         PersistenceManager mgr = getPersistenceManager();
         try {
 
-            TermCourse termCourse = mgr.getObjectById(TermCourse.class, exerciseID);
+            Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
+            TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
             // Check if user is authorized
             Authorization.checkAuthorizationTermCourse(termCourse, user);
-
+            
             Query q;
             Map<String, Long> params = new HashMap<>();
             q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID");
