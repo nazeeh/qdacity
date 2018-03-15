@@ -1,5 +1,7 @@
 # Starts the selenium server and the local dev-server.
 
+echo ./war/api_config.json
+
 # Start RTCS
 cd realtime-service
 npm run start &
