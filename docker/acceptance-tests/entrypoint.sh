@@ -2,7 +2,7 @@
 
 # Start RTCS
 ls
-cd realtimeservice
+cd realtime-service
 npm run start &
 cd ..
 
