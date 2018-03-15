@@ -379,6 +379,14 @@ public class ExerciseEndpoint {
 	@ApiMethod(name = "exercise.sendNotificationEmailExercise")
 	public void sendNotificationEmailExercise(@Named("reportID") Long reportID, User user) throws UnauthorizedException {
 
+        PersistenceManager mgr = getPersistenceManager();
+        ExerciseReport report = mgr.getObjectById(ExerciseReport.class, reportID);
+        Exercise exercise = mgr.getObjectById(Exercise.class, report.getExerciseID());
+        TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+        // Check if user is authorized
+        Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+
 		DeferredEmailNotification task = new DeferredEmailNotification(reportID, user);
 		// Set instance variables etc as you wish
 		Queue queue = QueueFactory.getDefaultQueue();
@@ -392,6 +400,11 @@ public class ExerciseEndpoint {
         PersistenceManager mgr = getPersistenceManager();
         try {
             ExerciseReport report = mgr.getObjectById(ExerciseReport.class, repID);
+
+            Exercise exercise = mgr.getObjectById(Exercise.class, report.getExerciseID());
+            TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+            // Check if user is authorized
+            Authorization.checkAuthorizationTermCourse(termCourse, user);
 
             List<ExerciseResult> results;
 
