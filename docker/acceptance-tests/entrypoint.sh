@@ -5,6 +5,8 @@ cd realtime-service
 npm run start &
 cd ..
 
+sleep 5
+
 # Start selenium
 echo "Start the selenium server"
 
