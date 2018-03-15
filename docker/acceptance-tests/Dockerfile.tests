@@ -4,6 +4,7 @@ FROM qdacity-tests-base:latest
 WORKDIR /app
 COPY ./target /app/target
 COPY ./docker /app/docker
+COPY ./realtime-service /app/realtime-service
 COPY ./localization /app/localization
 COPY ./war/assets /app/war/assets
 COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests

@@ -1,5 +1,10 @@
 # Starts the selenium server and the local dev-server.
 
+# Start RTCS
+cd ./realtimeservice
+npm run start &
+cd ..
+
 # Start selenium
 echo "Start the selenium server"
 
