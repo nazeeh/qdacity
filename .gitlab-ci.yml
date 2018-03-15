@@ -124,17 +124,16 @@ acceptance_tests:
     
     
   cache:
-    key: "rtcsvc:node_modules"
-    untracked: true
-    paths:
-    - realtime-service/node_modules/
-    policy: pull
-#  cache:
-#    key: "node_modules"
-#    paths:
-#    - war/node_modules/
-#    - localization/node_modules/
-#    policy: pull
+    - key: "rtcsvc:node_modules"
+      untracked: true
+      paths:
+      - realtime-service/node_modules/
+      policy: pull
+    - key: "node_modules"
+      paths:
+      - war/node_modules/
+      - localization/node_modules/
+      policy: pull
     
     
     
