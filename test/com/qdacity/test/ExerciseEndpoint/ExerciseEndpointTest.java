@@ -247,7 +247,7 @@ public class ExerciseEndpointTest {
         QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
         assertEquals(0, qsi.getTaskInfo().size());
 
-        List<ExerciseReport> reports = ee.listExerciseReports(1L, testUser);
+        List<ExerciseReport> reports = ee.listExerciseReports(1L, 1L, testUser);
         assertEquals(1, reports.size());
         ExerciseReport report = reports.get(0);
         assertEquals(1L, report.getProjectID(), 0);
