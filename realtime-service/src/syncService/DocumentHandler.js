@@ -105,8 +105,7 @@ class DocumentHandler {
       }
 
       // Apply operations to document
-      const change = doc.value.change();
-      operations.map(operation => change.applyOperation(operation));
+      doc = this._applyOperations(doc, operations);
 
       // Cache updated document
       try {
@@ -116,7 +115,7 @@ class DocumentHandler {
       }
 
       // Serialize back to html
-      doc.text = serializer.serialize(change.value)
+      doc.text = serializer.serialize(doc.value)
         .replace(/(<coding[^>]+?)data-code-id=/g, '$1code_id=')
         .replace(/(<coding[^>]+?)data-author=/g, '$1author=');
 
@@ -153,6 +152,21 @@ class DocumentHandler {
       ack('err', err);
     };
 
+  }
+
+  /**
+   * Apply operations to document
+   *
+   * @private
+   * @arg {object} document - Document to apply the operations to
+   * @arg {object[]|Slate.Operation[]} operations - Operations to apply
+   * @return {object} Document with updated value
+   */
+  _applyOperations(document, operations) {
+    const change = document.value.change();
+    operations.map(operation => change.applyOperation(operation));
+    document.value = change.value;
+    return document;
   }
 }
 
