@@ -30,18 +30,6 @@ const buildRedisConnectionOptions = () => {
   REDIS_HOST && (redisConnectionOptions.host = REDIS_HOST);
   REDIS_PORT && (redisConnectionOptions.port = parseInt(REDIS_PORT));
   REDIS_AUTH && (redisConnectionOptions.password = REDIS_AUTH);
-
-  console.log('===========================================================');
-  console.log('===========================================================');
-  console.log('===========================================================');
-  console.log(redisConnectionOptions);
-  console.log(redisConnectionOptions.path);
-  console.log(redisConnectionOptions.host);
-  console.log(redisConnectionOptions.port);
-  console.log(redisConnectionOptions.password);
-  console.log('===========================================================');
-  console.log('===========================================================');
-  console.log('===========================================================');
   
   return redisConnectionOptions;
 };
