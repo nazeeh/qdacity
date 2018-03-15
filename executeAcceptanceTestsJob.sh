@@ -4,10 +4,18 @@
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
 echo $RTCS_CONFIG > ./realtime-service/.env
 
+echo "======================================"
 cd realtime-service
 ls
 ls ./node_modules
 cd ..
+
+echo "======================================"
+cd war
+ls
+ls ./node_modules
+echo "======================================"
+
 
 # Local build
 cd war
