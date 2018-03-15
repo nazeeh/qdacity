@@ -209,11 +209,8 @@ export default class DocumentsView extends React.Component {
 		this.changeDocumentData(doc);
 	}
 
-	applyCodeToCurrentDocument(code, author) {
-		return this.applyCodeToDocument(this.getActiveDocument(), code, author);
-	}
-
-	async applyCodeToDocument(document, code, author) {
+	async applyCodeToCurrentDocument(code, author) {
+		const document = this.getActiveDocument();
 		const {
 			getCodeByCodeID,
 			projectID,
@@ -256,27 +253,28 @@ export default class DocumentsView extends React.Component {
 		}
 
 		// Create the operation to be executed
-		const pathProperties = SlateUtils.rangeToPath(slateValue, currentSelection);
-		const operation = {
-			object: 'operation',
-			type: 'add_mark',
-			mark: {
-				object: 'mark',
-				type: 'coding',
-				data: {
-					id: maxCodingID,
-					code_id: code.codeID,
-					title: code.name,
-					author: author,
+		const operations = SlateUtils
+			.rangeToPaths(slateValue, currentSelection)
+			.map(({ path, offset, length }) => ({
+				object: 'operation',
+				type: 'add_mark',
+				mark: {
+					object: 'mark',
+					type: 'coding',
+					data: {
+						id: maxCodingID,
+						code_id: code.codeID,
+						title: code.name,
+						author: author,
+					},
 				},
-			},
-			path: pathProperties.path,
-			offset: pathProperties.offset,
-			length: pathProperties.length,
-		};
+				path,
+				offset,
+				length,
+			}));
 
 		// Optimistically add the mark locally
-		this.props.textEditor.applyOperation(operation, onStateChange);
+		this.props.textEditor.applyOperations(operations, onStateChange);
 
 		// Send change to sync service
 		try {
@@ -284,7 +282,7 @@ export default class DocumentsView extends React.Component {
 				document.id,
 				projectID,
 				projectType,
-				operation,
+				operations,
 				getCodeByCodeID(code.codeID)
 			);
 
@@ -300,9 +298,217 @@ export default class DocumentsView extends React.Component {
 			console.error('Error while syncing applyCode', e);
 
 			// Rollback optimistically added mark
-			const undoOperation = SlateUtils.invertOperation(operation);
-			this.props.textEditor.applyOperation(undoOperation, onStateChange);
+			const undoOperations = SlateUtils.invertOperations(operations);
+			this.props.textEditor.applyOperations(undoOperations, onStateChange);
 		}
+	}
+
+	/**
+	 * Remove coding from current selection
+	 *
+	 * This removes all codings with the given code ID from the current
+	 * selection. If the removal leads to two remaining halfs of a coding,
+	 * the latter half gets a new coding ID.
+	 *
+	 * @public
+	 * @arg {string} codeID - the ID of the code to remove
+	 * @return {Promise} - Waits for all code removals and splittings to be
+	 *                     successfully processed. Resolves with the editors
+	 *                     current content as HTML. Rejects if there is an
+	 *                     error while fetching a new coding ID from the API
+	 *                     or if nothing is selected
+	 */
+	async removeCoding(codeID) {
+		// Needed to getting new coding ID from API
+		const { projectID, projectType } = this.props;
+
+		// Store parts of the state for queries to be independent of other
+		// intermediate changes. MUST NOT BE USED AS BASE FOR STATE UPDATES!
+		// Otherwise intermediate changes would be discarded
+		const slateValue = this.props.textEditor.getSlateValue();
+		const { selection: currentSelection, document } = slateValue;
+
+		// Do nothing if no range is selected
+		if (currentSelection.isCollapsed) {
+			return;
+		}
+
+		// Find codings that should be removed
+		const codingsToRemove = document
+			.getMarksAtRange(currentSelection)
+			.filter(mark => mark.type === 'coding')
+			.filter(mark => mark.data.get('code_id') === codeID);
+
+		// Calculate parameters for code splitting if necessary.
+		// Returns Immutable.Set
+		const splittingPromises = codingsToRemove.map(coding => {
+			// Create curried coding searchers
+			const findCodingStart = SlateUtils.findCodingStart.bind(
+				this,
+				coding.data.get('id')
+			);
+			const findCodingEnd = SlateUtils.findCodingEnd.bind(
+				this,
+				coding.data.get('id')
+			);
+
+			// Prepare return value
+			const changeParameters = {
+				oldCoding: coding
+			};
+
+			// Get immediate character before the selection
+			let prevChar;
+			// Case 1: selection starts at block start
+			if (currentSelection.startOffset === 0) {
+				// Get previous text block
+				const prevText = document.getPreviousText(currentSelection.startKey);
+
+				// If there is no previous block, no splitting is needed
+				if (typeof prevText === 'undefined') {
+					return changeParameters;
+				}
+
+				prevChar = prevText.characters.last();
+			} else {
+				prevChar = document
+					.getDescendant(currentSelection.startKey)
+					.characters.get(currentSelection.startOffset - 1);
+			}
+
+			// If character before selection has not the current coding,
+			// no splitting is needed
+			if (!prevChar.marks.find(m => m.equals(coding))) {
+				return changeParameters;
+			}
+
+			// Search for the next character after the selection that has
+			// not the current coding
+
+			// Start with Text node in which the selection ends
+			let textNode = document.getDescendant(currentSelection.endKey);
+
+			// First textNode is only iterated after end of selection
+			const characters = textNode.characters.slice(
+				currentSelection.endOffset
+			);
+
+			// Find first character that has not the current coding
+			let endOffset = findCodingEnd(characters);
+
+			// If the immediate next character has not the current coding,
+			// no splitting is needed
+			if (endOffset === 0) {
+				return changeParameters;
+			}
+
+			// If other character found, add the selection end offset to
+			// get correct character offset in Text node
+			if (typeof endOffset !== 'undefined') {
+				endOffset += currentSelection.endOffset;
+			}
+
+			// If not already found, search subsequent Text nodes
+			while (typeof endOffset === 'undefined') {
+				textNode = document.getNextText(textNode.key);
+
+				// No Text node left, coding is applied until document end
+				if (!textNode) {
+					textNode = document.getLastText();
+					endOffset = textNode.characters.size;
+					break;
+				}
+
+				// Find first character that has not the current coding
+				endOffset = findCodingEnd(textNode.characters);
+			}
+
+			// Get new coding id from API
+			return ProjectEndpoint.incrCodingId(projectID, projectType).then(
+				({ maxCodingID }) => {
+					// Return parameters for coding removal and splitting
+					// to have all changes atomically
+					return {
+						rangeToChange: {
+							anchorKey: currentSelection.endKey,
+							anchorOffset: currentSelection.endOffset,
+							focusKey: textNode.key,
+							focusOffset: endOffset
+						},
+						oldCoding: coding,
+						newCoding: {
+							object: 'mark',
+							type: 'coding',
+							data: coding.data.set('id', maxCodingID)
+						}
+					};
+				}
+			);
+		});
+
+		// Wait for all splittings to resolve
+		let parameters;
+		try {
+			parameters = await Promise.all(splittingPromises);
+		} catch(e) {
+			console.log('error while fetching next coding ID', e);
+			return;
+		}
+
+		// Build operations from parameters
+		const operations = parameters.reduce((operations, params) => {
+
+			// Create operation for removing old coding
+			operations = SlateUtils
+				.rangeToPaths(slateValue, currentSelection)
+				.reduce((operations, { path, offset, length }) => {
+					return operations.concat({
+						object: 'operation',
+						type: 'remove_mark',
+						mark: params.oldCoding,
+						path,
+						offset,
+						length,
+					});
+				}, operations);
+
+			// Perform operations for code splitting, if necessary
+			if (params.pathToChange) {
+				// Create operation for removing coding with old id
+				operations = SlateUtils
+					.rangeToPaths(slateValue, params.rangeToChange)
+					.reduce((operations, { path, offset, length }) => {
+						return operations
+							.concat({
+								object: 'operation',
+								type: 'remove_mark',
+								mark: params.oldCoding,
+								path,
+								offset,
+								length,
+							})
+							.concat({
+								object: 'operation',
+								type: 'add_mark',
+								mark: params.newCoding,
+								path,
+								offset,
+								length,
+							});
+					}, operations);
+			}
+
+			return operations;
+		}, []);
+
+		this.props.textEditor.applyOperations(operations, () => {
+			const html = SlateUtils.serialize(
+				this.props.textEditor.getSlateValue()
+			);
+			this.updateCurrentDocument(html);
+			this.props.codesystemView.updateCodingCount();
+		});
+
 	}
 
 	changeDocumentData(doc) {
@@ -510,32 +716,32 @@ export default class DocumentsView extends React.Component {
 	 * @private
 	 * @arg {object} data - Object with at least these parameters:
 	 *                      {string} document - ID of the document to apply to
-	 *                      {object} operation - Slate.Operation to apply
+	 *                      {object[]} operations - Slate.Operations to apply
 	 */
 	_handleCodeApplied(data) {
 		const {
 			document,
-			operation,
+			operations,
 		} = data;
 
-		// If operation is for current document, apply directly
+		// If operations are for current document, apply directly
 		if (document === this.getActiveDocumentId()) {
-			this.props.textEditor.applyOperation(operation);
+			this.props.textEditor.applyOperations(operations);
 
-		// Process operation in DocumentsView
+		// Process operations in DocumentsView
 		} else {
 			const doc = this.getDocument(document);
 
 			// Apply if document has already been deserialized
 			if (doc.slateValue) {
-				doc.slateValue = SlateUtils.applyOperations(doc.slateValue, operation);
+				doc.slateValue = SlateUtils.applyOperations(doc.slateValue, operations);
 
-			// Else queue the operation for application after deserialization
+			// Else queue the operations for application after deserialization
 			} else {
 				if (!doc.operationQueue) {
 					doc.operationQueue = [];
 				}
-				doc.operationQueue.push(operation);
+				doc.operationQueue = doc.operationQueue.concat(operations);
 			}
 
 			this.setState({

@@ -49,8 +49,8 @@ class DocumentHandler {
    *                      {string} documentId - ID of the document to modify
    *                      {string} projectId - ID of the project to modify
    *                      {string} projectType - Type of the project to modify
-   *                      {object} operation - Serialization of the
-   *                                           Slate.Operation to apply
+   *                      {object[]} operations - Serializations of the
+   *                                              Slate.Operations to apply
    *                      {object} code - Code to apply
    * @arg {function} ack - acknowledge function for response
    */
@@ -59,7 +59,7 @@ class DocumentHandler {
       documentId,
       projectId,
       projectType,
-      operation,
+      operations,
       code,
     } = data;
 
@@ -81,9 +81,9 @@ class DocumentHandler {
       // Assert consistent internal slate IDs
       resetKeyGenerator();
 
-      // Apply operation to document
+      // Apply operations to document
       const change = serializer.deserialize(doc.text.value).change();
-      change.applyOperation(operation);
+      operations.map(operation => change.applyOperation(operation));
 
       // Serialize back to html
       doc.text = serializer.serialize(change.value)
@@ -102,7 +102,7 @@ class DocumentHandler {
       const data = {
         authorSocket: this._ioSocket.id,
         document: documentId,
-        operation,
+        operations,
       };
       this._socket.handleApiResponse(EVT.DOCUMENT.CODE_APPLIED, ack, data);
 

@@ -20,16 +20,16 @@ export default class DocumentService {
 	 * @arg {string} documentId - ID of the document to apply the coding
 	 * @arg {string} projectId - ID of the current project
 	 * @arg {string} projectType - The current project
-	 * @arg {object} operation - Slate.Operation describing the coding addition
+	 * @arg {object[]} operations - List of Slate.Operations to apply
 	 * @arg {object} code - Code that should be applied.
 	 * @return {Promise}
 	 */
-	applyCode(documentId, projectId, projectType, operation, code) {
+	applyCode(documentId, projectId, projectType, operations, code) {
 		return this.syncService.emit(MSG.DOCUMENT.APPLY_CODE, {
 			documentId,
 			projectId,
 			projectType,
-			operation,
+			operations,
 			code,
 		});
 	}
@@ -42,7 +42,7 @@ export default class DocumentService {
 	 * @arg {object} data - Object describing the change. At least contains:
 	 *                      {string} authorSocket - Socket id of the author's
 	 *                      {string} document - Document id to apply to
-	 *                      {object} operation - Slate.Operation to apply
+	 *                      {object[]} operations - Slate.Operations to apply
 	 */
 	_handleCodeApplied(data) {
 		// Filter events that were initiated by this same client

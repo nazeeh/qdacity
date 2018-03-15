@@ -127,7 +127,7 @@ export default class TextEditor extends React.Component {
 		// Bind public methods to this
 		this.setDocument = this.setDocument.bind(this);
 		this.getSlateValue = this.getSlateValue.bind(this);
-		this.applyOperation = this.applyOperation.bind(this);
+		this.applyOperations = this.applyOperations.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
 		this.activateCodingInEditor = this.activateCodingInEditor.bind(this);
 		this.isTextEditable = this.isTextEditable.bind(this);
@@ -169,19 +169,17 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
-	 * Apply Slate Operation to current editor state
+	 * Apply one or more Slate Operations to current editor state
 	 *
 	 * @public
-	 * @arg {Slate.Operation|object} operation - The operation to apply
+	 * @arg {Slate.Operation|object|Slate.Operation[]|object[]} operations
+	 *      - One operation or a list of operations to apply
 	 * @arg {callable} afterSetState - optional callback to execute after
 	 *                                 setState has been executed
 	 */
-	applyOperation(operation, afterSetState) {
+	applyOperations(operations, afterSetState) {
 		this.setState(prevState => ({
-			value: prevState.value
-				.change()
-				.applyOperation(operation)
-				.value,
+			value: SlateUtils.applyOperations(prevState.value, operations),
 		}), () => {
 			// Force update is needed for the coding brackets to update
 			// immediately because they rely on the DOM nodes that are only
@@ -233,11 +231,11 @@ export default class TextEditor extends React.Component {
 			// Returns Immutable.Set
 			const splittingPromises = codingsToRemove.map(coding => {
 				// Get curried coding searchers
-				const findCodingStart = this._findCodingStart.bind(
+				const findCodingStart = SlateUtils.findCodingStart.bind(
 					this,
 					coding.data.get('id')
 				);
-				const findCodingEnd = this._findCodingEnd.bind(
+				const findCodingEnd = SlateUtils.findCodingEnd.bind(
 					this,
 					coding.data.get('id')
 				);
@@ -644,8 +642,8 @@ export default class TextEditor extends React.Component {
 		const document = this.state.value.document;
 
 		// Get curried coding searchers
-		const findCodingStart = this._findCodingStart.bind(this, codingID);
-		const findCodingEnd = this._findCodingEnd.bind(this, codingID);
+		const findCodingStart = SlateUtils.findCodingStart.bind(this, codingID);
+		const findCodingEnd = SlateUtils.findCodingEnd.bind(this, codingID);
 
 		// Start searching for the first mark occurence in first text node
 		let startText = document.getFirstText();
@@ -693,38 +691,6 @@ export default class TextEditor extends React.Component {
 			focusKey: endText.key,
 			focusOffset: endOffset
 		});
-	}
-
-	/**
-	 * Find first character in a list of characters that has specific coding
-	 *
-	 * @private
-	 * @arg {string} codingID - The ID of the coding to search for
-	 * @arg {Immutable.List} characters - The list of characters to search in
-	 * @return {undefined|number} - The character's offset if found, or
-	 *                              undefined if no match found
-	 */
-	_findCodingStart(codingID, characters) {
-		return characters.findKey(c =>
-			c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
-		);
-	}
-
-	/**
-	 * Find first character in a list of characters that DOES NOT have specific
-	 * coding
-	 *
-	 * @private
-	 * @arg {string} codingID - The ID of the coding to search for
-	 * @arg {Immutable.List} characters - The list of characters to search in
-	 * @return {undefined|number} - The character's offset if found, or
-	 *                              undefined if no match found
-	 */
-	_findCodingEnd(codingID, characters) {
-		return characters.findKey(
-			c =>
-				!c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
-		);
 	}
 
 	/**

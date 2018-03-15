@@ -53,63 +53,54 @@ const serialize = value => {
 };
 
 /**
- * Calculate the path, offset and length for a Slate Operation based on the
- * Slate Value and a Slate Range
+ * Calculate paths with their offset and length for a Slate Operation based on
+ * the Slate Value and a Slate Range
  *
  * @arg {Slate.Value} value - The value to base the calculation on
  * @arg {Slate.Range} range - The range to convert
- * @return {object} with properties path, offset, length
+ * @return {object[]} array of paths with properties path, offset, length
  */
-const rangeToPath = (value, range) => {
+const rangeToPaths = (value, range) => {
 	const doc = value.document;
+	const paths = [];
 
-	// path is an array of indices
-	const path = doc.getPath(range.startKey);
-	const offset = range.startOffset;
-	let length = 0;
+	let textNode;
+	do {
+		// Get next or first text node
+		textNode = textNode
+			? doc.getNextText(textNode.key)
+			: doc.getDescendant(range.startKey);
 
-	// Simple case: range is inside a single text node (=paragraph)
-	if (range.startKey === range.endKey) {
+		// Offset is range.startOffset for first text node, else node start
+		const offset = textNode.key === range.startKey
+			? range.startOffset
+			: 0;
 
-		length = range.endOffset - offset;
+		// Length is range.endOffset for last text node, else node length
+		const length = textNode.key === range.endKey
+			? range.endOffset
+			: textNode.characters.size;
 
-	// Range spans over multiple text nodes.
-	} else {
+		paths.push({
+			path: doc.getPath(textNode.key),
+			offset,
+			length,
+		});
+	} while (textNode.key !== range.endKey);
 
-		// Get first text node and add characters from range start to node end
-		let node = doc.getDescendant(range.startKey);
-		length += node.characters.size - offset;
-
-		// Iterate through the start text node and the following nodes
-		while (node = doc.getNextText(node.key)) {
-
-			// Found last node of range, add node start to range end
-			if (node.key === range.endKey) {
-				length += range.endOffset;
-				break;
-
-			// Found node in between, add full node length
-			} else {
-				length += node.characters.size;
-			}
-		}
-	}
-
-	return {
-		path,
-		offset,
-		length,
-	};
+	return paths;
 };
 
 /**
- * Simple proxy for Slate.Operations.invert: Takes a Slate Operation and
- * generates a reverting operation
+ * Simple proxy for Slate.Operations.invert: Takes a list of Slate Operations
+ * and generates a list of reverting operations
  *
- * @arg {Slate.Operation|object} operation - The operation to invert
- * @return {Slate.Operation}
+ * @arg {Slate.Operation[]|object[]} operations - The operations to invert
+ * @return {Slate.Operation[]}
  */
-const invertOperation = Operations.invert;
+const invertOperations = operations => {
+	return operations.map(operation => Operations.invert(operation));
+};
 
 /**
  * Apply one ore more operations to Slate.Value
@@ -128,12 +119,44 @@ const applyOperations = (value, operations) => {
 	return change.value;
 };
 
+/**
+ * Find first character in a list of characters that has specific coding
+ *
+ * @arg {string} codingID - ID of the coding to search for
+ * @arg {Immutable.List} characters - The list of characters to search in
+ * @return {undefined|number} - The character's offset if found, or undefined
+ *                              if no match found
+ */
+const findCodingStart = (codingID, characters) => {
+	return characters.findKey(c =>
+		c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
+	);
+};
+
+/**
+ * Find first character in a list of characters that DOES NOT have specific
+ * coding
+ *
+ * @arg {string} codingID - The ID of the coding to search for
+ * @arg {Immutable.List} characters - The list of characters to search in
+ * @return {undefined|number} - The character's offset if found, or undefined
+ *                              if no match found
+ */
+const findCodingEnd = (codingID, characters) => {
+	return characters.findKey(
+		c => !c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
+	);
+};
+
+
 const SlateUtils = {
 	deserialize,
 	serialize,
-	rangeToPath,
-	invertOperation,
+	rangeToPaths,
+	invertOperations,
 	applyOperations,
+	findCodingStart,
+	findCodingEnd,
 };
 
 export default SlateUtils;

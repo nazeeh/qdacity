@@ -101,18 +101,7 @@ export default class CodesystemToolbar extends React.Component {
 	}
 
 	removeCoding() {
-		const codeID = this.props.selected.codeID;
-		this.props.textEditor
-			.removeCoding(codeID)
-			.then(html => {
-				this.props.documentsView.updateCurrentDocument(html);
-				this.props.updateCodingCount();
-			})
-			.catch(error => {
-				if (error !== 'nothing selected') {
-					console.error(error);
-				}
-			});
+		this.props.documentsView.removeCoding(this.props.selected.codeID);
 	}
 
 	showCodingsOverview() {
