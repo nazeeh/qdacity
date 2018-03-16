@@ -10,6 +10,7 @@ export default class DocumentService {
 		// Initialize listeners
 		[
 			[EVT.CODING.ADDED, this._handleCodingAdded],
+			[EVT.CODING.REMOVED, this._handleCodingRemoved],
 		].map(def => socket.on(def[0], def[1].bind(this)));
 	}
 
@@ -34,6 +35,16 @@ export default class DocumentService {
 		});
 	}
 
+	removeCoding(documentId, projectId, projectType, range, codeId) {
+		return this.syncService.emit(MSG.CODING.REMOVE, {
+			documentId,
+			projectId,
+			projectType,
+			range,
+			codeId,
+		});
+	}
+
 	/**
 	 * Handle CODING.ADDED message from sync service. Used to notify
 	 * clients about Codings being added to a document.
@@ -49,5 +60,18 @@ export default class DocumentService {
 		if (data.authorSocket !== this.syncService.getSocketId()) {
 			this.syncService.fireEvent(EVT.CODING.ADDED, data);
 		}
+	}
+
+	/**
+	 * Handle CODING.REMOVED message from sync service. Used to notify
+	 * clients about Codings being removed from a document.
+	 *
+	 * @access private
+	 * @arg {object} data - Object describing the change. At least contains:
+	 *                      {string} document - Document id to apply to
+	 *                      {object[]} operations - Slate.Operations to apply
+	 */
+	_handleCodingRemoved(data) {
+		this.syncService.fireEvent(EVT.CODING.REMOVED, data);
 	}
 }

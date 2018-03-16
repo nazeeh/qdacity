@@ -128,7 +128,6 @@ export default class TextEditor extends React.Component {
 		this.setDocument = this.setDocument.bind(this);
 		this.getSlateValue = this.getSlateValue.bind(this);
 		this.applyOperations = this.applyOperations.bind(this);
-		this.removeCoding = this.removeCoding.bind(this);
 		this.activateCodingInEditor = this.activateCodingInEditor.bind(this);
 		this.isTextEditable = this.isTextEditable.bind(this);
 		this.getMaxFalseNeg = this.getMaxFalseNeg.bind(this);

@@ -1,22 +1,14 @@
 const {
   Range,
-  resetKeyGenerator,
 } = require('slate');
-const { default: Html } = require('slate-html-serializer');
-const { JSDOM } = require('jsdom');
-
 const logger = require('../utils/Logger');
 const DocumentCache = require('../utils/DocumentCache');
 const DocumentLock = require('../utils/DocumentLock');
 const delay = require('../utils/delay');
+const SlateUtils = require('../utils/SlateUtils');
 
 const { MSG, EVT } = require('./constants');
 const slateRules = require('./documentSerializationRules');
-
-const serializer = new Html({
-  rules: slateRules,
-  parseHtml: html => new JSDOM(html).window.document.body
-});
 
 
 /**
@@ -44,6 +36,7 @@ class DocumentHandler {
   _listen() {
     [
       [MSG.CODING.ADD, this._handleCodingAdd],
+      [MSG.CODING.REMOVE, this._handleCodingRemove],
     ].map(def => this._ioSocket.on(def[0], def[1].bind(this)));
   }
 
@@ -137,7 +130,103 @@ class DocumentHandler {
       documentLock.release();
       logger.error('Error in handle doc:', err);
       ack('err', err);
-    };
+    }
+
+  }
+
+  /**
+   * @private
+   * @arg {object} data - object with at least four keys:
+   *                      {string} documentId - ID of the document to modify
+   *                      {string} projectId - ID of the project to modify
+   *                      {string} projectType - Type of the project to modify
+   *                      {object} range - Serialization of the Slate.Range to
+   *                                       work on
+   *                      {number} codeId - ID of the code to remove
+   * @arg {function} ack - acknowledge function for response
+   */
+  async _handleCodingRemove(data, ack) {
+    const {
+      documentId,
+      projectId,
+      projectType,
+      range,
+      codeId,
+    } = data;
+
+    // Initialize document lock manager and document cache
+    const documentLock = new DocumentLock(this._redis, documentId);
+    const cache = new DocumentCache(this._redis);
+
+    try {
+      // Wait up to 5 seconds for the exclusive lock on that document
+      try {
+        await documentLock.acquire(5000);
+      } catch(e) {
+        logger.error('Error while trying to acquire document lock', e);
+        throw 'Could not get document lock';
+      }
+
+      // Try to read document from cache and fallback to backend
+      let doc;
+      try {
+        doc = await cache.get(documentId);
+      } catch(e) {
+        if (e !== 'cache miss') {
+          logger.error('Error while trying to get document from cache', e);
+        }
+
+        try {
+          doc = await this._fetchDocument(projectId, projectType, documentId);
+        } catch(e) {
+          logger.error('Error while trying to get document from backend', e);
+          throw 'Could not get document from backend';
+        }
+      }
+
+      const operations = await this._calculateCodingRemovalOperations(
+        projectId, projectType, doc, range, codeId);
+
+      // Apply operations to document
+      doc = this._applyOperations(doc, operations);
+
+      // Cache updated document
+      try {
+        await cache.store(documentId, doc);
+      } catch(e) {
+        logger.error('Error while trying to cache document', e);
+      }
+
+      // Refresh lock before saving changes
+      try {
+        await documentLock.refresh();
+      } catch(e) {
+        logger.error('Error while trying to refresh document lock', e);
+        throw 'Document lock expired before uploading changes';
+      }
+
+      // Call backend to persist changes
+      try {
+        const response = await this._uploadDocumentToBackend(doc);
+      } catch(e) {
+        logger.error('Error while uploading document to Backend', e);
+        throw 'Error while uploading changes to backend';
+      }
+
+      // Release lock
+      documentLock.release();
+
+      // Respond to sender and emit sync event
+      this._socket.handleApiResponse(EVT.CODING.REMOVED, ack, {
+        document: documentId,
+        operations,
+      });
+
+    } catch(err) {
+      documentLock.release();
+      logger.error('Error in coding remove', err);
+      ack('err', err);
+    }
 
   }
 
@@ -177,11 +266,8 @@ class DocumentHandler {
       throw `No document found for ID ${documentId}`;
     }
 
-    // Assert consistent internal slate IDs
-    resetKeyGenerator();
-
     // Deserialize document text and add to document object
-    doc.value = serializer.deserialize(doc.text.value);
+    doc.value = SlateUtils.deserialize(doc.text.value);
 
     return doc;
   }
@@ -190,28 +276,45 @@ class DocumentHandler {
    * Serialize document and call applyCode endpoint at Backend
    *
    * @private
-   * @arg {object} doc - Document to serialize
+   * @arg {object} doc - Document to upload
    * @arg {object} code - Regarding code
-   * @return {Promise} resolves with document object or rejects with message
-   * @throws {string} API response, if backend returned error or 'No documents
-   *                  received from backend' or 'No document found for ID ...'
+   * @return {Promise} resolves with document object or rejects api response
    */
-  async _applyCodeAtBackend(doc, code) {
+  _applyCodeAtBackend(doc, code) {
 
     // Serialize back to html
-    doc.text = serializer.serialize(doc.value)
-      .replace(/(<coding[^>]+?)data-code-id=/g, '$1code_id=')
-      .replace(/(<coding[^>]+?)data-author=/g, '$1author=');
+    doc.text = SlateUtils.serialize(doc.value);
 
     // Delete the deserialized value before uploading
     delete doc.value;
 
     // Transmit document to backend
-    const codingResponse = await this._socket.api.request('documents.applyCode', {
+    return this._socket.api.request('documents.applyCode', {
       resource: {
         textDocument: doc,
         code: code,
       },
+    });
+  }
+
+  /**
+   * Upload text document to Backend
+   *
+   * @private
+   * @arg {object} doc - Document to upload
+   * @return {Promise} resolves with document object or rejects api response
+   */
+  _uploadDocumentToBackend(doc) {
+
+    // Serialize back to html
+    doc.text = SlateUtils.serialize(doc.value);
+
+    // Delete the deserialized value before uploading
+    delete doc.value;
+
+    // Transmit document to backend
+    return this._socket.api.request('documents.updateTextDocument', {
+      resource: doc,
     });
   }
 
@@ -228,6 +331,199 @@ class DocumentHandler {
     operations.map(operation => change.applyOperation(operation));
     document.value = change.value;
     return document;
+  }
+
+
+  /**
+   * Calculate all operations that are necessary for removing a coding,
+   * including coding splitting if necessary.
+   *
+   * @private
+   * @arg {string} doc - Document to operate on
+   * @arg {string} codeId - ID of the code to remove
+   * @return {Promise} - Waits for all code removals and splittings to be
+   *                     successfully processed. Resolves with the editors
+   *                     current content as HTML. Rejects if there is an
+   *                     error while fetching a new coding ID from the API
+   *                     or if nothing is selected
+   */
+  async _calculateCodingRemovalOperations(projectId, projectType, doc, range, codeId) {
+
+    const slateValue = doc.value;
+    const document = slateValue.document;
+    range = Range.fromJSON(range);
+
+    // Find codings that should be removed
+    const codingsToRemove = document
+      .getMarksAtRange(range)
+      .filter(mark => mark.type === 'coding')
+      .filter(mark => mark.data.get('code_id') === codeId);
+
+    // Calculate parameters for code splitting if necessary.
+    // Returns Immutable.Set
+    const splittingPromises = codingsToRemove.map(coding => {
+
+      // Create curried coding searchers
+      const findCodingStart = SlateUtils.findCodingStart.bind(
+        this,
+        coding.data.get('id')
+      );
+      const findCodingEnd = SlateUtils.findCodingEnd.bind(
+        this,
+        coding.data.get('id')
+      );
+
+      // Prepare return value
+      const changeParameters = {
+        oldCoding: coding
+      };
+
+      // Get immediate character before the selection
+      let prevChar;
+      // Case 1: selection starts at block start
+      if (range.startOffset === 0) {
+        // Get previous text block
+        const prevText = document.getPreviousText(range.startKey);
+
+        // If there is no previous block, no splitting is needed
+        if (typeof prevText === 'undefined') {
+          return changeParameters;
+        }
+
+        prevChar = prevText.characters.last();
+      } else {
+        prevChar = document
+          .getDescendant(range.startKey)
+          .characters.get(range.startOffset - 1);
+      }
+
+      // If character before selection has not the current coding,
+      // no splitting is needed
+      if (!prevChar.marks.find(m => m.equals(coding))) {
+        return changeParameters;
+      }
+
+      // Search for the next character after the selection that has
+      // not the current coding
+
+      // Start with Text node in which the selection ends
+      let textNode = document.getDescendant(range.endKey);
+
+      // First textNode is only iterated after end of selection
+      const characters = textNode.characters.slice(
+        range.endOffset
+      );
+
+      // Find first character that has not the current coding
+      let endOffset = findCodingEnd(characters);
+
+      // If the immediate next character has not the current coding,
+      // no splitting is needed
+      if (endOffset === 0) {
+        return changeParameters;
+      }
+
+      // If other character found, add the selection end offset to
+      // get correct character offset in Text node
+      if (typeof endOffset !== 'undefined') {
+        endOffset += range.endOffset;
+      }
+
+      // If not already found, search subsequent Text nodes
+      while (typeof endOffset === 'undefined') {
+        textNode = document.getNextText(textNode.key);
+
+        // No Text node left, coding is applied until document end
+        if (!textNode) {
+          textNode = document.getLastText();
+          endOffset = textNode.characters.size;
+          break;
+        }
+
+        // Find first character that has not the current coding
+        endOffset = findCodingEnd(textNode.characters);
+      }
+
+      // Get new coding id from API
+      return this._socket.api.request('project.incrCodingId', {
+        id: projectId,
+        type: projectType,
+      }).then(
+        ({ maxCodingID }) => {
+          // Return parameters for coding removal and splitting
+          // to have all changes atomically
+          return {
+            rangeToChange: Range.fromJSON({
+              anchorKey: range.endKey,
+              anchorOffset: range.endOffset,
+              focusKey: textNode.key,
+              focusOffset: endOffset
+            }),
+            oldCoding: coding,
+            newCoding: {
+              object: 'mark',
+              type: 'coding',
+              data: coding.data.set('id', maxCodingID)
+            }
+          };
+        }
+      );
+    });
+
+    // Wait for all splittings to resolve
+    let parameters;
+    try {
+      parameters = await Promise.all(splittingPromises);
+    } catch(e) {
+      logger.error('error while fetching next coding ID', e);
+      return;
+    }
+
+    // Build operations from parameters
+    return parameters.reduce((operations, params) => {
+
+      // Create operation for removing old coding
+      operations = SlateUtils
+        .rangeToPaths(slateValue, range)
+        .reduce((operations, { path, offset, length }) => {
+          return operations.concat({
+            object: 'operation',
+            type: 'remove_mark',
+            mark: params.oldCoding,
+            path,
+            offset,
+            length,
+          });
+        }, operations);
+
+      // Perform operations for code splitting, if necessary
+      if (params.rangeToChange) {
+        // Create operation for removing coding with old id
+        operations = SlateUtils
+          .rangeToPaths(slateValue, params.rangeToChange)
+          .reduce((operations, { path, offset, length }) => {
+            return operations
+              .concat({
+                object: 'operation',
+                type: 'remove_mark',
+                mark: params.oldCoding,
+                path,
+                offset,
+                length,
+              })
+              .concat({
+                object: 'operation',
+                type: 'add_mark',
+                mark: params.newCoding,
+                path,
+                offset,
+                length,
+              });
+          }, operations);
+      }
+
+      return operations;
+    }, []);
   }
 }
 

@@ -11,6 +11,7 @@ const MSG = {
 	},
 	CODING: {
 		ADD: 'coding.add',
+		REMOVE: 'coding.remove',
 	},
 };
 
@@ -28,6 +29,7 @@ const EVT = {
 	},
 	CODING: {
 		ADDED: 'coding.added',
+		REMOVED: 'coding.removed',
 	},
 };
 
