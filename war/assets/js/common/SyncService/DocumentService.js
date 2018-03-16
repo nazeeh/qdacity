@@ -5,7 +5,8 @@ export default class DocumentService {
 		this.syncService = syncService;
 
 		// Bind public methods to this
-		this.applyCode = this.applyCode.bind(this);
+		this.addCoding = this.addCoding.bind(this);
+		this.removeCoding = this.removeCoding.bind(this);
 
 		// Initialize listeners
 		[
@@ -25,7 +26,7 @@ export default class DocumentService {
 	 * @arg {object} code - Code that should be applied.
 	 * @return {Promise}
 	 */
-	applyCode(documentId, projectId, projectType, operations, code) {
+	addCoding(documentId, projectId, projectType, operations, code) {
 		return this.syncService.emit(MSG.CODING.ADD, {
 			documentId,
 			projectId,
@@ -35,12 +36,23 @@ export default class DocumentService {
 		});
 	}
 
-	removeCoding(documentId, projectId, projectType, range, codeId) {
+	/**
+	 * Remove coding from document
+	 *
+	 * @access public
+	 * @arg {string} documentId - ID of the document to apply the coding
+	 * @arg {string} projectId - ID of the current project
+	 * @arg {string} projectType - The current project
+	 * @arg {object[]} paths - Slate paths at which to remove the code
+	 * @arg {string} codeId - ID of the Code to remove
+	 * @return {Promise}
+	 */
+	removeCoding(documentId, projectId, projectType, paths, codeId) {
 		return this.syncService.emit(MSG.CODING.REMOVE, {
 			documentId,
 			projectId,
 			projectType,
-			range,
+			paths,
 			codeId,
 		});
 	}

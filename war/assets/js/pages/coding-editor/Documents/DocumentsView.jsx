@@ -278,7 +278,7 @@ export default class DocumentsView extends React.Component {
 
 		// Send change to sync service
 		try {
-			const message = await this.props.syncService.documents.applyCode(
+			const message = await this.props.syncService.documents.addCoding(
 				document.id,
 				projectID,
 				projectType,
@@ -340,7 +340,7 @@ export default class DocumentsView extends React.Component {
 			this.getActiveDocumentId(),
 			projectID,
 			projectType,
-			selection.toJSON(),
+			SlateUtils.rangeToPaths(slateValue, selection),
 			codeID
 		);
 
