@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
 import styled from 'styled-components';
 import CustomForm from '../../../common/modals/CustomForm';
 import Theme from '../../../common/styles/Theme.js';
@@ -17,6 +18,10 @@ import {
 	StyledListItemPrimary,
 	StyledListItemDefault
 } from '../../../common/styles/ItemList.jsx';
+
+const StyledBtnIcon = styled.i`
+	font-size: 18px;
+`;
 
 import { BtnDefault } from '../../../common/styles/Btn.jsx';
 

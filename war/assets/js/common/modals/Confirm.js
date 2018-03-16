@@ -9,9 +9,15 @@ export default class Confirm extends VexModal {
 	}
 
 	updateButtons() {
-		const {formatMessage} = IntlProvider.intl;
-		vex.dialog.buttons.YES.text = formatMessage({id: 'modal.ok', defaultMessage: 'OK'});
-		vex.dialog.buttons.NO.text = formatMessage({id: 'modal.no', defaultMessage: 'Cancel'});
+		const { formatMessage } = IntlProvider.intl;
+		vex.dialog.buttons.YES.text = formatMessage({
+			id: 'modal.ok',
+			defaultMessage: 'OK'
+		});
+		vex.dialog.buttons.NO.text = formatMessage({
+			id: 'modal.no',
+			defaultMessage: 'Cancel'
+		});
 	}
 
 	showModal() {

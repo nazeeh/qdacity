@@ -66,82 +66,93 @@ gulp.task('generate-language-files', () => {
 	);
 	const template = templateFile.getMessageIdents();
 
-	return gulp.src('translations/*.txt')
-		.pipe(transform('utf8', (content, file) => {
-			const translationFile = tf.TranslationFile.fromContent(content);
-			const identList = translationFile.getMessageIdents();
-			const messages = {};
-			let fail = false;
-			identList.forEach(ident => {
-				if (messages[ident.id]) {
-					log(chalk.yellow(
-						`Duplicate ident ${chalk.bold(ident.id)}`
-					));
-					fail = true;
-					return;
+	return (
+		gulp
+		.src('translations/*.txt')
+		.pipe(
+			transform('utf8', (content, file) => {
+				const translationFile = tf.TranslationFile.fromContent(content);
+				const identList = translationFile.getMessageIdents();
+				const messages = {};
+				let fail = false;
+				identList.forEach(ident => {
+					if (messages[ident.id]) {
+						log(chalk.yellow(`Duplicate ident ${chalk.bold(ident.id)}`));
+						fail = true;
+						return;
+					}
+					messages[ident.id] = ident.defaultMessage;
+				});
+				const result = JSON.stringify(messages, null, '\t');
+				template.forEach(ident => {
+					if (!messages.hasOwnProperty(ident.id)) {
+						log(
+							chalk.yellow(
+								`Ident ${chalk.bold(ident.id)} is missing in translation`
+							)
+						);
+						fail = true;
+						return;
+					}
+					delete messages[ident.id];
+				});
+				fail |= Object.keys(messages).length > 0;
+				if (fail) {
+					for (const id of Object.keys(messages)) {
+						log(
+							chalk.yellow(
+								`Ident ${chalk.bold(id)} does not exist in template`
+							)
+						);
+					}
+					log.error(
+						chalk.red.bold(
+							`Translation file ${file.relative} does not match template`
+						)
+					);
+					// We do not throw here for several reasons.
+					// a) Missing identifier is not a fatal error,
+					//   neither are duplicates nor additional identifiers
+					// b) we want to traverse all files and explain all errors
+					// c) one file should not keep others from being processed
+					// this checker might be reworked to allow the pipeline to fail
+					//return Promise.reject('Translation file invalid.');
 				}
-				messages[ident.id] = ident.defaultMessage;
-			});
-			const result = JSON.stringify(messages, null, '\t');
-			template.forEach(ident => {
-				if (!messages.hasOwnProperty(ident.id)) {
-					log(chalk.yellow(
-						`Ident ${chalk.bold(ident.id)} is missing in translation`
-					));
-					fail = true;
-					return;
-				}
-				delete messages[ident.id];
-			});
-			fail |= Object.keys(messages).length > 0;
-			if (fail) {
-				for (const id of Object.keys(messages)) {
-					log(chalk.yellow(
-						`Ident ${chalk.bold(id)} does not exist in template`
-					));
-				}
-				log.error(chalk.red.bold(
-					`Translation file ${file.relative} does not match template`
-				));
-				// We do not throw here for several reasons.
-				// a) Missing identifier is not a fatal error,
-				//   neither are duplicates nor additional identifiers
-				// b) we want to traverse all files and explain all errors
-				// c) one file should not keep others from being processed
-				// this checker might be reworked to allow the pipeline to fail
-				//return Promise.reject('Translation file invalid.');
-			}
-			return result;
-		})).on('error', error => {
+				return result;
+			})
+		)
+		.on('error', error => {
 			log.error(chalk.red.bold(error));
 			process.exit(1);
 		})
 		.pipe(rename({ extname: '.json' }))
 		.pipe(gulp.dest('dist/messages/'))
 		.pipe(gulp.dest('../target/qdacity-war/dist/messages/'))
-		// check if messages -> template -> messages is stable
-		.pipe(filterBy(file => {
-			return file.relative.match(/template.json$/);
-		}))
-		.pipe(rename({basename: 'en'}))
+	// check if messages -> template -> messages is stable
+		.pipe(
+			filterBy(file => {
+				return file.relative.match(/template.json$/);
+			})
+		)
+		.pipe(rename({ basename: 'en' }))
 		.pipe(diff('dist/messages/'))
-		.pipe(diff.reporter({fail: true})).on('error', error => {
-			log.error(chalk.red.bold(
-				'Template cannot reassemble extracted messages.\n' +
-				'If you did not modify the template than its a bug'
-			));
+		.pipe(diff.reporter({ fail: true }))
+		.on('error', error => {
+			log.error(
+				chalk.red.bold(
+					'Template cannot reassemble extracted messages.\n' +
+							'If you did not modify the template than its a bug'
+				)
+			);
 			process.exit(1);
-		});
+		})
+	);
 });
 
 gulp.task('translation-watch', () => {
-	const watcher = gulp.watch(
-		'translations/*.txt',
-		['generate-language-files']
-	);
+	const watcher = gulp.watch('translations/*.txt', ['generate-language-files']);
 	return watcher;
 });
-
 
 gulp.task('bundle-task', function() {
 	setConfig();
@@ -221,18 +232,21 @@ gulp.task('webpack-watch', function() {
 		.pipe(replace('$CLIENT_ID$', config.client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
 		.pipe(gulp.dest('dist/js/'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/js/'))
-	);
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });
 
 gulp.task('unit-tests', () =>
-    gulp.src('./tests/unit-tests/**/*.js').pipe(jasmine())
+	gulp.src('./tests/unit-tests/**/*.js').pipe(jasmine())
 );
 gulp.task('acceptance-tests', () =>
-    gulp.src('./tests/acceptance-tests/**/*.js').pipe(jasmine()).on('error', handleError)
+	gulp
+		.src('./tests/acceptance-tests/**/*.js')
+		.pipe(jasmine())
+		.on('error', handleError)
 );
 
 gulp.task('watch', ['webpack-watch', 'translation-watch']);
+
 gulp.task('acceptance-tests', () => {
 	const basePath = './tests/acceptance-tests/';
 	gulp.src([
@@ -240,5 +254,5 @@ gulp.task('acceptance-tests', () => {
 		basePath + 'coding-editor/*.js'
 	]).pipe(jasmine()).on('error', handleError);
 });
- 
+
 gulp.task('default', ['watch']);
