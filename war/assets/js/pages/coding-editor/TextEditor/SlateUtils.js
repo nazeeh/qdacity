@@ -76,10 +76,19 @@ const rangeToPaths = (value, range) => {
 			? range.startOffset
 			: 0;
 
-		// Length is range.endOffset for last text node, else node length
-		const length = textNode.key === range.endKey
-			? range.endOffset
-			: textNode.characters.size;
+		// Length is range.endOffset for last text node,
+		//           range.endOffset - range.startOffset if single text node,
+		//           node length else
+		let length;
+		if (textNode.key === range.endKey) {
+			if (range.endKey === range.startKey) {
+				length = range.endOffset - range.startOffset;
+			} else {
+				length = range.endOffset;
+			}
+		} else {
+			length = textNode.characters.size;
+		}
 
 		paths.push({
 			path: doc.getPath(textNode.key),

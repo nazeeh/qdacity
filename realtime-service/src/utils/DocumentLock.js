@@ -127,8 +127,8 @@ class DocumentLock {
       const lockingServer = await this._getLock();
 
       // Only delete, if lock belongs to this server
-      if (response == SERVER_NAME) {
-        this._deleteLock();
+      if (lockingServer == SERVER_NAME) {
+        await this._deleteLock();
       }
 
     } catch (error) {

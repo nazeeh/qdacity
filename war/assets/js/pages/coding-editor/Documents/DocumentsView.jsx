@@ -286,8 +286,8 @@ export default class DocumentsView extends React.Component {
 				getCodeByCodeID(code.codeID)
 			);
 
-			// Sync was succesful. Log for now, delete if no action needed
-			console.log('Sync of applyCode succeeded');
+			// Sync was successful. Log for now, delete if no action needed
+			console.log('Sync of coding.add succeeded');
 
 		// Sync failed
 		} catch(e) {
@@ -295,7 +295,7 @@ export default class DocumentsView extends React.Component {
 			// Inform the user why the mark is disappearing again
 			new Alert('Your new coding could not be saved. Please try again').showModal();
 
-			console.error('Error while syncing applyCode', e);
+			console.error('Error while syncing coding.add', e);
 
 			// Rollback optimistically added mark
 			const undoOperations = SlateUtils.invertOperations(operations);
@@ -748,6 +748,9 @@ export default class DocumentsView extends React.Component {
 				documents: this.state.documents
 			});
 		}
+
+		// In any case upgrade coding count
+		this.props.codesystemView.updateCodingCount();
 	}
 
 	componentDidMount() {
