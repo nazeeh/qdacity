@@ -9,6 +9,12 @@ describe('Login test', function() {
 	
 	var driver = null;
 	
+	beforeAll((done) => {
+    	console.log('#########################################################');
+    	console.log('####                   Login test                    ####');
+    	console.log('#########################################################');
+    });
+
     beforeEach((done) => {
     	const options = new chrome.Options();
     	

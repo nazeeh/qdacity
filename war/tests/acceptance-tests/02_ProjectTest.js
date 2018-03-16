@@ -9,6 +9,12 @@ describe('Project test', function() {
 	
 	var driver = null;
 	
+	beforeAll((done) => {
+    	console.log('#########################################################');
+    	console.log('####                  Project test                   ####');
+    	console.log('#########################################################');
+    });
+
     beforeEach((done) => {
     	const options = new chrome.Options();
 
