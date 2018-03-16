@@ -48,4 +48,4 @@ docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.tests -t $TEST_I
  
 # Run docker image
 echo "Running the image" 
-docker run --rm -v /dev/shm:/dev/shm $TEST_IMAGE_TAG
+docker run --rm -v /dev/shm:/dev/shm -p 6379:6379 $TEST_IMAGE_TAG

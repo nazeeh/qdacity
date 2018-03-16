@@ -17,5 +17,7 @@ COPY ./war/api_config.json /app/war/api_config.json
 RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
 RUN sudo chmod +x ./docker/acceptance-tests/startTests.sh
 
+EXPOSE 6379
+
 # Run script which starts the devserver and executes the tests
 ENTRYPOINT ./docker/acceptance-tests/entrypoint.sh
