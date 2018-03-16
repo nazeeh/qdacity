@@ -5,6 +5,7 @@ const {
 const { default: Html } = require('slate-html-serializer');
 const { JSDOM } = require('jsdom');
 
+const logger = require('../utils/Logger');
 const DocumentCache = require('../utils/DocumentCache');
 const DocumentLock = require('../utils/DocumentLock');
 const delay = require('../utils/delay');
@@ -75,7 +76,7 @@ class DocumentHandler {
       try {
         await documentLock.acquire(5000);
       } catch(e) {
-        console.error('Error while trying to acquire document lock', e);
+        logger.error('Error while trying to acquire document lock', e);
         throw 'Could not get document lock';
       }
 
@@ -85,13 +86,13 @@ class DocumentHandler {
         doc = await cache.get(documentId);
       } catch(e) {
         if (e !== 'cache miss') {
-          console.error('Error while trying to get document from cache', e);
+          logger.error('Error while trying to get document from cache', e);
         }
 
         try {
           doc = await this._fetchDocument(projectId, projectType, documentId);
         } catch(e) {
-          console.error('Error while trying to get document from backend', e);
+          logger.error('Error while trying to get document from backend', e);
           throw 'Could not get document from backend';
         }
       }
@@ -103,14 +104,14 @@ class DocumentHandler {
       try {
         await cache.store(documentId, doc);
       } catch(e) {
-        console.error('Error while trying to cache document', e);
+        logger.error('Error while trying to cache document', e);
       }
 
       // Refresh lock before saving changes
       try {
         await documentLock.refresh();
       } catch(e) {
-        console.error('Error while trying to refresh document lock', e);
+        logger.error('Error while trying to refresh document lock', e);
         throw 'Document lock expired before uploading changes';
       }
 
@@ -118,7 +119,7 @@ class DocumentHandler {
       try {
         const response = await this._applyCodeAtBackend(doc, code);
       } catch(e) {
-        console.error('Error while applying Code at Backend', e);
+        logger.error('Error while applying Code at Backend', e);
         throw 'Error while uploading changes to backend';
       }
 
@@ -134,7 +135,7 @@ class DocumentHandler {
 
     } catch(err) {
       documentLock.release();
-      console.log('error in handle doc', err);
+      logger.error('Error in handle doc:', err);
       ack('err', err);
     };
 

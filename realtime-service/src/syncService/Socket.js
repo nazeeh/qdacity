@@ -1,4 +1,5 @@
 const SERVER_NAME = require('../utils/serverName');
+const logger = require('../utils/Logger');
 const Endpoint = require('../endpoints/Endpoint');
 const CodesHandler = require('./CodesHandler');
 const DocumentHandler = require('./DocumentHandler');
@@ -62,7 +63,7 @@ class Socket {
     });
     this._emitUserUpdated();
 
-    console.info(`${this.socket.id} disconnected`);
+    logger.info(`${this.socket.id} disconnected`);
   }
 
   /**
@@ -75,7 +76,7 @@ class Socket {
    *                       ("ok") on success or ("error", stack) on failure
    */
   _handleUserUpdate(data, ack) {
-    console.info(`${this.socket.id} user.update ${JSON.stringify(data)}`);
+    logger.debug(`${this.socket.id} user.update ${JSON.stringify(data)}`);
 
     try {
       // Add socket and its data to shared application state
@@ -145,7 +146,7 @@ class Socket {
   _updateRoom(type, id) {
     // Allow only certain room types
     if (type !== DOC_ROOM && type !== PRJ_ROOM) {
-      console.error('Invalid type used in Socket._updateRoom(type, id)');
+      logger.error('Invalid type used in Socket._updateRoom(type, id)');
       return;
     }
 
