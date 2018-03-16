@@ -101,11 +101,6 @@ class DocumentHandler {
         // silently fail
       }
 
-      // Serialize back to html
-      doc.text = serializer.serialize(doc.value)
-        .replace(/(<coding[^>]+?)data-code-id=/g, '$1code_id=')
-        .replace(/(<coding[^>]+?)data-author=/g, '$1author=');
-
       // Refresh lock before saving changes
       try {
         await documentLock.refresh();
@@ -113,14 +108,13 @@ class DocumentHandler {
         throw 'Document lock expired before uploading changes';
       }
 
-      delete doc.value;
-      // Transmit change to backend
-      const codingResponse = await this._socket.api.request('documents.applyCode', {
-        resource: {
-          textDocument: doc,
-          code: code,
-        },
-      });
+      // Call backend to persist changes
+      try {
+        const response = await this._applyCodeAtBackend(doc, code);
+      } catch(error) {
+        console.log(error);
+        throw 'Error while uploading changes to backend';
+      }
 
       // Release lock
       documentLock.release();
@@ -184,6 +178,35 @@ class DocumentHandler {
     doc.value = serializer.deserialize(doc.text.value);
 
     return doc;
+  }
+
+  /**
+   * Serialize document and call applyCode endpoint at Backend
+   *
+   * @private
+   * @arg {object} doc - Document to serialize
+   * @arg {object} code - Regarding code
+   * @return {Promise} resolves with document object or rejects with message
+   * @throws {string} API response, if backend returned error or 'No documents
+   *                  received from backend' or 'No document found for ID ...'
+   */
+  async _applyCodeAtBackend(doc, code) {
+
+    // Serialize back to html
+    doc.text = serializer.serialize(doc.value)
+      .replace(/(<coding[^>]+?)data-code-id=/g, '$1code_id=')
+      .replace(/(<coding[^>]+?)data-author=/g, '$1author=');
+
+    // Delete the deserialized value before uploading
+    delete doc.value;
+
+    // Transmit document to backend
+    const codingResponse = await this._socket.api.request('documents.applyCode', {
+      resource: {
+        textDocument: doc,
+        code: code,
+      },
+    });
   }
 
   /**
