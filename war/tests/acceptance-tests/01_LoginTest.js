@@ -13,6 +13,7 @@ describe('Login test', function() {
     	console.log('#########################################################');
     	console.log('####                   Login test                    ####');
     	console.log('#########################################################');
+		done();
     });
 
     beforeEach((done) => {

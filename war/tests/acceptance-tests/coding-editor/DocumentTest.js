@@ -13,6 +13,7 @@ describe('Document test', function() {
     	console.log('#########################################################');
     	console.log('####                  Document test                  ####');
     	console.log('#########################################################');
+		done();
     });
 
     beforeEach((done) => {

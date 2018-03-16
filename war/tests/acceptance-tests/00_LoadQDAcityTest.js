@@ -12,7 +12,8 @@ describe('Load QDAcity', function() {
 	beforeAll((done) => {
     	console.log('#########################################################');
     	console.log('####                Load QDAcity test                ####');
-    	console.log('#########################################################');
+		console.log('#########################################################');
+		done();
     });
 
     beforeEach((done) => {

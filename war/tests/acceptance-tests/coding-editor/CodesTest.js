@@ -13,6 +13,7 @@ describe('Codesystem test', function() {
     	console.log('#########################################################');
     	console.log('####                   Codes test                    ####');
     	console.log('#########################################################');
+		done();
     });
 
     beforeEach((done) => {
