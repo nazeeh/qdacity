@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-
+import React from 'react';
 import ReactLoading from '../ReactLoading.jsx';
 
 import VexModal from './VexModal';
@@ -8,11 +8,12 @@ import IntercoderAgreementByCode from './IntercoderAgreementByCode';
 import BinaryDecider from './BinaryDecider';
 import ProjectEndpoint from '../endpoints/ProjectEndpoint';
 import ValidationEndpoint from '../endpoints/ValidationEndpoint';
+import ExerciseEndpoint from '../endpoints/ExerciseEndpoint';
 import 'script-loader!../../../../components/DataTables-1.10.7/media/js/jquery.dataTables.min.js';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 export default class IntercoderAgreement extends VexModal {
-	constructor(report, history) {
+	constructor(report, history, projectType, exercise) {
 		super();
 		const { formatMessage } = IntlProvider.intl;
 		this.history = history;
@@ -68,6 +69,8 @@ export default class IntercoderAgreement extends VexModal {
 			'</div>';
 
 		this.report = report;
+		this.exercise = exercise;
+		this.projectType = projectType;
 		this.results;
 	}
 
@@ -105,8 +108,15 @@ export default class IntercoderAgreement extends VexModal {
 							);
 							decider.showModal().then(function(value) {
 								if (value == 'optionB') {
-									var validationEndpoint = new ValidationEndpoint();
-									validationEndpoint.sendNotificationEmail(_this.report.id);
+									if (_this.projectType == 'EXERCISE') {
+										var exerciseEndpoint = new ExerciseEndpoint();
+										exerciseEndpoint.sendNotificationEmailExercise(
+											_this.report.id
+										);
+									} else {
+										var validationEndpoint = new ValidationEndpoint();
+										validationEndpoint.sendNotificationEmail(_this.report.id);
+									}
 								}
 							});
 						}
@@ -120,14 +130,25 @@ export default class IntercoderAgreement extends VexModal {
 							defaultMessage: 'Agreement Maps'
 						}),
 						click: function() {
-							_this.history.push(
-								'/CodingEditor?project=' +
-									_this.report.revisionID +
-									'&type=REVISION&report=' +
-									_this.report.id +
-									'&parentproject=' +
-									_this.report.projectID
-							);
+							if (_this.projectType == 'EXERCISE') {
+								_this.history.push(
+									'/CodingEditor?project=' +
+										_this.report.revisionID +
+										'&type=EXERCISE&report=' +
+										_this.report.id +
+										'&parentproject=' +
+										_this.report.projectID
+								);
+							} else {
+								_this.history.push(
+									'/CodingEditor?project=' +
+										_this.report.revisionID +
+										'&type=REVISION&report=' +
+										_this.report.id +
+										'&parentproject=' +
+										_this.report.projectID
+								);
+							}
 							vex.close(_this);
 						}
 					})
@@ -155,19 +176,25 @@ export default class IntercoderAgreement extends VexModal {
 				document.getElementById('reactLoading')
 			);
 
-			gapi.client.qdacity.validation
-				.listValidationResults({
-					reportID: _this.report.id
-				})
-				.execute(function(resp) {
-					if (!resp.code) {
-						$('#loadingAnimation').addClass('hidden');
-						_this.results = resp.items || [];
-						_this.setupDataTable();
-					} else {
-						// Log error
-					}
-				});
+			if (_this.projectType == 'EXERCISE')
+				var resultsPromise = ExerciseEndpoint.listExerciseResults(
+					_this.report.id,
+					_this.exercise.id
+				);
+			else
+				var resultsPromise = ValidationEndpoint.listValidationResults(
+					_this.report.id
+				);
+
+			resultsPromise.then(function(resp) {
+				if (!resp.code) {
+					$('#loadingAnimation').addClass('hidden');
+					_this.results = resp.items || [];
+					_this.setupDataTable();
+				} else {
+					// Log error
+				}
+			});
 		});
 
 		return promise;
@@ -269,26 +296,5 @@ export default class IntercoderAgreement extends VexModal {
 				$(this).addClass('selected');
 			}
 		});
-	}
-
-	calculateAgreement() {
-		var projectEndpoint = new ProjectEndpoint();
-		var _this = this;
-		const { formatMessage } = IntlProvider.intl;
-		projectEndpoint
-			.evaluateRevision(this.revId)
-			.then(function(val) {
-				_this.valPrjList = val.items;
-				_this.setupDataTable(); // FIXME fix reinitialization of datatable
-				alertify.success(
-					formatMessage({
-						id: 'intercoderagreement.agreement',
-						defaultMessage: 'Agreement'
-					}) +
-						': ' +
-						val.items[0].paragraphFMeasure
-				);
-			})
-			.catch(handleBadResponse);
 	}
 }

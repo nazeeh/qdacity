@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.qdacity.PMF;
-import com.qdacity.project.metrics.TabularValidationReportRow;
+import com.qdacity.project.metrics.TabularReportRow;
 
 /**
  * This class has package visibility intentionally!
@@ -33,13 +33,13 @@ class V4toV5AgreementHelperMethods {
 
     }
 
-    protected static TabularValidationReportRow createStandardFMeasureHeader() {
+    protected static TabularReportRow createStandardFMeasureHeader() {
 	List<String> cells = new ArrayList<>();
 	cells.add("Coder");
 	cells.add("FMeasure");
 	cells.add("Recall");
 	cells.add("Precision");
-	return new TabularValidationReportRow(cells);
+	return new TabularReportRow(cells);
     }
 
     /**

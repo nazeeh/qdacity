@@ -47,4 +47,11 @@ public class ProjectRevision extends AbstractProject {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+
+	public Long getRevisionID() {
+		return null;
+	}
+	public String getCreatorName() {
+		return "";
+	}
 }

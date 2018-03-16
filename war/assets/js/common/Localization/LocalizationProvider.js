@@ -26,7 +26,7 @@ const globalLocalizationState = {
 async function loadMessages(language = 'en', callback) {
 	try {
 		const response = await fetch(`dist/messages/${language}.json`);
-		if(response.ok) {
+		if (response.ok) {
 			callback(await response.json());
 		} else {
 			throw response.statusText;

@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import React from 'react';
 import VexModal from './VexModal';
 import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
 import IntlProvider from '../../common/Localization/LocalizationProvider';

@@ -54,4 +54,48 @@ export default class ExerciseEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	evaluateExerciseRevision(exerciseID, revId, name, docs, method, unit) {
+		var apiMethod = gapi.client.qdacity.exercise.evaluateExerciseRevision({
+			exerciseID: exerciseID,
+			revisionID: revId,
+			name: name,
+			docs: docs,
+			method: method,
+			unit: unit
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static listExerciseReportsByRevisionID(revisionID, exerciseID) {
+		var apiMethod = gapi.client.qdacity.exercise.listExerciseReportsByRevisionID(
+			{
+				revisionID: revisionID,
+				exerciseID: exerciseID
+			}
+		);
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static listExerciseResults(repId, exerciseID) {
+		var apiMethod = gapi.client.qdacity.exercise.listExerciseResults({
+			reportID: repId,
+			exerciseID: exerciseID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	sendNotificationEmailExercise(reportID) {
+		var apiMethod = gapi.client.qdacity.exercise.sendNotificationEmailExercise({
+			reportID: reportID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	deleteExerciseProjectReport(repId) {
+		var apiMethod = gapi.client.qdacity.exercise.deleteExerciseProjectReport({
+			reportID: repId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
 }

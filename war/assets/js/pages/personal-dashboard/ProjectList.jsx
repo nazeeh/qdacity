@@ -159,7 +159,7 @@ export default class ProjectList extends React.Component {
 			formatMessage({
 				id: 'projectlist.project_desc_template',
 				defaultMessage: 'Description'
-			}),
+			})
 		);
 		modal.showModal().then(function(data) {
 			_this.createNewProject(data.name, data.desc);

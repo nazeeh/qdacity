@@ -51,4 +51,11 @@ export default class ProjectEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static listValidationResults(repId) {
+		var apiMethod = gapi.client.qdacity.validation.listValidationResults({
+			reportID: repId
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
 }

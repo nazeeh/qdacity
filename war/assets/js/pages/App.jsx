@@ -35,11 +35,9 @@ import styled from 'styled-components';
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
 
-
-
 const ContentGrid = styled.div`
 	display: grid;
-	grid-template-areas: "ContentMain ContentSidebar";
+	grid-template-areas: 'ContentMain ContentSidebar';
 `;
 
 //there is the normal Site-Content in it
@@ -49,36 +47,30 @@ const ContentMain = styled.div`
 
 //there is, if acitvated, the sidebar for the Tutorial
 const ContentSidebar = styled.div`
-	padding:10px;
-	padding-top:60px;
-	color:#333;
+	padding: 10px;
+	padding-top: 60px;
+	color: #333;
 	grid-area: ContentSidebar;
 	background-color: rgb(232, 229, 229);
 `;
 
 //activatedSideBar, activatedSideBar2, deactivatedSideBar, deactivatedSideBar2 are
 // Helper to show or not to show the sidebar
-var activatedSideBar=
-{
-	gridTemplateColumns: "auto 250px"
+var activatedSideBar = {
+	gridTemplateColumns: 'auto 250px'
 };
 
-var deactivatedSideBar=
-{
-	gridTemplateColumns: "auto 0px"
+var deactivatedSideBar = {
+	gridTemplateColumns: 'auto 0px'
 };
 
-
-var activatedSideBar2=
-{
-	display: "inline"
+var activatedSideBar2 = {
+	display: 'inline'
 };
 
-var deactivatedSideBar2=
-{
-	display: "none"
+var deactivatedSideBar2 = {
+	display: 'none'
 };
-
 
 export default class App extends React.Component {
 	constructor(props) {
@@ -197,22 +189,24 @@ export default class App extends React.Component {
 	}
 
 	componentDidUpdate() {
-		var domObj=document.getElementById("ContentSidebarStyle");
-		if(domObj !=null){
-			domObj.style.minHeight = (window.innerHeight-22)+"px";
+		var domObj = document.getElementById('ContentSidebarStyle');
+		if (domObj != null) {
+			domObj.style.minHeight = window.innerHeight - 22 + 'px';
 		}
-
 	}
 
 	render() {
-
 		var tut = {
 			tutorialEngine: this.state.tutorialEngine,
 			tutorialState: this.state.tutorialState
 		};
 
-		var showSideBar=(tut.tutorialState.showSidebar)?activatedSideBar:deactivatedSideBar;//if deactivated, the grid is shrinked to 0 px
-		var showSideBar2=(tut.tutorialState.showSidebar)?activatedSideBar2:deactivatedSideBar2;//if deactivated, the right content is epclicit set to display: none
+		var showSideBar = tut.tutorialState.showSidebar
+			? activatedSideBar
+			: deactivatedSideBar; //if deactivated, the grid is shrinked to 0 px
+		var showSideBar2 = tut.tutorialState.showSidebar
+			? activatedSideBar2
+			: deactivatedSideBar2; //if deactivated, the right content is epclicit set to display: none
 
 		return (
 			<IntlProvider
@@ -236,121 +230,123 @@ export default class App extends React.Component {
 									/>
 								)}
 							/>
-					<ContentGrid className="ContentGrid" style={showSideBar}>
-						<ContentMain>
-							<Route
-								path="/PersonalDashboard"
-								render={props => (
-									<PersonalDashboard auth={this.state.auth} {...props} />
-								)}
-							/>
-							<Route
-								path="/ProjectDashboard"
-								render={props => (
-									<ProjectDashboard
-										auth={this.state.auth}
-										chartScriptPromise={this.props.chartScriptPromise}
-										{...props}
+							<ContentGrid className="ContentGrid" style={showSideBar}>
+								<ContentMain>
+									<Route
+										path="/PersonalDashboard"
+										render={props => (
+											<PersonalDashboard auth={this.state.auth} {...props} />
+										)}
 									/>
-								)}
-							/>
-							<Route
-								path="/CourseDashboard"
-								render={props => (
-									<CourseDashboard auth={this.state.auth} {...props} />
-								)}
-							/>
-							<Route
-								path="/TermDashboard"
-								render={props => (
-									<TermDashboard auth={this.state.auth} {...props} />
-								)}
-							/>
-							<Route
-								path="/TermCourseConfig"
-								render={props => (
-									<TermCourseConfig auth={this.state.auth} {...props} />
-								)}
-							/>
-							<Route
-								path="/ExercisePage"
-								render={props => (
-									<ExercisePage auth={this.state.auth} {...props} />
-								)}
-							/>
-							<Route
-								path="/Admin"
-								render={props => (
-									<Admin
-										auth={this.state.auth}
-										chartScriptPromise={this.props.chartScriptPromise}
-										{...props}
+									<Route
+										path="/ProjectDashboard"
+										render={props => (
+											<ProjectDashboard
+												auth={this.state.auth}
+												chartScriptPromise={this.props.chartScriptPromise}
+												{...props}
+											/>
+										)}
 									/>
-								)}
-							/>
-							<Route
-								exact
-								path="/Admin"
-								render={() => <Redirect to="/Admin/Control" />}
-							/>
-							<Route
-								path="/Admin/Stats"
-								render={props => (
-									<AdminStats
-										chartScriptPromise={this.props.chartScriptPromise}
-										{...props}
+									<Route
+										path="/CourseDashboard"
+										render={props => (
+											<CourseDashboard auth={this.state.auth} {...props} />
+										)}
 									/>
-								)}
-							/>
-							<Route
-								path="/Admin/Costs"
-								render={props => (
-									<AdminCosts
-										chartScriptPromise={this.props.chartScriptPromise}
-										{...props}
+									<Route
+										path="/TermDashboard"
+										render={props => (
+											<TermDashboard auth={this.state.auth} {...props} />
+										)}
 									/>
-								)}
-							/>
-							<Route
-								path="/Admin/Control"
-								render={props => (
-									<AdminControl
-										auth={this.state.auth}
-										chartScriptPromise={this.props.chartScriptPromise}
-										{...props}
+									<Route
+										path="/TermCourseConfig"
+										render={props => (
+											<TermCourseConfig auth={this.state.auth} {...props} />
+										)}
 									/>
-								)}
-							/>
-							<Route
-								path="/CodingEditor"
-								render={props => (
-									<CodingEditor
-										auth={this.state.auth}
-										mxGraphPromise={this.props.mxGraphPromise}
-										{...props}
+									<Route
+										path="/ExercisePage"
+										render={props => (
+											<ExercisePage auth={this.state.auth} {...props} />
+										)}
 									/>
-								)}
-							/>
-							<Route
-								path="/Faq"
-								render={props => <Faq auth={this.state.auth} {...props} />}
-							/>
-							<Route
-								path="/UserMigration"
-								render={props => (
-									<UserMigration auth={this.state.auth} {...props} />
-								)}
-							/>
-							<Route
-								exact
-								path="/"
-								render={props => <Index auth={this.state.auth} {...props} />}
-							/>
-						</ContentMain>
-						<ContentSidebar style={showSideBar2} id="ContentSidebarStyle">
-							<Sidebar tutorial={tut} />
-						</ContentSidebar>
-					</ContentGrid>
+									<Route
+										path="/Admin"
+										render={props => (
+											<Admin
+												auth={this.state.auth}
+												chartScriptPromise={this.props.chartScriptPromise}
+												{...props}
+											/>
+										)}
+									/>
+									<Route
+										exact
+										path="/Admin"
+										render={() => <Redirect to="/Admin/Control" />}
+									/>
+									<Route
+										path="/Admin/Stats"
+										render={props => (
+											<AdminStats
+												chartScriptPromise={this.props.chartScriptPromise}
+												{...props}
+											/>
+										)}
+									/>
+									<Route
+										path="/Admin/Costs"
+										render={props => (
+											<AdminCosts
+												chartScriptPromise={this.props.chartScriptPromise}
+												{...props}
+											/>
+										)}
+									/>
+									<Route
+										path="/Admin/Control"
+										render={props => (
+											<AdminControl
+												auth={this.state.auth}
+												chartScriptPromise={this.props.chartScriptPromise}
+												{...props}
+											/>
+										)}
+									/>
+									<Route
+										path="/CodingEditor"
+										render={props => (
+											<CodingEditor
+												auth={this.state.auth}
+												mxGraphPromise={this.props.mxGraphPromise}
+												{...props}
+											/>
+										)}
+									/>
+									<Route
+										path="/Faq"
+										render={props => <Faq auth={this.state.auth} {...props} />}
+									/>
+									<Route
+										path="/UserMigration"
+										render={props => (
+											<UserMigration auth={this.state.auth} {...props} />
+										)}
+									/>
+									<Route
+										exact
+										path="/"
+										render={props => (
+											<Index auth={this.state.auth} {...props} />
+										)}
+									/>
+								</ContentMain>
+								<ContentSidebar style={showSideBar2} id="ContentSidebarStyle">
+									<Sidebar tutorial={tut} />
+								</ContentSidebar>
+							</ContentGrid>
 							<Route
 								path="/"
 								render={props => <Tutorial tutorial={tut} {...props} />}
