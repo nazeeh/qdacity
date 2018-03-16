@@ -155,20 +155,10 @@ class CodingEditor extends React.Component {
 
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
+		updateUserAtSyncService();
 	}
 
 	updateUserAtSyncService() {
-		this.syncService.updateUser({
-			name: this.props.auth.userProfile.name,
-			email: this.props.auth.userProfile.email,
-			picSrc: this.props.auth.userProfile.picSrc,
-			project: this.state.project.id,
-			token: this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
-		});
-	}
-
-	updateUserStatusFromProps(targetedProps) {
 		this.syncService.updateUser({
 			name: this.props.auth.userProfile.name,
 			email: this.props.auth.userProfile.email,
