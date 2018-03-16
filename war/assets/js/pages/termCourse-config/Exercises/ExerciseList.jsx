@@ -107,16 +107,16 @@ export default class ExerciseList extends React.Component {
 		);
 
 		modal.showModal().then(function(data) {
-			console.log(data);
 			_this.createNewExercise(
 				data.name,
 				data.exerciseType,
-				data.SelectedRevisionID
+				data.SelectedRevisionID,
+				data.SelectedDate
 			);
 		});
 	}
 
-	createNewExercise(name, exerciseType, projectRevisionID) {
+	createNewExercise(name, exerciseType, projectRevisionID, exerciseDeadline) {
 		var _this = this;
 		var exercise = {};
 		var termCourseID = this.props.termCourse.id;
@@ -125,6 +125,7 @@ export default class ExerciseList extends React.Component {
 		exercise.exerciseType = exerciseType;
 		exercise.projectRevisionID = projectRevisionID;
 		exercise.termCourseID = termCourseID;
+		exercise.exerciseDeadline = exerciseDeadline;
 		ExerciseEndpoint.insertExercise(exercise).then(function(resp) {
 			exercises.push(resp);
 			_this.setState({
