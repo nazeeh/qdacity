@@ -48,6 +48,7 @@ echo "Building the image"
 # Clean old image
 docker image rm $TEST_IMAGE_TAG
 
+# Build test image
 docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.tests -t $TEST_IMAGE_TAG .
  
 # Run docker image
