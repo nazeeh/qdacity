@@ -45,22 +45,22 @@ export default class ProjectRevisionSelector extends React.Component {
 			});
 		});
 
-		ProjectEndpoint.listRevisions(this.props.projects.items[0].id).then(
-			function(revisions) {
-				revisions.items.forEach(function(revision) {
-					revisionNameList.push({
-						text: revision.revision,
-						onClick: _this.revisionClicked.bind(_this, revision.id)
-					});
+		ProjectEndpoint.listRevisionsExcludingValidation(
+			this.props.projects.items[0].id
+		).then(function(revisions) {
+			revisions.items.forEach(function(revision) {
+				revisionNameList.push({
+					text: revision.revision,
+					onClick: _this.revisionClicked.bind(_this, revision.id)
 				});
-				_this.setState({
-					revisions: revisions,
-					projectNameList: projectNameList,
-					revisionNameList: revisionNameList,
-					revisionInitText: revisionNameList[0].text
-				});
-			}
-		);
+			});
+			_this.setState({
+				revisions: revisions,
+				projectNameList: projectNameList,
+				revisionNameList: revisionNameList,
+				revisionInitText: revisionNameList[0].text
+			});
+		});
 	}
 
 	projectClicked(projectID) {

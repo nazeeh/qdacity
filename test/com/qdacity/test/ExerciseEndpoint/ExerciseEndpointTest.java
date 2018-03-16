@@ -2,9 +2,25 @@ package com.qdacity.test.ExerciseEndpoint;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
+import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
+import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.CourseEndpoint;
+import com.qdacity.endpoint.ExerciseEndpoint;
+import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.data.AgreementMap;
+import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.*;
+import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +45,10 @@ import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 import com.qdacity.user.LoginProviderType;
 
 public class ExerciseEndpointTest {
+    private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
+    private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
+    //private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml"));
 	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 
 	@Before
@@ -188,5 +206,79 @@ public class ExerciseEndpointTest {
 		ExerciseEndpointTestHelper.createExerciseProjectIfNeeded(revision.getId(), 1L, testUser);
 		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
 	}
+
+    @Test
+    public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
+        latch.reset(12);
+        com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
+        UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
+        com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
+        UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
+
+        UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
+
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+
+        CourseEndpoint courseEndpoint = new CourseEndpoint();
+        TermCourse termCourse = new TermCourse();
+        termCourse.setId(1L);
+        termCourse.setCourseID(1L);
+        List<String> owners = new ArrayList<>();
+        owners.add(studentA.getId().toString());
+        owners.add(studentB.getId().toString());
+        termCourse.setOwners(owners);
+        courseEndpoint.insertTermCourse(termCourse, testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+
+        ExerciseProject exPrj = ExerciseEndpointTestHelper.setUpExerciseProject(testUser, studentA, studentB);
+
+        String docsToEvaluate = getDocumentsAsCSV(exPrj.getRevisionID(), ProjectType.EXERCISE);
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+        ee.evaluateExerciseRevision(1L, exPrj.getRevisionID(), "ReportTest", docsToEvaluate,EvaluationMethod.F_MEASURE.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
+
+        try {
+            latch.await(25, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            fail("Deferred task did not finish in time");
+        }
+
+        LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+        QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+        assertEquals(0, qsi.getTaskInfo().size());
+
+        List<ExerciseReport> reports = ee.listExerciseReports(1L, 1L, testUser);
+        assertEquals(1, reports.size());
+        ExerciseReport report = reports.get(0);
+        assertEquals(1L, report.getProjectID(), 0);
+        assertEquals(exPrj.getRevisionID(), report.getRevisionID(), 0);
+        assertEquals(EvaluationUnit.PARAGRAPH.toString(), report.getEvaluationUnit());
+        assertEquals(EvaluationMethod.F_MEASURE.toString(), report.getEvaluationMethod());
+        assertEquals("ReportTest", report.getName());
+
+        List<DocumentResult> docResults = report.getDocumentResults();
+        assertEquals(1, docResults.size());
+        TextDocumentEndpoint tde = new TextDocumentEndpoint();
+        List<AgreementMap> agreementMaps = tde.getAgreementMaps(report.getId(), "EXERCISE", testUser);
+        assertEquals(1, agreementMaps.size());
+        latch.reset(1);
+
+        try {
+            latch.await(20, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            fail("Deferred task did not finish in time");
+        }
+
+    }
+    private String getDocumentsAsCSV(long projectID, ProjectType projectType) {
+        Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(projectID, projectType, testUser);
+        String documentsToEvaluate = "";
+        for (TextDocument textDocument : docs) {
+            documentsToEvaluate += textDocument.getId() + ",";
+        }
+        return documentsToEvaluate;
+
+    }
 
 }

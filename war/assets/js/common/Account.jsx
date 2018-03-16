@@ -44,7 +44,8 @@ export default class Account extends React.Component {
 			* When adding other LoginProviders this needs to be reviewed
 			*/
 			var url = URI(profile.thumbnail).fragment(true);
-			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			const picSrcWithoutParams =
+				url.protocol() + '://' + url.hostname() + url.path();
 			_this.setState({
 				name: profile.name,
 				email: profile.email,

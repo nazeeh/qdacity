@@ -7,7 +7,7 @@ var ExtractMessagesPlugin = require('../localization/webpack').default;
 var BabelFormatMessagesPlugin = require('../localization/babel').default;
 
 // to find out the source of deprecation warnings un-comment this line
-//process.traceDeprecation = true 
+//process.traceDeprecation = true
 
 module.exports = {
 	bail: true,
@@ -43,13 +43,19 @@ module.exports = {
 						metadataSubscribers: [ExtractMessagesPlugin.metadataSubscriber],
 						presets: ['env', 'react'],
 						plugins: [
-							['react-intl', {
-								extractSourceLocation: true
-							}],
-							[BabelFormatMessagesPlugin, {
-								test: false,
-								debug: false,
-							}],
+							[
+								'react-intl',
+								{
+									extractSourceLocation: true
+								}
+							],
+							[
+								BabelFormatMessagesPlugin,
+								{
+									test: false,
+									debug: false
+								}
+							]
 							//until there is a working solution we cannot use this in development
 							//'transform-react-inline-elements'
 						]

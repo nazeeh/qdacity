@@ -8,6 +8,7 @@ import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import Exercise from './Exercise';
 import ExerciseProjects from './ExerciseProjects/ExerciseProjects.jsx';
+import ExerciseProjectReports from './ExerciseProjectReports/ExerciseProjectReports.jsx';
 import BtnDefault from '../../common/styles/Btn.jsx';
 import Confirm from '../../common/modals/Confirm';
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
@@ -58,7 +59,6 @@ export default class ExercisePage extends React.Component {
 
 	setExerciseInfo() {
 		var _this = this;
-		var exercise = this.state.exercise;
 		this.userPromise.then(function(user) {
 			_this.getExerciseByIDPromise.then(function(exerciseResp) {
 				var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
@@ -66,7 +66,7 @@ export default class ExercisePage extends React.Component {
 					exerciseResp.termCourseID
 				);
 				_this.setState({
-					exercise: exercise,
+					exercise: exerciseResp,
 					isTermCourseOwner: isTermCourseOwner
 				});
 			});
@@ -88,6 +88,22 @@ export default class ExercisePage extends React.Component {
 		}
 	}
 
+	renderExerciseProjectReports() {
+		var isUserTermCourseOwner = this.state.isTermCourseOwner;
+		if (!isUserTermCourseOwner) {
+			return '';
+		} else {
+			return (
+				<ExerciseProjectReports
+					exercise={this.state.exercise}
+					auth={this.props.auth}
+					isTermCourseOwner={this.state.isTermCourseOwner}
+					history={this.props.history}
+				/>
+			);
+		}
+	}
+
 	render() {
 		if (
 			!this.props.auth.authState.isUserSignedIn ||
@@ -97,6 +113,11 @@ export default class ExercisePage extends React.Component {
 		}
 		this.init();
 
-		return <StyledDashboard>{this.renderExerciseProjects()}</StyledDashboard>;
+		return (
+			<StyledDashboard>
+				{this.renderExerciseProjects()}
+				{this.renderExerciseProjectReports()}
+			</StyledDashboard>
+		);
 	}
 }
