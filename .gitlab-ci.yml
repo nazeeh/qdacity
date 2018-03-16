@@ -126,7 +126,6 @@ acceptance_tests:
     - realtime-service/node_modules/
     - localization/node_modules/
     - war/node_modules/
-    policy: pull
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
