@@ -28,6 +28,7 @@
     "start:daemon": "pm2 restart index.js || pm2 start index.js",
     "test": "echo \"Info: no test specified\" && exit 0",
     "watch": "pm2 start index.js --watch",
+    "watch:debug": "pm2 start index.js --watch --node-args=\"--inspect\"",
     "watch:stop": "pm2 stop 0 --watch"
   },
   "dependencies": {
