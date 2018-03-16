@@ -122,7 +122,6 @@ acceptance_tests:
     - branches 
   cache:
     key: "acceptance_tests"
-    untracked: true
     paths:
     - realtime-service/node_modules/
     - localization/node_modules/
