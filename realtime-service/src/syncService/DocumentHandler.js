@@ -83,25 +83,12 @@ class DocumentHandler {
       try {
         doc = await cache.get(documentId);
       } catch(e) {
-
-        // Load text document from backend
-        const documentResponse = await this._socket.api.request('documents.getTextDocument', {
-          id: projectId,
-          projectType: projectType,
-        });
-
-        // Error, fail early
-        if (documentResponse.code) {
-          throw documentResponse;
+        try {
+          doc = await this._fetchDocument(projectId, projectType, documentId);
+        } catch(e) {
+          console.error(e);
+          throw 'Could not get document from backend or cache';
         }
-
-        // Extract document HTML from response
-        doc = (documentResponse.items || []).filter(doc => doc.id == documentId)[0];
-
-        // Assert consistent internal slate IDs
-        resetKeyGenerator();
-
-        doc.value = serializer.deserialize(doc.text.value);
       }
 
       // Apply operations to document
@@ -152,6 +139,51 @@ class DocumentHandler {
       ack('err', err);
     };
 
+  }
+
+  /**
+   * Get document from Backend and deserialize it
+   *
+   * @private
+   * @arg {string} projectId - ID of the project to modify
+   * @arg {string} projectType - Type of the project to modify
+   * @arg {string} documentId - ID of the document to modify
+   * @return {Promise} resolves with document object or rejects with message
+   * @throws {string} API response, if backend returned error or 'No documents
+   *                  received from backend' or 'No document found for ID ...'
+   */
+  async _fetchDocument(projectId, projectType, documentId) {
+    // Load text documents from backend
+    const documentsResponse = await this._socket.api.request('documents.getTextDocument', {
+      id: projectId,
+      projectType: projectType,
+    });
+
+    // Error, if API response has property 'code'
+    if (documentsResponse.code) {
+      throw documentsResponse;
+    }
+
+    // Error, if no documents array found
+    if (!Array.isArray(documentsResponse.items)) {
+      throw 'No documents received from backend';
+    }
+
+    // Extract document HTML from response
+    const doc = documentsResponse.items.find(doc => doc.id == documentId);
+
+    // Error, if no document found
+    if (typeof doc === 'undefined') {
+      throw `No document found for ID ${documentId}`;
+    }
+
+    // Assert consistent internal slate IDs
+    resetKeyGenerator();
+
+    // Deserialize document text and add to document object
+    doc.value = serializer.deserialize(doc.text.value);
+
+    return doc;
   }
 
   /**
