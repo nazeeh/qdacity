@@ -115,12 +115,7 @@ class CodingEditor extends React.Component {
 			searchResults: {
 				documentResults: []
 			},
-			mxGraphLoaded: false,
-			userProfile: {
-				name: '',
-				email: '',
-				picSrc: ''
-			}
+			mxGraphLoaded: false
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -174,13 +169,6 @@ class CodingEditor extends React.Component {
 	}
 
 	updateUserStatusFromProps(targetedProps) {
-		this.setState({
-			userProfile: {
-				name: this.props.auth.userProfile.name,
-				email: this.props.auth.userProfile.email,
-				picSrc: this.props.auth.userProfile.picSrc
-			}
-		});
 		this.syncService.updateUser({
 			name: this.props.auth.userProfile.name,
 			email: this.props.auth.userProfile.email,
