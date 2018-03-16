@@ -280,7 +280,7 @@ export default class IntercoderAgreement extends VexModal {
 		if (typeof this.report != 'undefined') {
 			for (var i = 0; i < this.results.length; i++) {
 				var result = this.results[i];
-				var cells = [result.id, result.validationProjectID];
+				var cells = [result.id, result.projectID];
 				table.row.add(cells.concat(result.reportRow.split(',')));
 			}
 			table.draw();
