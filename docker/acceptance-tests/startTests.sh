@@ -10,8 +10,6 @@ TIME_INTERVAL=2
 PORT_OPEN=1
 PORT_CLOSED=0
 
-echo "Starting shell script which runs the acceptance tests."
-
 time=0
 isPortOpen=0
 
@@ -33,7 +31,7 @@ done
 
 if [ $isPortOpen -eq $PORT_OPEN ]; then
 	# Give the server more time to properly start
-	sleep 8
+	sleep 10
 
 	echo "##############################################"
 	echo "####           Start the tests            ####"
