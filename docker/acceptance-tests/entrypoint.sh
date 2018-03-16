@@ -28,8 +28,4 @@ echo "##############################################"
 sudo /usr/local/gcloud/google-cloud-sdk/bin/java_dev_appserver.sh --disable_update_check --port=8888 /app/target/qdacity-war/ &
 
 # Run a script which starts the acceptance-tests as soon as the specified port is open (=> the dev-server is running)
-echo "##############################################"
-echo "####           Start the tests            ####"
-echo "##############################################"
-
 ./docker/acceptance-tests/startTests.sh

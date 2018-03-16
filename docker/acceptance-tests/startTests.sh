@@ -33,8 +33,11 @@ done
 
 if [ $isPortOpen -eq $PORT_OPEN ]; then
 	# Give the server more time to properly start
-	sleep 5
+	sleep 8
 
+	echo "##############################################"
+	echo "####           Start the tests            ####"
+	echo "##############################################"
 	echo "Port is open after ${time} seconds. Start acceptance tests now."
 	
 	cd war
