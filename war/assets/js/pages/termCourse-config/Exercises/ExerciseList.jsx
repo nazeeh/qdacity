@@ -94,6 +94,8 @@ export default class ExerciseList extends React.Component {
 			})
 		);
 
+		modal.addDatePicker();
+
 		modal.addTextInput(
 			'name',
 			formatMessage({
@@ -103,7 +105,9 @@ export default class ExerciseList extends React.Component {
 			'Name',
 			''
 		);
+
 		modal.showModal().then(function(data) {
+			console.log(data);
 			_this.createNewExercise(
 				data.name,
 				data.exerciseType,

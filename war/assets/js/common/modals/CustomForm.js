@@ -5,6 +5,7 @@ import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import Theme from '../../common/styles/Theme.js';
 import { ThemeProvider } from 'styled-components';
+import ChartTimeFrameChooser from '../../pages/termCourse-config/ChartTimeFrameChooser.jsx';
 
 export default class CustomForm extends VexModal {
 	constructor(message) {
@@ -17,12 +18,16 @@ export default class CustomForm extends VexModal {
 		this.projects = [];
 		this.selectedRevisionID = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+		this.setSelectedDate = this.setSelectedDate.bind(this);
 	}
 
 	setSelectedRevisionID(revisionID) {
 		this.selectedRevisionID = revisionID;
 	}
 
+	setSelectedDate(date) {
+		this.selectedDate = date;
+	}
 	addTextInput(name, label, placeholder, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<label for="' + name + '">' + label + '</label>';
@@ -39,6 +44,17 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
+	addDatePicker() {
+
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += 'Deadline: ';
+		this.formElements += '<div id="DatePicker">';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+
+	}
 	addTextField(name, label, placeholder, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<label for="' + name + '">' + label + '</label>';
@@ -155,6 +171,7 @@ export default class CustomForm extends VexModal {
 				callback: function(data) {
 					if (data != false) {
 						data.SelectedRevisionID = _this.selectedRevisionID;
+						data.SelectedDate = _this.selectedDate;
 						resolve(data);
 					} else reject(data);
 				},
@@ -165,6 +182,14 @@ export default class CustomForm extends VexModal {
 					}
 				}
 			});
+			ReactDOM.render(
+				<ThemeProvider theme={Theme}>
+					<ChartTimeFrameChooser
+						setSelectedDate={_this.setSelectedDate}
+					/>
+				</ThemeProvider>,
+				document.getElementById('DatePicker')
+			)
 			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(
 					<ThemeProvider theme={Theme}>
