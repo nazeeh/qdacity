@@ -10,6 +10,7 @@ describe('Codesystem test', function() {
 	var driver = null;
 	
 	beforeAll((done) => {
+    	console.log(' ');
     	console.log('#########################################################');
     	console.log('####                   Codes test                    ####');
     	console.log('#########################################################');

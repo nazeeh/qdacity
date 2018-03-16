@@ -10,6 +10,7 @@ describe('Load QDAcity', function() {
 	var driver = null;
 	
 	beforeAll((done) => {
+    	console.log(' ');
     	console.log('#########################################################');
     	console.log('####                Load QDAcity test                ####');
 		console.log('#########################################################');
