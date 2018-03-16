@@ -75,6 +75,7 @@ class DocumentHandler {
       try {
         await documentLock.acquire(5000);
       } catch(e) {
+        console.error('Error while trying to acquire document lock', e);
         throw 'Could not get document lock';
       }
 
@@ -83,11 +84,15 @@ class DocumentHandler {
       try {
         doc = await cache.get(documentId);
       } catch(e) {
+        if (e !== 'cache miss') {
+          console.error('Error while trying to get document from cache', e);
+        }
+
         try {
           doc = await this._fetchDocument(projectId, projectType, documentId);
         } catch(e) {
-          console.error(e);
-          throw 'Could not get document from backend or cache';
+          console.error('Error while trying to get document from backend', e);
+          throw 'Could not get document from backend';
         }
       }
 
@@ -98,21 +103,22 @@ class DocumentHandler {
       try {
         await cache.store(documentId, doc);
       } catch(e) {
-        // silently fail
+        console.error('Error while trying to cache document', e);
       }
 
       // Refresh lock before saving changes
       try {
         await documentLock.refresh();
-      } catch(error) {
+      } catch(e) {
+        console.error('Error while trying to refresh document lock', e);
         throw 'Document lock expired before uploading changes';
       }
 
       // Call backend to persist changes
       try {
         const response = await this._applyCodeAtBackend(doc, code);
-      } catch(error) {
-        console.log(error);
+      } catch(e) {
+        console.error('Error while applying Code at Backend', e);
         throw 'Error while uploading changes to backend';
       }
 
@@ -120,12 +126,11 @@ class DocumentHandler {
       documentLock.release();
 
       // Respond to sender and emit sync event
-      const data = {
+      this._socket.handleApiResponse(EVT.CODING.ADDED, ack, {
         authorSocket: this._ioSocket.id,
         document: documentId,
         operations,
-      };
-      this._socket.handleApiResponse(EVT.CODING.ADDED, ack, data);
+      });
 
     } catch(err) {
       documentLock.release();
