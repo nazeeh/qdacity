@@ -24,20 +24,20 @@ class Logger {
     });
   }
 
-  debug(msg) {
-    this.logger.debug(msg);
+  debug(...msg) {
+    this.logger.debug(...msg);
   }
 
-  info(msg) {
-    this.logger.info(msg);
+  info(...msg) {
+    this.logger.info(...msg);
   }
 
-  warn(msg) {
-    this.logger.warn(msg);
+  warn(...msg) {
+    this.logger.warn(...msg);
   }
 
-  error(msg) {
-    this.logger.error(msg);
+  error(...msg) {
+    this.logger.error(...msg);
   }
 }
 
