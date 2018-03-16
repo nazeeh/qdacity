@@ -14,43 +14,9 @@ export default class Account extends React.Component {
 
 		this.authenticationProvider = props.auth.authentication;
 
-		this.state = {
-			name: '',
-			email: '',
-			picSrc: ''
-		};
-
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(
 			this
 		);
-
-		this.updateFromProps(props);
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateFromProps(nextProps);
-	}
-
-	updateFromProps(targetedProps) {
-		this.authenticationProvider = targetedProps.auth.authentication;
-		const _this = this;
-		this.authenticationProvider.getProfile().then(function(profile) {
-			/*
-			* Removing query parameters from URL.
-			* With google we always got ?sz=50 in the URL which gives you a
-			* small low res thumbnail. Without parameter we get the original
-			* image.
-			* When adding other LoginProviders this needs to be reviewed
-			*/
-			var url = URI(profile.thumbnail).fragment(true);
-			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
-			_this.setState({
-				name: profile.name,
-				email: profile.email,
-				picSrc: picSrcWithoutParams
-			});
-		});
 	}
 
 	/**
@@ -95,16 +61,16 @@ export default class Account extends React.Component {
 						<div className="col-xs-5">
 							<UserImage
 								id="currentUserPicture"
-								src={this.state.picSrc}
+								src={this.props.auth.userProfile.picSrc}
 								alt=""
 								className="img-responsive"
 							/>
 							<p className="text-center small" />
 						</div>
 						<div className="col-xs-7">
-							<span id="currentUserName">{this.state.name}</span>
+							<span id="currentUserName">{this.props.auth.userProfile.name}</span>
 							<p id="currentUserEmail" className="text-muted small">
-								{this.state.email}
+								{this.props.auth.userProfile.email}
 							</p>
 							<div className="divider" />
 							<BtnPrimary onClick={this.redirectToPersonalDashbaord}>
