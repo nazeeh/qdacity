@@ -180,12 +180,12 @@ public class CourseEndpointTest {
 		assertEquals(1, ds.prepare(new Query("Course")).countEntities(withLimit(10)));
 		
 		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
+		User addedLoggedInUserB = UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, loggedInUserB.getId());
+			User user = mgr.getObjectById(User.class, addedLoggedInUserB.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {
@@ -277,14 +277,14 @@ public class CourseEndpointTest {
 	 */
 	@Test
 	public void testListTermCourseByParticipant() throws UnauthorizedException {
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		User addedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		List<TermCourse> retrievedTerms = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(2L, 1L, "A description", testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(1L, testUser.getId(), testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(1L, addedTestUser.getId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, addedTestUser.getId(), testUser);
 		
 		retrievedTerms = CourseEndpointTestHelper.listTermCourseByParticipant(1L, testUser);
 		
@@ -467,12 +467,12 @@ public class CourseEndpointTest {
 		UserEndpointTestHelper.addUser("asd@asd.de", "User", "A", loggedInUserA);
 		assertEquals(1, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 		com.google.api.server.spi.auth.common.User loggedInUserB = new AuthenticatedUser("2", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
+		User addedLoggedInUserB = UserEndpointTestHelper.addUser("asd@asd.de", "User", "B", loggedInUserB);
 		assertEquals(2, ds.prepare(new Query("User")).countEntities(withLimit(10)));
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, loggedInUserB.getId());
+			User user = mgr.getObjectById(User.class, addedLoggedInUserB.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {
@@ -670,7 +670,7 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 	@Test
 	public void testInviteUserCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
-		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		User addedTestUser2 = UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
 		
 		PersistenceManager mgr = getPersistenceManager();
 		Course thisCourse = null;
@@ -695,7 +695,7 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisCourse.getInvitedUsers().contains(testUser2.getId()));
+		assertEquals(true, thisCourse.getInvitedUsers().contains(addedTestUser2.getId()));
 	}
 	
 	/**
@@ -705,7 +705,7 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 	@Test
 	public void testInviteUserTermCourse() throws UnauthorizedException {
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
-		UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
+		User addedTestUser2 = UserEndpointTestHelper.addUser("asdf@asdf.de", "firstName", "lastName", testUser2);
 		
 		PersistenceManager mgr = getPersistenceManager();
 		TermCourse thisTermCourse = null;
@@ -731,7 +731,7 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 			  q.closeAll();
 			}
 		
-		assertEquals(true, thisTermCourse.getInvitedUsers().contains(testUser2.getId()));
+		assertEquals(true, thisTermCourse.getInvitedUsers().contains(addedTestUser2.getId()));
 	}
 	
 	/**
@@ -777,12 +777,12 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 	 */
 	@Test
 	public void testListTermCourseParticipants() throws UnauthorizedException {
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		User addedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CollectionResponse<User> users = null;
 		
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(2L, testUser);
-		CourseEndpointTestHelper.addParticipantTermCourse(2L, testUser.getId(), testUser);
+		CourseEndpointTestHelper.addParticipantTermCourse(2L, addedTestUser.getId(), testUser);
 		
 		users = (CollectionResponse<User>) CourseEndpointTestHelper.listTermCourseParticipants(2L, testUser);
 		

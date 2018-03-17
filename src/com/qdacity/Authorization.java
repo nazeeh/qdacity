@@ -66,7 +66,7 @@ public class Authorization {
 				if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(authenticatedUserId);
 			}
 			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
-			if (course.getOwners().contains(googleUser.getId()) || courseUser.getType() == UserType.ADMIN || userIsInvited) return true;
+			if (course.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN || userIsInvited) return true;
 		} finally {
 			mgr.close();
 		}
@@ -232,7 +232,7 @@ public class Authorization {
 		Boolean authorized = (authenticatedUserId.equals(userRequested.getId()));
 		Boolean isAdmin = isUserAdmin(userLoggedIn);
 		if (!authorized) throw new UnauthorizedException("User " + authenticatedUserId + " is Not Authorized");
-		Boolean userUpdatesSelf = (userLoggedIn.getId().equals(userRequested.getId()));
+		Boolean userUpdatesSelf = (authenticatedUserId.equals(userRequested.getId()));
 		if (!userUpdatesSelf && !isAdmin) throw new UnauthorizedException("User " + authenticatedUserId + " is not authorized to update a user other than himself");
 		if (userRequested.getType() == UserType.ADMIN && !isAdmin) throw new UnauthorizedException("Non admin user tried to set ADMIN status");
 	}

@@ -152,12 +152,12 @@ public class ProjectEndpointTest {
 	public void testListProjectByUserIdAuthorization() throws UnauthorizedException {
 		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 		com.google.api.server.spi.auth.common.User otherUser = new AuthenticatedUser("234567", "asd2@asd2.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
-		UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
+		User addedLoggedInUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+		User addedOtherUser = UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
 
 		expectedException.expect(UnauthorizedException.class);
 		ProjectEndpoint pe = new ProjectEndpoint();
-		pe.listProjectByUserId(null, null, "234567", loggedInUser);
+		pe.listProjectByUserId(null, null, addedOtherUser.getId(), loggedInUser);
 	}
 
 	/**
@@ -168,11 +168,11 @@ public class ProjectEndpointTest {
 		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 		com.google.api.server.spi.auth.common.User otherUser = new AuthenticatedUser("234567", "asd2@asd2.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
-		UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
+		User addedOtherUser = UserEndpointTestHelper.addUser("asd2@asd2.de", "firstName2", "lastName2", otherUser);
 
 		expectedException.expect(UnauthorizedException.class);
 		ProjectEndpoint pe = new ProjectEndpoint();
-		pe.listValidationProjectByUserId("234567", loggedInUser);
+		pe.listValidationProjectByUserId(addedOtherUser.getId(), loggedInUser);
 	}
 
 	/**
@@ -395,17 +395,17 @@ public class ProjectEndpointTest {
 		}
 
 		com.google.api.server.spi.auth.common.User invitedUser = new AuthenticatedUser("77777", "asd@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
+		User addedInvitedUser = UserEndpointTestHelper.addUser("surname@mydomain.com", "FirstName", "SurName", invitedUser);
 
 		UserNotificationEndpoint une = new UserNotificationEndpoint();
 
 		pe.inviteUser(1L, "surname@mydomain.com", testUser);
-		pe.addOwner(1L, invitedUser.getId(), invitedUser);
+		pe.addOwner(1L, addedInvitedUser.getId(), invitedUser);
 
 		Project project = (Project) pe.getProject(1L, "PROJECT", invitedUser);
 		assertEquals(2, project.getOwners().size());
 
-		pe.removeUser(1L, "PROJECT", invitedUser.getId(), testUser);
+		pe.removeUser(1L, "PROJECT", addedInvitedUser.getId(), testUser);
 
 		project = (Project) pe.getProject(1L, "PROJECT", invitedUser);
 		assertEquals(1, project.getOwners().size());
@@ -499,13 +499,13 @@ public class ProjectEndpointTest {
 		pe.createSnapshot(1L, "A test revision", testUser);
 
 		com.google.api.server.spi.auth.common.User student = new AuthenticatedUser("77777", "student@asd.de", LoginProviderType.GOOGLE);
-		UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
+		User addedStudent = UserEndpointTestHelper.addUser("student@asd.de", "Student", "B", student);
 
 		List<ProjectRevision> revisions = pe.listRevisions(1L, testUser);
 		Long revID = revisions.get(0).getId();
 		pe.requestValidationAccess(revID, student);
 
-		pe.createValidationProject(revID, student.getId(), testUser);
+		pe.createValidationProject(revID, addedStudent.getId(), testUser);
 		
 		List<ValidationProject> valPrj = pe.listValidationProject(student);
 

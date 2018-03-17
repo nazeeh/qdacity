@@ -401,7 +401,7 @@ public class CourseEndpoint {
 					}
 				}
 				try {
-					termCourse.addOwner(user.getId());
+					termCourse.addOwner(qdacityUser.getId());
 					Authorization.checkAuthorizationTermCourse(termCourse, user);
 					mgr.makePersistent(termCourse);
 					qdacityUser.addTermCourseAuthorization(termCourse.getId());
