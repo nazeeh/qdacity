@@ -6,32 +6,26 @@ var chrome = require("selenium-webdriver/chrome");
 import Common from './util/Common.js';
 
 
-const TEST_NAME = 'Login test';
+const SPEC_NAME = 'Login test';
 
-describe(TEST_NAME, function () {
+describe(SPEC_NAME, function () {
 
-	var defaultTimeout = 30000;
+	let defaultTimeout = 30000;
 	
-	var driver = null;
-
+	let driver = null;
+	
 	beforeAll(() => {
-		Common.initializeTest(TEST_NAME);
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
-    	const options = new chrome.Options();
-    	
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-	        .build();
-
+    	this.driver = Common.setupChromeDriver();
         this.driver.get('http://localhost:8888/').then(done);
-    }, defaultTimeout);
+    });
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, defaultTimeout);
+    });
 
     /**
      * This function tests the login of QDAcity with a google test-account. If the test-account

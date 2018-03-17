@@ -1,7 +1,11 @@
+var webdriver = require('selenium-webdriver'),
+	By = webdriver.By,
+	until = webdriver.until;
+var chrome = require("selenium-webdriver/chrome");
 
 export default class Common {
 
-	static initializeTest(testName) {
+	static initializeSpec(testName) {
 		const headerTextBorderChar = '#';
 		const headerTextWidth = 60;
 		const headerTextBorderWidth = 4;
@@ -23,4 +27,15 @@ export default class Common {
 		console.log(textContentBorder + textContentSpacesBefore + textContentName + textContentSpacesAfter + textContentBorder);
 		console.log(textBorder);
 	} 
+
+	static setupChromeDriver() {
+		const options = new chrome.Options();
+    	
+    	const driver = new webdriver.Builder()
+	        .forBrowser('chrome')
+	        .withCapabilities(options.toCapabilities())
+			.build();
+			
+		return driver;
+	}
 }
