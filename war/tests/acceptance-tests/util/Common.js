@@ -38,4 +38,8 @@ export default class Common {
 			
 		return driver;
 	}
+
+	static getDefaultTimeout() {
+		return 30000;
+	}
 }

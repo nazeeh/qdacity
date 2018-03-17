@@ -10,8 +10,6 @@ const SPEC_NAME = 'Document test';
 
 describe(SPEC_NAME, function () {
 
-	let defaultTimeout = 30000;
-	
 	let driver = null;
 	
 	beforeAll(() => {
@@ -50,7 +48,7 @@ describe(SPEC_NAME, function () {
     	this.driver.wait(until.elementLocated(By.xpath("//div[text()='" + documentName + "']"))).then(() => {
     		done();
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
     
     it('Should add text to a document', (done) => {
     	const projectName = 'Project_01';
@@ -80,5 +78,5 @@ describe(SPEC_NAME, function () {
     		expect(text).toBe(documentText);
     		done();
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });

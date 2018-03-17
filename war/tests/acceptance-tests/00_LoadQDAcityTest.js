@@ -10,8 +10,6 @@ const SPEC_NAME = 'Load QDAcity test';
 
 describe(SPEC_NAME, function () {
 
-	let defaultTimeout = 30000;
-	
 	let driver = null;
 	
 	beforeAll(() => {
@@ -33,5 +31,5 @@ describe(SPEC_NAME, function () {
 			expect(1).toBe(1);
 			done();
 		});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });

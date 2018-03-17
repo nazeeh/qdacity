@@ -10,8 +10,6 @@ const SPEC_NAME = 'Project test';
 
 describe(SPEC_NAME, function () {
 
-	let defaultTimeout = 30000;
-	
 	let driver = null;
 	
 	beforeAll(() => {
@@ -64,5 +62,5 @@ describe(SPEC_NAME, function () {
 	    		});
         	});
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });

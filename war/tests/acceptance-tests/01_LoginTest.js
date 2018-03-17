@@ -10,8 +10,6 @@ const SPEC_NAME = 'Login test';
 
 describe(SPEC_NAME, function () {
 
-	let defaultTimeout = 30000;
-	
 	let driver = null;
 	
 	beforeAll(() => {
@@ -78,5 +76,5 @@ describe(SPEC_NAME, function () {
     		    done();
     		})
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });

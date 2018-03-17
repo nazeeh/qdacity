@@ -10,8 +10,6 @@ const SPEC_NAME = 'Codesystem test';
 
 describe(SPEC_NAME, function () {
 
-	let defaultTimeout = 30000;
-	
 	let driver = null;
 	
 	beforeAll(() => {
@@ -49,5 +47,5 @@ describe(SPEC_NAME, function () {
     	this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'clickable') and text()='" + codeName + "']"))).then(() => {
         	done();
     	});    		
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });
