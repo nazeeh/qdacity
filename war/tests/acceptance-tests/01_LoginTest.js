@@ -3,18 +3,19 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('Login test', function() {
+import Common from './util/Common.js';
+
+
+const TEST_NAME = 'Login test';
+
+describe(TEST_NAME, function () {
 
 	var defaultTimeout = 30000;
 	
 	var driver = null;
-	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                   Login test                    ####');
-    	console.log('#########################################################');
-		done();
+
+	beforeAll(() => {
+		Common.initializeTest(TEST_NAME);
     });
 
     beforeEach((done) => {
