@@ -17,8 +17,8 @@ describe(SPEC_NAME, function () {
     });
 
     beforeEach((done) => {
-    	this.driver = Common.setupChromeDriver();
-        this.driver.get('http://localhost:8888/PersonalDashboard').then(done);
+		this.driver = Common.setupChromeDriver();
+		Common.openCodingEditor(this.driver, done, 'Project_01');
     });
 
     afterEach((done) => {
@@ -26,12 +26,8 @@ describe(SPEC_NAME, function () {
     });
 
     it('Should create a new code', (done) => {
-    	const projectName = 'Project_01';
     	const codeName = 'Code_01';
 
-    	// Find an existing project and open the coding editor
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']/following-sibling::div/button/i[contains(@class,'fa-tags')]"))).click();    	
-    	
     	// Find add code button
     	this.driver.wait(until.elementLocated(By.id('addCodeButtonId'))).click();   
 

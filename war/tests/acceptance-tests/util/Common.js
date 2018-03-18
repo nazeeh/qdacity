@@ -3,8 +3,14 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
+import Conditions from './Conditions.js';
+
 export default class Common {
 
+	static getDefaultTimeout() {
+		return 30000;
+	}
+	
 	static initializeSpec(testName) {
 		const headerTextBorderChar = '#';
 		const headerTextWidth = 60;
@@ -39,7 +45,13 @@ export default class Common {
 		return driver;
 	}
 
-	static getDefaultTimeout() {
-		return 30000;
+	static openCodingEditor(driver, done, projectName) {
+		driver.get('http://localhost:8888/PersonalDashboard');
+
+		Conditions.projectExists(driver, projectName);
+	
+		driver.wait(until.elementLocated(Conditions.getProjectCodingEditorButton(projectName))).click().then(() => {
+			done();
+		}); 
 	}
 }

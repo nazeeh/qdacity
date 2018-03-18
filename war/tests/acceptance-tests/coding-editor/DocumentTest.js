@@ -18,7 +18,7 @@ describe(SPEC_NAME, function () {
 
     beforeEach((done) => {
     	this.driver = Common.setupChromeDriver();
-        this.driver.get('http://localhost:8888/PersonalDashboard').then(done);
+		Common.openCodingEditor(this.driver, done, 'Project_01');
     });
 
     afterEach((done) => {
@@ -26,11 +26,7 @@ describe(SPEC_NAME, function () {
     });
 
     it('Should create a new document', (done) => {
-    	const projectName = 'Project_01';
     	const documentName = 'Document_01';
-    	
-    	// Find an existing project and open the coding editor
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']/following-sibling::div/button/i[contains(@class,'fa-tags')]"))).click();    	
     	
     	// Find add document button
     	this.driver.wait(until.elementLocated(By.xpath("//div[@id='documents-ui']//button/i[contains(@class,'fa-plus')]"))).click();   
@@ -51,15 +47,11 @@ describe(SPEC_NAME, function () {
     }, Common.getDefaultTimeout());
     
     it('Should add text to a document', (done) => {
-    	const projectName = 'Project_01';
     	const documentName = 'Document_01';
     	
     	const documentText = 'This is the text.';
     	
     	const _this = this;
-    	
-    	// Find an existing project and open the coding editor
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']/following-sibling::div/button/i[contains(@class,'fa-tags')]"))).click();    	
     	
     	// Find the document and select it
     	this.driver.wait(until.elementLocated(By.xpath("//div[text()='" + documentName + "']"))).click();
