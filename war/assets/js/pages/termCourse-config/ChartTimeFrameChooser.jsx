@@ -11,6 +11,7 @@ export default class ChartTimeChooser extends React.Component {
 		super(props);
 
 		const dateDefault = new Date();
+
 		this.props.setSelectedDate(ChartTimeChooser.toDateString(dateDefault));
 		this.state = {
 			customDate: dateDefault
@@ -57,6 +58,7 @@ export default class ChartTimeChooser extends React.Component {
 			margin-left: 10px;
 			vertical-align: top;
 		`;
+		const dateMinDefault = new Date();
 
 		return (
 			<CenteringDiv>
@@ -70,6 +72,9 @@ export default class ChartTimeChooser extends React.Component {
 							onChange={event =>
 								this.setcustomDate(new Date(event.target.value))
 							}
+							min={ChartTimeChooser.toDateString(
+								dateMinDefault
+							)}
 						/>
 					</div>
 			</CenteringDiv>
