@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import cheerio from 'cheerio';
+
 import { PageView } from '../View/PageView.js';
+
+import DocumentParser from './DocumentParser.js';
 
 const StyledContainer = styled.div`
 	border-left: 1px solid #888;
@@ -13,9 +17,11 @@ export default class CodeQueries extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.documentParser = new DocumentParser();
+
 		this.state = {
 			selectedCode: null
-		}
+		};
 	}
 
 	codesystemSelectionChanged(code) {
@@ -40,20 +46,28 @@ export default class CodeQueries extends React.Component {
 		return codes;
 	}
 
-	calculateOverlap(otherCode) {
-		let overlaps = 0;
-
+	calculateOverlap() {		
 		let documents = this.props.getDocuments();
+		
+		return this.documentParser.parseDocuments(this.state.selectedCode, documents);
+	}
 
-		if (documents) {
-			for (let i = 0; i < documents.length; i++) {
-				let document = documents[i];
-
-				console.log(document.title);
-			}
+	renderEntry(code, codingOverlapResult) {
+		if (this.state.selectedCode.codeID == code.codeID) {
+			return null;
 		}
+		
+		const codeKey = code.codeID.toString();
+		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(codeKey);
 
-		return overlaps;
+		return (
+			<tr>
+				<td>{code.name}</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getCodingCount() : '0' }</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByMainCode() : '0.0' }</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByOtherCode() : '0.0' }</td>
+			</tr>
+		);
 	}
 
 	render() {
@@ -69,6 +83,9 @@ export default class CodeQueries extends React.Component {
 			return null;
 		}
 
+		// Overlap
+		const codingOverlapResult = this.calculateOverlap();
+
 		return (
 			<StyledContainer>
 				<div>Selected Code: {this.state.selectedCode.name}</div>
@@ -76,19 +93,14 @@ export default class CodeQueries extends React.Component {
 				<table>
 					<thead>
 						<th>Code</th>
-						<th>Overlaps</th>
+						<th>Overlap count</th>
+						<th>Average % by {this.state.selectedCode.name}</th>
+						<th>Average % by the other code</th>
 					</thead>
 					<tbody>
-						{
-							this.getCodeSystemArray().map((code) => {
-								return (
-									<tr>
-										<td>{code.name}</td>
-										<td>{_this.calculateOverlap(code)}</td>
-									</tr>
-								);
-							})
-						}
+						{this.getCodeSystemArray().map(code => {
+							return _this.renderEntry(code, codingOverlapResult);
+						})}
 					</tbody>
 				</table>
 			</StyledContainer>
