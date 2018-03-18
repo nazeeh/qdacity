@@ -67,7 +67,7 @@ public class TokenUtil {
     }
 
     public boolean verifyToken(String token) {
-        Claims claims = Jwts.parser().setSigningKey(keyPair.getPublic()).parseClaimsJws(token).getBody();
+        Claims claims = readClaims(token);
 
         if(!claims.getIssuer().equals(JWT_ISSUER)) {
             return false;
@@ -79,6 +79,15 @@ public class TokenUtil {
         }
 
         return true;
+    }
+
+    /**
+     * read the claims from token
+     * @param token
+     * @return
+     */
+    public Claims readClaims(String token) {
+        return Jwts.parser().setSigningKey(keyPair.getPublic()).parseClaimsJws(token).getBody();
     }
 
     /**
