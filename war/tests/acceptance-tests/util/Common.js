@@ -48,10 +48,8 @@ export default class Common {
 	static openCodingEditor(driver, done, projectName) {
 		driver.get('http://localhost:8888/PersonalDashboard');
 
-		Conditions.projectExists(driver, projectName);
+		Conditions.assertProjectExists(driver, projectName);
 	
-		driver.wait(until.elementLocated(Conditions.getProjectCodingEditorButton(projectName))).click().then(() => {
-			done();
-		}); 
+		driver.wait(until.elementLocated(Conditions.getProjectCodingEditorButton(projectName))).click().then(done); 
 	}
 }

@@ -4,6 +4,7 @@ var webdriver = require('selenium-webdriver'),
 var chrome = require("selenium-webdriver/chrome");
 
 import Common from './util/Common.js';
+import Conditions from './util/Conditions.js';
 
 
 const SPEC_NAME = 'Project test';
@@ -46,12 +47,13 @@ describe(SPEC_NAME, function () {
     	// Is the project in the project-list?
     	// If xpath can't find the project, it was not created properly. The timeout will indicate the failure of the test.
     	// If the project was created properly, open it by clicking on it.
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']"))).click();    	
+		Conditions.assertProjectExists(this.driver, projectName);
+		this.driver.wait(until.elementLocated(Conditions.getProject(projectName))).click();    	
     	
 		// Find the project title
     	this.driver.wait(until.elementLocated(By.xpath("//h2[@class='page-header']/span[text()='" + projectName + "']"))).then(() => {
-    		// Find the project description
-        	_this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'box')]/div[text()='" + projectDescription + "']"))).then(() => {
+			// Find the project description
+			Conditions.assertProjectDescription(this.driver, projectDescription, () => {
         		// Check the URL
 	    		_this.driver.getCurrentUrl().then((currentUrl) => {
 	        		// Does the URL end with /ProjectDashboard?

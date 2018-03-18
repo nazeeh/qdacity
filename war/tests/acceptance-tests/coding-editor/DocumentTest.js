@@ -4,6 +4,7 @@ var webdriver = require('selenium-webdriver'),
 var chrome = require("selenium-webdriver/chrome");
 
 import Common from '../util/Common.js';
+import Conditions from '../util/Conditions.js';
 
 
 const SPEC_NAME = 'Document test';
@@ -41,9 +42,7 @@ describe(SPEC_NAME, function () {
     	this.driver.wait(until.elementLocated(By.xpath("//button[@type='submit' and contains(@class,'vex-dialog-button')]"))).click();   
 
     	// Is the document in the document-list?    	
-    	this.driver.wait(until.elementLocated(By.xpath("//div[text()='" + documentName + "']"))).then(() => {
-    		done();
-    	});
+		Conditions.assertDocumentExists(this.driver, documentName, done);
     }, Common.getDefaultTimeout());
     
     it('Should add text to a document', (done) => {

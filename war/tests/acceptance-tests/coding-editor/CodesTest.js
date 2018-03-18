@@ -4,6 +4,7 @@ var webdriver = require('selenium-webdriver'),
 var chrome = require("selenium-webdriver/chrome");
 
 import Common from '../util/Common.js';
+import Conditions from '../util/Conditions.js';
 
 
 const SPEC_NAME = 'Codesystem test';
@@ -38,10 +39,8 @@ describe(SPEC_NAME, function () {
     	
     	// Find the OK button
     	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();    	
-    	
+			
     	// Find the code in the codesystem
-    	this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'clickable') and text()='" + codeName + "']"))).then(() => {
-        	done();
-    	});    		
+		Conditions.assertCodeExists(this.driver, codeName, done); 		
     }, Common.getDefaultTimeout());
 });

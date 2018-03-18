@@ -26,8 +26,7 @@ describe(SPEC_NAME, function () {
     });
 
     /**
-     * This function tests the login of QDAcity with a google test-account. If the test-account
-     * is not registered within QDAcity, the test registers the account.
+     * This function tests the login of QDAcity with a google test-account. It registers a new account in QDAcity.
      */
     it('Should register and login a user', (done) => {
     	const displayName = 'Max Mustermann';
