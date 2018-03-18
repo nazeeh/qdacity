@@ -45,7 +45,6 @@ export default class ExerciseList extends React.Component {
 	}
 
 	renderExercise(exercise, index) {
-		console.log(this.deadlinePassed(exercise));
 		return (
 			<StyledListItemDefault key={index} className="clickable">
 				<span> {exercise.name} </span>
@@ -70,17 +69,29 @@ export default class ExerciseList extends React.Component {
 			exercise.id
 		).then(function(resp2) {
 			if (typeof resp2.id == 'undefined') {
-				ExerciseEndpoint.getExerciseProjectByRevisionID(
-					exercise.projectRevisionID
-				).then(function(exerciseProjectResp) {
-					_this.props.history.push(
-						'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
-					);
-				});
+				if (!(_this.deadlinePassed(exercise))) {
+					ExerciseEndpoint.getExerciseProjectByRevisionID(
+						exercise.projectRevisionID
+					).then(function(exerciseProjectResp) {
+						_this.props.history.push(
+							'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
+						);
+					});
+				}
+				else {
+					//Show an alert an call the editor in read only mode
+					console.log("The deadline for this exercise has passed, you will only be able to view your project without editing");
+					}
 			} else {
-				_this.props.history.push(
-					'/CodingEditor?project=' + resp2.id + '&type=EXERCISE'
-				);
+				if (!(_this.deadlinePassed(exercise))) {
+					_this.props.history.push(
+						'/CodingEditor?project=' + resp2.id + '&type=EXERCISE'
+					);
+				}
+				else {
+					//Show an alert an call the editor in read only mode
+					console.log("The deadline for this exercise has passed, you will only be able to view the project without editing");
+				}
 			}
 		});
 	}
