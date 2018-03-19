@@ -172,9 +172,6 @@ class CodingEditor extends React.Component {
 		this.updateUserAtSyncService();
 
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
-		if (this.props.auth.userProfile.email !== '') {
-			this.syncService.updateUser(this.props.auth.userProfile);
-		}
 	}
 
 	componentWillUnmount() {
