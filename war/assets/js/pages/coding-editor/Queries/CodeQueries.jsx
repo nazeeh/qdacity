@@ -155,13 +155,15 @@ export default class CodeQueries extends React.Component {
 				<td><div onClick={this.codeSelected.bind(this, code)}>CLICK ME</div></td>
 				<td>{code.name}</td>
 				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getCodingCount() : '0' }</td>
-				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByMainCode() : '0.0' }</td>
-				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByOtherCode() : '0.0' }</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByMainCode().toFixed(2) : '0.00' }</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByOtherCode().toFixed(2): '0.00' }</td>
 			</tr>
 		);
 	}
 
 	renderDetails(codingOverlapResult) {
+		const _this = this;
+
 		if (this.state.selectedCode == null) {
 			return null;
 		}
@@ -183,18 +185,22 @@ export default class CodeQueries extends React.Component {
 					</thead>
 					<tbody>
 						{codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
-							return (
-								<tr>
-									<td>{index}</td>
-									<td>{codingOverlap.getDocument().title}</td>
-									<td>{codingOverlap.getOverlapPercentageByMainCode()}</td>
-									<td>{codingOverlap.getOverlapPercentageByOtherCode()}</td>
-								</tr>
-							);
+							return _this.renderDetailsItem(codingOverlap, index);
 						})}
 					</tbody>
 				</table>
 			</StyledDetailsContainer>
+		);
+	}
+
+	renderDetailsItem(codingOverlap, index) {
+		return (
+			<tr>
+				<td>{index + 1}</td>
+				<td>{codingOverlap.getDocument().title}</td>
+				<td>{codingOverlap.getOverlapPercentageByMainCode().toFixed(2)}</td>
+				<td>{codingOverlap.getOverlapPercentageByOtherCode().toFixed(2)}</td>
+			</tr>
 		);
 	}
 }
