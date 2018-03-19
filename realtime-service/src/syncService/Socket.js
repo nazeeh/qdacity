@@ -200,7 +200,7 @@ class Socket {
         const data = response
           .map(clientData => {
             const json = JSON.parse(clientData);
-            return json.data || {};
+			return (json && json.data) ? json.data : {};
           })
           .filter(
             data =>
