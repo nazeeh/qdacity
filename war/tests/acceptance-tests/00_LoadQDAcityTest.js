@@ -5,10 +5,18 @@ var chrome = require("selenium-webdriver/chrome");
 
 describe('Load QDAcity', function() {
 
-	var defaultTimeout = 40000;
+	var defaultTimeout = 30000;
 	
 	var driver = null;
 	
+	beforeAll((done) => {
+    	console.log(' ');
+    	console.log('#########################################################');
+    	console.log('####                Load QDAcity test                ####');
+		console.log('#########################################################');
+		done();
+    });
+
     beforeEach((done) => {
     	const options = new chrome.Options();
     	
