@@ -205,7 +205,7 @@ class DocumentHandler {
     // Try to read document from cache and fallback to backend
     let doc;
     try {
-      doc = await cache.get(documentId);
+      doc = await cache.get(`${this._socket.api.apiHost}:${documentId}`);
     } catch(e) {
       if (e !== 'cache miss') {
         logger.error('Error while trying to get document from cache', e);
@@ -235,7 +235,7 @@ class DocumentHandler {
   async _cacheAndUpload(doc, cache, lock) {
     // Cache document
     try {
-      await cache.store(doc.id, doc);
+      await cache.store(`${this._socket.api.apiHost}:${doc.id}`, doc);
     } catch(e) {
       logger.error('Error while trying to cache document', e);
     }

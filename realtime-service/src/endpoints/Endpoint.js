@@ -20,6 +20,14 @@ class Endpoint {
   }
 
   /**
+   * @property {string} apiHost - Computed property containing the host name
+   * of the configured API
+   */
+  get apiHost() {
+    return this._apiRoot.replace(/.*?\/\/([^\/]+)\/.*/, '$1');
+  }
+
+  /**
    * Update API parameters. Endpoint tries to connect to the API as soon as
    * the provided parameters are complete, and after that only reconnects if
    * at least one of the parameters changed.
