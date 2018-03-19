@@ -105,6 +105,10 @@ export default class DocumentParser {
         const codeKey = coding.attribs.code_id.toString();
         const codingOverlapKey = mainCoding.attribs.id + '_' + coding.attribs.id;
 
+        if (!this.codingOverlapResult.containsEntry(codeKey)) {
+            this.codingOverlapResult.createEntry(codeKey);
+        }
+
         // Overlapping codings can have multiple entries
         const exists = this.codingOverlapResult.hasCodingOverlap(codeKey, codingOverlapKey);
 
@@ -131,7 +135,7 @@ export default class DocumentParser {
             return coding.attribs.id == codingId;
         });
     }
-   
+
     getSiblings(coding) {
         const searchParents = (arr, currentCoding) => {
             const parent = currentCoding.parent;

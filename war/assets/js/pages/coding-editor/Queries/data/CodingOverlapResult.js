@@ -18,7 +18,7 @@ export default class CodingOverlapResult {
 
     createEntry(codeKey) {
         if (this.containsEntry(codeKey)) {
-            throw new Error('Object does already exist: ' + codeKey);
+            throw new Error('Entry does already exist: ' + codeKey);
         }
         this.overlapCollections[codeKey] = new CodingOverlapCollection();
     }
@@ -29,7 +29,7 @@ export default class CodingOverlapResult {
 
     addCodingOverlap(codeKey, codingOverlap) {
         if (!this.containsEntry(codeKey)) {
-            this.createEntry(codeKey);
+            throw new Error('Entry does not exist: ' + codeKey);
         }
 
         this.overlapCollections[codeKey].addCodingOverlap(codingOverlap);
