@@ -13,17 +13,50 @@ const LOCK_TTL = 10000;
  */
 class DocumentLock {
 
-  constructor(redis, documentId) {
-    const lockEntryKey = `lock:document:${documentId}`;
+  /**
+   * Constructor for DocumentLock
+   *
+   * @public
+   * @arg {object} redis - Redis instance to use
+   * @arg {string} apiHost - Hostname of the backend the document belongs to
+   * @arg {string} documentId - ID of the document to manage the lock for
+   */
+  constructor(redis, apiHost, documentId) {
+    const lockEntryKey = `lock:document:${apiHost}:${documentId}`;
 
+    /**
+     * Set a key-value-entry in redis
+     *
+     * SET <key> <value> NX PX <ttl>
+     *   <key> - The unique key for this lock
+     *   <value> - This server's unique name
+     *   NX - Only set the redis entry if it is not set already, i.e. if the
+     *        lock is not already acquired
+     *   PX <ttl> - Automatically expire (= delete) the entry after <ttl> ms
+     */
     this._setLock = util.promisify(redis.set)
       .bind(redis, [lockEntryKey, SERVER_NAME, 'NX', 'PX', LOCK_TTL]);
 
+    /**
+     * Get the value of a key-value-entry from redis
+     * GET <key>
+     *   <key> - The unique key for this lock
+     */
     this._getLock = util.promisify(redis.get).bind(redis, [lockEntryKey]);
 
+    /**
+     * Set the expiration time of a key-value-entry in redis
+     * PEXIPIRE <ttl>
+     *   <ttl> - Automatically expire (= delete) the entry after <ttl> ms
+     */
     this._refreshLock = util.promisify(redis.pexpire)
       .bind(redis, [lockEntryKey, LOCK_TTL]);
 
+    /**
+     * Delete a key-value-entry from redis
+     * DEL <key>
+     *   <key> - The unique key for this lock
+     */
     this._deleteLock = util.promisify(redis.del).bind(redis, [lockEntryKey]);
   }
 

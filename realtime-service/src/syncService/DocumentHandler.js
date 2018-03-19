@@ -57,8 +57,9 @@ class DocumentHandler {
     } = data;
 
     // Initialize document lock manager and document cache
-    const lock = new DocumentLock(this._redis, documentId);
-    const cache = new DocumentCache(this._redis);
+    const apiHost = this._socket.api.apiHost;
+    const lock = new DocumentLock(this._redis, apiHost, documentId);
+    const cache = new DocumentCache(this._redis, apiHost, documentId);
 
     try {
 
@@ -108,8 +109,9 @@ class DocumentHandler {
     } = data;
 
     // Initialize document lock manager and document cache
-    const lock = new DocumentLock(this._redis, documentId);
-    const cache = new DocumentCache(this._redis);
+    const apiHost = this._socket.api.apiHost;
+    const lock = new DocumentLock(this._redis, apiHost, documentId);
+    const cache = new DocumentCache(this._redis, apiHost, documentId);
 
     try {
 
@@ -205,7 +207,7 @@ class DocumentHandler {
     // Try to read document from cache and fallback to backend
     let doc;
     try {
-      doc = await cache.get(`${this._socket.api.apiHost}:${documentId}`);
+      doc = await cache.get();
     } catch(e) {
       if (e !== 'cache miss') {
         logger.error('Error while trying to get document from cache', e);
@@ -235,7 +237,7 @@ class DocumentHandler {
   async _cacheAndUpload(doc, cache, lock) {
     // Cache document
     try {
-      await cache.store(`${this._socket.api.apiHost}:${doc.id}`, doc);
+      await cache.store(doc);
     } catch(e) {
       logger.error('Error while trying to cache document', e);
     }

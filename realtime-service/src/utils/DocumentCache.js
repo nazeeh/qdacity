@@ -7,9 +7,34 @@ const util = require('util');
  * Uses Redis to cache documents. Cache entries will expire after 10 minutes
  */
 class DocumentCache {
-  constructor(redis) {
-    this._redis_set = util.promisify(redis.set).bind(redis);
-    this._redis_get = util.promisify(redis.get).bind(redis);
+  /**
+   * Constructor for DocumentCache
+   *
+   * @public
+   * @arg {object} redis - Redis instance to use
+   * @arg {string} apiHost - Hostname of the backend the document belongs to
+   * @arg {string} documentId - ID of the document to manage the lock for
+   */
+  constructor(redis, apiHost, documentId) {
+    const cacheEntryKey = `cache:document:${apiHost}:${documentId}`;
+
+    /**
+     * Set a key-value-entry in redis
+     *
+     * SET <key> <value> EX <ttl>
+     *   <key> - The unique key for this cache entry
+     * Parameters being set in {@link this#store}:
+     *   <value> - The documents JSON
+     *   EX <ttl> - Automatically expire (= delete) the entry after <ttl> sec
+     */
+    this._setDocument = util.promisify(redis.set).bind(redis, cacheEntryKey);
+
+    /**
+     * Get the value of a key-value-entry from redis
+     * GET <key>
+     *   <key> - The unique key for this cache entry
+     */
+    this._getDocument = util.promisify(redis.get).bind(redis, cacheEntryKey);
   }
 
   /**
@@ -30,7 +55,7 @@ class DocumentCache {
       });
 
       // Try to store the document
-      const response = await this._setDocument(id, doc);
+      const response = await this._setDocument([doc, 'EX', 600]);
 
       return response == 'OK' ? Promise.resolve() : Promise.reject();
     } catch(error) {
@@ -49,7 +74,7 @@ class DocumentCache {
 
     try {
       // Try to get the document from redis
-      const response = await this._getDocument(documentId);
+      const response = await this._getDocument();
 
       if (response === null) {
         return Promise.reject('cache miss');
@@ -66,25 +91,6 @@ class DocumentCache {
     } catch(error) {
       return Promise.reject(error);
     }
-  }
-
-  /**
-   * Wrapper for redis.set, handling key prefixing and TTL
-   * @arg {string} id - cache ID, will be prefixed with constant prefix
-   * @arg {string} doc - Document to cache
-   * @return {Promise} - Redis set promise
-   */
-  _setDocument(id, doc) {
-    return this._redis_set([`documentcache:${id}`, doc, 'EX', 600]);
-  }
-
-  /**
-   * Wrapper for redis.get, handling key prefixing
-   * @arg {string} id - cache ID, will be prefixed with constant prefix
-   * @return {Promise} - Redis set promise
-   */
-  _getDocument(id) {
-    return this._redis_get([`documentcache:${id}`]);
   }
 };
 
