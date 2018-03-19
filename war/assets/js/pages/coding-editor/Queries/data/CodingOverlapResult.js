@@ -2,14 +2,14 @@ import CodingOverlapCollection from './CodingOverlapCollection.js';
 
 export default class CodingOverlapResult {
     
-	constructor(selectedCode) {
-        this.selectedCode = selectedCode;
+	constructor(code) {
+        this.code = code;
 
         this.overlapCollections = {};
     }
 
-    getSelectedCode() {
-        return this.selectedCode;
+    getCode() {
+        return this.code;
     }
 
     containsEntry(codeKey) {

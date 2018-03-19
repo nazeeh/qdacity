@@ -20,13 +20,15 @@ export default class CodeQueries extends React.Component {
 		this.documentParser = new DocumentParser();
 
 		this.state = {
+			code: null,
 			selectedCode: null
 		};
 	}
 
 	codesystemSelectionChanged(code) {
 		this.setState({
-			selectedCode: code
+			code: code,
+			selectedCode: null
 		});
 	}
 
@@ -49,25 +51,13 @@ export default class CodeQueries extends React.Component {
 	calculateOverlap() {		
 		let documents = this.props.getDocuments();
 		
-		return this.documentParser.parseDocuments(this.state.selectedCode, documents);
+		return this.documentParser.parseDocuments(this.state.code, documents);
 	}
 
-	renderEntry(code, codingOverlapResult) {
-		if (this.state.selectedCode.codeID == code.codeID) {
-			return null;
-		}
-		
-		const codeKey = code.codeID.toString();
-		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(codeKey);
-
-		return (
-			<tr>
-				<td>{code.name}</td>
-				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getCodingCount() : '0' }</td>
-				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByMainCode() : '0.0' }</td>
-				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByOtherCode() : '0.0' }</td>
-			</tr>
-		);
+	codeSelected(code) {
+		this.setState({
+			selectedCode: code 
+		});
 	}
 
 	render() {
@@ -79,7 +69,7 @@ export default class CodeQueries extends React.Component {
 		}
 
 		// Dont render if the code is empty
-		if (this.state.selectedCode == null) {
+		if (this.state.code == null) {
 			return null;
 		}
 
@@ -88,13 +78,14 @@ export default class CodeQueries extends React.Component {
 
 		return (
 			<StyledContainer>
-				<div>Selected Code: {this.state.selectedCode.name}</div>
+				<div>Selected Code: {this.state.code.name}</div>
 
 				<table>
 					<thead>
+						<th></th>
 						<th>Code</th>
 						<th>Overlap count</th>
-						<th>Average % by {this.state.selectedCode.name}</th>
+						<th>Average % by {this.state.code.name}</th>
 						<th>Average % by the other code</th>
 					</thead>
 					<tbody>
@@ -103,7 +94,62 @@ export default class CodeQueries extends React.Component {
 						})}
 					</tbody>
 				</table>
+
+				{ this.renderDetails(codingOverlapResult) }
 			</StyledContainer>
+		);
+	}
+	
+	renderEntry(code, codingOverlapResult) {
+		if (this.state.code.codeID == code.codeID) {
+			return null;
+		}
+		
+		const codeKey = code.codeID.toString();
+		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(codeKey);
+
+		return (
+			<tr>
+				<td><div onClick={this.codeSelected.bind(this, code)}>CLICK ME</div></td>
+				<td>{code.name}</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getCodingCount() : '0' }</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByMainCode() : '0.0' }</td>
+				<td>{ (codingOverlapCollection) ? codingOverlapCollection.getAverageOverlapPercentageByOtherCode() : '0.0' }</td>
+			</tr>
+		);
+	}
+
+	renderDetails(codingOverlapResult) {
+		if (this.state.selectedCode == null) {
+			return null;
+		}
+
+		const codeKey = this.state.selectedCode.codeID.toString();
+		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(codeKey);
+
+		if (codingOverlapCollection == null) {
+			return null;
+		}
+
+		return (
+			<table>
+				<thead>
+					<th>#</th>
+					<th>Average % by {this.state.code.name}</th>
+					<th>Average % by {this.state.selectedCode.name}</th>
+				</thead>
+				<tbody>
+					{codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
+						return (
+							<tr>
+								<td>{index}</td>
+								<td>{codingOverlap.getOverlapPercentageByMainCode()}</td>
+								<td>{codingOverlap.getOverlapPercentageByOtherCode()}</td>
+							</tr>
+						);
+					})}
+				</tbody>
+			</table>
 		);
 	}
 }
