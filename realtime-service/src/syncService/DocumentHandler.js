@@ -42,10 +42,8 @@ class DocumentHandler {
 
   /**
    * @private
-   * @arg {object} data - object with at least four keys:
+   * @arg {object} data - object with required properties:
    *                      {string} documentId - ID of the document to modify
-   *                      {string} projectId - ID of the project to modify
-   *                      {string} projectType - Type of the project to modify
    *                      {object[]} operations - Serializations of the
    *                                              Slate.Operations to apply
    *                      {object} code - Code to apply
@@ -54,70 +52,27 @@ class DocumentHandler {
   async _handleCodingAdd(data, ack) {
     const {
       documentId,
-      projectId,
-      projectType,
       operations,
       code,
     } = data;
 
     // Initialize document lock manager and document cache
-    const documentLock = new DocumentLock(this._redis, documentId);
+    const lock = new DocumentLock(this._redis, documentId);
     const cache = new DocumentCache(this._redis);
 
     try {
-      // Wait up to 5 seconds for the exclusive lock on that document
-      try {
-        await documentLock.acquire(5000);
-      } catch(e) {
-        logger.error('Error while trying to acquire document lock', e);
-        throw 'Could not get document lock';
-      }
 
-      // Try to read document from cache and fallback to backend
-      let doc;
-      try {
-        doc = await cache.get(documentId);
-      } catch(e) {
-        if (e !== 'cache miss') {
-          logger.error('Error while trying to get document from cache', e);
-        }
-
-        try {
-          doc = await this._fetchDocument(projectId, projectType, documentId);
-        } catch(e) {
-          logger.error('Error while trying to get document from backend', e);
-          throw 'Could not get document from backend';
-        }
-      }
+      // Get the lock on the document and the document from cache or backend
+      let doc = await this._lockAndGet(documentId, cache, lock);
 
       // Apply operations to document
       doc = this._applyOperations(doc, operations);
 
-      // Cache updated document
-      try {
-        await cache.store(documentId, doc);
-      } catch(e) {
-        logger.error('Error while trying to cache document', e);
-      }
-
-      // Refresh lock before saving changes
-      try {
-        await documentLock.refresh();
-      } catch(e) {
-        logger.error('Error while trying to refresh document lock', e);
-        throw 'Document lock expired before uploading changes';
-      }
-
-      // Call backend to persist changes
-      try {
-        const response = await this._applyCodeAtBackend(doc, code);
-      } catch(e) {
-        logger.error('Error while applying Code at Backend', e);
-        throw 'Error while uploading changes to backend';
-      }
+      // Cache document, refresh lock and upload to backend
+      await this._cacheAndUpload(doc, cache, lock);
 
       // Release lock
-      documentLock.release();
+      lock.release();
 
       // Respond to sender and emit sync event
       this._socket.handleApiResponse(EVT.CODING.ADDED, ack, {
@@ -127,7 +82,7 @@ class DocumentHandler {
       });
 
     } catch(err) {
-      documentLock.release();
+      lock.release();
       logger.error('Error in handle doc:', err);
       ack('err', err);
     }
@@ -136,12 +91,9 @@ class DocumentHandler {
 
   /**
    * @private
-   * @arg {object} data - object with at least four keys:
+   * @arg {object} data - object with required properties:
    *                      {string} documentId - ID of the document to modify
-   *                      {string} projectId - ID of the project to modify
-   *                      {string} projectType - Type of the project to modify
-   *                      {object[]} paths - Paths to work on. Each path should
-   *                                         have at least these properties:
+   *                      {object[]} paths - Required properties:
    *                                         {number[]} path
    *                                         {number} offset
    *                                         {number} length
@@ -151,73 +103,31 @@ class DocumentHandler {
   async _handleCodingRemove(data, ack) {
     const {
       documentId,
-      projectId,
-      projectType,
       paths,
       codeId,
     } = data;
 
     // Initialize document lock manager and document cache
-    const documentLock = new DocumentLock(this._redis, documentId);
+    const lock = new DocumentLock(this._redis, documentId);
     const cache = new DocumentCache(this._redis);
 
     try {
-      // Wait up to 5 seconds for the exclusive lock on that document
-      try {
-        await documentLock.acquire(5000);
-      } catch(e) {
-        logger.error('Error while trying to acquire document lock', e);
-        throw 'Could not get document lock';
-      }
 
-      // Try to read document from cache and fallback to backend
-      let doc;
-      try {
-        doc = await cache.get(documentId);
-      } catch(e) {
-        if (e !== 'cache miss') {
-          logger.error('Error while trying to get document from cache', e);
-        }
+      // Get the lock on the document and the document from cache or backend
+      let doc = await this._lockAndGet(documentId, cache, lock);
 
-        try {
-          doc = await this._fetchDocument(projectId, projectType, documentId);
-        } catch(e) {
-          logger.error('Error while trying to get document from backend', e);
-          throw 'Could not get document from backend';
-        }
-      }
-
+      // Calculate the necessary operations including coding splitting
       const operations = await this._calculateCodingRemovalOperations(
-        projectId, projectType, doc, paths, codeId);
+        doc, paths, codeId);
 
       // Apply operations to document
       doc = this._applyOperations(doc, operations);
 
-      // Cache updated document
-      try {
-        await cache.store(documentId, doc);
-      } catch(e) {
-        logger.error('Error while trying to cache document', e);
-      }
-
-      // Refresh lock before saving changes
-      try {
-        await documentLock.refresh();
-      } catch(e) {
-        logger.error('Error while trying to refresh document lock', e);
-        throw 'Document lock expired before uploading changes';
-      }
-
-      // Call backend to persist changes
-      try {
-        const response = await this._uploadDocumentToBackend(doc);
-      } catch(e) {
-        logger.error('Error while uploading document to Backend', e);
-        throw 'Error while uploading changes to backend';
-      }
+      // Cache document, refresh lock and upload to backend
+      await this._cacheAndUpload(doc, cache, lock);
 
       // Release lock
-      documentLock.release();
+      lock.release();
 
       // Respond to sender and emit sync event
       this._socket.handleApiResponse(EVT.CODING.REMOVED, ack, {
@@ -226,7 +136,7 @@ class DocumentHandler {
       });
 
     } catch(err) {
-      documentLock.release();
+      lock.release();
       logger.error('Error in coding remove', err);
       ack('err', err);
     }
@@ -237,19 +147,18 @@ class DocumentHandler {
    * Get document from Backend and deserialize it
    *
    * @private
-   * @arg {string} projectId - ID of the project to modify
-   * @arg {string} projectType - Type of the project to modify
    * @arg {string} documentId - ID of the document to modify
    * @return {Promise} resolves with document object or rejects with message
    * @throws {string} API response, if backend returned error or 'No documents
    *                  received from backend' or 'No document found for ID ...'
    */
-  async _fetchDocument(projectId, projectType, documentId) {
+  async _fetchDocument(documentId) {
     // Load text documents from backend
-    const documentsResponse = await this._socket.api.request('documents.getTextDocument', {
-      id: projectId,
-      projectType: projectType,
-    });
+    const documentsResponse = await this._socket.api
+      .request('documents.getTextDocument', {
+        id: this._socket.project.id,
+        projectType: this._socket.project.type,
+      });
 
     // Error, if API response has property 'code'
     if (documentsResponse.code) {
@@ -273,6 +182,79 @@ class DocumentHandler {
     doc.value = SlateUtils.deserialize(doc.text.value);
 
     return doc;
+  }
+
+  /**
+   * Try to get the mutex lock on the document, try to fetch it from the cache
+   * or on cache miss from the backend
+   *
+   * @arg {string} documentId - ID of the document to retrieve
+   * @arg {DocumentCache} cache - The cache instance to use
+   * @arg {DocumentLock} lock - The lock instance to use
+   * @throws {string} If any step fails
+   */
+  async _lockAndGet(documentId, cache, lock) {
+    // Wait up to 5 seconds for the exclusive lock on that document
+    try {
+      await lock.acquire(5000);
+    } catch(e) {
+      logger.error('Error while trying to acquire document lock', e);
+      throw 'Could not get document lock';
+    }
+
+    // Try to read document from cache and fallback to backend
+    let doc;
+    try {
+      doc = await cache.get(documentId);
+    } catch(e) {
+      if (e !== 'cache miss') {
+        logger.error('Error while trying to get document from cache', e);
+      }
+
+      try {
+        doc = await this._fetchDocument(documentId);
+      } catch(e) {
+        logger.error('Error while trying to get document from backend', e);
+        throw 'Could not get document from backend';
+      }
+    }
+
+    return doc;
+  }
+
+  /**
+   * Cache the document, refresh the lock on the document and upload it to the
+   * backend
+   *
+   * @private
+   * @arg {object} doc - Document to process
+   * @arg {DocumentCache} cache - The cache instance to use
+   * @arg {DocumentLock} lock - The lock instance to use
+   * @throws {string} If any step fails
+   */
+  async _cacheAndUpload(doc, cache, lock) {
+    // Cache document
+    try {
+      await cache.store(doc.id, doc);
+    } catch(e) {
+      logger.error('Error while trying to cache document', e);
+    }
+
+    // Refresh lock before saving changes
+    try {
+      await lock.refresh();
+    } catch(e) {
+      logger.error('Error while trying to refresh document lock', e);
+      throw 'Document lock expired before uploading changes';
+    }
+
+    // Call backend to persist changes
+    try {
+      await this._uploadDocumentToBackend(doc);
+    } catch(e) {
+      logger.error('Error while uploading document to Backend', e);
+      throw 'Error while uploading changes to backend';
+    }
   }
 
   /**
@@ -342,11 +324,8 @@ class DocumentHandler {
    * including coding splitting if necessary.
    *
    * @private
-   * @arg {string} projectId - ID of the project to modify
-   * @arg {string} projectType - Type of the project to modify
    * @arg {string} doc - Document to operate on
-   * @arg {object[]} paths - Paths to work on. Each path should have at least
-   *                         these properties:
+   * @arg {object[]} paths - Paths to work on. Required path properties:
    *                         {number[]} path
    *                         {number} offset
    *                         {number} length
@@ -357,7 +336,7 @@ class DocumentHandler {
    *                     error while fetching a new coding ID from the API
    *                     or if nothing is selected
    */
-  async _calculateCodingRemovalOperations(projectId, projectType, doc, paths, codeId) {
+  async _calculateCodingRemovalOperations(doc, paths, codeId) {
 
     const slateValue = doc.value;
     const document = slateValue.document;
@@ -472,8 +451,8 @@ class DocumentHandler {
 
       // Get new coding id from API
       return this._socket.api.request('project.incrCodingId', {
-        id: projectId,
-        type: projectType,
+        id: this._socket.project.id,
+        type: this._socket.project.type,
       }).then(
         ({ maxCodingID }) => {
           // Return parameters for coding removal and splitting

@@ -280,8 +280,6 @@ export default class DocumentsView extends React.Component {
 		try {
 			const message = await this.props.syncService.documents.addCoding(
 				document.id,
-				projectID,
-				projectType,
 				operations,
 				getCodeByCodeID(code.codeID)
 			);
@@ -319,11 +317,6 @@ export default class DocumentsView extends React.Component {
 	 *                     or if nothing is selected
 	 */
 	async removeCoding(codeID) {
-		const {
-			projectID,
-			projectType,
-		} = this.props;
-
 		// Store parts of the state for queries to be independent of other
 		// intermediate changes. MUST NOT BE USED AS BASE FOR STATE UPDATES!
 		// Otherwise intermediate changes would be discarded
@@ -338,8 +331,6 @@ export default class DocumentsView extends React.Component {
 		// Send all changes to sync service
 		const syncPromise = this.props.syncService.documents.removeCoding(
 			this.getActiveDocumentId(),
-			projectID,
-			projectType,
 			SlateUtils.rangeToPaths(slateValue, selection),
 			codeID
 		);

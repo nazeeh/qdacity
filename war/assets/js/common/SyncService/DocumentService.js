@@ -20,17 +20,13 @@ export default class DocumentService {
 	 *
 	 * @access public
 	 * @arg {string} documentId - ID of the document to apply the coding
-	 * @arg {string} projectId - ID of the current project
-	 * @arg {string} projectType - The current project
 	 * @arg {object[]} operations - List of Slate.Operations to apply
 	 * @arg {object} code - Code that should be applied.
 	 * @return {Promise}
 	 */
-	addCoding(documentId, projectId, projectType, operations, code) {
+	addCoding(documentId, operations, code) {
 		return this.syncService.emit(MSG.CODING.ADD, {
 			documentId,
-			projectId,
-			projectType,
 			operations,
 			code,
 		});
@@ -41,17 +37,13 @@ export default class DocumentService {
 	 *
 	 * @access public
 	 * @arg {string} documentId - ID of the document to apply the coding
-	 * @arg {string} projectId - ID of the current project
-	 * @arg {string} projectType - The current project
 	 * @arg {object[]} paths - Slate paths at which to remove the code
 	 * @arg {string} codeId - ID of the Code to remove
 	 * @return {Promise}
 	 */
-	removeCoding(documentId, projectId, projectType, paths, codeId) {
+	removeCoding(documentId, paths, codeId) {
 		return this.syncService.emit(MSG.CODING.REMOVE, {
 			documentId,
-			projectId,
-			projectType,
 			paths,
 			codeId,
 		});
