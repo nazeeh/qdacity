@@ -5,11 +5,12 @@ import cheerio from 'cheerio';
 
 import { PageView } from '../View/PageView.js';
 
-import DocumentParser from './DocumentParser.js';
+import DocumentParser from './parser/DocumentParser.js';
 
 const StyledContainer = styled.div`
 	border-left: 1px solid #888;
 	height: 100%;
+	padding: 10px 20px;
 `;
 
 export default class CodeQueries extends React.Component {

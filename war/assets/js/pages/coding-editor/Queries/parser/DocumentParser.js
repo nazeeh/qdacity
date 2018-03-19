@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
 
-import CodingOverlap from './data/CodingOverlap.js';
-import CodingOverlapResult from './data/CodingOverlapResult.js';
+import CodingOverlap from '../data/CodingOverlap.js';
+import CodingOverlapResult from '../data/CodingOverlapResult.js';
 
 export default class DocumentParser {
     
