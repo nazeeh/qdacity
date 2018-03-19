@@ -62,8 +62,6 @@ export default class CodeQueries extends React.Component {
 	}
 
 	render() {
-		const _this = this;
-
 		// Render only if the page is code_queries
 		if (this.props.selectedEditor != PageView.CODE_QUERIES) {
 			return null;
@@ -74,8 +72,22 @@ export default class CodeQueries extends React.Component {
 			return null;
 		}
 
-		// Overlap
+		// Calculate overlap
 		const codingOverlapResult = this.calculateOverlap();
+		
+		return (
+			<StyledContainer>
+				<div>Selected Code: {this.state.code.name}</div>
+
+				{ this.renderCodeList(codingOverlapResult) }
+
+				{ this.renderDetails(codingOverlapResult) }
+			</StyledContainer>
+		);
+	}
+
+	renderCodeList(codingOverlapResult) {
+		const _this = this;
 
 		// Sort codes
 		const codes = this.getCodeSystemArray();
@@ -97,30 +109,24 @@ export default class CodeQueries extends React.Component {
 		});
 
 		return (
-			<StyledContainer>
-				<div>Selected Code: {this.state.code.name}</div>
-
-				<table>
-					<thead>
-						<th></th>
-						<th>Code</th>
-						<th>Overlap count</th>
-						<th>Average % by {this.state.code.name}</th>
-						<th>Average % by the other code</th>
-					</thead>
-					<tbody>
-						{codes.map(code => {
-							return _this.renderEntry(code, codingOverlapResult);
-						})}
-					</tbody>
-				</table>
-
-				{ this.renderDetails(codingOverlapResult) }
-			</StyledContainer>
+			<table>
+				<thead>
+					<th></th>
+					<th>Code</th>
+					<th>Overlap count</th>
+					<th>Average % by {this.state.code.name}</th>
+					<th>Average % by the other code</th>
+				</thead>
+				<tbody>
+					{codes.map(code => {
+						return _this.renderCodeListItem(code, codingOverlapResult);
+					})}
+				</tbody>
+			</table>
 		);
 	}
 	
-	renderEntry(code, codingOverlapResult) {
+	renderCodeListItem(code, codingOverlapResult) {
 		if (this.state.code.codeID == code.codeID) {
 			return null;
 		}
