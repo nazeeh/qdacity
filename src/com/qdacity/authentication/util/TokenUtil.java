@@ -144,9 +144,12 @@ public class TokenUtil {
      * @return
      */
     public boolean verifyToken(String token) {
-        Claims claims = readClaims(token);
-
-       return verifyClaims(claims);
+        try {
+            Claims claims = readClaims(token);
+            return verifyClaims(claims);
+        } catch (io.jsonwebtoken.MalformedJwtException ex) {
+            return false;
+        }
     }
 
     /**

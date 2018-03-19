@@ -80,12 +80,11 @@ public class EmailPasswordAuthenticationEndpoint {
         PersistenceManager pm = getPersistenceManager();
         try {
             emailPwd = pm.getObjectById(EmailPasswordLogin.class, email);
-        } finally {
-            pm.close();
-        }
-
-        if(emailPwd == null) {
+        } catch(JDOObjectNotFoundException e) {
             throw new UnauthorizedException("The User with the email " + email + " could not be found!");
+        }
+        finally {
+            pm.close();
         }
 
         // check if given password matches
@@ -155,7 +154,7 @@ public class EmailPasswordAuthenticationEndpoint {
     @ApiMethod(name = "authentication.emailpassword.refreshToken")
     public String refreshToken(@Named("pwd") String oldToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         TokenUtil tokenUtil = TokenUtil.getInstance();
-        if(!tokenUtil.verifyToken(oldToken)) {
+        if (!tokenUtil.verifyToken(oldToken)) {
             throw new UnauthorizedException("The given token is not valid. It also may be timed out!");
         }
 

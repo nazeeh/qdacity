@@ -98,4 +98,33 @@ public class EmailPasswordAuthenticationEndpointTest {
         assertEquals(unregisteredUser.getEmail(), user.getEmail());
         assertEquals(registeredUser.getId(), user.getId());
     }
+
+    @Test(expected = UnauthorizedException.class)
+    public void testGetTokenNotRegistered() throws UnauthorizedException {
+        new EmailPasswordAuthenticationEndpoint().getToken("not@exists.de", "abc", null);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void testGetTokenIncorrectPwd() throws UnauthorizedException {
+        User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+        EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
+
+        String password = "password";
+        User registeredUser = endpoint.registerEmailPassword(unregisteredUser, password, null);
+        endpoint.getToken(registeredUser.getEmail(), "abc", null); // wrong pwd
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void testRefreshTokenInvalidToken() throws UnauthorizedException {
+
+        User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+
+        String refreshedToken = new EmailPasswordAuthenticationEndpoint().refreshToken("sdfjklsjeiljfs", null);
+    }
 }
