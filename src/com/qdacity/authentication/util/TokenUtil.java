@@ -1,15 +1,24 @@
 package com.qdacity.authentication.util;
 
 
+import com.qdacity.Cache;
+import com.qdacity.PMF;
+import com.qdacity.authentication.StoredSecret;
 import com.qdacity.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.RsaProvider;
 
-import java.security.Key;
-import java.security.KeyPair;
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Util class that deals with JWT tokens.
@@ -26,9 +35,71 @@ public class TokenUtil {
 
     private final KeyPair keyPair;
 
-    private TokenUtil() {
-        keyPair = RsaProvider.generateKeyPair();
+    /**
+     * These contants are used as keys for the StoredSecret.
+     */
+    private static final String PRIVATE_KEY_SECRET_IDENTIFIER = "JWT-private-key";
+    private static final String PUBLIC_KEY_SECRET_IDENTIFIER = "JWT-public-key";
 
+    private TokenUtil() {
+        byte[] privateKeyLoaded = null;
+        byte[] publicKeyLoaded = null;
+        try {
+            Cache.getOrLoad(PRIVATE_KEY_SECRET_IDENTIFIER, StoredSecret.class);
+            privateKeyLoaded = ((StoredSecret) Cache.getOrLoad(PRIVATE_KEY_SECRET_IDENTIFIER, StoredSecret.class)).getValue().getBytes();
+            publicKeyLoaded = ((StoredSecret) Cache.getOrLoad(PUBLIC_KEY_SECRET_IDENTIFIER, StoredSecret.class)).getValue().getBytes();
+        } catch (JDOObjectNotFoundException e) {
+            // privateKeyLoaded or publicKeyLoaded is null
+            Logger.getLogger("logger").log(Level.INFO, "Didn't find RSA keys in the database. Going to create some new and store it.");
+        }
+
+        if(privateKeyLoaded == null || publicKeyLoaded == null) {
+            // generate new pair
+            keyPair = genAndStoreKeyPair();
+        } else {
+
+            PublicKey publicKey = null;
+            PrivateKey privateKey = null;
+            try {
+                publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(publicKeyLoaded));
+                privateKey = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(privateKeyLoaded));
+            } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+                // publicKey or privateKey is null
+                Logger.getLogger("logger").log(Level.INFO, "Couldn't decrypt loaded RSA keys.", e);
+            }
+
+            if(privateKey == null || publicKey == null) {
+                // generate new pair
+                keyPair = genAndStoreKeyPair();
+            } else {
+                keyPair = new KeyPair(publicKey, privateKey);
+            }
+
+        }
+    }
+
+    /**
+     * generates new keyPair, stores into StoredSecret and caches both StoredSecrets.
+     * @return
+     */
+    private KeyPair genAndStoreKeyPair() {
+        KeyPair keyPair = RsaProvider.generateKeyPair();
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            StoredSecret privateKeySecret = new StoredSecret(PRIVATE_KEY_SECRET_IDENTIFIER, new com.google.appengine.api.datastore.Blob(keyPair.getPrivate().getEncoded()));
+            StoredSecret publicKeySecret = new StoredSecret(PUBLIC_KEY_SECRET_IDENTIFIER, new com.google.appengine.api.datastore.Blob(keyPair.getPublic().getEncoded()));
+
+            mgr.makePersistent(privateKeySecret);
+            mgr.makePersistent(publicKeySecret);
+
+            Cache.cache(PRIVATE_KEY_SECRET_IDENTIFIER, StoredSecret.class, privateKeySecret);
+            Cache.cache(PUBLIC_KEY_SECRET_IDENTIFIER, StoredSecret.class, publicKeySecret);
+        } finally {
+            mgr.close();
+        }
+
+        return keyPair;
     }
 
     /**
@@ -109,7 +180,12 @@ public class TokenUtil {
      * Returns the RSA public key
      * @return
      */
-    public Key getPublicKey() {
-        return keyPair.getPrivate();
+    public PublicKey getPublicKey() {
+        return keyPair.getPublic();
+    }
+
+
+    private static PersistenceManager getPersistenceManager() {
+        return PMF.get().getPersistenceManager();
     }
 }
