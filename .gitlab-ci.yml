@@ -132,6 +132,7 @@ acceptance_tests:
   dependencies:
     - frontend_prod_build
     - backend_prod_build
+  allow_failure: true
 
 frontend_babel_plugin_test:
   <<: *job_definition
