@@ -96,6 +96,7 @@ class CodingEditor extends React.Component {
 		var urlParams = URI(window.location.search).query(true);
 		var projectType = urlParams.type ? urlParams.type : 'PROJECT';
 		var project = new Project(urlParams.project, projectType);
+		var readOnly = urlParams.readOnly ? urlParams.readOnly : false;
 
 		this.report = urlParams.report;
 		this.documentsViewRef = {};
@@ -105,6 +106,7 @@ class CodingEditor extends React.Component {
 		this.textEditor = {};
 		this.syncService = new SyncService();
 		this.state = {
+			readOnly: readOnly,
 			project: project,
 			showCodingView: false,
 			showAgreementMap: urlParams.report ? true : false,
@@ -455,6 +457,7 @@ class CodingEditor extends React.Component {
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
 							userProfile={this.state.userProfile}
+							readOnly = {this.state.readOnly}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>

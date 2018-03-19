@@ -69,19 +69,22 @@ export default class ExerciseList extends React.Component {
 			exercise.id
 		).then(function(resp2) {
 			if (typeof resp2.id == 'undefined') {
-				if (!(_this.deadlinePassed(exercise))) {
 					ExerciseEndpoint.getExerciseProjectByRevisionID(
 						exercise.projectRevisionID
 					).then(function(exerciseProjectResp) {
-						_this.props.history.push(
-							'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
-						);
+						if (!(_this.deadlinePassed(exercise))) {
+							_this.props.history.push(
+								'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
+							);
+						}
+						else {
+							//Show an alert and call the editor in read only mode
+							alert("The deadline for this exercise has passed, you will only be able to view your project without editing");
+							_this.props.history.push(
+								'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE' + '&readOnly=true'
+							);
+							}
 					});
-				}
-				else {
-					//Show an alert an call the editor in read only mode
-					console.log("The deadline for this exercise has passed, you will only be able to view your project without editing");
-					}
 			} else {
 				if (!(_this.deadlinePassed(exercise))) {
 					_this.props.history.push(
@@ -89,8 +92,11 @@ export default class ExerciseList extends React.Component {
 					);
 				}
 				else {
-					//Show an alert an call the editor in read only mode
-					console.log("The deadline for this exercise has passed, you will only be able to view the project without editing");
+					//Show an alert and call the editor in read only mode
+					alert("The deadline for this exercise has passed, you will only be able to view the project without editing");
+					_this.props.history.push(
+						'/CodingEditor?project=' + resp2.id + '&type=EXERCISE' + '&readOnly=true'
+					);
 				}
 			}
 		});
