@@ -10,6 +10,7 @@ import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
 import AuthenticationProvider from '../common/AuthenticationProvider.js';
+import TestAuthenticationProvider from '../common/TestAuthenticationProvider.js';
 import AuthorizationProvider from '../common/AuthorizationProvider.js';
 
 import NavBar from '../common/NavBar.jsx';
@@ -34,6 +35,8 @@ import styled from 'styled-components';
 
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
+
+const TEST_MODE = $TEST_MODE$;
 
 const ContentGrid = styled.div`
 	display: grid;
@@ -78,7 +81,7 @@ export default class App extends React.Component {
 
 		this.state = {};
 
-		this.authenticationProvider = new AuthenticationProvider();
+		this.authenticationProvider = (TEST_MODE == true ? new TestAuthenticationProvider() : new AuthenticationProvider());
 		this.authorizationProvider = new AuthorizationProvider();
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
