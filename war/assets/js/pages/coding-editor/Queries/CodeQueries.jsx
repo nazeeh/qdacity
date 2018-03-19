@@ -13,6 +13,19 @@ const StyledContainer = styled.div`
 	padding: 10px 20px;
 `;
 
+const StyledContentContainer = styled.div`
+	display: flex;
+	flex-direction: row;
+`;
+
+const StyledCodeListContainer = styled.div`
+	flex: 50%;
+`;
+
+const StyledDetailsContainer = styled.div`
+	flex: 50%;
+`;
+
 export default class CodeQueries extends React.Component {
 
 	constructor(props) {
@@ -79,9 +92,11 @@ export default class CodeQueries extends React.Component {
 			<StyledContainer>
 				<div>Selected Code: {this.state.code.name}</div>
 
-				{ this.renderCodeList(codingOverlapResult) }
+				<StyledContentContainer>
+					{ this.renderCodeList(codingOverlapResult) }
 
-				{ this.renderDetails(codingOverlapResult) }
+					{ this.renderDetails(codingOverlapResult) }
+				</StyledContentContainer>
 			</StyledContainer>
 		);
 	}
@@ -109,20 +124,22 @@ export default class CodeQueries extends React.Component {
 		});
 
 		return (
-			<table>
-				<thead>
-					<th></th>
-					<th>Code</th>
-					<th>Overlap count</th>
-					<th>Average % by {this.state.code.name}</th>
-					<th>Average % by the other code</th>
-				</thead>
-				<tbody>
-					{codes.map(code => {
-						return _this.renderCodeListItem(code, codingOverlapResult);
-					})}
-				</tbody>
-			</table>
+			<StyledCodeListContainer>
+				<table>
+					<thead>
+						<th></th>
+						<th>Code</th>
+						<th>Overlap count</th>
+						<th>Average % by {this.state.code.name}</th>
+						<th>Average % by the other code</th>
+					</thead>
+					<tbody>
+						{codes.map(code => {
+							return _this.renderCodeListItem(code, codingOverlapResult);
+						})}
+					</tbody>
+				</table>
+			</StyledCodeListContainer>
 		);
 	}
 	
@@ -156,24 +173,26 @@ export default class CodeQueries extends React.Component {
 		}
 
 		return (
-			<table>
-				<thead>
-					<th>#</th>
-					<th>% by {this.state.code.name}</th>
-					<th>% by {this.state.selectedCode.name}</th>
-				</thead>
-				<tbody>
-					{codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
-						return (
-							<tr>
-								<td>{index}</td>
-								<td>{codingOverlap.getOverlapPercentageByMainCode()}</td>
-								<td>{codingOverlap.getOverlapPercentageByOtherCode()}</td>
-							</tr>
-						);
-					})}
-				</tbody>
-			</table>
+			<StyledDetailsContainer>
+				<table>
+					<thead>
+						<th>#</th>
+						<th>% by {this.state.code.name}</th>
+						<th>% by {this.state.selectedCode.name}</th>
+					</thead>
+					<tbody>
+						{codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
+							return (
+								<tr>
+									<td>{index}</td>
+									<td>{codingOverlap.getOverlapPercentageByMainCode()}</td>
+									<td>{codingOverlap.getOverlapPercentageByOtherCode()}</td>
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+			</StyledDetailsContainer>
 		);
 	}
 }
