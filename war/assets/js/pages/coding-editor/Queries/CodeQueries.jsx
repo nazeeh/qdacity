@@ -76,6 +76,25 @@ export default class CodeQueries extends React.Component {
 		// Overlap
 		const codingOverlapResult = this.calculateOverlap();
 
+		// Sort codes
+		const codes = this.getCodeSystemArray();
+		codes.sort((code1, code2) => {
+			const codingOverlapCollection1 = codingOverlapResult.getCodingOverlapCollection(code1.codeID.toString());
+			const codingOverlapCollection2 = codingOverlapResult.getCodingOverlapCollection(code2.codeID.toString());
+			const codingCount1 = (codingOverlapCollection1) ? codingOverlapCollection1.getCodingCount() : 0;
+			const codingCount2 = (codingOverlapCollection2) ? codingOverlapCollection2.getCodingCount() : 0;
+
+			// Sort by coding count
+			if (codingCount1 > codingCount2) return -1;
+			if (codingCount1 < codingCount2) return 1;
+
+			// Sort by name
+			if(code1.name < code2.name) return -1;
+			if(code1.name > code2.name) return 1;
+
+			return 0;
+		});
+
 		return (
 			<StyledContainer>
 				<div>Selected Code: {this.state.code.name}</div>
@@ -89,7 +108,7 @@ export default class CodeQueries extends React.Component {
 						<th>Average % by the other code</th>
 					</thead>
 					<tbody>
-						{this.getCodeSystemArray().map(code => {
+						{codes.map(code => {
 							return _this.renderEntry(code, codingOverlapResult);
 						})}
 					</tbody>
@@ -105,8 +124,7 @@ export default class CodeQueries extends React.Component {
 			return null;
 		}
 		
-		const codeKey = code.codeID.toString();
-		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(codeKey);
+		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(code.codeID.toString());
 
 		return (
 			<tr>
@@ -124,8 +142,7 @@ export default class CodeQueries extends React.Component {
 			return null;
 		}
 
-		const codeKey = this.state.selectedCode.codeID.toString();
-		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(codeKey);
+		const codingOverlapCollection = codingOverlapResult.getCodingOverlapCollection(this.state.selectedCode.codeID.toString());
 
 		if (codingOverlapCollection == null) {
 			return null;
@@ -135,8 +152,8 @@ export default class CodeQueries extends React.Component {
 			<table>
 				<thead>
 					<th>#</th>
-					<th>Average % by {this.state.code.name}</th>
-					<th>Average % by {this.state.selectedCode.name}</th>
+					<th>% by {this.state.code.name}</th>
+					<th>% by {this.state.selectedCode.name}</th>
 				</thead>
 				<tbody>
 					{codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
