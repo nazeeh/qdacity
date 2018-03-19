@@ -3,6 +3,9 @@ import React from 'react';
 import CourseEndpoint from '../../../common/endpoints/CourseEndpoint';
 import ExerciseEndpoint from '../../../common/endpoints/ExerciseEndpoint';
 import Theme from '../../../common/styles/Theme.js';
+import Alert from '../../../common/modals/Alert';
+import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import {
 	ItemList,
@@ -63,6 +66,7 @@ export default class ExerciseList extends React.Component {
 	}
 
 	editorClick(e, exercise, index) {
+		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		ExerciseEndpoint.createExerciseProjectIfNeeded(
 			exercise.projectRevisionID,
@@ -79,7 +83,14 @@ export default class ExerciseList extends React.Component {
 						}
 						else {
 							//Show an alert and call the editor in read only mode
-							alert("The deadline for this exercise has passed, you will only be able to view your project without editing");
+							new Alert(
+								formatMessage({
+									id: 'exercise.deadlinePassed',
+									defaultMessage:
+										'The deadline for this exercise has passed.\n' +
+										' You will only be able to view your project without editing'
+								})
+							).showModal();
 							_this.props.history.push(
 								'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE' + '&readOnly=true'
 							);
@@ -93,7 +104,14 @@ export default class ExerciseList extends React.Component {
 				}
 				else {
 					//Show an alert and call the editor in read only mode
-					alert("The deadline for this exercise has passed, you will only be able to view the project without editing");
+					new Alert(
+						formatMessage({
+							id: 'exercise.deadlinePassed',
+							defaultMessage:
+								'The deadline for this exercise has passed.\n' +
+								' You will only be able to view your project without editing'
+						})
+					).showModal();
 					_this.props.history.push(
 						'/CodingEditor?project=' + resp2.id + '&type=EXERCISE' + '&readOnly=true'
 					);
