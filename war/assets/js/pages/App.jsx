@@ -98,6 +98,11 @@ export default class App extends React.Component {
 					isUserSignedIn: false,
 					isUserRegistered: false
 				},
+				userProfile: {
+					name: '',
+					email: '',
+					picSrc: ''
+				},
 				updateUserStatus: () => {
 					return this.updateUserStatus();
 				},
@@ -130,9 +135,10 @@ export default class App extends React.Component {
 	 * Updates the state -> the supplied authState
 	 * @returns {Promise}
 	 */
-	updateUserStatus() {
+	async updateUserStatus() {
 		const _this = this;
-		const promise = new Promise(function(resolve, reject) {
+		const promise = new Promise(async function(resolve, reject) {
+			// 1. check if signed-in
 			const loginStatus = _this.authenticationProvider.isSignedIn();
 			if (!loginStatus && !_this.state.auth.authState.isUserSignedIn) {
 				// no need to rerender!
@@ -141,6 +147,24 @@ export default class App extends React.Component {
 			}
 
 			_this.authenticationProvider.synchronizeTokenWithGapi(); // Bugfix: sometimes the token seems to get lost!
+			// 2. get the user profile
+			const profile = await _this.authenticationProvider.getProfile();
+			/*
+			* Removing query parameters from URL.
+			* With google we always got ?sz=50 in the URL which gives you a
+			* small low res thumbnail. Without parameter we get the original
+			* image.
+			* When adding other LoginProviders this needs to be reviewed
+			*/
+			var url = URI(profile.thumbnail).fragment(true);
+			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			_this.state.auth.userProfile = {
+				name: profile.name,
+				email: profile.email,
+				picSrc: picSrcWithoutParams
+			};
+
+			// 3. check if user is registered
 			_this.authenticationProvider.getCurrentUser().then(
 				function(user) {
 					_this.state.auth.authState = {

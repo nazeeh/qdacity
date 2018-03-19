@@ -37,7 +37,7 @@ export default class WelcomePanel extends React.Component {
 						id="welcomepanel.welcome_user"
 						defaultMessage="Welcome {user}"
 						values={{
-							user: this.state.userDisplayName
+							user: this.props.auth.userProfile.name
 						}}
 					/>
 				</h1>
