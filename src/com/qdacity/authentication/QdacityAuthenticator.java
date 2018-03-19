@@ -1,8 +1,12 @@
 package com.qdacity.authentication;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.api.server.spi.config.Authenticator;
+import com.google.appengine.api.utils.SystemProperty;
 
 /**
  * Custom authentication class that interacts with google cloud api and injects automatically a User object.
@@ -18,6 +22,7 @@ public class QdacityAuthenticator implements Authenticator {
 	
 	TokenValidator googleIdTokenValidator = new GoogleIdTokenValidator();
 	TokenValidator googleAccessTokenValidator = new GoogleAccessTokenValidator();
+	TokenValidator testTokenValidator = new TestTokenValidator();
 	
     /**
      * Validates the received token and returns a User object if the token was valid.
@@ -29,6 +34,11 @@ public class QdacityAuthenticator implements Authenticator {
     public AuthenticatedUser authenticate(HttpServletRequest httpServletRequest) {
         //get token
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
+
+        // Is the server running as a development server? Then authorize all.
+        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development) {
+        	return testTokenValidator.validate("");
+    	}
         
         //verify
         if(authorizationHeader != null) {
@@ -47,10 +57,10 @@ public class QdacityAuthenticator implements Authenticator {
         		provider = tokenParts[1];
         	} 
         	
-			switch (provider.toLowerCase()) {
+			switch (provider.toLowerCase()) {			
 				case "google":
 		    		return googleIdTokenValidator.validate(idTokenString);
-		    		
+		    	
 				case "googleaccesstoken":	
 				default:
 					return googleAccessTokenValidator.validate(idTokenString);

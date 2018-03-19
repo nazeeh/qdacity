@@ -6,8 +6,21 @@ import { FormattedMessage } from 'react-intl';
 export default class WelcomePanel extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			userDisplayName: ""
+		}
+
 		this.authenticationProvider = props.auth.authentication;
 		this.redirectToNytProject = this.redirectToNytProject.bind(this);
+	}
+
+	componentDidMount() {
+		this.authenticationProvider.getProfile().then((profile) => { 
+			this.setState({
+				userDisplayName: profile.displayName
+			});
+		});
 	}
 
 	redirectToNytProject() {
