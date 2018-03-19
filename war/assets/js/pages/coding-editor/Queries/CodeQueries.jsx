@@ -125,7 +125,7 @@ export default class CodeQueries extends React.Component {
 
 		return (
 			<StyledCodeListContainer>
-				<table>
+				<table style={{ borderSpacing: '10px', borderCollapse: 'separate' }}>
 					<thead>
 						<th></th>
 						<th>Code</th>
@@ -176,7 +176,7 @@ export default class CodeQueries extends React.Component {
 
 		return (
 			<StyledDetailsContainer>
-				<table>
+				<table style={{ borderSpacing: '10px', borderCollapse: 'separate' }}>
 					<thead>
 						<th>#</th>
 						<th>Document</th>
