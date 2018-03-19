@@ -60,6 +60,7 @@ public class TokenUtil {
                 .setSubject(user.getId())
                 .setIssuer(JWT_ISSUER)
                 .setExpiration(cal.getTime())
+                .setIssuedAt(GregorianCalendar.getInstance().getTime())
                 .signWith(SignatureAlgorithm.RS512, keyPair.getPrivate())
                 .compact();
 
