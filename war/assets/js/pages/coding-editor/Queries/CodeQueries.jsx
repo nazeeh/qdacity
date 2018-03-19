@@ -177,6 +177,7 @@ export default class CodeQueries extends React.Component {
 				<table>
 					<thead>
 						<th>#</th>
+						<th>Document</th>
 						<th>% by {this.state.code.name}</th>
 						<th>% by {this.state.selectedCode.name}</th>
 					</thead>
@@ -185,6 +186,7 @@ export default class CodeQueries extends React.Component {
 							return (
 								<tr>
 									<td>{index}</td>
+									<td>{codingOverlap.getDocument().title}</td>
 									<td>{codingOverlap.getOverlapPercentageByMainCode()}</td>
 									<td>{codingOverlap.getOverlapPercentageByOtherCode()}</td>
 								</tr>

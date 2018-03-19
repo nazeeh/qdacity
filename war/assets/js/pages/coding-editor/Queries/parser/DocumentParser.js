@@ -56,7 +56,7 @@ export default class DocumentParser {
 
                 // Skip selected code
                 if (coding.attribs.code_id != this.selectedCode.codeID) {                
-                    this.evaluateCoding(mainCoding, coding);
+                    this.evaluateCoding(document, mainCoding, coding);
                 }
             }
         }
@@ -101,7 +101,7 @@ export default class DocumentParser {
         });
     }
 
-    evaluateCoding(mainCoding, coding) {
+    evaluateCoding(document, mainCoding, coding) {
         const codeKey = coding.attribs.code_id.toString();
         const codingOverlapKey = mainCoding.attribs.id + '_' + coding.attribs.id;
 
@@ -111,6 +111,7 @@ export default class DocumentParser {
         if (!exists) {
             const codingOverlap = new CodingOverlap(
                 codingOverlapKey,
+                document,
                 this.getCodingText(mainCoding.attribs.id),
                 this.getCodingText(coding.attribs.id),
                 this.getOverlappingText(mainCoding.attribs.id, coding.attribs.id)

@@ -1,9 +1,11 @@
 
 export default class CodingOverlap {
     
-	constructor(key, textMainCode, textOtherCode, textOverlap) {
+	constructor(key, document, textMainCode, textOtherCode, textOverlap) {
         this.key = key;
-        
+
+        this.document = document;
+
         this.textMainCode = textMainCode;
         this.textOtherCode = textOtherCode;
         this.textOverlap = textOverlap;
@@ -14,6 +16,10 @@ export default class CodingOverlap {
 
     getKey() {
         return this.key;
+    }
+
+    getDocument() {
+        return this.document;
     }
 
     getTextMainCode() {
