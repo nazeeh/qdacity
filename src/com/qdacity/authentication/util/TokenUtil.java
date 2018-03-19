@@ -66,9 +66,23 @@ public class TokenUtil {
         return compactJws;
     }
 
+    /**
+     * checks if the given token is valid
+     * @param token
+     * @return
+     */
     public boolean verifyToken(String token) {
         Claims claims = readClaims(token);
 
+       return verifyClaims(claims);
+    }
+
+    /**
+     * checks if the given claims are valid
+     * @param claims
+     * @return
+     */
+    public boolean verifyClaims(Claims claims) {
         if(!claims.getIssuer().equals(JWT_ISSUER)) {
             return false;
         }
