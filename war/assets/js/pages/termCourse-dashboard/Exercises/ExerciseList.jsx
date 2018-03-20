@@ -66,7 +66,6 @@ export default class ExerciseList extends React.Component {
 	}
 
 	editorClick(e, exercise, index) {
-		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		ExerciseEndpoint.createExerciseProjectIfNeeded(
 			exercise.projectRevisionID,
@@ -76,48 +75,33 @@ export default class ExerciseList extends React.Component {
 					ExerciseEndpoint.getExerciseProjectByRevisionID(
 						exercise.projectRevisionID
 					).then(function(exerciseProjectResp) {
-						if (!(_this.deadlinePassed(exercise))) {
-							_this.props.history.push(
-								'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
-							);
-						}
-						else {
-							//Show an alert and call the editor in read only mode
-							new Alert(
-								formatMessage({
-									id: 'exercise.deadlinePassed',
-									defaultMessage:
-										'The deadline for this exercise has passed.\n' +
-										' You will only be able to view your project without editing'
-								})
-							).showModal();
-							_this.props.history.push(
-								'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE' + '&readOnly=true'
-							);
-							}
+						_this.props.history.push(
+							'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
+						);
+						_this.showAlertIfDeadlinePassed(exercise);
 					});
 			} else {
-				if (!(_this.deadlinePassed(exercise))) {
-					_this.props.history.push(
-						'/CodingEditor?project=' + resp2.id + '&type=EXERCISE'
-					);
-				}
-				else {
-					//Show an alert and call the editor in read only mode
-					new Alert(
-						formatMessage({
-							id: 'exercise.deadlinePassed',
-							defaultMessage:
-								'The deadline for this exercise has passed.\n' +
-								' You will only be able to view your project without editing'
-						})
-					).showModal();
-					_this.props.history.push(
-						'/CodingEditor?project=' + resp2.id + '&type=EXERCISE' + '&readOnly=true'
-					);
-				}
+				_this.props.history.push(
+					'/CodingEditor?project=' + resp2.id + '&type=EXERCISE'
+				);
+				_this.showAlertIfDeadlinePassed(exercise);
 			}
 		});
+	}
+
+	showAlertIfDeadlinePassed(exercise) {
+		const { formatMessage } = IntlProvider.intl;
+		if ((this.deadlinePassed(exercise))) {
+			new Alert(
+				formatMessage({
+					id: 'exercise.deadlinePassed',
+					defaultMessage:
+						'The deadline for this exercise has passed.\n' +
+						' Any changes you make will not be taken into account\n' +
+						' when the exercise is evaluated.'
+				})
+			).showModal();
+		}
 	}
 
 	javaToJSDate(javaDateString) {
