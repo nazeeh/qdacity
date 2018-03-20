@@ -2,12 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { FormattedMessage } from 'react-intl';
-import IntlProvider from '../../common/Localization/LocalizationProvider';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
-import ReactLoading from '../../common/ReactLoading.jsx';
-import BinaryDecider from '../../common/modals/BinaryDecider.js';
+import ReactLoading from '../../../common/ReactLoading.jsx';
+import BinaryDecider from '../../../common/modals/BinaryDecider.js';
 
-import { BtnLg } from '../../common/styles/Btn.jsx';
+import { BtnLg } from '../../../common/styles/Btn.jsx';
 
 export default class SigninWithGoogleBtn extends React.Component {
 	constructor(props) {

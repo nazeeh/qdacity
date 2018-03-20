@@ -3,7 +3,6 @@ import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
 import Account from './Account.jsx';
-import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
 
 const StyledAccountTab = styled.li`
 	display: ${props => (props.loggedIn ? 'block' : 'none')} !important;
