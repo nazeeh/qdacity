@@ -59,7 +59,7 @@ const ButtonStyledWidh = styled.div`
 	width:  100%;
 	& > button {
 		width: 70%;
-		border: 1px solid ${props => props.theme.defaultText};
+		border: 1px solid ${props => props.theme.borderDefault};
 	}
 `;
 
