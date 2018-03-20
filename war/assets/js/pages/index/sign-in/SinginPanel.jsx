@@ -60,6 +60,14 @@ const ButtonStyledWidh = styled.div`
 	}
 `;
 
+const FormulaInputWrapper = styled.div`
+	width: 100%;
+	& > input {
+		width: 80%;
+		color: ${props => props.theme.defaultText}
+	}
+`;
+
 export default class SigninPanel extends React.Component {
 	constructor(props) {
 		super(props);
@@ -100,7 +108,9 @@ export default class SigninPanel extends React.Component {
 							</FormulaHeading>
 						</div>
 						<div className="col-xs-12">
-							<StyledInput/>
+							<FormulaInputWrapper>
+								<StyledInput/>
+							</FormulaInputWrapper>
 						</div>
 					</div>
 					<div className="row">
@@ -113,7 +123,9 @@ export default class SigninPanel extends React.Component {
 							</FormulaHeading>
 						</div>
 						<div className="col-xs-12">
-							<StyledInput type="password"/>
+							<FormulaInputWrapper>
+								<StyledInput type="password"/>
+							</FormulaInputWrapper>
 						</div>
 					</div>
 					<div className="row">
