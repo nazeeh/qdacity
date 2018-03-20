@@ -80,14 +80,77 @@ export default class SigninPanel extends React.Component {
 		};
 
 	}
+
 	signInWithEmailPassword() {
 		console.log('Sign in with Email and password called!');
 	}
+
 	forgotPassword() {
 		console.log('Forgot your password?');
 	}
+
 	registerEmailPassword() {
 		console.log('Register with email and password.');
+		
+		const { formatMessage } = IntlProvider.intl;
+
+		const firstNameLabel = formatMessage({
+			id: 'index.registeremailpwd.first_name',
+			defaultMessage: 'First Name'
+		});
+		const lastNameLabel = formatMessage({
+			id: 'index.registeremailpwd.last_name',
+			defaultMessage: 'Last Name'
+		});
+		const emailLabel = formatMessage({
+			id: 'index.registeremailpwd.email',
+			defaultMessage: 'Email'
+		});
+		const passwordLabel = formatMessage({
+			id: 'index.registeremailpwd.pwd',
+			defaultMessage: 'Password'
+		});
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'index.registeremailpwd.registerHeading',
+				defaultMessage: 'Register a new QDACity Account!'
+			}),
+			input: [
+				`<label for="firstName">${firstNameLabel}</label><input name="firstName" type="text" placeholder="${firstNameLabel}" required />`,
+				`<label for="lastName">${lastNameLabel}</label><input name="lastName" type="text" placeholder="${lastNameLabel}" required />`,
+				`<label for="email">${emailLabel}</label><input name="email" type="text" placeholder="${emailLabel}" required />`,
+				`<label for="pwd">${passwordLabel}</label><input name="pwd" type="password" placeholder="${passwordLabel}" required />`
+			].join('\n'),
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: formatMessage({
+						id: 'index.registeremailpwd.registerCompleteButton',
+						defaultMessage: 'Register'
+					})
+				}),
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'index.registeremailpwd.registerCancelButton',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				}
+				// TODO call backend!
+
+				return console.log(
+					'First',
+					data.firstName,
+					'Last Name',
+					data.lastName,
+					'Email',
+					data.email
+				);
+			}
+		});
 	}
 
 	render() {
@@ -174,7 +237,7 @@ export default class SigninPanel extends React.Component {
 						<h4>
 							<FormattedMessage
 								id="index.signinpanel.signin-social-heading"
-								defaultMessage="Sign in / Register with existing Accounts"
+								defaultMessage="Sign in / Register with social Accounts"
 							/>
 						</h4>
 					</div>
