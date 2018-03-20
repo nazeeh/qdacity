@@ -37,14 +37,14 @@ export default class DocumentService {
 	 *
 	 * @access public
 	 * @arg {string} documentId - ID of the document to apply the coding
-	 * @arg {object[]} paths - Slate paths at which to remove the code
+	 * @arg {object[]} pathRange - Range at which to remove the code
 	 * @arg {string} codeId - ID of the Code to remove
 	 * @return {Promise}
 	 */
-	removeCoding(documentId, paths, codeId) {
+	removeCoding(documentId, pathRange, codeId) {
 		return this.syncService.emit(MSG.CODING.REMOVE, {
 			documentId,
-			paths,
+			pathRange,
 			codeId,
 		});
 	}

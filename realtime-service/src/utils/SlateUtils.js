@@ -1,5 +1,6 @@
 const {
   Operations,
+  Range,
   resetKeyGenerator,
 } = require('slate');
 const { JSDOM } = require('jsdom');
@@ -105,6 +106,49 @@ const rangeToPaths = (value, range) => {
 };
 
 /**
+ * Create a instance-independent range that uses paths to identify start and
+ * end node instead of node keys
+ *
+ * @arg {Slate.Value} value - Base for the conversion
+ * @arg {Slate.Range} range - Range to convert
+ * @return {object} Instance-independent range with properties:
+ *                  {string[]} anchorPath
+ *                  {number} anchorOffset
+ *                  {string[]} focusPath
+ *                  {number} focusOffset
+ */
+const rangeToPathRange = (value, range) => {
+  const doc = value.document;
+  return {
+    anchorPath: doc.getPath(range.startKey),
+    anchorOffset: range.startOffset,
+    focusPath: doc.getPath(range.endKey),
+    focusOffset: range.endOffset,
+  };
+};
+
+/**
+ * Convert the instance-independent range to a Slate.Range
+ *
+ * @arg {Slate.Value} value - Base for the conversion
+ * @arg {object} range - Instance-dependent range. Required properties:
+ *                       {string[]} anchorPath
+ *                       {number} anchorOffset
+ *                       {string[]} focusPath
+ *                       {number} focusOffset
+ * @return {Slate.Range}
+ */
+const pathRangeToRange = (value, range) => {
+  const doc = value.document;
+  return Range.create({
+    anchorKey: doc.getNodeAtPath(range.anchorPath).key,
+    anchorOffset: range.anchorOffset,
+    focusKey: doc.getNodeAtPath(range.focusPath).key,
+    focusOffset: range.focusOffset,
+  });
+};
+
+/**
  * Simple proxy for Slate.Operations.invert: Takes a list of Slate Operations
  * and generates a list of reverting operations
  *
@@ -166,6 +210,8 @@ const SlateUtils = {
   deserialize,
   serialize,
   rangeToPaths,
+  rangeToPathRange,
+  pathRangeToRange,
   invertOperations,
   applyOperations,
   findCodingStart,

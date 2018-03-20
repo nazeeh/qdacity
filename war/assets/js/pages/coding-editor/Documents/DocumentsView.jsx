@@ -331,7 +331,7 @@ export default class DocumentsView extends React.Component {
 		// Send all changes to sync service
 		const syncPromise = this.props.syncService.documents.removeCoding(
 			this.getActiveDocumentId(),
-			SlateUtils.rangeToPaths(slateValue, selection),
+			SlateUtils.rangeToPathRange(slateValue, selection),
 			codeID
 		);
 

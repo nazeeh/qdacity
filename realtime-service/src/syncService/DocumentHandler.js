@@ -94,17 +94,18 @@ class DocumentHandler {
    * @private
    * @arg {object} data - object with required properties:
    *                      {string} documentId - ID of the document to modify
-   *                      {object[]} paths - Required properties:
-   *                                         {number[]} path
-   *                                         {number} offset
-   *                                         {number} length
+   *                      {object[]} pathRange - Required properties:
+   *                                             {number[]} anchorPath
+   *                                             {number} anchorOffset
+   *                                             {number[]} focusPath
+   *                                             {number} focusOffset
    *                      {number} codeId - ID of the code to remove
    * @arg {function} ack - acknowledge function for response
    */
   async _handleCodingRemove(data, ack) {
     const {
       documentId,
-      paths,
+      pathRange,
       codeId,
     } = data;
 
@@ -120,7 +121,7 @@ class DocumentHandler {
 
       // Calculate the necessary operations including coding splitting
       const operations = await this._calculateCodingRemovalOperations(
-        doc, paths, codeId);
+        doc, pathRange, codeId);
 
       // Apply operations to document
       doc = this._applyOperations(doc, operations);
@@ -327,10 +328,11 @@ class DocumentHandler {
    *
    * @private
    * @arg {string} doc - Document to operate on
-   * @arg {object[]} paths - Paths to work on. Required path properties:
-   *                         {number[]} path
-   *                         {number} offset
-   *                         {number} length
+   * @arg {object[]} pathRange - Range to work on. Required path properties:
+   *                             {number[]} anchorPath
+   *                             {number} anchorOffset
+   *                             {number[]} focusPath
+   *                             {number} focusOffset
    * @arg {string} codeId - ID of the code to remove
    * @return {Promise} - Waits for all code removals and splittings to be
    *                     successfully processed. Resolves with the editors
@@ -338,36 +340,20 @@ class DocumentHandler {
    *                     error while fetching a new coding ID from the API
    *                     or if nothing is selected
    */
-  async _calculateCodingRemovalOperations(doc, paths, codeId) {
+  async _calculateCodingRemovalOperations(doc, pathRange, codeId) {
 
     const slateValue = doc.value;
     const document = slateValue.document;
-
-    // Get ranges from paths
-    const ranges = paths.map(path => {
-      const node = document.getNodeAtPath(path.path);
-      return Range.create({
-        anchorKey: node.key,
-        anchorOffset: path.offset,
-        focusKey: node.key,
-        focusOffset: path.offset + path.length,
-      });
-    });
-
+    const range = SlateUtils.pathRangeToRange(slateValue, pathRange);
 
     // Find codings that should be removed
-    const codingsToRemove = ranges.reduce((marks, range) => {
-      return marks.concat(document
-        .getMarksAtRange(range)
+    const codingsToRemove = document.getMarksAtRange(range)
         .filter(mark => mark.type === 'coding')
         .filter(mark => mark.data.get('code_id') === codeId)
-        .map(mark => ({ range, coding: mark }))
-        .toArray()
-      );
-    }, []);
+        .toArray();
 
     // Calculate parameters for code splitting if necessary.
-    const splittingPromises = codingsToRemove.map(({ range, coding }) => {
+    const splittingPromises = codingsToRemove.map(coding => {
 
       // Create curried coding searchers
       const findCodingStart = SlateUtils.findCodingStart.bind(
@@ -381,7 +367,6 @@ class DocumentHandler {
 
       // Prepare return value
       const changeParameters = {
-        range,
         oldCoding: coding,
       };
 
@@ -460,8 +445,7 @@ class DocumentHandler {
           // Return parameters for coding removal and splitting
           // to have all changes atomically
           return {
-            range,
-            rangeToChange: Range.fromJSON({
+            rangeToChange: Range.create({
               anchorKey: range.endKey,
               anchorOffset: range.endOffset,
               focusKey: textNode.key,
@@ -492,7 +476,7 @@ class DocumentHandler {
 
       // Create operation for removing old coding
       operations = SlateUtils
-        .rangeToPaths(slateValue, params.range)
+        .rangeToPaths(slateValue, range)
         .reduce((operations, { path, offset, length }) => {
           return operations.concat({
             object: 'operation',
