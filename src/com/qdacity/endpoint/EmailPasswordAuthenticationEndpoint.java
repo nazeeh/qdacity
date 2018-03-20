@@ -13,6 +13,7 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.authentication.util.HashUtil;
 import com.qdacity.authentication.util.TokenUtil;
+import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
@@ -29,11 +30,15 @@ import java.util.List;
 /**
  * This Endpoint is intented to be used for Email+Password actions.
  */
-@SuppressWarnings("ResourceParameter")
-@Api(name = "qdacity",
-    version = Constants.VERSION,
-    namespace = @ApiNamespace(ownerDomain = "qdacity.com", ownerName = "qdacity.com", packagePath = "server.project"),
-    authenticators = {QdacityAuthenticator.class })
+@Api(
+        name = "qdacity",
+        version = Constants.VERSION,
+        namespace = @ApiNamespace(
+                ownerDomain = "qdacity.com",
+                ownerName = "qdacity.com",
+                packagePath = "server.project"),
+        authenticators = {QdacityAuthenticator.class}
+)
 public class EmailPasswordAuthenticationEndpoint {
 
     public EmailPasswordAuthenticationEndpoint() { }
@@ -41,26 +46,34 @@ public class EmailPasswordAuthenticationEndpoint {
     /**
      * Registers a new user.
      * This means adds the user to the database and adds an Email+Pwd LoginProvider Information
-     * @param user
+     * @param email
+     * @param givenName
+     * @param surName
      * @param pwd
      * @param loggedInUser
      */
-    @ApiMethod(name = "authentication.emailpassword.register")
-    public User registerEmailPassword(User user, @Named("pwd") String pwd, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
-        assertEmailIsAvailable(user.getEmail());
+    @ApiMethod(name = "authentication.registerEmailPassword")
+    public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
+                                      @Named("givenName") String givenName, @Named("surName") String surName,
+                                      com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        assertEmailIsAvailable(email);
 
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);
 
         // the id is also the email adress
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser(user.getEmail(), user.getEmail(), LoginProviderType.EMAIL_PASSWORD);
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
 
         UserEndpoint userEndpoint = new UserEndpoint();
+        User user = new User();
+        user.setEmail(email);
+        user.setGivenName(givenName);
+        user.setSurName(surName);
         User insertedUser = userEndpoint.insertUser(user, authenticatedUser);
 
         PersistenceManager pm = getPersistenceManager();
         try {
-            pm.makePersistent(new EmailPasswordLogin(user.getEmail(), pwdHash));
+            pm.makePersistent(new EmailPasswordLogin(email, pwdHash));
         } finally {
             pm.close();
         }
@@ -73,8 +86,8 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param pwd
      * @param loggedInUser
      */
-    @ApiMethod(name = "authentication.emailpassword.getToken")
-    public String getToken(@Named("email") String email, @Named("pwd") String pwd, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    @ApiMethod(name = "authentication.getTokenEmailPassword")
+    public StringWrapper getToken(@Named("email") String email, @Named("pwd") String pwd, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         // check if user is registered
         EmailPasswordLogin emailPwd = null;
         PersistenceManager pm = getPersistenceManager();
@@ -94,7 +107,7 @@ public class EmailPasswordAuthenticationEndpoint {
 
         // generate JWT token
         User user = getUserByEmailPassword(emailPwd);
-        return TokenUtil.getInstance().genToken(user);
+        return new StringWrapper(TokenUtil.getInstance().genToken(user));
     }
 
     private User getUserByEmailPassword(EmailPasswordLogin emailPwd) throws UnauthorizedException {
@@ -151,8 +164,8 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param oldToken
      * @param loggedInUser
      */
-    @ApiMethod(name = "authentication.emailpassword.refreshToken")
-    public String refreshToken(@Named("pwd") String oldToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    @ApiMethod(name = "authentication.refreshToken")
+    public StringWrapper refreshToken(@Named("pwd") String oldToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         TokenUtil tokenUtil = TokenUtil.getInstance();
         if (!tokenUtil.verifyToken(oldToken)) {
             throw new UnauthorizedException("The given token is not valid. It also may be timed out!");
@@ -160,7 +173,7 @@ public class EmailPasswordAuthenticationEndpoint {
 
         Claims claims = tokenUtil.readClaims(oldToken);
         User user = (User) Cache.getOrLoad(claims.getSubject(), User.class);
-        return tokenUtil.genToken(user);
+        return new StringWrapper(tokenUtil.genToken(user));
     }
 
     /**
@@ -168,7 +181,7 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param email
      * @param loggedInUser
      */
-    @ApiMethod(name = "authentication.emailpassword.forgotPwd")
+    @ApiMethod(name = "authentication.forgotPwd")
     public void forgotPwd(@Named("email") String email, com.google.api.server.spi.auth.common.User loggedInUser) {
         // TODO implement
     }

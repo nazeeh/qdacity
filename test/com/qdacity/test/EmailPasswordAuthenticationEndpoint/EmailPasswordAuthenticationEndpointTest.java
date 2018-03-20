@@ -42,7 +42,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        User registeredUser = endpoint.registerEmailPassword(unregisteredUser, "password", null);
+        User registeredUser = registerUser(unregisteredUser, "pw");
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(
                 registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
@@ -60,8 +60,8 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        endpoint.registerEmailPassword(unregisteredUser, "password", null);
-        endpoint.registerEmailPassword(unregisteredUser, "password", null);
+        registerUser(unregisteredUser, "pw");
+        registerUser(unregisteredUser, "pw");
     }
 
     @Test
@@ -74,9 +74,9 @@ public class EmailPasswordAuthenticationEndpointTest {
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
         String password = "password";
-        User registeredUser = endpoint.registerEmailPassword(unregisteredUser, password, null);
+        User registeredUser = registerUser(unregisteredUser, password);
 
-        String token = new EmailPasswordAuthenticationEndpoint().getToken(unregisteredUser.getEmail(), password, null);
+        String token = new EmailPasswordAuthenticationEndpoint().getToken(unregisteredUser.getEmail(), password, null).getValue();
         assertTrue(TokenUtil.getInstance().verifyToken(token));
         AuthenticatedUser authUser = emailpwdTokenValidator.validate(token);
         assertEquals(unregisteredUser.getEmail(), authUser.getId());
@@ -87,7 +87,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         assertEquals(registeredUser.getId(), user.getId());
 
         Thread.sleep(1000); // two tokens generated in same second are equal (not the typical use-case)
-        String refreshedToken = new EmailPasswordAuthenticationEndpoint().refreshToken(token, null);
+        String refreshedToken = new EmailPasswordAuthenticationEndpoint().refreshToken(token, null).getValue();
         assertNotEquals(token, refreshedToken);
         assertTrue(TokenUtil.getInstance().verifyToken(refreshedToken));
         authUser = emailpwdTokenValidator.validate(refreshedToken);
@@ -113,7 +113,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
         String password = "password";
-        User registeredUser = endpoint.registerEmailPassword(unregisteredUser, password, null);
+        User registeredUser = registerUser(unregisteredUser, password);
         endpoint.getToken(registeredUser.getEmail(), "abc", null); // wrong pwd
     }
 
@@ -125,6 +125,13 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
 
-        String refreshedToken = new EmailPasswordAuthenticationEndpoint().refreshToken("sdfjklsjeiljfs", null);
+        String refreshedToken = new EmailPasswordAuthenticationEndpoint().refreshToken("sdfjklsjeiljfs", null).getValue();
+    }
+
+
+
+    private User registerUser(User unregisteredUser, String password) throws UnauthorizedException {
+        return new EmailPasswordAuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
+                unregisteredUser.getGivenName(), unregisteredUser.getSurName(), null);
     }
 }
