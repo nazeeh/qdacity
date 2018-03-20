@@ -1,18 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import './styles.css';
+import '../../pages/admin/styles.css';
 
 import DropDownButton from '../../common/styles/DropDownButton.jsx';
 import { BtnDefault } from '../../common/styles/Btn.jsx';
 import StyledInput from '../../common/styles/Input.jsx';
 
-export default class ChartTimeChooser extends React.Component {
+export default class DateChooser extends React.Component {
 	constructor(props) {
 		super(props);
 
 		const dateDefault = new Date();
 
-		this.props.setSelectedDate(ChartTimeChooser.toDateString(dateDefault));
+		this.props.setSelectedDate(DateChooser.toDateString(dateDefault));
 		this.state = {
 			customDate: dateDefault
 		};
@@ -22,7 +22,7 @@ export default class ChartTimeChooser extends React.Component {
 		this.setState({
 			customDate: value
 		});
-		this.props.setSelectedDate(ChartTimeChooser.toDateString(value));
+		this.props.setSelectedDate(DateChooser.toDateString(value));
 	}
 
 	static toDateString(date) {
@@ -66,13 +66,13 @@ export default class ChartTimeChooser extends React.Component {
 						<CustomStyledInput
 							type={'date'}
 							required={'required'}
-							value={ChartTimeChooser.toDateString(
+							value={DateChooser.toDateString(
 								this.state.customDate
 							)}
 							onChange={event =>
 								this.setcustomDate(new Date(event.target.value))
 							}
-							min={ChartTimeChooser.toDateString(
+							min={DateChooser.toDateString(
 								dateMinDefault
 							)}
 						/>
