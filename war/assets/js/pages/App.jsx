@@ -9,9 +9,9 @@ import {
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
-import AuthenticationProvider from '../common/AuthenticationProvider.js';
-import TestAuthenticationProvider from '../common/TestAuthenticationProvider.js';
-import AuthorizationProvider from '../common/AuthorizationProvider.js';
+import AuthenticationProvider from '../common/auth/AuthenticationProvider.js';
+import TestAuthenticationProvider from '../common/auth/TestAuthenticationProvider.js';
+import AuthorizationProvider from '../common/auth/AuthorizationProvider.js';
 
 import NavBar from '../common/NavBar.jsx';
 import Index from './index/Index.jsx';
