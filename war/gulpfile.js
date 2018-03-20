@@ -38,6 +38,7 @@ function setConfig() {
 	console.log('Configured rts server adress: ' + config.sync_service);
 	if (argv.api_version) config.api_version = argv.api_version;
 	if (argv.client_id) config.client_id = argv.client_id;
+	if (argv.local) config.test_mode = true; else config.test_mode = false;
 }
 
 gulp.task('bundle-ci', ['bundle', 'set-constants-ci']);
@@ -164,6 +165,7 @@ gulp.task('bundle-task', function() {
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(replace('$TEST_MODE$', config.test_mode))
 		.pipe(gulp.dest('dist/js/'))
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });
@@ -229,6 +231,7 @@ gulp.task('webpack-watch', function() {
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(replace('$TEST_MODE$', config.test_mode))
 		.pipe(gulp.dest('dist/js/'))
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });
@@ -244,11 +247,13 @@ gulp.task('acceptance-tests', () =>
 );
 
 gulp.task('watch', ['webpack-watch', 'translation-watch']);
-gulp.task('acceptance-tests', () =>
-	gulp
-		.src('./tests/acceptance-tests/**/*.js')
-		.pipe(jasmine())
-		.on('error', handleError)
-);
+
+gulp.task('acceptance-tests', () => {
+	const basePath = './tests/acceptance-tests/';
+	gulp.src([
+		basePath + '*.js', 
+		basePath + 'coding-editor/*.js'
+	]).pipe(jasmine()).on('error', handleError);
+});
 
 gulp.task('default', ['watch']);

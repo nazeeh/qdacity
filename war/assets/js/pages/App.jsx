@@ -10,6 +10,7 @@ import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
 import AuthenticationProvider from '../common/AuthenticationProvider.js';
+import TestAuthenticationProvider from '../common/TestAuthenticationProvider.js';
 import AuthorizationProvider from '../common/AuthorizationProvider.js';
 
 import NavBar from '../common/NavBar.jsx';
@@ -34,6 +35,8 @@ import styled from 'styled-components';
 
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
+
+const TEST_MODE = $TEST_MODE$;
 
 const ContentGrid = styled.div`
 	display: grid;
@@ -78,7 +81,7 @@ export default class App extends React.Component {
 
 		this.state = {};
 
-		this.authenticationProvider = new AuthenticationProvider();
+		this.authenticationProvider = (TEST_MODE == true ? new TestAuthenticationProvider() : new AuthenticationProvider());
 		this.authorizationProvider = new AuthorizationProvider();
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
@@ -94,6 +97,11 @@ export default class App extends React.Component {
 				authState: {
 					isUserSignedIn: false,
 					isUserRegistered: false
+				},
+				userProfile: {
+					name: '',
+					email: '',
+					picSrc: ''
 				},
 				updateUserStatus: () => {
 					return this.updateUserStatus();
@@ -127,9 +135,10 @@ export default class App extends React.Component {
 	 * Updates the state -> the supplied authState
 	 * @returns {Promise}
 	 */
-	updateUserStatus() {
+	async updateUserStatus() {
 		const _this = this;
-		const promise = new Promise(function(resolve, reject) {
+		const promise = new Promise(async function(resolve, reject) {
+			// 1. check if signed-in
 			const loginStatus = _this.authenticationProvider.isSignedIn();
 			if (!loginStatus && !_this.state.auth.authState.isUserSignedIn) {
 				// no need to rerender!
@@ -138,6 +147,24 @@ export default class App extends React.Component {
 			}
 
 			_this.authenticationProvider.synchronizeTokenWithGapi(); // Bugfix: sometimes the token seems to get lost!
+			// 2. get the user profile
+			const profile = await _this.authenticationProvider.getProfile();
+			/*
+			* Removing query parameters from URL.
+			* With google we always got ?sz=50 in the URL which gives you a
+			* small low res thumbnail. Without parameter we get the original
+			* image.
+			* When adding other LoginProviders this needs to be reviewed
+			*/
+			var url = URI(profile.thumbnail).fragment(true);
+			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			_this.state.auth.userProfile = {
+				name: profile.name,
+				email: profile.email,
+				picSrc: picSrcWithoutParams
+			};
+
+			// 3. check if user is registered
 			_this.authenticationProvider.getCurrentUser().then(
 				function(user) {
 					_this.state.auth.authState = {
