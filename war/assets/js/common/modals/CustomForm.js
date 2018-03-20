@@ -46,9 +46,16 @@ export default class CustomForm extends VexModal {
 
 	addDatePicker() {
 
+		const { formatMessage } = IntlProvider.intl;
+		var deadlineMessage = formatMessage({
+			id: 'modal.deadline',
+			defaultMessage:
+				'Deadline: '
+		});
+
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += 'Deadline: ';
+		this.formElements += deadlineMessage;
 		this.formElements += '<div id="DatePicker">';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
