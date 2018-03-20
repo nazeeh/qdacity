@@ -42,18 +42,17 @@ public class TokenUtil {
     private static final String PUBLIC_KEY_SECRET_IDENTIFIER = "JWT-public-key";
 
     private TokenUtil() {
-        byte[] privateKeyLoaded = null;
-        byte[] publicKeyLoaded = null;
+        byte[] privateKeySerialized = null;
+        byte[] publicKeySerialized = null;
         try {
-            Cache.getOrLoad(PRIVATE_KEY_SECRET_IDENTIFIER, StoredSecret.class);
-            privateKeyLoaded = ((StoredSecret) Cache.getOrLoad(PRIVATE_KEY_SECRET_IDENTIFIER, StoredSecret.class)).getValue().getBytes();
-            publicKeyLoaded = ((StoredSecret) Cache.getOrLoad(PUBLIC_KEY_SECRET_IDENTIFIER, StoredSecret.class)).getValue().getBytes();
+            privateKeySerialized = ((StoredSecret) Cache.getOrLoad(PRIVATE_KEY_SECRET_IDENTIFIER, StoredSecret.class)).getValue().getBytes();
+            publicKeySerialized = ((StoredSecret) Cache.getOrLoad(PUBLIC_KEY_SECRET_IDENTIFIER, StoredSecret.class)).getValue().getBytes();
         } catch (JDOObjectNotFoundException e) {
-            // privateKeyLoaded or publicKeyLoaded is null
+            // privateKeySerialized or publicKeySerialized is null
             Logger.getLogger("logger").log(Level.INFO, "Didn't find RSA keys in the database. Going to create some new and store it.");
         }
 
-        if(privateKeyLoaded == null || publicKeyLoaded == null) {
+        if(privateKeySerialized == null || publicKeySerialized == null) {
             // generate new pair
             keyPair = genAndStoreKeyPair();
         } else {
@@ -61,11 +60,11 @@ public class TokenUtil {
             PublicKey publicKey = null;
             PrivateKey privateKey = null;
             try {
-                publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(publicKeyLoaded));
-                privateKey = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(privateKeyLoaded));
+                publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(publicKeySerialized));
+                privateKey = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(privateKeySerialized));
             } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
                 // publicKey or privateKey is null
-                Logger.getLogger("logger").log(Level.INFO, "Couldn't decrypt loaded RSA keys.", e);
+                Logger.getLogger("logger").log(Level.SEVERE, "Couldn't decrypt loaded RSA keys.", e);
             }
 
             if(privateKey == null || publicKey == null) {
