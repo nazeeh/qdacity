@@ -15,12 +15,12 @@ const PanelWrapper = styled.div`
 	border: 1px solid;
 	padding: 20px 50px 20px 50px;
 	margin-bottom: 20px;
-	background-color: rgba(174, 224, 148, 0.95);
+	background-color: ${props => props.theme.darkGreen};
 	margin-left: auto;
 	margin-right: auto;
 	width: 90%;
 	max-width: 400px;
-	opacity: 0.5;
+	opacity: 0.8;
 	& > div {
 		font-size: 18px;
 	}
@@ -50,6 +50,14 @@ const FormulaLink = styled.a`
 
 const Spacer = styled.div`
 	margin-top: 15px;
+`;
+
+const ButtonStyledWidh = styled.div`
+	margin-top: 4px;
+	width:  100%;
+	& > button {
+		width: 70%;
+	}
 `;
 
 export default class SigninPanel extends React.Component {
@@ -128,30 +136,38 @@ export default class SigninPanel extends React.Component {
 					</div>
 					<Spacer/>
 					<div className="row">
-						<BtnLg onClick={() => this.signInWithEmailPassword()}>
-							<a>
-								<i className="fa fa-sign-in fa-2x" />
-							</a>
-							<span>
-								<FormattedMessage
-									id="index.signinpanel.signin-email-pwd"
-									defaultMessage="Sign in"
-								/>
-							</span>
-						</BtnLg>
+						<ButtonStyledWidh>
+							<BtnLg onClick={() => this.signInWithEmailPassword()}>
+								<a>
+									<i className="fa fa-sign-in fa-2x" />
+								</a>
+								<span>
+									<FormattedMessage
+										id="index.signinpanel.signin-email-pwd"
+										defaultMessage="Sign in"
+									/>
+								</span>
+							</BtnLg>
+						</ButtonStyledWidh>
 					</div>
 				</div>
 
 				<PanelDivisor/>
 
 				<div id="social-signin">
-					<h4>
-						<FormattedMessage
-							id="index.signinpanel.signin-social-heading"
-							defaultMessage="Sign in / Register with existing Accounts"
-						/>
-					</h4>
-					<SigninWithGoogleBtn auth={this.props.auth} history={this.props.history}/>
+					<div className="row">
+						<h4>
+							<FormattedMessage
+								id="index.signinpanel.signin-social-heading"
+								defaultMessage="Sign in / Register with existing Accounts"
+							/>
+						</h4>
+					</div>
+					<div className="row">
+						<ButtonStyledWidh>
+							<SigninWithGoogleBtn auth={this.props.auth} history={this.props.history}/>
+						</ButtonStyledWidh>
+					</div>
 				</div>
             </PanelWrapper>
 		);
