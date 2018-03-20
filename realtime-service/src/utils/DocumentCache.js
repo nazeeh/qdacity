@@ -41,11 +41,10 @@ class DocumentCache {
    * Try to store document in cache
    *
    * @public
-   * @arg {string} id - ID of the document
    * @arg {object} document
    * @return {Promise} resolves if document was stored or rejects
    */
-  async store(id, document) {
+  async store(document) {
 
     try {
       // Copy document, serialize Slate.Value and serialize everything to JSON
@@ -67,10 +66,9 @@ class DocumentCache {
    * Try to get document from cache
    *
    * @public
-   * @arg {string} documentId
    * @return {Promise} resolves with the document state if existing or rejects
    */
-  async get(documentId) {
+  async get() {
 
     try {
       // Try to get the document from redis
