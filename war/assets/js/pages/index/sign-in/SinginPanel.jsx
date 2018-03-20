@@ -95,6 +95,7 @@ export default class SigninPanel extends React.Component {
 
 	registerEmailPassword() {
 		console.log('Register with email and password.');
+		const _this = this;
 		
 		const { formatMessage } = IntlProvider.intl;
 
@@ -144,6 +145,12 @@ export default class SigninPanel extends React.Component {
 					return console.log('Cancelled');
 				}
 				// TODO call backend!
+				_this.props.auth.authentication.registerUserEmailPassword(data.email, data.password, data.firstName, data.lastName)
+					.then(function() {
+						_this.props.auth.updateUserStatus().then(function() {
+							_this.props.history.push('/PersonalDashboard');
+						});
+					});
 
 				return console.log(
 					'First',

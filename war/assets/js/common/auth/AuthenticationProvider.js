@@ -1,4 +1,5 @@
 import hello from 'hellojs';
+import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.jsx';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
@@ -14,10 +15,12 @@ export default class AuthenticationProvider {
 		});
 
 		this.initHelloJs();
+		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider();
 
 		this.network = {
 			google: 'google', // uses hellojs
-			google_silent: 'gapi' // uses gapi.auth2
+			google_silent: 'gapi', // uses gapi.auth2
+			email_password: 'email_password' // uses EmailPasswordAuthenticationProvider
 		};
 
 		/**
@@ -239,6 +242,17 @@ export default class AuthenticationProvider {
 	 */
 	encodeTokenWithIdentityProvider(token, provider) {
 		return token + ' ' + provider;
+	}
+
+	/**
+	 * Tries to register a user with email and password at qdacity.
+	 * @param {String} email 
+	 * @param {String} password 
+	 * @param {String} givenName 
+	 * @param {String} surName 
+	 */
+	registerUserEmailPassword(email, password, givenName, surName) {
+		return this.emailPasswordAuthenticationProvider.register(email, password, givenName, surName);
 	}
 
 	/* ---------------------- Interaction with Qdacity Server ................. */
