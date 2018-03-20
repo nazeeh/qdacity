@@ -10,6 +10,7 @@ import ReactLoading from '../../../common/ReactLoading.jsx';
 import { BtnLg } from '../../../common/styles/Btn.jsx';
 import StyledInput from '../../../common/styles/Input.jsx';
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
+import VexModal from '../../../common/modals/VexModal';
 
 const PanelWrapper = styled.div`
 	border: 1px solid ${props => props.theme.borderPrimaryHighlight};
@@ -78,6 +79,9 @@ export default class SigninPanel extends React.Component {
 		this.state = {
 			loading: false
 		};
+
+		// init vex (workaround)
+		new VexModal()
 
 	}
 
@@ -204,7 +208,7 @@ export default class SigninPanel extends React.Component {
 							</u></FormulaLink>
 						</div>
 						<div className="col-xs-6">
-							<FormulaLink onClick={() => this.registerEmailPassword()}><u>
+							<FormulaLink href="#" onClick={() => this.registerEmailPassword()}><u>
 								<FormattedMessage
 									id="index.signinpanel.register-email-pwd"
 									defaultMessage="Register now!"
