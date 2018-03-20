@@ -12,10 +12,12 @@ import StyledInput from '../../../common/styles/Input.jsx';
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
 
 const PanelWrapper = styled.div`
-	border: 1px solid;
+	border: 1px solid ${props => props.theme.borderPrimaryHighlight};
 	padding: 20px 50px 20px 50px;
 	margin-bottom: 20px;
-	background-color: ${props => props.theme.darkGreen};
+	padding-bottom: 20px;
+	background-color: ${props => props.theme.defaultPaneBg};
+	color: ${props => props.theme.defaultText};
 	margin-left: auto;
 	margin-right: auto;
 	width: 90%;
@@ -57,6 +59,7 @@ const ButtonStyledWidh = styled.div`
 	width:  100%;
 	& > button {
 		width: 70%;
+		border: 1px solid ${props => props.theme.defaultText};
 	}
 `;
 
