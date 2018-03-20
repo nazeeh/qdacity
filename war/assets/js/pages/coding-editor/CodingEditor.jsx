@@ -144,10 +144,6 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
-		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
-
-		// update on initialization
-		this.updateUserStatusFromProps(props);
 
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
@@ -172,9 +168,6 @@ class CodingEditor extends React.Component {
 		this.updateUserAtSyncService();
 
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
-		if (this.props.auth.userProfile.email !== '') {
-			this.syncService.updateUser(this.props.auth.userProfile);
-		}
 	}
 
 	componentWillUnmount() {

@@ -29,7 +29,7 @@ describe('Login test', function() {
     }, defaultTimeout);
 
     afterEach((done) => {
-        this.driver.quit().then(done);   
+        this.driver.quit().then(done);
     }, defaultTimeout);
 
     /**
@@ -37,7 +37,7 @@ describe('Login test', function() {
      * is not registered within QDAcity, the test registers the account.
      */
     it('Should register and login a user', (done) => {
-    	const displayName = 'Max Mustermann';
+    	const displayName = 'Test Name';
     	const qdacityFirstName = 'Max';
     	const qdacityLastName = 'Mustermann';
     	const qdacityEmail = 'felixtest22@gmail.com';
