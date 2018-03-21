@@ -85,8 +85,14 @@ export default class SigninPanel extends React.Component {
 
 	}
 
-	signInWithEmailPassword() {
+	async signInWithEmailPassword() {
 		console.log('Sign in with Email and password called!');
+		const email = 'third@test.de';
+		const password = 'test';
+
+		await this.props.auth.authentication.signInWithEmailPassword(email, password);
+		await this.props.auth.updateUserStatus();
+		this.props.history.push('/PersonalDashboard');
 	}
 
 	forgotPassword() {
@@ -145,7 +151,7 @@ export default class SigninPanel extends React.Component {
 					return console.log('Cancelled');
 				}
 				// TODO call backend!
-				_this.props.auth.authentication.registerUserEmailPassword(data.email, data.password, data.firstName, data.lastName)
+				_this.props.auth.authentication.registerUserEmailPassword(data.email, data.pwd, data.firstName, data.lastName)
 					.then(function() {
 						_this.props.auth.updateUserStatus().then(function() {
 							_this.props.history.push('/PersonalDashboard');

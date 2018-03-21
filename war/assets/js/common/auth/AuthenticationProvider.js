@@ -90,6 +90,18 @@ export default class AuthenticationProvider {
 	}
 
 	/**
+	 * Signs-in on the qdacity account with email and password
+	 * @param {String} email 
+	 * @param {String} password 
+	 * @returns {Promise}
+	 */
+	async signInWithEmailPassword(email, password) {
+		const signinResult = await this.emailPasswordAuthenticationProvider.signIn(email, password);
+		this.activeNetwork = this.network.email_password;
+		return signinResult;
+	}
+
+	/**
 	 * Get the current user.
 	 * Respects the activeNetwork state to achieve this.
 	 * @return {Promise}

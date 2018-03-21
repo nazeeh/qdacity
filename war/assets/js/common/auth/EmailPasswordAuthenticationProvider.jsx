@@ -1,7 +1,10 @@
+//@ts-check
 export default class EmailPasswordAuthenticationProvider {
 
 	constructor() {
-		
+	
+		this.callbackFunctions = [];
+		this.jwtToken = null;
 	}
 
 	/** 
@@ -11,7 +14,22 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @returns {Promise} 
 	 */
 	signIn(email, password) {
-
+		const _this = this;
+		var promise = new Promise(function(resolve, reject) {
+			gapi.client.qdacity.authentication.getTokenEmailPassword({
+				email: email,
+				pwd: password
+			}).execute(function(resp) {
+				if (!resp.code) {
+					_this.jwtToken = resp.value;
+					console.log('received token ' + _this.jwtToken);
+					resolve(resp);
+				} else {
+					reject(resp);
+				}
+			});
+		});
+		return promise;
 	}
 
 	/**
@@ -19,7 +37,11 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @return {Promise}
 	 */
 	getProfile() {
-		
+		// TODO
+		const promise = new Promise(function(resolve, reject) {
+			resolve();
+		});
+		return promise;
 	}
 
 	/**
@@ -27,7 +49,20 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
-		
+		if(this.jwtToken == undefined || this.jwtToken == null) {
+			return false;
+		}
+		return this.isTokenValid(this.jwtToken);
+	}
+
+	/**
+	 * Checks if the given token is valid and not expired.
+	 * @param {String} token 
+	 * @returns {boolean}
+	 */
+	isTokenValid(token) {
+		// TODO!
+		return true;
 	}
 
 	/**
@@ -35,7 +70,12 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @return {Promise}
 	 */
 	signOut() {
-		
+		this.jwtToken = null;
+
+		const promise = new Promise(function(resolve, reject) {
+			resolve();
+		});
+		return promise;
 	}
 
 	/**
@@ -43,7 +83,11 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @returns the token
 	 */
 	getToken() {
-		
+		if(this.isTokenValid(this.jwtToken)) {
+			return this.jwtToken;
+		} else {
+			return undefined;
+		}
 	}
 
 	/**
@@ -52,7 +96,13 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @param callback
 	 */
 	addAuthStateListener(callback) {
+		this.callbackFunctions.push(callback);
+	}
 
+	authStateChaned() {
+		for(const callback in this.callbackFunctions) {
+			callback();
+		}
 	}
 
 	/**
