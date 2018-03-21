@@ -1,44 +1,34 @@
 
 export default class CodingOverlap {
     
-	constructor(key, document, textMainCode, textOtherCode, textOverlap) {
-        this.key = key;
+	constructor(codingIdMain, codingIdOther) {
+        this.codingIdMain = codingIdMain;
+        this.codingIdOther = codingIdOther;
 
-        this.document = document;
-
-        this.textMainCode = textMainCode;
-        this.textOtherCode = textOtherCode;
-        this.textOverlap = textOverlap;
-
-        this.overlapPercentageByMainCode = this.textOverlap.length / this.textMainCode.length;
-        this.overlapPercentageByOtherCode = this.textOverlap.length / this.textOtherCode.length;
+        this.textContent = null;
     }
 
-    getKey() {
-        return this.key;
+    getCodingIdMain() {
+        return this.codingIdMain;
     }
 
-    getDocument() {
-        return this.document;
+    getCodingIdOther() {
+        return this.codingIdOther;
     }
 
-    getTextMainCode() {
-        return this.textMainCode;
+    getTextContent() {
+        return this.textContent;
     }
 
-    getTextOtherCode() {
-        return this.textOtherCode;
-    }
-
-    getTextOverlap() {
-        return this.textOverlap;
+    setTextContent(textContent) {
+        this.textContent = textContent;
     }
 
     getOverlapPercentageByMainCode() {
-        return this.overlapPercentageByMainCode;
+        return this.textContent.getTextLengthOverlap() / this.textContent.getTextLengthMainCode();
     }
     
     getOverlapPercentageByOtherCode() {
-        return this.overlapPercentageByOtherCode;
+        return this.textContent.getTextLengthOverlap() / this.textContent.getTextLengthOtherCode();
     }
 }

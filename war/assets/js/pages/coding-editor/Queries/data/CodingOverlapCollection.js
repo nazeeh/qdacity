@@ -1,57 +1,36 @@
 
 export default class CodingOverlapCollection {
     
-	constructor() {
-        this.codingOverlaps = [];
+    constructor(codeId, totalCodingsCount) {
+        this.codeId = codeId;
+        this.totalCodingsCount = totalCodingsCount;
 
-        this.averageOverlapPercentageByMainCode = 0.0;
-        this.averageOverlapPercentageByOtherCode = 0.0;
+        this.codingOverlaps = [];
+    }
+
+    getCodeId() {
+        return this.codeId;
     }
 
     getCodingOverlaps() {
         return this.codingOverlaps;
     }
 
-    getCodingCount() {
+    getCodingOverlapCount() {
         return this.codingOverlaps.length;
     }
 
-    getAverageOverlapPercentageByMainCode() {
-        return this.averageOverlapPercentageByMainCode;
+    getTotalCodingsCount() {
+        return this.totalCodingsCount;
     }
 
-    getAverageOverlapPercentageByOtherCode() {
-        return this.averageOverlapPercentageByOtherCode;
+    hasCodingOverlap(codingIdMain, codingIdOther) {
+        return this.codingOverlaps.find((codingOverlap) => {
+            return codingOverlap.getCodingIdMain() == codingIdMain && codingOverlap.getCodingIdOther() == codingIdOther;
+        });
     }
 
     addCodingOverlap(codingOverlap) {
         this.codingOverlaps.push(codingOverlap);
-
-        this.recalculateAverageOverlapPercentage();
-    }
-
-    hasCodingOverlap(codingOverlapKey) {
-        return this.codingOverlaps.find((codingOverlap) => {
-            return codingOverlap.getKey() == codingOverlapKey;
-        });
-    }
-
-    recalculateAverageOverlapPercentage() {
-        let count = this.codingOverlaps.length;
-
-        if (count == 0) {
-            return;
-        }
-
-        let totalOverlapPercentageByMainCode = 0.0;
-        let totalOverlapPercentageByOtherCode = 0.0;
-
-        for (let i = 0; i < count; i++) {
-            totalOverlapPercentageByMainCode = totalOverlapPercentageByMainCode + this.codingOverlaps[i].getOverlapPercentageByMainCode();
-            totalOverlapPercentageByOtherCode = totalOverlapPercentageByOtherCode + this.codingOverlaps[i].getOverlapPercentageByOtherCode();
-        }
-
-        this.averageOverlapPercentageByMainCode = totalOverlapPercentageByMainCode / count;
-        this.averageOverlapPercentageByOtherCode = totalOverlapPercentageByOtherCode / count;
     }
 }
