@@ -82,13 +82,10 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
-		if(this.jwtToken == undefined || this.jwtToken == null) {
+		if(this.jwtToken === undefined || this.jwtToken === null) {
 			this.loadTokenFromStorage();
-			if(this.jwtToken == undefined || this.jwtToken == null) {
-				return false
-			}
 		}
-		return this.isTokenValid(this.jwtToken);
+		return this.jwtToken !== undefined && this.jwtToken !== null
 	}
 
 	/**
@@ -97,16 +94,6 @@ export default class EmailPasswordAuthenticationProvider {
 	 */
 	loadTokenFromStorage() {
 		// TODO
-	}
-
-	/**
-	 * Checks if the given token is valid and not expired.
-	 * @param {String} token 
-	 * @returns {boolean}
-	 */
-	isTokenValid(token) {
-		// TODO!
-		return true;
 	}
 
 	/**
@@ -131,11 +118,7 @@ export default class EmailPasswordAuthenticationProvider {
 		if(this.jwtToken == undefined || this.jwtToken == null) {
 			this.loadTokenFromStorage();
 		}
-		if(this.isTokenValid(this.jwtToken)) {
-			return this.jwtToken;
-		} else {
-			return undefined;
-		}
+		return this.jwtToken;
 	}
 
 	/**
