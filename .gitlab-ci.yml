@@ -109,7 +109,7 @@ frontend_prod_unittest:
     expire_in: 6 mos
   script:
     - export DISPLAY=:10
-    - xdpyinfo -display 10 > /dev/null || Xvfb 10 -screen 0 
+    - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd war
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
