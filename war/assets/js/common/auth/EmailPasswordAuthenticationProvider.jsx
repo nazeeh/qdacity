@@ -22,6 +22,7 @@ export default class EmailPasswordAuthenticationProvider {
 			}).execute(function(resp) {
 				if (!resp.code) {
 					_this.jwtToken = resp.value;
+					_this.authStateChaned();
 					console.log('received token ' + _this.jwtToken);
 					resolve(resp);
 				} else {
@@ -71,6 +72,7 @@ export default class EmailPasswordAuthenticationProvider {
 	 */
 	signOut() {
 		this.jwtToken = null;
+		this.authStateChaned();
 
 		const promise = new Promise(function(resolve, reject) {
 			resolve();
@@ -93,14 +95,14 @@ export default class EmailPasswordAuthenticationProvider {
 	/**
 	 * Always calls the given callback if the auth state changes.
 	 *
-	 * @param callback
+	 * @param {Function} callback
 	 */
 	addAuthStateListener(callback) {
 		this.callbackFunctions.push(callback);
 	}
 
 	authStateChaned() {
-		for(const callback in this.callbackFunctions) {
+		for(const callback of this.callbackFunctions) {
 			callback();
 		}
 	}

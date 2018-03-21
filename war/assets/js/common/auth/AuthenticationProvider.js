@@ -107,6 +107,9 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	getProfile() {
+		if (this.activeNetwork === this.network.email_password) {
+			return this.emailPasswordAuthenticationProvider.getProfile();
+		}
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			return hello(this.activeNetwork).api('me');
@@ -132,6 +135,9 @@ export default class AuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
+		if (this.activeNetwork === this.network.email_password) {
+			return this.emailPasswordAuthenticationProvider.getProfile();
+		}
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
@@ -150,12 +156,19 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	signOut() {
+		if (this.activeNetwork === this.network.email_password) {
+			this.auth2.disconnect();
+			hello(this.network.google).logout();
+			return this.emailPasswordAuthenticationProvider.signOut();
+		}
 		if (this.activeNetwork !== this.network.google_silent) {
 			this.auth2.disconnect();
+			this.emailPasswordAuthenticationProvider.signOut();
 			// check hellojs
 			return hello(this.network.google).logout();
 		} else {
 			hello(this.network.google).logout();
+			this.emailPasswordAuthenticationProvider.signOut();
 			// elsewise check gapi.auth2
 			return this.auth2.disconnect();
 		}
@@ -195,6 +208,9 @@ export default class AuthenticationProvider {
 	 * @returns the token
 	 */
 	getToken() {
+		if (this.activeNetwork === this.network.email_password) {
+			return this.emailPasswordAuthenticationProvider.getToken();
+		}
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
@@ -213,6 +229,9 @@ export default class AuthenticationProvider {
 	addAuthStateListener(callback) {
 		// add to hellojs
 		hello.on('auth', callback);
+
+		// add to email+pwd
+		this.emailPasswordAuthenticationProvider.addAuthStateListener(callback);
 
 		// add to gapi.auth2
 		this.auth2.currentUser.listen(callback);
