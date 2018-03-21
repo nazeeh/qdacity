@@ -1,4 +1,5 @@
 const google = require('googleapis');
+const logger = require('../utils/Logger');
 
 /**
  * Endpoint class
@@ -16,6 +17,14 @@ class Endpoint {
     // Initialize api and queue
     this._api = null;
     this._queue = [];
+  }
+
+  /**
+   * @property {string} apiHost - Computed property containing the host name
+   * of the configured API
+   */
+  get apiHost() {
+    return this._apiRoot.replace(/.*?\/\/([^\/]+)\/.*/, '$1');
   }
 
   /**
@@ -67,7 +76,7 @@ class Endpoint {
         // Error: Something went wrong, e.g. API configuration wrong or
         // authorization invalid.
         if (err) {
-          console.error('API discovery failed', err);
+          logger.error('API discovery failed', err);
           this._queue.map(params => params.reject('API discovery failed'));
           return;
         }

@@ -24,7 +24,7 @@ export default class CodesService {
 	 * @access public
 	 * @arg {object} code - new Code object
 	 * @arg {int} parentID - ID of parent of new Code object
-	 * @return {Promise} - Promise (will never be rejected)
+	 * @return {Promise}
 	 */
 	insertCode(code, parentID) {
 		return this.syncService.emit(MSG.CODE.INSERT, {
@@ -40,7 +40,7 @@ export default class CodesService {
 	 * @access public
 	 * @arg {int} codeId - ID of Code to be relocated
 	 * @arg {int} newParentID - ID of Code where the code should be moved to
-	 * @return {Promise} - Promise (will never be rejected)
+	 * @return {Promise}
 	 */
 	relocateCode(codeId, newParentID) {
 		return this.syncService.emit(MSG.CODE.RELOCATE, {
@@ -53,7 +53,7 @@ export default class CodesService {
 	 * Send command to remove Code from Codesystem
 	 * @access public
 	 * @arg {object} code - Code object to be removed
-	 * @return {Promise} - Promise (will never be rejected)
+	 * @return {Promise}
 	 */
 	removeCode(code) {
 		return this.syncService.emit(MSG.CODE.REMOVE, {
@@ -65,7 +65,7 @@ export default class CodesService {
 	 * Send command to updated Code in Codesystem
 	 * @access public
 	 * @arg {object} code - Code object to be updated
-	 * @return {Promise} - Promise (will never be rejected)
+	 * @return {Promise}
 	 */
 	updateCode(code) {
 		return this.syncService.emit(MSG.CODE.UPDATE, {
