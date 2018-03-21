@@ -48,9 +48,7 @@ class SearchBox extends React.Component {
 		return this.state.search;
 	}
 
-	updateSearch(e) {
-		const searchText = e.target.value;
-
+	setSearchText(searchText) {
 		this.setState(
 			{
 				search: searchText
@@ -61,6 +59,12 @@ class SearchBox extends React.Component {
 				}
 			}
 		);
+	}
+
+	updateSearch(e) {
+		const searchText = e.target.value;
+
+		this.setSearchText(searchText);
 	}
 
 	onKeyPress(e) {
