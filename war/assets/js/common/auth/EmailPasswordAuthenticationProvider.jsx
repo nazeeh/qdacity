@@ -64,17 +64,21 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	register(email, password, givenName, surName) {
-		gapi.client.qdacity.authentication.registerEmailPassword({
-			givenName: givenName,
-			surName: surName,
-			email: email,
-			pwd: password
-		}).execute(function(resp) {
-			if (!resp.code) {
-				resolve(resp);
-			} else {
-				reject(resp);
-			}
+		
+		var promise = new Promise(function(resolve, reject) {
+			gapi.client.qdacity.authentication.registerEmailPassword({
+				givenName: givenName,
+				surName: surName,
+				email: email,
+				pwd: password
+			}).execute(function(resp) {
+				if (!resp.code) {
+					resolve(resp);
+				} else {
+					reject(resp);
+				}
+			});
 		});
+		return promise;
 	}
 }
