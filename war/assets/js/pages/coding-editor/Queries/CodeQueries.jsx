@@ -8,10 +8,14 @@ import DocumentParser from './data/parser/DocumentParser.js';
 import CodeList from './list/CodeList.jsx';
 import DetailsView from './details/DetailsView.jsx';
 
-const StyledContainer = styled.div`
-	border-left: 1px solid #888;
+const StyledContainer = styled.div`	
 	height: 100%;
-	padding: 10px 20px;
+	padding: 10px 0px 0px 20px;
+
+	border-left: 1px solid #888;
+
+	display: flex;
+	flex-direction: column;
 `;
 
 const StyledContentContainer = styled.div`

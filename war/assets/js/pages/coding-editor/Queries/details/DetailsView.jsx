@@ -5,6 +5,7 @@ import CodingOverlapText from './CodingOverlapText.jsx';
 
 const StyledDetailsContainer = styled.div`
 	flex: 50%;
+	overflow: auto;
 `;
 
 export default class DetailsView extends React.Component {
