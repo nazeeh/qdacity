@@ -1,8 +1,5 @@
 package com.qdacity.endpoint;
 
-import com.google.apphosting.api.ApiProxy;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -260,12 +257,6 @@ public class ProjectEndpoint {
 		// Check if user is authorized
 		// Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
 		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
-		ApiProxy.ApiConfig apiConfig = new ApiProxy.ApiConfig();
-		apiConfig.setDeadlineInSeconds(0.005);
-		//ApiProxy.ApiConfig = apiConfig;
-		//Logger.getLogger("logger").log(Level.INFO, String.join(",", ApiProxy.getCurrentEnvironment().getAttributes().keySet()));
-		
-		Logger.getLogger("logger").log(Level.INFO, ApiProxy.getCurrentEnvironment().getAttributes().get("com.google.appengine.http_servlet_request").toString());
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
