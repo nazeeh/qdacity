@@ -141,7 +141,7 @@ public class ExerciseEndpoint {
 
 
 	@ApiMethod(name = "exercise.createExerciseProject")
-		public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
+		public ExerciseProject createExerciseProject(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User loggedInUser) throws UnauthorizedException, JSONException {
 			ExerciseProject cloneExerciseProject = null;
 			PersistenceManager mgr = getPersistenceManager();
 
@@ -150,9 +150,11 @@ public class ExerciseEndpoint {
 				Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
 				TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
 				// Check if user is authorized
-				Authorization.checkAuthorizationTermCourse(termCourse, user);
+				Authorization.checkAuthorizationTermCourse(termCourse, loggedInUser);
 
-				cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
+				com.qdacity.user.User qdacityUser = new UserEndpoint().getCurrentUser(loggedInUser);
+
+				cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, qdacityUser, loggedInUser);
 
 			} finally {
 				mgr.close();
@@ -227,7 +229,9 @@ public class ExerciseEndpoint {
 
 	@SuppressWarnings({ "unchecked"})
 	@ApiMethod(name = "exercise.createExerciseProjectIfNeeded")
-		public ExerciseProject createExerciseProjectIfNeeded(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User user) throws UnauthorizedException, JSONException {
+		public ExerciseProject createExerciseProjectIfNeeded(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID,  User loggedInUser) throws UnauthorizedException, JSONException {
+
+			com.qdacity.user.User qdacityUser = new UserEndpoint().getCurrentUser(loggedInUser);
 
 			ExerciseProject cloneExerciseProject = null;
 			List<ExerciseProject> exerciseProjects = null;
@@ -241,12 +245,12 @@ public class ExerciseEndpoint {
                 Exercise exercise = (Exercise) mgr.getObjectById(Exercise.class, exerciseID);
                 TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
                 // Check if user is authorized
-                Authorization.checkAuthorizationTermCourse(termCourse, user);
+                Authorization.checkAuthorizationTermCourse(termCourse, loggedInUser);
 
                 filters.append("exerciseID == exerciseID && ");
                 parameters.put("exerciseID", exerciseID);
                 filters.append("validationCoders == :userID");
-                parameters.put("userID", user.getId());
+                parameters.put("userID", qdacityUser.getId());
                 Query q = mgr.newQuery(ExerciseProject.class);
 
                 q.setFilter(filters.toString());
@@ -254,7 +258,7 @@ public class ExerciseEndpoint {
 
                 if (exerciseProjects != null) {
                     if (exerciseProjects.size() == 0) {
-                        cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, user);
+                        cloneExerciseProject = createExerciseProjectLocal(exerciseID, revisionID, qdacityUser, loggedInUser);
                     }
                 }
 
@@ -324,7 +328,7 @@ public class ExerciseEndpoint {
 		return exercise;
 	}
 
-	private ExerciseProject cloneExerciseProject(ProjectRevision projectRev, User user) throws UnauthorizedException {
+	private ExerciseProject cloneExerciseProject(ProjectRevision projectRev) {
 
 		ExerciseProject cloneProject = new ExerciseProject(projectRev);
 
@@ -434,7 +438,7 @@ public class ExerciseEndpoint {
         return reports;
     }
 
-	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID ,User user) throws UnauthorizedException {
+	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
 
@@ -443,7 +447,7 @@ public class ExerciseEndpoint {
 
 		project = mgr.getObjectById(ProjectRevision.class, revisionID);
 
-		cloneExerciseProject = cloneExerciseProject(project, user);
+		cloneExerciseProject = cloneExerciseProject(project);
 
 		cloneExerciseProject.addValidationCoder(user.getId());
 		cloneExerciseProject.setExerciseID(exerciseID);
@@ -454,7 +458,7 @@ public class ExerciseEndpoint {
 		cloneExerciseProject = mgr.makePersistent(cloneExerciseProject);
 		project = mgr.makePersistent(project);
 
-		TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.EXERCISE, cloneExerciseProject.getId(), true, user);
+		TextDocumentEndpoint.cloneTextDocuments(project, ProjectType.EXERCISE, cloneExerciseProject.getId(), true, loggedInUser);
 
 		return cloneExerciseProject;
 	}

@@ -30,7 +30,7 @@ const buildRedisConnectionOptions = () => {
   REDIS_HOST && (redisConnectionOptions.host = REDIS_HOST);
   REDIS_PORT && (redisConnectionOptions.port = parseInt(REDIS_PORT));
   REDIS_AUTH && (redisConnectionOptions.password = REDIS_AUTH);
-  
+
   return redisConnectionOptions;
 };
 

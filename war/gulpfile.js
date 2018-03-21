@@ -231,6 +231,7 @@ gulp.task('webpack-watch', function() {
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(replace('$TEST_MODE$', config.test_mode))
 		.pipe(gulp.dest('dist/js/'))
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
 });

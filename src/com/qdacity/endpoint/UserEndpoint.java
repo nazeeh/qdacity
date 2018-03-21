@@ -29,7 +29,6 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -274,9 +273,19 @@ public class UserEndpoint {
 		if(!(loggedInUser instanceof AuthenticatedUser)) {
 			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
 		}
+		try {
+			getCurrentUser(loggedInUser);
+			throw new UnauthorizedException("A User with this login method already exists!");
+		} catch (UnauthorizedException ex) {
+			// user is not registered
+			// this is required for inserting a user!
+		}
+
 		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
-		
-		user.setId(authenticatedUser.getId());
+
+		UUID uuid = UUID.randomUUID();
+		String randomId = uuid.toString();
+		user.setId(randomId);
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
@@ -494,7 +503,7 @@ public class UserEndpoint {
 
 			// Set filter for UserLoginProviderInformation
 			Filter externalUserIdFilter = new FilterPredicate("externalUserId", FilterOperator.EQUAL, authUser.getId());
-			Filter providerFilter = new FilterPredicate("provider", FilterOperator.EQUAL, "GOOGLE");
+			Filter providerFilter = new FilterPredicate("provider", FilterOperator.EQUAL, authUser.getProvider().toString());
 			Filter filter = new CompositeFilter(CompositeFilterOperator.AND,
 					Arrays.asList(externalUserIdFilter, providerFilter));
 

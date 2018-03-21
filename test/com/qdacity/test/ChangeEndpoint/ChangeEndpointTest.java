@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.qdacity.user.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class ChangeEndpointTest {
 	@Test
 	public void testGetAllChanges() throws UnauthorizedException {
 		latch.reset(5);
-		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		User addedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "My Project", "desc", testUser);
 		CodeEndpointTestHelper.addCode(22L, 2L, 1L, 15648758L, "authorName", "fff", testUser);
@@ -79,7 +80,7 @@ public class ChangeEndpointTest {
 		assertEquals(ChangeType.CREATED, change.getChangeType());
 		assertEquals(ChangeObject.CODE, change.getObjectType());
 		assertEquals(ProjectType.PROJECT, change.getProjectType());
-		assertEquals(testUser.getId(), change.getUserID());
+		assertEquals(addedTestUser.getId(), change.getUserID());
 		assertEquals(33L, change.getObjectID(), 0);
 		assertEquals(null, change.getOldValue());
 		// assertTrue(change.getNewValue().startsWith("{\"codeId\":\"3\"},{\"color\":\"fff\"},{\"author\":\"authorName\"}")); //FIXME check for contains instead. Order may vary.

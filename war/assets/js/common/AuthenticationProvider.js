@@ -39,7 +39,6 @@ export default class AuthenticationProvider {
 	/**
 	 * Signs-in on google account via a popup.
 	 * Sets the activeNetwork to 'google'.
-	 * @param callback
 	 * @return {Promise}
 	 */
 	signInWithGoogle() {
@@ -150,7 +149,6 @@ export default class AuthenticationProvider {
 	/**
 	 * Loggs out the current user and starts the sign in process for a new user.
 	 *
-	 * @param callback
 	 * @returns {Promise}
 	 */
 	changeAccount() {
@@ -236,7 +234,7 @@ export default class AuthenticationProvider {
 	 * This is a workaround because gapi.client doesn't provider header
 	 * specification with the discovered API.
 	 * @param {String} token
-	 * @param {Atring} provider
+	 * @param {String} provider
 	 * @returns the ecoded token as string.
 	 */
 	encodeTokenWithIdentityProvider(token, provider) {

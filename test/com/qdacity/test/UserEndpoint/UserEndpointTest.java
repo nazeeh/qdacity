@@ -290,7 +290,7 @@ public class UserEndpointTest {
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			ue.removeUser(testUser.getId(), testUser);
+			ue.removeUser(insertedTestUser.getId(), testUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
@@ -378,7 +378,7 @@ public class UserEndpointTest {
 		PersistenceManager mgr = getPersistenceManager();
 		mgr.setIgnoreCache(true);
 		try {
-			User user = mgr.getObjectById(User.class, "1");
+			User user = mgr.getObjectById(User.class, insertedUser.getId());
 			assertEquals(UserType.USER, user.getType());
 
 			UserEndpoint ue = new UserEndpoint();
@@ -435,12 +435,12 @@ public class UserEndpointTest {
 	
 	@Test
 	public void testGetCurrentUserOneAssociatedUsers() throws UnauthorizedException {
-		UserEndpointTestHelper.addUser("abc@test.de", "abc", "test", testUser);
+		User addedTestUser = UserEndpointTestHelper.addUser("abc@test.de", "abc", "test", testUser);
 		
 		UserEndpoint ue = new UserEndpoint();
 		User retrievedUser = ue.getCurrentUser(testUser);
 		
-		Assert.assertEquals(testUser.getId(), retrievedUser.getId());
+		Assert.assertEquals(addedTestUser.getId(), retrievedUser.getId());
 	}
 	
 	
