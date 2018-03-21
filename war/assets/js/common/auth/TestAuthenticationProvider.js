@@ -18,13 +18,6 @@ export default class TestAuthenticationProvider {
 		return true;
 	}
 
-	synchronizeTokenWithGapi() {
-		const promise = new Promise(function(resolve, reject) {
-			resolve();
-		});
-		return promise;
-	}
-
 	getProfile() {
 		const promise = new Promise(function(resolve, reject) {
 			const profile = {

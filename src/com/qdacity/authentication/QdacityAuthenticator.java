@@ -20,7 +20,7 @@ import com.google.appengine.api.utils.SystemProperty;
  */
 public class QdacityAuthenticator implements Authenticator {
 
-	public static final String PROVIDER_EMAILPWD = "emailpwd";
+	public static final String PROVIDER_EMAILPWD = "email_password";
 	public static final String PROVIDER_GOOGLE = "google";
 	public static final String PROVIDER_GOOGLE_ACCESS_TOKEN = "googleaccesstoken";
 
@@ -52,7 +52,7 @@ public class QdacityAuthenticator implements Authenticator {
         	String idTokenString = tokenParts[0];
         	
     		// no provider information was sent. Use default case!
-        	String provider = "GoogleAccessToken";
+        	String provider = PROVIDER_GOOGLE_ACCESS_TOKEN;
         	if(tokenParts.length >= 2) {
         		provider = tokenParts[1];
         	}

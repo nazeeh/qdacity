@@ -50,8 +50,12 @@ export default class AuthenticationProvider {
 	 * Sets the activeNetwork to 'google'.
 	 * @return {Promise}
 	 */
-	signInWithGoogle() {
-		if(TEST_MODE == true) return this.testAuthenticationProvider.signIn();
+	async signInWithGoogle() {
+		if(TEST_MODE === true) {
+			const testSigninPromise = await this.testAuthenticationProvider.signIn();
+			_this.synchronizeTokenWithGapi();
+			return testSigninPromise;
+		}
 
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
@@ -117,12 +121,14 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	getProfile() {
+		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
+			return this.testAuthenticationProvider.getProfile();
+		}
+
+
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getProfile();
 		}
-		
-		if(TEST_MODE == true) return this.testAuthenticationProvider.getProfile();
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			return hello(this.activeNetwork).api('me');
@@ -148,12 +154,14 @@ export default class AuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
+		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
+			return this.testAuthenticationProvider.isSignedIn();
+		}
+
+
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getProfile();
 		}
-
-		if(TEST_MODE == true) return this.testAuthenticationProvider.isSignedIn();
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
@@ -172,14 +180,16 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	signOut() {
+		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
+			return this.testAuthenticationProvider.signOut();
+		}
+
+
 		if (this.activeNetwork === this.network.email_password) {
 			this.auth2.disconnect();
 			hello(this.network.google).logout();
 			return this.emailPasswordAuthenticationProvider.signOut();
 		}
-
-		if(TEST_MODE == true) return this.testAuthenticationProvider.signOut();
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			this.auth2.disconnect();
 			this.emailPasswordAuthenticationProvider.signOut();
@@ -227,12 +237,13 @@ export default class AuthenticationProvider {
 	 * @returns the token
 	 */
 	getToken() {
+		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
+			return this.testAuthenticationProvider.getToken();
+		}
+
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getToken();
 		}
-
-		if(TEST_MODE == true) return this.testAuthenticationProvider.getToken();
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
@@ -249,9 +260,11 @@ export default class AuthenticationProvider {
 	 * 'Bearer' has to be prepended!
 	 */
 	getEncodedToken() {
+		const provider = (TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn() ? 'test' : this.activeNetwork);
+
 		return this.encodeTokenWithIdentityProvider(
 			this.getToken(),
-			this.activeNetwork
+			provider
 		);
 	}
 
@@ -264,7 +277,7 @@ export default class AuthenticationProvider {
 		// add to email+pwd
 		this.emailPasswordAuthenticationProvider.addAuthStateListener(callback);
 
-		if(TEST_MODE == true) return;
+		if(TEST_MODE === true) return;
 
 		// add to hellojs
 		hello.on('auth', callback);
@@ -280,8 +293,6 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	synchronizeTokenWithGapi() {
-		if(TEST_MODE == true) return this.testAuthenticationProvider.synchronizeTokenWithGapi(); // for test cases
-
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
 			if (!_this.isSignedIn()) {
