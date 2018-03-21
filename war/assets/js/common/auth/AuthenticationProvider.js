@@ -1,10 +1,5 @@
 import hello from 'hellojs';
 import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.js';
-import TestAuthenticationProvider from './TestAuthenticationProvider.js';
-
-
-const TEST_MODE = $TEST_MODE$;
-
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
@@ -21,7 +16,6 @@ export default class AuthenticationProvider {
 
 		this.initHelloJs();
 		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider();
-		this.testAuthenticationProvider = new TestAuthenticationProvider();
 
 		this.network = {
 			google: 'google', // uses hellojs
@@ -51,12 +45,6 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	async signInWithGoogle() {
-		if(TEST_MODE === true) {
-			const testSigninPromise = await this.testAuthenticationProvider.signIn();
-			_this.synchronizeTokenWithGapi();
-			return testSigninPromise;
-		}
-
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
 			hello.on('auth.login', function(auth) {
@@ -91,8 +79,6 @@ export default class AuthenticationProvider {
 	 * Sets the activeNetwork to 'gapi'.
 	 */
 	silentSignInWithGoogle() {
-		if(TEST_MODE == true) return this.testAuthenticationProvider.signIn();
-
 		var _this = this;
 		const promise = new Promise(function(resolve, reject) {
 			_this.auth2.isSignedIn.listen(function(googleUser) {
@@ -124,11 +110,6 @@ export default class AuthenticationProvider {
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getProfile();
 		}
-
-		if(TEST_MODE === true)  {
-			return this.testAuthenticationProvider.getProfile();
-		}
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			return hello(this.activeNetwork).api('me');
@@ -157,11 +138,6 @@ export default class AuthenticationProvider {
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getProfile();
 		}
-		
-		if(TEST_MODE === true)  {
-			return this.testAuthenticationProvider.isSignedIn();
-		}
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
@@ -185,13 +161,6 @@ export default class AuthenticationProvider {
 			hello(this.network.google).logout();
 			return this.emailPasswordAuthenticationProvider.signOut();
 		}
-
-
-		if(TEST_MODE === true)  {
-			return this.testAuthenticationProvider.signOut();
-		}
-
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			this.auth2.disconnect();
 			this.emailPasswordAuthenticationProvider.signOut();
@@ -242,13 +211,6 @@ export default class AuthenticationProvider {
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getToken();
 		}
-
-
-		if(TEST_MODE === true)  {
-			return this.testAuthenticationProvider.getToken();
-		}
-
-
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
@@ -265,8 +227,6 @@ export default class AuthenticationProvider {
 	 * 'Bearer' has to be prepended!
 	 */
 	getEncodedToken() {
-		const provider = (TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn() ? 'test' : this.activeNetwork);
-
 		return this.encodeTokenWithIdentityProvider(
 			this.getToken(),
 			provider
@@ -281,8 +241,6 @@ export default class AuthenticationProvider {
 	addAuthStateListener(callback) {
 		// add to email+pwd
 		this.emailPasswordAuthenticationProvider.addAuthStateListener(callback);
-
-		if(TEST_MODE === true) return;
 
 		// add to hellojs
 		hello.on('auth', callback);

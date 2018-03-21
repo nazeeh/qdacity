@@ -57,15 +57,6 @@ public class QdacityAuthenticator implements Authenticator {
         		provider = tokenParts[1];
         	}
 
-
-			// Is the server running as a development server? Then authorize all.
-			// But make Email+Password work as well!
-			if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development
-					&& !provider.equals(PROVIDER_EMAILPWD)) {
-				return testTokenValidator.validate("");
-			}
-
-
 			switch (provider.toLowerCase()) {			
 				case PROVIDER_GOOGLE:
 		    		return googleIdTokenValidator.validate(idTokenString);
