@@ -21,6 +21,7 @@ import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.*;
 import com.qdacity.test.TextDocumentEndpointTest.TextDocumentEndpointTestHelper;
+import com.qdacity.user.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -211,9 +212,9 @@ public class ExerciseEndpointTest {
     public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
         latch.reset(12);
         com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
-        UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
+        User addedStudentA = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
         com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
-        UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
+        User addedStudentB = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
 
         UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
 
@@ -224,8 +225,8 @@ public class ExerciseEndpointTest {
         termCourse.setId(1L);
         termCourse.setCourseID(1L);
         List<String> owners = new ArrayList<>();
-        owners.add(studentA.getId().toString());
-        owners.add(studentB.getId().toString());
+        owners.add(addedStudentA.getId().toString());
+        owners.add(addedStudentB.getId().toString());
         termCourse.setOwners(owners);
         courseEndpoint.insertTermCourse(termCourse, testUser);
         ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);

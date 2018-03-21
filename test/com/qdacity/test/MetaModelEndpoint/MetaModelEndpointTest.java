@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jdo.PersistenceManager;
 
+import com.qdacity.user.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,11 +53,11 @@ public class MetaModelEndpointTest {
 
 	@Test
 	public void testListEntities() throws UnauthorizedException {
-		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
+		User insertedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
 
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			ue.updateUserType("123456", "ADMIN", testUser);
+			ue.updateUserType(insertedTestUser.getId(), "ADMIN", testUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");
@@ -74,11 +75,11 @@ public class MetaModelEndpointTest {
 	public void testInsertEntity() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-		UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
+		User addedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "Owner", "Guy", testUser);
 		
 		UserEndpoint ue = new UserEndpoint();
 		try {
-			ue.updateUserType("123456", "ADMIN", testUser);
+			ue.updateUserType(addedTestUser.getId(), "ADMIN", testUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized");

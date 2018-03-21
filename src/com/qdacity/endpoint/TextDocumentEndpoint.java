@@ -345,16 +345,16 @@ public class TextDocumentEndpoint {
 		}
 	}
 
-	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
+	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User loggedInUser) throws UnauthorizedException {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Collection<TextDocument> documents = null;
 		if (project.getClass() == ProjectRevision.class)
         {
-            if (projectType == ProjectType.REVISION) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, user).getItems();
-            else if (projectType == ProjectType.EXERCISE) documents = tde.getTextDocument(project.getId(), ProjectType.EXERCISE, user).getItems();
-            else if (projectType == ProjectType.VALIDATION) documents = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
+            if (projectType == ProjectType.REVISION) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, loggedInUser).getItems();
+            else if (projectType == ProjectType.EXERCISE) documents = tde.getTextDocument(project.getId(), ProjectType.EXERCISE, loggedInUser).getItems();
+            else if (projectType == ProjectType.VALIDATION) documents = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, loggedInUser).getItems();
         }
-		else documents = tde.getTextDocument(project.getId(), ProjectType.PROJECT, user).getItems();
+		else documents = tde.getTextDocument(project.getId(), ProjectType.PROJECT, loggedInUser).getItems();
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
