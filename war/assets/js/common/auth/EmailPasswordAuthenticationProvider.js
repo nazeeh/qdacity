@@ -1,5 +1,6 @@
 import jwt_decode from 'jwt-decode';
 
+const STORAGE_EMAIL_PASSWORD_TOKEN_KEY = 'qdacity-emai-password-token';
 
 //@ts-check
 export default class EmailPasswordAuthenticationProvider {
@@ -25,6 +26,7 @@ export default class EmailPasswordAuthenticationProvider {
 			}).execute(function(resp) {
 				if (!resp.code) {
 					_this.jwtToken = resp.value;
+					localStorage.setItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY, resp.value);
 					_this.authStateChaned();
 					resolve(resp);
 				} else {
@@ -36,12 +38,19 @@ export default class EmailPasswordAuthenticationProvider {
 	}
 
 	/**
-	 * Get the current user.
+	 * Get the current user
 	 * @return {Promise}
 	 */
 	getProfile() {
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
+			if(_this.jwtToken === undefined || _this.jwtToken === null) {
+				resolve({
+					name: '',
+					email: '',
+					thumbnail: ''
+				});
+			}
 			const decoded = jwt_decode(_this.jwtToken);
 			const profile = {
 				name: decoded.name,
@@ -85,7 +94,7 @@ export default class EmailPasswordAuthenticationProvider {
 		if(this.jwtToken === undefined || this.jwtToken === null) {
 			this.loadTokenFromStorage();
 		}
-		return this.jwtToken !== undefined && this.jwtToken !== null
+		return this.jwtToken !== undefined && this.jwtToken !== null;
 	}
 
 	/**
@@ -93,7 +102,11 @@ export default class EmailPasswordAuthenticationProvider {
 	 * Sets this.jwtToken to the found token.
 	 */
 	loadTokenFromStorage() {
-		// TODO
+		const storedToken = localStorage.getItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY);
+		this.jwtToken = storedToken;
+		if(this.jwtToken !== undefined && this.jwtToken !== null) {
+			this.authStateChaned();
+		}
 	}
 
 	/**
@@ -101,10 +114,11 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @return {Promise}
 	 */
 	signOut() {
-		this.jwtToken = null;
-		this.authStateChaned();
-
+		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
+			localStorage.removeItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY);
+			_this.jwtToken = null;
+			_this.authStateChaned();
 			resolve();
 		});
 		return promise;

@@ -102,6 +102,21 @@ export default class AuthenticationProvider {
 	}
 
 	/**
+	 * Tries to restore token from prior session.
+	 * @returns {Promise}
+	 */
+	silentSignInWithEmailPassword() {
+		const _this = this;
+		const promise = new Promise(function(resolve, reject) {
+			if(_this.emailPasswordAuthenticationProvider.isSignedIn()) {
+				_this.activeNetwork = _this.network.email_password;
+				resolve();
+			}
+		});
+		return promise;
+	}
+
+	/**
 	 * Get the current user.
 	 * Respects the activeNetwork state to achieve this.
 	 * @return {Promise}
@@ -229,7 +244,7 @@ export default class AuthenticationProvider {
 	getEncodedToken() {
 		return this.encodeTokenWithIdentityProvider(
 			this.getToken(),
-			provider
+			this.activeNetwork
 		);
 	}
 

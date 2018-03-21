@@ -109,20 +109,26 @@ export default class App extends React.Component {
 			}
 		};
 
-		const _this = this;
+		this.initAuthProvider();
+	}
 
+	async initAuthProvider() {
 		// on page reloads: also reload profile data
-		if (this.authenticationProvider.isSignedIn()) {
-			_this.authenticationProvider.synchronizeTokenWithGapi();
-			_this.updateUserStatus();
-		} else {
-			// try silent sign in
-			_this.authenticationProvider.silentSignInWithGoogle().then(function() {
-				_this.authenticationProvider.synchronizeTokenWithGapi();
-				_this.updateUserStatus(); // somehow the auth state listener triggers too early!
-			});
-		}
+		if (!this.authenticationProvider.isSignedIn()) {
+			// try to silently sign in with email and password
+			await this.authenticationProvider.silentSignInWithEmailPassword();
+			//await this.authenticationProvider.synchronizeTokenWithGapi();
+			
+			if(!this.authenticationProvider.isSignedIn()) {
+				// try silent sign in
+				await this.authenticationProvider.silentSignInWithGoogle();
+				//await this.authenticationProvider.synchronizeTokenWithGapi();
+			}
 
+		}
+		this.updateUserStatus(); // somehow the auth state listener triggers too early!
+
+		const _this = this;
 		this.authenticationProvider.addAuthStateListener(function() {
 			// update on every auth state change
 			_this.updateUserStatus();
@@ -163,24 +169,18 @@ export default class App extends React.Component {
 			};
 
 			// 3. check if user is registered
-			_this.authenticationProvider.getCurrentUser().then(
-				function(user) {
-					_this.state.auth.authState = {
-						isUserSignedIn: loginStatus,
-						isUserRegistered: !!user
-					};
-					_this.setState(_this.state);
-					resolve();
-				},
-				function(err) {
-					_this.state.auth.authState = {
-						isUserSignedIn: loginStatus,
-						isUserRegistered: false
-					};
-					_this.setState(_this.state);
-					resolve();
-				}
-			);
+			const user = undefined;
+			try {
+				user = await _this.authenticationProvider.getCurrentUser();
+			} catch(e) {
+				// user stays undefined
+			}
+			_this.state.auth.authState = {
+				isUserSignedIn: loginStatus,
+				isUserRegistered: !!user
+			};
+			_this.setState(_this.state);
+			resolve();
 		});
 		return promise;
 	}
