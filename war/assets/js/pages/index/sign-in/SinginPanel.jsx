@@ -77,7 +77,9 @@ export default class SigninPanel extends React.Component {
 		super(props);
 
 		this.state = {
-			loading: false
+			loading: false,
+			emailInput: '',
+			passwordInput: ''
 		};
 
 		// init vex (workaround)
@@ -87,10 +89,8 @@ export default class SigninPanel extends React.Component {
 
 	async signInWithEmailPassword() {
 		console.log('Sign in with Email and password called!');
-		const email = 'third@test.de';
-		const password = 'test';
 
-		await this.props.auth.authentication.signInWithEmailPassword(email, password);
+		await this.props.auth.authentication.signInWithEmailPassword(this.state.emailInput, this.state.passwordInput);
 		await this.props.auth.updateUserStatus();
 		this.props.history.push('/PersonalDashboard');
 	}
@@ -146,17 +146,15 @@ export default class SigninPanel extends React.Component {
 					})
 				})
 			],
-			callback: function(data) {
+			callback: async function(data) {
 				if (data === false) {
 					return console.log('Cancelled');
 				}
 				// TODO call backend!
-				_this.props.auth.authentication.registerUserEmailPassword(data.email, data.pwd, data.firstName, data.lastName)
-					.then(function() {
-						_this.props.auth.updateUserStatus().then(function() {
-							_this.props.history.push('/PersonalDashboard');
-						});
-					});
+				await _this.props.auth.authentication.registerUserEmailPassword(data.email, data.pwd, data.firstName, data.lastName);
+				await _this.props.auth.authentication.signInWithEmailPassword(data.email, data.pwd);
+				await _this.props.auth.updateUserStatus();
+				_this.props.history.push('/PersonalDashboard');
 
 				return console.log(
 					'First',
@@ -192,7 +190,7 @@ export default class SigninPanel extends React.Component {
 						</div>
 						<div className="col-xs-12">
 							<FormulaInputWrapper>
-								<StyledInput/>
+								<StyledInput onChange={(event) => this.state.emailInput = event.target.value}/>
 							</FormulaInputWrapper>
 						</div>
 					</div>
@@ -207,7 +205,7 @@ export default class SigninPanel extends React.Component {
 						</div>
 						<div className="col-xs-12">
 							<FormulaInputWrapper>
-								<StyledInput type="password"/>
+								<StyledInput type="password" onChange={(event) => this.state.passwordInput = event.target.value}/>
 							</FormulaInputWrapper>
 						</div>
 					</div>
