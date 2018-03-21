@@ -153,7 +153,7 @@ class CodingEditor extends React.Component {
 
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
-		updateUserAtSyncService();
+		this.updateUserAtSyncService();
 	}
 
 	updateUserAtSyncService() {
