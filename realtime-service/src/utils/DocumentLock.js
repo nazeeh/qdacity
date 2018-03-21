@@ -4,7 +4,7 @@ const SERVER_NAME = require('../utils/serverName');
 const delay = require('../utils/delay');
 
 // Lock TTL in milliseconds
-const LOCK_TTL = 10000;
+const LOCK_TTL = 61000;
 
 /**
  * Document Lock Manager
