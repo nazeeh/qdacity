@@ -121,14 +121,14 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	getProfile() {
-		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
-			return this.testAuthenticationProvider.getProfile();
-		}
-
-
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getProfile();
 		}
+
+		if(TEST_MODE === true)  {
+			return this.testAuthenticationProvider.getProfile();
+		}
+
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			return hello(this.activeNetwork).api('me');
@@ -154,14 +154,14 @@ export default class AuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
-		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
-			return this.testAuthenticationProvider.isSignedIn();
-		}
-
-
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getProfile();
 		}
+		
+		if(TEST_MODE === true)  {
+			return this.testAuthenticationProvider.isSignedIn();
+		}
+
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
@@ -180,16 +180,18 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	signOut() {
-		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
-			return this.testAuthenticationProvider.signOut();
-		}
-
-
 		if (this.activeNetwork === this.network.email_password) {
 			this.auth2.disconnect();
 			hello(this.network.google).logout();
 			return this.emailPasswordAuthenticationProvider.signOut();
 		}
+
+
+		if(TEST_MODE === true)  {
+			return this.testAuthenticationProvider.signOut();
+		}
+
+
 		if (this.activeNetwork !== this.network.google_silent) {
 			this.auth2.disconnect();
 			this.emailPasswordAuthenticationProvider.signOut();
@@ -237,13 +239,16 @@ export default class AuthenticationProvider {
 	 * @returns the token
 	 */
 	getToken() {
-		if(TEST_MODE === true && !this.emailPasswordAuthenticationProvider.isSignedIn())  {
-			return this.testAuthenticationProvider.getToken();
-		}
-
 		if (this.activeNetwork === this.network.email_password) {
 			return this.emailPasswordAuthenticationProvider.getToken();
 		}
+
+
+		if(TEST_MODE === true)  {
+			return this.testAuthenticationProvider.getToken();
+		}
+
+
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
 			const session = hello.getAuthResponse(this.network.google);
