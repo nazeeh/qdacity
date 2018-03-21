@@ -480,6 +480,7 @@ export default class Codesystem extends SimpleCodesystem {
 						pageView={this.props.pageView}
 						getCodeById={this.getCodeById}
 						userProfile={this.props.userProfile}
+						readOnly = {this.props.readOnly}
 					/>
 				</StyledToolBar>
 

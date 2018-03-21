@@ -5,7 +5,7 @@ import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import Theme from '../../common/styles/Theme.js';
 import { ThemeProvider } from 'styled-components';
-import ChartTimeFrameChooser from '../../pages/termCourse-config/ChartTimeFrameChooser.jsx';
+import DateChooser from '../../common/modals/DateChooser.jsx';
 
 export default class CustomForm extends VexModal {
 	constructor(message) {
@@ -46,9 +46,16 @@ export default class CustomForm extends VexModal {
 
 	addDatePicker() {
 
+		const { formatMessage } = IntlProvider.intl;
+		var deadlineMessage = formatMessage({
+			id: 'modal.deadline',
+			defaultMessage:
+				'Deadline: '
+		});
+
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<div class="vex-custom-input-wrapper">';
-		this.formElements += 'Deadline: ';
+		this.formElements += deadlineMessage;
 		this.formElements += '<div id="DatePicker">';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
@@ -184,7 +191,7 @@ export default class CustomForm extends VexModal {
 			});
 			ReactDOM.render(
 				<ThemeProvider theme={Theme}>
-					<ChartTimeFrameChooser
+					<DateChooser
 						setSelectedDate={_this.setSelectedDate}
 					/>
 				</ThemeProvider>,
