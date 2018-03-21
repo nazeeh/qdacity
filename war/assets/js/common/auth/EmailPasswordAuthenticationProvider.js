@@ -1,3 +1,6 @@
+import jwt_decode from 'jwt-decode';
+
+
 //@ts-check
 export default class EmailPasswordAuthenticationProvider {
 
@@ -23,7 +26,6 @@ export default class EmailPasswordAuthenticationProvider {
 				if (!resp.code) {
 					_this.jwtToken = resp.value;
 					_this.authStateChaned();
-					console.log('received token ' + _this.jwtToken);
 					resolve(resp);
 				} else {
 					reject(resp);
@@ -38,11 +40,30 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @return {Promise}
 	 */
 	getProfile() {
-		// TODO
+		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
-			resolve();
+			const decoded = jwt_decode(_this.jwtToken);
+			const profile = {
+				name: decoded.name,
+				email: decoded.email,
+				thumbnail: _this.generateThumbnailBase64(decoded.name.charAt(0))
+			};
+			resolve(profile);
 		});
 		return promise;
+	}
+
+	/**
+	 * Generates a thumbnail image with blue background and the letter written in white.
+	 * @param {String} letter 
+	 * @returns {String} data url
+	 */
+	generateThumbnailBase64(letter) {
+		const canvas = document.createElement('canvas');
+		canvas.width = 200;
+		canvas.height = 200;
+		canvas.style.backgroundColor = 'red';
+		return canvas.toDataURL();
 	}
 
 	/**
@@ -51,9 +72,20 @@ export default class EmailPasswordAuthenticationProvider {
 	 */
 	isSignedIn() {
 		if(this.jwtToken == undefined || this.jwtToken == null) {
-			return false;
+			this.loadTokenFromStorage();
+			if(this.jwtToken == undefined || this.jwtToken == null) {
+				return false
+			}
 		}
 		return this.isTokenValid(this.jwtToken);
+	}
+
+	/**
+	 * Tries to load a jwt token from storage.
+	 * Sets this.jwtToken to the found token.
+	 */
+	loadTokenFromStorage() {
+		// TODO
 	}
 
 	/**
@@ -85,6 +117,9 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @returns the token
 	 */
 	getToken() {
+		if(this.jwtToken == undefined || this.jwtToken == null) {
+			this.loadTokenFromStorage();
+		}
 		if(this.isTokenValid(this.jwtToken)) {
 			return this.jwtToken;
 		} else {
