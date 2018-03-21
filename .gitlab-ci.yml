@@ -109,6 +109,7 @@ frontend_prod_unittest:
     expire_in: 6 mos
   script:
     - export DISPLAY=:10
+    - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd war
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
@@ -119,13 +120,14 @@ acceptance_tests:
   <<: *job_definition
   stage: test
   only:
-    - branches
+    - branches 
   cache:
-    <<: *node_cache
-    policy: pull
+    key: "acceptance_tests"
+    paths:
+    - realtime-service/node_modules/
+    - localization/node_modules/
+    - war/node_modules/
   script:
-    - pwd
-    - echo $API_CONFIG_PRODUCTION > ./war/api_config.json
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:
