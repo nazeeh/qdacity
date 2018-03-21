@@ -45,6 +45,7 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	async signInWithGoogle() {
+		this.signOut();
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
 			hello.on('auth.login', function(auth) {
@@ -78,11 +79,12 @@ export default class AuthenticationProvider {
 	 * Signs-in on an google account silently.
 	 * Sets the activeNetwork to 'gapi'.
 	 */
-	silentSignInWithGoogle() {
+	async silentSignInWithGoogle() {
 		var _this = this;
 		const promise = new Promise(function(resolve, reject) {
 			_this.auth2.isSignedIn.listen(function(googleUser) {
 				_this.activeNetwork = _this.network.google_silent;
+				_this.synchronizeTokenWithGapi();
 				resolve();
 			});
 		});
@@ -96,8 +98,10 @@ export default class AuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	async signInWithEmailPassword(email, password) {
+		this.signOut();
 		const signinResult = await this.emailPasswordAuthenticationProvider.signIn(email, password);
 		this.activeNetwork = this.network.email_password;
+		this.synchronizeTokenWithGapi();
 		return signinResult;
 	}
 
@@ -105,11 +109,13 @@ export default class AuthenticationProvider {
 	 * Tries to restore token from prior session.
 	 * @returns {Promise}
 	 */
-	silentSignInWithEmailPassword() {
+	async silentSignInWithEmailPassword() {
 		const _this = this;
-		const promise = new Promise(function(resolve, reject) {
+		const promise = new Promise(async function(resolve, reject) {
 			if(_this.emailPasswordAuthenticationProvider.isSignedIn()) {
 				_this.activeNetwork = _this.network.email_password;
+				await _this.synchronizeTokenWithGapi();
+				_this.emailPasswordAuthenticationProvider.authStateChaned(); // has to be called after sync with gapi
 				resolve();
 			}
 		});
@@ -170,23 +176,20 @@ export default class AuthenticationProvider {
 	 * The returned Promise is the one of the activeNetwork state.
 	 * @return {Promise}
 	 */
-	signOut() {
-		if (this.activeNetwork === this.network.email_password) {
-			this.auth2.disconnect();
-			hello(this.network.google).logout();
-			return this.emailPasswordAuthenticationProvider.signOut();
-		}
-		if (this.activeNetwork !== this.network.google_silent) {
-			this.auth2.disconnect();
-			this.emailPasswordAuthenticationProvider.signOut();
-			// check hellojs
-			return hello(this.network.google).logout();
-		} else {
-			hello(this.network.google).logout();
-			this.emailPasswordAuthenticationProvider.signOut();
-			// elsewise check gapi.auth2
-			return this.auth2.disconnect();
-		}
+	async signOut() {
+		const _this = this;
+		const promise = new Promise(async function(resolve, reject) {
+			try {
+				_this.auth2.disconnect();
+				hello(_this.network.google).logout();
+				_this.emailPasswordAuthenticationProvider.signOut();
+			} catch (e) {
+				console.log('Signout: catched exception');
+				console.log(e);
+			}
+			resolve();
+		});
+		return promise;
 	}
 
 	/**
@@ -259,7 +262,6 @@ export default class AuthenticationProvider {
 
 		// add to hellojs
 		hello.on('auth', callback);
-
 
 		// add to gapi.auth2
 		this.auth2.currentUser.listen(callback);
@@ -355,5 +357,12 @@ export default class AuthenticationProvider {
 			});
 		});
 		return promise;
+	}
+
+	/**
+	 * @returns {String}
+	 */
+	getActiveNetwork() {
+		return this.activeNetwork;
 	}
 }

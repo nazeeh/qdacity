@@ -113,26 +113,27 @@ export default class App extends React.Component {
 	}
 
 	async initAuthProvider() {
-		// on page reloads: also reload profile data
-		if (!this.authenticationProvider.isSignedIn()) {
-			// try to silently sign in with email and password
-			await this.authenticationProvider.silentSignInWithEmailPassword();
-			//await this.authenticationProvider.synchronizeTokenWithGapi();
-			
-			if(!this.authenticationProvider.isSignedIn()) {
-				// try silent sign in
-				await this.authenticationProvider.silentSignInWithGoogle();
-				//await this.authenticationProvider.synchronizeTokenWithGapi();
-			}
-
-		}
-		this.updateUserStatus(); // somehow the auth state listener triggers too early!
-
-		const _this = this;
+		
+		let _this = this;
 		this.authenticationProvider.addAuthStateListener(function() {
 			// update on every auth state change
 			_this.updateUserStatus();
 		});
+
+		// on page reloads: also reload profile data
+		if (!this.authenticationProvider.isSignedIn()) {
+			// try to silently sign in with email and password
+			await this.authenticationProvider.silentSignInWithEmailPassword();
+			
+			if(!this.authenticationProvider.isSignedIn()) {
+				// try silent sign in
+				this.authenticationProvider.silentSignInWithGoogle(); // don't await, because it is listening on an observer
+				await this.authenticationProvider.synchronizeTokenWithGapi();
+			}
+
+		}
+		this.authenticationProvider.synchronizeTokenWithGapi();
+		this.updateUserStatus(); // somehow the auth state listener triggers too early!
 	}
 
 	/**
@@ -169,7 +170,7 @@ export default class App extends React.Component {
 			};
 
 			// 3. check if user is registered
-			const user = undefined;
+			let user = undefined;
 			try {
 				user = await _this.authenticationProvider.getCurrentUser();
 			} catch(e) {

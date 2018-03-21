@@ -138,7 +138,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 			loading: true
 		});
 
-		if (this.authenticationProvider.isSignedIn()) {
+		if (this.authenticationProvider.isSignedIn() && this.authenticationProvider.getActiveNetwork() === 'google') {
 			this.redirect();
 		} else {
 			var _this = this;

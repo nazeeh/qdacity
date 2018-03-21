@@ -91,7 +91,7 @@ export default class SigninPanel extends React.Component {
 		console.log('Sign in with Email and password called!');
 
 		await this.props.auth.authentication.signInWithEmailPassword(this.state.emailInput, this.state.passwordInput);
-		await this.props.auth.updateUserStatus();
+		this.props.auth.updateUserStatus();
 		this.props.history.push('/PersonalDashboard');
 	}
 
