@@ -173,7 +173,7 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param loggedInUser
      */
     @ApiMethod(name = "authentication.refreshToken")
-    public StringWrapper refreshToken(@Named("pwd") String oldToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    public StringWrapper refreshToken(@Named("token") String oldToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         TokenUtil tokenUtil = TokenUtil.getInstance();
         if (!tokenUtil.verifyToken(oldToken)) {
             throw new UnauthorizedException("The given token is not valid. It also may be timed out!");

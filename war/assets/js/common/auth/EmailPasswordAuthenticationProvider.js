@@ -1,8 +1,10 @@
+//@ts-check
 import jwt_decode from 'jwt-decode';
 
 const STORAGE_EMAIL_PASSWORD_TOKEN_KEY = 'qdacity-emai-password-token';
+const TOKEN_TIMEOUT = 30; //min
 
-//@ts-check
+
 export default class EmailPasswordAuthenticationProvider {
 
 	constructor() {
@@ -51,6 +53,7 @@ export default class EmailPasswordAuthenticationProvider {
 					thumbnail: ''
 				});
 			}
+			_this.refreshTokenIfNeccessary();
 			const decoded = jwt_decode(_this.jwtToken);
 			const profile = {
 				name: decoded.name,
@@ -94,6 +97,7 @@ export default class EmailPasswordAuthenticationProvider {
 		if(this.jwtToken === undefined || this.jwtToken === null) {
 			this.loadTokenFromStorage();
 		}
+		this.refreshTokenIfNeccessary();
 		return this.jwtToken !== undefined && this.jwtToken !== null;
 	}
 
@@ -132,6 +136,7 @@ export default class EmailPasswordAuthenticationProvider {
 		if(this.jwtToken == undefined || this.jwtToken == null) {
 			this.loadTokenFromStorage();
 		}
+		this.refreshTokenIfNeccessary();
 		return this.jwtToken;
 	}
 
@@ -175,5 +180,36 @@ export default class EmailPasswordAuthenticationProvider {
 			});
 		});
 		return promise;
+	}
+
+	/**
+	 * Refreshes the token if it is close to timing out.
+	 */
+	refreshTokenIfNeccessary() {
+		if(this.jwtToken == undefined || this.jwtToken == null) {
+			return;
+		}
+		
+		const decoded = jwt_decode(this.jwtToken);
+
+		const now = new Date();
+		const compareDate = new Date(now.getTime() + TOKEN_TIMEOUT * 60000); // adding minutes
+		const expiresAt = new Date(decoded.exp  * 1000); // get the right date format
+
+		if(expiresAt.getTime() < compareDate.getTime()) {
+			// refresh neccessary
+			const _this = this;
+			gapi.client.qdacity.authentication.refreshToken({
+				token: this.jwtToken
+			}).execute(function(resp) {
+				if (!resp.code) {
+					_this.jwtToken = resp.value;
+					console.log('Refreshed token!');
+					localStorage.setItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY, resp.value);
+				} else {
+					console.log('Refreshing the token failed!');
+				}
+			});
+		}
 	}
 }
