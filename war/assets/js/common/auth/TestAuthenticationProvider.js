@@ -3,6 +3,20 @@ import AuthenticationProvider from './AuthenticationProvider.js';
 
 export default class TestAuthenticationProvider extends AuthenticationProvider {
 
+	signIn() {
+		const promise = new Promise(function(resolve, reject) {
+			resolve();
+		});
+		return promise;
+	}
+
+	signOut() {
+		const promise = new Promise(function(resolve, reject) {
+			resolve();
+		});
+		return promise;
+	}
+
 	isSignedIn() {
 		return true;
 	}
