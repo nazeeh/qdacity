@@ -60,9 +60,20 @@ export default class EmailPasswordAuthenticationProvider {
 	 */
 	generateThumbnailBase64(letter) {
 		const canvas = document.createElement('canvas');
+		const context = canvas.getContext('2d');
 		canvas.width = 200;
 		canvas.height = 200;
-		canvas.style.backgroundColor = 'red';
+
+		// background
+		context.fillStyle = "red";
+		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		// letter
+		context.fillStyle = "white";
+		context.font = "130px Arial";
+		context.textAlign = "center";
+		context.fillText(letter, canvas.width / 2, canvas.height/2 + 40);
+
 		return canvas.toDataURL();
 	}
 
