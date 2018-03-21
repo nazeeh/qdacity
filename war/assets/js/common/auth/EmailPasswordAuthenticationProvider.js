@@ -205,6 +205,7 @@ export default class EmailPasswordAuthenticationProvider {
 				if (!resp.code) {
 					_this.jwtToken = resp.value;
 					console.log('Refreshed token!');
+					_this.authStateChaned();
 					localStorage.setItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY, resp.value);
 				} else {
 					console.log('Refreshing the token failed!');

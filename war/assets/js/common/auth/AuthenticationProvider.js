@@ -5,6 +5,9 @@ const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
 	'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email';
 
+
+const TOKEN_REFRESH_ATER_MINUTES = 10;
+
 /* ------------------------------- AuthenticationProvider ----------------------------------- */
 export default class AuthenticationProvider {
 	constructor() {
@@ -28,6 +31,13 @@ export default class AuthenticationProvider {
 		 * Equals one of the network properties or 'gapi'.
 		 */
 		this.activeNetwork = this.network.google;
+
+		const _this = this;
+		setInterval(function() {
+			// automatically refresh token
+			console.log('automatically refreshing token');
+			_this.getToken();
+		}, 60 * 1000 * TOKEN_REFRESH_ATER_MINUTES); // every 10 min
 	}
 
 	/**
