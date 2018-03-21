@@ -3,6 +3,7 @@
  */
 
 const SERVER_NAME = require('./utils/serverName');
+const logger = require('./utils/Logger');
 
 // Socket.io setup as suggested in https://socket.io/get-started/chat/
 const app = require('express')();
@@ -24,5 +25,5 @@ require('./fileServer')(app);
 
 // Start server and listen on all IPs
 http.listen(process.env.PORT, '0.0.0.0', () => {
-  console.info(`${SERVER_NAME} listening`);
+  logger.info(`${SERVER_NAME} listening`);
 });

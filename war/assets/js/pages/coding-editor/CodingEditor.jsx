@@ -161,7 +161,10 @@ class CodingEditor extends React.Component {
 			name: this.props.auth.userProfile.name,
 			email: this.props.auth.userProfile.email,
 			picSrc: this.props.auth.userProfile.picSrc,
-			project: this.state.project.id,
+			project: {
+				id: this.state.project.id,
+				type: this.state.project.type,
+			},
 			token: this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
 		});
 	}
@@ -245,7 +248,9 @@ class CodingEditor extends React.Component {
 				relationshipCode.relationshipCode = null;
 				relationshipCode.mmElementIDs = [];
 
-				this.syncService.codes.updateCode(relationshipCode);
+				this.syncService.codes.updateCode(relationshipCode).catch(() => {
+					// Errors are logged in syncService, but need to be catched
+				});
 			}
 
 			code.relations = resp.relations;
@@ -401,6 +406,8 @@ class CodingEditor extends React.Component {
 									projectType={this.state.project.getType()}
 									report={this.report}
 									syncService={this.syncService}
+									getCodeByCodeID={this.getCodeByCodeID}
+									codesystemView={this.codesystemViewRef}
 								/>
 							</StyledDocumentsView>
 						</div>
@@ -441,9 +448,7 @@ class CodingEditor extends React.Component {
 							projectType={this.state.project.getType()}
 							getCodeByCodeID={this.getCodeByCodeID}
 							showAgreementMap={this.state.showAgreementMap}
-							agreementMapHighlightThreshold={
-								this.state.agreementMapHighlightThreshold
-							}
+							agreementMapHighlightThreshold={this.state.agreementMapHighlightThreshold}
 						/>
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}

@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 
 import styled from 'styled-components';
 
+import Alert from '../../../common/modals/Alert';
 import ReactLoading from '../../../common/ReactLoading.jsx';
 
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
@@ -155,7 +156,10 @@ export default class Codesystem extends SimpleCodesystem {
 
 	updateSelected(code, persist) {
 		if (persist) {
-			this.props.syncService.codes.updateCode(code);
+			this.props.syncService.codes.updateCode(code).catch(() => {
+				// Inform the user why the mark is disappearing again
+				new Alert('Code could not be updated. Please try again').showModal();
+			});
 		} else {
 			Object.assign(this.state.selected, code);
 			this.forceUpdate();
@@ -199,7 +203,9 @@ export default class Codesystem extends SimpleCodesystem {
 				relationshipCode.relationshipCode = null;
 				relationshipCode.mmElementIDs = [];
 
-				this.props.syncService.codes.updateCode(relationshipCode);
+				this.props.syncService.codes.updateCode(relationshipCode).catch(() => {
+					// Errors are logged in syncService, but need to be catched
+				});
 			}
 		};
 
@@ -253,6 +259,9 @@ export default class Codesystem extends SimpleCodesystem {
 				if (select) {
 					_this.setSelected(resp);
 				}
+			}).catch(() => {
+				// Inform the user why the mark is disappearing again
+				new Alert('Code could not be created. Please try again').showModal();
 			});
 	}
 
@@ -275,7 +284,10 @@ export default class Codesystem extends SimpleCodesystem {
 			return;
 		}
 
-		this.props.syncService.codes.removeCode(code);
+		this.props.syncService.codes.removeCode(code).catch(() => {
+			// Inform the user why the mark is disappearing again
+			new Alert('Code could not be removed. Please try again').showModal();
+		});
 	}
 
 	initCodingCount(allCodes, rootCodes) {
@@ -315,7 +327,10 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	relocateCode(movingNode, targetID) {
-		this.props.syncService.codes.relocateCode(movingNode.id, targetID);
+		this.props.syncService.codes.relocateCode(movingNode.id, targetID).catch(() => {
+			// Inform the user why the mark is disappearing again
+			new Alert('Code could not be relocated. Please try again').showModal();
+		});
 	}
 
 	onCodeRelocation(code) {
@@ -354,7 +369,7 @@ export default class Codesystem extends SimpleCodesystem {
 			if (strippedText !== originalText) {
 				doc.text = strippedText;
 				this.props.documentsView.changeDocumentData(doc);
-				if (activeDocId === doc.id) this.props.textEditor.setHTML(doc.text);
+				if (activeDocId === doc.id) this.props.textEditor.setDocument(doc);
 			}
 		}
 	}

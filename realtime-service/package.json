@@ -28,6 +28,7 @@
     "start:daemon": "pm2 restart index.js || pm2 start index.js",
     "test": "echo \"Info: no test specified\" && exit 0",
     "watch": "pm2 start index.js --watch",
+    "watch:debug": "pm2 start index.js --watch --node-args=\"--inspect\"",
     "watch:stop": "pm2 stop 0 --watch"
   },
   "dependencies": {
@@ -35,7 +36,13 @@
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "googleapis": "^24.0.0",
+    "immutable": "^3.8.2",
+    "jsdom": "^11.6.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "redis": "^2.8.0",
+    "slate": "^0.32.4",
+    "slate-html-serializer": "^0.5.4",
     "socket.io": "^2.0.4",
     "socket.io-redis": "^5.2.0",
     "winston": "^2.4.1"
