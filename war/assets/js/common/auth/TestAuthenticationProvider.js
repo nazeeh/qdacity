@@ -1,7 +1,4 @@
-
-import AuthenticationProvider from './AuthenticationProvider.js';
-
-export default class TestAuthenticationProvider extends AuthenticationProvider {
+export default class TestAuthenticationProvider {
 
 	signIn() {
 		const promise = new Promise(function(resolve, reject) {

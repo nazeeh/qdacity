@@ -1,6 +1,6 @@
 import hello from 'hellojs';
-import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.jsx';
-import TestAuthenticationProvider from './TestAuthenticationProvider.jsx';
+import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.js';
+import TestAuthenticationProvider from './TestAuthenticationProvider.js';
 
 
 const TEST_MODE = $TEST_MODE$;
@@ -243,6 +243,18 @@ export default class AuthenticationProvider {
 		}
 	}
 
+	/** 
+	 * This returns the matching format for the authorization header.
+	 * Format: <token> <identity_provider> 
+	 * 'Bearer' has to be prepended!
+	 */
+	getEncodedToken() {
+		return this.encodeTokenWithIdentityProvider(
+			this.getToken(),
+			this.activeNetwork
+		);
+	}
+
 	/**
 	 * Always calls the given callback if the auth state changes.
 	 *
@@ -277,12 +289,7 @@ export default class AuthenticationProvider {
 				return;
 			}
 
-			const idToken = _this.getToken();
-			const headerToken = _this.encodeTokenWithIdentityProvider(
-				idToken,
-				_this.network.google
-			); // format: <id_token> <authentication_provider_identifier>
-			// Google just allows Authorization header customization with id_token by using the access_token attribute:
+			const headerToken = _this.getEncodedToken();
 			gapi.client.setToken({
 				access_token: headerToken // gapi prepends 'Bearer ' automatically!
 			});
