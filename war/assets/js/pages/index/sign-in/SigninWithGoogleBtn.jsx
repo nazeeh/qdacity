@@ -57,7 +57,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 	}
 
 	onSignedIn() {
-		if(!this.props.onSignedIn()) {
+		if(!this.props.onSignedIn) {
 			console.error('No onSignedIn method given in SigninWithGoogleBtn.');
 			return;
 		}
