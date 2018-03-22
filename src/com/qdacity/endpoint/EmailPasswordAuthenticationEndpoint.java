@@ -57,14 +57,14 @@ public class EmailPasswordAuthenticationEndpoint {
     public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
                                       @Named("givenName") String givenName, @Named("surName") String surName,
                                       com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
-        assertEmailIsAvailable(email);
-        if(pwd == null || pwd.isEmpty()) {
-            throw new BadRequestException("Code2.3: The password must not be empty!");
-        }
         Pattern pattern = Pattern.compile(EMAIL_REGEX);
         if(!pattern.matcher(email).matches()) {
             throw new BadRequestException("Code2.2: The given email adress is not in a valid format!");
         }
+        if(pwd == null || pwd.isEmpty()) {
+            throw new BadRequestException("Code2.3: The password must not be empty!");
+        }
+        assertEmailIsAvailable(email);
 
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);

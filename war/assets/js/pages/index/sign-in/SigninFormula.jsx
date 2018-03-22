@@ -90,11 +90,13 @@ export default class SigninFormula extends React.Component {
 						id: 'signin-formula.signin.failure.userDoesNotExist',
 						defaultMessage: 'This combination of email and password does not exist!'
 					});
+					break;
 				case 'Code1.2': // wrong password
 					failureMessage = formatMessage({
 						id: 'signin-formula.signin.failure.wrongPassword',
 						defaultMessage: 'This combination of email and password does not exist!'
 					});
+					break;
 			}
 
 			vex.dialog.open({
@@ -177,8 +179,50 @@ export default class SigninFormula extends React.Component {
 				if (data === false) {
 					return console.log('Cancelled');
 				}
-				// TODO call backend!
-				await _this.props.auth.authentication.registerUserEmailPassword(data.email, data.pwd, data.firstName, data.lastName);
+				try {
+					await _this.props.auth.authentication.registerUserEmailPassword(data.email, data.pwd, data.firstName, data.lastName);
+				} catch(e) {
+					const code = e.message.split(':')[0]; // format Code1.2: ...
+					let failureMessage = formatMessage({
+						id: 'signin-formula.register.failure.genericMessage',
+						defaultMessage: 'Something went wrong! Please report to our administrators'
+					});
+					switch(code) {
+						case 'Code2.1': // email format not ok
+							failureMessage = formatMessage({
+							id: 'signin-formula.register.failure.emailNotFree',
+							defaultMessage: 'There already exists an account with this email!'
+							});
+							break;
+						case 'Code2.2': // email format not ok
+							failureMessage = formatMessage({
+								id: 'signin-formula.register.failure.invalidEmail',
+								defaultMessage: 'This is not a valid email adress!'
+							});
+							break;
+						case 'Code2.3': // password doesn't meet requirements.
+							failureMessage = formatMessage({
+								id: 'signin-formula.register.failure.invalidPassword',
+								defaultMessage: 'The password must not be empty!'
+							});
+							break;
+					}
+
+					vex.dialog.open({
+						message: failureMessage,
+						buttons: [
+							$.extend({}, vex.dialog.buttons.NO, {
+								text: formatMessage({
+									id: 'signin-formula.signin.failure.popup.close',
+									defaultMessage: 'Close'
+								})
+							})
+						],
+					});
+					return;
+				}
+
+
 				await _this.props.auth.authentication.signInWithEmailPassword(data.email, data.pwd);
 				await _this.props.auth.updateUserStatus();
 				_this.onSignedIn();
