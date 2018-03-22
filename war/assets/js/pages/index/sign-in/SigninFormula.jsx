@@ -50,7 +50,10 @@ const ButtonStyledWidh = styled.div`
 const FormulaInputWrapper = styled.div`
 	width: 100%;
 	& > input {
-		width: 80%;
+		width: 80% !important;
+		height: 30px !important;
+		border: 1px solid !important;    
+		min-height: 0px !important;
 		color: ${props => props.theme.defaultText}
 	}
 `;
@@ -75,7 +78,15 @@ export default class SigninFormula extends React.Component {
 
 		await this.props.auth.authentication.signInWithEmailPassword(this.state.emailInput, this.state.passwordInput);
 		this.props.auth.updateUserStatus();
-		this.props.history.push('/PersonalDashboard');
+		this.onSignedIn();	
+	}
+
+	onSignedIn() {
+		if(!this.props.onSignedIn()) {
+			console.error('No onSignedIn method given in SigninFormula.');
+			return;
+		}
+		this.props.onSignedIn();
 	}
 
 	forgotPassword() {
@@ -137,7 +148,7 @@ export default class SigninFormula extends React.Component {
 				await _this.props.auth.authentication.registerUserEmailPassword(data.email, data.pwd, data.firstName, data.lastName);
 				await _this.props.auth.authentication.signInWithEmailPassword(data.email, data.pwd);
 				await _this.props.auth.updateUserStatus();
-				_this.props.history.push('/PersonalDashboard');
+				_this.onSignedIn();
 
 				return console.log(
 					'First',
@@ -241,7 +252,7 @@ export default class SigninFormula extends React.Component {
                     </div>
                     <div className="row">
                         <ButtonStyledWidh>
-                            <SigninWithGoogleBtn auth={this.props.auth} history={this.props.history}/>
+                            <SigninWithGoogleBtn auth={this.props.auth} onSignedIn={this.props.onSignedIn}/>
                         </ButtonStyledWidh>
                     </div>
                 </div>

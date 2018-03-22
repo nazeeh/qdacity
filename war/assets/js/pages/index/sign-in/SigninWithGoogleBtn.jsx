@@ -27,7 +27,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 		const _this = this;
 		this.authenticationProvider.getCurrentUser().then(
 			function(value) {
-				_this.props.history.push('/PersonalDashboard');
+				_this.onSignedIn();
 			},
 			function(value) {
 				var decider = new BinaryDecider(
@@ -54,6 +54,14 @@ export default class SigninWithGoogleBtn extends React.Component {
 				});
 			}
 		);
+	}
+
+	onSignedIn() {
+		if(!this.props.onSignedIn()) {
+			console.error('No onSignedIn method given in SigninWithGoogleBtn.');
+			return;
+		}
+		this.props.onSignedIn();
 	}
 
 	registerAccount() {

@@ -241,6 +241,7 @@ export default class App extends React.Component {
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
 										tutorial={tut}
+										theme={Theme}
 										{...props}
 									/>
 								)}

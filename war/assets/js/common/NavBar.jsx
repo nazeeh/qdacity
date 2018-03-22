@@ -166,6 +166,7 @@ export default class NavBar extends React.Component {
 									<Account
 										auth={this.props.auth}
 										history={this.props.history}
+										theme={this.props.theme}
 									/>
 								</div>
 							</StyledAccountTab>

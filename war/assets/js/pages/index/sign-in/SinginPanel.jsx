@@ -43,11 +43,17 @@ const ButtonGroupWrapper = styled.div`
 export default class SigninPanel extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.onSignedIn = this.onSignedIn.bind(this);
 	}
 
 	async onSignOut() {
 		await this.props.auth.authentication.signOut();
 		this.props.history.push('/');
+	}
+
+	onSignedIn() {
+		this.props.history.push('/PersonalDashboard');
 	}
 
 	render() {
@@ -101,7 +107,7 @@ export default class SigninPanel extends React.Component {
 					<SignInFormula 
 						theme={this.props.theme}
 						auth={this.props.auth}
-						history={this.props.history}/>
+						onSignedIn={this.onSignedIn}/>
 				</PanelWrapper>
 			);
 		}
