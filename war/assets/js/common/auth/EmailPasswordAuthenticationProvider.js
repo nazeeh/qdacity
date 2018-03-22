@@ -98,7 +98,7 @@ export default class EmailPasswordAuthenticationProvider {
 			this.loadTokenFromStorage();
 		}
 		this.refreshTokenIfNeccessary();
-		return this.jwtToken !== undefined && this.jwtToken !== null;
+		return this.jwtToken !== undefined && this.jwtToken !== null && !this.isTokenExpired(this.jwtToken);
 	}
 
 	/**
@@ -107,7 +107,15 @@ export default class EmailPasswordAuthenticationProvider {
 	 */
 	loadTokenFromStorage() {
 		const storedToken = localStorage.getItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY);
-		this.jwtToken = storedToken;
+		if(storedToken === undefined || storedToken === null) {
+			this.jwtToken = null;
+			return;
+		}
+
+		if(!this.isTokenExpired(storedToken)) {
+			this.jwtToken = storedToken;
+		}
+
 		if(this.jwtToken !== undefined && this.jwtToken !== null) {
 			this.authStateChaned();
 		}
@@ -137,7 +145,7 @@ export default class EmailPasswordAuthenticationProvider {
 			this.loadTokenFromStorage();
 		}
 		this.refreshTokenIfNeccessary();
-		return this.jwtToken;
+		return !this.isTokenExpired(this.jwtToken) ? this.jwtToken : null;
 	}
 
 	/**
@@ -212,5 +220,18 @@ export default class EmailPasswordAuthenticationProvider {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Checkis if the token is already expired.
+	 * @param {String} token 
+	 */
+	isTokenExpired(token) {
+		const decoded = jwt_decode(token);
+
+		const now = new Date();
+		const expiresAt = new Date(decoded.exp  * 1000); // get the right date format
+		
+		return (expiresAt.getTime() < now.getTime());
 	}
 }
