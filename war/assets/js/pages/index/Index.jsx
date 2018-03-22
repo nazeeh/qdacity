@@ -67,7 +67,6 @@ export default class Index extends React.Component {
 									</h3>
 									<hr className="intro-divider" />
 									<SigninPanel
-										theme={this.props.theme}
 										auth={this.props.auth}
 										history={this.props.history}
 									/>

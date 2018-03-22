@@ -98,7 +98,7 @@ export default class Account extends React.Component {
 			ReactDOM.render(
 				<IntlProvider>
 					<ChangeAccountWrapper className="container-fluid">
-						<SigninFormula auth={_this.props.auth} theme={_this.props.theme} onSignedIn={_this.onSignedIn}/>
+						<SigninFormula auth={_this.props.auth} onSignedIn={_this.onSignedIn}/>
 					</ChangeAccountWrapper>
 				</IntlProvider>,
 				document.getElementById('change-account-placeholder')

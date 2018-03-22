@@ -105,7 +105,6 @@ export default class SigninPanel extends React.Component {
 			return (
 				<PanelWrapper className="container-fluid">
 					<SignInFormula 
-						theme={this.props.theme}
 						auth={this.props.auth}
 						onSignedIn={this.onSignedIn}/>
 				</PanelWrapper>
