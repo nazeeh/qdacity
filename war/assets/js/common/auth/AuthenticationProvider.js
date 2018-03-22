@@ -51,7 +51,7 @@ export default class AuthenticationProvider {
 
 	/**
 	 * Signs-in on google account via a popup.
-	 * Sets the activeNetwork to 'google'.
+	 * Signs out all accounts beforehand!
 	 * @return {Promise}
 	 */
 	async signInWithGoogle() {
@@ -102,7 +102,8 @@ export default class AuthenticationProvider {
 	}
 
 	/**
-	 * Signs-in on the qdacity account with email and password
+	 * Signs-in on the qdacity account with email and password.
+	 * Signs out all accounts beforehand!
 	 * @param {String} email 
 	 * @param {String} password 
 	 * @returns {Promise}
@@ -204,35 +205,6 @@ export default class AuthenticationProvider {
 			});
 
 			resolve();
-		});
-		return promise;
-	}
-
-	/**
-	 * Loggs out the current user and starts the sign in process for a new user.
-	 *
-	 * @returns {Promise}
-	 */
-	changeAccount() {
-		var _this = this;
-		var promise = new Promise(function(resolve, reject) {
-			_this.signOut().then(
-				function() {
-					_this.signInWithGoogle().then(
-						function() {
-							resolve();
-						},
-						function(err) {
-							console.log('Error at changing Account!');
-							reject(err);
-						}
-					);
-				},
-				function(err) {
-					console.log('Error at changing Account!');
-					reject(err);
-				}
-			);
 		});
 		return promise;
 	}

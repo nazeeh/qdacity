@@ -47,7 +47,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 				);
 				decider.showModal().then(function(value) {
 					if (value == 'optionA') {
-						_this.authenticationProvider.changeAccount().then(function() {
+						_this.authenticationProvider.signInWithGoogle().then(function() {
 							_this.redirect();
 						});
 					} else _this.registerAccount();
