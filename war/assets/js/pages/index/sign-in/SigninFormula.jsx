@@ -53,7 +53,10 @@ const FormulaInputWrapper = styled.div`
 		height: 30px !important;
 		border: 1px solid !important;    
 		min-height: 0px !important;
-		color: ${props => props.theme.defaultText}
+		color: ${props => props.theme.defaultText};
+		margin-left: auto !important;
+		margin-right: auto !important;
+		display: block;
 	}
 `;
 
