@@ -15,6 +15,7 @@ import { DragAndDropCode } from './Code.jsx';
 import { PageView } from '../View/PageView.js';
 
 import CodesystemToolbar from './CodesystemToolbar.jsx';
+import CodeSearch from './CodeSearch.jsx';
 
 import SimpleCodesystem from './SimpleCodesystem.jsx';
 
@@ -70,6 +71,7 @@ export default class Codesystem extends SimpleCodesystem {
 		this.umlEditor = null;
 
 		this.toolbarRef = null;
+		this.codeSearchRef = null;
 
 		this.relocateCode = this.relocateCode.bind(this);
 		this.createCode = this.createCode.bind(this);
@@ -77,6 +79,9 @@ export default class Codesystem extends SimpleCodesystem {
 		this.updateCodingCount = this.updateCodingCount.bind(this);
 		this.initCodingCount = this.initCodingCount.bind(this);
 		this.shouldHighlightNode = this.shouldHighlightNode.bind(this);
+		this.toggleCodeSearch = this.toggleCodeSearch.bind(this);
+		this.searchTextUpdated = this.searchTextUpdated.bind(this);
+		this.doesCodeMatchSearchText = this.doesCodeMatchSearchText.bind(this);
 		this.init = this.init.bind(this);
 
 		this.updateUserProfileStatusFromProps(props);
@@ -374,6 +379,45 @@ export default class Codesystem extends SimpleCodesystem {
 		}
 	}
 
+	toggleCodeSearch() {
+		this.codeSearchRef.toggleVisibility();
+	}
+
+	searchTextUpdated(searchText) {
+		this.forceUpdate();
+	}
+
+	doesCodeMatchSearchText(code) {
+		if (this.codeSearchRef == null) {
+			return true;
+		}
+
+		const searchText = this.codeSearchRef.getSearchText().toLowerCase();
+
+		if (searchText ==  '') {
+			return true;
+		}
+
+		if (code.name.toLowerCase().indexOf(searchText) !== -1) {
+			return true;
+		}
+		else {
+			if (code.children == null) {
+				return false;
+			}
+
+			for (let i = 0; i < code.children.length; i++) {
+				let b = this.doesCodeMatchSearchText(code.children[i]);
+			
+				if (b) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	shouldHighlightNode(code) {
 		// Not initialized yet
 		if (this.props.umlEditor.getMetaModelMapper() == null) {
@@ -441,6 +485,7 @@ export default class Codesystem extends SimpleCodesystem {
 				selected={this.state.selected}
 				setSelected={this.setSelected}
 				relocateCode={this.relocateCode}
+				doesCodeMatchSearchText={this.doesCodeMatchSearchText}
 				showFooter={this.props.showFooter}
 				key={key}
 				isCodeSelectable={this.props.isCodeSelectable}
@@ -495,8 +540,11 @@ export default class Codesystem extends SimpleCodesystem {
 						pageView={this.props.pageView}
 						getCodeById={this.getCodeById}
 						userProfile={this.props.userProfile}
+						toggleCodeSearch={this.toggleCodeSearch}
 					/>
 				</StyledToolBar>
+
+				<CodeSearch ref={c => {if (c != null) { this.codeSearchRef = c; }}} codesystem={this} searchTextUpdated={this.searchTextUpdated}></CodeSearch>
 
 				<StyledCodeSystem
 					ref={c => (this.codesystemRef = c)}

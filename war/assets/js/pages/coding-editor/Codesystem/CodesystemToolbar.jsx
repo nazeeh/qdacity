@@ -39,6 +39,7 @@ export default class CodesystemToolbar extends React.Component {
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
 		this.showCodingsOverview = this.showCodingsOverview.bind(this);
+		this.toggleSearchBar = this.toggleSearchBar.bind(this);
 	}
 
 	// lifecycle hook: update state for rerender
@@ -117,6 +118,10 @@ export default class CodesystemToolbar extends React.Component {
 			.then(function() {});
 	}
 
+	toggleSearchBar() {
+		this.props.toggleCodeSearch();
+	}
+
 	renderAddRemoveCodeBtn() {
 		if (this.props.projectType != 'PROJECT') return '';
 
@@ -162,6 +167,16 @@ export default class CodesystemToolbar extends React.Component {
 		);
 	}
 
+	renderSearchButton() {
+		return (
+			<StyledBtnGroup className="btn-group">
+				<BtnDefault className="btn btn-default" onClick={this.toggleSearchBar}>
+					<i className="fa fa-search fa-1x" />
+				</BtnDefault>
+			</StyledBtnGroup>
+		);
+	}
+
 	render() {
 		return (
 			<StyledToolBar>
@@ -184,6 +199,7 @@ export default class CodesystemToolbar extends React.Component {
 					</BtnDefault>
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}
+				{this.renderSearchButton()}
 			</StyledToolBar>
 		);
 	}

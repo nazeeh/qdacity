@@ -98,6 +98,10 @@ class Code extends SimpleCode {
 	}
 
 	renderChildSimple(childCode, level, key) {
+		if (!this.props.doesCodeMatchSearchText(this.props.node)) {
+			return null;
+		}
+
 		return (
 			<DragAndDropCode
 				showSimpleView={this.props.showSimpleView}
@@ -107,6 +111,7 @@ class Code extends SimpleCode {
 				selected={this.props.selected}
 				setSelected={this.props.setSelected}
 				relocateCode={this.props.relocateCode}
+				doesCodeMatchSearchText={this.props.doesCodeMatchSearchText}
 				showFooter={this.props.showFooter}
 				key={key}
 				isCodeSelectable={this.props.isCodeSelectable}
