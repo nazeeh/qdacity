@@ -27,6 +27,7 @@ const Mode = {
 
 /**
  * Available props:
+ * - defaultExpanded: specifies if the content should be collapsed or expanded by default
  * - duration: specifies how much time the animation lasts
  * - onCollapse: function which is called when the Collapsible finishs the collapse animation
  * - onExpand: function which is called when the Collapsible finishs the expand animation
@@ -47,7 +48,7 @@ export default class Collapsible extends React.Component {
 		this.contentHeight = 0;
 
 		this.state = {
-			mode: Mode.COLLAPSED,
+			mode: (this.props.defaultCollapsed === true ? Mode.EXPANDED : Mode.COLLAPSED),
 			height: 0
 		};
 
