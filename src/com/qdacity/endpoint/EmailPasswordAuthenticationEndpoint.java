@@ -59,11 +59,11 @@ public class EmailPasswordAuthenticationEndpoint {
                                       com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         assertEmailIsAvailable(email);
         if(pwd == null || pwd.isEmpty()) {
-            throw new BadRequestException("The password must not be empty!");
+            throw new BadRequestException("Code2.3: The password must not be empty!");
         }
         Pattern pattern = Pattern.compile(EMAIL_REGEX);
         if(!pattern.matcher(email).matches()) {
-            throw new BadRequestException("The given email adress is not in a valid format!");
+            throw new BadRequestException("Code2.2: The given email adress is not in a valid format!");
         }
 
         HashUtil hashUtil = new HashUtil();
@@ -102,7 +102,7 @@ public class EmailPasswordAuthenticationEndpoint {
         try {
             emailPwd = pm.getObjectById(EmailPasswordLogin.class, email);
         } catch(JDOObjectNotFoundException e) {
-            throw new UnauthorizedException("The User with the email " + email + " could not be found!");
+            throw new UnauthorizedException("Code1.1: The User with the email " + email + " could not be found!");
         }
         finally {
             pm.close();
@@ -110,7 +110,7 @@ public class EmailPasswordAuthenticationEndpoint {
 
         // check if given password matches
         if(!new HashUtil().verify(pwd, emailPwd.getHashedPwd())) {
-            throw new UnauthorizedException("The password doesn't match the account for " + email + "!");
+            throw new UnauthorizedException("Code1.2: The password doesn't match the account for " + email + "!");
         }
 
         // generate JWT token
@@ -138,7 +138,7 @@ public class EmailPasswordAuthenticationEndpoint {
             Entity providerInformationEntity = pq.asSingleEntity();
 
             if (providerInformationEntity == null) {
-                throw new UnauthorizedException("User is not registered");
+                throw new UnauthorizedException("Code1.1: User is not registered");
             }
 
             Key userKey = providerInformationEntity.getParent();
@@ -159,7 +159,7 @@ public class EmailPasswordAuthenticationEndpoint {
             // EmailPasswordLoginProviderInformation has externalUserId = email
             Object loginInfo = pm.getObjectById(EmailPasswordLogin.class, email);
 
-            throw new UnauthorizedException("The Email is already in use!");
+            throw new UnauthorizedException("Code2.1: The Email is already in use!");
         } catch(JDOObjectNotFoundException ex) {
             // intended!
         }finally {

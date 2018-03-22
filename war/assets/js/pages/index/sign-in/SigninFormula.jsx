@@ -73,9 +73,43 @@ export default class SigninFormula extends React.Component {
 	}
 
 	async signInWithEmailPassword() {
-		console.log('Sign in with Email and password called!');
+		const { formatMessage } = IntlProvider.intl;
 
-		await this.props.auth.authentication.signInWithEmailPassword(this.state.emailInput, this.state.passwordInput);
+		console.log('Sign in with Email and password called!');
+		try {
+			await this.props.auth.authentication.signInWithEmailPassword(this.state.emailInput, this.state.passwordInput);
+		} catch(e) {
+			const code = e.message.split(':')[0]; // format Code1.2: ...
+			let failureMessage = formatMessage({
+				id: 'signin-formula.signin.failure.genericMessage',
+				defaultMessage: 'Something went wrong! Please report to our administrators'
+			});
+			switch(code) {
+				case 'Code1.1': // user doesn't exist.
+					failureMessage = formatMessage({
+						id: 'signin-formula.signin.failure.userDoesNotExist',
+						defaultMessage: 'This combination of email and password does not exist!'
+					});
+				case 'Code1.2': // wrong password
+					failureMessage = formatMessage({
+						id: 'signin-formula.signin.failure.wrongPassword',
+						defaultMessage: 'This combination of email and password does not exist!'
+					});
+			}
+
+			vex.dialog.open({
+				message: failureMessage,
+				buttons: [
+					$.extend({}, vex.dialog.buttons.NO, {
+						text: formatMessage({
+							id: 'signin-formula.signin.failure.popup.close',
+							defaultMessage: 'Close'
+						})
+					})
+				],
+			});
+			return;
+		}
 		this.props.auth.updateUserStatus();
 		this.onSignedIn();	
 	}
