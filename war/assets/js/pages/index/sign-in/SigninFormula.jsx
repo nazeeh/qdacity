@@ -266,10 +266,16 @@ export default class SigninFormula extends React.Component {
 								defaultMessage: 'This is not a valid email adress!'
 							});
 							break;
-						case 'Code2.3': // password doesn't meet requirements.
+						case 'Code2.3': // password is empty.
 							failureMessage = formatMessage({
-								id: 'signin-formula.register.failure.invalidPassword',
+								id: 'signin-formula.register.failure.emptyPassword',
 								defaultMessage: 'The password must not be empty!'
+							});
+							break;
+						case 'Code2.4': // password doesn't meet requirements.
+							failureMessage = formatMessage({
+								id: 'signin-formula.register.failure.malformedPassword',
+								defaultMessage: 'The password must have at least 7 characters and must contain only small letters, big letters and numbers. Each category has to be fulfilled with at least one character! No Whitespaces allowed.'
 							});
 							break;
 					}

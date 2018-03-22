@@ -45,6 +45,7 @@ public class EmailPasswordAuthenticationEndpoint {
 
 
     private static final String EMAIL_REGEX = "^(.+)@(.+)$";
+    private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{7,}$";
 
     public EmailPasswordAuthenticationEndpoint() { }
 
@@ -61,12 +62,17 @@ public class EmailPasswordAuthenticationEndpoint {
     public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
                                       @Named("givenName") String givenName, @Named("surName") String surName,
                                       com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
-        Pattern pattern = Pattern.compile(EMAIL_REGEX);
-        if(!pattern.matcher(email).matches()) {
+        Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
+        if(!emailPattern.matcher(email).matches()) {
             throw new BadRequestException("Code2.2: The given email adress is not in a valid format!");
         }
+        Pattern passwordPattern = Pattern.compile(PASSWORD_REGEX);
         if(pwd == null || pwd.isEmpty()) {
             throw new BadRequestException("Code2.3: The password must not be empty!");
+        }
+        if(!passwordPattern.matcher(pwd).matches()) {
+            throw new BadRequestException("Code2.4: The password must have at least 7 characters and must contain only and " +
+                    "at least one of small letters, big letters and numbers! No Whitespaces allowed");
         }
         assertEmailIsAvailable(email);
 
