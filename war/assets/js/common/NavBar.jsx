@@ -148,8 +148,7 @@ export default class NavBar extends React.Component {
 							</StyledHelpTab>
 							<StyledAccountTab
 								loggedIn={
-									this.authenticationProvider.isSignedIn &&
-									this.authenticationProvider.isSignedIn()
+									this.props.auth.authState.isUserSignedIn && this.props.auth.authState.isUserRegistered
 								}
 								className="dropdown"
 							>
