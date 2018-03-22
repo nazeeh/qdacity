@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
+import SigninPanel from './sign-in/SinginPanel.jsx';
 import { BtnLg } from '../../common/styles/Btn.jsx';
 
 const StyledIntroBanner = styled.div`
@@ -66,7 +66,8 @@ export default class Index extends React.Component {
 										/>
 									</h3>
 									<hr className="intro-divider" />
-									<SigninWithGoogleBtn
+									<SigninPanel
+										theme={this.props.theme}
 										auth={this.props.auth}
 										history={this.props.history}
 									/>

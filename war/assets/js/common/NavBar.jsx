@@ -3,7 +3,6 @@ import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
 import Account from './Account.jsx';
-import SigninWithGoogleBtn from '../pages/index/SigninWithGoogleBtn.jsx';
 
 const StyledAccountTab = styled.li`
 	display: ${props => (props.loggedIn ? 'block' : 'none')} !important;
@@ -149,8 +148,7 @@ export default class NavBar extends React.Component {
 							</StyledHelpTab>
 							<StyledAccountTab
 								loggedIn={
-									this.authenticationProvider.isSignedIn &&
-									this.authenticationProvider.isSignedIn()
+									this.props.auth.authState.isUserSignedIn && this.props.auth.authState.isUserRegistered
 								}
 								className="dropdown"
 							>
@@ -168,6 +166,7 @@ export default class NavBar extends React.Component {
 									<Account
 										auth={this.props.auth}
 										history={this.props.history}
+										theme={this.props.theme}
 									/>
 								</div>
 							</StyledAccountTab>

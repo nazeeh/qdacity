@@ -4,6 +4,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.qdacity.Cache;
@@ -17,15 +18,12 @@ import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
-import com.qdacity.user.UserLoginProviderInformation;
-import com.uwyn.jhighlight.fastutil.Hash;
 import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
 import java.util.Arrays;
-import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * This Endpoint is intented to be used for Email+Password actions.
@@ -41,6 +39,9 @@ import java.util.List;
 )
 public class EmailPasswordAuthenticationEndpoint {
 
+
+    private static final String EMAIL_REGEX = "^(.+)@(.+)$";
+
     public EmailPasswordAuthenticationEndpoint() { }
 
     /**
@@ -55,8 +56,15 @@ public class EmailPasswordAuthenticationEndpoint {
     @ApiMethod(name = "authentication.registerEmailPassword")
     public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
                                       @Named("givenName") String givenName, @Named("surName") String surName,
-                                      com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+                                      com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         assertEmailIsAvailable(email);
+        if(pwd == null || pwd.isEmpty()) {
+            throw new BadRequestException("The password must not be empty!");
+        }
+        Pattern pattern = Pattern.compile(EMAIL_REGEX);
+        if(!pattern.matcher(email).matches()) {
+            throw new BadRequestException("The given email adress is not in a valid format!");
+        }
 
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);
@@ -165,7 +173,7 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param loggedInUser
      */
     @ApiMethod(name = "authentication.refreshToken")
-    public StringWrapper refreshToken(@Named("pwd") String oldToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    public StringWrapper refreshToken(@Named("token") String oldToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         TokenUtil tokenUtil = TokenUtil.getInstance();
         if (!tokenUtil.verifyToken(oldToken)) {
             throw new UnauthorizedException("The given token is not valid. It also may be timed out!");
