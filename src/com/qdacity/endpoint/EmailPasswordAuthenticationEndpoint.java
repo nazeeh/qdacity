@@ -7,10 +7,13 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.authentication.ForgotPasswordEmailSender;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.authentication.util.HashUtil;
 import com.qdacity.authentication.util.TokenUtil;
@@ -23,6 +26,7 @@ import io.jsonwebtoken.Claims;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -190,8 +194,35 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param loggedInUser
      */
     @ApiMethod(name = "authentication.forgotPwd")
-    public void forgotPwd(@Named("email") String email, com.google.api.server.spi.auth.common.User loggedInUser) {
-        // TODO implement
+    public void forgotPwd(@Named("email") String email, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+        // generate new password
+        String generatedPassword = UUID.randomUUID().toString().replace("-", "");
+
+        // hash new password
+        String pwdHashed = new HashUtil().hash(generatedPassword);
+
+        // store new password
+        PersistenceManager pm = getPersistenceManager();
+        try {
+            EmailPasswordLogin emailPwd = pm.getObjectById(EmailPasswordLogin.class, email);
+            emailPwd.setHashedPwd(pwdHashed);
+            pm.makePersistent(emailPwd);
+        } catch(JDOObjectNotFoundException e) {
+            throw new UnauthorizedException("Code1.1: The User with the email " + email + " could not be found!");
+        }
+        finally {
+            pm.close();
+        }
+
+        EmailPasswordLogin emailPwd = new EmailPasswordLogin(email, generatedPassword);
+        User user = getUserByEmailPassword(emailPwd);
+
+        // send email with new password
+        ForgotPasswordEmailSender task = new ForgotPasswordEmailSender(user, email, generatedPassword);
+
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
     }
 
 

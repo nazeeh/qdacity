@@ -128,7 +128,70 @@ export default class SigninFormula extends React.Component {
 	}
 
 	forgotPassword() {
-		console.log('Forgot your password?');
+		const { formatMessage } = IntlProvider.intl;
+
+		const emailLabel = formatMessage({
+			id: 'signin-formula.forgotpwd.email',
+			defaultMessage: 'Email'
+		});
+		
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'signin-formula.forgotpwd.heading',
+				defaultMessage: 'Get a new password for your account!'
+			}),
+			input: [
+				`<label for="email">${emailLabel}</label><input name="email" type="text" placeholder="${emailLabel}" required />`
+			].join('\n'),
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: formatMessage({
+						id: 'signin-formula.forgotpwd.getNewPwd',
+						defaultMessage: 'Go!'
+					})
+				}),
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'signin-formula.forgotpwd.cancel',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: async function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				}
+				gapi.client.qdacity.authentication.forgotPwd({
+					email: data.email
+				}).execute(function(resp) {
+					let resultMessage = '';
+					if (!resp.code) {
+						resultMessage = formatMessage({
+							id: 'signin-formula.forgotpwd.success',
+							defaultMessage: 'Your password was reseted. Please check your contact email account!'
+						});
+					} else {
+						resultMessage = formatMessage({
+							id: 'signin-formula.forgotpwd.failure',
+							defaultMessage: 'Something went wrong during resetting the password...'
+						});
+					}
+
+					vex.dialog.open({
+						message: resultMessage,
+						buttons: [
+							$.extend({}, vex.dialog.buttons.NO, {
+								text: formatMessage({
+									id: 'signin-formula.forgotpwd.failure.popup.close',
+									defaultMessage: 'Close'
+								})
+							})
+						],
+					});
+				});
+				return;
+			}
+		});
 	}
 
 	registerEmailPassword() {
