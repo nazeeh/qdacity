@@ -40,15 +40,13 @@ describe('Login test', function() {
     	const displayName = 'Test Name';
     	const qdacityFirstName = 'Max';
     	const qdacityLastName = 'Mustermann';
-    	const qdacityEmail = 'felixtest22@gmail.com';
+		const qdacityEmail = 'felixtest22@gmail.com';
+		const userPassword = 'password123';
     	
     	const _this = this;
-    	
-    	// Click login button
-    	this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]"))).click();    	
-
+    
 		// Register Account
-		this.driver.wait(until.elementLocated(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register Account']"))).click();
+		this.driver.wait(until.elementLocated(By.xpath("//a[@id='signin-formula-register-link']"))).click();
 
 		// First name
 		let fieldFirstName = this.driver.findElement(By.xpath("//input[@name='firstName']"));
@@ -64,6 +62,11 @@ describe('Login test', function() {
 		let fieldEmail = this.driver.findElement(By.xpath("//input[@name='email']"));
 		fieldEmail.clear();
 		fieldEmail.sendKeys(qdacityEmail);
+
+		// Password
+		let fieldPassword = this.driver.findElement(By.xpath("//input[@name='pwd']"));
+		fieldPassword.clear();
+		fieldPassword.sendKeys(userPassword);
 		
 		// Register  
 		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click(); 		

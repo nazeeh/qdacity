@@ -202,7 +202,7 @@ export default class SigninFormula extends React.Component {
                             </u></FormulaLink>
                         </div>
                         <div className="col-xs-6">
-                            <FormulaLink href="#" onClick={() => this.registerEmailPassword()}><u>
+                            <FormulaLink id="signin-formula-register-link" href="#" onClick={() => this.registerEmailPassword()}><u>
                                 <FormattedMessage
                                     id="signin-formula.register-email-pwd"
                                     defaultMessage="Register now!"
