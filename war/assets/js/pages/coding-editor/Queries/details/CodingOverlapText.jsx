@@ -1,8 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const StyledContainer = styled.div`
+    padding: 3px 0px;
+`;
+
 const StyledParagraph = styled.p`
-    margin: 7px 0px;
+    padding: 3px 0px;
+    margin: 0px;
     display: block;
 `;
 
@@ -25,11 +30,11 @@ export default class CodingOverlapText extends React.Component {
 		const paragraphs = this.props.codingOverlapText.getParagraphs();
 
         return (
-            <div>
+            <StyledContainer>
                 {paragraphs.map((paragraph) => {
 					return _this.renderParagraph(paragraph);
 				})}
-            </div>
+            </StyledContainer>
         );
     }
 
