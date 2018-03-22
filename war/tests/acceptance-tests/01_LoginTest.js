@@ -82,7 +82,13 @@ describe('Login test', function() {
         		// Does the URL end with /PersonalDashboard?
         		const urlEnd = "/PersonalDashboard";
         		expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
-        		
+				
+				// Check if the token of the signed-in user is stored in the localStorage 
+				_this.driver.executeScript('return localStorage.getItem("qdacity-emai-password-token")').then(function (token) {
+					expect(token).not.toBeUndefined();
+					expect(token).not.toBeNull();
+				});
+
     		    done();
     		})
     	});
