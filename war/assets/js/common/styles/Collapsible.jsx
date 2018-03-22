@@ -1,0 +1,164 @@
+import React from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import styled from 'styled-components';
+
+const StyledExpander = styled.div`
+	overflow: hidden;
+`;
+
+const StyledWrapper = styled.div`
+	overflow: hidden;
+	height: ${props => 
+		(props.mode == Mode.COLLAPSING ? props.height + 'px' : 
+		(props.mode == Mode.COLLAPSED ? '0px' : 
+		(props.mode == Mode.EXPANDING ? props.height + 'px' : 
+		(props.mode == Mode.EXPANDED ? 'auto' : ''))))};
+`;
+
+const StyledContent = styled.div`
+`;
+
+const Mode = {
+	COLLAPSING: 1,
+	COLLAPSED: 2,
+	EXPANDING: 3,
+	EXPANDED: 4
+};
+
+/**
+ * Available props:
+ * - duration: specifies how much time the animation lasts
+ * - onCollapse: function which is called when the Collapsible finishs the collapse animation
+ * - onExpand: function which is called when the Collapsible finishs the expand animation
+ */
+export default class Collapsible extends React.Component {
+
+	constructor(props) {
+		super(props);
+
+		this.duration = (this.props.duration ? this.props.duration: 300);
+		
+		this.interval = 30;
+		this.intervalOffset = 0;
+		
+		this.contentRef = null;
+
+		this.timerId = 0;
+		this.contentHeight = 0;
+
+		this.state = {
+			mode: Mode.COLLAPSED,
+			height: 0
+		};
+
+		this.timerCallback = this.timerCallback.bind(this);
+	}
+
+	componentWillUnmount() {
+		this.endTimer();
+	}
+	
+	toggle() {
+		if (this.state.mode == Mode.COLLAPSED) {
+			this.expand();
+		}
+		else if (this.state.mode == Mode.EXPANDED) {
+			this.collapse();
+		}
+		else {
+			throw new Error('Cant collapse/expand in state: ' + this.state.mode);
+		}
+	}
+
+	collapse() {
+		if (this.state.mode != Mode.EXPANDED) {
+			throw new Error('Cant collapse in state: ' + this.state.mode);
+		}
+
+		this.setState({
+			mode: Mode.COLLAPSING
+		}, () => {
+			this.startTimer();
+		});
+	}
+
+	expand() {
+		if (this.state.mode != Mode.COLLAPSED) {
+			throw new Error('Cant expand in state: ' + this.state.mode);
+		}
+
+		this.setState({
+			mode: Mode.EXPANDING
+		}, () => {
+			this.startTimer();
+		});		
+	}
+
+	startTimer() {
+		this.contentHeight = this.contentRef.offsetHeight;
+		this.intervalOffset = this.contentHeight / (this.duration / this.interval);
+
+		this.timerId = setInterval(this.timerCallback, this.interval);
+	}
+
+	endTimer() {
+		clearInterval(this.timerId);
+	}
+	
+	timerCallback() {
+		// Collapsing
+		if (this.state.mode == Mode.COLLAPSING) {
+			if (this.state.height - this.intervalOffset > 0) {
+				this.setState({
+					height: this.state.height - this.intervalOffset
+				});
+			}
+			else {
+				this.setState({
+					mode: Mode.COLLAPSED,
+					height: 0
+				});
+				
+				this.endTimer();
+
+				if (this.props.onCollapse) {
+					this.props.onCollapse();
+				}
+			}
+		}
+		// Expanding
+		else if (this.state.mode == Mode.EXPANDING) {
+			if (this.state.height + this.intervalOffset <= this.contentHeight) {
+				this.setState({
+					height: this.state.height + this.intervalOffset
+				});
+			}
+			else {
+				this.setState({
+					mode: Mode.EXPANDED,
+					height: this.contentHeight
+				});
+
+				this.endTimer();
+				
+				if (this.props.onExpand) {
+					this.props.onExpand();
+				}
+			}
+		}
+		// Invalid state
+		else {
+			throw new Error('Invalid state in timer interval: ' + this.state.mode);
+		}
+	}
+
+	render() {
+		return (
+			<StyledWrapper mode={this.state.mode} height={this.state.height}>
+				<StyledContent innerRef={(r) => { if (r) this.contentRef = r;}}>
+					{this.props.children}
+				</StyledContent>
+			</StyledWrapper>
+		);
+	}
+}
