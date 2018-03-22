@@ -7,7 +7,7 @@ import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
 import SignInFormula from './SigninFormula.jsx';
 
-import { BtnLg } from '../../../common/styles/Btn.jsx';
+import { BtnLg, BtnDefault, BtnPrimary } from '../../../common/styles/Btn.jsx';
 
 const PanelWrapper = styled.div`
 	border: 1px solid ${props => props.theme.borderPrimaryHighlight};
@@ -26,19 +26,84 @@ const PanelWrapper = styled.div`
 	}
 `;
 
+const UserThumbnail = styled.img`
+	height: 80px;
+	width: 80px;
+
+	margin-top: 20px;
+	margin-bottom: 7px;
+`;
+
+const ButtonGroupWrapper = styled.div`
+	& > button {
+		margin: 3px 10px;
+	}
+`;
+
 export default class SigninPanel extends React.Component {
 	constructor(props) {
 		super(props);
 	}
 
+	async onSignOut() {
+		await this.props.auth.authentication.signOut();
+		this.props.history.push('/');
+	}
+
 	render() {
-		return (
-            <PanelWrapper className="container-fluid">
-				<SignInFormula 
-					theme={this.props.theme}
-					auth={this.props.auth}
-					history={this.props.history}/>
-            </PanelWrapper>
-		);
+		if (
+			this.props.auth.authState.isUserSignedIn &&
+			this.props.auth.authState.isUserRegistered
+		) {
+			return (
+				<PanelWrapper className="container-fluid">
+					<h3><FormattedMessage
+                        id="signin-panel.title"
+                        defaultMessage="You are currently signed in!"
+                    /></h3>	
+					<div className="row">
+						<UserThumbnail id="signinPanelUserThumbnail" src={this.props.auth.userProfile.picSrc} alt='user thumbnail'/>
+					</div>
+					
+					<div className="row">
+						<span id="signinPanelUserName">{this.props.auth.userProfile.name}</span>
+					</div>
+
+					<div className="row">
+						<p id="signinPanelUserEmail" className="text-muted small">
+							{this.props.auth.userProfile.email}
+						</p>
+					</div>
+
+					<div className="row">
+						<ButtonGroupWrapper>
+							<BtnDefault onClick={() => this.onSignOut()}>
+								<FormattedMessage
+									id="signin-panel.signout"
+									defaultMessage="Sign Out"
+								/>
+							</BtnDefault>
+							<BtnPrimary onClick={() => this.props.history.push('/PersonalDashboard')}>
+								<FormattedMessage
+									id="signin-panel.link-personal-dashboard"
+									defaultMessage="Personal Dashboard"
+								/>
+							</BtnPrimary>
+						</ButtonGroupWrapper>
+					</div>
+
+				</PanelWrapper>
+			);
+		}
+		else {
+			return (
+				<PanelWrapper className="container-fluid">
+					<SignInFormula 
+						theme={this.props.theme}
+						auth={this.props.auth}
+						history={this.props.history}/>
+				</PanelWrapper>
+			);
+		}
 	}
 }

@@ -151,18 +151,31 @@ export default class App extends React.Component {
 				return;
 			}
 
-			_this.authenticationProvider.synchronizeTokenWithGapi(); // Bugfix: sometimes the token seems to get lost!
-			// 2. get the user profile
-			const profile = await _this.authenticationProvider.getProfile();
-			/*
-			* Removing query parameters from URL.
-			* With google we always got ?sz=50 in the URL which gives you a
-			* small low res thumbnail. Without parameter we get the original
-			* image.
-			* When adding other LoginProviders this needs to be reviewed
-			*/
-			var url = URI(profile.thumbnail).fragment(true);
-			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			_this.authenticationProvider.synchronizeTokenWithGapi() // Bugfix: sometimes the token seems to get lost!
+				.catch((e) => {
+					console.log('Failure at syncing token with gapi.');
+					console.log(e);
+				})
+
+			// 2. get the user profile			
+			let profile = {
+				name: '',
+				email: '',
+				picSrc: ''
+			};
+			let picSrcWithoutParams = '';
+			if(!!loginStatus) {
+				profile = await _this.authenticationProvider.getProfile();/*
+				* Removing query parameters from URL.
+				* With google we always got ?sz=50 in the URL which gives you a
+				* small low res thumbnail. Without parameter we get the original
+				* image.
+				* When adding other LoginProviders this needs to be reviewed
+				*/
+				var url = URI(profile.thumbnail).fragment(true);
+				picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			}
+			
 			_this.state.auth.userProfile = {
 				name: profile.name,
 				email: profile.email,
@@ -177,7 +190,7 @@ export default class App extends React.Component {
 				// user stays undefined
 			}
 			_this.state.auth.authState = {
-				isUserSignedIn: loginStatus,
+				isUserSignedIn: !!loginStatus,
 				isUserRegistered: !!user
 			};
 			_this.setState(_this.state);

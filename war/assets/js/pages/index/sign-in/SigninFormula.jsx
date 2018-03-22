@@ -55,7 +55,7 @@ const FormulaInputWrapper = styled.div`
 	}
 `;
 
-export default class PanelFormula extends React.Component {
+export default class SigninFormula extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -157,7 +157,7 @@ export default class PanelFormula extends React.Component {
             <div>
                 <h3>
                     <FormattedMessage
-                        id="index.signinpanel.title"
+                        id="signin-formula.title"
                         defaultMessage="Sign in now!"
                     />
                 </h3>
@@ -166,7 +166,7 @@ export default class PanelFormula extends React.Component {
                         <div className="col-xs-12">
                             <FormulaHeading>
                                 <FormattedMessage
-                                    id="index.signinpanel.email"
+                                    id="signin-formula.email"
                                     defaultMessage="Email:"
                                 />	
                             </FormulaHeading>
@@ -181,7 +181,7 @@ export default class PanelFormula extends React.Component {
                         <div className="col-xs-12">
                             <FormulaHeading>
                                 <FormattedMessage
-                                    id="index.signinpanel.pwd"
+                                    id="signin-formula.pwd"
                                     defaultMessage="Password:"
                                 />	
                             </FormulaHeading>
@@ -196,7 +196,7 @@ export default class PanelFormula extends React.Component {
                         <div className="col-xs-6">
                             <FormulaLink onClick={() => this.forgotPassword()}><u>
                                 <FormattedMessage
-                                    id="index.signinpanel.forgotpw"
+                                    id="signin-formula.forgotpw"
                                     defaultMessage="Forgot PW?"
                                 />	
                             </u></FormulaLink>
@@ -204,7 +204,7 @@ export default class PanelFormula extends React.Component {
                         <div className="col-xs-6">
                             <FormulaLink href="#" onClick={() => this.registerEmailPassword()}><u>
                                 <FormattedMessage
-                                    id="index.signinpanel.register-email-pwd"
+                                    id="signin-formula.register-email-pwd"
                                     defaultMessage="Register now!"
                                 />	
                             </u></FormulaLink>
@@ -219,7 +219,7 @@ export default class PanelFormula extends React.Component {
                                 </a>
                                 <span>
                                     <FormattedMessage
-                                        id="index.signinpanel.signin-email-pwd"
+                                        id="signin-formula.signin-email-pwd"
                                         defaultMessage="Sign in"
                                     />
                                 </span>
@@ -234,7 +234,7 @@ export default class PanelFormula extends React.Component {
                     <div className="row">
                         <h4>
                             <FormattedMessage
-                                id="index.signinpanel.signin-social-heading"
+                                id="signin-formula.signin-social-heading"
                                 defaultMessage="Sign in / Register with social Accounts"
                             />
                         </h4>

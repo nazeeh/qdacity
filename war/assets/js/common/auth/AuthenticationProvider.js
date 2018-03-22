@@ -197,6 +197,12 @@ export default class AuthenticationProvider {
 				console.log('Signout: catched exception');
 				console.log(e);
 			}
+
+			// invalidate token in gapi.client
+			gapi.client.setToken({
+				access_token: ''
+			});
+
 			resolve();
 		});
 		return promise;
