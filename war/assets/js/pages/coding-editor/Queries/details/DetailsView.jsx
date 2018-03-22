@@ -71,9 +71,11 @@ export default class DetailsView extends React.Component {
 				<td>{codingOverlap.getTextContent().getTextLengthOverlap()}</td>
 			</tr>,	
 			<tr>
-				<CodingOverlapText 
-					codingOverlapText={codingOverlap.getTextContent()}
-				/>
+				<td colSpan="6">
+					<CodingOverlapText 
+						codingOverlapText={codingOverlap.getTextContent()}
+					/>
+				</td>
 			</tr>		
 		];
 	}

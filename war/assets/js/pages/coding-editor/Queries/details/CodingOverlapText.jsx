@@ -1,6 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const StyledParagraph = styled.p`
+    margin: 7px 0px;
+    display: block;
+`;
+
+const StyledTextPart = styled.span`
+    background-color: ${props => 
+        (props.containsMainCoding && !props.containsOtherCoding ? '#B5D5FF' : 
+        (!props.containsMainCoding && props.containsOtherCoding ? '#D9C8DA' : 
+        (props.containsMainCoding && props.containsOtherCoding ? '#FCBBB4' : '')))};
+`;
+
 export default class CodingOverlapText extends React.Component {
 
 	constructor(props) {
@@ -27,37 +39,25 @@ export default class CodingOverlapText extends React.Component {
         const textParts = paragraph.getTextParts();
 
         return (
-            <p>
+            <StyledParagraph>
                 {textParts.map((textPart) => {
 					return _this.renderTextPart(textPart);
 				})}
-            </p>
+            </StyledParagraph>
         );
     }
 
     renderTextPart(textPart) {
-		let color = null;
-		
 		const codingIdMain = this.props.codingOverlapText.getCodingOverlap().getCodingIdMain();
 		const codingIdOther = this.props.codingOverlapText.getCodingOverlap().getCodingIdOther();
 
         const containsMainCoding = textPart.getCodingIds().indexOf(codingIdMain) != -1;
         const containsOtherCoding = textPart.getCodingIds().indexOf(codingIdOther) != -1;
 
-        if (containsMainCoding && !containsOtherCoding) {
-            color = 'red';
-        }
-        else if (!containsMainCoding && containsOtherCoding) {
-            color = 'blue';
-        }
-        else if (containsMainCoding && containsOtherCoding) {
-            color = 'purple';
-        }
-
         return (
-            <p color={color}>
+            <StyledTextPart containsMainCoding={containsMainCoding} containsOtherCoding={containsOtherCoding}>
                 {textPart.getText()}
-            </p>
+            </StyledTextPart>
         );
 	}
 }
