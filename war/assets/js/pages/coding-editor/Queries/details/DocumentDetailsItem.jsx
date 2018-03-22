@@ -1,13 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import Collapsible from '../../../../common/styles/Collapsible.jsx';
+
 import CodingOverlapText from './CodingOverlapText.jsx';
 
 export default class DocumentDetailsItem extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.textCollapsibleRef = null;
 	}
+
+	toggleText() {
+		this.textCollapsibleRef.toggle();
+	}	
 
 	render() {
 		return (
@@ -22,9 +30,15 @@ export default class DocumentDetailsItem extends React.Component {
 				</tr>	
 				<tr>
 					<td colSpan="6">
-						<CodingOverlapText
-							codingOverlapText={this.props.codingOverlap.getTextContent()}
-						/>
+						<div>
+							<button onClick={this.toggleText.bind(this)}>Toggle Text</button>
+						</div>
+
+						<Collapsible ref={(r) => {if (r) this.textCollapsibleRef = r}}>
+							<CodingOverlapText
+								codingOverlapText={this.props.codingOverlap.getTextContent()}
+							/>
+						</Collapsible>
 					</td>
 				</tr>	
 			</div>
