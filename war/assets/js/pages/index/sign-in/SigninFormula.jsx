@@ -329,7 +329,10 @@ export default class SigninFormula extends React.Component {
                     </div>
                     <div className="row">
                         <ButtonStyledWidh>
-                            <SigninWithGoogleBtn auth={this.props.auth} onSignedIn={this.props.onSignedIn}/>
+							<SigninWithGoogleBtn 
+								auth={this.props.auth} 
+								onSignedIn={this.props.onSignedIn} 
+								theme={this.props.theme}/>
                         </ButtonStyledWidh>
                     </div>
                 </div>

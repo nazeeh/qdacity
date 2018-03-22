@@ -159,7 +159,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 	}
 
 	render() {
-		if (this.state.loading) return <ReactLoading />;
+		if (this.state.loading) return <ReactLoading color={(props) => props.theme.defaultText} />;
 		return (
 			<BtnLg href="#" onClick={() => this.signIn()}>
 				<a>

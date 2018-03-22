@@ -355,7 +355,7 @@ export default class App extends React.Component {
 										exact
 										path="/"
 										render={props => (
-											<Index auth={this.state.auth} {...props} />
+											<Index auth={this.state.auth} theme={Theme} {...props} />
 										)}
 									/>
 								</ContentMain>
