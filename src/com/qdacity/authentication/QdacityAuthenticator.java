@@ -22,6 +22,7 @@ public class QdacityAuthenticator implements Authenticator {
 	
 	TokenValidator googleIdTokenValidator = new GoogleIdTokenValidator();
 	TokenValidator googleAccessTokenValidator = new GoogleAccessTokenValidator();
+	TokenValidator emailpwdTokenValidator = new EmailPasswordValidator();
 	TokenValidator testTokenValidator = new TestTokenValidator();
 	
     /**
@@ -60,7 +61,8 @@ public class QdacityAuthenticator implements Authenticator {
 			switch (provider.toLowerCase()) {			
 				case "google":
 		    		return googleIdTokenValidator.validate(idTokenString);
-		    	
+				case "emailpwd":
+					return emailpwdTokenValidator.validate(idTokenString);
 				case "googleaccesstoken":	
 				default:
 					return googleAccessTokenValidator.validate(idTokenString);

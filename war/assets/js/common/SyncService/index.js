@@ -1,6 +1,7 @@
 import openSocket from 'socket.io-client';
 
 import CodesService from './CodesService';
+import DocumentService from './DocumentService';
 import { MSG, EVT } from './constants.js';
 
 /**
@@ -62,6 +63,7 @@ export default class SyncService {
 
 		// Register sub-services
 		this.codes = new CodesService(this, this._socket);
+		this.documents = new DocumentService(this, this._socket);
 	}
 
 	/**
@@ -144,8 +146,7 @@ export default class SyncService {
 	/**
 	 * Emit message to sync service
 	 * @access package
-	 * @return {Promise} - resolves on success, will never be rejected, any
-	 *                     API errors will handled internally.
+	 * @return {Promise} - resolves on success, rejects on failure
 	 */
 	emit(messageType, arg) {
 		return new Promise((resolve, reject) => {
@@ -154,9 +155,19 @@ export default class SyncService {
 					resolve(...args);
 				} else {
 					this.console.error('API error', ...args);
+					reject(...args);
 				}
 			});
 		});
+	}
+
+	/**
+	 * Getter for socket id
+	 * @access package
+	 * @return {string} socket id
+	 */
+	getSocketId() {
+		return this._socket.id;
 	}
 
 	/**

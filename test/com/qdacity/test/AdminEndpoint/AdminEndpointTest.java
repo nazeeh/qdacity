@@ -46,11 +46,11 @@ public class AdminEndpointTest {
 	public void testGetAdminStats() throws UnauthorizedException {
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
-		UserEndpointTestHelper.addUser("2@asd.de", "User 2", "lastName", testUser);
+		User addedTestUser = UserEndpointTestHelper.addUser("2@asd.de", "User 2", "lastName", testUser);
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			User user = mgr.getObjectById(User.class, testUser.getId());
+			User user = mgr.getObjectById(User.class, addedTestUser.getId());
 			user.setType(UserType.ADMIN);
 			mgr.makePersistent(user);
 		} finally {
