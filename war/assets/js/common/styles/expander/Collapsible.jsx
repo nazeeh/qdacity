@@ -110,7 +110,7 @@ class Collapsible extends React.Component {
 	timerCallback() {
 		// Collapsing
 		if (this.state.mode == Mode.COLLAPSING) {
-			if (this.state.height - this.intervalOffset > 0) {
+			if (this.state.height != 0 && this.state.height - this.intervalOffset > 0) {
 				this.setState({
 					height: this.state.height - this.intervalOffset
 				});
@@ -130,7 +130,7 @@ class Collapsible extends React.Component {
 		}
 		// Expanding
 		else if (this.state.mode == Mode.EXPANDING) {
-			if (this.state.height + this.intervalOffset <= this.contentHeight) {
+			if (this.state.height != 0 && this.state.height + this.intervalOffset <= this.contentHeight) {
 				this.setState({
 					height: this.state.height + this.intervalOffset
 				});
