@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Collapsible from '../../../../common/styles/Collapsible.jsx';
+import { Collapsible } from '../../../../common/styles/expander/Collapsible.jsx';
 
 import CodingOverlapText from './CodingOverlapText.jsx';
 
