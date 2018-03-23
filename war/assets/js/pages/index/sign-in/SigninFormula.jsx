@@ -333,7 +333,7 @@ export default class SigninFormula extends React.Component {
                         </div>
                         <div className="col-xs-12">
                             <FormulaInputWrapper>
-                                <StyledInput onChange={(event) => this.state.emailInput = event.target.value}/>
+                                <StyledInput id="signin-forumla-email" onChange={(event) => this.state.emailInput = event.target.value}/>
                             </FormulaInputWrapper>
                         </div>
                     </div>
@@ -348,7 +348,7 @@ export default class SigninFormula extends React.Component {
                         </div>
                         <div className="col-xs-12">
                             <FormulaInputWrapper>
-                                <StyledInput type="password" onChange={(event) => this.state.passwordInput = event.target.value}/>
+                                <StyledInput id="signin-formula-password" type="password" onChange={(event) => this.state.passwordInput = event.target.value}/>
                             </FormulaInputWrapper>
                         </div>
                     </div>
@@ -373,7 +373,7 @@ export default class SigninFormula extends React.Component {
                     <Spacer/>
                     <div className="row">
                         <ButtonStyledWidh>
-                            <BtnLg onClick={() => this.signInWithEmailPassword()}>
+                            <BtnLg id="signin-formula-signin-btn" onClick={() => this.signInWithEmailPassword()}>
                                 <a>
                                     <i className="fa fa-sign-in fa-2x" />
                                 </a>
