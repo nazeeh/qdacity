@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import styled from 'styled-components';
 
 const StyledExpander = styled.div`
@@ -32,7 +31,7 @@ const Mode = {
  * - onCollapse: function which is called when the Collapsible finishs the collapse animation
  * - onExpand: function which is called when the Collapsible finishs the expand animation
  */
-export default class Collapsible extends React.Component {
+class Collapsible extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -67,13 +66,14 @@ export default class Collapsible extends React.Component {
 			this.collapse();
 		}
 		else {
-			throw new Error('Cant collapse/expand in state: ' + this.state.mode);
+			// Do nothings
 		}
 	}
 
 	collapse() {
 		if (this.state.mode != Mode.EXPANDED) {
-			throw new Error('Cant collapse in state: ' + this.state.mode);
+			// Do nothing
+			return;
 		}
 
 		this.setState({
@@ -85,7 +85,8 @@ export default class Collapsible extends React.Component {
 
 	expand() {
 		if (this.state.mode != Mode.COLLAPSED) {
-			throw new Error('Cant expand in state: ' + this.state.mode);
+			// Do nothing
+			return;
 		}
 
 		this.setState({
@@ -163,3 +164,5 @@ export default class Collapsible extends React.Component {
 		);
 	}
 }
+
+export { Collapsible, Mode };
