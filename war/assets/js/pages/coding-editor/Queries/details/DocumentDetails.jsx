@@ -40,7 +40,7 @@ export default class DocumentDetails extends React.Component {
 		const codingOverlapCount = this.props.codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID);
 
 		const title = this.props.document.title;
-		const codingOverlapCountText = '(' + codingOverlapCount + ' Coding overlap' + (codingOverlapCount == 1 ? '' : 's') + ')';
+		const codingOverlapCountText = '(' + codingOverlapCount + ' coding overlap' + (codingOverlapCount == 1 ? '' : 's') + ')';
 
 		return (
 			<div>
