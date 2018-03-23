@@ -8,7 +8,7 @@ import Conditions from './Conditions.js';
 export default class Common {
 
 	static getDefaultTimeout() {
-		return 30000;
+		return 20000;
 	}
 	
 	static initializeSpec(testName) {
