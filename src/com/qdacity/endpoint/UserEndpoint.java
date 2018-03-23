@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -215,8 +216,16 @@ public class UserEndpoint {
 		try {
 
 			user = (User) Cache.getOrLoad(id, User.class);
-			// FIXME Check if user is authorized
-			Authorization.checkAuthorization(user, loggedInUser);
+
+			// only admins are allowed to trigger this endpoint
+			if(!Authorization.isUserAdmin(loggedInUser)) {
+				if (SystemProperty.environment.value().equals(SystemProperty.Environment.Value.Development)) {
+					// in dev environmanet everyone may use this endpoint.
+					Logger.getLogger("logger").log(Level.INFO, "UpdateUserType called by non-admin user. Allowed because Dev Environment!");
+				} else {
+					throw new UnauthorizedException("Only Admins are allowed.");
+				}
+			}
 
 			switch (type) {
 				case "ADMIN":
