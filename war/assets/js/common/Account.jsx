@@ -1,12 +1,32 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import { FormattedMessage } from 'react-intl';
 
 import { BtnDefault, BtnPrimary } from './styles/Btn.jsx';
 
+import SigninFormula from '../pages/index/sign-in/SigninFormula.jsx';
+
+import VexModal from './modals/VexModal.js'
+
+// React-Intl
+import IntlProvider from './Localization/LocalizationProvider';
+
 const UserImage = styled.img`
 	width: 96px;
 `;
+
+const ChangeAccountWrapper = styled.div`
+	padding: 20px 50px 20px 50px;
+	margin-bottom: 20px;
+	padding-bottom: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 400px;
+	opacity: 0.8;
+	& > div {
+		font-size: 18px;
+	}`;
 
 export default class Account extends React.Component {
 	constructor(props) {
@@ -18,6 +38,7 @@ export default class Account extends React.Component {
 			this
 		);
 
+		this.onSignedIn = this.onSignedIn.bind(this);
 		this.redirectToSettings = this.redirectToSettings.bind(
 			this
 		);
@@ -50,18 +71,49 @@ export default class Account extends React.Component {
 		);
 	}
 
+	onSignedIn() {
+		location.reload();
+	}
+
 	onChanceUser() {
 		const _this = this;
-		this.authenticationProvider.changeAccount().then(
-			() => {
-				location.reload();
-				// no redirect neccessary because App.jsx rerenders if auth state changes
-			},
-			error => {
-				console.log(error);
-				_this.props.history.push('/');
-			}
-		);
+		var promise = new Promise(function(resolve, reject) {
+			const { formatMessage } = IntlProvider.intl;
+
+			const formElements = '<div id="change-account-placeholder">';
+
+			vex.dialog.open({
+				message: formatMessage({
+					id: 'change-account.heading',
+					defaultMessage: 'Change Account'
+				}),
+				className: 'vex-theme-wireframe',
+				contentCSS: {
+					width: '600px',
+					'margin-top': '-100px'
+				},
+				input: formElements,
+				buttons: [
+					$.extend({}, vex.dialog.buttons.NO, {
+						text: formatMessage({
+							id: 'modal.cancel',
+							defaultMessage: 'Cancel'
+						})
+					})
+				],
+				callback: function(data) {
+					resolve(data);
+				}
+			});
+			ReactDOM.render(
+				<IntlProvider>
+					<ChangeAccountWrapper className="container-fluid">
+						<SigninFormula auth={_this.props.auth} onSignedIn={_this.onSignedIn}/>
+					</ChangeAccountWrapper>
+				</IntlProvider>,
+				document.getElementById('change-account-placeholder')
+			);
+		});
 	}
 
 	render() {
