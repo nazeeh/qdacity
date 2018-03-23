@@ -6,7 +6,6 @@ echo "####      Start the realtime service      ####"
 echo "##############################################"
 
 cd realtime-service
-npm rebuild
 npm run start &
 cd ..
 
