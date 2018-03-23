@@ -32,6 +32,7 @@ import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
 import Sidebar from '../common/tutorial/Sidebar.jsx';
 import styled from 'styled-components';
+import Settings from './settings/Settings.jsx';
 
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
@@ -217,6 +218,7 @@ export default class App extends React.Component {
 				locale={this.state.locale}
 				language={this.state.language}
 				messages={this.state.messages}
+				isGlobal={true}
 			>
 				<Router>
 					<ThemeProvider theme={Theme}>
@@ -343,6 +345,16 @@ export default class App extends React.Component {
 										path="/"
 										render={props => (
 											<Index auth={this.state.auth} {...props} />
+										)}
+									/>
+									<Route
+										path="/Settings"
+										render={props => (
+											<Settings
+												locale={this.state.locale}
+												language={this.state.language}
+												messages={this.state.messages}
+												auth={this.state.auth} {...props} />
 										)}
 									/>
 								</ContentMain>
