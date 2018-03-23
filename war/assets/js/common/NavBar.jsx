@@ -129,8 +129,8 @@ export default class NavBar extends React.Component {
 									<StyledDropdownLinks
 										loggedIn={this.props.auth.authState.isUserSignedIn}
 										className="clickable"
-										onClick={function() {
-											alert('Coming Soon...');
+										onClick={() => {
+											this.props.history.push('/Faq');
 										}}
 									>
 										<div>Faq</div>

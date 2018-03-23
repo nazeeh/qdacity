@@ -6,13 +6,13 @@ import java.util.List;
 
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.qdacity.endpoint.CourseEndpoint;
-import com.qdacity.user.User;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.CourseEndpoint;
+import com.qdacity.user.User;
 
 public class CourseEndpointTestHelper {
-	static public void addCourse(Long id, String name, String description, com.google.api.server.spi.auth.common.User loggedInUser) {
+	static public Course addCourse(Long id, String name, String description, com.google.api.server.spi.auth.common.User loggedInUser) {
 		Course course = new Course();
 		course.setId(id);
 		course.setName(name);
@@ -20,11 +20,12 @@ public class CourseEndpointTestHelper {
 
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
-			ue.insertCourse(course, loggedInUser);
+			return ue.insertCourse(course, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for course creation");
 		}
+		return null;
 	}
 	
 	static public void removeCourse(Long id, com.google.api.server.spi.auth.common.User loggedInUser) {
@@ -106,17 +107,18 @@ public class CourseEndpointTestHelper {
 		ce.insertTermCourse(termCourse, loggedInUser);
 	}
 	
-	static public void addTermCourse(Long termCourseId, com.google.api.server.spi.auth.common.User loggedInUser) {
+	static public TermCourse addTermCourse(Long termCourseId, com.google.api.server.spi.auth.common.User loggedInUser) {
 		TermCourse termCourse = new TermCourse();
 		termCourse.setId(termCourseId);
 
 		CourseEndpoint ue = new CourseEndpoint();
 		try {
-			ue.insertTermCourse(termCourse, loggedInUser);
+			return ue.insertTermCourse(termCourse, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term course creation");
 		}
+		return null;
 	}
 	
 	static public void setTermCourseStatus(Long termCourseId,boolean isOpen, com.google.api.server.spi.auth.common.User loggedInUser) {

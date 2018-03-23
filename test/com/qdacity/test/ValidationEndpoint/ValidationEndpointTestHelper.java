@@ -5,11 +5,12 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
@@ -41,10 +42,12 @@ public class ValidationEndpointTestHelper {
 			Long revID = revisions.get(0).getId();
 
 			pe.requestValidationAccess(revID, validationCoderA);
-			ValidationProject valprjA = pe.createValidationProject(revID, validationCoderA.getId(), testUser);
+			com.qdacity.user.User qdacityUserValidationCoderA = new UserEndpoint().getCurrentUser(validationCoderA);
+			ValidationProject valprjA = pe.createValidationProject(revID, qdacityUserValidationCoderA.getId(), testUser);
 
 			pe.requestValidationAccess(revID, validationCoderB);
-			ValidationProject valprjB = pe.createValidationProject(revID, validationCoderB.getId(), testUser);
+			com.qdacity.user.User qdacityUserValidationCoderB = new UserEndpoint().getCurrentUser(validationCoderB);
+			ValidationProject valprjB = pe.createValidationProject(revID, qdacityUserValidationCoderB.getId(), testUser);
 
 			TextDocumentEndpoint tde = new TextDocumentEndpoint();
 			TextDocumentCodeContainer textDocumentCode = new TextDocumentCodeContainer();

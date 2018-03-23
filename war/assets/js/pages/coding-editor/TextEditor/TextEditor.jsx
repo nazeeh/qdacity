@@ -1,19 +1,21 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import styled from 'styled-components';
-import { Data, Range, resetKeyGenerator } from 'slate';
+import { Data, Range, Value } from 'slate';
 import { Editor } from 'slate-react';
-import Html from 'slate-html-serializer';
 
+import { PageView } from '../View/PageView.js';
+import Alert from '../../../common/modals/Alert';
 import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
+
 import SlateCodingBracketAdapter from './SlateCodingBracketAdapter.jsx';
+import SlateUtils from './SlateUtils.js';
 import TextEditorToolbar from './TextEditorToolbar.jsx';
-import documentSchema from './documentSchema.js';
 import Marks from './Marks';
 
 // Container to wrap optional Toolbar and StyledDocumentWrapper
 const StyledContainer = styled.div`
-	display: flex;
+	display: ${props =>(props.selectedEditor === PageView.TEXT || props.selectedEditor === PageView.CODING ) ? 'flex' : 'none'};
 	flex-direction: column;
 	height: 100%;
 `;
@@ -85,11 +87,12 @@ export default class TextEditor extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// Initialize HTML serializer with custom rules
-		this._htmlSerializer = new Html({ rules: documentSchema });
-
 		// Initialize state
 		this.state = {
+
+			// The current document
+			document: {},
+
 			/**
 			 * Slate Value object of the SlateReact.Editor
 			 * See https://docs.slatejs.org/slate-core/value
@@ -102,17 +105,29 @@ export default class TextEditor extends React.Component {
 			 *   decorations: Immutable.List<Ranges>|Null,
 			 * })
 			 */
-			value: this._htmlSerializer.deserialize('<p></p>'),
+			value: Value.fromJSON({
+				document: {
+					nodes: [{
+						object: 'block',
+						type: 'paragraph',
+						nodes: [{
+							object: 'text',
+							leaves: [{
+								text: '',
+							}],
+						}],
+					}],
+				},
+			}),
 
 			// Default font size to be selected in toolbar
-			selectedFontSize: 13
+			selectedFontSize: 13,
 		};
 
 		// Bind public methods to this
-		this.setHTML = this.setHTML.bind(this);
-		this.getHTML = this.getHTML.bind(this);
-		this.setCoding = this.setCoding.bind(this);
-		this.removeCoding = this.removeCoding.bind(this);
+		this.setDocument = this.setDocument.bind(this);
+		this.getSlateValue = this.getSlateValue.bind(this);
+		this.applyOperations = this.applyOperations.bind(this);
 		this.activateCodingInEditor = this.activateCodingInEditor.bind(this);
 		this.isTextEditable = this.isTextEditable.bind(this);
 		this.getMaxFalseNeg = this.getMaxFalseNeg.bind(this);
@@ -125,299 +140,53 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
-	 * Set editor content
+	 * Set editor document
 	 *
 	 * @public
-	 * @arg {string} html - The HTML string to load into the editor
+	 * @arg {object} document - The document to load into the editor
 	 */
-	setHTML(html) {
-		// Fallback to empty string if html is falsy
-		html = html || '';
-
-		// Cleanup the HTMl before parsing it
-		const sanitizedText = html
-			// Remove trailing <br> tags in each paragraph (added by Squire)
-			.replace(/<br><\/p>/g, '</p>')
-			// Remove div#svgContainer (added in previous versions)
-			.replace(/<div id="svgContainer".*?<\/div>/, '');
-
-		this.setState((prevState, props) => {
-			// Reset key generator to get consistent Slate node IDs
-			resetKeyGenerator();
-
-			// Parse HTML to Slate.Value
-			return { value: this._htmlSerializer.deserialize(sanitizedText) };
+	setDocument(doc) {
+		this.setState({
+			document: doc,
+			value: doc.slateValue,
+		}, () => {
+			// Force update is needed for the coding brackets to update
+			// immediately because they rely on the DOM nodes that are only
+			// changed after rendering is complete.
+			this.forceUpdate()
 		});
 	}
 
 	/**
-	 * Get editor content
+	 * Get the current editor value
 	 *
 	 * @public
-	 * @return {string} The current editor content as HTML string
+	 * @return {Slate.Value}
 	 */
-	getHTML() {
-		// Serialize editor value to HTML
-		const workaroundHTML = this._htmlSerializer.serialize(this.state.value);
-
-		// Attributes `code_id` and `author` are removed by the serializer
-		// and need that workaround. They are serialized to data-code-id and
-		// data-author by the serializer and replaced by their original value
-		// here.
-		return workaroundHTML
-			.replace(/(<coding[^>]+?)data-code-id=/g, '$1code_id=')
-			.replace(/(<coding[^>]+?)data-author=/g, '$1author=');
+	getSlateValue() {
+		return this.state.value;
 	}
 
 	/**
-	 * Apply coding to current selection
+	 * Apply one or more Slate Operations to current editor state
 	 *
 	 * @public
-	 * @arg {string} codeID - The ID of the applied code
-	 * @arg {string} codeName - The name of the applied code
-	 * @arg {string} author - The author for the new coding
-	 *
-	 * @return {Promise} - Resolves when coding is applied, rejects on error
-	 *                     or if nothing is selected
+	 * @arg {Slate.Operation|object|Slate.Operation[]|object[]} operations
+	 *      - One operation or a list of operations to apply
+	 * @arg {callable} afterSetState - optional callback to execute after
+	 *                                 setState has been executed
 	 */
-	setCoding(codeID, codeName, author) {
-		// Needed to getting new coding ID from API
-		const { projectID, projectType } = this.props;
+	applyOperations(operations, afterSetState) {
+		this.setState(prevState => ({
+			value: SlateUtils.applyOperations(prevState.value, operations),
+		}), () => {
+			// Force update is needed for the coding brackets to update
+			// immediately because they rely on the DOM nodes that are only
+			// changed after rendering is complete.
+			this.forceUpdate();
 
-		// Store selection to be independent of other intermediate changes
-		const currentSelection = this.state.value.selection;
-
-		// Do nothing if no range is selected
-		if (currentSelection.isCollapsed) {
-			return Promise.reject('nothing selected');
-		}
-
-		return new Promise((resolve, reject) => {
-			// Get new coding ID from API
-			ProjectEndpoint.incrCodingId(projectID, projectType)
-				.then(({ maxCodingID }) => {
-					this.setState(
-						prevState => {
-							const change = prevState.value.change();
-							change.addMarkAtRange(currentSelection, {
-								object: 'mark',
-								type: 'coding',
-								data: Data.create({
-									id: maxCodingID,
-									code_id: codeID,
-									title: codeName,
-									author: author
-								})
-							});
-							return {
-								value: change.value
-							};
-						},
-						() => {
-							resolve(this.getHTML());
-
-							// Force update is needed for the coding brackets to
-							// update immediately because they rely on the DOM
-							// nodes that are only changed after rendering is
-							// complete.
-							this.forceUpdate();
-						}
-					);
-				})
-				.catch(error => {
-					console.log('error while fetching next coding ID');
-					reject(error);
-				});
-		});
-	}
-
-	/**
-	 * Remove coding from current selection
-	 *
-	 * This removes all codings with the given code ID from the current
-	 * selection. If the removal leads to two remaining halfs of a coding,
-	 * the latter half gets a new coding ID.
-	 *
-	 * @public
-	 * @arg {string} codeID - the ID of the code to remove
-	 * @return {Promise} - Waits for all code removals and splittings to be
-	 *                     successfully processed. Resolves with the editors
-	 *                     current content as HTML. Rejects if there is an
-	 *                     error while fetching a new coding ID from the API
-	 *                     or if nothing is selected
-	 */
-	removeCoding(codeID) {
-		// Needed to getting new coding ID from API
-		const { projectID, projectType } = this.props;
-
-		// Store parts of the state for queries to be independent of other
-		// intermediate changes. MUST NOT BE USED AS BASE FOR STATE UPDATES!
-		// Otherwise intermediate changes would be discarded
-		const { selection: currentSelection, document } = this.state.value;
-
-		// Do nothing if no range is selected
-		if (currentSelection.isCollapsed) {
-			return Promise.reject('nothing selected');
-		}
-
-		return new Promise((resolve, reject) => {
-			// Find codings that should be removed
-			const codingsToRemove = document
-				.getMarksAtRange(currentSelection)
-				.filter(mark => mark.type === 'coding')
-				.filter(mark => mark.data.get('code_id') === codeID);
-
-			// Calculate parameters for code splitting if necessary.
-			// Returns Immutable.Set
-			const splittingPromises = codingsToRemove.map(coding => {
-				// Get curried coding searchers
-				const findCodingStart = this._findCodingStart.bind(
-					this,
-					coding.data.get('id')
-				);
-				const findCodingEnd = this._findCodingEnd.bind(
-					this,
-					coding.data.get('id')
-				);
-
-				// Prepare return value
-				const changeParameters = {
-					oldCoding: coding
-				};
-
-				// Get immediate character before the selection
-				let prevChar;
-				// Case 1: selection starts at block start
-				if (currentSelection.startOffset === 0) {
-					// Get previous text block
-					const prevText = document.getPreviousText(currentSelection.startKey);
-
-					// If there is no previous block, no splitting is needed
-					if (typeof prevText === 'undefined') {
-						return changeParameters;
-					}
-
-					prevChar = prevText.characters.last();
-				} else {
-					prevChar = document
-						.getDescendant(currentSelection.startKey)
-						.characters.get(currentSelection.startOffset - 1);
-				}
-
-				// If character before selection has not the current coding,
-				// no splitting is needed
-				if (!prevChar.marks.find(m => m.equals(coding))) {
-					return changeParameters;
-				}
-
-				// Search for the next character after the selection that has
-				// not the current coding
-
-				// Start with Text node in which the selection ends
-				let textNode = document.getDescendant(currentSelection.endKey);
-
-				// First textNode is only iterated after end of selection
-				const characters = textNode.characters.slice(
-					currentSelection.endOffset
-				);
-
-				// Find first character that has not the current coding
-				let endOffset = findCodingEnd(characters);
-
-				// If the immediate next character has not the current coding,
-				// no splitting is needed
-				if (endOffset === 0) {
-					return changeParameters;
-				}
-
-				// If other character found, add the selection end offset to
-				// get correct character offset in Text node
-				if (typeof endOffset !== 'undefined') {
-					endOffset += currentSelection.endOffset;
-				}
-
-				// If not already found, search subsequent Text nodes
-				while (typeof endOffset === 'undefined') {
-					textNode = document.getNextText(textNode.key);
-
-					// No Text node left, coding is applied until document end
-					if (!textNode) {
-						textNode = document.getLastText();
-						endOffset = textNode.characters.size;
-						break;
-					}
-
-					// Find first character that has not the current coding
-					endOffset = findCodingEnd(textNode.characters);
-				}
-
-				// Get new coding id from API
-				return ProjectEndpoint.incrCodingId(projectID, projectType).then(
-					({ maxCodingID }) => {
-						// Return parameters for coding removal and splitting
-						// to have all changes atomically
-						return {
-							rangeToChange: Range.create({
-								anchorKey: currentSelection.endKey,
-								anchorOffset: currentSelection.endOffset,
-								focusKey: textNode.key,
-								focusOffset: endOffset
-							}),
-							oldCoding: coding,
-							newCoding: {
-								object: 'mark',
-								type: 'coding',
-								data: coding.data.set('id', maxCodingID)
-							}
-						};
-					}
-				);
-			});
-
-			// Wait for all splittings to resolve
-			Promise.all(splittingPromises)
-				.then(parameters => {
-					// Apply all changes atomically
-					this.setState(
-						prevState => {
-							const change = prevState.value.change();
-
-							parameters.map(params => {
-								const { rangeToChange, oldCoding, newCoding } = params;
-
-								// Remove mark
-								change.removeMarkAtRange(currentSelection, oldCoding);
-
-								// Perform code splitting, if necessary
-								if (rangeToChange) {
-									// Remove current coding
-									change.removeMarkAtRange(rangeToChange, oldCoding);
-
-									// Add coding with new codingID
-									change.addMarkAtRange(rangeToChange, newCoding);
-								}
-							});
-
-							return {
-								value: change.value
-							};
-						},
-						() => {
-							// Resolve promise with editors current content as HTML
-							resolve(this.getHTML());
-
-							// Force update is needed for the coding brackets to
-							// update immediately because they rely on the DOM
-							// nodes that are only changed after rendering is
-							// complete.
-							this.forceUpdate();
-						}
-					);
-				})
-				.catch(error => {
-					console.log('error while fetching next coding ID');
-					reject(error);
-				});
+			// Call callback if set
+			afterSetState && afterSetState();
 		});
 	}
 
@@ -494,13 +263,13 @@ export default class TextEditor extends React.Component {
 	 */
 	handleEditorChange(change) {
 		// Get operation types
-		const operations = change.operations.map(op => op.type);
+		const operationTypes = change.operations.map(op => op.type);
 
 		// Only apply change if in textEditable mode or all operations are in
 		// readOnlyOperations
 		if (
 			this.props.textEditable ||
-			operations.every(op => readOnlyOperations.includes(op))
+			operationTypes.every(op => readOnlyOperations.includes(op))
 		) {
 			this.setState({ value: change.value });
 		}
@@ -682,8 +451,8 @@ export default class TextEditor extends React.Component {
 		const document = this.state.value.document;
 
 		// Get curried coding searchers
-		const findCodingStart = this._findCodingStart.bind(this, codingID);
-		const findCodingEnd = this._findCodingEnd.bind(this, codingID);
+		const findCodingStart = SlateUtils.findCodingStart.bind(this, codingID);
+		const findCodingEnd = SlateUtils.findCodingEnd.bind(this, codingID);
 
 		// Start searching for the first mark occurence in first text node
 		let startText = document.getFirstText();
@@ -734,38 +503,6 @@ export default class TextEditor extends React.Component {
 	}
 
 	/**
-	 * Find first character in a list of characters that has specific coding
-	 *
-	 * @private
-	 * @arg {string} codingID - The ID of the coding to search for
-	 * @arg {Immutable.List} characters - The list of characters to search in
-	 * @return {undefined|number} - The character's offset if found, or
-	 *                              undefined if no match found
-	 */
-	_findCodingStart(codingID, characters) {
-		return characters.findKey(c =>
-			c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
-		);
-	}
-
-	/**
-	 * Find first character in a list of characters that DOES NOT have specific
-	 * coding
-	 *
-	 * @private
-	 * @arg {string} codingID - The ID of the coding to search for
-	 * @arg {Immutable.List} characters - The list of characters to search in
-	 * @return {undefined|number} - The character's offset if found, or
-	 *                              undefined if no match found
-	 */
-	_findCodingEnd(codingID, characters) {
-		return characters.findKey(
-			c =>
-				!c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
-		);
-	}
-
-	/**
 	 * Check if active selection has specific mark
 	 *
 	 * @private
@@ -796,7 +533,7 @@ export default class TextEditor extends React.Component {
 		}).value;
 
 		return (
-			<StyledContainer>
+			<StyledContainer selectedEditor={this.props.selectedEditor}>
 				{this.props.textEditable && (
 					<TextEditorToolbar
 						fontFaces={fontFaces}

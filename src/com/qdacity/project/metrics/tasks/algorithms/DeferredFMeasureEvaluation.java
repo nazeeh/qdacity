@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
-import com.qdacity.project.ValidationProject;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.EvaluationUnit;
 import com.qdacity.project.metrics.FMeasureResult;
-import com.qdacity.project.metrics.TabularValidationReportRow;
+import com.qdacity.project.metrics.TabularReportRow;
 import com.qdacity.project.metrics.algorithms.FMeasure;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 import com.qdacity.project.metrics.tasks.DeferredDocResults;
@@ -27,8 +27,8 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
     List<Long> orignalDocIDs;
 
-    public DeferredFMeasureEvaluation(ValidationProject validationPrj, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit) {
-	super(validationPrj, user, validationReportID, evalUnit, orignalDocIDs);
+    public DeferredFMeasureEvaluation(ProjectRevision project, List<Long> orignalDocIDs, Long validationReportID, User user, EvaluationUnit evalUnit) {
+        super(project, user, validationReportID, evalUnit, orignalDocIDs);
     }
 
     @Override
@@ -37,7 +37,8 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 
 	List<FMeasureResult> documentAgreements = new ArrayList<>();
 
-	Collection<TextDocument> recodedDocs = tde.getTextDocument(validationProject.getId(), ProjectType.VALIDATION, user).getItems();
+	Collection<TextDocument> recodedDocs = null;
+	recodedDocs = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
 
 	for (TextDocument textDocument : recodedDocs) {
 	    String keyString = KeyFactory.createKeyString(TextDocument.class.toString(), textDocument.getId());
@@ -52,10 +53,10 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	    for (TextDocument recoded : recodedDocs) {
 		if (original.getTitle().equals(recoded.getTitle())) {
 					DocumentResult documentAgreement = FMeasure.calculateParagraphAgreement(original, recoded);
-		    documentAgreements.add(FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentAgreement.getReportRow())));
+		    documentAgreements.add(FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularReportRow(documentAgreement.getReportRow())));
 
 		    // valResult.addDocumentResult(documentAgreement);
-		    documentAgreement.setValidationResultID(valResult.getId());
+		    documentAgreement.setValidationResultID(result.getId());
 		    documentAgreement.setOriginDocumentID(original.getId());
 
 		    // Persist all DocumentResults asynchronously
@@ -69,8 +70,8 @@ public class DeferredFMeasureEvaluation extends DeferredAlgorithmEvaluation {
 	}
 
 	FMeasureResult totalAgreement = FMeasure.calculateAverageAgreement(documentAgreements);
-	TabularValidationReportRow fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularValidationReportRow(totalAgreement, validationProject.getCreatorName());
-	valResult.setReportRow(fmeasureRow.toString());
+	TabularReportRow fmeasureRow = FMeasureResultConverter.fmeasureResultToTabularReportRow(totalAgreement, project.getCreatorName());
+	result.setReportRow(fmeasureRow.toString());
     }
 
 }

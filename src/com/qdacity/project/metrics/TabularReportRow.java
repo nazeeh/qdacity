@@ -7,7 +7,7 @@ import java.util.List;
  * A Row for the generic data structure TabularValidationReport. Make sure to
  * set a tabularValidationReportId
  */
-public class TabularValidationReportRow implements Serializable {
+public class TabularReportRow implements Serializable {
 
     /**
 	 * 
@@ -15,7 +15,7 @@ public class TabularValidationReportRow implements Serializable {
 	private static final long serialVersionUID = -6855616324566422223L;
 	private final String ROW_STRING_FORMAT_REGEXP = "\\s*,\\s*";
 
-    public TabularValidationReportRow(TabularValidationReportRow copy) {
+    public TabularReportRow(TabularReportRow copy) {
 	super();
 	this.rowCsvString = copy.rowCsvString;
     }
@@ -27,11 +27,11 @@ public class TabularValidationReportRow implements Serializable {
      *
      * @param csvString a valid csv String representing a row
      */
-    public TabularValidationReportRow(String csvString) {
+    public TabularReportRow(String csvString) {
 	this.rowCsvString = csvString;
     }
 
-    public TabularValidationReportRow(List<String> cells) {
+    public TabularReportRow(List<String> cells) {
 	this.setRow(cells);
    }
 

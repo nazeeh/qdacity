@@ -81,11 +81,11 @@ export default class ProjectList extends React.Component {
 				defaultMessage: 'Please confirm leaving this project'
 			}),
 			formatMessage({
-				id: 'projectlist.cancel',
+				id: 'modal.cancel',
 				defaultMessage: 'Cancel'
 			}),
 			formatMessage({
-				id: 'projectlist.leave',
+				id: 'modal.confirm_leave',
 				defaultMessage: 'Leave'
 			})
 		);
@@ -144,7 +144,10 @@ export default class ProjectList extends React.Component {
 				id: 'projectlist.project_name',
 				defaultMessage: 'Project Name'
 			}),
-			'Name',
+			formatMessage({
+				id: 'projectlist.project_name_template',
+				defaultMessage: 'Name'
+			}),
 			''
 		);
 		modal.addTextField(
@@ -153,7 +156,10 @@ export default class ProjectList extends React.Component {
 				id: 'projectlist.project_desc',
 				defaultMessage: 'Project Description'
 			}),
-			'Description'
+			formatMessage({
+				id: 'projectlist.project_desc_template',
+				defaultMessage: 'Description'
+			})
 		);
 		modal.showModal().then(function(data) {
 			_this.createNewProject(data.name, data.desc);

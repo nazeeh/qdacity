@@ -39,9 +39,9 @@ public class SaturationEndpoint {
 
     @ApiMethod(name = "saturation.calculateNewSaturation")
     public void calculateNewSaturation(@Named("projectId") Long projectId, User user) throws UnauthorizedException {
-	DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId);
-	Queue queue = QueueFactory.getDefaultQueue();
-	queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredSaturationTask));
+		DeferredSaturationCalculationTask deferredSaturationTask = new DeferredSaturationCalculationTask(projectId);
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(deferredSaturationTask));
     }
 
     /**

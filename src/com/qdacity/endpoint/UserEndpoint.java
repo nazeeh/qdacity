@@ -1,18 +1,11 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
-import javax.jdo.FetchGroup;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -22,10 +15,12 @@ import javax.persistence.EntityNotFoundException;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -41,7 +36,10 @@ import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
-import com.qdacity.logs.*;
+import com.qdacity.course.TermCourse;
+import com.qdacity.logs.Change;
+import com.qdacity.logs.ChangeBuilder;
+import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.Project;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
@@ -275,9 +273,19 @@ public class UserEndpoint {
 		if(!(loggedInUser instanceof AuthenticatedUser)) {
 			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
 		}
+		try {
+			getCurrentUser(loggedInUser);
+			throw new UnauthorizedException("A User with this login method already exists!");
+		} catch (UnauthorizedException ex) {
+			// user is not registered
+			// this is required for inserting a user!
+		}
+
 		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
-		
-		user.setId(authenticatedUser.getId());
+
+		UUID uuid = UUID.randomUUID();
+		String randomId = uuid.toString();
+		user.setId(randomId);
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
@@ -333,24 +341,92 @@ public class UserEndpoint {
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
+	 * 
+	 * Removes associations from Projects. Deletes the project if this is the last owner.
+	 * Removes associations from ValidationProjects.
+	 * Removes associations from Courses. Deletes the course if this is the last owner.
+	 * Removes associations from TermCourses. Deletes the TermCourse if this is the last owner.
 	 *
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(name = "removeUser")
 	public void removeUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			User user = (User) Cache.getOrLoad(id, User.class, mgr);
-			User myUser = user;
-			System.out.println("This is the id " + user.getId());
+		
+		User user = (User) Cache.getOrLoad(id, User.class);
 
+		if(!Authorization.isUserAdmin(loggedInUser)) {
 			// Check if user is authorized
 			Authorization.checkAuthorization(user, loggedInUser);
-			mgr.deletePersistent(myUser);
+		} // else he is admin and is also privileged to to this action!
+		
+		// remove from projects
+		ProjectEndpoint projectEndpoint = new ProjectEndpoint();
+		if(user.getProjects() != null) {
+			CollectionResponse<Project> projectResponse = projectEndpoint.listProjectByUserId(null, null, user.getId(), loggedInUser);
+			for(Project project  : projectResponse.getItems()) {
+
+				if(project.getOwners().contains(user.getId()) && project.getOwners().size() == 1) {
+					// last owner -> delete project
+					projectEndpoint.removeProject(project.getId(), loggedInUser);
+				} else {
+					// just remove user
+					projectEndpoint.removeUser(project.getId(), "PROJECT", user.getId(), loggedInUser);
+				}
+			}
+		}
+
+		// remove from validationProjects
+		List<ValidationProject> validationProjects = projectEndpoint.listValidationProjectByUserId(user.getId(), loggedInUser);
+		for(ValidationProject validationProject: validationProjects) {
+			projectEndpoint.removeUser(validationProject.getId(), "VALIDATION", user.getId(), loggedInUser);
+		}
+
+
+		// remove from courses
+		CourseEndpoint courseEndpoint = new CourseEndpoint();
+		if(user.getCourses() != null) {
+			for(Course course : courseEndpoint.listCourseByUserId(user.getId(), null, null, loggedInUser).getItems()) {
+
+				if(course.getOwners().contains(user.getId()) && course.getOwners().size() == 1) {
+					// last owner
+					courseEndpoint.removeCourse(course.getId(), loggedInUser);
+				} else {
+					// just remove user
+					courseEndpoint.removeUser(course.getId(), loggedInUser);
+				}
+			}
+		}
+		
+		// remove from termCourses
+		if(user.getTermCourses() != null) {
+			for(Long termCourserId: user.getTermCourses()) {
+				
+				TermCourse termCourse = (TermCourse) Cache.getOrLoad(termCourserId, TermCourse.class);
+				if(termCourse.getOwners().contains(user.getId()) && termCourse.getOwners().size() == 1) {
+					// last owner
+					courseEndpoint.removeTermCourse(termCourserId, loggedInUser);
+				} else {
+					// just remove user
+					courseEndpoint.removeParticipant(termCourserId, user.getId(), loggedInUser);
+				}
+			}
+		}
+		
+		
+		
+		// finally delete user
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			user = mgr.getObjectById(User.class, id);
+			Cache.invalidate(user.getId(), User.class);
+			Cache.invalidatUserLogins(user);
+			mgr.makePersistent(user); // can't delete transient instance
+			mgr.deletePersistent(user);
 		} finally {
 			mgr.close();
 		}
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -397,41 +473,57 @@ public class UserEndpoint {
 
 	/**
 	 * Gets the qdacity.User by the given authentication information.
+	 * 
 	 * @param loggedInUser
 	 * @return
-	 * @throws UnauthorizedException if the loggedInUser is null or there was no user found.
-	 * @throws IllegalArgumentException if the user is not an instance of AuthenticatedUser
-	 * @throws IllegalStateException if there are inconsistencies in db: more than one user linked with the given provider id
+	 * @throws UnauthorizedException
+	 *             if the loggedInUser is null or there was no user found.
+	 * @throws IllegalArgumentException
+	 *             if the user is not an instance of AuthenticatedUser
+	 * @throws IllegalStateException
+	 *             if there are inconsistencies in db: more than one user linked
+	 *             with the given provider id
 	 */
 	@SuppressWarnings("unchecked")
-	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+	private User getUserByLoginProviderId(com.google.api.server.spi.auth.common.User loggedInUser)
+			throws UnauthorizedException {
 
-		if(loggedInUser == null) {
+		if (loggedInUser == null) {
 			throw new UnauthorizedException("The User could not be authenticated");
 		}
-		if(!(loggedInUser instanceof AuthenticatedUser)) {
-			throw new IllegalArgumentException("A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
+		if (!(loggedInUser instanceof AuthenticatedUser)) {
+			throw new IllegalArgumentException(
+					"A User for registration must be an instance of com.qdacity.authentication.AuthenticatedUser!");
 		}
-		
+
 		AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
-		
+
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			Query query = mgr.newQuery(User.class);
-			query.setFilter("loginProviderInformationList.contains(loginProviderVar) && loginProviderVar.externalUserId == externalIdParam && loginProviderVar.provider == providerParam");
-			query.declareVariables("com.qdacity.user.UserLoginProviderInformation loginProviderVar");
-			query.declareParameters("String externalIdParam, String providerParam");
+
+			// Set filter for UserLoginProviderInformation
+			Filter externalUserIdFilter = new FilterPredicate("externalUserId", FilterOperator.EQUAL, authUser.getId());
+			Filter providerFilter = new FilterPredicate("provider", FilterOperator.EQUAL, authUser.getProvider().toString());
+			Filter filter = new CompositeFilter(CompositeFilterOperator.AND,
+					Arrays.asList(externalUserIdFilter, providerFilter));
+
+			com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
+					"UserLoginProviderInformation").setFilter(filter);
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+			PreparedQuery pq = datastore.prepare(q);
+
+			Entity providerInformationEntity = pq.asSingleEntity();
 			
-			List<User> queriedUserList = (List<User>) query.execute(authUser.getId(), authUser.getProvider());
-			
-			if(queriedUserList.size() > 1) {
-				throw new IllegalStateException("There are multiple Users connected with a federate Auth Provider!");
-			}
-			if(queriedUserList.size() == 0) {
+			if (providerInformationEntity == null) {
 				throw new UnauthorizedException("User is not registered");
 			}
-			
-			User user = queriedUserList.get(0);
+
+			Key userKey = providerInformationEntity.getParent();
+
+			User user = mgr.getObjectById(User.class, userKey.getName());
+
 			// detatch copy, otherwise referenced default fetched objects filled with nulls
 			user = mgr.detachCopy(user);
 			return user;

@@ -1,13 +1,13 @@
 package com.qdacity.maintenance.tasks.v9tov10Migration;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.qdacity.project.metrics.EvaluationMethod;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class V9toV10MigrationUser implements DeferredTask {
 

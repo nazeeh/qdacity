@@ -1,6 +1,7 @@
 .idea
 .settings/
 .project
+.classpath
 qdacity.iml
 endpoint-libs
 gwt-unitCache
@@ -8,6 +9,7 @@ gwt-unitCache
 /war/WEB-INF/deploy
 /war/qdacity
 /war/WEB-INF/appengine-generated
+/war/WEB-INF/lib
 /war/node_modules
 /war/messages
 /war/assets/messages
@@ -25,3 +27,6 @@ war/coverage
 target
 /.idea/
 /war/package-lock.json
+/war/translations/template.txt
+/bin/
+/pom.xml

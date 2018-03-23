@@ -446,6 +446,8 @@ export default class UmlEditor extends React.Component {
 		this.props.syncService.codes.updateCode(code).then(resp => {
 			code.mmElementIDs = resp.mmElementIDs;
 			this.props.updateCode(code);
+		}).catch(() => {
+			// Errors are logged in syncService, but need to be catched
 		});
 	}
 

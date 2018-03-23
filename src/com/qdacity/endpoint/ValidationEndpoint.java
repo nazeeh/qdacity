@@ -12,13 +12,13 @@ import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.authentication.QdacityAuthenticator;
@@ -28,6 +28,7 @@ import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
 import com.qdacity.project.metrics.tasks.DeferredEvaluation;
+import com.qdacity.project.metrics.tasks.DeferredEvaluationValidationReport;
 import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
 
 
@@ -135,7 +136,7 @@ public class ValidationEndpoint {
 	@ApiMethod(name = "validation.evaluateRevision")
 	public List<ValidationProject> evaluateRevision(@Named("revisionID") Long revisionID, @Named("name") String name, @Named("docs") String docIDsString, @Named("method") String evaluationMethod, @Named("unit") String unitOfCoding, @Named("raterIds")  @Nullable String raterIds, User user) throws UnauthorizedException {
 
-		DeferredEvaluation task = new DeferredEvaluation(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
+		DeferredEvaluation task = new DeferredEvaluationValidationReport(revisionID, name, docIDsString, evaluationMethod, unitOfCoding, raterIds, user);
 		// Set instance variables etc as you wish
 		Queue queue = QueueFactory.getDefaultQueue();
 		queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));

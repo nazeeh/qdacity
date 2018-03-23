@@ -7,13 +7,15 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskHandle;
-import com.google.api.server.spi.auth.common.User;
+import com.qdacity.endpoint.ExerciseEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
-import com.qdacity.project.metrics.ValidationResult;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.metrics.Result;
 
 /**
  * Wrapper for com.google.appengine.api.taskqueue for easier usage in the
@@ -25,7 +27,6 @@ public class DeferredAlgorithmTaskQueue {
     private final Queue taskQueue;
     private final List<Future<TaskHandle>> futures;
     private long SLEEP_TIME = 10000;
-
     public DeferredAlgorithmTaskQueue() {
 	taskQueue = QueueFactory.getQueue("ValidationResultQueue");
 	futures = new ArrayList<>();
@@ -56,14 +57,14 @@ public class DeferredAlgorithmTaskQueue {
      * Waits for all Tasks to finish by polling for their results.
      *
      * @param amountValidationProjects how many tasks are you waiting for
-     * @param validationReportId from which validationReport
+     * @param reportId from which validationReport
      * @param user user which has the rights to see the results of the task
      * @return the ValidationResults created by the tasks.
      * @throws ExecutionException
      * @throws UnauthorizedException
      * @throws InterruptedException
      */
-    public List<ValidationResult> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long validationReportId, User user) throws ExecutionException, UnauthorizedException, InterruptedException {
+    public List<? extends Result> waitForTasksWhichCreateAnValidationResultToFinish(int amountValidationProjects, Long reportId, Long exerciseID, User user, ProjectType projectType) throws ExecutionException, UnauthorizedException, InterruptedException {
 	if (amountValidationProjects == 0) {
 	    return null;
 	}
@@ -74,11 +75,17 @@ public class DeferredAlgorithmTaskQueue {
 	    future.get();
 	}
 	// Poll every 10 seconds. TODO: find better solution
-	List<ValidationResult> valResults = new ArrayList<>();
+	List<? extends Result> valResults = new ArrayList<>();
 		while (valResults.size() != amountValidationProjects || !reportRowsExist(valResults)) {
 			// checking if all validationReports exists. If yes tasks must have finished.
-			ValidationEndpoint ve = new ValidationEndpoint();
-			valResults = ve.listValidationResults(validationReportId, user);
+            if (projectType == ProjectType.VALIDATION) {
+                ValidationEndpoint ve = new ValidationEndpoint();
+                valResults = ve.listValidationResults(reportId, user);
+            }
+            else if (projectType == ProjectType.EXERCISE) {
+                ExerciseEndpoint ee = new ExerciseEndpoint();
+                valResults = ee.listExerciseResults(reportId, exerciseID, user);
+            }
 			if (valResults.size() != amountValidationProjects || !reportRowsExist(valResults)) {
 				Thread.sleep(SLEEP_TIME);
 			}
@@ -90,10 +97,10 @@ public class DeferredAlgorithmTaskQueue {
 
     }
 
-	private boolean reportRowsExist(List<ValidationResult> valResults) {
-		for (ValidationResult validationResult : valResults) {
-			if (validationResult.getReportRow() == null) {
-				Logger.getLogger("logger").log(Level.INFO, " All results as entities in the DB, but the reportRow has not been written for " + validationResult.getId());
+	private boolean reportRowsExist(List<? extends Result> valResults) {
+		for (Result result : valResults) {
+			if (result.getReportRow() == null) {
+				Logger.getLogger("logger").log(Level.INFO, " All results as entities in the DB, but the reportRow has not been written for " + result.getId());
 				return false;
 			}
 		}

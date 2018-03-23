@@ -101,7 +101,7 @@ export default class TermCourseList extends React.Component {
 				defaultMessage: 'Term Name'
 			}),
 			formatMessage({
-				id: 'term.course.term_name.sample',
+				id: 'term.course.term_name_template',
 				defaultMessage: 'Name'
 			}),
 			''

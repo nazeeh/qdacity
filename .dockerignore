@@ -1,0 +1,3 @@
+# Exclude local db file
+/war/WEB-INF/appengine-generated
+/target/qdacity-war/WEB-INF/appengine-generated

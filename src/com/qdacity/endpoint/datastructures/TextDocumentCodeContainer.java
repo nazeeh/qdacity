@@ -1,8 +1,9 @@
 package com.qdacity.endpoint.datastructures;
 
+import java.io.Serializable;
+
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.data.TextDocument;
-import java.io.Serializable;
 
 public class TextDocumentCodeContainer implements Serializable {
 

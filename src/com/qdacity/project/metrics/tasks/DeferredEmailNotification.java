@@ -9,22 +9,18 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import com.qdacity.project.metrics.*;
 import org.json.JSONException;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.DeferredTask;
-import com.google.api.server.spi.auth.common.User;
 import com.qdacity.Credentials;
 import com.qdacity.PMF;
 import com.qdacity.Sendgrid;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.endpoint.ValidationEndpoint;
 import com.qdacity.project.ValidationProject;
-import com.qdacity.project.metrics.DocumentResult;
-import com.qdacity.project.metrics.FMeasureResult;
-import com.qdacity.project.metrics.TabularValidationReportRow;
-import com.qdacity.project.metrics.ValidationReport;
-import com.qdacity.project.metrics.ValidationResult;
 import com.qdacity.project.metrics.algorithms.datastructures.converter.FMeasureResultConverter;
 
 public class DeferredEmailNotification implements DeferredTask {
@@ -61,7 +57,7 @@ public class DeferredEmailNotification implements DeferredTask {
 
 			for (ValidationResult result : results) {
 				Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER, Credentials.SENDGRID_PW);
-				Long prjID = result.getValidationProjectID();
+				Long prjID = result.getProjectID();
 				ValidationProject project = mgr.getObjectById(ValidationProject.class, prjID);
 				List<String> coderIDs = project.getValidationCoders();
 				String greetingName = "";
@@ -81,7 +77,7 @@ public class DeferredEmailNotification implements DeferredTask {
 				msgBody += "</p>";
 				msgBody += "<p>";
 				msgBody += "<strong>Overall</strong> <br>";
-				FMeasureResult paragraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(result.getReportRow()));
+				FMeasureResult paragraphAgreement = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularReportRow(result.getReportRow()));
 				msgBody += "F-Measure: " + paragraphAgreement.getFMeasure() + "<br>";
 				msgBody += "Recall: " + paragraphAgreement.getRecall() + "<br>";
 				msgBody += "Precision: " + paragraphAgreement.getPrecision() + "<br>";
@@ -94,7 +90,7 @@ public class DeferredEmailNotification implements DeferredTask {
 				for (DocumentResult documentResult : docResults) {
 					msgBody += "<p>";
 					msgBody += "<strong>" + documentResult.getDocumentName() + ":</strong><br>";
-					FMeasureResult documentPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(documentResult.getReportRow()));
+					FMeasureResult documentPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularReportRow(documentResult.getReportRow()));
 					msgBody += "F-Measure: " + documentPA.getFMeasure() + "<br>";
 					msgBody += "Recall: " + documentPA.getRecall() + "<br>";
 					msgBody += "Precision: " + documentPA.getPrecision() + "<br><br>";
@@ -103,7 +99,7 @@ public class DeferredEmailNotification implements DeferredTask {
 
 				msgBody += "<p>";
 				msgBody += "You may compare these values to the average of this report<br>";
-				FMeasureResult reportPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularValidationReportRow(report.getAverageAgreementCsvString()));
+				FMeasureResult reportPA = FMeasureResultConverter.tabularValidationReportRowToFMeasureResult(new TabularReportRow(report.getAverageAgreementCsvString()));
 				msgBody += "F-Measure: " + reportPA.getFMeasure() + "<br>";
 				msgBody += "Recall: " + reportPA.getRecall() + "<br>";
 				msgBody += "Precision: " + reportPA.getPrecision() + "<br><br>";

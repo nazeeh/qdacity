@@ -1,16 +1,18 @@
 package com.qdacity.project.metrics.algorithms.datastructures.converter;
 
-import com.qdacity.project.data.TextDocument;
-import com.qdacity.project.metrics.EvaluationUnit;
-import com.qdacity.project.metrics.constants.TextDocumentConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.qdacity.project.data.TextDocument;
+import com.qdacity.project.metrics.EvaluationUnit;
+import com.qdacity.project.metrics.constants.TextDocumentConstants;
 
 public class TextDocumentAnalyzer {
 

@@ -61,6 +61,35 @@ public class CourseEndpoint {
 
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
 
+		return listCourseByUserId(cursorString, qdacityUser.getId());
+	}
+
+	/**
+	 * This method lists all the entities inserted in datastore.
+	 * It uses HTTP GET method and paging support.
+	 *
+	 * @return A CollectionResponse class containing the list of all entities
+	 *         persisted and a cursor to the next page.
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({ "unchecked", "unused" })
+	@ApiMethod(name = "course.listCourseByUserId", path = "courses.listByUser")
+	public CollectionResponse<Course> listCourseByUserId(@Named("id") String userId, @Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User requestedUser = (com.qdacity.user.User) Cache.getOrLoad(userId, com.qdacity.user.User.class);
+		Authorization.checkAuthorization(requestedUser, user);
+
+		return listCourseByUserId(cursorString, requestedUser.getId());
+	}
+
+	/**
+	 * Fetches all courses linked to the given user id.
+	 * Be sure to check authorization first!
+	 * @param cursorString
+	 * @param userId
+	 * @return
+	 */
+	private CollectionResponse<Course> listCourseByUserId(@Nullable @Named("cursor") String cursorString, String userId) {
 		PersistenceManager mgr = null;
 		List<Course> execute = null;
 
@@ -69,7 +98,7 @@ public class CourseEndpoint {
 
 			Query q = mgr.newQuery(Course.class, ":p.contains(owners)");
 
-			execute = (List<Course>) q.execute(Arrays.asList(qdacityUser.getId()));
+			execute = (List<Course>) q.execute(Arrays.asList(userId));
 
 			// Tight loop for fetching all entities from datastore and accomodate
 			// for lazy fetch.
@@ -372,13 +401,15 @@ public class CourseEndpoint {
 					}
 				}
 				try {
-					termCourse.addOwner(user.getId());
+					termCourse.addOwner(qdacityUser.getId());
 					Authorization.checkAuthorizationTermCourse(termCourse, user);
 					mgr.makePersistent(termCourse);
-					// Authorize User
-					com.qdacity.user.User dbUser = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
-					dbUser.addTermCourseAuthorization(termCourse.getId());
-					Cache.cache(dbUser.getId(), com.qdacity.user.User.class, dbUser);
+					qdacityUser.addTermCourseAuthorization(termCourse.getId());
+					
+					mgr.makePersistent(qdacityUser);
+					Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
+					AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
+					Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
 				}
 				catch (javax.jdo.JDOObjectNotFoundException ex) {
 					throw new javax.jdo.JDOObjectNotFoundException("User is not registered");

@@ -1,17 +1,22 @@
 package com.qdacity.project.metrics.tasks.algorithms;
 
-import com.google.api.server.spi.auth.common.User;
-import com.qdacity.project.ValidationProject;
-import com.qdacity.project.metrics.EvaluationUnit;
-import com.qdacity.project.metrics.TabularValidationReportRow;
-import com.qdacity.project.metrics.algorithms.KrippendorffsAlphaCoefficient;
-import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
-import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.api.server.spi.auth.common.User;
+import com.qdacity.exercise.ExerciseProject;
+import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
+import com.qdacity.project.metrics.EvaluationUnit;
+import com.qdacity.project.metrics.TabularReportRow;
+import com.qdacity.project.metrics.algorithms.KrippendorffsAlphaCoefficient;
+import com.qdacity.project.metrics.algorithms.datastructures.ReliabilityData;
+import com.qdacity.project.metrics.algorithms.datastructures.converter.ReliabilityDataGenerator;
 
 public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvaluation {
 
@@ -19,12 +24,13 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
     private final Collection<Long> codeIds;
     
 
-    public DeferredKrippendorffsAlphaEvaluation(ValidationProject validationProject, User user, Long validationReportId, String documentTitle, EvaluationUnit evalUnit, ArrayList<Long> codeIds, ArrayList<Long> textDocumentIds) {
+    public DeferredKrippendorffsAlphaEvaluation(ProjectRevision validationProject, User user, Long validationReportId, String documentTitle, EvaluationUnit evalUnit, ArrayList<Long> codeIds, ArrayList<Long> textDocumentIds) {
 	super(validationProject, user, validationReportId, evalUnit, textDocumentIds);
 	this.codeIds = codeIds;
 	row = new ArrayList<>();
 	row.add(documentTitle);
     }
+
 
     @Override
     protected void runAlgorithm() throws Exception {
@@ -37,7 +43,7 @@ public class DeferredKrippendorffsAlphaEvaluation extends DeferredAlgorithmEvalu
 	    row.add(result + "");
 	    Logger.getLogger("logger").log(Level.INFO, "Kripp's Alpha Result: " + result + " adding to ValidationResult");
 	}
-	valResult.setReportRow(new TabularValidationReportRow(row).toString());
+	result.setReportRow(new TabularReportRow(row).toString());
 
     }
 

@@ -1,13 +1,15 @@
 package com.qdacity.project.saturation;
 
-import com.google.appengine.api.datastore.Key;
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+
+import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SaturationParameters implements Serializable {

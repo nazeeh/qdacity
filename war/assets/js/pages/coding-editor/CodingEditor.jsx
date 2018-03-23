@@ -115,12 +115,7 @@ class CodingEditor extends React.Component {
 			searchResults: {
 				documentResults: []
 			},
-			mxGraphLoaded: false,
-			userProfile: {
-				name: '',
-				email: '',
-				picSrc: ''
-			}
+			mxGraphLoaded: false
 		};
 
 		this.props.mxGraphPromise.then(() => {
@@ -149,10 +144,6 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
-		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
-
-		// update on initialization
-		this.updateUserStatusFromProps(props);
 
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
@@ -160,52 +151,25 @@ class CodingEditor extends React.Component {
 
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
-		this.updateUserStatusFromProps(nextProps);
+		this.updateUserAtSyncService();
 	}
 
 	updateUserAtSyncService() {
-		const _this = this;
-		this.props.auth.authentication.getProfile().then(profile => {
-			_this.syncService.updateUser({
-				name: profile.name,
-				email: profile.email,
-				picSrc: profile.thumbnail,
-				project: _this.state.project.id,
-				token: _this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
-			});
-		});
-	}
-
-	updateUserStatusFromProps(targetedProps) {
-		const _this = this;
-		targetedProps.auth.authentication.getProfile().then(function(profile) {
-			_this.setState({
-				userProfile: {
-					name: profile.name,
-					email: profile.email,
-					picSrc: profile.thumbnail
-				}
-			});
-			_this.syncService.updateUser({
-				name: profile.name,
-				email: profile.email,
-				picSrc: profile.thumbnail,
-				project: _this.state.project.id,
-				token: _this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
-			});
+		this.syncService.updateUser({
+			name: this.props.auth.userProfile.name,
+			email: this.props.auth.userProfile.email,
+			picSrc: this.props.auth.userProfile.picSrc,
+			project: {
+				id: this.state.project.id,
+				type: this.state.project.type,
+			},
+			token: this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
 		});
 	}
 
 	componentDidMount() {
 		this.updateUserAtSyncService();
 
-		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
-		if (this.state.userProfile.email !== '') {
-			this.syncService.logon(this.state.userProfile);
-		}
-	}
-
-	componentDidMount() {
 		document.getElementsByTagName('body')[0].style['overflow-y'] = 'hidden';
 	}
 
@@ -282,7 +246,9 @@ class CodingEditor extends React.Component {
 				relationshipCode.relationshipCode = null;
 				relationshipCode.mmElementIDs = [];
 
-				this.syncService.codes.updateCode(relationshipCode);
+				this.syncService.codes.updateCode(relationshipCode).catch(() => {
+					// Errors are logged in syncService, but need to be catched
+				});
 			}
 
 			code.relations = resp.relations;
@@ -406,7 +372,7 @@ class CodingEditor extends React.Component {
 									<span>
 										<FormattedMessage
 											id="coding.editor.false_negatives"
-											defaultMesage="Showing False Negatives"
+											defaultMessage="Showing False Negatives"
 										/>{' '}
 										>={' '}
 									</span>
@@ -438,6 +404,8 @@ class CodingEditor extends React.Component {
 									projectType={this.state.project.getType()}
 									report={this.report}
 									syncService={this.syncService}
+									getCodeByCodeID={this.getCodeByCodeID}
+									codesystemView={this.codesystemViewRef}
 								/>
 							</StyledDocumentsView>
 						</div>
@@ -463,7 +431,7 @@ class CodingEditor extends React.Component {
 							codeRemoved={this.codeRemoved}
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
-							userProfile={this.state.userProfile}
+							userProfile={this.props.auth.userProfile}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>
@@ -471,14 +439,13 @@ class CodingEditor extends React.Component {
 					<StyledTextdocumentUi>
 						<TextEditor
 							ref={r => (this.textEditor = r)}
+							selectedEditor={this.state.selectedEditor}
 							textEditable={this.state.selectedEditor === PageView.TEXT}
 							projectID={this.state.project.getId()}
 							projectType={this.state.project.getType()}
 							getCodeByCodeID={this.getCodeByCodeID}
 							showAgreementMap={this.state.showAgreementMap}
-							agreementMapHighlightThreshold={
-								this.state.agreementMapHighlightThreshold
-							}
+							agreementMapHighlightThreshold={this.state.agreementMapHighlightThreshold}
 						/>
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}

@@ -39,6 +39,7 @@ export default class CodesystemToolbar extends React.Component {
 		this.applyCode = this.applyCode.bind(this);
 		this.removeCoding = this.removeCoding.bind(this);
 		this.showCodingsOverview = this.showCodingsOverview.bind(this);
+		this.toggleSearchBar = this.toggleSearchBar.bind(this);
 	}
 
 	// lifecycle hook: update state for rerender
@@ -97,32 +98,11 @@ export default class CodesystemToolbar extends React.Component {
 		const selected = this.props.selected;
 		const author = this.props.userProfile.name;
 
-		this.props.textEditor
-			.setCoding(selected.codeID, selected.name, author)
-			.then(html => {
-				this.props.documentsView.applyCodeToCurrentDocument(html, selected);
-				this.props.updateCodingCount();
-			})
-			.catch(error => {
-				if (error !== 'nothing selected') {
-					console.error(error);
-				}
-			});
+		this.props.documentsView.applyCodeToCurrentDocument(selected, author);
 	}
 
 	removeCoding() {
-		const codeID = this.props.selected.codeID;
-		this.props.textEditor
-			.removeCoding(codeID)
-			.then(html => {
-				this.props.documentsView.updateCurrentDocument(html);
-				this.props.updateCodingCount();
-			})
-			.catch(error => {
-				if (error !== 'nothing selected') {
-					console.error(error);
-				}
-			});
+		this.props.documentsView.removeCoding(this.props.selected.codeID);
 	}
 
 	showCodingsOverview() {
@@ -138,11 +118,16 @@ export default class CodesystemToolbar extends React.Component {
 			.then(function() {});
 	}
 
+	toggleSearchBar() {
+		this.props.toggleCodeSearch();
+	}
+
 	renderAddRemoveCodeBtn() {
 		if (this.props.projectType != 'PROJECT') return '';
 
 		return [
 			<BtnDefault
+				id="addCodeButtonId"
 				key="applyCodeBtn"
 				className="btn btn-default"
 				onClick={this.insertCode}
@@ -182,6 +167,16 @@ export default class CodesystemToolbar extends React.Component {
 		);
 	}
 
+	renderSearchButton() {
+		return (
+			<StyledBtnGroup className="btn-group">
+				<BtnDefault className="btn btn-default" onClick={this.toggleSearchBar}>
+					<i className="fa fa-search fa-1x" />
+				</BtnDefault>
+			</StyledBtnGroup>
+		);
+	}
+
 	render() {
 		return (
 			<StyledToolBar>
@@ -204,6 +199,7 @@ export default class CodesystemToolbar extends React.Component {
 					</BtnDefault>
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}
+				{this.renderSearchButton()}
 			</StyledToolBar>
 		);
 	}

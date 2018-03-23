@@ -24,7 +24,7 @@ public class StoredSecret  implements Serializable{
 	private String identifier;
 	
 	@Persistent
-	private com.google.appengine.api.datastore.Text value;
+	private com.google.appengine.api.datastore.Blob value;
 	
 	/**
 	 * The default constructor.
@@ -36,7 +36,7 @@ public class StoredSecret  implements Serializable{
 	 * @param identifier
 	 * @param value
 	 */
-	public StoredSecret(String identifier, com.google.appengine.api.datastore.Text value) {
+	public StoredSecret(String identifier, com.google.appengine.api.datastore.Blob value) {
 		this.identifier = identifier;
 		this.value = value;
 	}
@@ -61,7 +61,7 @@ public class StoredSecret  implements Serializable{
 	 * 
 	 * @return
 	 */
-	public com.google.appengine.api.datastore.Text getValue() {
+	public com.google.appengine.api.datastore.Blob getValue() {
 		return value;
 	}
 
@@ -69,7 +69,7 @@ public class StoredSecret  implements Serializable{
 	 * 
 	 * @param value
 	 */
-	public void setValue(com.google.appengine.api.datastore.Text value) {
+	public void setValue(com.google.appengine.api.datastore.Blob value) {
 		this.value = value;
 	}
 

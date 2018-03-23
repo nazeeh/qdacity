@@ -1,3 +1,4 @@
+const logger = require('../utils/Logger');
 const { MSG, EVT } = require('./constants.js');
 
 /**
@@ -39,7 +40,7 @@ class CodesHandler {
    * @arg {function} ack - acknowledge function for response
    */
   _handleCodeInsert(data, ack) {
-    console.info(`${this._ioSocket.id} code.insert ${JSON.stringify(data)}`);
+    logger.debug(`${this._ioSocket.id} code.insert ${JSON.stringify(data)}`);
 
     // Call backend API to insert code
     this._socket.api
@@ -57,7 +58,7 @@ class CodesHandler {
    * @arg {function} ack - acknowledge function for response
    */
   _handleCodeRelocate(data, ack) {
-    console.info(`${this._ioSocket.id} code.relocate ${JSON.stringify(data)}`);
+    logger.debug(`${this._ioSocket.id} code.relocate ${JSON.stringify(data)}`);
 
     // Call backend API to relocate code
     this._socket.api
@@ -73,7 +74,7 @@ class CodesHandler {
    * @arg {function} ack - acknowledge function for response
    */
   _handleCodeRemove(data, ack) {
-    console.info(`${this._ioSocket.id} code.remove ${JSON.stringify(data)}`);
+    logger.debug(`${this._ioSocket.id} code.remove ${JSON.stringify(data)}`);
 
     // Call backend API to remove code
     this._socket.api
@@ -90,7 +91,7 @@ class CodesHandler {
    * @arg {function} ack - acknowledge function for response
    */
   _handleCodeUpdate(data, ack) {
-    console.info(`${this._ioSocket.id} code.update ${JSON.stringify(data)}`);
+    logger.debug(`${this._ioSocket.id} code.update ${JSON.stringify(data)}`);
 
     // Call backend API to insert code
     this._socket.api

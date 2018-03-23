@@ -5,11 +5,12 @@ image: java:7
     - qdacity
   environment: Production
 
+
 .cache_node: &node_cache
   key: "node_modules"
-  untracked: true
   paths:
     - war/node_modules/
+    - localization/node_modules/
 
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
@@ -35,7 +36,8 @@ frontend_prod_build:
   <<: *job_definition
   <<: *frontend_build
   script:
-    - build_frontend bundle minify set-react-production
+    - build_babel_plugin
+    - build_frontend bundle generate-language-files minify set-react-production
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -43,7 +45,8 @@ frontend_prod_build_nm:
   except:
     - master
   script:
-    - build_frontend bundle
+    - build_babel_plugin
+    - build_frontend bundle generate-language-files
 
 backend_prod_build:
   <<: *job_definition
@@ -53,9 +56,12 @@ backend_prod_build:
   artifacts:
     paths:
       - target/qdacity-war
+      - ./pom.xml
     expire_in: 3 mos
   script:
-    - mvn clean package
+    - cp ./pom.base.xml ./pom.xml
+    - sed -i -e 's/APPENGINE_APP_ID/'$PROJECT_ID_PRODUCTION'/g' ./pom.xml
+    - mvn clean package -DskipTests
 
 rtcsvc_prod_build:
   <<: *job_definition
@@ -64,7 +70,6 @@ rtcsvc_prod_build:
     - master
   cache:
     key: "rtcsvc:node_modules"
-    untracked: true
     paths:
     - realtime-service/node_modules/
   artifacts:
@@ -104,10 +109,42 @@ frontend_prod_unittest:
     expire_in: 6 mos
   script:
     - export DISPLAY=:10
+    - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd war
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
+  allow_failure: true
+
+acceptance_tests:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches 
+  cache:
+    key: "acceptance_tests"
+    paths:
+    - realtime-service/node_modules/
+    - localization/node_modules/
+    - war/node_modules/
+  script:
+    - chmod +x ./executeAcceptanceTestsJob.sh
+    - ./executeAcceptanceTestsJob.sh
+  dependencies:
+    - frontend_prod_build
+    - backend_prod_build
+  allow_failure: true
+
+frontend_babel_plugin_test:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  cache:
+    <<: *node_cache
+    policy: pull
+  script:
+    - build_babel_plugin test
 
 rtcsvc_prod_unittest:
   <<: *job_definition
@@ -116,7 +153,6 @@ rtcsvc_prod_unittest:
     - master
   cache:
     key: "rtcsvc:node_modules"
-    untracked: true
     paths:
     - realtime-service/node_modules/
     policy: pull
@@ -205,6 +241,19 @@ deploy_non_minified:
         shift
         gulp $subcommand
       done
+      cd ..
+    }
+
+    function build_babel_plugin() {
+      cd localization
+      npm prune
+      npm install
+      while [ -n "$1" ]; do
+        subcommand="$1"
+        shift
+        npm run $subcommand
+      done
+      cd ..
     }
 
 before_script:

@@ -130,7 +130,7 @@ export default class DocumentsToolbar extends React.Component {
 		uploadFile.project = this.props.projectID;
 		uploadFile.fileData = fileData.split(',')[1];
 		UploadEndpoint.insertUpload(uploadFile).then(function(resp) {
-			_this.props.addDocument(resp.id, resp.title, resp.text.value);
+			_this.props.addDocument(resp);
 		});
 	}
 

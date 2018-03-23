@@ -1,17 +1,12 @@
 const SERVER_NAME = require('../utils/serverName');
+const logger = require('../utils/Logger');
 const Endpoint = require('../endpoints/Endpoint');
 const CodesHandler = require('./CodesHandler');
+const DocumentHandler = require('./DocumentHandler');
 const { MSG, EVT } = require('./constants.js');
 
 // Key to use for socket data hash in redis
 const REDIS_SOCKET_DATA = 'socketdata';
-
-// Separator to combine type, id to room id
-const ROOM_SEP = '/';
-
-// Room Types
-const DOC_ROOM = 'doc';
-const PRJ_ROOM = 'prj';
 
 /**
  * Wrapper class to handle socket connections
@@ -32,8 +27,12 @@ class Socket {
     // Private properties
     this._io = io;
     this._redis = redis;
-    this._project = '';
-    this._document = '';
+
+    // User data
+    this.project = {
+      id: '',
+      type: '',
+    };
 
     // Listen to meta messages from client
     this.socket.on(MSG.USER.UPDATE, this._handleUserUpdate.bind(this));
@@ -41,6 +40,7 @@ class Socket {
 
     // Initialize handlers for specific domains
     new CodesHandler(this);
+    new DocumentHandler(this, redis);
 
     // Send connection acknowledgement to client
     this.socket.emit(EVT.USER.CONNECTED, SERVER_NAME);
@@ -60,7 +60,7 @@ class Socket {
     });
     this._emitUserUpdated();
 
-    console.info(`${this.socket.id} disconnected`);
+    logger.info(`${this.socket.id} disconnected`);
   }
 
   /**
@@ -68,12 +68,12 @@ class Socket {
    * @private
    * @arg {object} data - object describing the connected user. Expected keys:
    *                      { name, email, picSrc, apiRoot, apiVersion, token,
-   *                        project, document }
+   *                        project: { id, type }, document }
    * @arg {function} ack - acknowledge function will be called with argument
    *                       ("ok") on success or ("error", stack) on failure
    */
   _handleUserUpdate(data, ack) {
-    console.info(`${this.socket.id} user.update ${JSON.stringify(data)}`);
+    logger.debug(`${this.socket.id} user.update ${JSON.stringify(data)}`);
 
     try {
       // Add socket and its data to shared application state
@@ -83,10 +83,7 @@ class Socket {
       this.api.updateParameters(data.apiRoot, data.apiVersion, data.token);
 
       // (Leave previous and) join new project room
-      this._updateRoom(PRJ_ROOM, data.project);
-
-      // (Leave others and) join new document room
-      this._updateRoom(DOC_ROOM, data.document);
+      this._updateProjectRoom(data.project);
 
       ack('ok');
     } catch (e) {
@@ -126,7 +123,10 @@ class Socket {
           name: data.name,
           email: data.email,
           picSrc: data.picSrc,
-          project: data.project,
+          project: {
+            id: data.project.id,
+            type: data.project.type,
+          },
           document: data.document,
         },
         server: SERVER_NAME,
@@ -137,36 +137,27 @@ class Socket {
   /**
    * Update this sockets project or document and emit change to all clients.
    * @private
-   * @arg {string} type - Room type. Use only constants DOC_ROOM and PRJ_ROOM
-   * @arg {string} id - ID of the document or project room
+   * @arg {object} project - Project data for the update. Required properties:
+   *                         { id, type }
    */
-  _updateRoom(type, id) {
-    // Allow only certain room types
-    if (type !== DOC_ROOM && type !== PRJ_ROOM) {
-      console.error('Invalid type used in Socket._updateRoom(type, id)');
-      return;
-    }
-
-    const property = type === DOC_ROOM ? '_document' : '_project';
+  _updateProjectRoom(project) {
 
     // Do not update if id did not change
-    if (this[property] === id) {
+    if (this.project.id === project.id && this.project.type === project.type) {
       return;
     }
 
-    // Update property
-    this[property] = id;
+    this.project = project;
+
+    const newRoom = this._getProjectRoomName();
 
     // Leave all rooms that are not in updated data
     Object.keys(this.socket.rooms).map(room => {
-      const { roomType, roomId } = room.split(ROOM_SEP);
-      if (type === roomType && id !== roomId) {
+      if (room !== newRoom) {
         this.socket.leave(room);
       }
     });
 
-    // Join new room
-    const newRoom = `${type}${ROOM_SEP}${id}`;
     this.socket.join(newRoom);
 
     // Emit user update to project room
@@ -180,7 +171,7 @@ class Socket {
    */
   _emitUserUpdated() {
     // Get project room name
-    const roomid = `${PRJ_ROOM}${ROOM_SEP}${this._project}`;
+    const roomid = this._getProjectRoomName();
 
     // Get all sockets in the document room.
     this._io.in(roomid).clients((error, socketIds) => {
@@ -200,11 +191,11 @@ class Socket {
         const data = response
           .map(clientData => {
             const json = JSON.parse(clientData);
-            return json.data || {};
+			return (json && json.data) ? json.data : {};
           })
           .filter(
             data =>
-              data.project == this._project &&
+              data.project.id === this.project.id &&
               data.name &&
               data.email &&
               data.picSrc
@@ -223,28 +214,17 @@ class Socket {
    * @arg {...mixed} args - Any arguments to send with the event
    */
   _emitToProject(event, ...args) {
-    this._emitToRoom(`${PRJ_ROOM}${ROOM_SEP}${this._project}`, event, ...args);
+    this._io
+      .to(this._getProjectRoomName())
+      .emit(event, ...args);
   }
 
   /**
-   * Send event to this socket's document room
-   * @private
-   * @arg {string} event - The event to emit
-   * @arg {...mixed} args - Any arguments to send with the event
+   * Build project room name
+   * @return {string} project room name
    */
-  _emitToDocument(event, ...args) {
-    this._emitToRoom(`${DOC_ROOM}${ROOM_SEP}${this._document}`, event, ...args);
-  }
-
-  /**
-   * Send event to some room
-   * @private
-   * @arg {string} room - The room to send to
-   * @arg {string} event - The event to emit
-   * @arg {...mixed} args - Any arguments to send with the event
-   */
-  _emitToRoom(room, event, ...args) {
-    this._io.to(room).emit(event, ...args);
+  _getProjectRoomName() {
+    return `prj/${this.project.id}`;
   }
 }
 

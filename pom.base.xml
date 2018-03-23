@@ -10,13 +10,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<maven.compiler.testSource>1.7</maven.compiler.testSource>
-		<maven.compiler.testTarget>1.7</maven.compiler.testTarget>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.testSource>1.8</maven.compiler.testSource>
+		<maven.compiler.testTarget>1.8</maven.compiler.testTarget>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<archiveClasses>true</archiveClasses>
-		<argLine>-Dbytecode.version=1.7</argLine>
+		<argLine>-Dbytecode.version=1.8</argLine>
 	</properties>
 
 	<prerequisites>
@@ -39,9 +39,9 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-endpoints</artifactId>
-			<version>1.9.59</version>
+			<groupId>com.google.endpoints</groupId>
+			<artifactId>endpoints-framework</artifactId>
+			<version>2.0.9</version>
 		</dependency>
 		
 		<dependency>
@@ -186,6 +186,16 @@
 			<artifactId>gson</artifactId>
 			<version>2.8.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.0</version>
+		</dependency>
 
 
 		<!-- Test Dependencies -->
@@ -277,13 +287,26 @@
 				</dependencies>
 			</plugin>
 			<plugin>
-			   <groupId>com.google.appengine</groupId>
-			   <artifactId>appengine-maven-plugin</artifactId>
-			   <version>1.9.59</version>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>appengine-maven-plugin</artifactId>
+				<version>1.3.2</version>
 				<configuration>
 					<enableJarSplitting>true</enableJarSplitting>
 					<port>8888</port>
 					<fullScanSeconds>2</fullScanSeconds>
+					<deploy.promote>false</deploy.promote>
+					<!-- configure the following for local builds -->
+					<deploy.project>APPENGINE_APP_ID</deploy.project>
+					<deploy.version>APPENGINE_APP_VERSION</deploy.version>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>endpoints-framework-maven-plugin</artifactId>
+				<version>1.0.2</version>
+				<configuration>
+					<!-- configure the following for local builds -->
+					<hostname>APPENGINE_APP_ID.appspot.com</hostname>
 				</configuration>
 			</plugin>
 		  <plugin>
@@ -371,7 +394,7 @@
 			<version>2.20</version>
 			<configuration>
 				<!-- Sets the VM argument line used when unit tests are run. -->
-				<argLine>${surefireArgLine} -Dbytecode.version=1.7</argLine>
+				<argLine>${surefireArgLine} -Dbytecode.version=1.8</argLine>
 				<trimStackTrace>false</trimStackTrace>
 			</configuration>
 		  </plugin>

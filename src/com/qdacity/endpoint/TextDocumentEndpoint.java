@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
@@ -14,7 +13,9 @@ import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
+import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.*;
+import com.qdacity.project.metrics.ExerciseReport;
 import org.apache.cxf.common.util.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -36,14 +37,18 @@ import com.google.appengine.datanucleus.query.JDOCursorHelper;
 import com.qdacity.Authorization;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
+import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.endpoint.datastructures.AgreementMapList;
 import com.qdacity.endpoint.datastructures.AgreementMapList.SimplifiedAgreementMap;
-import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.endpoint.datastructures.TextDocumentList;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
+import com.qdacity.project.AbstractProject;
+import com.qdacity.project.ProjectRevision;
+import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
@@ -143,6 +148,10 @@ public class TextDocumentEndpoint {
 			} else if (projectType.equals("VALIDATION")) {
 				ValidationEndpoint ve = new ValidationEndpoint();
 				documentResults = ve.listDocumentResults(id, user);
+			}
+			else if (projectType.equals("EXERCISE")) {
+				ExerciseReport exerciseReport = mgr.getObjectById(ExerciseReport.class, id);
+				documentResults = exerciseReport.getDocumentResults();
 			}
 			if (documentResults.size() > 0) {
 				for (DocumentResult documentResult : documentResults) {
@@ -336,16 +345,16 @@ public class TextDocumentEndpoint {
 		}
 	}
 
-	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User user) throws UnauthorizedException {
+	public static void cloneTextDocuments(AbstractProject project, ProjectType projectType, Long cloneId, Boolean stripCodings, User loggedInUser) throws UnauthorizedException {
 		TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Collection<TextDocument> documents = null;
 		if (project.getClass() == ProjectRevision.class)
         {
-            if (projectType == ProjectType.REVISION) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, user).getItems();
-            else if (projectType == ProjectType.EXERCISE) documents = tde.getTextDocument(project.getId(), ProjectType.EXERCISE, user).getItems();
-            else if (projectType == ProjectType.VALIDATION) documents = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
+            if (projectType == ProjectType.REVISION) documents = tde.getTextDocument(project.getId(), ProjectType.REVISION, loggedInUser).getItems();
+            else if (projectType == ProjectType.EXERCISE) documents = tde.getTextDocument(project.getId(), ProjectType.EXERCISE, loggedInUser).getItems();
+            else if (projectType == ProjectType.VALIDATION) documents = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, loggedInUser).getItems();
         }
-		else documents = tde.getTextDocument(project.getId(), ProjectType.PROJECT, user).getItems();
+		else documents = tde.getTextDocument(project.getId(), ProjectType.PROJECT, loggedInUser).getItems();
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -390,21 +399,21 @@ public class TextDocumentEndpoint {
 
 	/**
 	 * For usage with Krippendorffs Alpha or Fleiss Kappa. Automatically puts the documents to Memcache!
-	 * @param validationProjects from which validation projects to get the documents from
+	 * @param projects from which  projects to get the documents from
 	 * @param docIDs filter for documents from the main project (will filter by title of the documents)
 	 * @param user with sufficient rights to get the documents
 	 * @return a HashMap grouped by Document name containig a list with the corresponding document Ids from the different users
 	 * @throws UnauthorizedException
 	 */
-	public static Map<String, ArrayList<Long>> getDocumentsFromDifferentValidationProjectsGroupedByName(List<ValidationProject> validationProjects, List<Long> docIDs, User user) throws UnauthorizedException {
+	public static Map<String, ArrayList<Long>> getDocumentsFromDifferentProjectsGroupedByName(List<? extends ProjectRevision> projects, ProjectType projectType,List<Long> docIDs, User user) throws UnauthorizedException {
 	    	TextDocumentEndpoint tde = new TextDocumentEndpoint();
 		Map<String, ArrayList<Long>> sameDocumentsFromDifferentRaters = new HashMap();
 
 		List<String> docTitles = getDocumentTitles(docIDs); //We need the names to filter for the actually wanted documents in this report.
 		//Not possible to filter by IDs as the IDs of the documents of the different rates are different!
-		for (ValidationProject project : validationProjects) {
+		for (ProjectRevision project : projects) {
 		    //gets the documents from the validationProject of a user with the rights of our user.
-		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), ProjectType.VALIDATION, user).getItems();
+		    Collection<TextDocument> textDocuments = tde.getTextDocument(project.getId(), projectType, user).getItems();
 		    for(TextDocument doc : textDocuments) {
 			if(docTitles.contains(doc.getTitle())) {
 			    if(null == sameDocumentsFromDifferentRaters.get(doc.getTitle())) {
@@ -417,6 +426,7 @@ public class TextDocumentEndpoint {
 		}
 		return sameDocumentsFromDifferentRaters;
 	}
+
 
 	/**
 	 * Put a TextDocument to the Memcache to read it faster/cheaper later (within 300 seconds)

@@ -1,6 +1,6 @@
 ///@ts-check
 /// <reference types="react-intl" />
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, intlShape } from 'react-intl';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -15,7 +15,7 @@ const globalLocalizationState = {
 	/** @type {ReactIntl.InjectedIntl} */
 	intl: undefined,
 	/** @type {Set<String>} */
-	supportedLanguages: new Set(['en'])
+	supportedLanguages: new Set(['en', 'test'])
 };
 
 /**
@@ -23,11 +23,14 @@ const globalLocalizationState = {
  * @param {String} [language=en] language to load
  * @returns {Promise<JSON?>}
  */
-async function loadMessages(language = 'en') {
+async function loadMessages(language = 'en', callback) {
 	try {
-		const response = await fetch(`assets/translations/${language}.json`);
-		if (response.ok) return await response.json();
-		throw response.statusText;
+		const response = await fetch(`dist/messages/${language}.json`);
+		if (response.ok) {
+			callback(await response.json());
+		} else {
+			throw response.statusText;
+		}
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -50,7 +53,25 @@ export default class LocalizationProvider extends IntlProvider {
 		}
 	}
 
-	static propTypes() {
+	componentDidUpdate() {
+		// update state to our globalLocalization object
+		// this is required, so that modals show new language on next invocation
+		globalLocalizationState.intl = this.getChildContext().intl;
+	}
+
+	/*static get contextTypes() {
+		return {
+			intl: intlShape
+		};
+	}
+
+	static get childContextTypes() {
+		return {
+			intl: intlShape.isRequired
+		};
+	}*/
+
+	static get propTypes() {
 		return {
 			app: PropTypes.element.isRequired
 		};
@@ -78,11 +99,12 @@ export default class LocalizationProvider extends IntlProvider {
 	 */
 	async changeLanguage(language = 'en') {
 		if (!LocalizationProvider.isSupportedLanguage(language)) return;
-		const json = await loadMessages(language);
-		//@ts-ignore
-		this.props.app.setState({
-			messages: json,
-			language: language
+		await loadMessages(language, json => {
+			//@ts-ignore
+			this.props.app.setState({
+				messages: json,
+				language: language
+			});
 		});
 	}
 

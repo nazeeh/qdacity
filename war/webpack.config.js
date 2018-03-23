@@ -1,6 +1,13 @@
 var path = require('path');
 var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+require('babel-register'); // replace nodes require with babels on-the-fly c.
+require('babel-polyfill');
+var ExtractMessagesPlugin = require('../localization/webpack').default;
+var BabelFormatMessagesPlugin = require('../localization/babel').default;
+
+// to find out the source of deprecation warnings un-comment this line
+//process.traceDeprecation = true
 
 module.exports = {
 	bail: true,
@@ -33,8 +40,25 @@ module.exports = {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['es2015', 'react'],
-						plugins: ['transform-react-inline-elements']
+						metadataSubscribers: [ExtractMessagesPlugin.metadataSubscriber],
+						presets: ['env', 'react'],
+						plugins: [
+							[
+								'react-intl',
+								{
+									extractSourceLocation: true
+								}
+							],
+							[
+								BabelFormatMessagesPlugin,
+								{
+									test: false,
+									debug: false
+								}
+							]
+							//until there is a working solution we cannot use this in development
+							//'transform-react-inline-elements'
+						]
 					}
 				}
 			},
@@ -73,6 +97,10 @@ module.exports = {
 			'process.env': {
 				NODE_ENV: JSON.stringify('production')
 			}
+		}),
+
+		new ExtractMessagesPlugin({
+			outputPath: __dirname
 		}),
 
 		new ExtractTextPlugin({

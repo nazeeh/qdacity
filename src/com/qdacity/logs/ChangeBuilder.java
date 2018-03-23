@@ -1,15 +1,14 @@
 package com.qdacity.logs;
 
-import com.google.api.server.spi.auth.common.User;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeBookEntry;
 import com.qdacity.project.codesystem.CodeRelation;
 import com.qdacity.project.data.TextDocument;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Simplifies the process of creating a Change object.

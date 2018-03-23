@@ -10,7 +10,6 @@ import javax.jdo.PersistenceManager;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
-import com.qdacity.project.ProjectType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,6 +26,7 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.endpoint.datastructures.TextDocumentList;
+import com.qdacity.project.ProjectType;
 import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.test.CodeEndpoint.CodeEndpointTestHelper;

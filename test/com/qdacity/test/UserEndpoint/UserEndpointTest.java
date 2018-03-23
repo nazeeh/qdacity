@@ -29,9 +29,15 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.Cache;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.course.Course;
+import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.CourseEndpoint;
+import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.project.Project;
+import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
+import com.qdacity.project.ValidationProject;
 import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.user.LoginProviderType;
@@ -41,6 +47,9 @@ import com.qdacity.user.UserType;
 
 public class UserEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
+	
+	private final CourseEndpoint courseEndpoint = new CourseEndpoint();
+	private final ProjectEndpoint projectEndpoint = new ProjectEndpoint();
 
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
@@ -148,6 +157,156 @@ public class UserEndpointTest {
 	}
 	
 	@Test
+	public void testUserDeleteProjectOwnerRemoved() throws UnauthorizedException {		
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUserA = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedTestUser = UserEndpointTestHelper.addUser("test@abc.de", "test", "abc", testUser);
+		
+		Project createdProject = ProjectEndpointTestHelper.addProject(1L, "test_project", "description", 2L, loggedInUserA);
+		createdProject = projectEndpoint.addOwner(1L, insertedUserA.getId(), loggedInUserA);
+		createdProject = projectEndpoint.addOwner(1L, insertedTestUser.getId(), testUser);
+		
+		assertEquals(2, createdProject.getOwners().size());
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(insertedUserA.getId(), loggedInUserA);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		createdProject = ProjectEndpointTestHelper.getProject(1L, testUser);
+		assertEquals(1, createdProject.getOwners().size());
+	}
+	
+	@Test(expected=javax.jdo.JDOObjectNotFoundException.class)
+	public void testUserDeleteProjectOwnerDeleted() throws UnauthorizedException {		
+		User insertedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		Project project = ProjectEndpointTestHelper.addProject(1L, "test_project", "description", 2L, testUser);
+		project = projectEndpoint.addOwner(1L, insertedTestUser.getId(), testUser);
+		
+		assertEquals(1, project.getOwners().size());
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(insertedTestUser.getId(), testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.getObjectById(Project.class, project.getId());
+		} finally {
+			mgr.close();
+		}
+	}
+	
+	@Test
+	public void testUserDeleteCourseOwnerRemoved() throws UnauthorizedException {		
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUserA = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedTestUser = UserEndpointTestHelper.addUser("test@abc.de", "test", "abc", testUser);
+		
+		Course course = CourseEndpointTestHelper.addCourse(1L, "test_project", "description", loggedInUserA);
+		course = courseEndpoint.addCourseOwner(1L, insertedUserA.getId(), loggedInUserA);
+		course = courseEndpoint.addCourseOwner(1L, insertedTestUser.getId(), loggedInUserA);
+		
+		assertEquals(2, course.getOwners().size());
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(insertedUserA.getId(), loggedInUserA);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		course = CourseEndpointTestHelper.getCourse(1L, testUser);
+		assertEquals(1, course.getOwners().size());
+	}
+	
+	@Test(expected=javax.jdo.JDOObjectNotFoundException.class)
+	public void testUserDeleteCourseOwnerDeleted() throws UnauthorizedException {		
+		User insertedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		Course course = CourseEndpointTestHelper.addCourse(1L, "test_project", "description", testUser);
+		course = courseEndpoint.addCourseOwner(1L, insertedTestUser.getId(), testUser);
+		
+		assertEquals(1, course.getOwners().size());
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(insertedTestUser.getId(), testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.getObjectById(Course.class, course.getId());
+		} finally {
+			mgr.close();
+		}
+	}
+	
+	@Test(expected=javax.jdo.JDOObjectNotFoundException.class)
+	public void testUserDeleteTermCourseOwnerDeleted() throws UnauthorizedException {		
+		User insertedTestUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+		
+		TermCourse termCourse = CourseEndpointTestHelper.addTermCourse(1L, testUser);
+		// user is set to owner
+		
+		assertEquals(1, termCourse.getOwners().size());
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(insertedTestUser.getId(), testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.getObjectById(TermCourse.class, termCourse.getId());
+		} finally {
+			mgr.close();
+		}
+	}
+
+	@Test
+	public void testUserDeleteValidationProjectOwnerRemoved() throws UnauthorizedException {		
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUserA = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedTestUser = UserEndpointTestHelper.addUser("test@abc.de", "test", "abc", testUser);
+		
+		Project project = ProjectEndpointTestHelper.setupProjectWithCodesystem(1L, "coding system test", "test", testUser);
+		projectEndpoint.addOwner(1L, insertedUserA.getId(), testUser);
+		ProjectRevision revision = projectEndpoint.createSnapshot(1L, "testComment", testUser);
+		ValidationProject validationProject = projectEndpoint.createValidationProject(revision.getId(), insertedTestUser.getId(), testUser);
+		// creator automatically added validation coder
+		
+		assertEquals(1, validationProject.getValidationCoders().size());
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(insertedTestUser.getId(), testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+		
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			validationProject = mgr.getObjectById(ValidationProject.class, validationProject.getId());
+			assertEquals(0, validationProject.getValidationCoders().size());
+		} finally {
+			mgr.close();
+		}
+	}	
+	
+	
+	@Test
 	public void testUserDeleteAuthorization() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(0, ds.prepare(new Query("User")).countEntities(withLimit(10)));
@@ -219,7 +378,7 @@ public class UserEndpointTest {
 		PersistenceManager mgr = getPersistenceManager();
 		mgr.setIgnoreCache(true);
 		try {
-			User user = mgr.getObjectById(User.class, "1");
+			User user = mgr.getObjectById(User.class, insertedUser.getId());
 			assertEquals(UserType.USER, user.getType());
 
 			UserEndpoint ue = new UserEndpoint();
@@ -276,12 +435,12 @@ public class UserEndpointTest {
 	
 	@Test
 	public void testGetCurrentUserOneAssociatedUsers() throws UnauthorizedException {
-		UserEndpointTestHelper.addUser("abc@test.de", "abc", "test", testUser);
+		User addedTestUser = UserEndpointTestHelper.addUser("abc@test.de", "abc", "test", testUser);
 		
 		UserEndpoint ue = new UserEndpoint();
 		User retrievedUser = ue.getCurrentUser(testUser);
 		
-		Assert.assertEquals(testUser.getId(), retrievedUser.getId());
+		Assert.assertEquals(addedTestUser.getId(), retrievedUser.getId());
 	}
 	
 	

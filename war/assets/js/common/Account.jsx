@@ -1,41 +1,22 @@
 import React from 'react';
+import styled from 'styled-components';
 import { FormattedMessage } from 'react-intl';
 
 import { BtnDefault, BtnPrimary } from './styles/Btn.jsx';
+
+const UserImage = styled.img`
+	width: 96px;
+`;
+
 export default class Account extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.authenticationProvider = props.auth.authentication;
 
-		this.state = {
-			name: '',
-			email: '',
-			picSrc: ''
-		};
-
 		this.redirectToPersonalDashbaord = this.redirectToPersonalDashbaord.bind(
 			this
 		);
-
-		this.updateFromProps(props);
-	}
-
-	// lifecycle hook: update state for rerender
-	componentWillReceiveProps(nextProps) {
-		this.updateFromProps(nextProps);
-	}
-
-	updateFromProps(targetedProps) {
-		this.authenticationProvider = targetedProps.auth.authentication;
-		const _this = this;
-		this.authenticationProvider.getProfile().then(function(profile) {
-			_this.setState({
-				name: profile.name,
-				email: profile.email,
-				picSrc: profile.thumbnail
-			});
-		});
 	}
 
 	/**
@@ -78,18 +59,18 @@ export default class Account extends React.Component {
 				<div className="navbar-content">
 					<div className="row">
 						<div className="col-xs-5">
-							<img
+							<UserImage
 								id="currentUserPicture"
-								src={this.state.picSrc}
+								src={this.props.auth.userProfile.picSrc}
 								alt=""
 								className="img-responsive"
 							/>
 							<p className="text-center small" />
 						</div>
 						<div className="col-xs-7">
-							<span id="currentUserName">{this.state.name}</span>
+							<span id="currentUserName">{this.props.auth.userProfile.name}</span>
 							<p id="currentUserEmail" className="text-muted small">
-								{this.state.email}
+								{this.props.auth.userProfile.email}
 							</p>
 							<div className="divider" />
 							<BtnPrimary onClick={this.redirectToPersonalDashbaord}>
