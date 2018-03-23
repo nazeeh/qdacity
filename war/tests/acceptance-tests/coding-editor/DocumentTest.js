@@ -3,41 +3,31 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('Document test', function() {
+import Common from '../util/Common.js';
+import Conditions from '../util/Conditions.js';
 
-	var defaultTimeout = 30000;
+
+const SPEC_NAME = 'Document test';
+
+describe(SPEC_NAME, function () {
+
+	let driver = null;
 	
-	var driver = null;
-	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                  Document test                  ####');
-    	console.log('#########################################################');
-		done();
+	beforeAll(() => {
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
-    	const options = new chrome.Options();
-    	
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-	        .build();
-
-        this.driver.get('http://localhost:8888/PersonalDashboard').then(done);
-    }, defaultTimeout);
+    	this.driver = Common.setupChromeDriver();
+		Common.openCodingEditor(this.driver, done, 'Project_01');
+    });
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, defaultTimeout);
+    });
 
     it('Should create a new document', (done) => {
-    	const projectName = 'Project_01';
     	const documentName = 'Document_01';
-    	
-    	// Find an existing project and open the coding editor
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']/following-sibling::div/button/i[contains(@class,'fa-tags')]"))).click();    	
     	
     	// Find add document button
     	this.driver.wait(until.elementLocated(By.xpath("//div[@id='documents-ui']//button/i[contains(@class,'fa-plus')]"))).click();   
@@ -52,21 +42,15 @@ describe('Document test', function() {
     	this.driver.wait(until.elementLocated(By.xpath("//button[@type='submit' and contains(@class,'vex-dialog-button')]"))).click();   
 
     	// Is the document in the document-list?    	
-    	this.driver.wait(until.elementLocated(By.xpath("//div[text()='" + documentName + "']"))).then(() => {
-    		done();
-    	});
-    }, defaultTimeout);
+		Conditions.assertDocumentExists(this.driver, documentName, done);
+    }, Common.getDefaultTimeout());
     
     it('Should add text to a document', (done) => {
-    	const projectName = 'Project_01';
     	const documentName = 'Document_01';
     	
     	const documentText = 'This is the text.';
     	
     	const _this = this;
-    	
-    	// Find an existing project and open the coding editor
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']/following-sibling::div/button/i[contains(@class,'fa-tags')]"))).click();    	
     	
     	// Find the document and select it
     	this.driver.wait(until.elementLocated(By.xpath("//div[text()='" + documentName + "']"))).click();
@@ -85,5 +69,5 @@ describe('Document test', function() {
     		expect(text).toBe(documentText);
     		done();
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });

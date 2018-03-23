@@ -3,38 +3,30 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('Login test', function() {
+import Common from './util/Common.js';
 
-	var defaultTimeout = 30000;
+
+const SPEC_NAME = 'Login test';
+
+describe(SPEC_NAME, function () {
+
+	let driver = null;
 	
-	var driver = null;
-	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                   Login test                    ####');
-    	console.log('#########################################################');
-		done();
+	beforeAll(() => {
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
-    	const options = new chrome.Options();
-    	
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-	        .build();
-
+    	this.driver = Common.setupChromeDriver();
         this.driver.get('http://localhost:8888/').then(done);
-    }, defaultTimeout);
+    });
 
     afterEach((done) => {
-        this.driver.quit().then(done);
-    }, defaultTimeout);
+        this.driver.quit().then(done);   
+    });
 
     /**
-     * This function tests the login of QDAcity with a google test-account. If the test-account
-     * is not registered within QDAcity, the test registers the account.
+     * This function tests the login of QDAcity with a google test-account. It registers a new account in QDAcity.
      */
     it('Should register and login a user', (done) => {
     	const displayName = 'Test Name';
@@ -83,5 +75,5 @@ describe('Login test', function() {
     		    done();
     		})
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });

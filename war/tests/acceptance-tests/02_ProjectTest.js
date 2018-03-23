@@ -3,34 +3,28 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('Project test', function() {
+import Common from './util/Common.js';
+import Conditions from './util/Conditions.js';
 
-	var defaultTimeout = 30000;
+
+const SPEC_NAME = 'Project test';
+
+describe(SPEC_NAME, function () {
+
+	let driver = null;
 	
-	var driver = null;
-	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                  Project test                   ####');
-    	console.log('#########################################################');
-		done();
+	beforeAll(() => {
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
-    	const options = new chrome.Options();
-
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-	        .build();
-
+    	this.driver = Common.setupChromeDriver();
         this.driver.get('http://localhost:8888/PersonalDashboard').then(done);
-    }, defaultTimeout);
+    });
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, defaultTimeout);
+    });
 
     it('Should create a new project', (done) => {
     	const projectName = 'Project_01';
@@ -53,12 +47,13 @@ describe('Project test', function() {
     	// Is the project in the project-list?
     	// If xpath can't find the project, it was not created properly. The timeout will indicate the failure of the test.
     	// If the project was created properly, open it by clicking on it.
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']"))).click();    	
+		Conditions.assertProjectExists(this.driver, projectName);
+		this.driver.wait(until.elementLocated(Conditions.getProject(projectName))).click();    	
     	
 		// Find the project title
     	this.driver.wait(until.elementLocated(By.xpath("//h2[@class='page-header']/span[text()='" + projectName + "']"))).then(() => {
-    		// Find the project description
-        	_this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'box')]/div[text()='" + projectDescription + "']"))).then(() => {
+			// Find the project description
+			Conditions.assertProjectDescription(this.driver, projectDescription, () => {
         		// Check the URL
 	    		_this.driver.getCurrentUrl().then((currentUrl) => {
 	        		// Does the URL end with /ProjectDashboard?
@@ -69,5 +64,5 @@ describe('Project test', function() {
 	    		});
         	});
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });

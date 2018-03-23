@@ -3,34 +3,27 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-describe('Load QDAcity', function() {
+import Common from './util/Common.js';
 
-	var defaultTimeout = 30000;
+
+const SPEC_NAME = 'Load QDAcity test';
+
+describe(SPEC_NAME, function () {
+
+	let driver = null;
 	
-	var driver = null;
-	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                Load QDAcity test                ####');
-		console.log('#########################################################');
-		done();
+	beforeAll(() => {
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
-    	const options = new chrome.Options();
-    	
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-	        .build();
-
+    	this.driver = Common.setupChromeDriver();
         this.driver.get('http://localhost:8888/').then(done);
-    }, defaultTimeout);
+    });
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, defaultTimeout);
+    });
 
     it('The system is running', (done) => {
 		// Find login button
@@ -38,5 +31,5 @@ describe('Load QDAcity', function() {
 			expect(1).toBe(1);
 			done();
 		});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });
