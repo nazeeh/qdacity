@@ -1,14 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { Table, StyledTableHeaderRow, StyledTableHeaderCell, StyledTableRow, StyledTableCell } from '../../../../common/styles/table/Table.jsx';
+
 const StyledCodeListContainer = styled.div`
 	flex: 50%;
+	max-width: 50%;
+	padding-right: 10px;
 `;
 
 export default class CodeList extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.renderHeaderRow = this.renderHeaderRow.bind(this);
+		this.renderRow = this.renderRow.bind(this);
 	}
 
 	getCodeSystemArray() {
@@ -49,44 +56,53 @@ export default class CodeList extends React.Component {
 	render() {
 		const _this = this;
 
-		const codes = this.getCodeSystemArray();
+		// Get codes
+		let codes = this.getCodeSystemArray();
+
+		// Filter main code
+		codes = codes.filter((code) => {
+			return this.props.code.codeID != code.codeID;
+		});
+
+		// Sort codes
 		this.sortCodes(codes);
 
 		return (
 			<StyledCodeListContainer>
-				<table style={{ borderSpacing: '5px', borderCollapse: 'separate' }}>
-					<thead>
-						<th></th>
-						<th>Code</th>
-						<th>Overlaps by {this.props.code.name}</th>
-						<th>Overlaps by other code</th>
-						<th>Average % by {this.props.code.name}</th>
-						<th>Average % by other code</th>
-					</thead>
-					<tbody>
-						{codes.map(code => {
-							return _this.renderListItem(code);
-						})}
-					</tbody>
-				</table>
+				<Table 
+					items={codes} 
+					renderHeaderRow={this.renderHeaderRow}
+					renderRow={this.renderRow} 
+				/>
 			</StyledCodeListContainer>
 		);
 	}
 	
-	renderListItem(code) {
-		if (this.props.code.codeID == code.codeID) {
-			return null;
-		}
-		
+	renderHeaderRow() {
 		return (
-			<tr>
-				<td><div onClick={() => this.props.codeSelected(code)}>X</div></td>
-				<td>{code.name}</td>
-				<td>{this.props.codingResult.getCodingOverlapCount(code.codeID)} by {this.props.codingResult.getTotalCodingsCountMainCode()}</td>
-				<td>{this.props.codingResult.getCodingOverlapCount(code.codeID)} by {this.props.codingResult.getTotalCodingsCount(code.codeID)}</td>
-				<td>{this.props.codingResult.getAverageOverlapPercentageByMainCode(code.codeID).toFixed(2)}</td>
-				<td>{this.props.codingResult.getAverageOverlapPercentageByOtherCode(code.codeID).toFixed(2)}</td>
-			</tr>
+			<StyledTableHeaderRow>
+				<StyledTableHeaderCell>#</StyledTableHeaderCell>
+				<StyledTableHeaderCell></StyledTableHeaderCell>
+				<StyledTableHeaderCell>Code</StyledTableHeaderCell>
+				<StyledTableHeaderCell>Overlaps by {this.props.code.name}</StyledTableHeaderCell>
+				<StyledTableHeaderCell>Overlaps by other code</StyledTableHeaderCell>
+				<StyledTableHeaderCell>Average % by {this.props.code.name}</StyledTableHeaderCell>
+				<StyledTableHeaderCell>Average % by other code</StyledTableHeaderCell>
+			</StyledTableHeaderRow>
+		);
+	}
+
+	renderRow(code, index) {
+		return (
+			<StyledTableRow evenIndex={((index + 1) % 2) == false}>
+				<StyledTableCell>{index}</StyledTableCell>
+				<StyledTableCell><div onClick={() => this.props.codeSelected(code)}>X</div></StyledTableCell>
+				<StyledTableCell>{code.name}</StyledTableCell>
+				<StyledTableCell>{this.props.codingResult.getCodingOverlapCount(code.codeID)} by {this.props.codingResult.getTotalCodingsCountMainCode()}</StyledTableCell>
+				<StyledTableCell>{this.props.codingResult.getCodingOverlapCount(code.codeID)} by {this.props.codingResult.getTotalCodingsCount(code.codeID)}</StyledTableCell>
+				<StyledTableCell>{this.props.codingResult.getAverageOverlapPercentageByMainCode(code.codeID).toFixed(2)}</StyledTableCell>
+				<StyledTableCell>{this.props.codingResult.getAverageOverlapPercentageByOtherCode(code.codeID).toFixed(2)}</StyledTableCell>
+			</StyledTableRow>
 		);
 	}
 }
