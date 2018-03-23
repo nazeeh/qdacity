@@ -39,6 +39,8 @@ if [ $isPortOpen -eq $PORT_OPEN ]; then
 	echo "Port is open after ${time} seconds. Start acceptance tests now."
 	
 	cd war
+	
+	nodejs -v
 	./node_modules/.bin/gulp acceptance-tests
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
