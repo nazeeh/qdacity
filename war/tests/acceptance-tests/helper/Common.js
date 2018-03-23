@@ -3,9 +3,9 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-import Conditions from './Conditions.js';
+var Conditions = require('./Conditions.js');
 
-export default class Common {
+class Common {
 
 	static getDefaultTimeout() {
 		return 20000;
@@ -53,3 +53,5 @@ export default class Common {
 		driver.wait(until.elementLocated(Conditions.getProjectCodingEditorButton(projectName))).click().then(done); 
 	}
 }
+
+module.exports = Common;

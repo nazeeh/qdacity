@@ -3,7 +3,7 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-import Common from './helper/Common.js';
+var Common = require('./helper/Common.js');
 
 
 const SPEC_NAME = 'Load QDAcity test';

@@ -3,7 +3,7 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
-export default class Conditions {
+class Conditions {
 
 	static getProject(projectName) {
 		return By.xpath("//ul/li/span[text()='" + projectName + "']");
@@ -57,3 +57,5 @@ export default class Conditions {
 		Conditions.assertElementExists(driver, '/CodingEditor', 'Document', Conditions.getDocument(documentName), then);
 	}
 }
+
+module.exports = Conditions;

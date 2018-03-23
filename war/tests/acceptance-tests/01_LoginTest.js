@@ -4,7 +4,7 @@ var webdriver = require('selenium-webdriver'),
 var chrome = require("selenium-webdriver/chrome");
 var loginHelper = require('./helper/LoginHelper.js');
 
-import Common from './helper/Common.js';
+var Common = require('./helper/Common.js');
 
 
 const SPEC_NAME = 'Login test';
