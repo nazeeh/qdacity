@@ -45,7 +45,7 @@ export default class Common {
 		return driver;
 	}
 
-	static openCodingEditor(driver, done, projectName) {
+	static openCodingEditor(driver, projectName, done) {
 		driver.get('http://localhost:8888/PersonalDashboard');
 
 		Conditions.assertProjectExists(driver, projectName);

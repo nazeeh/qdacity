@@ -2,6 +2,7 @@ var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
+var loginHelper = require('./helper/LoginHelper.js');
 
 import Common from './util/Common.js';
 
@@ -29,18 +30,16 @@ describe(SPEC_NAME, function () {
      * This function tests the login of QDAcity with a google test-account. It registers a new account in QDAcity.
      */
     it('Should register and login a user', (done) => {
-    	const displayName = 'Test Name';
+    	const displayName = 'Max Mustermann';
     	const qdacityFirstName = 'Max';
     	const qdacityLastName = 'Mustermann';
-    	const qdacityEmail = 'felixtest22@gmail.com';
+		const qdacityEmail = 'felixtest27@gmail.com';
+		const userPassword = 'Password123';
     	
     	const _this = this;
-    	
-    	// Click login button
-    	this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]"))).click();    	
-
+    
 		// Register Account
-		this.driver.wait(until.elementLocated(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register Account']"))).click();
+		this.driver.wait(until.elementLocated(By.xpath("//a[@id='signin-formula-register-link']"))).click();
 
 		// First name
 		let fieldFirstName = this.driver.findElement(By.xpath("//input[@name='firstName']"));
@@ -56,6 +55,11 @@ describe(SPEC_NAME, function () {
 		let fieldEmail = this.driver.findElement(By.xpath("//input[@name='email']"));
 		fieldEmail.clear();
 		fieldEmail.sendKeys(qdacityEmail);
+
+		// Password
+		let fieldPassword = this.driver.findElement(By.xpath("//input[@name='pwd']"));
+		fieldPassword.clear();
+		fieldPassword.sendKeys(userPassword);
 		
 		// Register  
 		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click(); 		
@@ -71,8 +75,16 @@ describe(SPEC_NAME, function () {
         		// Does the URL end with /PersonalDashboard?
         		const urlEnd = "/PersonalDashboard";
         		expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
-        		
-    		    done();
+				
+				// Check if the token of the signed-in user is stored in the localStorage 
+				_this.driver.executeScript('return localStorage.getItem("qdacity-emai-password-token")').then(function (token) {
+					expect(token).not.toBeUndefined();
+					expect(token).not.toBeNull();
+				});
+
+				loginHelper.storeLoginState(this.driver).then(() => {
+					done();
+				});
     		})
     	});
     }, Common.getDefaultTimeout());

@@ -2,6 +2,7 @@ var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
+var loginHelper = require('../helper/LoginHelper.js');
 
 import Common from '../util/Common.js';
 import Conditions from '../util/Conditions.js';
@@ -19,9 +20,12 @@ describe(SPEC_NAME, function () {
 
     beforeEach((done) => {
     	this.driver = Common.setupChromeDriver();
-		Common.openCodingEditor(this.driver, done, 'Project_01');
-    });
+		Common.openCodingEditor(this.driver, 'Project_01', () => {
+			loginHelper.restoreLoginState(this.driver).then(done);
+		});
 
+	});
+	
     afterEach((done) => {
         this.driver.quit().then(done);   
     });

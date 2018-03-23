@@ -6,9 +6,14 @@ import ReactLoading from '../../../common/ReactLoading.jsx';
 
 import { DragDocument } from './Document.jsx';
 
+import Alert from '../../../common/modals/Alert';
+import ProjectEndpoint from '../../../common/endpoints/ProjectEndpoint';
 import DocumentsEndpoint from '../../../common/endpoints/DocumentsEndpoint';
+import { EVT } from '../../../common/SyncService/constants.js';
 
 import DocumentsToolbar from './DocumentsToolbar.jsx';
+
+import SlateUtils from '../TextEditor/SlateUtils.js';
 
 const StyledDocumentsHeader = styled.div`
 	text-align: center;
@@ -51,6 +56,7 @@ export default class DocumentsView extends React.Component {
 			isExpanded: true,
 			loading: true
 		};
+		this.listenerIDs = {};
 
 		var setupPromise = this.setupView(
 			this.props.projectID,
@@ -58,20 +64,19 @@ export default class DocumentsView extends React.Component {
 			this.props.report
 		);
 
-		const _this = this;
 		setupPromise.then(() => {
-			_this.setState({
+			this.setState({
 				loading: false,
-				documents: _this.state.documents.sort((doc1, doc2) => {
+				documents: this.state.documents.sort((doc1, doc2) => {
 					return doc1.positionInOrder - doc2.positionInOrder;
 				})
 			});
 
 			// Persists the order of documents if no order is persisted in the database.
-			_this.persistDocumentsOrderIfNecessary();
+			this.persistDocumentsOrderIfNecessary();
 
 			if (this.state.documents.length > 0) {
-				_this.setActiveDocument(this.state.documents[0].id);
+				this.setActiveDocument(this.state.documents[0].id);
 			}
 		});
 
@@ -123,15 +128,22 @@ export default class DocumentsView extends React.Component {
 		return promise;
 	}
 
-	// returns a promis that resolves in the coding count value
+	// returns a promise that resolves in the coding count value
 	// the calculation is handled asynchronously in web worker
 	async calculateCodingCount(codeIDs) {
-		let _this = this;
+		const _this = this;
+
 		await this.setupPromise;
+
+		// Get only texts from documents to remove unserializable properties
+		// like SlateValue
+		const documents = this.state.documents.map(doc => ({ text: doc.text }));
+
 		this.codingCountWorker.postMessage({
-			documents: this.state.documents,
+			documents,
 			codeIDs: codeIDs
 		}); // post a message to our worker
+
 		return new Promise(function(resolve, reject) {
 			_this.codingCountWorker.addEventListener('message', function handleEvent(
 				event
@@ -197,14 +209,174 @@ export default class DocumentsView extends React.Component {
 		this.changeDocumentData(doc);
 	}
 
-	applyCodeToCurrentDocument(text, code) {
-		var doc = this.getActiveDocument();
-		doc.text = text;
-		doc.projectID = this.props.projectID;
-		var _this = this;
-		DocumentsEndpoint.applyCode(doc, code).then(function(resp) {
-			_this.updateDocument(doc.id, doc.title, doc.text);
-		});
+	async applyCodeToCurrentDocument(code, author) {
+		const document = this.getActiveDocument();
+		const {
+			getCodeByCodeID,
+			projectID,
+			projectType,
+		} = this.props;
+
+		// Store slate value and selection to be independent of other
+		// intermediate changes
+		const slateValue = this.props.textEditor.getSlateValue();
+		const currentSelection = slateValue.selection;
+
+		// Do nothing if no range is selected
+		if (currentSelection.isCollapsed) {
+			return;
+		}
+
+		// To be called after setState executed
+		const onStateChange = () => {
+			// Update DocumentsView's state
+			this.updateDocument(
+				document.id,
+				document.title,
+				SlateUtils.serialize(this.props.textEditor.getSlateValue()),
+			);
+
+			// Update coding count in CodeSystem
+			this.props.codesystemView.updateCodingCount();
+		};
+
+		let maxCodingID;
+		try {
+			// Get new coding ID from API
+			const response = await ProjectEndpoint.incrCodingId(projectID, projectType);
+			maxCodingID = response.maxCodingID
+		} catch(e) {
+			// Inform the user about the failure
+			new Alert('Your new coding could not be saved. Please try again').showModal();
+
+			console.error('error while fetching next coding ID', e);
+		}
+
+		// Create the operation to be executed
+		const operations = SlateUtils
+			.rangeToPaths(slateValue, currentSelection)
+			.map(({ path, offset, length }) => ({
+				object: 'operation',
+				type: 'add_mark',
+				mark: {
+					object: 'mark',
+					type: 'coding',
+					data: {
+						id: maxCodingID,
+						code_id: code.codeID,
+						title: code.name,
+						author: author,
+					},
+				},
+				path,
+				offset,
+				length,
+			}));
+
+		// Optimistically add the mark locally
+		this.props.textEditor.applyOperations(operations, onStateChange);
+
+		// Send change to sync service
+		try {
+			const message = await this.props.syncService.documents.addCoding(
+				document.id,
+				operations,
+				getCodeByCodeID(code.codeID)
+			);
+
+			// Sync was successful. Log for now, delete if no action needed
+			console.log('Sync of coding.add succeeded');
+
+		// Sync failed
+		} catch(e) {
+
+			// Inform the user why the mark is disappearing again
+			new Alert('Your new coding could not be saved. Please try again').showModal();
+
+			console.error('Error while syncing coding.add', e);
+
+			// Rollback optimistically added mark
+			const undoOperations = SlateUtils.invertOperations(operations);
+			this.props.textEditor.applyOperations(undoOperations, onStateChange);
+		}
+	}
+
+	/**
+	 * Remove coding from current selection
+	 *
+	 * This removes all codings with the given code ID from the current
+	 * selection. If the removal leads to two remaining halfs of a coding,
+	 * the latter half gets a new coding ID.
+	 *
+	 * @public
+	 * @arg {string} codeID - the ID of the code to remove
+	 * @return {Promise} - Waits for all code removals and splittings to be
+	 *                     successfully processed. Resolves with the editors
+	 *                     current content as HTML. Rejects if there is an
+	 *                     error while fetching a new coding ID from the API
+	 *                     or if nothing is selected
+	 */
+	async removeCoding(codeID) {
+		// Store parts of the state for queries to be independent of other
+		// intermediate changes. MUST NOT BE USED AS BASE FOR STATE UPDATES!
+		// Otherwise intermediate changes would be discarded
+		const slateValue = this.props.textEditor.getSlateValue();
+		const { selection, document } = slateValue;
+
+		// Do nothing if no range is selected
+		if (selection.isCollapsed) {
+			return;
+		}
+
+		// Send all changes to sync service
+		const syncPromise = this.props.syncService.documents.removeCoding(
+			this.getActiveDocumentId(),
+			SlateUtils.rangeToPathRange(slateValue, selection),
+			codeID
+		);
+
+		// Find codings that should be removed and built operations from it
+		const operations = document
+			.getMarksAtRange(selection)
+			.filter(mark => mark.type === 'coding')
+			.filter(mark => mark.data.get('code_id') === codeID)
+			.reduce((operations, coding) => {
+				return operations.concat(
+					SlateUtils
+						.rangeToPaths(slateValue, selection)
+						.reduce((operations, { path, offset, length }) => {
+							return operations.concat({
+								object: 'operation',
+								type: 'remove_mark',
+								mark: coding,
+								path,
+								offset,
+								length,
+							});
+						}, [])
+				);
+			}, []);
+
+		// Optimistically remove the mark locally
+		this.props.textEditor.applyOperations(operations);
+
+		try {
+			const message = await syncPromise;
+
+			// Sync was successful. Log for now, delete if no action needed
+			console.log('Sync of coding.remove succeeded');
+		} catch(e) {
+
+			// Inform the user why the mark is disappearing again
+			new Alert('The coding could not be removed. Please try again').showModal();
+
+			console.error('Error while syncing coding.remove', e);
+
+			// Rollback optimistically added mark
+			const undoOperations = SlateUtils.invertOperations(operations);
+			this.props.textEditor.applyOperations(undoOperations);
+		}
+
 	}
 
 	changeDocumentData(doc) {
@@ -238,17 +410,6 @@ export default class DocumentsView extends React.Component {
 		this.render();
 	}
 
-	saveCurrentDocument() {
-		var doc = this.getActiveDocument();
-		if (typeof doc != 'undefined') {
-			doc.text = this.props.textEditor.getHTML();
-			this.setState({
-				documents: this.state.documents
-			});
-			this.saveDocument(doc);
-		}
-	}
-
 	saveDocument(doc) {
 		doc.projectID = this.props.projectID;
 		var _this = this;
@@ -261,17 +422,55 @@ export default class DocumentsView extends React.Component {
 		return this.state.documents;
 	}
 
-	setActiveDocument(selectedID) {
-		if (this.props.textEditor.isTextEditable()) {
-			this.saveCurrentDocument();
+	/**
+	 * Set the document to be shown in the text editor pane. Deserializes the
+	 * document from HTML to Slate Value if not already done
+	 */
+	setActiveDocument(id) {
+		// Save previous document if existent
+		const prevDoc = this.getActiveDocument();
+		if (typeof prevDoc !== 'undefined') {
+			prevDoc.slateValue = this.props.textEditor.getSlateValue();
+			prevDoc.text = SlateUtils.serialize(prevDoc.slateValue);
+
+			this.setState({
+				documents: this.state.documents
+			});
+
+			// Upload the current document to the backend if it is in editable mode
+			if (this.props.textEditor.isTextEditable()) {
+				this.saveDocument(prevDoc);
+			}
 		}
+
+		// Get document to be shown and deserialize if necessary
+		const nextDoc = this.getDocument(id);
+		if (!nextDoc.slateValue) {
+			nextDoc.slateValue = SlateUtils.deserialize(nextDoc.text);
+		}
+		// Apply queued operations if any
+		if (nextDoc.operationQueue) {
+			nextDoc.slateValue = SlateUtils.applyOperations(
+				nextDoc.slateValue,
+				nextDoc.operationQueue
+			);
+			nextDoc.operationQueue = [];
+		}
+
+		// Notify sync service (and other clients) that the user changed the
+		// active document
 		this.props.syncService.updateUser({
-			document: selectedID.toString()
+			document: id.toString()
 		});
+
+		// Change the active document and save document changes
 		this.setState({
-			selected: selectedID
+			selected: id,
+			documents: this.state.documents,
 		});
-		this.props.textEditor.setHTML(this.getDocument(selectedID).text);
+
+		// Update the text editor
+		this.props.textEditor.setDocument(nextDoc);
 	}
 
 	getActiveDocumentId() {
@@ -377,6 +576,70 @@ export default class DocumentsView extends React.Component {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Process incoming operations from SyncService
+	 *
+	 * @private
+	 * @arg {object} data - Object with at least these parameters:
+	 *                      {string} document - ID of the document to apply to
+	 *                      {object[]} operations - Slate.Operations to apply
+	 */
+	_applySyncServiceOperations(data) {
+		const {
+			document,
+			operations,
+		} = data;
+
+		// If operations are for current document, apply directly
+		if (document === this.getActiveDocumentId()) {
+			this.props.textEditor.applyOperations(operations);
+
+		// Process operations in DocumentsView
+		} else {
+			const doc = this.getDocument(document);
+
+			// Apply if document has already been deserialized
+			if (doc.slateValue) {
+				doc.slateValue = SlateUtils.applyOperations(doc.slateValue, operations);
+
+			// Else queue the operations for application after deserialization
+			} else {
+				if (!doc.operationQueue) {
+					doc.operationQueue = [];
+				}
+				doc.operationQueue = doc.operationQueue.concat(operations);
+			}
+
+			this.setState({
+				documents: this.state.documents
+			});
+		}
+
+		// In any case upgrade coding count
+		this.props.codesystemView.updateCodingCount();
+	}
+
+	componentDidMount() {
+		// Register event listeners at sync service
+		this.listenerIDs = {
+			[EVT.CODING.ADDED]: this.props.syncService.on(
+				EVT.CODING.ADDED,
+				this._applySyncServiceOperations.bind(this)
+			),
+			[EVT.CODING.REMOVED]: this.props.syncService.on(
+				EVT.CODING.REMOVED,
+				this._applySyncServiceOperations.bind(this)
+			),
+		};
+	}
+
+	componentWillUnmount() {
+		// Unregister event listeners at sync service
+		Object.keys(this.listenerIDs).forEach(key => {
+			this.props.syncService.off(key, this.listenerIDs[key]);
+		});
 	}
 
 	renderCollapseIcon() {
