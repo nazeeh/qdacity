@@ -59,7 +59,7 @@ export default class DocumentDetails extends React.Component {
 
 		const codingOverlapCollection = this.props.codingDocument.getCodingOverlapCollection(this.props.selectedCode.codeID);
 
-		return (
+		/*return (
 			<table style={{ borderSpacing: '5px', borderCollapse: 'separate' }}>
 				<thead>
 					<th>#</th>
@@ -75,12 +75,21 @@ export default class DocumentDetails extends React.Component {
 					}) : null}
 				</tbody>
 			</table>
+		);*/
+		return (
+			<div>
+				{(codingOverlapCollection) ? codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
+					return _this.renderItem(codingOverlap, index);
+				}) : null}
+			</div>
 		);
 	}
 
 	renderItem(codingOverlap, index) {
 		return (
 			<DocumentDetailsItem
+				code={this.props.code}
+				selectedCode={this.props.selectedCode}
 				codingOverlap={codingOverlap}
 				index={index}
 			/>
