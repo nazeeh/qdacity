@@ -43,7 +43,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        User registeredUser = registerUser(unregisteredUser, "pw");
+        User registeredUser = registerUser(unregisteredUser, "Password123");
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(
                 registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
@@ -63,11 +63,29 @@ public class EmailPasswordAuthenticationEndpointTest {
         new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", null, "a", "b", null);
     }
 
-    @Test(expected= BadRequestException.class)
+    @Test
+    public void testRegisterPasswordInvlaidFormaat() throws UnauthorizedException, BadRequestException {
+        String[] invalidPasswords = {"aasdasasdd", "AAAAAAAAAA", "237483597", "AAAAaaaaaaaa", "AAAAAAAAAA123234", "aaaaaaaaaaaa123123", "A123a", "A123djsfh asd12"};
+        for(String invalidPassword: invalidPasswords) {
+            try {
+                new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", invalidPassword, "a", "b", null);
+                fail(invalidPassword);
+            } catch(BadRequestException e) {
+                // intended
+            }
+        }
+    }
+
+    @Test
     public void testRegisterInvalidEmail() throws UnauthorizedException, BadRequestException {
         String[] invalidEmails = {"a", "a@", "@b", "a@b", "a@b.", "@b.de", "a.de", "a@.de"};
         for(String invalidEmail: invalidEmails) {
-            new EmailPasswordAuthenticationEndpoint().registerEmailPassword(invalidEmail, "a", "a", "b", null);
+            try {
+                new EmailPasswordAuthenticationEndpoint().registerEmailPassword(invalidEmail, "a", "a", "b", null);
+                fail(invalidEmail);
+            } catch(BadRequestException e) {
+                // intended
+            }
         }
     }
 
@@ -80,8 +98,8 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        registerUser(unregisteredUser, "pw");
-        registerUser(unregisteredUser, "pw");
+        registerUser(unregisteredUser, "Password123");
+        registerUser(unregisteredUser, "Password123");
     }
 
     @Test
@@ -93,7 +111,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        String password = "password";
+        String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
 
         String token = new EmailPasswordAuthenticationEndpoint().getToken(unregisteredUser.getEmail(), password, null).getValue();
@@ -132,9 +150,9 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        String password = "password";
+        String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
-        endpoint.getToken(registeredUser.getEmail(), "abc", null); // wrong pwd
+        endpoint.getToken(registeredUser.getEmail(), "Password456", null); // wrong pwd
     }
 
     @Test(expected = UnauthorizedException.class)

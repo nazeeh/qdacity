@@ -45,7 +45,7 @@ public class EmailPasswordAuthenticationEndpoint {
 
 
     private static final String EMAIL_REGEX = "^(.+)@(.+)$";
-    private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{7,}$";
+    private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=\\S+$).{7,}$";
 
     public EmailPasswordAuthenticationEndpoint() { }
 
