@@ -2,6 +2,7 @@ var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
+var loginHelper = require('./helper/LoginHelper.js');
 
 describe('Project test', function() {
 
@@ -23,9 +24,11 @@ describe('Project test', function() {
         this.driver = new webdriver.Builder()
 	        .forBrowser('chrome')
 	        .withCapabilities(options.toCapabilities())
-	        .build();
-
-        this.driver.get('http://localhost:8888/PersonalDashboard').then(done);
+			.build();
+			
+			this.driver.get('http://localhost:8888/PersonalDashboard').then(() => {
+				loginHelper.restoreLoginState(this.driver).then(done);
+			});
     }, defaultTimeout);
 
     afterEach((done) => {

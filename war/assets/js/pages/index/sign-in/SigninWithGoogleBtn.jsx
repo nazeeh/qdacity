@@ -2,12 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { FormattedMessage } from 'react-intl';
-import IntlProvider from '../../common/Localization/LocalizationProvider';
+import IntlProvider from '../../../common/Localization/LocalizationProvider';
 
-import ReactLoading from '../../common/ReactLoading.jsx';
-import BinaryDecider from '../../common/modals/BinaryDecider.js';
+import ReactLoading from '../../../common/ReactLoading.jsx';
+import BinaryDecider from '../../../common/modals/BinaryDecider.js';
 
-import { BtnLg } from '../../common/styles/Btn.jsx';
+import { BtnLg } from '../../../common/styles/Btn.jsx';
 
 export default class SigninWithGoogleBtn extends React.Component {
 	constructor(props) {
@@ -27,7 +27,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 		const _this = this;
 		this.authenticationProvider.getCurrentUser().then(
 			function(value) {
-				_this.props.history.push('/PersonalDashboard');
+				_this.onSignedIn();
 			},
 			function(value) {
 				var decider = new BinaryDecider(
@@ -47,13 +47,21 @@ export default class SigninWithGoogleBtn extends React.Component {
 				);
 				decider.showModal().then(function(value) {
 					if (value == 'optionA') {
-						_this.authenticationProvider.changeAccount().then(function() {
+						_this.authenticationProvider.signInWithGoogle().then(function() {
 							_this.redirect();
 						});
 					} else _this.registerAccount();
 				});
 			}
 		);
+	}
+
+	onSignedIn() {
+		if(!this.props.onSignedIn) {
+			console.error('No onSignedIn method given in SigninWithGoogleBtn.');
+			return;
+		}
+		this.props.onSignedIn();
 	}
 
 	registerAccount() {
@@ -138,7 +146,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 			loading: true
 		});
 
-		if (this.authenticationProvider.isSignedIn()) {
+		if (this.authenticationProvider.isSignedIn() && this.authenticationProvider.getActiveNetwork() === 'google') {
 			this.redirect();
 		} else {
 			var _this = this;
@@ -151,7 +159,7 @@ export default class SigninWithGoogleBtn extends React.Component {
 	}
 
 	render() {
-		if (this.state.loading) return <ReactLoading />;
+		if (this.state.loading) return <ReactLoading color={(props) => props.theme.defaultText} />;
 		return (
 			<BtnLg href="#" onClick={() => this.signIn()}>
 				<a>

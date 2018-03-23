@@ -19,7 +19,11 @@ import com.google.appengine.api.utils.SystemProperty;
  * )
  */
 public class QdacityAuthenticator implements Authenticator {
-	
+
+	public static final String PROVIDER_EMAILPWD = "email_password";
+	public static final String PROVIDER_GOOGLE = "google";
+	public static final String PROVIDER_GOOGLE_ACCESS_TOKEN = "googleaccesstoken";
+
 	TokenValidator googleIdTokenValidator = new GoogleIdTokenValidator();
 	TokenValidator googleAccessTokenValidator = new GoogleAccessTokenValidator();
 	TokenValidator emailpwdTokenValidator = new EmailPasswordValidator();
@@ -36,11 +40,6 @@ public class QdacityAuthenticator implements Authenticator {
         //get token
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
 
-        // Is the server running as a development server? Then authorize all.
-        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development) {
-        	return testTokenValidator.validate("");
-    	}
-        
         //verify
         if(authorizationHeader != null) {
         	String tokenInfo = authorizationHeader.replace("Bearer ", "");
@@ -53,17 +52,17 @@ public class QdacityAuthenticator implements Authenticator {
         	String idTokenString = tokenParts[0];
         	
     		// no provider information was sent. Use default case!
-        	String provider = "GoogleAccessToken";
+        	String provider = PROVIDER_GOOGLE_ACCESS_TOKEN;
         	if(tokenParts.length >= 2) {
         		provider = tokenParts[1];
-        	} 
-        	
+        	}
+
 			switch (provider.toLowerCase()) {			
-				case "google":
+				case PROVIDER_GOOGLE:
 		    		return googleIdTokenValidator.validate(idTokenString);
-				case "emailpwd":
+				case PROVIDER_EMAILPWD:
 					return emailpwdTokenValidator.validate(idTokenString);
-				case "googleaccesstoken":	
+				case PROVIDER_GOOGLE_ACCESS_TOKEN:
 				default:
 					return googleAccessTokenValidator.validate(idTokenString);
 			}

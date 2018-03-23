@@ -165,7 +165,7 @@ class CodingEditor extends React.Component {
 				id: this.state.project.id,
 				type: this.state.project.type,
 			},
-			token: this.props.auth.authentication.getToken() + ' google' //FIXME this is just a workaround since the provider type was missing at the end of the token
+			token: this.props.auth.authentication.getEncodedToken()
 		});
 	}
 

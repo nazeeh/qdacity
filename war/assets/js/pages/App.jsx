@@ -9,9 +9,8 @@ import {
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
 
-import AuthenticationProvider from '../common/AuthenticationProvider.js';
-import TestAuthenticationProvider from '../common/TestAuthenticationProvider.js';
-import AuthorizationProvider from '../common/AuthorizationProvider.js';
+import AuthenticationProvider from '../common/auth/AuthenticationProvider.js';
+import AuthorizationProvider from '../common/auth/AuthorizationProvider.js';
 
 import NavBar from '../common/NavBar.jsx';
 import Index from './index/Index.jsx';
@@ -37,7 +36,6 @@ import Settings from './settings/Settings.jsx';
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
 
-const TEST_MODE = $TEST_MODE$;
 
 const ContentGrid = styled.div`
 	display: grid;
@@ -82,7 +80,7 @@ export default class App extends React.Component {
 
 		this.state = {};
 
-		this.authenticationProvider = (TEST_MODE == true ? new TestAuthenticationProvider() : new AuthenticationProvider());
+		this.authenticationProvider = new AuthenticationProvider();
 		this.authorizationProvider = new AuthorizationProvider();
 
 		//maybe default props: http://lucybain.com/blog/2016/react-state-vs-pros/
@@ -112,24 +110,31 @@ export default class App extends React.Component {
 			}
 		};
 
-		const _this = this;
+		this.initAuthProvider();
+	}
 
-		// on page reloads: also reload profile data
-		if (this.authenticationProvider.isSignedIn()) {
-			_this.authenticationProvider.synchronizeTokenWithGapi();
-			_this.updateUserStatus();
-		} else {
-			// try silent sign in
-			_this.authenticationProvider.silentSignInWithGoogle().then(function() {
-				_this.authenticationProvider.synchronizeTokenWithGapi();
-				_this.updateUserStatus(); // somehow the auth state listener triggers too early!
-			});
-		}
-
+	async initAuthProvider() {
+		
+		let _this = this;
 		this.authenticationProvider.addAuthStateListener(function() {
 			// update on every auth state change
 			_this.updateUserStatus();
 		});
+
+		// on page reloads: also reload profile data
+		if (!this.authenticationProvider.isSignedIn()) {
+			// try to silently sign in with email and password
+			await this.authenticationProvider.silentSignInWithEmailPassword();
+			
+			if(!this.authenticationProvider.isSignedIn()) {
+				// try silent sign in
+				this.authenticationProvider.silentSignInWithGoogle(); // don't await, because it is listening on an observer
+				await this.authenticationProvider.synchronizeTokenWithGapi();
+			}
+
+		}
+		this.authenticationProvider.synchronizeTokenWithGapi();
+		this.updateUserStatus(); // somehow the auth state listener triggers too early!
 	}
 
 	/**
@@ -147,18 +152,31 @@ export default class App extends React.Component {
 				return;
 			}
 
-			_this.authenticationProvider.synchronizeTokenWithGapi(); // Bugfix: sometimes the token seems to get lost!
-			// 2. get the user profile
-			const profile = await _this.authenticationProvider.getProfile();
-			/*
-			* Removing query parameters from URL.
-			* With google we always got ?sz=50 in the URL which gives you a
-			* small low res thumbnail. Without parameter we get the original
-			* image.
-			* When adding other LoginProviders this needs to be reviewed
-			*/
-			var url = URI(profile.thumbnail).fragment(true);
-			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			_this.authenticationProvider.synchronizeTokenWithGapi() // Bugfix: sometimes the token seems to get lost!
+				.catch((e) => {
+					console.log('Failure at syncing token with gapi.');
+					console.log(e);
+				})
+
+			// 2. get the user profile			
+			let profile = {
+				name: '',
+				email: '',
+				picSrc: ''
+			};
+			let picSrcWithoutParams = '';
+			if(!!loginStatus) {
+				profile = await _this.authenticationProvider.getProfile();/*
+				* Removing query parameters from URL.
+				* With google we always got ?sz=50 in the URL which gives you a
+				* small low res thumbnail. Without parameter we get the original
+				* image.
+				* When adding other LoginProviders this needs to be reviewed
+				*/
+				var url = URI(profile.thumbnail).fragment(true);
+				picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			}
+			
 			_this.state.auth.userProfile = {
 				name: profile.name,
 				email: profile.email,
@@ -166,24 +184,18 @@ export default class App extends React.Component {
 			};
 
 			// 3. check if user is registered
-			_this.authenticationProvider.getCurrentUser().then(
-				function(user) {
-					_this.state.auth.authState = {
-						isUserSignedIn: loginStatus,
-						isUserRegistered: !!user
-					};
-					_this.setState(_this.state);
-					resolve();
-				},
-				function(err) {
-					_this.state.auth.authState = {
-						isUserSignedIn: loginStatus,
-						isUserRegistered: false
-					};
-					_this.setState(_this.state);
-					resolve();
-				}
-			);
+			let user = undefined;
+			try {
+				user = await _this.authenticationProvider.getCurrentUser();
+			} catch(e) {
+				// user stays undefined
+			}
+			_this.state.auth.authState = {
+				isUserSignedIn: !!loginStatus,
+				isUserRegistered: !!user
+			};
+			_this.setState(_this.state);
+			resolve();
 		});
 		return promise;
 	}
@@ -231,6 +243,7 @@ export default class App extends React.Component {
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
 										tutorial={tut}
+										theme={Theme}
 										{...props}
 									/>
 								)}
@@ -344,7 +357,7 @@ export default class App extends React.Component {
 										exact
 										path="/"
 										render={props => (
-											<Index auth={this.state.auth} {...props} />
+											<Index auth={this.state.auth} theme={Theme} {...props} />
 										)}
 									/>
 									<Route
