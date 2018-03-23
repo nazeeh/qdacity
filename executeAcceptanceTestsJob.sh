@@ -1,5 +1,8 @@
 #!/bin/bash
 
+gulp --version
+node --version
+
 # Create api_config and .env
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
 echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > ./realtime-service/.env
