@@ -5,7 +5,9 @@ import DocumentDetails from './DocumentDetails.jsx';
 
 const StyledDetailsContainer = styled.div`
 	flex: 50%;
+	max-width: 50%;
 	overflow: auto;
+	padding-left: 10px;
 `;
 
 export default class DetailsView extends React.Component {
@@ -15,19 +17,23 @@ export default class DetailsView extends React.Component {
 	}
 
 	render() {
-		const _this = this;
-
 		if (this.props.selectedCode == null) {
 			return null;
 		}
 
 		return (
 			<StyledDetailsContainer>
-				{this.props.documents.map(document => {
-					return _this.renderDocument(document);
-				})}
+				{this.renderDocuments()}
 			</StyledDetailsContainer>
 		);
+	}
+
+	renderDocuments() {
+		const _this = this;
+
+		return this.props.documents.map(document => {
+			return _this.renderDocument(document);
+		});
 	}
 
 	renderDocument(document) {
