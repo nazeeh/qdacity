@@ -103,6 +103,10 @@
 		<servlet-name>page</servlet-name>
 		<url-pattern>/Faq</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Settings</url-pattern>
+	</servlet-mapping>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>qdacity</web-resource-name>
