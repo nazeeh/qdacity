@@ -2,7 +2,7 @@ var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
-var { loginHelper } = require('./helper/LoginHelper.js');
+var loginHelper = require('./helper/LoginHelper.js');
 
 describe('Login test', function() {
 
@@ -41,7 +41,7 @@ describe('Login test', function() {
     	const displayName = 'Max Mustermann';
     	const qdacityFirstName = 'Max';
     	const qdacityLastName = 'Mustermann';
-		const qdacityEmail = 'felixtest25@gmail.com';
+		const qdacityEmail = 'felixtest27@gmail.com';
 		const userPassword = 'Password123';
     	
     	const _this = this;

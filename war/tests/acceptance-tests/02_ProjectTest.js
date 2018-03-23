@@ -2,7 +2,7 @@ var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
-var { loginHelper } = require('./helper/LoginHelper.js');
+var loginHelper = require('./helper/LoginHelper.js');
 
 describe('Project test', function() {
 
