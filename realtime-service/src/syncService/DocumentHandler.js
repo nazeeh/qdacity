@@ -389,6 +389,11 @@ class DocumentHandler {
           .characters.get(range.startOffset - 1);
       }
 
+      // If previous block is empty, no splitting is needed
+      if (typeof prevChar === 'undefined') {
+        return changeParameters;
+      }
+
       // If character before selection has not the current coding,
       // no splitting is needed
       if (!prevChar.marks.find(m => m.equals(coding))) {
