@@ -31,12 +31,15 @@ export default class DetailsView extends React.Component {
 	}
 
 	renderDocument(document) {
+		const codingDocument = this.props.codingResult.getDocument(document.id);
+
 		return (
 			<DocumentDetails
 				code={this.props.code}
 				selectedCode={this.props.selectedCode}
 				document={document}
 				codingResult={this.props.codingResult}
+				codingDocument={codingDocument}
 			/>
 		);
 	}

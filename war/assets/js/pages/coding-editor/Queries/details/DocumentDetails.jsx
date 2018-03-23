@@ -10,8 +10,12 @@ const StyledContainer = styled.div`
 	margin-bottom: 15px;
 `;
 
-const StyledDocumentTitle = styled.div`
+const StyledDocumentTitle = styled.span`
 	font-weight: bold;
+`;
+
+const StyledDocumentTitleCodingCount = styled.span`
+	margin-left: 8px;
 `;
 
 export default class DocumentDetails extends React.Component {
@@ -33,18 +37,27 @@ export default class DocumentDetails extends React.Component {
 	}
 
 	renderExpanderHeader() {
+		const codingOverlapCount = this.props.codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID);
+
+		const title = this.props.document.title;
+		const codingOverlapCountText = '(' + codingOverlapCount + ' Coding overlap' + (codingOverlapCount == 1 ? '' : 's') + ')';
+
 		return (
-			<StyledDocumentTitle>
-				{this.props.document.title}
-			</StyledDocumentTitle>
+			<div>
+				<StyledDocumentTitle>
+					{title}
+				</StyledDocumentTitle>
+				<StyledDocumentTitleCodingCount>
+					{codingOverlapCountText}
+				</StyledDocumentTitleCodingCount>
+			</div>
 		);
 	}
 
 	renderContent() {
 		const _this = this;
 
-		const codingDocument = this.props.codingResult.getDocument(this.props.document.id);
-		const codingOverlapCollection = codingDocument.getCodingOverlapCollection(this.props.selectedCode.codeID);
+		const codingOverlapCollection = this.props.codingDocument.getCodingOverlapCollection(this.props.selectedCode.codeID);
 
 		return (
 			<table style={{ borderSpacing: '5px', borderCollapse: 'separate' }}>
