@@ -8,6 +8,7 @@ echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > ./realtime-service/.env
 cd realtime-service
 npm prune
 npm install
+npm rebuild
 cd ..
 
 cd localization
