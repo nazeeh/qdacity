@@ -118,9 +118,17 @@ export default class AuthenticationProvider {
 	async silentSignInWithGoogle() {
 		var _this = this;
 		const promise = new Promise(function(resolve, reject) {
+
+			// timeout because listening to an observer
+			setTimeout(function() {
+				console.log('Could not sign in with google silently');
+				reject('Could not sign in with google silently');
+			}, 2000);
+
 			_this.auth2.isSignedIn.listen(function(googleUser) {
 				_this.activeNetwork = _this.network.google_silent;
 				_this.synchronizeTokenWithGapi();
+				console.log('Signed in with google silently');
 				resolve();
 			});
 		});
@@ -153,7 +161,11 @@ export default class AuthenticationProvider {
 				_this.activeNetwork = _this.network.email_password;
 				await _this.synchronizeTokenWithGapi();
 				_this.emailPasswordAuthenticationProvider.authStateChaned(); // has to be called after sync with gapi
-				resolve();
+				console.log('Signed in with email+pwd silently');
+				resolve(true);
+			} else {
+				console.log('Could not sign in with email+pwd silently');
+				reject('Could not sign in with email+pwd silently');
 			}
 		});
 		return promise;
