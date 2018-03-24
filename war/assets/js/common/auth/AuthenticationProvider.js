@@ -1,5 +1,7 @@
 import hello from 'hellojs';
 
+import IntlProvider from '../Localization/LocalizationProvider';
+
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.js';
 
@@ -37,9 +39,30 @@ export default class AuthenticationProvider {
 
 		const _this = this;
 		setInterval(function() {
+			const { formatMessage } = IntlProvider.intl;
 			// automatically refresh token
 			console.log('automatically refreshing token');
-			_this.getToken();
+			if(_this.isSignedIn()) {
+				_this.getToken(); // refreshes if neccessary
+				
+				if(!_this.isSignedIn()) {
+					vex.dialog.open({
+						message: formatMessage({
+							id: 'authenticationProvider.automaticTokenRefresh.failed',
+							defaultMessage: 'Authentication Error. Please reload the page and sign-in again.'
+						}),
+						buttons: [
+							$.extend({}, vex.dialog.buttons.YES, {
+								text: formatMessage({
+									id: 'authenticationProvider.automaticTokenRefresh.close',
+									defaultMessage: 'Close'
+								})
+							})
+						],
+					});
+				}
+			}
+
 		}, 60 * 1000 * TOKEN_REFRESH_ATER_MINUTES); // every 10 min
 	}
 
