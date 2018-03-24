@@ -44,6 +44,7 @@ public class ForgotPasswordEmailSender implements DeferredTask {
 
         String greetingName = givenName + ", ";
 
+        // TODO: make it possible to localize strings in the backend as well
         String msgBody = "Hi " + greetingName + "<br>";
         msgBody += 	"<p>"
                 +	"You requested a new password in order to be able to sign in with <u>" +  loginEmail + "</u> again.<br>"
