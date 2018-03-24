@@ -14,8 +14,8 @@ export default class CodeList extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.renderHeaderRow = this.renderHeaderRow.bind(this);
-		this.renderRow = this.renderRow.bind(this);
+		this.renderHeaderCellContent = this.renderHeaderCellContent.bind(this);
+		this.renderCellContent = this.renderCellContent.bind(this);
 	}
 
 	getCodeSystemArray() {
@@ -71,13 +71,76 @@ export default class CodeList extends React.Component {
 			<StyledCodeListContainer>
 				<Table 
 					items={codes} 
-					renderHeaderRow={this.renderHeaderRow}
-					renderRow={this.renderRow} 
+					columns={['index', 'click', 'code', 'overlap-main', 'overlap-other', 'average-percentage-main', 'average-percentage-other']}
+					defaultSortColumn={'overlap-main'}
+					renderHeaderCellContent={this.renderHeaderCellContent}
+					renderCellContent={this.renderCellContent} 
 				/>
 			</StyledCodeListContainer>
 		);
 	}
-	
+
+	renderHeaderCellContent(column, columnIndex) {
+		switch (column) {
+			case 'index': {
+				return '#';
+			}
+			case 'click': {
+				return '';
+			}
+			case 'code': {
+				return 'Code';
+			}
+			case 'overlap-main': {
+				return 'Overlaps by ' + this.props.code.name;
+			}
+			case 'overlap-other': {
+				return 'Overlaps by other code';
+			}
+			case 'average-percentage-main': {
+				return 'Average % by ' + this.props.code.name;
+			}
+			case 'average-percentage-other': {
+				return 'Average % by other code';
+			}
+			default: {
+				return '';
+			}
+		}
+	}
+
+	renderCellContent(code, itemIndex, column, columnIndex) {
+		switch (column) {
+			case 'index': {
+				return itemIndex + 1;
+			}
+			case 'click': {
+				return <div onClick={() => this.props.codeSelected(code)}>X</div>;
+			}
+			case 'code': {
+				return code.name;
+			}
+			case 'overlap-main': {
+				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' by ' + this.props.codingResult.getTotalCodingsCountMainCode();
+			}
+			case 'overlap-other': {
+				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' by ' + this.props.codingResult.getTotalCodingsCount(code.codeID);
+			}
+			case 'average-percentage-main': {
+				return this.props.codingResult.getAverageOverlapPercentageByMainCode(code.codeID).toFixed(2);
+			}
+			case 'average-percentage-other': {
+				return this.props.codingResult.getAverageOverlapPercentageByOtherCode(code.codeID).toFixed(2);
+			}
+			default: {
+				return '';
+			}
+		}
+	}
+
+
+
+
 	renderHeaderRow() {
 		return (
 			<StyledTableHeaderRow>
@@ -95,7 +158,7 @@ export default class CodeList extends React.Component {
 	renderRow(code, index) {
 		return (
 			<StyledTableRow evenIndex={((index + 1) % 2) == false}>
-				<StyledTableCell>{index}</StyledTableCell>
+				<StyledTableCell>{index + 1}</StyledTableCell>
 				<StyledTableCell><div onClick={() => this.props.codeSelected(code)}>X</div></StyledTableCell>
 				<StyledTableCell>{code.name}</StyledTableCell>
 				<StyledTableCell>{this.props.codingResult.getCodingOverlapCount(code.codeID)} by {this.props.codingResult.getTotalCodingsCountMainCode()}</StyledTableCell>

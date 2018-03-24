@@ -13,35 +13,54 @@ const StyledTableHead = styled.thead`
 `;
 
 const StyledTableHeaderRow = styled.tr`
-
 `;
 
 const StyledTableHeaderCell = styled.th`
 	padding: 5px 10px;
+	font-weight: normal;
+	color: ${props => props.sortColumn ? props.theme.fgPrimary : ''};
 `;
 
 const StyledTableBody = styled.tbody`
-
 `;
 
 const StyledTableRow = styled.tr`
-	background-color ${props => props.evenIndex ? '#DDECFF' : ''};
+	background-color: ${props => props.evenIndex ? '#efefef' : ''};
 `;
 
 const StyledTableCell = styled.td`
 	padding: 5px 10px;
+	background-color: ${props => !props.evenIndex && props.sortColumn ? '#F0F6FF' : (props.evenIndex && props.sortColumn ? '#E8EFF7' : '')};
 `;
 
 /**
  * Available props:
+ * - columns:
  * - items: specifies the content of the table
- * - renderHeaderRow function which defines how to render the header row in the table
- * - renderRow: function which defines how to render a row in the table
+ * - defaultSortColumn
+ * - renderHeaderCellContent
+ * - renderCellContent
  */
 class Table extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		let defaultSortColumn = null;
+
+		if (this.props.defaultSortColumn) {
+			defaultSortColumn = this.props.defaultSortColumn;
+		}
+		else if (this.props.columns && this.props.columns.length > 0) {
+			defaultSortColumn = this.props.columns[0];
+		}
+		else {
+			throw new Error('No columns specified.');
+		}
+
+		this.state = {
+			sortColumn: defaultSortColumn
+		};
 	}
 
 	render() {
@@ -63,12 +82,23 @@ class Table extends React.Component {
 	}
 
 	renderHeaderRow() {
-		if (this.props.renderHeaderRow) {
-			return this.props.renderHeaderRow();
-		}
-		else {
-			throw new Error('Please specify a renderHeaderRow method and pass it as a props.')
-		}
+		const _this = this;
+
+		return (
+			<StyledTableHeaderRow>
+				{this.props.columns.map((column, index) => {
+					return _this.renderHeaderCell(column, index);
+				})}
+			</StyledTableHeaderRow>
+		);
+	}
+
+	renderHeaderCell(column, index) {
+		const content = this.props.renderHeaderCellContent ? this.props.renderHeaderCellContent(column, index) : '';
+
+		return (
+			<StyledTableHeaderCell sortColumn={this.state.sortColumn == column}>{content}</StyledTableHeaderCell>
+		);
 	}
 
 	renderBody() {
@@ -85,13 +115,27 @@ class Table extends React.Component {
 		);
 	}
 
-	renderRow(item, index) {
-		if (this.props.renderRow) {
-			return this.props.renderRow(item, index);
-		}
-		else {
-			throw new Error('Please specify a renderRow method and pass it as a props.')
-		}
+	renderRow(item, itemIndex) {
+		const _this = this;
+
+		return (
+			<StyledTableRow evenIndex={((itemIndex + 1) % 2) == false}>
+				{this.props.columns.map((column, columnIndex) => {
+					return _this.renderCell(item, itemIndex, column, columnIndex);
+				})}
+			</StyledTableRow>
+		);
+	}
+
+	renderCell(item, itemIndex, column, columnIndex) {
+		const content = this.props.renderCellContent ? this.props.renderCellContent(item, itemIndex, column, columnIndex) : '';
+
+		return (
+			<StyledTableCell
+				evenIndex={((itemIndex + 1) % 2) == false}
+				sortColumn={this.state.sortColumn == column}
+			>{content}</StyledTableCell>
+		);
 	}
 }
 
