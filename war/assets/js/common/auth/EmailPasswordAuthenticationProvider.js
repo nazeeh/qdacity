@@ -1,7 +1,7 @@
 //@ts-check
 import jwt_decode from 'jwt-decode';
 
-const STORAGE_EMAIL_PASSWORD_TOKEN_KEY = 'qdacity-emai-password-token';
+const STORAGE_EMAIL_PASSWORD_TOKEN_KEY = 'qdacity-email-password-token';
 const TOKEN_TIMEOUT = 30; //min
 
 
