@@ -58,7 +58,7 @@ export default class EmailPasswordAuthenticationProvider {
 			const profile = {
 				name: decoded.name,
 				email: decoded.email,
-				thumbnail: _this.generateThumbnailBase64(decoded.name.charAt(0))
+				thumbnail: _this.generateThumbnailBase64(decoded.name)
 			};
 			resolve(profile);
 		});
@@ -67,24 +67,28 @@ export default class EmailPasswordAuthenticationProvider {
 
 	/**
 	 * Generates a thumbnail image with blue background and the letter written in white.
-	 * @param {String} letter 
+	 * @param {String} name 
 	 * @returns {String} data url
 	 */
-	generateThumbnailBase64(letter) {
+	generateThumbnailBase64(name) {
 		const canvas = document.createElement('canvas');
 		const context = canvas.getContext('2d');
 		canvas.width = 200;
 		canvas.height = 200;
 
+		const colors = ["Red", "Blue", "DarkCyan", "DarkGreen", "Sienna"];
+		const asciiLastChar = name.charCodeAt(name.length - 1);
+		const fillStyleColor = colors[asciiLastChar % colors.length];
+
 		// background
-		context.fillStyle = "red";
+		context.fillStyle = fillStyleColor;
 		context.fillRect(0, 0, canvas.width, canvas.height);
 
 		// letter
 		context.fillStyle = "white";
 		context.font = "130px Arial";
 		context.textAlign = "center";
-		context.fillText(letter, canvas.width / 2, canvas.height/2 + 40);
+		context.fillText(name.charAt(0), canvas.width / 2, canvas.height/2 + 40);
 
 		return canvas.toDataURL();
 	}
