@@ -146,16 +146,12 @@ export default class SigninWithGoogleBtn extends React.Component {
 			loading: true
 		});
 
-		if (this.authenticationProvider.isSignedIn() && this.authenticationProvider.getActiveNetwork() === 'google') {
-			this.redirect();
-		} else {
-			var _this = this;
-			this.authenticationProvider.signInWithGoogle().then(function() {
-				if (_this.authenticationProvider.isSignedIn()) {
-					_this.redirect();
-				}
-			});
-		}
+		var _this = this;
+		this.authenticationProvider.signInWithGoogle().then(function() {
+			if (_this.authenticationProvider.isSignedIn()) {
+				_this.redirect();
+			}
+		});
 	}
 
 	render() {
