@@ -498,6 +498,12 @@ public class UserEndpoint {
 
 		AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
 
+		// try to load from cache
+        User user = Cache.getUserByAuthenticatedUser(authUser);
+		if(user != null) {
+		    return user;
+        }
+
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 
@@ -515,17 +521,21 @@ public class UserEndpoint {
 			PreparedQuery pq = datastore.prepare(q);
 
 			Entity providerInformationEntity = pq.asSingleEntity();
-			
+
 			if (providerInformationEntity == null) {
 				throw new UnauthorizedException("User is not registered");
 			}
 
 			Key userKey = providerInformationEntity.getParent();
 
-			User user = mgr.getObjectById(User.class, userKey.getName());
+			user = mgr.getObjectById(User.class, userKey.getName());
 
 			// detatch copy, otherwise referenced default fetched objects filled with nulls
 			user = mgr.detachCopy(user);
+
+			// cache user
+			Cache.cacheAuthenticatedUser(authUser, user);
+
 			return user;
 		} finally {
 			mgr.close();
