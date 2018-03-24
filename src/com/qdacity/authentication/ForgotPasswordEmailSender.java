@@ -23,10 +23,10 @@ public class ForgotPasswordEmailSender implements DeferredTask {
 
     @Override
     public void run() {
-        sendUserMigrationEmail(user, loginEmail, generatedPassword);
+        sendGeneratedPassword(user, loginEmail, generatedPassword);
     }
 
-    private void sendUserMigrationEmail(User user, String loginEmail, String generatedPassword) {
+    private void sendGeneratedPassword(User user, String loginEmail, String generatedPassword) {
         Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER, Credentials.SENDGRID_PW);
 
         String givenName = user.getGivenName() == null ? "User" : user.getGivenName();
