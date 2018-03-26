@@ -135,20 +135,14 @@ export default class GoogleAuthenticationProvider {
 	 * @returns {Promise} the google profile
 	 */
 	async silentSignIn() {
-		var _this = this;
+		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
-
-			// timeout because listening to an observer
-			setTimeout(function() {
-				console.log('Could not sign in with google silently');
-				reject('Could not sign in with google silently');
-			}, 2000);
 
 			_this.auth2.isSignedIn.listen(function(googleUser) {
                 console.log('Signed in with google silently');
 
                 // get google token
-			    const googleToken = this.auth2.currentUser.get().getAuthResponse().id_token;
+			    const googleToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
 
                 // get qdacity jwt token
                 gapi.client.qdacity.authentication.google.getToken({
@@ -171,6 +165,12 @@ export default class GoogleAuthenticationProvider {
                     }
                 });
 			});
+
+			// timeout because listening to an observer
+			setTimeout(function() {
+				console.log('Could not sign in with google silently');
+				reject('Could not sign in with google silently');
+			}, 2000);
 		});
 		return promise;
 	}
