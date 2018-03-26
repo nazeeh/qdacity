@@ -175,7 +175,8 @@ export default class App extends React.Component {
 			};
 			let picSrcWithoutParams = '';
 			if(!!loginStatus) {
-				profile = await _this.authenticationProvider.getProfile();/*
+				profile = await _this.authenticationProvider.getProfile();
+				/*
 				* Removing query parameters from URL.
 				* With google we always got ?sz=50 in the URL which gives you a
 				* small low res thumbnail. Without parameter we get the original
