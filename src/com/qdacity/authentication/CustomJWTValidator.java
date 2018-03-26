@@ -4,7 +4,7 @@ import com.qdacity.authentication.util.TokenUtil;
 import com.qdacity.user.LoginProviderType;
 import io.jsonwebtoken.Claims;
 
-public class EmailPasswordValidator implements TokenValidator {
+public class CustomJWTValidator implements TokenValidator {
 
     @Override
     public AuthenticatedUser validate(String token) {
