@@ -6,7 +6,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.authentication.AuthenticatedUser;
-import com.qdacity.authentication.EmailPasswordValidator;
+import com.qdacity.authentication.CustomJWTValidator;
 import com.qdacity.authentication.TokenValidator;
 import com.qdacity.authentication.util.TokenUtil;
 import com.qdacity.endpoint.AuthenticationEndpoint;
@@ -104,7 +104,7 @@ public class AuthenticationEndpointTest {
 
     @Test
     public void testGetTokenAndRefresh() throws UnauthorizedException, InterruptedException, BadRequestException {
-        TokenValidator emailpwdTokenValidator = new EmailPasswordValidator();
+        TokenValidator emailpwdTokenValidator = new CustomJWTValidator();
         User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
@@ -114,7 +114,7 @@ public class AuthenticationEndpointTest {
         String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
 
-        String token = new AuthenticationEndpoint().getToken(unregisteredUser.getEmail(), password, null).getValue();
+        String token = new AuthenticationEndpoint().getTokenEmailPassword(unregisteredUser.getEmail(), password, null).getValue();
         assertTrue(TokenUtil.getInstance().verifyToken(token));
         AuthenticatedUser authUser = emailpwdTokenValidator.validate(token);
         assertEquals(unregisteredUser.getEmail(), authUser.getId());
@@ -139,7 +139,7 @@ public class AuthenticationEndpointTest {
 
     @Test(expected = UnauthorizedException.class)
     public void testGetTokenNotRegistered() throws UnauthorizedException {
-        new AuthenticationEndpoint().getToken("not@exists.de", "abc", null);
+        new AuthenticationEndpoint().getTokenEmailPassword("not@exists.de", "abc", null);
     }
 
     @Test(expected = UnauthorizedException.class)
@@ -152,7 +152,7 @@ public class AuthenticationEndpointTest {
 
         String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
-        endpoint.getToken(registeredUser.getEmail(), "Password456", null); // wrong pwd
+        endpoint.getTokenEmailPassword(registeredUser.getEmail(), "Password456", null); // wrong pwd
     }
 
     @Test(expected = UnauthorizedException.class)

@@ -14,6 +14,7 @@ import com.qdacity.Constants;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.ForgotPasswordEmailSender;
+import com.qdacity.authentication.GoogleIdTokenValidator;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.authentication.util.HashUtil;
 import com.qdacity.authentication.util.TokenUtil;
@@ -42,6 +43,8 @@ import java.util.regex.Pattern;
         authenticators = {QdacityAuthenticator.class}
 )
 public class AuthenticationEndpoint {
+
+    private final GoogleIdTokenValidator googleTokenValidator = new GoogleIdTokenValidator();
 
 
     private static final String EMAIL_REGEX = "^(.+)@(.+)$";
@@ -105,7 +108,7 @@ public class AuthenticationEndpoint {
      * @param loggedInUser
      */
     @ApiMethod(name = "authentication.email.getToken")
-    public StringWrapper getToken(@Named("email") String email, @Named("pwd") String pwd, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    public StringWrapper getTokenEmailPassword(@Named("email") String email, @Named("pwd") String pwd, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         // check if user is registered
         EmailPasswordLogin emailPwd = null;
         PersistenceManager pm = getPersistenceManager();
@@ -126,6 +129,25 @@ public class AuthenticationEndpoint {
         // generate JWT token
         User user = getUserByEmailPassword(emailPwd);
         return new StringWrapper(TokenUtil.getInstance().genToken(user));
+    }
+
+    @ApiMethod(name = "authentication.google.getToken")
+    public StringWrapper getTokenGoogle(@Named("googleToken") String googleToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+        AuthenticatedUser authUser = googleTokenValidator.validate(googleToken);
+        if(authUser == null) {
+            throw new UnauthorizedException("Code3.2: The Google token does not seem to be valid!");
+        }
+
+        // check if user is registered
+        try {
+            User user = new UserEndpoint().getCurrentUser(authUser);
+
+            // generate JWT token
+            return new StringWrapper(TokenUtil.getInstance().genToken(user));
+        } catch (JDOObjectNotFoundException e) {
+            throw new UnauthorizedException("Code3.1: The User could not be found!");
+        }
     }
 
     private User getUserByEmailPassword(EmailPasswordLogin emailPwd) throws UnauthorizedException {
