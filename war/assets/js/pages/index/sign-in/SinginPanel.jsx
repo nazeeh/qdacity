@@ -58,8 +58,7 @@ export default class SigninPanel extends React.Component {
 
 	render() {
 		if (
-			this.props.auth.authState.isUserSignedIn &&
-			this.props.auth.authState.isUserRegistered
+			this.props.auth.authState.isUserSignedIn
 		) {
 			return (
 				<PanelWrapper className="container-fluid">

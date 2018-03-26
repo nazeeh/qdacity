@@ -95,8 +95,7 @@ export default class App extends React.Component {
 			tutorialState: t.tutorialState,
 			auth: {
 				authState: {
-					isUserSignedIn: false,
-					isUserRegistered: false
+					isUserSignedIn: false
 				},
 				userProfile: {
 					name: '',
@@ -201,8 +200,7 @@ export default class App extends React.Component {
 				// user stays undefined
 			}
 			_this.state.auth.authState = {
-				isUserSignedIn: !!loginStatus,
-				isUserRegistered: !!user
+				isUserSignedIn: !!loginStatus
 			};
 			_this.setState(_this.state);
 			resolve();

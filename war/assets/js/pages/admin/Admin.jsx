@@ -42,8 +42,7 @@ export default class Admin extends React.Component {
 
 	render() {
 		if (
-			!this.props.auth.authState.isUserSignedIn ||
-			!this.props.auth.authState.isUserRegistered
+			!this.props.auth.authState.isUserSignedIn
 		) {
 			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
 		}
