@@ -13,6 +13,7 @@ export default class CustomForm extends VexModal {
 		this.formElements = '';
 		this.message = message;
 		this.isProjectRevisionSelector = false;
+		this.hasDateChooser = false;
 		this.disableYesButton = false;
 		this.showProjectDropDown = true;
 		this.projects = [];
@@ -45,7 +46,7 @@ export default class CustomForm extends VexModal {
 	}
 
 	addDatePicker() {
-
+		this.hasDateChooser = true;
 		const { formatMessage } = IntlProvider.intl;
 		var deadlineMessage = formatMessage({
 			id: 'modal.deadline',
@@ -56,7 +57,7 @@ export default class CustomForm extends VexModal {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<div class="vex-custom-input-wrapper">';
 		this.formElements += deadlineMessage;
-		this.formElements += '<div id="DatePicker">';
+		this.formElements += '<div id="DateChooser">';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
@@ -189,14 +190,16 @@ export default class CustomForm extends VexModal {
 					}
 				}
 			});
+			if (_this.hasDateChooser) {
 			ReactDOM.render(
 				<ThemeProvider theme={Theme}>
 					<DateChooser
 						setSelectedDate={_this.setSelectedDate}
 					/>
 				</ThemeProvider>,
-				document.getElementById('DatePicker')
+				document.getElementById('DateChooser')
 			)
+		}
 			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(
 					<ThemeProvider theme={Theme}>
