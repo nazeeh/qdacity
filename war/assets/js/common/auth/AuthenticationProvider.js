@@ -65,7 +65,10 @@ export default class AuthenticationProvider {
 	/**
 	 * Signs-in on google account via a popup.
 	 * Signs out all accounts beforehand!
-	 * @return {Promise} the google profile
+	 * @return {Promise} 
+	 * If the sign-in was successful (Google + Qdacity), then the google profile is resolved.
+	 * If the sign-in for Google was not successful (Qdacity automatically also failed), the error is rejeceted.
+	 * If the sign-in for Google succeeded but for Qdacity not, then the google profile is rejected.
 	 */
 	async signInWithGoogle() {
 		this.signOut();
@@ -270,6 +273,13 @@ export default class AuthenticationProvider {
 		return this.googleAuthenticationProvider.registerCurrentUser(givenName, surName, email);
 	}
 
+	/**
+	 * @returns {String}
+	 */
+	getActiveNetwork() {
+		return this.activeNetwork;
+	}
+
 	/* ---------------------- Interaction with Qdacity Server ................. */
 
 	/**
@@ -288,12 +298,5 @@ export default class AuthenticationProvider {
 			});
 		});
 		return promise;
-	}
-
-	/**
-	 * @returns {String}
-	 */
-	getActiveNetwork() {
-		return this.activeNetwork;
 	}
 }

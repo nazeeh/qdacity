@@ -76,7 +76,10 @@ export default class GoogleAuthenticationProvider {
 
 	/** 
 	 * Signs in with the google popup.
-	 * @returns {Promise} the google profile, if signing in to google+ worked (independent from user being registered at qdacity)
+	 * @returns {Promise} 
+	 * If the sign-in was successful (Google + Qdacity), then the google profile is resolved.
+	 * If the sign-in for Google was not successful (Qdacity automatically also failed), the error is rejeceted.
+	 * If the sign-in for Google succeeded but for Qdacity not, then the google profile is rejected.
 	 */
 	signIn() {
         const _this = this;
