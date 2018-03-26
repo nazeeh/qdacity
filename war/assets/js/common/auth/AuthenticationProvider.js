@@ -72,6 +72,8 @@ export default class AuthenticationProvider {
 	initHelloJs() {
 		hello.init({
 			google: GOOGLE_CLIENT_ID
+		}, {
+			redirect_uri: '$APP_PATH$'
 		});
 	}
 

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FormattedMessage } from 'react-intl';
 
 import ReactLoading from '../common/ReactLoading.jsx';
+import SigninFormula from '../pages/index/sign-in/SigninFormula.jsx';
 
 const StyledPanel = styled.div`
 	padding: 20px 50px 20px 50px;
@@ -64,15 +65,10 @@ export default class UnauthenticatedUserPanel extends React.Component {
 								defaultMessage="Please sign-in or register to access this page."
 							/>
 						</p>
-						<p>
-							<FormattedMessage
-								id="unauthenticated_user_panel.redirect_to_home"
-								defaultMessage={'Click {redirect_url} to get to the Home.'}
-								values={{
-									redirect_url: <a href="/">here</a>
-								}}
-							/>
-						</p>
+						<SigninFormula
+							auth={this.props.auth}
+							onSignedIn={() => {location.reload()}}
+						/>
 					</StyledPanel>
 				</CenteredDiv>
 			);
