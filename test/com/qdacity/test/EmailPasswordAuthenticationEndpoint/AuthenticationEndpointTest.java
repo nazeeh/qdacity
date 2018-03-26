@@ -9,7 +9,7 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.EmailPasswordValidator;
 import com.qdacity.authentication.TokenValidator;
 import com.qdacity.authentication.util.TokenUtil;
-import com.qdacity.endpoint.EmailPasswordAuthenticationEndpoint;
+import com.qdacity.endpoint.AuthenticationEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class EmailPasswordAuthenticationEndpointTest {
+public class AuthenticationEndpointTest {
 
     private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
@@ -41,7 +41,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
-        EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
+        AuthenticationEndpoint endpoint = new AuthenticationEndpoint();
 
         User registeredUser = registerUser(unregisteredUser, "Password123");
 
@@ -55,12 +55,12 @@ public class EmailPasswordAuthenticationEndpointTest {
 
     @Test(expected= BadRequestException.class)
     public void testRegisterEmptyPassword() throws UnauthorizedException, BadRequestException {
-        new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", "", "a", "b", null);
+        new AuthenticationEndpoint().registerEmailPassword("email@email.de", "", "a", "b", null);
     }
 
     @Test(expected= BadRequestException.class)
     public void testRegisterPasswordNull() throws UnauthorizedException, BadRequestException {
-        new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", null, "a", "b", null);
+        new AuthenticationEndpoint().registerEmailPassword("email@email.de", null, "a", "b", null);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         String[] invalidPasswords = {"aasdasasdd", "AAAAAAAAAA", "237483597", "AAAAaaaaaaaa", "AAAAAAAAAA123234", "aaaaaaaaaaaa123123", "A123a", "A123djsfh asd12"};
         for(String invalidPassword: invalidPasswords) {
             try {
-                new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", invalidPassword, "a", "b", null);
+                new AuthenticationEndpoint().registerEmailPassword("email@email.de", invalidPassword, "a", "b", null);
                 fail(invalidPassword);
             } catch(BadRequestException e) {
                 // intended
@@ -81,7 +81,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         String[] invalidEmails = {"a", "a@", "@b", "a@b", "a@b.", "@b.de", "a.de", "a@.de"};
         for(String invalidEmail: invalidEmails) {
             try {
-                new EmailPasswordAuthenticationEndpoint().registerEmailPassword(invalidEmail, "a", "a", "b", null);
+                new AuthenticationEndpoint().registerEmailPassword(invalidEmail, "a", "a", "b", null);
                 fail(invalidEmail);
             } catch(BadRequestException e) {
                 // intended
@@ -96,7 +96,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
-        EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
+        AuthenticationEndpoint endpoint = new AuthenticationEndpoint();
 
         registerUser(unregisteredUser, "Password123");
         registerUser(unregisteredUser, "Password123");
@@ -109,12 +109,12 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
-        EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
+        AuthenticationEndpoint endpoint = new AuthenticationEndpoint();
 
         String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
 
-        String token = new EmailPasswordAuthenticationEndpoint().getToken(unregisteredUser.getEmail(), password, null).getValue();
+        String token = new AuthenticationEndpoint().getToken(unregisteredUser.getEmail(), password, null).getValue();
         assertTrue(TokenUtil.getInstance().verifyToken(token));
         AuthenticatedUser authUser = emailpwdTokenValidator.validate(token);
         assertEquals(unregisteredUser.getEmail(), authUser.getId());
@@ -125,7 +125,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         assertEquals(registeredUser.getId(), user.getId());
 
         Thread.sleep(1000); // two tokens generated in same second are equal (not the typical use-case)
-        String refreshedToken = new EmailPasswordAuthenticationEndpoint().refreshToken(token, null).getValue();
+        String refreshedToken = new AuthenticationEndpoint().refreshToken(token, null).getValue();
         assertNotEquals(token, refreshedToken);
         assertTrue(TokenUtil.getInstance().verifyToken(refreshedToken));
         authUser = emailpwdTokenValidator.validate(refreshedToken);
@@ -139,7 +139,7 @@ public class EmailPasswordAuthenticationEndpointTest {
 
     @Test(expected = UnauthorizedException.class)
     public void testGetTokenNotRegistered() throws UnauthorizedException {
-        new EmailPasswordAuthenticationEndpoint().getToken("not@exists.de", "abc", null);
+        new AuthenticationEndpoint().getToken("not@exists.de", "abc", null);
     }
 
     @Test(expected = UnauthorizedException.class)
@@ -148,7 +148,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
-        EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
+        AuthenticationEndpoint endpoint = new AuthenticationEndpoint();
 
         String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
@@ -163,13 +163,13 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
 
-        String refreshedToken = new EmailPasswordAuthenticationEndpoint().refreshToken("sdfjklsjeiljfs", null).getValue();
+        String refreshedToken = new AuthenticationEndpoint().refreshToken("sdfjklsjeiljfs", null).getValue();
     }
 
 
 
     private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {
-        return new EmailPasswordAuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
+        return new AuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
                 unregisteredUser.getGivenName(), unregisteredUser.getSurName(), null);
     }
 }

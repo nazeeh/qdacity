@@ -41,13 +41,13 @@ import java.util.regex.Pattern;
                 packagePath = "server.project"),
         authenticators = {QdacityAuthenticator.class}
 )
-public class EmailPasswordAuthenticationEndpoint {
+public class AuthenticationEndpoint {
 
 
     private static final String EMAIL_REGEX = "^(.+)@(.+)$";
     private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=\\S+$).{7,}$";
 
-    public EmailPasswordAuthenticationEndpoint() { }
+    public AuthenticationEndpoint() { }
 
     /**
      * Registers a new user.
@@ -58,7 +58,7 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param pwd
      * @param loggedInUser
      */
-    @ApiMethod(name = "authentication.registerEmailPassword")
+    @ApiMethod(name = "authentication.email.register")
     public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
                                       @Named("givenName") String givenName, @Named("surName") String surName,
                                       com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
@@ -104,7 +104,7 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param pwd
      * @param loggedInUser
      */
-    @ApiMethod(name = "authentication.getTokenEmailPassword")
+    @ApiMethod(name = "authentication.email.getToken")
     public StringWrapper getToken(@Named("email") String email, @Named("pwd") String pwd, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         // check if user is registered
         EmailPasswordLogin emailPwd = null;
@@ -199,7 +199,7 @@ public class EmailPasswordAuthenticationEndpoint {
      * @param email
      * @param loggedInUser
      */
-    @ApiMethod(name = "authentication.forgotPwd")
+    @ApiMethod(name = "authentication.email.forgotPwd")
     public void forgotPwd(@Named("email") String email, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 
         // generate new password
