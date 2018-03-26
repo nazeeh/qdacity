@@ -132,12 +132,29 @@ public class AuthenticationEndpoint {
         return new StringWrapper(TokenUtil.getInstance().genToken(user, authInfo));
     }
 
+    @ApiMethod(name = "authentication.google.register")
+    public User registerGoogle(@Named("googleToken") String googleToken,
+                               @Named("email") String email,
+                               @Named("givenName") String givenName,
+                               @Named("surName") String surName) throws UnauthorizedException {
+        AuthenticatedUser authUser = googleTokenValidator.validate(googleToken);
+        if(authUser == null) {
+            throw new UnauthorizedException("Code3.1: The Google token does not seem to be valid!");
+        }
+        User user = new User();
+        user.setEmail(email);
+        user.setGivenName(givenName);
+        user.setSurName(surName);
+
+        return new UserEndpoint().insertUser(user, authUser);
+    }
+
     @ApiMethod(name = "authentication.google.getToken")
     public StringWrapper getTokenGoogle(@Named("googleToken") String googleToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 
         AuthenticatedUser authUser = googleTokenValidator.validate(googleToken);
         if(authUser == null) {
-            throw new UnauthorizedException("Code3.2: The Google token does not seem to be valid!");
+            throw new UnauthorizedException("Code4.2: The Google token does not seem to be valid!");
         }
 
         // check if user is registered
@@ -147,7 +164,7 @@ public class AuthenticationEndpoint {
             // generate JWT token
             return new StringWrapper(TokenUtil.getInstance().genToken(user, authUser));
         } catch (JDOObjectNotFoundException e) {
-            throw new UnauthorizedException("Code3.1: The User could not be found!");
+            throw new UnauthorizedException("Code4.1: The User could not be found!");
         }
     }
 
