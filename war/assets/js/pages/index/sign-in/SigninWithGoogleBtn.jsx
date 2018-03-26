@@ -83,6 +83,9 @@ export default class SigninWithGoogleBtn extends React.Component {
 			],
 			callback: function(data) {
 				if (data === false) {
+					_this.setState({
+						loading: false
+					});
 					return console.log('Cancelled');
 				}
 				_this.authenticationProvider
