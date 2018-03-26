@@ -32,6 +32,7 @@ export default class GoogleAuthenticationProvider {
 	/**
 	 * Registers the current user.
 	 * The user has to be logged in beforehand.
+	 * Signs-in after successful registering.
 	 * @param givenName
 	 * @param surName
 	 * @param email
