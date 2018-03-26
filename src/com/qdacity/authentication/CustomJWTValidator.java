@@ -15,7 +15,9 @@ public class CustomJWTValidator implements TokenValidator {
             return null;
         }
 
-        return new AuthenticatedUser(claims.get("email", String.class), // convention: email is id
-                claims.get("email", String.class), LoginProviderType.EMAIL_PASSWORD);
+        return new AuthenticatedUser(
+                claims.get(TokenUtil.EXTERNAL_USER_ID_CLAIM, String.class), // convention: email is id
+                claims.get(TokenUtil.EXTERNAL_EMAIL_CLAIM, String.class),
+                LoginProviderType.valueOf(claims.get(TokenUtil.AUTH_NETWORK_CLAIM, String.class)));
     }
 }
