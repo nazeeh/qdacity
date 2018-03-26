@@ -1,7 +1,7 @@
 //@ts-check
 import jwt_decode from 'jwt-decode';
 
-const STORAGE_EMAIL_PASSWORD_TOKEN_KEY = 'qdacity-jwt-token';
+const STORAGE_QDACITY_JWT_TOKEN_KEY = 'qdacity-jwt-token';
 const TOKEN_TIMEOUT = 30; //min
 
 
@@ -84,7 +84,7 @@ export default class QdacityTokenAuthenticationProvider {
 	 * Sets this.jwtToken to the found token.
 	 */
 	loadTokenFromStorage() {
-		const storedToken = localStorage.getItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY);
+		const storedToken = localStorage.getItem(STORAGE_QDACITY_JWT_TOKEN_KEY);
 		if(storedToken === undefined || storedToken === null) {
 			this.jwtToken = null;
 			return;
@@ -106,7 +106,7 @@ export default class QdacityTokenAuthenticationProvider {
 	signOut() {
 		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
-			localStorage.removeItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY);
+			localStorage.removeItem(STORAGE_QDACITY_JWT_TOKEN_KEY);
 			_this.jwtToken = null;
 			_this.authStateChaned();
 			resolve();
@@ -128,7 +128,7 @@ export default class QdacityTokenAuthenticationProvider {
     
     setToken(token) {
         this.jwtToken = token;
-        localStorage.setItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY, token);
+        localStorage.setItem(STORAGE_QDACITY_JWT_TOKEN_KEY, token);
     }
 
 	/**
@@ -167,10 +167,9 @@ export default class QdacityTokenAuthenticationProvider {
 				token: this.jwtToken
 			}).execute(function(resp) {
 				if (!resp.code) {
-					_this.jwtToken = resp.value;
+					_this.setToken(resp.value);
 					console.log('Refreshed token!');
 					_this.authStateChaned();
-					localStorage.setItem(STORAGE_EMAIL_PASSWORD_TOKEN_KEY, resp.value);
 				} else {
 					console.log('Refreshing the token failed!');
 				}

@@ -128,7 +128,7 @@ export default class App extends React.Component {
 		if (!this.authenticationProvider.isSignedIn()) {
 			// try to silently sign in with email and password
 			try {
-				await this.authenticationProvider.silentSignInWithEmailPassword();
+				await this.authenticationProvider.silentSignInWithQdacityToken();
 			} catch (e) {
 				// ok, if failed
 			}

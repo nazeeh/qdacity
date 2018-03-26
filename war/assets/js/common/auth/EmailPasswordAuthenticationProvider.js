@@ -1,8 +1,4 @@
 //@ts-check
-import jwt_decode from 'jwt-decode';
-
-const TOKEN_TIMEOUT = 30; //min
-
 
 export default class EmailPasswordAuthenticationProvider {
 
@@ -19,7 +15,7 @@ export default class EmailPasswordAuthenticationProvider {
 	signIn(email, password) {
 		const _this = this;
 		var promise = new Promise(function(resolve, reject) {
-			gapi.client.qdacity.authentication.getTokenEmailPassword({
+			gapi.client.qdacity.authentication.email.getToken({
 				email: email,
 				pwd: password
 			}).execute(function(resp) {
@@ -46,7 +42,7 @@ export default class EmailPasswordAuthenticationProvider {
 	register(email, password, givenName, surName) {
 		
 		var promise = new Promise(function(resolve, reject) {
-			gapi.client.qdacity.authentication.registerEmailPassword({
+			gapi.client.qdacity.authentication.email.register({
 				givenName: givenName,
 				surName: surName,
 				email: email,

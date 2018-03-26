@@ -5,11 +5,8 @@ import IntlProvider from '../Localization/LocalizationProvider';
 
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.js';
+import GoogleAuthenticationProvider from './GoogleAuthenticationProvider.js';
 import QdacityTokenAuthenticationProvider from './QdacityTokenAuthenticationProvider';
-
-const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
-const GOOGLE_SCOPES =
-	'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email';
 
 
 const TOKEN_REFRESH_ATER_MINUTES = 10;
@@ -18,15 +15,11 @@ const TOKEN_REFRESH_ATER_MINUTES = 10;
 /* ------------------------------- AuthenticationProvider ----------------------------------- */
 export default class AuthenticationProvider {
 	constructor() {
-		// gapi auth2 is used for silent sign-in
-		this.auth2 = gapi.auth2.init({
-			client_id: GOOGLE_CLIENT_ID,
-			scope: 'profile'
-		});
+		
 
-		this.initHelloJs();
 		this.qdacityTokenAuthenticationProvider = new QdacityTokenAuthenticationProvider();
 		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
+		this.googleAuthenticationProvider = new GoogleAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
 
 		this.network = {
 			google: AuthenticationNetworks.GOOGLE, // uses hellojs
@@ -70,48 +63,22 @@ export default class AuthenticationProvider {
 	}
 
 	/**
-	 * Inits the HelloJS library
-	 */
-	initHelloJs() {
-		hello.init({
-			google: GOOGLE_CLIENT_ID
-		}, {
-			redirect_uri: '$APP_PATH$'
-		});
-	}
-
-	/**
 	 * Signs-in on google account via a popup.
 	 * Signs out all accounts beforehand!
-	 * @return {Promise}
+	 * @return {Promise} the google profile
 	 */
 	async signInWithGoogle() {
 		this.signOut();
 		const _this = this;
-		const promise = new Promise(function(resolve, reject) {
-			hello.on('auth.login', function(auth) {
+		const promise = new Promise(async function(resolve, reject) {
+			try {
+				const googleProfile = await _this.googleAuthenticationProvider.signIn();
 				_this.activeNetwork = _this.network.google;
 				_this.synchronizeTokenWithGapi();
-				resolve();
-			});
-
-			hello(_this.network.google)
-				.login({
-					display: 'popup',
-					response_type: 'token id_token',
-					scope: GOOGLE_SCOPES,
-					force: true // let user choose which account he wants to login with
-				})
-				.then(
-					function() {
-						// do nothing because the listener  gets the result.
-						_this.activeNetwork = _this.network.google;
-					},
-					function(err) {
-						console.log(err);
-						reject(err);
-					}
-				);
+				resolve(googleProfile);
+			} catch (e) {
+				reject(e);
+			}
 		});
 		return promise;
 	}
@@ -119,23 +86,19 @@ export default class AuthenticationProvider {
 	/**
 	 * Signs-in on an google account silently.
 	 * Sets the activeNetwork to 'gapi'.
+	 * @returns {Promise} the google profile, if signing in to google+ worked (independent from user being registered at qdacity)
 	 */
-	async silentSignInWithGoogle() {
+	silentSignInWithGoogle() {
 		var _this = this;
-		const promise = new Promise(function(resolve, reject) {
-
-			// timeout because listening to an observer
-			setTimeout(function() {
-				console.log('Could not sign in with google silently');
-				reject('Could not sign in with google silently');
-			}, 2000);
-
-			_this.auth2.isSignedIn.listen(function(googleUser) {
+		const promise = new Promise(async function(resolve, reject) {
+			try {
+				const googleProfile = await _this.googleAuthenticationProvider.silentSignIn(); 
 				_this.activeNetwork = _this.network.google_silent;
 				_this.synchronizeTokenWithGapi();
-				console.log('Signed in with google silently');
-				resolve();
-			});
+				resolve(googleProfile);
+			} catch (e) {
+				reject(e);
+			}
 		});
 		return promise;
 	}
@@ -159,10 +122,10 @@ export default class AuthenticationProvider {
 	 * Tries to restore token from prior session.
 	 * @returns {Promise}
 	 */
-	async silentSignInWithEmailPassword() {
+	async silentSignInWithQdacityToken() {
 		const _this = this;
 		const promise = new Promise(async function(resolve, reject) {
-			if(_this.qdacityTokenAuthenticationProvider.isSignedIn()) {
+			if(_this.qdacityTokenAuthenticationProvider.isSignedIn()) { // tries to restore token
 				_this.activeNetwork = _this.network.email_password;
 				await _this.synchronizeTokenWithGapi();
 				_this.qdacityTokenAuthenticationProvider.authStateChaned(); // has to be called after sync with gapi
@@ -182,26 +145,7 @@ export default class AuthenticationProvider {
 	 * @return {Promise}
 	 */
 	getProfile() {
-		if (this.activeNetwork === this.network.email_password) {
-			return this.qdacityTokenAuthenticationProvider.getProfile();
-		}
-		if (this.activeNetwork !== this.network.google_silent) {
-			// check hellojs
-			return hello(this.activeNetwork).api('me');
-		} else {
-			// elsewise check gapi.auth2
-			var _this = this;
-			const promise = new Promise(function(resolve, reject) {
-				const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
-				const profile = {
-					name: gapiProfile.getName(),
-					email: gapiProfile.getEmail(),
-					thumbnail: gapiProfile.getImageUrl()
-				};
-				resolve(profile);
-			});
-			return promise;
-		}
+		return this.qdacityTokenAuthenticationProvider.getProfile();
 	}
 
 	/**
@@ -210,18 +154,7 @@ export default class AuthenticationProvider {
 	 * @return {boolean}
 	 */
 	isSignedIn() {
-		if (this.activeNetwork === this.network.email_password) {
-			return this.qdacityTokenAuthenticationProvider.isSignedIn();
-		}
-		if (this.activeNetwork !== this.network.google_silent) {
-			// check hellojs
-			const session = hello.getAuthResponse(this.network.google);
-			const currentTime = new Date().getTime() / 1000;
-			return session && session.access_token && session.expires > currentTime;
-		} else {
-			// elsewise check gapi.auth2
-			return this.auth2.isSignedIn.get();
-		}
+		return this.qdacityTokenAuthenticationProvider.isSignedIn();
 	}
 
 	/**
@@ -234,9 +167,8 @@ export default class AuthenticationProvider {
 		const _this = this;
 		const promise = new Promise(async function(resolve, reject) {
 			try {
-				_this.auth2.disconnect();
-				hello(_this.network.google).logout();
-				_this.qdacityTokenAuthenticationProvider.signOut();
+				await _this.googleAuthenticationProvider.signOut();
+				await _this.qdacityTokenAuthenticationProvider.signOut();
 			} catch (e) {
 				console.log('Signout: catched exception');
 				console.log(e);
@@ -257,17 +189,7 @@ export default class AuthenticationProvider {
 	 * @returns the token
 	 */
 	getToken() {
-		if (this.activeNetwork === this.network.email_password) {
-			return this.qdacityTokenAuthenticationProvider.getToken();
-		}
-		if (this.activeNetwork !== this.network.google_silent) {
-			// check hellojs
-			const session = hello.getAuthResponse(this.network.google);
-			return session.id_token;
-		} else {
-			// elsewise check gapi.auth2
-			return this.auth2.currentUser.get().getAuthResponse().id_token;
-		}
+		return this.qdacityTokenAuthenticationProvider.getToken();
 	}
 
 	/** 
@@ -277,8 +199,7 @@ export default class AuthenticationProvider {
 	 */
 	getEncodedToken() {
 		return this.encodeTokenWithIdentityProvider(
-			this.getToken(),
-			this.activeNetwork
+			this.getToken()
 		);
 	}
 
@@ -288,14 +209,10 @@ export default class AuthenticationProvider {
 	 * @param callback
 	 */
 	addAuthStateListener(callback) {
-		// add to email+pwd
+		// add to jwt token listener
 		this.qdacityTokenAuthenticationProvider.addAuthStateListener(callback);
 
-		// add to hellojs
-		hello.on('auth', callback);
-
-		// add to gapi.auth2
-		this.auth2.currentUser.listen(callback);
+		this.googleAuthenticationProvider.addAuthStateListener(callback);
 	}
 
 	/**
@@ -310,11 +227,11 @@ export default class AuthenticationProvider {
 				reject();
 				return;
 			}
-
 			const headerToken = _this.getEncodedToken();
 			gapi.client.setToken({
 				access_token: headerToken // gapi prepends 'Bearer ' automatically!
 			});
+			resolve();
 		});
 		return promise;
 	}
@@ -324,11 +241,10 @@ export default class AuthenticationProvider {
 	 * This is a workaround because gapi.client doesn't provider header
 	 * specification with the discovered API.
 	 * @param {String} token
-	 * @param {String} provider
 	 * @returns the ecoded token as string.
 	 */
-	encodeTokenWithIdentityProvider(token, provider) {
-		return token + ' ' + provider;
+	encodeTokenWithIdentityProvider(token) {
+		return token + ' qdacity-custom';
 	}
 
 	/**
@@ -342,35 +258,19 @@ export default class AuthenticationProvider {
 		return this.emailPasswordAuthenticationProvider.register(email, password, givenName, surName);
 	}
 
-	/* ---------------------- Interaction with Qdacity Server ................. */
-
 	/**
-	 * Registers the current user.
+	 * Registers the current google user.
 	 * The user has to be logged in beforehand.
-	 *
 	 * @param givenName
 	 * @param surName
 	 * @param email
 	 * @returns {Promise}
 	 */
-	registerCurrentUser(givenName, surName, email) {
-		var promise = new Promise(function(resolve, reject) {
-			var user = {};
-			user.email = email;
-			user.givenName = givenName;
-			user.surName = surName;
-
-			gapi.client.qdacity.insertUser(user).execute(function(resp) {
-				if (!resp.code) {
-					resolve(resp);
-				} else {
-					reject(resp);
-				}
-			});
-		});
-
-		return promise;
+	registerGoogleUser(givenName, surName, email) {
+		return this.googleAuthenticationProvider.registerCurrentUser(givenName, surName, email);
 	}
+
+	/* ---------------------- Interaction with Qdacity Server ................. */
 
 	/**
 	 * Gets the current user from qdacity server.
