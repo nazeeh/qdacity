@@ -128,7 +128,8 @@ public class AuthenticationEndpoint {
 
         // generate JWT token
         User user = getUserByEmailPassword(emailPwd);
-        return new StringWrapper(TokenUtil.getInstance().genToken(user));
+        AuthenticatedUser authInfo = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
+        return new StringWrapper(TokenUtil.getInstance().genToken(user, authInfo));
     }
 
     @ApiMethod(name = "authentication.google.getToken")
@@ -144,7 +145,7 @@ public class AuthenticationEndpoint {
             User user = new UserEndpoint().getCurrentUser(authUser);
 
             // generate JWT token
-            return new StringWrapper(TokenUtil.getInstance().genToken(user));
+            return new StringWrapper(TokenUtil.getInstance().genToken(user, authUser));
         } catch (JDOObjectNotFoundException e) {
             throw new UnauthorizedException("Code3.1: The User could not be found!");
         }
@@ -213,7 +214,11 @@ public class AuthenticationEndpoint {
 
         Claims claims = tokenUtil.readClaims(oldToken);
         User user = (User) Cache.getOrLoad(claims.getSubject(), User.class);
-        return new StringWrapper(tokenUtil.genToken(user));
+        AuthenticatedUser authInfos = new AuthenticatedUser(
+                claims.get(TokenUtil.EXTERNAL_USER_ID_CLAIM, String.class),
+                claims.get(TokenUtil.EXTERNAL_EMAIL_CLAIM, String.class),
+                LoginProviderType.valueOf(claims.get(TokenUtil.AUTH_NETWORK_CLAIM, String.class)));
+        return new StringWrapper(tokenUtil.genToken(user, authInfos));
     }
 
     /**

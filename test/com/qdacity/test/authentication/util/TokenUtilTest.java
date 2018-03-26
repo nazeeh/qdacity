@@ -5,8 +5,10 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import com.qdacity.Cache;
 import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.StoredSecret;
 import com.qdacity.authentication.util.TokenUtil;
+import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -60,14 +62,21 @@ public class TokenUtilTest {
         user.setSurName("lastname");
         user.setGivenName("firstname");
 
-        String token = TokenUtil.getInstance().genToken(user);
+        AuthenticatedUser authUser = new AuthenticatedUser("456", "test@test2.de", LoginProviderType.EMAIL_PASSWORD);
+
+        String token = TokenUtil.getInstance().genToken(user, authUser);
 
         Claims claims = Jwts.parser().setSigningKey(TokenUtil.getInstance().getPublicKey()).parseClaimsJws(token).getBody();
 
-        assertEquals("QDACity", claims.getIssuer());
+        assertEquals(TokenUtil.JWT_ISSUER, claims.getIssuer());
         assertEquals(user.getId(), claims.getSubject());
-        assertEquals(user.getGivenName() + " " + user.getSurName(), claims.get("name", String.class));
-        assertEquals(user.getEmail(), claims.get("email", String.class));
+        assertEquals(user.getGivenName() + " " + user.getSurName(), claims.get(TokenUtil.NAME_CLAIM, String.class));
+        assertEquals(user.getEmail(), claims.get(TokenUtil.EMAIL_CLAIM, String.class));
+
+        assertEquals(authUser.getId(), claims.get(TokenUtil.EXTERNAL_USER_ID_CLAIM, String.class));
+        assertEquals(authUser.getProvider().toString(), claims.get(TokenUtil.AUTH_NETWORK_CLAIM, String.class));
+        assertEquals(authUser.getEmail(), claims.get(TokenUtil.EXTERNAL_EMAIL_CLAIM, String.class));
+
         assertTrue(claims.getExpiration().after
                 (GregorianCalendar.getInstance().getTime()));
     }
@@ -82,7 +91,9 @@ public class TokenUtilTest {
         user.setSurName("lastname");
         user.setGivenName("firstname");
 
-        String token = TokenUtil.getInstance().genToken(user);
+        AuthenticatedUser authUser = new AuthenticatedUser("456", "test@test2.de", LoginProviderType.EMAIL_PASSWORD);
+
+        String token = TokenUtil.getInstance().genToken(user, authUser);
         assertTrue(TokenUtil.getInstance().verifyToken(token));
     }
 
