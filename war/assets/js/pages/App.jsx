@@ -135,7 +135,7 @@ export default class App extends React.Component {
 			if(!this.authenticationProvider.isSignedIn()) {
 				// try silent sign in
 				try {
-					await this.authenticationProvider.silentSignInWithGoogle(); // don't await, because it is listening on an observer
+					await this.authenticationProvider.silentSignInWithGoogle();
 				} catch (e) {
 					// ok if failed
 				}
