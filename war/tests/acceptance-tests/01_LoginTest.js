@@ -85,7 +85,7 @@ describe('Login test', function() {
         		expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
 				
 				// Check if the token of the signed-in user is stored in the localStorage 
-				_this.driver.executeScript('return localStorage.getItem("qdacity-email-password-token")').then(function (token) {
+				_this.driver.executeScript('return localStorage.getItem("qdacity-jwt-token")').then(function (token) {
 					expect(token).not.toBeUndefined();
 					expect(token).not.toBeNull();
 				});
