@@ -1,4 +1,4 @@
-var LOCAL_STORAGE_TOKEN_KEY = 'qdacity-email-password-token';
+var LOCAL_STORAGE_TOKEN_KEY = 'qdacity-jwt-token';
 var token;
 
 module.exports.storeLoginState = async function(driver) {

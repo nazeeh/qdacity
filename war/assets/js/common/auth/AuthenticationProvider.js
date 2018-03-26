@@ -1,9 +1,11 @@
+//@ts-check
 import hello from 'hellojs';
 
 import IntlProvider from '../Localization/LocalizationProvider';
 
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.js';
+import QdacityTokenAuthenticationProvider from './QdacityTokenAuthenticationProvider';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
@@ -23,7 +25,8 @@ export default class AuthenticationProvider {
 		});
 
 		this.initHelloJs();
-		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider();
+		this.qdacityTokenAuthenticationProvider = new QdacityTokenAuthenticationProvider();
+		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
 
 		this.network = {
 			google: AuthenticationNetworks.GOOGLE, // uses hellojs
@@ -159,10 +162,10 @@ export default class AuthenticationProvider {
 	async silentSignInWithEmailPassword() {
 		const _this = this;
 		const promise = new Promise(async function(resolve, reject) {
-			if(_this.emailPasswordAuthenticationProvider.isSignedIn()) {
+			if(_this.qdacityTokenAuthenticationProvider.isSignedIn()) {
 				_this.activeNetwork = _this.network.email_password;
 				await _this.synchronizeTokenWithGapi();
-				_this.emailPasswordAuthenticationProvider.authStateChaned(); // has to be called after sync with gapi
+				_this.qdacityTokenAuthenticationProvider.authStateChaned(); // has to be called after sync with gapi
 				console.log('Signed in with email+pwd silently');
 				resolve(true);
 			} else {
@@ -180,7 +183,7 @@ export default class AuthenticationProvider {
 	 */
 	getProfile() {
 		if (this.activeNetwork === this.network.email_password) {
-			return this.emailPasswordAuthenticationProvider.getProfile();
+			return this.qdacityTokenAuthenticationProvider.getProfile();
 		}
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
@@ -208,7 +211,7 @@ export default class AuthenticationProvider {
 	 */
 	isSignedIn() {
 		if (this.activeNetwork === this.network.email_password) {
-			return this.emailPasswordAuthenticationProvider.getProfile();
+			return this.qdacityTokenAuthenticationProvider.isSignedIn();
 		}
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
@@ -233,7 +236,7 @@ export default class AuthenticationProvider {
 			try {
 				_this.auth2.disconnect();
 				hello(_this.network.google).logout();
-				_this.emailPasswordAuthenticationProvider.signOut();
+				_this.qdacityTokenAuthenticationProvider.signOut();
 			} catch (e) {
 				console.log('Signout: catched exception');
 				console.log(e);
@@ -255,7 +258,7 @@ export default class AuthenticationProvider {
 	 */
 	getToken() {
 		if (this.activeNetwork === this.network.email_password) {
-			return this.emailPasswordAuthenticationProvider.getToken();
+			return this.qdacityTokenAuthenticationProvider.getToken();
 		}
 		if (this.activeNetwork !== this.network.google_silent) {
 			// check hellojs
@@ -286,7 +289,7 @@ export default class AuthenticationProvider {
 	 */
 	addAuthStateListener(callback) {
 		// add to email+pwd
-		this.emailPasswordAuthenticationProvider.addAuthStateListener(callback);
+		this.qdacityTokenAuthenticationProvider.addAuthStateListener(callback);
 
 		// add to hellojs
 		hello.on('auth', callback);
