@@ -38,11 +38,6 @@ describe('Login test', function() {
      * is not registered within QDAcity, the test registers the account.
      */
     it('Should register and login a user', (done) => {
-    	const displayName = 'Max Mustermann';
-    	const qdacityFirstName = 'Max';
-    	const qdacityLastName = 'Mustermann';
-		const qdacityEmail = 'felixtest222@gmail.com';
-		const userPassword = 'Password123';
     	
     	const _this = this;
     
@@ -52,22 +47,22 @@ describe('Login test', function() {
 		// First name
 		let fieldFirstName = this.driver.findElement(By.xpath("//input[@name='firstName']"));
 		fieldFirstName.clear();
-		fieldFirstName.sendKeys(qdacityFirstName);
+		fieldFirstName.sendKeys(loginHelper.userData.qdacityFirstName);
 
 		// Last name
 		let fieldLastName = this.driver.findElement(By.xpath("//input[@name='lastName']"));
 		fieldLastName.clear();
-		fieldLastName.sendKeys(qdacityLastName);
+		fieldLastName.sendKeys(loginHelper.userData.qdacityLastName);
 
 		// Email
 		let fieldEmail = this.driver.findElement(By.xpath("//input[@name='email']"));
 		fieldEmail.clear();
-		fieldEmail.sendKeys(qdacityEmail);
+		fieldEmail.sendKeys(loginHelper.userData.qdacityEmail);
 
 		// Password
 		let fieldPassword = this.driver.findElement(By.xpath("//input[@name='pwd']"));
 		fieldPassword.clear();
-		fieldPassword.sendKeys(userPassword);
+		fieldPassword.sendKeys(loginHelper.userData.userPassword);
 		
 		// Register  
 		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click(); 		
@@ -78,7 +73,7 @@ describe('Login test', function() {
     	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
     		_this.driver.getCurrentUrl().then((currentUrl) => {	
     			// Check the welcome message
-        		expect(text).toBe("Welcome " + displayName);
+        		expect(text).toBe("Welcome " + loginHelper.userData.displayName);
         		
         		// Does the URL end with /PersonalDashboard?
         		const urlEnd = "/PersonalDashboard";
