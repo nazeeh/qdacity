@@ -25,24 +25,10 @@ const ColumnFlow = Flex.extend`
 	align-items: center;
 `;
 
-const User = ColumnFlow;
-const UserNameMail = RowFlow.extend`
-	margin-left: 30px;
-`;
-
-const H1NoMargin = styled.h1`
-	margin: 0px;
-`;
-
 const Box = RowFlow.extend`
 	padding: 10px;
 	outline: 1px solid ${props => props.theme.borderDefault};
 	background: ${props => props.theme.defaultPaneBg};
-`;
-
-const Header = ColumnFlow.extend`
-	align-self: stretch;
-	justify-content: space-between;
 `;
 
 const Slant = styled.span`
@@ -151,23 +137,7 @@ export default class LocalizationSettingsPage extends Component {
 	}
 
 	render() {
-		const {picture: url, email, name} = this.state;
 		return <div className='container main-content' >
-			<Box>
-				<Header>
-					<H1NoMargin>
-						<FormattedMessage id='settings.title'
-							defaultMessage='Settings' />
-					</H1NoMargin>
-					<User>
-						<img src={url} />
-						<UserNameMail>
-							<b>{name}</b>
-							<Slant>{email}</Slant>
-						</UserNameMail>
-					</User>
-				</Header>
-			</Box>
 			<Category>
 				<SectionTitle>
 					<FormattedMessage id='settings.display'
