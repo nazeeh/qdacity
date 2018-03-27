@@ -30,13 +30,20 @@ const GridContainer = styled.div`
 const SidebarNav = styled.div`
     grid-area: sidebarNav;
     background-color: ${props => props.theme.defaultPaneBg};
-	border-right: 1px solid ${props => props.theme.borderDefault};
     overflow-y: auto;
 
     & > div {
         display: block;
         margin-left: auto;
         margin-right: auto;
+    }
+
+    @media (max-width: 767px) {
+        border-bottom: 1px solid ${props => props.theme.borderDefault};
+    }
+
+    @media (min-width: 768px) {
+        border-right: 1px solid ${props => props.theme.borderDefault};
     }
 `;
 
