@@ -261,7 +261,8 @@ gulp.task('acceptance-tests', () => {
 	const basePath = './tests/acceptance-tests/';
 	gulp.src([
 		basePath + '*.js', 
-		basePath + 'coding-editor/*.js'
+		basePath + 'coding-editor/*.js',
+		basePath + 'settings/*.js'
 	]).pipe(jasmine()).on('error', handleError);
 });
 

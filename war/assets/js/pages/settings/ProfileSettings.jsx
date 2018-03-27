@@ -135,7 +135,7 @@ export default class ProfileSettings extends Component {
 						defaultMessage="Delete your QDAcity-Account"
 					/>	
 				</StyledDeleteAccountLabel>
-				<StyledDeleteAccountButton className="btn btn-danger btn-md" onClick={() => this.onDeleteUser()}>
+				<StyledDeleteAccountButton id='profile-settings-delete-button' className="btn btn-danger btn-md" onClick={() => this.onDeleteUser()}>
 					<i className="fa fa-trash"/>
 					<FormattedMessage
 						id="settings.profile.delete.button"
