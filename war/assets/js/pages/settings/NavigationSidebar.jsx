@@ -21,6 +21,7 @@ import styled from 'styled-components';
  */
 
 const NavigationWrapper = styled.div`
+    max-width: 200px;
     & > div {
         margin-left: 0px;
     }
@@ -38,7 +39,7 @@ const StyledMenuItem = styled.div`
     color: ${props => props.theme.defaultText};
     font-size: 15px;
     padding: 10px;
-    padding-left: 45px !important; 
+    padding-left: 45px !important;
     display: grid;
     grid-template-columns: 20px auto;
 	grid-template-areas:

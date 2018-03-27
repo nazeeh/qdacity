@@ -10,11 +10,21 @@ import LocalizationSettingsPage from './LocalizationSettings.jsx';
 
 const GridContainer = styled.div`
 	padding-top: 51px;
-	display: grid;
-	grid-template-columns: 200px auto;
-	grid-template-areas:
-        'sidebarNav settingsContent';
-    height: 100vh;
+    display: grid;
+    
+    @media (max-width: 767px) {
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            'sidebarNav' 'settingsContent';
+        height: auto;
+    }
+
+    @media (min-width: 768px) {
+        grid-template-columns: 200px auto;
+        grid-template-areas:
+            'sidebarNav settingsContent';
+        height: 100vh;
+    }
 `;
 
 const SidebarNav = styled.div`
@@ -22,6 +32,12 @@ const SidebarNav = styled.div`
     background-color: ${props => props.theme.defaultPaneBg};
 	border-right: 1px solid ${props => props.theme.borderDefault};
     overflow-y: auto;
+
+    & > div {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
 `;
 
 
