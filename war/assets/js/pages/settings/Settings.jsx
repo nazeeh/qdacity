@@ -139,6 +139,7 @@ export default class SettingsPage extends Component {
                             path="/Settings/Profile"
                             render={props => (
                                 <ProfileSettings
+                                    history={this.props.history}
                                     auth={this.props.auth} 
                                 />
                             )}
