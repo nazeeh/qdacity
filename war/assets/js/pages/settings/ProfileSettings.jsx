@@ -136,8 +136,62 @@ export default class ProfileSettings extends Component {
 		});
 	}
 
-	changeNameAndEmail() {
-		console.log(' change name and email');
+	onChangeNameAndEmail() {
+		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+		const emailLabel = formatMessage({
+			id: 'settings.profile.change.email',
+			defaultMessage: 'Email'
+		});
+		const firstNameLabel = formatMessage({
+			id: 'settings.profile.change.firstname',
+			defaultMessage: 'First Name'
+		});const lastNameLabel = formatMessage({
+			id: 'settings.profile.change.lastname',
+			defaultMessage: 'Last Name'
+		});
+
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'settings.profile.change.dialog',
+				defaultMessage: 'Change your profile information'
+			}),
+			input: [
+				`<label for="emailInput">${emailLabel}</label><input name="emailInput" value=${_this.props.auth.userProfile.email} type="text" required />`,
+				`<label for="firstnameInput">${firstNameLabel}</label><input name="firstnameInput" value=${_this.props.auth.userProfile.firstname} type="text" required />`,
+				`<label for="lastnameInput">${lastNameLabel}</label><input name="lastnameInput" value=${_this.props.auth.userProfile.lastname} type="text" required />`
+			].join('\n'),
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: formatMessage({
+						id: 'settings.profile.change.confirm',
+						defaultMessage: 'Save'
+					})
+				}),
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'settings.profile.change.cancel',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: async function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				}
+
+				_this.changeNameAndEmail({
+					email: data.emailInput,
+					firstname: data.firstnameInput,
+					lastname: data.lastnameInput
+				});
+			}
+		});
+	}
+
+	changeNameAndEmail(data) {
+		console.log(data);
 	}
 
 
@@ -148,7 +202,7 @@ export default class ProfileSettings extends Component {
 					<img width='100px' height='100px' src={this.props.auth.userProfile.picSrc} alt='profile img'/>
 					<StyledUserName>{this.props.auth.userProfile.name}</StyledUserName>
 					<StyledUserEmail>{this.props.auth.userProfile.email}</StyledUserEmail>
-					<button onClick={() => this.changeNameAndEmail()} className="btn btn-primary btn-xs">
+					<button onClick={() => this.onChangeNameAndEmail()} className="btn btn-primary btn-xs">
 						<i className="fa fa-pencil"/>
 					</button>
 				</StyledPanel>
