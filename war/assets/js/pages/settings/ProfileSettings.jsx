@@ -3,6 +3,8 @@ import React, {Component} from 'react';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
+import UserEndpoint from '../../common/endpoints/UserEndpoint.js';
+
 import styled from 'styled-components';
 
 const StyledPanel = styled.div`
@@ -183,15 +185,40 @@ export default class ProfileSettings extends Component {
 
 				_this.changeNameAndEmail({
 					email: data.emailInput,
-					firstname: data.firstnameInput,
-					lastname: data.lastnameInput
+					givenName: data.firstnameInput,
+					surName: data.lastnameInput
 				});
 			}
 		});
 	}
 
 	changeNameAndEmail(data) {
-		console.log(data);
+		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+		data.id = _this.props.auth.userProfile.qdacityId;
+
+		UserEndpoint.updateUser(data).then(async function(resp) {
+			if(!resp.code) {
+				console.log('changed user data');
+			} else {
+				vex.dialog.open({
+					message: formatMessage({
+						id: 'settings.profile.update.failure.heading',
+						defaultMessage: 'Could not update the user profile.'
+					}),
+					buttons: [
+						$.extend({}, vex.dialog.buttons.NO, {
+							text: formatMessage({
+								id: 'settings.profile.update.failure.ok',
+								defaultMessage: 'OK'
+							})
+						})
+					]
+				});
+			}
+			await _this.props.auth.authentication.refreshSession();
+		})
 	}
 
 
