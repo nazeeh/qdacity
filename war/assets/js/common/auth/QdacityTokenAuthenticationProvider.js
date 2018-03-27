@@ -22,6 +22,7 @@ export default class QdacityTokenAuthenticationProvider {
 		const promise = new Promise(function(resolve, reject) {
 			if(_this.jwtToken === undefined || _this.jwtToken === null) {
 				resolve({
+					qdacityId: '',
 					name: '',
 					email: '',
 					thumbnail: ''
@@ -30,6 +31,7 @@ export default class QdacityTokenAuthenticationProvider {
 			_this.refreshTokenIfNeccessary();
 			const decoded = jwt_decode(_this.jwtToken);
 			const profile = {
+				qdacityId: decoded.sub,
 				name: decoded.name,
 				email: decoded.email,
 				thumbnail: _this.generateThumbnailBase64(decoded.name)
