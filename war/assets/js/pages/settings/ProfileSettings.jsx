@@ -1,6 +1,7 @@
 //@ts-check
 import React, {Component} from 'react';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
+import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
 
@@ -35,9 +36,18 @@ export default class ProfileSettings extends Component {
 	render() {
 		return (
 			<StyledDeleteAccountPanel>
-				<StyledDeleteAccountLabel>Delete your QDAcity-Account</StyledDeleteAccountLabel>
+				<StyledDeleteAccountLabel>
+					<FormattedMessage
+						id="settings.profile.delete.description"
+						defaultMessage="Delete your QDAcity-Account"
+					/>	
+				</StyledDeleteAccountLabel>
 				<StyledDeleteAccountButton className="btn btn-danger btn-md" onClick={() => this.onDeleteUser()}>
-					<i className="fa fa-trash"/>  Delete
+					<i className="fa fa-trash"/>
+					<FormattedMessage
+						id="settings.profile.delete.button"
+						defaultMessage=" Delete"
+					/>	
 				</StyledDeleteAccountButton>
 			</StyledDeleteAccountPanel>
 		);
