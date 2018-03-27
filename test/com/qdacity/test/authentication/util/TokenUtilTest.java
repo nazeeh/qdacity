@@ -71,6 +71,8 @@ public class TokenUtilTest {
         assertEquals(TokenUtil.JWT_ISSUER, claims.getIssuer());
         assertEquals(user.getId(), claims.getSubject());
         assertEquals(user.getGivenName() + " " + user.getSurName(), claims.get(TokenUtil.NAME_CLAIM, String.class));
+        assertEquals(user.getGivenName(), claims.get(TokenUtil.FIRSTNAME_CLAIM, String.class));
+        assertEquals(user.getSurName(), claims.get(TokenUtil.LASTNAME_CLAIM, String.class));
         assertEquals(user.getEmail(), claims.get(TokenUtil.EMAIL_CLAIM, String.class));
 
         assertEquals(authUser.getId(), claims.get(TokenUtil.EXTERNAL_USER_ID_CLAIM, String.class));
