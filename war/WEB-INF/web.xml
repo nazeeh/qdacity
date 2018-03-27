@@ -112,6 +112,10 @@
 		<servlet-name>page</servlet-name>
 		<url-pattern>/Settings/Localization</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Settings/Profile</url-pattern>
+	</servlet-mapping>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>qdacity</web-resource-name>
