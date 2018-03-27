@@ -60,30 +60,51 @@ export default class SettingsPage extends Component {
 
         this.redirectTo = this.redirectTo.bind(this);
 
+        const { formatMessage } = IntlProvider.intl;
+        
+        this.navbarHeading = formatMessage({
+            id: 'settings.menu.heading',
+            defaultMessage: 'Settings'
+        });
         this.navbarItems = [
             {
                 iconClass: 'fa fa-user-circle',
-                text: 'User Data',
+                text: formatMessage({
+                    id: 'settings.menu.user-data',
+                    defaultMessage: 'User Data'
+                }),
                 onClick: () => this.redirectTo('/Settings'),
                 items: [
                     {
-                        text: 'Profile',
+                        text: formatMessage({
+                            id: 'settings.menu.profile',
+                            defaultMessage: 'Profile'
+                        }),
                         onClick: () => this.redirectTo('/Settings'),
                     },
                     {
-                        text: 'Billing',
+                        text: formatMessage({
+                            id: 'settings.menu.billing',
+                            defaultMessage: 'Billing'
+                        }),
                         onClick: () => this.redirectTo('/Settings'),
                     },
                 ]
             },
             {
                 iconClass: 'fa fa-sign-in',
-                text: 'Login Data',
+                text: formatMessage({
+                    id: 'settings.menu.login-data',
+                    defaultMessage: 'Login Data'
+                }),
                 onClick: () => this.redirectTo('/Settings')
             },
             {
                 iconClass: 'fa fa-globe',
-                text: 'Localization',
+                text: formatMessage({
+                    id: 'settings.menu.localization',
+                    defaultMessage: 'Localization'
+                }),
                 onClick: () => this.redirectTo('/Settings/Localization')
             }
         ]
