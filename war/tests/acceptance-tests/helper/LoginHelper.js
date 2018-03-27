@@ -28,6 +28,6 @@ module.exports.userData = {
     displayName: 'Max Mustermann',
     qdacityFirstName: 'Max',
     qdacityLastName: 'Mustermann',
-    qdacityEmail: 'felixtest11@gmail.com',
+    qdacityEmail: 'felixtest22@gmail.com',
     userPassword: 'Password123'
 }

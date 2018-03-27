@@ -57,6 +57,8 @@ describe('Setting Delete Qdacity User', function() {
     	// Find the "OK" button
     	this.driver.findElement(By.xpath("//div[contains(@class,'vex-dialog-buttons')]/button[@type='button']")).click();    
 
+        this.driver.sleep(2000);	
+
         this.driver.getCurrentUrl().then((currentUrl) => {
             // check if user got redirected to index
             expect(currentUrl.includes('Settings')).toBeFalsy();
@@ -67,9 +69,18 @@ describe('Setting Delete Qdacity User', function() {
             });
 
             // Try to login (should fail)
+            _this.driver.wait(until.elementLocated(By.xpath("//input[contains(@id, 'signin-forumla-email')]"))).sendKeys(loginHelper.userData.qdacityEmail);
+            _this.driver.findElement(By.xpath("//input[contains(@id, 'signin-formula-password')]")).sendKeys(loginHelper.userData.userPassword);
+            _this.driver.findElement(By.xpath("//button[contains(@id, 'signin-formula-signin-btn')]")).click();
+        
+            _this.driver.sleep(1000);
 
-                
-            done();
+            this.driver.getCurrentUrl().then((currentUrl) => {
+                expect(currentUrl.includes('PersonalDashboard')).toBeFalsy();
+
+                done();
+            });
+
         });
 
     }, defaultTimeout);
