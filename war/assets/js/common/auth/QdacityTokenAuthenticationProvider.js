@@ -24,6 +24,8 @@ export default class QdacityTokenAuthenticationProvider {
 				resolve({
 					qdacityId: '',
 					name: '',
+					firstname: '',
+					lastname: '',
 					email: '',
 					thumbnail: ''
 				});
@@ -33,6 +35,8 @@ export default class QdacityTokenAuthenticationProvider {
 			const profile = {
 				qdacityId: decoded.sub,
 				name: decoded.name,
+				firstname: decoded.firstname,
+				lastname: decoded.lastname,
 				email: decoded.email,
 				thumbnail: _this.generateThumbnailBase64(decoded.name)
 			};

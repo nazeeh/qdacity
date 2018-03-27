@@ -100,6 +100,8 @@ export default class App extends React.Component {
 				userProfile: {
 					qdacityId: '',
 					name: '',
+					firstname: '',
+					lastname: '',
 					email: '',
 					picSrc: ''
 				},
@@ -170,6 +172,8 @@ export default class App extends React.Component {
 			// 2. get the user profile			
 			let profile = {
 				name: '',
+				firstname: '',
+				lastname: '',
 				email: '',
 				picSrc: '',
 				qdacityId: ''
@@ -191,6 +195,8 @@ export default class App extends React.Component {
 			_this.state.auth.userProfile = {
 				qdacityId: profile.qdacityId,
 				name: profile.name,
+				firstname: profile.firstname,
+				lastname: profile.lastname,
 				email: profile.email,
 				picSrc: picSrcWithoutParams
 			};
