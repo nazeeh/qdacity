@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
 
-const StyledDeleteAccountPanel = styled.div`
+const StyledPanel = styled.div`
 	background-color: ${props => props.theme.defaultPaneBg};
 	border: 1px solid ${props => props.theme.borderDefault};
 	padding: 20px 50px 20px 50px;
@@ -20,6 +20,17 @@ const StyledDeleteAccountLabel = styled.p`
 
 const StyledDeleteAccountButton = styled.button`
 	margin-left: 80px;
+`;
+
+const StyledUserName = styled.div`
+	font-size: 15px;
+	margin-top: 20px;
+`;
+
+const StyledUserEmail = styled.div`
+	font-size: 12px;
+	font-style: italic;
+	margin-bottom: 7px;
 `;
 
 
@@ -125,24 +136,38 @@ export default class ProfileSettings extends Component {
 		});
 	}
 
+	changeNameAndEmail() {
+		console.log(' change name and email');
+	}
+
 
 	render() {
 		return (
-			<StyledDeleteAccountPanel>
-				<StyledDeleteAccountLabel>
-					<FormattedMessage
-						id="settings.profile.delete.description"
-						defaultMessage="Delete your QDAcity-Account"
-					/>	
-				</StyledDeleteAccountLabel>
-				<StyledDeleteAccountButton id='profile-settings-delete-button' className="btn btn-danger btn-md" onClick={() => this.onDeleteUser()}>
-					<i className="fa fa-trash"/>
-					<FormattedMessage
-						id="settings.profile.delete.button"
-						defaultMessage=" Delete"
-					/>	
-				</StyledDeleteAccountButton>
-			</StyledDeleteAccountPanel>
+			<div>
+				<StyledPanel>
+					<img width='100px' height='100px' src={this.props.auth.userProfile.picSrc} alt='profile img'/>
+					<StyledUserName>{this.props.auth.userProfile.name}</StyledUserName>
+					<StyledUserEmail>{this.props.auth.userProfile.email}</StyledUserEmail>
+					<button onClick={() => this.changeNameAndEmail()} className="btn btn-primary btn-xs">
+						<i className="fa fa-pencil"/>
+					</button>
+				</StyledPanel>
+				<StyledPanel>
+					<StyledDeleteAccountLabel>
+						<FormattedMessage
+							id="settings.profile.delete.description"
+							defaultMessage="Delete your QDAcity-Account"
+						/>	
+					</StyledDeleteAccountLabel>
+					<StyledDeleteAccountButton id='profile-settings-delete-button' className="btn btn-danger btn-md" onClick={() => this.onDeleteUser()}>
+						<i className="fa fa-trash"/>
+						<FormattedMessage
+							id="settings.profile.delete.button"
+							defaultMessage=" Delete"
+						/>	
+					</StyledDeleteAccountButton>
+				</StyledPanel>
+			</div>
 		);
 	}
 }
