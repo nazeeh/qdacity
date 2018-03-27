@@ -52,9 +52,11 @@ describe('Setting Delete Qdacity User', function() {
     	// Find the "Delete" button
         this.driver.findElement(By.xpath("//div[contains(@class,'vex-dialog-buttons')]/button[@type='submit']")).click();    
         
-    	this.driver.sleep(1000);	
-        
-    	// Find the "OK" button
+        this.driver.sleep(1000);	
+        // Check if it was successful
+        this.driver.findElement(By.xpath('//div[contains(@class, "vex-dialog-message") and contains(text(), "success")]'));
+
+        // Find the "OK" button
     	this.driver.findElement(By.xpath("//div[contains(@class,'vex-dialog-buttons')]/button[@type='button']")).click();    
 
         this.driver.sleep(2000);	
