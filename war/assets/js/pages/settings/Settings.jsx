@@ -19,7 +19,6 @@ const GridContainer = styled.div`
 
 const SidebarNav = styled.div`
     grid-area: sidebarNav;
-    height: 100fr;
     background-color: ${props => props.theme.defaultPaneBg};
 	border-right: 1px solid ${props => props.theme.borderDefault};
     overflow-y: auto;
@@ -35,14 +34,34 @@ const SettingsContent = styled.div`
 export default class SettingsPage extends Component {
 	constructor(props) {
         super(props);
+
+        this.redirectTo = this.redirectTo.bind(this);
+
+        this.navbarItems = [
+            {
+                text: 'User Data',
+                onClick: () => this.redirectTo('/Settings')
+            },
+            {
+                text: 'Login Data',
+                onClick: () => this.redirectTo('/Settings')
+            },
+            {
+                text: 'Localization',
+                onClick: () => this.redirectTo('/Settings/Localization')
+            }
+        ]
     }
     
+    redirectTo(path) {
+        this.props.history.push(path);
+    }
 
     render() {
         return (
             <GridContainer>
                 <SidebarNav>
-                    <NavigationSidebar/>
+                    <NavigationSidebar heading='Settings' items={this.navbarItems}/>
                 </SidebarNav>
                 <SettingsContent>
                     <Switch>
