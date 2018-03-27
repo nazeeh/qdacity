@@ -22,6 +22,7 @@ const GridContainer = styled.div`
 
     @media (min-width: 768px) {
         grid-template-columns: 200px auto;
+        grid-column-gap: 30px;
         grid-template-areas:
             'sidebarNav settingsContent';
         height: 100vh;
