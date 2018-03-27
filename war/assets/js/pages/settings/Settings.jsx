@@ -1,3 +1,4 @@
+//@ts-check
 import React, {Component} from 'react';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import {
@@ -81,20 +82,15 @@ export default class SettingsPage extends Component {
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
-			picture: '',
-			email: '',
-			name: '',
 			locale: props.locale,
 			language: props.language,
 			messages: props.messages
 		};
-		this.getProfileUpdate(props);
 		this.previewProvider = { language: IntlProvider.language };
 	}
 
 	componentWillReceiveProps(props) {
 		this.getIntlUpdate(props);
-		this.getProfileUpdate(props);
 	}
 
 	getIntlUpdate(props) {
@@ -143,17 +139,6 @@ export default class SettingsPage extends Component {
 			if (language == selectedLanguage)
 				props.selected = true;
 			return <option value={language} {...props}>{IntlProvider.getNameOfLanguage(language)}</option>;
-		});
-	}
-
-	getProfileUpdate(props) {
-		const {authentication} = this.props.auth;
-		authentication.getProfile().then(profile => {
-			this.setState({
-				picture: profile.image.url,
-				email: profile.email,
-				name: profile.name
-			});
 		});
 	}
 
