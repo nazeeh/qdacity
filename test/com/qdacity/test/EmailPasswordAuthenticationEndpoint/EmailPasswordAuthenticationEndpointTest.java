@@ -1,5 +1,6 @@
 package com.qdacity.test.EmailPasswordAuthenticationEndpoint;
 
+import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -35,14 +36,14 @@ public class EmailPasswordAuthenticationEndpointTest {
     }
 
     @Test
-    public void testRegister() throws UnauthorizedException {
+    public void testRegister() throws UnauthorizedException, BadRequestException {
         User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        User registeredUser = registerUser(unregisteredUser, "pw");
+        User registeredUser = registerUser(unregisteredUser, "Password123");
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(
                 registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
@@ -52,20 +53,57 @@ public class EmailPasswordAuthenticationEndpointTest {
         ue.getCurrentUser(authenticatedUser);
     }
 
+    @Test(expected= BadRequestException.class)
+    public void testRegisterEmptyPassword() throws UnauthorizedException, BadRequestException {
+        new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", "", "a", "b", null);
+    }
+
+    @Test(expected= BadRequestException.class)
+    public void testRegisterPasswordNull() throws UnauthorizedException, BadRequestException {
+        new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", null, "a", "b", null);
+    }
+
+    @Test
+    public void testRegisterPasswordInvlaidFormaat() throws UnauthorizedException, BadRequestException {
+        String[] invalidPasswords = {"aasdasasdd", "AAAAAAAAAA", "237483597", "AAAAaaaaaaaa", "AAAAAAAAAA123234", "aaaaaaaaaaaa123123", "A123a", "A123djsfh asd12"};
+        for(String invalidPassword: invalidPasswords) {
+            try {
+                new EmailPasswordAuthenticationEndpoint().registerEmailPassword("email@email.de", invalidPassword, "a", "b", null);
+                fail(invalidPassword);
+            } catch(BadRequestException e) {
+                // intended
+            }
+        }
+    }
+
+    @Test
+    public void testRegisterInvalidEmail() throws UnauthorizedException, BadRequestException {
+        String[] invalidEmails = {"a", "a@", "@b", "a@b", "a@b.", "@b.de", "a.de", "a@.de"};
+        for(String invalidEmail: invalidEmails) {
+            try {
+                new EmailPasswordAuthenticationEndpoint().registerEmailPassword(invalidEmail, "a", "a", "b", null);
+                fail(invalidEmail);
+            } catch(BadRequestException e) {
+                // intended
+            }
+        }
+    }
+
+
     @Test(expected = UnauthorizedException.class)
-    public void testRegisterSameEmail() throws UnauthorizedException {
+    public void testRegisterSameEmail() throws UnauthorizedException, BadRequestException {
         User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        registerUser(unregisteredUser, "pw");
-        registerUser(unregisteredUser, "pw");
+        registerUser(unregisteredUser, "Password123");
+        registerUser(unregisteredUser, "Password123");
     }
 
     @Test
-    public void testGetTokenAndRefresh() throws UnauthorizedException, InterruptedException {
+    public void testGetTokenAndRefresh() throws UnauthorizedException, InterruptedException, BadRequestException {
         TokenValidator emailpwdTokenValidator = new EmailPasswordValidator();
         User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
@@ -73,7 +111,7 @@ public class EmailPasswordAuthenticationEndpointTest {
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        String password = "password";
+        String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
 
         String token = new EmailPasswordAuthenticationEndpoint().getToken(unregisteredUser.getEmail(), password, null).getValue();
@@ -105,16 +143,16 @@ public class EmailPasswordAuthenticationEndpointTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    public void testGetTokenIncorrectPwd() throws UnauthorizedException {
+    public void testGetTokenIncorrectPwd() throws UnauthorizedException, BadRequestException {
         User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
         EmailPasswordAuthenticationEndpoint endpoint = new EmailPasswordAuthenticationEndpoint();
 
-        String password = "password";
+        String password = "Password123";
         User registeredUser = registerUser(unregisteredUser, password);
-        endpoint.getToken(registeredUser.getEmail(), "abc", null); // wrong pwd
+        endpoint.getToken(registeredUser.getEmail(), "Password456", null); // wrong pwd
     }
 
     @Test(expected = UnauthorizedException.class)
@@ -130,7 +168,7 @@ public class EmailPasswordAuthenticationEndpointTest {
 
 
 
-    private User registerUser(User unregisteredUser, String password) throws UnauthorizedException {
+    private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {
         return new EmailPasswordAuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
                 unregisteredUser.getGivenName(), unregisteredUser.getSurName(), null);
     }

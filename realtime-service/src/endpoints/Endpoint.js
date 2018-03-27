@@ -10,9 +10,9 @@ const logger = require('../utils/Logger');
 class Endpoint {
   constructor() {
     // Initialize API parameters
-    this._apiRoot;
-    this._apiVersion;
-    this._apiToken;
+    this._apiRoot = '';
+    this._apiVersion = '';
+    this._apiToken = '';
 
     // Initialize api and queue
     this._api = null;
