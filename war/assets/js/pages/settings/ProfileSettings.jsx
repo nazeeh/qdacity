@@ -29,7 +29,65 @@ export default class ProfileSettings extends Component {
 	}
 
 	onDeleteUser() {
-		console.log('User delete');
+		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+		const deleteLabel = formatMessage({
+			id: 'settings.profile.delete.inputLabel',
+			defaultMessage: 'Type'
+		});
+
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'settings.profile.delete.dialog',
+				defaultMessage: 'Are you sure about deleting your QDAcity account?'
+			}),
+			input: [
+				`<label for="deleteInput">${deleteLabel + ' DELETE'}</label><input name="deleteInput" type="text" required />`
+			].join('\n'),
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: formatMessage({
+						id: 'settings.profile.delete.confirm',
+						defaultMessage: 'Delete'
+					})
+				}),
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'settings.profile.delete.cancel',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: async function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				}
+
+				if (data.deleteInput !== 'DELETE') {
+					vex.dialog.open({
+						message: formatMessage({
+							id: 'settings.profile.delete.wrongInput',
+							defaultMessage: 'The input was not correct. Aborting the deletion process!'
+						}),
+						buttons: [
+							$.extend({}, vex.dialog.buttons.NO, {
+								text: formatMessage({
+									id: 'settings.profile.delete.ok',
+									defaultMessage: 'OK'
+								})
+							})
+						]
+					});
+				} else {
+					_this.deleteUser();
+				}
+			}
+		});
+	}
+
+	deleteUser() {
+		console.log('delete!');
 	}
 
 
