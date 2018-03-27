@@ -32,7 +32,7 @@ import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
 import Sidebar from '../common/tutorial/Sidebar.jsx';
 import styled from 'styled-components';
-import Settings from './settings/Settings.jsx';
+import LocalizationSettingsPage from './settings/LocalizationSettings.jsx';
 
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
@@ -371,7 +371,7 @@ export default class App extends React.Component {
 									<Route
 										path="/Settings"
 										render={props => (
-											<Settings
+											<LocalizationSettingsPage
 												locale={this.state.locale}
 												language={this.state.language}
 												messages={this.state.messages}

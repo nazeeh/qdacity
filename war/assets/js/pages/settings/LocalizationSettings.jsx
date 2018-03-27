@@ -78,7 +78,7 @@ const Category = Box.extend`
 	margin-top: 30px;
 `;
 
-export default class SettingsPage extends Component {
+export default class LocalizationSettingsPage extends Component {
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
