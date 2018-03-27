@@ -9,6 +9,7 @@ import styled from 'styled-components';
  * The props.items should look like this:
  * [
  *  {
+ *      iconClass: 'fa fa-user',
  *      text: 'SettingsGroup1',
  *      onClick: () => console.log('SettingsGroup1'),
  *      items: [
@@ -37,10 +38,27 @@ const StyledMenuItem = styled.div`
     padding: 10px;
     font-size: 15px;
 
+    display: grid;
+    grid-template-columns: 20px auto;
+	grid-template-areas:
+        'itemIcon itemText';
+
     &:hover {
         background-color: ${props => props.theme.darkPaneBg};
         color: ${props => props.theme.bgDefault};
         cursor: pointer
+    }
+
+    & > i {
+        grid-area: itemIcon;
+        text-align: left;
+        margin-top: 3px;
+    }
+
+    & > p {
+        grid-area: itemText;
+        display: inline-block;
+        margin: 0px;
     }
 `;
 
@@ -53,7 +71,10 @@ export default class NavigationSidebar extends Component {
     render() {
         const MenuItem = ({ item }) => {
             return (
-                <StyledMenuItem onClick={item.onClick}>{item.text}</StyledMenuItem>
+                <StyledMenuItem onClick={item.onClick}>
+                    <i className={item.iconClass}/>
+                    <p>{item.text}</p>
+                </StyledMenuItem>
             )
         }
 

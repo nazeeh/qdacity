@@ -39,14 +39,17 @@ export default class SettingsPage extends Component {
 
         this.navbarItems = [
             {
+                iconClass: 'fa fa-user-circle',
                 text: 'User Data',
                 onClick: () => this.redirectTo('/Settings')
             },
             {
+                iconClass: 'fa fa-sign-in',
                 text: 'Login Data',
                 onClick: () => this.redirectTo('/Settings')
             },
             {
+                iconClass: 'fa fa-globe',
                 text: 'Localization',
                 onClick: () => this.redirectTo('/Settings/Localization')
             }
