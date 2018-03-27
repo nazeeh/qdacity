@@ -4,6 +4,8 @@ import { Switch, Route } from 'react-router'
 import styled from 'styled-components';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+
 import NavigationSidebar from './NavigationSidebar.jsx';
 import LocalizationSettingsPage from './LocalizationSettings.jsx';
 import ProfileSettings from './ProfileSettings.jsx';
@@ -117,6 +119,10 @@ export default class SettingsPage extends Component {
     }
 
     render() {
+        if(!this.props.auth.authState.isUserSignedIn) {
+                return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+        }
+
         return (
             <GridContainer>
                 <SidebarNav>
@@ -124,6 +130,15 @@ export default class SettingsPage extends Component {
                 </SidebarNav>
                 <SettingsContent>
                     <Switch>
+                        <Route
+                            path="/Settings"
+                            render={props => (
+                                <ProfileSettings
+                                    history={this.props.history}
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
                         <Route
                             path="/Settings/Localization"
                             render={props => (
