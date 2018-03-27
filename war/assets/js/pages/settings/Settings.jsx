@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router'
 import styled from 'styled-components';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
+import NavigationSidebar from './NavigationSidebar.jsx';
 import LocalizationSettingsPage from './LocalizationSettings.jsx';
 
 
@@ -41,7 +42,7 @@ export default class SettingsPage extends Component {
         return (
             <GridContainer>
                 <SidebarNav>
-                    Hallo123
+                    <NavigationSidebar/>
                 </SidebarNav>
                 <SettingsContent>
                     <Switch>
