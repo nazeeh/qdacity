@@ -281,6 +281,15 @@ export default class AuthenticationProvider {
 		return this.activeNetwork;
 	}
 
+	/**
+	 * Forces a token refresh.
+	 * This also updates the profile of the user.
+	 * @returns {Promise}
+	 */
+	refreshSession() {
+		return this.qdacityTokenAuthenticationProvider.forceTokenRefresh();
+	}
+
 	/* ---------------------- Interaction with Qdacity Server ................. */
 
 	/**
