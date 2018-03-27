@@ -26,7 +26,7 @@ const NavigationWrapper = styled.div`
     }
 `;
 
-const NavigationHeading = styled.h2`
+const StyledNavigationHeading = styled.h2`
     color: ${props => props.theme.defaultText};
     text-align: center;
     margin-top: 30px;
@@ -34,10 +34,10 @@ const NavigationHeading = styled.h2`
 `;
 
 const StyledMenuItem = styled.div`
+    background-color: ${props => props.theme.defaultPaneBg};
     color: ${props => props.theme.defaultText};
-    padding: 10px;
     font-size: 15px;
-
+    padding: 10px;
     display: grid;
     grid-template-columns: 20px auto;
 	grid-template-areas:
@@ -62,6 +62,18 @@ const StyledMenuItem = styled.div`
     }
 `;
 
+const StyledMenuItemList = styled.div`
+    & > div {
+        padding-left: 10px;
+    }
+`;
+
+const StyledSubMenuItemList = styled.div`
+    & > div {
+        padding: 5px;
+    }
+`;
+
 export default class NavigationSidebar extends Component {
 	constructor(props) {
         super(props);
@@ -69,6 +81,23 @@ export default class NavigationSidebar extends Component {
     
 
     render() {
+        const NavigationHeading = ({ heading }) => {
+            return !! heading ? <StyledNavigationHeading>{heading}</StyledNavigationHeading> : null;
+        }
+
+        const MenuItemList = ({ items }) => {
+            return !! items ? <div>
+                {items.map((item, i) => {
+                    return (
+                        <StyledMenuItemList>
+                            <MenuItem item={item}/>
+                            <SubMenuItemList items={item.items}/>
+                        </StyledMenuItemList>
+                    );
+                })}
+            </div> : null;
+        }
+
         const MenuItem = ({ item }) => {
             return (
                 <StyledMenuItem onClick={item.onClick}>
@@ -78,12 +107,23 @@ export default class NavigationSidebar extends Component {
             )
         }
 
+        const SubMenuItemList = ({ items }) => {
+            return !! items ? <div>
+                {items.map((item, i) => {
+                    return (
+                        <StyledSubMenuItemList>
+                            <MenuItem item={item}/>
+                        </StyledSubMenuItemList>
+                    );
+                })}
+            </div> : null;
+        }
+
+
         return (
             <NavigationWrapper>
-                <NavigationHeading>{this.props.heading}</NavigationHeading>
-                <div>
-                    {this.props.items.map((item, i) => <MenuItem item={item}/>)}
-                </div>
+                <NavigationHeading heading={this.props.heading}></NavigationHeading>
+                <MenuItemList items={this.props.items}/>
             </NavigationWrapper>
         );
     }

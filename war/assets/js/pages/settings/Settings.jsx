@@ -41,7 +41,17 @@ export default class SettingsPage extends Component {
             {
                 iconClass: 'fa fa-user-circle',
                 text: 'User Data',
-                onClick: () => this.redirectTo('/Settings')
+                onClick: () => this.redirectTo('/Settings'),
+                items: [
+                    {
+                        text: 'Profile',
+                        onClick: () => this.redirectTo('/Settings'),
+                    },
+                    {
+                        text: 'Billing',
+                        onClick: () => this.redirectTo('/Settings'),
+                    },
+                ]
             },
             {
                 iconClass: 'fa fa-sign-in',
