@@ -140,7 +140,10 @@ export default class ImageChooser extends Component {
                     </ImagePreviewWrapper>
                     <StyledUploadButtonWrapper>
                         <StyledUploadButton onClick={() => this.onUpload()} className="vex-dialog-button vex-dialog-button-secondary">
-                            <i className="fa fa-upload"/> Upload
+                            <i className="fa fa-upload"/> <FormattedMessage
+                                                            id="image.chooser.upload"
+                                                            defaultMessage="Upload"
+                                                        />	
                         </StyledUploadButton>
                     </StyledUploadButtonWrapper>
                     <StyledFileInputWrapper>
