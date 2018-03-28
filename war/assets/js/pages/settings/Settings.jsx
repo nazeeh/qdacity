@@ -9,6 +9,7 @@ import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx'
 import NavigationSidebar from './NavigationSidebar.jsx';
 import LocalizationSettingsPage from './LocalizationSettings.jsx';
 import ProfileSettings from './ProfileSettings.jsx';
+import LoginDataSettings from './LoginDataSettings.jsx';
 
 
 const GridContainer = styled.div`
@@ -101,7 +102,7 @@ export default class SettingsPage extends Component {
                     id: 'settings.menu.login-data',
                     defaultMessage: 'Login Data'
                 }),
-                onClick: () => this.redirectTo('/Settings')
+                onClick: () => this.redirectTo('/Settings/LoginData')
             },
             {
                 iconClass: 'fa fa-globe',
@@ -131,15 +132,6 @@ export default class SettingsPage extends Component {
                 <SettingsContent>
                     <Switch>
                         <Route
-                            path="/Settings"
-                            render={props => (
-                                <ProfileSettings
-                                    history={this.props.history}
-                                    auth={this.props.auth} 
-                                />
-                            )}
-                        />
-                        <Route
                             path="/Settings/Localization"
                             render={props => (
                                 <LocalizationSettingsPage
@@ -152,6 +144,23 @@ export default class SettingsPage extends Component {
                         />
                         <Route
                             path="/Settings/Profile"
+                            render={props => (
+                                <ProfileSettings
+                                    history={this.props.history}
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                        <Route
+                            path="/Settings/LoginData"
+                            render={props => (
+                                <LoginDataSettings
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                        <Route
+                            path="/Settings"
                             render={props => (
                                 <ProfileSettings
                                     history={this.props.history}
