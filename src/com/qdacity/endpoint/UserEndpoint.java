@@ -289,7 +289,7 @@ public class UserEndpoint {
 		user.setCourses(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		user.setLastLogin(new Date());
-		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId())));
+		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId(), authenticatedUser.getEmail())));
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (user.getId() != null && containsUser(user)) {
