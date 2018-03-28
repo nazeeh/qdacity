@@ -1,11 +1,15 @@
 //@ts-check
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
+
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
+import styled from 'styled-components';
+
+import ImageChooser from './ImageChooser.jsx';
 import UserEndpoint from '../../common/endpoints/UserEndpoint.js';
 
-import styled from 'styled-components';
 
 const StyledPanel = styled.div`
 	background-color: ${props => props.theme.defaultPaneBg};
@@ -64,6 +68,8 @@ const StyledChangeImgButton = styled.button`
 export default class ProfileSettings extends Component {
 	constructor(props) {
 		super(props);
+
+		this.changeProfileImg = this.changeProfileImg.bind(this);
 	}
 
 	onDeleteUser() {
@@ -247,6 +253,42 @@ export default class ProfileSettings extends Component {
 	}
 
 	onChangeProfileImg() {
+		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+		const formElements = '<div id="upload-img-placeholder">';
+
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'settings.profile.change.picture.heading',
+				defaultMessage: 'Select an image file with max. 350kb.'
+			}),
+			input: formElements,
+			buttons: [
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'settings.profile.change.picture.cancel',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: async function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				} else {
+					// callback triggered by ImageChooser component.
+				}
+			}
+		});
+		ReactDOM.render(
+			<IntlProvider>
+				<ImageChooser onSave={_this.changeProfileImg}/>
+			</IntlProvider>,
+			document.getElementById('upload-img-placeholder')
+		);
+	}
+
+	changeProfileImg(imgBase64) {
 		const imgBase64WithoutMetaInformation = this.props.auth.userProfile.picSrc.split(',')[1];
 		this.updateUserData({
 			profileImg: imgBase64WithoutMetaInformation
