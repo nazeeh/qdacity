@@ -1,6 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { SortMode } from './SortMode.js';
+import TableHeaderRow from './TableHeaderRow.jsx';
+import TableHeaderCell from './TableHeaderCell.jsx';
+import TableRow from './TableRow.jsx';
+import TableCell from './TableCell.jsx';
+
 const StyledTable = styled.table`
 	border-collapse: collapse;
 	border: 1px solid;
@@ -12,40 +18,29 @@ const StyledTableHead = styled.thead`
 	border-color: ${props => props.theme.borderDefault};
 `;
 
-const StyledTableHeaderRow = styled.tr`
-`;
-
-const StyledTableHeaderCell = styled.th`
-	padding: 5px 10px;
-	font-weight: normal;
-	color: ${props => props.sortColumn ? props.theme.fgPrimary : ''};
-`;
-
 const StyledTableBody = styled.tbody`
-`;
-
-const StyledTableRow = styled.tr`
-	background-color: ${props => props.evenIndex ? '#efefef' : ''};
-`;
-
-const StyledTableCell = styled.td`
-	padding: 5px 10px;
-	background-color: ${props => !props.evenIndex && props.sortColumn ? '#F0F6FF' : (props.evenIndex && props.sortColumn ? '#E8EFF7' : '')};
 `;
 
 /**
  * Available props:
- * - columns:
- * - items: specifies the content of the table
- * - defaultSortColumn
- * - renderHeaderCellContent
- * - renderCellContent
+ * - items: the items which will be rendered as rows
+ * - columns: specifies the available columns
+ * - sortable: is the table sortable?
+ * - selectable: is the table selectable?
+ * - defaultSortColumn: the default (on load) sort column
+ * - defaultSortMode: the default (on load) sort mode (ascending or descending)
+ * - fallbackSortMode: when sorting by another column, this value will initially be used for the sort mode (ascending or descending)
+ * - cellSelected: function - called when a cell is selected
+ * - getSortFunction: function - returns the sort function, depending on the selected column
+ * - renderHeaderCellContent: function - renders the header cell content
+ * - renderCellContent: function - renders the cell content
  */
-class Table extends React.Component {
+export default class Table extends React.Component {
 
 	constructor(props) {
 		super(props);
 
+		// Default sort column
 		let defaultSortColumn = null;
 
 		if (this.props.defaultSortColumn) {
@@ -58,9 +53,64 @@ class Table extends React.Component {
 			throw new Error('No columns specified.');
 		}
 
+		// Default sort mode
+		const defaultSortMode = this.props.defaultSortMode ? this.props.defaultSortMode : this.props.fallbackSortMode;
+
+		// Fallback sort mode
+		if (!this.props.fallbackSortMode) {
+			this.props.fallbackSortMode = SortMode.DESCENDING;
+		}
+
 		this.state = {
-			sortColumn: defaultSortColumn
+			sortColumn: defaultSortColumn,
+			sortMode: defaultSortMode,
+			selectedItem: null
 		};
+
+		this.headerCellSelected = this.headerCellSelected.bind(this);
+		this.cellSelected = this.cellSelected.bind(this);
+	}
+
+	headerCellSelected(column, index) {
+		if (!this.props.sortable) {
+			return;
+		}
+
+		// Sort mode
+		let newSortMode = null;
+		if (this.state.sortColumn != column) {
+			newSortMode = this.props.fallbackSortMode;
+		}
+		else {
+			if (this.state.sortMode == SortMode.ASCENDING) {
+				newSortMode = SortMode.DESCENDING;
+			}
+			else if (this.state.sortMode == SortMode.DESCENDING) {
+				newSortMode = SortMode.ASCENDING;
+			}
+			else {
+				throw new Error('Case not implemented: ' + this.state.sortMode);
+			}
+		}
+
+		this.setState({
+			sortColumn: column,
+			sortMode: newSortMode
+		});
+	}
+
+	cellSelected(item, itemIndex, column, columnIndex) {
+		if (!this.props.selectable) {
+			return;
+		}
+
+		this.setState({
+			selectedItem: item
+		}, () => {
+			if (this.props.cellSelected) {
+				this.props.cellSelected(item, itemIndex, column, columnIndex);
+			}
+		});
 	}
 
 	render() {
@@ -82,22 +132,15 @@ class Table extends React.Component {
 	}
 
 	renderHeaderRow() {
-		const _this = this;
-
 		return (
-			<StyledTableHeaderRow>
-				{this.props.columns.map((column, index) => {
-					return _this.renderHeaderCell(column, index);
-				})}
-			</StyledTableHeaderRow>
-		);
-	}
-
-	renderHeaderCell(column, index) {
-		const content = this.props.renderHeaderCellContent ? this.props.renderHeaderCellContent(column, index) : '';
-
-		return (
-			<StyledTableHeaderCell sortColumn={this.state.sortColumn == column}>{content}</StyledTableHeaderCell>
+			<TableHeaderRow 
+				sortable={this.props.sortable}
+				sortColumn={this.state.sortColumn}
+				sortMode={this.state.sortMode}
+				columns={this.props.columns}
+				headerCellSelected={this.headerCellSelected}
+				renderHeaderCellContent={this.props.renderHeaderCellContent}
+			/>
 		);
 	}
 
@@ -105,6 +148,12 @@ class Table extends React.Component {
 		const _this = this;
 
 		const items = this.props.items;
+
+		// Sort items
+		if (this.props.sortable) {
+			const sortFunction = this.props.getSortFunction ? this.props.getSortFunction(this.state.sortColumn, this.state.sortMode) : null;
+			items.sort(sortFunction, this.state.sortMode);
+		}
 
 		return (
 			<StyledTableBody>
@@ -116,27 +165,18 @@ class Table extends React.Component {
 	}
 
 	renderRow(item, itemIndex) {
-		const _this = this;
-
 		return (
-			<StyledTableRow evenIndex={((itemIndex + 1) % 2) == false}>
-				{this.props.columns.map((column, columnIndex) => {
-					return _this.renderCell(item, itemIndex, column, columnIndex);
-				})}
-			</StyledTableRow>
-		);
-	}
-
-	renderCell(item, itemIndex, column, columnIndex) {
-		const content = this.props.renderCellContent ? this.props.renderCellContent(item, itemIndex, column, columnIndex) : '';
-
-		return (
-			<StyledTableCell
-				evenIndex={((itemIndex + 1) % 2) == false}
-				sortColumn={this.state.sortColumn == column}
-			>{content}</StyledTableCell>
+			<TableRow 
+				item={item}
+				itemIndex={itemIndex}
+				sortable={this.props.sortable}
+				sortColumn={this.state.sortColumn}
+				selectable={this.props.selectable}
+				isSelected={this.state.selectedItem == item}
+				columns={this.props.columns}
+				cellSelected={this.cellSelected}
+				renderCellContent={this.props.renderCellContent}
+			/>
 		);
 	}
 }
-
-export { Table, StyledTable, StyledTableHead, StyledTableHeaderRow, StyledTableHeaderCell, StyledTableBody, StyledTableRow, StyledTableCell };
