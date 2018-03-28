@@ -139,7 +139,7 @@ export default class CodeList extends React.Component {
 				sortable={true}
 				defaultSortColumn={TABLE_COLUMN_OVERLAPS_MAIN}
 				defaultSortMode={SortMode.DESCENDING}
-				fallbackSortMode={SortMode.ASCENDING}
+				fallbackSortMode={SortMode.DESCENDING}
 				cellSelected={this.cellSelected}
 				getSortFunction={this.getSortFunction}
 				renderHeaderCellContent={this.renderHeaderCellContent}
