@@ -34,6 +34,7 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
@@ -342,7 +343,6 @@ public class UserEndpoint {
 	 * @param email
 	 * @param surName
 	 * @param givenName
-	 * @param profileImg
 	 * @param loggedInUser
 	 * @return
 	 */
@@ -352,7 +352,6 @@ public class UserEndpoint {
 								  @Named("email") @Nullable String email,
 								  @Named("surName") @Nullable String surName,
 								  @Named("givenName") @Nullable String givenName,
-								  @Named("profileImg") @Nullable Blob profileImg,
 								  com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		User requestedUser = (User) Cache.getOrLoad(userId, User.class);
 
@@ -371,15 +370,43 @@ public class UserEndpoint {
 			requestedUser.setGivenName(givenName);
 		}
 
-		if(profileImg != null) {
-			requestedUser.setProfileImg(profileImg);
-		}
-
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			mgr.makePersistent(requestedUser);
 			Cache.cache(userId, User.class, requestedUser);
 			Cache.invalidatUserLogins(requestedUser); // cannot cache with right external id because can be triggered by admin
+		} finally {
+			mgr.close();
+		}
+
+		return requestedUser;
+	}
+
+	/**
+	 * Updates the profile img of the requesting user
+	 * @param profileImgBase64Wrapper
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({"RestSignature", "ResourceParameter"})
+	@ApiMethod(name = "user.updateProfileImg", path="user.updateProfileImg")
+	public User updateUserProfileImg(
+			StringWrapper profileImgBase64Wrapper,
+		  	com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+		User requestedUser = (User) Cache.getOrLoadUserByAuthenticatedUser(authenticatedUser);
+
+		// Check if user is authorized
+		Authorization.checkAuthorization(requestedUser, loggedInUser);
+
+		requestedUser.setProfileImg(new Blob(profileImgBase64Wrapper.getValue().getBytes()));
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.makePersistent(requestedUser);
+			Cache.cache(requestedUser.getId(), User.class, requestedUser);
+			Cache.cacheAuthenticatedUser(authenticatedUser, requestedUser); // cannot cache with right external id because can be triggered by admin
 		} finally {
 			mgr.close();
 		}

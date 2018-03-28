@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.datastore.Blob;
+import com.qdacity.endpoint.datastructures.StringWrapper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -402,16 +403,32 @@ public class UserEndpointTest {
 		String updatedEmail = "update@email.com";
 		String updatedSurName = "SurnameNew";
 		String updatedGivenName = "GivennameNew";
-		byte[] updatedProfileImg = new byte[30];
-
-		assertNull(insertedUser.getProfileImg());
 
 		User changedUser = new UserEndpoint().updateUserProfile(insertedUser.getId(), updatedEmail, updatedSurName,
-																updatedGivenName, new Blob(updatedProfileImg), loggedInUserA);
+																updatedGivenName, loggedInUserA);
 
 		assertEquals(updatedEmail, changedUser.getEmail());
 		assertEquals(updatedSurName, changedUser.getSurName());
 		assertEquals(updatedGivenName, changedUser.getGivenName());
+
+		changedUser = new UserEndpoint().getCurrentUser(loggedInUserA);
+
+		assertEquals(updatedEmail, changedUser.getEmail());
+		assertEquals(updatedSurName, changedUser.getSurName());
+		assertEquals(updatedGivenName, changedUser.getGivenName());
+	}
+
+	@Test
+	public void testUpdateUserProfileImg() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+
+		assertNull(insertedUser.getProfileImg());
+		byte[] updatedProfileImg = new byte[30];
+
+		User changedUser = new UserEndpoint().updateUserProfileImg(new StringWrapper(new String(updatedProfileImg)), loggedInUserA);
+
+		assertNotNull(changedUser.getProfileImg());
 		byte[] returnedProfileImg = changedUser.getProfileImg().getBytes();
 		assertEquals(updatedProfileImg.length, returnedProfileImg.length);
 		for(int i = 0; i < updatedProfileImg.length; ++i) {
@@ -420,9 +437,6 @@ public class UserEndpointTest {
 
 		changedUser = new UserEndpoint().getCurrentUser(loggedInUserA);
 
-		assertEquals(updatedEmail, changedUser.getEmail());
-		assertEquals(updatedSurName, changedUser.getSurName());
-		assertEquals(updatedGivenName, changedUser.getGivenName());
 		returnedProfileImg = changedUser.getProfileImg().getBytes();
 		assertEquals(updatedProfileImg.length, returnedProfileImg.length);
 		for(int i = 0; i < updatedProfileImg.length; ++i) {
