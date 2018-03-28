@@ -301,7 +301,7 @@ export default class ProfileSettings extends Component {
 
 		UserEndpoint.updateProfileImg(data).then(async function(resp) {
 			if(!resp.code) {
-				console.log('changed user data');
+				console.log('changed user profile picture');
 			} else {
 				vex.dialog.open({
 					message: formatMessage({
