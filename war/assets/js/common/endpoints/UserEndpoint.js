@@ -22,6 +22,11 @@ export default class ProjectEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static updateUserProfile(user) {
+		var apiMethod = gapi.client.qdacity.user.updateUserProfile(user);
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static listUser(prjId) {
 		var apiMethod = gapi.client.qdacity.user.listUser({
 			projectID: prjId

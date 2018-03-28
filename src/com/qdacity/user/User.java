@@ -106,7 +106,7 @@ public class User implements Serializable {
 	public void setProfileImg(Blob profileImg) {
 		this.profileImg = profileImg;
 	}
-	
+
 	public List<Long> getProjects() {
 		return projects;
 	}

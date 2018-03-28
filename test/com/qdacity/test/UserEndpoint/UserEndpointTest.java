@@ -1,9 +1,7 @@
 package com.qdacity.test.UserEndpoint;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jdo.PersistenceManager;
 
+import com.google.appengine.api.datastore.Blob;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -392,6 +391,42 @@ public class UserEndpointTest {
 			assertEquals(UserType.ADMIN, user.getType());
 		} finally {
 			mgr.close();
+		}
+	}
+
+	@Test
+	public void testUpdateUserProfileAllInfos() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+
+		String updatedEmail = "update@email.com";
+		String updatedSurName = "SurnameNew";
+		String updatedGivenName = "GivennameNew";
+		byte[] updatedProfileImg = new byte[30];
+
+		assertNull(insertedUser.getProfileImg());
+
+		User changedUser = new UserEndpoint().updateUserProfile(insertedUser.getId(), updatedEmail, updatedSurName,
+																updatedGivenName, new Blob(updatedProfileImg), loggedInUserA);
+
+		assertEquals(updatedEmail, changedUser.getEmail());
+		assertEquals(updatedSurName, changedUser.getSurName());
+		assertEquals(updatedGivenName, changedUser.getGivenName());
+		byte[] returnedProfileImg = changedUser.getProfileImg().getBytes();
+		assertEquals(updatedProfileImg.length, returnedProfileImg.length);
+		for(int i = 0; i < updatedProfileImg.length; ++i) {
+			assertEquals(updatedProfileImg[i], returnedProfileImg[i]);
+		}
+
+		changedUser = new UserEndpoint().getCurrentUser(loggedInUserA);
+
+		assertEquals(updatedEmail, changedUser.getEmail());
+		assertEquals(updatedSurName, changedUser.getSurName());
+		assertEquals(updatedGivenName, changedUser.getGivenName());
+		returnedProfileImg = changedUser.getProfileImg().getBytes();
+		assertEquals(updatedProfileImg.length, returnedProfileImg.length);
+		for(int i = 0; i < updatedProfileImg.length; ++i) {
+			assertEquals(updatedProfileImg[i], returnedProfileImg[i]);
 		}
 	}
 

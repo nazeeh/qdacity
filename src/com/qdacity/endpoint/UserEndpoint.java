@@ -9,6 +9,7 @@ import javax.inject.Named;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.jdo.annotations.Persistent;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
@@ -17,11 +18,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -336,6 +333,58 @@ public class UserEndpoint {
 			mgr.close();
 		}
 		return user;
+	}
+
+	/**
+	 * Updates the user with the given user information.
+	 * If a field is empty, it is not updated!
+	 * @param userId
+	 * @param email
+	 * @param surName
+	 * @param givenName
+	 * @param profileImg
+	 * @param loggedInUser
+	 * @return
+	 */
+	@SuppressWarnings("ResourceParameter")
+	@ApiMethod(name = "user.updateUserProfile")
+	public User updateUserProfile(@Named("userId") String userId,
+								  @Named("email") @Nullable String email,
+								  @Named("surName") @Nullable String surName,
+								  @Named("givenName") @Nullable String givenName,
+								  @Named("profileImg") @Nullable Blob profileImg,
+								  com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		User requestedUser = (User) Cache.getOrLoad(userId, User.class);
+
+		// Check if user is authorized
+		Authorization.checkAuthorization(requestedUser, loggedInUser);
+
+		if(email != null && !email.isEmpty()) {
+			requestedUser.setEmail(email);
+		}
+
+		if(surName != null && !surName.isEmpty()) {
+			requestedUser.setSurName(surName);
+		}
+
+		if(givenName != null && !givenName.isEmpty()) {
+			requestedUser.setGivenName(givenName);
+		}
+
+		if(profileImg != null) {
+			requestedUser.setProfileImg(profileImg);
+		}
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.makePersistent(requestedUser);
+			Cache.cache(userId, User.class, requestedUser);
+			Cache.invalidatUserLogins(requestedUser); // cannot cache with right external id because can be triggered by admin
+		} finally {
+			mgr.close();
+		}
+
+		return requestedUser;
 	}
 
 	/**
