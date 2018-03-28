@@ -14,6 +14,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.project.metrics.*;
@@ -437,9 +438,33 @@ public class ExerciseEndpoint {
         return reports;
     }
 
+    //Fetches exercises whose deadlines have passed, then creates snapshots of exerciseProjects which belong to these exercises
 	public static void createExerciseProjectSnapshotsIfNeeded() {
-		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "running createExerciseProjectSnapshotsIfNeeded");
-	}
+
+	    Date now = new Date();
+        List<Exercise> exercises = null;
+        PersistenceManager mgr = getPersistenceManager();
+        StringBuilder filters = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+
+        filters.append("exerciseDeadline > now");
+        parameters.put("now", now);
+
+        try {
+            Query q = mgr.newQuery(Exercise.class);
+            q.setFilter(filters.toString());
+            exercises = (List<Exercise>)q.executeWithMap(parameters);
+
+            for (Exercise exercise : exercises) {
+                java.util.logging.Logger.getLogger("logger").log(Level.INFO, exercise.getName());
+            }
+
+        }
+        finally {
+            mgr.close();
+        }
+
+    }
 
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
 
