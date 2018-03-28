@@ -205,6 +205,10 @@ export default class App extends React.Component {
 			let user = undefined;
 			try {
 				user = await _this.authenticationProvider.getCurrentUser();
+				if(!! user.profileImg) {
+					console.log('received stored profile image');
+					_this.state.auth.userProfile.picSrc = 'data://image;base64,' + user.profileImg;
+				}
 			} catch(e) {
 				// user stays undefined
 			}
