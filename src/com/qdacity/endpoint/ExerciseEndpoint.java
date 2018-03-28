@@ -14,7 +14,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
-import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.project.metrics.*;
@@ -447,11 +446,13 @@ public class ExerciseEndpoint {
         StringBuilder filters = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
 
-        filters.append("exerciseDeadline > now");
+        filters.append("exerciseDeadline >:now");
+
         parameters.put("now", now);
 
         try {
             Query q = mgr.newQuery(Exercise.class);
+
             q.setFilter(filters.toString());
             exercises = (List<Exercise>)q.executeWithMap(parameters);
 
