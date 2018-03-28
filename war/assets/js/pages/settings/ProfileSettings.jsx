@@ -35,6 +35,31 @@ const StyledUserEmail = styled.div`
 	margin-bottom: 7px;
 `;
 
+const StyledProfileImgWrapper = styled.div`
+	width: 100px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	position:relative;
+	
+	&:hover {
+		& > div {
+			display: inherit;
+		}
+	}
+`;
+
+const StyledChangeImgButtonWrapper = styled.div`
+	opacity: 0.7;
+	display: none;
+`;
+
+const StyledChangeImgButton = styled.button`
+	position: absolute;
+	bottom: 3px;
+	right: 3px;
+`;
+
 
 export default class ProfileSettings extends Component {
 	constructor(props) {
@@ -221,12 +246,22 @@ export default class ProfileSettings extends Component {
 		})
 	}
 
+	onChangeProfileImg() {
+		console.log('change profile image');
+	}
 
 	render() {
 		return (
 			<div>
 				<StyledPanel>
-					<img width='100px' height='100px' src={this.props.auth.userProfile.picSrc} alt='profile img'/>
+					<StyledProfileImgWrapper>
+						<img width='100px' height='100px' src={this.props.auth.userProfile.picSrc} alt='profile img'/>
+						<StyledChangeImgButtonWrapper>
+							<StyledChangeImgButton onClick={() => this.onChangeProfileImg()} className="btn btn-light btn-xs">
+								<i className="fa fa-pencil"/>
+							</StyledChangeImgButton>
+						</StyledChangeImgButtonWrapper>
+					</StyledProfileImgWrapper>
 					<StyledUserName>{this.props.auth.userProfile.name}</StyledUserName>
 					<StyledUserEmail>{this.props.auth.userProfile.email}</StyledUserEmail>
 					<button onClick={() => this.onChangeNameAndEmail()} className="btn btn-primary btn-xs">
