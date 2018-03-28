@@ -208,7 +208,7 @@ export default class ProfileSettings extends Component {
 					return console.log('Cancelled');
 				}
 
-				_this.changeNameAndEmail({
+				_this.updateUserData({
 					email: data.emailInput,
 					givenName: data.firstnameInput,
 					surName: data.lastnameInput
@@ -217,7 +217,7 @@ export default class ProfileSettings extends Component {
 		});
 	}
 
-	changeNameAndEmail(data) {
+	updateUserData(data) {
 		const _this = this;
 		const { formatMessage } = IntlProvider.intl;
 
@@ -247,7 +247,12 @@ export default class ProfileSettings extends Component {
 	}
 
 	onChangeProfileImg() {
-		console.log('change profile image');
+		const imgBase64WithoutMetaInformation = this.props.auth.userProfile.picSrc.split(',')[1];
+		console.log(imgBase64WithoutMetaInformation);
+		const imgAsBytes = atob(imgBase64WithoutMetaInformation);  
+		this.updateUserData({
+			profileImg: imgBase64WithoutMetaInformation
+		});
 	}
 
 	render() {
