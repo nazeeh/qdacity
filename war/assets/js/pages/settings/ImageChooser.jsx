@@ -69,16 +69,32 @@ export default class ImageChooser extends Component {
     onImageSelected(imgPath) {
 		const { formatMessage } = IntlProvider.intl;
 
+        let errorMsg = null;
         if(imgPath.size > 350000) {
+            // file too large
+            errorMsg = formatMessage({
+                id: 'image.chooser.sizeTooLarge',
+                defaultMessage: 'Your file has more than 350kb!'
+            });
+        }
+        console.log(imgPath);
+        if(!(imgPath.name.endsWith('.png') || imgPath.name.endsWith('.PNG') 
+            || imgPath.name.endsWith('.jpg') || imgPath.name.endsWith('.JPG') 
+            || imgPath.name.endsWith('.jpeg') || imgPath.name.endsWith('.JPEG'))) {
+            // not an image
+            errorMsg = formatMessage({
+                id: 'image.chooser.wrongFileEnding',
+                defaultMessage: 'Only PNG and JPEG is supported as image format!'
+            });
+        }
+
+        if(errorMsg != null) {
             vex.dialog.open({
-                message: formatMessage({
-                    id: 'image.chooser.sizeTooLarge',
-                    defaultMessage: 'Your file has more than 350kb!'
-                }),
+                message: errorMsg,
                 buttons: [
                     $.extend({}, vex.dialog.buttons.YES, {
                         text: formatMessage({
-                            id: 'image.chooser.sizeTooLarge.ok',
+                            id: 'image.chooser.error.ok',
                             defaultMessage: 'OK'
                         })
                     })
