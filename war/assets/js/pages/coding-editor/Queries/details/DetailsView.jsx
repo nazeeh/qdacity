@@ -39,6 +39,10 @@ export default class DetailsView extends React.Component {
 	renderDocument(document) {
 		const codingDocument = this.props.codingResult.getDocument(document.id);
 
+		if (codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID) <= 0) {
+			return '';
+		}
+
 		return (
 			<DocumentDetails
 				code={this.props.code}
