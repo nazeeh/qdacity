@@ -134,6 +134,7 @@ export default class CodeList extends React.Component {
 					TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN, 
 					TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER
 				]}
+				useAvailableWidth={true}
 				selectable={true}
 				sortable={true}
 				defaultSortColumn={TABLE_COLUMN_OVERLAPS_MAIN}
@@ -153,16 +154,16 @@ export default class CodeList extends React.Component {
 				return 'Code';
 			}
 			case TABLE_COLUMN_OVERLAPS_MAIN: {
-				return 'Overlaps by ' + this.props.code.name;
+				return ['Overlaps by', <br/>, this.props.code.name];
 			}
 			case TABLE_COLUMN_OVERLAPS_OTHER: {
-				return 'Overlaps by other code';
+				return ['Overlaps by', <br/>, 'other code'];
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN: {
-				return 'Overlap % by ' + this.props.code.name;
+				return ['Overlap % by', <br/>, this.props.code.name];
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER: {
-				return 'Overlap % by other code';
+				return ['Overlap % by', <br/>, 'other code'];
 			}
 			default: {
 				throw new Error('Missing case in switch statement: ' + column);
