@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.datastore.Blob;
+import com.qdacity.endpoint.datastructures.BlobWrapper;
 import com.qdacity.endpoint.datastructures.StringWrapper;
 import org.junit.After;
 import org.junit.Assert;
@@ -424,24 +425,19 @@ public class UserEndpointTest {
 		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
 
 		assertNull(insertedUser.getProfileImg());
-		byte[] updatedProfileImg = new byte[30];
+		String profileImgString = "data:image/png;base64,OH5PRre846tC11v1Kii3A6dOKWGuIPpIA5N5DOl8wKvX2nFj";
+		Blob profileImg = new Blob(profileImgString.getBytes());
 
-		User changedUser = new UserEndpoint().updateUserProfileImg(new StringWrapper(new String(updatedProfileImg)), loggedInUserA);
+		User changedUser = new UserEndpoint().updateUserProfileImg(new BlobWrapper(profileImg), loggedInUserA);
 
 		assertNotNull(changedUser.getProfileImg());
-		byte[] returnedProfileImg = changedUser.getProfileImg().getBytes();
-		assertEquals(updatedProfileImg.length, returnedProfileImg.length);
-		for(int i = 0; i < updatedProfileImg.length; ++i) {
-			assertEquals(updatedProfileImg[i], returnedProfileImg[i]);
-		}
+		String returnedProfileImg = new String(changedUser.getProfileImg().getBytes());
+		assertEquals(profileImgString, returnedProfileImg);
 
 		changedUser = new UserEndpoint().getCurrentUser(loggedInUserA);
 
-		returnedProfileImg = changedUser.getProfileImg().getBytes();
-		assertEquals(updatedProfileImg.length, returnedProfileImg.length);
-		for(int i = 0; i < updatedProfileImg.length; ++i) {
-			assertEquals(updatedProfileImg[i], returnedProfileImg[i]);
-		}
+		returnedProfileImg = new String(changedUser.getProfileImg().getBytes());
+		assertEquals(profileImgString, returnedProfileImg);
 	}
 
 	@Test

@@ -27,8 +27,8 @@ export default class ProjectEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static updateProfileImg(user) {
-		var apiMethod = gapi.client.qdacity.user.updateProfileImg(user);
+	static updateProfileImg(data) {
+		var apiMethod = gapi.client.qdacity.user.updateProfileImg(data);
 		return Promisizer.makePromise(apiMethod);
 	}
 

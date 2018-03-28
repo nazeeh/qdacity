@@ -34,6 +34,7 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.datastructures.BlobWrapper;
 import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
@@ -384,15 +385,14 @@ public class UserEndpoint {
 
 	/**
 	 * Updates the profile img of the requesting user
-	 * @param profileImgBase64Wrapper
+	 * @param profileImg
 	 * @param loggedInUser
 	 * @return
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings({"RestSignature", "ResourceParameter"})
 	@ApiMethod(name = "user.updateProfileImg", path="user.updateProfileImg")
-	public User updateUserProfileImg(
-			StringWrapper profileImgBase64Wrapper,
+	public User updateUserProfileImg(BlobWrapper profileImg,
 		  	com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
 		User requestedUser = (User) Cache.getOrLoadUserByAuthenticatedUser(authenticatedUser);
@@ -400,7 +400,7 @@ public class UserEndpoint {
 		// Check if user is authorized
 		Authorization.checkAuthorization(requestedUser, loggedInUser);
 
-		requestedUser.setProfileImg(new Blob(profileImgBase64Wrapper.getValue().getBytes()));
+		requestedUser.setProfileImg(profileImg.getBlob());
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
