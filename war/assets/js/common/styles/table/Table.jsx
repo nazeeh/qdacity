@@ -11,6 +11,7 @@ const StyledTable = styled.table`
 	border-collapse: collapse;
 	border: 1px solid;
 	border-color: ${props => props.theme.borderDefault};
+	width: ${props => props.useAvailableWidth ? '100%' : ''};
 `;
 
 const StyledTableHead = styled.thead`
@@ -25,6 +26,7 @@ const StyledTableBody = styled.tbody`
  * Available props:
  * - items: the items which will be rendered as rows
  * - columns: specifies the available columns
+ * - useAvailableWidth: should the table use the available width (100%)?
  * - sortable: is the table sortable?
  * - selectable: is the table selectable?
  * - defaultSortColumn: the default (on load) sort column
@@ -115,7 +117,7 @@ export default class Table extends React.Component {
 
 	render() {
 		return (
-			<StyledTable>
+			<StyledTable useAvailableWidth={this.props.useAvailableWidth}>
 				{this.renderHeader()}
 
 				{this.renderBody()}

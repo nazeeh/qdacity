@@ -24,6 +24,7 @@ const StyledHeaderCellContentContainer = styled.div`
 
 const StyledHeaderCellSeparator = styled.div`
 	align-self: auto;
+	flex-grow: 0;
 	width: ${props => !props.firstColumn ? '1px' : '0px'};
 	margin-right: 13px;
 	margin-top: 7px;
@@ -33,10 +34,12 @@ const StyledHeaderCellSeparator = styled.div`
 
 const StyledHeaderCellContent = styled.div`
 	align-self: center;
+	flex-grow: 1;
 `;
 
 const StyledHeaderCellSort = styled.div`
 	align-self: center;
+	flex-grow: 0;
 `;
 
 const StyledHeaderCellSortArrowContainer = styled.div`
