@@ -16,7 +16,6 @@ import javax.persistence.EntityExistsException;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.*;
 import com.qdacity.project.metrics.tasks.*;
 import org.json.JSONException;
@@ -437,6 +436,10 @@ public class ExerciseEndpoint {
         }
         return reports;
     }
+
+	public static void createExerciseProjectSnapshotsIfNeeded() {
+		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "running createExerciseProjectSnapshotsIfNeeded");
+	}
 
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
 

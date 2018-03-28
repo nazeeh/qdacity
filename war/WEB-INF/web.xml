@@ -42,6 +42,17 @@
     <url-pattern>/daily_events</url-pattern>
   </servlet-mapping>
 
+	<servlet>
+		<servlet-name>exercise_deadline_check</servlet-name>
+		<servlet-class>com.qdacity.servlet.ExerciseDeadlineServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>exercise_deadline_check</servlet-name>
+		<url-pattern>/exercise_deadline_check</url-pattern>
+	</servlet-mapping>
+
+
   <servlet>
   <servlet-name>_ah_warmup</servlet-name>
   <servlet-class>com.qdacity.servlet.WarmupServlet</servlet-class>
