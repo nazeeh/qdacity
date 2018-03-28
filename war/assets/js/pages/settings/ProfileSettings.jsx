@@ -7,6 +7,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { ThemeProvider } from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
+import { BtnDefault } from '../../common/styles/Btn.jsx';
 
 import styled from 'styled-components';
 
@@ -59,12 +60,12 @@ const StyledProfileImgWrapper = styled.div`
 const StyledChangeImgButtonWrapper = styled.div`
 	opacity: 0.7;
 	display: none;
-`;
 
-const StyledChangeImgButton = styled.button`
-	position: absolute;
-	top: 3px;
-	right: 3px;
+	& > button {
+		position: absolute;
+		top: 3px;
+		right: 3px;
+	}
 `;
 
 
@@ -329,16 +330,16 @@ export default class ProfileSettings extends Component {
 					<StyledProfileImgWrapper>
 						<img width='150px' height='150px' src={this.props.auth.userProfile.picSrc} alt='profile img'/>
 						<StyledChangeImgButtonWrapper>
-							<StyledChangeImgButton onClick={() => this.onChangeProfileImg()} className="btn btn-light btn-xs">
+							<BtnDefault onClick={() => this.onChangeProfileImg()}>
 								<i className="fa fa-pencil"/>
-							</StyledChangeImgButton>
+							</BtnDefault>
 						</StyledChangeImgButtonWrapper>
 					</StyledProfileImgWrapper>
 					<StyledUserName>{this.props.auth.userProfile.name}</StyledUserName>
 					<StyledUserEmail>{this.props.auth.userProfile.email}</StyledUserEmail>
-					<button onClick={() => this.onChangeNameAndEmail()} className="btn btn-primary btn-xs">
+					<BtnDefault onClick={() => this.onChangeNameAndEmail()}>
 						<i className="fa fa-pencil"/>
-					</button>
+					</BtnDefault>
 				</StyledPanel>
 				<StyledPanel>
 					<StyledDeleteAccountLabel>
