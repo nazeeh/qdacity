@@ -43,7 +43,7 @@ const StyledUserEmail = styled.div`
 `;
 
 const StyledProfileImgWrapper = styled.div`
-	width: 100px;
+	width: 150px;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -63,7 +63,7 @@ const StyledChangeImgButtonWrapper = styled.div`
 
 const StyledChangeImgButton = styled.button`
 	position: absolute;
-	bottom: 3px;
+	top: 3px;
 	right: 3px;
 `;
 
@@ -327,7 +327,7 @@ export default class ProfileSettings extends Component {
 			<div>
 				<StyledPanel>
 					<StyledProfileImgWrapper>
-						<img width='100px' height='100px' src={this.props.auth.userProfile.picSrc} alt='profile img'/>
+						<img width='150px' height='150px' src={this.props.auth.userProfile.picSrc} alt='profile img'/>
 						<StyledChangeImgButtonWrapper>
 							<StyledChangeImgButton onClick={() => this.onChangeProfileImg()} className="btn btn-light btn-xs">
 								<i className="fa fa-pencil"/>
