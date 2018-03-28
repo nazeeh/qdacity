@@ -4,12 +4,6 @@ import styled from 'styled-components';
 import { SortMode } from '../../../../common/styles/table/SortMode.js';
 import Table from '../../../../common/styles/table/Table.jsx';
 
-const StyledCodeListContainer = styled.div`
-	flex: 50%;
-	max-width: 50%;
-	padding-right: 10px;
-`;
-
 const TABLE_COLUMN_CODE = 'code';
 const TABLE_COLUMN_OVERLAPS_MAIN = 'overlaps-main';
 const TABLE_COLUMN_OVERLAPS_OTHER = 'overlaps-other';
@@ -131,27 +125,25 @@ export default class CodeList extends React.Component {
 		});
 
 		return (
-			<StyledCodeListContainer>
-				<Table 
-					items={codes} 
-					columns={[
-						TABLE_COLUMN_CODE, 
-						TABLE_COLUMN_OVERLAPS_MAIN, 
-						TABLE_COLUMN_OVERLAPS_OTHER, 
-						TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN, 
-						TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER
-					]}
-					selectable={true}
-					sortable={true}
-					defaultSortColumn={TABLE_COLUMN_OVERLAPS_MAIN}
-					defaultSortMode={SortMode.DESCENDING}
-					fallbackSortMode={SortMode.ASCENDING}
-					cellSelected={this.cellSelected}
-					getSortFunction={this.getSortFunction}
-					renderHeaderCellContent={this.renderHeaderCellContent}
-					renderCellContent={this.renderCellContent} 
-				/>
-			</StyledCodeListContainer>
+			<Table 
+				items={codes} 
+				columns={[
+					TABLE_COLUMN_CODE, 
+					TABLE_COLUMN_OVERLAPS_MAIN, 
+					TABLE_COLUMN_OVERLAPS_OTHER, 
+					TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN, 
+					TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER
+				]}
+				selectable={true}
+				sortable={true}
+				defaultSortColumn={TABLE_COLUMN_OVERLAPS_MAIN}
+				defaultSortMode={SortMode.DESCENDING}
+				fallbackSortMode={SortMode.ASCENDING}
+				cellSelected={this.cellSelected}
+				getSortFunction={this.getSortFunction}
+				renderHeaderCellContent={this.renderHeaderCellContent}
+				renderCellContent={this.renderCellContent} 
+			/>
 		);
 	}
 
@@ -167,10 +159,10 @@ export default class CodeList extends React.Component {
 				return 'Overlaps by other code';
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN: {
-				return 'Average % by ' + this.props.code.name;
+				return 'Overlap % by ' + this.props.code.name;
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER: {
-				return 'Average % by other code';
+				return 'Overlap % by other code';
 			}
 			default: {
 				throw new Error('Missing case in switch statement: ' + column);
@@ -184,16 +176,18 @@ export default class CodeList extends React.Component {
 				return code.name;
 			}
 			case TABLE_COLUMN_OVERLAPS_MAIN: {
-				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' by ' + this.props.codingResult.getTotalCodingsCountMainCode();
+				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' / ' + this.props.codingResult.getTotalCodingsCountMainCode();
 			}
 			case TABLE_COLUMN_OVERLAPS_OTHER: {
-				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' by ' + this.props.codingResult.getTotalCodingsCount(code.codeID);
+				return this.props.codingResult.getCodingOverlapCount(code.codeID) + ' / ' + this.props.codingResult.getTotalCodingsCount(code.codeID);
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN: {
-				return this.props.codingResult.getAverageOverlapPercentageByMainCode(code.codeID).toFixed(2);
+				const value = this.props.codingResult.getAverageOverlapPercentageByMainCode(code.codeID);
+				return (value > 0.0 ? (value * 100).toFixed(2) + ' %' : '-');
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER: {
-				return this.props.codingResult.getAverageOverlapPercentageByOtherCode(code.codeID).toFixed(2);
+				const value = this.props.codingResult.getAverageOverlapPercentageByOtherCode(code.codeID);
+				return (value > 0.0 ? (value * 100).toFixed(2) + ' %' : '-');
 			}
 			default: {
 				throw new Error('Missing case in switch statement: ' + column);

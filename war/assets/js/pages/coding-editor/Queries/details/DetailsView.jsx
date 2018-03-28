@@ -3,11 +3,9 @@ import styled from 'styled-components';
 
 import DocumentDetails from './DocumentDetails.jsx';
 
-const StyledDetailsContainer = styled.div`
-	flex: 50%;
-	max-width: 50%;
+const StyledContainer = styled.div`
 	overflow: auto;
-	padding-left: 10px;
+	height: 100%;
 `;
 
 export default class DetailsView extends React.Component {
@@ -17,14 +15,36 @@ export default class DetailsView extends React.Component {
 	}
 
 	render() {
+		// No code selected
 		if (this.props.selectedCode == null) {
-			return null;
+			return (
+				<div>No code selected</div>
+			);
 		}
 
+		// If there are no overlaps,
+		let foundOverlaps = false;
+
+		for (let i = 0; i < this.props.documents.length; i++) {
+			const codingDocument = this.props.codingResult.getDocument(this.props.documents[i].id);
+
+			if (codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID) > 0) {
+				foundOverlaps = true;
+				break;
+			}
+		}
+
+		if (!foundOverlaps) {
+			return (
+				<div>0 Overlaps!</div>
+			);
+		}
+
+		// Render content
 		return (
-			<StyledDetailsContainer>
+			<StyledContainer>
 				{this.renderDocuments()}
-			</StyledDetailsContainer>
+			</StyledContainer>
 		);
 	}
 

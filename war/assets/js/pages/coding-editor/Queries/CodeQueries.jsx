@@ -15,12 +15,31 @@ const StyledContainer = styled.div`
 	border-left: 1px solid #888;
 
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 `;
 
-const StyledContentContainer = styled.div`
-	display: flex;
-	flex-direction: row;
+const StyledColumnLeft = styled.div`
+	width: 50%;
+	min-width: 50%;
+	max-width: 50%;
+	padding-right: 10px;
+`;
+
+const StyledColumnRight = styled.div`
+	width: 50%;
+	min-width: 50%;
+	max-width: 50%;
+	padding-left: 10px;
+`;
+
+const StyledHeadline = styled.div`
+	margin: 10px 0px;
+	font-size: 18px;
+`;
+
+const StyledHeadlineHighlight = styled.span`
+	color: ${props => props.theme.fgPrimary};
+	margin-left: 6px;
 `;
 
 export default class CodeQueries extends React.Component {
@@ -69,25 +88,42 @@ export default class CodeQueries extends React.Component {
 
 		return (
 			<StyledContainer>
-				<div>Selected Code: {this.state.code.name}</div>
-
-				<StyledContentContainer>
-					<CodeList
-						code={this.state.code}
-						selectedCode={this.state.selectedCode}
-						codingResult={codingResult}
-						codeSelected={this.codeSelected}
-						getCodeSystem={this.props.getCodeSystem}
-					/>
-
-					<DetailsView
-						code={this.state.code}
-						selectedCode={this.state.selectedCode}
-						documents={documents}
-						codingResult={codingResult}
-					/>
-				</StyledContentContainer>
+				{this.renderCodeList(codingResult)}
+				{this.renderDetailsView(documents, codingResult)}
 			</StyledContainer>
+		);
+	}
+
+	renderCodeList(codingResult) {
+		return (
+			<StyledColumnLeft>
+				<StyledHeadline>Coding-Overlaps
+					<StyledHeadlineHighlight>{this.state.code.name}</StyledHeadlineHighlight>
+				</StyledHeadline>
+
+				<CodeList
+					code={this.state.code}
+					selectedCode={this.state.selectedCode}
+					codingResult={codingResult}
+					codeSelected={this.codeSelected}
+					getCodeSystem={this.props.getCodeSystem}
+				/>
+			</StyledColumnLeft>
+		);
+	}
+
+	renderDetailsView(documents, codingResult) {
+		return (
+			<StyledColumnRight>
+				<StyledHeadline>Documents</StyledHeadline>
+
+				<DetailsView
+					code={this.state.code}
+					selectedCode={this.state.selectedCode}
+					documents={documents}
+					codingResult={codingResult}
+				/>
+			</StyledColumnRight>
 		);
 	}
 }
