@@ -322,11 +322,6 @@ export default class ProfileSettings extends Component {
 		})
 	}
 
-	updateUserImg(data) {
-
-		
-	}
-
 	render() {
 		return (
 			<div>
