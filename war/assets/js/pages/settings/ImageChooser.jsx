@@ -67,6 +67,26 @@ export default class ImageChooser extends Component {
     }
 
     onImageSelected(imgPath) {
+		const { formatMessage } = IntlProvider.intl;
+
+        if(imgPath.size > 350000) {
+            vex.dialog.open({
+                message: formatMessage({
+                    id: 'image.chooser.sizeTooLarge',
+                    defaultMessage: 'Your file has more than 350kb!'
+                }),
+                buttons: [
+                    $.extend({}, vex.dialog.buttons.YES, {
+                        text: formatMessage({
+                            id: 'image.chooser.sizeTooLarge.ok',
+                            defaultMessage: 'OK'
+                        })
+                    })
+                ]
+            });
+            return;
+        }
+
         const reader = new FileReader();
     
         reader.onloadend = () => {
@@ -76,7 +96,7 @@ export default class ImageChooser extends Component {
           });
         }
     
-        reader.readAsDataURL(imgPath)
+        reader.readAsDataURL(imgPath);
     }
     
     render() {
