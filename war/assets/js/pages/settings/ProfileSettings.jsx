@@ -291,10 +291,40 @@ export default class ProfileSettings extends Component {
 	}
 
 	changeProfileImg(imgBase64) {
-		const imgBase64WithoutMetaInformation = this.props.auth.userProfile.picSrc.split(',')[1];
-		this.updateUserData({
-			profileImg: imgBase64WithoutMetaInformation
-		});
+		const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+		const imgBase64WithoutMetaInformation = imgBase64.split(',')[1];
+		const data = {
+			blob: imgBase64WithoutMetaInformation
+		}
+
+		UserEndpoint.updateProfileImg(data).then(async function(resp) {
+			if(!resp.code) {
+				console.log('changed user data');
+			} else {
+				vex.dialog.open({
+					message: formatMessage({
+						id: 'settings.profile.update.failure.heading',
+						defaultMessage: 'Could not update the user profile.'
+					}),
+					buttons: [
+						$.extend({}, vex.dialog.buttons.NO, {
+							text: formatMessage({
+								id: 'settings.profile.update.failure.ok',
+								defaultMessage: 'OK'
+							})
+						})
+					]
+				});
+			}
+			await _this.props.auth.authentication.refreshSession();
+		})
+	}
+
+	updateUserImg(data) {
+
+		
 	}
 
 	render() {

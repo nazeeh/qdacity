@@ -69,26 +69,15 @@ export default class ImageChooser extends Component {
     onImageSelected(imgPath) {
 		const { formatMessage } = IntlProvider.intl;
 
-        let errorMsg = null;
-        if(imgPath.size > 350000) {
-            // file too large
-            errorMsg = formatMessage({
-                id: 'image.chooser.sizeTooLarge',
-                defaultMessage: 'Your file has more than 350kb!'
-            });
-        }
-        console.log(imgPath);
         if(!(imgPath.name.endsWith('.png') || imgPath.name.endsWith('.PNG') 
             || imgPath.name.endsWith('.jpg') || imgPath.name.endsWith('.JPG') 
             || imgPath.name.endsWith('.jpeg') || imgPath.name.endsWith('.JPEG'))) {
             // not an image
-            errorMsg = formatMessage({
+            const errorMsg = formatMessage({
                 id: 'image.chooser.wrongFileEnding',
                 defaultMessage: 'Only PNG and JPEG is supported as image format!'
             });
-        }
 
-        if(errorMsg != null) {
             vex.dialog.open({
                 message: errorMsg,
                 buttons: [
@@ -114,6 +103,27 @@ export default class ImageChooser extends Component {
     
         reader.readAsDataURL(imgPath);
     }
+
+    scaleImage(imgBase64) {
+        const scaleWidth = 200; //px
+        const scaleHeight = 200; //px
+
+        const canvas = document.createElement('canvas');
+        canvas.width = scaleWidth;
+        canvas.height = scaleHeight;
+
+        const img = new Image();
+        img.src = imgBase64
+        const context = canvas.getContext('2d');
+        context.drawImage(img, 0, 0, scaleWidth, scaleHeight);
+
+        return canvas.toDataURL();
+    }
+
+    onUpload() {
+        const scaledImgBase64 = this.scaleImage(this.state.imgBase64)
+        this.props.onSave(scaledImgBase64);
+    }
     
     render() {
         return (
@@ -129,7 +139,7 @@ export default class ImageChooser extends Component {
                         <img height='100px' width='100px' src={this.state.imgBase64}/>
                     </ImagePreviewWrapper>
                     <StyledUploadButtonWrapper>
-                        <StyledUploadButton onClick={() => this.props.onSave(this.state.imgBase64)} className="vex-dialog-button vex-dialog-button-secondary">
+                        <StyledUploadButton onClick={() => this.onUpload()} className="vex-dialog-button vex-dialog-button-secondary">
                             <i className="fa fa-upload"/> Upload
                         </StyledUploadButton>
                     </StyledUploadButtonWrapper>
