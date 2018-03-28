@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
@@ -22,11 +23,13 @@ import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -273,6 +276,21 @@ public class AuthenticationEndpoint {
 
         Queue queue = QueueFactory.getDefaultQueue();
         queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+    }
+
+    @ApiMethod(name="auth.getAssociatedLogins")
+    public List<UserLoginProviderInformation> getAssociatedLogins(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+        User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+
+        Authorization.checkAuthorization(user, loggedInUser);
+
+        return user.getLoginProviderInformation();
     }
 
 

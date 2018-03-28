@@ -13,9 +13,12 @@ import com.qdacity.endpoint.AuthenticationEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -166,6 +169,29 @@ public class AuthenticationEndpointTest {
         String refreshedToken = new AuthenticationEndpoint().refreshToken("sdfjklsjeiljfs", null).getValue();
     }
 
+
+    @Test
+    public void testGetAssociatedLogins() throws UnauthorizedException, BadRequestException {
+
+        User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+
+        User registeredUser = this.registerUser(unregisteredUser, "Password123");
+
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+                registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
+                registeredUser.getEmail(), LoginProviderType.EMAIL_PASSWORD);
+
+        List<UserLoginProviderInformation> associatedLogins = new AuthenticationEndpoint().getAssociatedLogins(authenticatedUser);
+        assertEquals(1, associatedLogins.size());
+
+        UserLoginProviderInformation associatedLogin = associatedLogins.get(0);
+        assertEquals(registeredUser.getLoginProviderInformation().get(0).getProvider(), associatedLogin.getProvider());
+        assertEquals(registeredUser.getLoginProviderInformation().get(0).getExternalEmail(), associatedLogin.getExternalEmail());
+        assertEquals(registeredUser.getLoginProviderInformation().get(0).getExternalEmail(), associatedLogin.getExternalUserId());
+    }
 
 
     private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {
