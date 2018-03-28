@@ -8,6 +8,15 @@ const StyledContainer = styled.div`
 	height: 100%;
 `;
 
+const StyledInfoBox = styled.div`
+	margin-right: 20px;
+	padding: 25px;
+	text-align: center;
+	border: 1px solid;
+	border-color: ${props => props.theme.borderDefault};
+	background-color: #f8f8f8;
+`;
+
 export default class DetailsView extends React.Component {
 
 	constructor(props) {
@@ -17,9 +26,7 @@ export default class DetailsView extends React.Component {
 	render() {
 		// No code selected
 		if (this.props.selectedCode == null) {
-			return (
-				<div>No code selected</div>
-			);
+			return this.renderNoCodeSelected();
 		}
 
 		// If there are no overlaps,
@@ -35,9 +42,7 @@ export default class DetailsView extends React.Component {
 		}
 
 		if (!foundOverlaps) {
-			return (
-				<div>0 Overlaps!</div>
-			);
+			return this.renderZeroOverlaps();
 		}
 
 		// Render content
@@ -45,6 +50,18 @@ export default class DetailsView extends React.Component {
 			<StyledContainer>
 				{this.renderDocuments()}
 			</StyledContainer>
+		);
+	}
+
+	renderNoCodeSelected() {
+		return (
+			<StyledInfoBox>Please select a code from the list.</StyledInfoBox>
+		);
+	}
+
+	renderZeroOverlaps() {
+		return (
+			<StyledInfoBox>No coding overlaps found.</StyledInfoBox>
 		);
 	}
 
