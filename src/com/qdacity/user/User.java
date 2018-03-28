@@ -15,6 +15,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.api.server.spi.config.AnnotationBoolean;
 import com.google.api.server.spi.config.ApiResourceProperty;
+import com.google.appengine.api.datastore.Blob;
 import com.qdacity.course.TermCourse;
 import com.qdacity.project.ProjectType;
 
@@ -34,11 +35,19 @@ public class User implements Serializable {
 
 	@Persistent
 	String givenName;
+
 	@Persistent
 	String surName;
 
 	@Persistent
 	String email;
+
+	/**
+	 * If user uploaded a profile image.
+	 * Otherwise empty, dummy is created on client.
+	 */
+	@Persistent
+	Blob profileImg;
 
 	@Persistent
 	Long lastProjectId; // Used to pre-load to cache when user signs in
@@ -90,6 +99,14 @@ public class User implements Serializable {
 		this.surName = surName;
 	}
 
+	public Blob getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(Blob profileImg) {
+		this.profileImg = profileImg;
+	}
+	
 	public List<Long> getProjects() {
 		return projects;
 	}
