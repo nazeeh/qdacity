@@ -221,9 +221,9 @@ export default class ProfileSettings extends Component {
 		const _this = this;
 		const { formatMessage } = IntlProvider.intl;
 
-		data.id = _this.props.auth.userProfile.qdacityId;
+		data.userId = _this.props.auth.userProfile.qdacityId;
 
-		UserEndpoint.updateUser(data).then(async function(resp) {
+		UserEndpoint.updateUserProfile(data).then(async function(resp) {
 			if(!resp.code) {
 				console.log('changed user data');
 			} else {
@@ -248,8 +248,6 @@ export default class ProfileSettings extends Component {
 
 	onChangeProfileImg() {
 		const imgBase64WithoutMetaInformation = this.props.auth.userProfile.picSrc.split(',')[1];
-		console.log(imgBase64WithoutMetaInformation);
-		const imgAsBytes = atob(imgBase64WithoutMetaInformation);  
 		this.updateUserData({
 			profileImg: imgBase64WithoutMetaInformation
 		});
