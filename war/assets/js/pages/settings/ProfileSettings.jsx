@@ -5,6 +5,9 @@ import ReactDOM from 'react-dom';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
+import { ThemeProvider } from 'styled-components';
+import Theme from '../../common/styles/Theme.js';
+
 import styled from 'styled-components';
 
 import ImageChooser from './ImageChooser.jsx';
@@ -259,10 +262,7 @@ export default class ProfileSettings extends Component {
 		const formElements = '<div id="upload-img-placeholder">';
 
 		vex.dialog.open({
-			message: formatMessage({
-				id: 'settings.profile.change.picture.heading',
-				defaultMessage: 'Select an image file with max. 350kb.'
-			}),
+			message: '',
 			input: formElements,
 			buttons: [
 				$.extend({}, vex.dialog.buttons.NO, {
@@ -282,7 +282,9 @@ export default class ProfileSettings extends Component {
 		});
 		ReactDOM.render(
 			<IntlProvider>
-				<ImageChooser onSave={_this.changeProfileImg}/>
+				<ThemeProvider theme={Theme}>
+					<ImageChooser onSave={_this.changeProfileImg} initialImg={_this.props.auth.userProfile.picSrc}/>
+				</ThemeProvider>
 			</IntlProvider>,
 			document.getElementById('upload-img-placeholder')
 		);
