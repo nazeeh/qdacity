@@ -122,6 +122,7 @@ export default class CodeQueries extends React.Component {
 					selectedCode={this.state.selectedCode}
 					documents={documents}
 					codingResult={codingResult}
+					openCodingEditor={this.props.openCodingEditor}
 				/>
 			</StyledColumnRight>
 		);

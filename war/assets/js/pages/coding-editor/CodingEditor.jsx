@@ -154,6 +154,7 @@ class CodingEditor extends React.Component {
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
 		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
 		this.openCodeQueries = this.openCodeQueries.bind(this);
+		this.openCodingInCodingEditor = this.openCodingInCodingEditor.bind(this);
 
 		// update on initialization
 		this.updateUserStatusFromProps(props);
@@ -245,6 +246,12 @@ class CodingEditor extends React.Component {
 		this.setState({
 			selectedEditor: view
 		});
+	}
+	
+	openCodingInCodingEditor(codingId) {
+		this.viewChanged(PageView.CODING);
+		this.documentsViewRef.setDocumentWithCoding(codingId);
+		this.textEditor.activateCodingInEditor(codingId);
 	}
 
 	openCodeQueries() {
@@ -510,6 +517,7 @@ class CodingEditor extends React.Component {
 							textEditor={this.textEditor}
 							getCodeSystem={this.getCodeSystem}
 							getDocuments={this.getDocuments}
+							openCodingEditor={this.openCodingInCodingEditor}
 						/>
 					</StyledTextdocumentUi>
 				</StyledEditor>

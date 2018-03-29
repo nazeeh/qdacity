@@ -87,6 +87,7 @@ export default class DetailsView extends React.Component {
 				document={document}
 				codingResult={this.props.codingResult}
 				codingDocument={codingDocument}
+				openCodingEditor={this.props.openCodingEditor}
 			/>
 		);
 	}

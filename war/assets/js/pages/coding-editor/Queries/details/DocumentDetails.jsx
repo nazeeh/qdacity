@@ -80,6 +80,7 @@ export default class DocumentDetails extends React.Component {
 				codingOverlap={codingOverlap}
 				index={index}
 				isLastItem={isLastItem}
+				openCodingEditor={this.props.openCodingEditor}
 			/>
 		);
 	}

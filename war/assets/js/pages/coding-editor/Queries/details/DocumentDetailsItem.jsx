@@ -82,13 +82,6 @@ export default class DocumentDetailsItem extends React.Component {
 		this.textCollapsibleRef.toggle();
 	}	
 
-	openCodingEditor() {
-		
-		//_this.props.codingEditor.viewChanged(PageView.CODING);
-		//_this.props.documentsView.setDocumentWithCoding(codingID);
-		//_this.props.textEditor.activateCodingInEditor(codingID);
-	}
-
 	render() {
 		return (
 			<StyledContainer>	
@@ -114,7 +107,7 @@ export default class DocumentDetailsItem extends React.Component {
 				</StyledContainerShowText>
 				
 				<StyledContainerOpenCodingEditor>
-					<StyledShowText>Open Coding</StyledShowText>
+					<StyledShowText onClick={() => this.props.openCodingEditor(this.props.codingOverlap.getCodingIdMain())}>Open Coding</StyledShowText>
 				</StyledContainerOpenCodingEditor>
 				
 				<StyledContainerOverlapPercentage>
