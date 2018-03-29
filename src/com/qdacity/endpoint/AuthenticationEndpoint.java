@@ -5,7 +5,6 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.InternalServerErrorException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
@@ -29,11 +28,10 @@ import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -367,18 +365,38 @@ public class AuthenticationEndpoint {
         }
 
         PersistenceManager mgr = getPersistenceManager();
+        Transaction transaction = mgr.currentTransaction();
         try {
+            transaction.begin(); // transaction in order to update dependent relation
             mgr.makePersistent(user);
+
+            // Set filter for UserLoginProviderInformation
+            Query.Filter externalUserIdFilter = new Query.FilterPredicate("externalUserId", Query.FilterOperator.EQUAL, associatedLogin.getExternalUserId());
+            Query.Filter providerFilter = new Query.FilterPredicate("provider", Query.FilterOperator.EQUAL, associatedLogin.getProvider().toString());
+            Query.Filter filter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND,
+                    Arrays.asList(externalUserIdFilter, providerFilter));
+            com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
+                    "UserLoginProviderInformation").setFilter(filter);
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            PreparedQuery pq = datastore.prepare(q);
+            Entity providerInformationEntity = pq.asSingleEntity();
+            datastore.delete(providerInformationEntity.getKey());
+
+            transaction.commit();
 
             if(associatedLogin.getProvider().equals(LoginProviderType.EMAIL_PASSWORD)) {
                 EmailPasswordLogin emailPwd = mgr.getObjectById(EmailPasswordLogin.class, associatedLogin.getExternalEmail());
                 mgr.deletePersistent(emailPwd);
             }
 
+
             Cache.cache(user.getId(), User.class, user);
             Cache.invalidatUserLogins(user); // make sure the associatedLogin is not chached any more.
             Cache.cacheAuthenticatedUser(authUser, user);
         } finally {
+            if(transaction.isActive()) {
+                transaction.rollback();
+            }
             mgr.close();
         }
     }
