@@ -102,42 +102,126 @@ export default class LoginDataSettings extends Component {
             if(!resp.code) {
                 _this.updateAssociatedLoginList();
             } else {    
-                const code = resp.message.split(':')[0];
-                let errorMsg = formatMessage({
-                    id: 'settings.logindata.addgoogle.failure',
-                    defaultMessage: 'Could not associate user to that Google account.'
-                });
-
-                switch(code) {
-                    case 'Code4.1': 
-                        errorMsg = formatMessage({
-                            id: 'settings.logindata.addgoogle.failure.invalidGoogleId',
-                            defaultMessage: 'The Google token does not seem to be valid!'
-                        });
-                        break;
-                    case 'Code4.2':
-                        errorMsg = formatMessage({
-                            id: 'settings.logindata.addgoogle.failure.associatedOtherAccount',
-                            defaultMessage: 'There already exists a QDAcity user with this google account!'
-                        });
-                        break;
-                }
-
-                vex.dialog.open({
-                    message: errorMsg,
-                    buttons: [
-                        $.extend({}, vex.dialog.buttons.YES, {
-                            text: formatMessage({
-                                id: 'settings.logindata.addgoogle.failure.close',
-                                defaultMessage: 'Close'
-                            })
-                        })
-                    ],
-                });
+                _this.handleFailedAssociateResponse(resp);
             }
         });
     }
     
+    onAddEmailPassword() {
+		const _this = this;
+        const { formatMessage } = IntlProvider.intl;
+        
+		const emailLabel = formatMessage({
+			id: 'settings.logindata.associate.emailpwd.email',
+			defaultMessage: 'Email'
+		});
+		const passwordLabel = formatMessage({
+			id: 'settings.logindata.associate.emailpwd.password',
+			defaultMessage: 'Password'
+		});
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'settings.logindata.associate.emailpwd.heading',
+				defaultMessage: 'Register with an email account!'
+			}),
+			input: [
+				`<label for="email">${emailLabel}</label><input name="email" type="text" placeholder="${emailLabel}" required />`,
+				`<label for="pwd">${passwordLabel}</label><input name="pwd" type="password" placeholder="${passwordLabel}" required />`
+			].join('\n'),
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: formatMessage({
+						id: 'settings.logindata.associate.emailpwd.register',
+						defaultMessage: 'Register'
+					})
+				}),
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'settings.logindata.associate.emailpwd.cancel',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: async function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+                }
+                
+				gapi.client.qdacity.auth.associateEmailPassword({
+                    email: data.email,
+                    password: data.pwd
+                }).execute(function(resp) {
+                    if(!resp.code) {
+                        _this.updateAssociatedLoginList();
+                    } else {
+                        _this.handleFailedAssociateResponse(resp);
+                    }
+                })
+			}
+		});
+    }
+
+    handleFailedAssociateResponse(resp) {
+        const { formatMessage } = IntlProvider.intl;
+
+        const code = resp.message.split(':')[0];
+        let errorMsg = formatMessage({
+            id: 'settings.logindata.associate.failure',
+            defaultMessage: 'Could not associate user to that Google account.'
+        });
+
+        switch(code) {
+            case 'Code4.1': 
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.associate.failure.invalidGoogleId',
+                    defaultMessage: 'The Google token does not seem to be valid!'
+                });
+                break;
+            case 'Code4.2':
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.associate.failure.associatedOtherAccount',
+                    defaultMessage: 'There already exists a QDAcity user with this google account!'
+                });
+                break;
+            case 'Code4.3':
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.associate.failure.emailFormat',
+                    defaultMessage: 'The given email adress is not in a valid format!'
+                });
+                break;
+            case 'Code4.4':
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.associate.failure.passwordEmpty',
+                    defaultMessage: 'The password must not be empty!'
+                });
+                break;
+            case 'Code4.5':
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.associate.failure.passwordFormat',
+                    defaultMessage: 'The password must have at least 7 characters and must contain only small letters, big letters and numbers. Each category has to be fulfilled with at least one character! No Whitespaces allowed.'
+                });
+                break;
+            case 'Code2.1':
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.associate.failure.emailAlreadyInUse',
+                    defaultMessage: 'The Email is already in use!'
+                });
+                break;
+        }
+
+        vex.dialog.open({
+            message: errorMsg,
+            buttons: [
+                $.extend({}, vex.dialog.buttons.YES, {
+                    text: formatMessage({
+                        id: 'settings.logindata.associate.failure.close',
+                        defaultMessage: 'Close'
+                    })
+                })
+            ],
+        });
+    }
+
     render() {
 
         const AssociatedLoginListItems = ({ associatedLoginList }) => {
@@ -184,6 +268,13 @@ export default class LoginDataSettings extends Component {
                         <FormattedMessage
                             id="settings.logindata.add.google"
                             defaultMessage="Google"
+                        />
+                    </BtnDefault>
+                    <BtnDefault onClick={() => this.onAddEmailPassword()}>
+                        <i className="fa fa-envelope" />
+                        <FormattedMessage
+                            id="settings.logindata.add.emailpassword"
+                            defaultMessage="Email+Password"
                         />
                     </BtnDefault>
                 </StyledPanel>
