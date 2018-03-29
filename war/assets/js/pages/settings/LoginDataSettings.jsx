@@ -31,6 +31,28 @@ const StyledAssociateBtnGroup = styled.div`
     }
 `;
 
+const StyledAssociatedLoginItem = styled.li`
+    padding: 3px 5px;
+    margin-bottom: 5px;
+
+    background-color: ${props => props.theme.bgDefault};
+    border: 1px solid ${props => props.theme.borderPrimary};
+
+    &:hover {
+        border-color ${props => props.theme.borderDefault};
+    }
+    &:active {
+        border-color ${props => props.theme.borderDefault};
+    }
+    &:focus {
+        border-color ${props => props.theme.borderDefault};
+    }
+
+    display: grid;
+    grid-template-columns: 100px 200px 100px auto;
+`;
+
+    
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
@@ -233,6 +255,19 @@ export default class LoginDataSettings extends Component {
         });
     }
 
+    parseLoginProvider(provider) {
+        let parsedProvider = provider;
+        switch(provider) {
+            case 'GOOGLE': 
+                parsedProvider = 'Google';
+                break;
+            case 'EMAIL_PASSWORD':
+                parsedProvider = 'Email';
+                break;
+        }
+        return parsedProvider
+    }
+
     render() {
 
         const AssociatedLoginListItems = ({ associatedLoginList }) => {
@@ -247,7 +282,10 @@ export default class LoginDataSettings extends Component {
 
         const AssociatedLoginListItem = ({ associatedLogin }) => {
             return (
-                <li>{associatedLogin.provider + ' | ' + associatedLogin.externalEmail}</li>
+                <StyledAssociatedLoginItem>
+                    <span>{this.parseLoginProvider(associatedLogin.provider)}</span>
+                    <span>{associatedLogin.externalEmail}</span>
+                </StyledAssociatedLoginItem>
             );
         }
 
