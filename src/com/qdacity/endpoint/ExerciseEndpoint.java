@@ -446,7 +446,7 @@ public class ExerciseEndpoint {
         StringBuilder filters = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
 
-        filters.append("exerciseDeadline >:now");
+        filters.append("exerciseDeadline <:now");
 
         parameters.put("now", now);
 
