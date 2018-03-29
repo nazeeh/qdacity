@@ -30,10 +30,10 @@ do
 done
 
 if [ $isPortOpen -eq $PORT_OPEN ]; then
-	# Give the server more time to properly start
-	sleep 7
-	
 	echo "Port is open after ${time} seconds."
+
+	# Give the server more time to properly start
+	sleep 10
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
 	
