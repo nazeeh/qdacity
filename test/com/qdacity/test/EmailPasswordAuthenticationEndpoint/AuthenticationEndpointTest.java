@@ -226,6 +226,26 @@ public class AuthenticationEndpointTest {
         assertEquals(1, associatedLogins.size());
     }
 
+    @Test(expected = BadRequestException.class)
+    public void testDisassociateLast() throws UnauthorizedException, BadRequestException, InternalServerErrorException {
+        User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+
+        User registeredUser = this.registerUser(unregisteredUser, "Password123");
+
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+                registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
+                registeredUser.getEmail(), LoginProviderType.EMAIL_PASSWORD);
+
+        List<UserLoginProviderInformation> associatedLogins = new AuthenticationEndpoint().getAssociatedLogins(authenticatedUser);
+        assertEquals(1, associatedLogins.size());
+
+        new AuthenticationEndpoint().disassociateLogin(associatedLogins.get(0), authenticatedUser);
+    }
+
+
     private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {
         return new AuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
                 unregisteredUser.getGivenName(), unregisteredUser.getSurName(), null);

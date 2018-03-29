@@ -355,6 +355,10 @@ public class AuthenticationEndpoint {
 
         int sizeBeforeRemove = user.getLoginProviderInformation().size();
 
+        if(user.getLoginProviderInformation().size() == 1) {
+            throw new BadRequestException("The last associated Login cannot be deleted!");
+        }
+
         List<UserLoginProviderInformation> stayingLoginInfos = user.getLoginProviderInformation().stream()
                 .filter((loginInfo) -> !(loginInfo.getExternalUserId().equals(associatedLogin.getExternalUserId()) && loginInfo.getProvider().equals(associatedLogin.getProvider())))
                 .collect(Collectors.toList());

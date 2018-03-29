@@ -288,6 +288,24 @@ export default class LoginDataSettings extends Component {
         const _this = this;
         const { formatMessage } = IntlProvider.intl;
 
+        if(this.state.associatedLogins.length == 1) {
+            vex.dialog.open({
+                message: formatMessage({
+                    id: 'settings.logindata.disassociate.failure.oneLeft',
+                    defaultMessage: 'You cannot delete the last associated Login!'
+                }),
+                buttons: [
+                    $.extend({}, vex.dialog.buttons.YES, {
+                        text: formatMessage({
+                            id: 'settings.logindata.disassociate.failure.close',
+                            defaultMessage: 'Close'
+                        })
+                    })
+                ],
+            });
+            return;
+        }
+
         gapi.client.qdacity.auth.disassociateLogin(
             associatedLogin
         ).execute(function(resp) {
