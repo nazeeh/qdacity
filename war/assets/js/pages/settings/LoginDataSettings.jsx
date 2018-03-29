@@ -20,6 +20,12 @@ const StyledPanel = styled.div`
 
 const StyledAssociatedLoginList = styled.ul``;
 
+const StyledAssociateBtnGroup = styled.div`
+    & > button {
+        margin-right: 20px;
+    }
+`;
+
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
@@ -262,21 +268,22 @@ export default class LoginDataSettings extends Component {
                             defaultMessage="Associate new Login"
                         />	
                     </h4>  
-                    
-                    <BtnDefault onClick={() => this.onAddGoogleAccount()}>
-                        <i className="fa fa-google" />
-                        <FormattedMessage
-                            id="settings.logindata.add.google"
-                            defaultMessage="Google"
-                        />
-                    </BtnDefault>
-                    <BtnDefault onClick={() => this.onAddEmailPassword()}>
-                        <i className="fa fa-envelope" />
-                        <FormattedMessage
-                            id="settings.logindata.add.emailpassword"
-                            defaultMessage="Email+Password"
-                        />
-                    </BtnDefault>
+                    <StyledAssociateBtnGroup>
+                        <BtnDefault onClick={() => this.onAddGoogleAccount()}>
+                            <i className="fa fa-google" />
+                            <FormattedMessage
+                                id="settings.logindata.add.google"
+                                defaultMessage="Google"
+                            />
+                        </BtnDefault>
+                        <BtnDefault onClick={() => this.onAddEmailPassword()}>
+                            <i className="fa fa-envelope" />
+                            <FormattedMessage
+                                id="settings.logindata.add.emailpassword"
+                                defaultMessage="Email+Password"
+                            />
+                        </BtnDefault>
+                    </StyledAssociateBtnGroup>
                 </StyledPanel>
             </div>
         );
