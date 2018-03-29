@@ -1,6 +1,9 @@
 //@ts-check
 import React, {Component} from 'react';
 
+import hello from 'hellojs';
+import * as AuthenticationNetworks from '../../common/auth/AuthenticationNetworks.js';
+
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
@@ -17,6 +20,11 @@ const StyledPanel = styled.div`
 
 const StyledAssociatedLoginList = styled.ul``;
 
+
+const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
+const GOOGLE_SCOPES =
+	'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email';
+
 export default class LoginDataSettings extends Component {
 	constructor(props) {
         super(props);
@@ -27,6 +35,8 @@ export default class LoginDataSettings extends Component {
         
         this.updateAssociatedLoginList = this.updateAssociatedLoginList.bind(this);
         this.props.auth.authentication.addAuthStateListener(this.updateAssociatedLoginList);
+
+        // hellojs is already setup in GoogleAuthenticationProvider
 
         this.updateAssociatedLoginList();
     }
@@ -47,11 +57,41 @@ export default class LoginDataSettings extends Component {
             }
         });
     }
+
+    onAddGoogleAccount() {
+        const _this = this;
+        hello.on('auth.login', function(auth) {
+            // get google token
+            const session = hello.getAuthResponse(AuthenticationNetworks.GOOGLE);
+            const googleIdToken = session.id_token;
+
+            _this.addGoogleAccount(googleIdToken);
+        });
+
+        hello(AuthenticationNetworks.GOOGLE)
+            .login({
+                display: 'popup',
+                response_type: 'token id_token',
+                scope: GOOGLE_SCOPES,
+                force: true // let user choose which account he wants to login with
+            })
+            .then(
+                function() {
+                    // do nothing because the listener gets the result.
+                },
+                function(err) {
+                    console.log(err);
+                }
+            );        
+    }
+
+    addGoogleAccount(googleIdToken) {
+        console.log(googleIdToken);
+    }
     
     render() {
 
         const AssociatedLoginListItems = ({ associatedLoginList }) => {
-            console.log(associatedLoginList);
             return !! associatedLoginList ? <div>
                 {associatedLoginList.map((associatedLogin, i) => {
                     return (
@@ -62,7 +102,6 @@ export default class LoginDataSettings extends Component {
         }
 
         const AssociatedLoginListItem = ({ associatedLogin }) => {
-            console.log(associatedLogin);
             return (
                 <li>{associatedLogin.provider + ' | ' + associatedLogin.externalEmail}</li>
             );
@@ -91,7 +130,7 @@ export default class LoginDataSettings extends Component {
                         />	
                     </h4>  
                     
-                    <BtnDefault>
+                    <BtnDefault onClick={() => this.onAddGoogleAccount()}>
                         <i className="fa fa-google" />
                         <FormattedMessage
                             id="settings.logindata.add.google"
