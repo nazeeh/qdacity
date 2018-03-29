@@ -213,7 +213,7 @@ export default class App extends React.Component {
 				// user stays undefined
 			}
 			_this.state.auth.authState = {
-				isUserSignedIn: !!loginStatus
+				isUserSignedIn: !!loginStatus && user !== undefined
 			};
 			_this.setState(_this.state);
 			resolve();
