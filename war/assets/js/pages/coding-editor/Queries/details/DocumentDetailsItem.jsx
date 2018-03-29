@@ -16,11 +16,20 @@ const StyledContentContainer = styled.div`
 
 const StyledContainerIndex = styled.div`
 	width: 25px;
+	min-width: 25px;
 	margin-right: 35px;
 	text-align: right;
 `;
 
 const StyledContainerShowText = styled.div`
+	width: 65px;
+	min-width: 65px;
+	margin-right: 35px;
+`;
+
+const StyledContainerOpenCodingEditor = styled.div`
+	width: 83px;
+	min-width: 83px;
 	margin-right: 35px;
 `;
 
@@ -73,6 +82,13 @@ export default class DocumentDetailsItem extends React.Component {
 		this.textCollapsibleRef.toggle();
 	}	
 
+	openCodingEditor() {
+		
+		//_this.props.codingEditor.viewChanged(PageView.CODING);
+		//_this.props.documentsView.setDocumentWithCoding(codingID);
+		//_this.props.textEditor.activateCodingInEditor(codingID);
+	}
+
 	render() {
 		return (
 			<StyledContainer>	
@@ -96,6 +112,10 @@ export default class DocumentDetailsItem extends React.Component {
 				<StyledContainerShowText>
 					<StyledShowText onClick={this.toggleText.bind(this)}>Show Text</StyledShowText>
 				</StyledContainerShowText>
+				
+				<StyledContainerOpenCodingEditor>
+					<StyledShowText>Open Coding</StyledShowText>
+				</StyledContainerOpenCodingEditor>
 				
 				<StyledContainerOverlapPercentage>
 					{overlapPercentageByMainCode} % / {overlapPercentageByOtherCode} % by (<StyledColorMarkMainCode/>{this.props.code.name} / <StyledColorMarkOtherCode/>{this.props.selectedCode.name})
