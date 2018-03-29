@@ -295,6 +295,10 @@ public class AuthenticationEndpoint {
 
     @ApiMethod(name="auth.associateGoogleLogin")
     public void associateGoogleLogin(@Named("googleIdToken") String googleIdToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
         AuthenticatedUser googleUser = googleTokenValidator.validate(googleIdToken);
         assertAssociationPreconditions(googleUser);
         associateLogin((AuthenticatedUser) loggedInUser, googleUser);
@@ -302,6 +306,10 @@ public class AuthenticationEndpoint {
 
     @ApiMethod(name="auth.associateEmailPassword")
     public void associateEmailPassword(@Named("email") String email, @Named("password") String password, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
         Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
         if(!emailPattern.matcher(email).matches()) {
             throw new BadRequestException("Code4.3: The given email adress is not in a valid format!");
@@ -332,7 +340,7 @@ public class AuthenticationEndpoint {
         }
         associateLogin((AuthenticatedUser) loggedInUser, unassociatedUser);
     }
-
+    
     private void associateLogin(AuthenticatedUser loggedInUser, AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
         AuthenticatedUser authUser = loggedInUser;
         User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
