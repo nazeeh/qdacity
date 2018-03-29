@@ -61,6 +61,13 @@ const StyledAssociatedLoginItem = styled.li`
     }
 `;
 
+const StyledDisassociateSpan = styled.span`
+    text-align: right;
+
+    & > a {
+        cursor: pointer;
+    }
+`;
     
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
@@ -277,6 +284,10 @@ export default class LoginDataSettings extends Component {
         return parsedProvider
     }
 
+    disassociate(associatedLogin) {
+        console.log(associatedLogin);
+    }
+
     render() {
 
         const AssociatedLoginListItems = ({ associatedLoginList }) => {
@@ -295,6 +306,9 @@ export default class LoginDataSettings extends Component {
                     <span>{this.parseLoginProvider(associatedLogin.provider)}</span>
                     <span>{associatedLogin.externalEmail}</span>
                     <span>{!!associatedLogin.externalEmail ? '' : '(ID: ' + associatedLogin.externalUserId + ')'}</span>
+                    <StyledDisassociateSpan>
+                        <a><i onClick={() => this.disassociate(associatedLogin)} className="fa fa-trash"/></a>
+                    </StyledDisassociateSpan>
                 </StyledAssociatedLoginItem>
             );
         }
