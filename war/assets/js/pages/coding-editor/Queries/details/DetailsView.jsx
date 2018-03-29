@@ -5,7 +5,7 @@ import DocumentDetails from './DocumentDetails.jsx';
 
 const StyledContainer = styled.div`
 	overflow: auto;
-	height: 100%;
+	height: calc(100% - 45px);
 `;
 
 const StyledInfoBox = styled.div`

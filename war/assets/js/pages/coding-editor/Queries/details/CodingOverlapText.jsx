@@ -14,8 +14,8 @@ const StyledParagraph = styled.p`
 const StyledTextPart = styled.span`
     background-color: ${props => 
         (props.containsMainCoding && !props.containsOtherCoding ? '#B5D5FF' : 
-        (!props.containsMainCoding && props.containsOtherCoding ? '#D9C8DA' : 
-        (props.containsMainCoding && props.containsOtherCoding ? '#FCBBB4' : '')))};
+        (!props.containsMainCoding && props.containsOtherCoding ? '#A5FEE3' : 
+        (props.containsMainCoding && props.containsOtherCoding ? '#FFEAB7' : '')))};
 `;
 
 export default class CodingOverlapText extends React.Component {

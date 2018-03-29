@@ -18,6 +18,10 @@ const StyledDocumentTitleCodingCount = styled.span`
 	margin-left: 8px;
 `;
 
+const StyledExpanderContent = styled.div`
+	padding: 5px;
+`;
+
 export default class DocumentDetails extends React.Component {
 
 	constructor(props) {
@@ -59,39 +63,23 @@ export default class DocumentDetails extends React.Component {
 
 		const codingOverlapCollection = this.props.codingDocument.getCodingOverlapCollection(this.props.selectedCode.codeID);
 
-		/*return (
-			<table style={{ borderSpacing: '5px', borderCollapse: 'separate' }}>
-				<thead>
-					<th>#</th>
-					<th>% by {this.props.code.name}</th>
-					<th>% by {this.props.selectedCode.name}</th>
-					<th>Characters count {this.props.code.name}</th>
-					<th>Characters count {this.props.selectedCode.name}</th>
-					<th>Characters count overlap</th>
-				</thead>
-				<tbody>
-					{(codingOverlapCollection) ? codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
-						return _this.renderItem(codingOverlap, index);
-					}) : null}
-				</tbody>
-			</table>
-		);*/
 		return (
-			<div>
+			<StyledExpanderContent>
 				{(codingOverlapCollection) ? codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
-					return _this.renderItem(codingOverlap, index);
+					return _this.renderItem(codingOverlap, index, index == codingOverlapCollection.getCodingOverlaps().length - 1);
 				}) : null}
-			</div>
+			</StyledExpanderContent>
 		);
 	}
 
-	renderItem(codingOverlap, index) {
+	renderItem(codingOverlap, index, isLastItem) {
 		return (
 			<DocumentDetailsItem
 				code={this.props.code}
 				selectedCode={this.props.selectedCode}
 				codingOverlap={codingOverlap}
 				index={index}
+				isLastItem={isLastItem}
 			/>
 		);
 	}

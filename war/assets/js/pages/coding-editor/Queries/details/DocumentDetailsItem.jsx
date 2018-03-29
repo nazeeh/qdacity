@@ -5,6 +5,62 @@ import { Collapsible } from '../../../../common/styles/expander/Collapsible.jsx'
 
 import CodingOverlapText from './CodingOverlapText.jsx';
 
+const StyledContainer = styled.div`
+	padding: 4px;
+`;
+
+const StyledContentContainer = styled.div`
+	display: flex;
+	flex-direction: row;
+`;
+
+const StyledContainerIndex = styled.div`
+	width: 25px;
+	margin-right: 35px;
+	text-align: right;
+`;
+
+const StyledContainerShowText = styled.div`
+	margin-right: 35px;
+`;
+
+const StyledShowText = styled.a`
+	&:hover {
+		cursor: pointer;
+	}
+`;
+
+const StyledContainerOverlapPercentage = styled.div`
+	overflow: hidden;
+`;
+
+const StyledColorMark = styled.div`
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border: 1px solid;
+	border-color: ${props => props.theme.defaultText};
+	margin-right: 4px;
+	margin-left: 3px;
+`;
+
+const StyledColorMarkMainCode = StyledColorMark.extend`
+	background-color: #B5D5FF;
+`;
+
+const StyledColorMarkOtherCode = StyledColorMark.extend`
+	background-color: #A5FEE3;
+`;
+
+const StyledContainerCollapsible = styled.div`
+`;
+
+const StyledSeparator = styled.div`
+	height: 1px;
+	background-color: #e3e3e3;
+	margin-top: 8px;
+`;
+
 export default class DocumentDetailsItem extends React.Component {
 
 	constructor(props) {
@@ -19,39 +75,54 @@ export default class DocumentDetailsItem extends React.Component {
 
 	render() {
 		return (
-			<table style={{ borderSpacing: '5px', borderCollapse: 'separate' }}>
-				<thead>
-					<th>#</th>
-					<th>% by {this.props.code.name}</th>
-					<th>% by {this.props.selectedCode.name}</th>
-					<th>Characters count {this.props.code.name}</th>
-					<th>Characters count {this.props.selectedCode.name}</th>
-					<th>Characters count overlap</th>
-				</thead>
-				<tbody>
-					<tr>
-						<td>{this.props.index + 1}</td>
-						<td>{this.props.codingOverlap.getOverlapPercentageByMainCode().toFixed(2)}</td>
-						<td>{this.props.codingOverlap.getOverlapPercentageByOtherCode().toFixed(2)}</td>
-						<td>{this.props.codingOverlap.getTextContent().getTextLengthMainCode()}</td>
-						<td>{this.props.codingOverlap.getTextContent().getTextLengthOtherCode()}</td>
-						<td>{this.props.codingOverlap.getTextContent().getTextLengthOverlap()}</td>
-					</tr>	
-					<tr>
-						<td colSpan="6">
-							<div>
-								<button onClick={this.toggleText.bind(this)}>Toggle Text</button>
-							</div>
+			<StyledContainer>	
+				{this.renderContent()}
+				{this.renderText()}
+				{this.renderSeparator()}				
+			</StyledContainer>
+		);
+	}
 
-							<Collapsible ref={(r) => {if (r) this.textCollapsibleRef = r}}>
-								<CodingOverlapText
-									codingOverlapText={this.props.codingOverlap.getTextContent()}
-								/>
-							</Collapsible>
-						</td>
-					</tr>	
-				</tbody>
-			</table>
+	renderContent() {
+		const overlapPercentageByMainCode = (this.props.codingOverlap.getOverlapPercentageByMainCode() * 100).toFixed(2);
+		const overlapPercentageByOtherCode = (this.props.codingOverlap.getOverlapPercentageByOtherCode() * 100).toFixed(2);
+
+		return (
+			<StyledContentContainer>
+				<StyledContainerIndex>
+					#{this.props.index + 1}
+				</StyledContainerIndex>
+				
+				<StyledContainerShowText>
+					<StyledShowText onClick={this.toggleText.bind(this)}>Show Text</StyledShowText>
+				</StyledContainerShowText>
+				
+				<StyledContainerOverlapPercentage>
+					{overlapPercentageByMainCode} % / {overlapPercentageByOtherCode} % by (<StyledColorMarkMainCode/>{this.props.code.name} / <StyledColorMarkOtherCode/>{this.props.selectedCode.name})
+				</StyledContainerOverlapPercentage>
+			</StyledContentContainer>
+		);
+	}
+
+	renderText() {
+		return (
+			<StyledContainerCollapsible>
+				<Collapsible ref={(r) => {if (r) this.textCollapsibleRef = r}}>
+					<CodingOverlapText
+						codingOverlapText={this.props.codingOverlap.getTextContent()}
+					/>
+				</Collapsible>
+			</StyledContainerCollapsible>
+		);
+	}
+
+	renderSeparator() {
+		if (this.props.isLastItem) {
+			return '';
+		}
+
+		return (
+			<StyledSeparator />
 		);
 	}
 }
