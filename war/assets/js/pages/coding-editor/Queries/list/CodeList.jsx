@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import { SortMode } from '../../../../common/styles/table/SortMode.js';
@@ -151,19 +152,58 @@ export default class CodeList extends React.Component {
 	renderHeaderCellContent(column, columnIndex) {
 		switch (column) {
 			case TABLE_COLUMN_CODE: {
-				return 'Code';
+				return (
+					<FormattedMessage
+						id="codeQueriesCodeListHeaderCode"
+						defaultMessage="Code"
+					/>
+				);
 			}
 			case TABLE_COLUMN_OVERLAPS_MAIN: {
-				return ['Overlaps by', <br/>, this.props.code.name];
+				return [
+					<FormattedMessage
+						id="codeQueriesCodeListHeaderOverlapsBy"
+						defaultMessage="Overlaps by"
+					/>, 
+					<br/>, 
+					this.props.code.name
+				];
 			}
 			case TABLE_COLUMN_OVERLAPS_OTHER: {
-				return ['Overlaps by', <br/>, 'other code'];
+				return [
+					<FormattedMessage
+						id="codeQueriesCodeListHeaderOverlapsBy"
+						defaultMessage="Overlaps by"
+					/>, 
+					<br/>, 
+					<FormattedMessage
+						id="codeQueriesCodeListHeaderOtherCode"
+						defaultMessage="other code"
+					/>
+				];
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_MAIN: {
-				return ['Overlap % by', <br/>, this.props.code.name];
+				return [
+					<FormattedMessage
+						id="codeQueriesCodeListHeaderOverlapPercentageBy"
+						defaultMessage="Overlap % by"
+					/>, 
+					<br/>, 
+					this.props.code.name
+				];
 			}
 			case TABLE_COLUMN_AVERAGE_PERCENTAGE_OTHER: {
-				return ['Overlap % by', <br/>, 'other code'];
+				return [
+					<FormattedMessage
+						id="codeQueriesCodeListHeaderOverlapPercentageBy"
+						defaultMessage="Overlap % by"
+					/>,
+					 <br/>, 
+					<FormattedMessage
+						id="codeQueriesCodeListHeaderOtherCode"
+						defaultMessage="other code"
+					/>
+				];
 			}
 			default: {
 				throw new Error('Missing case in switch statement: ' + column);

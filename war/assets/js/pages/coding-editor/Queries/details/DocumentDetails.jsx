@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import Expander from '../../../../common/styles/expander/Expander.jsx';
@@ -43,13 +44,31 @@ export default class DocumentDetails extends React.Component {
 	renderExpanderHeader() {
 		const codingOverlapCount = this.props.codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID);
 
-		const title = this.props.document.title;
-		const codingOverlapCountText = '(' + codingOverlapCount + ' coding overlap' + (codingOverlapCount == 1 ? '' : 's') + ')';
+		const textCodingOverlap = (
+			<FormattedMessage
+				id="codeQueriesDetailsDocumentHeadlineCodingOverlap"
+				defaultMessage="coding overlap"
+			/>
+		);
+		const textCodingOverlaps = (
+			<FormattedMessage
+				id="codeQueriesDetailsDocumentHeadlineCodingOverlaps"
+				defaultMessage="coding overlaps"
+			/>
+		);
+
+		const codingOverlapCountText = [
+			'(',
+			codingOverlapCount,
+			' ',
+			(codingOverlapCount == 1 ? textCodingOverlap : textCodingOverlaps),
+			')'
+		];
 
 		return (
 			<div>
 				<StyledDocumentTitle>
-					{title}
+					{this.props.document.title}
 				</StyledDocumentTitle>
 				<StyledDocumentTitleCodingCount>
 					{codingOverlapCountText}

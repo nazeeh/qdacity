@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import { PageView } from '../View/PageView.js';
@@ -97,7 +98,11 @@ export default class CodeQueries extends React.Component {
 	renderCodeList(codingResult) {
 		return (
 			<StyledColumnLeft>
-				<StyledHeadline>Coding-Overlaps
+				<StyledHeadline>
+					<FormattedMessage
+						id="codeQueriesHeadlineCodingOverlaps"
+						defaultMessage="Coding-Overlaps"
+					/>
 					<StyledHeadlineHighlight>{this.state.code.name}</StyledHeadlineHighlight>
 				</StyledHeadline>
 
@@ -115,7 +120,12 @@ export default class CodeQueries extends React.Component {
 	renderDetailsView(documents, codingResult) {
 		return (
 			<StyledColumnRight>
-				<StyledHeadline>Documents</StyledHeadline>
+				<StyledHeadline>	
+					<FormattedMessage
+						id="codeQueriesHeadlineDocuments"
+						defaultMessage="Documents"
+					/>
+				</StyledHeadline>
 
 				<DetailsView
 					code={this.state.code}

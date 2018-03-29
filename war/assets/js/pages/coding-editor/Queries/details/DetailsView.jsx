@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import DocumentDetails from './DocumentDetails.jsx';
@@ -42,7 +43,7 @@ export default class DetailsView extends React.Component {
 		}
 
 		if (!foundOverlaps) {
-			return this.renderZeroOverlaps();
+			return this.renderNoCodingOverlaps();
 		}
 
 		// Render content
@@ -55,13 +56,23 @@ export default class DetailsView extends React.Component {
 
 	renderNoCodeSelected() {
 		return (
-			<StyledInfoBox>Please select a code from the list.</StyledInfoBox>
+			<StyledInfoBox>
+				<FormattedMessage
+					id="codeQueriesDetailsNoCodeSelected"
+					defaultMessage="Please select a code from the list."
+				/>
+			</StyledInfoBox>
 		);
 	}
 
-	renderZeroOverlaps() {
+	renderNoCodingOverlaps() {
 		return (
-			<StyledInfoBox>No coding overlaps found.</StyledInfoBox>
+			<StyledInfoBox>
+				<FormattedMessage
+					id="codeQueriesDetailsNoCodingOverlaps"
+					defaultMessage="No coding overlaps found."
+				/>
+			</StyledInfoBox>
 		);
 	}
 

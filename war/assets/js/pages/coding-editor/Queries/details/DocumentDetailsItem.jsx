@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
 import { Collapsible } from '../../../../common/styles/expander/Collapsible.jsx';
@@ -103,15 +104,25 @@ export default class DocumentDetailsItem extends React.Component {
 				</StyledContainerIndex>
 				
 				<StyledContainerShowText>
-					<StyledShowText onClick={this.toggleText.bind(this)}>Show Text</StyledShowText>
+					<StyledShowText onClick={this.toggleText.bind(this)}>
+						<FormattedMessage
+							id="codeQueriesDetailsItemShowText"
+							defaultMessage="Show Text"
+						/>
+					</StyledShowText>
 				</StyledContainerShowText>
 				
 				<StyledContainerOpenCodingEditor>
-					<StyledShowText onClick={() => this.props.openCodingEditor(this.props.codingOverlap.getCodingIdMain())}>Open Coding</StyledShowText>
+					<StyledShowText onClick={() => this.props.openCodingEditor(this.props.codingOverlap.getCodingIdMain())}>
+						<FormattedMessage
+							id="codeQueriesDetailsItemOpenCoding"
+							defaultMessage="Open Coding"
+						/>
+					</StyledShowText>
 				</StyledContainerOpenCodingEditor>
 				
 				<StyledContainerOverlapPercentage>
-					{overlapPercentageByMainCode} % / {overlapPercentageByOtherCode} % by (<StyledColorMarkMainCode/>{this.props.code.name} / <StyledColorMarkOtherCode/>{this.props.selectedCode.name})
+					{overlapPercentageByMainCode} % / {overlapPercentageByOtherCode} %  (<StyledColorMarkMainCode/>{this.props.code.name} / <StyledColorMarkOtherCode/>{this.props.selectedCode.name})
 				</StyledContainerOverlapPercentage>
 			</StyledContentContainer>
 		);
