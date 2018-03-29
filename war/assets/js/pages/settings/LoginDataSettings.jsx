@@ -34,10 +34,11 @@ export default class LoginDataSettings extends Component {
         }
         
         this.updateAssociatedLoginList = this.updateAssociatedLoginList.bind(this);
+        this.helloCallback = this.helloCallback.bind(this);
         this.props.auth.authentication.addAuthStateListener(this.updateAssociatedLoginList);
 
         // hellojs is already setup in GoogleAuthenticationProvider
-
+        
         this.updateAssociatedLoginList();
     }
 
@@ -59,14 +60,7 @@ export default class LoginDataSettings extends Component {
     }
 
     onAddGoogleAccount() {
-        const _this = this;
-        hello.on('auth.login', function(auth) {
-            // get google token
-            const session = hello.getAuthResponse(AuthenticationNetworks.GOOGLE);
-            const googleIdToken = session.id_token;
-
-            _this.addGoogleAccount(googleIdToken);
-        });
+        hello.on('auth.login', this.helloCallback);
 
         hello(AuthenticationNetworks.GOOGLE)
             .login({
@@ -85,8 +79,63 @@ export default class LoginDataSettings extends Component {
             );        
     }
 
+    helloCallback(auth) {
+        if(auth.network === AuthenticationNetworks.GOOGLE) {
+            // get google token
+            const session = hello.getAuthResponse(AuthenticationNetworks.GOOGLE);
+            const googleIdToken = session.id_token;
+
+            this.addGoogleAccount(googleIdToken);
+
+            // unsubscribe again
+            hello.off('auth.login', this.helloCallback);
+        }
+    }
+
     addGoogleAccount(googleIdToken) {
-        console.log(googleIdToken);
+        const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+        gapi.client.qdacity.auth.associateGoogleLogin({
+            googleIdToken: googleIdToken
+        }).execute(function(resp) {
+            if(!resp.code) {
+                _this.updateAssociatedLoginList();
+            } else {    
+                const code = resp.message.split(':')[0];
+                let errorMsg = formatMessage({
+                    id: 'settings.logindata.addgoogle.failure',
+                    defaultMessage: 'Could not associate user to that Google account.'
+                });
+
+                switch(code) {
+                    case 'Code4.1': 
+                        errorMsg = formatMessage({
+                            id: 'settings.logindata.addgoogle.failure.invalidGoogleId',
+                            defaultMessage: 'The Google token does not seem to be valid!'
+                        });
+                        break;
+                    case 'Code4.2':
+                        errorMsg = formatMessage({
+                            id: 'settings.logindata.addgoogle.failure.associatedOtherAccount',
+                            defaultMessage: 'There already exists a QDAcity user with this google account!'
+                        });
+                        break;
+                }
+
+                vex.dialog.open({
+                    message: errorMsg,
+                    buttons: [
+                        $.extend({}, vex.dialog.buttons.YES, {
+                            text: formatMessage({
+                                id: 'settings.logindata.addgoogle.failure.close',
+                                defaultMessage: 'Close'
+                            })
+                        })
+                    ],
+                });
+            }
+        });
     }
     
     render() {
