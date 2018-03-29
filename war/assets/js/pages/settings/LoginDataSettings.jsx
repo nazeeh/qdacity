@@ -292,7 +292,7 @@ export default class LoginDataSettings extends Component {
             associatedLogin
         ).execute(function(resp) {
             if(!resp.code) {
-                _this.updateAssociatedLoginList();
+                location.reload(); // need reload if current login is deleted
             } else {
                 let errorMsg = formatMessage({
                     id: 'settings.logindata.disassociate.failure',
