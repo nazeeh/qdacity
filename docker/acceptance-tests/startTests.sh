@@ -31,8 +31,20 @@ done
 
 if [ $isPortOpen -eq $PORT_OPEN ]; then
 	# Give the server more time to properly start
-	sleep 10
+	sleep 5
 
+	# Start RTCS
+	echo "##############################################"
+	echo "####      Start the realtime service      ####"
+	echo "##############################################"
+
+	cd realtime-service
+	npm run start &
+	cd ..
+
+	sleep 5
+
+	# Start the tests
 	echo "##############################################"
 	echo "####           Start the tests            ####"
 	echo "##############################################"
