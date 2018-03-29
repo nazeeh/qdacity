@@ -7,7 +7,8 @@ echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > ./realtime-service/.env
 # Install npm packages
 cd realtime-service
 npm prune
-npm install
+# The docker image requires a special grpc binary
+npm install --target=9.0.0 --target_platform=linux --target_arch=x64
 cd ..
 
 cd localization
