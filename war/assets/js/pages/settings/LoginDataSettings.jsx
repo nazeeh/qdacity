@@ -5,14 +5,14 @@ import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
+import { BtnDefault } from '../../common/styles/Btn.jsx'
 
 
 const StyledPanel = styled.div`
 	background-color: ${props => props.theme.defaultPaneBg};
 	border: 1px solid ${props => props.theme.borderDefault};
 	padding: 20px 50px 20px 50px;
-	margin: 20px;
-	text-align: center;
+    margin: 20px;
 `;
 
 const StyledAssociatedLoginList = styled.ul``;
@@ -69,18 +69,37 @@ export default class LoginDataSettings extends Component {
         }
 
         return (
-            <StyledPanel>
-                <h2>
-                    <FormattedMessage
-                        id="settings.logindata.heading"
-                        defaultMessage="Login Data Settings"
-                    />	
-                </h2>        
+            <div>
+                <StyledPanel>
+                    <h2>
+                        <FormattedMessage
+                            id="settings.logindata.heading"
+                            defaultMessage="Login Data Settings"
+                        />	
+                    </h2>        
 
-                <StyledAssociatedLoginList>
-                    <AssociatedLoginListItems associatedLoginList={this.state.associatedLogins}/>
-                </StyledAssociatedLoginList>
-            </StyledPanel>
+                    <StyledAssociatedLoginList>
+                        <AssociatedLoginListItems associatedLoginList={this.state.associatedLogins}/>
+                    </StyledAssociatedLoginList>
+                </StyledPanel>
+
+                <StyledPanel>
+                    <h4>
+                        <FormattedMessage
+                            id="settings.logindata.add"
+                            defaultMessage="Associate new Login"
+                        />	
+                    </h4>  
+                    
+                    <BtnDefault>
+                        <i className="fa fa-google" />
+                        <FormattedMessage
+                            id="settings.logindata.add.google"
+                            defaultMessage="Google"
+                        />
+                    </BtnDefault>
+                </StyledPanel>
+            </div>
         );
     }
 }
