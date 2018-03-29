@@ -18,7 +18,9 @@ const StyledPanel = styled.div`
     margin: 20px;
 `;
 
-const StyledAssociatedLoginList = styled.ul``;
+const StyledAssociatedLoginList = styled.ul`
+    list-style: none;
+`;
 
 const StyledAssociateBtnGroup = styled.div`
     & > button {
