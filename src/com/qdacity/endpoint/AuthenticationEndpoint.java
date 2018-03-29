@@ -28,6 +28,7 @@ import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+import javax.jdo.annotations.Persistent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -291,6 +292,42 @@ public class AuthenticationEndpoint {
         Authorization.checkAuthorization(user, loggedInUser);
 
         return user.getLoginProviderInformation();
+    }
+
+    @ApiMethod(name="auth.associateGoogleLogin")
+    public void associateGoogleLogin(@Named("googleIdToken") String googleIdToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        AuthenticatedUser googleUser = googleTokenValidator.validate(googleIdToken);
+        associateLogin((AuthenticatedUser) loggedInUser, googleUser);
+    }
+
+    private void associateLogin(AuthenticatedUser loggedInUser, AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
+        if(unAssociatedUser == null) {
+            throw new UnauthorizedException("Code4.1: The Google token does not seem to be valid!");
+        }
+        User user = null;
+
+        try {
+            user = Cache.getOrLoadUserByAuthenticatedUser(unAssociatedUser);
+        } catch (UnauthorizedException e) {
+            // user stays null
+        }
+
+        if(user != null) {
+            throw new UnauthorizedException("Code4.2: There already exists a user with this google account!");
+        }
+
+        AuthenticatedUser authUser = loggedInUser;
+        user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+        user.addLoginProviderInformation(new UserLoginProviderInformation(LoginProviderType.GOOGLE, unAssociatedUser.getId(), unAssociatedUser.getEmail()));
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(user);
+            Cache.cache(user.getId(), User.class, user);
+            Cache.cacheAuthenticatedUser(authUser, user);
+        } finally {
+            mgr.close();
+        }
     }
 
 
