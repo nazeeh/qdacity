@@ -27,13 +27,20 @@ export default class QdacityTokenAuthenticationProvider {
 					firstname: '',
 					lastname: '',
 					email: '',
-					thumbnail: ''
+					thumbnail: '',
+					authNetwork: '',
+					externalUserId: '',
+					externalEmail: ''
 				});
 			}
 			_this.refreshTokenIfNeccessary();
 			const decoded = jwt_decode(_this.jwtToken);
+			console.log(decoded);
 			const profile = {
 				qdacityId: decoded.sub,
+				authNetwork: decoded.auth_network,
+				externalUserId: decoded.external_user_id,
+				externalEmail: decoded.external_email,
 				name: decoded.name,
 				firstname: decoded.firstname,
 				lastname: decoded.lastname,

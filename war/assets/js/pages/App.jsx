@@ -99,6 +99,9 @@ export default class App extends React.Component {
 				},
 				userProfile: {
 					qdacityId: '',
+					authNetwork: '',
+					externalUserId: '',
+					externalEmail: '',
 					name: '',
 					firstname: '',
 					lastname: '',
@@ -176,7 +179,10 @@ export default class App extends React.Component {
 				lastname: '',
 				email: '',
 				picSrc: '',
-				qdacityId: ''
+				qdacityId: '',
+				authNetwork: '',
+				externalUserId: '',
+				externalEmail: ''
 			};
 			let picSrcWithoutParams = '';
 			if(!!loginStatus) {
@@ -194,6 +200,9 @@ export default class App extends React.Component {
 			
 			_this.state.auth.userProfile = {
 				qdacityId: profile.qdacityId,
+				authNetwork: profile.authNetwork,
+				externalUserId: profile.externalUserId,
+				externalEmail: profile.externalEmail,
 				name: profile.name,
 				firstname: profile.firstname,
 				lastname: profile.lastname,
