@@ -49,7 +49,7 @@ const StyledAssociatedLoginItem = styled.li`
     }
 
     display: grid;
-    grid-template-columns: 100px 200px 100px auto;
+    grid-template-columns: 100px 200px 200px auto;
 `;
 
     
@@ -285,6 +285,7 @@ export default class LoginDataSettings extends Component {
                 <StyledAssociatedLoginItem>
                     <span>{this.parseLoginProvider(associatedLogin.provider)}</span>
                     <span>{associatedLogin.externalEmail}</span>
+                    <span>{!!associatedLogin.externalEmail ? '' : '(ID: ' + associatedLogin.externalUserId + ')'}</span>
                 </StyledAssociatedLoginItem>
             );
         }
