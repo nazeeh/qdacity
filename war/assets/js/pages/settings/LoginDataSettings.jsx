@@ -359,6 +359,18 @@ export default class LoginDataSettings extends Component {
         return (
             <div>
                 <StyledPanel>
+                    <FormattedMessage
+                            id="settings.logindata.loggedInAs"
+                            defaultMessage="You are logged in as"
+                    />
+                    {' '}
+                    <u>
+                        {this.props.auth.userProfile.externalEmail}
+                    </u> 
+                    {' (via ' + this.parseLoginProvider(this.props.auth.userProfile.authNetwork) + ')'}
+                </StyledPanel>
+
+                <StyledPanel>
                     <h2>
                         <FormattedMessage
                             id="settings.logindata.heading"
