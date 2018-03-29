@@ -285,7 +285,32 @@ export default class LoginDataSettings extends Component {
     }
 
     disassociate(associatedLogin) {
-        console.log(associatedLogin);
+        const _this = this;
+        const { formatMessage } = IntlProvider.intl;
+
+        gapi.client.qdacity.auth.disassociateLogin(
+            associatedLogin
+        ).execute(function(resp) {
+            if(!resp.code) {
+                _this.updateAssociatedLoginList();
+            } else {
+                let errorMsg = formatMessage({
+                    id: 'settings.logindata.disassociate.failure',
+                    defaultMessage: 'Could not disassociate user with the chosen Login.'
+                });
+                vex.dialog.open({
+                    message: errorMsg,
+                    buttons: [
+                        $.extend({}, vex.dialog.buttons.YES, {
+                            text: formatMessage({
+                                id: 'settings.logindata.disassociate.failure.close',
+                                defaultMessage: 'Close'
+                            })
+                        })
+                    ],
+                });
+            }
+        });
     }
 
     render() {
