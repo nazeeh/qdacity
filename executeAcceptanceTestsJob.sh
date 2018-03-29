@@ -17,6 +17,12 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 npm install --target=9.0.0 --target_platform=linux --target_arch=x64
 
+#https://storage.googleapis.com/grpc-precompiled-binaries/node/grpc/v1.7.1/node-v59-linux-x64.tar.gz
+
+#Expected directory: node-v59-linux-x64-glibc
+#Found: [node-v57-linux-x64-glibc]
+
+
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -71,6 +77,14 @@ docker rmi $(docker images -qa -f "dangling=true")
 # Build docker images 
 BASE_IMAGE_TAG="qdacity-tests-base:latest"
 TEST_IMAGE_TAG="qdacity-tests-${CI_PROJECT_ID}"
+
+
+
+#FORCE REBUILD !!!!!!!!!!!!!!!!!!!!!!!!!!!
+docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
+
+
+
 
 # Build the base image if it does not exist
 [ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .

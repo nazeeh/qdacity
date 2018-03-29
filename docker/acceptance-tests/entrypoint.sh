@@ -23,14 +23,6 @@ echo "########                      Start the realtime service                  
 echo "#######################################################################################"
 
 cd realtime-service
-
-echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
-echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
-echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
-sudo npm rebuild
-echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
-echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
-echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa"
 npm run start &
 cd ..
 
