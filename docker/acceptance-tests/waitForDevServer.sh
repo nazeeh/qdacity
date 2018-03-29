@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script waits until the port 8888 is open and then launches the acceptance-tests.
+# This script waits until the port 8888 is open.
 
 SERVER=localhost
 PORT=8888
@@ -31,27 +31,11 @@ done
 
 if [ $isPortOpen -eq $PORT_OPEN ]; then
 	# Give the server more time to properly start
-	sleep 5
-
-	# Start RTCS
-	echo "##############################################"
-	echo "####      Start the realtime service      ####"
-	echo "##############################################"
-
-	cd realtime-service
-	npm run start &
-	cd ..
-
-	sleep 5
-
-	# Start the tests
-	echo "##############################################"
-	echo "####           Start the tests            ####"
-	echo "##############################################"
-	echo "Port is open after ${time} seconds. Start acceptance tests now."
+	sleep 7
 	
-	cd war
-	./node_modules/.bin/gulp acceptance-tests
+	echo "Port is open after ${time} seconds."
+
+	return 0
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
 	
