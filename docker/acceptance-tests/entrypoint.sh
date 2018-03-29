@@ -1,5 +1,24 @@
 # Starts the selenium server and the local dev-server.
 
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+cd realtime-service
+npm rebuild
+cd ..
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAA"
+
 # Start selenium
 echo "#######################################################################################"
 echo "########                      Start the selenium server                        ########"
