@@ -28,7 +28,6 @@ import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
-import javax.jdo.annotations.Persistent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -297,10 +296,65 @@ public class AuthenticationEndpoint {
     @ApiMethod(name="auth.associateGoogleLogin")
     public void associateGoogleLogin(@Named("googleIdToken") String googleIdToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         AuthenticatedUser googleUser = googleTokenValidator.validate(googleIdToken);
+        assertAssociationPreconditions(googleUser);
         associateLogin((AuthenticatedUser) loggedInUser, googleUser);
     }
 
+    @ApiMethod(name="auth.associateEmailPassword")
+    public void associateEmailPassword(@Named("email") String email, @Named("password") String password, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
+        if(!emailPattern.matcher(email).matches()) {
+            throw new BadRequestException("Code4.3: The given email adress is not in a valid format!");
+        }
+        Pattern passwordPattern = Pattern.compile(PASSWORD_REGEX);
+        if(password == null || password.isEmpty()) {
+            throw new BadRequestException("Code4.4: The password must not be empty!");
+        }
+        if(!passwordPattern.matcher(password).matches()) {
+            throw new BadRequestException("Code4.5: The password must have at least 7 characters and must contain only and " +
+                    "at least one of small letters, big letters and numbers! No Whitespaces allowed");
+        }
+        assertEmailIsAvailable(email);
+
+        AuthenticatedUser unassociatedUser = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
+        assertAssociationPreconditions(unassociatedUser);
+
+        HashUtil hashUtil = new HashUtil();
+        String pwdHash = hashUtil.hash(password);
+
+        EmailPasswordLogin emailPwd = new EmailPasswordLogin(email, pwdHash);
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(emailPwd);
+        } finally {
+            mgr.close();
+        }
+        associateLogin((AuthenticatedUser) loggedInUser, unassociatedUser);
+    }
+
     private void associateLogin(AuthenticatedUser loggedInUser, AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
+        AuthenticatedUser authUser = loggedInUser;
+        User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+        user.addLoginProviderInformation(new UserLoginProviderInformation(unAssociatedUser.getProvider(), unAssociatedUser.getId(), unAssociatedUser.getEmail()));
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(user);
+            Cache.cache(user.getId(), User.class, user);
+            Cache.cacheAuthenticatedUser(authUser, user);
+        } finally {
+            mgr.close();
+        }
+    }
+
+    /**
+     * Checks some preconditions for associating a login.
+     * @param unAssociatedUser
+     * @return
+     * @throws UnauthorizedException
+     */
+    private void assertAssociationPreconditions(AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
         if(unAssociatedUser == null) {
             throw new UnauthorizedException("Code4.1: The Google token does not seem to be valid!");
         }
@@ -314,19 +368,6 @@ public class AuthenticationEndpoint {
 
         if(user != null) {
             throw new UnauthorizedException("Code4.2: There already exists a user with this google account!");
-        }
-
-        AuthenticatedUser authUser = loggedInUser;
-        user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
-        user.addLoginProviderInformation(new UserLoginProviderInformation(LoginProviderType.GOOGLE, unAssociatedUser.getId(), unAssociatedUser.getEmail()));
-
-        PersistenceManager mgr = getPersistenceManager();
-        try {
-            mgr.makePersistent(user);
-            Cache.cache(user.getId(), User.class, user);
-            Cache.cacheAuthenticatedUser(authUser, user);
-        } finally {
-            mgr.close();
         }
     }
 

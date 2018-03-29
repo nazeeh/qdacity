@@ -1,5 +1,6 @@
 package com.qdacity.test.EmailPasswordAuthenticationEndpoint;
 
+import com.google.api.server.spi.request.Auth;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -193,6 +194,31 @@ public class AuthenticationEndpointTest {
         assertEquals(registeredUser.getLoginProviderInformation().get(0).getExternalEmail(), associatedLogin.getExternalUserId());
     }
 
+    @Test
+    public void testAssociateEmailPassword() throws UnauthorizedException, BadRequestException {
+        User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+
+        User registeredUser = this.registerUser(unregisteredUser, "Password123");
+
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+                registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
+                registeredUser.getEmail(), LoginProviderType.EMAIL_PASSWORD);
+
+        List<UserLoginProviderInformation> associatedLogins = new AuthenticationEndpoint().getAssociatedLogins(authenticatedUser);
+        assertEquals(1, associatedLogins.size());
+
+        String associatedEmail = "associate@email.de";
+        String associetedPwd = "Password456";
+        new AuthenticationEndpoint().associateEmailPassword(associatedEmail, associetedPwd, authenticatedUser);
+
+        associatedLogins = new AuthenticationEndpoint().getAssociatedLogins(authenticatedUser);
+        assertEquals(2, associatedLogins.size());
+
+        String token = new AuthenticationEndpoint().getTokenEmailPassword(associatedEmail, associetedPwd, null).getValue();
+    }
 
     private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {
         return new AuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
