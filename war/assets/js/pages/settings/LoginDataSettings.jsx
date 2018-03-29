@@ -19,6 +19,7 @@ const StyledPanel = styled.div`
 `;
 
 const StyledAssociatedLoginList = styled.ul`
+    padding-left: 5px;
     margin-top: 30px;
     list-style: none;
 `;
@@ -49,7 +50,15 @@ const StyledAssociatedLoginItem = styled.li`
     }
 
     display: grid;
-    grid-template-columns: 100px 200px 200px auto;
+
+    @media (max-width: 767px) {
+        grid-template-rows: auto auto auto auto;
+    }
+
+    @media (min-width: 768px) {
+        grid-template-columns: 100px 200px 200px auto;
+        grid-column-gap: 2px;
+    }
 `;
 
     
