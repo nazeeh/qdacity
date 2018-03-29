@@ -3,6 +3,8 @@ var webdriver = require('selenium-webdriver'),
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 
+var loginHelper = require('../helper/LoginHelper.js');
+
 var Conditions = require('./Conditions.js');
 
 class Common {
@@ -46,11 +48,13 @@ class Common {
 	}
 
 	static openCodingEditor(driver, projectName, done) {
-		driver.get('http://localhost:8888/PersonalDashboard');
+		driver.get('http://localhost:8888/PersonalDashboard').then(() => {
+			loginHelper.restoreLoginState(driver);
 
-		Conditions.assertProjectExists(driver, projectName);
-	
-		driver.wait(until.elementLocated(Conditions.getProjectCodingEditorButton(projectName))).click().then(done); 
+			Conditions.assertProjectExists(driver, projectName);
+		
+			driver.wait(until.elementLocated(Conditions.getProjectCodingEditorButton(projectName))).click().then(done); 
+		});
 	}
 }
 
