@@ -19,10 +19,13 @@ const StyledPanel = styled.div`
 `;
 
 const StyledAssociatedLoginList = styled.ul`
+    margin-top: 30px;
     list-style: none;
 `;
 
 const StyledAssociateBtnGroup = styled.div`
+    margin-top: 20px;
+
     & > button {
         margin-right: 20px;
     }
