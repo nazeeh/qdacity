@@ -2,6 +2,7 @@ package com.qdacity.test.EmailPasswordAuthenticationEndpoint;
 
 import com.google.api.server.spi.request.Auth;
 import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.InternalServerErrorException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -195,7 +196,7 @@ public class AuthenticationEndpointTest {
     }
 
     @Test
-    public void testAssociateEmailPassword() throws UnauthorizedException, BadRequestException {
+    public void testAssociateEmailPasswordAndDisassociate() throws UnauthorizedException, BadRequestException, InternalServerErrorException {
         User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
@@ -218,6 +219,11 @@ public class AuthenticationEndpointTest {
         assertEquals(2, associatedLogins.size());
 
         String token = new AuthenticationEndpoint().getTokenEmailPassword(associatedEmail, associetedPwd, null).getValue();
+
+        new AuthenticationEndpoint().disassociateLogin(associatedLogins.get(1), authenticatedUser);
+
+        associatedLogins = new AuthenticationEndpoint().getAssociatedLogins(authenticatedUser);
+        assertEquals(1, associatedLogins.size());
     }
 
     private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {

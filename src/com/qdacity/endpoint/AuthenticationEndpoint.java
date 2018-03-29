@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.InternalServerErrorException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
@@ -31,7 +32,10 @@ import javax.jdo.PersistenceManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This Endpoint is intented to be used for Email+Password actions.
@@ -340,7 +344,45 @@ public class AuthenticationEndpoint {
         }
         associateLogin((AuthenticatedUser) loggedInUser, unassociatedUser);
     }
-    
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(name="auth.disassociateLogin")
+    public void disassociateLogin(UserLoginProviderInformation associatedLogin, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        if (loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+        User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+
+        int sizeBeforeRemove = user.getLoginProviderInformation().size();
+
+        List<UserLoginProviderInformation> stayingLoginInfos = user.getLoginProviderInformation().stream()
+                .filter((loginInfo) -> !(loginInfo.getExternalUserId().equals(associatedLogin.getExternalUserId()) && loginInfo.getProvider().equals(associatedLogin.getProvider())))
+                .collect(Collectors.toList());
+        user.setLoginProviderInformation(stayingLoginInfos);
+
+        if (stayingLoginInfos.size() == sizeBeforeRemove) {
+            throw new BadRequestException("This associated Login does not exist.");
+        }
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(user);
+
+            if(associatedLogin.getProvider().equals(LoginProviderType.EMAIL_PASSWORD)) {
+                EmailPasswordLogin emailPwd = mgr.getObjectById(EmailPasswordLogin.class, associatedLogin.getExternalEmail());
+                mgr.deletePersistent(emailPwd);
+            }
+
+            Cache.cache(user.getId(), User.class, user);
+            Cache.invalidatUserLogins(user); // make sure the associatedLogin is not chached any more.
+            Cache.cacheAuthenticatedUser(authUser, user);
+        } finally {
+            mgr.close();
+        }
+    }
+
     private void associateLogin(AuthenticatedUser loggedInUser, AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
         AuthenticatedUser authUser = loggedInUser;
         User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
