@@ -12,7 +12,7 @@ export default class ImageUtil {
                 canvas.height = scaleHeight;
 
                 const img = new Image();
-                img.src = imgSrc
+                img.src = imgSrc;
                 const context = canvas.getContext('2d');
                 context.drawImage(img, 0, 0, scaleWidth, scaleHeight);
 
