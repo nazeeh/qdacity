@@ -4,6 +4,7 @@ import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
+import { BtnDanger } from '../../common/styles/Btn.jsx'
 
 const StyledDeleteAccountPanel = styled.div`
 	background-color: ${props => props.theme.defaultPaneBg};
@@ -18,8 +19,10 @@ const StyledDeleteAccountLabel = styled.p`
 	font-size: 16px;
 `;
 
-const StyledDeleteAccountButton = styled.button`
-	margin-left: 80px;
+const StyledDeleteAccountBtnWrapper = styled.span`
+	& > button {
+		margin-left: 80px;
+	}
 `;
 
 
@@ -135,13 +138,15 @@ export default class ProfileSettings extends Component {
 						defaultMessage="Delete your QDAcity-Account"
 					/>	
 				</StyledDeleteAccountLabel>
-				<StyledDeleteAccountButton id='profile-settings-delete-button' className="btn btn-danger btn-md" onClick={() => this.onDeleteUser()}>
-					<i className="fa fa-trash"/>
-					<FormattedMessage
-						id="settings.profile.delete.button"
-						defaultMessage=" Delete"
-					/>	
-				</StyledDeleteAccountButton>
+				<StyledDeleteAccountBtnWrapper>
+					<BtnDanger id='profile-settings-delete-button' onClick={() => this.onDeleteUser()}>
+						<i className="fa fa-trash"/>
+						<FormattedMessage
+							id="settings.profile.delete.button"
+							defaultMessage=" Delete"
+						/>	
+					</BtnDanger>
+				</StyledDeleteAccountBtnWrapper>
 			</StyledDeleteAccountPanel>
 		);
 	}
