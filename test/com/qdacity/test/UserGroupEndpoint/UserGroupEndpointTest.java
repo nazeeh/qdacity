@@ -16,6 +16,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class UserGroupEndpointTest {
@@ -64,5 +67,35 @@ public class UserGroupEndpointTest {
 
         String groupName = null;
         new UserGroupEndpoint().insertUserGroup(groupName, authUser);
+    }
+
+    @Test
+    public void testListOwnedUserGroup() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+        assertEquals(0, user.getUserGroups().size());
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser);
+        UserGroup group2 = new UserGroupEndpoint().insertUserGroup("group2", authUser);
+
+        Collection<UserGroup> userGroups = new UserGroupEndpoint().listOwnedUserGroups(null, user.getId(), authUser).getItems();
+        assertEquals(2, userGroups.size());
+        assertEquals(1, userGroups.stream().filter(group -> group.getId().equals(group1.getId())).count());
+        assertEquals(1, userGroups.stream().filter(group -> group.getId().equals(group2.getId())).count());
+    }
+
+    @Test
+    public void testListOwnedUserGroupNoId() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser);
+        assertEquals(0, user.getUserGroups().size());
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser);
+        UserGroup group2 = new UserGroupEndpoint().insertUserGroup("group2", authUser);
+
+        Collection<UserGroup> userGroups = new UserGroupEndpoint().listOwnedUserGroups(null, null, authUser).getItems();
+        assertEquals(2, userGroups.size());
+        assertEquals(1, userGroups.stream().filter(group -> group.getId().equals(group1.getId())).count());
+        assertEquals(1, userGroups.stream().filter(group -> group.getId().equals(group2.getId())).count());
     }
 }

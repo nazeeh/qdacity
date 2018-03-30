@@ -1,11 +1,10 @@
 package com.qdacity.endpoint;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.*;
 import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
@@ -15,9 +14,11 @@ import com.qdacity.user.User;
 import com.qdacity.user.UserGroup;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.jdo.Transaction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Api(
         name = "qdacity",
@@ -30,6 +31,14 @@ import java.util.Arrays;
 )
 public class UserGroupEndpoint {
 
+    /**
+     * Inserts a new user group with the given name and assigns the requesting user as owner.
+     * @param name
+     * @param loggedInUser
+     * @return
+     * @throws UnauthorizedException
+     * @throws BadRequestException
+     */
     @ApiMethod(name = "usergroup.insertUserGroup")
     public UserGroup insertUserGroup(@Named("name") String name, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         if(loggedInUser == null) {
@@ -59,6 +68,42 @@ public class UserGroupEndpoint {
             mgr.close();
         }
         return userGroup;
+    }
+
+    /**
+     * Lists all owned user groups for the user with the given userId.
+     * If the userId is empty, the owned userGroups of the requesting users is returned.
+     * @param userId
+     * @param loggedInUser
+     * @return
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name="usergroup.getOwnedUserGroupsByUserId")
+    public CollectionResponse<UserGroup> listOwnedUserGroups(@Named("cursor") @Nullable String cursorString, @Named("userId") @Nullable String userId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The user could not be authenticated");
+        }
+        AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+        User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+
+        if(userId == null || userId.isEmpty()) {
+            userId = user.getId();
+        }
+
+        List<UserGroup> execute = null;
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            Query q = mgr.newQuery(UserGroup.class, ":p.contains(owners)");
+            execute = (List<UserGroup>) q.execute(Arrays.asList(userId));
+
+            // Tight loop for fetching all entities from datastore and accomodate
+            // for lazy fetch.
+            for (UserGroup obj : execute);
+        } finally {
+            mgr.close();
+        }
+
+        return CollectionResponse.<UserGroup> builder().setItems(execute).setNextPageToken(cursorString).build();
     }
 
 
