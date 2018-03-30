@@ -287,6 +287,7 @@ public class UserEndpoint {
 		user.setId(randomId);
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
+		user.setUserGroups(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		user.setLastLogin(new Date());
 		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId(), authenticatedUser.getEmail())));
