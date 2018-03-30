@@ -120,6 +120,10 @@
 		<servlet-name>page</servlet-name>
 		<url-pattern>/Settings/LoginData</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
+		<url-pattern>/Settings/UserGroups</url-pattern>
+	</servlet-mapping>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>qdacity</web-resource-name>
