@@ -24,6 +24,7 @@ import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserLoginProviderInformation;
+import com.uwyn.jhighlight.fastutil.Hash;
 import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -74,14 +75,7 @@ public class AuthenticationEndpoint {
         if(!emailPattern.matcher(email).matches()) {
             throw new BadRequestException("Code2.2: The given email adress is not in a valid format!");
         }
-        Pattern passwordPattern = Pattern.compile(PASSWORD_REGEX);
-        if(pwd == null || pwd.isEmpty()) {
-            throw new BadRequestException("Code2.3: The password must not be empty!");
-        }
-        if(!passwordPattern.matcher(pwd).matches()) {
-            throw new BadRequestException("Code2.4: The password must have at least 7 characters and must contain only and " +
-                    "at least one of small letters, big letters and numbers! No Whitespaces allowed");
-        }
+        assertPasswordValidFormat(pwd);
         assertEmailIsAvailable(email);
 
         HashUtil hashUtil = new HashUtil();
@@ -106,6 +100,17 @@ public class AuthenticationEndpoint {
         return insertedUser;
     }
 
+    private void assertPasswordValidFormat(@Named("pwd") String pwd) throws BadRequestException {
+        Pattern passwordPattern = Pattern.compile(PASSWORD_REGEX);
+        if(pwd == null || pwd.isEmpty()) {
+            throw new BadRequestException("Code2.3: The password must not be empty!");
+        }
+        if(!passwordPattern.matcher(pwd).matches()) {
+            throw new BadRequestException("Code2.4: The password must have at least 7 characters and must contain only and " +
+                    "at least one of small letters, big letters and numbers! No Whitespaces allowed");
+        }
+    }
+
     /**
      * Get a new JWT token by email and password
      * @param email
@@ -114,6 +119,15 @@ public class AuthenticationEndpoint {
      */
     @ApiMethod(name = "authentication.email.getToken")
     public StringWrapper getTokenEmailPassword(@Named("email") String email, @Named("pwd") String pwd, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        EmailPasswordLogin emailPwd = verifyPassword(email, pwd);
+
+        // generate JWT token
+        User user = getUserByEmailPassword(emailPwd);
+        AuthenticatedUser authInfo = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
+        return new StringWrapper(TokenUtil.getInstance().genToken(user, authInfo));
+    }
+
+    private EmailPasswordLogin verifyPassword(@Named("email") String email, @Named("pwd") String pwd) throws UnauthorizedException {
         // check if user is registered
         EmailPasswordLogin emailPwd = null;
         PersistenceManager pm = getPersistenceManager();
@@ -130,11 +144,7 @@ public class AuthenticationEndpoint {
         if(!new HashUtil().verify(pwd, emailPwd.getHashedPwd())) {
             throw new UnauthorizedException("Code1.2: The password doesn't match the account for " + email + "!");
         }
-
-        // generate JWT token
-        User user = getUserByEmailPassword(emailPwd);
-        AuthenticatedUser authInfo = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
-        return new StringWrapper(TokenUtil.getInstance().genToken(user, authInfo));
+        return emailPwd;
     }
 
     @ApiMethod(name = "authentication.google.register")
@@ -278,6 +288,29 @@ public class AuthenticationEndpoint {
 
         Queue queue = QueueFactory.getDefaultQueue();
         queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+    }
+
+    @ApiMethod(name = "auth.changePassword")
+    public void changePassword(@Named("oldPassword") String oldPassword, @Named("newPassword") String newPassword, com.google.api.server.spi.auth.common.User loggedInUser) throws BadRequestException, UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+        AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+        if(authUser.getProvider() != LoginProviderType.EMAIL_PASSWORD) {
+            throw new BadRequestException("Changing password is only available for Email+Pwd Login");
+        }
+        assertPasswordValidFormat(newPassword);
+        EmailPasswordLogin emailPwd = verifyPassword(authUser.getId(), oldPassword);
+
+        String hashedPwd = new HashUtil().hash(newPassword);
+        emailPwd.setHashedPwd(hashedPwd);
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(emailPwd);
+        } finally {
+            mgr.close();
+        }
     }
 
     @ApiMethod(name="auth.getAssociatedLogins")
