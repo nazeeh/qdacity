@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# pom.xml
+cp ./pom.base.xml ./pom.xml
+sed -i -e 's/APPENGINE_APP_ID/'$PROJECT_ID_PRODUCTION'/g' ./pom.xml
+sed -i -e 's/APPENGINE_APP_VERSION/'2'/g' ./pom.xml
+
 # Create api_config and .env
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
 echo $RTCSVC_ENV | sed -e 's/\r/\n/g' > ./realtime-service/.env
