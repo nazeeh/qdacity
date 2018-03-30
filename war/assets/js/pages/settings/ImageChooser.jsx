@@ -106,8 +106,8 @@ export default class ImageChooser extends Component {
         reader.readAsDataURL(imgPath);
     }
 
-    onUpload() {
-        const scaledImgBase64 = ImageUtil.scaleToBase64(this.state.imgBase64, 200, 200);
+    async onUpload() {
+        const scaledImgBase64 = await ImageUtil.scaleToBase64(this.state.imgBase64, 200, 200);
         this.props.onSave(scaledImgBase64);
     }
     

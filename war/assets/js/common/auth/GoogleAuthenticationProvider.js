@@ -94,7 +94,7 @@ export default class GoogleAuthenticationProvider {
 			var url = URI(profile.thumbnail).fragment(true);
 			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
 
-			const imgBase64 = ImageUtil.scaleToBase64(picSrcWithoutParams, 200, 200);
+			const imgBase64 = await ImageUtil.scaleToBase64(picSrcWithoutParams, 200, 200);
 			const imgBase64WithoutMetaInformation = imgBase64.split(',')[1];
 			const data = {
 				blob: imgBase64WithoutMetaInformation
