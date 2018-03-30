@@ -5,6 +5,8 @@ import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
 
+import ImageUtil from '../../common/auth/ImageUtil.js';
+
 const StyledHeading = styled.h4`
     margin-bottom: 20px;
 `;
@@ -104,24 +106,8 @@ export default class ImageChooser extends Component {
         reader.readAsDataURL(imgPath);
     }
 
-    scaleImage(imgBase64) {
-        const scaleWidth = 200; //px
-        const scaleHeight = 200; //px
-
-        const canvas = document.createElement('canvas');
-        canvas.width = scaleWidth;
-        canvas.height = scaleHeight;
-
-        const img = new Image();
-        img.src = imgBase64
-        const context = canvas.getContext('2d');
-        context.drawImage(img, 0, 0, scaleWidth, scaleHeight);
-
-        return canvas.toDataURL();
-    }
-
     onUpload() {
-        const scaledImgBase64 = this.scaleImage(this.state.imgBase64)
+        const scaledImgBase64 = ImageUtil.scaleToBase64(this.state.imgBase64, 200, 200);
         this.props.onSave(scaledImgBase64);
     }
     
