@@ -15,6 +15,8 @@ import com.qdacity.user.User;
 import com.qdacity.user.UserGroup;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @Api(
@@ -42,17 +44,21 @@ public class UserGroupEndpoint {
         UserGroup userGroup = new UserGroup();
         userGroup.setName(name);
         userGroup.setOwners(Arrays.asList(user.getId()));
+        userGroup.setParticipants(new ArrayList<String>());
 
         PersistenceManager mgr = getPersistenceManager();
         try {
             userGroup = mgr.makePersistent(userGroup);
             Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
 
-            // TODO also add to user field
+            user.getUserGroups().add(userGroup.getId());
+            mgr.makePersistent(user);
+            Cache.cache(user.getId(), User.class, user);
+            Cache.cacheAuthenticatedUser(authUser, user);
         } finally {
             mgr.close();
         }
-        return userGroup
+        return userGroup;
     }
 
 

@@ -1,15 +1,16 @@
 package com.qdacity.user;
 
 import javax.jdo.annotations.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class UserGroup {
+public class UserGroup implements Serializable {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    long id;
+    Long id;
 
     @Persistent
     String name;
@@ -22,11 +23,11 @@ public class UserGroup {
 
     public UserGroup() {    }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
