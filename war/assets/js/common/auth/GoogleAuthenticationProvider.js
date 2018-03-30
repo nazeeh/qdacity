@@ -65,6 +65,7 @@ export default class GoogleAuthenticationProvider {
 							_this.qdacityTokenAuthentcationProvider.authStateChaned();
 							
 							await _this.uploadGoogleProfileImg();
+							await _this.qdacityTokenAuthentcationProvider.forceTokenRefresh();
                             resolve();
                         } else {
                             reject("Could not sign-in after registering new user.");
