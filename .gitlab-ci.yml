@@ -61,6 +61,7 @@ backend_prod_build:
   script:
     - cp ./pom.base.xml ./pom.xml
     - sed -i -e 's/APPENGINE_APP_ID/'$PROJECT_ID_PRODUCTION'/g' ./pom.xml
+    - sed -i -e 's/APPENGINE_APP_VERSION/'2'/g' ./pom.xml
     - mvn clean package -DskipTests
 
 rtcsvc_prod_build:
