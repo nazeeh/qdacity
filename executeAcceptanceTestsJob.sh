@@ -25,6 +25,9 @@ cd war
 gulp bundle-task --local
 cd ..
 
+# Rebuild server
+mvn clean install -DskipTests
+
 # Show docker containers and images
 echo "Existing containers"
 docker container ls -a
