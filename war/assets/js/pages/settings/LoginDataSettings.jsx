@@ -68,6 +68,10 @@ const StyledDisassociateSpan = styled.span`
         cursor: pointer;
     }
 `;
+
+const StyledChangePasswordButtonWrapper = styled.span`
+    margin-left: 30px;
+`;
     
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
@@ -356,6 +360,20 @@ export default class LoginDataSettings extends Component {
             );
         }
 
+        const ChangePasswordButton = () => {
+            return (
+                this.props.auth.userProfile.authNetwork === 'EMAIL_PASSWORD' ?
+                    <StyledChangePasswordButtonWrapper>
+                        <BtnDefault>
+                            <FormattedMessage
+                                id="settings.logindata.email.changePassword"
+                                defaultMessage="Change Password"
+                            />
+                        </BtnDefault>
+                    </StyledChangePasswordButtonWrapper> : null
+            );
+        }
+
         return (
             <div>
                 <StyledPanel>
@@ -368,6 +386,7 @@ export default class LoginDataSettings extends Component {
                         {this.props.auth.userProfile.externalEmail}
                     </u> 
                     {' (via ' + this.parseLoginProvider(this.props.auth.userProfile.authNetwork) + ')'}
+                    <ChangePasswordButton/>
                 </StyledPanel>
 
                 <StyledPanel>
