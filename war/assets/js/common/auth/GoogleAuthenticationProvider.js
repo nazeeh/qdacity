@@ -2,6 +2,8 @@
 import hello from 'hellojs';
 
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
+import UserEndpoint from '../endpoints/UserEndpoint.js';
+import ImageUtil from './ImageUtil.js';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
@@ -44,7 +46,7 @@ export default class GoogleAuthenticationProvider {
 		var promise = new Promise(function(resolve, reject) {
 
             // get google token
-            const session = hello.getAuthResponse(AuthenticationNetworks.GOOGLE);
+			const session = hello.getAuthResponse(AuthenticationNetworks.GOOGLE);
             const googleToken = session.id_token;
 
 			gapi.client.qdacity.authentication.google.register({
@@ -60,7 +62,9 @@ export default class GoogleAuthenticationProvider {
                     }).execute(async function(resp) {
                         if (!resp.code) {
                             _this.qdacityTokenAuthentcationProvider.setToken(resp.value);
-                            _this.qdacityTokenAuthentcationProvider.authStateChaned();
+							_this.qdacityTokenAuthentcationProvider.authStateChaned();
+							
+							await _this.uploadGoogleProfileImg();
                             resolve();
                         } else {
                             reject("Could not sign-in after registering new user.");
@@ -72,6 +76,38 @@ export default class GoogleAuthenticationProvider {
 			});
 		});
 
+		return promise;
+	}
+
+	uploadGoogleProfileImg() {
+		var promise = new Promise(async function(resolve, reject) {
+			const profile = await hello(AuthenticationNetworks.GOOGLE).api('me');
+
+			/*
+			* Removing query parameters from URL.
+			* With google we always got ?sz=50 in the URL which gives you a
+			* small low res thumbnail. Without parameter we get the original
+			* image.
+			* When adding other LoginProviders this needs to be reviewed
+			*/
+			var url = URI(profile.thumbnail).fragment(true);
+			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+
+			const imgBase64 = ImageUtil.scaleToBase64(picSrcWithoutParams, 200, 200);
+			const imgBase64WithoutMetaInformation = imgBase64.split(',')[1];
+			const data = {
+				blob: imgBase64WithoutMetaInformation
+			}
+
+			UserEndpoint.updateProfileImg(data).then(async function(resp) {
+				if(!resp.code) {
+					console.log('changed user profile picture');
+				} else {
+					console.log('could not change user profile picture');
+				}
+				resolve();
+			});
+		});
 		return promise;
 	}
 
