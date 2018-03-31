@@ -83,8 +83,7 @@ export default class GroupDashboard extends Component {
 
                 <StyledUserListWrapper>
                     <GroupUserList 
-                        owners={this.state.userGroup.owners} 
-                        participants={this.state.userGroup.participants} 
+                        userGroup={this.state.userGroup} 
                         isOwner={this.state.isOwner}
                     />
                 </StyledUserListWrapper>
