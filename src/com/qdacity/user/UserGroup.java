@@ -22,7 +22,7 @@ public class UserGroup implements Serializable {
     List<String> participants;
 
     @Persistent
-    List<String> projects;
+    List<Long> projects;
 
     public UserGroup() {    }
 
@@ -60,12 +60,12 @@ public class UserGroup implements Serializable {
         this.participants = participants;
     }
 
-    public List<String> getProjects() {
-        if(projects == null) return new ArrayList<String>();
+    public List<Long> getProjects() {
+        if(projects == null) return new ArrayList<Long>();
         return projects;
     }
 
-    public void setProjects(List<String> projects) {
+    public void setProjects(List<Long> projects) {
         this.projects = projects;
     }
 }
