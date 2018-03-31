@@ -26,7 +26,7 @@ cd realtime-service
 npm run start &
 cd ..
 
-sleep 5
+sleep 10
 
 # Start the tests
 echo "#######################################################################################"
