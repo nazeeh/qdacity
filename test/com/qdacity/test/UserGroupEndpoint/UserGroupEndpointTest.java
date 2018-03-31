@@ -140,6 +140,63 @@ public class UserGroupEndpointTest {
     }
 
     @Test
+    public void testRemoveUserParticipantByOwner() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser1 = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);
+
+        AuthenticatedUser authUser2 = new AuthenticatedUser("11", "test2@googleuser.de", LoginProviderType.GOOGLE);
+        User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
+        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+
+        Collection<UserGroup> userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser2).getItems();
+        assertEquals(1, userGroupCollection.size());
+
+        new UserGroupEndpoint().removeUser(user2.getId(), group1.getId(), authUser1);
+        userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser2).getItems();
+        assertEquals(0, userGroupCollection.size());
+    }
+
+    @Test
+    public void testRemoveUserParticipantSelf() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser1 = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);
+
+        AuthenticatedUser authUser2 = new AuthenticatedUser("11", "test2@googleuser.de", LoginProviderType.GOOGLE);
+        User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
+        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+
+        Collection<UserGroup> userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser2).getItems();
+        assertEquals(1, userGroupCollection.size());
+
+        new UserGroupEndpoint().removeUser(user2.getId(), group1.getId(), authUser2);
+        userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser2).getItems();
+        assertEquals(0, userGroupCollection.size());
+    }
+
+    @Test
+    public void testRemoveUserOwner() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser1 = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);
+
+        AuthenticatedUser authUser2 = new AuthenticatedUser("11", "test2@googleuser.de", LoginProviderType.GOOGLE);
+        User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
+        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+
+        Collection<UserGroup> userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser1).getItems();
+        assertEquals(1, userGroupCollection.size());
+
+        new UserGroupEndpoint().removeUser(user1.getId(), group1.getId(), authUser1);
+        userGroupCollection = new UserGroupEndpoint().listUserGroups(null, null, authUser1).getItems();
+        assertEquals(0, userGroupCollection.size());
+    }
+
+    @Test
     public void testListUserGroups() throws UnauthorizedException, BadRequestException {
         AuthenticatedUser authUser1 = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
         User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);

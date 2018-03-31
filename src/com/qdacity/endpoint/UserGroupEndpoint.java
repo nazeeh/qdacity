@@ -175,7 +175,44 @@ public class UserGroupEndpoint {
         }
     }
 
+    /**
+     * Removes the given user from the given group (owner and participant).
+     * Updates the bidirectional relation to user.
+     * Only admins and course owner can trigger this endpoint to remove other users.
+     * Participants can remove themselves.
+     * @param userId
+     * @param groupId
+     * @param loggedInUser
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "usergroup.removeUser")
+    public void removeUser(@Named("userId") String userId, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The participant could not be authenticated");
+        }
+        User requestingUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
+        User user = (User) Cache.getOrLoad(userId, User.class);
+        UserGroup userGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
 
+        if(!requestingUser.getId().equals(userId)) { // removin self is ok
+            Authorization.checkAuthorization(userGroup, loggedInUser); // otherwise only owners and admins
+        }
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            userGroup.getParticipants().remove(user.getId());
+            userGroup.getOwners().remove(user.getId());
+            mgr.makePersistent(userGroup);
+            Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
+
+            user.getUserGroups().remove(userGroup.getId());
+            mgr.makePersistent(user);
+            Cache.cache(user.getId(), User.class, user);
+            Cache.invalidatUserLogins(user); // for case that admin triggers
+        } finally {
+            mgr.close();
+        }
+    }
 
 
     private static PersistenceManager getPersistenceManager() {
