@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import ProjectList from './ProjectList.jsx';
 import CourseList from './CourseList.jsx';
+import UserGroupList from './UserGroupList.jsx';
 import NotificationList from './NotificationList.jsx';
 import WelcomePanel from './WelcomePanel.jsx';
 import AdvertPanel from './AdvertPanel.jsx';
@@ -14,7 +15,8 @@ export default class PersonalDashboard extends React.Component {
 
 		this.state = {
 			projects: [],
-			courses: []
+			courses: [],
+			userGroups: []
 		};
 
 		this.setProjects = this.setProjects.bind(this);
@@ -23,6 +25,7 @@ export default class PersonalDashboard extends React.Component {
 		this.setCourses = this.setCourses.bind(this);
 		this.addCourse = this.addCourse.bind(this);
 		this.removeCourse = this.removeCourse.bind(this);
+		this.setUserGroups = this.setUserGroups.bind(this);
 
 		scroll(0, 0);
 	}
@@ -63,6 +66,12 @@ export default class PersonalDashboard extends React.Component {
 		this.state.courses.splice(index, 1);
 		this.setState({
 			courses: this.state.courses
+		});
+	}
+
+	setUserGroups(userGroups) {
+		this.setState({
+			userGroups: userGroups
 		});
 	}
 
@@ -118,6 +127,25 @@ export default class PersonalDashboard extends React.Component {
 										addCourse={this.addCourse}
 										removeCourse={this.removeCourse}
 										history={this.props.history}
+									/>
+								</div>
+							</div>
+						</div>
+						<div>
+							<div className="box box-default">
+								<div className="box-header with-border">
+									<h3 className="box-title">
+										<FormattedMessage
+											id="personaldashboard.groups"
+											defaultMessage="User Groups"
+										/>
+									</h3>
+								</div>
+								<div className="box-body">
+									<UserGroupList
+										userGroups={this.state.userGroups}
+										history={this.props.history}
+										setUserGroups={this.setUserGroups}
 									/>
 								</div>
 							</div>
