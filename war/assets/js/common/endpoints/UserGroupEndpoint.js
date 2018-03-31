@@ -16,4 +16,11 @@ export default class UserGroupEndpoint {
         });
 		return Promisizer.makePromise(apiMethod);
     }
+
+    static listUserGroups(userId = null) {
+		var apiMethod = gapi.client.qdacity.usergroup.listUserGroups({
+            userId: userId
+        });
+		return Promisizer.makePromise(apiMethod);
+    }
 }

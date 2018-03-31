@@ -144,6 +144,7 @@ export default class PersonalDashboard extends React.Component {
 								<div className="box-body">
 									<UserGroupList
 										userGroups={this.state.userGroups}
+										auth={this.props.auth}
 										history={this.props.history}
 										setUserGroups={this.setUserGroups}
 									/>
