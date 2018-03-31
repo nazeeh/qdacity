@@ -212,4 +212,20 @@ public class UserGroupEndpointTest {
         assertEquals(1, userGroups.stream().filter(group -> group.getId().equals(group1.getId())).count());
         assertEquals(1, userGroups.stream().filter(group -> group.getId().equals(group2.getId())).count());
     }
+
+    @Test
+    public void testGetUsers() throws UnauthorizedException, BadRequestException {
+        AuthenticatedUser authUser1 = new AuthenticatedUser("283791", "test@googleuser.de", LoginProviderType.EMAIL_PASSWORD);
+        User user1 = UserEndpointTestHelper.addUser("test@user.de", "test", "user", authUser1);
+
+        AuthenticatedUser authUser2 = new AuthenticatedUser("11", "test2@googleuser.de", LoginProviderType.GOOGLE);
+        User user2 = UserEndpointTestHelper.addUser("test2@user.de", "test2", "user2", authUser2);
+
+        UserGroup group1 = new UserGroupEndpoint().insertUserGroup("group1", authUser1);
+        new UserGroupEndpoint().addParticipant(user2.getId(), group1.getId(), authUser1);
+
+        Collection<User> users = new UserGroupEndpoint().getUsers(null, group1.getId(), authUser1).getItems();
+        assertEquals(1, users.stream().filter(user -> user.getId().equals(user1.getId())).count());
+        assertEquals(1, users.stream().filter(user -> user.getId().equals(user2.getId())).count());
+    }
 }

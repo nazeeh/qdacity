@@ -230,6 +230,36 @@ public class UserGroupEndpoint {
         }
     }
 
+    /**
+     * Returns all users that are associeted with the given user group.
+     * @param cursorString
+     * @param groupId
+     * @param loggedInUser
+     * @return
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "usergroup.getUsers", path = "usergroup.getUsers")
+    public CollectionResponse<User> getUsers(@Named("cursor") @Nullable String cursorString, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The participant could not be authenticated");
+        }
+
+        List<User> execute = null;
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            Query q = mgr.newQuery(User.class, ":p.contains(userGroups)");
+            execute = (List<User>) q.execute(Arrays.asList(groupId));
+
+            // Tight loop for fetching all entities from datastore and accomodate
+            // for lazy fetch.
+            for (User obj : execute);
+        } finally {
+            mgr.close();
+        }
+
+        return CollectionResponse.<User> builder().setItems(execute).setNextPageToken(cursorString).build();
+    }
+
 
     private static PersistenceManager getPersistenceManager() {
         return PMF.get().getPersistenceManager();

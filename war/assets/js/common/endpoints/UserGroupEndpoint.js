@@ -30,4 +30,11 @@ export default class UserGroupEndpoint {
         });
 		return Promisizer.makePromise(apiMethod);
     }
+
+    static getUsers(groupId) {
+		var apiMethod = gapi.client.qdacity.usergroup.getUsers({
+            groupId: groupId
+        });
+		return Promisizer.makePromise(apiMethod);
+    }
 }
