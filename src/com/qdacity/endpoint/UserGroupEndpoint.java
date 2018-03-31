@@ -142,6 +142,22 @@ public class UserGroupEndpoint {
     }
 
     /**
+     * Returns the UserGroup by id.
+     * @param groupId
+     * @param loggedInUser
+     * @return
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "userGroup.getById")
+    public UserGroup getUserGroupById(@Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The participant could not be authenticated");
+        }
+
+        return (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
+    }
+
+    /**
      * Adds the user with the given userId to the participants list.
      * Updates the bidirectional relation to user.
      * Only admins and course owner can trigger this endpoint.

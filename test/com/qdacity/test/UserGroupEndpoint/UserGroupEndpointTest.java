@@ -113,10 +113,8 @@ public class UserGroupEndpointTest {
         assertEquals(0, group1.getParticipants().size());
 
         new UserGroupEndpoint().addParticipant(participant.getId(), group1.getId(), authGroupOwner);
-        Collection<UserGroup> userGroups = new UserGroupEndpoint().listOwnedUserGroups(null, null, authGroupOwner).getItems();
-        assertEquals(1, userGroups.size());
 
-        group1 = new ArrayList<UserGroup>(userGroups).get(0);
+        group1 = new UserGroupEndpoint().getUserGroupById(group1.getId(), authGroupOwner);
         assertEquals(1, group1.getParticipants().size());
         assertTrue(group1.getParticipants().contains(participant.getId()));
 
