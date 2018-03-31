@@ -1,6 +1,6 @@
 import Promisizer from './Promisizer';
 
-export default class UserGroup {
+export default class UserGroupEndpoint {
     constructor() {}
     
 	static insertUserGroup(name) {
