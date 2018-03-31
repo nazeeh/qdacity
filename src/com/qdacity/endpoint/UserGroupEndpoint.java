@@ -148,7 +148,7 @@ public class UserGroupEndpoint {
      * @return
      * @throws UnauthorizedException
      */
-    @ApiMethod(name = "userGroup.getById")
+    @ApiMethod(name = "usergroup.getById")
     public UserGroup getUserGroupById(@Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The participant could not be authenticated");
