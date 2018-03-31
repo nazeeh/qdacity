@@ -27,8 +27,11 @@ describe(SPEC_NAME, function () {
 
     it('The system is running', (done) => {
 		// Find login button
-		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]"))).then(() =>  {
+		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-google')]")), 10000).then(() =>  {
 			expect(1).toBe(1);
+			done();
+		}, () => {
+			expect('Did not find the login button. The test assumes, that the side was not loaded properly.').toBe('');
 			done();
 		});
     }, Common.getDefaultTimeout());
