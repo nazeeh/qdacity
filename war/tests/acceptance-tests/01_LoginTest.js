@@ -40,7 +40,9 @@ describe(SPEC_NAME, function () {
     	const _this = this;
     
 		// Register Account
-		this.driver.wait(until.elementLocated(By.xpath("//a[@id='signin-formula-register-link']"))).click();
+		this.driver.wait(until.elementLocated(By.xpath("//a[@id='signin-formula-register-link']"))).click().then(() => {
+			console.log('Found and clicked the login button.');
+		});
 
 		// First name
 		let fieldFirstName = this.driver.findElement(By.xpath("//input[@name='firstName']"));
@@ -63,12 +65,16 @@ describe(SPEC_NAME, function () {
 		fieldPassword.sendKeys(userPassword);
 		
 		// Register  
-		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click(); 		
+		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click().then(() => {
+			console.log('Filled the form and clicked the register button.');
+		}); 		
     	    	
     	this.driver.sleep(2000);
     	
 		// Check welcome message and URL
     	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
+			console.log('Found the welcome message.');
+
     		_this.driver.getCurrentUrl().then((currentUrl) => {	
     			// Check the welcome message
         		expect(text).toBe("Welcome " + displayName);
