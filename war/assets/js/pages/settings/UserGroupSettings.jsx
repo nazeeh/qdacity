@@ -32,6 +32,8 @@ const StyledUserGroupItem = styled.li`
     padding: 3px 5px;
     margin-bottom: 5px;
 
+    cursor: pointer;
+
     background-color: ${props => props.theme.bgDefault};
     border: 1px solid ${props => props.theme.borderPrimary};
 
@@ -154,9 +156,8 @@ export default class UserGroupSettings extends Component {
         }
 
         const UserGroupItem = ({ userGroup }) => {
-            console.log(userGroup);
             return (
-                <StyledUserGroupItem>
+                <StyledUserGroupItem onClick={() => this.props.history.push('/GroupDashboard?userGroup=' + userGroup.id)}>
                     <span>{userGroup.name}</span>
                 </StyledUserGroupItem>
             );

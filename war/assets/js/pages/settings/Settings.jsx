@@ -173,6 +173,7 @@ export default class SettingsPage extends Component {
                             render={props => (
                                 <UserGroupSettings
                                     auth={this.props.auth} 
+                                    history={this.props.history}
                                 />
                             )}
                         />
