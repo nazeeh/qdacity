@@ -4,6 +4,7 @@ import com.google.api.server.spi.config.*;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.common.collect.Lists;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -77,7 +78,7 @@ public class UserGroupEndpoint {
      * @return
      * @throws UnauthorizedException
      */
-    @ApiMethod(name="usergroup.listOwnedUserGroups")
+    @ApiMethod(name="usergroup.listOwnedUserGroups", path = "usergroup.listOwnedUserGroups")
     public CollectionResponse<UserGroup> listOwnedUserGroups(@Named("cursor") @Nullable String cursorString, @Named("userId") @Nullable String userId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The user could not be authenticated");
@@ -98,6 +99,41 @@ public class UserGroupEndpoint {
             // Tight loop for fetching all entities from datastore and accomodate
             // for lazy fetch.
             for (UserGroup obj : execute);
+        } finally {
+            mgr.close();
+        }
+
+        return CollectionResponse.<UserGroup> builder().setItems(execute).setNextPageToken(cursorString).build();
+    }
+
+    /**
+     * Lists all user groups that the user with the given userId owns or participates.
+     * If the userId is empty, the owned userGroups of the requesting users is returned.
+     * @param cursorString
+     * @param userId
+     * @param loggedInUser
+     * @return
+     */
+    @ApiMethod(name = "usergroup.listUserGroups", path = "usergroup.listUserGroups")
+    public CollectionResponse<UserGroup> listUserGroups(@Named("cursor") @Nullable String cursorString, @Named("userId") @Nullable String userId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The user could not be authenticated");
+        }
+
+        if(userId == null || userId.isEmpty()) {
+            AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+            User requestingUser = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+            userId = requestingUser.getId();
+        }
+        User user = (User) Cache.getOrLoad(userId, User.class);
+
+        List<UserGroup> execute = new ArrayList<UserGroup>();
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            for(Long userGroupId: user.getUserGroups()) {
+                UserGroup group = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+                execute.add(group);
+            }
         } finally {
             mgr.close();
         }
