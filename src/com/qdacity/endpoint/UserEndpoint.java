@@ -489,8 +489,14 @@ public class UserEndpoint {
 				}
 			}
 		}
-		
-		
+
+		// remove reference from user groups
+		UserGroupEndpoint userGroupEndpoint = new UserGroupEndpoint();
+		if(user.getUserGroups() != null) {
+			for(Long userGroupId: user.getUserGroups()) {
+				userGroupEndpoint.removeUser(user.getId(), userGroupId, loggedInUser);
+			}
+		}
 		
 		// finally delete user
 		PersistenceManager mgr = getPersistenceManager();
