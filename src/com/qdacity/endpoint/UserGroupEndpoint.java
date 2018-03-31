@@ -54,6 +54,7 @@ public class UserGroupEndpoint {
         userGroup.setName(name);
         userGroup.setOwners(Arrays.asList(user.getId()));
         userGroup.setParticipants(new ArrayList<String>());
+        userGroup.setProjects(new ArrayList<String>());
 
         PersistenceManager mgr = getPersistenceManager();
         try {
