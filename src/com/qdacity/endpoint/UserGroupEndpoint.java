@@ -15,7 +15,6 @@ import com.qdacity.user.UserGroup;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import javax.jdo.Transaction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +77,7 @@ public class UserGroupEndpoint {
      * @return
      * @throws UnauthorizedException
      */
-    @ApiMethod(name="usergroup.getOwnedUserGroupsByUserId")
+    @ApiMethod(name="usergroup.listOwnedUserGroups")
     public CollectionResponse<UserGroup> listOwnedUserGroups(@Named("cursor") @Nullable String cursorString, @Named("userId") @Nullable String userId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The user could not be authenticated");
