@@ -10,6 +10,7 @@ import javax.jdo.Query;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.UserEndpoint;
@@ -21,6 +22,7 @@ import com.qdacity.project.codesystem.Code;
 import com.qdacity.project.codesystem.CodeSystem;
 import com.qdacity.project.data.TextDocument;
 import com.qdacity.umleditor.UmlCodePosition;
+import com.qdacity.user.UserGroup;
 import com.qdacity.user.UserType;
 
 public class Authorization {
@@ -269,6 +271,23 @@ public class Authorization {
 		throw new UnauthorizedException("User is Not Authorized.");
 	}
 
+	/**
+	 * Checks if requesting user is admin or owner of the user group
+	 * @param userGroup
+	 * @param loggedInUser
+	 * @throws UnauthorizedException if not
+	 */
+	public static void checkAuthorization(UserGroup userGroup, User loggedInUser) throws UnauthorizedException {
+		isUserNotNull(loggedInUser);
+
+		com.qdacity.user.User user = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
+
+		Boolean isOwner = userGroup.getOwners().contains(user.getId());
+		Boolean isAdmin = isUserAdmin(loggedInUser);
+
+		if(!isOwner && !isAdmin) throw new UnauthorizedException("Only group owners and admins are allowed to perform this operation!");
+	}
+
 	public static Boolean isUserAdmin(User googleUser) throws UnauthorizedException {
 		com.qdacity.user.User user = userEndpoint.getCurrentUser(googleUser);
 		if (user.getType() == UserType.ADMIN) return true;
@@ -286,5 +305,4 @@ public class Authorization {
 	public static void isUserNotNull(Object userLoggedIn) throws UnauthorizedException {
 		if (userLoggedIn == null) throw new UnauthorizedException("User is Not Valid");
 	}
-
 }

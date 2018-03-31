@@ -105,6 +105,41 @@ public class UserGroupEndpoint {
         return CollectionResponse.<UserGroup> builder().setItems(execute).setNextPageToken(cursorString).build();
     }
 
+    /**
+     * Adds the user with the given userId to the participants list.
+     * Updates the bidirectional relation to user.
+     * Only admins and course owner can trigger this endpoint.
+     * @param userId
+     * @param groupId
+     * @param loggedInUser
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "usergroup.addParticipant")
+    public void addParticipant(@Named("userId") String userId, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("The participant could not be authenticated");
+        }
+        User participant = (User) Cache.getOrLoad(userId, User.class);
+        UserGroup userGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
+
+        Authorization.checkAuthorization(userGroup, loggedInUser); // only owners and admins
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            userGroup.getParticipants().add(participant.getId());
+            mgr.makePersistent(userGroup);
+            Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
+
+            participant.getUserGroups().add(userGroup.getId());
+            mgr.makePersistent(participant);
+            Cache.cache(participant.getId(), User.class, participant);
+            Cache.invalidatUserLogins(participant); // for case that admin triggers
+        } finally {
+            mgr.close();
+        }
+    }
+
+
 
 
     private static PersistenceManager getPersistenceManager() {
