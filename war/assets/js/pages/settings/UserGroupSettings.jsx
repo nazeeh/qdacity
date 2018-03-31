@@ -5,6 +5,7 @@ import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
 import styled from 'styled-components';
+import { BtnPrimary } from '../../common/styles/Btn.jsx';
 
 import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
@@ -15,6 +16,10 @@ const StyledPanel = styled.div`
 	border: 1px solid ${props => props.theme.borderDefault};
 	padding: 20px 50px 20px 50px;
     margin: 20px;
+`;
+
+const StyledUserGroupHeading = styled.h2`
+    margin-bottom: 30px;
 `;
 
 const StyledUserGroupList = styled.ul`
@@ -67,6 +72,74 @@ export default class UserGroupSettings extends Component {
                 });
             })
     }
+
+    onCreateUserGroup() {
+        const _this = this;
+        const { formatMessage } = IntlProvider.intl;
+
+        const groupNameLabel = formatMessage({
+			id: 'settings.usergroup.create.groupName',
+			defaultMessage: 'Name'
+		});
+
+        vex.dialog.open({
+            message: formatMessage({
+                id: 'settings.usergroup.create.heading',
+                defaultMessage: 'Create a new User Group.'
+            }),
+            input: [
+                `<label for="groupName">${groupNameLabel}</label><input name="groupName" required />`
+            ].join('\n'),
+            buttons: [
+                $.extend({}, vex.dialog.buttons.YES, {
+                    text: formatMessage({
+                        id: 'settings.usergroup.create.create',
+                        defaultMessage: 'Create'
+                    })
+                }),
+                $.extend({}, vex.dialog.buttons.NO, {
+                    text: formatMessage({
+                        id: 'settings.usergroup.create.cancel',
+                        defaultMessage: 'Cancel'
+                    })
+                })
+            ],
+            callback: async function(data) {
+                if (data === false) {
+                    return console.log('Cancelled');
+                }
+                _this.createUserGroup({
+                    name: data.groupName
+                })
+            }
+        });
+    }
+
+    createUserGroup(groupData) {
+        const _this = this;
+        const { formatMessage } = IntlProvider.intl;
+
+        UserGroupEndpoint.insertUserGroup(groupData.name).then(function(resp) {
+            _this.updateUserGroups();
+        }).catch(function(err) {
+            vex.dialog.open({
+                message: formatMessage({
+                    id: 'settings.usergroup.create.failure',
+                    defaultMessage: 'Could not create the User Group!'
+                }),
+                buttons: [
+                    $.extend({}, vex.dialog.buttons.YES, {
+                        text: formatMessage({
+                            id: 'settings.usergroup.create.failure.ok',
+                            defaultMessage: 'OK'
+                        })
+                    })
+                ]
+            });
+        });
+    }
+
+
     
     render() {
 
@@ -74,13 +147,14 @@ export default class UserGroupSettings extends Component {
             return !! userGroups ? <div>
                 {userGroups.map((userGroup, i) => {
                     return (
-                        <UserGroupItem userGroup={userGroups}/>
+                        <UserGroupItem userGroup={userGroup}/>
                     );
                 })}
             </div> : null;
         }
 
         const UserGroupItem = ({ userGroup }) => {
+            console.log(userGroup);
             return (
                 <StyledUserGroupItem>
                     <span>{userGroup.name}</span>
@@ -91,12 +165,19 @@ export default class UserGroupSettings extends Component {
 
         return (
             <StyledPanel>
-                <h2>
+                <StyledUserGroupHeading>
                     <FormattedMessage
                         id="settings.usergroups.heading"
                         defaultMessage="Owned User Groups"
                     />
-                </h2>
+                </StyledUserGroupHeading>
+                <BtnPrimary onClick={() => this.onCreateUserGroup()}>
+                    <i className="fa fa-plus"/>
+                    <FormattedMessage
+                        id="settings.usergroups.create"
+                        defaultMessage="Create new User Group"
+                    />
+                </BtnPrimary>
                 <StyledUserGroupList>
                     <UserGroupListItems userGroups={this.state.userGroups} />
                 </StyledUserGroupList>
