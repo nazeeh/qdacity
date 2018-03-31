@@ -60,7 +60,8 @@ export default class UserGroupList extends React.Component {
 			return (
 				<StyledListItemDefault
 					key={userGroup.id}
-					onClick={this.userGroupClick.bind(this, userGroup)}
+                    onClick={this.userGroupClick.bind(this, userGroup)}
+                    clickable={true}
 				>
                 {userGroup.name}
 				</StyledListItemDefault>
@@ -70,6 +71,7 @@ export default class UserGroupList extends React.Component {
 				<StyledListItemPrimary
 					key={userGroup.id}
 					onClick={this.userGroupClick.bind(this, userGroup)}
+                    clickable={true}
 				>
                 {userGroup.name}
 				</StyledListItemPrimary>
