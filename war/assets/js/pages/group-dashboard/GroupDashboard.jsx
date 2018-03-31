@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+import GroupUserList from './GroupUserList.jsx';
 
 
 const StyledDashboard = styled.div`
@@ -28,6 +29,10 @@ const StyledPageHeader = styled.div`
 
 const StyledUserGroupName = styled.span`
     margin-left: 5px;
+`;
+
+const StyledUserListWrapper = styled.div`
+    grid-area: users;
 `;
 
 
@@ -73,6 +78,10 @@ export default class GroupDashboard extends Component {
                     <i className="fa fa-users" />
                     <StyledUserGroupName>{this.state.userGroup.name}</StyledUserGroupName>
                 </StyledPageHeader>
+
+                <StyledUserListWrapper>
+                    <GroupUserList/>
+                </StyledUserListWrapper>
 			</StyledDashboard>
         );
     }
