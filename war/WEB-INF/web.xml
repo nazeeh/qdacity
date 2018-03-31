@@ -66,6 +66,10 @@
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>page</servlet-name>
+		<url-pattern>/GroupDashboard</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>page</servlet-name>
 		<url-pattern>/TermDashboard</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
