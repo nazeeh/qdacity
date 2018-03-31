@@ -13,6 +13,8 @@ import GroupUserList from './GroupUserList.jsx';
 
 const StyledDashboard = styled.div`
     margin-top: 35px;
+    margin-left: 15px;
+    margin-right: 15px;
     
     display: grid;
     grid-gap: 20px;
@@ -80,7 +82,11 @@ export default class GroupDashboard extends Component {
                 </StyledPageHeader>
 
                 <StyledUserListWrapper>
-                    <GroupUserList/>
+                    <GroupUserList 
+                        owners={this.state.userGroup.owners} 
+                        participants={this.state.userGroup.participants} 
+                        isOwner={this.state.isOwner}
+                    />
                 </StyledUserListWrapper>
 			</StyledDashboard>
         );
