@@ -185,7 +185,7 @@ public class UserGroupEndpoint {
      * @param loggedInUser
      * @throws UnauthorizedException
      */
-    @ApiMethod(name = "usergroup.removeUser")
+    @ApiMethod(name = "usergroup.removeUser", path = "usergroup.removeUser")
     public void removeUser(@Named("userId") String userId, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The participant could not be authenticated");
