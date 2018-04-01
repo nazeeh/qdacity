@@ -9,6 +9,7 @@ import ReactLoading from '../../../common/ReactLoading.jsx';
 import { BtnLg } from '../../../common/styles/Btn.jsx';
 import StyledInput from '../../../common/styles/Input.jsx';
 import SigninWithGoogleBtn from './SigninWithGoogleBtn.jsx';
+import SigninWithTwitterBtn from './SigninWithTwitterBtn.jsx';
 import VexModal from '../../../common/modals/VexModal';
 
 const PanelDivisor = styled.div`
@@ -402,6 +403,13 @@ export default class SigninFormula extends React.Component {
                     <div className="row">
                         <ButtonStyledWidh>
 							<SigninWithGoogleBtn 
+								auth={this.props.auth} 
+								onSignedIn={this.props.onSignedIn} />
+                        </ButtonStyledWidh>
+                    </div>
+					<div className="row">
+                        <ButtonStyledWidh>
+							<SigninWithTwitterBtn 
 								auth={this.props.auth} 
 								onSignedIn={this.props.onSignedIn} />
                         </ButtonStyledWidh>
