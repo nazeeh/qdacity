@@ -7,8 +7,7 @@ import ImageUtil from './ImageUtil.js';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const TWITTER_CLIENT_ID = '$TWITTER_CLIENT_ID$';
-//const FACEBOOK_CLIENT_ID = '$FACEBOOK_CLIENT_ID$';
-const FACEBOOK_CLIENT_ID = '187499018555928';
+const FACEBOOK_CLIENT_ID = '$FACEBOOK_CLIENT_ID$';
     
     
 // hellojs for 'regular' sign-in
