@@ -132,13 +132,31 @@ export default class LoginDataSettings extends Component {
             );        
     }
 
+    onAddFacebookAccount() {
+        hello.on('auth.login', this.helloCallback);
+
+        hello(AuthenticationNetworks.FACEBOOK)
+            .login({
+                display: 'popup',
+                scope: 'basic, email',
+                force: true // let user choose which account he wants to login with
+            })
+            .then(
+                function() {
+                    // do nothing because the listener gets the result.
+                },
+                function(err) {
+                    console.log(err);
+                }
+            );        
+    }
+
     onAddTwitterAccount() {
         hello.on('auth.login', this.helloCallback);
 
         hello(AuthenticationNetworks.TWITTER)
             .login({
                 display: 'popup',
-                response_type: 'token id_token',
                 scope: 'basic, email',
                 force: true // let user choose which account he wants to login with
             })
@@ -162,6 +180,15 @@ export default class LoginDataSettings extends Component {
 
             // unsubscribe again
             hello.off('auth.login', this.helloCallback);
+        } else if(auth.network === AuthenticationNetworks.FACEBOOK) {
+            // get facebook token
+            const session = hello.getAuthResponse(AuthenticationNetworks.FACEBOOK);
+            const facebookToken = session.access_token;
+
+            this.addFacebookAccount(facebookToken);
+
+            // unsubscribe again
+            hello.off('auth.login', this.helloCallback);
         } else if(auth.network === AuthenticationNetworks.TWITTER) {
             // get twitter token
             const session = hello.getAuthResponse(AuthenticationNetworks.TWITTER);
@@ -180,6 +207,21 @@ export default class LoginDataSettings extends Component {
 
         gapi.client.qdacity.auth.associateGoogleLogin({
             googleIdToken: googleIdToken
+        }).execute(function(resp) {
+            if(!resp.code) {
+                _this.updateAssociatedLoginList();
+            } else {    
+                _this.handleFailedAssociateResponse(resp);
+            }
+        });
+    }
+
+    addFacebookAccount(facebookAccessToken) {
+        const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+        gapi.client.qdacity.auth.associateFacebookLogin({
+            authNetworkToken: facebookAccessToken
         }).execute(function(resp) {
             if(!resp.code) {
                 _this.updateAssociatedLoginList();
@@ -327,6 +369,9 @@ export default class LoginDataSettings extends Component {
                 break;
             case 'EMAIL_PASSWORD':
                 parsedProvider = 'Email';
+                break;
+            case 'FACEBOOK':
+                parsedProvider = 'Facebook';
                 break;
             case 'TWITTER':
                 parsedProvider = 'Twitter';
@@ -574,6 +619,13 @@ export default class LoginDataSettings extends Component {
                             <FormattedMessage
                                 id="settings.logindata.add.google"
                                 defaultMessage="Google"
+                            />
+                        </BtnDefault>
+                        <BtnDefault onClick={() => this.onAddFacebookAccount()}>
+                            <i className="fa fa-facebook-f" />
+                            <FormattedMessage
+                                id="settings.logindata.add.facebook"
+                                defaultMessage="Facebook"
                             />
                         </BtnDefault>
                         <BtnDefault onClick={() => this.onAddTwitterAccount()}>
