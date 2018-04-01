@@ -48,7 +48,11 @@ export default class HelloJsAuthenticationProvider {
 
             // get AuthNetwork token
 			const session = hello.getAuthResponse(_this.authNetwork);
-            const authNetworkToken = session.id_token;
+			let authNetworkToken = session.id_token;	
+			if(!authNetworkToken) {
+				// twitter needs access token
+				authNetworkToken = session.access_token;
+			}		
 
 			_this.registerApiMethod({
                 authNetworkToken: authNetworkToken,
@@ -123,7 +127,11 @@ export default class HelloJsAuthenticationProvider {
 
                 // get AuthNetwork token
                 const session = hello.getAuthResponse(_this.authNetwork);
-			    const authNetworkToken = session.id_token;
+				let authNetworkToken = session.id_token;
+				if(!authNetworkToken) {
+					// twitter needs access token
+					authNetworkToken = session.access_token;
+				}
 
                 // get qdacity jwt token
                 _this.getTokenApiMethod({
