@@ -1,6 +1,4 @@
 //@ts-check
-import hello from 'hellojs';
-
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import HelloJsAuthenticationProvider from './HelloJsAuthenticationProvider.js';
 
