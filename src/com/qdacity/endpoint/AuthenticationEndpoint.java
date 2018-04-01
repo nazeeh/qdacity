@@ -373,6 +373,17 @@ public class AuthenticationEndpoint {
         associateLogin((AuthenticatedUser) loggedInUser, googleUser);
     }
 
+    @ApiMethod(name="auth.associateTwitterLogin")
+    public void associateTwitterLogin(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser twitterUser = twitterTokenValidator.validate(authNetworkToken);
+        assertAssociationPreconditions(twitterUser);
+        associateLogin((AuthenticatedUser) loggedInUser, twitterUser);
+    }
+
     @ApiMethod(name="auth.associateEmailPassword")
     public void associateEmailPassword(@Named("email") String email, @Named("password") String password, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         if(loggedInUser == null) {
