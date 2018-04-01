@@ -50,7 +50,7 @@ export default class HelloJsAuthenticationProvider {
             const authNetworkToken = session.id_token;
 
 			_this.registerApiMethod({
-                googleToken: authNetworkToken,
+                authNetworkToken: authNetworkToken,
                 email: email,
                 surName: surName,
                 givenName: givenName
@@ -58,7 +58,7 @@ export default class HelloJsAuthenticationProvider {
 				if (!resp.code) {
 					// sign in after successful registration
                     _this.getTokenApiMethod({
-                        googleToken: authNetworkToken,
+                        authNetworkToken: authNetworkToken,
                     }).execute(async function(resp) {
                         if (!resp.code) {
                             _this.qdacityTokenAuthentcationProvider.setToken(resp.value);
@@ -126,7 +126,7 @@ export default class HelloJsAuthenticationProvider {
 
                 // get qdacity jwt token
                 _this.getTokenApiMethod({
-                    googleToken: authNetworkToken,
+                    authNetworkToken: authNetworkToken,
                 }).execute(async function(resp) {
                     if (!resp.code) {
                         _this.qdacityTokenAuthentcationProvider.setToken(resp.value);

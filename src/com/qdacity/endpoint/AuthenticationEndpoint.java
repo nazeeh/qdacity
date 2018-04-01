@@ -148,11 +148,11 @@ public class AuthenticationEndpoint {
     }
 
     @ApiMethod(name = "authentication.google.register")
-    public User registerGoogle(@Named("googleToken") String googleToken,
+    public User registerGoogle(@Named("authNetworkToken") String authNetworkToken,
                                @Named("email") String email,
                                @Named("givenName") String givenName,
                                @Named("surName") String surName) throws UnauthorizedException {
-        AuthenticatedUser authUser = googleTokenValidator.validate(googleToken);
+        AuthenticatedUser authUser = googleTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
             throw new UnauthorizedException("Code3.1: The Google token does not seem to be valid!");
         }
@@ -165,9 +165,9 @@ public class AuthenticationEndpoint {
     }
 
     @ApiMethod(name = "authentication.google.getToken")
-    public StringWrapper getTokenGoogle(@Named("googleToken") String googleToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    public StringWrapper getTokenGoogle(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 
-        AuthenticatedUser authUser = googleTokenValidator.validate(googleToken);
+        AuthenticatedUser authUser = googleTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
             throw new UnauthorizedException("Code4.2: The Google token does not seem to be valid!");
         }
