@@ -410,6 +410,17 @@ public class AuthenticationEndpoint {
         associateLogin((AuthenticatedUser) loggedInUser, googleUser);
     }
 
+    @ApiMethod(name="auth.associateFacebookLogin")
+    public void associateFacebookLogin(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser facebookUser = facebookTokenValidator.validate(authNetworkToken);
+        assertAssociationPreconditions(facebookUser);
+        associateLogin((AuthenticatedUser) loggedInUser, facebookUser);
+    }
+
     @ApiMethod(name="auth.associateTwitterLogin")
     public void associateTwitterLogin(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
