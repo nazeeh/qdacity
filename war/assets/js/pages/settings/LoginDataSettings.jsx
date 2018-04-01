@@ -132,6 +132,26 @@ export default class LoginDataSettings extends Component {
             );        
     }
 
+    onAddTwitterAccount() {
+        hello.on('auth.login', this.helloCallback);
+
+        hello(AuthenticationNetworks.TWITTER)
+            .login({
+                display: 'popup',
+                response_type: 'token id_token',
+                scope: 'basic, email',
+                force: true // let user choose which account he wants to login with
+            })
+            .then(
+                function() {
+                    // do nothing because the listener gets the result.
+                },
+                function(err) {
+                    console.log(err);
+                }
+            );        
+    }
+
     helloCallback(auth) {
         if(auth.network === AuthenticationNetworks.GOOGLE) {
             // get google token
@@ -139,6 +159,15 @@ export default class LoginDataSettings extends Component {
             const googleIdToken = session.id_token;
 
             this.addGoogleAccount(googleIdToken);
+
+            // unsubscribe again
+            hello.off('auth.login', this.helloCallback);
+        } else if(auth.network === AuthenticationNetworks.TWITTER) {
+            // get twitter token
+            const session = hello.getAuthResponse(AuthenticationNetworks.TWITTER);
+            const twitterToken = session.access_token;
+
+            this.addTwitterAccount(twitterToken);
 
             // unsubscribe again
             hello.off('auth.login', this.helloCallback);
@@ -160,6 +189,21 @@ export default class LoginDataSettings extends Component {
         });
     }
     
+    addTwitterAccount(twitterAccessToken) {
+        const _this = this;
+		const { formatMessage } = IntlProvider.intl;
+
+        gapi.client.qdacity.auth.associateTwitterLogin({
+            authNetworkToken: twitterAccessToken
+        }).execute(function(resp) {
+            if(!resp.code) {
+                _this.updateAssociatedLoginList();
+            } else {    
+                _this.handleFailedAssociateResponse(resp);
+            }
+        });
+    }
+
     onAddEmailPassword() {
 		const _this = this;
         const { formatMessage } = IntlProvider.intl;
@@ -283,6 +327,9 @@ export default class LoginDataSettings extends Component {
                 break;
             case 'EMAIL_PASSWORD':
                 parsedProvider = 'Email';
+                break;
+            case 'TWITTER':
+                parsedProvider = 'Twitter';
                 break;
         }
         return parsedProvider
@@ -527,6 +574,13 @@ export default class LoginDataSettings extends Component {
                             <FormattedMessage
                                 id="settings.logindata.add.google"
                                 defaultMessage="Google"
+                            />
+                        </BtnDefault>
+                        <BtnDefault onClick={() => this.onAddTwitterAccount()}>
+                            <i className="fa fa-twitter" />
+                            <FormattedMessage
+                                id="settings.logindata.add.twitter"
+                                defaultMessage="Twitter"
                             />
                         </BtnDefault>
                         <BtnDefault onClick={() => this.onAddEmailPassword()}>
