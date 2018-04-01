@@ -42,7 +42,7 @@ public class TwitterTokenValidator implements TokenValidator {
                     LoginProviderType.TWITTER
             );
         } catch (TwitterException e) {
-            Logger.getLogger("logger").log(Level.INFO, "Failed to verify twitter token", e);
+            Logger.getLogger("logger").log(Level.INFO, "Failed to verify twitter token: " + token, e);
             return null;
         }
     }
