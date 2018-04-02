@@ -9,6 +9,7 @@ import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 import GroupUserList from './GroupUserList.jsx';
+import GroupProjectList from './GroupProjectList.jsx';
 
 
 const StyledDashboard = styled.div`
@@ -37,6 +38,9 @@ const StyledUserListWrapper = styled.div`
     grid-area: users;
 `;
 
+const StyledProjectListWrapper = styled.div`
+    grid-area: projects;
+`;
 
 
 export default class GroupDashboard extends Component {
@@ -80,6 +84,13 @@ export default class GroupDashboard extends Component {
                     <i className="fa fa-users" />
                     <StyledUserGroupName>{this.state.userGroup.name}</StyledUserGroupName>
                 </StyledPageHeader>
+
+                <StyledProjectListWrapper>
+                    <GroupProjectList 
+                        userGroup={this.state.userGroup} 
+                        history={this.props.history}
+                    />
+                </StyledProjectListWrapper>
 
                 <StyledUserListWrapper>
                     <GroupUserList 
