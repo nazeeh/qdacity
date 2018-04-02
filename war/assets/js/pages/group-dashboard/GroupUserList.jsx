@@ -21,12 +21,14 @@ export default class GroupUserList extends Component {
         };
 
         this.renderUser = this.renderUser.bind(this);
-
-        this.collectUsers();
     }
 
-    async collectUsers() {
-        const resp = await UserGroupEndpoint.getUsers(this.props.userGroup.id);
+    componentWillReceiveProps(nextProps) {
+        this.collectUsers(nextProps.userGroup.id);
+    }
+
+    async collectUsers(userGroupId) {
+        const resp = await UserGroupEndpoint.getUsers(userGroupId);
         this.setState({
             users: this.sortUsers(resp.items || [])
         }); 
