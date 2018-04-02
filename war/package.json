@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "bootstrap-slider": "^9.7.1",
+    "gulp-connect": "^5.5.0",
     "hellojs": "^1.16.1",
     "immutable": "^3.8.2",
     "jwt-decode": "^2.2.0",

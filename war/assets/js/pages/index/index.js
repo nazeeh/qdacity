@@ -76,6 +76,10 @@ window.onload = function() {
 			init();
 		});
 	});
+	console.log(navigator.onLine);
+    initServiceWorker();
+    window.addEventListener("offline", function(e) { console.log("Nicht Verbunden"); });
+    window.addEventListener("online", function(e) { console.log("Verbunden"); });
 };
 
 const init = function() {
@@ -95,3 +99,21 @@ const init = function() {
 		);
 	});
 };
+
+
+function initServiceWorker() {
+    if( 'serviceWorker' in navigator ) {
+        console.log("service worker is supported");
+        navigator.serviceWorker
+            .register( "sw.js" , { scope : '/' } )
+            .then( function( ) {
+                console.log('Congratulations!!Service Worker Registered');
+            })
+            .catch( function( err) {
+                console.log(`Aagh! Some kind of Error :- ${err}`);
+            });
+    } else {
+        console.log("Browser does not support service worker")
+    }
+}
+
