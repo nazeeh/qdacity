@@ -146,6 +146,11 @@ export default class ProjectEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static insertProjectForUserGroup(userGroupId, project) {
+		var apiMethod = gapi.client.qdacity.project.insertProjectForUserGroup({userGroupId: userGroupId}, project);
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static addOwner(prjId) {
 		var apiMethod = gapi.client.qdacity.project.addOwner({
 			projectID: prjId

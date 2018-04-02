@@ -204,14 +204,33 @@ export default class ProjectList extends React.Component {
 			project.maxCodingID = 0;
 			project.name = name;
 			project.description = description;
-			ProjectEndpoint.insertProject(project).then(function(insertedProject) {
+
+			let insertMethodPromise = undefined;
+			let afterInsertMethod = undefined;
+			if(ownerId === '-1') {
+				// add to user's personal projects
+				insertMethodPromise = ProjectEndpoint.insertProject(project);
+				afterInsertMethod = function(insertedProject) {
+					_this.props.addProject(insertedProject);
+				}
+			} else {
+				// add project to a user group
+				insertMethodPromise = ProjectEndpoint.insertProjectForUserGroup(ownerId, project);
+				afterInsertMethod = function(insertedProject) {
+					_this.props.history.push(
+						'/GroupDashboard?userGroup=' + ownerId
+					);
+				}
+			}
+
+			insertMethodPromise.then(function(insertedProject) {
 				codeSystem.project = insertedProject.id;
 
 				CodesystemEndpoint.updateCodeSystem(codeSystem).then(function(
 					updatedCodeSystem
 				) {
 					insertedProject.type = 'PROJECT';
-					_this.props.addProject(insertedProject);
+					afterInsertMethod(insertedProject);
 				});
 			});
 		});

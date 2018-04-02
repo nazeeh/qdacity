@@ -321,6 +321,7 @@ public class ProjectEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@SuppressWarnings("ResourceParameter")
+	@ApiMethod(name = "project.insertProjectForUserGroup")
 	public Project insertProjectForUserGroup(Project project, @Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
 		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
