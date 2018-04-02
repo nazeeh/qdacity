@@ -21,17 +21,15 @@ export default class GroupUserList extends Component {
         };
 
         this.renderUser = this.renderUser.bind(this);
+
+        this.collectUsers();
     }
 
-    collectUsers() {
-        const _this = this;
-
-        UserGroupEndpoint.getUsers(this.props.userGroup.id)
-            .then(function(resp) {
-                _this.setState({
-                    users: _this.sortUsers(resp.items || [])
-                });        
-            })
+    async collectUsers() {
+        const resp = await UserGroupEndpoint.getUsers(this.props.userGroup.id);
+        this.setState({
+            users: this.sortUsers(resp.items || [])
+        }); 
     }
 
     sortUsers(userList) {
@@ -68,9 +66,6 @@ export default class GroupUserList extends Component {
     }
 
     renderUsers() {
-        this.collectUsers();
-        const users = this.state.users;
-        
         return  <ItemList
                     key={'itemlist'}
                     hasPagination={true}
