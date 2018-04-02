@@ -25,6 +25,7 @@ const StyledNewPrjBtn = styled.div`
 	padding-left: 5px;
 `;
 
+
 export default class ProjectList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -37,6 +38,9 @@ export default class ProjectList extends React.Component {
 		this.createNewProject = this.createNewProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
 		this.renderProject = this.renderProject.bind(this);
+
+		
+		const { formatMessage } = IntlProvider.intl;
 	}
 
 	init() {
@@ -140,17 +144,21 @@ export default class ProjectList extends React.Component {
 		);
 
 		const possibleOwners = [];
-		possibleOwners.push(
-			formatMessage({
+		possibleOwners.push({
+			id: -1,
+			name: formatMessage({
 				id: 'projectlist.create_project.owner.me',
 				defaultMessage: 'my projects'
-			}),
-		);
+			})
+		});
 		for(const userGroup of _this.props.userGroups) {
-			possibleOwners.push(userGroup.name);
+			possibleOwners.push({
+				id: userGroup.id,
+				name: userGroup.name
+			});
 		}
-		modal.addSelect(
-			'owner',
+		modal.addSelectComplexOptions(
+			'ownerId',
 			possibleOwners,
 			formatMessage({
 				id: 'projectlist.create_project.owner.add',
@@ -182,11 +190,11 @@ export default class ProjectList extends React.Component {
 			})
 		);
 		modal.showModal().then(function(data) {
-			_this.createNewProject(data.name, data.desc);
+			_this.createNewProject(data.ownerId, data.name, data.desc);
 		});
 	}
 
-	createNewProject(name, description) {
+	createNewProject(ownerId, name, description) {
 		var _this = this;
 		CodesystemEndpoint.insertCodeSystem(0, 'PROJECT').then(function(
 			codeSystem
