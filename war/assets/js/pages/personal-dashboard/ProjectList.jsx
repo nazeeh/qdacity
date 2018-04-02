@@ -138,6 +138,26 @@ export default class ProjectList extends React.Component {
 			}),
 			''
 		);
+
+		const possibleOwners = [];
+		possibleOwners.push(
+			formatMessage({
+				id: 'projectlist.create_project.owner.me',
+				defaultMessage: 'my projects'
+			}),
+		);
+		for(const userGroup of _this.props.userGroups) {
+			possibleOwners.push(userGroup.name);
+		}
+		modal.addSelect(
+			'owner',
+			possibleOwners,
+			formatMessage({
+				id: 'projectlist.create_project.owner.add',
+				defaultMessage: 'Add to'
+			}),
+			possibleOwners[0]
+		);
 		modal.addTextInput(
 			'name',
 			formatMessage({
