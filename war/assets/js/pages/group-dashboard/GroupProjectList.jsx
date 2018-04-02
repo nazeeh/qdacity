@@ -24,6 +24,7 @@ export default class GroupProjectList extends Component {
 
         this.renderProject = this.renderProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
+		this.projectClick = this.projectClick.bind(this);
 
         this.collectProjects();
     }
@@ -52,12 +53,21 @@ export default class GroupProjectList extends Component {
 		this.props.history.push(
 			'/CodingEditor?project=' + prj.id + '&type=' + prj.type
 		);
-	}
+    }
+    
+    projectClick(e, prj, index) {
+		e.stopPropagation();
+		this.props.history.push(
+			'/ProjectDashboard?project=' + prj.id + '&type=' + prj.type
+		);
+    }
 
     renderProject(project, index) {
         return (
             <StyledListItemDefault
                 key={project.id}
+                onClick={e => this.projectClick(e, project, index)}
+                clickable='true'
             >
             {project.name}
 
