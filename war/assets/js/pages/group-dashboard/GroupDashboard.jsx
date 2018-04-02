@@ -50,6 +50,7 @@ export default class GroupDashboard extends Component {
         const urlParams = URI(window.location.search).query(true);
 
         this.state = {
+            userGroupId: urlParams.userGroup,
             userGroup: {
                 name: ''
             },
@@ -57,7 +58,7 @@ export default class GroupDashboard extends Component {
             isParticipant: false
         }
         
-        this.init(urlParams.userGroup);
+        this.init(this.state.userGroupId);
     }
 
     init(userGroupId) {
@@ -87,7 +88,7 @@ export default class GroupDashboard extends Component {
 
                 <StyledProjectListWrapper>
                     <GroupProjectList 
-                        userGroup={this.state.userGroup} 
+                        userGroupId={this.state.userGroupId} 
                         history={this.props.history}
                     />
                 </StyledProjectListWrapper>
