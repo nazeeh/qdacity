@@ -5,14 +5,14 @@ export default class AuthorizationProvider {
 			user.projects.forEach(function(userPrjId) {
 				if (userPrjId === prj.id) isOwner = true;
 			});
+		}
 
-			if(prj.owningUserGroups !== undefined && prj.owningUserGroups !== null
-				&& user.userGroups !== undefined && user.userGroups !== null) {
+		if(prj.owningUserGroups !== undefined && prj.owningUserGroups !== null
+			&& user.userGroups !== undefined && user.userGroups !== null) {
 
-				prj.owningUserGroups.forEach(function(userGroup) {
-					if(user.userGroups.includes(userGroup)) isOwner = true;
-				});
-			}
+			prj.owningUserGroups.forEach(function(userGroup) {
+				if(user.userGroups.includes(userGroup)) isOwner = true;
+			});
 		}
 		return isOwner;
 	}
