@@ -31,6 +31,7 @@ import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.course.tasks.LastCourseUsed;
+import com.qdacity.user.UserGroup;
 import com.qdacity.user.UserNotification;
 import com.qdacity.user.UserNotificationType;
 
@@ -62,6 +63,32 @@ public class CourseEndpoint {
 		if (user == null) throw new UnauthorizedException("User not authorized"); // TODO currently no user is authorized to list all courses
 
 		return listCourseByUserId(cursorString, qdacityUser.getId());
+	}
+
+	@ApiMethod(name = "course.listByUserGroupId")
+	public CollectionResponse<Course> listCourseByUserGroupId(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit,
+															  @Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
+
+		UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+		com.qdacity.user.User requestingUser = userEndpoint.getCurrentUser(user);
+
+		if(!userGroup.getParticipants().contains(requestingUser.getId())) { // allow participants of group
+			Authorization.checkAuthorization(userGroup, user); // and owners and admins
+		}
+
+		List<Course> execute = null;
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			Query q = mgr.newQuery(Course.class, ":p.contains(owningUserGroups)");
+			execute = (List<Course>) q.execute(Arrays.asList(userGroupId));
+
+			// Tight loop for fetching all entities from datastore and accomodate
+			// for lazy fetch.
+			for (Course obj : execute);
+		} finally {
+			mgr.close();
+		}
+		return CollectionResponse.<Course> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
 
 	/**
@@ -135,7 +162,14 @@ public class CourseEndpoint {
 
 				courseUser.removeCourseAuthorization(id);
 				mgr.makePersistent(courseUser);
+			}
 
+			// remove user groups
+			for (Long userGroupId: course.getOwningUserGroups()) {
+				UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+				userGroup.getProjects().remove(id);
+				mgr.makePersistent(userGroup);
+				Cache.cache(userGroupId, UserGroup.class, userGroup);
 			}
 
 			// Finally remove the actual course
@@ -178,6 +212,40 @@ public class CourseEndpoint {
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
 				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
+			}
+			catch (javax.jdo.JDOObjectNotFoundException ex) {
+				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
+			}
+
+		} finally {
+			mgr.close();
+		}
+		return course;
+	}
+
+	@ApiMethod(name = "course.insertCourseForUserGroup")
+	public Course insertCourseForUserGroup(Course course, @Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (course.getId() != null) {
+				if (containsCourse(course)) {
+					throw new EntityExistsException("Course already exists");
+				}
+			}
+
+			try {
+				UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+
+				course.setOwningUserGroups(Arrays.asList(userGroupId));
+				course = mgr.makePersistent(course);
+				Cache.cache(course.getId(), Course.class, course);
+
+				userGroup.getCourses().add(course.getId());
+				mgr.makePersistent(userGroup);
+				Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
 			}
 			catch (javax.jdo.JDOObjectNotFoundException ex) {
 				throw new javax.jdo.JDOObjectNotFoundException("User is not registered");
