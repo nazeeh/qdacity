@@ -32,38 +32,50 @@ export default class ProjectList extends React.Component {
 
 		this.itemList = null;
 
-		this.init();
-
 		this.showNewProjectModal = this.showNewProjectModal.bind(this);
 		this.createNewProject = this.createNewProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
 		this.renderProject = this.renderProject.bind(this);
-
-		
-		const { formatMessage } = IntlProvider.intl;
 	}
 
-	init() {
+    componentWillReceiveProps(nextProps) {
+        this.collectProjects(nextProps.userGroupId);
+    }
+
+    async collectProjects(userGroupId = this.props.userGroupId) {
 		var _this = this;
 		var projectList = [];
-		var validationPrjPromise = ProjectEndpoint.listValidationProject();
-		ProjectEndpoint.listProject().then(function(resp) {
-			resp.items = resp.items || [];
-			resp.items.forEach(function(prj) {
-				prj.type = 'PROJECT';
-			});
-			var projects = projectList.concat(resp.items);
 
-			validationPrjPromise.then(function(resp2) {
-				resp2.items = resp2.items || [];
-				resp2.items.forEach(function(prj) {
-					prj.type = 'VALIDATION';
+		if(!this.props.userGroupId) { 
+			// personal dashboard
+			var validationPrjPromise = ProjectEndpoint.listValidationProject();
+			ProjectEndpoint.listProject().then(function(resp) {
+				resp.items = resp.items || [];
+				resp.items.forEach(function(prj) {
+					prj.type = 'PROJECT';
 				});
-				projects = projects.concat(resp2.items);
-				projects = _this.sortProjects(projects);
-				_this.props.setProjects(projects);
+				var projects = projectList.concat(resp.items);
+
+				validationPrjPromise.then(function(resp2) {
+					resp2.items = resp2.items || [];
+					resp2.items.forEach(function(prj) {
+						prj.type = 'VALIDATION';
+					});
+					projects = projects.concat(resp2.items);
+					projects = _this.sortProjects(projects);
+					_this.props.setProjects(projects);
+				});
 			});
-		});
+		} else {
+			// user group dashboard
+			const resp = await ProjectEndpoint.listProjectByUserGroupId(userGroupId);  
+			const projects = [];
+			for(const project of resp.items || []) {
+				project.type = 'PROJECT';
+				projects.push(project);
+			}
+			_this.props.setProjects(projects);
+		}
 	}
 
 	sortProjects(projects) {
@@ -76,6 +88,8 @@ export default class ProjectList extends React.Component {
 	}
 
 	leaveProject(e, project, index) {
+		if(!!this.props.userGroupId) return // user group cannot leave
+
 		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
 		e.stopPropagation();
@@ -157,6 +171,8 @@ export default class ProjectList extends React.Component {
 				name: userGroup.name
 			});
 		}
+		const defaultOwner = !!_this.props.userGroupId ? possibleOwners[1] // only 2 elements, 2nd is the user group
+									: possibleOwners[0] // 'my projects' if not the userGroup mode active
 		modal.addSelectComplexOptions(
 			'ownerId',
 			possibleOwners,
@@ -164,7 +180,7 @@ export default class ProjectList extends React.Component {
 				id: 'projectlist.create_project.owner.add',
 				defaultMessage: 'Add to'
 			}),
-			possibleOwners[0]
+			defaultOwner.id
 		);
 		modal.addTextInput(
 			'name',
@@ -266,12 +282,11 @@ export default class ProjectList extends React.Component {
 		}
 	}
 
-	renderProjectContent(project, index) {
-		return [
-			<span>{project.name}</span>,
-			<div>
-				{this.renderDeleteBtn(project, index)}
-				<StyledListItemBtn
+	renderLeaveBtn(project, index) {
+		if(!!this.props.userGroupId) return // user group cannot leave
+
+		return (
+			<StyledListItemBtn
 					onClick={e => this.leaveProject(e, project, index)}
 					className=" btn fa-lg"
 					color={Theme.rubyRed}
@@ -279,6 +294,15 @@ export default class ProjectList extends React.Component {
 				>
 					<i className="fa fa-sign-out" />
 				</StyledListItemBtn>
+		);
+	}
+
+	renderProjectContent(project, index) {
+		return [
+			<span>{project.name}</span>,
+			<div>
+				{this.renderDeleteBtn(project, index)}
+				{this.renderLeaveBtn(project, index)}
 				<StyledListItemBtn
 					onClick={e => this.editorClick(e, project, index)}
 					className=" btn fa-lg"
