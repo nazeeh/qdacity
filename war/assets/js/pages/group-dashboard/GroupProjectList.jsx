@@ -89,6 +89,7 @@ export default class GroupProjectList extends Component {
 
     renderProjects() {
         return  <ItemList
+                    hasSearch={true}
                     key={'itemlist'}
                     hasPagination={true}
                     itemsPerPage={8}
