@@ -338,6 +338,7 @@ public class ProjectEndpoint {
 				project.setRevision(0);
 				project.setMaxCodingID(0L);
 				project = mgr.makePersistent(project);
+				Cache.cache(project.getId(), Project.class, project);
 
 				// update user groups
 				UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
