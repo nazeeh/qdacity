@@ -35,7 +35,6 @@ import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.datastructures.BlobWrapper;
-import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
