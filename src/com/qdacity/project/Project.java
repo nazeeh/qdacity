@@ -42,6 +42,7 @@ public class Project extends AbstractProject {
 	}
 
 	public List<String> getOwners() {
+		if(owners == null) return new ArrayList<>();
 		return owners;
 	}
 
