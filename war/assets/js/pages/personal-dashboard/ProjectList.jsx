@@ -36,10 +36,16 @@ export default class ProjectList extends React.Component {
 		this.createNewProject = this.createNewProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
 		this.renderProject = this.renderProject.bind(this);
+		
+		this.collectProjects();
 	}
 
     componentWillReceiveProps(nextProps) {
-        this.collectProjects(nextProps.userGroupId);
+		if(this.props.userGroupId !== nextProps.userGroupId &&
+			(this.props.userGroupId !== undefined || nextProps.userGroupId !== undefined)) {
+				// wait for userGroupId to be loaded
+				this.collectProjects(nextProps.userGroupId);
+		}
     }
 
     async collectProjects(userGroupId = this.props.userGroupId) {
