@@ -33,19 +33,11 @@ public class Authorization {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			// Check if user is Authorized
-			Query query = mgr.newQuery(Project.class);
+			Project project = (Project) Cache.getOrLoad(projectID, Project.class);
 
-			query.setFilter("id == :theID");
-			Map<String, Long> params = new HashMap<String, Long>();
-			params.put("theID", projectID);
-
-			@SuppressWarnings("unchecked")
-			List<Project> projects = (List<Project>) query.executeWithMap(params);
-
-			if (projects.size() == 0) {
+			if (project == null) {
 				throw new UnauthorizedException("Project " + projectID + " was not found");
 			}
-			Project project = projects.get(0);
 
 			com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(googleUser);
 			List<Long> userGroupList = project.getOwningUserGroups();
