@@ -59,14 +59,25 @@ public class Authorization {
 	public static Boolean isUserAuthorizedCourse(User googleUser, Course course) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			String authenticatedUserId = userEndpoint.getCurrentUser(googleUser).getId();
+			com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(googleUser);
 
 			boolean userIsInvited = false;
 			if (course.getInvitedUsers() != null) {
-				if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(authenticatedUserId);
+				if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(qdacityUser.getId());
 			}
-			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
-			if (course.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN || userIsInvited) return true;
+
+			if (course.getOwners().contains(qdacityUser.getId()) ||
+					qdacityUser.getType() == UserType.ADMIN ||
+					userIsInvited) {
+				return true;
+			}
+
+			List<Long> userGroupList = course.getOwningUserGroups();
+			int sizeBefore = userGroupList.size();
+			if(userGroupList.removeAll(qdacityUser.getUserGroups())) {
+				// size decreased if user is in matching usergroup
+				if(userGroupList.size() < sizeBefore) return true;
+			}
 		} finally {
 			mgr.close();
 		}
