@@ -113,15 +113,29 @@ export default class GroupDashboard extends Component {
                 </StyledPageHeader>
 
                 <StyledProjectListWrapper>
-                    <ProjectList 
-                        projects={this.state.projects}
-                        setProjects={this.setProjects}
-                        addProject={this.addProject}
-                        removeProject={this.removeProject}
-                        userGroups={[this.state.userGroup]}
-                        userGroupId={this.state.userGroupId}
-                        history={this.props.history}
-                    />
+                    <div>
+                        <div className="box box-default">
+                            <div className="box-header with-border">
+                                <h3 className="box-title">
+                                    <FormattedMessage
+                                        id="personaldashboard.projects"
+                                        defaultMessage="Projects"
+                                    />
+                                </h3>
+                            </div>
+                            <div className="box-body">
+                                <ProjectList 
+                                    projects={this.state.projects}
+                                    setProjects={this.setProjects}
+                                    addProject={this.addProject}
+                                    removeProject={this.removeProject}
+                                    userGroups={[this.state.userGroup]}
+                                    userGroupId={this.state.userGroupId}
+                                    history={this.props.history}
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </StyledProjectListWrapper>
 
                 <StyledUserListWrapper>
