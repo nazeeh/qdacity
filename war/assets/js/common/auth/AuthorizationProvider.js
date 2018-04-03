@@ -17,10 +17,18 @@ export default class AuthorizationProvider {
 		return isOwner;
 	}
 
-	isCourseOwner(user, courseID) {
+	isCourseOwner(user, course) {
 		var isOwner = false;
 		if (typeof user.courses != 'undefined') {
-			isOwner = user.courses.indexOf(courseID) == -1 ? false : true;
+			isOwner = user.courses.indexOf(course.id) == -1 ? false : true;
+		}
+
+		if(course.owningUserGroups !== undefined && course.owningUserGroups !== null
+			&& user.userGroups !== undefined && user.userGroups !== null) {
+
+			course.owningUserGroups.forEach(function(userGroup) {
+				if(user.userGroups.includes(userGroup)) isOwner = true;
+			});
 		}
 		return isOwner;
 	}
