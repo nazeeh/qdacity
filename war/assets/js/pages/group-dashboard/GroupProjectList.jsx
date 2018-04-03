@@ -25,17 +25,21 @@ export default class GroupProjectList extends Component {
         this.renderProject = this.renderProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
 		this.projectClick = this.projectClick.bind(this);
-
-        this.collectProjects();
     }
 
-    async collectProjects() {
-        const resp = await ProjectEndpoint.listProjectByUserGroupId(this.props.userGroupId);  
-        for(const project of resp.items) {
+    componentWillReceiveProps(nextProps) {
+        this.collectProjects(nextProps.userGroupId);
+    }
+
+    async collectProjects(userGroupId) {
+        const resp = await ProjectEndpoint.listProjectByUserGroupId(userGroupId);  
+        const projects = [];
+        for(const project of resp.items || []) {
             project.type = 'PROJECT';
+            projects.push(project);
         }
         this.setState({
-            projects: this.sortProjects(resp.items || [])
+            projects: this.sortProjects(projects)
         });      
     }
 
