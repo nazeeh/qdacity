@@ -47,9 +47,15 @@ public class Authorization {
 			}
 			Project project = projects.get(0);
 
-			String userId = userEndpoint.getCurrentUser(googleUser).getId();
+			com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(googleUser);
+			List<Long> userGroupList = project.getOwningUserGroups();
+			int sizeBefore = userGroupList.size();
+			if(userGroupList.removeAll(qdacityUser.getUserGroups())) {
+				// size decreased if user is in matching usergroup
+				if(userGroupList.size() < sizeBefore) return true;
+			}
 
-			if (project.getOwners().contains(userId)) return true;
+			if (project.getOwners().contains(qdacityUser.getId())) return true;
 		} finally {
 			mgr.close();
 		}
