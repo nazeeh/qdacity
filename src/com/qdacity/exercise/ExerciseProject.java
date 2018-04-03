@@ -31,7 +31,8 @@ public class ExerciseProject extends ProjectRevision {
 	String creatorName;
 	@Persistent
 	Long exerciseID;
-	
+	@Persistent
+	Boolean isSnapshot;
 	public ExerciseProject(Project prj, Long projectID, String comment) {
 		super(prj, projectID, comment);
 		// TODO Auto-generated constructor stub
@@ -93,4 +94,11 @@ public class ExerciseProject extends ProjectRevision {
 		this.creatorName = creatorName;
 	}
 
+	public Boolean getSnapshot() {
+		return isSnapshot;
+	}
+
+	public void setSnapshot(Boolean isSnapshot) {
+		this.isSnapshot = isSnapshot;
+	}
 }
