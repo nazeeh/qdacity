@@ -79,18 +79,15 @@ export default class RevisionHistory extends React.Component {
 					_this.setRevisions(snapshots);
 					_this.setValidationProjects(validationProjects);
 					_this.setReports(reports);
-					_this.setRights(project.getId(), user);
+					_this.setRights(user);
 				});
 			});
 		});
 	}
 
-	setRights(prjId, user) {
-		var isAdmin = user.type === 'ADMIN';
-
-		var isProjectOwner = false;
-		if (typeof user.projects != 'undefined')
-			isProjectOwner = user.projects.indexOf(prjId) !== -1;
+	setRights(user) {
+		const isAdmin = user.type === 'ADMIN';
+		const isProjectOwner = this.props.isProjectOwner;
 
 		this.setState({
 			isAdmin: isAdmin,
