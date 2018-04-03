@@ -2,6 +2,7 @@
 import React, {Component} from 'react';
 
 import { FormattedMessage } from 'react-intl';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
@@ -11,6 +12,7 @@ import {
     StyledListItemPrimary,
 	StyledListItemBtn
 } from '../../common/styles/ItemList.jsx';
+import Confirm from '../../common/modals/Confirm';
 
 import ProjectEndpoint from '../../common/endpoints/ProjectEndpoint.js';
 
@@ -31,7 +33,7 @@ export default class GroupProjectList extends Component {
         this.collectProjects(nextProps.userGroupId);
     }
 
-    async collectProjects(userGroupId) {
+    async collectProjects(userGroupId = this.props.userGroupId) {
         const resp = await ProjectEndpoint.listProjectByUserGroupId(userGroupId);  
         const projects = [];
         for(const project of resp.items || []) {
@@ -66,26 +68,32 @@ export default class GroupProjectList extends Component {
 		);
     }
 
-    renderProject(project, index) {
-        return (
-            <StyledListItemDefault
-                key={project.id}
-                onClick={e => this.projectClick(e, project, index)}
-                clickable='true'
-            >
-            {project.name}
-
-            <StyledListItemBtn
-					onClick={e => this.editorClick(e, project, index)}
-					className=" btn fa-lg"
-					color={Theme.darkGreen}
-					colorAccent={Theme.darkGreenAccent}
-				>
-					<i className="fa fa-tags" />
-            </StyledListItemBtn>
-            </StyledListItemDefault>
+    deleteProject(e, project, index) {
+        e.stopPropagation();
+        
+		const { formatMessage } = IntlProvider.intl;
+        const _this = this;
+        
+		const confirm = new Confirm(
+			formatMessage(
+				{
+					id: 'group.projectlist.confirm_delete',
+					defaultMessage: 'Do you want to delete the project {name}?'
+				},
+				{
+					name: project.name
+				}
+			)
         );
-    }
+		confirm.showModal().then(function() {
+            console.log('triggered');
+			ProjectEndpoint.removeProject(project.id).then(function(resp) {
+				_this.collectProjects();
+			});
+		}, function(err) {
+            console.log('Canceled');
+        });
+	}
 
     renderProjects() {
         return  <ItemList
@@ -97,7 +105,47 @@ export default class GroupProjectList extends Component {
                     renderItem={this.renderProject}
                 />
     }
+
+    renderDeleteBtn(project, index) {
+		if (typeof project.revisionID == 'undefined') {
+			return (
+				<StyledListItemBtn
+					onClick={e => this.deleteProject(e, project, index)}
+					className=" btn fa-lg"
+					color={Theme.rubyRed}
+					colorAccent={Theme.rubyRedAccent}
+				>
+					<i className="fa fa-trash " />
+				</StyledListItemBtn>
+			);
+		} else {
+			return '';
+		}
+    }
     
+    renderProject(project, index) {
+        return (
+            <StyledListItemDefault
+                key={project.id}
+                onClick={e => this.projectClick(e, project, index)}
+                clickable='true'
+            >
+            {project.name}
+            <div>
+				{this.renderDeleteBtn(project, index)}
+                <StyledListItemBtn
+                        onClick={e => this.editorClick(e, project, index)}
+                        className=" btn fa-lg"
+                        color={Theme.darkGreen}
+                        colorAccent={Theme.darkGreenAccent}
+                    >
+                        <i className="fa fa-tags" />
+                </StyledListItemBtn>
+            </div>
+            </StyledListItemDefault>
+        );
+    }
+
     render() {
         return (
             <div className="box box-default">
