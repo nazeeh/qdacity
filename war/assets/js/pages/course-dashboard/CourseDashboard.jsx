@@ -95,7 +95,7 @@ export default class CourseDashboard extends React.Component {
 		this.userPromise.then(function(user) {
 			var isCourseOwner = _this.props.auth.authorization.isCourseOwner(
 				user,
-				_this.state.course.getId()
+				_this.state.course
 			);
 			_this.state.isCourseOwner = isCourseOwner;
 		});
