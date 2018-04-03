@@ -44,6 +44,7 @@ public class ExerciseProject extends ProjectRevision {
 		// TODO Auto-generated constructor stub
 	}
 
+
 	public Long getRevisionID() {
 		return revisionID;
 	}
@@ -94,11 +95,11 @@ public class ExerciseProject extends ProjectRevision {
 		this.creatorName = creatorName;
 	}
 
-	public Boolean getSnapshot() {
+	public Boolean getIsSnapshot() {
 		return isSnapshot;
 	}
 
-	public void setSnapshot(Boolean isSnapshot) {
+	public void setIsSnapshot(Boolean isSnapshot) {
 		this.isSnapshot = isSnapshot;
 	}
 }

@@ -457,6 +457,7 @@ public class ExerciseEndpoint {
             exercises = (List<Exercise>)q.executeWithMap(parameters);
 
             for (Exercise exercise : exercises) {
+                createExerciseProjectSnapshotsForExercise(exercise.getId());
                 java.util.logging.Logger.getLogger("logger").log(Level.INFO, exercise.getName());
             }
 
@@ -467,6 +468,57 @@ public class ExerciseEndpoint {
 
     }
 
+    private static void createExerciseProjectSnapshotsForExercise(Long exerciseID) {
+	    List<ExerciseProject> exerciseProjects;
+        StringBuilder filters = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            //fetch exerciseProjects related to the exercise whose deadline has passed
+            filters.append("exerciseID == exerciseID");
+            parameters.put("exerciseID", exerciseID);
+            Query q = mgr.newQuery(ExerciseProject.class);
+            q.setFilter(filters.toString());
+            exerciseProjects = (List<ExerciseProject>)q.executeWithMap(parameters);
+
+            if (exerciseProjects != null) {
+                for (ExerciseProject exerciseProject : exerciseProjects) {
+                    try {
+                        createExerciseProjectSnapshot(exerciseProject);
+                    }
+                    catch (UnauthorizedException e) {
+                        java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
+                    }
+                }
+            }
+
+        } finally {
+            mgr.close();
+        }
+    }
+    private static ExerciseProject createExerciseProjectSnapshot (ExerciseProject exerciseProject) throws UnauthorizedException {
+        java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "Attempting to clone exerciseProject with id: " + exerciseProject.getId());
+	    //Todo create an admin user specifically for this cronjob servlet
+        User loggedInUser = null;
+	    PersistenceManager mgr = getPersistenceManager();
+	    ProjectRevision parentProject;
+	    ExerciseProject clonedExerciseProject;
+	    clonedExerciseProject = exerciseProject;
+	    clonedExerciseProject.setIsSnapshot(true);
+
+        Exercise exercise = mgr.getObjectById(Exercise.class, exerciseProject.getExerciseID());
+        TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
+        // Check if user is authorized
+        Authorization.checkAuthorizationTermCourse(termCourse, loggedInUser);
+
+	    mgr.makePersistent(clonedExerciseProject);
+
+        parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
+
+        TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, clonedExerciseProject.getId(), false, loggedInUser);
+
+	    return  clonedExerciseProject;
+    }
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
