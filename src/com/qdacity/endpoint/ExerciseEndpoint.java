@@ -500,7 +500,9 @@ public class ExerciseEndpoint {
     }
     private static ExerciseProject createExerciseProjectSnapshot (ExerciseProject exerciseProject, PersistenceManager mgr) throws UnauthorizedException {
         java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Attempting to clone exerciseProject with id: " + exerciseProject.getId());
-	    //Todo create an admin user specifically for this cronjob servlet instead of using this account
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "original exerciseProject has the name: " + exerciseProject.getName());
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "original exerciseProject: " + exerciseProject);
+	     //Todo create an admin user specifically for this cronjob servlet instead of using this account
 		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
 	    ProjectRevision parentProject;
 	    ExerciseProject clonedExerciseProject;
@@ -512,11 +514,12 @@ public class ExerciseEndpoint {
         Authorization.checkAuthorizationTermCourse(termCourse, loggedInUser);
 
         //Persist the cloned exercise project & copy the associated text documents without stripping the codings
-        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "persisting: " + exerciseProject);
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "persisting exerciseProject with the name: " + clonedExerciseProject.getName());
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "persisting: " + clonedExerciseProject);
         mgr.makePersistent(clonedExerciseProject);
         parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
         TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, clonedExerciseProject.getId(), false, loggedInUser);
-        
+
 	    return  clonedExerciseProject;
     }
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
