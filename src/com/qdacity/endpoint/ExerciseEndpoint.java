@@ -486,7 +486,7 @@ public class ExerciseEndpoint {
             if (exerciseProjects != null) {
                 for (ExerciseProject exerciseProject : exerciseProjects) {
                     try {
-                        createExerciseProjectSnapshot(exerciseProject);
+                        createExerciseProjectSnapshot(exerciseProject, mgr);
                     }
                     catch (UnauthorizedException e) {
                         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
@@ -498,11 +498,10 @@ public class ExerciseEndpoint {
             mgr.close();
         }
     }
-    private static ExerciseProject createExerciseProjectSnapshot (ExerciseProject exerciseProject) throws UnauthorizedException {
-        java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "Attempting to clone exerciseProject with id: " + exerciseProject.getId());
-	    //Todo create an admin user specifically for this cronjob servlet
+    private static ExerciseProject createExerciseProjectSnapshot (ExerciseProject exerciseProject, PersistenceManager mgr) throws UnauthorizedException {
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Attempting to clone exerciseProject with id: " + exerciseProject.getId());
+	    //Todo create an admin user specifically for this cronjob servlet instead of using this account
 		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
-	    PersistenceManager mgr = getPersistenceManager();
 	    ProjectRevision parentProject;
 	    ExerciseProject clonedExerciseProject;
 	    clonedExerciseProject = exerciseProject;
@@ -512,12 +511,17 @@ public class ExerciseEndpoint {
         // Check if user is authorized
         Authorization.checkAuthorizationTermCourse(termCourse, loggedInUser);
 
-	    mgr.makePersistent(clonedExerciseProject);
+        //Persist the cloned exercise project & copy the associated text documents without stripping the codings
+        try {
+			mgr.makePersistent(clonedExerciseProject);
 
-        parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
+			parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
 
-        TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, clonedExerciseProject.getId(), false, loggedInUser);
-
+			TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, clonedExerciseProject.getId(), false, loggedInUser);
+		}
+	    finally {
+        	mgr.close();
+		}
 	    return  clonedExerciseProject;
     }
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
