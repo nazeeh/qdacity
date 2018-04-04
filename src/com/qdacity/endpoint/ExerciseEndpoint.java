@@ -512,16 +512,11 @@ public class ExerciseEndpoint {
         Authorization.checkAuthorizationTermCourse(termCourse, loggedInUser);
 
         //Persist the cloned exercise project & copy the associated text documents without stripping the codings
-        try {
-			mgr.makePersistent(clonedExerciseProject);
-
-			parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
-
-			TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, clonedExerciseProject.getId(), false, loggedInUser);
-		}
-	    finally {
-        	mgr.close();
-		}
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO, "persisting: " + exerciseProject);
+        mgr.makePersistent(clonedExerciseProject);
+        parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
+        TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, clonedExerciseProject.getId(), false, loggedInUser);
+        
 	    return  clonedExerciseProject;
     }
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
