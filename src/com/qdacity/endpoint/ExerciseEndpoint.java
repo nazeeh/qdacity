@@ -16,8 +16,10 @@ import javax.persistence.EntityExistsException;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.project.metrics.*;
 import com.qdacity.project.metrics.tasks.*;
+import com.qdacity.user.LoginProviderType;
 import org.json.JSONException;
 
 import com.google.api.server.spi.auth.common.User;
@@ -499,13 +501,12 @@ public class ExerciseEndpoint {
     private static ExerciseProject createExerciseProjectSnapshot (ExerciseProject exerciseProject) throws UnauthorizedException {
         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "Attempting to clone exerciseProject with id: " + exerciseProject.getId());
 	    //Todo create an admin user specifically for this cronjob servlet
-        User loggedInUser = null;
+		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
 	    PersistenceManager mgr = getPersistenceManager();
 	    ProjectRevision parentProject;
 	    ExerciseProject clonedExerciseProject;
 	    clonedExerciseProject = exerciseProject;
 	    clonedExerciseProject.setIsSnapshot(true);
-
         Exercise exercise = mgr.getObjectById(Exercise.class, exerciseProject.getExerciseID());
         TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
         // Check if user is authorized
