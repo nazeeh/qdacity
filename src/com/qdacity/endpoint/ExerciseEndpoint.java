@@ -517,11 +517,12 @@ public class ExerciseEndpoint {
 
 		ProjectRevision project = null;
 		ExerciseProject cloneExerciseProject = null;
-        cloneExerciseProject.setIsSnapshot(false);
+
 		project = mgr.getObjectById(ProjectRevision.class, revisionID);
 
 		cloneExerciseProject = cloneExerciseProject(project);
-
+		
+        cloneExerciseProject.setIsSnapshot(false);
 		cloneExerciseProject.addValidationCoder(user.getId());
 		cloneExerciseProject.setExerciseID(exerciseID);
 		com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, user.getId());
