@@ -456,7 +456,7 @@ public class ExerciseEndpoint {
             q.setFilter(filters.toString());
             exercises = (List<Exercise>)q.executeWithMap(parameters);
             for (Exercise exercise : exercises) {
-                if (exercise.getSnapshotsAlreadyCreated()) {
+                if (!exercise.getSnapshotsAlreadyCreated()) {
                     createSnapshotsForExpiredExerciseProjects(exercise.getId());
                     exercise.setSnapshotsAlreadyCreated(true);
                     mgr.makePersistent(exercise);
@@ -521,7 +521,7 @@ public class ExerciseEndpoint {
 		project = mgr.getObjectById(ProjectRevision.class, revisionID);
 
 		cloneExerciseProject = cloneExerciseProject(project);
-		
+
         cloneExerciseProject.setIsSnapshot(false);
 		cloneExerciseProject.addValidationCoder(user.getId());
 		cloneExerciseProject.setExerciseID(exerciseID);
