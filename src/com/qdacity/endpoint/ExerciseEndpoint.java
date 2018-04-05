@@ -59,7 +59,7 @@ public class ExerciseEndpoint {
 	 */
 	@ApiMethod(name = "exercise.insertExercise")
 	public Exercise insertExercise(Exercise exercise, User user) throws UnauthorizedException {
-
+        exercise.setSnapshotsAlreadyCreated(false);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (exercise.getId() != null) {
@@ -456,8 +456,12 @@ public class ExerciseEndpoint {
             q.setFilter(filters.toString());
             exercises = (List<Exercise>)q.executeWithMap(parameters);
             for (Exercise exercise : exercises) {
-                createSnapshotsForExpiredExerciseProjects(exercise.getId());
-                java.util.logging.Logger.getLogger("logger").log(Level.INFO, exercise.getName());
+                if (exercise.getSnapshotsAlreadyCreated()) {
+                    createSnapshotsForExpiredExerciseProjects(exercise.getId());
+                    exercise.setSnapshotsAlreadyCreated(true);
+                    mgr.makePersistent(exercise);
+                    java.util.logging.Logger.getLogger("logger").log(Level.INFO, "creating exercise project snapshots for exercise: " + exercise.getName());
+                }
             }
         }
         finally {
@@ -513,7 +517,7 @@ public class ExerciseEndpoint {
 
 		ProjectRevision project = null;
 		ExerciseProject cloneExerciseProject = null;
-
+        cloneExerciseProject.setIsSnapshot(false);
 		project = mgr.getObjectById(ProjectRevision.class, revisionID);
 
 		cloneExerciseProject = cloneExerciseProject(project);
