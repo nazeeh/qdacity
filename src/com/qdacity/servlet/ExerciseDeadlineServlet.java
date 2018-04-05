@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ExerciseDeadlineServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-		ExerciseEndpoint.createExerciseProjectSnapshotsIfNeeded();
+		ExerciseEndpoint.checkAndCreateExerciseProjectSnapshotsIfNeeded();
 	}
 
 }
