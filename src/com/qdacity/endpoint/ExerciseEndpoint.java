@@ -497,15 +497,15 @@ public class ExerciseEndpoint {
                         clonedExerciseProject.setParagraphFMeasure(exerciseProject.getParagraphFMeasure());
                         clonedExerciseProject.setUmlEditorEnabled(exerciseProject.isUmlEditorEnabled());
                         clonedExerciseProject.setIsSnapshot(true);
-                        
+
                         clonedExerciseProjects.add(clonedExerciseProject);
-                        mgr.makePersistentAll(clonedExerciseProjects);
                         cloneExerciseProjectTextDocs(exerciseProject, parentProject);
                     }
                     catch (UnauthorizedException e) {
                         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
                     }
                 }
+                mgr.makePersistentAll(clonedExerciseProjects);
             }
 
         } finally {
