@@ -499,7 +499,7 @@ public class ExerciseEndpoint {
                         clonedExerciseProject.setIsSnapshot(true);
 
                         clonedExerciseProjects.add(clonedExerciseProject);
-                        cloneExerciseProjectTextDocs(exerciseProject, parentProject);
+                        cloneExerciseProjectTextDocs(clonedExerciseProject, parentProject);
                     }
                     catch (UnauthorizedException e) {
                         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
