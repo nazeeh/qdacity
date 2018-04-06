@@ -475,6 +475,7 @@ public class ExerciseEndpoint {
         Map<String, Object> parameters = new HashMap<>();
         PersistenceManager mgr = getPersistenceManager();
         List<ExerciseProject> clonedExerciseProjects = new ArrayList<>();
+        ProjectRevision parentProject;
         try {
             //fetch exerciseProjects related to the exercise whose deadline has passed
             filters.append("exerciseID == exerciseID");
@@ -483,13 +484,14 @@ public class ExerciseEndpoint {
             q.setFilter(filters.toString());
             exerciseProjects = (List<ExerciseProject>)q.executeWithMap(parameters);
 
-            if (exerciseProjects != null) {
-                for (ExerciseProject exerciseProject : exerciseProjects) {
-                    try {
-						ProjectRevision parentProject;
-						parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
+            if (exerciseProjects != null && exerciseProjects.size() > 0) {
 
-						//construct the cloneExerciseProject and set its properties to the original exerciseProject
+                //The parent project of all exerciseProjects which belong to the same exercise is the same, so it can be assigned from the first exerciseProject
+                parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProjects.get(0).getRevisionID());
+
+                //construct clonedExerciseProjects and set their properties to the original exerciseProjects
+                //Afterwards, all of the clonedExerciseProjects are persisted
+                for (ExerciseProject exerciseProject : exerciseProjects) {
                         ExerciseProject clonedExerciseProject = new ExerciseProject(parentProject);
                         clonedExerciseProject.setExerciseID(exerciseProject.getExerciseID());
                         clonedExerciseProject.setValidationCoders(exerciseProject.getValidationCoders());
@@ -497,17 +499,20 @@ public class ExerciseEndpoint {
                         clonedExerciseProject.setParagraphFMeasure(exerciseProject.getParagraphFMeasure());
                         clonedExerciseProject.setUmlEditorEnabled(exerciseProject.isUmlEditorEnabled());
                         clonedExerciseProject.setIsSnapshot(true);
-
                         clonedExerciseProjects.add(clonedExerciseProject);
+                }
+
+                //Persist the clonedExerciseProjects, then clone their TextDocuments
+                mgr.makePersistentAll(clonedExerciseProjects);
+                for (ExerciseProject clonedExerciseProject : clonedExerciseProjects) {
+                    try {
                         cloneExerciseProjectTextDocs(clonedExerciseProject, parentProject);
                     }
                     catch (UnauthorizedException e) {
                         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
                     }
                 }
-                mgr.makePersistentAll(clonedExerciseProjects);
             }
-
         } finally {
             mgr.close();
         }
