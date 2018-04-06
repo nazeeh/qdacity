@@ -486,11 +486,21 @@ public class ExerciseEndpoint {
             if (exerciseProjects != null) {
                 for (ExerciseProject exerciseProject : exerciseProjects) {
                     try {
-                        ExerciseProject clonedExerciseProject = exerciseProject;
+						ProjectRevision parentProject;
+						parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
+
+						//construct the cloneExerciseProject and set its properties to the original exerciseProject
+                        ExerciseProject clonedExerciseProject = new ExerciseProject(parentProject);
+                        clonedExerciseProject.setExerciseID(exerciseProject.getExerciseID());
+                        clonedExerciseProject.setValidationCoders(exerciseProject.getValidationCoders());
+                        clonedExerciseProject.setCreatorName(exerciseProject.getCreatorName());
+                        clonedExerciseProject.setParagraphFMeasure(exerciseProject.getParagraphFMeasure());
+                        clonedExerciseProject.setUmlEditorEnabled(exerciseProject.isUmlEditorEnabled());
                         clonedExerciseProject.setIsSnapshot(true);
+                        
                         clonedExerciseProjects.add(clonedExerciseProject);
                         mgr.makePersistentAll(clonedExerciseProjects);
-                        cloneExerciseProjectTextDocs(exerciseProject, mgr);
+                        cloneExerciseProjectTextDocs(exerciseProject, parentProject);
                     }
                     catch (UnauthorizedException e) {
                         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
@@ -503,11 +513,9 @@ public class ExerciseEndpoint {
         }
     }
 
-    private static void cloneExerciseProjectTextDocs (ExerciseProject exerciseProject, PersistenceManager mgr) throws UnauthorizedException {
+    private static void cloneExerciseProjectTextDocs (ExerciseProject exerciseProject, ProjectRevision parentProject) throws UnauthorizedException {
          //Todo create an admin user specifically for this cronjob servlet instead of using this account
 		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
-	    ProjectRevision parentProject;
-        parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProject.getRevisionID());
         TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, exerciseProject.getId(), false, loggedInUser);
     }
 
