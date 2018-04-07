@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import javax.annotation.Nullable;
 import javax.inject.Named;
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
@@ -459,6 +460,7 @@ public class CourseEndpoint {
 
 			termCourse.setOpen(true);
 			termCourse.setCreationDate(new Date());
+			termCourse.setOwningUserGroups(new ArrayList<>(Long));
 
 
 			PersistenceManager mgr = getPersistenceManager();
@@ -487,6 +489,67 @@ public class CourseEndpoint {
 				mgr.close();
 			}
 			return termCourse;
+	}
+
+	@ApiMethod(name = "course.listTermCourseByUserGroupId",
+			path = "course.listTermCourseByUserGroupId")
+	public List<TermCourse> listTermCourseByUserGroupId(@Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		if (user == null) throw new UnauthorizedException("User is not logged in"); // TODO currently no user is authorized to list all courses
+
+		PersistenceManager mgr = null;
+		List<TermCourse> execute = null;
+		try {
+			mgr = getPersistenceManager();
+			Query q = mgr.newQuery(TermCourse.class, ":p.contains(owningUserGroups)");
+			execute = (List<TermCourse>) q.execute(Arrays.asList(qdacityUser.getId()));
+		} finally {
+			mgr.close();
+		}
+
+		Collections.sort(execute, new Comparator<TermCourse>() {
+			public int compare(TermCourse t1, TermCourse t2) {
+				return t1.getCreationDate().compareTo(t2.getCreationDate());
+			}
+		});
+		return execute;
+	}
+
+	@ApiMethod(name = "course.insertTermCourseForUserGroup")
+	public TermCourse insertTermCourseForUserGroup(TermCourse termCourse, @Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
+
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+
+		termCourse.setOpen(true);
+		termCourse.setCreationDate(new Date());
+		termCourse.setOwningUserGroups(new ArrayList<>(Long));
+
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (termCourse.getId() != null) {
+				if (containsTermCourse(termCourse)) {
+					throw new EntityExistsException("Term already exists");
+				}
+			}
+			try {
+				termCourse.setOwningUserGroups(Arrays.asList(userGroupId));
+				termCourse = mgr.makePersistent(termCourse);
+				Cache.cache(termCourse.getId(), Course.class, termCourse);
+
+				userGroup.getTermCourses().add(termCourse.getId());
+				mgr.makePersistent(userGroup);
+				Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
+			}
+			catch (JDOObjectNotFoundException ex) {
+				throw new JDOObjectNotFoundException("User is not registered");
+			}
+
+		} finally {
+			mgr.close();
+		}
+		return termCourse;
 	}
 
 
