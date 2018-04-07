@@ -83,7 +83,7 @@ export default class CourseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
-	static listTermCourseByUserGroupId() {
+	static listTermCourseByUserGroupId(userGroupId) {
 		var apiMethod = gapi.client.qdacity.course.listTermCourseByUserGroupId({userGroupId: userGroupId});
 		return Promisizer.makePromise(apiMethod);
 	}
