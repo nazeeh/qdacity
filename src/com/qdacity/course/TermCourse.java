@@ -38,6 +38,9 @@ public class TermCourse implements Serializable {
 	
 	@Persistent
 	List<String> owners;
+
+	@Persistent
+	List<Long> owningUserGroups;
 	
 	@Persistent
 	boolean isOpen;
@@ -128,7 +131,16 @@ public class TermCourse implements Serializable {
 		if (owners == null) owners = new ArrayList<String>();
 		if (!owners.contains(userID)) owners.add(userID);
 	}
-	
+
+	public List<Long> getOwningUserGroups() {
+		if (owningUserGroups == null) owningUserGroups = new ArrayList<Long>();
+		return owningUserGroups;
+	}
+
+	public void setOwningUserGroups(List<Long> owningUserGroups) {
+		this.owningUserGroups = owningUserGroups;
+	}
+
 	public void addParticipant(String userID) {
 		if (participants == null) participants = new ArrayList<String>();
 		if (!participants.contains(userID)) participants.add(userID);
