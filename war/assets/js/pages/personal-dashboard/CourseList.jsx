@@ -58,67 +58,44 @@ export default class CourseList extends React.Component {
 		if(!this.props.userGroupId) {
 			// personal dashboard: user in focus
 			var listCoursePromise = CourseEndPoint.listCourse();
-			var listTermCourseByParticipantPromise = CourseEndPoint.listTermCourseByParticipant();
-			listCoursePromise.then(function(resp) {
-				resp.items = resp.items || [];
-				var courses = courseList.concat(resp.items);
-				//In case the user is not an owner of any course, the list of terms in which he's a participant should still be fetched
-				if (courses.length == 0) {
-					_this.fetchTermsByParticipant(listTermCourseByParticipantPromise);
-				}
-				courses = _this.sortCourses(courses);
-				var counter = resp.items.length;
-				courses.forEach(function(crs, index) {
-					CourseEndPoint.listTermCourse(crs.id).then(function(resp2) {
-						counter -= 1;
-						var termList = [];
-						resp2.items = resp2.items || [];
-						resp2.items.forEach(function(crs, index) {
-							termList.push({
-								text: crs.term,
-								onClick: _this.termCourseClicked.bind(_this, crs),
-								id: crs.id
-							});
-						});
-						courses[index].terms = termList;
-						if (counter == 0) {
-							_this.props.setCourses(courses);
-							_this.fetchTermsByParticipant(listTermCourseByParticipantPromise);
-						}
-					});
-				});
-			});
+			var listTermCoursePromise = CourseEndPoint.listTermCourseByParticipant();
 		} else {
 			// group dashboard: user group in focus
 			var listCoursePromise = CourseEndPoint.listCourseByUserGroupId(userGroupId);
-			listCoursePromise.then(function(resp) {
-				resp.items = resp.items || [];
-				var courses = courseList.concat(resp.items);
-				courses = _this.sortCourses(courses);
-				var counter = resp.items.length;
-				courses.forEach(function(crs, index) {
-					CourseEndPoint.listTermCourse(crs.id).then(function(resp2) {
-						counter -= 1;
-						var termList = [];
-						resp2.items = resp2.items || [];
-						resp2.items.forEach(function(crs, index) {
-							termList.push({
-								text: crs.term,
-								onClick: _this.termCourseClicked.bind(_this, crs),
-								id: crs.id
-							});
+			var listTermCoursePromise = CourseEndPoint.listTermCourseByUserGroupId(userGroupId);
+		}
+		listCoursePromise.then(function(resp) {
+			resp.items = resp.items || [];
+			var courses = courseList.concat(resp.items);
+			//In case the user is not an owner of any course, the list of terms in which he's a participant should still be fetched
+			if (courses.length == 0) {
+				_this.fetchTermsByPromise(listTermCoursePromise);
+			}
+			courses = _this.sortCourses(courses);
+			var counter = resp.items.length;
+			courses.forEach(function(crs, index) {
+				CourseEndPoint.listTermCourse(crs.id).then(function(resp2) {
+					counter -= 1;
+					var termList = [];
+					resp2.items = resp2.items || [];
+					resp2.items.forEach(function(crs, index) {
+						termList.push({
+							text: crs.term,
+							onClick: _this.termCourseClicked.bind(_this, crs),
+							id: crs.id
 						});
-						courses[index].terms = termList;
-						if (counter == 0) {
-							_this.props.setCourses(courses);
-						}
 					});
+					courses[index].terms = termList;
+					if (counter == 0) {
+						_this.props.setCourses(courses);
+						_this.fetchTermsByPromise(listTermCoursePromise);
+					}
 				});
 			});
-		}
+		});
 	}
 
-	fetchTermsByParticipant(listTermCourseByParticipantPromise) {
+	fetchTermsByPromise(listTermCourseByParticipantPromise) {
 		var _this = this;
 		//the array below contains the response of listTermCourseByParticipant without duplicate courseIDs
 		var coursesWithTermsArray = [];
@@ -380,6 +357,7 @@ export default class CourseList extends React.Component {
 		course.description = description;
 		let insertMethodPromise;
 		let afterInsertMethod;
+		let termCourseInserMethod;
 		if(ownerId === '-1') {
 			// add to user's personal courses
 			insertMethodPromise = CourseEndPoint.insertCourse(course)
@@ -388,6 +366,9 @@ export default class CourseList extends React.Component {
 				_this.props.history.push(
 					'/PersonalDashboard'
 				);
+			}
+			termCourseInserMethod = function(termCourse) {
+				return CourseEndPoint.insertTermCourse(termCourse);
 			}
 		} else {
 			// add course to a user group
@@ -398,12 +379,15 @@ export default class CourseList extends React.Component {
 					'/GroupDashboard?userGroup=' + ownerId
 				);
 			}
+			termCourseInserMethod = function(termCourse) {
+				return CourseEndPoint.insertTermCourseForUserGroup(ownerId, termCourse);
+			}
 		}
 		insertMethodPromise.then(function(insertedCourse) {
 			var termCourse = {};
 			termCourse.courseID = insertedCourse.id;
 			termCourse.term = term;
-			CourseEndPoint.insertTermCourse(termCourse).then(function(
+			termCourseInserMethod(termCourse).then(function(
 				insertedTermCourse
 			) {
 				var termList = [];
