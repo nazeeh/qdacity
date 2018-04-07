@@ -234,11 +234,15 @@ export default class ProjectList extends React.Component {
 				insertMethodPromise = ProjectEndpoint.insertProject(project);
 				afterInsertMethod = function(insertedProject) {
 					_this.props.addProject(insertedProject);
+					_this.props.history.push(
+						'/PersonalDashboard'
+					);
 				}
 			} else {
 				// add project to a user group
 				insertMethodPromise = ProjectEndpoint.insertProjectForUserGroup(ownerId, project);
 				afterInsertMethod = function(insertedProject) {
+					_this.props.addProject(insertedProject);
 					_this.props.history.push(
 						'/GroupDashboard?userGroup=' + ownerId
 					);
