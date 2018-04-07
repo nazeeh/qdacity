@@ -33,11 +33,20 @@ export default class AuthorizationProvider {
 		return isOwner;
 	}
 
-	isTermCourseOwner(user, termCourseID) {
+	isTermCourseOwner(user, termCourse) {
 		var isOwner = false;
 		if (typeof user.termCourses != 'undefined') {
-			isOwner = user.termCourses.indexOf(termCourseID) == -1 ? false : true;
+			isOwner = user.termCourses.indexOf(termCourse.id) == -1 ? false : true;
 		}
+		
+		if(termCourse.owningUserGroups !== undefined && termCourse.owningUserGroups !== null
+			&& user.userGroups !== undefined && user.userGroups !== null) {
+
+			termCourse.owningUserGroups.forEach(function(userGroup) {
+				if(user.userGroups.includes(userGroup)) isOwner = true;
+			});
+		}
+
 		return isOwner;
 	}
 

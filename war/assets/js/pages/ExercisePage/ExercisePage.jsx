@@ -63,7 +63,7 @@ export default class ExercisePage extends React.Component {
 			_this.getExerciseByIDPromise.then(function(exerciseResp) {
 				var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
 					user,
-					exerciseResp.termCourseID
+					exerciseResp
 				);
 				_this.setState({
 					exercise: exerciseResp,

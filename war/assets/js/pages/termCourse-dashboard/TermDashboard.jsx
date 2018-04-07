@@ -86,7 +86,7 @@ export default class TermDashboard extends React.Component {
 		this.userPromise.then(function(user) {
 			var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
 				user,
-				_this.state.termCourse.getId()
+				_this.state.termCourse
 			);
 			_this.listTermCourseParticipantsPromise.then(function(resp) {
 				var termCourse = _this.state.termCourse;
