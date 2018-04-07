@@ -98,6 +98,12 @@ public class Authorization {
 				if (termCourse.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN) return true;
 			}
 
+			List<Long> userGroupList = termCourse.getOwningUserGroups();
+			int sizeBefore = userGroupList.size();
+			if(userGroupList.removeAll(courseUser.getUserGroups())) {
+				// size decreased if user is in matching usergroup
+				if(userGroupList.size() < sizeBefore) return true;
+			}
 		} finally {
 			mgr.close();
 		}

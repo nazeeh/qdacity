@@ -120,6 +120,7 @@ public class TermCourse implements Serializable {
 	}
 
 	public List<String> getOwners() {
+		if(owners == null) owners = new ArrayList<String>();
 		return owners;
 	}
 
