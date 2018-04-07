@@ -385,11 +385,15 @@ export default class CourseList extends React.Component {
 			insertMethodPromise = CourseEndPoint.insertCourse(course)
 			afterInsertMethod = function(insertedCourse) {
 				_this.props.addCourse(insertedCourse);
+				_this.props.history.push(
+					'/PersonalDashboard'
+				);
 			}
 		} else {
 			// add course to a user group
 			insertMethodPromise = CourseEndPoint.insertCourseForUserGroup(ownerId, course);
 			afterInsertMethod = function(insertedCourse) {
+				_this.props.addCourse(insertedCourse);
 				_this.props.history.push(
 					'/GroupDashboard?userGroup=' + ownerId
 				);
