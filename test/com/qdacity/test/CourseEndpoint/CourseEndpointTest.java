@@ -822,4 +822,33 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		 userGroup = new UserGroupEndpoint().getUserGroupById(userGroup.getId(), loggedInUser);
 		 assertTrue(userGroup.getCourses().contains(course.getId()));
 	}
+
+	/**
+	 * Tests that inserting term courses and listing of term courses for a user group works.
+	 */
+	@Test
+	public void testListTermCourseForUserGroup() throws UnauthorizedException, BadRequestException {
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+
+		UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("testGroup", loggedInUser);
+		TermCourse termCourse = new TermCourse();
+		try {
+			termCourse = new CourseEndpoint().insertTermCourseForUserGroup(termCourse, userGroup.getId(), loggedInUser);
+			assertTrue(termCourse.getOwningUserGroups().contains(userGroup.getId()));
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for term course creation");
+		}
+		try {
+			List<TermCourse> courses = new CourseEndpoint().listTermCourseByUserGroupId(userGroup.getId(), loggedInUser);
+			assertEquals(1, courses.size());
+			assertTrue(courses.get(0).getOwningUserGroups().contains(userGroup.getId()));
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("Failed to authorize the user for listing his courses");
+		}
+		userGroup = new UserGroupEndpoint().getUserGroupById(userGroup.getId(), loggedInUser);
+		assertTrue(userGroup.getTermCourses().contains(termCourse.getId()));
+	}
 }
