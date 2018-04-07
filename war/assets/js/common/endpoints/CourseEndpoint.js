@@ -59,6 +59,11 @@ export default class CourseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static insertTermCourseForUserGroup(userGroupId, termCourse) {
+		var apiMethod = gapi.client.qdacity.course.insertTermCourseForUserGroup({userGroupId: userGroupId}, termCourse);
+		return Promisizer.makePromise(apiMethod);
+	}
+
 	static removeTermCourse(Id) {
 		var apiMethod = gapi.client.qdacity.course.removeTermCourse({
 			id: Id
@@ -75,6 +80,11 @@ export default class CourseEndpoint {
 
 	static listTermCourseByParticipant() {
 		var apiMethod = gapi.client.qdacity.course.listTermCourseByParticipant();
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static listTermCourseByUserGroupId() {
+		var apiMethod = gapi.client.qdacity.course.listTermCourseByUserGroupId({userGroupId: userGroupId});
 		return Promisizer.makePromise(apiMethod);
 	}
 
