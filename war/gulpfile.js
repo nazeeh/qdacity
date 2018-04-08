@@ -252,7 +252,8 @@ gulp.task('sw-watch', function () {
 
 gulp.task('connect', function() {
     connect.server({
-        livereload: true
+        livereload: true,
+		port:8090
     });
 });
 

@@ -40,6 +40,7 @@
 <body>
 	<div id="navBar"></div>
 	<div id=indexContent></div>
+	static test text
 
     <script src="/dist/js/index.dist.js"></script>
 	<link href="/components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
