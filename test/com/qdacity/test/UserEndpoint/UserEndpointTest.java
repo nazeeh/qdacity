@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jdo.PersistenceManager;
 
+import com.google.appengine.api.utils.SystemProperty;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -369,8 +370,10 @@ public class UserEndpointTest {
 	}
 
 	@Test
-	public void testUpdateUserType() throws UnauthorizedException {
+	public void testUpdateUserTypeDevEnvironment() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		SystemProperty.environment.set(SystemProperty.Environment.Value.Development);
 
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
@@ -386,10 +389,36 @@ public class UserEndpointTest {
 				user = ue.updateUserType(insertedUser.getId(), "ADMIN", loggedInUserA);
 			} catch (UnauthorizedException e) {
 				e.printStackTrace();
-				fail("User could not be authorized");
+				fail(e.getMessage());
 			}
 			User user2 = mgr.getObjectById(User.class, insertedUser.getId());
 			assertEquals(UserType.ADMIN, user.getType());
+		} finally {
+			mgr.close();
+		}
+	}
+
+	@Test
+	public void testUpdateUserTypeNotDevEnvironment() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		SystemProperty.environment.set(SystemProperty.Environment.Value.Production);
+
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+
+		PersistenceManager mgr = getPersistenceManager();
+		mgr.setIgnoreCache(true);
+		try {
+			User user = mgr.getObjectById(User.class, insertedUser.getId());
+			assertEquals(UserType.USER, user.getType());
+
+			UserEndpoint ue = new UserEndpoint();
+			try {
+				user = ue.updateUserType(insertedUser.getId(), "ADMIN", loggedInUserA);
+			} catch (UnauthorizedException e) {
+				assertEquals("Only Admins are allowed.", e.getMessage());
+			}
 		} finally {
 			mgr.close();
 		}
