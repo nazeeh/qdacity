@@ -110,13 +110,8 @@ gulp.task('generate-language-files', () => {
 							`Translation file ${file.relative} does not match template`
 						)
 					);
-					// We do not throw here for several reasons.
-					// a) Missing identifier is not a fatal error,
-					//   neither are duplicates nor additional identifiers
-					// b) we want to traverse all files and explain all errors
-					// c) one file should not keep others from being processed
-					// this checker might be reworked to allow the pipeline to fail
-					//return Promise.reject('Translation file invalid.');
+					// If argument verifyTranslation is passed, then the task will fail
+					if (argv.verifyTranslation) return Promise.reject('Translation file invalid.');
 				}
 				return result;
 			})
