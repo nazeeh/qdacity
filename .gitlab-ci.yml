@@ -121,6 +121,9 @@ frontend_prod_translation_tests:
   stage: test
   only:
     - branches
+  cache:
+    <<: *node_cache
+    policy: pull
   script:
     - cd war
     - gulp generate-language-files --verifyTranslation
