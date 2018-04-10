@@ -1,6 +1,7 @@
 package com.qdacity.exercise;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -26,6 +27,9 @@ public class Exercise implements Serializable {
 	
 	@Persistent
 	Long termCourseID;
+
+	@Persistent
+	Date exerciseDeadline;
 
 	@Persistent
 	String name;
@@ -76,5 +80,8 @@ public class Exercise implements Serializable {
 	public void setTermCourseID(Long termCourseID) {
 		this.termCourseID = termCourseID;
 	}
-	
+
+	public Date getExerciseDeadline() { return exerciseDeadline; }
+
+	public void setExerciseDeadline(Date deadline) {this.exerciseDeadline = deadline; }
 }
