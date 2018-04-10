@@ -125,8 +125,8 @@ frontend_prod_translation_tests:
     <<: *node_cache
     policy: pull
   script:
-    - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - cd war
+    - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - gulp generate-language-files --verifyTranslation
   allow_failure: true
 
