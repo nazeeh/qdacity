@@ -1,4 +1,6 @@
 import hello from 'hellojs';
+
+import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.js';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
@@ -7,6 +9,7 @@ const GOOGLE_SCOPES =
 
 
 const TOKEN_REFRESH_ATER_MINUTES = 10;
+
 
 /* ------------------------------- AuthenticationProvider ----------------------------------- */
 export default class AuthenticationProvider {
@@ -21,9 +24,9 @@ export default class AuthenticationProvider {
 		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider();
 
 		this.network = {
-			google: 'google', // uses hellojs
-			google_silent: 'gapi', // uses gapi.auth2
-			email_password: 'email_password' // uses EmailPasswordAuthenticationProvider
+			google: AuthenticationNetworks.GOOGLE, // uses hellojs
+			google_silent: AuthenticationNetworks.GOOGLE_SILENT, // uses gapi.auth2
+			email_password: AuthenticationNetworks.EMAIL_PASSWORD // uses EmailPasswordAuthenticationProvider
 		};
 
 		/**
