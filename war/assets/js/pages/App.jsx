@@ -100,6 +100,8 @@ export default class App extends React.Component {
 				userProfile: {
 					qdacityId: '',
 					name: '',
+					firstname: '',
+					lastname: '',
 					email: '',
 					picSrc: ''
 				},
@@ -170,6 +172,8 @@ export default class App extends React.Component {
 			// 2. get the user profile			
 			let profile = {
 				name: '',
+				firstname: '',
+				lastname: '',
 				email: '',
 				picSrc: '',
 				qdacityId: ''
@@ -191,6 +195,8 @@ export default class App extends React.Component {
 			_this.state.auth.userProfile = {
 				qdacityId: profile.qdacityId,
 				name: profile.name,
+				firstname: profile.firstname,
+				lastname: profile.lastname,
 				email: profile.email,
 				picSrc: picSrcWithoutParams
 			};
@@ -199,6 +205,10 @@ export default class App extends React.Component {
 			let user = undefined;
 			try {
 				user = await _this.authenticationProvider.getCurrentUser();
+				if(!! user.profileImg) {
+					console.log('received stored profile image');
+					_this.state.auth.userProfile.picSrc = 'data://image/png;base64,' + user.profileImg;
+				}
 			} catch(e) {
 				// user stays undefined
 			}

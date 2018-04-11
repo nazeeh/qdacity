@@ -9,6 +9,7 @@ import javax.inject.Named;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.jdo.annotations.Persistent;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
@@ -17,11 +18,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -38,6 +35,8 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.datastructures.BlobWrapper;
+import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
@@ -345,6 +344,83 @@ public class UserEndpoint {
 			mgr.close();
 		}
 		return user;
+	}
+
+	/**
+	 * Updates the user with the given user information.
+	 * If a field is empty, it is not updated!
+	 * @param userId
+	 * @param email
+	 * @param surName
+	 * @param givenName
+	 * @param loggedInUser
+	 * @return
+	 */
+	@SuppressWarnings("ResourceParameter")
+	@ApiMethod(name = "user.updateUserProfile")
+	public User updateUserProfile(@Named("userId") String userId,
+								  @Named("email") @Nullable String email,
+								  @Named("surName") @Nullable String surName,
+								  @Named("givenName") @Nullable String givenName,
+								  com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		User requestedUser = (User) Cache.getOrLoad(userId, User.class);
+
+		// Check if user is authorized
+		Authorization.checkAuthorization(requestedUser, loggedInUser);
+
+		if(email != null && !email.isEmpty()) {
+			requestedUser.setEmail(email);
+		}
+
+		if(surName != null && !surName.isEmpty()) {
+			requestedUser.setSurName(surName);
+		}
+
+		if(givenName != null && !givenName.isEmpty()) {
+			requestedUser.setGivenName(givenName);
+		}
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.makePersistent(requestedUser);
+			Cache.cache(userId, User.class, requestedUser);
+			Cache.invalidatUserLogins(requestedUser); // cannot cache with right external id because can be triggered by admin
+		} finally {
+			mgr.close();
+		}
+
+		return requestedUser;
+	}
+
+	/**
+	 * Updates the profile img of the requesting user
+	 * @param profileImg
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({"RestSignature", "ResourceParameter"})
+	@ApiMethod(name = "user.updateProfileImg", path="user.updateProfileImg")
+	public User updateUserProfileImg(BlobWrapper profileImg,
+		  	com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+		User requestedUser = (User) Cache.getOrLoadUserByAuthenticatedUser(authenticatedUser);
+
+		// Check if user is authorized
+		Authorization.checkAuthorization(requestedUser, loggedInUser);
+
+		requestedUser.setProfileImg(profileImg.getBlob());
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.makePersistent(requestedUser);
+			Cache.cache(requestedUser.getId(), User.class, requestedUser);
+			Cache.cacheAuthenticatedUser(authenticatedUser, requestedUser); // cannot cache with right external id because can be triggered by admin
+		} finally {
+			mgr.close();
+		}
+
+		return requestedUser;
 	}
 
 	/**

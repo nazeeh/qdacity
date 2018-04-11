@@ -33,6 +33,8 @@ public class TokenUtil {
     private static final int TOKEN_VALIDITY_TIME = 40;
     public static final String JWT_ISSUER = "QDACity";
     public static final String NAME_CLAIM = "name";
+    public static final String FIRSTNAME_CLAIM = "firstname";
+    public static final String LASTNAME_CLAIM = "lastname";
     public static final String EMAIL_CLAIM = "email";
     public static final String AUTH_NETWORK_CLAIM = "auth-network";
     public static final String EXTERNAL_USER_ID_CLAIM = "external-user-id";
@@ -129,6 +131,8 @@ public class TokenUtil {
 
         Map<String, Object> customClaimsMap = new HashMap<String, Object>();
         customClaimsMap.put(NAME_CLAIM, user.getGivenName() + " " + user.getSurName());
+        customClaimsMap.put(FIRSTNAME_CLAIM, user.getGivenName());
+        customClaimsMap.put(LASTNAME_CLAIM, user.getSurName());
         customClaimsMap.put(EMAIL_CLAIM, user.getEmail());
         customClaimsMap.put(AUTH_NETWORK_CLAIM, authUser.getProvider());
         customClaimsMap.put(EXTERNAL_USER_ID_CLAIM, authUser.getId());

@@ -24,6 +24,8 @@ export default class QdacityTokenAuthenticationProvider {
 				resolve({
 					qdacityId: '',
 					name: '',
+					firstname: '',
+					lastname: '',
 					email: '',
 					thumbnail: ''
 				});
@@ -33,6 +35,8 @@ export default class QdacityTokenAuthenticationProvider {
 			const profile = {
 				qdacityId: decoded.sub,
 				name: decoded.name,
+				firstname: decoded.firstname,
+				lastname: decoded.lastname,
 				email: decoded.email,
 				thumbnail: _this.generateThumbnailBase64(decoded.name)
 			};
@@ -164,19 +168,34 @@ export default class QdacityTokenAuthenticationProvider {
 
 		if(expiresAt.getTime() < compareDate.getTime()) {
 			// refresh neccessary
-			const _this = this;
+			this.forceTokenRefresh()
+				.catch((e) => console.log(e))
+		}
+	}
+
+	/** 
+	 * Forces a token refresh
+	 * @returns {Promise}
+	 */
+	forceTokenRefresh() {
+		const _this = this;
+
+		const promise = new Promise(function(resolve, reject) {
+
 			gapi.client.qdacity.authentication.refreshToken({
-				token: this.jwtToken
+				token: _this.jwtToken
 			}).execute(function(resp) {
 				if (!resp.code) {
 					_this.setToken(resp.value);
 					console.log('Refreshed token!');
 					_this.authStateChaned();
+					resolve();
 				} else {
-					console.log('Refreshing the token failed!');
+					reject('Refreshing the token failed!');
 				}
 			});
-		}
+		});
+		return promise;
 	}
 
 	/**
