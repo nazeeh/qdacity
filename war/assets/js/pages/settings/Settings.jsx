@@ -4,8 +4,11 @@ import { Switch, Route } from 'react-router'
 import styled from 'styled-components';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+
 import NavigationSidebar from './NavigationSidebar.jsx';
 import LocalizationSettingsPage from './LocalizationSettings.jsx';
+import ProfileSettings from './ProfileSettings.jsx';
 
 
 const GridContainer = styled.div`
@@ -21,6 +24,7 @@ const GridContainer = styled.div`
 
     @media (min-width: 768px) {
         grid-template-columns: 200px auto;
+        grid-column-gap: 30px;
         grid-template-areas:
             'sidebarNav settingsContent';
         height: 100vh;
@@ -73,14 +77,14 @@ export default class SettingsPage extends Component {
                     id: 'settings.menu.user-data',
                     defaultMessage: 'User Data'
                 }),
-                onClick: () => this.redirectTo('/Settings'),
+                onClick: () => this.redirectTo('/Settings/Profile'),
                 items: [
                     {
                         text: formatMessage({
                             id: 'settings.menu.profile',
                             defaultMessage: 'Profile'
                         }),
-                        onClick: () => this.redirectTo('/Settings'),
+                        onClick: () => this.redirectTo('/Settings/Profile'),
                     },
                     {
                         text: formatMessage({
@@ -115,6 +119,10 @@ export default class SettingsPage extends Component {
     }
 
     render() {
+        if(!this.props.auth.authState.isUserSignedIn) {
+                return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+        }
+
         return (
             <GridContainer>
                 <SidebarNav>
@@ -123,12 +131,30 @@ export default class SettingsPage extends Component {
                 <SettingsContent>
                     <Switch>
                         <Route
+                            path="/Settings"
+                            render={props => (
+                                <ProfileSettings
+                                    history={this.props.history}
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                        <Route
                             path="/Settings/Localization"
                             render={props => (
                                 <LocalizationSettingsPage
                                     locale={this.props.locale}
                                     language={this.props.language}
                                     messages={this.props.messages}
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                        <Route
+                            path="/Settings/Profile"
+                            render={props => (
+                                <ProfileSettings
+                                    history={this.props.history}
                                     auth={this.props.auth} 
                                 />
                             )}

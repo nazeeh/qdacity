@@ -359,7 +359,7 @@ public class UserEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "removeUser")
+	@ApiMethod(name = "user.removeUser")
 	public void removeUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		
 		User user = (User) Cache.getOrLoad(id, User.class);

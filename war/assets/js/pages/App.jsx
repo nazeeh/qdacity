@@ -98,6 +98,7 @@ export default class App extends React.Component {
 					isUserSignedIn: false
 				},
 				userProfile: {
+					qdacityId: '',
 					name: '',
 					email: '',
 					picSrc: ''
@@ -170,7 +171,8 @@ export default class App extends React.Component {
 			let profile = {
 				name: '',
 				email: '',
-				picSrc: ''
+				picSrc: '',
+				qdacityId: ''
 			};
 			let picSrcWithoutParams = '';
 			if(!!loginStatus) {
@@ -187,6 +189,7 @@ export default class App extends React.Component {
 			}
 			
 			_this.state.auth.userProfile = {
+				qdacityId: profile.qdacityId,
 				name: profile.name,
 				email: profile.email,
 				picSrc: picSrcWithoutParams

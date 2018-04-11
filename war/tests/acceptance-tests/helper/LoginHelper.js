@@ -23,3 +23,11 @@ module.exports.restoreLoginState = async function(driver) {
         console.error('Could not restore token!');
     }
 }
+
+module.exports.userData = {
+    displayName: 'Max Mustermann',
+    qdacityFirstName: 'Max',
+    qdacityLastName: 'Mustermann',
+    qdacityEmail: 'felixtest22@gmail.com',
+    userPassword: 'Password123'
+}
