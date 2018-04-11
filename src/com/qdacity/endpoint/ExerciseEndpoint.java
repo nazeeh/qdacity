@@ -17,6 +17,7 @@ import javax.persistence.EntityExistsException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.exercise.ExerciseGroup;
 import com.qdacity.project.metrics.*;
 import com.qdacity.project.metrics.tasks.*;
 import com.qdacity.user.LoginProviderType;
@@ -47,6 +48,40 @@ import com.qdacity.project.ProjectType;
 public class ExerciseEndpoint {
 
 	private UserEndpoint userEndpoint = new UserEndpoint();
+
+	/**
+	 * This inserts a new entity into App Engine datastore. If the entity already
+	 * exists in the datastore, an exception is thrown.
+	 * It uses HTTP POST method.
+	 *
+	 * @param exerciseGroup the entity to be inserted.
+	 * @return The inserted entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "exercise.insertExerciseGroup")
+	public ExerciseGroup insertExerciseGroup(ExerciseGroup exerciseGroup, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (exerciseGroup.getId() != null) {
+				if (containsExerciseGroup(exerciseGroup)) {
+					throw new EntityExistsException("Exercise group already exists");
+				}
+			}
+
+			try {
+				TermCourse termCourse = mgr.getObjectById(TermCourse.class, exerciseGroup.getTermCourseID());
+				Authorization.checkAuthorizationTermCourse(termCourse, user);
+				mgr.makePersistent(exerciseGroup);
+			}
+			catch (javax.jdo.JDOObjectNotFoundException ex) {
+				throw new javax.jdo.JDOObjectNotFoundException("The corresponding term course was not found");
+			}
+
+		} finally {
+			mgr.close();
+		}
+		return exerciseGroup;
+	}
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
@@ -555,6 +590,19 @@ public class ExerciseEndpoint {
 		boolean contains = true;
 		try {
 			mgr.getObjectById(Exercise.class, exercise.getId());
+		} catch (javax.jdo.JDOObjectNotFoundException ex) {
+			contains = false;
+		} finally {
+			mgr.close();
+		}
+		return contains;
+	}
+
+	private boolean containsExerciseGroup(ExerciseGroup exerciseGroup) {
+		PersistenceManager mgr = getPersistenceManager();
+		boolean contains = true;
+		try {
+			mgr.getObjectById(ExerciseGroup.class, exerciseGroup.getId());
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			contains = false;
 		} finally {
