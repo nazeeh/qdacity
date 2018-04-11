@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
@@ -22,13 +23,17 @@ import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
+import com.qdacity.user.UserLoginProviderInformation;
 import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This Endpoint is intented to be used for Email+Password actions.
@@ -273,6 +278,169 @@ public class AuthenticationEndpoint {
 
         Queue queue = QueueFactory.getDefaultQueue();
         queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+    }
+
+    @ApiMethod(name="auth.getAssociatedLogins")
+    public List<UserLoginProviderInformation> getAssociatedLogins(com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+        User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+
+        Authorization.checkAuthorization(user, loggedInUser);
+
+        return user.getLoginProviderInformation();
+    }
+
+    @ApiMethod(name="auth.associateGoogleLogin")
+    public void associateGoogleLogin(@Named("googleIdToken") String googleIdToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser googleUser = googleTokenValidator.validate(googleIdToken);
+        assertAssociationPreconditions(googleUser);
+        associateLogin((AuthenticatedUser) loggedInUser, googleUser);
+    }
+
+    @ApiMethod(name="auth.associateEmailPassword")
+    public void associateEmailPassword(@Named("email") String email, @Named("password") String password, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
+        if(!emailPattern.matcher(email).matches()) {
+            throw new BadRequestException("Code4.3: The given email adress is not in a valid format!");
+        }
+        Pattern passwordPattern = Pattern.compile(PASSWORD_REGEX);
+        if(password == null || password.isEmpty()) {
+            throw new BadRequestException("Code4.4: The password must not be empty!");
+        }
+        if(!passwordPattern.matcher(password).matches()) {
+            throw new BadRequestException("Code4.5: The password must have at least 7 characters and must contain only and " +
+                    "at least one of small letters, big letters and numbers! No Whitespaces allowed");
+        }
+        assertEmailIsAvailable(email);
+
+        AuthenticatedUser unassociatedUser = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
+        assertAssociationPreconditions(unassociatedUser);
+
+        HashUtil hashUtil = new HashUtil();
+        String pwdHash = hashUtil.hash(password);
+
+        EmailPasswordLogin emailPwd = new EmailPasswordLogin(email, pwdHash);
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(emailPwd);
+        } finally {
+            mgr.close();
+        }
+        associateLogin((AuthenticatedUser) loggedInUser, unassociatedUser);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(name="auth.disassociateLogin")
+    public void disassociateLogin(UserLoginProviderInformation associatedLogin, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        if (loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
+        User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+
+        int sizeBeforeRemove = user.getLoginProviderInformation().size();
+
+        if(user.getLoginProviderInformation().size() == 1) {
+            throw new BadRequestException("The last associated Login cannot be deleted!");
+        }
+
+        List<UserLoginProviderInformation> stayingLoginInfos = user.getLoginProviderInformation().stream()
+                .filter((loginInfo) -> !(loginInfo.getExternalUserId().equals(associatedLogin.getExternalUserId()) && loginInfo.getProvider().equals(associatedLogin.getProvider())))
+                .collect(Collectors.toList());
+        user.setLoginProviderInformation(stayingLoginInfos);
+
+        if (stayingLoginInfos.size() == sizeBeforeRemove) {
+            throw new BadRequestException("This associated Login does not exist.");
+        }
+
+        PersistenceManager mgr = getPersistenceManager();
+        Transaction transaction = mgr.currentTransaction();
+        try {
+            transaction.begin(); // transaction in order to update dependent relation
+            mgr.makePersistent(user);
+
+            // Set filter for UserLoginProviderInformation
+            Query.Filter externalUserIdFilter = new Query.FilterPredicate("externalUserId", Query.FilterOperator.EQUAL, associatedLogin.getExternalUserId());
+            Query.Filter providerFilter = new Query.FilterPredicate("provider", Query.FilterOperator.EQUAL, associatedLogin.getProvider().toString());
+            Query.Filter filter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND,
+                    Arrays.asList(externalUserIdFilter, providerFilter));
+            com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
+                    "UserLoginProviderInformation").setFilter(filter);
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            PreparedQuery pq = datastore.prepare(q);
+            Entity providerInformationEntity = pq.asSingleEntity();
+            datastore.delete(providerInformationEntity.getKey());
+
+            transaction.commit();
+
+            if(associatedLogin.getProvider().equals(LoginProviderType.EMAIL_PASSWORD)) {
+                EmailPasswordLogin emailPwd = mgr.getObjectById(EmailPasswordLogin.class, associatedLogin.getExternalEmail());
+                mgr.deletePersistent(emailPwd);
+            }
+
+
+            Cache.cache(user.getId(), User.class, user);
+            Cache.invalidatUserLogins(user); // make sure the associatedLogin is not chached any more.
+            Cache.cacheAuthenticatedUser(authUser, user);
+        } finally {
+            if(transaction.isActive()) {
+                transaction.rollback();
+            }
+            mgr.close();
+        }
+    }
+
+    private void associateLogin(AuthenticatedUser loggedInUser, AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
+        AuthenticatedUser authUser = loggedInUser;
+        User user = Cache.getOrLoadUserByAuthenticatedUser(authUser);
+        user.addLoginProviderInformation(new UserLoginProviderInformation(unAssociatedUser.getProvider(), unAssociatedUser.getId(), unAssociatedUser.getEmail()));
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            mgr.makePersistent(user);
+            Cache.cache(user.getId(), User.class, user);
+            Cache.cacheAuthenticatedUser(authUser, user);
+        } finally {
+            mgr.close();
+        }
+    }
+
+    /**
+     * Checks some preconditions for associating a login.
+     * @param unAssociatedUser
+     * @return
+     * @throws UnauthorizedException
+     */
+    private void assertAssociationPreconditions(AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
+        if(unAssociatedUser == null) {
+            throw new UnauthorizedException("Code4.1: The Google token does not seem to be valid!");
+        }
+        User user = null;
+
+        try {
+            user = Cache.getOrLoadUserByAuthenticatedUser(unAssociatedUser);
+        } catch (UnauthorizedException e) {
+            // user stays null
+        }
+
+        if(user != null) {
+            throw new UnauthorizedException("Code4.2: There already exists a user with this google account!");
+        }
     }
 
 

@@ -36,9 +36,9 @@ public class TokenUtil {
     public static final String FIRSTNAME_CLAIM = "firstname";
     public static final String LASTNAME_CLAIM = "lastname";
     public static final String EMAIL_CLAIM = "email";
-    public static final String AUTH_NETWORK_CLAIM = "auth-network";
-    public static final String EXTERNAL_USER_ID_CLAIM = "external-user-id";
-    public static final String EXTERNAL_EMAIL_CLAIM = "external-email";
+    public static final String AUTH_NETWORK_CLAIM = "auth_network";
+    public static final String EXTERNAL_USER_ID_CLAIM = "external_user_id";
+    public static final String EXTERNAL_EMAIL_CLAIM = "external_email";
 
     private static TokenUtil instance = null;
 
