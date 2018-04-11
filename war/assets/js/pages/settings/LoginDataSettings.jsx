@@ -68,6 +68,10 @@ const StyledDisassociateSpan = styled.span`
         cursor: pointer;
     }
 `;
+
+const StyledChangePasswordButtonWrapper = styled.span`
+    margin-left: 30px;
+`;
     
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
@@ -331,6 +335,118 @@ export default class LoginDataSettings extends Component {
         });
     }
 
+    onChangePassword() {
+        const _this = this;
+        const { formatMessage } = IntlProvider.intl;
+
+        const oldPasswordLabel = formatMessage({
+			id: 'settings.logindata.changePassword.oldPassword',
+			defaultMessage: 'Old Password'
+		});
+		const newPasswordLabel = formatMessage({
+			id: 'settings.logindata.changePassword.newPassword',
+			defaultMessage: 'New Password'
+		});
+
+        vex.dialog.open({
+            message: formatMessage({
+                id: 'settings.logindata.changePassword.heading',
+                defaultMessage: 'Change your password.'
+            }),
+            input: [
+                `<label for="oldPassword">${oldPasswordLabel}</label><input name="oldPassword" type="password" required />`,
+                `<label for="newPassword">${newPasswordLabel}</label><input name="newPassword" type="password" required />`
+            ].join('\n'),
+            buttons: [
+                $.extend({}, vex.dialog.buttons.YES, {
+                    text: formatMessage({
+                        id: 'settings.logindata.changePassword.changePassword',
+                        defaultMessage: 'Change Password'
+                    })
+                }),
+                $.extend({}, vex.dialog.buttons.NO, {
+                    text: formatMessage({
+                        id: 'settings.logindata.changePassword.cancel',
+                        defaultMessage: 'Cancel'
+                    })
+                })
+            ],
+            callback: async function(data) {
+                if (data === false) {
+                    return console.log('Cancelled');
+                }
+                
+                gapi.client.qdacity.auth.changePassword({
+                    oldPassword: data.oldPassword,
+                    newPassword: data.newPassword
+                }).execute(function(resp) {
+                    if(!resp.code) {
+                        _this.props.auth.authentication.refreshSession();
+                        vex.dialog.open({
+                            message: formatMessage({
+                                id: 'settings.logindata.changePassword.success',
+                                defaultMessage: 'Your password was changed!'
+                            }),
+                            buttons: [
+                                $.extend({}, vex.dialog.buttons.YES, {
+                                    text: formatMessage({
+                                        id: 'settings.logindata.changePAssword.success.close',
+                                        defaultMessage: 'Close'
+                                    })
+                                })
+                            ],
+                        });
+                    } else {
+                        _this.handleFailedChangePasswordResponse(resp);
+                    }
+                })
+            }
+        });
+    }
+
+    handleFailedChangePasswordResponse(resp) {
+        const { formatMessage } = IntlProvider.intl;
+
+        let errorMsg = formatMessage({
+            id: 'settings.logindata.changePassword.failure',
+            defaultMessage: 'Could not change the password.'
+        });
+
+        const code = resp.message.split(':')[0];
+        switch(code) {
+            case 'Code2.3': 
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.changePassword.failure.pwdEmpty',
+                    defaultMessage: 'The new password must not be empty.'
+                });
+                break;
+            case 'Code2.4':
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.changePassword.failure.associatedOtherAccount',
+                    defaultMessage: 'The password must have at least 7 characters and must contain only small letters, big letters and numbers. Each category has to be fulfilled with at least one character! No Whitespaces allowed.'
+                });
+                break;
+            case 'Code1.2':
+                errorMsg = formatMessage({
+                    id: 'settings.logindata.changePassword.failure.wrongOldPassword',
+                    defaultMessage: 'The old password was not correct!'
+                });
+                break;
+        }
+
+        vex.dialog.open({
+            message: errorMsg,
+            buttons: [
+                $.extend({}, vex.dialog.buttons.YES, {
+                    text: formatMessage({
+                        id: 'settings.logindata.changePAssword.failure.close',
+                        defaultMessage: 'Close'
+                    })
+                })
+            ],
+        });
+    }
+
     render() {
 
         const AssociatedLoginListItems = ({ associatedLoginList }) => {
@@ -356,6 +472,20 @@ export default class LoginDataSettings extends Component {
             );
         }
 
+        const ChangePasswordButton = () => {
+            return (
+                this.props.auth.userProfile.authNetwork === 'EMAIL_PASSWORD' ?
+                    <StyledChangePasswordButtonWrapper>
+                        <BtnDefault onClick={() => this.onChangePassword()}>
+                            <FormattedMessage
+                                id="settings.logindata.email.changePassword"
+                                defaultMessage="Change Password"
+                            />
+                        </BtnDefault>
+                    </StyledChangePasswordButtonWrapper> : null
+            );
+        }
+
         return (
             <div>
                 <StyledPanel>
@@ -368,6 +498,7 @@ export default class LoginDataSettings extends Component {
                         {this.props.auth.userProfile.externalEmail}
                     </u> 
                     {' (via ' + this.parseLoginProvider(this.props.auth.userProfile.authNetwork) + ')'}
+                    <ChangePasswordButton/>
                 </StyledPanel>
 
                 <StyledPanel>

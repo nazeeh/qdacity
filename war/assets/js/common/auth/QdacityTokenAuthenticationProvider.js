@@ -35,7 +35,6 @@ export default class QdacityTokenAuthenticationProvider {
 			}
 			_this.refreshTokenIfNeccessary();
 			const decoded = jwt_decode(_this.jwtToken);
-			console.log(decoded);
 			const profile = {
 				qdacityId: decoded.sub,
 				authNetwork: decoded.auth_network,

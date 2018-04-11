@@ -245,6 +245,51 @@ public class AuthenticationEndpointTest {
         new AuthenticationEndpoint().disassociateLogin(associatedLogins.get(0), authenticatedUser);
     }
 
+    @Test
+    public void testChangePwd() throws BadRequestException, UnauthorizedException {
+        User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+
+        String password = "Password123";
+        User registeredUser = this.registerUser(unregisteredUser, password);
+
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+                registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
+                registeredUser.getEmail(), LoginProviderType.EMAIL_PASSWORD);
+
+        new AuthenticationEndpoint().getTokenEmailPassword(unregisteredUser.getEmail(), password, null);
+
+        String changedPassword = "Password456";
+        new AuthenticationEndpoint().changePassword(password, changedPassword, authenticatedUser);
+        try {
+            new AuthenticationEndpoint().getTokenEmailPassword(unregisteredUser.getEmail(), password, null);
+            fail("Could sign in with old password");
+        } catch (UnauthorizedException ex) {
+            // expected
+        }
+        new AuthenticationEndpoint().getTokenEmailPassword(unregisteredUser.getEmail(), changedPassword, null);
+    }
+
+    @Test(expected = UnauthorizedException.class)
+    public void testChangePwdWrongOldPwd() throws UnauthorizedException, BadRequestException {User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+
+        String password = "Password123";
+        User registeredUser = this.registerUser(unregisteredUser, password);
+
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+                registeredUser.getLoginProviderInformation().get(0).getExternalUserId(),
+                registeredUser.getEmail(), LoginProviderType.EMAIL_PASSWORD);
+
+        new AuthenticationEndpoint().getTokenEmailPassword(unregisteredUser.getEmail(), password, null);
+
+        String changedPassword = "Password456";
+        new AuthenticationEndpoint().changePassword(changedPassword, changedPassword, authenticatedUser);
+    }
 
     private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {
         return new AuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
