@@ -8,6 +8,7 @@ import {
 
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
+import VexModal from '../common/modals/VexModal.js'
 
 import AuthenticationProvider from '../common/auth/AuthenticationProvider.js';
 import AuthorizationProvider from '../common/auth/AuthorizationProvider.js';
@@ -109,6 +110,8 @@ export default class App extends React.Component {
 				authorization: this.authorizationProvider
 			}
 		};
+
+		new VexModal(); // init vex
 
 		this.initAuthProvider();
 	}
