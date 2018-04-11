@@ -30,15 +30,15 @@ function handleError(err) {
 
 function setConfig() {
 	//CLI args overwrite JSON config
-	if (argv.app_path) config.app_path = argv.app_path;
-	if (argv.local) config.app_path = 'http://localhost:8888';
-	if (argv.slocal) config.app_path = 'https://localhost:8888';
-	console.log('Configured app adress: ' + config.app_path);
-
+	
 	if (argv.api_path) config.api_path = argv.api_path;
 	if (argv.local) config.api_path = 'http://localhost:8888/_ah/api';
 	if (argv.slocal) config.api_path = 'https://localhost:8888/_ah/api';
 	console.log('Configured server adress: ' + config.api_path);
+	
+	if (argv.app_path) config.app_path = argv.app_path; // if api_path is explicitly passed, use this
+	else config.app_path = config.api_path.substring(0, config.api_path.length - 8); // just strip the /_ah/api
+	console.log('Configured app adress: ' + config.app_path);
 
 	if (argv.local || argv.slocal) config.sync_service = 'http://localhost:8080';
 	console.log('Configured rts server adress: ' + config.sync_service);
