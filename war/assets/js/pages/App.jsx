@@ -95,8 +95,7 @@ export default class App extends React.Component {
 			tutorialState: t.tutorialState,
 			auth: {
 				authState: {
-					isUserSignedIn: false,
-					isUserRegistered: false
+					isUserSignedIn: false
 				},
 				userProfile: {
 					name: '',
@@ -127,16 +126,22 @@ export default class App extends React.Component {
 		// on page reloads: also reload profile data
 		if (!this.authenticationProvider.isSignedIn()) {
 			// try to silently sign in with email and password
-			await this.authenticationProvider.silentSignInWithEmailPassword();
+			try {
+				await this.authenticationProvider.silentSignInWithQdacityToken();
+			} catch (e) {
+				// ok, if failed
+			}
 			
 			if(!this.authenticationProvider.isSignedIn()) {
 				// try silent sign in
-				this.authenticationProvider.silentSignInWithGoogle(); // don't await, because it is listening on an observer
-				await this.authenticationProvider.synchronizeTokenWithGapi();
+				try {
+					await this.authenticationProvider.silentSignInWithGoogle();
+				} catch (e) {
+					// ok if failed
+				}
 			}
 
 		}
-		this.authenticationProvider.synchronizeTokenWithGapi();
 		this.updateUserStatus(); // somehow the auth state listener triggers too early!
 	}
 
@@ -169,7 +174,8 @@ export default class App extends React.Component {
 			};
 			let picSrcWithoutParams = '';
 			if(!!loginStatus) {
-				profile = await _this.authenticationProvider.getProfile();/*
+				profile = await _this.authenticationProvider.getProfile();
+				/*
 				* Removing query parameters from URL.
 				* With google we always got ?sz=50 in the URL which gives you a
 				* small low res thumbnail. Without parameter we get the original
@@ -194,8 +200,7 @@ export default class App extends React.Component {
 				// user stays undefined
 			}
 			_this.state.auth.authState = {
-				isUserSignedIn: !!loginStatus,
-				isUserRegistered: !!user
+				isUserSignedIn: !!loginStatus
 			};
 			_this.setState(_this.state);
 			resolve();

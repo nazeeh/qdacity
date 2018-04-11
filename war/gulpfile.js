@@ -30,12 +30,19 @@ function handleError(err) {
 
 function setConfig() {
 	//CLI args overwrite JSON config
+	if (argv.app_path) config.app_path = argv.app_path;
+	if (argv.local) config.app_path = 'http://localhost:8888';
+	if (argv.slocal) config.app_path = 'https://localhost:8888';
+	console.log('Configured app adress: ' + config.app_path);
+
 	if (argv.api_path) config.api_path = argv.api_path;
 	if (argv.local) config.api_path = 'http://localhost:8888/_ah/api';
 	if (argv.slocal) config.api_path = 'https://localhost:8888/_ah/api';
 	console.log('Configured server adress: ' + config.api_path);
+
 	if (argv.local || argv.slocal) config.sync_service = 'http://localhost:8080';
 	console.log('Configured rts server adress: ' + config.sync_service);
+	
 	if (argv.api_version) config.api_version = argv.api_version;
 	if (argv.client_id) config.client_id = argv.client_id;
 	if (argv.local) config.test_mode = true; else config.test_mode = false;
@@ -156,6 +163,7 @@ gulp.task('bundle-task', function() {
 	//since webpack.config fetches from entry points
 		.pipe(webpack(require('./webpack.config.js')))
 		.on('error', handleError)
+		.pipe(replace('$APP_PATH$', config.app_path))
 		.pipe(replace('$API_PATH$', config.api_path))
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
@@ -222,6 +230,7 @@ gulp.task('webpack-watch', function() {
 			)
 		)
 		.on('error', handleError)
+		.pipe(replace('$APP_PATH$', config.app_path))
 		.pipe(replace('$API_PATH$', config.api_path))
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
