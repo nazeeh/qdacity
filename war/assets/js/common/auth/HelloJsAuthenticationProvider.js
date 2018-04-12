@@ -7,14 +7,15 @@ import ImageUtil from './ImageUtil.js';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const TWITTER_CLIENT_ID = '$TWITTER_CLIENT_ID$';
-    
-    
+
+
 // hellojs for 'regular' sign-in
 hello.init({
 	google: GOOGLE_CLIENT_ID,
 	twitter: TWITTER_CLIENT_ID
 }, {
-    redirect_uri: '$APP_PATH$'
+    redirect_uri: '$APP_PATH$',
+	oauth_proxy: 'https://auth-proxy-dot-qdacity-app.appspot.com/oauthproxy'
 });
 
 export default class HelloJsAuthenticationProvider {
@@ -31,7 +32,7 @@ export default class HelloJsAuthenticationProvider {
         this.signOut = this.signOut.bind(this);
     }
 
-    
+
 	/**
 	 * Registers the current user.
 	 * The user has to be logged in beforehand.
@@ -48,11 +49,11 @@ export default class HelloJsAuthenticationProvider {
 
             // get AuthNetwork token
 			const session = hello.getAuthResponse(_this.authNetwork);
-			let authNetworkToken = session.id_token;	
+			let authNetworkToken = session.id_token;
 			if(!authNetworkToken) {
 				// twitter needs access token
 				authNetworkToken = session.access_token;
-			}		
+			}
 
 			_this.registerApiMethod({
                 authNetworkToken: authNetworkToken,
@@ -68,7 +69,7 @@ export default class HelloJsAuthenticationProvider {
                         if (!resp.code) {
                             _this.qdacityTokenAuthentcationProvider.setToken(resp.value);
 							_this.qdacityTokenAuthentcationProvider.authStateChaned();
-							
+
 							await _this.uploadProfileImg();
 							await _this.qdacityTokenAuthentcationProvider.forceTokenRefresh();
                             resolve();
@@ -113,9 +114,9 @@ export default class HelloJsAuthenticationProvider {
 		return promise;
 	}
 
-	/** 
+	/**
 	 * Signs in with a popup.
-	 * @returns {Promise} 
+	 * @returns {Promise}
 	 * If the sign-in was successful (AuthNetwork + Qdacity), then the AuthNetwork profile is resolved.
 	 * If the sign-in for AuthNetwork was not successful (Qdacity automatically also failed), the error is rejeceted.
 	 * If the sign-in for AuthNetwork succeeded but for Qdacity not, then the AuthNetwork profile is rejected.
