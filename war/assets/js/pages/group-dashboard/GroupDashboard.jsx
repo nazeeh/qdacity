@@ -9,6 +9,7 @@ import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
 import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
 import GroupUserList from './GroupUserList.jsx';
+import ProjectList from '../personal-dashboard/ProjectList.jsx';
 
 
 const StyledDashboard = styled.div`
@@ -37,6 +38,9 @@ const StyledUserListWrapper = styled.div`
     grid-area: users;
 `;
 
+const StyledProjectListWrapper = styled.div`
+    grid-area: projects;
+`;
 
 
 export default class GroupDashboard extends Component {
@@ -46,15 +50,42 @@ export default class GroupDashboard extends Component {
         const urlParams = URI(window.location.search).query(true);
 
         this.state = {
+            userGroupId: urlParams.userGroup,
             userGroup: {
                 name: ''
             },
             isOwner: false,
-            isParticipant: false
+            isParticipant: false,
+            projects: []
         }
         
-        this.init(urlParams.userGroup);
+        this.init(this.state.userGroupId);
+
+		this.setProjects = this.setProjects.bind(this);
+		this.addProject = this.addProject.bind(this);
+		this.removeProject = this.removeProject.bind(this);
     }
+
+    
+	setProjects(projects) {
+		this.setState({
+			projects: projects
+		});
+	}
+
+	addProject(project) {
+		this.state.projects.push(project);
+		this.setState({
+			projects: this.state.projects
+		});
+	}
+
+	removeProject(index) {
+		this.state.projects.splice(index, 1);
+		this.setState({
+			projects: this.state.projects
+		});
+	}
 
     init(userGroupId) {
         const _this = this;
@@ -80,6 +111,32 @@ export default class GroupDashboard extends Component {
                     <i className="fa fa-users" />
                     <StyledUserGroupName>{this.state.userGroup.name}</StyledUserGroupName>
                 </StyledPageHeader>
+
+                <StyledProjectListWrapper>
+                    <div>
+                        <div className="box box-default">
+                            <div className="box-header with-border">
+                                <h3 className="box-title">
+                                    <FormattedMessage
+                                        id="personaldashboard.projects"
+                                        defaultMessage="Projects"
+                                    />
+                                </h3>
+                            </div>
+                            <div className="box-body">
+                                <ProjectList 
+                                    projects={this.state.projects}
+                                    setProjects={this.setProjects}
+                                    addProject={this.addProject}
+                                    removeProject={this.removeProject}
+                                    userGroups={[this.state.userGroup]}
+                                    userGroupId={this.state.userGroupId}
+                                    history={this.props.history}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </StyledProjectListWrapper>
 
                 <StyledUserListWrapper>
                     <GroupUserList 

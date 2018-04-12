@@ -55,22 +55,8 @@ export default class ProjectDashboard extends React.Component {
 	init() {
 		if (!this.userPromise) {
 			this.userPromise = this.authenticationProvider.getCurrentUser();
-			this.setUserRights();
 			this.setProjectProperties();
 		}
-	}
-
-	setUserRights() {
-		var _this = this;
-		this.userPromise.then(function(user) {
-			var isProjectOwner = _this.props.auth.authorization.isProjectOwner(
-				user,
-				_this.state.project.getId()
-			);
-			_this.setState({
-				isProjectOwner: isProjectOwner
-			});
-		});
 	}
 
 	setProjectProperties() {
@@ -83,8 +69,13 @@ export default class ProjectDashboard extends React.Component {
 						user,
 						resp
 					);
+					var isProjectOwner = _this.props.auth.authorization.isProjectOwner(
+						user,
+						resp
+					);
 					_this.setState({
-						isValidationCoder: isValidationCoder
+						isValidationCoder: isValidationCoder,
+						isProjectOwner: isProjectOwner
 					});
 				});
 
@@ -117,14 +108,6 @@ export default class ProjectDashboard extends React.Component {
 				chartScriptPromise={this.props.chartScriptPromise}
 			/>
 		);
-	}
-
-	updateUserStatus() {
-		const loginStatus = this.authenticationProvider.isSignedIn();
-		if (loginStatus !== this.state.isSignedIn) {
-			this.state.isSignedIn = loginStatus;
-			this.setState(this.state);
-		}
 	}
 
 	render() {
@@ -169,11 +152,13 @@ export default class ProjectDashboard extends React.Component {
 							project={this.state.project}
 							isProjectOwner={this.state.isProjectOwner}
 						/>
+
 						<RevisionHistory
 							project={this.state.project}
 							addReports={this.addReports}
 							userPromise={this.userPromise}
 							history={this.props.history}
+							isProjectOwner={this.state.isProjectOwner}
 						/>
 
 						<ParentProject

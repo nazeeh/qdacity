@@ -122,6 +122,31 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
+	/**
+	 * Options has fields id and name.
+	 * The name is shown, the id is returned
+	 */
+	addSelectComplexOptions(name, options, label, initialValueId) {
+		var _this = this;
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += label + ': ';
+		this.formElements += '<select name="' + name + '">';
+
+		var isDefault = function(el) {
+			return el.id == initialValueId ? 'selected="selected"' : '';
+		};
+
+		options.forEach(function(el) {
+			_this.formElements +=
+				'<option value="' + el.id + '" ' + isDefault(el) + '>' + el.name + '</option>';
+		});
+		this.formElements += '</select>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+	}
+
 	addCheckBox(name, label, checked, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 
