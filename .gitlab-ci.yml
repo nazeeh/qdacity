@@ -30,6 +30,7 @@ stages:
     paths:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
+      - target/qdacity-war/sw.js
       - war/translations/template.txt
       - war/dist/messages/
     expire_in: 3 mos
