@@ -252,7 +252,6 @@ export default class App extends React.Component {
                     connected: false
                 });
             });
-        console.log(this.state.connected)
 	}
 
 	componentDidMount() {

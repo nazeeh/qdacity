@@ -73,6 +73,25 @@ export default class Faq extends React.Component {
 					id="faq.pricing.answer"
 					defaultMessage="You can use QDAcity free of charge."
 				/>
+                <h3 id="offline-mode">
+                    <FormattedMessage
+                        id="faq.offline"
+                        defaultMessage="What does offline mean?"
+                    />
+                </h3>
+                <FormattedMessage
+                    id="faq.offline.answer"
+                    defaultMessage="Offline indicates the site can't establish a conneciton to the server.
+                    				You can still do the following:"
+                />
+                <ul>
+                    <li>
+                        <FormattedMessage
+                            id="faq.offline.0"
+                            defaultMessage="You cant do anything"
+                        />
+                    </li>
+				</ul>
 			</StyledPage>
 		);
 	}

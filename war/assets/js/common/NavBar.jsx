@@ -12,6 +12,11 @@ const StyledHelpTab = styled.li`
 	display: block;
 `;
 
+const StyledOfflineTab = styled.span`
+	display: ${props => (props.connected ? 'none' : 'block')} !important;
+`;
+
+
 const StyledSigninTab = styled.li`
 	display: ${props => (props.loggedIn ? 'none' : 'block')} !important;
 `;
@@ -107,6 +112,15 @@ export default class NavBar extends React.Component {
 						>
 							QDAcity
 						</StyledNavbarItem>
+                        <StyledOfflineTab
+                            className="clickable navbar-text"
+							connected={this.props.connected}
+                            onClick={() => {
+                                this.props.history.push('/Faq#offline-mode');
+                            }}
+                        >
+							<subscript><small><em>offline</em></small></subscript>
+                        </StyledOfflineTab>
 					</div>
 					<div
 						className="collapse navbar-collapse"
