@@ -47,6 +47,8 @@ function setConfig() {
 	
 	if (argv.api_version) config.api_version = argv.api_version;
 	if (argv.client_id) config.client_id = argv.client_id;
+	if (argv.facebook_client_id) config.facebook_client_id = argv.facebook_client_id;
+	if (argv.twitter_client_id) config.twitter_client_id = argv.twitter_client_id;
 	if (argv.local) config.test_mode = true; else config.test_mode = false;
 }
 
@@ -169,6 +171,8 @@ gulp.task('bundle-task', function() {
 		.pipe(replace('$API_PATH$', config.api_path))
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
+		.pipe(replace('$FACEBOOK_CLIENT_ID$', config.facebook_client_id))
+		.pipe(replace('$TWITTER_CLIENT_ID$', config.twitter_client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
 		.pipe(replace('$TEST_MODE$', config.test_mode))
 		.pipe(gulp.dest('dist/js/'))
@@ -236,6 +240,8 @@ gulp.task('webpack-watch', function() {
 		.pipe(replace('$API_PATH$', config.api_path))
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
+		.pipe(replace('$FACEBOOK_CLIENT_ID$', config.facebook_client_id))
+		.pipe(replace('$TWITTER_CLIENT_ID$', config.twitter_client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
 		.pipe(replace('$TEST_MODE$', config.test_mode))
 		.pipe(gulp.dest('dist/js/'))

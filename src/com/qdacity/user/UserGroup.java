@@ -21,6 +21,9 @@ public class UserGroup implements Serializable {
     @Persistent
     List<String> participants;
 
+    @Persistent
+    List<Long> projects;
+
     public UserGroup() {    }
 
     public Long getId() {
@@ -55,5 +58,14 @@ public class UserGroup implements Serializable {
 
     public void setParticipants(List<String> participants) {
         this.participants = participants;
+    }
+
+    public List<Long> getProjects() {
+        if(projects == null) return new ArrayList<Long>();
+        return projects;
+    }
+
+    public void setProjects(List<Long> projects) {
+        this.projects = projects;
     }
 }

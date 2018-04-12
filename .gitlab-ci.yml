@@ -215,6 +215,16 @@ deploy_rtcsvc:
     - cd realtime-service
     - bash ./deployment/deploy_from_gitlab_ci.sh
 
+deploy_auth_proxy:
+  <<: *job_definition
+  stage: deploy
+  only:
+    - branches
+  script:
+    - cd auth-proxy
+    - gcloud app deploy -v 1 --quiet
+  when: manual
+
 deploy_prod:
   <<: *deployment_template
   dependencies:

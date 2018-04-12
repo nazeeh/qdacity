@@ -1,0 +1,34 @@
+{
+  "name": "appengine-hello-world",
+  "description": "Auth proxy for hello.js. Hosted on App Engine Flexible.",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": ">=4.3.2"
+  },
+  "dependencies": {
+    "express": "4.16.2",
+    "oauth-shim": "^1.1.1"
+  },
+  "devDependencies": {
+    "@google-cloud/nodejs-repo-tools": "2.2.1"
+  },
+  "scripts": {
+    "deploy": "gcloud app deploy",
+    "start": "node app.js",
+    "lint": "repo-tools lint",
+    "pretest": "npm run lint",
+    "system-test": "repo-tools test app",
+    "test": "npm run system-test",
+    "e2e-test": "repo-tools test deploy"
+  },
+  "cloud-repo-tools": {
+    "test": {
+      "app": {
+        "msg": "Hello, world!"
+      }
+    },
+    "requiresKeyFile": true,
+    "requiresProjectId": true
+  }
+}

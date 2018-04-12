@@ -18,6 +18,8 @@
     <max-concurrent-requests>50</max-concurrent-requests>
   </automatic-scaling>
   
+  <!-- Let Twitter4J run requests; otherwise no connection possible -->
+  <url-stream-handler>urlfetch</url-stream-handler>
 
   <!-- Configure serving/caching of GWT files -->
   <static-files>
