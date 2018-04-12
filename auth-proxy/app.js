@@ -13,6 +13,6 @@ oauthshim.init([{
 	// Define the grant_url where to exchange Authorisation codes for tokens
 	grant_url: 'https://api.twitter.com/oauth/access_token',
 	// Restrict the callback URL to a delimited list of callback paths
-	domain: 'appspot.com, qdacity.com/redirect'
+	domain: '*qdacity-app.appspot.com, https://qdacity.com*, https://www.qdacity.com*'
 }
 ]);
