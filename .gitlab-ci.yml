@@ -39,7 +39,7 @@ frontend_prod_build:
   <<: *frontend_build
   script:
     - build_babel_plugin
-    - build_frontend bundle generate-language-files minify set-react-production
+    - build_frontend bundle generate-language-files minify set-react-production sw
 
 frontend_prod_build_nm:
   <<: *job_definition
