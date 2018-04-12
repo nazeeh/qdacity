@@ -3,7 +3,8 @@ package com.qdacity.user;
 public enum LoginProviderType {
 	GOOGLE(1),
 	EMAIL_PASSWORD(2),
-	TWITTER(3);
+	TWITTER(3),
+	FACEBOOK(4);
 
 	private final int value;
 
