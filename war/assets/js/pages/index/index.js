@@ -97,7 +97,6 @@ const init = function() {
 	});
 };
 
-
 function initServiceWorker() {
     if('serviceWorker' in navigator) {
         navigator.serviceWorker.register("sw.js" , {scope: '/'})
