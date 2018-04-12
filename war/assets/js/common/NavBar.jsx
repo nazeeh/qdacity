@@ -36,7 +36,7 @@ export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userData: {}
+			userData: {},
 		};
 
 		this.authenticationProvider = props.auth.authentication;
@@ -82,6 +82,7 @@ export default class NavBar extends React.Component {
 			<nav
 				className="navbar navbar-default navbar-fixed-top topnav"
 				role="navigation"
+				style={{background: this.props.connected ? 'blue' : 'red'}}
 			>
 				<div className="container topnav">
 					<div className="navbar-header">

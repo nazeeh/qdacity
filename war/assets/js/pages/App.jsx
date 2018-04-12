@@ -113,12 +113,18 @@ export default class App extends React.Component {
 				},
 				authentication: this.authenticationProvider,
 				authorization: this.authorizationProvider
-			}
+			},
+			connected: true
 		};
+
+        this.ping=this.ping.bind(this);
+        this.updateConnectionStatus=this.updateConnectionStatus.bind(this);
 
 		new VexModal(); // init vex
 
 		this.initAuthProvider();
+		//this.updateConnectionStatus();
+		this.ping();
 	}
 
 	async initAuthProvider() {
@@ -230,6 +236,25 @@ export default class App extends React.Component {
 		return promise;
 	}
 
+	ping() {
+        setInterval(this.updateConnectionStatus, 1000);
+	}
+
+	async updateConnectionStatus() {
+        fetch('/')
+            .then((response) => {
+                this.setState({
+                    connected: response.status === 200
+           		});
+            })
+            .catch((error) => {
+                this.setState({
+                    connected: false
+                });
+            });
+        console.log(this.state.connected)
+	}
+
 	componentDidMount() {
 		this.state.tutorialEngine.appRootDidMount();
 	}
@@ -272,6 +297,7 @@ export default class App extends React.Component {
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
+                                        connected={this.state.connected}
 										tutorial={tut}
 										theme={Theme}
 										{...props}
