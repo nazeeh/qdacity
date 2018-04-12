@@ -23,10 +23,10 @@ public class ForgotPasswordEmailSender implements DeferredTask {
 
     @Override
     public void run() {
-        sendUserMigrationEmail(user, loginEmail, generatedPassword);
+        sendGeneratedPassword(user, loginEmail, generatedPassword);
     }
 
-    private void sendUserMigrationEmail(User user, String loginEmail, String generatedPassword) {
+    private void sendGeneratedPassword(User user, String loginEmail, String generatedPassword) {
         Sendgrid mail = new Sendgrid(Credentials.SENDGRID_USER, Credentials.SENDGRID_PW);
 
         String givenName = user.getGivenName() == null ? "User" : user.getGivenName();
@@ -44,6 +44,7 @@ public class ForgotPasswordEmailSender implements DeferredTask {
 
         String greetingName = givenName + ", ";
 
+        // TODO: make it possible to localize strings in the backend as well
         String msgBody = "Hi " + greetingName + "<br>";
         msgBody += 	"<p>"
                 +	"You requested a new password in order to be able to sign in with <u>" +  loginEmail + "</u> again.<br>"

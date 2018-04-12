@@ -30,12 +30,19 @@ function handleError(err) {
 
 function setConfig() {
 	//CLI args overwrite JSON config
+	
 	if (argv.api_path) config.api_path = argv.api_path;
 	if (argv.local) config.api_path = 'http://localhost:8888/_ah/api';
 	if (argv.slocal) config.api_path = 'https://localhost:8888/_ah/api';
 	console.log('Configured server adress: ' + config.api_path);
+	
+	if (argv.app_path) config.app_path = argv.app_path; // if api_path is explicitly passed, use this
+	else config.app_path = config.api_path.substring(0, config.api_path.length - 8); // just strip the /_ah/api
+	console.log('Configured app adress: ' + config.app_path);
+
 	if (argv.local || argv.slocal) config.sync_service = 'http://localhost:8080';
 	console.log('Configured rts server adress: ' + config.sync_service);
+	
 	if (argv.api_version) config.api_version = argv.api_version;
 	if (argv.client_id) config.client_id = argv.client_id;
 	if (argv.local) config.test_mode = true; else config.test_mode = false;
@@ -110,13 +117,8 @@ gulp.task('generate-language-files', () => {
 							`Translation file ${file.relative} does not match template`
 						)
 					);
-					// We do not throw here for several reasons.
-					// a) Missing identifier is not a fatal error,
-					//   neither are duplicates nor additional identifiers
-					// b) we want to traverse all files and explain all errors
-					// c) one file should not keep others from being processed
-					// this checker might be reworked to allow the pipeline to fail
-					//return Promise.reject('Translation file invalid.');
+					// If argument verifyTranslation is passed, then the task will fail
+					if (argv.verifyTranslation) return Promise.reject('Translation file invalid.');
 				}
 				return result;
 			})
@@ -161,6 +163,7 @@ gulp.task('bundle-task', function() {
 	//since webpack.config fetches from entry points
 		.pipe(webpack(require('./webpack.config.js')))
 		.on('error', handleError)
+		.pipe(replace('$APP_PATH$', config.app_path))
 		.pipe(replace('$API_PATH$', config.api_path))
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
@@ -227,6 +230,7 @@ gulp.task('webpack-watch', function() {
 			)
 		)
 		.on('error', handleError)
+		.pipe(replace('$APP_PATH$', config.app_path))
 		.pipe(replace('$API_PATH$', config.api_path))
 		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(replace('$CLIENT_ID$', config.client_id))
@@ -252,7 +256,8 @@ gulp.task('acceptance-tests', () => {
 	const basePath = './tests/acceptance-tests/';
 	gulp.src([
 		basePath + '*.js', 
-		basePath + 'coding-editor/*.js'
+		basePath + 'coding-editor/*.js',
+		basePath + 'settings/*.js'
 	]).pipe(jasmine()).on('error', handleError);
 });
 

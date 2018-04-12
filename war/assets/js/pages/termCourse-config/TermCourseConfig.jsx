@@ -101,7 +101,7 @@ export default class TermCourseConfig extends React.Component {
 		const { formatMessage } = IntlProvider.intl;
 		var confirm = new Confirm(
 			formatMessage({
-				id: 'termcourseconfig.join_term_course',
+				id: 'termdashboard.join_term_course',
 				defaultMessage: 'Do you want to join this term course?'
 			})
 		);
@@ -127,7 +127,7 @@ export default class TermCourseConfig extends React.Component {
 		const { formatMessage } = IntlProvider.intl;
 		var confirm = new Confirm(
 			formatMessage({
-				id: 'termcourseconfig.leave_term_course',
+				id: 'termdashboard.leave_term_course',
 				defaultMessage: 'Do you want to leave this term course?'
 			})
 		);
@@ -180,10 +180,9 @@ export default class TermCourseConfig extends React.Component {
 
 	render() {
 		if (
-			!this.props.auth.authState.isUserSignedIn ||
-			!this.props.auth.authState.isUserRegistered
+			!this.props.auth.authState.isUserSignedIn
 		) {
-			return <UnauthenticatedUserPanel history={this.props.history} />;
+			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
 		}
 		this.init();
 		var termCourse = this.state.termCourse;

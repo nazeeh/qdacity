@@ -80,23 +80,11 @@ export default class UserMigration extends React.Component {
 
 		const _this = this;
 		this.authenticationProvider.addAuthStateListener(function(payload) {
-			// update on every auth state change
-			if (payload.authResponse) {
+			// update on every auth state change triggered by google
+			if (!!payload && !!payload.authResponse) {
 				_this.access_token = payload.authResponse.access_token;
 				_this.id_token = payload.authResponse.id_token;
 			}
-			_this.updateUserStatus();
-		});
-	}
-
-	updateUserStatus() {
-		const _this = this;
-		this.authenticationProvider.getProfile().then(profile => {
-			_this.state.name = profile.displayName;
-			_this.state.email = profile.email;
-			_this.state.picSrc = profile.thumbnail;
-			_this.setState(_this.state);
-			_this.checkMigrationPreconditions();
 		});
 	}
 
@@ -115,22 +103,12 @@ export default class UserMigration extends React.Component {
 		});
 		gapi.client.qdacityusermigration.isOldUserRegistered({}).execute(
 			resp => {
-				_this.state.isRegisteredAsOldAccount = resp.value;
-				_this.setState(_this.state);
+				_this.setState({
+					isRegisteredAsOldAccount: resp.value
+				});
 
 				// all other requests need id_token here as header
 				_this.resetGapiToken();
-
-				this.authenticationProvider.getCurrentUser().then(
-					user => {
-						_this.state.isAlreadyMigrated = !!user.id;
-						_this.setState(_this.state);
-					},
-					error => {
-						_this.state.isAlreadyMigrated = false;
-						_this.setState(_this.state);
-					}
-				);
 			},
 			err => {
 				console.error('Error in updating the preconditions for migration!');
@@ -141,10 +119,55 @@ export default class UserMigration extends React.Component {
 	}
 
 	signIn() {
+		const _this = this; 
+
 		this.authenticationProvider
 			.signInWithGoogle()
-			.then(function() {}, error => {
-				console.error('Sign in failed.');
+			.then(function(googleProfile) {
+				/*
+				* Removing query parameters from URL.
+				* With google we always got ?sz=50 in the URL which gives you a
+				* small low res thumbnail. Without parameter we get the original
+				* image.
+				* When adding other LoginProviders this needs to be reviewed
+				*/
+				const url = URI(googleProfile.thumbnail).fragment(true);
+				const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+
+				_this.setState({
+					name: googleProfile.displayName,
+					email: googleProfile.email,
+					picSrc: picSrcWithoutParams
+				});
+				_this.setState({
+					isAlreadyMigrated: true
+				});
+				_this.checkMigrationPreconditions();
+			}, function(googleProfileOrError) {
+				if(!!googleProfileOrError.error) {
+					console.error('Sign in failed.');
+				} else {
+					/*
+					* Removing query parameters from URL.
+					* With google we always got ?sz=50 in the URL which gives you a
+					* small low res thumbnail. Without parameter we get the original
+					* image.
+					* When adding other LoginProviders this needs to be reviewed
+					*/
+					const url = URI(googleProfileOrError.thumbnail).fragment(true);
+					const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+
+					_this.setState({
+						name: googleProfileOrError.displayName,
+						email: googleProfileOrError.email,
+						picSrc: picSrcWithoutParams
+					});
+					
+					_this.setState({
+						isAlreadyMigrated: false
+					});
+					_this.checkMigrationPreconditions();
+				}
 			});
 	}
 
@@ -177,7 +200,6 @@ export default class UserMigration extends React.Component {
 					// all other requests need id_token here as header
 					_this.resetGapiToken();
 
-					_this.props.auth.updateUserStatus();
 					_this.props.history.push('/');
 				},
 				failure => {
@@ -243,6 +265,7 @@ export default class UserMigration extends React.Component {
 							className="btn btn-primary col-xs-3"
 							onClick={() => {
 								this.authenticationProvider.signOut();
+								location.reload();
 							}}
 						>
 							Sign-Out!
@@ -397,28 +420,16 @@ export default class UserMigration extends React.Component {
 				</StyledMigrationDescription>
 				<StyledMigrationFunctionality>
 					<GoogleSignIn
-						show={
-							!this.props.auth.authState.isUserSignedIn ||
-							(this.access_token === null && this.id_token === null)
-						}
+						show={(this.access_token === null && this.id_token === null)}
 					/>
 					<ProfileInfo
-						show={
-							this.props.auth.authState.isUserSignedIn &&
-							this.access_token !== null &&
-							this.id_token !== null
-						}
+						show={this.access_token !== null &&	this.id_token !== null}
 					/>
 					<MigrationPreconditions
-						show={
-							this.props.auth.authState.isUserSignedIn &&
-							this.access_token !== null &&
-							this.id_token !== null
-						}
+						show={this.access_token !== null &&	this.id_token !== null}
 					/>
 					<MigrationButton
 						show={
-							this.props.auth.authState.isUserSignedIn &&
 							this.state.isRegisteredAsOldAccount &&
 							!this.state.isAlreadyMigrated &&
 							!this.state.migrationStatus
@@ -426,7 +437,6 @@ export default class UserMigration extends React.Component {
 					/>
 					<MigrationMessage
 						show={
-							this.props.auth.authState.isUserSignedIn &&
 							this.state.isRegisteredAsOldAccount &&
 							!this.state.isAlreadyMigrated &&
 							this.state.migrationStatus !== null

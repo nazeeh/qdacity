@@ -1,262 +1,176 @@
+//@ts-check
 import React, {Component} from 'react';
-import IntlProvider from '../../common/Localization/LocalizationProvider';
-import {
-	FormattedMessage,
-	FormattedDate,
-	FormattedRelative,
-	FormattedTime,
-	FormattedNumber
-} from 'react-intl';
-import PropTypes from 'prop-types';
+import { Switch, Route } from 'react-router'
 import styled from 'styled-components';
+import IntlProvider from '../../common/Localization/LocalizationProvider';
 
-const Flex = styled.div`
-	display: flex;
+import UnauthenticatedUserPanel from '../../common/UnauthenticatedUserPanel.jsx';
+
+import NavigationSidebar from './NavigationSidebar.jsx';
+import LocalizationSettingsPage from './LocalizationSettings.jsx';
+import ProfileSettings from './ProfileSettings.jsx';
+import LoginDataSettings from './LoginDataSettings.jsx';
+
+
+const GridContainer = styled.div`
+	padding-top: 51px;
+    display: grid;
+    
+    @media (max-width: 767px) {
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            'sidebarNav' 'settingsContent';
+        height: auto;
+    }
+
+    @media (min-width: 768px) {
+        grid-template-columns: 200px auto;
+        grid-column-gap: 30px;
+        grid-template-areas:
+            'sidebarNav settingsContent';
+        height: 100vh;
+    }
 `;
 
-const RowFlow = Flex.extend`
-	flex-direction: column;
-	align-items: flex-start;
+const SidebarNav = styled.div`
+    grid-area: sidebarNav;
+    background-color: ${props => props.theme.defaultPaneBg};
+    overflow-y: auto;
+
+    & > div {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @media (max-width: 767px) {
+        border-bottom: 1px solid ${props => props.theme.borderDefault};
+    }
+
+    @media (min-width: 768px) {
+        border-right: 1px solid ${props => props.theme.borderDefault};
+    }
 `;
 
-const ColumnFlow = Flex.extend`
-	flex-direction: row;
-	align-items: center;
+
+const SettingsContent = styled.div`
+    grid-area: settingsContent;
+    overflow-y: auto;
 `;
 
-const User = ColumnFlow;
-const UserNameMail = RowFlow.extend`
-	margin-left: 30px;
-`;
-
-const H1NoMargin = styled.h1`
-	margin: 0px;
-`;
-
-const Box = RowFlow.extend`
-	padding: 10px;
-	outline: 1px solid ${props => props.theme.borderDefault};
-	background: ${props => props.theme.defaultPaneBg};
-`;
-
-const Header = ColumnFlow.extend`
-	align-self: stretch;
-	justify-content: space-between;
-`;
-
-const Slant = styled.span`
-	color: rgba(0,0,0,.7);
-`; // TODO: move to theme
-
-const SectionContent = ColumnFlow.extend`
-	margin-top: 20px;
-	margin-left: 30px;
-	width: 100%;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-`;
-
-const Item = ColumnFlow.extend`
-	justify-content: space-evenly;
-	padding: 10px;
-	background: #cccccc33;
-`; // Todo move to theme
-
-const SectionTitle = styled.h2`
-	width: 100%;
-	padding-bottom: 7px;
-	margin: 0px;
-	border-bottom: 1px solid ${props => props.theme.borderDefault};
-`;
-
-const Spacer = styled.div`
-	width: 30px;
-`;
-
-const Category = Box.extend`
-	margin-top: 30px;
-`;
 
 export default class SettingsPage extends Component {
-	constructor(props, context) {
-		super(props, context);
-		this.state = {
-			picture: '',
-			email: '',
-			name: '',
-			locale: props.locale,
-			language: props.language,
-			messages: props.messages
-		};
-		this.getProfileUpdate(props);
-		this.previewProvider = { language: IntlProvider.language };
-	}
+	constructor(props) {
+        super(props);
 
-	componentWillReceiveProps(props) {
-		this.getIntlUpdate(props);
-		this.getProfileUpdate(props);
-	}
+        this.redirectTo = this.redirectTo.bind(this);
 
-	getIntlUpdate(props) {
-		const {locale, language, messages} = props;
-		let update = false, updatePreview = false;
-		if (this.state.locale != locale)
-			updatePreview = true;
-		if (this.state.language != language)
-			update = true;
-		this.setState({
-			locale: locale,
-			language: language,
-			messages: messages
-		}, () => {
-			if(update)
-				this.forceUpdate();
-			else if(updatePreview)
-				this.previewProvider.forceUpdate();
-		});
-	}
+        const { formatMessage } = IntlProvider.intl;
+        
+        this.navbarHeading = formatMessage({
+            id: 'settings.menu.heading',
+            defaultMessage: 'Settings'
+        });
+        this.navbarItems = [
+            {
+                iconClass: 'fa fa-user-circle',
+                text: formatMessage({
+                    id: 'settings.menu.user-data',
+                    defaultMessage: 'User Data'
+                }),
+                onClick: () => this.redirectTo('/Settings/Profile'),
+                items: [
+                    {
+                        text: formatMessage({
+                            id: 'settings.menu.profile',
+                            defaultMessage: 'Profile'
+                        }),
+                        onClick: () => this.redirectTo('/Settings/Profile'),
+                    },
+                    {
+                        text: formatMessage({
+                            id: 'settings.menu.billing',
+                            defaultMessage: 'Billing'
+                        }),
+                        onClick: () => this.redirectTo('/Settings'),
+                    },
+                ]
+            },
+            {
+                iconClass: 'fa fa-sign-in',
+                text: formatMessage({
+                    id: 'settings.menu.login-data',
+                    defaultMessage: 'Login Data'
+                }),
+                onClick: () => this.redirectTo('/Settings/LoginData')
+            },
+            {
+                iconClass: 'fa fa-globe',
+                text: formatMessage({
+                    id: 'settings.menu.localization',
+                    defaultMessage: 'Localization'
+                }),
+                onClick: () => this.redirectTo('/Settings/Localization')
+            }
+        ]
+    }
+    
+    redirectTo(path) {
+        this.props.history.push(path);
+    }
 
-	getRegionOptions() {
-		const language = this.previewProvider.language;
-		const selectedRegion = this.previewProvider.locale;
-		const regionCodeSet = IntlProvider.getRegionsForLanguage(language);
-		if (regionCodeSet.length == 0) return (<option value='en-US'>United States</option>);
-		const regions = Array.from(regionCodeSet).map(regionCode =>
-			[`${language}-${regionCode}`, IntlProvider.getNameOfRegion(regionCode)]
-		).filter(
-			x => x[1]!=undefined
-		).map(regionInfo => {
-			const [regionCode, regionName] = regionInfo;
-			const props = {};
-			if (regionCode == selectedRegion)
-				props.selected = true;
-			return <option {...props} value={regionCode}>{regionName}</option>;
-		});
-		return regions;
-	}
+    render() {
+        if(!this.props.auth.authState.isUserSignedIn) {
+                return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+        }
 
-	getLanguageOptions() {
-		const languages = IntlProvider.supportedLanguages;
-		const selectedLanguage = this.previewProvider.language;
-		return Array.from(languages).map(language => {
-			const props = {};
-			if (language == selectedLanguage)
-				props.selected = true;
-			return <option value={language} {...props}>{IntlProvider.getNameOfLanguage(language)}</option>;
-		});
-	}
-
-	getProfileUpdate(props) {
-		const {authentication} = this.props.auth;
-		authentication.getProfile().then(profile => {
-			this.setState({
-				picture: profile.image.url,
-				email: profile.email,
-				name: profile.name
-			});
-		});
-	}
-
-	applyDisplaySettings() {
-		const selectedLanguage = this.previewProvider.language;
-		const selectedRegion = this.previewProvider.locale.split('-', 2)[1];
-
-		localStorage.setItem('language', `${selectedLanguage}-${selectedRegion}`);
-		IntlProvider.changeLanguage(selectedLanguage, selectedRegion);
-	}
-
-	render() {
-		const {picture: url, email, name} = this.state;
-		return <div className='container main-content' >
-			<Box>
-				<Header>
-					<H1NoMargin>
-						<FormattedMessage id='settings.title'
-							defaultMessage='Settings' />
-					</H1NoMargin>
-					<User>
-						<img src={url} />
-						<UserNameMail>
-							<b>{name}</b>
-							<Slant>{email}</Slant>
-						</UserNameMail>
-					</User>
-				</Header>
-			</Box>
-			<Category>
-				<SectionTitle>
-					<FormattedMessage id='settings.display'
-						defaultMessage='Display' />
-				</SectionTitle>
-				<SectionContent>
-					<Item>
-						<div>
-							<FormattedMessage id='settings.language'
-								defaultMessage='Language' />
-						</div>
-						<Spacer />
-						<div>
-							<select onChange={
-								(event) => {
-									this.previewProvider.changeLanguage(event.target.value).then(() =>
-										this.forceUpdate());
-								}
-							}>
-								{this.getLanguageOptions()}
-							</select>
-						</div>
-					</Item>
-					<Item>
-						<div>
-							<FormattedMessage id='settings.region'
-								defaultMessage='Region' />
-						</div>
-						<Spacer />
-						<div>
-							<select onChange={
-								(event) => {
-									this.previewProvider.changeLocale(event.target.value).then(() =>
-										this.previewProvider.forceUpdate());
-								}
-							}>
-								{this.getRegionOptions()}
-							</select>
-						</div>
-					</Item>
-					<Item>
-						<IntlProvider
-							app={this}
-							messages={this.state.messages}
-							language={this.state.language}
-							locale={this.state.locale}
-							isGlobal={false}
-							ref={(provider) => this.previewProvider = provider}
-						>
-							<div>
-								<span><FormattedMessage id='preview' defaultMessage='Preview' />:</span>
-								<div>
-									<FormattedDate year='numeric' month='long' day='2-digit' value={new Date()} />
-									{' '}
-									<FormattedTime value={new Date()} /> <br />
-									<FormattedRelative updateInterval='1' style='best fit' value={new Date()} />
-								</div>
-								<div>
-									<FormattedNumber value='100000' /> <br />
-									<FormattedNumber value='100000' style='currency' currency='$' /> <br />
-									<FormattedNumber value='12.3333' style='percent' />
-								</div>
-							</div>
-						</IntlProvider>
-					</Item>
-				</SectionContent>
-				<button onClick={() => this.applyDisplaySettings()}><FormattedMessage id='modal.apply' defaultMessage='Apply' /></button>
-			</Category>
-		</div>;
-	}
-
-	static get propTypes() {
-		return {
-			auth: PropTypes.object.isRequired
-		};
-	}
+        return (
+            <GridContainer>
+                <SidebarNav>
+                    <NavigationSidebar heading='Settings' items={this.navbarItems}/>
+                </SidebarNav>
+                <SettingsContent>
+                    <Switch>
+                        <Route
+                            path="/Settings/Localization"
+                            render={props => (
+                                <LocalizationSettingsPage
+                                    locale={this.props.locale}
+                                    language={this.props.language}
+                                    messages={this.props.messages}
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                        <Route
+                            path="/Settings/Profile"
+                            render={props => (
+                                <ProfileSettings
+                                    history={this.props.history}
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                        <Route
+                            path="/Settings/LoginData"
+                            render={props => (
+                                <LoginDataSettings
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                        <Route
+                            path="/Settings"
+                            render={props => (
+                                <ProfileSettings
+                                    history={this.props.history}
+                                    auth={this.props.auth} 
+                                />
+                            )}
+                        />
+                    </Switch>
+                </SettingsContent>
+            </GridContainer>
+        );
+    }
 }
