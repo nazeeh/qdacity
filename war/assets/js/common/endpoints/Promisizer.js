@@ -7,6 +7,7 @@ export default class Promisizer {
 				if (!resp.code) {
 					resolve(resp);
 				} else {
+					console.log(resp.code + ' : ' + resp.message);
 					reject(resp);
 				}
 			});
