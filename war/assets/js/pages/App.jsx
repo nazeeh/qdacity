@@ -18,6 +18,7 @@ import Index from './index/Index.jsx';
 import PersonalDashboard from './personal-dashboard/PersonalDashboard.jsx';
 import CourseDashboard from './course-dashboard/CourseDashboard.jsx';
 import ProjectDashboard from './project-dashboard/ProjectDashboard.jsx';
+import GroupDashboard from './group-dashboard/GroupDashboard.jsx';
 import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
 import ExercisePage from './ExercisePage/ExercisePage.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
@@ -291,6 +292,12 @@ export default class App extends React.Component {
 										path="/CourseDashboard"
 										render={props => (
 											<CourseDashboard auth={this.state.auth} {...props} />
+										)}
+									/>
+									<Route
+										path="/GroupDashboard"
+										render={props => (
+											<GroupDashboard auth={this.state.auth} {...props} />
 										)}
 									/>
 									<Route
