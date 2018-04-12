@@ -29,3 +29,4 @@ target
 /war/translations/template.txt
 /bin/
 /pom.xml
+/auth-proxy/node_modules
