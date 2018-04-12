@@ -80,9 +80,9 @@ export default class NavBar extends React.Component {
 	render() {
 		return (
 			<nav
-				className="navbar navbar-default navbar-fixed-top topnav"
+				className={'navbar navbar-default navbar-fixed-top topnav '
+					+ (this.props.connected ? '' : 'navbar-offline')}
 				role="navigation"
-				style={{background: this.props.connected ? 'blue' : 'red'}}
 			>
 				<div className="container topnav">
 					<div className="navbar-header">
