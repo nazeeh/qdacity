@@ -13,10 +13,7 @@ import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
 import com.qdacity.PMF;
-import com.qdacity.authentication.AuthenticatedUser;
-import com.qdacity.authentication.ForgotPasswordEmailSender;
-import com.qdacity.authentication.GoogleIdTokenValidator;
-import com.qdacity.authentication.QdacityAuthenticator;
+import com.qdacity.authentication.*;
 import com.qdacity.authentication.util.HashUtil;
 import com.qdacity.authentication.util.TokenUtil;
 import com.qdacity.endpoint.datastructures.StringWrapper;
@@ -51,6 +48,7 @@ import java.util.stream.Collectors;
 public class AuthenticationEndpoint {
 
     private final GoogleIdTokenValidator googleTokenValidator = new GoogleIdTokenValidator();
+    private final TwitterTokenValidator twitterTokenValidator = new TwitterTokenValidator();
 
 
     private static final String EMAIL_REGEX = "^(.+)@(.+)$";
@@ -148,11 +146,11 @@ public class AuthenticationEndpoint {
     }
 
     @ApiMethod(name = "authentication.google.register")
-    public User registerGoogle(@Named("googleToken") String googleToken,
+    public User registerGoogle(@Named("authNetworkToken") String authNetworkToken,
                                @Named("email") String email,
                                @Named("givenName") String givenName,
                                @Named("surName") String surName) throws UnauthorizedException {
-        AuthenticatedUser authUser = googleTokenValidator.validate(googleToken);
+        AuthenticatedUser authUser = googleTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
             throw new UnauthorizedException("Code3.1: The Google token does not seem to be valid!");
         }
@@ -164,12 +162,48 @@ public class AuthenticationEndpoint {
         return new UserEndpoint().insertUser(user, authUser);
     }
 
-    @ApiMethod(name = "authentication.google.getToken")
-    public StringWrapper getTokenGoogle(@Named("googleToken") String googleToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    @ApiMethod(name = "authentication.twitter.register")
+    public User registerTwitter(@Named("authNetworkToken") String authNetworkToken,
+                               @Named("email") String email,
+                               @Named("givenName") String givenName,
+                               @Named("surName") String surName) throws UnauthorizedException {
+        AuthenticatedUser authUser = twitterTokenValidator.validate(authNetworkToken);
+        if(authUser == null) {
+            throw new UnauthorizedException("Code3.1: The Twitter token does not seem to be valid!");
+        }
+        User user = new User();
+        user.setEmail(email);
+        user.setGivenName(givenName);
+        user.setSurName(surName);
 
-        AuthenticatedUser authUser = googleTokenValidator.validate(googleToken);
+        return new UserEndpoint().insertUser(user, authUser);
+    }
+
+    @ApiMethod(name = "authentication.google.getToken", path = "uthentication.google.getToken")
+    public StringWrapper getTokenGoogle(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+        AuthenticatedUser authUser = googleTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
             throw new UnauthorizedException("Code4.2: The Google token does not seem to be valid!");
+        }
+
+        // check if user is registered
+        try {
+            User user = new UserEndpoint().getCurrentUser(authUser);
+
+            // generate JWT token
+            return new StringWrapper(TokenUtil.getInstance().genToken(user, authUser));
+        } catch (JDOObjectNotFoundException e) {
+            throw new UnauthorizedException("Code4.1: The User could not be found!");
+        }
+    }
+
+    @ApiMethod(name = "authentication.twitter.getToken", path = "authentication.twitter.getToken")
+    public StringWrapper getTokenTwitter(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+        AuthenticatedUser authUser = twitterTokenValidator.validate(authNetworkToken);
+        if(authUser == null) {
+            throw new UnauthorizedException("Code4.2: The Twitter token does not seem to be valid!");
         }
 
         // check if user is registered
@@ -337,6 +371,17 @@ public class AuthenticationEndpoint {
         AuthenticatedUser googleUser = googleTokenValidator.validate(googleIdToken);
         assertAssociationPreconditions(googleUser);
         associateLogin((AuthenticatedUser) loggedInUser, googleUser);
+    }
+
+    @ApiMethod(name="auth.associateTwitterLogin")
+    public void associateTwitterLogin(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser twitterUser = twitterTokenValidator.validate(authNetworkToken);
+        assertAssociationPreconditions(twitterUser);
+        associateLogin((AuthenticatedUser) loggedInUser, twitterUser);
     }
 
     @ApiMethod(name="auth.associateEmailPassword")
