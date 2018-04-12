@@ -237,21 +237,21 @@ export default class App extends React.Component {
 	}
 
 	ping() {
-        setInterval(this.updateConnectionStatus, 1000);
+		setInterval(this.updateConnectionStatus, 1000);
 	}
 
 	async updateConnectionStatus() {
-        fetch('/')
-            .then((response) => {
-                this.setState({
-                    connected: response.status === 200
-           		});
-            })
-            .catch((error) => {
-                this.setState({
-                    connected: false
-                });
-            });
+		fetch('/')
+			.then((response) => {
+				this.setState({
+					connected: response.status === 200
+				});
+			})
+			.catch((error) => {
+				this.setState({
+					connected: false
+				});
+			});
 	}
 
 	componentDidMount() {
