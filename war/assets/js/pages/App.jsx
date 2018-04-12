@@ -121,20 +121,17 @@ export default class App extends React.Component {
 			_this.updateUserStatus();
 		});
 
-		if(false) {
+        // on page reloads: also reload profile data
+        if (!this.authenticationProvider.isSignedIn()) {
+            // try to silently sign in with email and password
+            await this.authenticationProvider.silentSignInWithEmailPassword();
 
-            // on page reloads: also reload profile data
             if (!this.authenticationProvider.isSignedIn()) {
-                // try to silently sign in with email and password
-                await this.authenticationProvider.silentSignInWithEmailPassword();
-
-                if (!this.authenticationProvider.isSignedIn()) {
-                    // try silent sign in
-                    this.authenticationProvider.silentSignInWithGoogle(); // don't await, because it is listening on an observer
-                    await this.authenticationProvider.synchronizeTokenWithGapi();
-                }
-
+                // try silent sign in
+                this.authenticationProvider.silentSignInWithGoogle(); // don't await, because it is listening on an observer
+                await this.authenticationProvider.synchronizeTokenWithGapi();
             }
+
         }
 		this.authenticationProvider.synchronizeTokenWithGapi();
 		this.updateUserStatus(); // somehow the auth state listener triggers too early!

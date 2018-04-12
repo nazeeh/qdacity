@@ -171,8 +171,6 @@ export default class ProjectList extends React.Component {
 		CodesystemEndpoint.insertCodeSystem(0, 'PROJECT').then(function(
 			codeSystem
 		) {
-            console.log("prject created");
-			console.log(codeSystem);
 			var project = {};
 			project.codesystemID = codeSystem.id;
 			project.maxCodingID = 0;

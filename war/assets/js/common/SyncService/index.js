@@ -149,7 +149,6 @@ export default class SyncService {
 	 * @return {Promise} - resolves on success, rejects on failure
 	 */
 	emit(messageType, arg) {
-        console.log("[Sync Service] emit: ", messageType, arg);
 		return new Promise((resolve, reject) => {
 			this._socket.emit(messageType, arg, (status, ...args) => {
 				if (status === 'ok') {

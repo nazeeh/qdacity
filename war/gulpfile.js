@@ -4,7 +4,6 @@ const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpack = require('webpack-stream');
 const uglify = require('gulp-uglify');
 const jasmine = require('gulp-jasmine');
-const connect = require('gulp-connect');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
@@ -235,7 +234,6 @@ gulp.task('webpack-watch', function() {
 		.pipe(replace('$TEST_MODE$', config.test_mode))
 		.pipe(gulp.dest('dist/js/'))
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/'))
-        .pipe(connect.reload())
 	);
 });
 
@@ -243,18 +241,10 @@ gulp.task('sw', function() {
 	gulp
 		.src('assets/js/service-worker/sw.js')
 		.pipe(gulp.dest('../target/qdacity-war/'))
-        .pipe(connect.reload());
 });
 
 gulp.task('sw-watch', function () {
     gulp.watch('assets/js/service-worker/sw.js', ['sw']);
-});
-
-gulp.task('connect', function() {
-    connect.server({
-        livereload: true,
-		port:8090
-    });
 });
 
 gulp.task('unit-tests', () =>
@@ -277,4 +267,4 @@ gulp.task('acceptance-tests', () => {
 	]).pipe(jasmine()).on('error', handleError);
 });
 
-gulp.task('default', ['watch', 'connect']);
+gulp.task('default', ['sw', 'watch']);
