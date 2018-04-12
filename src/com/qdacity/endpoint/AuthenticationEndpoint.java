@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 public class AuthenticationEndpoint {
 
     private final GoogleIdTokenValidator googleTokenValidator = new GoogleIdTokenValidator();
+    private final FacebookTokenValidator facebookTokenValidator = new FacebookTokenValidator();
     private final TwitterTokenValidator twitterTokenValidator = new TwitterTokenValidator();
 
 
@@ -162,6 +163,24 @@ public class AuthenticationEndpoint {
         return new UserEndpoint().insertUser(user, authUser);
     }
 
+    @ApiMethod(name = "authentication.facebook.register")
+    public User registerFacebook(@Named("authNetworkToken") String authNetworkToken,
+                               @Named("email") String email,
+                               @Named("givenName") String givenName,
+                               @Named("surName") String surName) throws UnauthorizedException {
+
+        AuthenticatedUser authUser = facebookTokenValidator.validate(authNetworkToken);
+        if(authUser == null) {
+            throw new UnauthorizedException("Code3.1: The Google token does not seem to be valid!");
+        }
+        User user = new User();
+        user.setEmail(email);
+        user.setGivenName(givenName);
+        user.setSurName(surName);
+
+        return new UserEndpoint().insertUser(user, authUser);
+    }
+
     @ApiMethod(name = "authentication.twitter.register")
     public User registerTwitter(@Named("authNetworkToken") String authNetworkToken,
                                @Named("email") String email,
@@ -191,6 +210,24 @@ public class AuthenticationEndpoint {
         try {
             User user = new UserEndpoint().getCurrentUser(authUser);
 
+            // generate JWT token
+            return new StringWrapper(TokenUtil.getInstance().genToken(user, authUser));
+        } catch (JDOObjectNotFoundException e) {
+            throw new UnauthorizedException("Code4.1: The User could not be found!");
+        }
+    }
+
+    @ApiMethod(name = "authentication.facebook.getToken", path = "authentication.facebook.getToken")
+    public StringWrapper getTokenFacebook(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+
+        AuthenticatedUser authUser = facebookTokenValidator.validate(authNetworkToken);
+        if(authUser == null) {
+            throw new UnauthorizedException("Code4.2: The Twitter token does not seem to be valid!");
+        }
+
+        // check if user is registered
+        try {
+            User user = new UserEndpoint().getCurrentUser(authUser);
             // generate JWT token
             return new StringWrapper(TokenUtil.getInstance().genToken(user, authUser));
         } catch (JDOObjectNotFoundException e) {
@@ -371,6 +408,17 @@ public class AuthenticationEndpoint {
         AuthenticatedUser googleUser = googleTokenValidator.validate(googleIdToken);
         assertAssociationPreconditions(googleUser);
         associateLogin((AuthenticatedUser) loggedInUser, googleUser);
+    }
+
+    @ApiMethod(name="auth.associateFacebookLogin")
+    public void associateFacebookLogin(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+        if(loggedInUser == null) {
+            throw new UnauthorizedException("Could not authenticate user.");
+        }
+
+        AuthenticatedUser facebookUser = facebookTokenValidator.validate(authNetworkToken);
+        assertAssociationPreconditions(facebookUser);
+        associateLogin((AuthenticatedUser) loggedInUser, facebookUser);
     }
 
     @ApiMethod(name="auth.associateTwitterLogin")

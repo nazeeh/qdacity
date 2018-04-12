@@ -7,11 +7,13 @@ import ImageUtil from './ImageUtil.js';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const TWITTER_CLIENT_ID = '$TWITTER_CLIENT_ID$';
+const FACEBOOK_CLIENT_ID = '$FACEBOOK_CLIENT_ID$';
     
     
 // hellojs for 'regular' sign-in
 hello.init({
 	google: GOOGLE_CLIENT_ID,
+	facebook: FACEBOOK_CLIENT_ID,
 	twitter: TWITTER_CLIENT_ID
 }, {
     redirect_uri: '$APP_PATH$'
