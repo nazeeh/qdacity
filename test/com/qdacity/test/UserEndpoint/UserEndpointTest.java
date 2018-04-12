@@ -1,9 +1,7 @@
 package com.qdacity.test.UserEndpoint;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +11,12 @@ import java.util.concurrent.TimeUnit;
 import javax.jdo.PersistenceManager;
 
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.appengine.api.datastore.Blob;
+import com.qdacity.endpoint.UserGroupEndpoint;
+import com.qdacity.endpoint.datastructures.BlobWrapper;
+import com.qdacity.endpoint.datastructures.StringWrapper;
+import com.qdacity.user.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,10 +45,6 @@ import com.qdacity.project.ProjectType;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
-import com.qdacity.user.LoginProviderType;
-import com.qdacity.user.User;
-import com.qdacity.user.UserLoginProviderInformation;
-import com.qdacity.user.UserType;
 
 public class UserEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
@@ -304,8 +304,37 @@ public class UserEndpointTest {
 		} finally {
 			mgr.close();
 		}
-	}	
-	
+	}
+
+	@Test
+	public void testUserDeleteRemovedFromUserGroup() throws UnauthorizedException, BadRequestException {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUserA = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+		User insertedTestUser = UserEndpointTestHelper.addUser("test@abc.de", "test", "abc", testUser);
+
+		UserGroup ownedUserGroup = new UserGroupEndpoint().insertUserGroup("testGroup", testUser);
+		UserGroup participatingUserGroup = new UserGroupEndpoint().insertUserGroup("testGroup2", loggedInUserA);
+		new UserGroupEndpoint().addParticipant(insertedTestUser.getId(), participatingUserGroup.getId(), loggedInUserA);
+
+		UserEndpoint ue = new UserEndpoint();
+		try {
+			ue.removeUser(insertedTestUser.getId(), testUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized");
+		}
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			ownedUserGroup = mgr.getObjectById(UserGroup.class, ownedUserGroup.getId());
+			assertEquals(0, ownedUserGroup.getOwners().size());
+
+			participatingUserGroup = mgr.getObjectById(UserGroup.class, participatingUserGroup.getId());
+			assertEquals(0, ownedUserGroup.getParticipants().size());
+		} finally {
+			mgr.close();
+		}
+	}
 	
 	@Test
 	public void testUserDeleteAuthorization() throws UnauthorizedException {
@@ -399,6 +428,52 @@ public class UserEndpointTest {
 	}
 
 	@Test
+	public void testUpdateUserProfileAllInfos() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+
+		String updatedEmail = "update@email.com";
+		String updatedSurName = "SurnameNew";
+		String updatedGivenName = "GivennameNew";
+
+		User changedUser = new UserEndpoint().updateUserProfile(insertedUser.getId(), updatedEmail, updatedSurName,
+																updatedGivenName, loggedInUserA);
+
+		assertEquals(updatedEmail, changedUser.getEmail());
+		assertEquals(updatedSurName, changedUser.getSurName());
+		assertEquals(updatedGivenName, changedUser.getGivenName());
+
+		changedUser = new UserEndpoint().getCurrentUser(loggedInUserA);
+
+		assertEquals(updatedEmail, changedUser.getEmail());
+		assertEquals(updatedSurName, changedUser.getSurName());
+		assertEquals(updatedGivenName, changedUser.getGivenName());
+	}
+
+	@Test
+	public void testUpdateUserProfileImg() throws UnauthorizedException {
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+
+		assertNull(insertedUser.getProfileImg());
+		String profileImgString = "data:image/png;base64,OH5PRre846tC11v1Kii3A6dOKWGuIPpIA5N5DOl8wKvX2nFj";
+		Blob profileImg = new Blob(profileImgString.getBytes());
+
+		User changedUser = new UserEndpoint().updateUserProfileImg(new BlobWrapper(profileImg), loggedInUserA);
+
+		assertNotNull(changedUser.getProfileImg());
+		String returnedProfileImg = new String(changedUser.getProfileImg().getBytes());
+		assertEquals(profileImgString, returnedProfileImg);
+
+		changedUser = new UserEndpoint().getCurrentUser(loggedInUserA);
+
+		returnedProfileImg = new String(changedUser.getProfileImg().getBytes());
+		assertEquals(profileImgString, returnedProfileImg);
+	}
+
+	@Test
+
+
 	public void testUpdateUserTypeNotDevEnvironment() throws UnauthorizedException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 

@@ -15,6 +15,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 import com.google.api.server.spi.config.AnnotationBoolean;
 import com.google.api.server.spi.config.ApiResourceProperty;
+import com.google.appengine.api.datastore.Blob;
 import com.qdacity.course.TermCourse;
 import com.qdacity.project.ProjectType;
 
@@ -34,11 +35,19 @@ public class User implements Serializable {
 
 	@Persistent
 	String givenName;
+
 	@Persistent
 	String surName;
 
 	@Persistent
 	String email;
+
+	/**
+	 * If user uploaded a profile image.
+	 * Otherwise empty, dummy is created on client.
+	 */
+	@Persistent
+	Blob profileImg;
 
 	@Persistent
 	Long lastProjectId; // Used to pre-load to cache when user signs in
@@ -66,6 +75,9 @@ public class User implements Serializable {
 	@Column(name = "loginProviderInformations")
 	List<UserLoginProviderInformation> loginProviderInformationList;
 
+	@Persistent
+	List<Long> userGroups;
+
 	public String getId() {
 		return id;
 	}
@@ -88,6 +100,14 @@ public class User implements Serializable {
 
 	public void setSurName(String surName) {
 		this.surName = surName;
+	}
+
+	public Blob getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(Blob profileImg) {
+		this.profileImg = profileImg;
 	}
 
 	public List<Long> getProjects() {
@@ -209,5 +229,14 @@ public class User implements Serializable {
 	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE) // do not expect from client
 	public void setLoginProviderInformation(List<UserLoginProviderInformation> loginProviderInformationList) {
 		this.loginProviderInformationList = loginProviderInformationList;
+	}
+
+	public List<Long> getUserGroups() {
+		if(userGroups == null) return new ArrayList<Long>();
+		return userGroups;
+	}
+
+	public void setUserGroups(List<Long> userGroups) {
+		this.userGroups = userGroups;
 	}
 }

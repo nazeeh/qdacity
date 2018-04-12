@@ -27,12 +27,16 @@ public class UserLoginProviderInformation implements Serializable {
 
 	@Persistent
 	String externalUserId;
-	
+
+	@Persistent
+	String externalEmail;
+
 	public UserLoginProviderInformation() {	}
 	
-	public UserLoginProviderInformation(LoginProviderType provider, String externalUserId) {
+	public UserLoginProviderInformation(LoginProviderType provider, String externalUserId, String externalEmail) {
 		this.provider = provider;
 		this.externalUserId = externalUserId;
+		this.externalEmail = externalEmail;
 	}
 
 	public Key getKey() {
@@ -58,4 +62,12 @@ public class UserLoginProviderInformation implements Serializable {
 	public void setExternalUserId(String userId) {
 		this.externalUserId = userId;
 	}
+
+    public String getExternalEmail() {
+        return externalEmail;
+    }
+
+    public void setExternalEmail(String externalEmail) {
+        this.externalEmail = externalEmail;
+    }
 }

@@ -37,7 +37,9 @@ function setConfig() {
 	console.log('Configured server adress: ' + config.api_path);
 	
 	if (argv.app_path) config.app_path = argv.app_path; // if api_path is explicitly passed, use this
-	else config.app_path = config.api_path.substring(0, config.api_path.length - 8); // just strip the /_ah/api
+	else {
+		if (!config.app_path) config.app_path = config.api_path.substring(0, config.api_path.length - 8); // just strip the /_ah/api
+	}
 	console.log('Configured app adress: ' + config.app_path);
 
 	if (argv.local || argv.slocal) config.sync_service = 'http://localhost:8080';
