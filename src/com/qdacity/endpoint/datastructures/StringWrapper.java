@@ -3,6 +3,8 @@ package com.qdacity.endpoint.datastructures;
 public class StringWrapper {
     private String value;
 
+    public StringWrapper() {}
+
     public StringWrapper(String value) {
         this.value = value;
     }
