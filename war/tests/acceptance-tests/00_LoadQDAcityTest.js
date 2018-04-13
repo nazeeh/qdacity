@@ -29,7 +29,6 @@ describe(SPEC_NAME, function () {
 		// Find login button
 		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-sign-in')]")), 10000).then(() =>  {
 			console.log('Found the login button. Test passed!');
-			expect(true).toBe(true);
 			done();
 		}, () => {
 			expect('Did not find the login button. The test assumes, that the side was not loaded properly.').toBe('');
