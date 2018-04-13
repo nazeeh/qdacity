@@ -10,7 +10,7 @@ var Conditions = require('./Conditions.js');
 class Common {
 
 	static getDefaultTimeout() {
-		return 20000;
+		return 30000;
 	}
 	
 	static initializeSpec(testName) {
