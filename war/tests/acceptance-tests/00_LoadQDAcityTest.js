@@ -32,6 +32,7 @@ describe(SPEC_NAME, function () {
 		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-sign-in')]"))).then(() =>  {
 			console.log('Found the login button. Test passed!');
 			console.log("Found button at " + new Date() );
+			expect(true).toBeTruthy();
 			done();
 		});
 	}, Common.getDefaultTimeout());
