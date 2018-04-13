@@ -27,11 +27,8 @@ describe(SPEC_NAME, function () {
 
     it('The system is running', (done) => {
 		// Find login button
-		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-sign-in')]")), 10000).then(() =>  {
+		this.driver.wait(until.elementLocated(By.xpath("//button//i[contains(@class,'fa-sign-in')]"))).then(() =>  {
 			console.log('Found the login button. Test passed!');
-			done();
-		}, () => {
-			expect('Did not find the login button. The test assumes, that the side was not loaded properly.').toBe('');
 			done();
 		});
 	}, Common.getDefaultTimeout());
