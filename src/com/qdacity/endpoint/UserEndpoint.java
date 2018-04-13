@@ -9,6 +9,7 @@ import javax.inject.Named;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import javax.jdo.annotations.Persistent;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
@@ -17,11 +18,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -29,6 +26,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -37,6 +35,7 @@ import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.datastructures.BlobWrapper;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
@@ -215,8 +214,16 @@ public class UserEndpoint {
 		try {
 
 			user = (User) Cache.getOrLoad(id, User.class);
-			// FIXME Check if user is authorized
-			Authorization.checkAuthorization(user, loggedInUser);
+
+			// only admins are allowed to trigger this endpoint
+			if(!Authorization.isUserAdmin(loggedInUser)) {
+				if (SystemProperty.environment.value().equals(SystemProperty.Environment.Value.Development)) {
+					// in dev environmanet everyone may use this endpoint.
+					Logger.getLogger("logger").log(Level.INFO, "UpdateUserType called by non-admin user. Allowed because Dev Environment!");
+				} else {
+					throw new UnauthorizedException("Only Admins are allowed.");
+				}
+			}
 
 			switch (type) {
 				case "ADMIN":
@@ -288,9 +295,10 @@ public class UserEndpoint {
 		user.setId(randomId);
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
+		user.setUserGroups(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		user.setLastLogin(new Date());
-		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId())));
+		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId(), authenticatedUser.getEmail())));
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (user.getId() != null && containsUser(user)) {
@@ -339,6 +347,83 @@ public class UserEndpoint {
 	}
 
 	/**
+	 * Updates the user with the given user information.
+	 * If a field is empty, it is not updated!
+	 * @param userId
+	 * @param email
+	 * @param surName
+	 * @param givenName
+	 * @param loggedInUser
+	 * @return
+	 */
+	@SuppressWarnings("ResourceParameter")
+	@ApiMethod(name = "user.updateUserProfile")
+	public User updateUserProfile(@Named("userId") String userId,
+								  @Named("email") @Nullable String email,
+								  @Named("surName") @Nullable String surName,
+								  @Named("givenName") @Nullable String givenName,
+								  com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		User requestedUser = (User) Cache.getOrLoad(userId, User.class);
+
+		// Check if user is authorized
+		Authorization.checkAuthorization(requestedUser, loggedInUser);
+
+		if(email != null && !email.isEmpty()) {
+			requestedUser.setEmail(email);
+		}
+
+		if(surName != null && !surName.isEmpty()) {
+			requestedUser.setSurName(surName);
+		}
+
+		if(givenName != null && !givenName.isEmpty()) {
+			requestedUser.setGivenName(givenName);
+		}
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.makePersistent(requestedUser);
+			Cache.cache(userId, User.class, requestedUser);
+			Cache.invalidatUserLogins(requestedUser); // cannot cache with right external id because can be triggered by admin
+		} finally {
+			mgr.close();
+		}
+
+		return requestedUser;
+	}
+
+	/**
+	 * Updates the profile img of the requesting user
+	 * @param profileImg
+	 * @param loggedInUser
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings({"RestSignature", "ResourceParameter"})
+	@ApiMethod(name = "user.updateProfileImg", path="user.updateProfileImg")
+	public User updateUserProfileImg(BlobWrapper profileImg,
+		  	com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+		AuthenticatedUser authenticatedUser = (AuthenticatedUser) loggedInUser;
+		User requestedUser = (User) Cache.getOrLoadUserByAuthenticatedUser(authenticatedUser);
+
+		// Check if user is authorized
+		Authorization.checkAuthorization(requestedUser, loggedInUser);
+
+		requestedUser.setProfileImg(profileImg.getBlob());
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			mgr.makePersistent(requestedUser);
+			Cache.cache(requestedUser.getId(), User.class, requestedUser);
+			Cache.cacheAuthenticatedUser(authenticatedUser, requestedUser); // cannot cache with right external id because can be triggered by admin
+		} finally {
+			mgr.close();
+		}
+
+		return requestedUser;
+	}
+
+	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.
 	 * 
@@ -350,7 +435,7 @@ public class UserEndpoint {
 	 * @param id the primary key of the entity to be deleted.
 	 * @throws UnauthorizedException
 	 */
-	@ApiMethod(name = "removeUser")
+	@ApiMethod(name = "user.removeUser")
 	public void removeUser(@Named("id") String id, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 		
 		User user = (User) Cache.getOrLoad(id, User.class);
@@ -412,8 +497,14 @@ public class UserEndpoint {
 				}
 			}
 		}
-		
-		
+
+		// remove reference from user groups
+		UserGroupEndpoint userGroupEndpoint = new UserGroupEndpoint();
+		if(user.getUserGroups() != null) {
+			for(Long userGroupId: user.getUserGroups()) {
+				userGroupEndpoint.removeUser(user.getId(), userGroupId, loggedInUser);
+			}
+		}
 		
 		// finally delete user
 		PersistenceManager mgr = getPersistenceManager();
@@ -498,6 +589,12 @@ public class UserEndpoint {
 
 		AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
 
+		// try to load from cache
+        User user = Cache.getUserByAuthenticatedUser(authUser);
+		if(user != null) {
+		    return user;
+        }
+
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 
@@ -515,17 +612,21 @@ public class UserEndpoint {
 			PreparedQuery pq = datastore.prepare(q);
 
 			Entity providerInformationEntity = pq.asSingleEntity();
-			
+
 			if (providerInformationEntity == null) {
 				throw new UnauthorizedException("User is not registered");
 			}
 
 			Key userKey = providerInformationEntity.getParent();
 
-			User user = mgr.getObjectById(User.class, userKey.getName());
+			user = mgr.getObjectById(User.class, userKey.getName());
 
 			// detatch copy, otherwise referenced default fetched objects filled with nulls
 			user = mgr.detachCopy(user);
+
+			// cache user
+			Cache.cacheAuthenticatedUser(authUser, user);
+
 			return user;
 		} finally {
 			mgr.close();

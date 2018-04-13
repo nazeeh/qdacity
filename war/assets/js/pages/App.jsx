@@ -8,6 +8,7 @@ import {
 
 import { ThemeProvider } from 'styled-components';
 import Theme from '../common/styles/Theme.js';
+import VexModal from '../common/modals/VexModal.js'
 
 import AuthenticationProvider from '../common/auth/AuthenticationProvider.js';
 import AuthorizationProvider from '../common/auth/AuthorizationProvider.js';
@@ -17,6 +18,7 @@ import Index from './index/Index.jsx';
 import PersonalDashboard from './personal-dashboard/PersonalDashboard.jsx';
 import CourseDashboard from './course-dashboard/CourseDashboard.jsx';
 import ProjectDashboard from './project-dashboard/ProjectDashboard.jsx';
+import GroupDashboard from './group-dashboard/GroupDashboard.jsx';
 import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
 import ExercisePage from './ExercisePage/ExercisePage.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
@@ -31,7 +33,7 @@ import TutorialEngine from '../common/tutorial/TutorialEngine.js';
 import Tutorial from '../common/tutorial/Tutorial.jsx';
 import Sidebar from '../common/tutorial/Sidebar.jsx';
 import styled from 'styled-components';
-import Settings from './settings/Settings.jsx';
+import SettingsPage from './settings/Settings.jsx';
 
 // React-Intl
 import IntlProvider from '../common/Localization/LocalizationProvider';
@@ -94,11 +96,16 @@ export default class App extends React.Component {
 			tutorialState: t.tutorialState,
 			auth: {
 				authState: {
-					isUserSignedIn: false,
-					isUserRegistered: false
+					isUserSignedIn: false
 				},
 				userProfile: {
+					qdacityId: '',
+					authNetwork: '',
+					externalUserId: '',
+					externalEmail: '',
 					name: '',
+					firstname: '',
+					lastname: '',
 					email: '',
 					picSrc: ''
 				},
@@ -109,6 +116,8 @@ export default class App extends React.Component {
 				authorization: this.authorizationProvider
 			}
 		};
+
+		new VexModal(); // init vex
 
 		this.initAuthProvider();
 	}
@@ -124,16 +133,22 @@ export default class App extends React.Component {
 		// on page reloads: also reload profile data
 		if (!this.authenticationProvider.isSignedIn()) {
 			// try to silently sign in with email and password
-			await this.authenticationProvider.silentSignInWithEmailPassword();
+			try {
+				await this.authenticationProvider.silentSignInWithQdacityToken();
+			} catch (e) {
+				// ok, if failed
+			}
 			
 			if(!this.authenticationProvider.isSignedIn()) {
 				// try silent sign in
-				this.authenticationProvider.silentSignInWithGoogle(); // don't await, because it is listening on an observer
-				await this.authenticationProvider.synchronizeTokenWithGapi();
+				try {
+					await this.authenticationProvider.silentSignInWithGoogle();
+				} catch (e) {
+					// ok if failed
+				}
 			}
 
 		}
-		this.authenticationProvider.synchronizeTokenWithGapi();
 		this.updateUserStatus(); // somehow the auth state listener triggers too early!
 	}
 
@@ -161,38 +176,45 @@ export default class App extends React.Component {
 			// 2. get the user profile			
 			let profile = {
 				name: '',
+				firstname: '',
+				lastname: '',
 				email: '',
-				picSrc: ''
+				picSrc: '',
+				qdacityId: '',
+				authNetwork: '',
+				externalUserId: '',
+				externalEmail: ''
 			};
 			let picSrcWithoutParams = '';
 			if(!!loginStatus) {
-				profile = await _this.authenticationProvider.getProfile();/*
-				* Removing query parameters from URL.
-				* With google we always got ?sz=50 in the URL which gives you a
-				* small low res thumbnail. Without parameter we get the original
-				* image.
-				* When adding other LoginProviders this needs to be reviewed
-				*/
-				var url = URI(profile.thumbnail).fragment(true);
-				picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+				profile = await _this.authenticationProvider.getProfile();
 			}
 			
 			_this.state.auth.userProfile = {
+				qdacityId: profile.qdacityId,
+				authNetwork: profile.authNetwork,
+				externalUserId: profile.externalUserId,
+				externalEmail: profile.externalEmail,
 				name: profile.name,
+				firstname: profile.firstname,
+				lastname: profile.lastname,
 				email: profile.email,
-				picSrc: picSrcWithoutParams
+				picSrc: profile.thumbnail
 			};
 
 			// 3. check if user is registered
 			let user = undefined;
 			try {
 				user = await _this.authenticationProvider.getCurrentUser();
+				if(!! user.profileImg) {
+					console.log('received stored profile image');
+					_this.state.auth.userProfile.picSrc = 'data://image/png;base64,' + user.profileImg;
+				}
 			} catch(e) {
 				// user stays undefined
 			}
 			_this.state.auth.authState = {
-				isUserSignedIn: !!loginStatus,
-				isUserRegistered: !!user
+				isUserSignedIn: !!loginStatus && user !== undefined
 			};
 			_this.setState(_this.state);
 			resolve();
@@ -270,6 +292,12 @@ export default class App extends React.Component {
 										path="/CourseDashboard"
 										render={props => (
 											<CourseDashboard auth={this.state.auth} {...props} />
+										)}
+									/>
+									<Route
+										path="/GroupDashboard"
+										render={props => (
+											<GroupDashboard auth={this.state.auth} {...props} />
 										)}
 									/>
 									<Route
@@ -363,7 +391,7 @@ export default class App extends React.Component {
 									<Route
 										path="/Settings"
 										render={props => (
-											<Settings
+											<SettingsPage
 												locale={this.state.locale}
 												language={this.state.language}
 												messages={this.state.messages}

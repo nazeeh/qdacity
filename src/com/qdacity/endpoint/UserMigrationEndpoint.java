@@ -221,7 +221,7 @@ public class UserMigrationEndpoint {
 
 		// ready for migration:
 			// add the newUser to UserLoginProivderInformation.
-		dbUser.addLoginProviderInformation(new UserLoginProviderInformation(newUser.getProvider(), newUser.getId()));
+		dbUser.addLoginProviderInformation(new UserLoginProviderInformation(newUser.getProvider(), newUser.getId(), newUser.getEmail()));
 		persistUpdatedUser(dbUser, newUser);
 		java.util.logging.Logger.getLogger("logger").log(Level.INFO, "Migration was successful!");
 	}

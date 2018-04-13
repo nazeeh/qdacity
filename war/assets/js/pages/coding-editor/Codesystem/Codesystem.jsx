@@ -408,7 +408,7 @@ export default class Codesystem extends SimpleCodesystem {
 
 			for (let i = 0; i < code.children.length; i++) {
 				let b = this.doesCodeMatchSearchText(code.children[i]);
-			
+
 				if (b) {
 					return true;
 				}
@@ -542,6 +542,7 @@ export default class Codesystem extends SimpleCodesystem {
 						userProfile={this.props.userProfile}
 						toggleCodeSearch={this.toggleCodeSearch}
 						openCodeQueries={this.props.openCodeQueries}
+						readOnly = {this.props.readOnly}
 					/>
 				</StyledToolBar>
 

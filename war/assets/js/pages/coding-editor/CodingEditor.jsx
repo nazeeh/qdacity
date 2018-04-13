@@ -97,6 +97,7 @@ class CodingEditor extends React.Component {
 		var urlParams = URI(window.location.search).query(true);
 		var projectType = urlParams.type ? urlParams.type : 'PROJECT';
 		var project = new Project(urlParams.project, projectType);
+		var readOnly = urlParams.readOnly ? urlParams.readOnly : false;
 
 		this.report = urlParams.report;
 		this.documentsViewRef = {};
@@ -107,6 +108,7 @@ class CodingEditor extends React.Component {
 		this.textEditor = {};
 		this.syncService = new SyncService();
 		this.state = {
+			readOnly: readOnly,
 			project: project,
 			showCodingView: false,
 			showAgreementMap: urlParams.report ? true : false,
@@ -370,10 +372,9 @@ class CodingEditor extends React.Component {
 
 	render() {
 		if (
-			!this.props.auth.authState.isUserSignedIn ||
-			!this.props.auth.authState.isUserRegistered
+			!this.props.auth.authState.isUserSignedIn
 		)
-			return <UnauthenticatedUserPanel history={this.props.history} />;
+			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
 		if (this.state.project.getCodesystemID() == -1) this.init();
 
 		return (
@@ -453,6 +454,7 @@ class CodingEditor extends React.Component {
 							syncService={this.syncService}
 							userProfile={this.props.auth.userProfile}
 							openCodeQueries={this.openCodeQueries}
+							readOnly = {this.state.readOnly}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>

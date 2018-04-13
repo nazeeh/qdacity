@@ -23,12 +23,6 @@ export default class SettingsBtn extends React.Component {
 		this.showSettingsModal = this.showSettingsModal.bind(this);
 	}
 
-	setIsProjectOwner(pIsProjectOnwer) {
-		this.setState({
-			isProjectOwner: pIsProjectOnwer
-		});
-	}
-
 	showSettingsModal() {
 		var modal = new Settings();
 		var _this = this;

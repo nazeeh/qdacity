@@ -17,6 +17,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.persistence.EntityExistsException;
 
+import com.qdacity.user.UserGroup;
 import org.json.JSONException;
 
 import com.google.api.server.spi.auth.common.User;
@@ -111,6 +112,31 @@ public class ProjectEndpoint {
 			mgr.close();
 		}
 
+		return CollectionResponse.<Project> builder().setItems(execute).setNextPageToken(cursorString).build();
+	}
+
+	@ApiMethod(name = "project.listByUserGroupId")
+	public CollectionResponse<Project> listProjectByUserGroupId(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
+		UserGroup userGroup = (com.qdacity.user.UserGroup) Cache.getOrLoad(userGroupId, com.qdacity.user.UserGroup.class);
+		com.qdacity.user.User requestingUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) user);
+
+		if(!userGroup.getParticipants().contains(requestingUser.getId())) { // allow participants of group
+			Authorization.checkAuthorization(userGroup, user); // and owners and admins
+		}
+
+		PersistenceManager mgr = null;
+		List<Project> execute = null;
+		try {
+			mgr = getPersistenceManager();
+			Query q = mgr.newQuery(Project.class, ":p.contains(owningUserGroups)");
+			execute = (List<Project>) q.execute(Arrays.asList(userGroupId));
+
+			// Tight loop for fetching all entities from datastore and accomodate
+			// for lazy fetch.
+			for (Project obj : execute);
+		} finally {
+			mgr.close();
+		}
 		return CollectionResponse.<Project> builder().setItems(execute).setNextPageToken(cursorString).build();
 	}
 
@@ -252,10 +278,9 @@ public class ProjectEndpoint {
 	 * @return The inserted entity.
 	 * @throws UnauthorizedException
 	 */
+	@SuppressWarnings("ResourceParameter")
 	@ApiMethod(name = "project.insertProject")
 	public Project insertProject(Project project, User user) throws UnauthorizedException {
-		// Check if user is authorized
-		// Authorization.checkAuthorization(project, user); // FIXME does not make sense for inserting new projects - only check if user is in DB already
 		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -270,13 +295,56 @@ public class ProjectEndpoint {
 				project.addOwner(qdacityUser.getId());
 				project.setRevision(0);
 				project.setMaxCodingID(0L);
-				mgr.makePersistent(project);
-
+				project = mgr.makePersistent(project);
+				// update user
 				qdacityUser.addProjectAuthorization(project.getId());
 				mgr.makePersistent(qdacityUser);
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
 				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
+			} catch (JDOObjectNotFoundException e) {
+				throw new UnauthorizedException("User is not registered");
+			}
+
+		} finally {
+			mgr.close();
+		}
+		return project;
+	}
+
+	/**
+	 * Inserts project for a user group.
+	 * @param project
+	 * @param userGroupId
+	 * @param user
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	@SuppressWarnings("ResourceParameter")
+	@ApiMethod(name = "project.insertProjectForUserGroup")
+	public Project insertProjectForUserGroup(Project project, @Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (project.getId() != null) {
+				if (containsProject(project)) {
+					throw new EntityExistsException("Object already exists");
+				}
+			}
+
+			try {
+				project.setOwningUserGroups(Arrays.asList(userGroupId));
+				project.setRevision(0);
+				project.setMaxCodingID(0L);
+				project = mgr.makePersistent(project);
+				Cache.cache(project.getId(), Project.class, project);
+
+				// update user groups
+				UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+				userGroup.getProjects().add(project.getId());
+				mgr.makePersistent(userGroup);
+				Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
 			} catch (JDOObjectNotFoundException e) {
 				throw new UnauthorizedException("User is not registered");
 			}
@@ -734,10 +802,16 @@ public class ProjectEndpoint {
 
 			for (String projectUserIDs : userIDs) {
 				com.qdacity.user.User projectUser = mgr.getObjectById(com.qdacity.user.User.class, projectUserIDs);
-
 				projectUser.removeProjectAuthorization(id);
 				mgr.makePersistent(projectUser);
+			}
 
+			// remove user groups
+			for (Long userGroupId: project.getOwningUserGroups()) {
+				UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+				userGroup.getProjects().remove(id);
+				mgr.makePersistent(userGroup);
+				Cache.cache(userGroupId, UserGroup.class, userGroup);
 			}
 
 			Long codeSystemID = project.getCodesystemID();

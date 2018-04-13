@@ -20,6 +20,9 @@ public class Project extends AbstractProject {
 	List<String> owners;
 
 	@Persistent
+	List<Long> owningUserGroups;
+
+	@Persistent
 	List<String> coders;
 
 	@Persistent
@@ -39,6 +42,7 @@ public class Project extends AbstractProject {
 	}
 
 	public List<String> getOwners() {
+		if(owners == null) return new ArrayList<>();
 		return owners;
 	}
 
@@ -49,6 +53,15 @@ public class Project extends AbstractProject {
 	public void addOwner(String userID) {
 		if (owners == null) owners = new ArrayList<String>();
 		if (!owners.contains(userID)) owners.add(userID);
+	}
+
+	public List<Long> getOwningUserGroups() {
+		if(owningUserGroups == null) return new ArrayList<Long>();
+		return owningUserGroups;
+	}
+
+	public void setOwningUserGroups(List<Long> owningUserGroups) {
+		this.owningUserGroups = owningUserGroups;
 	}
 
 	public List<String> getInvitedUsers() {

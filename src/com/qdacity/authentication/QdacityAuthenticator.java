@@ -1,12 +1,8 @@
 package com.qdacity.authentication;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.api.server.spi.config.Authenticator;
-import com.google.appengine.api.utils.SystemProperty;
 
 /**
  * Custom authentication class that interacts with google cloud api and injects automatically a User object.
@@ -20,13 +16,13 @@ import com.google.appengine.api.utils.SystemProperty;
  */
 public class QdacityAuthenticator implements Authenticator {
 
-	public static final String PROVIDER_EMAILPWD = "email_password";
+	public static final String PROVIDER_CUSTOM_JWT = "qdacity-custom";
 	public static final String PROVIDER_GOOGLE = "google";
 	public static final String PROVIDER_GOOGLE_ACCESS_TOKEN = "googleaccesstoken";
 
 	TokenValidator googleIdTokenValidator = new GoogleIdTokenValidator();
 	TokenValidator googleAccessTokenValidator = new GoogleAccessTokenValidator();
-	TokenValidator emailpwdTokenValidator = new EmailPasswordValidator();
+	TokenValidator customTokenValidator = new CustomJWTValidator();
 	TokenValidator testTokenValidator = new TestTokenValidator();
 	
     /**
@@ -57,11 +53,9 @@ public class QdacityAuthenticator implements Authenticator {
         		provider = tokenParts[1];
         	}
 
-			switch (provider.toLowerCase()) {			
-				case PROVIDER_GOOGLE:
-		    		return googleIdTokenValidator.validate(idTokenString);
-				case PROVIDER_EMAILPWD:
-					return emailpwdTokenValidator.validate(idTokenString);
+			switch (provider.toLowerCase()) {
+				case PROVIDER_CUSTOM_JWT:
+					return customTokenValidator.validate(idTokenString);
 				case PROVIDER_GOOGLE_ACCESS_TOKEN:
 				default:
 					return googleAccessTokenValidator.validate(idTokenString);

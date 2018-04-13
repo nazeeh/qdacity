@@ -1,18 +1,18 @@
 package com.qdacity;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.PersistenceManager;
-
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.qdacity.authentication.AuthenticatedUser;
-import com.qdacity.user.LoginProviderType;
+import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.user.User;
 import com.qdacity.user.UserLoginProviderInformation;
+
+import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Cache {
 
@@ -129,7 +129,7 @@ public class Cache {
 	
 	public static void cacheAuthenticatedUser(AuthenticatedUser authenticatedUser, User qdacityUser) {
 		Class type = User.class;
-		String id = authenticatedUser.getProvider().toString() + ":" + authenticatedUser.getId();
+		String id = getCacheId(authenticatedUser);
 		cache(id, type, qdacityUser);
 	}
 
@@ -139,6 +139,32 @@ public class Cache {
 		for(UserLoginProviderInformation loginInfo: qdacityUser.getLoginProviderInformation()) {
 			invalidate(loginInfo.getProvider().toString() + ":" + loginInfo.getExternalUserId(), User.class);
 		}
+	}
+
+	private static String getCacheId(AuthenticatedUser authenticatedUser) {
+		return authenticatedUser.getProvider().toString() + ":" + authenticatedUser.getId();
+	}
+
+	public static User getUserByAuthenticatedUser(AuthenticatedUser authenticatedUser) {
+		User user = null;
+
+		String keyString = getCacheId(authenticatedUser);
+		MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+
+		if (syncCache.contains(keyString)) {
+			user = (User) syncCache.get(keyString);
+		}
+		return user;
+	}
+
+	public static User getOrLoadUserByAuthenticatedUser(AuthenticatedUser authenticatedUser) throws UnauthorizedException {
+		User user = getUserByAuthenticatedUser(authenticatedUser);
+
+		if(user == null) {
+			user = new UserEndpoint().getCurrentUser(authenticatedUser);
+		}
+
+		return user;
 	}
 
 	private static PersistenceManager getPersistenceManager() {

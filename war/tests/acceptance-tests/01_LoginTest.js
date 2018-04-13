@@ -31,11 +31,6 @@ describe(SPEC_NAME, function () {
      * This function tests the login of QDAcity with a google test-account. It registers a new account in QDAcity.
      */
     it('Should register and login a user', (done) => {
-    	const displayName = 'Max Mustermann';
-    	const qdacityFirstName = 'Max';
-    	const qdacityLastName = 'Mustermann';
-		const qdacityEmail = 'felixtest27@gmail.com';
-		const userPassword = 'Password123';
     	
     	const _this = this;
     
@@ -47,22 +42,22 @@ describe(SPEC_NAME, function () {
 		// First name
 		let fieldFirstName = this.driver.findElement(By.xpath("//input[@name='firstName']"));
 		fieldFirstName.clear();
-		fieldFirstName.sendKeys(qdacityFirstName);
+		fieldFirstName.sendKeys(loginHelper.userData.qdacityFirstName);
 
 		// Last name
 		let fieldLastName = this.driver.findElement(By.xpath("//input[@name='lastName']"));
 		fieldLastName.clear();
-		fieldLastName.sendKeys(qdacityLastName);
+		fieldLastName.sendKeys(loginHelper.userData.qdacityLastName);
 
 		// Email
 		let fieldEmail = this.driver.findElement(By.xpath("//input[@name='email']"));
 		fieldEmail.clear();
-		fieldEmail.sendKeys(qdacityEmail);
+		fieldEmail.sendKeys(loginHelper.userData.qdacityEmail);
 
 		// Password
 		let fieldPassword = this.driver.findElement(By.xpath("//input[@name='pwd']"));
 		fieldPassword.clear();
-		fieldPassword.sendKeys(userPassword);
+		fieldPassword.sendKeys(loginHelper.userData.userPassword);
 		
 		// Register  
 		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click().then(() => {
@@ -77,14 +72,14 @@ describe(SPEC_NAME, function () {
 
     		_this.driver.getCurrentUrl().then((currentUrl) => {	
     			// Check the welcome message
-        		expect(text).toBe("Welcome " + displayName);
+        		expect(text).toBe("Welcome " + loginHelper.userData.displayName);
         		
         		// Does the URL end with /PersonalDashboard?
         		const urlEnd = "/PersonalDashboard";
         		expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
 				
 				// Check if the token of the signed-in user is stored in the localStorage 
-				_this.driver.executeScript('return localStorage.getItem("qdacity-emai-password-token")').then(function (token) {
+				_this.driver.executeScript('return localStorage.getItem("qdacity-jwt-token")').then(function (token) {
 					expect(token).not.toBeUndefined();
 					expect(token).not.toBeNull();
 				});

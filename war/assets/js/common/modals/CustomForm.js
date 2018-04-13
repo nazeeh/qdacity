@@ -5,6 +5,7 @@ import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import Theme from '../../common/styles/Theme.js';
 import { ThemeProvider } from 'styled-components';
+import DateChooser from '../../common/modals/DateChooser.jsx';
 
 export default class CustomForm extends VexModal {
 	constructor(message) {
@@ -12,17 +13,22 @@ export default class CustomForm extends VexModal {
 		this.formElements = '';
 		this.message = message;
 		this.isProjectRevisionSelector = false;
+		this.hasDateChooser = false;
 		this.disableYesButton = false;
 		this.showProjectDropDown = true;
 		this.projects = [];
 		this.selectedRevisionID = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+		this.setSelectedDate = this.setSelectedDate.bind(this);
 	}
 
 	setSelectedRevisionID(revisionID) {
 		this.selectedRevisionID = revisionID;
 	}
 
+	setSelectedDate(date) {
+		this.selectedDate = date;
+	}
 	addTextInput(name, label, placeholder, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<label for="' + name + '">' + label + '</label>';
@@ -39,6 +45,24 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
+	addDatePicker() {
+		this.hasDateChooser = true;
+		const { formatMessage } = IntlProvider.intl;
+		var deadlineMessage = formatMessage({
+			id: 'modal.deadline',
+			defaultMessage:
+				'Deadline: '
+		});
+
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += deadlineMessage;
+		this.formElements += '<div id="DateChooser">';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+
+	}
 	addTextField(name, label, placeholder, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
 		this.formElements += '<label for="' + name + '">' + label + '</label>';
@@ -92,6 +116,31 @@ export default class CustomForm extends VexModal {
 		options.forEach(function(el) {
 			_this.formElements +=
 				'<option value="' + el + '" ' + isDefault(el) + '>' + el + '</option>';
+		});
+		this.formElements += '</select>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+	}
+
+	/**
+	 * Options has fields id and name.
+	 * The name is shown, the id is returned
+	 */
+	addSelectComplexOptions(name, options, label, initialValueId) {
+		var _this = this;
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += label + ': ';
+		this.formElements += '<select name="' + name + '">';
+
+		var isDefault = function(el) {
+			return el.id == initialValueId ? 'selected="selected"' : '';
+		};
+
+		options.forEach(function(el) {
+			_this.formElements +=
+				'<option value="' + el.id + '" ' + isDefault(el) + '>' + el.name + '</option>';
 		});
 		this.formElements += '</select>';
 		this.formElements += '</div>';
@@ -155,6 +204,7 @@ export default class CustomForm extends VexModal {
 				callback: function(data) {
 					if (data != false) {
 						data.SelectedRevisionID = _this.selectedRevisionID;
+						data.SelectedDate = _this.selectedDate;
 						resolve(data);
 					} else reject(data);
 				},
@@ -165,6 +215,16 @@ export default class CustomForm extends VexModal {
 					}
 				}
 			});
+			if (_this.hasDateChooser) {
+			ReactDOM.render(
+				<ThemeProvider theme={Theme}>
+					<DateChooser
+						setSelectedDate={_this.setSelectedDate}
+					/>
+				</ThemeProvider>,
+				document.getElementById('DateChooser')
+			)
+		}
 			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(
 					<ThemeProvider theme={Theme}>

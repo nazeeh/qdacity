@@ -4,7 +4,7 @@ import com.qdacity.authentication.util.TokenUtil;
 import com.qdacity.user.LoginProviderType;
 import io.jsonwebtoken.Claims;
 
-public class EmailPasswordValidator implements TokenValidator {
+public class CustomJWTValidator implements TokenValidator {
 
     @Override
     public AuthenticatedUser validate(String token) {
@@ -15,7 +15,9 @@ public class EmailPasswordValidator implements TokenValidator {
             return null;
         }
 
-        return new AuthenticatedUser(claims.get("email", String.class), // convention: email is id
-                claims.get("email", String.class), LoginProviderType.EMAIL_PASSWORD);
+        return new AuthenticatedUser(
+                claims.get(TokenUtil.EXTERNAL_USER_ID_CLAIM, String.class), // convention: email is id
+                claims.get(TokenUtil.EXTERNAL_EMAIL_CLAIM, String.class),
+                LoginProviderType.valueOf(claims.get(TokenUtil.AUTH_NETWORK_CLAIM, String.class)));
     }
 }
