@@ -10,6 +10,7 @@ import DocumentsView from './Documents/DocumentsView.jsx';
 import Codesystem from './Codesystem/Codesystem.jsx';
 import BottomPanel from './BottomPanel/BottomPanel.jsx';
 import ProjectPanel from './ProjectPanel/ProjectPanel.jsx';
+import CodeQueries from './Queries/CodeQueries.jsx';
 
 import TextEditor from './TextEditor/TextEditor.jsx';
 
@@ -102,6 +103,7 @@ class CodingEditor extends React.Component {
 		this.codesystemViewRef = {};
 		this.umlEditorRef = {};
 		this.codeViewRef = {};
+		this.codeQueriesRef = null;
 		this.textEditor = {};
 		this.syncService = new SyncService();
 		this.state = {
@@ -132,6 +134,7 @@ class CodingEditor extends React.Component {
 		this.updateSelectedCode = this.updateSelectedCode.bind(this);
 		this.viewChanged = this.viewChanged.bind(this);
 		this.getCodeSystem = this.getCodeSystem.bind(this);
+		this.getDocuments = this.getDocuments.bind(this);
 		this.getCodeById = this.getCodeById.bind(this);
 		this.getCodeByCodeID = this.getCodeByCodeID.bind(this);
 		this.showCodingView = this.showCodingView.bind(this);
@@ -144,6 +147,9 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
+		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
+		this.openCodeQueries = this.openCodeQueries.bind(this);
+		this.openCodingInCodingEditor = this.openCodingInCodingEditor.bind(this);
 
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
@@ -205,6 +211,16 @@ class CodingEditor extends React.Component {
 		this.setState({
 			selectedEditor: view
 		});
+	}
+	
+	openCodingInCodingEditor(codingId) {
+		this.viewChanged(PageView.CODING);
+		this.documentsViewRef.setDocumentWithCoding(codingId);
+		this.textEditor.activateCodingInEditor(codingId);
+	}
+
+	openCodeQueries() {
+		this.viewChanged(PageView.CODE_QUERIES);
 	}
 
 	setSearchResults(results) {
@@ -270,6 +286,7 @@ class CodingEditor extends React.Component {
 			selectedCode: newCode
 		});
 		this.umlEditorRef.codesystemSelectionChanged(newCode);
+		this.codeQueriesRef.codesystemSelectionChanged(newCode);
 	}
 
 	createCode(name, mmElementIDs, relationId, relationSourceCodeId, select) {
@@ -296,6 +313,10 @@ class CodingEditor extends React.Component {
 
 	getCodeSystem() {
 		return this.codesystemViewRef.getCodesystem();
+	}
+
+	getDocuments() {
+		return this.documentsViewRef.getDocuments();
 	}
 
 	hideCodingView() {
@@ -398,7 +419,7 @@ class CodingEditor extends React.Component {
 						<div id="documents-ui">
 							<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
 								<DocumentsView
-									ref={c => (this.documentsViewRef = c)}
+									ref={c => { if (c) this.documentsViewRef = c }}
 									textEditor={this.textEditor}
 									projectID={this.state.project.getId()}
 									projectType={this.state.project.getType()}
@@ -431,7 +452,8 @@ class CodingEditor extends React.Component {
 							codeRemoved={this.codeRemoved}
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
-							userProfile={this.props.auth.userProfile}
+							userProfile={this.state.userProfile}
+							openCodeQueries={this.openCodeQueries}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>
@@ -447,6 +469,7 @@ class CodingEditor extends React.Component {
 							showAgreementMap={this.state.showAgreementMap}
 							agreementMapHighlightThreshold={this.state.agreementMapHighlightThreshold}
 						/>
+
 						<StyledUMLEditor
 							selectedEditor={this.state.selectedEditor}
 							showCodingView={this.state.showCodingView}
@@ -454,6 +477,15 @@ class CodingEditor extends React.Component {
 						>
 							{this.renderUMLEditor()}
 						</StyledUMLEditor>
+						
+						<CodeQueries 
+							ref={c => { if (c) this.codeQueriesRef = c; }} 
+							selectedEditor={this.state.selectedEditor}
+							textEditor={this.textEditor}
+							getCodeSystem={this.getCodeSystem}
+							getDocuments={this.getDocuments}
+							openCodingEditor={this.openCodingInCodingEditor}
+						/>
 					</StyledTextdocumentUi>
 				</StyledEditor>
 				<StyledFooter showCodingView={this.state.showCodingView}>
