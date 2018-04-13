@@ -2,47 +2,42 @@ var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
+
 var loginHelper = require('./helper/LoginHelper.js');
 
-describe('Login test', function() {
+var Common = require('./helper/Common.js');
 
-	var defaultTimeout = 30000;
+
+const SPEC_NAME = 'Login test';
+
+describe(SPEC_NAME, function () {
+
+	let driver = null;
 	
-	var driver = null;
-	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                   Login test                    ####');
-    	console.log('#########################################################');
-		done();
+	beforeAll(() => {
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
-    	const options = new chrome.Options();
-    	
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-	        .build();
-
+    	this.driver = Common.setupChromeDriver();
         this.driver.get('http://localhost:8888/').then(done);
-    }, defaultTimeout);
+    });
 
     afterEach((done) => {
-        this.driver.quit().then(done);
-    }, defaultTimeout);
+        this.driver.quit().then(done);   
+    });
 
     /**
-     * This function tests the login of QDAcity with a google test-account. If the test-account
-     * is not registered within QDAcity, the test registers the account.
+     * This function tests the login of QDAcity with a google test-account. It registers a new account in QDAcity.
      */
     it('Should register and login a user', (done) => {
     	
     	const _this = this;
     
 		// Register Account
-		this.driver.wait(until.elementLocated(By.xpath("//a[@id='signin-formula-register-link']"))).click();
+		this.driver.wait(until.elementLocated(By.xpath("//a[@id='signin-formula-register-link']"))).click().then(() => {
+			console.log('Found and clicked the login button.');
+		});
 
 		// First name
 		let fieldFirstName = this.driver.findElement(By.xpath("//input[@name='firstName']"));
@@ -65,12 +60,16 @@ describe('Login test', function() {
 		fieldPassword.sendKeys(loginHelper.userData.userPassword);
 		
 		// Register  
-		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click(); 		
+		this.driver.findElement(By.xpath("//button[contains(@class,'vex-dialog-button') and text()='Register']")).click().then(() => {
+			console.log('Filled the form and clicked the register button.');
+		}); 		
     	    	
     	this.driver.sleep(2000);
     	
 		// Check welcome message and URL
     	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
+			console.log('Found the welcome message.');
+
     		_this.driver.getCurrentUrl().then((currentUrl) => {	
     			// Check the welcome message
         		expect(text).toBe("Welcome " + loginHelper.userData.displayName);
@@ -90,5 +89,5 @@ describe('Login test', function() {
 				});
     		})
     	});
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });
