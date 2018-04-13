@@ -2,46 +2,35 @@ var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
+
 var loginHelper = require('../helper/LoginHelper.js');
 
-describe('Codesystem test', function() {
+var Common = require('../helper/Common.js');
+var Conditions = require('../helper/Conditions.js');
 
-	var defaultTimeout = 30000;
+
+const SPEC_NAME = 'Codesystem test';
+
+describe(SPEC_NAME, function () {
+
+	let driver = null;
 	
-	var driver = null;
-	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                   Codes test                    ####');
-    	console.log('#########################################################');
-		done();
+	beforeAll(() => {
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
-    	const options = new chrome.Options();
-    	
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-	        .build();
-
-		this.driver.get('http://localhost:8888/PersonalDashboard').then(() => {
-			loginHelper.restoreLoginState(this.driver).then(done);
-		});
-    }, defaultTimeout);
+		this.driver = Common.setupChromeDriver();
+		Common.openCodingEditor(this.driver, 'Project_01', done);
+    });
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, defaultTimeout);
+    });
 
     it('Should create a new code', (done) => {
-    	const projectName = 'Project_01';
     	const codeName = 'Code_01';
 
-    	// Find an existing project and open the coding editor
-    	this.driver.wait(until.elementLocated(By.xpath("//ul/li/span[text()='" + projectName + "']/following-sibling::div/button/i[contains(@class,'fa-tags')]"))).click();    	
-    	
     	// Find add code button
     	this.driver.wait(until.elementLocated(By.id('addCodeButtonId'))).click();   
 
@@ -52,10 +41,8 @@ describe('Codesystem test', function() {
     	
     	// Find the OK button
     	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();    	
-    	
+			
     	// Find the code in the codesystem
-    	this.driver.wait(until.elementLocated(By.xpath("//div[contains(@class,'clickable') and text()='" + codeName + "']"))).then(() => {
-        	done();
-    	});    		
-    }, defaultTimeout);
+		Conditions.assertCodeExists(this.driver, codeName, done); 		
+    }, Common.getDefaultTimeout());
 });
