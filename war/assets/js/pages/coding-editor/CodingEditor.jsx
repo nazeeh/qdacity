@@ -147,7 +147,6 @@ class CodingEditor extends React.Component {
 		this.resizeElements = this.resizeElements.bind(this);
 		this.setSearchResults = this.setSearchResults.bind(this);
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
-		this.updateUserStatusFromProps = this.updateUserStatusFromProps.bind(this);
 		this.openCodeQueries = this.openCodeQueries.bind(this);
 		this.openCodingInCodingEditor = this.openCodingInCodingEditor.bind(this);
 
@@ -452,7 +451,7 @@ class CodingEditor extends React.Component {
 							codeRemoved={this.codeRemoved}
 							documentsView={this.documentsViewRef}
 							syncService={this.syncService}
-							userProfile={this.state.userProfile}
+							userProfile={this.props.auth.userProfile}
 							openCodeQueries={this.openCodeQueries}
 						/>
 					</StyledSideBarCodesystem>
