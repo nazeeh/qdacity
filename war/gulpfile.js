@@ -155,6 +155,66 @@ gulp.task('generate-language-files', () => {
 	);
 });
 
+gulp.task('update-translations', /*['bundle-task'],*/ () => {
+	const templateFile = tf.TranslationFile.fromContent(
+		fs.readFileSync('translations/template.txt', 'utf8')
+	);
+	const template = templateFile.getMessageIdents();
+	return gulp
+		.src('translations/*.txt')
+		.pipe(
+			filterBy(file => !file.relative.match(/template.txt$/))
+		).pipe(
+		transform('utf8', (content, file) => {
+			const translationFile = tf.TranslationFile.fromContent(content);
+			const identList = translationFile.getMessageIdents();
+			const messages = {};
+			identList.forEach(ident => {
+				if (messages[ident.id]) {
+					log(chalk.yellow(`Duplicate ident ${chalk.bold(ident.id)}`));
+					throw new Error('Cannot update invalid translation file');
+				}
+				messages[ident.id] = ident;
+			});
+			let first = true;
+			template.forEach(ident => {
+				if (!messages.hasOwnProperty(ident.id)) {
+					const clone = { ...ident };
+					if(first)
+						clone.description = `
+---------------------------------------------
+These strings are missing in this translation
+---------------------------------------------
+
+add:
+
+${clone.description || ''}`;
+					clone.id = `# ${clone.id}`;
+					clone.defaultMessage = clone.defaultMessage.replace(/\n/g, "\n#");
+					identList.push(clone);
+					first = false;
+				}
+				delete messages[ident.id];
+			});
+			if(Object.keys(messages).length > 0) {
+				for (const id of Object.keys(messages)) {
+					const obj = messages[id];
+					obj.description = `del: ${obj.description || ''}`;
+					obj.id = `# ${obj.id}`;
+					obj.defaultMessage = obj.defaultMessage.replace(/\n/g, "\n#");
+				}
+			}
+			return tf.TranslationFile.fromMessageIdentList(identList).source();
+		}))
+		.on('error', error => {
+			log.error(chalk.red.bold(error));
+			process.exit(1);
+		})
+		.pipe(gulp.dest('translations'))
+		.pipe(gulp.dest('../target/qdacity-war/translations'))
+	;
+})
+
 gulp.task('translation-watch', () => {
 	const watcher = gulp.watch('translations/*.txt', ['generate-language-files']);
 	return watcher;
