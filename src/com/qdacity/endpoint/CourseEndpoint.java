@@ -228,6 +228,11 @@ public class CourseEndpoint {
 	public Course insertCourseForUserGroup(Course course, @Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
 
 		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+		UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
+
+		if(!userGroup.getParticipants().contains(qdacityUser.getId())) { // allow participants of group
+			Authorization.checkAuthorization(userGroup, user); // and owners and admins
+		}
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -238,8 +243,6 @@ public class CourseEndpoint {
 			}
 
 			try {
-				UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
-
 				course.setOwningUserGroups(Arrays.asList(userGroupId));
 				course = mgr.makePersistent(course);
 				Cache.cache(course.getId(), Course.class, course);
@@ -451,7 +454,12 @@ public class CourseEndpoint {
         if (user == null) throw new UnauthorizedException("User is not logged in"); // TODO currently no user is authorized to list all courses
         UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
 
-        PersistenceManager mgr = null;
+		if(!userGroup.getParticipants().contains(qdacityUser.getId())) { // allow participants of group
+			Authorization.checkAuthorization(userGroup, user); // and owners and admins
+		}
+
+
+		PersistenceManager mgr = null;
         List<TermCourse> execute = null;
         try {
             mgr = getPersistenceManager();
@@ -522,6 +530,10 @@ public class CourseEndpoint {
 		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
 		UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
 
+		if(!userGroup.getParticipants().contains(qdacityUser.getId())) { // allow participants of group
+			Authorization.checkAuthorization(userGroup, user); // and owners and admins
+		}
+
 		termCourse.setOpen(true);
 		termCourse.setCreationDate(new Date());
 		termCourse.setOwningUserGroups(new ArrayList<Long>());
@@ -535,7 +547,7 @@ public class CourseEndpoint {
 				}
 			}
 			try {
-				termCourse.setOwningUserGroups(Arrays.asList(userGroupId));
+				termCourse.getOwningUserGroups().add(userGroupId);
 				termCourse = mgr.makePersistent(termCourse);
 				Cache.cache(termCourse.getId(), Course.class, termCourse);
 
