@@ -57,6 +57,8 @@ export default class CourseDashboard extends React.Component {
 		this.setState({
 			course: course
 		});
+
+		this.setUserRights(); // need loaded data, so update when arrives
 	}
 
 	addParticipant(term) {
