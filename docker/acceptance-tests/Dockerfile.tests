@@ -14,8 +14,8 @@ COPY ./war/gulpfile.js /app/war/gulpfile.js
 COPY ./war/api_config.json /app/war/api_config.json
 
 # Allow execute
-RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
-RUN sudo chmod +x ./docker/acceptance-tests/waitForDevServer.sh
+# RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
+# RUN sudo chmod +x ./docker/acceptance-tests/waitForDevServer.sh
 
 # Run script which starts the devserver and executes the tests
 ENTRYPOINT ./docker/acceptance-tests/entrypoint.sh
