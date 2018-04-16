@@ -76,6 +76,7 @@ window.onload = function() {
 			init();
 		});
 	});
+    initServiceWorker();
 };
 
 const init = function() {
@@ -95,3 +96,17 @@ const init = function() {
 		);
 	});
 };
+
+function initServiceWorker() {
+    if('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("sw.js" , {scope: '/'})
+            .then(function() {
+                console.log("Service worker registered")
+            })
+            .catch(function(err) {
+                console.log(err);
+            });
+    } else {
+        console.log("Browser does not support service worker")
+    }
+}

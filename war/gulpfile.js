@@ -155,6 +155,66 @@ gulp.task('generate-language-files', () => {
 	);
 });
 
+gulp.task('update-translations', /*['bundle-task'],*/ () => {
+	const templateFile = tf.TranslationFile.fromContent(
+		fs.readFileSync('translations/template.txt', 'utf8')
+	);
+	const template = templateFile.getMessageIdents();
+	return gulp
+		.src('translations/*.txt')
+		.pipe(
+			filterBy(file => !file.relative.match(/template.txt$/))
+		).pipe(
+		transform('utf8', (content, file) => {
+			const translationFile = tf.TranslationFile.fromContent(content);
+			const identList = translationFile.getMessageIdents();
+			const messages = {};
+			identList.forEach(ident => {
+				if (messages[ident.id]) {
+					log(chalk.yellow(`Duplicate ident ${chalk.bold(ident.id)}`));
+					throw new Error('Cannot update invalid translation file');
+				}
+				messages[ident.id] = ident;
+			});
+			let first = true;
+			template.forEach(ident => {
+				if (!messages.hasOwnProperty(ident.id)) {
+					const clone = { ...ident };
+					if(first)
+						clone.description = `
+---------------------------------------------
+These strings are missing in this translation
+---------------------------------------------
+
+add:
+
+${clone.description || ''}`;
+					clone.id = `# ${clone.id}`;
+					clone.defaultMessage = clone.defaultMessage.replace(/\n/g, "\n#");
+					identList.push(clone);
+					first = false;
+				}
+				delete messages[ident.id];
+			});
+			if(Object.keys(messages).length > 0) {
+				for (const id of Object.keys(messages)) {
+					const obj = messages[id];
+					obj.description = `del: ${obj.description || ''}`;
+					obj.id = `# ${obj.id}`;
+					obj.defaultMessage = obj.defaultMessage.replace(/\n/g, "\n#");
+				}
+			}
+			return tf.TranslationFile.fromMessageIdentList(identList).source();
+		}))
+		.on('error', error => {
+			log.error(chalk.red.bold(error));
+			process.exit(1);
+		})
+		.pipe(gulp.dest('translations'))
+		.pipe(gulp.dest('../target/qdacity-war/translations'))
+	;
+})
+
 gulp.task('translation-watch', () => {
 	const watcher = gulp.watch('translations/*.txt', ['generate-language-files']);
 	return watcher;
@@ -245,7 +305,18 @@ gulp.task('webpack-watch', function() {
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
 		.pipe(replace('$TEST_MODE$', config.test_mode))
 		.pipe(gulp.dest('dist/js/'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/'))
+	);
+});
+
+gulp.task('sw', function() {
+	gulp
+		.src('assets/js/service-worker/sw.js')
+		.pipe(gulp.dest('../target/qdacity-war/'))
+});
+
+gulp.task('sw-watch', function () {
+    gulp.watch('assets/js/service-worker/sw.js', ['sw']);
 });
 
 gulp.task('unit-tests', () =>
@@ -258,7 +329,7 @@ gulp.task('acceptance-tests', () =>
 		.on('error', handleError)
 );
 
-gulp.task('watch', ['webpack-watch', 'translation-watch']);
+gulp.task('watch', ['webpack-watch', 'translation-watch', 'sw-watch']);
 
 gulp.task('acceptance-tests', () => {
 	const basePath = './tests/acceptance-tests/';
@@ -269,4 +340,4 @@ gulp.task('acceptance-tests', () => {
 	]).pipe(jasmine()).on('error', handleError);
 });
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['sw', 'watch']);
