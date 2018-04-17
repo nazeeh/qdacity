@@ -14,7 +14,7 @@ class Common {
 	}
 	
 	static getExtendedTimeout() {
-		return 60000;
+		return 120000;
 	}
 	
 	static initializeSpec(testName) {
