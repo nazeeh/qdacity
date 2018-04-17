@@ -106,7 +106,7 @@ class CodingEditor extends React.Component {
 		this.codeViewRef = {};
 		this.codeQueriesRef = null;
 		this.textEditor = {};
-		this.syncService = new SyncService();
+		this.syncService = new SyncService(this);
 		this.state = {
 			readOnly: readOnly,
 			project: project,
@@ -151,6 +151,7 @@ class CodingEditor extends React.Component {
 		this.updateUserAtSyncService = this.updateUserAtSyncService.bind(this);
 		this.openCodeQueries = this.openCodeQueries.bind(this);
 		this.openCodingInCodingEditor = this.openCodingInCodingEditor.bind(this);
+		this.updateConnectionState = this.updateConnectionState.bind(this);
 
 		scroll(0, 0);
 		window.onresize = this.resizeElements;
@@ -159,6 +160,10 @@ class CodingEditor extends React.Component {
 	// lifecycle hook: update state for rerender
 	componentWillReceiveProps(nextProps) {
 		this.updateUserAtSyncService();
+	}
+
+	updateConnectionState(connected) {
+		this.props.setRTCSConnectionState(connected);
 	}
 
 	updateUserAtSyncService() {

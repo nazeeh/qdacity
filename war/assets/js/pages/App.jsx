@@ -115,16 +115,20 @@ export default class App extends React.Component {
 				authentication: this.authenticationProvider,
 				authorization: this.authorizationProvider
 			},
-			connected: true
+			connected: {
+				api: true,
+				rtcs: true
+			}
 		};
 
         this.ping=this.ping.bind(this);
         this.updateConnectionStatus=this.updateConnectionStatus.bind(this);
+		this.setApiConnectionState=this.setApiConnectionState.bind(this);
+		this.setRTCSConnectionState=this.setRTCSConnectionState.bind(this);
 
 		new VexModal(); // init vex
 
 		this.initAuthProvider();
-		//this.updateConnectionStatus();
 		this.ping();
 	}
 
@@ -235,15 +239,21 @@ export default class App extends React.Component {
 	async updateConnectionStatus() {
 		fetch('/')
 			.then((response) => {
-				this.setState({
-					connected: response.status === 200
-				});
+				this.setApiConnectionState(response.status === 200)
 			})
 			.catch((error) => {
-				this.setState({
-					connected: false
-				});
+				this.setApiConnectionState(false)
 			});
+	}
+
+	setApiConnectionState(state) {
+		this.state.connected.api = state;
+		this.setState(this.state);
+	}
+
+	setRTCSConnectionState(state) {
+		this.state.connected.rtcs = state;
+		this.setState(this.state);
 	}
 
 	componentDidMount() {
@@ -288,7 +298,7 @@ export default class App extends React.Component {
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
-                                        connected={this.state.connected}
+                                        connected={this.state.connected.api && this.state.connected.rtcs}
 										tutorial={tut}
 										theme={Theme}
 										{...props}
@@ -391,6 +401,7 @@ export default class App extends React.Component {
 										render={props => (
 											<CodingEditor
 												auth={this.state.auth}
+												setRTCSConnectionState={this.setRTCSConnectionState}
 												mxGraphPromise={this.props.mxGraphPromise}
 												{...props}
 											/>

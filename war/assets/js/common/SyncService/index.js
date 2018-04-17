@@ -39,8 +39,9 @@ export default class SyncService {
 	/**
 	 * Constructor for SyncService.
 	 */
-	constructor() {
+	constructor(component) {
 		this._socket = null;
+		this._component = component;
 		this._listeners = {};
 		this._userdata = {
 			apiRoot: '$API_PATH$',
@@ -182,6 +183,7 @@ export default class SyncService {
 		[
 			// Send user data again on reconnect
 			['reconnect', this._emitUserUpdate],
+			['connect_error', this._handleConnectError],
 
 			// Handle user events
 			[EVT.USER.CONNECTED, this._handleUserConnected],
@@ -209,6 +211,11 @@ export default class SyncService {
 	 */
 	_handleUserConnected(serverName) {
 		this.log('Connected to realtime-service:', serverName);
+		this._component.updateConnectionState(true);
+	}
+
+	_handleConnectError() {
+		this._component.updateConnectionState(false);
 	}
 
 	/**
