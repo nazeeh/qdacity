@@ -115,7 +115,7 @@ frontend_prod_unittest:
     - export DISPLAY=:10
     - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd war
-    - $API_CONFIG_PRODUCTION > ./api_config.json
+    - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - gulp set-config-dist
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
