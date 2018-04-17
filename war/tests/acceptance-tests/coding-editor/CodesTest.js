@@ -22,11 +22,11 @@ describe(SPEC_NAME, function () {
     beforeEach((done) => {
 		this.driver = Common.setupChromeDriver();
 		Common.openCodingEditor(this.driver, 'Project_01', done);
-    }, Common.getDefaultTimeout());
+    }, Common.getExtendedTimeout());
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, Common.getDefaultTimeout());
+    }, Common.getExtendedTimeout());
 
     it('Should create a new code', (done) => {
     	const codeName = 'Code_01';
@@ -44,5 +44,5 @@ describe(SPEC_NAME, function () {
 			
     	// Find the code in the codesystem
 		Conditions.assertCodeExists(this.driver, codeName, done); 		
-    }, Common.getDefaultTimeout());
+    }, Common.getExtendedTimeout());
 });

@@ -13,6 +13,10 @@ class Common {
 		return 30000;
 	}
 	
+	static getExtendedTimeout() {
+		return 60000;
+	}
+	
 	static initializeSpec(testName) {
 		const headerTextBorderChar = '#';
 		const headerTextWidth = 60;
