@@ -521,6 +521,10 @@ export default class TextEditor extends React.Component {
 	render() {
 		const { value, selectedFontSize } = this.state;
 
+		if (this.props.selectedEditor != PageView.TEXT && this.props.selectedEditor != PageView.CODING) {
+			return null;
+		}
+
 		/*
 		 * Create decorations from current selection
 		 * It would be cleaner to do this in handleEditorChange(), but that

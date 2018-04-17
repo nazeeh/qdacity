@@ -40,6 +40,9 @@ public class Exercise implements Serializable {
 	@Persistent
 	ExerciseType exerciseType;
 
+	@Persistent
+	Boolean snapshotsAlreadyCreated;
+
 	public Exercise() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -84,4 +87,12 @@ public class Exercise implements Serializable {
 	public Date getExerciseDeadline() { return exerciseDeadline; }
 
 	public void setExerciseDeadline(Date deadline) {this.exerciseDeadline = deadline; }
+
+	public Boolean getSnapshotsAlreadyCreated() {
+		return snapshotsAlreadyCreated;
+	}
+
+	public void setSnapshotsAlreadyCreated(Boolean snapshotsAlreadyCreated) {
+		this.snapshotsAlreadyCreated = snapshotsAlreadyCreated;
+	}
 }

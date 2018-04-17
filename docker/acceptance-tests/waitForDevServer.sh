@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script waits until the port 8888 is open and then launches the acceptance-tests.
+# This script waits until the port 8888 is open.
 
 SERVER=localhost
 PORT=8888
@@ -30,16 +30,10 @@ do
 done
 
 if [ $isPortOpen -eq $PORT_OPEN ]; then
+	echo "Port is open after ${time} seconds."
+
 	# Give the server more time to properly start
 	sleep 10
-
-	echo "##############################################"
-	echo "####           Start the tests            ####"
-	echo "##############################################"
-	echo "Port is open after ${time} seconds. Start acceptance tests now."
-	
-	cd war
-	./node_modules/.bin/gulp acceptance-tests
 else
 	echo "Reached the timeout (${TIMEOUT} seconds). The port ${SERVER}:${PORT} is not available."
 	

@@ -18,6 +18,7 @@ import Index from './index/Index.jsx';
 import PersonalDashboard from './personal-dashboard/PersonalDashboard.jsx';
 import CourseDashboard from './course-dashboard/CourseDashboard.jsx';
 import ProjectDashboard from './project-dashboard/ProjectDashboard.jsx';
+import GroupDashboard from './group-dashboard/GroupDashboard.jsx';
 import TermDashboard from './termCourse-dashboard/TermDashboard.jsx';
 import ExercisePage from './ExercisePage/ExercisePage.jsx';
 import TermCourseConfig from './termCourse-config/TermCourseConfig.jsx';
@@ -193,15 +194,6 @@ export default class App extends React.Component {
 			let picSrcWithoutParams = '';
 			if(!!loginStatus) {
 				profile = await _this.authenticationProvider.getProfile();
-				/*
-				* Removing query parameters from URL.
-				* With google we always got ?sz=50 in the URL which gives you a
-				* small low res thumbnail. Without parameter we get the original
-				* image.
-				* When adding other LoginProviders this needs to be reviewed
-				*/
-				var url = URI(profile.thumbnail).fragment(true);
-				picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
 			}
 			
 			_this.state.auth.userProfile = {
@@ -213,7 +205,7 @@ export default class App extends React.Component {
 				firstname: profile.firstname,
 				lastname: profile.lastname,
 				email: profile.email,
-				picSrc: picSrcWithoutParams
+				picSrc: profile.thumbnail
 			};
 
 			// 3. check if user is registered
@@ -325,6 +317,12 @@ export default class App extends React.Component {
 										path="/CourseDashboard"
 										render={props => (
 											<CourseDashboard auth={this.state.auth} {...props} />
+										)}
+									/>
+									<Route
+										path="/GroupDashboard"
+										render={props => (
+											<GroupDashboard auth={this.state.auth} {...props} />
 										)}
 									/>
 									<Route

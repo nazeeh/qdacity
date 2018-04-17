@@ -3,6 +3,7 @@ package com.qdacity.test.ProjectEndpoint;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Collection;
@@ -11,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jdo.PersistenceManager;
 
+import com.google.api.server.spi.response.BadRequestException;
+import com.qdacity.endpoint.UserGroupEndpoint;
+import com.qdacity.user.UserGroup;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -120,6 +124,37 @@ public class ProjectEndpointTest {
 		user = UserEndpointTestHelper.getUser(loggedInUser);
 		assertEquals(1L, user.getLastProjectId(), 0);
 		assertEquals(ProjectType.PROJECT, user.getLastProjectType());
+	}
+
+	/**
+	 * Tests that inserting projects and listing of projects for a user group works
+	 */
+	@Test
+	public void testListProjectForUserGroup() throws UnauthorizedException, BadRequestException {
+		com.google.api.server.spi.auth.common.User loggedInUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
+		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
+		UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("testGroup", loggedInUser);
+
+		Project project = new Project();
+		try {
+			project = new ProjectEndpoint().insertProjectForUserGroup(project, userGroup.getId(), loggedInUser);
+			assertTrue(project.getOwningUserGroups().contains(userGroup.getId()));
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for project creation");
+		}
+
+		try {
+			CollectionResponse<Project> projects = new ProjectEndpoint().listProjectByUserGroupId(null, null, userGroup.getId(), loggedInUser);
+			assertEquals(1, projects.getItems().size());
+			assertTrue(projects.getItems().iterator().next().getOwningUserGroups().contains(userGroup.getId()));
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("Failed to authorize the user for listing his projects");
+		}
+
+		userGroup = new UserGroupEndpoint().getUserGroupById(userGroup.getId(), loggedInUser);
+		assertTrue(userGroup.getProjects().contains(project.getId()));
 	}
 
 	@Rule

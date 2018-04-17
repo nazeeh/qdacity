@@ -30,6 +30,7 @@ stages:
     paths:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
+      - target/qdacity-war/sw.js
       - war/translations/template.txt
       - war/dist/messages/
     expire_in: 3 mos
@@ -39,7 +40,7 @@ frontend_prod_build:
   <<: *frontend_build
   script:
     - build_babel_plugin
-    - build_frontend bundle generate-language-files minify set-react-production
+    - build_frontend bundle generate-language-files minify set-react-production sw
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -214,6 +215,16 @@ deploy_rtcsvc:
   script:
     - cd realtime-service
     - bash ./deployment/deploy_from_gitlab_ci.sh
+
+deploy_auth_proxy:
+  <<: *job_definition
+  stage: deploy
+  only:
+    - branches
+  script:
+    - cd auth-proxy
+    - gcloud app deploy -v 1 --quiet
+  when: manual
 
 deploy_prod:
   <<: *deployment_template

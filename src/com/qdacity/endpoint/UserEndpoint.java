@@ -36,7 +36,6 @@ import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.datastructures.BlobWrapper;
-import com.qdacity.endpoint.datastructures.StringWrapper;
 import com.qdacity.logs.Change;
 import com.qdacity.logs.ChangeBuilder;
 import com.qdacity.logs.ChangeLogger;
@@ -296,6 +295,7 @@ public class UserEndpoint {
 		user.setId(randomId);
 		user.setProjects(new ArrayList<Long>());
 		user.setCourses(new ArrayList<Long>());
+		user.setUserGroups(new ArrayList<Long>());
 		user.setType(UserType.USER);
 		user.setLastLogin(new Date());
 		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(authenticatedUser.getProvider(), authenticatedUser.getId(), authenticatedUser.getEmail())));
@@ -497,8 +497,14 @@ public class UserEndpoint {
 				}
 			}
 		}
-		
-		
+
+		// remove reference from user groups
+		UserGroupEndpoint userGroupEndpoint = new UserGroupEndpoint();
+		if(user.getUserGroups() != null) {
+			for(Long userGroupId: user.getUserGroups()) {
+				userGroupEndpoint.removeUser(user.getId(), userGroupId, loggedInUser);
+			}
+		}
 		
 		// finally delete user
 		PersistenceManager mgr = getPersistenceManager();

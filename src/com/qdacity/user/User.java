@@ -75,6 +75,9 @@ public class User implements Serializable {
 	@Column(name = "loginProviderInformations")
 	List<UserLoginProviderInformation> loginProviderInformationList;
 
+	@Persistent
+	List<Long> userGroups;
+
 	public String getId() {
 		return id;
 	}
@@ -226,5 +229,14 @@ public class User implements Serializable {
 	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE) // do not expect from client
 	public void setLoginProviderInformation(List<UserLoginProviderInformation> loginProviderInformationList) {
 		this.loginProviderInformationList = loginProviderInformationList;
+	}
+
+	public List<Long> getUserGroups() {
+		if(userGroups == null) return new ArrayList<Long>();
+		return userGroups;
+	}
+
+	public void setUserGroups(List<Long> userGroups) {
+		this.userGroups = userGroups;
 	}
 }
