@@ -20,12 +20,12 @@ describe(SPEC_NAME, function () {
 		console.log("Starting test at " + new Date() );
     	this.driver = Common.setupChromeDriver();
         this.driver.get('http://localhost:8888/').then(done);
-    });
+    }, Common.getDefaultTimeout());
 
     afterEach((done) => {
         this.driver.quit().then(done);
 		console.log("Ending test at " + new Date() );
-    });
+    }, Common.getDefaultTimeout());
 
     it('The system is running', (done) => {
 		// Find login button
