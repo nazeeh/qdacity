@@ -121,10 +121,10 @@ export default class App extends React.Component {
 			}
 		};
 
-        this.ping=this.ping.bind(this);
-        this.updateConnectionStatus=this.updateConnectionStatus.bind(this);
-		this.setApiConnectionState=this.setApiConnectionState.bind(this);
-		this.setRTCSConnectionState=this.setRTCSConnectionState.bind(this);
+		this.ping = this.ping.bind(this);
+		this.updateConnectionStatus = this.updateConnectionStatus.bind(this);
+		this.setApiConnectionState = this.setApiConnectionState.bind(this);
+		this.setRTCSConnectionState = this.setRTCSConnectionState.bind(this);
 
 		new VexModal(); // init vex
 
