@@ -1,6 +1,5 @@
 const fs = require('fs');
 const gulp = require('gulp');
-const merge = require('merge-stream');
 const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpack = require('webpack-stream');
 const uglify = require('gulp-uglify');
