@@ -236,7 +236,7 @@ gulp.task('set-config', ['set-config-dist', 'set-config-target']);
 gulp.task('set-config-dist', function() {
 	setConfig();
 	return gulp
-		.src('dist/js/')
+		.src('dist/js/*.js')
 		.on('error', handleError)
 		.pipe(replace('$APP_PATH$', config.app_path))
 		.pipe(replace('$API_PATH$', config.api_path))
@@ -252,7 +252,7 @@ gulp.task('set-config-dist', function() {
 gulp.task('set-config-target', function() {
 	setConfig();
 	return gulp
-		.src('../target/qdacity-war/dist/js/')
+		.src('../target/qdacity-war/dist/js/*.js')
 		.on('error', handleError)
 		.pipe(replace('$APP_PATH$', config.app_path))
 		.pipe(replace('$API_PATH$', config.api_path))
