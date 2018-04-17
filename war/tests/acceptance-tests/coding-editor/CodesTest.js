@@ -22,11 +22,11 @@ describe(SPEC_NAME, function () {
     beforeEach((done) => {
 		this.driver = Common.setupChromeDriver();
 		Common.openCodingEditor(this.driver, 'Project_01', done);
-    });
+    }, Common.getDefaultTimeout());
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    });
+    }, Common.getDefaultTimeout());
 
     it('Should create a new code', (done) => {
     	const codeName = 'Code_01';
