@@ -52,9 +52,9 @@ function setConfig() {
 	if (argv.local) config.test_mode = true; else config.test_mode = false;
 }
 
-gulp.task('bundle-ci', ['bundle', 'set-constants-ci']);
+gulp.task('bundle-ci', ['bundle-task']);
 
-gulp.task('bundle', ['format', 'bundle-task']);
+gulp.task('bundle', ['format', 'bundle-task', 'set-config']);
 
 gulp.task('format', () => {
 	return gulp
@@ -227,6 +227,17 @@ gulp.task('bundle-task', function() {
 	//since webpack.config fetches from entry points
 		.pipe(webpack(require('./webpack.config.js')))
 		.on('error', handleError)
+		.pipe(gulp.dest('dist/js/'))
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+});
+
+gulp.task('set-config', ['set-config-dist', 'set-config-target']);
+
+gulp.task('set-config-dist', function() {
+	setConfig();
+	return gulp
+		.src('dist/js/*.js')
+		.on('error', handleError)
 		.pipe(replace('$APP_PATH$', config.app_path))
 		.pipe(replace('$API_PATH$', config.api_path))
 		.pipe(replace('$API_VERSION$', config.api_version))
@@ -235,8 +246,23 @@ gulp.task('bundle-task', function() {
 		.pipe(replace('$TWITTER_CLIENT_ID$', config.twitter_client_id))
 		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
 		.pipe(replace('$TEST_MODE$', config.test_mode))
-		.pipe(gulp.dest('dist/js/'))
-		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
+		.pipe(gulp.dest('dist/js/'));
+});
+
+gulp.task('set-config-target', function() {
+	setConfig();
+	return gulp
+		.src('../target/qdacity-war/dist/js/*.js')
+		.on('error', handleError)
+		.pipe(replace('$APP_PATH$', config.app_path))
+		.pipe(replace('$API_PATH$', config.api_path))
+		.pipe(replace('$API_VERSION$', config.api_version))
+		.pipe(replace('$CLIENT_ID$', config.client_id))
+		.pipe(replace('$FACEBOOK_CLIENT_ID$', config.facebook_client_id))
+		.pipe(replace('$TWITTER_CLIENT_ID$', config.twitter_client_id))
+		.pipe(replace('$SYNC_SERVICE$', config.sync_service))
+		.pipe(replace('$TEST_MODE$', config.test_mode))
+		.pipe(gulp.dest('../target/qdacity-war/dist/js/'));
 });
 
 gulp.task('set-react-production', function() {

@@ -33,6 +33,7 @@ stages:
       - target/qdacity-war/sw.js
       - war/translations/template.txt
       - war/dist/messages/
+      - war/dist/js/index.dist.js
     expire_in: 3 mos
 
 frontend_prod_build:
@@ -40,7 +41,7 @@ frontend_prod_build:
   <<: *frontend_build
   script:
     - build_babel_plugin
-    - build_frontend bundle generate-language-files minify set-react-production sw
+    - build_frontend bundle-ci set-config-target generate-language-files minify set-react-production sw
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -49,7 +50,7 @@ frontend_prod_build_nm:
     - master
   script:
     - build_babel_plugin
-    - build_frontend bundle generate-language-files
+    - build_frontend bundle-ci generate-language-files
 
 backend_prod_build:
   <<: *job_definition
@@ -114,6 +115,8 @@ frontend_prod_unittest:
     - export DISPLAY=:10
     - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd war
+    - echo $API_CONFIG_PRODUCTION > ./api_config.json
+    - gulp set-config-dist
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
@@ -201,6 +204,7 @@ pages:
 
 .deploy_prod: &deployment_template
   <<: *job_definition
+  cache: *node_cache
   stage: deploy
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
