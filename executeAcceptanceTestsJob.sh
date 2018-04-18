@@ -23,7 +23,7 @@ echo "Existing images"
 docker image ls
 
 echo "Clear dangling images" 
-docker image prune
+docker image prune -f
 
 # Build docker images 
 BASE_IMAGE_TAG="qdacity-tests-base:latest"
