@@ -189,6 +189,7 @@ export default class ExerciseList extends React.Component {
 				onClick={this.exerciseClick.bind(this, exercise)}
 			>
 				<span> {exercise.name} </span>
+				<span> {"Deadline: "+exercise.exerciseDeadline.substr(0, 10)} </span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.deleteExercise(e, exercise, index)}

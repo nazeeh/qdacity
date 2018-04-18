@@ -51,6 +51,7 @@ export default class ExerciseList extends React.Component {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
 				<span> {exercise.name} </span>
+				<span> {"Deadline: "+exercise.exerciseDeadline.substr(0, 10)} </span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.editorClick(e, exercise, index)}
