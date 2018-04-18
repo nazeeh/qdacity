@@ -2,7 +2,7 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox
 
 import {get, set} from 'idb-keyval';
 
-
+// TODO replace v14 with version
 function fetchDiscoveryDoc() {
 	fetch('_ah/api/discovery/v1/apis/qdacity/v14/rest').then(function (response) {
 		if (response.ok) {
