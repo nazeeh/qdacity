@@ -483,20 +483,19 @@ public class ExerciseEndpoint {
         PersistenceManager mgr = getPersistenceManager();
         StringBuilder filters = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
-        filters.append("exerciseDeadline <:now");
+        filters.append("exerciseDeadline <:now && ");
         parameters.put("now", now);
+        filters.append("snapshotsAlreadyCreated == false");
 
         try {
             Query q = mgr.newQuery(Exercise.class);
             q.setFilter(filters.toString());
             exercises = (List<Exercise>)q.executeWithMap(parameters);
             for (Exercise exercise : exercises) {
-                if (!exercise.getSnapshotsAlreadyCreated()) {
                     createSnapshotsForExpiredExerciseProjects(exercise.getId(), loggedInUser);
                     exercise.setSnapshotsAlreadyCreated(true);
                     mgr.makePersistent(exercise);
                     java.util.logging.Logger.getLogger("logger").log(Level.INFO, "creating exercise project snapshots for exercise: " + exercise.getName());
-                }
             }
         }
         finally {
