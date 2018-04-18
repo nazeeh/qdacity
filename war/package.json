@@ -8,6 +8,7 @@
   "dependencies": {
     "bootstrap-slider": "^9.7.1",
     "hellojs": "^1.16.1",
+    "idb-keyval": "^3.0.3",
     "immutable": "^3.8.2",
     "jwt-decode": "^2.2.0",
     "react-intl": "^2.4.0",

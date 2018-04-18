@@ -311,12 +311,12 @@ gulp.task('webpack-watch', function() {
 
 gulp.task('sw', function() {
 	gulp
-		.src('assets/js/service-worker/sw.js')
+		.src('dist/js/service-worker/sw.dist.js')
 		.pipe(gulp.dest('../target/qdacity-war/'))
 });
 
 gulp.task('sw-watch', function () {
-    gulp.watch('assets/js/service-worker/sw.js', ['sw']);
+    gulp.watch('dist/js/service-worker/sw.dist.js', ['sw']);
 });
 
 gulp.task('unit-tests', () =>
@@ -340,4 +340,4 @@ gulp.task('acceptance-tests', () => {
 	]).pipe(jasmine()).on('error', handleError);
 });
 
-gulp.task('default', ['sw', 'watch']);
+gulp.task('default', ['watch', 'sw']);
