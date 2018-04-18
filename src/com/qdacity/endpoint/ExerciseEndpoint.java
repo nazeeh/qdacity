@@ -476,7 +476,7 @@ public class ExerciseEndpoint {
 
     //Fetches exercises whose deadlines have passed, then creates snapshots of exerciseProjects which belong to these exercises
     //This method is called by ExerciseDeadlineServlet which is triggered by a cronjob every 5 minutes
-	public static void checkAndCreateExerciseProjectSnapshotsIfNeeded(User loggedInUser) {
+	public void checkAndCreateExerciseProjectSnapshotsIfNeeded(User loggedInUser) {
 
 	    Date now = new Date();
         List<Exercise> exercises = null;

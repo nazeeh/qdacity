@@ -6,8 +6,10 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
@@ -69,10 +71,12 @@ public class ExerciseEndpointTest {
 	 */
 	@Test
 	public void testExerciseInsert() throws UnauthorizedException {
+	    Date nextYear = new Date();
+	    nextYear.setTime(31556952000L + nextYear.getTime());
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
@@ -86,11 +90,14 @@ public class ExerciseEndpointTest {
 	 */
 	@Test
 	public void testExerciseRemove() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 
 		CourseEndpointTestHelper.addCourse(1L, "New Course", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, 1L, "ex 1", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "ex 1", nextYear, testUser);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("Exercise")).countEntities(withLimit(10)));
@@ -105,10 +112,13 @@ public class ExerciseEndpointTest {
 	 */
 	@Test
 	public void testListExercise() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 
 		List<Exercise> retrievedExercises = null;
 
@@ -123,6 +133,9 @@ public class ExerciseEndpointTest {
 	 */
 	@Test
 	public void getExerciseProjectByRevisionIDTest() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
 		ProjectEndpoint pe = new ProjectEndpoint();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -131,7 +144,7 @@ public class ExerciseEndpointTest {
 		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
 		ExerciseProject exerciseProject = ExerciseEndpointTestHelper.getExerciseProjectByRevisionID(revision.getId(), testUser);
 
@@ -148,6 +161,9 @@ public class ExerciseEndpointTest {
 	 */
 	@Test
 	public void getExerciseProjectsByExerciseIDTest() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
 		ProjectEndpoint pe = new ProjectEndpoint();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -156,7 +172,7 @@ public class ExerciseEndpointTest {
 		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
 		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
 
@@ -171,6 +187,9 @@ public class ExerciseEndpointTest {
 	 */
 	@Test
 	public void createExerciseProjectTest() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
 		ProjectEndpoint pe = new ProjectEndpoint();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -179,7 +198,7 @@ public class ExerciseEndpointTest {
 		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
@@ -191,6 +210,9 @@ public class ExerciseEndpointTest {
 	 */
 	@Test
 	public void createExerciseProjectIfNeededTest() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
 		ProjectEndpoint pe = new ProjectEndpoint();
 
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
@@ -199,7 +221,7 @@ public class ExerciseEndpointTest {
 		ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
 		CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
-		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 		ExerciseEndpointTestHelper.createExerciseProjectIfNeeded(revision.getId(), 1L, testUser);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		assertEquals(1, ds.prepare(new Query("ExerciseProject")).countEntities(withLimit(10)));
@@ -210,6 +232,9 @@ public class ExerciseEndpointTest {
 
     @Test
     public void testEvaluateRevisionFMeasure() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
         latch.reset(12);
         com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
         User addedStudentA = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
@@ -229,9 +254,9 @@ public class ExerciseEndpointTest {
         owners.add(addedStudentB.getId().toString());
         termCourse.setOwners(owners);
         courseEndpoint.insertTermCourse(termCourse, testUser);
-        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 
-        ExerciseProject exPrj = ExerciseEndpointTestHelper.setUpExerciseProject(testUser, studentA, studentB);
+        ExerciseProject exPrj = ExerciseEndpointTestHelper.setUpExerciseProject(testUser, studentA, studentB, 1L, 1L, 1L);
 
         String docsToEvaluate = getDocumentsAsCSV(exPrj.getRevisionID(), ProjectType.EXERCISE);
         ExerciseEndpoint ee = new ExerciseEndpoint();
@@ -272,6 +297,58 @@ public class ExerciseEndpointTest {
         }
 
     }
+
+    @Test
+    public void testCheckAndCreateExerciseProjectSnapshotsIfNeeded() throws UnauthorizedException {
+        Date passedDeadline = new Date();
+        passedDeadline.setTime(passedDeadline.getTime() - 31556952000L);
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
+        com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
+        User addedStudentA = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
+        com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
+        User addedStudentB = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
+
+        UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
+
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+
+        CourseEndpoint courseEndpoint = new CourseEndpoint();
+        TermCourse termCourse = new TermCourse();
+        termCourse.setId(1L);
+        termCourse.setCourseID(1L);
+        List<String> owners = new ArrayList<>();
+        owners.add(addedStudentA.getId().toString());
+        owners.add(addedStudentB.getId().toString());
+        termCourse.setOwners(owners);
+        courseEndpoint.insertTermCourse(termCourse, testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", passedDeadline, testUser);
+        ExerciseEndpointTestHelper.addExercise(2L, 1L, "New Exercise 2", nextYear, testUser);
+        //Creates an exerciseProject for each student
+        ExerciseEndpointTestHelper.setUpExerciseProject(testUser, studentA, studentB, 1L, 1L, 1L);
+
+        //Create an exerciseProject for each student for exercise 2 (whose deadline has passed)
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+        List<ProjectRevision> revisions;
+        ProjectEndpoint pe = new ProjectEndpoint();
+        revisions = pe.listRevisions(1L, testUser);
+        Long revID = revisions.get(0).getId();
+        ee.createExerciseProject(revID, 2L, studentA);
+        ee.createExerciseProject(revID, 2L, studentB);
+
+        //Running this more than once should not clone the exerciseProjects more than once
+        ee.checkAndCreateExerciseProjectSnapshotsIfNeeded(studentA);
+        ee.checkAndCreateExerciseProjectSnapshotsIfNeeded(studentA);
+
+        List<ExerciseProject> exerciseProjects = ee.getExerciseProjectsByExerciseID(1L, studentA);
+        List<ExerciseProject> exerciseProjects2 = ee.getExerciseProjectsByExerciseID(2L, studentA);
+
+        //Only exerciseProjects related to exercise 1 should be cloned and only once, because exercise 2 still hasn't met the deadline
+        //That means a total of 6 exercise projects should exist in the datastore
+        assertEquals(6, exerciseProjects.size() + exerciseProjects2.size());
+   }
+
     private String getDocumentsAsCSV(long projectID, ProjectType projectType) {
         Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(projectID, projectType, testUser);
         String documentsToEvaluate = "";

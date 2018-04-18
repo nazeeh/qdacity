@@ -179,7 +179,7 @@ gulp.task('update-translations', /*['bundle-task'],*/ () => {
 			let first = true;
 			template.forEach(ident => {
 				if (!messages.hasOwnProperty(ident.id)) {
-					const clone = { ...ident };
+					const clone = { ident };
 					if(first)
 						clone.description = `
 ---------------------------------------------

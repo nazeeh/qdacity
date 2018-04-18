@@ -14,7 +14,7 @@ public class ExerciseDeadlineServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		//Todo create an admin user specifically for this cronjob servlet instead of using this account
 		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
-		ExerciseEndpoint.checkAndCreateExerciseProjectSnapshotsIfNeeded(loggedInUser);
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		ee.checkAndCreateExerciseProjectSnapshotsIfNeeded(loggedInUser);
 	}
-
 }
