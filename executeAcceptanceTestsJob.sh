@@ -9,16 +9,6 @@ cd realtime-service
 yarn install
 cd ..
 
-# cd localization
-# npm prune
-# npm install
-# cd ..
-
-# cd war
-# npm prune
-# npm install
-# cd ..
-
 # Copy package without a set configuration to target and set config with --local
 cd war
 cp ./dist/js/index.dist.js ../target/qdacity-war/dist/js/index.dist.js
