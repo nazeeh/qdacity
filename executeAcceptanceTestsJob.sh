@@ -9,10 +9,10 @@ cd realtime-service
 yarn install
 cd ..
 
-cd localization
-npm prune
-npm install
-cd ..
+# cd localization
+# npm prune
+# npm install
+# cd ..
 
 # cd war
 # npm prune

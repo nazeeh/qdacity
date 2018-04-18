@@ -145,7 +145,6 @@ acceptance_tests:
     key: "acceptance_tests"
     paths:
     - realtime-service/node_modules/
-    - localization/node_modules/
     - war/node_modules/
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
