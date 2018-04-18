@@ -15,14 +15,15 @@ npm prune
 npm install
 cd ..
 
-cd war
-npm prune
-npm install
-cd ..
+# cd war
+# npm prune
+# npm install
+# cd ..
 
-# Local frontend build
+# Copy package without a set configuration to target and set config with --local
 cd war
-gulp bundle-task --local
+cp ./dist/js/index.dist.js ../target/qdacity-war/dist/js/index.dist.js
+gulp set-config-target --local
 cd ..
 
 # Show docker containers and images
