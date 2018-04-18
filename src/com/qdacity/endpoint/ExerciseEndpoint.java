@@ -476,7 +476,7 @@ public class ExerciseEndpoint {
 
     //Fetches exercises whose deadlines have passed, then creates snapshots of exerciseProjects which belong to these exercises
     //This method is called by ExerciseDeadlineServlet which is triggered by a cronjob every 5 minutes
-	public static void checkAndCreateExerciseProjectSnapshotsIfNeeded() {
+	public static void checkAndCreateExerciseProjectSnapshotsIfNeeded(User loggedInUser) {
 
 	    Date now = new Date();
         List<Exercise> exercises = null;
@@ -492,7 +492,7 @@ public class ExerciseEndpoint {
             exercises = (List<Exercise>)q.executeWithMap(parameters);
             for (Exercise exercise : exercises) {
                 if (!exercise.getSnapshotsAlreadyCreated()) {
-                    createSnapshotsForExpiredExerciseProjects(exercise.getId());
+                    createSnapshotsForExpiredExerciseProjects(exercise.getId(), loggedInUser);
                     exercise.setSnapshotsAlreadyCreated(true);
                     mgr.makePersistent(exercise);
                     java.util.logging.Logger.getLogger("logger").log(Level.INFO, "creating exercise project snapshots for exercise: " + exercise.getName());
@@ -504,7 +504,7 @@ public class ExerciseEndpoint {
         }
     }
 
-    private static void createSnapshotsForExpiredExerciseProjects(Long exerciseID) {
+    private static void createSnapshotsForExpiredExerciseProjects(Long exerciseID, User loggedInUser) {
 	    List<ExerciseProject> exerciseProjects;
         StringBuilder filters = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
@@ -541,7 +541,7 @@ public class ExerciseEndpoint {
                 mgr.makePersistentAll(clonedExerciseProjects);
                 for (ExerciseProject clonedExerciseProject : clonedExerciseProjects) {
                     try {
-                        cloneExerciseProjectTextDocs(clonedExerciseProject, parentProject);
+                        cloneExerciseProjectTextDocs(clonedExerciseProject, parentProject, loggedInUser);
                     }
                     catch (UnauthorizedException e) {
                         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
@@ -553,9 +553,7 @@ public class ExerciseEndpoint {
         }
     }
 
-    private static void cloneExerciseProjectTextDocs (ExerciseProject exerciseProject, ProjectRevision parentProject) throws UnauthorizedException {
-         //Todo create an admin user specifically for this cronjob servlet instead of using this account
-		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
+    private static void cloneExerciseProjectTextDocs (ExerciseProject exerciseProject, ProjectRevision parentProject, User loggedInUser) throws UnauthorizedException {
         TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, exerciseProject.getId(), false, loggedInUser);
     }
 
