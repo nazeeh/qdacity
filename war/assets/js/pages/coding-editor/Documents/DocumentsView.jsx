@@ -700,7 +700,7 @@ export default class DocumentsView extends React.Component {
 		return (
 			<div>
 				<StyledToolBar>{this.renderToolbar()}</StyledToolBar>
-				<StyledDocumentList>
+				<StyledDocumentList id="documentList">
 					{this.state.documents.map((doc, index) => {
 						return this.renderDocument(doc, index);
 					})}

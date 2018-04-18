@@ -6,24 +6,13 @@ echo "$RTCSVC_ENV" | sed -e 's/\r/\n/g' > ./realtime-service/.env
 
 # Install npm packages
 cd realtime-service
-npm prune
-npm install
+yarn install
 cd ..
-
-cd localization
-npm prune
-npm install
-cd ..
-
-# cd war
-# npm prune
-# npm install
-# cd ..
 
 # Copy package without a set configuration to target and set config with --local
 cd war
 cp ./dist/js/index.dist.js ../target/qdacity-war/dist/js/index.dist.js
-gulp set-config-target --local
+gulp set-config-target --local --noTranslation
 cd ..
 
 # Show docker containers and images
