@@ -6,8 +6,7 @@ echo "$RTCSVC_ENV" | sed -e 's/\r/\n/g' > ./realtime-service/.env
 
 # Install npm packages
 cd realtime-service
-npm prune
-npm install
+yarn install
 cd ..
 
 cd localization
