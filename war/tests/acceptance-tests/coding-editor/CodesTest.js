@@ -31,6 +31,9 @@ describe(SPEC_NAME, function () {
     it('Should create a new code', (done) => {
     	const codeName = 'Code_01';
 
+		// Wait until documents are loaded, so the "Add code" button doesn't move anymore
+		this.driver.wait(until.elementLocated(By.id('documentList')));
+		
     	// Find add code button
     	this.driver.wait(until.elementLocated(By.id('addCodeButtonId'))).click();   
 
