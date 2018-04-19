@@ -340,10 +340,11 @@ public class ExerciseEndpoint {
     }
 
     @SuppressWarnings("unchecked")
-    @ApiMethod(name = "exercise.getExercisesOfExerciseGroup")
+    @ApiMethod(name = "exercise.getExercisesOfExerciseGroup",
+            path = "getExercisesOfExerciseGroup")
     public List<Exercise> getExercisesOfExerciseGroup(@Named("exerciseGroupID") Long exerciseGroupID, User user) throws UnauthorizedException, JSONException {
         PersistenceManager mgr = getPersistenceManager();
-        List<Exercise> exercises;
+        List<Exercise> exercises = null;
         ExerciseGroup exerciseGroup;
         List<String> exerciseIDs;
         try {
