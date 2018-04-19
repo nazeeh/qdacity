@@ -22,7 +22,10 @@ public class ExerciseGroup implements Serializable {
 	@Persistent(
 		valueStrategy = IdGeneratorStrategy.IDENTITY)
 	Long id;
-	
+
+    @Persistent
+    Long projectRevisionID;
+
 	@Persistent
 	Long termCourseID;
 
@@ -72,6 +75,14 @@ public class ExerciseGroup implements Serializable {
 
     public void setExerciseProjectID(Long exerciseProjectID) {
 	    this.exerciseProjectID = exerciseProjectID;
+    }
+
+    public Long getProjectRevisionID() {
+        return projectRevisionID;
+    }
+
+    public void setProjectRevisionID(Long projectRevisionID) {
+        this.projectRevisionID = projectRevisionID;
     }
 
     public List<String> getExercises() {
