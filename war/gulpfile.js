@@ -20,8 +20,12 @@ const jsonConcat = require('gulp-json-concat');
 require('babel-core/register');
 require('babel-polyfill');
 
-const tf = require('../localization/translationFile');
+let tf;
 const config = require('./api_config.json');
+
+if (!argv.noTranslation){
+	tf = require('../localization/translationFile');
+}
 
 function handleError(err) {
 	console.log(err.toString());
