@@ -382,7 +382,7 @@ public class ExerciseEndpoint {
 
     @SuppressWarnings("unchecked")
     @ApiMethod(name = "exercise.getExerciseGroupByID" , path = "getExerciseGroupByID")
-    public ExerciseGroup getExerciseGroupByID(@Named("revisionID") Long id, User user) throws UnauthorizedException, JSONException {
+    public ExerciseGroup getExerciseGroupByID(@Named("id") Long id, User user) throws UnauthorizedException, JSONException {
         PersistenceManager mgr = getPersistenceManager();
         ExerciseGroup exerciseGroup;
         try {
