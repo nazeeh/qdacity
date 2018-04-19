@@ -340,6 +340,28 @@ public class ExerciseEndpoint {
     }
 
     @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.getExercisesOfExerciseGroup")
+    public List<Exercise> getExercisesOfExerciseGroup(@Named("exerciseGroupID") Long exerciseGroupID, User user) throws UnauthorizedException, JSONException {
+        PersistenceManager mgr = getPersistenceManager();
+        List<Exercise> exercises;
+        ExerciseGroup exerciseGroup;
+        List<String> exerciseIDs;
+        try {
+
+            exerciseGroup = mgr.getObjectById(ExerciseGroup.class, exerciseGroupID);
+            if (exerciseGroup != null) {
+                exerciseIDs = exerciseGroup.getExercises();
+                Query q = mgr.newQuery(Exercise.class, ":p.contains(id)");
+                exercises = (List<Exercise>) q.execute(Arrays.asList(exerciseIDs));
+            }
+
+        } finally {
+            mgr.close();
+        }
+        return exercises;
+    }
+
+    @SuppressWarnings("unchecked")
     @ApiMethod(name = "exercise.getExerciseGroupsByProjectRevisionID")
     public List<ExerciseGroup> getExerciseGroupsByProjectRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
         PersistenceManager mgr = getPersistenceManager();
@@ -382,7 +404,7 @@ public class ExerciseEndpoint {
 		Exercise exercise = null;
 		try {
 
-			Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(exerciseID)");
+			Query q = mgr.newQuery(ExerciseProject.class);
 
 			exercise = mgr.getObjectById(Exercise.class, exerciseID);
 
