@@ -264,7 +264,6 @@ deploy_non_minified:
       cd war
       echo $API_CONFIG_PRODUCTION > ./api_config.json
       rm -f -r ./dist/js/*
-      npm prune
       npm install
       while [ -n "$1" ]; do
         subcommand="$1"
@@ -276,7 +275,6 @@ deploy_non_minified:
 
     function build_babel_plugin() {
       cd localization
-      npm prune
       npm install
       while [ -n "$1" ]; do
         subcommand="$1"
