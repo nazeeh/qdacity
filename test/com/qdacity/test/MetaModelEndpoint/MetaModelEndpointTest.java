@@ -23,6 +23,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.endpoint.MetaModelEntityEndpoint;
@@ -34,11 +35,12 @@ import com.qdacity.user.LoginProviderType;
 public class MetaModelEndpointTest {
 	private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
 
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
+	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(true).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
 	private final com.google.api.server.spi.auth.common.User testUser = new AuthenticatedUser("123456", "asd@asd.de", LoginProviderType.GOOGLE);
 	
 	@Before
 	public void setUp() {
+		SystemProperty.environment.set( SystemProperty.Environment.Value.Development );
 		helper.setUp();
 	}
 
@@ -64,6 +66,7 @@ public class MetaModelEndpointTest {
 		}
 
 		MetaModelEndpointTestHelper.setUpDefaultMetaModel(testUser);
+
 
 		MetaModelEntityEndpoint mme = new MetaModelEntityEndpoint();
 		List<MetaModelEntity> entities = mme.listEntities(1L, testUser);
