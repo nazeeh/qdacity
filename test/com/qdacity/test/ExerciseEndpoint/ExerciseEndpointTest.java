@@ -374,7 +374,7 @@ public class ExerciseEndpointTest {
         ExerciseEndpoint ee = new ExerciseEndpoint();
 
         List<Exercise> exercises = ee.getExercisesOfExerciseGroup(1L, testUser);
-        //assertEquals(3, exercises.size());
+        assertEquals(3, exercises.size());
     }
 
     private String getDocumentsAsCSV(long projectID, ProjectType projectType) {
