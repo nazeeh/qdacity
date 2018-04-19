@@ -351,14 +351,13 @@ public class ExerciseEndpoint {
 
             exerciseGroup = mgr.getObjectById(ExerciseGroup.class, exerciseGroupID);
             if (exerciseGroup != null) {
-
                 TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exerciseGroup.getTermCourseID());
                 // Check if user is authorized
                 Authorization.checkAuthorizationTermCourse(termCourse, user);
 
                 exerciseIDs = exerciseGroup.getExercises();
                 Query q = mgr.newQuery(Exercise.class, ":p.contains(id)");
-                exercises = (List<Exercise>) q.execute(Arrays.asList(exerciseIDs));
+                exercises = (List<Exercise>) q.execute(exerciseIDs);
             }
 
         } finally {
@@ -379,6 +378,19 @@ public class ExerciseEndpoint {
             mgr.close();
         }
         return exerciseGroups;
+    }
+
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.getExerciseGroupByID" , path = "getExerciseGroupByID")
+    public ExerciseGroup getExerciseGroupByID(@Named("revisionID") Long id, User user) throws UnauthorizedException, JSONException {
+        PersistenceManager mgr = getPersistenceManager();
+        ExerciseGroup exerciseGroup;
+        try {
+            exerciseGroup = mgr.getObjectById(ExerciseGroup.class, id);
+        } finally {
+            mgr.close();
+        }
+        return exerciseGroup;
     }
 
 	@SuppressWarnings("unchecked")

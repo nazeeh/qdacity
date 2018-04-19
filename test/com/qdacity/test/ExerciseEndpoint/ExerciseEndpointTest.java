@@ -4,12 +4,10 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
@@ -18,6 +16,7 @@ import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.endpoint.ExerciseEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
+import com.qdacity.exercise.ExerciseGroup;
 import com.qdacity.project.ProjectType;
 import com.qdacity.project.data.AgreementMap;
 import com.qdacity.project.data.TextDocument;
@@ -348,6 +347,35 @@ public class ExerciseEndpointTest {
         //That means a total of 6 exercise projects should exist in the datastore
         assertEquals(6, exerciseProjects.size() + exerciseProjects2.size());
    }
+
+    /**
+     * Tests if a registered user can get exercises of an exerciseGroup
+     * @throws UnauthorizedException
+     */
+    @Test
+    public void getExercisesOfExerciseGroupTest() throws UnauthorizedException {
+
+
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
+        ProjectEndpoint pe = new ProjectEndpoint();
+
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CodeSystemTestHelper.addCodeSystem(2L, testUser);
+        ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+        ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+        ExerciseEndpointTestHelper.addExercise(2L, 1L, "New Exercise 2", nextYear, testUser);
+        ExerciseEndpointTestHelper.addExercise(3L, 1L, "New Exercise 3", nextYear, testUser);
+        ExerciseEndpointTestHelper.addExerciseGroup(1L, revision.getRevisionID(), 1L, "exercise Group 1", Arrays.asList("1", "2", "3"), 1L, testUser);
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+
+        List<Exercise> exercises = ee.getExercisesOfExerciseGroup(1L, testUser);
+        //assertEquals(3, exercises.size());
+    }
 
     private String getDocumentsAsCSV(long projectID, ProjectType projectType) {
         Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(projectID, projectType, testUser);

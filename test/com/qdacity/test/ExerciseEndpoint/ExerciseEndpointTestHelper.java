@@ -14,6 +14,7 @@ import com.qdacity.endpoint.ProjectEndpoint;
 import com.qdacity.endpoint.TextDocumentEndpoint;
 import com.qdacity.endpoint.datastructures.TextDocumentCodeContainer;
 import com.qdacity.exercise.Exercise;
+import com.qdacity.exercise.ExerciseGroup;
 import com.qdacity.exercise.ExerciseProject;
 import com.qdacity.project.ProjectRevision;
 import com.qdacity.project.ProjectType;
@@ -33,6 +34,23 @@ public class ExerciseEndpointTestHelper {
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		try {
 			ee.insertExercise(exercise, loggedInUser);
+		} catch (UnauthorizedException e) {
+			e.printStackTrace();
+			fail("User could not be authorized for exercise creation");
+		}
+	}
+
+	static public void addExerciseGroup(Long id, Long projectRevisionID, Long termCourseID, String name, List<String> exerciseIDs, Long exerciseProjectID,  com.google.api.server.spi.auth.common.User loggedInUser) {
+		ExerciseGroup exerciseGroup = new ExerciseGroup();
+		exerciseGroup.setId(id);
+		exerciseGroup.setProjectRevisionID(projectRevisionID);
+		exerciseGroup.setExerciseProjectID(exerciseProjectID);
+		exerciseGroup.setName(name);
+		exerciseGroup.setTermCourseID(termCourseID);
+		exerciseGroup.setExercises(exerciseIDs);
+		ExerciseEndpoint ee = new ExerciseEndpoint();
+		try {
+			ee.insertExerciseGroup(exerciseGroup, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for exercise creation");
