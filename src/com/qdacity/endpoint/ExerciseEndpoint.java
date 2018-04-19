@@ -347,6 +347,7 @@ public class ExerciseEndpoint {
         List<Exercise> exercises = null;
         ExerciseGroup exerciseGroup;
         List<String> exerciseIDs;
+        List<Long> exerciseIDsLong = new ArrayList<>();
         try {
 
             exerciseGroup = mgr.getObjectById(ExerciseGroup.class, exerciseGroupID);
@@ -355,9 +356,14 @@ public class ExerciseEndpoint {
                 // Check if user is authorized
                 Authorization.checkAuthorizationTermCourse(termCourse, user);
 
+                //Convert Exercise ids from string to long, otherwise the query doesn't work properly
                 exerciseIDs = exerciseGroup.getExercises();
+                for (String exerciseID : exerciseIDs) {
+                    exerciseIDsLong.add(Long.parseLong(exerciseID));
+                }
+
                 Query q = mgr.newQuery(Exercise.class, ":p.contains(id)");
-                exercises = (List<Exercise>) q.execute(exerciseIDs);
+                exercises = (List<Exercise>) q.execute(exerciseIDsLong);
             }
 
         } finally {
