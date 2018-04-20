@@ -13,7 +13,7 @@ const StyledHelpTab = styled.li`
 `;
 
 const StyledOfflineTab = styled.span`
-	display: ${props => (props.connected ? 'none' : 'block')} !important;
+	display: ${props => (props.connected.api && props.connected.rtcs ? 'none' : 'block')} !important;
 `;
 
 
@@ -86,7 +86,7 @@ export default class NavBar extends React.Component {
 		return (
 			<nav
 				className={'navbar navbar-default navbar-fixed-top topnav '
-					+ (this.props.connected ? '' : 'navbar-offline')}
+					+ (this.props.connected.api && this.props.connected.rtcs ? '' : 'navbar-offline')}
 				role="navigation"
 			>
 				<div className="container topnav">

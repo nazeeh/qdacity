@@ -261,8 +261,17 @@ export default class App extends React.Component {
 	}
 
 	setRTCSConnectionState(state) {
-		this.state.connected.rtcs = state;
-		this.setState(this.state);
+		if (this.state.connected.rcts !== state) {
+			const connected = {
+				api: this.state.connected.api,
+				rtcs: state
+			};
+			this.setState(
+				{
+					connected: connected
+				}
+			);
+		}
 	}
 
 	componentDidMount() {
@@ -307,7 +316,7 @@ export default class App extends React.Component {
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
-										connected={this.state.connected.api && this.state.connected.rtcs}
+										connected={this.state.connected}
 										tutorial={tut}
 										theme={Theme}
 										{...props}
