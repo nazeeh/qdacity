@@ -745,7 +745,7 @@ public class CourseEndpoint {
 				Cache.cache(course.getId(), Course.class, course);
 
 				mgr.makePersistent(qdacityUser);
-				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, loggedinUser);
+				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				Cache.cacheAuthenticatedUser((AuthenticatedUser) loggedinUser, qdacityUser);
 			} finally {
 				mgr.close();
