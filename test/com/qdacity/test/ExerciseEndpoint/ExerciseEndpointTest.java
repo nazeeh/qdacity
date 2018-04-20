@@ -430,6 +430,56 @@ public class ExerciseEndpointTest {
     }
 
 
+    @Test
+    public void listExerciseReportsByRevisionIDTest() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
+        latch.reset(12);
+        com.google.api.server.spi.auth.common.User studentA = new AuthenticatedUser("77777", "student@group.riehle.org", LoginProviderType.GOOGLE);
+        User addedStudentA = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentA);
+        com.google.api.server.spi.auth.common.User studentB = new AuthenticatedUser("88888", "student@group.riehle.org", LoginProviderType.GOOGLE);
+        User addedStudentB = UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Student", "B", studentB);
+
+        UserEndpointTestHelper.addUser("testdummy.smash@gmail.com", "Owner", "Guy", testUser);
+
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+
+        CourseEndpoint courseEndpoint = new CourseEndpoint();
+        TermCourse termCourse = new TermCourse();
+        termCourse.setId(1L);
+        termCourse.setCourseID(1L);
+        List<String> owners = new ArrayList<>();
+        owners.add(addedStudentA.getId().toString());
+        owners.add(addedStudentB.getId().toString());
+        termCourse.setOwners(owners);
+        courseEndpoint.insertTermCourse(termCourse, testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+
+        ExerciseProject exPrj = ExerciseEndpointTestHelper.setUpExerciseProject(testUser, studentA, studentB, 1L, 1L, 1L);
+
+        String docsToEvaluate = getDocumentsAsCSV(exPrj.getRevisionID(), ProjectType.EXERCISE);
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+        ee.evaluateExerciseRevision(1L, exPrj.getRevisionID(), "ReportTest", docsToEvaluate,EvaluationMethod.F_MEASURE.toString(), EvaluationUnit.PARAGRAPH.toString(), null, testUser);
+
+        try {
+            latch.await(25, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            fail("Deferred task did not finish in time");
+        }
+
+        LocalTaskQueue ltq = LocalTaskQueueTestConfig.getLocalTaskQueue();
+        QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
+        assertEquals(0, qsi.getTaskInfo().size());
+
+
+        List<ExerciseReport> reports = ee.listExerciseReportsByRevisionID(exPrj.getRevisionID(), 1L, testUser);
+        assertEquals(1, reports.size());
+
+
+    }
+
     private String getDocumentsAsCSV(long projectID, ProjectType projectType) {
         Collection<TextDocument> docs = TextDocumentEndpointTestHelper.getTextDocuments(projectID, projectType, testUser);
         String documentsToEvaluate = "";
