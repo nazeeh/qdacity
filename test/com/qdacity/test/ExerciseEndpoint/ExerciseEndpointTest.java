@@ -154,6 +154,32 @@ public class ExerciseEndpointTest {
 		assertEquals(Long.valueOf(queryResult.getKey().getId()), exerciseProject.getId());
 	}
 
+    /**
+     * Tests if a registered user can get an exercise by id
+     * @throws UnauthorizedException
+     */
+    @Test
+    public void getExerciseByIDTest() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
+        ProjectEndpoint pe = new ProjectEndpoint();
+
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CodeSystemTestHelper.addCodeSystem(2L, testUser);
+        ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+        ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Query q = new Query("Exercise");
+        Entity queryResult = ds.prepare(q).asSingleEntity();
+
+        assertEquals(1L, queryResult.getKey().getId());
+    }
+
 	/**
 	 * Tests if a registered user can get an exerciseProject by its revision id
 	 * @throws UnauthorizedException
