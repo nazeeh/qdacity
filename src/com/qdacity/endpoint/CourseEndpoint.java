@@ -170,6 +170,7 @@ public class CourseEndpoint {
 
 			// Finally remove the actual course
 			mgr.deletePersistent(course);
+			Cache.invalidate(course.getId(), Course.class);
 		} finally {
 			mgr.close();
 		}
@@ -204,6 +205,7 @@ public class CourseEndpoint {
 				Authorization.isUserRegistered(qdacityUser);
 				qdacityUser.addCourseAuthorization(course.getId());
 				mgr.makePersistent(qdacityUser);
+				Cache.cache(course.getId(), Course.class, course);
 
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
@@ -464,6 +466,8 @@ public class CourseEndpoint {
 					termCourse.addOwner(qdacityUser.getId());
 					Authorization.checkAuthorizationTermCourse(termCourse, user);
 					mgr.makePersistent(termCourse);
+					Cache.cache(termCourse.getId(), TermCourse.class, termCourse);
+
 					qdacityUser.addTermCourseAuthorization(termCourse.getId());
 
 					mgr.makePersistent(qdacityUser);
@@ -545,6 +549,7 @@ public class CourseEndpoint {
 
 			// Finally remove the actual course
 			mgr.deletePersistent(termCourse);
+			Cache.invalidate(termCourse.getId(), TermCourse.class);
 		} finally {
 			mgr.close();
 		}
@@ -572,8 +577,9 @@ public class CourseEndpoint {
 				qdacityUser.addTermCourseAuthorization(termCourseID);
 
 				mgr.makePersistent(termCourse);
-				mgr.makePersistent(qdacityUser);
+				Cache.cache(termCourse.getId(), TermCourse.class, termCourse);
 
+				mgr.makePersistent(qdacityUser);
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
 				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
@@ -605,6 +611,7 @@ public class CourseEndpoint {
 			try {
 				termCourse.setOpen(status);
 				mgr.makePersistent(termCourse);
+				Cache.cache(termCourse.getId(), TermCourse.class, termCourse);
 			} finally {
 				mgr.close();
 			}
@@ -626,8 +633,9 @@ public class CourseEndpoint {
 				qdacityUser.removeCourseAuthorization(termCourseID);
 
 				mgr.makePersistent(termCourse);
-				mgr.makePersistent(qdacityUser);
+				Cache.cache(termCourse.getId(), TermCourse.class, termCourse);
 
+				mgr.makePersistent(qdacityUser);
 				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 				AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
 				Cache.cacheAuthenticatedUser(authenticatedUser, qdacityUser); // also cache external user id
@@ -655,6 +663,7 @@ public class CourseEndpoint {
 				course = (Course) mgr.getObjectById(Course.class, courseID);
 				course.addInvitedUser(userID);
 				mgr.makePersistent(course);
+				Cache.cache(course.getId(), Course.class, course);
 
 				// Create notification
 				UserNotification notification = new UserNotification();
@@ -693,6 +702,7 @@ public class CourseEndpoint {
 				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
 				termCourse.addInvitedUser(userID);
 				mgr.makePersistent(termCourse);
+				Cache.cache(termCourse.getId(), TermCourse.class, termCourse);
 
 				// Create notification
 				UserNotification notification = new UserNotification();
@@ -715,23 +725,26 @@ public class CourseEndpoint {
 		}
 
 	@ApiMethod(name = "course.addCourseOwner")
-		public Course addCourseOwner(@Named("courseID") Long courseID, @Nullable @Named("userID") String userID, User user) throws UnauthorizedException {
+		public Course addCourseOwner(@Named("courseID") Long courseID, @Nullable @Named("userID") String userID, User loggedinUser) throws UnauthorizedException {
 
-			com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+			com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(loggedinUser); // also checks if user is registered
 
 			Course course = null;
 			PersistenceManager mgr = getPersistenceManager();
 
 			try {
 				course = (Course) mgr.getObjectById(Course.class, courseID);
-				Authorization.checkAuthorizationCourse(course, user);
+				Authorization.checkAuthorizationCourse(course, loggedinUser);
 
 				course.addOwner(userID);
-
 				qdacityUser.addCourseAuthorization(courseID);
-				mgr.makePersistent(course);
-				mgr.makePersistent(qdacityUser);
 
+				mgr.makePersistent(course);
+				Cache.cache(course.getId(), Course.class, course);
+
+				mgr.makePersistent(qdacityUser);
+				Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, loggedinUser);
+				Cache.cacheAuthenticatedUser((AuthenticatedUser) loggedinUser, qdacityUser);
 			} finally {
 				mgr.close();
 			}
