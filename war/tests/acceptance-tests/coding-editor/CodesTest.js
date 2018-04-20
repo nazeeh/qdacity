@@ -22,15 +22,18 @@ describe(SPEC_NAME, function () {
     beforeEach((done) => {
 		this.driver = Common.setupChromeDriver();
 		Common.openCodingEditor(this.driver, 'Project_01', done);
-    }, Common.getDefaultTimeout());
+    }, Common.getExtendedTimeout());
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, Common.getDefaultTimeout());
+    }, Common.getExtendedTimeout());
 
     it('Should create a new code', (done) => {
     	const codeName = 'Code_01';
 
+		// Wait until documents are loaded, so the "Add code" button doesn't move anymore
+		this.driver.wait(until.elementLocated(By.id('documentList')));
+		
     	// Find add code button
     	this.driver.wait(until.elementLocated(By.id('addCodeButtonId'))).click();   
 
@@ -44,5 +47,5 @@ describe(SPEC_NAME, function () {
 			
     	// Find the code in the codesystem
 		Conditions.assertCodeExists(this.driver, codeName, done); 		
-    }, Common.getDefaultTimeout());
+    }, Common.getExtendedTimeout());
 });

@@ -35,4 +35,4 @@ echo "########                            Start the tests                       
 echo "#######################################################################################"
 
 cd war
-./node_modules/.bin/gulp acceptance-tests
+./node_modules/.bin/gulp acceptance-tests --noTranslation
