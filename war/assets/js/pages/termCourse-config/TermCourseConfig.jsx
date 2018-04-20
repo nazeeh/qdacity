@@ -40,14 +40,14 @@ export default class TermCourseConfig extends React.Component {
 
 		var urlParams = URI(window.location.search).query(true);
 
-		var termCourse = new TermCourse(urlParams.termCourse);
+		this.termCourseId = urlParams.termCourse;
 
 		this.addParticipant = this.addParticipant.bind(this);
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
 			course: [],
-			termCourse: termCourse,
+			termCourse: null,
 			isTermCourseOwner: false
 		};
 	}
@@ -56,10 +56,10 @@ export default class TermCourseConfig extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.getTermCoursePromise = CourseEndpoint.getTermCourse(
-				this.state.termCourse.id
+				this.termCourseId
 			);
 			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(
-				this.state.termCourse.getId()
+				this.termCourseId
 			);
 			this.setTermCourseInfo();
 		}
@@ -70,17 +70,16 @@ export default class TermCourseConfig extends React.Component {
 		const user = await this.userPromise;
 		
 		let resp = await this.getTermCoursePromise;
-		termCourse.term = resp.term;
+		const termCourse = resp;
 		
 		const course = await CourseEndpoint.getCourse(resp.courseID);
 
 		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
 			user,
-			this.state.termCourse,
+			termCourse,
 			course
 		);
 		resp = await this.listTermCourseParticipantsPromise;
-		var termCourse = this.state.termCourse;
 		resp.items = resp.items || [];
 		termCourse.participants = resp.items;
 				
@@ -182,8 +181,12 @@ export default class TermCourseConfig extends React.Component {
 		) {
 			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
 		}
-		this.init();
-		var termCourse = this.state.termCourse;
+		const termCourse = this.state.termCourse;
+		if(termCourse == undefined || termCourse == null) {
+			this.init();
+			return null;
+		}
+
 		return (
 			<StyledDashboard>
 				<StyledTitleRow>

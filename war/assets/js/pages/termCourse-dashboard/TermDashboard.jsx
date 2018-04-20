@@ -71,7 +71,7 @@ export default class TermDashboard extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(
-				this.state.termCourse.getId()
+				this.state.termCourse.id
 			);
 			this.getTermCoursePromise = CourseEndpoint.getTermCourse(
 				this.state.termCourse.id
@@ -85,7 +85,7 @@ export default class TermDashboard extends React.Component {
 		const user = await this.userPromise;
 		
 		let resp = await this.getTermCoursePromise;
-		termCourse.term = resp.term;
+		termCourse = resp;
 		termCourse.isUserParticipant = isUserParticipant;
 					
 		const course = await CourseEndpoint.getCourse(resp.courseID);
