@@ -55,14 +55,14 @@ export default class TermDashboard extends React.Component {
 
 		var urlParams = URI(window.location.search).query(true);
 
-		var termCourse = new TermCourse(urlParams.termCourse);
+		this.termCourseId = urlParams.termCourse;
 
 		this.addParticipant = this.addParticipant.bind(this);
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
 			course: [],
-			termCourse: termCourse,
+			termCourse: null,
 			isTermCourseOwner: false
 		};
 	}
@@ -71,10 +71,10 @@ export default class TermDashboard extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(
-				this.state.termCourse.id
+				this.termCourseId
 			);
 			this.getTermCoursePromise = CourseEndpoint.getTermCourse(
-				this.state.termCourse.id
+				this.termCourseId
 			);
 			this.setTermCourseInfo();
 		}
@@ -85,23 +85,22 @@ export default class TermDashboard extends React.Component {
 		const user = await this.userPromise;
 		
 		let resp = await this.getTermCoursePromise;
-		termCourse = resp;
-		termCourse.isUserParticipant = isUserParticipant;
+		const termCourse = resp;
 					
 		const course = await CourseEndpoint.getCourse(resp.courseID);
 
 		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
 			user,
-			this.state.termCourse,
+			termCourse,
 			course
 		);
 
 		resp = await this.listTermCourseParticipantsPromise;
-		let termCourse = this.state.termCourse;
 		resp.items = resp.items || [];
 		termCourse.participants = resp.items;
 		isUserParticipant = (typeof termCourse.participants.find(o => o.id === user.id) != 'undefined');
-
+		termCourse.isUserParticipant = isUserParticipant;
+		
 		this.setState({
 			course: course,
 			termCourse: termCourse,
@@ -232,6 +231,8 @@ export default class TermDashboard extends React.Component {
 
 		this.init();
 		var termCourse = this.state.termCourse;
+		if(termCourse == undefined || termCourse == null) return null;
+
 		return (
 			<StyledDashboard>
 				<StyledTitleRow>
