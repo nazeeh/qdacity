@@ -1,16 +1,34 @@
-var path = require('path');
-var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 require('babel-register'); // replace nodes require with babels on-the-fly c.
 require('babel-polyfill');
-var ExtractMessagesPlugin = require('../localization/webpack').default;
-var BabelFormatMessagesPlugin = require('../localization/babel').default;
+const ExtractMessagesPlugin = require('../localization/webpack').default;
+const BabelFormatMessagesPlugin = require('../localization/babel').default;
 
 // to find out the source of deprecation warnings un-comment this line
 //process.traceDeprecation = true
 
 module.exports = {
 	bail: true,
+	mode: 'development',
+	optimization: {
+		splitChunks: {
+			name: 'qdacity',
+			minChunks: 1
+		},
+		noEmitOnErrors: true,
+		minimizer: [
+		new UglifyJsPlugin({
+			cache: true,
+			parallel: true,
+			sourceMap: true
+		}),
+		new OptimizeCSSAssetsPlugin({})
+		]
+	},
 	entry: {
 		index: './assets/js/pages/index/index.js',
 		'web-worker/codingCountWorker':
@@ -64,17 +82,10 @@ module.exports = {
 			},
 			{
 				test: /\.css$/,
-				use: ExtractTextPlugin.extract({
-					fallback: 'style-loader',
-					use: [
-						{
-							loader: 'css-loader',
-							options: {
-								minimize: true
-							}
-						}
-					]
-				})
+				use: [
+					MiniCssExtractPlugin.loader,
+					'css-loader'
+				]
 			},
 			{
 				test: /\.((png|jpg|gif|svg|eot|ttf|woff|woff2)(\?|=|.|[a-z]|[0-9])*)$/,
@@ -92,21 +103,20 @@ module.exports = {
 
 	plugins: [
 		// Avoid publishing files when compilation fails
-		new webpack.NoEmitOnErrorsPlugin(),
 		new webpack.DefinePlugin({
 			'process.env': {
 				NODE_ENV: JSON.stringify('production')
 			}
 		}),
 
-		new ExtractMessagesPlugin({
-			outputPath: __dirname
+		new MiniCssExtractPlugin({
+			filename: "[name].css",
+			chunkFilename: "[id].css"
 		}),
 
-		new ExtractTextPlugin({
-			filename: 'styles.css',
-			allChunks: true
-		})
+		new ExtractMessagesPlugin({
+                       outputPath: __dirname
+		}),
 	],
 	stats: {
 		// Nice colored output

@@ -1,7 +1,8 @@
 const fs = require('fs');
 const gulp = require('gulp');
 const prettierEslint = require('./gulp-plugins/prettier-eslint');
-const webpack = require('webpack-stream');
+const webpackStream = require('webpack-stream');
+const webpack = require('webpack');
 const uglify = require('gulp-uglify');
 const jasmine = require('gulp-jasmine');
 const size = require('gulp-size');
@@ -229,7 +230,7 @@ gulp.task('bundle-task', function() {
 	return (gulp
 		.src('') //doesn't matter what to put as src,
 	//since webpack.config fetches from entry points
-		.pipe(webpack(require('./webpack.config.js')))
+		.pipe(webpackStream(require('./webpack.config.js'), webpack))
 		.on('error', handleError)
 		.pipe(gulp.dest('dist/js/'))
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
@@ -319,10 +320,11 @@ gulp.task('webpack-watch', function() {
 		.src('') //doesn't matter what to put as src,
 	//since webpack.config fetches from entry points
 		.pipe(
-			webpack(
+			webpackStream(
 				Object.assign(require('./webpack.config.js'), {
 					watch: true
-				})
+				}),
+				webpack
 			)
 		)
 		.on('error', handleError)
