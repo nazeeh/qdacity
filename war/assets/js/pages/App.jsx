@@ -261,7 +261,7 @@ export default class App extends React.Component {
 	}
 
 	setRTCSConnectionState(state) {
-		if (this.state.connected.rcts !== state) {
+		if (this.state.connected.rtcs !== state) {
 			const connected = {
 				api: this.state.connected.api,
 				rtcs: state
