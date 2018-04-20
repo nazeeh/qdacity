@@ -1,11 +1,6 @@
 package com.qdacity.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 import javax.annotation.Nullable;
@@ -449,32 +444,28 @@ public class CourseEndpoint {
 
     @ApiMethod(name = "course.listTermCourseByUserGroupId",
             path = "course.listTermCourseByUserGroupId")
-    public List<TermCourse> listTermCourseByUserGroupId(@Named("userGroupId") Long userGroupId, User user) throws UnauthorizedException {
-        com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
-        if (user == null) throw new UnauthorizedException("User is not logged in"); // TODO currently no user is authorized to list all courses
+    public List<TermCourse> listTermCourseByUserGroupId(@Named("userGroupId") Long userGroupId, User loggedInUser) throws UnauthorizedException {
+        com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(loggedInUser); // also checks if user is registered
+        if (loggedInUser == null) throw new UnauthorizedException("User is not logged in"); // TODO currently no user is authorized to list all courses
         UserGroup userGroup = (UserGroup) Cache.getOrLoad(userGroupId, UserGroup.class);
 
 		if(!userGroup.getParticipants().contains(qdacityUser.getId())) { // allow participants of group
-			Authorization.checkAuthorization(userGroup, user); // and owners and admins
+			Authorization.checkAuthorization(userGroup, loggedInUser); // and owners and admins
 		}
 
+		List<TermCourse> listedTermCourses = new ArrayList<TermCourse>();
+		Collection<Course> courses = this.listCourseByUserGroupId(null, null, userGroupId, loggedInUser).getItems();
+        for(Course course: courses) {
+        	Collection<TermCourse> termCourses = this.listTermCourse(course.getId(), loggedInUser);
+			listedTermCourses.addAll(termCourses);
+		}
 
-		PersistenceManager mgr = null;
-        List<TermCourse> execute = null;
-        try {
-            mgr = getPersistenceManager();
-            Query q = mgr.newQuery(TermCourse.class, ":p.contains(owningUserGroups)");
-            execute = (List<TermCourse>) q.execute(Arrays.asList(userGroup.getId()));
-        } finally {
-            mgr.close();
-        }
-
-        Collections.sort(execute, new Comparator<TermCourse>() {
+        Collections.sort(listedTermCourses, new Comparator<TermCourse>() {
             public int compare(TermCourse t1, TermCourse t2) {
                 return t1.getCreationDate().compareTo(t2.getCreationDate());
             }
         });
-        return execute;
+        return listedTermCourses;
     }
 
 	/**
@@ -493,8 +484,6 @@ public class CourseEndpoint {
 
 			termCourse.setOpen(true);
 			termCourse.setCreationDate(new Date());
-			termCourse.setOwningUserGroups(new ArrayList<Long>());
-
 
 			PersistenceManager mgr = getPersistenceManager();
 			try {
@@ -508,7 +497,7 @@ public class CourseEndpoint {
 					Authorization.checkAuthorizationTermCourse(termCourse, user);
 					mgr.makePersistent(termCourse);
 					qdacityUser.addTermCourseAuthorization(termCourse.getId());
-					
+
 					mgr.makePersistent(qdacityUser);
 					Cache.cache(qdacityUser.getId(), com.qdacity.user.User.class, qdacityUser);
 					AuthenticatedUser authenticatedUser = (AuthenticatedUser) user;
@@ -536,8 +525,6 @@ public class CourseEndpoint {
 
 		termCourse.setOpen(true);
 		termCourse.setCreationDate(new Date());
-		termCourse.setOwningUserGroups(new ArrayList<Long>());
-
 
 		PersistenceManager mgr = getPersistenceManager();
 		try {
@@ -547,13 +534,8 @@ public class CourseEndpoint {
 				}
 			}
 			try {
-				termCourse.getOwningUserGroups().add(userGroupId);
 				termCourse = mgr.makePersistent(termCourse);
 				Cache.cache(termCourse.getId(), Course.class, termCourse);
-
-				userGroup.getTermCourses().add(termCourse.getId());
-				mgr.makePersistent(userGroup);
-				Cache.cache(userGroup.getId(), UserGroup.class, userGroup);
 			}
 			catch (JDOObjectNotFoundException ex) {
 				throw new JDOObjectNotFoundException("User is not registered");

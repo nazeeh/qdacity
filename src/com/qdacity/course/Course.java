@@ -70,7 +70,7 @@ public class Course extends AbstractCourse {
 	}
 
 	public List<Long> getOwningUserGroups() {
-		if(owningUserGroups == null) return new ArrayList<Long>();
+		if(owningUserGroups == null) owningUserGroups = new ArrayList<Long>();
 		return owningUserGroups;
 	}
 

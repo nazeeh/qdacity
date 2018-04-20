@@ -832,10 +832,14 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUser);
 
 		UserGroup userGroup = new UserGroupEndpoint().insertUserGroup("testGroup", loggedInUser);
+
+		Course parentCourse = new Course();
+		parentCourse = new CourseEndpoint().insertCourseForUserGroup(parentCourse, userGroup.getId(), loggedInUser);
+
 		TermCourse termCourse = new TermCourse();
+		termCourse.setCourseID(parentCourse.getId());
 		try {
 			termCourse = new CourseEndpoint().insertTermCourseForUserGroup(termCourse, userGroup.getId(), loggedInUser);
-			assertTrue(termCourse.getOwningUserGroups().contains(userGroup.getId()));
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for term course creation");
@@ -843,12 +847,10 @@ UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
 		try {
 			List<TermCourse> courses = new CourseEndpoint().listTermCourseByUserGroupId(userGroup.getId(), loggedInUser);
 			assertEquals(1, courses.size());
-			assertTrue(courses.get(0).getOwningUserGroups().contains(userGroup.getId()));
+			assertEquals(termCourse.getId(), courses.get(0).getId());
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("Failed to authorize the user for listing his courses");
 		}
-		userGroup = new UserGroupEndpoint().getUserGroupById(userGroup.getId(), loggedInUser);
-		assertTrue(userGroup.getTermCourses().contains(termCourse.getId()));
 	}
 }

@@ -13,6 +13,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
@@ -28,6 +29,7 @@ import com.qdacity.user.UserType;
 public class Authorization {
 
 	private static UserEndpoint userEndpoint = new UserEndpoint();
+	private static CourseEndpoint courseEndpoint = new CourseEndpoint();
 
 	public static Boolean isUserAuthorized(User googleUser, Long projectID) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
@@ -85,10 +87,10 @@ public class Authorization {
 	}
 
 
-	public static Boolean isUserAuthorizedTermCourse(User googleUser, TermCourse termCourse) throws UnauthorizedException {
+	public static Boolean isUserAuthorizedTermCourse(User loggedInUser, TermCourse termCourse) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			String authenticatedUserId = userEndpoint.getCurrentUser(googleUser).getId();
+			String authenticatedUserId = userEndpoint.getCurrentUser(loggedInUser).getId();
 
 			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
 			if (termCourse.getParticipants() != null) {
@@ -98,17 +100,12 @@ public class Authorization {
 				if (termCourse.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN) return true;
 			}
 
-			List<Long> userGroupList = termCourse.getOwningUserGroups();
-			int sizeBefore = userGroupList.size();
-			if(userGroupList.removeAll(courseUser.getUserGroups())) {
-				// size decreased if user is in matching usergroup
-				if(userGroupList.size() < sizeBefore) return true;
-			}
+			Long associatedCourseId = termCourse.getCourseID();
+			Course course = courseEndpoint.getCourse(associatedCourseId, loggedInUser);
+			return isUserAuthorizedCourse(loggedInUser, course); // also checks authorization with user groups
 		} finally {
 			mgr.close();
 		}
-
-		return false;
 	}
 
 	private static PersistenceManager getPersistenceManager() {
