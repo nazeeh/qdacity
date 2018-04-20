@@ -21,11 +21,11 @@ describe(SPEC_NAME, function () {
     beforeEach((done) => {
     	this.driver = Common.setupChromeDriver();
         this.driver.get('http://localhost:8888/').then(done);
-    });
+    }, Common.getDefaultTimeout());
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    });
+    }, Common.getDefaultTimeout());
 
     /**
      * This function tests the login of QDAcity with a google test-account. It registers a new account in QDAcity.

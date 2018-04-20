@@ -24,11 +24,11 @@ describe(SPEC_NAME, function () {
 		this.driver.get('http://localhost:8888/PersonalDashboard').then(() => {
 			loginHelper.restoreLoginState(this.driver).then(done);
 		});
-	});
+	}, Common.getDefaultTimeout());
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    });
+    }, Common.getDefaultTimeout());
 
     it('Should create a new project', (done) => {
     	const projectName = 'Project_01';

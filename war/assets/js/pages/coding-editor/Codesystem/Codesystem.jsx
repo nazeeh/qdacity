@@ -541,6 +541,7 @@ export default class Codesystem extends SimpleCodesystem {
 						getCodeById={this.getCodeById}
 						userProfile={this.props.userProfile}
 						toggleCodeSearch={this.toggleCodeSearch}
+						openCodeQueries={this.props.openCodeQueries}
 						readOnly = {this.props.readOnly}
 					/>
 				</StyledToolBar>
