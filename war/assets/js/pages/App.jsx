@@ -237,7 +237,7 @@ export default class App extends React.Component {
 	}
 
 	async updateConnectionStatus() {
-		fetch('/')
+		fetch('/ping.txt', {cache: "no-store"})
 			.then((response) => {
 				this.setApiConnectionState(response.status === 200)
 			})
@@ -247,8 +247,17 @@ export default class App extends React.Component {
 	}
 
 	setApiConnectionState(state) {
-		this.state.connected.api = state;
-		this.setState(this.state);
+		if (this.state.connected.api !== state) {
+			const connected = {
+				api: state,
+				rtcs: this.state.connected.rtcs
+			};
+			this.setState(
+				{
+					connected: connected
+				}
+			);
+		}
 	}
 
 	setRTCSConnectionState(state) {
