@@ -39,9 +39,9 @@ export default class SyncService {
 	/**
 	 * Constructor for SyncService.
 	 */
-	constructor(component) {
+	constructor(setRTCSConnectionState) {
 		this._socket = null;
-		this._component = component;
+		this.setRTCSConnectionsState = setRTCSConnectionState;
 		this._listeners = {};
 		this._userdata = {
 			apiRoot: '$API_PATH$',
@@ -211,11 +211,11 @@ export default class SyncService {
 	 */
 	_handleUserConnected(serverName) {
 		this.log('Connected to realtime-service:', serverName);
-		this._component.updateConnectionState(true);
+		this.setRTCSConnectionsState(true);
 	}
 
 	_handleConnectError() {
-		this._component.updateConnectionState(false);
+		this.setRTCSConnectionsState(false);
 	}
 
 	/**
