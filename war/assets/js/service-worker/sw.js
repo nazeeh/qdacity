@@ -43,7 +43,7 @@ self.addEventListener('install', function (event) {
 });
 
 workbox.routing.registerRoute(
-	/.*/,
+	/^(?!.*ping\.txt$).*/,
 	workbox.strategies.networkFirst()
 );
 
