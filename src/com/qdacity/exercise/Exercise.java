@@ -1,6 +1,7 @@
 package com.qdacity.exercise;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -28,6 +29,9 @@ public class Exercise implements Serializable {
 	Long termCourseID;
 
 	@Persistent
+	Date exerciseDeadline;
+
+	@Persistent
 	String name;
 	
 	@Persistent
@@ -35,6 +39,9 @@ public class Exercise implements Serializable {
 
 	@Persistent
 	ExerciseType exerciseType;
+
+	@Persistent
+	Boolean snapshotsAlreadyCreated;
 
 	public Exercise() {
 		super();
@@ -76,5 +83,16 @@ public class Exercise implements Serializable {
 	public void setTermCourseID(Long termCourseID) {
 		this.termCourseID = termCourseID;
 	}
-	
+
+	public Date getExerciseDeadline() { return exerciseDeadline; }
+
+	public void setExerciseDeadline(Date deadline) {this.exerciseDeadline = deadline; }
+
+	public Boolean getSnapshotsAlreadyCreated() {
+		return snapshotsAlreadyCreated;
+	}
+
+	public void setSnapshotsAlreadyCreated(Boolean snapshotsAlreadyCreated) {
+		this.snapshotsAlreadyCreated = snapshotsAlreadyCreated;
+	}
 }

@@ -26,6 +26,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -41,9 +42,7 @@ import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.Project;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
-import com.qdacity.user.User;
-import com.qdacity.user.UserLoginProviderInformation;
-import com.qdacity.user.UserType;
+import com.qdacity.user.*;
 
 @Api(
 	name = "qdacity",
@@ -213,8 +212,16 @@ public class UserEndpoint {
 		try {
 
 			user = (User) Cache.getOrLoad(id, User.class);
-			// FIXME Check if user is authorized
-			Authorization.checkAuthorization(user, loggedInUser);
+
+			// only admins are allowed to trigger this endpoint
+			if(!Authorization.isUserAdmin(loggedInUser)) {
+				if (SystemProperty.environment.value().equals(SystemProperty.Environment.Value.Development)) {
+					// in dev environmanet everyone may use this endpoint.
+					Logger.getLogger("logger").log(Level.INFO, "UpdateUserType called by non-admin user. Allowed because Dev Environment!");
+				} else {
+					throw new UnauthorizedException("Only Admins are allowed.");
+				}
+			}
 
 			switch (type) {
 				case "ADMIN":
@@ -496,9 +503,22 @@ public class UserEndpoint {
 				userGroupEndpoint.removeUser(user.getId(), userGroupId, loggedInUser);
 			}
 		}
-		
-		// finally delete user
+
+		// remove email+pwd logins
 		PersistenceManager mgr = getPersistenceManager();
+		try {
+			for(UserLoginProviderInformation loginInfo: user.getLoginProviderInformation()) {
+				if(loginInfo.getProvider() == LoginProviderType.EMAIL_PASSWORD) {
+					EmailPasswordLogin emailPwd = mgr.getObjectById(EmailPasswordLogin.class, loginInfo.getExternalUserId());
+					mgr.deletePersistent(emailPwd);
+				}
+			}
+		} finally {
+			mgr.close();
+		}
+
+		// finally delete user
+		mgr = getPersistenceManager();
 		try {
 			user = mgr.getObjectById(User.class, id);
 			Cache.invalidate(user.getId(), User.class);

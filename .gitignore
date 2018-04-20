@@ -26,7 +26,7 @@ war/coverage
 /war/api_config.json
 target
 /.idea/
-/war/package-lock.json
 /war/translations/template.txt
 /bin/
 /pom.xml
+/auth-proxy/node_modules

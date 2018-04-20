@@ -6,6 +6,8 @@ import IntlProvider from '../Localization/LocalizationProvider';
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import EmailPasswordAuthenticationProvider from './EmailPasswordAuthenticationProvider.js';
 import GoogleAuthenticationProvider from './GoogleAuthenticationProvider.js';
+import TwitterAuthenticationProvider from './TwitterAuthenticationProvider.js';
+import FacebookAuthenticationProvider from './FacebookAuthenticationProvider.js';
 import QdacityTokenAuthenticationProvider from './QdacityTokenAuthenticationProvider';
 
 
@@ -20,9 +22,13 @@ export default class AuthenticationProvider {
 		this.qdacityTokenAuthenticationProvider = new QdacityTokenAuthenticationProvider();
 		this.emailPasswordAuthenticationProvider = new EmailPasswordAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
 		this.googleAuthenticationProvider = new GoogleAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
+		this.twitterAuthenticationProvider = new TwitterAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
+		this.facebookAuthenticationProvider = new FacebookAuthenticationProvider(this.qdacityTokenAuthenticationProvider);
 
 		this.network = {
 			google: AuthenticationNetworks.GOOGLE, // uses hellojs
+			twitter: AuthenticationNetworks.TWITTER, // uses hellojs
+			facebook: AuthenticationNetworks.FACEBOOK, // uses hellojs
 			google_silent: AuthenticationNetworks.GOOGLE_SILENT, // uses gapi.auth2
 			email_password: AuthenticationNetworks.EMAIL_PASSWORD // uses EmailPasswordAuthenticationProvider
 		};
@@ -79,6 +85,54 @@ export default class AuthenticationProvider {
 				_this.activeNetwork = _this.network.google;
 				_this.synchronizeTokenWithGapi();
 				resolve(googleProfile);
+			} catch (e) {
+				reject(e);
+			}
+		});
+		return promise;
+	}
+
+	/**
+	 * Signs-in on twitter account via a popup.
+	 * Signs out all accounts beforehand!
+	 * @return {Promise} 
+	 * If the sign-in was successful (Twitter + Qdacity), then the Twitter profile is resolved.
+	 * If the sign-in for Twitter was not successful (Qdacity automatically also failed), the error is rejeceted.
+	 * If the sign-in for Twitter succeeded but for Qdacity not, then the Twitter profile is rejected.
+	 */
+	async signInWithTwitter() {
+		this.signOut();
+		const _this = this;
+		const promise = new Promise(async function(resolve, reject) {
+			try {
+				const twitterProfile = await _this.twitterAuthenticationProvider.signIn();
+				_this.activeNetwork = _this.network.twitter;
+				_this.synchronizeTokenWithGapi();
+				resolve(twitterProfile);
+			} catch (e) {
+				reject(e);
+			}
+		});
+		return promise;
+	}
+
+	/**
+	 * Signs-in on Facebook account via a popup.
+	 * Signs out all accounts beforehand!
+	 * @return {Promise} 
+	 * If the sign-in was successful (Facebook + Qdacity), then the Facebook profile is resolved.
+	 * If the sign-in for Facebook was not successful (Qdacity automatically also failed), the error is rejeceted.
+	 * If the sign-in for Facebook succeeded but for Qdacity not, then the Facebook profile is rejected.
+	 */
+	async signInWithFacebook() {
+		this.signOut();
+		const _this = this;
+		const promise = new Promise(async function(resolve, reject) {
+			try {
+				const facebookProfile = await _this.facebookAuthenticationProvider.signIn();
+				_this.activeNetwork = _this.network.facebook;
+				_this.synchronizeTokenWithGapi();
+				resolve(facebookProfile);
 			} catch (e) {
 				reject(e);
 			}
@@ -171,6 +225,8 @@ export default class AuthenticationProvider {
 		const promise = new Promise(async function(resolve, reject) {
 			try {
 				await _this.googleAuthenticationProvider.signOut();
+				await _this.twitterAuthenticationProvider.signOut();
+				await _this.facebookAuthenticationProvider.signOut();
 				await _this.qdacityTokenAuthenticationProvider.signOut();
 			} catch (e) {
 				console.log('Signout: catched exception');
@@ -216,6 +272,8 @@ export default class AuthenticationProvider {
 		this.qdacityTokenAuthenticationProvider.addAuthStateListener(callback);
 
 		this.googleAuthenticationProvider.addAuthStateListener(callback);
+		this.twitterAuthenticationProvider.addAuthStateListener(callback);
+		this.facebookAuthenticationProvider.addAuthStateListener(callback);
 	}
 
 	/**
@@ -272,6 +330,32 @@ export default class AuthenticationProvider {
 	 */
 	registerGoogleUser(givenName, surName, email) {
 		return this.googleAuthenticationProvider.registerCurrentUser(givenName, surName, email);
+	}
+
+	/**
+	 * Registers the current twitter user.
+	 * The user has to be logged in beforehand.
+	 * Signs-in after successful registering.
+	 * @param givenName
+	 * @param surName
+	 * @param email
+	 * @returns {Promise}
+	 */
+	registerTwitterUser(givenName, surName, email) {
+		return this.twitterAuthenticationProvider.registerCurrentUser(givenName, surName, email);
+	}
+
+	/**
+	 * Registers the current facebook user.
+	 * The user has to be logged in beforehand.
+	 * Signs-in after successful registering.
+	 * @param givenName
+	 * @param surName
+	 * @param email
+	 * @returns {Promise}
+	 */
+	registerFacebookUser(givenName, surName, email) {
+		return this.facebookAuthenticationProvider.registerCurrentUser(givenName, surName, email);
 	}
 
 	/**

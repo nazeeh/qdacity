@@ -148,23 +148,27 @@ export default class CodesystemToolbar extends React.Component {
 		if (this.props.pageView == PageView.UML) {
 			return '';
 		}
-
-		return (
-			<StyledBtnGroup className="btn-group">
-				<BtnDefault className="btn btn-default" onClick={this.applyCode}>
-					<StyledBtnStack className="fa-stack fa-lg">
-						<i className="fa fa-tag fa-stack-2x" />
-						<i className="fa fa-plus fa-stack-1x fa-inverse" />
-					</StyledBtnStack>
-				</BtnDefault>
-				<BtnDefault className="btn btn-default" onClick={this.removeCoding}>
-					<StyledBtnStack className="fa-stack fa-lg">
-						<i className="fa fa-tag fa-stack-2x" />
-						<i className="fa fa-minus fa-stack-1x fa-inverse" />
-					</StyledBtnStack>
-				</BtnDefault>
-			</StyledBtnGroup>
-		);
+		if (this.props.readOnly == 'true') {
+			return '';
+		}
+		else {
+			return (
+				<StyledBtnGroup className="btn-group">
+					<BtnDefault className="btn btn-default" onClick={this.applyCode}>
+						<StyledBtnStack className="fa-stack fa-lg">
+							<i className="fa fa-tag fa-stack-2x" />
+							<i className="fa fa-plus fa-stack-1x fa-inverse" />
+						</StyledBtnStack>
+					</BtnDefault>
+					<BtnDefault className="btn btn-default" onClick={this.removeCoding}>
+						<StyledBtnStack className="fa-stack fa-lg">
+							<i className="fa fa-tag fa-stack-2x" />
+							<i className="fa fa-minus fa-stack-1x fa-inverse" />
+						</StyledBtnStack>
+					</BtnDefault>
+				</StyledBtnGroup>
+			);
+		}
 	}
 
 	renderSearchButton() {
@@ -172,6 +176,16 @@ export default class CodesystemToolbar extends React.Component {
 			<StyledBtnGroup className="btn-group">
 				<BtnDefault className="btn btn-default" onClick={this.toggleSearchBar}>
 					<i className="fa fa-search fa-1x" />
+				</BtnDefault>
+			</StyledBtnGroup>
+		);
+	}
+
+	renderQueriesButton() {
+		return (
+			<StyledBtnGroup className="btn-group">
+				<BtnDefault className="btn btn-default" onClick={this.props.openCodeQueries} >
+					<i className="fa fa-database fa-1x" />
 				</BtnDefault>
 			</StyledBtnGroup>
 		);
@@ -200,6 +214,7 @@ export default class CodesystemToolbar extends React.Component {
 				</StyledBtnGroup>
 				{this.renderAddRemoveCodingBtn()}
 				{this.renderSearchButton()}
+				{this.renderQueriesButton()}
 			</StyledToolBar>
 		);
 	}

@@ -82,6 +82,35 @@ const BtnPrimary = BtnSm.extend`
 	}
 `;
 
+const BtnDanger = BtnSm.extend`
+	color: ${props =>
+		props.active ? props.theme.fgDefaultHighlight : props.theme.fgDefaultHighlight};
+	background-color: ${props =>
+		props.active ? props.theme.rubyRedAccent : props.theme.rubyRed};
+	border-color: ${props =>
+		props.active
+			? props.theme.borderDefaultHighlight
+			: props.theme.borderDefault};
+	&:hover {
+		background-color: ${props => props.theme.borderDefaultHighlight};
+		border-color: ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
+		& > div > .fa-inverse {
+			color: ${props => props.theme.fgDefault};
+		}
+	}
+	&:focus {
+		background-color: ${props => props.theme.borderDefaultHighlight};
+		border-color: ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
+	}
+	&:active {
+		background-color: ${props => props.theme.borderDefaultHighlight};
+		border-color: ${props => props.theme.borderDefaultHighlight};
+		color: ${props => props.theme.fgDefaultHighlight};
+	}
+`;
+
 const BtnGroup = styled.div`
 	margin-left: 10px;
 	display: inline;
@@ -122,4 +151,4 @@ const BtnLg = styled.button`
 	}
 `;
 
-export { BtnDefault, BtnPrimary, BtnSm, BtnLg, BtnGroup };
+export { BtnDefault, BtnPrimary, BtnDanger, BtnSm, BtnLg, BtnGroup };

@@ -53,9 +53,7 @@ public class QdacityAuthenticator implements Authenticator {
         		provider = tokenParts[1];
         	}
 
-			switch (provider.toLowerCase()) {			
-				case PROVIDER_GOOGLE:
-		    		return googleIdTokenValidator.validate(idTokenString);
+			switch (provider.toLowerCase()) {
 				case PROVIDER_CUSTOM_JWT:
 					return customTokenValidator.validate(idTokenString);
 				case PROVIDER_GOOGLE_ACCESS_TOKEN:

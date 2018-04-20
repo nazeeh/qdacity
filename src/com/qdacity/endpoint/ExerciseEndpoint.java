@@ -16,9 +16,10 @@ import javax.persistence.EntityExistsException;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.qdacity.project.ValidationProject;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.project.metrics.*;
 import com.qdacity.project.metrics.tasks.*;
+import com.qdacity.user.LoginProviderType;
 import org.json.JSONException;
 
 import com.google.api.server.spi.auth.common.User;
@@ -58,7 +59,7 @@ public class ExerciseEndpoint {
 	 */
 	@ApiMethod(name = "exercise.insertExercise")
 	public Exercise insertExercise(Exercise exercise, User user) throws UnauthorizedException {
-
+        exercise.setSnapshotsAlreadyCreated(false);
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			if (exercise.getId() != null) {
@@ -438,6 +439,91 @@ public class ExerciseEndpoint {
         return reports;
     }
 
+    //Fetches exercises whose deadlines have passed, then creates snapshots of exerciseProjects which belong to these exercises
+    //This method is called by ExerciseDeadlineServlet which is triggered by a cronjob every 5 minutes
+	public static void checkAndCreateExerciseProjectSnapshotsIfNeeded() {
+
+	    Date now = new Date();
+        List<Exercise> exercises = null;
+        PersistenceManager mgr = getPersistenceManager();
+        StringBuilder filters = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        filters.append("exerciseDeadline <:now");
+        parameters.put("now", now);
+
+        try {
+            Query q = mgr.newQuery(Exercise.class);
+            q.setFilter(filters.toString());
+            exercises = (List<Exercise>)q.executeWithMap(parameters);
+            for (Exercise exercise : exercises) {
+                if (!exercise.getSnapshotsAlreadyCreated()) {
+                    createSnapshotsForExpiredExerciseProjects(exercise.getId());
+                    exercise.setSnapshotsAlreadyCreated(true);
+                    mgr.makePersistent(exercise);
+                    java.util.logging.Logger.getLogger("logger").log(Level.INFO, "creating exercise project snapshots for exercise: " + exercise.getName());
+                }
+            }
+        }
+        finally {
+            mgr.close();
+        }
+    }
+
+    private static void createSnapshotsForExpiredExerciseProjects(Long exerciseID) {
+	    List<ExerciseProject> exerciseProjects;
+        StringBuilder filters = new StringBuilder();
+        Map<String, Object> parameters = new HashMap<>();
+        PersistenceManager mgr = getPersistenceManager();
+        List<ExerciseProject> clonedExerciseProjects = new ArrayList<>();
+        ProjectRevision parentProject;
+        try {
+            //fetch exerciseProjects related to the exercise whose deadline has passed
+            filters.append("exerciseID == exerciseID");
+            parameters.put("exerciseID", exerciseID);
+            Query q = mgr.newQuery(ExerciseProject.class);
+            q.setFilter(filters.toString());
+            exerciseProjects = (List<ExerciseProject>)q.executeWithMap(parameters);
+
+            if (exerciseProjects != null && exerciseProjects.size() > 0) {
+
+                //The parent project of all exerciseProjects which belong to the same exercise is the same, so it can be assigned from the first exerciseProject
+                parentProject = mgr.getObjectById(ProjectRevision.class, exerciseProjects.get(0).getRevisionID());
+
+                //construct clonedExerciseProjects and set their properties to the original exerciseProjects
+                //Afterwards, all of the clonedExerciseProjects are persisted
+                for (ExerciseProject exerciseProject : exerciseProjects) {
+                        ExerciseProject clonedExerciseProject = new ExerciseProject(parentProject);
+                        clonedExerciseProject.setExerciseID(exerciseProject.getExerciseID());
+                        clonedExerciseProject.setValidationCoders(exerciseProject.getValidationCoders());
+                        clonedExerciseProject.setCreatorName(exerciseProject.getCreatorName());
+                        clonedExerciseProject.setParagraphFMeasure(exerciseProject.getParagraphFMeasure());
+                        clonedExerciseProject.setUmlEditorEnabled(exerciseProject.isUmlEditorEnabled());
+                        clonedExerciseProject.setIsSnapshot(true);
+                        clonedExerciseProjects.add(clonedExerciseProject);
+                }
+
+                //Persist the clonedExerciseProjects, then clone their TextDocuments
+                mgr.makePersistentAll(clonedExerciseProjects);
+                for (ExerciseProject clonedExerciseProject : clonedExerciseProjects) {
+                    try {
+                        cloneExerciseProjectTextDocs(clonedExerciseProject, parentProject);
+                    }
+                    catch (UnauthorizedException e) {
+                        java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
+                    }
+                }
+            }
+        } finally {
+            mgr.close();
+        }
+    }
+
+    private static void cloneExerciseProjectTextDocs (ExerciseProject exerciseProject, ProjectRevision parentProject) throws UnauthorizedException {
+         //Todo create an admin user specifically for this cronjob servlet instead of using this account
+		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
+        TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, exerciseProject.getId(), false, loggedInUser);
+    }
+
 	private ExerciseProject createExerciseProjectLocal(Long exerciseID, Long revisionID, com.qdacity.user.User user, User loggedInUser) throws UnauthorizedException {
 
 		PersistenceManager mgr = getPersistenceManager();
@@ -449,6 +535,7 @@ public class ExerciseEndpoint {
 
 		cloneExerciseProject = cloneExerciseProject(project);
 
+        cloneExerciseProject.setIsSnapshot(false);
 		cloneExerciseProject.addValidationCoder(user.getId());
 		cloneExerciseProject.setExerciseID(exerciseID);
 		com.qdacity.user.User validationCoder = mgr.getObjectById(com.qdacity.user.User.class, user.getId());

@@ -2,20 +2,19 @@ FROM qdacity-tests-base:latest
 
 # Copy repository
 WORKDIR /app
-COPY ./target /app/target
-COPY ./docker /app/docker
-COPY ./realtime-service /app/realtime-service
-COPY ./localization /app/localization
-COPY ./war/assets /app/war/assets
-COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
-COPY ./war/node_modules /app/war/node_modules
 COPY ./war/gulp-plugins /app/war/gulp-plugins
 COPY ./war/gulpfile.js /app/war/gulpfile.js
+COPY ./docker /app/docker
+COPY ./war/node_modules /app/war/node_modules
+COPY ./realtime-service /app/realtime-service
+COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
+COPY ./war/assets /app/war/assets
+COPY ./target /app/target
 COPY ./war/api_config.json /app/war/api_config.json
 
 # Allow execute
-RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
-RUN sudo chmod +x ./docker/acceptance-tests/startTests.sh
+# RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
+# RUN sudo chmod +x ./docker/acceptance-tests/waitForDevServer.sh
 
 # Run script which starts the devserver and executes the tests
 ENTRYPOINT ./docker/acceptance-tests/entrypoint.sh

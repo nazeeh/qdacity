@@ -30,6 +30,10 @@ stages:
     paths:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
+      - target/qdacity-war/sw.js
+      - war/translations/template.txt
+      - war/dist/messages/
+      - war/dist/js/index.dist.js
     expire_in: 3 mos
 
 frontend_prod_build:
@@ -37,7 +41,7 @@ frontend_prod_build:
   <<: *frontend_build
   script:
     - build_babel_plugin
-    - build_frontend bundle generate-language-files minify set-react-production
+    - build_frontend bundle-ci set-config-target generate-language-files minify set-react-production sw
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -46,7 +50,7 @@ frontend_prod_build_nm:
     - master
   script:
     - build_babel_plugin
-    - build_frontend bundle generate-language-files
+    - build_frontend bundle-ci generate-language-files
 
 backend_prod_build:
   <<: *job_definition
@@ -111,9 +115,25 @@ frontend_prod_unittest:
     - export DISPLAY=:10
     - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd war
+    - echo $API_CONFIG_PRODUCTION > ./api_config.json
+    - gulp set-config-dist
     - ./node_modules/karma/bin/karma start --single-run
   dependencies:
     - frontend_prod_build
+  allow_failure: true
+  
+frontend_prod_translation_tests:
+  <<: *job_definition
+  stage: test
+  only:
+    - branches
+  cache:
+    <<: *node_cache
+    policy: pull
+  script:
+    - cd war
+    - echo $API_CONFIG_PRODUCTION > ./api_config.json
+    - gulp generate-language-files --verifyTranslation
   allow_failure: true
 
 acceptance_tests:
@@ -125,7 +145,6 @@ acceptance_tests:
     key: "acceptance_tests"
     paths:
     - realtime-service/node_modules/
-    - localization/node_modules/
     - war/node_modules/
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
@@ -184,6 +203,7 @@ pages:
 
 .deploy_prod: &deployment_template
   <<: *job_definition
+  cache: *node_cache
   stage: deploy
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
@@ -198,6 +218,16 @@ deploy_rtcsvc:
   script:
     - cd realtime-service
     - bash ./deployment/deploy_from_gitlab_ci.sh
+
+deploy_auth_proxy:
+  <<: *job_definition
+  stage: deploy
+  only:
+    - branches
+  script:
+    - cd auth-proxy
+    - gcloud app deploy -v 1 --quiet
+  when: manual
 
 deploy_prod:
   <<: *deployment_template
@@ -234,7 +264,6 @@ deploy_non_minified:
       cd war
       echo $API_CONFIG_PRODUCTION > ./api_config.json
       rm -f -r ./dist/js/*
-      npm prune
       npm install
       while [ -n "$1" ]; do
         subcommand="$1"
@@ -246,7 +275,6 @@ deploy_non_minified:
 
     function build_babel_plugin() {
       cd localization
-      npm prune
       npm install
       while [ -n "$1" ]; do
         subcommand="$1"
