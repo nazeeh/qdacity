@@ -300,8 +300,8 @@ public class Authorization {
 		if(!isOwner && !isAdmin) throw new UnauthorizedException("Only group owners and admins are allowed to perform this operation!");
 	}
 
-	public static Boolean isUserAdmin(User googleUser) throws UnauthorizedException {
-		com.qdacity.user.User user = userEndpoint.getCurrentUser(googleUser);
+	public static Boolean isUserAdmin(User loggedinUser) throws UnauthorizedException {
+		com.qdacity.user.User user = userEndpoint.getCurrentUser(loggedinUser);
 		if (user.getType() == UserType.ADMIN) return true;
 		return false;
 	}

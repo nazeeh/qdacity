@@ -333,8 +333,10 @@ public class CourseEndpoint {
 
 		// Check if user is registered
 		Authorization.isUserRegistered(qdacityUser);
-
 		termCourse = (TermCourse) Cache.getOrLoad(id, TermCourse.class);
+		if (termCourse == null) {
+			throw new JDOObjectNotFoundException("Term Course does not exist");
+		}
 		return termCourse;
 	}
 
