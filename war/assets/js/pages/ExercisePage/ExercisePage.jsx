@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
 import ExerciseEndpoint from '../../common/endpoints/ExerciseEndpoint';
+import CourseEndpoint from '../../common/endpoints/CourseEndpoint';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import Exercise from './Exercise';
@@ -38,10 +39,10 @@ export default class ExercisePage extends React.Component {
 		super(props);
 
 		var urlParams = URI(window.location.search).query(true);
-		var exercise = new Exercise(urlParams.exercise);
+		this.exerciseId = urlParams.exercise;
 
 		this.state = {
-			exercise: exercise,
+			exercise: undefined,
 			isTermCourseOwner: false
 		};
 	}
@@ -50,27 +51,29 @@ export default class ExercisePage extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.getExerciseByIDPromise = ExerciseEndpoint.getExerciseByID(
-				this.state.exercise.id
+				this.exerciseId
 			);
 
 			this.setExerciseInfo();
 		}
 	}
 
-	setExerciseInfo() {
-		var _this = this;
-		this.userPromise.then(function(user) {
-			_this.getExerciseByIDPromise.then(function(exerciseResp) {
-				// FIXME get owning course as parameter
-				var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
-					user,
-					exerciseResp
-				);
-				_this.setState({
-					exercise: exerciseResp,
-					isTermCourseOwner: isTermCourseOwner
-				});
-			});
+	async setExerciseInfo() {
+		const user = await this.userPromise;
+		const exercise = await this.getExerciseByIDPromise;
+
+		const parentTermCourse = await CourseEndpoint.getTermCourse(exercise.termCourseID);
+		const parentCourse = await CourseEndpoint.getCourse(parentTermCourse.courseID);
+		
+		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
+			user,
+			parentTermCourse,
+			parentCourse
+		);
+
+		this.setState({
+			exercise: exercise,
+			isTermCourseOwner: isTermCourseOwner
 		});
 	}
 
@@ -111,7 +114,10 @@ export default class ExercisePage extends React.Component {
 		) {
 			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
 		}
+
 		this.init();
+		if(this.state.exercise == undefined || this.state.exercise == null) return null;
+
 
 		return (
 			<StyledDashboard>
