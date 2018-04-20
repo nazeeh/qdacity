@@ -297,35 +297,21 @@ public class CourseEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(name = "course.getCourse", path = "course")
-	public Course getCourse(@Named("id") Long id, User user) throws UnauthorizedException {
+	public Course getCourse(@Named("id") Long id, User loggedInUser) throws UnauthorizedException {// Check if user is registered
+		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(loggedInUser); // also checks if user is registered
+		Authorization.isUserRegistered(qdacityUser);
 
-		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+        java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
 
-		PersistenceManager mgr = getPersistenceManager();
-		Course course = null;
-		try {
-			course = (Course) mgr.getObjectById(Course.class, id);
-		}
-		catch (Exception e) {
-			throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
-		};
+		Course course = (Course) Cache.getOrLoad(id, Course.class);
+		if(course == null) {
+            throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
+        }
 
-		try {
-			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
-
-			// Check if user is registered
-			Authorization.isUserRegistered(qdacityUser);
-
-			if (qdacityUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
-				LastCourseUsed task = new LastCourseUsed(qdacityUser, id);
-				Queue queue = QueueFactory.getDefaultQueue();
-				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-			}
-
-            course = (Course) Cache.getOrLoad(id, Course.class);
-
-		} finally {
-			mgr.close();
+		if (qdacityUser.getLastCourseId() != id) { // Check if lastcourse property of user has to be updated
+			LastCourseUsed task = new LastCourseUsed(qdacityUser, id);
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 		}
 		return course;
 	}
@@ -405,16 +391,13 @@ public class CourseEndpoint {
 
 		if (user == null) throw new UnauthorizedException("User is not logged in"); // TODO currently no user is authorized to list all courses
 
-		PersistenceManager mgr = null;
 		List<TermCourse> execute = null;
-
-		try {
+        PersistenceManager mgr = null;
+        try {
 			mgr = getPersistenceManager();
-
 			Query q = mgr.newQuery(TermCourse.class, ":p.contains(participants)");
 
 			execute = (List<TermCourse>) q.execute(Arrays.asList(qdacityUser.getId()));
-
 		} finally {
 			mgr.close();
 		}
@@ -604,22 +587,24 @@ public class CourseEndpoint {
 			path = "termCourse")
 		public TermCourse setTermCourseStatus(@Named("id") Long termCourseID, @Named("isOpen") boolean status, User user) throws UnauthorizedException {
 			TermCourse termCourse = null;
-			PersistenceManager mgr = getPersistenceManager();
 
-			try {
-				termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
-			}
+            PersistenceManager mgr = getPersistenceManager();
+            try {
+                termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, termCourseID);
+            }
 			catch (Exception e) {
 				throw new javax.jdo.JDOObjectNotFoundException("Course does not exist");
-			};
+			} finally {
+                mgr.close();
+            }
 
 			// Check if user is Authorized (authorization for the course means authorization for all terms under this course)
 			Authorization.checkAuthorizationTermCourse(termCourse, user);
 
+            mgr = getPersistenceManager();
 			try {
 				termCourse.setOpen(status);
 				mgr.makePersistent(termCourse);
-
 			} finally {
 				mgr.close();
 			}
@@ -768,10 +753,12 @@ public class CourseEndpoint {
 	)
 	public CollectionResponse<com.qdacity.user.User> listTermCourseParticipants(@Nullable @Named("cursor") String cursorString, @Nullable @Named("limit") Integer limit, @Named("termCourseID") Long termCourseID, User user) throws UnauthorizedException {
 		List<com.qdacity.user.User> users = new ArrayList<com.qdacity.user.User>();
-		PersistenceManager mgr = getPersistenceManager();
-		try {
-			TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
-			Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+        TermCourse termCourse = (TermCourse) Cache.getOrLoad(termCourseID, TermCourse.class);
+        Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+        PersistenceManager mgr = getPersistenceManager();
+        try {
 			List<String> participants = termCourse.getParticipants();
 			if (participants != null) {
 				if (!participants.isEmpty()) {

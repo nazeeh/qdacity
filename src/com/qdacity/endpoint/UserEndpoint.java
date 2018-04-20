@@ -110,13 +110,24 @@ public class UserEndpoint {
 
 		Course course = null;
 		List<User> myusers = null;
-		PersistenceManager mgr = getPersistenceManager();
 
-		course = mgr.getObjectById(Course.class, courseID);
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			course = mgr.getObjectById(Course.class, courseID);
+		} finally {
+			mgr.close();
+		}
+
 		Authorization.checkAuthorizationCourse(course, user);
-		
-		Query q = mgr.newQuery(User.class, ":p.contains(courses)");
-		List<User> users = (List<User>) q.execute(Arrays.asList(courseID));
+
+		List<User> users = new ArrayList<User>();
+		mgr = getPersistenceManager();
+		try {
+			Query q = mgr.newQuery(User.class, ":p.contains(courses)");
+			users = (List<User>) q.execute(Arrays.asList(courseID));
+		} finally {
+			mgr.close();
+		}
 		
 		return users;
 	}
