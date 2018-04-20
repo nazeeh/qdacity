@@ -316,7 +316,7 @@ export default class App extends React.Component {
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
-										connected={this.state.connected}
+										connected={this.state.connected.api && this.state.connected.rtcs}
 										tutorial={tut}
 										theme={Theme}
 										{...props}
