@@ -4,6 +4,10 @@ import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 import Account from './Account.jsx';
 
+const StyledNav = styled.nav`
+	background-color: ${props => (props.connected ? props.theme.navDefault : props.theme.navOffline)} !important;
+`;
+
 const StyledAccountTab = styled.li`
 	display: ${props => (props.loggedIn ? 'block' : 'none')} !important;
 `;
@@ -84,10 +88,10 @@ export default class NavBar extends React.Component {
 
 	render() {
 		return (
-			<nav
-				className={'navbar navbar-default navbar-fixed-top topnav '
-					+ (this.props.connected ? '' : 'navbar-offline')}
+			<StyledNav
+				className={'navbar navbar-default navbar-fixed-top topnav '}
 				role="navigation"
+				connected={this.props.connected}
 			>
 				<div className="container topnav">
 					<div className="navbar-header">
@@ -199,7 +203,7 @@ export default class NavBar extends React.Component {
 						</ul>
 					</div>
 				</div>
-			</nav>
+			</StyledNav>
 		);
 	}
 }

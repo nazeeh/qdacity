@@ -81,8 +81,7 @@ export default class Faq extends React.Component {
 				</h3>
 				<FormattedMessage
 					id="faq.offline.answer"
-					defaultMessage="Offline indicates the site can't establish a conneciton to the server.
-                    You can still do the following:"
+					defaultMessage="Offline indicates the site can't establish a conneciton to the server. You can still do the following:"
 				/>
 				<ul>
 					<li>
