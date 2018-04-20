@@ -5,6 +5,10 @@
   "directories": {
     "test": "tests"
   },
+  "scripts": {
+    "watch": "gulp watch",
+    "test": "./node_modules/.bin/jest"
+  },
   "dependencies": {
     "bootstrap-slider": "^9.7.1",
     "hellojs": "^1.16.1",
@@ -22,6 +26,7 @@
   "devDependencies": {
     "@types/react-intl": "^2.3.2",
     "babel-core": "^6.10.4",
+    "babel-jest": "^22.4.3",
     "babel-loader": "^7.1.2",
     "babel-plugin-async-to-promises": "^1.0.5",
     "babel-plugin-react-intl": "^2.4.0",
@@ -54,6 +59,7 @@
     "istanbul-instrumenter-loader": "^3.0.0",
     "jasmine-core": "^2.8.0",
     "jasmine-jquery": "^2.1.1",
+    "jest": "^22.4.3",
     "karma": "^1.7.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.1",
@@ -80,10 +86,6 @@
     "url-loader": "^0.5.9",
     "webpack-stream": "^4.0.0",
     "yargs": "^8.0.2"
-  },
-  "scripts": {
-    "watch": "gulp watch",
-    "test": "test"
   },
   "author": "",
   "license": "UNLICENSED",
