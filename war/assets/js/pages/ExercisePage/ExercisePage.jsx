@@ -3,7 +3,7 @@ import IntlProvider from '../../common/Localization/LocalizationProvider';
 import styled from 'styled-components';
 import Theme from '../../common/styles/Theme.js';
 
-import ExerciseEndpoint from 'endpoints/ExerciseEndpoint';
+import ExerciseEndpoint from '../../common/endpoints/ExerciseEndpoint';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
 import 'script-loader!../../../../components/alertify/alertify-0.3.js';
 import Exercise from './Exercise';
@@ -61,6 +61,7 @@ export default class ExercisePage extends React.Component {
 		var _this = this;
 		this.userPromise.then(function(user) {
 			_this.getExerciseByIDPromise.then(function(exerciseResp) {
+				// FIXME get owning course as parameter
 				var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
 					user,
 					exerciseResp

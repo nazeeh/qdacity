@@ -80,34 +80,32 @@ export default class TermDashboard extends React.Component {
 		}
 	}
 
-	setTermCourseInfo() {
-		var _this = this;
-		var isUserParticipant = false;
-		this.userPromise.then(function(user) {
-			var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
-				user,
-				_this.state.termCourse
-			);
-			_this.listTermCourseParticipantsPromise.then(function(resp) {
-				var termCourse = _this.state.termCourse;
-				resp.items = resp.items || [];
-				termCourse.participants = resp.items;
-				typeof termCourse.participants.find(o => o.id === user.id) ==
-				'undefined'
-					? (isUserParticipant = false)
-					: (isUserParticipant = true);
-				_this.getTermCoursePromise.then(function(resp) {
-					termCourse.term = resp.term;
-					termCourse.isUserParticipant = isUserParticipant;
-					CourseEndpoint.getCourse(resp.courseID).then(function(course) {
-						_this.setState({
-							course: course,
-							termCourse: termCourse,
-							isTermCourseOwner: isTermCourseOwner
-						});
-					});
-				});
-			});
+	async setTermCourseInfo() {
+		let isUserParticipant = false;
+		const user = await this.userPromise;
+		
+		let resp = await this.getTermCoursePromise;
+		termCourse.term = resp.term;
+		termCourse.isUserParticipant = isUserParticipant;
+					
+		const course = await CourseEndpoint.getCourse(resp.courseID);
+
+		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
+			user,
+			this.state.termCourse,
+			course
+		);
+
+		resp = await this.listTermCourseParticipantsPromise;
+		let termCourse = this.state.termCourse;
+		resp.items = resp.items || [];
+		termCourse.participants = resp.items;
+		isUserParticipant = (typeof termCourse.participants.find(o => o.id === user.id) != 'undefined');
+
+		this.setState({
+			course: course,
+			termCourse: termCourse,
+			isTermCourseOwner: isTermCourseOwner
 		});
 	}
 
