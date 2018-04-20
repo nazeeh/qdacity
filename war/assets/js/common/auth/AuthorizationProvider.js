@@ -33,21 +33,13 @@ export default class AuthorizationProvider {
 		return isOwner;
 	}
 
-	isTermCourseOwner(user, termCourse) {
+	isTermCourseOwner(user, termCourse, parentCourse) {
 		var isOwner = false;
-		if (typeof user.termCourses != 'undefined') {
-			isOwner = user.termCourses.indexOf(termCourse.id) == -1 ? false : true;
-		}
-		
-		if(termCourse.owningUserGroups !== undefined && termCourse.owningUserGroups !== null
-			&& user.userGroups !== undefined && user.userGroups !== null) {
-
-			termCourse.owningUserGroups.forEach(function(userGroup) {
-				if(user.userGroups.includes(userGroup)) isOwner = true;
-			});
+		if (typeof user.termCourses != 'undefined' && user.termCourses.indexOf(termCourse.id) != -1) {
+			return true;
 		}
 
-		return isOwner;
+		return this.isCourseOwner(user, parentCourse);
 	}
 
 	isValidationCoder(user, valPrj) {
