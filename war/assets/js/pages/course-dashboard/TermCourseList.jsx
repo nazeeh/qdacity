@@ -337,7 +337,7 @@ export default class TermCourseList extends React.Component {
 					hasPagination={true}
 					doNotrenderSearch={true}
 					itemsPerPage={8}
-					items={this.props.course.terms}
+					items={this.props.course.terms || []}
 					renderItem={this.renderTerm}
 					getItemText={item => item.text}
 				/>

@@ -243,7 +243,7 @@ public class CourseEndpoint {
 			}
 
 			try {
-				course.setOwningUserGroups(Arrays.asList(userGroupId));
+				course.getOwningUserGroups().add(userGroupId);
 				course = mgr.makePersistent(course);
 				Cache.cache(course.getId(), Course.class, course);
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import CourseEndpoint from 'endpoints/CourseEndpoint';
+import CourseEndpoint from '../../common/endpoints/CourseEndpoint';
 import TermCourseList from './TermCourseList.jsx';
 import Course from './Course';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
@@ -50,7 +50,7 @@ export default class CourseDashboard extends React.Component {
 
 		this.authenticationProvider = props.auth.authentication;
 
-		const _this = this;
+		this.init();
 	}
 
 	setCourse(course) {
@@ -92,14 +92,16 @@ export default class CourseDashboard extends React.Component {
 		}
 	}
 
-	setUserRights() {
-		var _this = this;
-		this.userPromise.then(function(user) {
-			var isCourseOwner = _this.props.auth.authorization.isCourseOwner(
-				user,
-				_this.state.course
-			);
-			_this.state.isCourseOwner = isCourseOwner;
+	async setUserRights() {
+		const user = await this.userPromise;
+		const course = await CourseEndpoint.getCourse(this.state.course.id);
+		const isCourseOwner = this.props.auth.authorization.isCourseOwner(
+			user,
+			course
+		);
+		this.setState({
+			isCourseOwner: isCourseOwner,
+			course: course
 		});
 	}
 

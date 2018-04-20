@@ -66,7 +66,7 @@ public class Authorization {
 				if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(qdacityUser.getId());
 			}
 
-			if (course.getOwners().contains(qdacityUser.getId()) ||
+			if (course.getOwners() != null && course.getOwners().contains(qdacityUser.getId()) ||
 					qdacityUser.getType() == UserType.ADMIN ||
 					userIsInvited) {
 				return true;
@@ -85,7 +85,7 @@ public class Authorization {
 	}
 
 
-		public static Boolean isUserAuthorizedTermCourse(User googleUser, TermCourse termCourse) throws UnauthorizedException {
+	public static Boolean isUserAuthorizedTermCourse(User googleUser, TermCourse termCourse) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
 			String authenticatedUserId = userEndpoint.getCurrentUser(googleUser).getId();
