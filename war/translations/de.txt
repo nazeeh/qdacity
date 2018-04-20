@@ -533,3 +533,6 @@ codeQueriesDetailsDocumentHeadlineCodingOverlap = coding Überschneidung
 codeQueriesDetailsDocumentHeadlineCodingOverlaps = coding Überschneidungen
 codeQueriesDetailsItemShowText = Text Anzeigen
 codeQueriesDetailsItemOpenCoding = Coding Anzeigen
+faq.offline = Warum bin ich offline?
+faq.offline.answer = Es kann keine Verbindung mit dem Server hergestellt werden. Du kannst trotzdem folgende Funktionen benutzen:
+faq.offline.0 = Du kannst nichts machen

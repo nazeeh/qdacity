@@ -29,5 +29,8 @@ export default {
 	rubyRed: '#e82240',
 	rubyRedAccent: '#b80b0b',
 	yellow: '#ffec21',
-	yellowAccent: '#e5d41e'
+	yellowAccent: '#e5d41e',
+
+	navDefault: '#f8f8f8',
+	navOffline: '#ffc05f',
 };

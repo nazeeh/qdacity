@@ -42,9 +42,7 @@ import com.qdacity.logs.ChangeLogger;
 import com.qdacity.project.Project;
 import com.qdacity.project.ValidationProject;
 import com.qdacity.project.tasks.ProjectDataPreloader;
-import com.qdacity.user.User;
-import com.qdacity.user.UserLoginProviderInformation;
-import com.qdacity.user.UserType;
+import com.qdacity.user.*;
 
 @Api(
 	name = "qdacity",
@@ -505,9 +503,22 @@ public class UserEndpoint {
 				userGroupEndpoint.removeUser(user.getId(), userGroupId, loggedInUser);
 			}
 		}
-		
-		// finally delete user
+
+		// remove email+pwd logins
 		PersistenceManager mgr = getPersistenceManager();
+		try {
+			for(UserLoginProviderInformation loginInfo: user.getLoginProviderInformation()) {
+				if(loginInfo.getProvider() == LoginProviderType.EMAIL_PASSWORD) {
+					EmailPasswordLogin emailPwd = mgr.getObjectById(EmailPasswordLogin.class, loginInfo.getExternalUserId());
+					mgr.deletePersistent(emailPwd);
+				}
+			}
+		} finally {
+			mgr.close();
+		}
+
+		// finally delete user
+		mgr = getPersistenceManager();
 		try {
 			user = mgr.getObjectById(User.class, id);
 			Cache.invalidate(user.getId(), User.class);

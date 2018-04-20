@@ -114,12 +114,22 @@ export default class App extends React.Component {
 				},
 				authentication: this.authenticationProvider,
 				authorization: this.authorizationProvider
+			},
+			connected: {
+				api: true,
+				rtcs: true
 			}
 		};
+
+		this.ping = this.ping.bind(this);
+		this.updateConnectionStatus = this.updateConnectionStatus.bind(this);
+		this.setApiConnectionState = this.setApiConnectionState.bind(this);
+		this.setRTCSConnectionState = this.setRTCSConnectionState.bind(this);
 
 		new VexModal(); // init vex
 
 		this.initAuthProvider();
+		this.ping();
 	}
 
 	async initAuthProvider() {
@@ -222,6 +232,48 @@ export default class App extends React.Component {
 		return promise;
 	}
 
+	ping() {
+		setInterval(this.updateConnectionStatus, 3000);
+	}
+
+	async updateConnectionStatus() {
+		fetch('/ping.txt', {cache: "no-store"})
+			.then((response) => {
+				this.setApiConnectionState(response.status === 200)
+			})
+			.catch((error) => {
+				this.setApiConnectionState(false)
+			});
+	}
+
+	setApiConnectionState(state) {
+		if (this.state.connected.api !== state) {
+			const connected = {
+				api: state,
+				rtcs: this.state.connected.rtcs
+			};
+			this.setState(
+				{
+					connected: connected
+				}
+			);
+		}
+	}
+
+	setRTCSConnectionState(state) {
+		if (this.state.connected.rtcs !== state) {
+			const connected = {
+				api: this.state.connected.api,
+				rtcs: state
+			};
+			this.setState(
+				{
+					connected: connected
+				}
+			);
+		}
+	}
+
 	componentDidMount() {
 		this.state.tutorialEngine.appRootDidMount();
 	}
@@ -264,6 +316,7 @@ export default class App extends React.Component {
 										client_id={this.props.apiCfg.client_id}
 										scopes={this.props.apiCfg.scopes}
 										auth={this.state.auth}
+										connected={this.state.connected.api && this.state.connected.rtcs}
 										tutorial={tut}
 										theme={Theme}
 										{...props}
@@ -366,6 +419,7 @@ export default class App extends React.Component {
 										render={props => (
 											<CodingEditor
 												auth={this.state.auth}
+												setRTCSConnectionState={this.setRTCSConnectionState}
 												mxGraphPromise={this.props.mxGraphPromise}
 												{...props}
 											/>
