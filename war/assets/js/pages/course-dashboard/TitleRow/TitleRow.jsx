@@ -16,6 +16,8 @@ export default class TitleRow extends React.Component {
 	}
 
 	render() {
+		if(this.props.course == undefined || this.props.course == null) return null;
+		
 		var courseName = this.props.course.name ? this.props.course.name : '';
 		return (
 			<StyledHeading>

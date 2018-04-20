@@ -34,52 +34,44 @@ export default class TermCourseList extends React.Component {
 		this.showNewTermCourseModal = this.showNewTermCourseModal.bind(this);
 		this.authenticationProvider = props.auth.authentication;
 
-		this.init();
-
 		this.renderTerm = this.renderTerm.bind(this);
 	}
 
-	init() {
-		var _this = this;
-		var course = this.props.course;
-		var owners = [];
-		var isUserOwner = [];
-		var coursePromise = CourseEndpoint.getCourse(course.getId());
-		var courseTermListPromise = CourseEndpoint.listTermCourse(course.getId());
-		var getAccountPromise = this.authenticationProvider.getCurrentUser();
+	componentWillReceiveProps(nextProps) {
+		if(nextProps.course != undefined && nextProps.course != null &&
+			nextProps.course.terms == undefined) { // #workaround
+			// and the collect initial data in this component only once (terms set)
+			this.collectInitialData(nextProps.course);
+		}
+	}
 
-		//Get the course, its terms, participants and save all info in the course object
-		coursePromise.then(function(resp) {
-			if (!(typeof resp.owners == 'undefined')) owners = resp.owners;
-			course.setName(resp.name);
-			course.setDescription(resp.description);
-			getAccountPromise.then(function(resp2) {
-				isUserOwner = owners.includes(resp2.id);
-				courseTermListPromise.then(function(resp3) {
-					var termList = [];
-					resp3.items = resp3.items || [];
-					resp3.items.forEach(function(crs) {
-						var participants = [];
-						var isUserParticipant = [];
-						//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
-						if (!(typeof crs.participants == 'undefined'))
-							participants = crs.participants;
-						status = crs.open;
-						isUserParticipant = participants.includes(resp2.id);
-						termList.push({
-							text: crs.term,
-							id: crs.id,
-							participants: participants,
-							isUserParticipant: isUserParticipant,
-							isUserOwner: isUserOwner,
-							isOpen: status
-						});
-					});
-					course.isUserOwner = isUserOwner;
-					course.setTerms(termList);
-					_this.props.setCourse(course);
+	collectInitialData(course) {
+		const _this = this;
+		var courseTermListPromise = CourseEndpoint.listTermCourse(course.id);
+
+		courseTermListPromise.then(function(resp3) {
+			var termList = [];
+			resp3.items = resp3.items || [];
+			resp3.items.forEach(function(crs) {
+				var participants = [];
+				var isUserParticipant = [];
+				//Get the id of the current user and check whether he's a participant in the term or not, then save this info in the course object
+				if (!(typeof crs.participants == 'undefined'))
+					participants = crs.participants;
+				status = crs.open;
+				isUserParticipant = participants.includes(_this.props.auth.userProfile.qdacityId);
+				termList.push({
+					text: crs.term,
+					id: crs.id,
+					participants: participants,
+					isUserParticipant: isUserParticipant,
+					isUserOwner: _this.props.isCourseOwner,
+					isOpen: status
 				});
 			});
+			course.isUserOwner = _this.props.isCourseOwner;
+			course.terms = termList;
+			_this.props.setCourse(course);
 		});
 	}
 
@@ -129,7 +121,7 @@ export default class TermCourseList extends React.Component {
 				isUserParticipant: false,
 				isOpen: 'true'
 			});
-			course.setTerms(termList);
+			course.terms = termList;
 			_this.props.setCourse(course);
 		});
 	}
@@ -158,7 +150,7 @@ export default class TermCourseList extends React.Component {
 					thisTerm => thisTerm.id === term.id
 				);
 				courseTerms.splice(courseTerms.indexOf(termToRemove.id), 1);
-				course.setTerms(courseTerms);
+				course.terms = courseTerms;
 				_this.props.setCourse(course);
 			});
 		});
@@ -321,6 +313,8 @@ export default class TermCourseList extends React.Component {
 	}
 
 	render() {
+		if(this.props.course == undefined || this.props.course == null) return null;
+
 		return (
 			<div>
 				<ListMenu>
