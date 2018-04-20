@@ -233,7 +233,7 @@ export default class App extends React.Component {
 	}
 
 	ping() {
-		setInterval(this.updateConnectionStatus, 1000);
+		setInterval(this.updateConnectionStatus, 3000);
 	}
 
 	async updateConnectionStatus() {
