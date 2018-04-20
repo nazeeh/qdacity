@@ -73,9 +73,7 @@ const insertProjectHandler = ({url, event}) => {
 	//return new Response(`Custom handler response.`);
 };
 
-/**
- * Register Routes
- */
+/*** Register Routes ***/
 
 get("qdacity.project.insertProject").then(method =>
 	workbox.routing.registerRoute(
