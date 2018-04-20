@@ -106,7 +106,7 @@ class CodingEditor extends React.Component {
 		this.codeViewRef = {};
 		this.codeQueriesRef = null;
 		this.textEditor = {};
-		this.syncService = new SyncService();
+		this.syncService = new SyncService(this.props.setRTCSConnectionState);
 		this.state = {
 			readOnly: readOnly,
 			project: project,

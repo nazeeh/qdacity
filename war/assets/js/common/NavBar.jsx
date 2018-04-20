@@ -4,6 +4,10 @@ import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 import Account from './Account.jsx';
 
+const StyledNav = styled.nav`
+	background-color: ${props => (props.connected ? props.theme.navDefault : props.theme.navOffline)} !important;
+`;
+
 const StyledAccountTab = styled.li`
 	display: ${props => (props.loggedIn ? 'block' : 'none')} !important;
 `;
@@ -11,6 +15,11 @@ const StyledAccountTab = styled.li`
 const StyledHelpTab = styled.li`
 	display: block;
 `;
+
+const StyledOfflineTab = styled.span`
+	display: ${props => (props.connected ? 'none' : 'block')} !important;
+`;
+
 
 const StyledSigninTab = styled.li`
 	display: ${props => (props.loggedIn ? 'none' : 'block')} !important;
@@ -36,7 +45,7 @@ export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userData: {}
+			userData: {},
 		};
 
 		this.authenticationProvider = props.auth.authentication;
@@ -79,9 +88,10 @@ export default class NavBar extends React.Component {
 
 	render() {
 		return (
-			<nav
-				className="navbar navbar-default navbar-fixed-top topnav"
+			<StyledNav
+				className={'navbar navbar-default navbar-fixed-top topnav '}
 				role="navigation"
+				connected={this.props.connected}
 			>
 				<div className="container topnav">
 					<div className="navbar-header">
@@ -106,6 +116,17 @@ export default class NavBar extends React.Component {
 						>
 							QDAcity
 						</StyledNavbarItem>
+						<StyledOfflineTab
+							className="clickable navbar-text"
+							connected={this.props.connected}
+							onClick={() => {
+								this.props.history.push('/Faq#offline-mode');
+							}}
+						>
+							<subscript>
+								<small><em>offline</em></small>
+							</subscript>
+						</StyledOfflineTab>
 					</div>
 					<div
 						className="collapse navbar-collapse"
@@ -182,7 +203,7 @@ export default class NavBar extends React.Component {
 						</ul>
 					</div>
 				</div>
-			</nav>
+			</StyledNav>
 		);
 	}
 }
