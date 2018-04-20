@@ -164,7 +164,7 @@ public class ExerciseEndpointTest {
         nextYear.setTime(31556952000L + nextYear.getTime());
 
         ProjectEndpoint pe = new ProjectEndpoint();
-
+        ExerciseEndpoint ee = new ExerciseEndpoint();
         UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
         CodeSystemTestHelper.addCodeSystem(2L, testUser);
         ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
@@ -172,12 +172,9 @@ public class ExerciseEndpointTest {
         CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
         CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
         ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+        Exercise exercise = ee.getExerciseByID(1L, testUser);
 
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Query q = new Query("Exercise");
-        Entity queryResult = ds.prepare(q).asSingleEntity();
-
-        assertEquals(1L, queryResult.getKey().getId());
+        assertEquals(1L, exercise.getId().longValue());
     }
 
 	/**
