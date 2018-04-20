@@ -339,29 +339,14 @@ public class CourseEndpoint {
 	 */
 	@ApiMethod(name = "course.getTermCourse")
 	public TermCourse getTermCourse(@Named("id") Long id, User user) throws UnauthorizedException {
-
 		com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
-
-		PersistenceManager mgr = getPersistenceManager();
 		TermCourse termCourse = null;
-		try {
-			termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, id);
-		}
-		catch (Exception e) {
-			throw new javax.jdo.JDOObjectNotFoundException("Term Course does not exist");
-		};
+		java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
 
-		try {
-			java.util.logging.Logger.getLogger("logger").log(Level.INFO, " Getting Course " + id);
+		// Check if user is registered
+		Authorization.isUserRegistered(qdacityUser);
 
-			// Check if user is registered
-			Authorization.isUserRegistered(qdacityUser);
-
-			termCourse = (TermCourse) Cache.getOrLoad(id, TermCourse.class);
-
-		} finally {
-			mgr.close();
-		}
+		termCourse = (TermCourse) Cache.getOrLoad(id, TermCourse.class);
 		return termCourse;
 	}
 
