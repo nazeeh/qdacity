@@ -52,8 +52,6 @@
     "gulp-beautify": "^2.0.1",
     "gulp-diff": "^1.0.0",
     "gulp-filter-by": "^1.2.0",
-    "gulp-jasmine": "^2.4.2",
-    "gulp-jest": "^4.0.2",
     "gulp-json-concat": "^0.1.1",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.6.1",
