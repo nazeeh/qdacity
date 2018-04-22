@@ -45,7 +45,10 @@ describe(SPEC_NAME, function () {
     	this.driver.wait(until.elementLocated(By.xpath("//button[@type='submit' and contains(@class,'vex-dialog-button')]"))).click();   
 
     	// Is the document in the document-list?    	
-		Conditions.assertDocumentExists(this.driver, documentName, done);
+		Conditions.assertDocumentExists(this.driver, documentName, ()=>{
+			console.log("successfully created a document");
+			done();
+		});
     }, Common.getDefaultTimeout());
     
     it('Should add text to a document', (done) => {
