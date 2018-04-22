@@ -30,3 +30,4 @@ target
 /bin/
 /pom.xml
 /auth-proxy/node_modules
+/war/jest-coverage
