@@ -117,7 +117,7 @@ frontend_prod_unittest:
     - cd war
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - gulp set-config-dist
-    - ./node_modules/karma/bin/karma start --single-run
+    - npm run test
   dependencies:
     - frontend_prod_build
   allow_failure: true
