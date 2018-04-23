@@ -41,4 +41,6 @@ docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $TEST_IMAGE_TAG .
  
 # Run docker image
 echo "Running the image" 
-docker run --rm -v /dev/shm:/dev/shm $TEST_IMAGE_TAG
+docker run --rm -v /dev/shm:/dev/shm \
+--mount type=bind,source="$(pwd)"/war/node_modules,target=/app/war/node_modules \ 
+$TEST_IMAGE_TAG
