@@ -110,6 +110,9 @@ frontend_prod_unittest:
   script:
     - export DISPLAY=:10
     - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
+    - cd localization
+    - npm ci
+    - cd ..
     - cd war
     - npm ci
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
@@ -125,6 +128,9 @@ frontend_prod_translation_tests:
   only:
     - branches
   script:
+    - cd localization
+    - npm ci
+    - cd ..
     - cd war
     - npm ci
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
