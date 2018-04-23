@@ -37,4 +37,4 @@ RUN \
   sudo apt-get install -y nodejs
   
 # update to latest npm version
-run npm i -g npm
+RUN sudo npm i -g npm
