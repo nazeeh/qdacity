@@ -6,11 +6,7 @@ COPY ./war/jest.acceptance.config.js /app/war/jest.acceptance.config.js
 COPY ./war/gulp-plugins /app/war/gulp-plugins
 COPY ./war/gulpfile.js /app/war/gulpfile.js
 COPY ./docker /app/docker
-COPY ./war/package-lock.json /app/war/package-lock.json
 COPY ./war/package.json /app/war/package.json
-# WORKDIR /app/war
-# RUN sudo npm ci
-# WORKDIR /app
 COPY ./realtime-service /app/realtime-service
 COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
 COPY ./war/assets /app/war/assets
