@@ -9,7 +9,7 @@ COPY ./docker /app/docker
 COPY ./war/package-lock.json /app/war/package-lock.json
 COPY ./war/package.json /app/war/package.json
 WORKDIR /app/war
-RUN npm ci
+RUN sudo npm ci
 WORKDIR /app
 COPY ./realtime-service /app/realtime-service
 COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
