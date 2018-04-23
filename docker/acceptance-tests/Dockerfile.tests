@@ -7,12 +7,12 @@ COPY ./war/gulp-plugins /app/war/gulp-plugins
 COPY ./war/gulpfile.js /app/war/gulpfile.js
 COPY ./docker /app/docker
 COPY ./war/package.json /app/war/package.json
-COPY ./war/node_modules /app/war/node_modules
 COPY ./realtime-service /app/realtime-service
 COPY ./war/tests/acceptance-tests /app/war/tests/acceptance-tests
 COPY ./war/assets /app/war/assets
 COPY ./target /app/target
 COPY ./war/api_config.json /app/war/api_config.json
+
 
 # Allow execute
 # RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh

@@ -6,6 +6,10 @@ echo "##########################################################################
 
 /opt/bin/entry_point.sh &
 
+#cd war
+#sudo npm ci
+#cd ..
+
 sleep 10
 
 # Start the dev-server
