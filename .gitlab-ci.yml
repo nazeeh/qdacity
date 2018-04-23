@@ -103,9 +103,6 @@ frontend_prod_unittest:
   stage: test
   only:
     - branches
-  cache:
-    <<: *node_cache
-    policy: pull
   artifacts:
     paths:
       - war/coverage
@@ -114,6 +111,7 @@ frontend_prod_unittest:
     - export DISPLAY=:10
     - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd war
+    - npm ci
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - gulp set-config-dist
     - npm run test
@@ -126,11 +124,9 @@ frontend_prod_translation_tests:
   stage: test
   only:
     - branches
-  cache:
-    <<: *node_cache
-    policy: pull
   script:
     - cd war
+    - npm ci
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - gulp generate-language-files --verifyTranslation
   allow_failure: true
@@ -158,8 +154,6 @@ frontend_babel_plugin_test:
   stage: test
   only:
     - branches
-  cache:
-    <<: *node_cache
     policy: pull
   script:
     - build_babel_plugin test
