@@ -7,7 +7,7 @@ echo "##########################################################################
 /opt/bin/entry_point.sh &
 
 cd war
-cd npm ci
+npm ci
 cd ..
 
 # sleep 10
