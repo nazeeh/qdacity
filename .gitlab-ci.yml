@@ -154,7 +154,6 @@ frontend_babel_plugin_test:
   stage: test
   only:
     - branches
-    policy: pull
   script:
     - build_babel_plugin test
 
