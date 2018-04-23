@@ -31,7 +31,7 @@ BASE_IMAGE_TAG="qdacity-tests-base:latest"
 TEST_IMAGE_TAG="qdacity-tests-${CI_PROJECT_ID}"
 
 # Build the base image if it does not exist
-[ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build -f --no-cache ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
+[ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 
 # Build the test image
 echo "Building the image" 
