@@ -25,7 +25,6 @@ stages:
   stage: build
   only:
     - branches
-  cache: *node_cache
   artifacts:
     paths:
       - target/qdacity-war/dist/
@@ -264,7 +263,7 @@ deploy_non_minified:
       cd war
       echo $API_CONFIG_PRODUCTION > ./api_config.json
       rm -f -r ./dist/js/*
-      npm install
+      npm ci
       while [ -n "$1" ]; do
         subcommand="$1"
         shift
@@ -275,7 +274,7 @@ deploy_non_minified:
 
     function build_babel_plugin() {
       cd localization
-      npm install
+      npm ci
       while [ -n "$1" ]; do
         subcommand="$1"
         shift
