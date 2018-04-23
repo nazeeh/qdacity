@@ -70,7 +70,6 @@
     "script-loader": "^0.7.0",
     "scriptjs": "^2.5.8",
     "selenium-webdriver": "^3.6.0",
-    "style-loader": "^0.13.1",
     "styled-components": "^2.1.1",
     "through2": "^2.0.3",
     "url-loader": "^0.5.9",
