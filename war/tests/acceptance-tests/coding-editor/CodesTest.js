@@ -46,6 +46,9 @@ describe(SPEC_NAME, function () {
     	this.driver.findElement(By.xpath("//div[@class='vex-dialog-buttons']/button[@type='submit' and contains(@class,'vex-dialog-button') and text()='OK']")).click();    	
 			
     	// Find the code in the codesystem
-		Conditions.assertCodeExists(this.driver, codeName, done); 		
+		Conditions.assertCodeExists(this.driver, codeName, ()=>{
+			console.log("found code");
+			done()
+		});
     }, Common.getExtendedTimeout());
 });

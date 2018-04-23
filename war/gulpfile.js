@@ -4,7 +4,6 @@ const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpackStream = require('webpack-stream');
 const webpack = require('webpack');
 const uglify = require('gulp-uglify');
-const jasmine = require('gulp-jasmine');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
@@ -351,25 +350,6 @@ gulp.task('sw-watch', function () {
     gulp.watch('assets/js/service-worker/sw.js', ['sw']);
 });
 
-gulp.task('unit-tests', () =>
-	gulp.src('./tests/unit-tests/**/*.js').pipe(jasmine())
-);
-gulp.task('acceptance-tests', () =>
-	gulp
-		.src('./tests/acceptance-tests/**/*.js')
-		.pipe(jasmine())
-		.on('error', handleError)
-);
-
 gulp.task('watch', ['webpack-watch', 'translation-watch', 'sw-watch']);
-
-gulp.task('acceptance-tests', () => {
-	const basePath = './tests/acceptance-tests/';
-	gulp.src([
-		basePath + '*.js', 
-		basePath + 'coding-editor/*.js',
-		basePath + 'settings/*.js'
-	]).pipe(jasmine()).on('error', handleError);
-});
 
 gulp.task('default', ['sw', 'watch']);
