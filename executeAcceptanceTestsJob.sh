@@ -11,7 +11,7 @@ cd ..
 
 # Copy package without a set configuration to target and set config with --local
 cd war
-npm install
+npm ci
 cp ./dist/js/index.dist.js ../target/qdacity-war/dist/js/index.dist.js
 gulp set-config-target --local --noTranslation
 cd ..
