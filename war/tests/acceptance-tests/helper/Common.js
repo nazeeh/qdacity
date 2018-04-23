@@ -7,6 +7,10 @@ var loginHelper = require('../helper/LoginHelper.js');
 
 var Conditions = require('./Conditions.js');
 
+console.log = (s) => {
+	process.stdout.write(s+"\n");
+};
+
 class Common {
 
 	static getDefaultTimeout() {
