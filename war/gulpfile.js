@@ -56,9 +56,13 @@ function setConfig() {
 	if (argv.local) config.test_mode = true; else config.test_mode = false;
 }
 
-gulp.task('bundle-ci', ['bundle-task']);
+gulp.task('bundle-ci', ['set-node-env-production', 'bundle-task']);
 
 gulp.task('bundle', ['format', 'bundle-task', 'set-config']);
+
+gulp.task('set-node-env-production', () => {
+	process.env.NODE_ENV = 'production';
+});
 
 gulp.task('format', () => {
 	return gulp

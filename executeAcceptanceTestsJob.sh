@@ -11,7 +11,7 @@ cd ..
 
 # Copy package without a set configuration to target and set config with --local
 cd war
-npm install
+npm ci
 cp ./dist/js/index.dist.js ../target/qdacity-war/dist/js/index.dist.js
 gulp set-config-target --local --noTranslation
 cd ..
@@ -31,7 +31,7 @@ BASE_IMAGE_TAG="qdacity-tests-base:latest"
 TEST_IMAGE_TAG="qdacity-tests-${CI_PROJECT_ID}"
 
 # Build the base image if it does not exist
-[ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
+[ ! -z $(docker images -q $BASE_IMAGE_TAG) ] || docker build --no-cache -f ./docker/acceptance-tests/Dockerfile.base -t qdacity-tests-base .
 
 # Build the test image
 echo "Building the image" 
@@ -41,4 +41,4 @@ docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $TEST_IMAGE_TAG .
  
 # Run docker image
 echo "Running the image" 
-docker run --rm -v /dev/shm:/dev/shm $TEST_IMAGE_TAG
+docker run --rm -v /dev/shm:/dev/shm --mount type=bind,source="$(pwd)"/war/node_modules,target=/app/war/node_modules $TEST_IMAGE_TAG

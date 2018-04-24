@@ -13,7 +13,7 @@ const BabelFormatMessagesPlugin = require('../localization/babel').default;
 
 module.exports = {
 	bail: true,
-	mode: 'development',
+	mode: process.env.NODE_ENV || 'development',
 	optimization: {
 		splitChunks: {
 			name: 'qdacity',
