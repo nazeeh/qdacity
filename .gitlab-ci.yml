@@ -29,7 +29,7 @@ stages:
     paths:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
-      - target/qdacity-war/sw.js
+      - target/qdacity-war/dist/js/styles.css
       - war/translations/template.txt
       - war/dist/messages/
       - war/dist/js/index.dist.js
