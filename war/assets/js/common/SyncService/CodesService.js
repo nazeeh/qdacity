@@ -73,6 +73,7 @@ export default class CodesService {
 		});
 	}
 
+
 	/**
 	 * Handle code.inserted message from sync service. Used to notify clients
 	 * about new Codes inserted in their current CodeSystem.

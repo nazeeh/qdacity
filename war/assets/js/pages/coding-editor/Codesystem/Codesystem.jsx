@@ -262,6 +262,7 @@ export default class Codesystem extends SimpleCodesystem {
 				}
 
 				if (select) {
+					console.log(_this);
 					_this.setSelected(resp);
 				}
 			}).catch(() => {
