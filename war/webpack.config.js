@@ -32,7 +32,9 @@ module.exports = {
 	entry: {
 		index: './assets/js/pages/index/index.js',
 		'web-worker/codingCountWorker':
-			'./assets/js/web-worker/codingCountWorker.js'
+			'./assets/js/web-worker/codingCountWorker.js',
+		'service-worker/sw':
+			'./assets/js/service-worker/sw.js',
 	},
 	resolve: {
 		alias: {
