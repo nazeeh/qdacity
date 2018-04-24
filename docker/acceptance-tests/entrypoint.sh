@@ -12,12 +12,16 @@ echo "##########################################################################
 
 sleep 10
 
+#sudo touch devserver.log
+echo "Setting ownership for seluser"
+sudo chown -R $USER:$(id -gn $USER) /Users/seluser/.config
+sudo chown $USER -R ./
+
 # Start the dev-server
 echo "#######################################################################################"
 echo "########                         Start the devserver                           ########"
 echo "#######################################################################################"
-#sudo touch devserver.log
-sudo chown $USER -R ./
+
 sudo /usr/local/gcloud/google-cloud-sdk/bin/java_dev_appserver.sh --disable_update_check --port=8888 /app/target/qdacity-war/ >devserver.log 2>&1 &
 
 # Run a script which waits until the specified port is open (=> the dev-server is running)
