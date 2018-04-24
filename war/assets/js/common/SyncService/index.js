@@ -153,9 +153,11 @@ export default class SyncService {
 		return new Promise((resolve, reject) => {
 			this._socket.emit(messageType, arg, (status, ...args) => {
 				if (status === 'ok') {
+					this.console.log(status);
 					resolve(...args);
 				} else {
 					this.console.error('API error', ...args);
+					this.console.log(status);
 					reject(...args);
 				}
 			});

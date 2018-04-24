@@ -4,10 +4,12 @@ export default class Promisizer {
 	static makePromise(apiMethod) {
 		var promise = new Promise(function(resolve, reject) {
 			apiMethod.execute(function(resp) {
+				console.log(resp);
 				if (!resp.code) {
 					resolve(resp);
 				} else {
-					console.log(resp.code + ' : ' + resp.message);
+					if(resp.code === -2)
+						alert("Function not available");
 					reject(resp);
 				}
 			});

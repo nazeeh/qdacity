@@ -1,5 +1,6 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
+const version=2;
 
 let apiMethods = {};
 
@@ -84,8 +85,7 @@ const insertProjectHandler = ({url, event}) => {
 	return new Response(JSON.stringify(testProject));
 };
 
-const insertProjectHandler = ({url, event}) => {
-	console.log('[Workbox] insert Porject handler called');
+const insertCourseHandler = ({url, event}) => {
 	return fetch(event.request)
 		.then(function (response) {
 			if (!response) {
@@ -115,6 +115,33 @@ const insertProjectHandler = ({url, event}) => {
 	return new Response(JSON.stringify(testCourse));
 };
 
+const defaultRejectPostHandler = ({url, event}) => {
+	return fetch(event.request)
+		.then(function (response) {
+			if (!response) {
+				console.log(
+					'[ServiceWorker|POST] No response from fetch ',
+					event.request.url
+				);
+				return response;
+			}
+			console.log(
+				'[ServiceWorker|POST] Good Response from fetch ',
+				event.request.url
+			);
+			response.clone().json().then(body => console.log(body));
+			return response;
+		})
+		.catch(function (error) {
+			console.warn('[ServiceWorker|Post] Error from fetch: ', error);
+			const body = {
+				code: -2,
+			};
+			return new Response(JSON.stringify(body), {});
+		});
+};
+
+
 /*** Register Routes ***/
 function registerPostRoutes() {
 	workbox.routing.registerRoute(
@@ -124,7 +151,7 @@ function registerPostRoutes() {
 	);
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.course.insertCourse"]),
-		insertCourseHandler,
+		defaultRejectPostHandler,
 		'POST'
 	);
 }
