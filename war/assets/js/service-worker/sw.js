@@ -51,8 +51,8 @@ workbox.routing.registerRoute(
 );
 
 
-const insertProjectHandler = ({url, event}) => {
-	console.log('[Workbox] insert Porject handler called');
+const insertCodeHandler = ({url, event}) => {
+	console.log('[Workbox] insert Code handler called');
 	return fetch(event.request)
 		.then(function (response) {
 			if (!response) {
@@ -72,86 +72,25 @@ const insertProjectHandler = ({url, event}) => {
 		})
 		.catch(function (error) {
 			console.warn('[ServiceWorker|Post] Error from fetch: ', error);
-		});
-	const testProject = {
-		codesystemID: "1234",
-		description: "offline created",
-		id: "12345678",
-		maxCodingID: "0",
-		name: "My first offline projekt",
-		revision: 0,
-		type: "PROJECT"
-	};
-	return new Response(JSON.stringify(testProject));
-};
-
-const insertCourseHandler = ({url, event}) => {
-	return fetch(event.request)
-		.then(function (response) {
-			if (!response) {
-				console.log(
-					'[ServiceWorker|POST] No response from fetch ',
-					event.request.url
-				);
-				return response;
-			}
-			console.log(
-				'[ServiceWorker|POST] Good Response from fetch ',
-				event.request.url
-			);
-			console.log(response);
-
-			return response;
-		})
-		.catch(function (error) {
-			console.warn('[ServiceWorker|Post] Error from fetch: ', error);
-		});
-	const testCourse = {
-		description: "offline created course",
-		id: "12345678",
-		maxCodingID: "0",
-		name: "My first offline course",
-	};
-	return new Response(JSON.stringify(testCourse));
-};
-
-const defaultRejectPostHandler = ({url, event}) => {
-	return fetch(event.request)
-		.then(function (response) {
-			if (!response) {
-				console.log(
-					'[ServiceWorker|POST] No response from fetch ',
-					event.request.url
-				);
-				return response;
-			}
-			console.log(
-				'[ServiceWorker|POST] Good Response from fetch ',
-				event.request.url
-			);
-			response.clone().json().then(body => console.log(body));
-			return response;
-		})
-		.catch(function (error) {
-			console.warn('[ServiceWorker|Post] Error from fetch: ', error);
-			const body = {
-				code: -2,
+			const offlineCode = {
+				author: "service worker",
+				codesystemID: "1234",
+				codeID: "46",
+				description: "offline created",
+				id: "12345678",
+				color: "#000000",
+				name: "My first offline code",
+				parentID: "1"
 			};
-			return new Response(JSON.stringify(body), {});
+			return new Response(JSON.stringify(offlineCode), {});
 		});
 };
-
 
 /*** Register Routes ***/
 function registerPostRoutes() {
 	workbox.routing.registerRoute(
-		pathToRegex(apiMethods["qdacity.project.insertProject"]),
-		insertProjectHandler,
-		'POST'
-	);
-	workbox.routing.registerRoute(
-		pathToRegex(apiMethods["qdacity.course.insertCourse"]),
-		defaultRejectPostHandler,
+		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
+		insertCodeHandler,
 		'POST'
 	);
 }
