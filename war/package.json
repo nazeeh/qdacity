@@ -14,7 +14,6 @@
     "bootstrap-slider": "^9.7.1",
     "eslint": "^4.19.1",
     "hellojs": "^1.16.1",
-    "idb-keyval": "^3.0.3",
     "immutable": "^3.8.2",
     "jwt-decode": "^2.2.0",
     "mini-css-extract-plugin": "^0.4.0",
