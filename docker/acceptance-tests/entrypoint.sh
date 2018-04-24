@@ -34,7 +34,7 @@ echo "########                      Start the realtime service                  
 echo "#######################################################################################"
 
 cd realtime-service
-npm run start &
+npm run start 2>&1 | sudo tee /app/rtcs.log > /dev/null &
 cd ..
 
 sleep 10
