@@ -1,10 +1,13 @@
-import { EdgeType } from '../util/EdgeType.js';
+import {
+	EdgeType
+} from '../util/EdgeType.js';
 
-import { Target } from './Target.js';
-
-import IntlProvider from '../../../common/Localization/LocalizationProvider';
+import {
+	Target
+} from './Target.js';
 
 export default class MetaModelMapper {
+
 	constructor(umlEditor) {
 		this.umlEditor = umlEditor;
 
@@ -12,70 +15,47 @@ export default class MetaModelMapper {
 	}
 
 	getEdgeRelationEntityName(edgeType) {
-		const { formatMessage } = IntlProvider.intl;
 		switch (edgeType) {
-			case EdgeType.GENERALIZATION:
-				return formatMessage({
-					id: 'metamodelmapper.generalization',
-					defaultMessage: 'is a'
-				});
-			case EdgeType.AGGREGATION:
-				return formatMessage({
-					id: 'metamodelmapper.aggregation',
-					defaultMessage: 'is part of'
-				});
-			case EdgeType.DIRECTED_ASSOCIATION:
-				return formatMessage({
-					id: 'metamodelmapper.direct_association',
-					defaultMessage: 'is related to'
-				});
-			default:
-				throw new Error(
-					formatMessage({
-						id: 'metamodelmapper.not_implemented',
-						defaultMessage: 'EdgeType is not implemented'
-					})
-				);
+		case EdgeType.GENERALIZATION:
+			{
+				return 'is a';
+			}
+		case EdgeType.AGGREGATION:
+			{
+				return 'is part of';
+			}
+		case EdgeType.DIRECTED_ASSOCIATION:
+			{
+				return 'is related to';
+			}
+		default:
+			{
+				throw new Error('EdgeType not implemented.');
+			}
 		}
 	}
 
 	getClassFieldRelationEntityName() {
-		const { formatMessage } = IntlProvider.intl;
-		return formatMessage({
-			id: 'metamodelmapper.field_relation_entity_name',
-			defaultMessage: 'is related to'
-		});
+		return 'is related to';
 	}
 
 	getClassMethodRelationEntityName() {
-		const { formatMessage } = IntlProvider.intl;
-		return formatMessage({
-			id: 'metamodelmapper.method_relation_entity_name',
-			defaultMessage: 'influences'
-		});
+		return 'influences';
 	}
 
 	getDefaultUmlClassMetaModelName() {
-		const { formatMessage } = IntlProvider.intl;
-		return formatMessage({
-			id: 'metamodelmapper.meta_model_name',
-			defaultMessage: 'Concept'
-		});
+		return 'Concept';
 	}
 
 	getClassFieldText(relation) {
 		const destinationCode = this.getCodeByCodeId(relation.codeId);
-		const relationMetaModelElement = this.getMetaModelEntityById(
-			relation.mmElementId
-		);
+		const relationMetaModelElement = this.getMetaModelEntityById(relation.mmElementId);
 		return destinationCode.name + ': ' + relationMetaModelElement.name;
 	}
 
 	getClassMethodText(relation) {
 		const destinationCode = this.getCodeByCodeId(relation.codeId);
-		const relationMetaModelElement = this.getMetaModelEntityById(
-			relation.mmElementId
-		);
+		const relationMetaModelElement = this.getMetaModelEntityById(relation.mmElementId);
 
 		let methodArguments = null;
 
@@ -83,13 +63,7 @@ export default class MetaModelMapper {
 			methodArguments = [];
 		}
 
-		return (
-			destinationCode.name +
-			'(' +
-			methodArguments.join(', ') +
-			'): ' +
-			relationMetaModelElement.name
-		);
+		return destinationCode.name + '(' + methodArguments.join(', ') + '): ' + relationMetaModelElement.name;
 	}
 
 	getUmlEditor() {
@@ -109,15 +83,9 @@ export default class MetaModelMapper {
 	}
 
 	getTargetType(target) {
-		if (
-			target.hasOwnProperty('codeID') ||
-			target.hasOwnProperty('mmElementIDs')
-		) {
+		if (target.hasOwnProperty('codeID') || target.hasOwnProperty('mmElementIDs')) {
 			return Target.CODE;
-		} else if (
-			target.hasOwnProperty('codeId') ||
-			target.hasOwnProperty('mmElementId')
-		) {
+		} else if (target.hasOwnProperty('codeId') || target.hasOwnProperty('mmElementId')) {
 			return Target.RELATION;
 		}
 

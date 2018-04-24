@@ -7,6 +7,14 @@ var loginHelper = require('../helper/LoginHelper.js');
 
 var Conditions = require('./Conditions.js');
 
+function color(color, output) {
+    return '\x1b['+color+'m'+output+'\x1b[0m';
+}
+
+const log = (s) => {
+	process.stdout.write(color(95,s)+"\n");
+};
+
 class Common {
 
 	static getDefaultTimeout() {
@@ -35,9 +43,9 @@ class Common {
 		const textBorder = repeat(headerTextBorderChar, headerTextWidth);
 		
 		console.log(' ');
-		console.log(textBorder);
-		console.log(textContentBorder + textContentSpacesBefore + textContentName + textContentSpacesAfter + textContentBorder);
-		console.log(textBorder);
+		log(textBorder);
+		log(textContentBorder + textContentSpacesBefore + textContentName + textContentSpacesAfter + textContentBorder);
+		log(textBorder);
 	} 
 
 	static setupChromeDriver() {

@@ -1,9 +1,9 @@
 const fs = require('fs');
 const gulp = require('gulp');
 const prettierEslint = require('./gulp-plugins/prettier-eslint');
-const webpack = require('webpack-stream');
+const webpackStream = require('webpack-stream');
+const webpack = require('webpack');
 const uglify = require('gulp-uglify');
-const jasmine = require('gulp-jasmine');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
@@ -56,9 +56,13 @@ function setConfig() {
 	if (argv.local) config.test_mode = true; else config.test_mode = false;
 }
 
-gulp.task('bundle-ci', ['bundle-task']);
+gulp.task('bundle-ci', ['set-node-env-production', 'bundle-task']);
 
 gulp.task('bundle', ['format', 'bundle-task', 'set-config']);
+
+gulp.task('set-node-env-production', () => {
+	process.env.NODE_ENV = 'production';
+});
 
 gulp.task('format', () => {
 	return gulp
@@ -229,7 +233,7 @@ gulp.task('bundle-task', function() {
 	return (gulp
 		.src('') //doesn't matter what to put as src,
 	//since webpack.config fetches from entry points
-		.pipe(webpack(require('./webpack.config.js')))
+		.pipe(webpackStream(require('./webpack.config.js'), webpack))
 		.on('error', handleError)
 		.pipe(gulp.dest('dist/js/'))
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/')) );
@@ -319,10 +323,11 @@ gulp.task('webpack-watch', function() {
 		.src('') //doesn't matter what to put as src,
 	//since webpack.config fetches from entry points
 		.pipe(
-			webpack(
+			webpackStream(
 				Object.assign(require('./webpack.config.js'), {
 					watch: true
-				})
+				}),
+				webpack
 			)
 		)
 		.on('error', handleError)
@@ -349,25 +354,6 @@ gulp.task('sw-watch', function () {
     gulp.watch('dist/js/service-worker/sw.dist.js', ['sw']);
 });
 
-gulp.task('unit-tests', () =>
-	gulp.src('./tests/unit-tests/**/*.js').pipe(jasmine())
-);
-gulp.task('acceptance-tests', () =>
-	gulp
-		.src('./tests/acceptance-tests/**/*.js')
-		.pipe(jasmine())
-		.on('error', handleError)
-);
-
 gulp.task('watch', ['webpack-watch', 'translation-watch', 'sw-watch']);
-
-gulp.task('acceptance-tests', () => {
-	const basePath = './tests/acceptance-tests/';
-	gulp.src([
-		basePath + '*.js', 
-		basePath + 'coding-editor/*.js',
-		basePath + 'settings/*.js'
-	]).pipe(jasmine()).on('error', handleError);
-});
 
 gulp.task('default', ['watch', 'sw']);

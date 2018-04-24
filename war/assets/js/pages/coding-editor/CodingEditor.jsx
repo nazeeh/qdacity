@@ -213,7 +213,7 @@ class CodingEditor extends React.Component {
 			selectedEditor: view
 		});
 	}
-	
+
 	openCodingInCodingEditor(codingId) {
 		this.viewChanged(PageView.CODING);
 		this.documentsViewRef.setDocumentWithCoding(codingId);
@@ -364,6 +364,7 @@ class CodingEditor extends React.Component {
 					deleteCode={this.deleteCode}
 					toggleCodingView={this.toggleCodingView}
 					deleteRelationship={this.deleteRelationship}
+					syncService={this.syncService}
 				/>
 			);
 		}
@@ -478,9 +479,9 @@ class CodingEditor extends React.Component {
 						>
 							{this.renderUMLEditor()}
 						</StyledUMLEditor>
-						
-						<CodeQueries 
-							ref={c => { if (c) this.codeQueriesRef = c; }} 
+
+						<CodeQueries
+							ref={c => { if (c) this.codeQueriesRef = c; }}
 							selectedEditor={this.state.selectedEditor}
 							textEditor={this.textEditor}
 							getCodeSystem={this.getCodeSystem}

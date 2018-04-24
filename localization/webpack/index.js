@@ -15,9 +15,9 @@ export default class ExtractMessagesPlugin {
 	}
 
 	apply(compiler) {
-		compiler.plugin('compilation', (compilation) => {
+		compiler.hooks.compilation.tap('ExtractMessagesPlugin', (compilation) => {
 			if(!this.outputPath) throw new Error('Required option outputPath is not set');
-			compilation.plugin('normal-module-loader', (context, module) => {
+			compilation.hooks.normalModuleLoader.tap('ExtractMessagesPlugin', (context, module) => {
 				context[metadataSubscriber] = (metadata) => {
 					if(!metadata['react-intl'] || !metadata['react-intl'].messages) {
 						return;
@@ -34,7 +34,7 @@ export default class ExtractMessagesPlugin {
 				};
 			});
 		});
-		compiler.plugin('emit', (compilation, done) => {
+		compiler.hooks.emit.tapAsync('ExtractMessagesPlugin', (compilation, done) => {
 			const messages = {};
 			const messageList = [];
 			this.messages.forEach((value, key) => {

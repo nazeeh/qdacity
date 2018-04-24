@@ -25,7 +25,6 @@ stages:
   stage: build
   only:
     - branches
-  cache: *node_cache
   artifacts:
     paths:
       - target/qdacity-war/dist/
@@ -41,7 +40,7 @@ frontend_prod_build:
   <<: *frontend_build
   script:
     - build_babel_plugin
-    - build_frontend bundle-ci set-config-target generate-language-files minify set-react-production sw
+    - build_frontend bundle-ci set-config-target generate-language-files set-react-production sw
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -104,9 +103,6 @@ frontend_prod_unittest:
   stage: test
   only:
     - branches
-  cache:
-    <<: *node_cache
-    policy: pull
   artifacts:
     paths:
       - war/coverage
@@ -114,10 +110,14 @@ frontend_prod_unittest:
   script:
     - export DISPLAY=:10
     - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
+    - cd localization
+    - npm ci
+    - cd ..
     - cd war
+    - npm ci
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - gulp set-config-dist
-    - ./node_modules/karma/bin/karma start --single-run
+    - npm run test
   dependencies:
     - frontend_prod_build
   allow_failure: true
@@ -127,11 +127,12 @@ frontend_prod_translation_tests:
   stage: test
   only:
     - branches
-  cache:
-    <<: *node_cache
-    policy: pull
   script:
+    - cd localization
+    - npm ci
+    - cd ..
     - cd war
+    - npm ci
     - echo $API_CONFIG_PRODUCTION > ./api_config.json
     - gulp generate-language-files --verifyTranslation
   allow_failure: true
@@ -145,7 +146,6 @@ acceptance_tests:
     key: "acceptance_tests"
     paths:
     - realtime-service/node_modules/
-    - war/node_modules/
   script:
     - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
@@ -159,9 +159,6 @@ frontend_babel_plugin_test:
   stage: test
   only:
     - branches
-  cache:
-    <<: *node_cache
-    policy: pull
   script:
     - build_babel_plugin test
 
@@ -264,7 +261,7 @@ deploy_non_minified:
       cd war
       echo $API_CONFIG_PRODUCTION > ./api_config.json
       rm -f -r ./dist/js/*
-      npm install
+      npm ci
       while [ -n "$1" ]; do
         subcommand="$1"
         shift
@@ -275,7 +272,7 @@ deploy_non_minified:
 
     function build_babel_plugin() {
       cd localization
-      npm install
+      npm ci
       while [ -n "$1" ]; do
         subcommand="$1"
         shift
