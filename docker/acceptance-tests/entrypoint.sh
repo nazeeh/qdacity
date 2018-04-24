@@ -23,7 +23,7 @@ echo "##########################################################################
 echo "########                         Start the devserver                           ########"
 echo "#######################################################################################"
 
-sudo /usr/local/gcloud/google-cloud-sdk/bin/java_dev_appserver.sh --disable_update_check --port=8888 /app/target/qdacity-war/ | sudo tee /app/devserver.log > /dev/null &
+sudo /usr/local/gcloud/google-cloud-sdk/bin/java_dev_appserver.sh --disable_update_check --port=8888 /app/target/qdacity-war/ 2>&1 | sudo tee /app/devserver.log > /dev/null &
 
 # Run a script which waits until the specified port is open (=> the dev-server is running)
 ./docker/acceptance-tests/waitForDevServer.sh
