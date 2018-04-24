@@ -14,8 +14,8 @@ sleep 10
 
 #sudo touch devserver.log
 echo "Setting ownership for seluser"
-sudo chown -R $USER:$(id -gn $USER) /Users/seluser/.config
-sudo chown $USER -R ./
+sudo chown -R $USER:$(id -gn $USER) /home/seluser/.config
+sudo chown $USER:$(id -gn $USER) -R ./
 
 # Start the dev-server
 echo "#######################################################################################"
