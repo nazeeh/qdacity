@@ -2,7 +2,7 @@ import openSocket from 'socket.io-client';
 
 import CodesService from './CodesService';
 import DocumentService from './DocumentService';
-import {MSG, EVT} from './constants.js';
+import { MSG, EVT } from './constants.js';
 
 import CodesEndpoint from '../endpoints/CodesEndpoint';
 

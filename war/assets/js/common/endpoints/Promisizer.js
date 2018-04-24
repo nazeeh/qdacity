@@ -8,8 +8,6 @@ export default class Promisizer {
 				if (!resp.code) {
 					resolve(resp);
 				} else {
-					if(resp.code === -2)
-						alert("Function not available");
 					reject(resp);
 				}
 			});
