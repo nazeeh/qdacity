@@ -12,11 +12,11 @@ echo "##########################################################################
 
 sleep 10
 
-sudo touch devserver.log
+sudo touch /app/devserver.log
 echo "Setting ownership for seluser: .config"
 sudo chown -R $USER:$(id -gn $USER) /home/seluser/.config
 echo "Setting ownership for seluser: devserver.log"
-sudo chown $USER:$(id -gn $USER) ./devserver.log
+sudo chown $USER:$(id -gn $USER) /app/devserver.log
 
 # Start the dev-server
 echo "#######################################################################################"
