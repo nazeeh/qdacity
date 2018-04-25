@@ -3,8 +3,6 @@ FROM qdacity-tests-base:latest
 # Copy repository
 WORKDIR /app
 COPY ./war/jest.acceptance.config.js /app/war/jest.acceptance.config.js
-COPY ./war/gulp-plugins /app/war/gulp-plugins
-COPY ./war/gulpfile.js /app/war/gulpfile.js
 COPY ./docker /app/docker
 COPY ./war/package.json /app/war/package.json
 COPY ./realtime-service /app/realtime-service

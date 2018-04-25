@@ -1,41 +1,34 @@
-//@ts-check
-
 var webdriver = require('selenium-webdriver'),
 	By = webdriver.By,
 	until = webdriver.until;
 var chrome = require("selenium-webdriver/chrome");
 var loginHelper = require('../helper/LoginHelper.js');
 
-describe('Setting Delete Qdacity User', function() {
+var Common = require('../helper/Common.js');
 
-	var defaultTimeout = 30000;
+const SPEC_NAME = 'Settings test';
+
+describe('Setting Delete Qdacity User', function() {
 	
-	var driver = null;
+	let driver = null;
 	
-	beforeAll((done) => {
-    	console.log(' ');
-    	console.log('#########################################################');
-    	console.log('####                  Settings test                  ####');
-    	console.log('#########################################################');
-		done();
+	beforeAll(() => {
+		Common.initializeSpec(SPEC_NAME);
     });
 
     beforeEach((done) => {
     	const options = new chrome.Options();
-
-        this.driver = new webdriver.Builder()
-	        .forBrowser('chrome')
-	        .withCapabilities(options.toCapabilities())
-			.build();
+		
+		this.driver = Common.setupChromeDriver();
 			
-			this.driver.get('http://localhost:8888/Settings').then(() => {
-				loginHelper.restoreLoginState(this.driver).then(done);
-			});
-    }, defaultTimeout);
+		this.driver.get('http://localhost:8888/Settings').then(() => {
+			loginHelper.restoreLoginState(this.driver).then(done);
+		});
+    }, Common.getDefaultTimeout());
 
     afterEach((done) => {
         this.driver.quit().then(done);   
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 
     it('deletes user and signs-out', (done) => {
         const _this = this;
@@ -85,5 +78,5 @@ describe('Setting Delete Qdacity User', function() {
 
         });
 
-    }, defaultTimeout);
+    }, Common.getDefaultTimeout());
 });
