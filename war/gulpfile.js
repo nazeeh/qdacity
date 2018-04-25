@@ -344,16 +344,30 @@ gulp.task('webpack-watch', function() {
 	);
 });
 
+gulp.task('prepare-sw-for-watch', function(){
+	const swDir = "dist/js/service-worker";
+	swDir
+		.split(path.sep)
+		.reduce((currentPath, folder) => {
+			currentPath += folder + path.sep;
+			if (!fs.existsSync(currentPath)){
+				fs.mkdirSync(currentPath);
+			}
+			return currentPath;
+		}, '');
+	fs.closeSync(fs.openSync(swDir+'/sw.dist.js', 'a'));
+});
+
 gulp.task('sw', function() {
 	gulp
 		.src('dist/js/service-worker/sw.dist.js')
 		.pipe(gulp.dest('../target/qdacity-war/'))
 });
 
-gulp.task('sw-watch', function () {
+gulp.task('sw-watch', ['prepare-sw-for-watch'], function () {
     gulp.watch('dist/js/service-worker/sw.dist.js', ['sw']);
 });
 
 gulp.task('watch', ['webpack-watch', 'translation-watch', 'sw-watch']);
 
-gulp.task('default', ['watch', 'sw']);
+gulp.task('default', ['watch']);
