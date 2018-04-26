@@ -3,7 +3,6 @@ const gulp = require('gulp');
 const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpackStream = require('webpack-stream');
 const webpack = require('webpack');
-const uglify = require('gulp-uglify');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
@@ -280,40 +279,6 @@ gulp.task('set-react-production', function() {
 		})
 		.pipe(replace('react.js', 'react.min.js'))
 		.pipe(replace('react-dom.js', 'react-dom.min.js'))
-		.pipe(gulp.dest('./'));
-});
-
-gulp.task('minify', function() {
-	return gulp
-		.src('../target/qdacity-war/dist/js/*.js', {
-			base: './'
-		})
-		.pipe(
-			uglify({
-				mangle: {
-					toplevel: true,
-					eval: true
-				},
-				compress: {
-					unused: true,
-					pure_getters: true,
-					evaluate: true,
-					booleans: true,
-					hoist_funs: true,
-					collapse_vars: true,
-					drop_console: true
-				},
-				output: {
-					ascii_only: true
-				}
-			})
-		)
-		.pipe(
-			size({
-				showFiles: true,
-				gzip: true
-			})
-		)
 		.pipe(gulp.dest('./'));
 });
 
