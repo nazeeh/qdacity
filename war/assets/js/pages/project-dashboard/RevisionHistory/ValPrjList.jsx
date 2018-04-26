@@ -114,6 +114,7 @@ export default class ValPrjList extends React.Component {
 					doNotrenderSearch={true}
 					itemsPerPage={8}
 					items={this.state.validationProjects}
+					getItemText={(item)=>{ return item.creatorName;}}
 					renderItem={this.renderValidationProject}
 				/>
 			</div>
