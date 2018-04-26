@@ -13,7 +13,7 @@ image: java:7
     - localization/node_modules/
 
 after_script:
-    - git clean -f
+    - git clean -d -f
     - rm -f /tmp/$CI_PIPELINE_ID.json
 
 stages:
