@@ -5,9 +5,5 @@ WORKDIR /app
 COPY ./docker /app/docker
 COPY ./realtime-service /app/realtime-service
 
-# Allow execute
-# RUN sudo chmod +x ./docker/acceptance-tests/entrypoint.sh
-# RUN sudo chmod +x ./docker/acceptance-tests/waitForDevServer.sh
-
 # Run script which starts the devserver and executes the tests
 ENTRYPOINT ./docker/acceptance-tests/entrypoint.sh

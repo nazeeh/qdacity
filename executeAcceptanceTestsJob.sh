@@ -4,11 +4,6 @@
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
 echo "$RTCSVC_ENV" | sed -e 's/\r/\n/g' > ./realtime-service/.env
 
-# Set file access, so we can later delete this folder even though the seluser in docker writes to it
-#chmod 777 ./target
-#setfacl -d -m o::rwx ./target
-#setfacl -d -m g::rwx ./target
-
 #creating directory where generated files from the devserver are stored, so we can later delete it
 mkdir ./target/qdacity-war/WEB-INF/appengine-generated
 
