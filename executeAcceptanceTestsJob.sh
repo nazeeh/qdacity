@@ -52,4 +52,4 @@ docker run --rm \
   $TEST_IMAGE_TAG
   
 echo "removing target folder"
-sudo rm -r ./target
+rm -r ./target
