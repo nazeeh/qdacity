@@ -46,3 +46,6 @@ docker run --rm \
   --mount type=bind,source="$(pwd)"/war,target=/app/war \
   --mount type=bind,source="$(pwd)"/target,target=/app/target \
   $TEST_IMAGE_TAG
+  
+echo "removing target folder"
+sudo rm -r ./target
