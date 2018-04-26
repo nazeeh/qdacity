@@ -45,7 +45,7 @@ export default class ExerciseList extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(
-				this.props.termCourse.getId()
+				this.props.termCourse.id
 			);
 			this.fetchTermCourseData();
 		}

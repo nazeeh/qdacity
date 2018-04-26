@@ -40,14 +40,14 @@ export default class TermCourseConfig extends React.Component {
 
 		var urlParams = URI(window.location.search).query(true);
 
-		var termCourse = new TermCourse(urlParams.termCourse);
+		this.termCourseId = urlParams.termCourse;
 
 		this.addParticipant = this.addParticipant.bind(this);
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
 			course: [],
-			termCourse: termCourse,
+			termCourse: null,
 			isTermCourseOwner: false
 		};
 	}
@@ -56,43 +56,40 @@ export default class TermCourseConfig extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.getTermCoursePromise = CourseEndpoint.getTermCourse(
-				this.state.termCourse.id
+				this.termCourseId
 			);
 			this.listTermCourseParticipantsPromise = CourseEndpoint.listTermCourseParticipants(
-				this.state.termCourse.getId()
+				this.termCourseId
 			);
 			this.setTermCourseInfo();
 		}
 	}
 
-	setTermCourseInfo() {
-		var _this = this;
+	async setTermCourseInfo() {
 		var isUserParticipant = false;
-		this.userPromise.then(function(user) {
-			var isTermCourseOwner = _this.props.auth.authorization.isTermCourseOwner(
-				user,
-				_this.state.termCourse.getId()
-			);
-			_this.listTermCourseParticipantsPromise.then(function(resp) {
-				var termCourse = _this.state.termCourse;
-				resp.items = resp.items || [];
-				termCourse.participants = resp.items;
-				typeof termCourse.participants.find(o => o.id === user.id) ==
-				'undefined'
-					? (isUserParticipant = false)
-					: (isUserParticipant = true);
-				termCourse.isUserParticipant = isUserParticipant;
-				_this.getTermCoursePromise.then(function(resp) {
-					termCourse.term = resp.term;
-					CourseEndpoint.getCourse(resp.courseID).then(function(course) {
-						_this.setState({
-							course: course,
-							termCourse: termCourse,
-							isTermCourseOwner: isTermCourseOwner
-						});
-					});
-				});
-			});
+		const user = await this.userPromise;
+		
+		let resp = await this.getTermCoursePromise;
+		const termCourse = resp;
+		
+		const course = await CourseEndpoint.getCourse(resp.courseID);
+
+		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
+			user,
+			termCourse,
+			course
+		);
+		resp = await this.listTermCourseParticipantsPromise;
+		resp.items = resp.items || [];
+		termCourse.participants = resp.items;
+				
+		isUserParticipant = (typeof termCourse.participants.find(o => o.id === user.id) != 'undefined');
+		termCourse.isUserParticipant = isUserParticipant;
+
+		this.setState({
+			course: course,
+			termCourse: termCourse,
+			isTermCourseOwner: isTermCourseOwner
 		});
 	}
 
@@ -184,8 +181,12 @@ export default class TermCourseConfig extends React.Component {
 		) {
 			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
 		}
-		this.init();
-		var termCourse = this.state.termCourse;
+		const termCourse = this.state.termCourse;
+		if(termCourse == undefined || termCourse == null) {
+			this.init();
+			return null;
+		}
+
 		return (
 			<StyledDashboard>
 				<StyledTitleRow>

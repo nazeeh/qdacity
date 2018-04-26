@@ -18,7 +18,6 @@ after_script:
 stages:
   - build
   - test
-  - report
   - deploy
 
 .frontend_build: &frontend_build
@@ -108,8 +107,6 @@ frontend_prod_unittest:
       - war/coverage
     expire_in: 6 mos
   script:
-    - export DISPLAY=:10
-    - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd localization
     - npm ci
     - cd ..
@@ -147,7 +144,6 @@ acceptance_tests:
     paths:
     - realtime-service/node_modules/
   script:
-    - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:
     - frontend_prod_build
@@ -182,21 +178,6 @@ rtcsvc_prod_unittest:
     - npm run test
   dependencies:
     - rtcsvc_prod_build
-
-# Does not work yet, with gitlab pages not installed
-pages:
-  <<: *job_definition
-  stage: report
-  dependencies:
-    - backend_prod_unittest
-  script:
-    - mv target/site/jacoco-ut/ public/
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - branches
 
 .deploy_prod: &deployment_template
   <<: *job_definition
