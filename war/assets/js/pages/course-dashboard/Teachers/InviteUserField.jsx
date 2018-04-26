@@ -28,7 +28,7 @@ export default class InviteUserField extends React.Component {
 	inviteUser() {
 		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
-		CourseEndPoint.inviteUser(this.props.course.getId(), this.state.userEmail)
+		CourseEndPoint.inviteUser(this.props.course.id, this.state.userEmail)
 			.then(function(resp) {
 				alertify.success(
 					formatMessage(

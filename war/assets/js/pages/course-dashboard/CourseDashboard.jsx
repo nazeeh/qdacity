@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import styled from 'styled-components';
 
-import CourseEndpoint from 'endpoints/CourseEndpoint';
+import CourseEndpoint from '../../common/endpoints/CourseEndpoint';
 import TermCourseList from './TermCourseList.jsx';
 import Course from './Course';
 import 'script-loader!../../../../components/URIjs/URI.min.js';
@@ -34,14 +34,14 @@ export default class CourseDashboard extends React.Component {
 		super(props);
 
 		var urlParams = URI(window.location.search).query(true);
+		this.courseId = urlParams.course;
 
-		var course = new Course(urlParams.course);
 		this.setCourse = this.setCourse.bind(this);
 		this.addParticipant = this.addParticipant.bind(this);
 		this.removeParticipant = this.removeParticipant.bind(this);
 
 		this.state = {
-			course: course,
+			course: null,
 			isCourseOwner: false
 		};
 		$('body').css({
@@ -50,13 +50,15 @@ export default class CourseDashboard extends React.Component {
 
 		this.authenticationProvider = props.auth.authentication;
 
-		const _this = this;
+		this.init();
 	}
 
 	setCourse(course) {
 		this.setState({
 			course: course
 		});
+
+		this.setUserRights(); // need loaded data, so update when arrives
 	}
 
 	addParticipant(term) {
@@ -90,14 +92,20 @@ export default class CourseDashboard extends React.Component {
 		}
 	}
 
-	setUserRights() {
-		var _this = this;
-		this.userPromise.then(function(user) {
-			var isCourseOwner = _this.props.auth.authorization.isCourseOwner(
-				user,
-				_this.state.course.getId()
-			);
-			_this.state.isCourseOwner = isCourseOwner;
+	async setUserRights() {
+		const user = await this.userPromise;
+		let course = this.state.course;
+		if(course == undefined || course == null) {
+			// don't overwrite fetched information from subclass!
+			course = await CourseEndpoint.getCourse(this.courseId);
+		}
+		const isCourseOwner = this.props.auth.authorization.isCourseOwner(
+			user,
+			course
+		);
+		this.setState({
+			isCourseOwner: isCourseOwner,
+			course: course
 		});
 	}
 
@@ -129,6 +137,7 @@ export default class CourseDashboard extends React.Component {
 								addParticipant={this.addParticipant}
 								removeParticipant={this.removeParticipant}
 								course={this.state.course}
+								isCourseOwner={this.state.isCourseOwner}
 								setCourse={this.setCourse}
 								history={this.props.history}
 							/>
