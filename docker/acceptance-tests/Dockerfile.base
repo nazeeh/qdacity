@@ -35,3 +35,6 @@ RUN gcloud components install app-engine-java --quiet
 RUN \
   curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
   sudo apt-get install -y nodejs
+  
+# update to latest npm version
+RUN sudo npm i -g npm

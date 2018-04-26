@@ -13,7 +13,7 @@ const BabelFormatMessagesPlugin = require('../localization/babel').default;
 
 module.exports = {
 	bail: true,
-	mode: 'development',
+	mode: process.env.NODE_ENV || 'development',
 	optimization: {
 		splitChunks: {
 			name: 'qdacity',
@@ -110,7 +110,7 @@ module.exports = {
 		}),
 
 		new MiniCssExtractPlugin({
-			filename: "[name].css",
+			filename: "styles.css",
 			chunkFilename: "[id].css"
 		}),
 
