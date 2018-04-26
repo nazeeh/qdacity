@@ -146,7 +146,6 @@ acceptance_tests:
     paths:
     - realtime-service/node_modules/
   script:
-    - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
   dependencies:
     - frontend_prod_build
