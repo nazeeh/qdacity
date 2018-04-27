@@ -272,16 +272,6 @@ gulp.task('set-config-target', function() {
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/'));
 });
 
-gulp.task('set-react-production', function() {
-	return gulp
-		.src('./*.jsp', {
-			base: './'
-		})
-		.pipe(replace('react.js', 'react.min.js'))
-		.pipe(replace('react-dom.js', 'react-dom.min.js'))
-		.pipe(gulp.dest('./'));
-});
-
 gulp.task('webpack-watch', function() {
 	setConfig();
 	return (gulp
