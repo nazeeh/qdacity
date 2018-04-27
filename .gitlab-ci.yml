@@ -182,7 +182,6 @@ rtcsvc_prod_unittest:
 
 .deploy_prod: &deployment_template
   <<: *job_definition
-  cache: *node_cache
   stage: deploy
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
