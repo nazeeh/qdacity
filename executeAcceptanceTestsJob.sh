@@ -53,6 +53,3 @@ docker run --rm \
   --mount type=bind,source="$(pwd)"/realtime-service,target=/app/realtime-service \
   --mount type=bind,source="$(pwd)"/logs,target=/app/logs \
   $TEST_IMAGE_TAG
-  
-echo "removing target folder"
-rm -r ./target
