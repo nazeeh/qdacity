@@ -146,6 +146,10 @@ acceptance_tests:
     - realtime-service/node_modules/
   script:
     - ./executeAcceptanceTestsJob.sh
+  artifacts:
+    paths:
+      - logs
+    expire_in: 6 mos
   dependencies:
     - frontend_prod_build
     - backend_prod_build

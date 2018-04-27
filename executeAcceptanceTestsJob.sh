@@ -41,6 +41,8 @@ echo "Building the image"
 
 # Build test image
 docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $TEST_IMAGE_TAG .
+
+mkdir logs
  
 # Run docker image
 echo "Running the image" 
@@ -49,6 +51,7 @@ docker run --rm \
   --mount type=bind,source="$(pwd)"/war,target=/app/war \
   --mount type=bind,source="$(pwd)"/target,target=/app/target \
   --mount type=bind,source="$(pwd)"/realtime-service,target=/app/realtime-service \
+  --mount type=bind,source="$(pwd)"/logs,target=/app/logs \
   $TEST_IMAGE_TAG
   
 echo "removing target folder"
