@@ -3,7 +3,6 @@ FROM qdacity-tests-base:latest
 # Copy repository
 WORKDIR /app
 COPY ./docker /app/docker
-COPY ./realtime-service /app/realtime-service
 
 # Run script which starts the devserver and executes the tests
 ENTRYPOINT ./docker/acceptance-tests/entrypoint.sh

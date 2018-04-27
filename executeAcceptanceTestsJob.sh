@@ -48,6 +48,7 @@ docker run --rm \
   -v /dev/shm:/dev/shm \
   --mount type=bind,source="$(pwd)"/war,target=/app/war \
   --mount type=bind,source="$(pwd)"/target,target=/app/target \
+  --mount type=bind,source="$(pwd)"/realtime-service,target=/app/realtime-service \
   $TEST_IMAGE_TAG
   
 echo "removing target folder"
