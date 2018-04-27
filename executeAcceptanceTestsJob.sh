@@ -4,6 +4,9 @@
 echo $API_CONFIG_PRODUCTION > ./war/api_config.json
 echo "$RTCSVC_ENV" | sed -e 's/\r/\n/g' > ./realtime-service/.env
 
+#creating directory where generated files from the devserver are stored, so we can later delete it
+mkdir ./target/qdacity-war/WEB-INF/appengine-generated
+
 # Install npm packages
 cd realtime-service
 yarn install
@@ -41,4 +44,11 @@ docker build -f ./docker/acceptance-tests/Dockerfile.tests -t $TEST_IMAGE_TAG .
  
 # Run docker image
 echo "Running the image" 
-docker run --rm -v /dev/shm:/dev/shm --mount type=bind,source="$(pwd)"/war/node_modules,target=/app/war/node_modules $TEST_IMAGE_TAG
+docker run --rm \
+  -v /dev/shm:/dev/shm \
+  --mount type=bind,source="$(pwd)"/war,target=/app/war \
+  --mount type=bind,source="$(pwd)"/target,target=/app/target \
+  $TEST_IMAGE_TAG
+  
+echo "removing target folder"
+rm -r ./target

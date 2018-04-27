@@ -14,6 +14,7 @@ image: java:7
 
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
+    - rm -r -f ./war/node_modules/
 
 stages:
   - build
@@ -39,7 +40,7 @@ frontend_prod_build:
   <<: *frontend_build
   script:
     - build_babel_plugin
-    - build_frontend bundle-ci set-config-target generate-language-files set-react-production sw
+    - build_frontend bundle-ci set-config-target generate-language-files sw
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -181,7 +182,6 @@ rtcsvc_prod_unittest:
 
 .deploy_prod: &deployment_template
   <<: *job_definition
-  cache: *node_cache
   stage: deploy
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
