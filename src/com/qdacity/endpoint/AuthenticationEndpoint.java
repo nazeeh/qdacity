@@ -497,7 +497,7 @@ public class AuthenticationEndpoint {
         PersistenceManager mgr = getPersistenceManager();
         Transaction transaction = mgr.currentTransaction();
         try {
-            transaction.begin(); // transaction in order to update dependent relation
+            transaction.begin(); // remove associated login from user and delete UserLoginProviderInformation manually (workaround)
             mgr.makePersistent(user);
 
             // Set filter for UserLoginProviderInformation
@@ -554,7 +554,7 @@ public class AuthenticationEndpoint {
      */
     private void assertAssociationPreconditions(AuthenticatedUser unAssociatedUser) throws UnauthorizedException {
         if(unAssociatedUser == null) {
-            throw new UnauthorizedException("Code4.1: The Google token does not seem to be valid!");
+            throw new UnauthorizedException("Code4.1: The token does not seem to be valid!");
         }
         User user = null;
 
