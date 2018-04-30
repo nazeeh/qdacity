@@ -1,6 +1,6 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
-const version=6;
+const version = 9;
 
 let apiMethods = {};
 
@@ -20,18 +20,16 @@ function discoverApi() {
 }
 
 function _parseDiscoveryDoc(discovery) {
-	console.log(discovery);
+	console.log("parsing discovery");
 	const resources = discovery.resources;
 	for (let resource in resources) {
 		resource = resources[resource];
 		for (let method in resource.methods) {
 			method = resource.methods[method];
-			if (method.httpMethod === "POST") {
-				apiMethods[method.id] = (discovery.basePath + method.path).replace(/^\/+/g, '');
-			}
+			apiMethods[method.id] = (discovery.basePath + method.path).replace(/^\/+/g, '');
 		}
 	}
-	registerPostRoutes();
+	registerRoutes();
 }
 
 function pathToRegex(path) {
@@ -45,10 +43,37 @@ self.addEventListener('install', function (event) {
 	event.waitUntil(discoverApi());
 });
 
+
+// workbox.routing.registerRoute(
+// 	/^(?!.*ping\.txt$).*/,
+// 	workbox.strategies.networkFirst()
+// );
+
 workbox.routing.registerRoute(
-	/^(?!.*ping\.txt$).*/,
+	/.*\.css/,
 	workbox.strategies.networkFirst()
 );
+workbox.routing.registerRoute(
+	/.*\.js/,
+	workbox.strategies.networkFirst()
+);
+workbox.routing.registerRoute(
+	"/",
+	workbox.strategies.networkFirst()
+);
+workbox.routing.registerRoute(
+	"/PersonalDashboard",
+	workbox.strategies.networkFirst()
+);
+workbox.routing.registerRoute(
+	/_ah\/api\/discovery\/.*/,
+	workbox.strategies.networkFirst()
+);
+workbox.routing.registerRoute(
+	/_ah\/api\/static\/.*/,
+	workbox.strategies.networkFirst()
+);
+
 
 
 const insertCodeHandler = ({url, event}) => {
@@ -87,7 +112,11 @@ const insertCodeHandler = ({url, event}) => {
 };
 
 /*** Register Routes ***/
-function registerPostRoutes() {
+function registerRoutes() {
+	workbox.routing.registerRoute(
+		pathToRegex(apiMethods["qdacity.user.getCurrentUser"]),
+		workbox.strategies.networkFirst()
+	);
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
 		insertCodeHandler,
