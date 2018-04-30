@@ -2,7 +2,7 @@
 import jwt_decode from 'jwt-decode';
 
 const STORAGE_QDACITY_JWT_TOKEN_KEY = 'qdacity-jwt-token';
-const TOKEN_TIMEOUT = 30; //min
+const TOKEN_REFRESH_INTERVAL = 30; //min
 
 
 export default class QdacityTokenAuthenticationProvider {
@@ -169,7 +169,7 @@ export default class QdacityTokenAuthenticationProvider {
 		const decoded = jwt_decode(this.jwtToken);
 
 		const now = new Date();
-		const compareDate = new Date(now.getTime() + TOKEN_TIMEOUT * 60000); // adding minutes
+		const compareDate = new Date(now.getTime() + TOKEN_REFRESH_INTERVAL * 60000); // adding minutes
 		const expiresAt = new Date(decoded.exp  * 1000); // get the right date format
 
 		if(expiresAt.getTime() < compareDate.getTime()) {
