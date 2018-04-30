@@ -14,6 +14,7 @@ import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.user.User;
 import com.qdacity.user.UserGroup;
 
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
@@ -155,6 +156,16 @@ public class UserGroupEndpoint {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The participant could not be authenticated");
         }
+        User qdacityUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
+
+        UserGroup requestedGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
+        if(requestedGroup == null) {
+            throw new JDOObjectNotFoundException("The user group with " + groupId + " does not exist!");
+        }
+
+        if(!requestedGroup.getParticipants().contains(qdacityUser.getId())) { // participants allowed
+            Authorization.checkAuthorization(requestedGroup, loggedInUser); // admin and owners allowed
+        }
 
         return (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
     }
@@ -244,7 +255,13 @@ public class UserGroupEndpoint {
     public CollectionResponse<User> getUsers(@Named("cursor") @Nullable String cursorString, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
             throw new UnauthorizedException("The participant could not be authenticated");
-        }
+    }
+
+    User qdacityUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
+    UserGroup requestedGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
+        if(!requestedGroup.getParticipants().contains(qdacityUser.getId())) { // participants allowed
+        Authorization.checkAuthorization(requestedGroup, loggedInUser); // admin and owners allowed
+    }
 
         List<User> execute = null;
         PersistenceManager mgr = getPersistenceManager();
