@@ -79,4 +79,53 @@ export default class AuthenticationEndpoint {
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
+
+	static changePassword(oldPassword, newPassword) {
+		var apiMethod = gapi.client.qdacity.auth.changePassword({
+			oldPassword: oldPassword,
+			newPassword: newPassword
+		})
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static getAssociatedLogins() {
+		var apiMethod = gapi.client.qdacity.auth.getAssociatedLogins();
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static associateGoogleLogin(googleIdToken) {
+		var apiMethod = gapi.client.qdacity.auth.associateGoogleLogin({
+            googleIdToken: googleIdToken
+        })
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static associateFacebookLogin(facebookAccessToken) {
+		var apiMethod = gapi.client.qdacity.auth.associateFacebookLogin({
+            authNetworkToken: facebookAccessToken
+        })
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static associateTwitterLogin(twitterAccessToken) {
+		var apiMethod = gapi.client.qdacity.auth.associateTwitterLogin({
+            authNetworkToken: twitterAccessToken
+        });
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static associateEmailPassword(email, password) {
+		var apiMethod = gapi.client.qdacity.auth.associateEmailPassword({
+			email: email,
+			password: password
+		})
+		return Promisizer.makePromise(apiMethod);
+	}
+
+	static disassociateLogin(associatedLogin) {
+		var apiMethod = gapi.client.qdacity.auth.disassociateLogin(
+            associatedLogin
+        );
+		return Promisizer.makePromise(apiMethod);
+	}
 }
