@@ -2,11 +2,13 @@
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import HelloJsAuthenticationProvider from './HelloJsAuthenticationProvider.js';
 
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint.js';
+
 export default class FacebookAuthenticationProvider extends HelloJsAuthenticationProvider {
 
 	constructor(qdacityTokenAuthentcationProvider) {
-		const registerApiMethod = gapi.client.qdacity.authentication.facebook.register;
-		const getTokenApiMethod = gapi.client.qdacity.authentication.facebook.getToken;
+		const registerApiMethod = AuthenticationEndpoint.registerFacebook;
+		const getTokenApiMethod = AuthenticationEndpoint.getTokenFacebook;
 		super(qdacityTokenAuthentcationProvider, registerApiMethod, getTokenApiMethod, AuthenticationNetworks.FACEBOOK);
 
 		this.qdacityTokenAuthentcationProvider = qdacityTokenAuthentcationProvider;
