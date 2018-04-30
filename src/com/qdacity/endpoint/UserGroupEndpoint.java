@@ -4,7 +4,6 @@ import com.google.api.server.spi.config.*;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.common.collect.Lists;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -14,7 +13,6 @@ import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.user.User;
 import com.qdacity.user.UserGroup;
 
-import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.ArrayList;
@@ -152,15 +150,15 @@ public class UserGroupEndpoint {
      * @throws UnauthorizedException
      */
     @ApiMethod(name = "usergroup.getById")
-    public UserGroup getUserGroupById(@Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
+    public UserGroup getUserGroupById(@Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         if(loggedInUser == null) {
-            throw new UnauthorizedException("The participant could not be authenticated");
+            throw new UnauthorizedException("The user could not be authenticated");
         }
         User qdacityUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
 
         UserGroup requestedGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
         if(requestedGroup == null) {
-            throw new JDOObjectNotFoundException("The user group with " + groupId + " does not exist!");
+            throw new BadRequestException("The user group with " + groupId + " does not exist!");
         }
 
         if(!requestedGroup.getParticipants().contains(qdacityUser.getId())) { // participants allowed
@@ -182,7 +180,7 @@ public class UserGroupEndpoint {
     @ApiMethod(name = "usergroup.addParticipant")
     public void addParticipant(@Named("userId") String userId, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
-            throw new UnauthorizedException("The participant could not be authenticated");
+            throw new UnauthorizedException("The user could not be authenticated");
         }
         User participant = (User) Cache.getOrLoad(userId, User.class);
         UserGroup userGroup = (UserGroup) Cache.getOrLoad(groupId, UserGroup.class);
@@ -217,7 +215,7 @@ public class UserGroupEndpoint {
     @ApiMethod(name = "usergroup.removeUser", path = "usergroup.removeUser")
     public void removeUser(@Named("userId") String userId, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
-            throw new UnauthorizedException("The participant could not be authenticated");
+            throw new UnauthorizedException("The user could not be authenticated");
         }
         User requestingUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
         User user = (User) Cache.getOrLoad(userId, User.class);
@@ -254,7 +252,7 @@ public class UserGroupEndpoint {
     @ApiMethod(name = "usergroup.getUsers", path = "usergroup.getUsers")
     public CollectionResponse<User> getUsers(@Named("cursor") @Nullable String cursorString, @Named("groupId") Long groupId, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
         if(loggedInUser == null) {
-            throw new UnauthorizedException("The participant could not be authenticated");
+            throw new UnauthorizedException("The user could not be authenticated");
     }
 
     User qdacityUser = Cache.getOrLoadUserByAuthenticatedUser((AuthenticatedUser) loggedInUser);
