@@ -361,6 +361,7 @@ gulp.task('prepare-sw-for-watch', function(){
 gulp.task('sw', function() {
 	gulp
 		.src('dist/js/service-worker/sw.dist.js')
+		.pipe(replace('$API_VERSION$', config.api_version))
 		.pipe(gulp.dest('../target/qdacity-war/'))
 });
 
