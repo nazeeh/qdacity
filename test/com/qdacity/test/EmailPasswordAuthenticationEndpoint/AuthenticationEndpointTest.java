@@ -1,15 +1,16 @@
 package com.qdacity.test.EmailPasswordAuthenticationEndpoint;
 
-import com.google.api.server.spi.request.Auth;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.InternalServerErrorException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.qdacity.PMF;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.authentication.CustomJWTValidator;
 import com.qdacity.authentication.TokenValidator;
+import com.qdacity.authentication.UnconfirmedEmailPasswordLogin;
 import com.qdacity.authentication.util.TokenUtil;
 import com.qdacity.endpoint.AuthenticationEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
@@ -18,8 +19,11 @@ import com.qdacity.user.User;
 import com.qdacity.user.UserLoginProviderInformation;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import javax.jdo.PersistenceManager;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -28,6 +32,9 @@ public class AuthenticationEndpointTest {
 
     private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
     private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), new LocalTaskQueueTestConfig().setQueueXmlPath("war/WEB-INF/queue.xml").setDisableAutoTaskExecution(false).setCallbackClass(LocalTaskQueueTestConfig.DeferredTaskCallback.class).setTaskExecutionLatch(latch));
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -41,12 +48,28 @@ public class AuthenticationEndpointTest {
     }
 
     @Test
+	public void testRegisterNoConfirmation() throws UnauthorizedException, BadRequestException {
+		User unregisteredUser = new User();
+		unregisteredUser.setGivenName("given-name");
+		unregisteredUser.setSurName("sur-name");
+		unregisteredUser.setEmail("email@email.com");
+		AuthenticationEndpoint endpoint = new AuthenticationEndpoint();
+
+		String password = "Password123";
+		endpoint.registerEmailPassword(unregisteredUser.getEmail(), password,
+				unregisteredUser.getGivenName(), unregisteredUser.getSurName(), null);
+
+		thrown.expect(UnauthorizedException.class);
+		thrown.expectMessage("Code1.1: The User with the email " + unregisteredUser.getEmail() + " could not be found!");
+		endpoint.getTokenEmailPassword(unregisteredUser.getEmail(), password, null);
+	}
+
+    @Test
     public void testRegister() throws UnauthorizedException, BadRequestException {
         User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
-        AuthenticationEndpoint endpoint = new AuthenticationEndpoint();
 
         User registeredUser = registerUser(unregisteredUser, "Password123");
 
@@ -292,7 +315,25 @@ public class AuthenticationEndpointTest {
     }
 
     private User registerUser(User unregisteredUser, String password) throws UnauthorizedException, BadRequestException {
-        return new AuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
+        new AuthenticationEndpoint().registerEmailPassword(unregisteredUser.getEmail(), password,
                 unregisteredUser.getGivenName(), unregisteredUser.getSurName(), null);
+
+        UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = null;
+        PersistenceManager mgr = getPersistenceManager();
+        try {
+            unconfirmedEmailPasswordLogin = mgr.getObjectById(UnconfirmedEmailPasswordLogin.class, unregisteredUser.getEmail());
+        } finally {
+            mgr.close();
+        }
+
+        return new AuthenticationEndpoint().confirmEmailRegistration(unregisteredUser.getEmail(),
+                unregisteredUser.getGivenName(), unregisteredUser.getSurName(),
+                unconfirmedEmailPasswordLogin.getSecret(), null);
+    }
+
+
+
+    private static PersistenceManager getPersistenceManager() {
+        return PMF.get().getPersistenceManager();
     }
 }

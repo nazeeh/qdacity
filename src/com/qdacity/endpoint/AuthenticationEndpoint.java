@@ -59,7 +59,7 @@ public class AuthenticationEndpoint {
 
     /**
      * Registers a new user.
-     * This means adds the user to the database and adds an Email+Pwd LoginProvider Information
+     * Still has to be confirmed @see confirmEmailRegistration
      * @param email
      * @param givenName
      * @param surName
@@ -67,7 +67,7 @@ public class AuthenticationEndpoint {
      * @param loggedInUser
      */
     @ApiMethod(name = "authentication.email.register")
-    public User registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
+    public void registerEmailPassword(@Named("email") String email, @Named("pwd") String pwd,
                                       @Named("givenName") String givenName, @Named("surName") String surName,
                                       com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
@@ -80,6 +80,52 @@ public class AuthenticationEndpoint {
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);
 
+        String secret = "secret"; // TODO: generate random
+		// TODO: send email with secret to user
+
+
+        PersistenceManager pm = getPersistenceManager();
+        try {
+            pm.makePersistent(new UnconfirmedEmailPasswordLogin(email, pwdHash, secret)); // confirmed = false
+        } finally {
+            pm.close();
+        }
+    }
+
+    /**
+     * Inserts new user after successful confirmation.
+     * @param email
+     * @param givenName
+     * @param surName
+     * @param secret
+     * @param loggedInUser
+     * @return
+     * @throws UnauthorizedException
+     * @throws BadRequestException
+     */
+    public User confirmEmailRegistration(@Named("email") String email,
+                                         @Named("givenName") String givenName, @Named("surName") String surName,
+                                         @Named("secret") String secret,
+                                         com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
+        // get the stored EmailPasswordLogin
+        UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = null;
+        PersistenceManager pm = getPersistenceManager();
+        try {
+            unconfirmedEmailPasswordLogin = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email); // confirmed = false
+        } finally {
+            pm.close();
+        }
+
+        if(unconfirmedEmailPasswordLogin == null) {
+            throw new BadRequestException("This Email is not waiting for confirmation!");
+        } else if(unconfirmedEmailPasswordLogin.isConfirmed()) {
+            throw new BadRequestException("This Email is already confirmed!");
+        }
+
+        if(!unconfirmedEmailPasswordLogin.getSecret().equals(secret)) {
+            throw new BadRequestException("The supplied secret is not valid!");
+        }
+
         // the id is also the email adress
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
 
@@ -90,12 +136,16 @@ public class AuthenticationEndpoint {
         user.setSurName(surName);
         User insertedUser = userEndpoint.insertUser(user, authenticatedUser);
 
-        PersistenceManager pm = getPersistenceManager();
+        pm = getPersistenceManager();
         try {
-            pm.makePersistent(new EmailPasswordLogin(email, pwdHash));
+            unconfirmedEmailPasswordLogin = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email); // cannot delete transient -> fetch 2nd time
+            String password = unconfirmedEmailPasswordLogin.getHashedPwd();
+            pm.deletePersistent(unconfirmedEmailPasswordLogin);
+            pm.makePersistent(new EmailPasswordLogin(email, password));
         } finally {
             pm.close();
         }
+
         return insertedUser;
     }
 
@@ -137,6 +187,10 @@ public class AuthenticationEndpoint {
         }
         finally {
             pm.close();
+        }
+
+        if(emailPwd instanceof UnconfirmedEmailPasswordLogin) {
+            throw new UnauthorizedException("Code1.1: The User with the email " + email + " could not be found!");
         }
 
         // check if given password matches
@@ -292,13 +346,18 @@ public class AuthenticationEndpoint {
     private void assertEmailIsAvailable(String email) throws UnauthorizedException {
         PersistenceManager pm = getPersistenceManager();
         try {
-            // EmailPasswordLoginProviderInformation has externalUserId = email
             Object loginInfo = pm.getObjectById(EmailPasswordLogin.class, email);
-
             throw new UnauthorizedException("Code2.1: The Email is already in use!");
         } catch(JDOObjectNotFoundException ex) {
             // intended!
-        }finally {
+
+            try {
+                Object loginInfo = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email);
+                throw new UnauthorizedException("Code2.1: The Email is already in use, but still unconfirmed!");
+            } catch(JDOObjectNotFoundException ex2) {
+                // intended!
+            }
+        } finally {
             pm.close();
         }
     }

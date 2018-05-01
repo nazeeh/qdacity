@@ -3,6 +3,7 @@ package com.qdacity.user;
 import javax.jdo.annotations.*;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
 public class EmailPasswordLogin {
 
     @PrimaryKey
