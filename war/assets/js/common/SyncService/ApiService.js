@@ -1,5 +1,6 @@
 import CodesEndpoint from '../endpoints/CodesEndpoint';
 import { MSG } from './constants.js';
+import Alert from '../modals/Alert.js';
 
 export default class ApiService {
 	constructor(syncService) {
@@ -14,8 +15,10 @@ export default class ApiService {
 					.then(function (code) {
 						_this.syncService.fireEvent('codeInserted', code);
 					});
+			case MSG.USER.UPDATE:
+				break;
 			default:
-				console.log("unhandled message type")
+				new Alert('This Operation is not (yet) supported in offline mode').showModal();
 		}
 	}
 

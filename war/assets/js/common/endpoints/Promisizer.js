@@ -1,3 +1,5 @@
+import Alert from '../modals/Alert.js';
+
 export default class Promisizer {
 	constructor() {}
 
@@ -8,6 +10,9 @@ export default class Promisizer {
 				if (!resp.code) {
 					resolve(resp);
 				} else {
+					if (resp.code===-1){
+						new Alert('This Operation is not (yet) supported in offline mode').showModal();
+					}
 					reject(resp);
 				}
 			});
