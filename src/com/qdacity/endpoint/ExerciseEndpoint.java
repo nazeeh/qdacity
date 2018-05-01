@@ -528,7 +528,7 @@ public class ExerciseEndpoint {
                 results = (List<ExerciseResult>) q.execute(report.getValidationResultIDs());
                 mgr.deletePersistentAll(results);
             } else {
-                DeferredReportDeletion task = new DeferredReportDeletion(repID);
+                DeferredReportDeletion task = new DeferredExerciseReportDeletion(repID);
                 Queue queue = QueueFactory.getDefaultQueue();
                 queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
             }

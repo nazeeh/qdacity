@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.dev.LocalTaskQueue;
 import com.google.appengine.api.taskqueue.dev.QueueStateInfo;
+import com.google.appengine.datanucleus.JDODatastoreBridge;
+import com.qdacity.PMF;
 import com.qdacity.course.TermCourse;
 import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.endpoint.ExerciseEndpoint;
@@ -45,6 +47,8 @@ import com.qdacity.test.CourseEndpoint.CourseEndpointTestHelper;
 import com.qdacity.test.ProjectEndpoint.ProjectEndpointTestHelper;
 import com.qdacity.test.UserEndpoint.UserEndpointTestHelper;
 import com.qdacity.user.LoginProviderType;
+
+import javax.jdo.PersistenceManager;
 
 public class ExerciseEndpointTest {
     private final LocalTaskQueueTestConfig.TaskCountDownLatch latch = new LocalTaskQueueTestConfig.TaskCountDownLatch(1);
@@ -427,7 +431,7 @@ public class ExerciseEndpointTest {
         List<Exercise> exercises = ee.getExercisesByProjectRevisionID(revision.getRevisionID(), testUser);
         assertEquals(2, exercises.size());
     }
-    
+
     /**
      * Tests if a registered user can create an exerciseGroup
      * @throws UnauthorizedException
@@ -462,6 +466,10 @@ public class ExerciseEndpointTest {
      */
     @Test
     public void deleteExerciseProjectReportTest() throws UnauthorizedException {
+        List<ExerciseReport> exerciseReportsBeforeDeletion;
+        List<ExerciseReport> exerciseReportsAfterDeletion;
+        List<ExerciseResult> exerciseResults;
+        List<DocumentResult> docResults;
         Date nextYear = new Date();
         nextYear.setTime(31556952000L + nextYear.getTime());
 
@@ -499,13 +507,67 @@ public class ExerciseEndpointTest {
             fail("Deferred task did not finish in time");
         }
 
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Query q = new Query("ExerciseReport");
-        Entity queryResult = ds.prepare(q).asSingleEntity();
-        assertEquals(1, ds.prepare(q).countEntities(withLimit(10)));
-        ee.deleteExerciseProjectReport(queryResult.getKey().getId(), testUser);
+        PersistenceManager mgr = PMF.get().getPersistenceManager();
+        try {
+            javax.jdo.Query q;
+            q = mgr.newQuery(ExerciseReport.class, " projectID  == :projectID");
+            Map<String, Long> params = new HashMap<>();
+            params.put("projectID", 1L);
+            exerciseReportsBeforeDeletion = (List<ExerciseReport>) q.executeWithMap(params);
+        }
+        finally {
+            mgr.close();
+        }
+        //Assertion to confirm that the exercise report was created
+        assertEquals(1, exerciseReportsBeforeDeletion.size());
 
-        assertEquals(0, ds.prepare(new Query("ExerciseReport")).countEntities(withLimit(10)));
+
+        mgr = PMF.get().getPersistenceManager();
+        try {
+            javax.jdo.Query q;
+            q = mgr.newQuery(ExerciseReport.class, " projectID  == :projectID");
+            Map<String, Long> params = new HashMap<>();
+            params.put("projectID", 1L);
+            ee.deleteExerciseProjectReport(exerciseReportsBeforeDeletion.get(0).getId(), testUser);
+            exerciseReportsAfterDeletion = (List<ExerciseReport>) q.executeWithMap(params);
+        }
+        finally {
+            mgr.close();
+        }
+        //Test deleteExerciseProjectReport
+        assertEquals(0, exerciseReportsAfterDeletion.size());
+
+
+        try {
+            latch.await(25, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            fail("Deferred task did not finish in time");
+        }
+
+        mgr = PMF.get().getPersistenceManager();
+        try {
+            javax.jdo.Query validationResultsQuery;
+            validationResultsQuery = mgr.newQuery(ExerciseResult.class);
+            exerciseResults = (List<ExerciseResult>) validationResultsQuery.execute(exerciseReportsBeforeDeletion.get(0).getId());
+        }
+        finally {
+            mgr.close();
+        }
+        //Test whether the related ExerciseResults were deleted
+        assertEquals(0, exerciseResults.size());
+
+
+        mgr = PMF.get().getPersistenceManager();
+        try {
+            javax.jdo.Query docResultQuery = mgr.newQuery(DocumentResult.class);
+            docResults = (List<DocumentResult>) docResultQuery.execute();
+        }
+        finally {
+            mgr.close();
+        }
+        //Test whether the related Results were deleted
+        assertEquals(0, docResults.size());
     }
 
 
