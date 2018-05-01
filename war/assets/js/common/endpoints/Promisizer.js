@@ -10,7 +10,8 @@ export default class Promisizer {
 				if (!resp.code) {
 					resolve(resp);
 				} else {
-					if (resp.code===-1){
+					const method = Promisizer.getMethod(apiMethod);
+					if (resp.code===-1 && (method === "POST" || method === "DELETE" || method === "PUT")){
 						new Alert('This Operation is not (yet) supported in offline mode').showModal();
 					}
 					reject(resp);
@@ -18,5 +19,9 @@ export default class Promisizer {
 			});
 		});
 		return promise;
+	}
+
+	static getMethod(apiMethod) {
+		return apiMethod.Zq.q5;
 	}
 }
