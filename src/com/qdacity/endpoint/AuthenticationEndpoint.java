@@ -21,7 +21,6 @@ import com.qdacity.user.EmailPasswordLogin;
 import com.qdacity.user.LoginProviderType;
 import com.qdacity.user.User;
 import com.qdacity.user.UserLoginProviderInformation;
-import com.uwyn.jhighlight.fastutil.Hash;
 import io.jsonwebtoken.Claims;
 
 import javax.jdo.JDOObjectNotFoundException;
@@ -79,16 +78,34 @@ public class AuthenticationEndpoint {
 
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);
+        String secret = generateLoginVerificationSecret();
 
-        String secret = "secret"; // TODO: generate random
-		// TODO: send email with secret to user
-
+        // TODO: send email with secret to user
 
         PersistenceManager pm = getPersistenceManager();
         try {
             pm.makePersistent(new UnconfirmedEmailPasswordLogin(email, pwdHash, secret)); // confirmed = false
         } finally {
             pm.close();
+        }
+    }
+
+    private String generateLoginVerificationSecret() {
+        while(true) {
+            String uuid = UUID.randomUUID().toString();
+            PersistenceManager mgr = getPersistenceManager();
+            try {
+                Query.Filter filter = new Query.FilterPredicate("secret", Query.FilterOperator.EQUAL, uuid);
+                com.google.appengine.api.datastore.Query query = new com.google.appengine.api.datastore.Query(
+                        "UnconfirmedEmailPasswordLogin").setFilter(filter);
+                DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+                PreparedQuery pq = datastore.prepare(query);
+                if(pq.countEntities(FetchOptions.Builder.withDefaults()) == 0) {
+                    return uuid;
+                }
+            } finally {
+                mgr.close();
+            }
         }
     }
 
