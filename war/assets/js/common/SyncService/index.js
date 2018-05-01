@@ -158,16 +158,18 @@ export default class SyncService {
 		if (this._socket.disconnected) {
 			this.api.emit(messageType, arg)
 		}
-		return new Promise((resolve, reject) => {
-			this._socket.emit(messageType, arg, (status, ...args) => {
-				if (status === 'ok') {
-					resolve(...args);
-				} else {
-					this.console.error('API error', ...args);
-					reject(...args);
-				}
+		else {
+			return new Promise((resolve, reject) => {
+				this._socket.emit(messageType, arg, (status, ...args) => {
+					if (status === 'ok') {
+						resolve(...args);
+					} else {
+						this.console.error('API error', ...args);
+						reject(...args);
+					}
+				});
 			});
-		});
+		}
 	}
 
 	/**
