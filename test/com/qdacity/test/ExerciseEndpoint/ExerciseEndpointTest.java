@@ -401,6 +401,34 @@ public class ExerciseEndpointTest {
     }
 
     /**
+     * Tests if a registered user can get exercises of an exerciseGroup
+     * @throws UnauthorizedException
+     */
+    @Test
+    public void getExercisesByProjectRevisionIDTest() throws UnauthorizedException {
+
+
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
+        ProjectEndpoint pe = new ProjectEndpoint();
+
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CodeSystemTestHelper.addCodeSystem(2L, testUser);
+        ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+        ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+        ExerciseEndpointTestHelper.addExercise(2L, 1L, "New Exercise 2", nextYear, testUser);
+
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+
+        List<Exercise> exercises = ee.getExercisesByProjectRevisionID(revision.getRevisionID(), testUser);
+        assertEquals(2, exercises.size());
+    }
+    
+    /**
      * Tests if a registered user can create an exerciseGroup
      * @throws UnauthorizedException
      */
