@@ -66,6 +66,14 @@ workbox.routing.registerRoute(
 	workbox.strategies.networkFirst()
 );
 workbox.routing.registerRoute(
+	/ProjectDashboard.*/,
+	workbox.strategies.networkFirst()
+);
+workbox.routing.registerRoute(
+	/CodingEditor.*/,
+	workbox.strategies.networkFirst()
+);
+workbox.routing.registerRoute(
 	/_ah\/api\/discovery\/.*/,
 	workbox.strategies.networkFirst()
 );

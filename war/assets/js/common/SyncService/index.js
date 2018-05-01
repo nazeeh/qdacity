@@ -2,9 +2,9 @@ import openSocket from 'socket.io-client';
 
 import CodesService from './CodesService';
 import DocumentService from './DocumentService';
+import ApiService from './ApiService';
 import { MSG, EVT } from './constants.js';
 
-import CodesEndpoint from '../endpoints/CodesEndpoint';
 
 /**
  * Provides collaboration features for CodingEditor and sub-components
@@ -57,7 +57,7 @@ export default class SyncService {
 		this.off = this.off.bind(this);
 		this.disconnect = this.disconnect.bind(this);
 
-		// For debug: prevent console.log from being removed in build proceess
+		// For debug: prevent console.log from being removed in build process
 		this.console = window['con' + 'sole'];
 		this.log = this.console.log.bind(this.console);
 
@@ -67,6 +67,8 @@ export default class SyncService {
 		// Register sub-services
 		this.codes = new CodesService(this, this._socket);
 		this.documents = new DocumentService(this, this._socket);
+
+		this.api = new ApiService(this);
 	}
 
 	/**
@@ -154,16 +156,7 @@ export default class SyncService {
 	 */
 	emit(messageType, arg) {
 		if (this._socket.disconnected) {
-			const _this = this;
-			//TODO for every supported message
-			switch(messageType) {
-				case MSG.CODE.INSERT:
-					return CodesEndpoint.insertCode(arg.resource, arg.relationId, arg.relationSourceCodeId, arg.parentId)
-						.then(function(code){
-							_this.codes._handleCodeInserted(code);
-						});
-				default: this.console.log("unhandled message type")
-			}
+			this.api.emit(messageType, arg)
 		}
 		return new Promise((resolve, reject) => {
 			this._socket.emit(messageType, arg, (status, ...args) => {
