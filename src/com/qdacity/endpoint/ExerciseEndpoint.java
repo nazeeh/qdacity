@@ -519,19 +519,10 @@ public class ExerciseEndpoint {
             TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
             // Check if user is authorized
             Authorization.checkAuthorizationTermCourse(termCourse, user);
-
-            List<ExerciseResult> results;
-
-            if (report.getValidationResultIDs().size() > 0) {
-                // Delete all ValidationResults / old - linked from report
-                Query q = mgr.newQuery(ExerciseResult.class, ":p.contains(id)");
-                results = (List<ExerciseResult>) q.execute(report.getValidationResultIDs());
-                mgr.deletePersistentAll(results);
-            } else {
-                DeferredReportDeletion task = new DeferredExerciseReportDeletion(repID);
-                Queue queue = QueueFactory.getDefaultQueue();
-                queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-            }
+            
+            DeferredReportDeletion task = new DeferredExerciseReportDeletion(repID);
+            Queue queue = QueueFactory.getDefaultQueue();
+            queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 
             // Lazy fetch
             List<DocumentResult> docResults = report.getDocumentResults();
