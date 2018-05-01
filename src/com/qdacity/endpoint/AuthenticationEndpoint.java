@@ -84,7 +84,7 @@ public class AuthenticationEndpoint {
 
         PersistenceManager pm = getPersistenceManager();
         try {
-            pm.makePersistent(new UnconfirmedEmailPasswordLogin(email, pwdHash, secret)); // confirmed = false
+            pm.makePersistent(new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, secret)); // confirmed = false
         } finally {
             pm.close();
         }

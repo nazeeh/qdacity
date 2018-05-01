@@ -16,6 +16,12 @@ public class UnconfirmedEmailPasswordLogin extends EmailPasswordLogin {
 	private String secret;
 
 	@Persistent
+	private String givenName;
+
+	@Persistent
+	private String surName;
+
+	@Persistent
 	private boolean confirmed;
 
 	/**
@@ -24,10 +30,12 @@ public class UnconfirmedEmailPasswordLogin extends EmailPasswordLogin {
 	 * @param email
 	 * @param hashedPwd
 	 */
-	public UnconfirmedEmailPasswordLogin(String email, String hashedPwd, String secret) {
+	public UnconfirmedEmailPasswordLogin(String email, String hashedPwd, String givenName, String surName, String secret) {
 		super(email, hashedPwd);
-		this.confirmed = false;
+		this.givenName = givenName;
+		this.surName = surName;
 		this.secret = secret;
+		this.confirmed = false;
 	}
 
 	public String getSecret() {
@@ -44,5 +52,21 @@ public class UnconfirmedEmailPasswordLogin extends EmailPasswordLogin {
 
 	public void setConfirmed(boolean confirmed) {
 		this.confirmed = confirmed;
+	}
+
+	public String getGivenName() {
+		return givenName;
+	}
+
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
+	}
+
+	public String getSurName() {
+		return surName;
+	}
+
+	public void setSurName(String surName) {
+		this.surName = surName;
 	}
 }
