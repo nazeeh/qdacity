@@ -48,10 +48,19 @@ export default class ExerciseList extends React.Component {
 	}
 
 	renderExercise(exercise, index) {
+		const { formatMessage } = IntlProvider.intl;
 		return (
 			<StyledListItemDefault key={index} className="clickable">
 				<span> {exercise.name} </span>
-				<span> {"Deadline: "+exercise.exerciseDeadline.substr(0, 10)} </span>
+				<span> {formatMessage(
+					{
+						id: 'exerciselist.exercise_deadline',
+						defaultMessage: 'Deadline: {deadline}'
+					},
+					{
+						deadline: exercise.exerciseDeadline.substr(0, 10)
+					}
+				)} </span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.editorClick(e, exercise, index)}
