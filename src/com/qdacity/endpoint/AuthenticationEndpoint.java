@@ -26,6 +26,7 @@ import io.jsonwebtoken.Claims;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -84,7 +85,8 @@ public class AuthenticationEndpoint {
 
         PersistenceManager pm = getPersistenceManager();
         try {
-            pm.makePersistent(new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, secret)); // confirmed = false
+            UnconfirmedEmailPasswordLogin unconfirmedLogin = new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, secret);
+            pm.makePersistent(unconfirmedLogin); // confirmed = false
         } finally {
             pm.close();
         }
@@ -93,55 +95,65 @@ public class AuthenticationEndpoint {
     private String generateLoginVerificationSecret() {
         while(true) {
             String uuid = UUID.randomUUID().toString();
-            PersistenceManager mgr = getPersistenceManager();
-            try {
-                Query.Filter filter = new Query.FilterPredicate("secret", Query.FilterOperator.EQUAL, uuid);
-                com.google.appengine.api.datastore.Query query = new com.google.appengine.api.datastore.Query(
-                        "UnconfirmedEmailPasswordLogin").setFilter(filter);
-                DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-                PreparedQuery pq = datastore.prepare(query);
-                if(pq.countEntities(FetchOptions.Builder.withDefaults()) == 0) {
-                    return uuid;
-                }
-            } finally {
-                mgr.close();
+            if(this.fetchUnconfirmedEmailPasswordLoginBySecret(uuid).size() == 0) {
+                return uuid;
             }
+        }
+    }
+
+    private List<UnconfirmedEmailPasswordLogin> fetchUnconfirmedEmailPasswordLoginBySecret(String secret) {
+        PersistenceManager mgr = null;
+        try {
+            mgr = getPersistenceManager();
+            Query.Filter filter = new Query.FilterPredicate("secret", Query.FilterOperator.EQUAL, secret);
+            com.google.appengine.api.datastore.Query query = new com.google.appengine.api.datastore.Query(
+                    "UnconfirmedEmailPasswordLogin"
+            ).setFilter(filter);
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            PreparedQuery pq = datastore.prepare(query);
+
+            List<UnconfirmedEmailPasswordLogin> resultList = new ArrayList<>();
+            for (Entity result : pq.asIterable()) {
+                String email = (String) result.getProperty("email");
+                String hashedPwd = (String) result.getProperty("hashedPwd");
+                String givenName = (String) result.getProperty("givenName");
+                String surName = (String) result.getProperty("surName");
+                Boolean confirmed = (Boolean) result.getProperty("confirmed");
+
+                UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = new UnconfirmedEmailPasswordLogin(
+                        email, hashedPwd, givenName, surName, secret
+                );
+                unconfirmedEmailPasswordLogin.setConfirmed(confirmed);
+
+                resultList.add(unconfirmedEmailPasswordLogin);
+            }
+            return resultList;
+        } finally {
+            mgr.close();
         }
     }
 
     /**
      * Inserts new user after successful confirmation.
-     * @param email
-     * @param givenName
-     * @param surName
      * @param secret
      * @param loggedInUser
      * @return
      * @throws UnauthorizedException
      * @throws BadRequestException
      */
-    public User confirmEmailRegistration(@Named("email") String email,
-                                         @Named("givenName") String givenName, @Named("surName") String surName,
-                                         @Named("secret") String secret,
+    public User confirmEmailRegistration(@Named("secret") String secret,
                                          com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         // get the stored EmailPasswordLogin
-        UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = null;
-        PersistenceManager pm = getPersistenceManager();
-        try {
-            unconfirmedEmailPasswordLogin = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email); // confirmed = false
-        } finally {
-            pm.close();
-        }
-
-        if(unconfirmedEmailPasswordLogin == null) {
+        List<UnconfirmedEmailPasswordLogin> unconfirmedEmailPasswordLoginList = fetchUnconfirmedEmailPasswordLoginBySecret(secret);
+        if(unconfirmedEmailPasswordLoginList.size() == 0) {
             throw new BadRequestException("This Email is not waiting for confirmation!");
-        } else if(unconfirmedEmailPasswordLogin.isConfirmed()) {
+        }
+        UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = unconfirmedEmailPasswordLoginList.get(0);
+
+        if(unconfirmedEmailPasswordLogin.isConfirmed()) {
             throw new BadRequestException("This Email is already confirmed!");
         }
-
-        if(!unconfirmedEmailPasswordLogin.getSecret().equals(secret)) {
-            throw new BadRequestException("The supplied secret is not valid!");
-        }
+        String email = unconfirmedEmailPasswordLogin.getEmail();
 
         // the id is also the email adress
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(email, email, LoginProviderType.EMAIL_PASSWORD);
@@ -149,11 +161,11 @@ public class AuthenticationEndpoint {
         UserEndpoint userEndpoint = new UserEndpoint();
         User user = new User();
         user.setEmail(email);
-        user.setGivenName(givenName);
-        user.setSurName(surName);
+        user.setGivenName(unconfirmedEmailPasswordLogin.getGivenName());
+        user.setSurName(unconfirmedEmailPasswordLogin.getSurName());
         User insertedUser = userEndpoint.insertUser(user, authenticatedUser);
 
-        pm = getPersistenceManager();
+        PersistenceManager pm = getPersistenceManager();
         try {
             unconfirmedEmailPasswordLogin = pm.getObjectById(UnconfirmedEmailPasswordLogin.class, email); // cannot delete transient -> fetch 2nd time
             String password = unconfirmedEmailPasswordLogin.getHashedPwd();
@@ -204,10 +216,6 @@ public class AuthenticationEndpoint {
         }
         finally {
             pm.close();
-        }
-
-        if(emailPwd instanceof UnconfirmedEmailPasswordLogin) {
-            throw new UnauthorizedException("Code1.1: The User with the email " + email + " could not be found!");
         }
 
         // check if given password matches

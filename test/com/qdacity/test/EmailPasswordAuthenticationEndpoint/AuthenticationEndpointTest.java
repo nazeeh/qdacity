@@ -296,7 +296,8 @@ public class AuthenticationEndpointTest {
     }
 
     @Test(expected = UnauthorizedException.class)
-    public void testChangePwdWrongOldPwd() throws UnauthorizedException, BadRequestException {User unregisteredUser = new User();
+    public void testChangePwdWrongOldPwd() throws UnauthorizedException, BadRequestException {
+        User unregisteredUser = new User();
         unregisteredUser.setGivenName("given-name");
         unregisteredUser.setSurName("sur-name");
         unregisteredUser.setEmail("email@email.com");
@@ -326,9 +327,7 @@ public class AuthenticationEndpointTest {
             mgr.close();
         }
 
-        return new AuthenticationEndpoint().confirmEmailRegistration(unregisteredUser.getEmail(),
-                unregisteredUser.getGivenName(), unregisteredUser.getSurName(),
-                unconfirmedEmailPasswordLogin.getSecret(), null);
+        return new AuthenticationEndpoint().confirmEmailRegistration(unconfirmedEmailPasswordLogin.getSecret(), null);
     }
 
 

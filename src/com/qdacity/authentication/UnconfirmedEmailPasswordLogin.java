@@ -1,16 +1,22 @@
 package com.qdacity.authentication;
 
-import com.qdacity.user.EmailPasswordLogin;
-
 import javax.jdo.annotations.*;
 
 /**
  * Represents an unconfirmed email password registration / association.
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-@Inheritance(strategy=InheritanceStrategy.SUPERCLASS_TABLE)
-@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
-public class UnconfirmedEmailPasswordLogin extends EmailPasswordLogin {
+public class UnconfirmedEmailPasswordLogin {
+
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	String email;
+
+	/**
+	 * Hashed and salted!
+	 */
+	@Persistent
+	String hashedPwd;
 
 	@Persistent
 	private String secret;
@@ -31,11 +37,28 @@ public class UnconfirmedEmailPasswordLogin extends EmailPasswordLogin {
 	 * @param hashedPwd
 	 */
 	public UnconfirmedEmailPasswordLogin(String email, String hashedPwd, String givenName, String surName, String secret) {
-		super(email, hashedPwd);
+		this.email = email;
+		this.hashedPwd = hashedPwd;
 		this.givenName = givenName;
 		this.surName = surName;
 		this.secret = secret;
 		this.confirmed = false;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getHashedPwd() {
+		return hashedPwd;
+	}
+
+	public void setHashedPwd(String hashedPwd) {
+		this.hashedPwd = hashedPwd;
 	}
 
 	public String getSecret() {
