@@ -251,9 +251,9 @@ public class ExerciseEndpoint {
 
             Query q;
             Map<String, Long> params = new HashMap<>();
-            q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID");
+            q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID && exerciseID == :exerciseID");
             params.put("revisionID", revID);
-
+            params.put("exerciseID", exerciseID);
             reports = (List<ExerciseReport>) q.executeWithMap(params);
 
 
