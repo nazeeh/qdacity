@@ -299,6 +299,10 @@ public class ExerciseEndpointTest {
         QueueStateInfo qsi = ltq.getQueueStateInfo().get(QueueFactory.getDefaultQueue().getQueueName());
         assertEquals(0, qsi.getTaskInfo().size());
 
+        //Assertion to confirm that the DocumentResultQueue is empty
+        QueueStateInfo docResultQueueqsi = ltq.getQueueStateInfo().get(QueueFactory.getQueue("DocumentResultQueue").getQueueName());
+        assertEquals(0, docResultQueueqsi.getTaskInfo().size());
+
         List<ExerciseReport> reports = ee.listExerciseReports(1L, 1L, testUser);
         assertEquals(1, reports.size());
         ExerciseReport report = reports.get(0);
