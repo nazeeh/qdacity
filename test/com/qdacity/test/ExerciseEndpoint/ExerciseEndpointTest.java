@@ -570,6 +570,28 @@ public class ExerciseEndpointTest {
         assertEquals(0, docResults.size());
     }
 
+    @Test
+    public void getExerciseGroupByIDTest() throws UnauthorizedException {
+        Date nextYear = new Date();
+        nextYear.setTime(31556952000L + nextYear.getTime());
+
+        ProjectEndpoint pe = new ProjectEndpoint();
+
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CodeSystemTestHelper.addCodeSystem(2L, testUser);
+        ProjectEndpointTestHelper.addProject(1L, "A name", "A description", 2L, testUser);
+        ProjectRevision revision = pe.createSnapshot(1L, "A test revision", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
+        ExerciseEndpointTestHelper.addExercise(2L, 1L, "New Exercise 2", nextYear, testUser);
+        ExerciseEndpointTestHelper.addExercise(3L, 1L, "New Exercise 3", nextYear, testUser);
+        ExerciseEndpointTestHelper.addExerciseGroup(1L, revision.getRevisionID(), 1L, "exercise Group 1", Arrays.asList("1", "2", "3"), 1L, testUser);
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+
+        ExerciseGroup exerciseGroup = ee.getExerciseGroupByID(1L, testUser);
+        assertEquals(1L,exerciseGroup.getId().longValue());
+    }
 
     @Test
     public void listExerciseReportsByRevisionIDTest() throws UnauthorizedException {
