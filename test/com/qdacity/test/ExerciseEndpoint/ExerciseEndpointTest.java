@@ -149,7 +149,7 @@ public class ExerciseEndpointTest {
 		CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
 		ExerciseEndpointTestHelper.addExercise(1L, 1L, "New Exercise", nextYear, testUser);
 		ExerciseEndpointTestHelper.createExerciseProject(revision.getId(), 1L, testUser);
-		ExerciseProject exerciseProject = ExerciseEndpointTestHelper.getExerciseProjectByRevisionID(revision.getId(), testUser);
+		ExerciseProject exerciseProject = ExerciseEndpointTestHelper.getExerciseProjectByRevisionID(revision.getId(), 1L, testUser);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Query q = new Query("ExerciseProject");
