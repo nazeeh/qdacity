@@ -543,7 +543,7 @@ public class ExerciseEndpointTest {
 
 
         try {
-            latch.await(25, TimeUnit.SECONDS);
+            latch.await(40, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
             fail("Deferred task did not finish in time");
