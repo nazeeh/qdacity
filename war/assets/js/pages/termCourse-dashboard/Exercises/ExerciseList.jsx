@@ -84,7 +84,7 @@ export default class ExerciseList extends React.Component {
 			if (typeof resp2.id == 'undefined') {
 					ExerciseEndpoint.getExerciseProjectByRevisionID(
 						exercise.projectRevisionID,
-						exercise.ID
+						exercise.id
 					).then(function(exerciseProjectResp) {
 						_this.props.history.push(
 							'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
