@@ -136,7 +136,9 @@ frontend_prod_translation_tests:
   allow_failure: true
 
 acceptance_tests:
-  <<: *job_definition
+  tags:
+    - qdacity-tests
+  environment: Production
   stage: test
   only:
     - branches 
