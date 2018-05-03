@@ -319,7 +319,7 @@ export default class ProfileSettings extends Component {
 					]
 				});
 			}
-			await _this.props.auth.authentication.refreshSession();
+			await _this.props.auth.updateUserStatus();
 		})
 	}
 

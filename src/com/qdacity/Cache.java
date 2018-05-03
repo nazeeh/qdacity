@@ -162,6 +162,7 @@ public class Cache {
 
 		if(user == null) {
 			user = new UserEndpoint().getCurrentUser(authenticatedUser);
+			cacheAuthenticatedUser(authenticatedUser, user);
 		}
 
 		return user;
