@@ -24,8 +24,10 @@ export default class CustomForm extends VexModal {
 		this.termCourseID = [];
 		this.selectedRevisionID = '';
 		this.selectedExerciseID = '';
+		this.selectedExerciseGroupID = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
 		this.setSelectedExerciseID = this.setSelectedExerciseID.bind(this);
+		this.setSelectedExerciseGroupID = this.setSelectedExerciseGroupID.bind(this);
 
 		this.setSelectedDate = this.setSelectedDate.bind(this);
 	}
@@ -35,9 +37,12 @@ export default class CustomForm extends VexModal {
 	}
 	
 	setSelectedExerciseID(exerciseID) {
-		this.setSelectedExerciseID = exerciseID;
+		this.selectedExerciseID = exerciseID;
 	}
-
+	setSelectedExerciseGroupID (exerciseGroupID) {
+		this.selectedExerciseGroupID = exerciseGroupID;
+	}
+	
 	setSelectedDate(date) {
 		this.selectedDate = date;
 	}
@@ -260,6 +265,7 @@ export default class CustomForm extends VexModal {
 				<ThemeProvider theme={Theme}>
 					<ExerciseGroupSelector
 						setSelectedExerciseID={_this.setSelectedExerciseID}
+						setSelectedExerciseGroupID={_this.setSelectedExerciseGroupID}
 						termCourseID={_this.termCourseID}
 					/>
 				</ThemeProvider>,

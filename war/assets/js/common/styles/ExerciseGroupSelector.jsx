@@ -36,19 +36,62 @@ export default class ExerciseGroupSelector extends React.Component {
 		var _this = this;
 		var exerciseNameList = [];
 		var termCourseID = this.props.termCourseID;
-
+		var modifiedExerciseGroups = [];
+		//First get a list of exercises which belong to the term course whose id is passed to the ExerciseGroupSelector
 		ExerciseEndpoint.listTermCourseExercises(termCourseID).then(function(exercises) {
+			var exercisesStateList = [];
 			exercises.items.forEach(function(exercise) {
+				exercisesStateList.push(exercise);
+				//Add the exercise name & its click event handler to the dropdown
 				exerciseNameList.push({
-					text: exercise.name,
+					text: 'Exercise: ' + exercise.name,
 					onClick: _this.exerciseClicked.bind(_this, exercise.id)
 				});
 			});
-			_this.setState({
-				exercises: exercises,
-				exerciseNameList: exerciseNameList,
-				exerciseInitText: exerciseNameList[0].text
-			});
+			//Then get a list of exercise groups which belong to the term course
+			ExerciseEndpoint.listTermCourseExerciseGroups(termCourseID).then(function(exerciseGroups) {
+				modifiedExerciseGroups = exerciseGroups;
+				exerciseGroups.items.forEach(function(exerciseGroup, index) {
+					var exerciseObjectsForGroup = [];
+					//Iterate over the exercise ids in each group and find the corresponding exercises
+					//then add them as objects to the modifiedExerciseGroup (which is eventually passed to the state)
+					//This can be achieved by another backend call getExercisesOfExerciseGroup but it will consume one unneccessary api call
+					if (typeof exerciseGroup.exercises !== 'undefined') {
+					exerciseGroup.exercises.forEach(function (exerciseID) {
+						var exerciseObject = exercisesStateList.find(
+							thisExercise => thisExercise.id === exerciseID
+						);
+						exerciseObjectsForGroup.push(exerciseObject);
+					});
+				}
+						modifiedExerciseGroups.items[index].exerciseObjects = exerciseObjectsForGroup;
+				});
+				modifiedExerciseGroups.items.forEach(function (modifiedExerciseGroup) {
+					if (modifiedExerciseGroup.exerciseObjects.length > 0) {
+					var groupDisplayName = 'Group: < ';
+					//Form the name of each exercise group as its exercise names. E.g <Exercise 1, Exercise 2>
+					modifiedExerciseGroup.exerciseObjects.forEach(function (exerciseObject, index, array) {
+						if (index == array.length - 1) {
+							groupDisplayName = groupDisplayName + exerciseObject.name + ' >'
+						}
+						else {
+							groupDisplayName = groupDisplayName + exerciseObject.name + ', ';
+						}
+					})
+					//Save the formed names & their click handlers in the list which is eventually passed to the state
+					exerciseNameList.push({
+						text: groupDisplayName,
+						onClick: _this.exerciseGroupClicked.bind(_this, modifiedExerciseGroup.id)
+					})
+				}
+				});
+				_this.setState({
+					exercises: exercisesStateList,
+					exerciseGroups: modifiedExerciseGroups,
+					exerciseNameList: exerciseNameList,
+					exerciseInitText: exerciseNameList[0].text
+				});
+		});
 		});
 	}
 
@@ -56,12 +99,16 @@ export default class ExerciseGroupSelector extends React.Component {
 		this.props.setSelectedExerciseID(exerciseID);
 	}
 
+	exerciseGroupClicked(exerciseGroupID) {
+		this.props.setSelectedExerciseGroupID(exerciseGroupID);
+	}
+
 	render() {
 		return (
 			<div>
 				<ProjectDropDownContainer>
 					<labelContainer>
-						<label>Select an exercise: </label>
+						<label>Select an exercise or an exercise group: </label>
 					</labelContainer>
 					<DropDownButton
 						isListItemButton={true}
