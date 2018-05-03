@@ -86,6 +86,13 @@ export default class ExerciseEndpoint {
 		return Promisizer.makePromise(apiMethod);
 	}
 
+	static getExercisesByProjectRevisionID(exerciseID) {
+		var apiMethod = gapi.client.qdacity.exercise.getExercisesByProjectRevisionID({
+			revisionID: revisionID
+		});
+		return Promisizer.makePromise(apiMethod);
+	}
+	
 	sendNotificationEmailExercise(reportID) {
 		var apiMethod = gapi.client.qdacity.exercise.sendNotificationEmailExercise({
 			reportID: reportID
