@@ -99,7 +99,7 @@ const init = function() {
 
 function initServiceWorker() {
     if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register("sw.js" , {scope: '/'})
+        navigator.serviceWorker.register("sw.dist.js" , {scope: '/'})
             .then(function() {
                 console.log("Service worker registered")
             })

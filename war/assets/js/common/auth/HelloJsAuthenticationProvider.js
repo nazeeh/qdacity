@@ -3,6 +3,7 @@ import hello from 'hellojs';
 
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import UserEndpoint from '../endpoints/UserEndpoint.js';
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint.js';
 import ImageUtil from './ImageUtil.js';
 
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
@@ -57,32 +58,24 @@ export default class HelloJsAuthenticationProvider {
 				authNetworkToken = session.access_token;
 			}
 
-			_this.registerApiMethod({
-                authNetworkToken: authNetworkToken,
-                email: email,
-                surName: surName,
-                givenName: givenName
-            }).execute(function(resp) {
-				if (!resp.code) {
+			_this.registerApiMethod(email, givenName, surName, authNetworkToken)
+				.then(function(resp) {
 					// sign in after successful registration
-                    _this.getTokenApiMethod({
-                        authNetworkToken: authNetworkToken,
-                    }).execute(async function(resp) {
-                        if (!resp.code) {
-                            _this.qdacityTokenAuthentcationProvider.setToken(resp.value);
+					_this.getTokenApiMethod(authNetworkToken)
+						.then(async function(resp) {
+							_this.qdacityTokenAuthentcationProvider.setToken(resp.value);
 							_this.qdacityTokenAuthentcationProvider.authStateChaned();
 
 							await _this.uploadProfileImg();
 							await _this.qdacityTokenAuthentcationProvider.forceTokenRefresh();
-                            resolve();
-                        } else {
-                            reject("Could not sign-in after registering new user.");
-                        }
-                    });
-				} else {
+							resolve();
+						})
+						.catch(function(resp) {
+							reject("Could not sign-in after registering new user.");
+						});
+				}).catch(function(resp) {
 					reject(resp);
-				}
-			});
+				});
 		});
 
 		return promise;
@@ -137,22 +130,20 @@ export default class HelloJsAuthenticationProvider {
 				}
 
                 // get qdacity jwt token
-                _this.getTokenApiMethod({
-                    authNetworkToken: authNetworkToken,
-                }).execute(async function(resp) {
-                    if (!resp.code) {
+				_this.getTokenApiMethod(authNetworkToken)
+					.then(async function(resp) {
                         _this.qdacityTokenAuthentcationProvider.setToken(resp.value);
                         _this.qdacityTokenAuthentcationProvider.authStateChaned();
 
                         // get profile
                         const profile = await hello(_this.authNetwork).api('me');
                         resolve(profile);
-                    } else {
+					})
+					.catch(async function(resp) {
                         // get profile
                         const profile = await hello(_this.authNetwork).api('me');
                         reject(profile);
-                    }
-                });
+                    });
 			});
 
 			hello(_this.authNetwork)
