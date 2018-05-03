@@ -102,11 +102,11 @@ static public void createExerciseProjectIfNeeded(Long revisionID, Long exerciseI
 		}
 	}
 	
-	static public ExerciseProject getExerciseProjectByRevisionID(Long revisionID, com.google.api.server.spi.auth.common.User loggedInUser) {
+	static public ExerciseProject getExerciseProjectByRevisionID(Long revisionID, Long exerciseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		ExerciseEndpoint ee = new ExerciseEndpoint();
 		ExerciseProject exerciseProject = null;
 		try {
-			exerciseProject = ee.getExerciseProjectByRevisionID(revisionID, loggedInUser);
+			exerciseProject = ee.getExerciseProjectByRevisionID(revisionID, exerciseID, loggedInUser);
 		} catch (UnauthorizedException e) {
 			e.printStackTrace();
 			fail("User could not be authorized for Course Term retrieval");
