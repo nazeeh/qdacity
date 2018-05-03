@@ -17,20 +17,29 @@ export default class AuthorizationProvider {
 		return isOwner;
 	}
 
-	isCourseOwner(user, courseID) {
+	isCourseOwner(user, course) {
 		var isOwner = false;
 		if (typeof user.courses != 'undefined') {
-			isOwner = user.courses.indexOf(courseID) == -1 ? false : true;
+			isOwner = user.courses.indexOf(course.id) == -1 ? false : true;
+		}
+
+		if(course.owningUserGroups !== undefined && course.owningUserGroups !== null
+			&& user.userGroups !== undefined && user.userGroups !== null) {
+
+			course.owningUserGroups.forEach(function(userGroup) {
+				if(user.userGroups.includes(userGroup)) isOwner = true;
+			});
 		}
 		return isOwner;
 	}
 
-	isTermCourseOwner(user, termCourseID) {
+	isTermCourseOwner(user, termCourse, parentCourse) {
 		var isOwner = false;
-		if (typeof user.termCourses != 'undefined') {
-			isOwner = user.termCourses.indexOf(termCourseID) == -1 ? false : true;
+		if (typeof user.termCourses != 'undefined' && user.termCourses.indexOf(termCourse.id) != -1) {
+			return true;
 		}
-		return isOwner;
+
+		return this.isCourseOwner(user, parentCourse);
 	}
 
 	isValidationCoder(user, valPrj) {

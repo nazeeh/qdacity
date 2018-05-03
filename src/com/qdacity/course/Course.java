@@ -21,6 +21,8 @@ public class Course extends AbstractCourse {
 	@Persistent
 	List<String> owners;
 
+	@Persistent
+	List<Long> owningUserGroups;
 
 	@Persistent
 	List<String> invitedUsers;
@@ -66,5 +68,13 @@ public class Course extends AbstractCourse {
 		if (owners == null) owners = new ArrayList<String>();
 		owners.remove(userID);
 	}
-	
+
+	public List<Long> getOwningUserGroups() {
+		if(owningUserGroups == null) owningUserGroups = new ArrayList<Long>();
+		return owningUserGroups;
+	}
+
+	public void setOwningUserGroups(List<Long> owningUserGroups) {
+		this.owningUserGroups = owningUserGroups;
+	}
 }

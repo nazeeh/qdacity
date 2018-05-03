@@ -13,7 +13,7 @@ echo "##########################################################################
 echo "########                         Start the devserver                           ########"
 echo "#######################################################################################"
 
-sudo /usr/local/gcloud/google-cloud-sdk/bin/java_dev_appserver.sh --disable_update_check --port=8888 /app/target/qdacity-war/ 2>&1 | sudo tee /app/devserver.log > /dev/null &
+sudo /usr/local/gcloud/google-cloud-sdk/bin/java_dev_appserver.sh --disable_update_check --port=8888 /app/target/qdacity-war/ 2>&1 | sudo tee /app/logs/devserver.log > /dev/null &
 
 # Run a script which waits until the specified port is open (=> the dev-server is running)
 ./docker/acceptance-tests/waitForDevServer.sh
@@ -24,7 +24,7 @@ echo "########                      Start the realtime service                  
 echo "#######################################################################################"
 
 cd realtime-service
-npm run start 2>&1 | sudo tee /app/rtcs.log > /dev/null &
+npm run start 2>&1 | sudo tee /app/logs/rtcs.log > /dev/null &
 cd ..
 
 sleep 10

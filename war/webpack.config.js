@@ -14,6 +14,7 @@ const BabelFormatMessagesPlugin = require('../localization/babel').default;
 module.exports = {
 	bail: true,
 	mode: process.env.NODE_ENV || 'development',
+	devtool: 'source-map',
 	optimization: {
 		splitChunks: {
 			name: 'qdacity',
@@ -32,9 +33,7 @@ module.exports = {
 	entry: {
 		index: './assets/js/pages/index/index.js',
 		'web-worker/codingCountWorker':
-			'./assets/js/web-worker/codingCountWorker.js',
-		'service-worker/sw':
-			'./assets/js/service-worker/sw.js',
+			'./assets/js/web-worker/codingCountWorker.js'
 	},
 	resolve: {
 		alias: {

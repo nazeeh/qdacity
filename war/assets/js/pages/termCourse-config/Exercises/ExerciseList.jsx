@@ -45,7 +45,7 @@ export default class ExerciseList extends React.Component {
 		if (!this.userPromise) {
 			this.userPromise = this.props.auth.authentication.getCurrentUser();
 			this.getExercisesPromise = ExerciseEndpoint.listTermCourseExercises(
-				this.props.termCourse.getId()
+				this.props.termCourse.id
 			);
 			this.fetchTermCourseData();
 		}
@@ -182,6 +182,8 @@ export default class ExerciseList extends React.Component {
 	}
 
 	renderExercise(exercise, index) {
+		const { formatMessage } = IntlProvider.intl;
+
 		return (
 			<StyledListItemDefault
 				key={index}
@@ -189,6 +191,15 @@ export default class ExerciseList extends React.Component {
 				onClick={this.exerciseClick.bind(this, exercise)}
 			>
 				<span> {exercise.name} </span>
+				<span> {formatMessage(
+					{
+						id: 'exerciselist.exercise_deadline',
+						defaultMessage: 'Deadline: {deadline}'
+					},
+					{
+						deadline: exercise.exerciseDeadline.substr(0, 10)
+					}
+				)} </span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.deleteExercise(e, exercise, index)}

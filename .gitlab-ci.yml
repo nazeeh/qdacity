@@ -14,11 +14,11 @@ image: java:7
 
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
+    - rm -r -f ./war/node_modules/
 
 stages:
   - build
   - test
-  - report
   - deploy
 
 .frontend_build: &frontend_build
@@ -29,20 +29,20 @@ stages:
     paths:
       - target/qdacity-war/dist/
       - target/qdacity-war/*.jsp
-      - target/qdacity-war/dist/js/styles.css
-      - target/qdacity-war/sw.dist.js
+      - target/qdacity-war/sw.js
       - war/translations/template.txt
       - war/dist/messages/
       - war/dist/js/index.dist.js
-      - war/dist/js/service-worker/
     expire_in: 3 mos
 
 frontend_prod_build:
-  <<: *job_definition
+  tags:
+    - qdacity-ramdisk
+  environment: Production
   <<: *frontend_build
   script:
     - build_babel_plugin
-    - build_frontend bundle-ci set-config-target generate-language-files set-react-production sw
+    - build_frontend bundle-ci set-config-target generate-language-files sw
 
 frontend_prod_build_nm:
   <<: *job_definition
@@ -110,8 +110,6 @@ frontend_prod_unittest:
       - war/coverage
     expire_in: 6 mos
   script:
-    - export DISPLAY=:10
-    - xdpyinfo -display $DISPLAY > /dev/null || Xvfb $DISPLAY -screen 0 1920x1080x24 &
     - cd localization
     - npm ci
     - cd ..
@@ -140,7 +138,9 @@ frontend_prod_translation_tests:
   allow_failure: true
 
 acceptance_tests:
-  <<: *job_definition
+  tags:
+    - qdacity-tests
+  environment: Production
   stage: test
   only:
     - branches 
@@ -149,8 +149,11 @@ acceptance_tests:
     paths:
     - realtime-service/node_modules/
   script:
-    - chmod +x ./executeAcceptanceTestsJob.sh
     - ./executeAcceptanceTestsJob.sh
+  artifacts:
+    paths:
+      - logs
+    expire_in: 6 mos
   dependencies:
     - frontend_prod_build
     - backend_prod_build
@@ -185,24 +188,8 @@ rtcsvc_prod_unittest:
   dependencies:
     - rtcsvc_prod_build
 
-# Does not work yet, with gitlab pages not installed
-pages:
-  <<: *job_definition
-  stage: report
-  dependencies:
-    - backend_prod_unittest
-  script:
-    - mv target/site/jacoco-ut/ public/
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - branches
-
 .deploy_prod: &deployment_template
   <<: *job_definition
-  cache: *node_cache
   stage: deploy
   script:
     - echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json

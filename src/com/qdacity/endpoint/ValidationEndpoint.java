@@ -26,10 +26,7 @@ import com.qdacity.project.ValidationProject;
 import com.qdacity.project.metrics.DocumentResult;
 import com.qdacity.project.metrics.ValidationReport;
 import com.qdacity.project.metrics.ValidationResult;
-import com.qdacity.project.metrics.tasks.DeferredEmailNotification;
-import com.qdacity.project.metrics.tasks.DeferredEvaluation;
-import com.qdacity.project.metrics.tasks.DeferredEvaluationValidationReport;
-import com.qdacity.project.metrics.tasks.DeferredReportDeletion;
+import com.qdacity.project.metrics.tasks.*;
 
 
 @Api(
@@ -169,7 +166,7 @@ public class ValidationEndpoint {
 				results = (List<ValidationResult>) q.execute(report.getValidationResultIDs());
 				mgr.deletePersistentAll(results);
 			} else {
-				DeferredReportDeletion task = new DeferredReportDeletion(repID);
+				DeferredReportDeletion task = new DeferredValidationReportDeletion(repID);
 				Queue queue = QueueFactory.getDefaultQueue();
 				queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 			}

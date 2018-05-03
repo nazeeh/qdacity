@@ -1,8 +1,13 @@
 package com.qdacity.endpoint;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.jdo.PersistenceManager;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
 import com.google.api.server.spi.auth.common.User;
@@ -13,6 +18,8 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.Authorization;
+import com.qdacity.PMF;
+import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.Constants;
 import com.qdacity.authentication.QdacityAuthenticator;
 import com.qdacity.maintenance.tasks.OrphanDeletion;
@@ -22,6 +29,10 @@ import com.qdacity.maintenance.tasks.usermigration.UserMigrationEmailNotifier;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelEntityType;
 import com.qdacity.metamodel.MetaModelRelation;
+import com.qdacity.user.LoginProviderType;
+import com.qdacity.user.UserLoginProviderInformation;
+import com.qdacity.user.UserType;
+
 
 @Api(
 	name = "qdacity",
@@ -95,13 +106,17 @@ public class MaintenanceEndpoint {
 	 * @throws UnauthorizedException
 	 */
 	@ApiMethod(name = "maintenance.initializeDatabase")
-	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, User user) throws UnauthorizedException {
+	public void initializeDatabase(@Named("initializeMetaModel") Boolean initializeMetaModel, @Named("initializeServiceAccount") Boolean initializeServiceAccount, User user) throws UnauthorizedException {
 		
 		Authorization.checkDatabaseInitalizationAuthorization(user);
 
 		if (initializeMetaModel) {
 			initializeMetaModelEntities(user);
 			initializeMetaModelRelations(user);
+		}
+
+		if (initializeServiceAccount){
+			doInitializeServiceAccount();
 		}
 	}
 	
@@ -192,6 +207,25 @@ public class MaintenanceEndpoint {
 		metaModelRelation.setDst(destinationEntity.getId());
 		
 		metaModelRelationEndpoint.insertMetaModelRelation(metaModelRelation, user);
+	}
+
+	private void doInitializeServiceAccount() throws UnauthorizedException {
+
+		com.qdacity.user.User user = new com.qdacity.user.User();
+		user.setId("100");
+		user.setProjects(new ArrayList<Long>());
+		user.setCourses(new ArrayList<Long>());
+		user.setUserGroups(new ArrayList<Long>());
+		user.setType(UserType.ADMIN);
+		user.setLastLogin(new Date());
+		user.setLoginProviderInformation(Arrays.asList(new UserLoginProviderInformation(LoginProviderType.EMAIL_PASSWORD, "100", "serviceaccount@qdacity.com")));
+		PersistenceManager mgr = PMF.get().getPersistenceManager();
+		try {
+			mgr.makePersistent(user);
+		} finally {
+			mgr.close();
+		}
+
 	}
 	
 	private MetaModelEntity getMetaModelEntityByName(String name, User user) throws UnauthorizedException {

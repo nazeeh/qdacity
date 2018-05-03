@@ -117,6 +117,7 @@ public class TermCourse implements Serializable {
 	}
 
 	public List<String> getOwners() {
+		if(owners == null) owners = new ArrayList<String>();
 		return owners;
 	}
 
@@ -128,7 +129,7 @@ public class TermCourse implements Serializable {
 		if (owners == null) owners = new ArrayList<String>();
 		if (!owners.contains(userID)) owners.add(userID);
 	}
-	
+
 	public void addParticipant(String userID) {
 		if (participants == null) participants = new ArrayList<String>();
 		if (!participants.contains(userID)) participants.add(userID);

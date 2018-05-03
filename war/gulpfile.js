@@ -3,7 +3,6 @@ const gulp = require('gulp');
 const prettierEslint = require('./gulp-plugins/prettier-eslint');
 const webpackStream = require('webpack-stream');
 const webpack = require('webpack');
-const uglify = require('gulp-uglify');
 const size = require('gulp-size');
 const argv = require('yargs').argv;
 const replace = require('gulp-replace');
@@ -187,7 +186,7 @@ gulp.task('update-translations', /*['bundle-task'],*/ () => {
 			let first = true;
 			template.forEach(ident => {
 				if (!messages.hasOwnProperty(ident.id)) {
-					const clone = { ...ident };
+					const clone = { ident };
 					if(first)
 						clone.description = `
 ---------------------------------------------
@@ -273,50 +272,6 @@ gulp.task('set-config-target', function() {
 		.pipe(gulp.dest('../target/qdacity-war/dist/js/'));
 });
 
-gulp.task('set-react-production', function() {
-	return gulp
-		.src('./*.jsp', {
-			base: './'
-		})
-		.pipe(replace('react.js', 'react.min.js'))
-		.pipe(replace('react-dom.js', 'react-dom.min.js'))
-		.pipe(gulp.dest('./'));
-});
-
-gulp.task('minify', function() {
-	return gulp
-		.src('../target/qdacity-war/dist/js/*.js', {
-			base: './'
-		})
-		.pipe(
-			uglify({
-				mangle: {
-					toplevel: true,
-					eval: true
-				},
-				compress: {
-					unused: true,
-					pure_getters: true,
-					evaluate: true,
-					booleans: true,
-					hoist_funs: true,
-					collapse_vars: true,
-					drop_console: true
-				},
-				output: {
-					ascii_only: true
-				}
-			})
-		)
-		.pipe(
-			size({
-				showFiles: true,
-				gzip: true
-			})
-		)
-		.pipe(gulp.dest('./'));
-});
-
 gulp.task('webpack-watch', function() {
 	setConfig();
 	return (gulp
@@ -344,31 +299,16 @@ gulp.task('webpack-watch', function() {
 	);
 });
 
-gulp.task('prepare-sw-for-watch', function(){
-	const swDir = "dist/js/service-worker";
-	swDir
-		.split(path.sep)
-		.reduce((currentPath, folder) => {
-			currentPath += folder + path.sep;
-			if (!fs.existsSync(currentPath)){
-				fs.mkdirSync(currentPath);
-			}
-			return currentPath;
-		}, '');
-	fs.closeSync(fs.openSync(swDir+'/sw.dist.js', 'a'));
-});
-
 gulp.task('sw', function() {
 	gulp
-		.src('dist/js/service-worker/sw.dist.js')
-		.pipe(replace('$API_VERSION$', config.api_version))
+		.src('assets/js/service-worker/sw.js')
 		.pipe(gulp.dest('../target/qdacity-war/'))
 });
 
-gulp.task('sw-watch', ['prepare-sw-for-watch'], function () {
-    gulp.watch('dist/js/service-worker/sw.dist.js', ['sw']);
+gulp.task('sw-watch', function () {
+    gulp.watch('assets/js/service-worker/sw.js', ['sw']);
 });
 
 gulp.task('watch', ['webpack-watch', 'translation-watch', 'sw-watch']);
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['sw', 'watch']);
