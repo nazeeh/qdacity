@@ -40,6 +40,20 @@ public class ExerciseEndpointTestHelper {
 		}
 	}
 
+    static public void insertExerciseGroup(Long id, Long termCourseID, String name, com.google.api.server.spi.auth.common.User loggedInUser) {
+        ExerciseGroup exerciseGroup = new ExerciseGroup();
+        exerciseGroup.setId(id);
+        exerciseGroup.setName(name);
+        exerciseGroup.setTermCourseID(termCourseID);
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+        try {
+            ee.insertExerciseGroup(exerciseGroup, loggedInUser);
+        } catch (UnauthorizedException e) {
+            e.printStackTrace();
+            fail("User could not be authorized for exercise creation");
+        }
+    }
+
 	static public void addExerciseGroup(Long id, Long projectRevisionID, Long termCourseID, String name, List<String> exerciseIDs, Long exerciseProjectID,  com.google.api.server.spi.auth.common.User loggedInUser) {
 		ExerciseGroup exerciseGroup = new ExerciseGroup();
 		exerciseGroup.setId(id);
@@ -78,7 +92,18 @@ public class ExerciseEndpointTestHelper {
 		}
 		return exercises;
 	}
-	
+
+    static public List<ExerciseGroup> listTermCourseExerciseGroups(Long termCourseID, com.google.api.server.spi.auth.common.User loggedInUser) {
+        ExerciseEndpoint ee = new ExerciseEndpoint();
+        List<ExerciseGroup> exerciseGroups = null;
+        try {
+            exerciseGroups = ee.listTermCourseExerciseGroups(termCourseID, loggedInUser);
+        } catch (UnauthorizedException e) {
+            e.printStackTrace();
+            fail("User could not be authorized for Course Term retrieval");
+        }
+        return exerciseGroups;
+    }
 	
 	static public void createExerciseProject(Long revisionID, Long exerciseID, com.google.api.server.spi.auth.common.User loggedInUser) {
 		

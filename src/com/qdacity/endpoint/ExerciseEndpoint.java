@@ -153,6 +153,41 @@ public class ExerciseEndpoint {
 		return execute;
 	}
 
+    /**
+     * This method lists all the exercise groups which belong to a specific term course
+     * It uses HTTP GET method and paging support.
+     *
+     * @return A list of ExerciseGroups class containing the ExerciseGroups which belong to the specified term course
+     *         persisted and a cursor to the next page.
+     * @throws UnauthorizedException
+     */
+    @SuppressWarnings({ "unchecked" })
+    @ApiMethod(
+            name = "exercise.listTermCourseExerciseGroups",
+            path = "listTermCourseExerciseGroups"
+    )
+    public List<ExerciseGroup> listTermCourseExerciseGroups(@Named("termCrsID") Long termCourseID, User user) throws UnauthorizedException {
+
+        com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(user); // also checks if user is registered
+
+        PersistenceManager mgr = null;
+        List<ExerciseGroup> execute = null;
+
+        try {
+            mgr = getPersistenceManager();
+            TermCourse termCourse = mgr.getObjectById(TermCourse.class, termCourseID);
+            Authorization.checkAuthTermCourseParticipation(termCourse, qdacityUser.getId(), user);
+            Query q = mgr.newQuery(ExerciseGroup.class, ":p.contains(termCourseID)");
+
+            execute = (List<ExerciseGroup>) q.execute(Arrays.asList(termCourseID));
+
+        } finally {
+            mgr.close();
+        }
+
+        return execute;
+    }
+
 	/**
 	 * This method removes the entity with primary key id.
 	 * It uses HTTP DELETE method.

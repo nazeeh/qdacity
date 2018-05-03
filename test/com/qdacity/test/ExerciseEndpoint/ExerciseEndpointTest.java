@@ -130,6 +130,25 @@ public class ExerciseEndpointTest {
 		assertEquals(1, retrievedExercises.size());
 	}
 
+    /**
+     * Tests if a registered can list exercise groups of a term course
+     * @throws UnauthorizedException
+     */
+    @Test
+    public void testListTermCourseExerciseGroups() throws UnauthorizedException {
+
+        UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", testUser);
+        CourseEndpointTestHelper.addCourse(1L, "A name", "A description", testUser);
+        CourseEndpointTestHelper.addTermCourse(1L, 1L, "A description", testUser);
+        ExerciseEndpointTestHelper.insertExerciseGroup(1L, 1L, "New Exercise", testUser);
+
+        List<ExerciseGroup> retrievedExerciseGroups = null;
+
+        retrievedExerciseGroups = (List<ExerciseGroup>) ExerciseEndpointTestHelper.listTermCourseExerciseGroups(1L, testUser);
+
+        assertEquals(1, retrievedExerciseGroups.size());
+    }
+
 	/**
 	 * Tests if a registered user can get an exerciseProject by its revision id
 	 * @throws UnauthorizedException
