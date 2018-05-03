@@ -1,6 +1,14 @@
 import CodesEndpoint from '../endpoints/CodesEndpoint';
 import { MSG } from './constants.js';
 
+/**
+ * Provides fallback to api requests for SyncService
+ *
+ * ApiService.emit() can be used in SyncService.emit() if SyncService.socket.emit() fails (=>disconnected)
+ *
+ * For every supported message type the corresponding api endpoint will be called
+ *
+ */
 export default class ApiService {
 	constructor(syncService) {
 		this.syncService = syncService;
@@ -15,7 +23,7 @@ export default class ApiService {
 						_this.syncService.fireEvent('codeInserted', code);
 					});
 			default:
-				console.log("unhandled message type")
+				return Promise.reject("Unhandled message type");
 		}
 	}
 
