@@ -69,6 +69,7 @@ export default class SyncService {
 		this.documents = new DocumentService(this, this._socket);
 
 		this.api = new ApiService(this);
+		this.disconnected = false;
 	}
 
 	/**
@@ -155,21 +156,19 @@ export default class SyncService {
 	 * @return {Promise} - resolves on success, rejects on failure
 	 */
 	emit(messageType, arg) {
-		if (this._socket.disconnected) {
-			this.api.emit(messageType, arg)
+		if (this.disconnected) {
+			return this.api.emit(messageType, arg)
 		}
-		else {
-			return new Promise((resolve, reject) => {
-				this._socket.emit(messageType, arg, (status, ...args) => {
-					if (status === 'ok') {
-						resolve(...args);
-					} else {
-						this.console.error('API error', ...args);
-						reject(...args);
-					}
-				});
+		return new Promise((resolve, reject) => {
+			this._socket.emit(messageType, arg, (status, ...args) => {
+				if (status === 'ok') {
+					resolve(...args);
+				} else {
+					this.console.error('API error', ...args);
+					reject(...args);
+				}
 			});
-		}
+		});
 	}
 
 	/**
@@ -222,10 +221,12 @@ export default class SyncService {
 	_handleUserConnected(serverName) {
 		this.log('Connected to realtime-service:', serverName);
 		this.setRTCSConnectionsState(true);
+		this.disconnected = false
 	}
 
 	_handleConnectError() {
 		this.setRTCSConnectionsState(false);
+		this.disconnected = true
 	}
 
 	/**
