@@ -7,13 +7,10 @@ export default class Promisizer {
 	static makePromise(apiMethod) {
 		var promise = new Promise(function(resolve, reject) {
 			apiMethod.execute(function(resp) {
-				console.log(resp);
-				console.log(apiMethod);
 				if (!resp.code) {
 					resolve(resp);
 				} else {
 					const method = Promisizer.getMethod(apiMethod);
-					console.log(method);
 					if (resp.code === -1 && (method === "POST" || method === "DELETE" || method === "PUT")){
 						const { formatMessage } = IntlProvider.intl;
 						const alertMessage = formatMessage({
