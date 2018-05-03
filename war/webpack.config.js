@@ -14,6 +14,7 @@ const BabelFormatMessagesPlugin = require('../localization/babel').default;
 module.exports = {
 	bail: true,
 	mode: process.env.NODE_ENV || 'development',
+	devtool: 'source-map',
 	optimization: {
 		splitChunks: {
 			name: 'qdacity',

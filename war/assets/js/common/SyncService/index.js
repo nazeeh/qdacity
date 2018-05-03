@@ -2,8 +2,8 @@ import openSocket from 'socket.io-client';
 
 import CodesService from './CodesService';
 import DocumentService from './DocumentService';
-import ApiService from './ApiService';
 import { MSG, EVT } from './constants.js';
+import ApiService from "./ApiService";
 
 
 /**
@@ -155,21 +155,20 @@ export default class SyncService {
 	 * @return {Promise} - resolves on success, rejects on failure
 	 */
 	emit(messageType, arg) {
-		if (this._socket.disconnected) {
-			this.api.emit(messageType, arg)
-		}
-		else {
-			return new Promise((resolve, reject) => {
-				this._socket.emit(messageType, arg, (status, ...args) => {
-					if (status === 'ok') {
-						resolve(...args);
-					} else {
-						this.console.error('API error', ...args);
-						reject(...args);
-					}
-				});
+		return new Promise((resolve, reject) => {
+			const socket = this._socket.emit(messageType, arg, (status, ...args) => {
+				if (status === 'ok') {
+					this.console.log("socket emit ok");
+					resolve(...args);
+				} else {
+					this.console.error('API error', ...args);
+					reject(...args);
+				}
 			});
-		}
+			if(socket.disconnected) {
+				return this.api.emit(messageType, arg);
+			}
+		});
 	}
 
 	/**

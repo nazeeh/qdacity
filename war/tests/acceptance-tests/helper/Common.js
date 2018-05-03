@@ -42,7 +42,6 @@ class Common {
 
 		const textBorder = repeat(headerTextBorderChar, headerTextWidth);
 		
-		console.log(' ');
 		log(textBorder);
 		log(textContentBorder + textContentSpacesBefore + textContentName + textContentSpacesAfter + textContentBorder);
 		log(textBorder);

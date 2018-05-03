@@ -127,6 +127,7 @@ export default class PersonalDashboard extends React.Component {
 										setCourses={this.setCourses}
 										addCourse={this.addCourse}
 										removeCourse={this.removeCourse}
+										userGroups={this.state.userGroups}
 										history={this.props.history}
 									/>
 								</div>

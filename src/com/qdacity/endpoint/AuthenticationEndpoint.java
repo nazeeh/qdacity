@@ -171,7 +171,7 @@ public class AuthenticationEndpoint {
 
         AuthenticatedUser authUser = facebookTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
-            throw new UnauthorizedException("Code3.1: The Google token does not seem to be valid!");
+            throw new UnauthorizedException("Code3.1: The Facebook token does not seem to be valid!");
         }
         User user = new User();
         user.setEmail(email);
@@ -222,7 +222,7 @@ public class AuthenticationEndpoint {
 
         AuthenticatedUser authUser = facebookTokenValidator.validate(authNetworkToken);
         if(authUser == null) {
-            throw new UnauthorizedException("Code4.2: The Twitter token does not seem to be valid!");
+            throw new UnauthorizedException("Code4.2: The Facebook token does not seem to be valid!");
         }
 
         // check if user is registered

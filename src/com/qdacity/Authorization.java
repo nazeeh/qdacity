@@ -13,6 +13,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.qdacity.authentication.AuthenticatedUser;
 import com.qdacity.course.Course;
 import com.qdacity.course.TermCourse;
+import com.qdacity.endpoint.CourseEndpoint;
 import com.qdacity.endpoint.UserEndpoint;
 import com.qdacity.metamodel.MetaModelEntity;
 import com.qdacity.metamodel.MetaModelRelation;
@@ -28,6 +29,7 @@ import com.qdacity.user.UserType;
 public class Authorization {
 
 	private static UserEndpoint userEndpoint = new UserEndpoint();
+	private static CourseEndpoint courseEndpoint = new CourseEndpoint();
 
 	public static Boolean isUserAuthorized(User googleUser, Long projectID) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
@@ -59,14 +61,25 @@ public class Authorization {
 	public static Boolean isUserAuthorizedCourse(User googleUser, Course course) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			String authenticatedUserId = userEndpoint.getCurrentUser(googleUser).getId();
+			com.qdacity.user.User qdacityUser = userEndpoint.getCurrentUser(googleUser);
 
 			boolean userIsInvited = false;
 			if (course.getInvitedUsers() != null) {
-				if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(authenticatedUserId);
+				if (!course.getInvitedUsers().isEmpty()) userIsInvited = course.getInvitedUsers().contains(qdacityUser.getId());
 			}
-			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
-			if (course.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN || userIsInvited) return true;
+
+			if (course.getOwners() != null && course.getOwners().contains(qdacityUser.getId()) ||
+					qdacityUser.getType() == UserType.ADMIN ||
+					userIsInvited) {
+				return true;
+			}
+
+			List<Long> userGroupList = course.getOwningUserGroups();
+			int sizeBefore = userGroupList.size();
+			if(userGroupList.removeAll(qdacityUser.getUserGroups())) {
+				// size decreased if user is in matching usergroup
+				if(userGroupList.size() < sizeBefore) return true;
+			}
 		} finally {
 			mgr.close();
 		}
@@ -74,10 +87,10 @@ public class Authorization {
 	}
 
 
-		public static Boolean isUserAuthorizedTermCourse(User googleUser, TermCourse termCourse) throws UnauthorizedException {
+	public static Boolean isUserAuthorizedTermCourse(User loggedInUser, TermCourse termCourse) throws UnauthorizedException {
 		PersistenceManager mgr = getPersistenceManager();
 		try {
-			String authenticatedUserId = userEndpoint.getCurrentUser(googleUser).getId();
+			String authenticatedUserId = userEndpoint.getCurrentUser(loggedInUser).getId();
 
 			com.qdacity.user.User courseUser = mgr.getObjectById(com.qdacity.user.User.class, authenticatedUserId);
 			if (termCourse.getParticipants() != null) {
@@ -87,11 +100,12 @@ public class Authorization {
 				if (termCourse.getOwners().contains(authenticatedUserId) || courseUser.getType() == UserType.ADMIN) return true;
 			}
 
+			Long associatedCourseId = termCourse.getCourseID();
+			Course course = courseEndpoint.getCourse(associatedCourseId, loggedInUser);
+			return isUserAuthorizedCourse(loggedInUser, course); // also checks authorization with user groups
 		} finally {
 			mgr.close();
 		}
-
-		return false;
 	}
 
 	private static PersistenceManager getPersistenceManager() {
@@ -286,8 +300,8 @@ public class Authorization {
 		if(!isOwner && !isAdmin) throw new UnauthorizedException("Only group owners and admins are allowed to perform this operation!");
 	}
 
-	public static Boolean isUserAdmin(User googleUser) throws UnauthorizedException {
-		com.qdacity.user.User user = userEndpoint.getCurrentUser(googleUser);
+	public static Boolean isUserAdmin(User loggedinUser) throws UnauthorizedException {
+		com.qdacity.user.User user = userEndpoint.getCurrentUser(loggedinUser);
 		if (user.getType() == UserType.ADMIN) return true;
 		return false;
 	}
