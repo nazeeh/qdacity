@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import VexModal from './VexModal';
 import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
+import ExerciseGroupSelector from '../../common/styles/ExerciseGroupSelector.jsx';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import Theme from '../../common/styles/Theme.js';
 import { ThemeProvider } from 'styled-components';
@@ -13,17 +14,28 @@ export default class CustomForm extends VexModal {
 		this.formElements = '';
 		this.message = message;
 		this.isProjectRevisionSelector = false;
+		this.isExerciseSelector = false;
+		
 		this.hasDateChooser = false;
 		this.disableYesButton = false;
 		this.showProjectDropDown = true;
+		this.showExerciseGroupDropDown = true;
 		this.projects = [];
+		this.termCourseID = [];
 		this.selectedRevisionID = '';
+		this.selectedExerciseID = '';
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
+		this.setSelectedExerciseID = this.setSelectedExerciseID.bind(this);
+
 		this.setSelectedDate = this.setSelectedDate.bind(this);
 	}
 
 	setSelectedRevisionID(revisionID) {
 		this.selectedRevisionID = revisionID;
+	}
+	
+	setSelectedExerciseID(exerciseID) {
+		this.setSelectedExerciseID = exerciseID;
 	}
 
 	setSelectedDate(date) {
@@ -100,6 +112,14 @@ export default class CustomForm extends VexModal {
 			this.formElements += '</div>';
 		}
 	}
+	
+	addExerciseGroupDropDown(termCourseID) {
+		this.isExerciseSelector = true;
+		this.termCourseID = termCourseID;
+
+		this.formElements += '<div id="ExerciseGroupSelector">';
+		this.formElements += '</div>';
+	}
 
 	addSelect(name, options, label, initialValue) {
 		var _this = this;
@@ -159,6 +179,16 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 	}
 
+	addCheckBox(name, value, title) {
+		var _this = this;
+		this.formElements += '<div class="vex-custom-field-wrapper">';
+
+		this.formElements += '<div class="vex-custom-input-wrapper">';
+		this.formElements += '<input type="checkbox" name="' + name +'" value="' +value +'">' + title +'<br>';
+		this.formElements += '</div>';
+		this.formElements += '</div>';
+	}
+	
 	addCheckBoxes(name, itemList) {
 		var _this = this;
 		this.formElements += '<div class="vex-custom-field-wrapper">';
@@ -224,6 +254,17 @@ export default class CustomForm extends VexModal {
 				</ThemeProvider>,
 				document.getElementById('DateChooser')
 			)
+		}
+		if (_this.isExerciseSelector && _this.showExerciseGroupDropDown) {
+			ReactDOM.render(
+				<ThemeProvider theme={Theme}>
+					<ExerciseGroupSelector
+						setSelectedExerciseID={_this.setSelectedExerciseID}
+						termCourseID={_this.termCourseID}
+					/>
+				</ThemeProvider>,
+				document.getElementById('ExerciseGroupSelector')
+			);
 		}
 			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(

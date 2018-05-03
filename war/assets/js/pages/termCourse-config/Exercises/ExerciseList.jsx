@@ -93,7 +93,8 @@ export default class ExerciseList extends React.Component {
 				defaultMessage: 'Exercise Type'
 			})
 		);
-
+		modal.addCheckBox("ExtendsExercise", false, " Extends existing Exercise or Exercise Group")
+		modal.addExerciseGroupDropDown(this.props.termCourse.id);
 		modal.addDatePicker();
 
 		modal.addTextInput(
