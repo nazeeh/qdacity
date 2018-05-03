@@ -14,6 +14,11 @@ export default class ApiService {
 		this.syncService = syncService;
 	}
 
+	/**
+	 * Translate message to api requests and executes this request
+	 * @access package
+	 * @return {Promise} - resolves on success, rejects on failure or unhandled message
+	 */
 	emit(messageType, arg) {
 		const _this = this;
 		switch (messageType) {
