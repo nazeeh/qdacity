@@ -2,7 +2,6 @@ import openSocket from 'socket.io-client';
 
 import CodesService from './CodesService';
 import DocumentService from './DocumentService';
-import ApiService from './ApiService';
 import { MSG, EVT } from './constants.js';
 import ApiService from "./ApiService";
 
