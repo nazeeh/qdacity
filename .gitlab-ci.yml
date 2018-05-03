@@ -36,7 +36,9 @@ stages:
     expire_in: 3 mos
 
 frontend_prod_build:
-  <<: *job_definition
+  tags:
+    - qdacity-ramdisk
+  environment: Production
   <<: *frontend_build
   script:
     - build_babel_plugin
@@ -136,7 +138,9 @@ frontend_prod_translation_tests:
   allow_failure: true
 
 acceptance_tests:
-  <<: *job_definition
+  tags:
+    - qdacity-tests
+  environment: Production
   stage: test
   only:
     - branches 
