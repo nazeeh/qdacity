@@ -285,8 +285,9 @@ public class ExerciseEndpoint {
 
                 filters.append("exerciseID == exerciseID && ");
                 parameters.put("exerciseID", exerciseID);
-                filters.append("validationCoders == :userID");
+                filters.append("validationCoders == :userID && ");
                 parameters.put("userID", qdacityUser.getId());
+                filters.append("isSnapshot == false");
                 Query q = mgr.newQuery(ExerciseProject.class);
 
                 q.setFilter(filters.toString());
@@ -305,17 +306,24 @@ public class ExerciseEndpoint {
 		}
 
 
+	//Fetches the original (not a snapshot) ExerciseProject which belongs to an exercise (there should be only one per student per exercise)
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID")
-		public ExerciseProject getExerciseProjectByRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
+		public ExerciseProject getExerciseProjectByRevisionID(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
 			PersistenceManager mgr = getPersistenceManager();
 			List<ExerciseProject> exerciseProjects = null;
 			ExerciseProject exerciseProject = null;
+            com.qdacity.user.User qdacityUser = new UserEndpoint().getCurrentUser(user);
 			try {
 
-				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(revisionID)");
+                Query q;
+                Map<String, Object> params = new HashMap<>();
+                q = mgr.newQuery(ExerciseProject.class, " revisionID  == :revisionID && exerciseID == :exerciseID && isSnapshot == false && validationCoders == :userID");
+                params.put("revisionID", revisionID);
+                params.put("exerciseID", exerciseID);
+                params.put("userID", qdacityUser.getId());
+                exerciseProjects = (List<ExerciseProject>) q.executeWithMap(params);
 
-				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(revisionID));
 				if (exerciseProjects.size() > 0) {
 					exerciseProject = exerciseProjects.get(0);
 				}

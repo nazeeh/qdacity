@@ -2,11 +2,13 @@
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import HelloJsAuthenticationProvider from './HelloJsAuthenticationProvider.js';
 
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint.js';
+
 export default class TwitterAuthenticationProvider extends HelloJsAuthenticationProvider {
 
 	constructor(qdacityTokenAuthentcationProvider) {
-		const registerApiMethod = gapi.client.qdacity.authentication.twitter.register;
-		const getTokenApiMethod = gapi.client.qdacity.authentication.twitter.getToken;
+		const registerApiMethod = AuthenticationEndpoint.registerTwitter;
+		const getTokenApiMethod = AuthenticationEndpoint.getTokenTwitter;
 		super(qdacityTokenAuthentcationProvider, registerApiMethod, getTokenApiMethod, AuthenticationNetworks.TWITTER);
 
 		this.qdacityTokenAuthentcationProvider = qdacityTokenAuthentcationProvider;
