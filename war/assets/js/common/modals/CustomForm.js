@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import styled from 'styled-components';
 import VexModal from './VexModal';
 import ProjectRevisionSelector from '../../common/styles/ProjectRevisionSelector.jsx';
 import ExerciseGroupSelector from '../../common/styles/ExerciseGroupSelector.jsx';
@@ -9,6 +10,12 @@ import { ThemeProvider } from 'styled-components';
 import DateChooser from '../../common/modals/DateChooser.jsx';
 import ExtendsExerciseCheckbox from '../../common/styles/ExtendsExerciseCheckbox.jsx';
 
+
+const EmptyDiv = styled.div`
+	display: none;
+`;
+
+
 export default class CustomForm extends VexModal {
 	constructor(message) {
 		super();
@@ -16,7 +23,7 @@ export default class CustomForm extends VexModal {
 		this.message = message;
 		this.isProjectRevisionSelector = false;
 		this.isExerciseSelector = false;
-		
+
 		this.hasDateChooser = false;
 		this.disableYesButton = false;
 		this.showProjectDropDown = true;
@@ -38,51 +45,28 @@ export default class CustomForm extends VexModal {
 	setSelectedRevisionID(revisionID) {
 		this.selectedRevisionID = revisionID;
 	}
-	
+
 	setSelectedExerciseID(exerciseID) {
 		this.selectedExerciseID = exerciseID;
 	}
 	setSelectedExerciseGroupID (exerciseGroupID) {
 		this.selectedExerciseGroupID = exerciseGroupID;
 	}
-	
+
 	setSelectedDate(date) {
 		this.selectedDate = date;
 	}
-	
+
 	setExtendsExerciseStatus(isChecked) {
 		this.ExtendsExercise = isChecked;
 		console.log(this.ExtendsExercise);
 		if (this.ExtendsExercise == true) {
-			ReactDOM.render(
-				<h1></h1>,
-				document.getElementById('ProjectRevisionSelector')
-			);
-			ReactDOM.render(
-				<ThemeProvider theme={Theme}>
-					<ExerciseGroupSelector
-						setSelectedExerciseID={this.setSelectedExerciseID}
-						setSelectedExerciseGroupID={this.setSelectedExerciseGroupID}
-						termCourseID={this.termCourseID}
-					/>
-				</ThemeProvider>,
-				document.getElementById('ExerciseGroupSelector')
-			);
+			this.hideElement('ProjectRevisionSelector');
+			this.renderExerciseGroupSelector();
 		}
 		else {
-			ReactDOM.render(
-				<ThemeProvider theme={Theme}>
-					<ProjectRevisionSelector
-						setSelectedRevisionID={this.setSelectedRevisionID}
-						projects={this.projects}
-					/>
-				</ThemeProvider>,
-				document.getElementById('ProjectRevisionSelector')
-			);
-			ReactDOM.render(
-				<h1></h1>,
-				document.getElementById('ExerciseGroupSelector')
-			);
+			this.renderProjectRevisionSelector();
+			this.hideElement('ExerciseGroupSelector');
 		}
 	}
 	addTextInput(name, label, placeholder, value) {
@@ -156,7 +140,7 @@ export default class CustomForm extends VexModal {
 			this.formElements += '</div>';
 		}
 	}
-	
+
 	addExerciseGroupDropDown(termCourseID) {
 		this.isExerciseSelector = true;
 		this.termCourseID = termCourseID;
@@ -227,7 +211,7 @@ export default class CustomForm extends VexModal {
 		this.formElements += '<div id="ExtendsExerciseCheckbox">';
 		this.formElements += '</div>';
 	}
-	
+
 	addCheckBoxes(name, itemList) {
 		var _this = this;
 		this.formElements += '<div class="vex-custom-field-wrapper">';
@@ -245,6 +229,37 @@ export default class CustomForm extends VexModal {
 		});
 		this.formElements += '</div>';
 		this.formElements += '</div>';
+	}
+	hideElement(elementID) {
+		ReactDOM.render(
+			<EmptyDiv></EmptyDiv>,
+			document.getElementById(elementID)
+		);
+	}
+
+	renderExerciseGroupSelector() {
+		ReactDOM.render(
+			<ThemeProvider theme={Theme}>
+				<ExerciseGroupSelector
+					setSelectedExerciseID={this.setSelectedExerciseID}
+					setSelectedExerciseGroupID={this.setSelectedExerciseGroupID}
+					termCourseID={this.termCourseID}
+				/>
+			</ThemeProvider>,
+			document.getElementById('ExerciseGroupSelector')
+		);
+	}
+
+	renderProjectRevisionSelector() {
+		ReactDOM.render(
+			<ThemeProvider theme={Theme}>
+				<ProjectRevisionSelector
+					setSelectedRevisionID={this.setSelectedRevisionID}
+					projects={this.projects}
+				/>
+			</ThemeProvider>,
+			document.getElementById('ProjectRevisionSelector')
+		);
 	}
 
 	showModal() {
