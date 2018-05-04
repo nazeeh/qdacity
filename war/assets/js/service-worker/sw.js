@@ -1,6 +1,6 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
-import { insertCodeHandler, getCurrentUserHandler } from "./ApiHandler";
+import { insertCodeHandler, getCodeSystemHandler } from "./ApiHandler";
 
 const version = 9;
 const cache_prefix = "qdacity-app";
@@ -10,7 +10,7 @@ const cache_precache = "precache";
 export const cache_runtime_name = `${cache_prefix}-${cache_runtime}-${cache_suffix}`;
 export const cache_precache_name = `${cache_prefix}-${cache_precache}-${cache_suffix}`;
 
-let apiMethods = {};
+export let apiMethods = {};
 
 workbox.core.setCacheNameDetails({
 	prefix: cache_prefix,
@@ -36,7 +36,7 @@ function discoverApi() {
 }
 
 function _parseDiscoveryDoc(discovery) {
-	console.log("parsing discovery");
+	console.log("parsing discovery...");
 	const resources = discovery.resources;
 	for (let resource in resources) {
 		resource = resources[resource];
@@ -99,18 +99,19 @@ workbox.routing.registerRoute(
 function registerRoutes() {
 	workbox.routing.registerRoute(
 		"/" + apiMethods["qdacity.user.getCurrentUser"],
-		getCurrentUserHandler
+		workbox.strategies.networkFirst()
+	);
+	workbox.routing.registerRoute(
+		pathToRegex(apiMethods["qdacity.project.listProject"]),
+		getCodeSystemHandler,
 	);
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
 		insertCodeHandler,
 		'POST'
 	);
-	/*
 	workbox.routing.registerRoute(
-		pathToRegex(apiMethods["qdacity.codesystem.listCodeSystem"]),
-		listCodeSystemHandler,
-		'POST'
+		pathToRegex(apiMethods["qdacity.codesystem.getCodeSystem"]),
+		getCodeSystemHandler,
 	);
-	*/
 }

@@ -1,30 +1,17 @@
-import {cache_runtime_name} from "./sw";
+import {cache_runtime_name, apiMethods} from "./sw";
+import { Store, get, set } from 'idb-keyval';
 
 function handleGoodResponse(response, event) {
 	if (!response) {
 		console.log('[ServiceWorker] No response from fetch ', event.request.url);
 		return response;
 	}
-	console.log('[ServiceWorker|POST] Good Response from fetch ', event.request.url);
+	console.log('[ServiceWorker] Good Response from fetch ', event.request.url);
 	return response;
 }
 
-/** Definition of Endpoint Handlers **/
 
-export const getCurrentUserHandler = ({url, event}) => {
-	caches.open(cache_runtime_name).then(function (cache) {
-		return fetch(event.request)
-			.then(function (response) {
-				const cloned_response = response.clone();
-				cloned_response.clone().json().then(body => console.log(body.id));
-				cache.put(event.request, cloned_response);
-				return response;
-			})
-			.catch(function () {
-				return caches.match(event.request);
-			});
-	});
-};
+/** Definition of Endpoint Handlers **/
 
 export const insertCodeHandler = ({url, event}) => {
 	console.log('[Workbox] insert Code handler called');
@@ -48,14 +35,16 @@ export const insertCodeHandler = ({url, event}) => {
 		});
 };
 
-const listCodeSystemHandler = ({url, event}) => {
-	console.log('[ServiceWorker] listCodeSystemHandler called');
+export const getCodeSystemHandler = ({url, event}) => {
+	console.log('[ServiceWorker] getCodeSystemHandler called');
+	console.log(event);
+	//console.log(caches.match(apiMethods["qdacity.user.getCurrentUser"]));
 	return fetch(event.request)
 		.then(function (response) {
-			return handleGoodResponse(response);
+			return handleGoodResponse(response, event);
 		})
 		.catch(function (error) {
-			console.warn('[ServiceWorker|Post] Error from fetch: ', error);
+			console.warn('[ServiceWorker] Error from fetch: ', error);
 			const offlineCode = {
 				author: "service worker",
 				codesystemID: "1234",
