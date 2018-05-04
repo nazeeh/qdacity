@@ -1,15 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const ProjectDropDownContainer = styled.div`
+const CheckboxAndLabelContainer = styled.div`
 	display: flex;
 	z-index: 10000 !important;
-	margin: 3px;
 `;
 
 const labelContainer = styled.div`
 	display: inline-block;
-	margin-right: 5px !important;
+	margin-left: 5px !important;
 `;
 
 export default class ExtendsExerciseCheckbox extends React.Component {
@@ -33,12 +32,12 @@ export default class ExtendsExerciseCheckbox extends React.Component {
 		var _this = this;
 		return (
 			<div>
-				<ProjectDropDownContainer>
+				<CheckboxAndLabelContainer>
+					<input type="checkbox" defaultChecked={_this.state.isChecked} onChange={_this.toggleChange} />
 					<labelContainer>
 						<label>Extends existing exercise</label>
 					</labelContainer>
-					<input type="checkbox" defaultChecked={_this.state.isChecked} onChange={_this.toggleChange} />
-				</ProjectDropDownContainer>
+				</CheckboxAndLabelContainer>
 			</div>
 		);
 	}
