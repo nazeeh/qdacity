@@ -148,16 +148,14 @@ acceptance_tests:
   only:
     - branches 
   cache:
-    key: "rtcsvc:node_modules"
+    key: "acceptance_tests"
     paths:
     - realtime-service/node_modules/
-    policy: pull
   script:
     - ./executeAcceptanceTestsJob.sh
   after_script:
     - rm -r -f ./war/node_modules/
     - rm -r -f ./localization/node_modules/
-    - rm -r -f ./realtime-service/node_modules/
     - rm -r -f ./target/
   artifacts:
     paths:
