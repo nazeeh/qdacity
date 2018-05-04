@@ -166,7 +166,9 @@ export default class SyncService {
 				}
 			});
 			if(socket.disconnected) {
-				return this.api.emit(messageType, arg);
+				this.api.emit(messageType, arg).then(()=>{
+					resolve();
+				}).catch(reject);
 			}
 		});
 	}
