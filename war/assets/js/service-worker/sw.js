@@ -1,8 +1,24 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
+import { insertCodeHandler, getCurrentUserHandler } from "./ApiHandler";
+
 const version = 9;
+const cache_prefix = "qdacity-app";
+const cache_suffix = "v1";
+const cache_runtime = "runtime";
+const cache_precache = "precache";
+export const cache_runtime_name = `${cache_prefix}-${cache_runtime}-${cache_suffix}`;
+export const cache_precache_name = `${cache_prefix}-${cache_precache}-${cache_suffix}`;
 
 let apiMethods = {};
+
+workbox.core.setCacheNameDetails({
+	prefix: cache_prefix,
+	suffix: cache_suffix,
+	precache: cache_precache,
+	runtime:cache_runtime
+});
+// results in runtime cache name: qdacity-app-runtime-v1
 
 function discoverApi() {
 	return fetch('_ah/api/discovery/v1/apis/qdacity/$API_VERSION$/rest')
@@ -44,11 +60,6 @@ self.addEventListener('install', function (event) {
 });
 
 
-// workbox.routing.registerRoute(
-// 	/^(?!.*ping\.txt$).*/,
-// 	workbox.strategies.networkFirst()
-// );
-
 workbox.routing.registerRoute(
 	/.*\.css/,
 	workbox.strategies.networkFirst()
@@ -84,50 +95,22 @@ workbox.routing.registerRoute(
 
 
 
-const insertCodeHandler = ({url, event}) => {
-	console.log('[Workbox] insert Code handler called');
-	return fetch(event.request)
-		.then(function (response) {
-			if (!response) {
-				console.log(
-					'[ServiceWorker|POST] No response from fetch ',
-					event.request.url
-				);
-				return response;
-			}
-			console.log(
-				'[ServiceWorker|POST] Good Response from fetch ',
-				event.request.url
-			);
-			console.log(response);
-
-			return response;
-		})
-		.catch(function (error) {
-			console.warn('[ServiceWorker|Post] Error from fetch: ', error);
-			const offlineCode = {
-				author: "service worker",
-				codesystemID: "1234",
-				codeID: "46",
-				description: "offline created",
-				id: "12345678",
-				color: "#000000",
-				name: "My first offline code",
-				parentID: "1"
-			};
-			return new Response(JSON.stringify(offlineCode), {});
-		});
-};
-
 /*** Register Routes ***/
 function registerRoutes() {
 	workbox.routing.registerRoute(
-		pathToRegex(apiMethods["qdacity.user.getCurrentUser"]),
-		workbox.strategies.networkFirst()
+		"/" + apiMethods["qdacity.user.getCurrentUser"],
+		getCurrentUserHandler
 	);
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
 		insertCodeHandler,
 		'POST'
 	);
+	/*
+	workbox.routing.registerRoute(
+		pathToRegex(apiMethods["qdacity.codesystem.listCodeSystem"]),
+		listCodeSystemHandler,
+		'POST'
+	);
+	*/
 }
