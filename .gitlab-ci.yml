@@ -148,9 +148,10 @@ acceptance_tests:
   only:
     - branches 
   cache:
-    key: "acceptance_tests"
+    key: "rtcsvc:node_modules"
     paths:
     - realtime-service/node_modules/
+    policy: pull
   script:
     - ./executeAcceptanceTestsJob.sh
   after_script:
