@@ -61,7 +61,6 @@ export default class SigninWithGoogleBtn extends React.Component {
 				id: 'sign.in.with.google.btn.confirm',
 				defaultMessage: 'Please confirm:'
 			}),
-			// FIXME
 			input: [
 				`<label for="firstName">${firstNameLabel}</label><input name="firstName" type="text" placeholder="${firstNameLabel}" value="${firstName}" required />`,
 				`<label for="lastName">${lastNameLabel}</label><input name="lastName" type="text" placeholder="${lastNameLabel}" value="${lastName}" required />`,

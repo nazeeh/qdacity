@@ -15,6 +15,7 @@ image: java:7
 after_script:
     - rm -f /tmp/$CI_PIPELINE_ID.json
     - rm -r -f ./war/node_modules/
+    - rm -r -f ./localization/node_modules/
 
 stages:
   - build
@@ -152,6 +153,10 @@ acceptance_tests:
     - realtime-service/node_modules/
   script:
     - ./executeAcceptanceTestsJob.sh
+  after_script:
+    - rm -r -f ./war/node_modules/
+    - rm -r -f ./localization/node_modules/
+    - rm -r -f ./target/
   artifacts:
     paths:
       - logs

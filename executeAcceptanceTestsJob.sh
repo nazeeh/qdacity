@@ -26,9 +26,6 @@ docker container ls -a
 echo "Existing images"
 docker image ls
 
-echo "Clear dangling images" 
-docker image prune -f
-
 # Build docker images 
 BASE_IMAGE_TAG="qdacity-tests-base:latest"
 TEST_IMAGE_TAG="qdacity-tests-${CI_PROJECT_ID}"

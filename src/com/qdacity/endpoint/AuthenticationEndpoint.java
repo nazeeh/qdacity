@@ -198,7 +198,7 @@ public class AuthenticationEndpoint {
         return new UserEndpoint().insertUser(user, authUser);
     }
 
-    @ApiMethod(name = "authentication.google.getToken", path = "uthentication.google.getToken")
+    @ApiMethod(name = "authentication.google.getToken", path = "authentication.google.getToken")
     public StringWrapper getTokenGoogle(@Named("authNetworkToken") String authNetworkToken, com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException {
 
         AuthenticatedUser authUser = googleTokenValidator.validate(authNetworkToken);

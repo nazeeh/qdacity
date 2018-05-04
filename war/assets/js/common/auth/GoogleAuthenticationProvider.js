@@ -2,6 +2,8 @@
 import * as AuthenticationNetworks from './AuthenticationNetworks.js';
 import HelloJsAuthenticationProvider from './HelloJsAuthenticationProvider.js';
 
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint.js';
+
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const GOOGLE_SCOPES =
 	'https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email';
@@ -9,8 +11,8 @@ const GOOGLE_SCOPES =
 export default class GoogleAuthenticationProvider extends HelloJsAuthenticationProvider {
 
 	constructor(qdacityTokenAuthentcationProvider) {
-		const registerApiMethod = gapi.client.qdacity.authentication.google.register;
-		const getTokenApiMethod = gapi.client.qdacity.authentication.google.getToken;
+		const registerApiMethod = AuthenticationEndpoint.registerGoogle;
+		const getTokenApiMethod = AuthenticationEndpoint.getTokenGoogle;
 		super(qdacityTokenAuthentcationProvider, registerApiMethod, getTokenApiMethod, AuthenticationNetworks.GOOGLE);
 
 		this.qdacityTokenAuthentcationProvider = qdacityTokenAuthentcationProvider;
@@ -38,25 +40,23 @@ export default class GoogleAuthenticationProvider extends HelloJsAuthenticationP
 			    const googleToken = _this.auth2.currentUser.get().getAuthResponse().id_token;
 
                 // get qdacity jwt token
-                gapi.client.qdacity.authentication.google.getToken({
-                    googleToken: googleToken,
-                }).execute(function(resp) {
-                    if (!resp.code) {
-                        _this.qdacityTokenAuthentcationProvider.setToken(resp.value);
-                        _this.qdacityTokenAuthentcationProvider.authStateChaned();
+				AuthenticationEndpoint.getTokenGoogle(googleToken)
+					.then(function(resp) {
+						_this.qdacityTokenAuthentcationProvider.setToken(resp.value);
+						_this.qdacityTokenAuthentcationProvider.authStateChaned();
 
-                        // get profile
-                        const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
-                        const profile = {
-                            name: gapiProfile.getName(),
-                            email: gapiProfile.getEmail(),
-                            thumbnail: gapiProfile.getImageUrl()
-                        };
-                        resolve(profile);
-                    } else {
-                        reject(resp);
-                    }
-                });
+						// get profile
+						const gapiProfile = _this.auth2.currentUser.get().getBasicProfile();
+						const profile = {
+							name: gapiProfile.getName(),
+							email: gapiProfile.getEmail(),
+							thumbnail: gapiProfile.getImageUrl()
+						};
+						resolve(profile);
+					})
+					.catch(function(resp) {
+						reject(resp);
+					});
 			});
 
 			// timeout because listening to an observer

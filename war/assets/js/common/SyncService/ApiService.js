@@ -1,5 +1,7 @@
 import CodesEndpoint from '../endpoints/CodesEndpoint';
 import { MSG } from './constants.js';
+import Alert from '../modals/Alert.js';
+import IntlProvider from '../Localization/LocalizationProvider';
 
 /**
  * Provides fallback to api requests for SyncService
@@ -27,7 +29,15 @@ export default class ApiService {
 					.then(function (code) {
 						_this.syncService.fireEvent('codeInserted', code);
 					});
+			case MSG.USER.UPDATE:
+				break;
 			default:
+				const { formatMessage } = IntlProvider.intl;
+				const alertMessage = formatMessage({
+					id: 'modal.offline_unsupported',
+					defaultMessage: 'Operation currently not supported in offline mode'
+				});
+				new Alert(alertMessage).showModal();
 				return Promise.reject("Unhandled message type");
 		}
 	}
