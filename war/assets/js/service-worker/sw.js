@@ -1,9 +1,11 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
-import { listProjectHandler } from "./handlers/ProjectHandler";
+import { listProjectHandler, listValidationProjectHandler } from "./handlers/ProjectHandler";
 
 
 const VERSION = 9;
+// Upgrade this version, if new stores should be created in existing database
+export const DB_VERSION = 3;
 const CACHE_PREFIX = "qdacity-app";
 const CACHE_SUFFIX = "v1";
 const CACHE_RUNTIME = "runtime";
@@ -106,6 +108,10 @@ function registerRoutes() {
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.project.listProject"]),
 		listProjectHandler,
+	);
+	workbox.routing.registerRoute(
+		pathToRegex(apiMethods["qdacity.project.listValidationProject"]),
+		listValidationProjectHandler,
 	);
 	/*
 	workbox.routing.registerRoute(
