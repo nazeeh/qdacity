@@ -1,23 +1,26 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
-import { insertCodeHandler, getCodeSystemHandler } from "./ApiHandler";
+import { listProjectHandler } from "./handlers/ProjectHandler";
 
-const version = 9;
-const cache_prefix = "qdacity-app";
-const cache_suffix = "v1";
-const cache_runtime = "runtime";
-const cache_precache = "precache";
-export const cache_runtime_name = `${cache_prefix}-${cache_runtime}-${cache_suffix}`;
-export const cache_precache_name = `${cache_prefix}-${cache_precache}-${cache_suffix}`;
+
+const VERSION = 9;
+const CACHE_PREFIX = "qdacity-app";
+const CACHE_SUFFIX = "v1";
+const CACHE_RUNTIME = "runtime";
+const CACHE_PRECACHE = "precache";
+export const CACHE_RUNTIME_NAME = `${CACHE_PREFIX}-${CACHE_RUNTIME}-${CACHE_SUFFIX}`;
+export const CACHE_PRECACHE_NAME = `${CACHE_PREFIX}-${CACHE_PRECACHE}-${CACHE_SUFFIX}`;
+export const DB_NAME = "qdacity-app";
 
 export let apiMethods = {};
 
 workbox.core.setCacheNameDetails({
-	prefix: cache_prefix,
-	suffix: cache_suffix,
-	precache: cache_precache,
-	runtime:cache_runtime
+	prefix: CACHE_PREFIX,
+	suffix: CACHE_SUFFIX,
+	precache: CACHE_PRECACHE,
+	runtime: CACHE_RUNTIME
 });
+
 // results in runtime cache name: qdacity-app-runtime-v1
 
 function discoverApi() {
@@ -94,7 +97,6 @@ workbox.routing.registerRoute(
 );
 
 
-
 /*** Register Routes ***/
 function registerRoutes() {
 	workbox.routing.registerRoute(
@@ -103,8 +105,9 @@ function registerRoutes() {
 	);
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.project.listProject"]),
-		getCodeSystemHandler,
+		listProjectHandler,
 	);
+	/*
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.codes.insertCode"]),
 		insertCodeHandler,
@@ -114,4 +117,5 @@ function registerRoutes() {
 		pathToRegex(apiMethods["qdacity.codesystem.getCodeSystem"]),
 		getCodeSystemHandler,
 	);
+	*/
 }
