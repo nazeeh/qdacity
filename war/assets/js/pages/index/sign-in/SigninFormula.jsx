@@ -296,11 +296,6 @@ export default class SigninFormula extends React.Component {
 					return;
 				}
 
-
-				await _this.props.auth.authentication.signInWithEmailPassword(data.email, data.pwd);
-				await _this.props.auth.updateUserStatus();
-				_this.onSignedIn();
-
 				return console.log(
 					'First',
 					data.firstName,
