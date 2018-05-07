@@ -118,6 +118,55 @@ public class ExerciseEndpoint {
 		return exercise;
 	}
 
+    /**
+     * This inserts a new exercise into App Engine datastore. If the entity already
+     * exists in the datastore, an exception is thrown.
+     * It uses HTTP POST method.
+     *
+     * @param ExerciseGroup the entity to be inserted.
+     * @return The inserted entity.
+     * @throws UnauthorizedException
+     */
+    @ApiMethod(name = "exercise.insertExerciseGroupForNewExercise", path = "exercise.insertExerciseGroupForNewExercise")
+    public ExerciseGroup insertExerciseGroupForNewExercise(Exercise newExercise, @Named("existingExerciseID") Long existingExerciseID, @Named("ExerciseGroupName") String ExerciseGroupName, User user) throws UnauthorizedException {
+        Logger LOGGER = Logger.getLogger("ExerciseEndpointTest");
+        newExercise.setSnapshotsAlreadyCreated(false);
+        PersistenceManager mgr = getPersistenceManager();
+        ExerciseGroup exerciseGroup = new ExerciseGroup();
+        List<String> exerciseIDs = new ArrayList<>();
+
+        try {
+
+            if (newExercise.getId() != null) {
+                if (containsExercise(newExercise)) {
+                    throw new EntityExistsException("Exercise already exists");
+                }
+            }
+
+            try {
+                TermCourse termCourse = mgr.getObjectById(TermCourse.class, newExercise.getTermCourseID());
+                Authorization.checkAuthorizationTermCourse(termCourse, user);
+                mgr.makePersistent(newExercise);
+            }
+            catch (javax.jdo.JDOObjectNotFoundException ex) {
+                throw new javax.jdo.JDOObjectNotFoundException("The corresponding term course was not found");
+            }
+
+            exerciseIDs.add(existingExerciseID.toString());
+            exerciseIDs.add(newExercise.getId().toString());
+            Exercise existingExercise = mgr.getObjectById(Exercise.class, existingExerciseID);
+            exerciseGroup.setName(ExerciseGroupName);
+            exerciseGroup.setProjectRevisionID(existingExercise.getProjectRevisionID());
+            exerciseGroup.setTermCourseID(existingExercise.getTermCourseID());
+            exerciseGroup.setExercises(exerciseIDs);
+            mgr.makePersistent(exerciseGroup);
+
+        } finally {
+            mgr.close();
+        }
+        return exerciseGroup;
+    }
+
 	/**
 	 * This method lists all the exercises which belong to a specific term course
 	 * It uses HTTP GET method and paging support.
