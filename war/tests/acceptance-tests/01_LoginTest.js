@@ -19,8 +19,13 @@ describe(SPEC_NAME, function () {
     });
 
     beforeEach((done) => {
-    	this.driver = Common.setupChromeDriver();
-        this.driver.get('http://localhost:8888/').then(done);
+		const _this = this;
+		this.driver = Common.setupChromeDriver();
+		this.driver.get('http://localhost:8888/').then(() => {
+			// switch to english version
+			_this.driver.executeScript('localStorage.setItem("language", "en-US")')
+				.then(done);
+		});
     }, Common.getDefaultTimeout());
 
     afterEach((done) => {
@@ -64,31 +69,47 @@ describe(SPEC_NAME, function () {
 			console.log('Filled the form and clicked the register button.');
 		}); 		
     	    	
-    	this.driver.sleep(2000);
-		this.driver.get('http://localhost:8888/PersonalDashboard').then(() => {
-			// Check welcome message and URL
-			_this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
-				console.log('Found the welcome message.');
+		this.driver.sleep(2000);
+		
+		// Login Email
+		let fieldEmailLogin = this.driver.findElement(By.xpath("//input[@id='signin-forumla-email']"));
+		fieldEmailLogin.clear();
+		fieldEmailLogin.sendKeys(loginHelper.userData.qdacityEmail);
 
-				_this.driver.getCurrentUrl().then((currentUrl) => {	
-					// Check the welcome message
-					expect(text).toBe("Welcome " + loginHelper.userData.displayName);
-					
-					// Does the URL end with /PersonalDashboard?
-					const urlEnd = "/PersonalDashboard";
-					expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
-					
-					// Check if the token of the signed-in user is stored in the localStorage 
-					_this.driver.executeScript('return localStorage.getItem("qdacity-jwt-token")').then(function (token) {
-						expect(token).not.toBeUndefined();
-						expect(token).not.toBeNull();
-					});
+		// Login Password
+		let fieldPasswordLogin = this.driver.findElement(By.xpath("//input[@id='signin-formula-password']"));
+		fieldPasswordLogin.clear();
+		fieldPasswordLogin.sendKeys(loginHelper.userData.userPassword);
 
-					loginHelper.storeLoginState(this.driver).then(() => {
-						done();
-					});
-				})
-			});
+		// Login
+		this.driver.findElement(By.xpath("//button[@id='signin-formula-signin-btn']")).click().then(() => {
+			console.log('Signed in.');
+		}); 
+
+		this.driver.sleep(2000);
+
+		// Check welcome message and URL
+		this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
+			console.log('Found the welcome message.');
+
+			_this.driver.getCurrentUrl().then((currentUrl) => {	
+				// Check the welcome message
+				expect(text).toBe("Welcome " + loginHelper.userData.displayName);
+				
+				// Does the URL end with /PersonalDashboard?
+				const urlEnd = "/PersonalDashboard";
+				expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
+				
+				// Check if the token of the signed-in user is stored in the localStorage 
+				_this.driver.executeScript('return localStorage.getItem("qdacity-jwt-token")').then(function (token) {
+					expect(token).not.toBeUndefined();
+					expect(token).not.toBeNull();
+				});
+
+				loginHelper.storeLoginState(this.driver).then(() => {
+					done();
+				});
+			})
 		});
     }, Common.getDefaultTimeout());
 });
