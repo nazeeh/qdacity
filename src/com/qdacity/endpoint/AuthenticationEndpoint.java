@@ -26,7 +26,6 @@ import io.jsonwebtoken.Claims;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -105,29 +104,10 @@ public class AuthenticationEndpoint {
         PersistenceManager mgr = null;
         try {
             mgr = getPersistenceManager();
-            Query.Filter filter = new Query.FilterPredicate("secret", Query.FilterOperator.EQUAL, secret);
-            com.google.appengine.api.datastore.Query query = new com.google.appengine.api.datastore.Query(
-                    "UnconfirmedEmailPasswordLogin"
-            ).setFilter(filter);
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            PreparedQuery pq = datastore.prepare(query);
-
-            List<UnconfirmedEmailPasswordLogin> resultList = new ArrayList<>();
-            for (Entity result : pq.asIterable()) {
-                String email = (String) result.getProperty("email");
-                String hashedPwd = (String) result.getProperty("hashedPwd");
-                String givenName = (String) result.getProperty("givenName");
-                String surName = (String) result.getProperty("surName");
-                Boolean confirmed = (Boolean) result.getProperty("confirmed");
-
-                UnconfirmedEmailPasswordLogin unconfirmedEmailPasswordLogin = new UnconfirmedEmailPasswordLogin(
-                        email, hashedPwd, givenName, surName, secret
-                );
-                unconfirmedEmailPasswordLogin.setConfirmed(confirmed);
-
-                resultList.add(unconfirmedEmailPasswordLogin);
-            }
-            return resultList;
+            javax.jdo.Query q = mgr.newQuery(UnconfirmedEmailPasswordLogin.class);
+            q.setFilter("secret == secretParam");
+            q.declareParameters("String secretParam");
+            return (List<UnconfirmedEmailPasswordLogin>) q.execute(secret);
         } finally {
             mgr.close();
         }
@@ -141,6 +121,7 @@ public class AuthenticationEndpoint {
      * @throws UnauthorizedException
      * @throws BadRequestException
      */
+    @ApiMethod(name = "authentication.email.confirmRegistration")
     public User confirmEmailRegistration(@Named("secret") String secret,
                                          com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         // get the stored EmailPasswordLogin

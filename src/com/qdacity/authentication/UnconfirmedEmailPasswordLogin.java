@@ -9,7 +9,7 @@ import javax.jdo.annotations.*;
 public class UnconfirmedEmailPasswordLogin {
 
 	@PrimaryKey
-	@Persistent
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	String email;
 
 	/**
