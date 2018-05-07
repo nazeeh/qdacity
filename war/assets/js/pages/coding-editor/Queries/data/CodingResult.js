@@ -1,86 +1,96 @@
-
 export default class CodingResult {
-    
 	constructor(code) {
-        this.code = code;
+		this.code = code;
 
-        this.documents = [];
-    }
+		this.documents = [];
+	}
 
-    getCode() {
-        return this.code;
-    }
+	getCode() {
+		return this.code;
+	}
 
-    getTotalCodingsCountMainCode() {
-        return this.totalCodingsCount;
-    }
+	getTotalCodingsCountMainCode() {
+		return this.totalCodingsCount;
+	}
 
-    getTotalCodingsCountMainCode() {
-        return this.iterateOverDocuments((document) => document.getTotalCodingsCountMainCode());
-    }
+	getTotalCodingsCountMainCode() {
+		return this.iterateOverDocuments(document =>
+			document.getTotalCodingsCountMainCode()
+		);
+	}
 
-    getTotalCodingsCount(codeId) {
-        return this.iterateOverDocuments((document) => document.getTotalCodingsCount(codeId));
-    }
+	getTotalCodingsCount(codeId) {
+		return this.iterateOverDocuments(document =>
+			document.getTotalCodingsCount(codeId)
+		);
+	}
 
-    getCodingOverlapCount(codeId) {
-        return this.iterateOverDocuments((document) => document.getCodingOverlapCount(codeId));
-    }
+	getCodingOverlapCount(codeId) {
+		return this.iterateOverDocuments(document =>
+			document.getCodingOverlapCount(codeId)
+		);
+	}
 
-    getAverageOverlapPercentageByMainCode(codeId) {
-        return this.getAverageOverlapPercentage(codeId, (codingOverlap) => codingOverlap.getOverlapPercentageByMainCode());
-    }
-    
-    getAverageOverlapPercentageByOtherCode(codeId) {
-        return this.getAverageOverlapPercentage(codeId, (codingOverlap) => codingOverlap.getOverlapPercentageByOtherCode());
-    }
+	getAverageOverlapPercentageByMainCode(codeId) {
+		return this.getAverageOverlapPercentage(codeId, codingOverlap =>
+			codingOverlap.getOverlapPercentageByMainCode()
+		);
+	}
 
-    getAverageOverlapPercentage(codeId, funcGetOverlapPercentage) {
-        if (this.documents.length == 0) {
-            return 0.0;
-        }
+	getAverageOverlapPercentageByOtherCode(codeId) {
+		return this.getAverageOverlapPercentage(codeId, codingOverlap =>
+			codingOverlap.getOverlapPercentageByOtherCode()
+		);
+	}
 
-        let totalPercentage = 0.0;
-        let counter = 0;
+	getAverageOverlapPercentage(codeId, funcGetOverlapPercentage) {
+		if (this.documents.length == 0) {
+			return 0.0;
+		}
 
-        for (let i = 0; i < this.documents.length; i++) {
-            const codingOverlapCollection = this.documents[i].getCodingOverlapCollection(codeId);
+		let totalPercentage = 0.0;
+		let counter = 0;
 
-            if (codingOverlapCollection != null) {
-                const codingOverlaps = codingOverlapCollection.getCodingOverlaps();
+		for (let i = 0; i < this.documents.length; i++) {
+			const codingOverlapCollection = this.documents[
+				i
+			].getCodingOverlapCollection(codeId);
 
-                for (let j = 0; j < codingOverlaps.length; j++) {
-                    totalPercentage += funcGetOverlapPercentage(codingOverlaps[j]);
-                }
+			if (codingOverlapCollection != null) {
+				const codingOverlaps = codingOverlapCollection.getCodingOverlaps();
 
-                counter += codingOverlapCollection.getCodingOverlapCount();
-            }
-        }
+				for (let j = 0; j < codingOverlaps.length; j++) {
+					totalPercentage += funcGetOverlapPercentage(codingOverlaps[j]);
+				}
 
-        if (counter == 0) {
-            return 0.0;
-        }
+				counter += codingOverlapCollection.getCodingOverlapCount();
+			}
+		}
 
-        return totalPercentage / counter;
-    }
+		if (counter == 0) {
+			return 0.0;
+		}
 
-    iterateOverDocuments(func) {
-        let value = 0;
+		return totalPercentage / counter;
+	}
 
-        for (let i = 0; i < this.documents.length; i++) {
-            value += func(this.documents[i]);
-        }
+	iterateOverDocuments(func) {
+		let value = 0;
 
-        return value;
-    }
+		for (let i = 0; i < this.documents.length; i++) {
+			value += func(this.documents[i]);
+		}
 
-    addDocument(document) {
-        this.documents.push(document);
-    }
+		return value;
+	}
 
-    getDocument(id) {
-        return this.documents.find((document) => {
-            return document.getDocument().id == id;
-        });
-    }
+	addDocument(document) {
+		this.documents.push(document);
+	}
+
+	getDocument(id) {
+		return this.documents.find(document => {
+			return document.getDocument().id == id;
+		});
+	}
 }

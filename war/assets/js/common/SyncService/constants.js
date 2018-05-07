@@ -11,8 +11,8 @@ const MSG = {
 	},
 	CODING: {
 		ADD: 'coding.add',
-		REMOVE: 'coding.remove',
-	},
+		REMOVE: 'coding.remove'
+	}
 };
 
 // Events that might be sent to the client by the server
@@ -29,8 +29,8 @@ const EVT = {
 	},
 	CODING: {
 		ADDED: 'coding.added',
-		REMOVED: 'coding.removed',
-	},
+		REMOVED: 'coding.removed'
+	}
 };
 
 module.exports = {

@@ -3,8 +3,7 @@ import openSocket from 'socket.io-client';
 import CodesService from './CodesService';
 import DocumentService from './DocumentService';
 import { MSG, EVT } from './constants.js';
-import ApiService from "./ApiService";
-
+import ApiService from './ApiService';
 
 /**
  * Provides collaboration features for CodingEditor and sub-components
@@ -158,17 +157,20 @@ export default class SyncService {
 		return new Promise((resolve, reject) => {
 			const socket = this._socket.emit(messageType, arg, (status, ...args) => {
 				if (status === 'ok') {
-					this.console.log("socket emit ok");
+					this.console.log('socket emit ok');
 					resolve(...args);
 				} else {
 					this.console.error('API error', ...args);
 					reject(...args);
 				}
 			});
-			if(socket.disconnected) {
-				this.api.emit(messageType, arg).then(()=>{
-					resolve();
-				}).catch(reject);
+			if (socket.disconnected) {
+				this.api
+					.emit(messageType, arg)
+					.then(() => {
+						resolve();
+					})
+					.catch(reject);
 			}
 		});
 	}
