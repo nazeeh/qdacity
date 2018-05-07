@@ -13,6 +13,8 @@ import SigninWithTwitterBtn from './SigninWithTwitterBtn.jsx';
 import SigninWithFacebookBtn from './SigninWithFacebookBtn.jsx';
 import VexModal from '../../../common/modals/VexModal';
 
+import AuthenticationEndpoint from '../../../common/endpoints/AuthenticationEndpoint.js';
+
 const PanelDivisor = styled.div`
 	margin-top: 15px;
 	margin-bottom: 15px;
@@ -295,6 +297,83 @@ export default class SigninFormula extends React.Component {
 					});
 					return;
 				}
+
+				_this.confirmEmail();
+
+				return console.log(
+					'First',
+					data.firstName,
+					'Last Name',
+					data.lastName,
+					'Email',
+					data.email
+				);
+			}
+		});
+	}
+
+	confirmEmail() {
+		console.log('Confirm email.');
+		const _this = this;
+		
+		const { formatMessage } = IntlProvider.intl;
+
+		const confirmationCodeLabel = formatMessage({
+			id: 'index.registeremailpwd.confirmation_code',
+			defaultMessage: 'Confirmation Code'
+		});
+		
+		vex.dialog.open({
+			message: formatMessage({
+				id: 'index.registeremailpwd.confirmationHeading',
+				defaultMessage: 'Enter the code you received with Email'
+			}),
+			input: [
+				`<label for="confirmationCode">${confirmationCodeLabel}</label><input name="confirmationCode" type="text" required />`,
+			].join('\n'),
+			buttons: [
+				$.extend({}, vex.dialog.buttons.YES, {
+					text: formatMessage({
+						id: 'index.registeremailpwd.confirm',
+						defaultMessage: 'Confirm'
+					})
+				}),
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'index.registeremailpwd.confirmCancel',
+						defaultMessage: 'Cancel'
+					})
+				})
+			],
+			callback: async function(data) {
+				if (data === false) {
+					return console.log('Cancelled');
+				}
+				let failureMessage = formatMessage({
+					id: 'signin-formula.confirm.success',
+					defaultMessage: 'Your Email was confirmed!'
+				});
+
+				try {
+					await AuthenticationEndpoint.confirmEmail(data.confirmationCode);
+				} catch(e) {
+
+					failureMessage = formatMessage({
+						id: 'signin-formula.confirm.failure',
+						defaultMessage: 'Could not confirm the Email. Please try again!'
+					});
+				}
+				vex.dialog.open({
+					message: failureMessage,
+					buttons: [
+						$.extend({}, vex.dialog.buttons.NO, {
+							text: formatMessage({
+								id: 'signin-formula.signin.failure.popup.close',
+								defaultMessage: 'Close'
+							})
+						})
+					],
+				});
 
 				return console.log(
 					'First',
