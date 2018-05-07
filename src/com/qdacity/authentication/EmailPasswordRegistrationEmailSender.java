@@ -47,7 +47,7 @@ public class EmailPasswordRegistrationEmailSender implements DeferredTask {
 		
 		
 		mail.setFrom("QDAcity <support@qdacity.com>");
-		mail.setSubject("QDAcity User Migration");
+		mail.setSubject("QDAcity Registration");
 		mail.setText(" ").setHtml(msgBody);
 
 		mail.send();
