@@ -9,6 +9,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.utils.SystemProperty;
 import com.qdacity.Authorization;
 import com.qdacity.Cache;
 import com.qdacity.Constants;
@@ -29,6 +30,8 @@ import javax.jdo.Transaction;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -58,7 +61,8 @@ public class AuthenticationEndpoint {
 
     /**
      * Registers a new user.
-     * Still has to be confirmed @see confirmEmailRegistration
+     * Still has to be confirmed @see confirmEmailRegistration.
+     * In development environment, no confirmation is required!
      * @param email
      * @param givenName
      * @param surName
@@ -89,10 +93,16 @@ public class AuthenticationEndpoint {
             pm.close();
         }
 
-        // send registration email
-        EmailPasswordRegistrationEmailSender task = new EmailPasswordRegistrationEmailSender(unconfirmedLogin);
-        Queue queue = QueueFactory.getDefaultQueue();
-        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+        if (SystemProperty.environment.value().equals(SystemProperty.Environment.Value.Development)) {
+            // in dev environmanet, there is no confirmation step (for acceptance tests)
+            Logger.getLogger("logger").log(Level.INFO, "Register with Email and Password will do confirmation automatically because Dev Environment!");
+            this.confirmEmailRegistration(unconfirmedLogin.getConfirmationCode(), loggedInUser);
+        } else {
+            // send registration email
+            EmailPasswordRegistrationEmailSender task = new EmailPasswordRegistrationEmailSender(unconfirmedLogin);
+            Queue queue = QueueFactory.getDefaultQueue();
+            queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
+        }
     }
 
     private String generateLoginVerificationSecret() {

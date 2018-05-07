@@ -3,6 +3,7 @@ package com.qdacity.test.EmailPasswordAuthenticationEndpoint;
 import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.InternalServerErrorException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
@@ -39,6 +40,7 @@ public class AuthenticationEndpointTest {
     @Before
     public void setUp() {
         helper.setUp();
+        SystemProperty.environment.set(SystemProperty.Environment.Value.Production); // production mode as standard
     }
 
     @After
@@ -63,6 +65,23 @@ public class AuthenticationEndpointTest {
 		thrown.expectMessage("Code1.1: The User with the email " + unregisteredUser.getEmail() + " could not be found!");
 		endpoint.getTokenEmailPassword(unregisteredUser.getEmail(), password, null);
 	}
+
+    @Test
+    public void testRegisterNoConfirmationDevSucceeds() throws UnauthorizedException, BadRequestException {
+        SystemProperty.environment.set(SystemProperty.Environment.Value.Development); // production mode as standard
+
+        User unregisteredUser = new User();
+        unregisteredUser.setGivenName("given-name");
+        unregisteredUser.setSurName("sur-name");
+        unregisteredUser.setEmail("email@email.com");
+        AuthenticationEndpoint endpoint = new AuthenticationEndpoint();
+
+        String password = "Password123";
+        endpoint.registerEmailPassword(unregisteredUser.getEmail(), password,
+                unregisteredUser.getGivenName(), unregisteredUser.getSurName(), null);
+
+        endpoint.getTokenEmailPassword(unregisteredUser.getEmail(), password, null);
+    }
 
     @Test
     public void testRegister() throws UnauthorizedException, BadRequestException {
