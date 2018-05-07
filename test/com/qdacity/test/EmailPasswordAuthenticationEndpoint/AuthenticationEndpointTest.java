@@ -327,7 +327,7 @@ public class AuthenticationEndpointTest {
             mgr.close();
         }
 
-        return new AuthenticationEndpoint().confirmEmailRegistration(unconfirmedEmailPasswordLogin.getSecret(), null);
+        return new AuthenticationEndpoint().confirmEmailRegistration(unconfirmedEmailPasswordLogin.getConfirmationCode(), null);
     }
 
 

@@ -20,7 +20,7 @@ public class UnconfirmedEmailPasswordLogin implements Serializable {
 	String hashedPwd;
 
 	@Persistent
-	private String secret;
+	private String confirmationCode;
 
 	@Persistent
 	private String givenName;
@@ -37,12 +37,12 @@ public class UnconfirmedEmailPasswordLogin implements Serializable {
 	 * @param email
 	 * @param hashedPwd
 	 */
-	public UnconfirmedEmailPasswordLogin(String email, String hashedPwd, String givenName, String surName, String secret) {
+	public UnconfirmedEmailPasswordLogin(String email, String hashedPwd, String givenName, String surName, String confirmationCode) {
 		this.email = email;
 		this.hashedPwd = hashedPwd;
 		this.givenName = givenName;
 		this.surName = surName;
-		this.secret = secret;
+		this.confirmationCode = confirmationCode;
 		this.confirmed = false;
 	}
 
@@ -62,12 +62,12 @@ public class UnconfirmedEmailPasswordLogin implements Serializable {
 		this.hashedPwd = hashedPwd;
 	}
 
-	public String getSecret() {
-		return secret;
+	public String getConfirmationCode() {
+		return confirmationCode;
 	}
 
-	public void setSecret(String secret) {
-		this.secret = secret;
+	public void setConfirmationCode(String confirmationCode) {
+		this.confirmationCode = confirmationCode;
 	}
 
 	public boolean isConfirmed() {

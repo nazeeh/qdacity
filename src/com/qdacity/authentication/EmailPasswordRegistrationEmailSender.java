@@ -3,7 +3,6 @@ package com.qdacity.authentication;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.qdacity.Credentials;
 import com.qdacity.Sendgrid;
-import com.qdacity.user.User;
 
 import java.text.Normalizer;
 import java.util.logging.Level;
@@ -40,7 +39,7 @@ public class EmailPasswordRegistrationEmailSender implements DeferredTask {
 				+	"thank you for your registration on QDAcity!<br>"
 				+	"<br>"
 				+ 	"Please enter the following code in the registration screen on QDAcity in order to complete the registration:<br>"
-				+ 	unconfirmedEmailPasswordLogin.getSecret() + "<br>"
+				+ 	unconfirmedEmailPasswordLogin.getConfirmationCode() + "<br>"
 				+	"<br>"
 				+	"Kind Regards,<br>"
 				+ 	"Your QDAcity team";

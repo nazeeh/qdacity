@@ -78,12 +78,12 @@ public class AuthenticationEndpoint {
 
         HashUtil hashUtil = new HashUtil();
         String pwdHash = hashUtil.hash(pwd);
-        String secret = generateLoginVerificationSecret();
+        String confirmationCode = generateLoginVerificationSecret();
 
         UnconfirmedEmailPasswordLogin unconfirmedLogin = null;
         PersistenceManager pm = getPersistenceManager();
         try {
-            unconfirmedLogin = new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, secret);
+            unconfirmedLogin = new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, confirmationCode);
             unconfirmedLogin = pm.makePersistent(unconfirmedLogin); // confirmed = false
         } finally {
             pm.close();
@@ -104,14 +104,14 @@ public class AuthenticationEndpoint {
         }
     }
 
-    private List<UnconfirmedEmailPasswordLogin> fetchUnconfirmedEmailPasswordLoginBySecret(String secret) {
+    private List<UnconfirmedEmailPasswordLogin> fetchUnconfirmedEmailPasswordLoginBySecret(String confirmationCode) {
         PersistenceManager mgr = null;
         try {
             mgr = getPersistenceManager();
             javax.jdo.Query q = mgr.newQuery(UnconfirmedEmailPasswordLogin.class);
-            q.setFilter("secret == secretParam");
-            q.declareParameters("String secretParam");
-            return (List<UnconfirmedEmailPasswordLogin>) q.execute(secret);
+            q.setFilter("confirmationCode == confirmationCodeParam");
+            q.declareParameters("String confirmationCodeParam");
+            return (List<UnconfirmedEmailPasswordLogin>) q.execute(confirmationCode);
         } finally {
             mgr.close();
         }
@@ -119,17 +119,17 @@ public class AuthenticationEndpoint {
 
     /**
      * Inserts new user after successful confirmation.
-     * @param secret
+     * @param confirmationCode
      * @param loggedInUser
      * @return
      * @throws UnauthorizedException
      * @throws BadRequestException
      */
     @ApiMethod(name = "authentication.email.confirmRegistration")
-    public User confirmEmailRegistration(@Named("secret") String secret,
+    public User confirmEmailRegistration(@Named("confirmationCode") String confirmationCode,
                                          com.google.api.server.spi.auth.common.User loggedInUser) throws UnauthorizedException, BadRequestException {
         // get the stored EmailPasswordLogin
-        List<UnconfirmedEmailPasswordLogin> unconfirmedEmailPasswordLoginList = fetchUnconfirmedEmailPasswordLoginBySecret(secret);
+        List<UnconfirmedEmailPasswordLogin> unconfirmedEmailPasswordLoginList = fetchUnconfirmedEmailPasswordLoginBySecret(confirmationCode);
         if(unconfirmedEmailPasswordLoginList.size() == 0) {
             throw new BadRequestException("This Email is not waiting for confirmation!");
         }
