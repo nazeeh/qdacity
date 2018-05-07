@@ -17,7 +17,7 @@ public class MetaModelEndpointTestHelper {
 	static public void setUpDefaultMetaModel(User googleUser) {
 		MaintenanceEndpoint me = new MaintenanceEndpoint();
 		try {
-			me.initializeDatabase(true, googleUser);
+			me.initializeDatabase(true, false, googleUser);
 		} catch (UnauthorizedException e) {
 			fail("Failed to initialize database with default meta model");
 			e.printStackTrace();

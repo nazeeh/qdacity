@@ -4,6 +4,8 @@ import React, {Component} from 'react';
 import hello from 'hellojs';
 import * as AuthenticationNetworks from '../../common/auth/AuthenticationNetworks.js';
 
+import AuthenticationEndpoint from '../../common/endpoints/AuthenticationEndpoint.js';
+
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import { FormattedMessage } from 'react-intl';
 
@@ -98,18 +100,18 @@ export default class LoginDataSettings extends Component {
     updateAssociatedLoginList() {
         const _this = this;
 
-        gapi.client.qdacity.auth.getAssociatedLogins().execute(function(resp) {
-            if (!resp.code) {
+        AuthenticationEndpoint.getAssociatedLogins()
+            .then(function(resp) {
                 _this.setState({
                     associatedLogins: resp.items
                 });
-            } else {
+            })
+            .catch(function(resp) {
                 console.error('Could not fetch any associated logins.');
                 _this.setState({
                     associatedLogins: []
                 });
-            }
-        });
+            });
     }
 
     onAddGoogleAccount() {
@@ -205,45 +207,39 @@ export default class LoginDataSettings extends Component {
         const _this = this;
 		const { formatMessage } = IntlProvider.intl;
 
-        gapi.client.qdacity.auth.associateGoogleLogin({
-            googleIdToken: googleIdToken
-        }).execute(function(resp) {
-            if(!resp.code) {
+        AuthenticationEndpoint.associateGoogleLogin(googleIdToken)
+            .then(function(resp) {
                 _this.updateAssociatedLoginList();
-            } else {    
+            })
+            .catch(function(resp) {    
                 _this.handleFailedAssociateResponse(resp);
-            }
-        });
+            });
     }
 
     addFacebookAccount(facebookAccessToken) {
         const _this = this;
 		const { formatMessage } = IntlProvider.intl;
 
-        gapi.client.qdacity.auth.associateFacebookLogin({
-            authNetworkToken: facebookAccessToken
-        }).execute(function(resp) {
-            if(!resp.code) {
+        AuthenticationEndpoint.associateFacebookLogin(facebookAccessToken)
+            .then(function(resp) {
                 _this.updateAssociatedLoginList();
-            } else {    
+            })
+            .catch(function(resp) {    
                 _this.handleFailedAssociateResponse(resp);
-            }
-        });
+            });
     }
     
     addTwitterAccount(twitterAccessToken) {
         const _this = this;
 		const { formatMessage } = IntlProvider.intl;
 
-        gapi.client.qdacity.auth.associateTwitterLogin({
-            authNetworkToken: twitterAccessToken
-        }).execute(function(resp) {
-            if(!resp.code) {
+        AuthenticationEndpoint.associateTwitterLogin(twitterAccessToken)
+            .then(function(resp) {
                 _this.updateAssociatedLoginList();
-            } else {    
+            })
+            .catch(function(resp) {    
                 _this.handleFailedAssociateResponse(resp);
-            }
-        });
+            });
     }
 
     onAddEmailPassword() {
@@ -286,16 +282,13 @@ export default class LoginDataSettings extends Component {
 					return console.log('Cancelled');
                 }
                 
-				gapi.client.qdacity.auth.associateEmailPassword({
-                    email: data.email,
-                    password: data.pwd
-                }).execute(function(resp) {
-                    if(!resp.code) {
+                AuthenticationEndpoint.associateEmailPassword(data.email, data.pwd)
+                    .then(function(resp) {
                         _this.updateAssociatedLoginList();
-                    } else {
+                    })
+                    .catch(function(resp) {
                         _this.handleFailedAssociateResponse(resp);
-                    }
-                })
+                    });
 			}
 		});
     }
@@ -402,12 +395,11 @@ export default class LoginDataSettings extends Component {
             return;
         }
 
-        gapi.client.qdacity.auth.disassociateLogin(
-            associatedLogin
-        ).execute(function(resp) {
-            if(!resp.code) {
+        AuthenticationEndpoint.disassociateLogin(associatedLogin)
+            .then(function(resp) {
                 location.reload(); // need reload if current login is deleted
-            } else {
+            })
+            .catch(function(resp) {
                 let errorMsg = formatMessage({
                     id: 'settings.logindata.disassociate.failure',
                     defaultMessage: 'Could not disassociate user with the chosen Login.'
@@ -423,8 +415,7 @@ export default class LoginDataSettings extends Component {
                         })
                     ],
                 });
-            }
-        });
+            });
     }
 
     onChangePassword() {
@@ -468,11 +459,8 @@ export default class LoginDataSettings extends Component {
                     return console.log('Cancelled');
                 }
                 
-                gapi.client.qdacity.auth.changePassword({
-                    oldPassword: data.oldPassword,
-                    newPassword: data.newPassword
-                }).execute(function(resp) {
-                    if(!resp.code) {
+                AuthenticationEndpoint.changePassword(data.oldPassword, data.newPassword)
+                    .then(function(resp) {
                         _this.props.auth.authentication.refreshSession();
                         vex.dialog.open({
                             message: formatMessage({
@@ -488,10 +476,10 @@ export default class LoginDataSettings extends Component {
                                 })
                             ],
                         });
-                    } else {
+                    })
+                    .catch(function(resp) {
                         _this.handleFailedChangePasswordResponse(resp);
-                    }
-                })
+                    });
             }
         });
     }

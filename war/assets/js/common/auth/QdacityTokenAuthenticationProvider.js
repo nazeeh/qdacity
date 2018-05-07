@@ -1,8 +1,10 @@
 //@ts-check
 import jwt_decode from 'jwt-decode';
 
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint.js';
+
 const STORAGE_QDACITY_JWT_TOKEN_KEY = 'qdacity-jwt-token';
-const TOKEN_TIMEOUT = 30; //min
+const TOKEN_REFRESH_INTERVAL = 30; //min
 
 
 export default class QdacityTokenAuthenticationProvider {
@@ -169,7 +171,7 @@ export default class QdacityTokenAuthenticationProvider {
 		const decoded = jwt_decode(this.jwtToken);
 
 		const now = new Date();
-		const compareDate = new Date(now.getTime() + TOKEN_TIMEOUT * 60000); // adding minutes
+		const compareDate = new Date(now.getTime() + TOKEN_REFRESH_INTERVAL * 60000); // adding minutes
 		const expiresAt = new Date(decoded.exp  * 1000); // get the right date format
 
 		if(expiresAt.getTime() < compareDate.getTime()) {
@@ -187,19 +189,16 @@ export default class QdacityTokenAuthenticationProvider {
 		const _this = this;
 
 		const promise = new Promise(function(resolve, reject) {
-
-			gapi.client.qdacity.authentication.refreshToken({
-				token: _this.jwtToken
-			}).execute(function(resp) {
-				if (!resp.code) {
+			AuthenticationEndpoint.refreshToken(_this.jwtToken)
+				.then(function(resp) {
 					_this.setToken(resp.value);
 					console.log('Refreshed token!');
 					_this.authStateChaned();
 					resolve();
-				} else {
+				})
+				.catch(function(resp) {
 					reject('Refreshing the token failed!');
-				}
-			});
+				});
 		});
 		return promise;
 	}

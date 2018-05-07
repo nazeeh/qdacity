@@ -428,6 +428,35 @@ public class UserEndpointTest {
 	}
 
 	@Test
+	public void testUpdateUserTypeProdEnvironment() throws UnauthorizedException {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		SystemProperty.environment.set(SystemProperty.Environment.Value.Production);
+
+		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
+		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);
+
+		PersistenceManager mgr = getPersistenceManager();
+		mgr.setIgnoreCache(true);
+		try {
+			User user = mgr.getObjectById(User.class, insertedUser.getId());
+			assertEquals(UserType.USER, user.getType());
+
+			UserEndpoint ue = new UserEndpoint();
+			try {
+				user = ue.updateUserType(insertedUser.getId(), "ADMIN", loggedInUserA);
+				fail("User must not change himself to be admin in production environment!");
+			} catch (UnauthorizedException e) {
+				// intended
+			}
+			User user2 = mgr.getObjectById(User.class, insertedUser.getId());
+			assertEquals(UserType.USER, user.getType());
+		} finally {
+			mgr.close();
+		}
+	}
+
+	@Test
 	public void testUpdateUserProfileAllInfos() throws UnauthorizedException {
 		com.google.api.server.spi.auth.common.User loggedInUserA = new AuthenticatedUser("1", "asd@asd.de", LoginProviderType.GOOGLE);
 		User insertedUser = UserEndpointTestHelper.addUser("asd@asd.de", "firstName", "lastName", loggedInUserA);

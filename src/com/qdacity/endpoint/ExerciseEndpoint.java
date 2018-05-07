@@ -17,6 +17,7 @@ import javax.persistence.EntityExistsException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.qdacity.authentication.AuthenticatedUser;
+import com.qdacity.exercise.ExerciseGroup;
 import com.qdacity.project.metrics.*;
 import com.qdacity.project.metrics.tasks.*;
 import com.qdacity.user.LoginProviderType;
@@ -47,6 +48,40 @@ import com.qdacity.project.ProjectType;
 public class ExerciseEndpoint {
 
 	private UserEndpoint userEndpoint = new UserEndpoint();
+
+	/**
+	 * This inserts a new entity into App Engine datastore. If the entity already
+	 * exists in the datastore, an exception is thrown.
+	 * It uses HTTP POST method.
+	 *
+	 * @param exerciseGroup the entity to be inserted.
+	 * @return The inserted entity.
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name = "exercise.insertExerciseGroup")
+	public ExerciseGroup insertExerciseGroup(ExerciseGroup exerciseGroup, User user) throws UnauthorizedException {
+		PersistenceManager mgr = getPersistenceManager();
+		try {
+			if (exerciseGroup.getId() != null) {
+				if (containsExerciseGroup(exerciseGroup)) {
+					throw new EntityExistsException("Exercise group already exists");
+				}
+			}
+
+			try {
+				TermCourse termCourse = mgr.getObjectById(TermCourse.class, exerciseGroup.getTermCourseID());
+				Authorization.checkAuthorizationTermCourse(termCourse, user);
+				mgr.makePersistent(exerciseGroup);
+			}
+			catch (javax.jdo.JDOObjectNotFoundException ex) {
+				throw new javax.jdo.JDOObjectNotFoundException("The corresponding term course was not found");
+			}
+
+		} finally {
+			mgr.close();
+		}
+		return exerciseGroup;
+	}
 
 	/**
 	 * This inserts a new entity into App Engine datastore. If the entity already
@@ -216,9 +251,9 @@ public class ExerciseEndpoint {
 
             Query q;
             Map<String, Long> params = new HashMap<>();
-            q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID");
+            q = mgr.newQuery(ExerciseReport.class, " revisionID  == :revisionID && exerciseID == :exerciseID");
             params.put("revisionID", revID);
-
+            params.put("exerciseID", exerciseID);
             reports = (List<ExerciseReport>) q.executeWithMap(params);
 
 
@@ -250,8 +285,9 @@ public class ExerciseEndpoint {
 
                 filters.append("exerciseID == exerciseID && ");
                 parameters.put("exerciseID", exerciseID);
-                filters.append("validationCoders == :userID");
+                filters.append("validationCoders == :userID && ");
                 parameters.put("userID", qdacityUser.getId());
+                filters.append("isSnapshot == false");
                 Query q = mgr.newQuery(ExerciseProject.class);
 
                 q.setFilter(filters.toString());
@@ -270,17 +306,24 @@ public class ExerciseEndpoint {
 		}
 
 
+	//Fetches the original (not a snapshot) ExerciseProject which belongs to an exercise (there should be only one per student per exercise)
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.getExerciseProjectByRevisionID")
-		public ExerciseProject getExerciseProjectByRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
+		public ExerciseProject getExerciseProjectByRevisionID(@Named("revisionID") Long revisionID, @Named("exerciseID") Long exerciseID, User user) throws UnauthorizedException, JSONException {
 			PersistenceManager mgr = getPersistenceManager();
 			List<ExerciseProject> exerciseProjects = null;
 			ExerciseProject exerciseProject = null;
+            com.qdacity.user.User qdacityUser = new UserEndpoint().getCurrentUser(user);
 			try {
 
-				Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(revisionID)");
+                Query q;
+                Map<String, Object> params = new HashMap<>();
+                q = mgr.newQuery(ExerciseProject.class, " revisionID  == :revisionID && exerciseID == :exerciseID && isSnapshot == false && validationCoders == :userID");
+                params.put("revisionID", revisionID);
+                params.put("exerciseID", exerciseID);
+                params.put("userID", qdacityUser.getId());
+                exerciseProjects = (List<ExerciseProject>) q.executeWithMap(params);
 
-				exerciseProjects = (List<ExerciseProject>) q.execute(Arrays.asList(revisionID));
 				if (exerciseProjects.size() > 0) {
 					exerciseProject = exerciseProjects.get(0);
 				}
@@ -289,6 +332,80 @@ public class ExerciseEndpoint {
 			}
 			return exerciseProject;
 		}
+
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.getExercisesByProjectRevisionID")
+    public List<Exercise> getExercisesByProjectRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
+        PersistenceManager mgr = getPersistenceManager();
+        List<Exercise> exercises;
+        try {
+            Query q = mgr.newQuery(Exercise.class, ":p.contains(projectRevisionID)");
+            exercises = (List<Exercise>) q.execute(Arrays.asList(revisionID));
+        } finally {
+            mgr.close();
+        }
+        return exercises;
+    }
+
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.getExercisesOfExerciseGroup",
+            path = "getExercisesOfExerciseGroup")
+    public List<Exercise> getExercisesOfExerciseGroup(@Named("exerciseGroupID") Long exerciseGroupID, User user) throws UnauthorizedException, JSONException {
+        PersistenceManager mgr = getPersistenceManager();
+        List<Exercise> exercises = null;
+        ExerciseGroup exerciseGroup;
+        List<String> exerciseIDs;
+        List<Long> exerciseIDsLong = new ArrayList<>();
+        try {
+
+            exerciseGroup = mgr.getObjectById(ExerciseGroup.class, exerciseGroupID);
+            if (exerciseGroup != null) {
+                TermCourse termCourse = (TermCourse) mgr.getObjectById(TermCourse.class, exerciseGroup.getTermCourseID());
+                // Check if user is authorized
+                Authorization.checkAuthorizationTermCourse(termCourse, user);
+
+                //Convert Exercise ids from string to long, otherwise the query doesn't work properly
+                exerciseIDs = exerciseGroup.getExercises();
+                for (String exerciseID : exerciseIDs) {
+                    exerciseIDsLong.add(Long.parseLong(exerciseID));
+                }
+
+                Query q = mgr.newQuery(Exercise.class, ":p.contains(id)");
+                exercises = (List<Exercise>) q.execute(exerciseIDsLong);
+            }
+
+        } finally {
+            mgr.close();
+        }
+        return exercises;
+    }
+
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.getExerciseGroupsByProjectRevisionID")
+    public List<ExerciseGroup> getExerciseGroupsByProjectRevisionID(@Named("revisionID") Long revisionID, User user) throws UnauthorizedException, JSONException {
+        PersistenceManager mgr = getPersistenceManager();
+        List<ExerciseGroup> exerciseGroups;
+        try {
+            Query q = mgr.newQuery(ExerciseGroup.class, ":p.contains(projectRevisionID)");
+            exerciseGroups = (List<ExerciseGroup>) q.execute(Arrays.asList(revisionID));
+        } finally {
+            mgr.close();
+        }
+        return exerciseGroups;
+    }
+
+    @SuppressWarnings("unchecked")
+    @ApiMethod(name = "exercise.getExerciseGroupByID" , path = "getExerciseGroupByID")
+    public ExerciseGroup getExerciseGroupByID(@Named("id") Long id, User user) throws UnauthorizedException, JSONException {
+        PersistenceManager mgr = getPersistenceManager();
+        ExerciseGroup exerciseGroup;
+        try {
+            exerciseGroup = mgr.getObjectById(ExerciseGroup.class, id);
+        } finally {
+            mgr.close();
+        }
+        return exerciseGroup;
+    }
 
 	@SuppressWarnings("unchecked")
 	@ApiMethod(name = "exercise.getExerciseProjectsByExerciseID")
@@ -319,7 +436,7 @@ public class ExerciseEndpoint {
 		Exercise exercise = null;
 		try {
 
-			Query q = mgr.newQuery(ExerciseProject.class, ":p.contains(exerciseID)");
+			Query q = mgr.newQuery(ExerciseProject.class);
 
 			exercise = mgr.getObjectById(Exercise.class, exerciseID);
 
@@ -410,19 +527,10 @@ public class ExerciseEndpoint {
             TermCourse termCourse = mgr.getObjectById(TermCourse.class, exercise.getTermCourseID());
             // Check if user is authorized
             Authorization.checkAuthorizationTermCourse(termCourse, user);
-
-            List<ExerciseResult> results;
-
-            if (report.getValidationResultIDs().size() > 0) {
-                // Delete all ValidationResults / old - linked from report
-                Query q = mgr.newQuery(ExerciseResult.class, ":p.contains(id)");
-                results = (List<ExerciseResult>) q.execute(report.getValidationResultIDs());
-                mgr.deletePersistentAll(results);
-            } else {
-                DeferredReportDeletion task = new DeferredReportDeletion(repID);
-                Queue queue = QueueFactory.getDefaultQueue();
-                queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
-            }
+            
+            DeferredReportDeletion task = new DeferredExerciseReportDeletion(repID);
+            Queue queue = QueueFactory.getDefaultQueue();
+            queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
 
             // Lazy fetch
             List<DocumentResult> docResults = report.getDocumentResults();
@@ -441,27 +549,26 @@ public class ExerciseEndpoint {
 
     //Fetches exercises whose deadlines have passed, then creates snapshots of exerciseProjects which belong to these exercises
     //This method is called by ExerciseDeadlineServlet which is triggered by a cronjob every 5 minutes
-	public static void checkAndCreateExerciseProjectSnapshotsIfNeeded() {
+	public void checkAndCreateExerciseProjectSnapshotsIfNeeded(User loggedInUser) {
 
 	    Date now = new Date();
         List<Exercise> exercises = null;
         PersistenceManager mgr = getPersistenceManager();
         StringBuilder filters = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
-        filters.append("exerciseDeadline <:now");
+        filters.append("exerciseDeadline <:now && ");
         parameters.put("now", now);
+        filters.append("snapshotsAlreadyCreated == false");
 
         try {
             Query q = mgr.newQuery(Exercise.class);
             q.setFilter(filters.toString());
             exercises = (List<Exercise>)q.executeWithMap(parameters);
             for (Exercise exercise : exercises) {
-                if (!exercise.getSnapshotsAlreadyCreated()) {
-                    createSnapshotsForExpiredExerciseProjects(exercise.getId());
+                    createSnapshotsForExpiredExerciseProjects(exercise.getId(), loggedInUser);
                     exercise.setSnapshotsAlreadyCreated(true);
                     mgr.makePersistent(exercise);
                     java.util.logging.Logger.getLogger("logger").log(Level.INFO, "creating exercise project snapshots for exercise: " + exercise.getName());
-                }
             }
         }
         finally {
@@ -469,7 +576,7 @@ public class ExerciseEndpoint {
         }
     }
 
-    private static void createSnapshotsForExpiredExerciseProjects(Long exerciseID) {
+    private static void createSnapshotsForExpiredExerciseProjects(Long exerciseID, User loggedInUser) {
 	    List<ExerciseProject> exerciseProjects;
         StringBuilder filters = new StringBuilder();
         Map<String, Object> parameters = new HashMap<>();
@@ -506,7 +613,7 @@ public class ExerciseEndpoint {
                 mgr.makePersistentAll(clonedExerciseProjects);
                 for (ExerciseProject clonedExerciseProject : clonedExerciseProjects) {
                     try {
-                        cloneExerciseProjectTextDocs(clonedExerciseProject, parentProject);
+                        cloneExerciseProjectTextDocs(clonedExerciseProject, parentProject, loggedInUser);
                     }
                     catch (UnauthorizedException e) {
                         java.util.logging.Logger.getLogger("logger").log(Level.WARNING, "The user is not authorized to clone the exerciseProjects of this exercise");
@@ -518,9 +625,7 @@ public class ExerciseEndpoint {
         }
     }
 
-    private static void cloneExerciseProjectTextDocs (ExerciseProject exerciseProject, ProjectRevision parentProject) throws UnauthorizedException {
-         //Todo create an admin user specifically for this cronjob servlet instead of using this account
-		User loggedInUser = new AuthenticatedUser("106195310051436260424", "nazeeh.ammari@gmail.com", LoginProviderType.GOOGLE);
+    private static void cloneExerciseProjectTextDocs (ExerciseProject exerciseProject, ProjectRevision parentProject, User loggedInUser) throws UnauthorizedException {
         TextDocumentEndpoint.cloneTextDocuments(parentProject, ProjectType.EXERCISE, exerciseProject.getId(), false, loggedInUser);
     }
 
@@ -555,6 +660,19 @@ public class ExerciseEndpoint {
 		boolean contains = true;
 		try {
 			mgr.getObjectById(Exercise.class, exercise.getId());
+		} catch (javax.jdo.JDOObjectNotFoundException ex) {
+			contains = false;
+		} finally {
+			mgr.close();
+		}
+		return contains;
+	}
+
+	private boolean containsExerciseGroup(ExerciseGroup exerciseGroup) {
+		PersistenceManager mgr = getPersistenceManager();
+		boolean contains = true;
+		try {
+			mgr.getObjectById(ExerciseGroup.class, exerciseGroup.getId());
 		} catch (javax.jdo.JDOObjectNotFoundException ex) {
 			contains = false;
 		} finally {

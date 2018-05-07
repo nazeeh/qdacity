@@ -6,6 +6,7 @@ import Theme from '../../../common/styles/Theme.js';
 import Alert from '../../../common/modals/Alert';
 import { FormattedMessage } from 'react-intl';
 import IntlProvider from '../../../common/Localization/LocalizationProvider';
+import IntercoderAgreement from '../../../common/modals/IntercoderAgreement';
 
 import {
 	ItemList,
@@ -39,18 +40,43 @@ export default class ExerciseList extends React.Component {
 
 	getExercises() {
 		var _this = this;
+		var exercises = [];
 		this.getExercisesPromise.then(function(resp) {
 			resp.items = resp.items || [];
-			_this.setState({
-				exercises: resp.items
+			var counter = resp.items.length;
+			resp.items.forEach(function (exercise, index) {
+				ExerciseEndpoint.listExerciseReportsByRevisionID(exercise.projectRevisionID, exercise.id).then(function(resp2) {
+					counter -= 1;
+					resp2.items = resp2.items || [];
+					console.log(resp2.items);
+					exercises[index] = exercise;
+					exercises[index].exerciseReport = resp2.items;
+					if (counter == 0) {
+						console.log(exercises);
+						_this.setState({
+							exercises: exercises
+						});
+					}
+				});;
 			});
 		});
 	}
 
 	renderExercise(exercise, index) {
+		var _this = this;
+		const { formatMessage } = IntlProvider.intl;
 		return (
 			<StyledListItemDefault key={index} className="clickable">
 				<span> {exercise.name} </span>
+				<span> {formatMessage(
+					{
+						id: 'exerciselist.exercise_deadline',
+						defaultMessage: 'Deadline: {deadline}'
+					},
+					{
+						deadline: exercise.exerciseDeadline.substr(0, 10)
+					}
+				)} </span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.editorClick(e, exercise, index)}
@@ -60,11 +86,26 @@ export default class ExerciseList extends React.Component {
 					>
 						<i className="fa fa-tags" />
 					</StyledListItemBtn>
+					{_this.renderReports(exercise, index)}
 				</div>
 			</StyledListItemDefault>
 		);
 	}
 
+	renderReports(exercise, index) {
+		if (typeof exercise.exerciseReport !== 'undefined' && exercise.exerciseReport.length > 0) {
+			return (
+				<StyledListItemBtn
+					onClick={e => this.exerciseReportClick(e, exercise, index)}
+					className=" btn fa-lg"
+					color={Theme.darkGreen}
+					colorAccent={Theme.darkGreenAccent}
+				>
+					<i className="fa fa-industry" />
+				</StyledListItemBtn>
+			)
+		}
+	}
 	editorClick(e, exercise, index) {
 		var _this = this;
 		ExerciseEndpoint.createExerciseProjectIfNeeded(
@@ -73,7 +114,8 @@ export default class ExerciseList extends React.Component {
 		).then(function(resp2) {
 			if (typeof resp2.id == 'undefined') {
 					ExerciseEndpoint.getExerciseProjectByRevisionID(
-						exercise.projectRevisionID
+						exercise.projectRevisionID,
+						exercise.id
 					).then(function(exerciseProjectResp) {
 						_this.props.history.push(
 							'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
@@ -89,6 +131,18 @@ export default class ExerciseList extends React.Component {
 		});
 	}
 
+exerciseReportClick(e, exercise, index) {
+	console.log(this.props.history);
+	console.log(exercise);
+	console.log(exercise.exerciseReport);
+	var agreementModal = new IntercoderAgreement(
+		exercise.exerciseReport[0],
+		this.props.history,
+		'EXERCISE',
+		exercise
+	);
+	agreementModal.showModal();
+}
 	showAlertIfDeadlinePassed(exercise) {
 		const { formatMessage } = IntlProvider.intl;
 		if ((this.deadlinePassed(exercise))) {

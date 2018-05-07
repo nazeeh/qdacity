@@ -3,6 +3,8 @@ import openSocket from 'socket.io-client';
 import CodesService from './CodesService';
 import DocumentService from './DocumentService';
 import { MSG, EVT } from './constants.js';
+import ApiService from "./ApiService";
+
 
 /**
  * Provides collaboration features for CodingEditor and sub-components
@@ -55,7 +57,7 @@ export default class SyncService {
 		this.off = this.off.bind(this);
 		this.disconnect = this.disconnect.bind(this);
 
-		// For debug: prevent console.log from being removed in build proceess
+		// For debug: prevent console.log from being removed in build process
 		this.console = window['con' + 'sole'];
 		this.log = this.console.log.bind(this.console);
 
@@ -65,6 +67,8 @@ export default class SyncService {
 		// Register sub-services
 		this.codes = new CodesService(this, this._socket);
 		this.documents = new DocumentService(this, this._socket);
+
+		this.api = new ApiService(this);
 	}
 
 	/**
@@ -146,19 +150,26 @@ export default class SyncService {
 
 	/**
 	 * Emit message to sync service
+	 * If disconnected, executes HTTP request instead
 	 * @access package
 	 * @return {Promise} - resolves on success, rejects on failure
 	 */
 	emit(messageType, arg) {
 		return new Promise((resolve, reject) => {
-			this._socket.emit(messageType, arg, (status, ...args) => {
+			const socket = this._socket.emit(messageType, arg, (status, ...args) => {
 				if (status === 'ok') {
+					this.console.log("socket emit ok");
 					resolve(...args);
 				} else {
 					this.console.error('API error', ...args);
 					reject(...args);
 				}
 			});
+			if(socket.disconnected) {
+				this.api.emit(messageType, arg).then(()=>{
+					resolve();
+				}).catch(reject);
+			}
 		});
 	}
 

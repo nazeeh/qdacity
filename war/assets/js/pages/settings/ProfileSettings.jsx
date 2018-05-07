@@ -134,42 +134,39 @@ export default class ProfileSettings extends Component {
 		});
 	}
 
-	deleteUser() {
+	async deleteUser() {
 		const _this = this;
 		const { formatMessage } = IntlProvider.intl;
 
-		gapi.client.qdacity.user.removeUser({
-			id: this.props.auth.userProfile.qdacityId
-		}).execute(function(resp) {
-			let resultMessage = '';
-			if (!resp.code) {
-				resultMessage = formatMessage({
-					id: 'settings.profile.delete.success',
-					defaultMessage: 'Your accunt was successfully deleted.'
-				});
-			} else {
-				resultMessage = formatMessage({
-					id: 'settings.profile.delete.failure',
-					defaultMessage: 'Oops, something went wrong while deleting your account...'
-				});
-			}
-
-			vex.dialog.open({
-				message: resultMessage,
-				buttons: [
-					$.extend({}, vex.dialog.buttons.NO, {
-						text: formatMessage({
-							id: 'settings.profile.delete.ok',
-							defaultMessage: 'OK'
-						})
-					})
-				],
-				callback: function() {
-					_this.props.auth.authentication.signOut();
-					_this.props.history.push('/');
-					location.reload();
-				}
+		let resultMessage = '';
+		try {
+			const resp = await UserEndpoint.removeUser(this.props.auth.userProfile.qdacityId)
+			resultMessage = formatMessage({
+				id: 'settings.profile.delete.success',
+				defaultMessage: 'Your accunt was successfully deleted.'
 			});
+		} catch (e) {
+			resultMessage = formatMessage({
+				id: 'settings.profile.delete.failure',
+				defaultMessage: 'Oops, something went wrong while deleting your account...'
+			});
+		}
+
+		vex.dialog.open({
+			message: resultMessage,
+			buttons: [
+				$.extend({}, vex.dialog.buttons.NO, {
+					text: formatMessage({
+						id: 'settings.profile.delete.ok',
+						defaultMessage: 'OK'
+					})
+				})
+			],
+			callback: function() {
+				_this.props.auth.authentication.signOut();
+				_this.props.history.push('/');
+				location.reload();
+			}
 		});
 	}
 
@@ -319,7 +316,7 @@ export default class ProfileSettings extends Component {
 					]
 				});
 			}
-			await _this.props.auth.authentication.refreshSession();
+			await _this.props.auth.updateUserStatus();
 		})
 	}
 

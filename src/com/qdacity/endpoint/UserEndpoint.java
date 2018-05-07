@@ -612,7 +612,7 @@ public class UserEndpoint {
 		AuthenticatedUser authUser = (AuthenticatedUser) loggedInUser;
 
 		// try to load from cache
-        User user = Cache.getUserByAuthenticatedUser(authUser);
+		User user = Cache.getUserByAuthenticatedUser(authUser);
 		if(user != null) {
 		    return user;
         }
