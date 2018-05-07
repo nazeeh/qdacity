@@ -67,7 +67,9 @@ export default class UnauthenticatedUserPanel extends React.Component {
 						</p>
 						<SigninFormula
 							auth={this.props.auth}
-							onSignedIn={() => {location.reload()}}
+							onSignedIn={() => {
+								location.reload();
+							}}
 						/>
 					</StyledPanel>
 				</CenteredDiv>

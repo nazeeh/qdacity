@@ -193,15 +193,18 @@ export default class ExerciseList extends React.Component {
 				onClick={this.exerciseClick.bind(this, exercise)}
 			>
 				<span> {exercise.name} </span>
-				<span> {formatMessage(
-					{
-						id: 'exerciselist.exercise_deadline',
-						defaultMessage: 'Deadline: {deadline}'
-					},
-					{
-						deadline: exercise.exerciseDeadline.substr(0, 10)
-					}
-				)} </span>
+				<span>
+					{' '}
+					{formatMessage(
+						{
+							id: 'exerciselist.exercise_deadline',
+							defaultMessage: 'Deadline: {deadline}'
+						},
+						{
+							deadline: exercise.exerciseDeadline.substr(0, 10)
+						}
+					)}{' '}
+				</span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.deleteExercise(e, exercise, index)}

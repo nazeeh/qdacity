@@ -111,10 +111,13 @@ export default class ProjectDashboard extends React.Component {
 	}
 
 	render() {
-		if (
-			!this.props.auth.authState.isUserSignedIn
-		) {
-			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+		if (!this.props.auth.authState.isUserSignedIn) {
+			return (
+				<UnauthenticatedUserPanel
+					history={this.props.history}
+					auth={this.props.auth}
+				/>
+			);
 		}
 		this.init();
 

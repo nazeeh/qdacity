@@ -44,8 +44,11 @@ export default class ExerciseList extends React.Component {
 		this.getExercisesPromise.then(function(resp) {
 			resp.items = resp.items || [];
 			var counter = resp.items.length;
-			resp.items.forEach(function (exercise, index) {
-				ExerciseEndpoint.listExerciseReportsByRevisionID(exercise.projectRevisionID, exercise.id).then(function(resp2) {
+			resp.items.forEach(function(exercise, index) {
+				ExerciseEndpoint.listExerciseReportsByRevisionID(
+					exercise.projectRevisionID,
+					exercise.id
+				).then(function(resp2) {
 					counter -= 1;
 					resp2.items = resp2.items || [];
 					exercises[index] = exercise;
@@ -55,7 +58,7 @@ export default class ExerciseList extends React.Component {
 							exercises: exercises
 						});
 					}
-				});;
+				});
 			});
 		});
 	}
@@ -66,15 +69,18 @@ export default class ExerciseList extends React.Component {
 		return (
 			<StyledListItemDefault key={index} className="clickable">
 				<span> {exercise.name} </span>
-				<span> {formatMessage(
-					{
-						id: 'exerciselist.exercise_deadline',
-						defaultMessage: 'Deadline: {deadline}'
-					},
-					{
-						deadline: exercise.exerciseDeadline.substr(0, 10)
-					}
-				)} </span>
+				<span>
+					{' '}
+					{formatMessage(
+						{
+							id: 'exerciselist.exercise_deadline',
+							defaultMessage: 'Deadline: {deadline}'
+						},
+						{
+							deadline: exercise.exerciseDeadline.substr(0, 10)
+						}
+					)}{' '}
+				</span>
 				<div>
 					<StyledListItemBtn
 						onClick={e => this.editorClick(e, exercise, index)}
@@ -91,7 +97,10 @@ export default class ExerciseList extends React.Component {
 	}
 
 	renderReports(exercise, index) {
-		if (typeof exercise.exerciseReport !== 'undefined' && exercise.exerciseReport.length > 0) {
+		if (
+			typeof exercise.exerciseReport !== 'undefined' &&
+			exercise.exerciseReport.length > 0
+		) {
 			return (
 				<StyledListItemBtn
 					onClick={e => this.exerciseReportClick(e, exercise, index)}
@@ -101,7 +110,7 @@ export default class ExerciseList extends React.Component {
 				>
 					<i className="fa fa-industry" />
 				</StyledListItemBtn>
-			)
+			);
 		}
 	}
 	editorClick(e, exercise, index) {
@@ -111,15 +120,15 @@ export default class ExerciseList extends React.Component {
 			exercise.id
 		).then(function(resp2) {
 			if (typeof resp2.id == 'undefined') {
-					ExerciseEndpoint.getExerciseProjectByRevisionID(
-						exercise.projectRevisionID,
-						exercise.id
-					).then(function(exerciseProjectResp) {
-						_this.props.history.push(
-							'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
-						);
-						_this.showAlertIfDeadlinePassed(exercise);
-					});
+				ExerciseEndpoint.getExerciseProjectByRevisionID(
+					exercise.projectRevisionID,
+					exercise.id
+				).then(function(exerciseProjectResp) {
+					_this.props.history.push(
+						'/CodingEditor?project=' + exerciseProjectResp.id + '&type=EXERCISE'
+					);
+					_this.showAlertIfDeadlinePassed(exercise);
+				});
 			} else {
 				_this.props.history.push(
 					'/CodingEditor?project=' + resp2.id + '&type=EXERCISE'
@@ -140,7 +149,7 @@ exerciseReportClick(e, exercise, index) {
 }
 	showAlertIfDeadlinePassed(exercise) {
 		const { formatMessage } = IntlProvider.intl;
-		if ((this.deadlinePassed(exercise))) {
+		if (this.deadlinePassed(exercise)) {
 			new Alert(
 				formatMessage({
 					id: 'exercise.deadlinePassed',
@@ -163,12 +172,12 @@ exerciseReportClick(e, exercise, index) {
 		var millisecond = 0;
 		var JSExerciseDeadline = new Date();
 		if (typeof javaDateString != 'undefined') {
-			year = javaDateString.substr(0, javaDateString.indexOf("-"));
-			javaDateString = javaDateString.substr(javaDateString.indexOf("-")+1);
-			month = javaDateString.substr(0, javaDateString.indexOf("-"));
-			javaDateString = javaDateString.substr(javaDateString.indexOf("-")+1);
-			day = javaDateString.substr(0, javaDateString.indexOf("T"));
-			javaDateString = javaDateString.substr(javaDateString.indexOf("T")+1);
+			year = javaDateString.substr(0, javaDateString.indexOf('-'));
+			javaDateString = javaDateString.substr(javaDateString.indexOf('-') + 1);
+			month = javaDateString.substr(0, javaDateString.indexOf('-'));
+			javaDateString = javaDateString.substr(javaDateString.indexOf('-') + 1);
+			day = javaDateString.substr(0, javaDateString.indexOf('T'));
+			javaDateString = javaDateString.substr(javaDateString.indexOf('T') + 1);
 			JSExerciseDeadline.setFullYear(year);
 			JSExerciseDeadline.setMonth(month - 1);
 			JSExerciseDeadline.setDate(day);
@@ -176,21 +185,18 @@ exerciseReportClick(e, exercise, index) {
 			JSExerciseDeadline.setMinutes(minute);
 			JSExerciseDeadline.setSeconds(second);
 			JSExerciseDeadline.setMilliseconds(millisecond);
-		}
-		else {
+		} else {
 			//If the deadline of the exercise is undefined in the datastore, set it to one year later here
-			JSExerciseDeadline.setFullYear(JSExerciseDeadline.getFullYear()+1);
+			JSExerciseDeadline.setFullYear(JSExerciseDeadline.getFullYear() + 1);
 		}
-		return (JSExerciseDeadline);
+		return JSExerciseDeadline;
 	}
 	deadlinePassed(exercise) {
 		var JSExerciseDeadline = this.javaToJSDate(exercise.exerciseDeadline);
 		var now = new Date();
 		if (JSExerciseDeadline < now) {
 			return true;
-		}
-		else
-		{
+		} else {
 			return false;
 		}
 	}

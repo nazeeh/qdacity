@@ -11,7 +11,7 @@ export default class DocumentService {
 		// Initialize listeners
 		[
 			[EVT.CODING.ADDED, this._handleCodingAdded],
-			[EVT.CODING.REMOVED, this._handleCodingRemoved],
+			[EVT.CODING.REMOVED, this._handleCodingRemoved]
 		].map(def => socket.on(def[0], def[1].bind(this)));
 	}
 
@@ -28,7 +28,7 @@ export default class DocumentService {
 		return this.syncService.emit(MSG.CODING.ADD, {
 			documentId,
 			operations,
-			code,
+			code
 		});
 	}
 
@@ -45,7 +45,7 @@ export default class DocumentService {
 		return this.syncService.emit(MSG.CODING.REMOVE, {
 			documentId,
 			pathRange,
-			codeId,
+			codeId
 		});
 	}
 

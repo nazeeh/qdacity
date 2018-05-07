@@ -1,36 +1,37 @@
-
 export default class CodingOverlapCollection {
-    
-    constructor(codeId, totalCodingsCount) {
-        this.codeId = codeId;
-        this.totalCodingsCount = totalCodingsCount;
+	constructor(codeId, totalCodingsCount) {
+		this.codeId = codeId;
+		this.totalCodingsCount = totalCodingsCount;
 
-        this.codingOverlaps = [];
-    }
+		this.codingOverlaps = [];
+	}
 
-    getCodeId() {
-        return this.codeId;
-    }
+	getCodeId() {
+		return this.codeId;
+	}
 
-    getCodingOverlaps() {
-        return this.codingOverlaps;
-    }
+	getCodingOverlaps() {
+		return this.codingOverlaps;
+	}
 
-    getCodingOverlapCount() {
-        return this.codingOverlaps.length;
-    }
+	getCodingOverlapCount() {
+		return this.codingOverlaps.length;
+	}
 
-    getTotalCodingsCount() {
-        return this.totalCodingsCount;
-    }
+	getTotalCodingsCount() {
+		return this.totalCodingsCount;
+	}
 
-    hasCodingOverlap(codingIdMain, codingIdOther) {
-        return this.codingOverlaps.find((codingOverlap) => {
-            return codingOverlap.getCodingIdMain() == codingIdMain && codingOverlap.getCodingIdOther() == codingIdOther;
-        });
-    }
+	hasCodingOverlap(codingIdMain, codingIdOther) {
+		return this.codingOverlaps.find(codingOverlap => {
+			return (
+				codingOverlap.getCodingIdMain() == codingIdMain &&
+				codingOverlap.getCodingIdOther() == codingIdOther
+			);
+		});
+	}
 
-    addCodingOverlap(codingOverlap) {
-        this.codingOverlaps.push(codingOverlap);
-    }
+	addCodingOverlap(codingOverlap) {
+		this.codingOverlaps.push(codingOverlap);
+	}
 }

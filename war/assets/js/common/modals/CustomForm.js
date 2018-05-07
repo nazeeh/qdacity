@@ -90,8 +90,7 @@ export default class CustomForm extends VexModal {
 		const { formatMessage } = IntlProvider.intl;
 		var deadlineMessage = formatMessage({
 			id: 'modal.deadline',
-			defaultMessage:
-				'Deadline: '
+			defaultMessage: 'Deadline: '
 		});
 
 		this.formElements += '<div class="vex-custom-field-wrapper">';
@@ -101,7 +100,6 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 		this.formElements += '</div>';
 		this.formElements += '</div>';
-
 	}
 	addTextField(name, label, placeholder, value) {
 		this.formElements += '<div class="vex-custom-field-wrapper">';
@@ -188,7 +186,13 @@ export default class CustomForm extends VexModal {
 
 		options.forEach(function(el) {
 			_this.formElements +=
-				'<option value="' + el.id + '" ' + isDefault(el) + '>' + el.name + '</option>';
+				'<option value="' +
+				el.id +
+				'" ' +
+				isDefault(el) +
+				'>' +
+				el.name +
+				'</option>';
 		});
 		this.formElements += '</select>';
 		this.formElements += '</div>';
@@ -300,16 +304,13 @@ export default class CustomForm extends VexModal {
 				}
 			});
 			if (_this.hasDateChooser) {
-			ReactDOM.render(
-				<ThemeProvider theme={Theme}>
-					<DateChooser
-						setSelectedDate={_this.setSelectedDate}
-					/>
-				</ThemeProvider>,
-				document.getElementById('DateChooser')
-			)
-		}
-
+				ReactDOM.render(
+					<ThemeProvider theme={Theme}>
+						<DateChooser setSelectedDate={_this.setSelectedDate} />
+					</ThemeProvider>,
+					document.getElementById('DateChooser')
+				);
+			}
 			if (_this.isProjectRevisionSelector && _this.showProjectDropDown) {
 				ReactDOM.render(
 					<ThemeProvider theme={Theme}>

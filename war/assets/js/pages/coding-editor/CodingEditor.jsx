@@ -168,7 +168,7 @@ class CodingEditor extends React.Component {
 			picSrc: this.props.auth.userProfile.picSrc,
 			project: {
 				id: this.state.project.id,
-				type: this.state.project.type,
+				type: this.state.project.type
 			},
 			token: this.props.auth.authentication.getEncodedToken()
 		});
@@ -372,10 +372,13 @@ class CodingEditor extends React.Component {
 	}
 
 	render() {
-		if (
-			!this.props.auth.authState.isUserSignedIn
-		)
-			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+		if (!this.props.auth.authState.isUserSignedIn)
+			return (
+				<UnauthenticatedUserPanel
+					history={this.props.history}
+					auth={this.props.auth}
+				/>
+			);
 		if (this.state.project.getCodesystemID() == -1) this.init();
 
 		return (
@@ -420,7 +423,9 @@ class CodingEditor extends React.Component {
 						<div id="documents-ui">
 							<StyledDocumentsView selectedEditor={this.state.selectedEditor}>
 								<DocumentsView
-									ref={c => { if (c) this.documentsViewRef = c }}
+									ref={c => {
+										if (c) this.documentsViewRef = c;
+									}}
 									textEditor={this.textEditor}
 									projectID={this.state.project.getId()}
 									projectType={this.state.project.getType()}
@@ -455,7 +460,7 @@ class CodingEditor extends React.Component {
 							syncService={this.syncService}
 							userProfile={this.props.auth.userProfile}
 							openCodeQueries={this.openCodeQueries}
-							readOnly = {this.state.readOnly}
+							readOnly={this.state.readOnly}
 						/>
 					</StyledSideBarCodesystem>
 				</StyledSideBar>
@@ -469,7 +474,9 @@ class CodingEditor extends React.Component {
 							projectType={this.state.project.getType()}
 							getCodeByCodeID={this.getCodeByCodeID}
 							showAgreementMap={this.state.showAgreementMap}
-							agreementMapHighlightThreshold={this.state.agreementMapHighlightThreshold}
+							agreementMapHighlightThreshold={
+								this.state.agreementMapHighlightThreshold
+							}
 						/>
 
 						<StyledUMLEditor
@@ -481,7 +488,9 @@ class CodingEditor extends React.Component {
 						</StyledUMLEditor>
 
 						<CodeQueries
-							ref={c => { if (c) this.codeQueriesRef = c; }}
+							ref={c => {
+								if (c) this.codeQueriesRef = c;
+							}}
 							selectedEditor={this.state.selectedEditor}
 							textEditor={this.textEditor}
 							getCodeSystem={this.getCodeSystem}

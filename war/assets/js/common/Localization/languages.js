@@ -1,14 +1,1 @@
-export default [
-	[
-		'de',
-		'Deutsch'
-	],
-	[
-		'en',
-		'English'
-	],
-	[
-		'test',
-		'Test'
-	]
-];
+export default [['de', 'Deutsch'], ['en', 'English'], ['test', 'Test']];

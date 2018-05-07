@@ -9,32 +9,34 @@ import ImageUtil from './ImageUtil.js';
 const GOOGLE_CLIENT_ID = '$CLIENT_ID$';
 const TWITTER_CLIENT_ID = '$TWITTER_CLIENT_ID$';
 const FACEBOOK_CLIENT_ID = '$FACEBOOK_CLIENT_ID$';
-    
-    
+
 // hellojs for 'regular' sign-in
-hello.init({
-	google: GOOGLE_CLIENT_ID,
-	facebook: FACEBOOK_CLIENT_ID,
-	twitter: TWITTER_CLIENT_ID
-}, {
-    redirect_uri: '$APP_PATH$',
-	oauth_proxy: 'https://auth-proxy-dot-qdacity-app.appspot.com/oauthproxy'
-});
+hello.init(
+	{
+		google: GOOGLE_CLIENT_ID,
+		facebook: FACEBOOK_CLIENT_ID,
+		twitter: TWITTER_CLIENT_ID
+	},
+	{
+		redirect_uri: '$APP_PATH$',
+		oauth_proxy: 'https://auth-proxy-dot-qdacity-app.appspot.com/oauthproxy'
+	}
+);
 
 export default class HelloJsAuthenticationProvider {
+	constructor(
+		qdacityTokenAuthentcationProvider,
+		registerApiMethod,
+		getTokenApiMethod,
+		authNetwork
+	) {
+		this.qdacityTokenAuthentcationProvider = qdacityTokenAuthentcationProvider;
+		this.registerApiMethod = registerApiMethod;
+		this.getTokenApiMethod = getTokenApiMethod;
+		this.authNetwork = authNetwork;
 
-    constructor(qdacityTokenAuthentcationProvider,
-                registerApiMethod,
-                getTokenApiMethod,
-                authNetwork) {
-        this.qdacityTokenAuthentcationProvider = qdacityTokenAuthentcationProvider;
-        this.registerApiMethod = registerApiMethod;
-        this.getTokenApiMethod = getTokenApiMethod;
-        this.authNetwork = authNetwork;
-
-        this.signOut = this.signOut.bind(this);
-    }
-
+		this.signOut = this.signOut.bind(this);
+	}
 
 	/**
 	 * Registers the current user.
@@ -46,22 +48,23 @@ export default class HelloJsAuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	registerCurrentUser(givenName, surName, email) {
-        const _this = this;
+		const _this = this;
 
 		var promise = new Promise(function(resolve, reject) {
-
-            // get AuthNetwork token
+			// get AuthNetwork token
 			const session = hello.getAuthResponse(_this.authNetwork);
 			let authNetworkToken = session.id_token;
-			if(!authNetworkToken) {
+			if (!authNetworkToken) {
 				// twitter needs access token
 				authNetworkToken = session.access_token;
 			}
 
-			_this.registerApiMethod(email, givenName, surName, authNetworkToken)
+			_this
+				.registerApiMethod(email, givenName, surName, authNetworkToken)
 				.then(function(resp) {
 					// sign in after successful registration
-					_this.getTokenApiMethod(authNetworkToken)
+					_this
+						.getTokenApiMethod(authNetworkToken)
 						.then(async function(resp) {
 							_this.qdacityTokenAuthentcationProvider.setToken(resp.value);
 							_this.qdacityTokenAuthentcationProvider.authStateChaned();
@@ -71,9 +74,10 @@ export default class HelloJsAuthenticationProvider {
 							resolve();
 						})
 						.catch(function(resp) {
-							reject("Could not sign-in after registering new user.");
+							reject('Could not sign-in after registering new user.');
 						});
-				}).catch(function(resp) {
+				})
+				.catch(function(resp) {
 					reject(resp);
 				});
 		});
@@ -82,23 +86,28 @@ export default class HelloJsAuthenticationProvider {
 	}
 
 	uploadProfileImg() {
-        const _this = this;
+		const _this = this;
 
 		var promise = new Promise(async function(resolve, reject) {
 			const profile = await hello(_this.authNetwork).api('me');
 
 			// Removing size affecting query parameters from URL.
 			var url = URI(profile.thumbnail).fragment(true);
-			const picSrcWithoutParams = url.protocol() + '://' + url.hostname() + url.path();
+			const picSrcWithoutParams =
+				url.protocol() + '://' + url.hostname() + url.path();
 
-			const imgBase64 = await ImageUtil.scaleToBase64(picSrcWithoutParams, 200, 200);
+			const imgBase64 = await ImageUtil.scaleToBase64(
+				picSrcWithoutParams,
+				200,
+				200
+			);
 			const imgBase64WithoutMetaInformation = imgBase64.split(',')[1];
 			const data = {
 				blob: imgBase64WithoutMetaInformation
-			}
+			};
 
 			UserEndpoint.updateProfileImg(data).then(async function(resp) {
-				if(!resp.code) {
+				if (!resp.code) {
 					console.log('changed user profile picture');
 				} else {
 					console.log('could not change user profile picture');
@@ -117,33 +126,33 @@ export default class HelloJsAuthenticationProvider {
 	 * If the sign-in for AuthNetwork succeeded but for Qdacity not, then the AuthNetwork profile is rejected.
 	 */
 	signIn(signInProperties) {
-        const _this = this;
+		const _this = this;
 		const promise = new Promise(function(resolve, reject) {
 			hello.on('auth.login', function(auth) {
-
-                // get AuthNetwork token
-                const session = hello.getAuthResponse(_this.authNetwork);
+				// get AuthNetwork token
+				const session = hello.getAuthResponse(_this.authNetwork);
 				let authNetworkToken = session.id_token;
-				if(!authNetworkToken) {
+				if (!authNetworkToken) {
 					// twitter needs access token
 					authNetworkToken = session.access_token;
 				}
 
-                // get qdacity jwt token
-				_this.getTokenApiMethod(authNetworkToken)
+				// get qdacity jwt token
+				_this
+					.getTokenApiMethod(authNetworkToken)
 					.then(async function(resp) {
-                        _this.qdacityTokenAuthentcationProvider.setToken(resp.value);
-                        _this.qdacityTokenAuthentcationProvider.authStateChaned();
+						_this.qdacityTokenAuthentcationProvider.setToken(resp.value);
+						_this.qdacityTokenAuthentcationProvider.authStateChaned();
 
-                        // get profile
-                        const profile = await hello(_this.authNetwork).api('me');
-                        resolve(profile);
+						// get profile
+						const profile = await hello(_this.authNetwork).api('me');
+						resolve(profile);
 					})
 					.catch(async function(resp) {
-                        // get profile
-                        const profile = await hello(_this.authNetwork).api('me');
-                        reject(profile);
-                    });
+						// get profile
+						const profile = await hello(_this.authNetwork).api('me');
+						reject(profile);
+					});
 			});
 
 			hello(_this.authNetwork)
@@ -159,26 +168,27 @@ export default class HelloJsAuthenticationProvider {
 				);
 		});
 		return promise;
-    }
+	}
 
-    addAuthStateListener(callback) {
+	addAuthStateListener(callback) {
 		// add to hellojs
-        hello.on('auth', callback);
-    }
+		hello.on('auth', callback);
+	}
 
-    signOut() {
-        const _this = this;
+	signOut() {
+		const _this = this;
 
 		const promise = new Promise(async function(resolve, reject) {
 			try {
-                hello(_this.authNetwork).logout();
-            } catch (e) {
-				console.log('Signout with ' + _this.authNetwork + ': catched exception');
+				hello(_this.authNetwork).logout();
+			} catch (e) {
+				console.log(
+					'Signout with ' + _this.authNetwork + ': catched exception'
+				);
 				console.log(e);
 			}
 			resolve();
 		});
 		return promise;
-    }
-
+	}
 }

@@ -13,57 +13,55 @@ import {
 	StyledListItemDefault
 } from '../../common/styles/ItemList.jsx';
 
-import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js'
+import UserGroupEndpoint from '../../common/endpoints/UserGroupEndpoint.js';
 
 export default class UserGroupList extends React.Component {
 	constructor(props) {
-        super(props);
+		super(props);
 
-        this.itemList = null;
+		this.itemList = null;
 
-        this.init();
-        
-        this.renderUserGroup = this.renderUserGroup.bind(this);
-    }
+		this.init();
 
-    init() {
+		this.renderUserGroup = this.renderUserGroup.bind(this);
+	}
+
+	init() {
 		const _this = this;
-        
-        UserGroupEndpoint.listUserGroups().then(function(resp) {
-            const userGroupList = resp.items || [];
-            _this.sortUserGroups(userGroupList);
-            _this.props.setUserGroups(userGroupList);
-        })
-    }
-    
-    sortUserGroups(userGroups) {
-        userGroups.sort(function(a, b) {
-            if (a.name < b.name) return -1;
-            if (a.name > b.name) return 1;
-            return 0;
-        });
-        return userGroups;
-    }
 
-    isOwnedUserGroup(userGroup) {
-        return userGroup.owners.includes(this.props.auth.userProfile.qdacityId)
-    }
+		UserGroupEndpoint.listUserGroups().then(function(resp) {
+			const userGroupList = resp.items || [];
+			_this.sortUserGroups(userGroupList);
+			_this.props.setUserGroups(userGroupList);
+		});
+	}
 
-    userGroupClick(group) {
-        this.props.history.push(
-			'/GroupDashboard?userGroup=' + group.id
-		);
-    }
+	sortUserGroups(userGroups) {
+		userGroups.sort(function(a, b) {
+			if (a.name < b.name) return -1;
+			if (a.name > b.name) return 1;
+			return 0;
+		});
+		return userGroups;
+	}
 
-    renderUserGroup(userGroup, index) {
+	isOwnedUserGroup(userGroup) {
+		return userGroup.owners.includes(this.props.auth.userProfile.qdacityId);
+	}
+
+	userGroupClick(group) {
+		this.props.history.push('/GroupDashboard?userGroup=' + group.id);
+	}
+
+	renderUserGroup(userGroup, index) {
 		if (this.isOwnedUserGroup(userGroup)) {
 			return (
 				<StyledListItemDefault
 					key={userGroup.id}
-                    onClick={this.userGroupClick.bind(this, userGroup)}
-                    clickable={true}
+					onClick={this.userGroupClick.bind(this, userGroup)}
+					clickable={true}
 				>
-                {userGroup.name}
+					{userGroup.name}
 				</StyledListItemDefault>
 			);
 		} else {
@@ -71,17 +69,16 @@ export default class UserGroupList extends React.Component {
 				<StyledListItemPrimary
 					key={userGroup.id}
 					onClick={this.userGroupClick.bind(this, userGroup)}
-                    clickable={true}
+					clickable={true}
 				>
-                {userGroup.name}
+					{userGroup.name}
 				</StyledListItemPrimary>
 			);
 		}
 	}
 
-
-    render() {
-        return (
+	render() {
+		return (
 			<div>
 				<ListMenu>
 					{this.itemList ? this.itemList.renderSearchBox() : ''}
@@ -100,5 +97,5 @@ export default class UserGroupList extends React.Component {
 				/>
 			</div>
 		);
-    }
+	}
 }

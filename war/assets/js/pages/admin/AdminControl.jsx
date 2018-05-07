@@ -38,10 +38,7 @@ export default class AdminControl extends React.Component {
 	}
 
 	render() {
-		if (
-			!this.props.auth.authState.isUserSignedIn
-		)
-			return null;
+		if (!this.props.auth.authState.isUserSignedIn) return null;
 		return (
 			<div className="container main-content">
 				<div className="row">

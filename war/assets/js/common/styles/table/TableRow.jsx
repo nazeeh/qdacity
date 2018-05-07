@@ -7,13 +7,18 @@ const StyledTableRow = styled.tr`
 	background-color: ${props => (props.evenIndex ? '#efefef' : '')};
 
 	&:hover {
-		background-color: ${props => (props.selectable && !props.isSelected ?  props.theme.bgHover + ' !important' : '')};
-		color: ${props => (props.selectable && !props.isSelected ?  props.theme.fgDefault : '')};
+		background-color: ${props =>
+		props.selectable && !props.isSelected
+			? props.theme.bgHover + ' !important'
+			: ''};
+		color: ${props =>
+		props.selectable && !props.isSelected ? props.theme.fgDefault : ''};
 		cursor: ${props => (props.selectable ? 'pointer' : '')};
 	}
 
-	&:hover>td {
-		background-color: ${props => (props.selectable && !props.isSelected ? 'transparent !important' : '')};
+	&:hover > td {
+		background-color: ${props =>
+		props.selectable && !props.isSelected ? 'transparent !important' : ''};
 	}
 `;
 
@@ -30,7 +35,6 @@ const StyledTableRow = styled.tr`
  * - renderCellContent: function
  */
 export default class TableRow extends React.Component {
-
 	constructor(props) {
 		super(props);
 	}
@@ -40,7 +44,7 @@ export default class TableRow extends React.Component {
 
 		return (
 			<StyledTableRow
-				evenIndex={((this.props.itemIndex + 1) % 2) == false}
+				evenIndex={(this.props.itemIndex + 1) % 2 == false}
 				selectable={this.props.selectable}
 				isSelected={this.props.isSelected}
 			>
@@ -53,7 +57,7 @@ export default class TableRow extends React.Component {
 
 	renderCell(column, columnIndex) {
 		return (
-			<TableCell 
+			<TableCell
 				item={this.props.item}
 				itemIndex={this.props.itemIndex}
 				column={column}

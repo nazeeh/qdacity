@@ -57,21 +57,27 @@ export default class SigninPanel extends React.Component {
 	}
 
 	render() {
-		if (
-			this.props.auth.authState.isUserSignedIn
-		) {
+		if (this.props.auth.authState.isUserSignedIn) {
 			return (
 				<PanelWrapper className="container-fluid">
-					<h3><FormattedMessage
-                        id="signin-panel.title"
-                        defaultMessage="You are currently signed in!"
-                    /></h3>	
+					<h3>
+						<FormattedMessage
+							id="signin-panel.title"
+							defaultMessage="You are currently signed in!"
+						/>
+					</h3>
 					<div className="row">
-						<UserThumbnail id="signinPanelUserThumbnail" src={this.props.auth.userProfile.picSrc} alt='user thumbnail'/>
+						<UserThumbnail
+							id="signinPanelUserThumbnail"
+							src={this.props.auth.userProfile.picSrc}
+							alt="user thumbnail"
+						/>
 					</div>
-					
+
 					<div className="row">
-						<span id="signinPanelUserName">{this.props.auth.userProfile.name}</span>
+						<span id="signinPanelUserName">
+							{this.props.auth.userProfile.name}
+						</span>
 					</div>
 
 					<div className="row">
@@ -88,7 +94,9 @@ export default class SigninPanel extends React.Component {
 									defaultMessage="Sign Out"
 								/>
 							</BtnDefault>
-							<BtnPrimary onClick={() => this.props.history.push('/PersonalDashboard')}>
+							<BtnPrimary
+								onClick={() => this.props.history.push('/PersonalDashboard')}
+							>
 								<FormattedMessage
 									id="signin-panel.link-personal-dashboard"
 									defaultMessage="Personal Dashboard"
@@ -96,16 +104,12 @@ export default class SigninPanel extends React.Component {
 							</BtnPrimary>
 						</ButtonGroupWrapper>
 					</div>
-
 				</PanelWrapper>
 			);
-		}
-		else {
+		} else {
 			return (
 				<PanelWrapper className="container-fluid">
-					<SignInFormula 
-						auth={this.props.auth}
-						onSignedIn={this.onSignedIn}/>
+					<SignInFormula auth={this.props.auth} onSignedIn={this.onSignedIn} />
 				</PanelWrapper>
 			);
 		}

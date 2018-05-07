@@ -68,10 +68,10 @@ export default class TermCourseConfig extends React.Component {
 	async setTermCourseInfo() {
 		var isUserParticipant = false;
 		const user = await this.userPromise;
-		
+
 		let resp = await this.getTermCoursePromise;
 		const termCourse = resp;
-		
+
 		const course = await CourseEndpoint.getCourse(resp.courseID);
 
 		const isTermCourseOwner = this.props.auth.authorization.isTermCourseOwner(
@@ -82,8 +82,9 @@ export default class TermCourseConfig extends React.Component {
 		resp = await this.listTermCourseParticipantsPromise;
 		resp.items = resp.items || [];
 		termCourse.participants = resp.items;
-				
-		isUserParticipant = (typeof termCourse.participants.find(o => o.id === user.id) != 'undefined');
+
+		isUserParticipant =
+			typeof termCourse.participants.find(o => o.id === user.id) != 'undefined';
 		termCourse.isUserParticipant = isUserParticipant;
 
 		this.setState({
@@ -176,13 +177,16 @@ export default class TermCourseConfig extends React.Component {
 	}
 
 	render() {
-		if (
-			!this.props.auth.authState.isUserSignedIn
-		) {
-			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+		if (!this.props.auth.authState.isUserSignedIn) {
+			return (
+				<UnauthenticatedUserPanel
+					history={this.props.history}
+					auth={this.props.auth}
+				/>
+			);
 		}
 		const termCourse = this.state.termCourse;
-		if(termCourse == undefined || termCourse == null) {
+		if (termCourse == undefined || termCourse == null) {
 			this.init();
 			return null;
 		}

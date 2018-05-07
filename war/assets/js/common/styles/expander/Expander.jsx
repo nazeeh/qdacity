@@ -37,7 +37,6 @@ const StyledBorder = styled.div`
  * - renderHeader: function which specifies the content of the header
  */
 export default class Expander extends Collapsible {
-
 	constructor(props) {
 		super(props);
 
@@ -63,8 +62,12 @@ export default class Expander extends Collapsible {
 	renderHeader() {
 		return (
 			<StyledHeader onClick={this.clickHeader}>
-				{(this.props.renderHeader ? this.props.renderHeader() : <div>Default Header Text</div>)}
-			
+				{this.props.renderHeader ? (
+					this.props.renderHeader()
+				) : (
+					<div>Default Header Text</div>
+				)}
+
 				{this.renderIcon()}
 			</StyledHeader>
 		);
@@ -73,19 +76,23 @@ export default class Expander extends Collapsible {
 	renderIcon() {
 		let iconClassName = 'fa fa-2x ';
 
-		if (this.state.mode == Mode.COLLAPSED || this.state.mode == Mode.COLLAPSING) {
+		if (
+			this.state.mode == Mode.COLLAPSED ||
+			this.state.mode == Mode.COLLAPSING
+		) {
 			iconClassName += 'fa-angle-down';
-		}
-		else if (this.state.mode == Mode.EXPANDED || this.state.mode == Mode.EXPANDING) {
+		} else if (
+			this.state.mode == Mode.EXPANDED ||
+			this.state.mode == Mode.EXPANDING
+		) {
 			iconClassName += 'fa-angle-up';
-		}
-		else {
+		} else {
 			throw new Error('Unknown state: ' + this.state.mode);
 		}
 
 		return (
 			<StyledIcon>
-				<i className={iconClassName}/>
+				<i className={iconClassName} />
 			</StyledIcon>
 		);
 	}
