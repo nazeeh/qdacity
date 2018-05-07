@@ -1,5 +1,5 @@
 //@ts-check
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import IntlProvider from '../../common/Localization/LocalizationProvider';
 import {
 	FormattedMessage,
@@ -32,7 +32,7 @@ const Box = RowFlow.extend`
 `;
 
 const Slant = styled.span`
-	color: rgba(0,0,0,.7);
+	color: rgba(0, 0, 0, 0.7);
 `; // TODO: move to theme
 
 const SectionContent = ColumnFlow.extend`
@@ -80,40 +80,46 @@ export default class LocalizationSettingsPage extends Component {
 	}
 
 	getIntlUpdate(props) {
-		const {locale, language, messages} = props;
-		let update = false, updatePreview = false;
-		if (this.state.locale != locale)
-			updatePreview = true;
-		if (this.state.language != language)
-			update = true;
-		this.setState({
-			locale: locale,
-			language: language,
-			messages: messages
-		}, () => {
-			if(update)
-				this.forceUpdate();
-			else if(updatePreview)
-				this.previewProvider.forceUpdate();
-		});
+		const { locale, language, messages } = props;
+		let update = false,
+			updatePreview = false;
+		if (this.state.locale != locale) updatePreview = true;
+		if (this.state.language != language) update = true;
+		this.setState(
+			{
+				locale: locale,
+				language: language,
+				messages: messages
+			},
+			() => {
+				if (update) this.forceUpdate();
+				else if (updatePreview) this.previewProvider.forceUpdate();
+			}
+		);
 	}
 
 	getRegionOptions() {
 		const language = this.previewProvider.language;
 		const selectedRegion = this.previewProvider.locale;
 		const regionCodeSet = IntlProvider.getRegionsForLanguage(language);
-		if (regionCodeSet.length == 0) return (<option value='en-US'>United States</option>);
-		const regions = Array.from(regionCodeSet).map(regionCode =>
-			[`${language}-${regionCode}`, IntlProvider.getNameOfRegion(regionCode)]
-		).filter(
-			x => x[1]!=undefined
-		).map(regionInfo => {
-			const [regionCode, regionName] = regionInfo;
-			const props = {};
-			if (regionCode == selectedRegion)
-				props.selected = true;
-			return <option {...props} value={regionCode}>{regionName}</option>;
-		});
+		if (regionCodeSet.length == 0)
+			return <option value="en-US">United States</option>;
+		const regions = Array.from(regionCodeSet)
+			.map(regionCode => [
+				`${language}-${regionCode}`,
+				IntlProvider.getNameOfRegion(regionCode)
+			])
+			.filter(x => x[1] != undefined)
+			.map(regionInfo => {
+				const [regionCode, regionName] = regionInfo;
+				const props = {};
+				if (regionCode == selectedRegion) props.selected = true;
+				return (
+					<option {...props} value={regionCode}>
+						{regionName}
+					</option>
+				);
+			});
 		return regions;
 	}
 
@@ -122,9 +128,12 @@ export default class LocalizationSettingsPage extends Component {
 		const selectedLanguage = this.previewProvider.language;
 		return Array.from(languages).map(language => {
 			const props = {};
-			if (language == selectedLanguage)
-				props.selected = true;
-			return <option value={language} {...props}>{IntlProvider.getNameOfLanguage(language)}</option>;
+			if (language == selectedLanguage) props.selected = true;
+			return (
+				<option value={language} {...props}>
+					{IntlProvider.getNameOfLanguage(language)}
+				</option>
+			);
 		});
 	}
 
@@ -137,76 +146,100 @@ export default class LocalizationSettingsPage extends Component {
 	}
 
 	render() {
-		return <div className='container main-content' >
-			<Category>
-				<SectionTitle>
-					<FormattedMessage id='settings.display'
-						defaultMessage='Display' />
-				</SectionTitle>
-				<SectionContent>
-					<Item>
-						<div>
-							<FormattedMessage id='settings.language'
-								defaultMessage='Language' />
-						</div>
-						<Spacer />
-						<div>
-							<select onChange={
-								(event) => {
-									this.previewProvider.changeLanguage(event.target.value).then(() =>
-										this.forceUpdate());
-								}
-							}>
-								{this.getLanguageOptions()}
-							</select>
-						</div>
-					</Item>
-					<Item>
-						<div>
-							<FormattedMessage id='settings.region'
-								defaultMessage='Region' />
-						</div>
-						<Spacer />
-						<div>
-							<select onChange={
-								(event) => {
-									this.previewProvider.changeLocale(event.target.value).then(() =>
-										this.previewProvider.forceUpdate());
-								}
-							}>
-								{this.getRegionOptions()}
-							</select>
-						</div>
-					</Item>
-					<Item>
-						<IntlProvider
-							app={this}
-							messages={this.state.messages}
-							language={this.state.language}
-							locale={this.state.locale}
-							isGlobal={false}
-							ref={(provider) => this.previewProvider = provider}
-						>
+		return (
+			<div className="container main-content">
+				<Category>
+					<SectionTitle>
+						<FormattedMessage id="settings.display" defaultMessage="Display" />
+					</SectionTitle>
+					<SectionContent>
+						<Item>
 							<div>
-								<span><FormattedMessage id='preview' defaultMessage='Preview' />:</span>
-								<div>
-									<FormattedDate year='numeric' month='long' day='2-digit' value={new Date()} />
-									{' '}
-									<FormattedTime value={new Date()} /> <br />
-									<FormattedRelative updateInterval='1' style='best fit' value={new Date()} />
-								</div>
-								<div>
-									<FormattedNumber value='100000' /> <br />
-									<FormattedNumber value='100000' style='currency' currency='$' /> <br />
-									<FormattedNumber value='12.3333' style='percent' />
-								</div>
+								<FormattedMessage
+									id="settings.language"
+									defaultMessage="Language"
+								/>
 							</div>
-						</IntlProvider>
-					</Item>
-				</SectionContent>
-				<button onClick={() => this.applyDisplaySettings()}><FormattedMessage id='modal.apply' defaultMessage='Apply' /></button>
-			</Category>
-		</div>;
+							<Spacer />
+							<div>
+								<select
+									onChange={event => {
+										this.previewProvider
+											.changeLanguage(event.target.value)
+											.then(() => this.forceUpdate());
+									}}
+								>
+									{this.getLanguageOptions()}
+								</select>
+							</div>
+						</Item>
+						<Item>
+							<div>
+								<FormattedMessage
+									id="settings.region"
+									defaultMessage="Region"
+								/>
+							</div>
+							<Spacer />
+							<div>
+								<select
+									onChange={event => {
+										this.previewProvider
+											.changeLocale(event.target.value)
+											.then(() => this.previewProvider.forceUpdate());
+									}}
+								>
+									{this.getRegionOptions()}
+								</select>
+							</div>
+						</Item>
+						<Item>
+							<IntlProvider
+								app={this}
+								messages={this.state.messages}
+								language={this.state.language}
+								locale={this.state.locale}
+								isGlobal={false}
+								ref={provider => (this.previewProvider = provider)}
+							>
+								<div>
+									<span>
+										<FormattedMessage id="preview" defaultMessage="Preview" />:
+									</span>
+									<div>
+										<FormattedDate
+											year="numeric"
+											month="long"
+											day="2-digit"
+											value={new Date()}
+										/>{' '}
+										<FormattedTime value={new Date()} /> <br />
+										<FormattedRelative
+											updateInterval="1"
+											style="best fit"
+											value={new Date()}
+										/>
+									</div>
+									<div>
+										<FormattedNumber value="100000" /> <br />
+										<FormattedNumber
+											value="100000"
+											style="currency"
+											currency="$"
+										/>{' '}
+										<br />
+										<FormattedNumber value="12.3333" style="percent" />
+									</div>
+								</div>
+							</IntlProvider>
+						</Item>
+					</SectionContent>
+					<button onClick={() => this.applyDisplaySettings()}>
+						<FormattedMessage id="modal.apply" defaultMessage="Apply" />
+					</button>
+				</Category>
+			</div>
+		);
 	}
 
 	static get propTypes() {

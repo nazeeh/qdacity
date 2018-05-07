@@ -1,18 +1,17 @@
-import AuthenticationEndpoint from "../endpoints/AuthenticationEndpoint";
+import AuthenticationEndpoint from '../endpoints/AuthenticationEndpoint';
 
 //@ts-check
 
 export default class EmailPasswordAuthenticationProvider {
-
 	constructor(qdacityTokenAuthentcationProvider) {
 		this.qdacityTokenAuthentcationProvider = qdacityTokenAuthentcationProvider;
 	}
 
-	/** 
+	/**
 	 * Signs in with the given credentials.
 	 * @param email
 	 * @param password
-	 * @returns {Promise} 
+	 * @returns {Promise}
 	 */
 	signIn(email, password) {
 		const _this = this;
@@ -39,6 +38,11 @@ export default class EmailPasswordAuthenticationProvider {
 	 * @returns {Promise}
 	 */
 	register(email, password, givenName, surName) {
-		return AuthenticationEndpoint.registerEmailPwd(email, password, givenName, surName);
+		return AuthenticationEndpoint.registerEmailPwd(
+			email,
+			password,
+			givenName,
+			surName
+		);
 	}
 }

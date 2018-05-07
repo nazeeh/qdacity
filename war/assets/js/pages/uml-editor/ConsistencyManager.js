@@ -216,11 +216,11 @@ export default class ConsistencyManager {
 		// Mapping action changed?
 		if (
 			!(
-			previousNodeActions.length == currentNodeActions.length &&
+				previousNodeActions.length == currentNodeActions.length &&
 				previousNodeActions.every(
 					(element, i) => element == currentNodeActions[i]
 				)
-		)
+			)
 		) {
 			this.umlEditor.getMetaModelMapper().undo(previousCode);
 			this.umlEditor.getMetaModelMapper().execute(code);
@@ -310,9 +310,9 @@ export default class ConsistencyManager {
 		// Execute action
 		if (
 			!(
-			oldActions.length == newActions.length &&
+				oldActions.length == newActions.length &&
 				oldActions.every((element, i) => element == newActions[i])
-		)
+			)
 		) {
 			this.umlEditor.getMetaModelMapper().undo(oldRelation);
 			this.umlEditor.getMetaModelMapper().execute(relation);

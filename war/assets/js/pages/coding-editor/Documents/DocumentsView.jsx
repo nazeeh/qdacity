@@ -211,11 +211,7 @@ export default class DocumentsView extends React.Component {
 
 	async applyCodeToCurrentDocument(code, author) {
 		const document = this.getActiveDocument();
-		const {
-			getCodeByCodeID,
-			projectID,
-			projectType,
-		} = this.props;
+		const { getCodeByCodeID, projectID, projectType } = this.props;
 
 		// Store slate value and selection to be independent of other
 		// intermediate changes
@@ -233,7 +229,7 @@ export default class DocumentsView extends React.Component {
 			this.updateDocument(
 				document.id,
 				document.title,
-				SlateUtils.serialize(this.props.textEditor.getSlateValue()),
+				SlateUtils.serialize(this.props.textEditor.getSlateValue())
 			);
 
 			// Update coding count in CodeSystem
@@ -243,35 +239,41 @@ export default class DocumentsView extends React.Component {
 		let maxCodingID;
 		try {
 			// Get new coding ID from API
-			const response = await ProjectEndpoint.incrCodingId(projectID, projectType);
-			maxCodingID = response.maxCodingID
-		} catch(e) {
+			const response = await ProjectEndpoint.incrCodingId(
+				projectID,
+				projectType
+			);
+			maxCodingID = response.maxCodingID;
+		} catch (e) {
 			// Inform the user about the failure
-			new Alert('Your new coding could not be saved. Please try again').showModal();
+			new Alert(
+				'Your new coding could not be saved. Please try again'
+			).showModal();
 
 			console.error('error while fetching next coding ID', e);
 		}
 
 		// Create the operation to be executed
-		const operations = SlateUtils
-			.rangeToPaths(slateValue, currentSelection)
-			.map(({ path, offset, length }) => ({
-				object: 'operation',
-				type: 'add_mark',
-				mark: {
-					object: 'mark',
-					type: 'coding',
-					data: {
-						id: maxCodingID,
-						code_id: code.codeID,
-						title: code.name,
-						author: author,
-					},
-				},
-				path,
-				offset,
-				length,
-			}));
+		const operations = SlateUtils.rangeToPaths(
+			slateValue,
+			currentSelection
+		).map(({ path, offset, length }) => ({
+			object: 'operation',
+			type: 'add_mark',
+			mark: {
+				object: 'mark',
+				type: 'coding',
+				data: {
+					id: maxCodingID,
+					code_id: code.codeID,
+					title: code.name,
+					author: author
+				}
+			},
+			path,
+			offset,
+			length
+		}));
 
 		// Optimistically add the mark locally
 		this.props.textEditor.applyOperations(operations, onStateChange);
@@ -287,11 +289,12 @@ export default class DocumentsView extends React.Component {
 			// Sync was successful. Log for now, delete if no action needed
 			console.log('Sync of coding.add succeeded');
 
-		// Sync failed
-		} catch(e) {
-
+			// Sync failed
+		} catch (e) {
 			// Inform the user why the mark is disappearing again
-			new Alert('Your new coding could not be saved. Please try again').showModal();
+			new Alert(
+				'Your new coding could not be saved. Please try again'
+			).showModal();
 
 			console.error('Error while syncing coding.add', e);
 
@@ -342,18 +345,19 @@ export default class DocumentsView extends React.Component {
 			.filter(mark => mark.data.get('code_id') === codeID)
 			.reduce((operations, coding) => {
 				return operations.concat(
-					SlateUtils
-						.rangeToPaths(slateValue, selection)
-						.reduce((operations, { path, offset, length }) => {
+					SlateUtils.rangeToPaths(slateValue, selection).reduce(
+						(operations, { path, offset, length }) => {
 							return operations.concat({
 								object: 'operation',
 								type: 'remove_mark',
 								mark: coding,
 								path,
 								offset,
-								length,
+								length
 							});
-						}, [])
+						},
+						[]
+					)
 				);
 			}, []);
 
@@ -365,10 +369,11 @@ export default class DocumentsView extends React.Component {
 
 			// Sync was successful. Log for now, delete if no action needed
 			console.log('Sync of coding.remove succeeded');
-		} catch(e) {
-
+		} catch (e) {
 			// Inform the user why the mark is disappearing again
-			new Alert('The coding could not be removed. Please try again').showModal();
+			new Alert(
+				'The coding could not be removed. Please try again'
+			).showModal();
 
 			console.error('Error while syncing coding.remove', e);
 
@@ -376,7 +381,6 @@ export default class DocumentsView extends React.Component {
 			const undoOperations = SlateUtils.invertOperations(operations);
 			this.props.textEditor.applyOperations(undoOperations);
 		}
-
 	}
 
 	changeDocumentData(doc) {
@@ -466,7 +470,7 @@ export default class DocumentsView extends React.Component {
 		// Change the active document and save document changes
 		this.setState({
 			selected: id,
-			documents: this.state.documents,
+			documents: this.state.documents
 		});
 
 		// Update the text editor
@@ -587,16 +591,13 @@ export default class DocumentsView extends React.Component {
 	 *                      {object[]} operations - Slate.Operations to apply
 	 */
 	_applySyncServiceOperations(data) {
-		const {
-			document,
-			operations,
-		} = data;
+		const { document, operations } = data;
 
 		// If operations are for current document, apply directly
 		if (document === this.getActiveDocumentId()) {
 			this.props.textEditor.applyOperations(operations);
 
-		// Process operations in DocumentsView
+			// Process operations in DocumentsView
 		} else {
 			const doc = this.getDocument(document);
 
@@ -604,7 +605,7 @@ export default class DocumentsView extends React.Component {
 			if (doc.slateValue) {
 				doc.slateValue = SlateUtils.applyOperations(doc.slateValue, operations);
 
-			// Else queue the operations for application after deserialization
+				// Else queue the operations for application after deserialization
 			} else {
 				if (!doc.operationQueue) {
 					doc.operationQueue = [];
@@ -631,7 +632,7 @@ export default class DocumentsView extends React.Component {
 			[EVT.CODING.REMOVED]: this.props.syncService.on(
 				EVT.CODING.REMOVED,
 				this._applySyncServiceOperations.bind(this)
-			),
+			)
 		};
 	}
 

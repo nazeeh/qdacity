@@ -39,15 +39,18 @@ export default class CourseList extends React.Component {
 		this.renderCourse = this.renderCourse.bind(this);
 		this.showNewCourseModal = this.showNewCourseModal.bind(this);
 		this.createNewCourse = this.createNewCourse.bind(this);
-		
+
 		this.collectCourses();
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if(this.props.userGroupId !== nextProps.userGroupId &&
-			(this.props.userGroupId !== undefined || nextProps.userGroupId !== undefined)) {
-				// wait for userGroupId to be loaded
-				this.collectCourses(nextProps.userGroupId);
+		if (
+			this.props.userGroupId !== nextProps.userGroupId &&
+			(this.props.userGroupId !== undefined ||
+				nextProps.userGroupId !== undefined)
+		) {
+			// wait for userGroupId to be loaded
+			this.collectCourses(nextProps.userGroupId);
 		}
 	}
 
@@ -55,14 +58,18 @@ export default class CourseList extends React.Component {
 		var _this = this;
 		var courseList = [];
 
-		if(!this.props.userGroupId) {
+		if (!this.props.userGroupId) {
 			// personal dashboard: user in focus
 			var listCoursePromise = CourseEndPoint.listCourse();
 			var listTermCoursePromise = CourseEndPoint.listTermCourseByParticipant();
 		} else {
 			// group dashboard: user group in focus
-			var listCoursePromise = CourseEndPoint.listCourseByUserGroupId(userGroupId);
-			var listTermCoursePromise = CourseEndPoint.listTermCourseByUserGroupId(userGroupId);
+			var listCoursePromise = CourseEndPoint.listCourseByUserGroupId(
+				userGroupId
+			);
+			var listTermCoursePromise = CourseEndPoint.listTermCourseByUserGroupId(
+				userGroupId
+			);
 		}
 		listCoursePromise.then(function(resp) {
 			resp.items = resp.items || [];
@@ -188,7 +195,7 @@ export default class CourseList extends React.Component {
 	}
 
 	leaveCourse(e, course, index) {
-		if(!!this.props.userGroupId) return; // user group cannot leave group
+		if (this.props.userGroupId) return; // user group cannot leave group
 
 		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
@@ -291,14 +298,15 @@ export default class CourseList extends React.Component {
 				defaultMessage: 'my courses'
 			})
 		});
-		for(const userGroup of _this.props.userGroups) {
+		for (const userGroup of _this.props.userGroups) {
 			possibleOwners.push({
 				id: userGroup.id,
 				name: userGroup.name
 			});
 		}
-		const defaultOwner = !!_this.props.userGroupId ? possibleOwners[1] // only 2 elements, 2nd is the user group
-									: possibleOwners[0] // 'my courses' if not the userGroup mode active
+		const defaultOwner = _this.props.userGroupId
+			? possibleOwners[1] // only 2 elements, 2nd is the user group
+			: possibleOwners[0]; // 'my courses' if not the userGroup mode active
 		modal.addSelectComplexOptions(
 			'ownerId',
 			possibleOwners,
@@ -358,38 +366,35 @@ export default class CourseList extends React.Component {
 		let insertMethodPromise;
 		let afterInsertMethod;
 		let termCourseInserMethod;
-		if(ownerId === '-1') {
+		if (ownerId === '-1') {
 			// add to user's personal courses
-			insertMethodPromise = CourseEndPoint.insertCourse(course)
+			insertMethodPromise = CourseEndPoint.insertCourse(course);
 			afterInsertMethod = function(insertedCourse) {
 				_this.props.addCourse(insertedCourse);
-				_this.props.history.push(
-					'/PersonalDashboard'
-				);
-			}
+				_this.props.history.push('/PersonalDashboard');
+			};
 			termCourseInserMethod = function(termCourse) {
 				return CourseEndPoint.insertTermCourse(termCourse);
-			}
+			};
 		} else {
 			// add course to a user group
-			insertMethodPromise = CourseEndPoint.insertCourseForUserGroup(ownerId, course);
+			insertMethodPromise = CourseEndPoint.insertCourseForUserGroup(
+				ownerId,
+				course
+			);
 			afterInsertMethod = function(insertedCourse) {
 				_this.props.addCourse(insertedCourse);
-				_this.props.history.push(
-					'/GroupDashboard?userGroup=' + ownerId
-				);
-			}
+				_this.props.history.push('/GroupDashboard?userGroup=' + ownerId);
+			};
 			termCourseInserMethod = function(termCourse) {
 				return CourseEndPoint.insertTermCourseForUserGroup(ownerId, termCourse);
-			}
+			};
 		}
 		insertMethodPromise.then(function(insertedCourse) {
 			var termCourse = {};
 			termCourse.courseID = insertedCourse.id;
 			termCourse.term = term;
-			termCourseInserMethod(termCourse).then(function(
-				insertedTermCourse
-			) {
+			termCourseInserMethod(termCourse).then(function(insertedTermCourse) {
 				var termList = [];
 				termList.push({
 					text: insertedTermCourse.term,
@@ -437,17 +442,17 @@ export default class CourseList extends React.Component {
 	}
 
 	renderLeaveCourseButton(course, index) {
-		if(!!this.props.userGroupId) return; // user group cannot leave group
+		if (this.props.userGroupId) return; // user group cannot leave group
 
 		return (
-		<StyledListItemBtn
-			onClick={e => this.leaveCourse(e, course, index)}
-			className=" btn fa-lg"
-			color={Theme.rubyRed}
-			colorAccent={Theme.rubyRedAccent}
-		>
-			<i className="fa fa-sign-out" />
-		</StyledListItemBtn>
+			<StyledListItemBtn
+				onClick={e => this.leaveCourse(e, course, index)}
+				className=" btn fa-lg"
+				color={Theme.rubyRed}
+				colorAccent={Theme.rubyRedAccent}
+			>
+				<i className="fa fa-sign-out" />
+			</StyledListItemBtn>
 		);
 	}
 

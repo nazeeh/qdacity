@@ -24,7 +24,6 @@ const StyledExpanderContent = styled.div`
 `;
 
 export default class DocumentDetails extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -42,7 +41,9 @@ export default class DocumentDetails extends React.Component {
 	}
 
 	renderExpanderHeader() {
-		const codingOverlapCount = this.props.codingDocument.getCodingOverlapCount(this.props.selectedCode.codeID);
+		const codingOverlapCount = this.props.codingDocument.getCodingOverlapCount(
+			this.props.selectedCode.codeID
+		);
 
 		const textCodingOverlap = (
 			<FormattedMessage
@@ -61,15 +62,13 @@ export default class DocumentDetails extends React.Component {
 			'(',
 			codingOverlapCount,
 			' ',
-			(codingOverlapCount == 1 ? textCodingOverlap : textCodingOverlaps),
+			codingOverlapCount == 1 ? textCodingOverlap : textCodingOverlaps,
 			')'
 		];
 
 		return (
 			<div>
-				<StyledDocumentTitle>
-					{this.props.document.title}
-				</StyledDocumentTitle>
+				<StyledDocumentTitle>{this.props.document.title}</StyledDocumentTitle>
 				<StyledDocumentTitleCodingCount>
 					{codingOverlapCountText}
 				</StyledDocumentTitleCodingCount>
@@ -80,13 +79,24 @@ export default class DocumentDetails extends React.Component {
 	renderContent() {
 		const _this = this;
 
-		const codingOverlapCollection = this.props.codingDocument.getCodingOverlapCollection(this.props.selectedCode.codeID);
+		const codingOverlapCollection = this.props.codingDocument.getCodingOverlapCollection(
+			this.props.selectedCode.codeID
+		);
 
 		return (
 			<StyledExpanderContent>
-				{(codingOverlapCollection) ? codingOverlapCollection.getCodingOverlaps().map((codingOverlap, index) => {
-					return _this.renderItem(codingOverlap, index, index == codingOverlapCollection.getCodingOverlaps().length - 1);
-				}) : null}
+				{codingOverlapCollection
+					? codingOverlapCollection
+						.getCodingOverlaps()
+						.map((codingOverlap, index) => {
+							return _this.renderItem(
+								codingOverlap,
+								index,
+								index ==
+										codingOverlapCollection.getCodingOverlaps().length - 1
+							);
+						})
+					: null}
 			</StyledExpanderContent>
 		);
 	}
