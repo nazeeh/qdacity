@@ -9,6 +9,7 @@ import javax.jdo.annotations.*;
 public class UnconfirmedEmailPasswordLogin {
 
 	@PrimaryKey
+	@Persistent
 	String email;
 
 	/**
