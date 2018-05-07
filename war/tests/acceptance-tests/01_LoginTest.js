@@ -65,29 +65,30 @@ describe(SPEC_NAME, function () {
 		}); 		
     	    	
     	this.driver.sleep(2000);
-    	
-		// Check welcome message and URL
-    	this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
-			console.log('Found the welcome message.');
+		this.driver.get('http://localhost:8888/PersonalDashboard').then(() => {
+			// Check welcome message and URL
+			_this.driver.wait(until.elementLocated(By.xpath("//span[starts-with(text(),'Welcome ')]"))).getText().then((text) => {
+				console.log('Found the welcome message.');
 
-    		_this.driver.getCurrentUrl().then((currentUrl) => {	
-    			// Check the welcome message
-        		expect(text).toBe("Welcome " + loginHelper.userData.displayName);
-        		
-        		// Does the URL end with /PersonalDashboard?
-        		const urlEnd = "/PersonalDashboard";
-        		expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
-				
-				// Check if the token of the signed-in user is stored in the localStorage 
-				_this.driver.executeScript('return localStorage.getItem("qdacity-jwt-token")').then(function (token) {
-					expect(token).not.toBeUndefined();
-					expect(token).not.toBeNull();
-				});
+				_this.driver.getCurrentUrl().then((currentUrl) => {	
+					// Check the welcome message
+					expect(text).toBe("Welcome " + loginHelper.userData.displayName);
+					
+					// Does the URL end with /PersonalDashboard?
+					const urlEnd = "/PersonalDashboard";
+					expect(currentUrl.substring(currentUrl.length - urlEnd.length, currentUrl.length)).toBe(urlEnd);
+					
+					// Check if the token of the signed-in user is stored in the localStorage 
+					_this.driver.executeScript('return localStorage.getItem("qdacity-jwt-token")').then(function (token) {
+						expect(token).not.toBeUndefined();
+						expect(token).not.toBeNull();
+					});
 
-				loginHelper.storeLoginState(this.driver).then(() => {
-					done();
-				});
-    		})
-    	});
+					loginHelper.storeLoginState(this.driver).then(() => {
+						done();
+					});
+				})
+			});
+		});
     }, Common.getDefaultTimeout());
 });
