@@ -138,15 +138,15 @@ export default class ExerciseList extends React.Component {
 		});
 	}
 
-exerciseReportClick(e, exercise, index) {
-	var agreementModal = new IntercoderAgreement(
-		exercise.exerciseReport[0],
-		this.props.history,
-		'EXERCISE',
-		exercise
-	);
-	agreementModal.showModal();
-}
+	exerciseReportClick(e, exercise, index) {
+		var agreementModal = new IntercoderAgreement(
+			exercise.exerciseReport[0],
+			this.props.history,
+			'EXERCISE',
+			exercise
+		);
+		agreementModal.showModal();
+	}
 	showAlertIfDeadlinePassed(exercise) {
 		const { formatMessage } = IntlProvider.intl;
 		if (this.deadlinePassed(exercise)) {

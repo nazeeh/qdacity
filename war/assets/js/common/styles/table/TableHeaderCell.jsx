@@ -105,7 +105,7 @@ export default class TableHeaderCell extends React.Component {
 			? this.props.renderHeaderCellContent(
 				this.props.column,
 				this.props.columnIndex
-			)
+			  )
 			: '';
 
 		return <StyledHeaderCellContent>{content}</StyledHeaderCellContent>;

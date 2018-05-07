@@ -93,7 +93,11 @@ export default class ExerciseList extends React.Component {
 				defaultMessage: 'Exercise Type'
 			})
 		);
-		modal.addCheckBoxExtendsExercise("ExtendsExercise", false, " Extends existing Exercise or Exercise Group")
+		modal.addCheckBoxExtendsExercise(
+			'ExtendsExercise',
+			false,
+			' Extends existing Exercise or Exercise Group'
+		);
 		modal.addExerciseGroupDropDown(this.props.termCourse.id);
 		modal.addDatePicker();
 
@@ -127,13 +131,12 @@ export default class ExerciseList extends React.Component {
 		exercise.projectRevisionID = projectRevisionID;
 		exercise.termCourseID = termCourseID;
 		exercise.exerciseDeadline = exerciseDeadline;
-			ExerciseEndpoint.insertExercise(exercise).then(function(resp) {
-				exercises.push(resp);
-				_this.setState({
-					exercises: exercises
-				});
+		ExerciseEndpoint.insertExercise(exercise).then(function(resp) {
+			exercises.push(resp);
+			_this.setState({
+				exercises: exercises
 			});
-
+		});
 	}
 
 	deleteExercise(e, exercise) {

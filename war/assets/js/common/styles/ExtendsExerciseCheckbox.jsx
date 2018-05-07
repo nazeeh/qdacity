@@ -22,18 +22,22 @@ export default class ExtendsExerciseCheckbox extends React.Component {
 	}
 
 	toggleChange() {
-	    this.setState({
-	      isChecked: !this.state.isChecked
-	    });
-			this.props.setExtendsExerciseStatus(!this.state.isChecked);
-	  }
+		this.setState({
+			isChecked: !this.state.isChecked
+		});
+		this.props.setExtendsExerciseStatus(!this.state.isChecked);
+	}
 
 	render() {
 		var _this = this;
 		return (
 			<div>
 				<CheckboxAndLabelContainer>
-					<input type="checkbox" defaultChecked={_this.state.isChecked} onChange={_this.toggleChange} />
+					<input
+						type="checkbox"
+						defaultChecked={_this.state.isChecked}
+						onChange={_this.toggleChange}
+					/>
 					<labelContainer>
 						<label>Extends existing exercise</label>
 					</labelContainer>

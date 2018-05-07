@@ -38,7 +38,9 @@ export default class ExerciseGroupSelector extends React.Component {
 		var termCourseID = this.props.termCourseID;
 		var modifiedExerciseGroups = [];
 		//First get a list of exercises which belong to the term course whose id is passed to the ExerciseGroupSelector
-		ExerciseEndpoint.listTermCourseExercises(termCourseID).then(function(exercises) {
+		ExerciseEndpoint.listTermCourseExercises(termCourseID).then(function(
+			exercises
+		) {
 			var exercisesStateList = [];
 			exercises.items.forEach(function(exercise) {
 				exercisesStateList.push(exercise);
@@ -49,7 +51,9 @@ export default class ExerciseGroupSelector extends React.Component {
 				});
 			});
 			//Then get a list of exercise groups which belong to the term course
-			ExerciseEndpoint.listTermCourseExerciseGroups(termCourseID).then(function(exerciseGroups) {
+			ExerciseEndpoint.listTermCourseExerciseGroups(termCourseID).then(function(
+				exerciseGroups
+			) {
 				modifiedExerciseGroups = exerciseGroups;
 				exerciseGroups.items.forEach(function(exerciseGroup, index) {
 					var exerciseObjectsForGroup = [];
@@ -57,33 +61,43 @@ export default class ExerciseGroupSelector extends React.Component {
 					//then add them as objects to the modifiedExerciseGroup (which is eventually passed to the state)
 					//This can be achieved by another backend call getExercisesOfExerciseGroup but it will consume one unneccessary api call
 					if (typeof exerciseGroup.exercises !== 'undefined') {
-					exerciseGroup.exercises.forEach(function (exerciseID) {
-						var exerciseObject = exercisesStateList.find(
-							thisExercise => thisExercise.id === exerciseID
-						);
-						exerciseObjectsForGroup.push(exerciseObject);
-					});
-				}
-						modifiedExerciseGroups.items[index].exerciseObjects = exerciseObjectsForGroup;
+						exerciseGroup.exercises.forEach(function(exerciseID) {
+							var exerciseObject = exercisesStateList.find(
+								thisExercise => thisExercise.id === exerciseID
+							);
+							exerciseObjectsForGroup.push(exerciseObject);
+						});
+					}
+					modifiedExerciseGroups.items[
+						index
+					].exerciseObjects = exerciseObjectsForGroup;
 				});
-				modifiedExerciseGroups.items.forEach(function (modifiedExerciseGroup) {
+				modifiedExerciseGroups.items.forEach(function(modifiedExerciseGroup) {
 					if (modifiedExerciseGroup.exerciseObjects.length > 0) {
-					var groupDisplayName = 'Group: < ';
-					//Form the name of each exercise group as its exercise names. E.g <Exercise 1, Exercise 2>
-					modifiedExerciseGroup.exerciseObjects.forEach(function (exerciseObject, index, array) {
-						if (index == array.length - 1) {
-							groupDisplayName = groupDisplayName + exerciseObject.name + ' >'
-						}
-						else {
-							groupDisplayName = groupDisplayName + exerciseObject.name + ', ';
-						}
-					})
-					//Save the formed names & their click handlers in the list which is eventually passed to the state
-					exerciseNameList.push({
-						text: groupDisplayName,
-						onClick: _this.exerciseGroupClicked.bind(_this, modifiedExerciseGroup.id)
-					})
-				}
+						var groupDisplayName = 'Group: < ';
+						//Form the name of each exercise group as its exercise names. E.g <Exercise 1, Exercise 2>
+						modifiedExerciseGroup.exerciseObjects.forEach(function(
+							exerciseObject,
+							index,
+							array
+						) {
+							if (index == array.length - 1) {
+								groupDisplayName =
+									groupDisplayName + exerciseObject.name + ' >';
+							} else {
+								groupDisplayName =
+									groupDisplayName + exerciseObject.name + ', ';
+							}
+						});
+						//Save the formed names & their click handlers in the list which is eventually passed to the state
+						exerciseNameList.push({
+							text: groupDisplayName,
+							onClick: _this.exerciseGroupClicked.bind(
+								_this,
+								modifiedExerciseGroup.id
+							)
+						});
+					}
 				});
 				_this.setState({
 					exercises: exercisesStateList,
@@ -91,7 +105,7 @@ export default class ExerciseGroupSelector extends React.Component {
 					exerciseNameList: exerciseNameList,
 					exerciseInitText: exerciseNameList[0].text
 				});
-		});
+			});
 		});
 	}
 

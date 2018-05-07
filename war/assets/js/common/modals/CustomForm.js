@@ -10,11 +10,9 @@ import { ThemeProvider } from 'styled-components';
 import DateChooser from '../../common/modals/DateChooser.jsx';
 import ExtendsExerciseCheckbox from '../../common/styles/ExtendsExerciseCheckbox.jsx';
 
-
 const EmptyDiv = styled.div`
 	display: none;
 `;
-
 
 export default class CustomForm extends VexModal {
 	constructor(message) {
@@ -36,7 +34,9 @@ export default class CustomForm extends VexModal {
 		this.ExtendsExercise = false;
 		this.setSelectedRevisionID = this.setSelectedRevisionID.bind(this);
 		this.setSelectedExerciseID = this.setSelectedExerciseID.bind(this);
-		this.setSelectedExerciseGroupID = this.setSelectedExerciseGroupID.bind(this);
+		this.setSelectedExerciseGroupID = this.setSelectedExerciseGroupID.bind(
+			this
+		);
 		this.setExtendsExerciseStatus = this.setExtendsExerciseStatus.bind(this);
 
 		this.setSelectedDate = this.setSelectedDate.bind(this);
@@ -49,7 +49,7 @@ export default class CustomForm extends VexModal {
 	setSelectedExerciseID(exerciseID) {
 		this.selectedExerciseID = exerciseID;
 	}
-	setSelectedExerciseGroupID (exerciseGroupID) {
+	setSelectedExerciseGroupID(exerciseGroupID) {
 		this.selectedExerciseGroupID = exerciseGroupID;
 	}
 
@@ -63,8 +63,7 @@ export default class CustomForm extends VexModal {
 		if (this.ExtendsExercise == true) {
 			this.hideElement('ProjectRevisionSelector');
 			this.renderExerciseGroupSelector();
-		}
-		else {
+		} else {
 			this.renderProjectRevisionSelector();
 			this.hideElement('ExerciseGroupSelector');
 		}
@@ -235,10 +234,7 @@ export default class CustomForm extends VexModal {
 		this.formElements += '</div>';
 	}
 	hideElement(elementID) {
-		ReactDOM.render(
-			<EmptyDiv></EmptyDiv>,
-			document.getElementById(elementID)
-		);
+		ReactDOM.render(<EmptyDiv />, document.getElementById(elementID));
 	}
 
 	renderExerciseGroupSelector() {
@@ -326,7 +322,7 @@ export default class CustomForm extends VexModal {
 				ReactDOM.render(
 					<ThemeProvider theme={Theme}>
 						<ExtendsExerciseCheckbox
-						setExtendsExerciseStatus={_this.setExtendsExerciseStatus}
+							setExtendsExerciseStatus={_this.setExtendsExerciseStatus}
 						/>
 					</ThemeProvider>,
 					document.getElementById('ExtendsExerciseCheckbox')
