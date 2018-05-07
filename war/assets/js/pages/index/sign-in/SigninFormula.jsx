@@ -319,13 +319,13 @@ export default class SigninFormula extends React.Component {
 		const { formatMessage } = IntlProvider.intl;
 
 		const confirmationCodeLabel = formatMessage({
-			id: 'index.registeremailpwd.confirmation_code',
+			id: 'signin-formula.registeremailpwd.confirmation_code',
 			defaultMessage: 'Confirmation Code'
 		});
 		
 		vex.dialog.open({
 			message: formatMessage({
-				id: 'index.registeremailpwd.confirmationHeading',
+				id: 'signin-formula.registeremailpwd.confirmationHeading',
 				defaultMessage: 'Enter the code you received with Email'
 			}),
 			input: [
@@ -334,13 +334,13 @@ export default class SigninFormula extends React.Component {
 			buttons: [
 				$.extend({}, vex.dialog.buttons.YES, {
 					text: formatMessage({
-						id: 'index.registeremailpwd.confirm',
+						id: 'signin-formula.registeremailpwd.confirm',
 						defaultMessage: 'Confirm'
 					})
 				}),
 				$.extend({}, vex.dialog.buttons.NO, {
 					text: formatMessage({
-						id: 'index.registeremailpwd.confirmCancel',
+						id: 'signin-formula.registeremailpwd.confirmCancel',
 						defaultMessage: 'Cancel'
 					})
 				})
@@ -350,7 +350,7 @@ export default class SigninFormula extends React.Component {
 					return console.log('Cancelled');
 				}
 				let failureMessage = formatMessage({
-					id: 'signin-formula.confirm.success',
+					id: 'signin-formula.registeremailpwd.confirm.success',
 					defaultMessage: 'Your Email was confirmed!'
 				});
 
@@ -359,7 +359,7 @@ export default class SigninFormula extends React.Component {
 				} catch(e) {
 
 					failureMessage = formatMessage({
-						id: 'signin-formula.confirm.failure',
+						id: 'signin-formula.registeremailpwd.confirm.failure',
 						defaultMessage: 'Could not confirm the Email. Please try again!'
 					});
 				}
