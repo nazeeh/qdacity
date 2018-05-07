@@ -135,6 +135,7 @@ signin-formula.pwd = Passwort:
 signin-formula.forgotpw = Passwort vergessen?
 signin-formula.register-email-pwd = Jetzt registrieren!
 signin-formula.signin-email-pwd = Einloggen
+signin-formula-confirm-email-link = Email bestätigen
 signin-formula.signin-social-heading = Mit social media account anmelden / registrieren.
 signin-panel.title = Sie sind bereits eingelogged!
 signin-panel.signout = Abmelden

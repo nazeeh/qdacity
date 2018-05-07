@@ -428,23 +428,32 @@ export default class SigninFormula extends React.Component {
                             </FormulaInputWrapper>
                         </div>
                     </div>
+					
+                    <Spacer/>
+					
                     <div className="row">
-                        <div className="col-xs-6">
-                            <FormulaLink onClick={() => this.forgotPassword()}><u>
-                                <FormattedMessage
-                                    id="signin-formula.forgotpw"
-                                    defaultMessage="Forgot PW?"
-                                />	
-                            </u></FormulaLink>
-                        </div>
-                        <div className="col-xs-6">
-                            <FormulaLink id="signin-formula-register-link" href="#" onClick={() => this.registerEmailPassword()}><u>
-                                <FormattedMessage
-                                    id="signin-formula.register-email-pwd"
-                                    defaultMessage="Register now!"
-                                />	
-                            </u></FormulaLink>
-                        </div>
+						<FormulaLink onClick={() => this.forgotPassword()}><u>
+							<FormattedMessage
+								id="signin-formula.forgotpw"
+								defaultMessage="Forgot PW?"
+							/>	
+						</u></FormulaLink>
+					</div>
+					<div className="row">
+						<FormulaLink id="signin-formula-confirm-email-link" href="#" onClick={() => this.confirmEmail()}><u>
+							<FormattedMessage
+								id="signin-formula-confirm-email-link"
+								defaultMessage="Confirm Email"
+							/>	
+						</u></FormulaLink>
+					</div>
+					<div className="row">
+						<FormulaLink id="signin-formula-register-link" href="#" onClick={() => this.registerEmailPassword()}><u>
+							<FormattedMessage
+								id="signin-formula.register-email-pwd"
+								defaultMessage="Register now!"
+							/>	
+						</u></FormulaLink>
                     </div>
                     <Spacer/>
                     <div className="row">
