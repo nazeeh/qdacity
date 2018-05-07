@@ -25,10 +25,14 @@ export default class ApiService {
 		const _this = this;
 		switch (messageType) {
 			case MSG.CODE.INSERT:
-				return CodesEndpoint.insertCode(arg.resource, arg.relationId, arg.relationSourceCodeId, arg.parentId)
-					.then(function (code) {
-						_this.syncService.fireEvent('codeInserted', code);
-					});
+				return CodesEndpoint.insertCode(
+					arg.resource,
+					arg.relationId,
+					arg.relationSourceCodeId,
+					arg.parentId
+				).then(function(code) {
+					_this.syncService.fireEvent('codeInserted', code);
+				});
 			case MSG.USER.UPDATE:
 				break;
 			default:
@@ -38,8 +42,7 @@ export default class ApiService {
 					defaultMessage: 'Operation currently not supported in offline mode'
 				});
 				new Alert(alertMessage).showModal();
-				return Promise.reject("Unhandled message type");
+				return Promise.reject('Unhandled message type');
 		}
 	}
-
 }

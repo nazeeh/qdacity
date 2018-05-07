@@ -5,7 +5,10 @@ import styled from 'styled-components';
 import Account from './Account.jsx';
 
 const StyledNav = styled.nav`
-	background-color: ${props => (props.connected ? props.theme.navDefault : props.theme.navOffline)} !important;
+	background-color: ${props =>
+		props.connected
+			? props.theme.navDefault
+			: props.theme.navOffline} !important;
 `;
 
 const StyledAccountTab = styled.li`
@@ -19,7 +22,6 @@ const StyledHelpTab = styled.li`
 const StyledOfflineTab = styled.span`
 	display: ${props => (props.connected ? 'none' : 'block')} !important;
 `;
-
 
 const StyledSigninTab = styled.li`
 	display: ${props => (props.loggedIn ? 'none' : 'block')} !important;
@@ -45,7 +47,7 @@ export default class NavBar extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userData: {},
+			userData: {}
 		};
 
 		this.authenticationProvider = props.auth.authentication;
@@ -124,7 +126,9 @@ export default class NavBar extends React.Component {
 							}}
 						>
 							<subscript>
-								<small><em>offline</em></small>
+								<small>
+									<em>offline</em>
+								</small>
 							</subscript>
 						</StyledOfflineTab>
 					</div>
@@ -168,9 +172,7 @@ export default class NavBar extends React.Component {
 								</div>
 							</StyledHelpTab>
 							<StyledAccountTab
-								loggedIn={
-									this.props.auth.authState.isUserSignedIn
-								}
+								loggedIn={this.props.auth.authState.isUserSignedIn}
 								className="dropdown"
 							>
 								<StyledNavbarItem

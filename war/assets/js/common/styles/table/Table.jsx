@@ -11,7 +11,7 @@ const StyledTable = styled.table`
 	border-collapse: collapse;
 	border: 1px solid;
 	border-color: ${props => props.theme.borderDefault};
-	width: ${props => props.useAvailableWidth ? '100%' : ''};
+	width: ${props => (props.useAvailableWidth ? '100%' : '')};
 `;
 
 const StyledTableHead = styled.thead`
@@ -19,8 +19,7 @@ const StyledTableHead = styled.thead`
 	border-color: ${props => props.theme.borderDefault};
 `;
 
-const StyledTableBody = styled.tbody`
-`;
+const StyledTableBody = styled.tbody``;
 
 /**
  * Available props:
@@ -38,7 +37,6 @@ const StyledTableBody = styled.tbody`
  * - renderCellContent: function - renders the cell content
  */
 export default class Table extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -47,16 +45,16 @@ export default class Table extends React.Component {
 
 		if (this.props.defaultSortColumn) {
 			defaultSortColumn = this.props.defaultSortColumn;
-		}
-		else if (this.props.columns && this.props.columns.length > 0) {
+		} else if (this.props.columns && this.props.columns.length > 0) {
 			defaultSortColumn = this.props.columns[0];
-		}
-		else {
+		} else {
 			throw new Error('No columns specified.');
 		}
 
 		// Default sort mode
-		const defaultSortMode = this.props.defaultSortMode ? this.props.defaultSortMode : this.props.fallbackSortMode;
+		const defaultSortMode = this.props.defaultSortMode
+			? this.props.defaultSortMode
+			: this.props.fallbackSortMode;
 
 		// Fallback sort mode
 		if (!this.props.fallbackSortMode) {
@@ -82,15 +80,12 @@ export default class Table extends React.Component {
 		let newSortMode = null;
 		if (this.state.sortColumn != column) {
 			newSortMode = this.props.fallbackSortMode;
-		}
-		else {
+		} else {
 			if (this.state.sortMode == SortMode.ASCENDING) {
 				newSortMode = SortMode.DESCENDING;
-			}
-			else if (this.state.sortMode == SortMode.DESCENDING) {
+			} else if (this.state.sortMode == SortMode.DESCENDING) {
 				newSortMode = SortMode.ASCENDING;
-			}
-			else {
+			} else {
 				throw new Error('Case not implemented: ' + this.state.sortMode);
 			}
 		}
@@ -106,13 +101,16 @@ export default class Table extends React.Component {
 			return;
 		}
 
-		this.setState({
-			selectedItem: item
-		}, () => {
-			if (this.props.cellSelected) {
-				this.props.cellSelected(item, itemIndex, column, columnIndex);
+		this.setState(
+			{
+				selectedItem: item
+			},
+			() => {
+				if (this.props.cellSelected) {
+					this.props.cellSelected(item, itemIndex, column, columnIndex);
+				}
 			}
-		});
+		);
 	}
 
 	render() {
@@ -126,16 +124,12 @@ export default class Table extends React.Component {
 	}
 
 	renderHeader() {
-		return (
-			<StyledTableHead>
-				{this.renderHeaderRow()}
-			</StyledTableHead>
-		);
+		return <StyledTableHead>{this.renderHeaderRow()}</StyledTableHead>;
 	}
 
 	renderHeaderRow() {
 		return (
-			<TableHeaderRow 
+			<TableHeaderRow
 				sortable={this.props.sortable}
 				sortColumn={this.state.sortColumn}
 				sortMode={this.state.sortMode}
@@ -153,7 +147,9 @@ export default class Table extends React.Component {
 
 		// Sort items
 		if (this.props.sortable) {
-			const sortFunction = this.props.getSortFunction ? this.props.getSortFunction(this.state.sortColumn, this.state.sortMode) : null;
+			const sortFunction = this.props.getSortFunction
+				? this.props.getSortFunction(this.state.sortColumn, this.state.sortMode)
+				: null;
 			items.sort(sortFunction, this.state.sortMode);
 		}
 
@@ -168,7 +164,7 @@ export default class Table extends React.Component {
 
 	renderRow(item, itemIndex) {
 		return (
-			<TableRow 
+			<TableRow
 				item={item}
 				itemIndex={itemIndex}
 				sortable={this.props.sortable}

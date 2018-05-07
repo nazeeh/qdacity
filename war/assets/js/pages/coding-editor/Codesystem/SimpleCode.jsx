@@ -249,7 +249,7 @@ export default class SimpleCode extends React.Component {
 		if (!this.props.doesCodeMatchSearchText(this.props.node)) {
 			return null;
 		}
-		
+
 		return (
 			<StyledCode
 				selected={selected}

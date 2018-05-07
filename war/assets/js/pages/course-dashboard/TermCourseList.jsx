@@ -38,8 +38,12 @@ export default class TermCourseList extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if(nextProps.course != undefined && nextProps.course != null &&
-			nextProps.course.terms == undefined) { // #workaround
+		if (
+			nextProps.course != undefined &&
+			nextProps.course != null &&
+			nextProps.course.terms == undefined
+		) {
+			// #workaround
 			// and the collect initial data in this component only once (terms set)
 			this.collectInitialData(nextProps.course);
 		}
@@ -59,7 +63,9 @@ export default class TermCourseList extends React.Component {
 				if (!(typeof crs.participants == 'undefined'))
 					participants = crs.participants;
 				status = crs.open;
-				isUserParticipant = participants.includes(_this.props.auth.userProfile.qdacityId);
+				isUserParticipant = participants.includes(
+					_this.props.auth.userProfile.qdacityId
+				);
 				termList.push({
 					text: crs.term,
 					id: crs.id,
@@ -313,7 +319,8 @@ export default class TermCourseList extends React.Component {
 	}
 
 	render() {
-		if(this.props.course == undefined || this.props.course == null) return null;
+		if (this.props.course == undefined || this.props.course == null)
+			return null;
 
 		return (
 			<div>

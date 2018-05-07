@@ -95,7 +95,7 @@ export default class CourseDashboard extends React.Component {
 	async setUserRights() {
 		const user = await this.userPromise;
 		let course = this.state.course;
-		if(course == undefined || course == null) {
+		if (course == undefined || course == null) {
 			// don't overwrite fetched information from subclass!
 			course = await CourseEndpoint.getCourse(this.courseId);
 		}
@@ -110,10 +110,13 @@ export default class CourseDashboard extends React.Component {
 	}
 
 	render() {
-		if (
-			!this.props.auth.authState.isUserSignedIn
-		) {
-			return <UnauthenticatedUserPanel history={this.props.history} auth={this.props.auth} />;
+		if (!this.props.auth.authState.isUserSignedIn) {
+			return (
+				<UnauthenticatedUserPanel
+					history={this.props.history}
+					auth={this.props.auth}
+				/>
+			);
 		}
 
 		return (

@@ -23,7 +23,7 @@ export default class AuthenticationEndpoint {
 
 	static getTokenGoogle(googleToken) {
 		var apiMethod = gapi.client.qdacity.authentication.google.getToken({
-			authNetworkToken: googleToken,
+			authNetworkToken: googleToken
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -40,7 +40,7 @@ export default class AuthenticationEndpoint {
 
 	static getTokenFacebook(facebookToken) {
 		var apiMethod = gapi.client.qdacity.authentication.facebook.getToken({
-			authNetworkToken: facebookToken,
+			authNetworkToken: facebookToken
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -57,7 +57,7 @@ export default class AuthenticationEndpoint {
 
 	static getTokenTwitter(facebookToken) {
 		var apiMethod = gapi.client.qdacity.authentication.twitter.getToken({
-			authNetworkToken: facebookToken,
+			authNetworkToken: facebookToken
 		});
 		return Promisizer.makePromise(apiMethod);
 	}
@@ -84,7 +84,7 @@ export default class AuthenticationEndpoint {
 		var apiMethod = gapi.client.qdacity.auth.changePassword({
 			oldPassword: oldPassword,
 			newPassword: newPassword
-		})
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
@@ -95,22 +95,22 @@ export default class AuthenticationEndpoint {
 
 	static associateGoogleLogin(googleIdToken) {
 		var apiMethod = gapi.client.qdacity.auth.associateGoogleLogin({
-            googleIdToken: googleIdToken
-        })
+			googleIdToken: googleIdToken
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static associateFacebookLogin(facebookAccessToken) {
 		var apiMethod = gapi.client.qdacity.auth.associateFacebookLogin({
-            authNetworkToken: facebookAccessToken
-        })
+			authNetworkToken: facebookAccessToken
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static associateTwitterLogin(twitterAccessToken) {
 		var apiMethod = gapi.client.qdacity.auth.associateTwitterLogin({
-            authNetworkToken: twitterAccessToken
-        });
+			authNetworkToken: twitterAccessToken
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
@@ -118,14 +118,12 @@ export default class AuthenticationEndpoint {
 		var apiMethod = gapi.client.qdacity.auth.associateEmailPassword({
 			email: email,
 			password: password
-		})
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 
 	static disassociateLogin(associatedLogin) {
-		var apiMethod = gapi.client.qdacity.auth.disassociateLogin(
-            associatedLogin
-        );
+		var apiMethod = gapi.client.qdacity.auth.disassociateLogin(associatedLogin);
 		return Promisizer.makePromise(apiMethod);
 	}
 }

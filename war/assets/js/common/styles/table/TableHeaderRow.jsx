@@ -3,8 +3,7 @@ import styled from 'styled-components';
 
 import TableHeaderCell from './TableHeaderCell.jsx';
 
-const StyledTableHeaderRow = styled.tr`
-`;
+const StyledTableHeaderRow = styled.tr``;
 
 /**
  * Available props:
@@ -17,7 +16,6 @@ const StyledTableHeaderRow = styled.tr`
  * - renderHeaderCellContent: function
  */
 export default class TableHeaderRow extends React.Component {
-
 	constructor(props) {
 		super(props);
 	}
@@ -36,7 +34,7 @@ export default class TableHeaderRow extends React.Component {
 
 	renderHeaderCell(column, index) {
 		return (
-			<TableHeaderCell 
+			<TableHeaderCell
 				column={column}
 				columnIndex={index}
 				sortable={this.props.sortable}

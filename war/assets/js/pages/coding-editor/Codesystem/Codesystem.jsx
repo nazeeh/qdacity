@@ -264,7 +264,8 @@ export default class Codesystem extends SimpleCodesystem {
 				if (select) {
 					_this.setSelected(resp);
 				}
-			}).catch(() => {
+			})
+			.catch(() => {
 				// Inform the user why the mark is disappearing again
 				new Alert('Code could not be created. Please try again').showModal();
 			});
@@ -332,10 +333,12 @@ export default class Codesystem extends SimpleCodesystem {
 	}
 
 	relocateCode(movingNode, targetID) {
-		this.props.syncService.codes.relocateCode(movingNode.id, targetID).catch(() => {
-			// Inform the user why the mark is disappearing again
-			new Alert('Code could not be relocated. Please try again').showModal();
-		});
+		this.props.syncService.codes
+			.relocateCode(movingNode.id, targetID)
+			.catch(() => {
+				// Inform the user why the mark is disappearing again
+				new Alert('Code could not be relocated. Please try again').showModal();
+			});
 	}
 
 	onCodeRelocation(code) {
@@ -394,14 +397,13 @@ export default class Codesystem extends SimpleCodesystem {
 
 		const searchText = this.codeSearchRef.getSearchText().toLowerCase();
 
-		if (searchText ==  '') {
+		if (searchText == '') {
 			return true;
 		}
 
 		if (code.name.toLowerCase().indexOf(searchText) !== -1) {
 			return true;
-		}
-		else {
+		} else {
 			if (code.children == null) {
 				return false;
 			}
@@ -542,11 +544,19 @@ export default class Codesystem extends SimpleCodesystem {
 						userProfile={this.props.userProfile}
 						toggleCodeSearch={this.toggleCodeSearch}
 						openCodeQueries={this.props.openCodeQueries}
-						readOnly = {this.props.readOnly}
+						readOnly={this.props.readOnly}
 					/>
 				</StyledToolBar>
 
-				<CodeSearch ref={c => {if (c != null) { this.codeSearchRef = c; }}} codesystem={this} searchTextUpdated={this.searchTextUpdated}></CodeSearch>
+				<CodeSearch
+					ref={c => {
+						if (c != null) {
+							this.codeSearchRef = c;
+						}
+					}}
+					codesystem={this}
+					searchTextUpdated={this.searchTextUpdated}
+				/>
 
 				<StyledCodeSystem
 					ref={c => (this.codesystemRef = c)}
