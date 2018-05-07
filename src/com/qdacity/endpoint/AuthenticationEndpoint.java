@@ -80,15 +80,19 @@ public class AuthenticationEndpoint {
         String pwdHash = hashUtil.hash(pwd);
         String secret = generateLoginVerificationSecret();
 
-        // TODO: send email with secret to user
-
+        UnconfirmedEmailPasswordLogin unconfirmedLogin = null;
         PersistenceManager pm = getPersistenceManager();
         try {
-            UnconfirmedEmailPasswordLogin unconfirmedLogin = new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, secret);
-            pm.makePersistent(unconfirmedLogin); // confirmed = false
+            unconfirmedLogin = new UnconfirmedEmailPasswordLogin(email, pwdHash, givenName, surName, secret);
+            unconfirmedLogin = pm.makePersistent(unconfirmedLogin); // confirmed = false
         } finally {
             pm.close();
         }
+
+        // send registration email
+        EmailPasswordRegistrationEmailSender task = new EmailPasswordRegistrationEmailSender(unconfirmedLogin);
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(com.google.appengine.api.taskqueue.TaskOptions.Builder.withPayload(task));
     }
 
     private String generateLoginVerificationSecret() {

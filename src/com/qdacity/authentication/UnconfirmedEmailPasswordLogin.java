@@ -1,12 +1,13 @@
 package com.qdacity.authentication;
 
 import javax.jdo.annotations.*;
+import java.io.Serializable;
 
 /**
  * Represents an unconfirmed email password registration / association.
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class UnconfirmedEmailPasswordLogin {
+public class UnconfirmedEmailPasswordLogin implements Serializable {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
