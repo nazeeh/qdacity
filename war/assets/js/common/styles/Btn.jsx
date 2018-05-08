@@ -84,7 +84,9 @@ const BtnPrimary = BtnSm.extend`
 
 const BtnDanger = BtnSm.extend`
 	color: ${props =>
-		props.active ? props.theme.fgDefaultHighlight : props.theme.fgDefaultHighlight};
+		props.active
+			? props.theme.fgDefaultHighlight
+			: props.theme.fgDefaultHighlight};
 	background-color: ${props =>
 		props.active ? props.theme.rubyRedAccent : props.theme.rubyRed};
 	border-color: ${props =>

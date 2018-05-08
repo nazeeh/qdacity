@@ -9,7 +9,7 @@ import DocumentParser from './data/parser/DocumentParser.js';
 import CodeList from './list/CodeList.jsx';
 import DetailsView from './details/DetailsView.jsx';
 
-const StyledContainer = styled.div`	
+const StyledContainer = styled.div`
 	height: 100%;
 	padding: 10px 0px 0px 20px;
 
@@ -44,7 +44,6 @@ const StyledHeadlineHighlight = styled.span`
 `;
 
 export default class CodeQueries extends React.Component {
-
 	constructor(props) {
 		super(props);
 
@@ -65,7 +64,7 @@ export default class CodeQueries extends React.Component {
 
 	codeSelected(code) {
 		this.setState({
-			selectedCode: code 
+			selectedCode: code
 		});
 	}
 
@@ -82,7 +81,7 @@ export default class CodeQueries extends React.Component {
 
 		// Documents
 		const documents = this.props.getDocuments();
-		
+
 		// Calculate overlap
 		const documentParser = new DocumentParser(this.state.code);
 		const codingResult = documentParser.parseDocuments(documents);
@@ -103,7 +102,9 @@ export default class CodeQueries extends React.Component {
 						id="codeQueriesHeadlineCodingOverlaps"
 						defaultMessage="Coding-Overlaps"
 					/>
-					<StyledHeadlineHighlight>{this.state.code.name}</StyledHeadlineHighlight>
+					<StyledHeadlineHighlight>
+						{this.state.code.name}
+					</StyledHeadlineHighlight>
 				</StyledHeadline>
 
 				<CodeList
@@ -120,7 +121,7 @@ export default class CodeQueries extends React.Component {
 	renderDetailsView(documents, codingResult) {
 		return (
 			<StyledColumnRight>
-				<StyledHeadline>	
+				<StyledHeadline>
 					<FormattedMessage
 						id="codeQueriesHeadlineDocuments"
 						defaultMessage="Documents"

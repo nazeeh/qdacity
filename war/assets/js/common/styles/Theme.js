@@ -32,5 +32,5 @@ export default {
 	yellowAccent: '#e5d41e',
 
 	navDefault: '#f8f8f8',
-	navOffline: '#ffc05f',
+	navOffline: '#ffc05f'
 };

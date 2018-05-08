@@ -15,7 +15,11 @@ import Marks from './Marks';
 
 // Container to wrap optional Toolbar and StyledDocumentWrapper
 const StyledContainer = styled.div`
-	display: ${props =>(props.selectedEditor === PageView.TEXT || props.selectedEditor === PageView.CODING ) ? 'flex' : 'none'};
+	display: ${props =>
+		props.selectedEditor === PageView.TEXT ||
+		props.selectedEditor === PageView.CODING
+			? 'flex'
+			: 'none'};
 	flex-direction: column;
 	height: 100%;
 `;
@@ -89,7 +93,6 @@ export default class TextEditor extends React.Component {
 
 		// Initialize state
 		this.state = {
-
 			// The current document
 			document: {},
 
@@ -107,21 +110,27 @@ export default class TextEditor extends React.Component {
 			 */
 			value: Value.fromJSON({
 				document: {
-					nodes: [{
-						object: 'block',
-						type: 'paragraph',
-						nodes: [{
-							object: 'text',
-							leaves: [{
-								text: '',
-							}],
-						}],
-					}],
-				},
+					nodes: [
+						{
+							object: 'block',
+							type: 'paragraph',
+							nodes: [
+								{
+									object: 'text',
+									leaves: [
+										{
+											text: ''
+										}
+									]
+								}
+							]
+						}
+					]
+				}
 			}),
 
 			// Default font size to be selected in toolbar
-			selectedFontSize: 13,
+			selectedFontSize: 13
 		};
 
 		// Bind public methods to this
@@ -146,15 +155,18 @@ export default class TextEditor extends React.Component {
 	 * @arg {object} document - The document to load into the editor
 	 */
 	setDocument(doc) {
-		this.setState({
-			document: doc,
-			value: doc.slateValue,
-		}, () => {
-			// Force update is needed for the coding brackets to update
-			// immediately because they rely on the DOM nodes that are only
-			// changed after rendering is complete.
-			this.forceUpdate()
-		});
+		this.setState(
+			{
+				document: doc,
+				value: doc.slateValue
+			},
+			() => {
+				// Force update is needed for the coding brackets to update
+				// immediately because they rely on the DOM nodes that are only
+				// changed after rendering is complete.
+				this.forceUpdate();
+			}
+		);
 	}
 
 	/**
@@ -177,17 +189,20 @@ export default class TextEditor extends React.Component {
 	 *                                 setState has been executed
 	 */
 	applyOperations(operations, afterSetState) {
-		this.setState(prevState => ({
-			value: SlateUtils.applyOperations(prevState.value, operations),
-		}), () => {
-			// Force update is needed for the coding brackets to update
-			// immediately because they rely on the DOM nodes that are only
-			// changed after rendering is complete.
-			this.forceUpdate();
+		this.setState(
+			prevState => ({
+				value: SlateUtils.applyOperations(prevState.value, operations)
+			}),
+			() => {
+				// Force update is needed for the coding brackets to update
+				// immediately because they rely on the DOM nodes that are only
+				// changed after rendering is complete.
+				this.forceUpdate();
 
-			// Call callback if set
-			afterSetState && afterSetState();
-		});
+				// Call callback if set
+				afterSetState && afterSetState();
+			}
+		);
 	}
 
 	/**
@@ -521,7 +536,10 @@ export default class TextEditor extends React.Component {
 	render() {
 		const { value, selectedFontSize } = this.state;
 
-		if (this.props.selectedEditor != PageView.TEXT && this.props.selectedEditor != PageView.CODING) {
+		if (
+			this.props.selectedEditor != PageView.TEXT &&
+			this.props.selectedEditor != PageView.CODING
+		) {
 			return null;
 		}
 

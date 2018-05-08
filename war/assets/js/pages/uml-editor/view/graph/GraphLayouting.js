@@ -91,11 +91,11 @@ export default class GraphLayouting {
 					// Intersects?
 					if (
 						!(
-						x > x2 + width2 ||
+							x > x2 + width2 ||
 							x + width < x2 ||
 							y > y2 + height2 ||
 							y + height < y2
-					)
+						)
 					) {
 						return false;
 					}

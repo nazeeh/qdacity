@@ -7,7 +7,7 @@ import { BtnDefault, BtnPrimary } from './styles/Btn.jsx';
 
 import SigninFormula from '../pages/index/sign-in/SigninFormula.jsx';
 
-import VexModal from './modals/VexModal.js'
+import VexModal from './modals/VexModal.js';
 
 // React-Intl
 import IntlProvider from './Localization/LocalizationProvider';
@@ -26,7 +26,8 @@ const ChangeAccountWrapper = styled.div`
 	opacity: 0.8;
 	& > div {
 		font-size: 18px;
-	}`;
+	}
+`;
 
 export default class Account extends React.Component {
 	constructor(props) {
@@ -39,9 +40,7 @@ export default class Account extends React.Component {
 		);
 
 		this.onSignedIn = this.onSignedIn.bind(this);
-		this.redirectToSettings = this.redirectToSettings.bind(
-			this
-		);
+		this.redirectToSettings = this.redirectToSettings.bind(this);
 	}
 
 	/**
@@ -108,7 +107,10 @@ export default class Account extends React.Component {
 			ReactDOM.render(
 				<IntlProvider>
 					<ChangeAccountWrapper className="container-fluid">
-						<SigninFormula auth={_this.props.auth} onSignedIn={_this.onSignedIn}/>
+						<SigninFormula
+							auth={_this.props.auth}
+							onSignedIn={_this.onSignedIn}
+						/>
 					</ChangeAccountWrapper>
 				</IntlProvider>,
 				document.getElementById('change-account-placeholder')
@@ -131,8 +133,11 @@ export default class Account extends React.Component {
 							<p className="text-center small" />
 						</div>
 						<div className="col-xs-7">
-							<span id="currentUserName">{this.props.auth.userProfile.name}</span>
-							<span> </span><span id="settingsIcon">
+							<span id="currentUserName">
+								{this.props.auth.userProfile.name}
+							</span>
+							<span> </span>
+							<span id="settingsIcon">
 								<a href="#" onClick={this.redirectToSettings}>
 									<i className="fa fa-cog fa-1x" />
 								</a>

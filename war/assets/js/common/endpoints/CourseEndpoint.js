@@ -28,7 +28,10 @@ export default class CourseEndpoint {
 	}
 
 	static insertCourseForUserGroup(userGroupId, course) {
-		var apiMethod = gapi.client.qdacity.course.insertCourseForUserGroup({userGroupId: userGroupId}, course);
+		var apiMethod = gapi.client.qdacity.course.insertCourseForUserGroup(
+			{ userGroupId: userGroupId },
+			course
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 
@@ -60,7 +63,10 @@ export default class CourseEndpoint {
 	}
 
 	static insertTermCourseForUserGroup(userGroupId, termCourse) {
-		var apiMethod = gapi.client.qdacity.course.insertTermCourseForUserGroup({userGroupId: userGroupId}, termCourse);
+		var apiMethod = gapi.client.qdacity.course.insertTermCourseForUserGroup(
+			{ userGroupId: userGroupId },
+			termCourse
+		);
 		return Promisizer.makePromise(apiMethod);
 	}
 
@@ -84,7 +90,9 @@ export default class CourseEndpoint {
 	}
 
 	static listTermCourseByUserGroupId(userGroupId) {
-		var apiMethod = gapi.client.qdacity.course.listTermCourseByUserGroupId({userGroupId: userGroupId});
+		var apiMethod = gapi.client.qdacity.course.listTermCourseByUserGroupId({
+			userGroupId: userGroupId
+		});
 		return Promisizer.makePromise(apiMethod);
 	}
 

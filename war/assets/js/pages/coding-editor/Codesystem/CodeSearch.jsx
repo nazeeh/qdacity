@@ -10,7 +10,7 @@ import {
 import { BtnDefault } from '../../../common/styles/Btn.jsx';
 
 const SearchContainer = styled.div`
-	display: ${props => props.visible ? 'block' : 'none'};
+	display: ${props => (props.visible ? 'block' : 'none')};
 	padding: 5px;
 `;
 
@@ -39,16 +39,18 @@ export default class CodeSearch extends React.Component {
 	}
 
 	toggleVisibility() {
-		this.setState({
-			visible: !this.state.visible
-		}, () => {
-			if (this.state.visible) {
-				this.searchBox.focus();
+		this.setState(
+			{
+				visible: !this.state.visible
+			},
+			() => {
+				if (this.state.visible) {
+					this.searchBox.focus();
+				} else {
+					this.setSearchText('');
+				}
 			}
-			else {
-				this.setSearchText('');
-			}
-		});
+		);
 	}
 
 	updateSearch() {
@@ -67,7 +69,9 @@ export default class CodeSearch extends React.Component {
 			<SearchContainer visible={this.state.visible}>
 				<StyledSearchFieldContainer className="searchfield" id="searchform">
 					<SearchBox
-						ref={c => { if (c != null) this.searchBox = c; }}
+						ref={c => {
+							if (c != null) this.searchBox = c;
+						}}
 						placeholder={searchFieldPlaceholder}
 						onSearch={this.updateSearch}
 					/>

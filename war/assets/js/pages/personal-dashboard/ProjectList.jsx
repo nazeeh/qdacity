@@ -25,7 +25,6 @@ const StyledNewPrjBtn = styled.div`
 	padding-left: 5px;
 `;
 
-
 export default class ProjectList extends React.Component {
 	constructor(props) {
 		super(props);
@@ -36,23 +35,26 @@ export default class ProjectList extends React.Component {
 		this.createNewProject = this.createNewProject.bind(this);
 		this.editorClick = this.editorClick.bind(this);
 		this.renderProject = this.renderProject.bind(this);
-		
+
 		this.collectProjects();
 	}
 
-    componentWillReceiveProps(nextProps) {
-		if(this.props.userGroupId !== nextProps.userGroupId &&
-			(this.props.userGroupId !== undefined || nextProps.userGroupId !== undefined)) {
-				// wait for userGroupId to be loaded
-				this.collectProjects(nextProps.userGroupId);
+	componentWillReceiveProps(nextProps) {
+		if (
+			this.props.userGroupId !== nextProps.userGroupId &&
+			(this.props.userGroupId !== undefined ||
+				nextProps.userGroupId !== undefined)
+		) {
+			// wait for userGroupId to be loaded
+			this.collectProjects(nextProps.userGroupId);
 		}
-    }
+	}
 
-    async collectProjects(userGroupId = this.props.userGroupId) {
+	async collectProjects(userGroupId = this.props.userGroupId) {
 		var _this = this;
 		var projectList = [];
 
-		if(!this.props.userGroupId) { 
+		if (!this.props.userGroupId) {
 			// personal dashboard
 			var validationPrjPromise = ProjectEndpoint.listValidationProject();
 			ProjectEndpoint.listProject().then(function(resp) {
@@ -74,9 +76,9 @@ export default class ProjectList extends React.Component {
 			});
 		} else {
 			// user group dashboard
-			const resp = await ProjectEndpoint.listProjectByUserGroupId(userGroupId);  
+			const resp = await ProjectEndpoint.listProjectByUserGroupId(userGroupId);
 			const projects = [];
-			for(const project of resp.items || []) {
+			for (const project of resp.items || []) {
 				project.type = 'PROJECT';
 				projects.push(project);
 			}
@@ -94,7 +96,7 @@ export default class ProjectList extends React.Component {
 	}
 
 	leaveProject(e, project, index) {
-		if(!!this.props.userGroupId) return // user group cannot leave
+		if (this.props.userGroupId) return; // user group cannot leave
 
 		const { formatMessage } = IntlProvider.intl;
 		var _this = this;
@@ -171,14 +173,15 @@ export default class ProjectList extends React.Component {
 				defaultMessage: 'my projects'
 			})
 		});
-		for(const userGroup of _this.props.userGroups) {
+		for (const userGroup of _this.props.userGroups) {
 			possibleOwners.push({
 				id: userGroup.id,
 				name: userGroup.name
 			});
 		}
-		const defaultOwner = !!_this.props.userGroupId ? possibleOwners[1] // only 2 elements, 2nd is the user group
-									: possibleOwners[0] // 'my projects' if not the userGroup mode active
+		const defaultOwner = _this.props.userGroupId
+			? possibleOwners[1] // only 2 elements, 2nd is the user group
+			: possibleOwners[0]; // 'my projects' if not the userGroup mode active
 		modal.addSelectComplexOptions(
 			'ownerId',
 			possibleOwners,
@@ -229,24 +232,23 @@ export default class ProjectList extends React.Component {
 
 			let insertMethodPromise = undefined;
 			let afterInsertMethod = undefined;
-			if(ownerId === '-1') {
+			if (ownerId === '-1') {
 				// add to user's personal projects
 				insertMethodPromise = ProjectEndpoint.insertProject(project);
 				afterInsertMethod = function(insertedProject) {
 					_this.props.addProject(insertedProject);
-					_this.props.history.push(
-						'/PersonalDashboard'
-					);
-				}
+					_this.props.history.push('/PersonalDashboard');
+				};
 			} else {
 				// add project to a user group
-				insertMethodPromise = ProjectEndpoint.insertProjectForUserGroup(ownerId, project);
+				insertMethodPromise = ProjectEndpoint.insertProjectForUserGroup(
+					ownerId,
+					project
+				);
 				afterInsertMethod = function(insertedProject) {
 					_this.props.addProject(insertedProject);
-					_this.props.history.push(
-						'/GroupDashboard?userGroup=' + ownerId
-					);
-				}
+					_this.props.history.push('/GroupDashboard?userGroup=' + ownerId);
+				};
 			}
 
 			insertMethodPromise.then(function(insertedProject) {
@@ -293,17 +295,17 @@ export default class ProjectList extends React.Component {
 	}
 
 	renderLeaveBtn(project, index) {
-		if(!!this.props.userGroupId) return // user group cannot leave
+		if (this.props.userGroupId) return; // user group cannot leave
 
 		return (
 			<StyledListItemBtn
-					onClick={e => this.leaveProject(e, project, index)}
-					className=" btn fa-lg"
-					color={Theme.rubyRed}
-					colorAccent={Theme.rubyRedAccent}
-				>
-					<i className="fa fa-sign-out" />
-				</StyledListItemBtn>
+				onClick={e => this.leaveProject(e, project, index)}
+				className=" btn fa-lg"
+				color={Theme.rubyRed}
+				colorAccent={Theme.rubyRedAccent}
+			>
+				<i className="fa fa-sign-out" />
+			</StyledListItemBtn>
 		);
 	}
 

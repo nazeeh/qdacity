@@ -1,10 +1,6 @@
-import {
-	Operations,
-	resetKeyGenerator,
-} from 'slate';
+import { Operations, resetKeyGenerator } from 'slate';
 import Html from 'slate-html-serializer';
 import documentSchema from './documentSchema.js';
-
 
 // Initialize html serializer instance.
 const htmlSerializer = new Html({ rules: documentSchema });
@@ -72,9 +68,7 @@ const rangeToPaths = (value, range) => {
 			: doc.getDescendant(range.startKey);
 
 		// Offset is range.startOffset for first text node, else node start
-		const offset = textNode.key === range.startKey
-			? range.startOffset
-			: 0;
+		const offset = textNode.key === range.startKey ? range.startOffset : 0;
 
 		// Length is range.endOffset for last text node,
 		//           range.endOffset - range.startOffset if single text node,
@@ -93,7 +87,7 @@ const rangeToPaths = (value, range) => {
 		paths.push({
 			path: doc.getPath(textNode.key),
 			offset,
-			length,
+			length
 		});
 	} while (textNode.key !== range.endKey);
 
@@ -118,7 +112,7 @@ const rangeToPathRange = (value, range) => {
 		anchorPath: doc.getPath(range.startKey),
 		anchorOffset: range.startOffset,
 		focusPath: doc.getPath(range.endKey),
-		focusOffset: range.endOffset,
+		focusOffset: range.endOffset
 	};
 };
 
@@ -139,7 +133,7 @@ const pathRangeToRange = (value, range) => {
 		anchorKey: doc.getNodeAtPath(range.anchorPath).key,
 		anchorOffset: range.anchorOffset,
 		focusKey: doc.getNodeAtPath(range.focusPath).key,
-		focusOffset: range.focusOffset,
+		focusOffset: range.focusOffset
 	});
 };
 
@@ -167,7 +161,7 @@ const applyOperations = (value, operations) => {
 	} else {
 		change.applyOperation(operations);
 	}
-	
+
 	return change.value;
 };
 
@@ -196,10 +190,10 @@ const findCodingStart = (codingID, characters) => {
  */
 const findCodingEnd = (codingID, characters) => {
 	return characters.findKey(
-		c => !c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
+		c =>
+			!c.marks.find(m => m.type === 'coding' && m.data.get('id') === codingID)
 	);
 };
-
 
 const SlateUtils = {
 	deserialize,
@@ -210,7 +204,7 @@ const SlateUtils = {
 	invertOperations,
 	applyOperations,
 	findCodingStart,
-	findCodingEnd,
+	findCodingEnd
 };
 
 export default SlateUtils;

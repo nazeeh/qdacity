@@ -1,40 +1,40 @@
 import Promisizer from './Promisizer';
 
 export default class UserGroupEndpoint {
-    constructor() {}
-    
+	constructor() {}
+
 	static insertUserGroup(name) {
 		var apiMethod = gapi.client.qdacity.usergroup.insertUserGroup({
-            name: name
-        });
+			name: name
+		});
 		return Promisizer.makePromise(apiMethod);
-    }
-    
-    static listOwnedUserGroups(userId = null) {
+	}
+
+	static listOwnedUserGroups(userId = null) {
 		var apiMethod = gapi.client.qdacity.usergroup.listOwnedUserGroups({
-            userId: userId
-        });
+			userId: userId
+		});
 		return Promisizer.makePromise(apiMethod);
-    }
-    
-    static getUserGroupById(groupId) {
+	}
+
+	static getUserGroupById(groupId) {
 		var apiMethod = gapi.client.qdacity.usergroup.getById({
-            groupId: groupId
-        });
+			groupId: groupId
+		});
 		return Promisizer.makePromise(apiMethod);
-    }
+	}
 
-    static listUserGroups(userId = null) {
+	static listUserGroups(userId = null) {
 		var apiMethod = gapi.client.qdacity.usergroup.listUserGroups({
-            userId: userId
-        });
+			userId: userId
+		});
 		return Promisizer.makePromise(apiMethod);
-    }
+	}
 
-    static getUsers(groupId) {
+	static getUsers(groupId) {
 		var apiMethod = gapi.client.qdacity.usergroup.getUsers({
-            groupId: groupId
-        });
+			groupId: groupId
+		});
 		return Promisizer.makePromise(apiMethod);
-    }
+	}
 }
