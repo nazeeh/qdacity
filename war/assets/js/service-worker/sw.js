@@ -7,15 +7,12 @@ import { getCodeSystemHandler } from "./handlers/CodeSystemHandler";
 
 
 const VERSION = 9;
-// Upgrade this version, if new stores should be created in existing database
-export const DB_VERSION = 4;
 const CACHE_PREFIX = "qdacity-app";
 const CACHE_SUFFIX = "v1";
 const CACHE_RUNTIME = "runtime";
 const CACHE_PRECACHE = "precache";
 export const CACHE_RUNTIME_NAME = `${CACHE_PREFIX}-${CACHE_RUNTIME}-${CACHE_SUFFIX}`;
 export const CACHE_PRECACHE_NAME = `${CACHE_PREFIX}-${CACHE_PRECACHE}-${CACHE_SUFFIX}`;
-export const DB_NAME = "qdacity-app";
 
 export let apiMethods = {};
 

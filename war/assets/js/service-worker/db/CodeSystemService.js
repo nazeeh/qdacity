@@ -1,9 +1,6 @@
 import DBService from "./DBService";
 import ResponseHelper from "./ResponseHelper";
-
-const STORE_NAMES = {
-	CODES: "codes",
-};
+import { STORE_NAMES } from "./constants";
 
 export default class CodeSystemService {
 	constructor() {
@@ -18,9 +15,9 @@ export default class CodeSystemService {
 	 * @returns {Promise<DB>}
 	 */
 	static cacheCodeSystem(codeSystemResponse, userId) {
-		return DBService.openAndCreateStoreIfNotExist(userId, STORE_NAMES.CODES, "id").then(function (db) {
-			const tx = db.transaction(STORE_NAMES.CODES, 'readwrite');
-			const store = tx.objectStore(STORE_NAMES.CODES);
+		return DBService.openDB(userId).then(function (db) {
+			const tx = db.transaction(STORE_NAMES.CODES.name, 'readwrite');
+			const store = tx.objectStore(STORE_NAMES.CODES.name);
 			codeSystemResponse.then(codes => {
 				for (let code of codes.items) {
 					store.put(code);
@@ -38,9 +35,9 @@ export default class CodeSystemService {
 	 */
 	static getCodeSystem(userId, params) {
 		const codeSystemID = params[0];
-		return DBService.openAndCreateStoreIfNotExist(userId, STORE_NAMES.CODES, "id").then(function (db) {
-			const tx = db.transaction(STORE_NAMES.CODES, 'readonly');
-			const store = tx.objectStore(STORE_NAMES.CODES);
+		return DBService.openDB(userId).then(function (db) {
+			const tx = db.transaction(STORE_NAMES.CODES.name, 'readonly');
+			const store = tx.objectStore(STORE_NAMES.CODES.name);
 			return store.getAll().then(function (items) {
 				const codesOfCodeSystem = items.filter(code => code.codesystemID === codeSystemID);
 				return ResponseHelper.listResultToResponse(codesOfCodeSystem);

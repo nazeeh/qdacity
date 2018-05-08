@@ -1,10 +1,7 @@
 import DBService from "./DBService";
 import ResponseHelper from "./ResponseHelper";
+import { STORE_NAMES } from "./constants";
 
-const STORE_NAMES = {
-	PROJECTS: "projects",
-	VALIDATION_PROJECTS: "validationProjects"
-};
 export default class ProjectService {
 	constructor() {
 	}
@@ -19,9 +16,9 @@ export default class ProjectService {
 	 * @param userId - the database name under which data will be stored
 	 */
 	static cacheProjects(projectsResponse, userId) {
-		return DBService.openAndCreateStoreIfNotExist(userId, STORE_NAMES.PROJECTS, "id").then(function (db) {
-			const tx = db.transaction(STORE_NAMES.PROJECTS, 'readwrite');
-			const store = tx.objectStore(STORE_NAMES.PROJECTS);
+		return DBService.openDB(userId).then(function (db) {
+			const tx = db.transaction(STORE_NAMES.PROJECTS.name, 'readwrite');
+			const store = tx.objectStore(STORE_NAMES.PROJECTS.name);
 			projectsResponse.then(projects => {
 				for (let project of projects.items) {
 					store.put(project);
@@ -31,9 +28,9 @@ export default class ProjectService {
 	}
 
 	static cacheValidationProjects(projectsResponse, userId) {
-		return DBService.openAndCreateStoreIfNotExist(userId, STORE_NAMES.VALIDATION_PROJECTS, "id").then(function (db) {
-			const tx = db.transaction(STORE_NAMES.VALIDATION_PROJECTS, 'readwrite');
-			const store = tx.objectStore(STORE_NAMES.VALIDATION_PROJECTS);
+		return DBService.openDB(userId).then(function (db) {
+			const tx = db.transaction(STORE_NAMES.VALIDATION_PROJECTS.name, 'readwrite');
+			const store = tx.objectStore(STORE_NAMES.VALIDATION_PROJECTS.name);
 			projectsResponse.then(projects => {
 				for (let project of projects.items) {
 					store.put(project);
@@ -50,9 +47,9 @@ export default class ProjectService {
 	 */
 	static getProject(userId, params) {
 		const projectId = params[0];
-		return DBService.openAndCreateStoreIfNotExist(userId, STORE_NAMES.PROJECTS, "id").then(function (db) {
-			const tx = db.transaction(STORE_NAMES.PROJECTS, 'readonly');
-			const store = tx.objectStore(STORE_NAMES.PROJECTS);
+		return DBService.openDB(userId).then(function (db) {
+			const tx = db.transaction(STORE_NAMES.PROJECTS.name, 'readonly');
+			const store = tx.objectStore(STORE_NAMES.PROJECTS.name);
 			return store.get(projectId).then(function (val) {
 				return ResponseHelper.resultToResponse(val);
 			})
@@ -65,9 +62,9 @@ export default class ProjectService {
 	 * @returns {Promise<Response>}
 	 */
 	static getProjects(userId) {
-		return DBService.openAndCreateStoreIfNotExist(userId, STORE_NAMES.PROJECTS, "id").then(function (db) {
-			const tx = db.transaction(STORE_NAMES.PROJECTS, 'readonly');
-			const store = tx.objectStore(STORE_NAMES.PROJECTS);
+		return DBService.openDB(userId).then(function (db) {
+			const tx = db.transaction(STORE_NAMES.PROJECTS.name, 'readonly');
+			const store = tx.objectStore(STORE_NAMES.PROJECTS.name);
 			return store.getAll().then(function (items) {
 				return ResponseHelper.listResultToResponse(items);
 			})
@@ -75,9 +72,9 @@ export default class ProjectService {
 	}
 
 	static getValidationProjects(userId) {
-		return DBService.openAndCreateStoreIfNotExist(userId, STORE_NAMES.VALIDATION_PROJECTS, "id").then(function (db) {
-			const tx = db.transaction(STORE_NAMES.VALIDATION_PROJECTS, 'readonly');
-			const store = tx.objectStore(STORE_NAMES.VALIDATION_PROJECTS);
+		return DBService.openDB(userId).then(function (db) {
+			const tx = db.transaction(STORE_NAMES.VALIDATION_PROJECTS.name, 'readonly');
+			const store = tx.objectStore(STORE_NAMES.VALIDATION_PROJECTS.name);
 			return store.getAll().then(function (items) {
 				return ResponseHelper.listResultToResponse(items);
 			})
