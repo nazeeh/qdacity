@@ -1,6 +1,6 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
-import { listProjectHandler, listValidationProjectHandler } from "./handlers/ProjectHandler";
+import { listProjectHandler, listValidationProjectHandler, getProjectHandler } from "./handlers/ProjectHandler";
 
 
 const VERSION = 9;
@@ -47,14 +47,20 @@ function _parseDiscoveryDoc(discovery) {
 		resource = resources[resource];
 		for (let method in resource.methods) {
 			method = resource.methods[method];
+			//remove leading slash
 			apiMethods[method.id] = (discovery.basePath + method.path).replace(/^\/+/g, '');
 		}
 	}
 	registerRoutes();
 }
 
+/**
+ *
+ * @param path
+ * @returns {RegExp}
+ */
 function pathToRegex(path) {
-	const regex = new RegExp(path.replace(/{\w+}/g, "\\w+"));
+	const regex = new RegExp(path.replace(/{\w+}/g, "\\w+")+"(\\?.*)?$");
 	console.log(regex);
 	return regex
 }
@@ -112,6 +118,10 @@ function registerRoutes() {
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.project.listValidationProject"]),
 		listValidationProjectHandler,
+	);
+	workbox.routing.registerRoute(
+		pathToRegex(apiMethods["qdacity.project.getProject"]),
+		getProjectHandler,
 	);
 	/*
 	workbox.routing.registerRoute(
