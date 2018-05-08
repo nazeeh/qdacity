@@ -1,11 +1,12 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.0.0/workbox-sw.js');
 
 import { listProjectHandler, listValidationProjectHandler, getProjectHandler } from "./handlers/ProjectHandler";
+import { getCodeSystemHandler } from "./handlers/CodeSystemHandler";
 
 
 const VERSION = 9;
 // Upgrade this version, if new stores should be created in existing database
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 const CACHE_PREFIX = "qdacity-app";
 const CACHE_SUFFIX = "v1";
 const CACHE_RUNTIME = "runtime";
@@ -16,6 +17,10 @@ export const DB_NAME = "qdacity-app";
 
 export let apiMethods = {};
 
+/**
+ * Cache naming scheme.
+ * results in runtime cache name: qdacity-app-runtime-v1
+ */
 workbox.core.setCacheNameDetails({
 	prefix: CACHE_PREFIX,
 	suffix: CACHE_SUFFIX,
@@ -23,7 +28,6 @@ workbox.core.setCacheNameDetails({
 	runtime: CACHE_RUNTIME
 });
 
-// results in runtime cache name: qdacity-app-runtime-v1
 
 function discoverApi() {
 	return fetch('_ah/api/discovery/v1/apis/qdacity/$API_VERSION$/rest')
@@ -65,11 +69,18 @@ function pathToRegex(path) {
 	return regex
 }
 
+
+/**
+ * Service worker install event. Called when registering service worker for first time, or when already registered
+ * and service worker has changed.
+ */
 self.addEventListener('install', function (event) {
 	console.log('[ServiceWorker] installing.');
 	event.waitUntil(discoverApi());
 });
 
+
+//TODO precache instead of runtime
 
 workbox.routing.registerRoute(
 	/.*\.css/,
@@ -122,6 +133,10 @@ function registerRoutes() {
 	workbox.routing.registerRoute(
 		pathToRegex(apiMethods["qdacity.project.getProject"]),
 		getProjectHandler,
+	);
+	workbox.routing.registerRoute(
+		pathToRegex(apiMethods["qdacity.codesystem.getCodeSystem"]),
+		getCodeSystemHandler,
 	);
 	/*
 	workbox.routing.registerRoute(
