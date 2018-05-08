@@ -6,6 +6,8 @@ export default class ResponseHandler {
 	}
 
 	/**
+	 * To be called when fetch succeded -> There is connection to the backend
+	 * Calls the passed function that in most cases stores the values from the good response in the database
 	 *
 	 * @param response - The response from the request that should be handled
 	 * @param event
@@ -18,7 +20,13 @@ export default class ResponseHandler {
 			console.log('[ServiceWorker] No response from fetch ', event.request.url);
 			return response;
 		}
-		const cloned_reponse = response.clone();
+		const cloned_reponse = response.clone();	/**
+	 *
+	 * Wraps an array (e.g retrieved from the database) into a Response, that will be used in the Promisizer
+	 *
+	 * @param result - The array that should be wrapped into a response
+	 * @returns {Response}
+	 */
 		console.log('[ServiceWorker] Good Response from fetch ', event.request.url);
 		if (dbHandler !== undefined) {
 			caches.match(apiMethods["qdacity.user.getCurrentUser"]).then(function (cache_response) {
@@ -32,9 +40,11 @@ export default class ResponseHandler {
 	}
 
 	/**
+	 * To be called, when the fetch failed -> could not connect to backend
+	 * Calls the passed function that in most cases queries the database and returns the result
 	 *
 	 * @param dbHandler
-	 * @param args
+	 * @param args - array of arguments that should be passed to the dbHandler(e.g an ID value)
 	 * @returns {Promise<any>}
 	 */
 	static handleBadResponse(dbHandler, ...args) {
