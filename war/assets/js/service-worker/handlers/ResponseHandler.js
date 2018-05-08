@@ -20,13 +20,7 @@ export default class ResponseHandler {
 			console.log('[ServiceWorker] No response from fetch ', event.request.url);
 			return response;
 		}
-		const cloned_reponse = response.clone();	/**
-	 *
-	 * Wraps an array (e.g retrieved from the database) into a Response, that will be used in the Promisizer
-	 *
-	 * @param result - The array that should be wrapped into a response
-	 * @returns {Response}
-	 */
+		const cloned_reponse = response.clone();
 		console.log('[ServiceWorker] Good Response from fetch ', event.request.url);
 		if (dbHandler !== undefined) {
 			caches.match(apiMethods["qdacity.user.getCurrentUser"]).then(function (cache_response) {
